@@ -842,6 +842,7 @@ public class RootUiCoordinator
     }
 
     private void initHistoryClustersCoordinator(Profile profile) {
+        if (mActivity == null) return;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS)) {
             HistoryClustersDelegate historyClustersDelegate = new HistoryClustersDelegate() {
                 @Override
