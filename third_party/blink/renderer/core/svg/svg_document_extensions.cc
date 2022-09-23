@@ -138,7 +138,13 @@ void SVGDocumentExtensions::InvalidateSVGRootsWithRelativeLengthDescendents(
       &in_relative_length_svg_roots_invalidation_, true);
 #endif
 
+  HeapVector<Member<SVGSVGElement>> relative_length_svg_roots_vector;
   for (SVGSVGElement* element : relative_length_svg_roots_)
+    relative_length_svg_roots_vector.push_back(element);
+  std::sort(relative_length_svg_roots_vector.begin(), relative_length_svg_roots_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<SVGSVGElement>>());
+
+  for (SVGSVGElement* element : relative_length_svg_roots_vector)
     element->InvalidateRelativeLengthClients(scope);
 }
 

@@ -16,7 +16,7 @@ class SVGResource;
 
 class CORE_EXPORT SVGResourceClient : public GarbageCollectedMixin {
  public:
-  virtual ~SVGResourceClient() = default;
+  virtual ~SVGResourceClient();
 
   virtual void ResourceContentChanged(SVGResource*) = 0;
 
@@ -28,7 +28,7 @@ class CORE_EXPORT SVGResourceClient : public GarbageCollectedMixin {
   }
 
  protected:
-  SVGResourceClient() = default;
+  SVGResourceClient();
 };
 
 }  // namespace blink
