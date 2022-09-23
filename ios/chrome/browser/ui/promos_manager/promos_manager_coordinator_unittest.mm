@@ -17,9 +17,12 @@
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
+#import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator+internal.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -77,4 +80,43 @@ TEST_F(PromosManagerCoordinatorTest, InitDoesNotCreatesMediator) {
   CreatePromosManagerCoordinator();
 
   EXPECT_EQ(coordinator_.mediator, nil);
+}
+
+// Tests dismissViewControllers is called when a banneredViewController's
+// secondary button is pressed, and the banneredProvider implements
+// standardPromoDismissAction.
+TEST_F(PromosManagerCoordinatorTest,
+       BanneredViewControllerDismissesUsingSecondaryButton) {
+  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
+
+  PromosManagerCoordinator* mockCoordinator =
+      OCMClassMock([PromosManagerCoordinator class]);
+  mockCoordinator.banneredViewController =
+      OCMClassMock([PostRestoreSignInProvider class]);
+
+  OCMStub([mockCoordinator dismissViewControllers])
+      .andDo(^(NSInvocation* invocation) {
+        SUCCEED();
+      });
+
+  [mockCoordinator.banneredViewController.delegate didTapSecondaryActionButton];
+}
+
+// Tests dismissViewControllers is called when a viewController's dismiss button
+// is pressed, and the provider implements standardPromoDismissAction.
+TEST_F(PromosManagerCoordinatorTest,
+       ViewControllerDismissesUsingDismissButton) {
+  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
+
+  PromosManagerCoordinator* mockCoordinator =
+      OCMClassMock([PromosManagerCoordinator class]);
+  mockCoordinator.viewController =
+      OCMClassMock([PostRestoreSignInProvider class]);
+
+  OCMStub([mockCoordinator dismissViewControllers])
+      .andDo(^(NSInvocation* invocation) {
+        SUCCEED();
+      });
+
+  [mockCoordinator confirmationAlertDismissAction];
 }

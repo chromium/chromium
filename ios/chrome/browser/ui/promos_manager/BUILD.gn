@@ -43,6 +43,7 @@ source_set("promos_manager_scene_agent") {
 source_set("promos_manager") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "promos_manager_coordinator+internal.h",
     "promos_manager_coordinator.h",
     "promos_manager_coordinator.mm",
     "promos_manager_mediator.h",
@@ -92,8 +93,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:promos_manager",
+    "//ios/chrome/browser/ui/post_restore_signin",
     "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

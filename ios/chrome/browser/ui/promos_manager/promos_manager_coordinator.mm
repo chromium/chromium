@@ -70,6 +70,12 @@
 // The current BanneredPromoViewProvider, if any.
 @property(nonatomic, weak) id<BanneredPromoViewProvider> banneredProvider;
 
+// The current ConfirmationAlertViewController, if any.
+@property(nonatomic, strong) ConfirmationAlertViewController* viewController;
+
+// The current PromoStyleViewController, if any.
+@property(nonatomic, strong) PromoStyleViewController* banneredViewController;
+
 @end
 
 @implementation PromosManagerCoordinator
@@ -111,6 +117,23 @@
 
 - (void)stop {
   self.mediator = nil;
+  [self dismissViewControllers];
+}
+
+- (void)dismissViewControllers {
+  if (self.viewController) {
+    [self.viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+    self.viewController = nil;
+  }
+
+  if (self.banneredViewController) {
+    [self.banneredViewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+    self.banneredViewController = nil;
+  }
 }
 
 - (void)displayPromo:(promos_manager::Promo)promo {
@@ -142,13 +165,13 @@
     if ([provider respondsToSelector:@selector(setHandler:)])
       provider.handler = promosManagerCommandsHandler;
 
-    ConfirmationAlertViewController* promoViewController =
-        [provider viewController];
-    promoViewController.presentationController.delegate = self;
-    promoViewController.actionHandler = self;
+    self.viewController = [provider viewController];
+    self.viewController.presentationController.delegate = self;
+    self.viewController.actionHandler = self;
+
     self.provider = provider;
 
-    [self.baseViewController presentViewController:promoViewController
+    [self.baseViewController presentViewController:self.viewController
                                           animated:YES
                                         completion:nil];
 
@@ -160,14 +183,13 @@
     if ([banneredProvider respondsToSelector:@selector(setHandler:)])
       banneredProvider.handler = promosManagerCommandsHandler;
 
-    PromoStyleViewController* promoViewController =
-        [banneredProvider viewController];
+    self.banneredViewController = [banneredProvider viewController];
 
-    promoViewController.presentationController.delegate = self;
-    promoViewController.delegate = self;
+    self.banneredViewController.presentationController.delegate = self;
+    self.banneredViewController.delegate = self;
     self.banneredProvider = banneredProvider;
 
-    [self.baseViewController presentViewController:promoViewController
+    [self.baseViewController presentViewController:self.banneredViewController
                                           animated:YES
                                         completion:nil];
 
@@ -214,8 +236,10 @@
                   style:UIAlertActionStyleCancel
                 handler:^(UIAlertAction* action) {
                   if ([alertProvider respondsToSelector:@selector
-                                     (standardPromoAlertCancelAction)])
+                                     (standardPromoAlertCancelAction)]) {
                     [alertProvider standardPromoAlertCancelAction];
+                    [self dismissViewControllers];
+                  }
                 }];
 
     [alert addAction:defaultAction];
@@ -248,11 +272,16 @@
 - (void)didTapSecondaryActionButton {
   DCHECK(self.banneredProvider);
 
-  if (![self.banneredProvider
-          respondsToSelector:@selector(standardPromoSecondaryAction)])
-    return;
-
-  [self.banneredProvider standardPromoSecondaryAction];
+  // Sometimes the secondary action button for a PromoStyleViewController is
+  // used as the dismiss action button.
+  if ([self.banneredProvider
+          respondsToSelector:@selector(standardPromoDismissAction)]) {
+    [self.banneredProvider standardPromoDismissAction];
+    [self dismissViewControllers];
+  } else if ([self.banneredProvider
+                 respondsToSelector:@selector(standardPromoSecondaryAction)]) {
+    [self.banneredProvider standardPromoSecondaryAction];
+  }
 }
 
 // Invoked when the tertiary action button is tapped.
@@ -330,9 +359,11 @@
   if ([self.provider
           respondsToSelector:@selector(standardPromoDismissAction)]) {
     [self.provider standardPromoDismissAction];
+    [self dismissViewControllers];
   } else if ([self.banneredProvider
                  respondsToSelector:@selector(standardPromoDismissAction)]) {
     [self.banneredProvider standardPromoDismissAction];
+    [self dismissViewControllers];
   } else {
     NOTREACHED();
   }
