@@ -155,7 +155,10 @@
     <div id="attachFiles">
       <div id="attachFilesLabelContainer">
         <h2 id="attachFilesLabel">[[i18n('attachFilesLabel')]]</h2>
-        <iron-icon icon="os-feedback:info" id="attachFilesIcon"></iron-icon>
+        <iron-icon icon="os-feedback:info" id="attachFilesIcon"
+            class="focusable" tabindex="0"
+            aria-labelledby="attachFilesTooltipContent">
+        </iron-icon>
         <paper-tooltip for="attachFilesIcon" position="top" offset="0" fit-to-visible-bounds>
           <div id="attachFilesTooltipContent">
             [[i18n('attachFileLabelTooltip')]]
