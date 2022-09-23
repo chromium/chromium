@@ -4918,8 +4918,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.AspectRatio" units="%" expires_after="M82">
+<histogram name="Media.VideoCapture.AspectRatio" units="%" expires_after="M120">
   <owner>mcasas@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
   <summary>
     Video Capture Device captured aspect ratio, as a rounded integer multiplied
     by 100. The collection is made in the VideoCaptureController upon reception
@@ -4961,9 +4962,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.SupportedResolution"
-    enum="VideoResolutionDesignation" expires_after="2021-10-10">
+    enum="VideoResolutionDesignation" expires_after="M120">
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
+  <owner>jophba@chromium.org</owner>
   <summary>
     Counts each resolution supported by an enumerated video capture device.
     These are categorized by designation (eg. QVGA, HD, 4KUHD, etc) instead of
@@ -4988,10 +4990,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.FrameDrop"
-    enum="VideoCaptureFrameDropReason" expires_after="2022-01-09">
+    enum="VideoCaptureFrameDropReason" expires_after="M120">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
   <summary>
     An event for this histogram is emitted once for each time a video frame is
     dropped on the way from a capture source, e.g. a webcam, to a corresponding
@@ -5004,12 +5007,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.FrameRate" units="fps"
-    expires_after="2023-02-19">
+<histogram name="Media.VideoCapture.FrameRate" units="fps" expires_after="M120">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
   <summary>
     Video Capture Device frame rate requested by VideoCaptureManager on
     AllocateAndStart(). The collection is made in the VideoCaptureController
@@ -5017,9 +5020,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.Height" units="pixels" expires_after="M99">
+<histogram name="Media.VideoCapture.Height" units="pixels" expires_after="M120">
   <owner>mcasas@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
   <summary>
     Video Capture Device captured frame height in pixels. The collection is made
     in the VideoCaptureController upon reception of the first frame.
@@ -5136,6 +5140,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.ScaleOverride" units="units"
+    expires_after="M120">
+  <owner>jophba@chromium.org</owner>
+  <owner>klausw@chromium.org</owner>
+  <summary>
+    The scalar multiplier used for adjusting the content size during tab capture
+    to align with the requested capture size, multiplied by 100. Recorded when
+    capture of a web contents is started, the content size of the capture
+    changes, and when capture stops.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.ScaleOverrideChangeCount" units="units"
+    expires_after="M120">
+  <owner>jophba@chromium.org</owner>
+  <owner>klausw@chromium.org</owner>
+  <summary>
+    The number of times the scale override changed in a single capture session.
+    Recorded when capture of a web contents is stopped.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Start" enum="Boolean"
     expires_after="2023-02-26">
   <owner>toprice@chromium.org</owner>
@@ -5156,9 +5182,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.Width" units="pixels" expires_after="M99">
+<histogram name="Media.VideoCapture.Width" units="pixels" expires_after="M120">
   <owner>mcasas@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
   <summary>
     Video Capture Device captured frame width in pixels. The collection is made
     in the VideoCaptureController upon reception of the first frame.

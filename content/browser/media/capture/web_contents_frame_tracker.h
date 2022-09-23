@@ -193,6 +193,10 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // changes.
   float capture_scale_override_ = 1.0f;
 
+  // Track the number of times the capture scale override mutates in a single
+  // session.
+  int scale_override_change_count_ = 0;
+
   // The consumer-requested capture size, set in |WillStartCapturingWebContents|
   // to indicate the preferred frame size from the video frame consumer. Note
   // that frames will not necessarily be this size due to a variety of reasons,
