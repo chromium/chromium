@@ -272,7 +272,8 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
     if (LayoutObject* button_layout_object = button->GetLayoutObject()) {
       default_label_width +=
           button_layout_object->PreferredLogicalWidths().max_size +
-          LayoutFileUploadControl::kAfterButtonSpacing;
+          (LayoutFileUploadControl::kAfterButtonSpacing *
+           box.StyleRef().EffectiveZoom());
     }
   }
   return LayoutUnit(

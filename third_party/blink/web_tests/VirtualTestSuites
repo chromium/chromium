@@ -235,6 +235,7 @@
               "external/wpt/css/filter-effects",
               "external/wpt/css/css-grid/animation",
               "external/wpt/largest-contentful-paint",
+              "fast/forms/file/file-appearance-no-default-width.html",
               "fast/hidpi/static",
               "http/tests/csspaint/hidpi",
               "http/tests/images/document-policy",

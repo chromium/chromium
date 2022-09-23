@@ -46,7 +46,8 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
                            ? button->GetLayoutBox()->PixelSnappedWidth()
                            : 0;
     LayoutUnit button_and_spacing_width(
-        button_width + LayoutFileUploadControl::kAfterButtonSpacing);
+        button_width + (layout_file_upload_control_.StyleRef().EffectiveZoom() *
+                        LayoutFileUploadControl::kAfterButtonSpacing));
     gfx::RectF text_bounds;
     float text_width = font.Width(text_run, nullptr, &text_bounds);
     LayoutUnit text_x;
