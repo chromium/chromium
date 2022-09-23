@@ -150,6 +150,11 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
   if (is_cursor_motion_blur_enabled_)
     return true;
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceShowCursor)) {
+    return false;
+  }
+
   auto* controller = CaptureModeController::Get();
   auto* session = controller->capture_mode_session();
   if (session && session->is_drag_in_progress()) {

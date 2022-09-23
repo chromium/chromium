@@ -108,6 +108,11 @@ bool TestCursorClient::ShouldHideCursorOnKeyEvent(
   return should_hide_cursor_on_key_event_;
 }
 
+bool TestCursorClient::ShouldHideCursorOnTouchEvent(
+    const ui::TouchEvent& event) const {
+  return true;
+}
+
 gfx::Size TestCursorClient::GetSystemCursorSize() const {
   return gfx::Size(25, 25);
 }

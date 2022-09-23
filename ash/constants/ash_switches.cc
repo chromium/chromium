@@ -565,6 +565,10 @@ const char kForceLaunchBrowser[] = "force-launch-browser";
 // tests can change how it's brought up. This flag disables that.
 const char kForceLoginManagerInTests[] = "force-login-manager-in-tests";
 
+// Forces the cursor to be shown even if we are mimicing touch events. Note that
+// cursor changes are locked when using this switch.
+const char kForceShowCursor[] = "force-show-cursor";
+
 // Force system compositor mode when set.
 const char kForceSystemCompositorMode[] = "force-system-compositor-mode";
 

@@ -19,6 +19,7 @@ class Size;
 
 namespace ui {
 class KeyEvent;
+class TouchEvent;
 enum class CursorSize;
 }
 
@@ -92,6 +93,8 @@ class AURA_EXPORT CursorClient {
 
   // Returns true if the mouse cursor should be hidden on |event|.
   virtual bool ShouldHideCursorOnKeyEvent(const ui::KeyEvent& event) const = 0;
+  virtual bool ShouldHideCursorOnTouchEvent(
+      const ui::TouchEvent& event) const = 0;
 
   // Returns the OS cursor size in DIP.
   virtual gfx::Size GetSystemCursorSize() const = 0;

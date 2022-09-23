@@ -1417,8 +1417,7 @@ void Shell::Init(
   // since it may need to add observers to root windows.
   window_restore_controller_ = std::make_unique<WindowRestoreController>();
 
-  cursor_manager_->HideCursor();  // Hide the mouse cursor on startup.
-  cursor_manager_->SetCursor(ui::mojom::CursorType::kPointer);
+  static_cast<CursorManager*>(cursor_manager_.get())->Init();
 
   mojo::PendingRemote<device::mojom::Fingerprint> fingerprint;
   shell_delegate_->BindFingerprint(

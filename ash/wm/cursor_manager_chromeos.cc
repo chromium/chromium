@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/shell.h"
+#include "base/command_line.h"
 #include "ui/aura/env.h"
 #include "ui/events/event.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -16,11 +18,24 @@
 
 namespace ash {
 
-CursorManager::CursorManager(
-    std::unique_ptr<::wm::NativeCursorManager> delegate)
-    : ::wm::CursorManager(std::move(delegate)) {}
+CursorManager::CursorManager(std::unique_ptr<wm::NativeCursorManager> delegate)
+    : wm::CursorManager(std::move(delegate)) {}
 
 CursorManager::~CursorManager() = default;
+
+void CursorManager::Init() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceShowCursor)) {
+    // TODO(sammiequon): Set a custom cursor.
+    SetCursor(ui::mojom::CursorType::kPointer);
+    LockCursor();
+    return;
+  }
+
+  // Hide the mouse cursor on startup.
+  HideCursor();
+  SetCursor(ui::mojom::CursorType::kPointer);
+}
 
 bool CursorManager::ShouldHideCursorOnKeyEvent(
     const ui::KeyEvent& event) const {
@@ -76,4 +91,5 @@ bool CursorManager::ShouldHideCursorOnKeyEvent(
       return true;
   }
 }
+
 }  // namespace ash

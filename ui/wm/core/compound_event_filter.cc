@@ -23,23 +23,6 @@
 
 namespace wm {
 
-namespace {
-
-// Returns true if the cursor should be hidden on touch events.
-// TODO(tdanderson|rsadam): Move this function into CursorClient.
-bool ShouldHideCursorOnTouch(const ui::TouchEvent& event) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  return true;
-#else
-  // Linux Aura does not hide the cursor on touch by default.
-  // TODO(tdanderson): Change this if having consistency across
-  // all platforms which use Aura is desired.
-  return false;
-#endif
-}
-
-}  // namespace
-
 ////////////////////////////////////////////////////////////////////////////////
 // CompoundEventFilter, public:
 
@@ -263,11 +246,12 @@ void CompoundEventFilter::OnTouchEvent(ui::TouchEvent* event) {
   TRACE_EVENT2("ui,input", "CompoundEventFilter::OnTouchEvent", "event_type",
                event->type(), "event_handled", event->handled());
   FilterTouchEvent(event);
-  if (!event->handled() && event->type() == ui::ET_TOUCH_PRESSED &&
-      ShouldHideCursorOnTouch(*event)) {
+  if (!event->handled() && event->type() == ui::ET_TOUCH_PRESSED) {
     aura::Window* target = static_cast<aura::Window*>(event->target());
     DCHECK(target);
-    if (!aura::Env::GetInstance()->IsMouseButtonDown()) {
+    auto* client = aura::client::GetCursorClient(target->GetRootWindow());
+    if (client && client->ShouldHideCursorOnTouchEvent(*event) &&
+        !aura::Env::GetInstance()->IsMouseButtonDown()) {
       SetMouseEventsEnableStateOnEvent(target, event, false);
       SetCursorVisibilityOnEvent(target, event, false);
     }

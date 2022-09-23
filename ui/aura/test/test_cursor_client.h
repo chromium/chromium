@@ -35,7 +35,7 @@ class TestCursorClient : public aura::client::CursorClient {
     should_hide_cursor_on_key_event_ = hide;
   }
 
-  // Overridden from aura::client::CursorClient:
+  // aura::client::CursorClient:
   void SetCursor(gfx::NativeCursor cursor) override;
   gfx::NativeCursor GetCursor() const override;
   void SetCursorForced(gfx::NativeCursor cursor) override;
@@ -55,6 +55,7 @@ class TestCursorClient : public aura::client::CursorClient {
   void AddObserver(aura::client::CursorClientObserver* observer) override;
   void RemoveObserver(aura::client::CursorClientObserver* observer) override;
   bool ShouldHideCursorOnKeyEvent(const ui::KeyEvent& event) const override;
+  bool ShouldHideCursorOnTouchEvent(const ui::TouchEvent& event) const override;
   gfx::Size GetSystemCursorSize() const override;
 
  private:

@@ -25,14 +25,19 @@ namespace ash {
 // This class overrides the cursor hiding behaviour on ChromeOS. The cursor is
 // hidden on certain key events only if the accessibility keyboard is not
 // enabled.
-class ASH_EXPORT CursorManager : public ::wm::CursorManager {
+class ASH_EXPORT CursorManager : public wm::CursorManager {
  public:
-  explicit CursorManager(std::unique_ptr<::wm::NativeCursorManager> delegate);
+  explicit CursorManager(std::unique_ptr<wm::NativeCursorManager> delegate);
 
   CursorManager(const CursorManager&) = delete;
   CursorManager& operator=(const CursorManager&) = delete;
 
   ~CursorManager() override;
+
+  // Checks if "--force-show-cursor" switch is turned on. If so, it shows a
+  // custom forced cursor and locks the cursor. Otherwise it hides the cursor
+  // for startup.
+  void Init();
 
   // aura::client::CursorClient:
   bool ShouldHideCursorOnKeyEvent(const ui::KeyEvent& event) const override;
