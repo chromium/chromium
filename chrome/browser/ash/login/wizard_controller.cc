@@ -177,7 +177,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/smart_privacy_protection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
@@ -492,6 +491,10 @@ void WizardController::OnDestroyingOobeUI() {
   // the screen/handlers migrated to the new patterns.
   screen_manager_->Shutdown();
   oobe_ui_observation_.Reset();
+}
+
+void WizardController::HideCurrentScreen() {
+  SetCurrentScreen(nullptr);
 }
 
 void WizardController::AdvanceToScreenAfterHIDDetection(

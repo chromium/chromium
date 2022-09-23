@@ -754,6 +754,9 @@ void LoginDisplayHostMojo::HideDialog() {
   // with hidden error screens).
   StopObservingOobeUI();
   dialog_->Hide();
+  // Hide the current screen of the `WizardController` to force `Show()` to be
+  // called on the first screen when the dialog reopens.
+  GetWizardController()->HideCurrentScreen();
   gaia_reauth_account_id_.reset();
 }
 

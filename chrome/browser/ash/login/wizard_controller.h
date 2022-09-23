@@ -65,7 +65,6 @@
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/chromeos/login/theme_selection_screen_handler.h"
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -254,6 +253,10 @@ class WizardController : public OobeUI::Observer {
   // OobeUI::Observer
   void OnCurrentScreenChanged(OobeScreenId, OobeScreenId) override {}
   void OnDestroyingOobeUI() override;
+
+  // Sets the current screen to nullptr so the next time WizardController
+  // will be started it will call `Show()` on the first screen.
+  void HideCurrentScreen();
 
  private:
   // Create BaseScreen instances. These are owned by `screen_manager_`.

@@ -388,8 +388,9 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
    */
   onBeforeShow(data) {
     this.enableWifiScans_ = true;
-    this.$.backButton.disabled = !this.closable;
     this.hasUserPods_ = data && ('hasUserPods' in data) && data.hasUserPods;
+    // `closable` is dependent on `hasUserPods_`
+    this.$.backButton.disabled = !this.closable;
   }
 
   /**
