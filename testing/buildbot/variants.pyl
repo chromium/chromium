@@ -853,8 +853,8 @@
   'CROS_ATLAS_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '105.0.5195.112',
-      'cros_img': 'atlas-release/R105-14989.85.0',
+      'cros_chrome_version': '105.0.5195.134',
+      'cros_img': 'atlas-release/R105-14989.107.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_RELEASE_STABLE',
@@ -1082,8 +1082,8 @@
   'CROS_STRONGBAD_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '105.0.5195.112',
-      'cros_img': 'strongbad-release/R105-14989.85.0',
+      'cros_chrome_version': '105.0.5195.134',
+      'cros_img': 'strongbad-release/R105-14989.107.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_STABLE',
