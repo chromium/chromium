@@ -29,6 +29,11 @@
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/settings/cros_settings_names.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#endif
+
 namespace {
 
 constexpr char kDeviceNameKey[] = "name";
@@ -103,6 +108,26 @@ base::Value DeviceIdsToValue(int vendor_id, int product_id) {
   return device_value;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool IsDetachable(int vid, int pid) {
+  // TOOD(huangs): Figure out how to do the following in Lacros, which does not
+  // have access to ash::CrosSettings (https://crbug.com/1219329).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const base::Value::List* policy_list;
+  if (ash::CrosSettings::Get()->GetList(ash::kUsbDetachableAllowlist,
+                                        &policy_list)) {
+    for (const auto& entry : *policy_list) {
+      if (entry.FindIntKey(ash::kUsbDetachableAllowlistKeyVid) == vid &&
+          entry.FindIntKey(ash::kUsbDetachableAllowlistKeyPid) == pid) {
+        return true;
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 bool IsMassStorageInterface(const device::mojom::UsbInterfaceInfo& interface) {
   for (auto& alternate : interface.alternates) {
     if (alternate->class_code == kUsbClassMassStorage)
@@ -112,10 +137,14 @@ bool IsMassStorageInterface(const device::mojom::UsbInterfaceInfo& interface) {
 }
 
 bool ShouldExposeDevice(const device::mojom::UsbDeviceInfo& device_info) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (IsDetachable(device_info.vendor_id, device_info.product_id))
+    return true;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // blink::USBDevice::claimInterface() disallows claiming mass storage
   // interfaces, but explicitly prevent access in the browser process as
   // ChromeOS would allow these interfaces to be claimed.
-
   for (auto& configuration : device_info.configurations) {
     if (configuration->interfaces.size() == 0) {
         return true;

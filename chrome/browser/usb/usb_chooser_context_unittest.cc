@@ -32,6 +32,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/settings/cros_settings_names.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#endif
+
 using ::base::test::TestFuture;
 using ::device::mojom::UsbDeviceInfoPtr;
 using ::testing::_;
@@ -49,7 +55,13 @@ constexpr int kDeviceIdWildcard = -1;
 
 class UsbChooserContextTest : public testing::Test {
  public:
-  UsbChooserContextTest() {}
+  UsbChooserContextTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    profile_.ScopedCrosSettingsTestHelper()
+        ->ReplaceDeviceSettingsProviderWithStub();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
   ~UsbChooserContextTest() override {
     // When UsbChooserContext is destroyed, OnDeviceManagerConnectionError will
     // be called for each device observer.
@@ -64,6 +76,11 @@ class UsbChooserContextTest : public testing::Test {
       EXPECT_CALL(*entry.second, OnPermissionRevoked).Times(AnyNumber());
       EXPECT_CALL(*entry.second, OnObjectPermissionChanged).Times(AnyNumber());
     }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    profile_.ScopedCrosSettingsTestHelper()
+        ->RestoreRealDeviceSettingsProvider();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
  protected:
@@ -1263,6 +1280,50 @@ TEST_F(UsbChooserContextTest, MassStorageHidden) {
       }));
   loop.Run();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(UsbChooserContextTest, MassStorageShownWhenDetachable) {
+  base::Value::List allowlist;
+  base::Value::Dict ids;
+  ids.Set(ash::kUsbDetachableAllowlistKeyVid, 1234);
+  ids.Set(ash::kUsbDetachableAllowlistKeyPid, 1);
+  allowlist.Append(std::move(ids));
+
+  profile()->ScopedCrosSettingsTestHelper()->GetStubbedProvider()->Set(
+      ash::kUsbDetachableAllowlist, base::Value(std::move(allowlist)));
+
+  GURL kUrl("https://www.google.com");
+  const auto origin = url::Origin::Create(kUrl);
+
+  // Mass storage devices should be hidden unless they are listed in the
+  // UsbDetachableAllowlist policy.
+  std::vector<device::mojom::UsbConfigurationInfoPtr> storage_configs;
+  storage_configs.push_back(
+      device::FakeUsbDeviceInfo::CreateConfiguration(0x08, 0x06, 0x50));
+  UsbDeviceInfoPtr detachable_storage_device_info =
+      device_manager_.CreateAndAddDevice(1234, 1, "vendor1",
+                                         "detachable storage", "123ABC",
+                                         std::move(storage_configs));
+
+  storage_configs.clear();
+  storage_configs.push_back(
+      device::FakeUsbDeviceInfo::CreateConfiguration(0x08, 0x06, 0x50));
+  UsbDeviceInfoPtr storage_device_info = device_manager_.CreateAndAddDevice(
+      1234, 2, "vendor1", "storage", "456DEF", std::move(storage_configs));
+
+  UsbChooserContext* chooser_context = GetChooserContext(profile());
+
+  base::RunLoop loop;
+  chooser_context->GetDevices(
+      base::BindLambdaForTesting([&](std::vector<UsbDeviceInfoPtr> devices) {
+        EXPECT_EQ(1u, devices.size());
+        EXPECT_EQ(detachable_storage_device_info->product_name,
+                  devices[0]->product_name);
+        loop.Quit();
+      }));
+  loop.Run();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(UsbChooserContextTest, DeviceWithNoInterfaceVisible) {
   GURL url("https://www.google.com");
