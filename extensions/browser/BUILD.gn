@@ -548,7 +548,6 @@ source_set("browser_sources") {
     "//base:i18n",
     "//build:chromeos_buildflags",
     "//components/back_forward_cache",
-    "//components/cast_certificate",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/crx_file",
@@ -917,8 +916,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//components/cast_certificate",
-    "//components/cast_certificate:test_support",
     "//components/content_settings/core/test:test_support",
     "//components/crx_file",
     "//components/feedback",
@@ -958,7 +955,6 @@ source_set("unit_tests") {
     "//services/service_manager/public/cpp/test:test_support",
     "//storage/browser:test_support",
     "//third_party/leveldatabase",
-    "//third_party/openscreen/src/cast/common/certificate/proto:certificate_unittest_proto",
     "//third_party/zlib/google:zip",
   ]
 

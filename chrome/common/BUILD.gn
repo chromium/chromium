@@ -184,7 +184,6 @@ static_library("common_lib") {
     "//chrome/common/profiler",
     "//chrome/common/search:mojo_bindings",
     "//chrome/installer/util:with_no_strings",
-    "//components/cast_certificate",
     "//components/cdm/common",
     "//components/client_hints/common",
     "//components/cloud_devices/common",

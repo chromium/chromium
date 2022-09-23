@@ -1,6 +1,6 @@
 include_rules = [
-  "+components/cast_certificate",
   "+components/keyed_service",
+  "+components/media_router/common/providers/cast",
   "+components/openscreen_platform",
   "+content/public/browser",
   "+content/public/test",
@@ -24,7 +24,7 @@ specific_include_rules = {
   ],
   ".*_(unittest|fuzzer).cc": [
     "+third_party/openscreen/src/cast/common/channel/testing",
-    "+components/test/data/cast_certificate",
+    "+components/test/data/media_router/common/providers/cast/certificate",
   ],
   "openscreen.*_fuzzer\.cc": [
     "+third_party/openscreen/src/cast/common/channel",

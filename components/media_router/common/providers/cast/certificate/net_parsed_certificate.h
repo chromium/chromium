@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_CERTIFICATE_NET_PARSED_CERTIFICATE_H_
-#define COMPONENTS_CAST_CERTIFICATE_NET_PARSED_CERTIFICATE_H_
+#ifndef COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_NET_PARSED_CERTIFICATE_H_
+#define COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_NET_PARSED_CERTIFICATE_H_
 
 #include "net/cert/pki/parsed_certificate.h"
 #include "third_party/openscreen/src/cast/common/public/parsed_certificate.h"
@@ -48,4 +48,4 @@ class NetParsedCertificate final : public openscreen::cast::ParsedCertificate {
 
 }  // namespace cast_certificate
 
-#endif  // COMPONENTS_CAST_CERTIFICATE_NET_PARSED_CERTIFICATE_H_
+#endif  // COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_NET_PARSED_CERTIFICATE_H_

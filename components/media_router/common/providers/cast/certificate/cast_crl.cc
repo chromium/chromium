@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_certificate/cast_crl.h"
+#include "components/media_router/common/providers/cast/certificate/cast_crl.h"
 
 #include <unordered_map>
 #include <unordered_set>
@@ -61,7 +61,7 @@ enum CrlVersion {
 //
 // These constants are defined by the file included next:
 
-#include "components/cast_certificate/cast_crl_root_ca_cert_der-inc.h"
+#include "components/media_router/common/providers/cast/certificate/cast_crl_root_ca_cert_der-inc.h"
 
 // Singleton for the Cast CRL trust store.
 class CastCRLTrustStore {

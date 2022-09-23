@@ -85,7 +85,6 @@ include_rules = [
   "+components/browsing_topics",
   "+components/custom_handlers",
   "+components/captive_portal",
-  "+components/cast_certificate",
   "+components/cast_channel",
   "+components/cbor",
   "+components/cdm/browser",

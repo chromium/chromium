@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_certificate/cast_cert_validator.h"
+#include "components/media_router/common/providers/cast/certificate/cast_cert_validator.h"
 
 #include <memory>
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/cast_certificate/cast_cert_reader.h"
-#include "components/cast_certificate/cast_cert_test_helpers.h"
+#include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
+#include "components/media_router/common/providers/cast/certificate/cast_cert_test_helpers.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/signature_algorithm.h"

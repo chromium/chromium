@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_CERTIFICATE_NET_TRUST_STORE_H_
-#define COMPONENTS_CAST_CERTIFICATE_NET_TRUST_STORE_H_
+#ifndef COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_NET_TRUST_STORE_H_
+#define COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_NET_TRUST_STORE_H_
 
 #include <vector>
 
@@ -40,4 +40,4 @@ class NetTrustStore final : public openscreen::cast::TrustStore {
 
 }  // namespace cast_certificate
 
-#endif  // COMPONENTS_CAST_CERTIFICATE_NET_TRUST_STORE_H_
+#endif  // COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_NET_TRUST_STORE_H_

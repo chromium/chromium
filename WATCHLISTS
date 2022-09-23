@@ -639,8 +639,8 @@
                    '|media/router/discovery',
     },
     'cast_certificate': {
-      'filepath': 'components/cast_certificate/'\
-                  '|components/test/data/cast_certificate/',
+      'filepath': 'components/media_router/common/providers/cast/certificate/'\
+                  '|components/test/data/media_router/common/providers/cast/certificate/',
     },
     'cast_channel': {
       'filepath':  'components/cast_channel/'

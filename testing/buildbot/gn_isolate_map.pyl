@@ -616,20 +616,20 @@
     "script": "//testing/scripts/run_performance_tests.py",
     "type": "script",
   },
-  "components/cast_certificate": {
-    "label": "//components/cast_certificate:cast_certificate",
-    "type": "additional_compile_target",
-  },
-  "components/cast_certificate:unit_tests": {
-    "label": "//components/cast_certificate:unit_tests",
-    "type": "additional_compile_target",
-  },
   "components/cast_channel": {
     "label": "//components/cast_channel:cast_channel",
     "type": "additional_compile_target",
   },
   "components/cast_channel:unit_tests": {
     "label": "//components/cast_channel:unit_tests",
+    "type": "additional_compile_target",
+  },
+  "components/media_router/common/providers/cast/certificate": {
+    "label": "//components/media_router/common/providers/cast/certificate",
+    "type": "additional_compile_target",
+  },
+  "components/media_router/common/providers/cast/certificate:unit_tests": {
+    "label": "//components/media_router/common/providers/cast/certificate:unit_tests",
     "type": "additional_compile_target",
   },
   "components/mirroring/browser": {

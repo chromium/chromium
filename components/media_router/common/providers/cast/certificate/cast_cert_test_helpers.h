@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_CERTIFICATE_CAST_CERT_TEST_HELPERS_H_
-#define COMPONENTS_CAST_CERTIFICATE_CAST_CERT_TEST_HELPERS_H_
+#ifndef COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_CAST_CERT_TEST_HELPERS_H_
+#define COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_CAST_CERT_TEST_HELPERS_H_
 
 #include <memory>
 #include <string>
@@ -16,10 +16,12 @@
 namespace cast_certificate {
 namespace testing {
 
-// Returns components/test/data/cast_certificate
+// Returns components/test/data/media_router/common/providers/cast/certificate
 const base::FilePath& GetCastCertificateDirectory();
 
-// Returns components/test/data/cast_certificate/certificates
+// Returns
+// components/test/data/media_router/common/providers/cast/certificate/
+//   certificates
 const base::FilePath& GetCastCertificatesSubDirectory();
 
 // Helper structure that describes a message and its various signatures.
@@ -35,7 +37,8 @@ struct SignatureTestData {
 
 // Reads a PEM file that contains "MESSAGE", "SIGNATURE SHA1" and
 // "SIGNATURE SHA256" blocks.
-// |file_name| should be relative to //components/test/data/cast_certificate
+// |file_name| should be relative to
+// //components/test/data/media_router/common/providers/cast/certificate
 SignatureTestData ReadSignatureTestData(const base::StringPiece& file_name);
 
 // Converts uint64_t unix timestamp in seconds to base::Time.
@@ -49,4 +52,4 @@ std::unique_ptr<net::TrustStoreInMemory> LoadTestCert(
 }  // namespace testing
 }  // namespace cast_certificate
 
-#endif  // COMPONENTS_CAST_CERTIFICATE_CAST_CERT_TEST_HELPERS_H_
+#endif  // COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_CAST_CERT_TEST_HELPERS_H_

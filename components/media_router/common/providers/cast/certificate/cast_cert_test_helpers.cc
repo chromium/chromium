@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_certificate/cast_cert_test_helpers.h"
+#include "components/media_router/common/providers/cast/certificate/cast_cert_test_helpers.h"
 
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
-#include "components/cast_certificate/cast_cert_reader.h"
+#include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/x509_util.h"
@@ -32,7 +32,11 @@ base::FilePath GetCastCertificateDirectoryFromPathService() {
   return src_root.AppendASCII("components")
       .AppendASCII("test")
       .AppendASCII("data")
-      .AppendASCII("cast_certificate");
+      .AppendASCII("media_router")
+      .AppendASCII("common")
+      .AppendASCII("providers")
+      .AppendASCII("cast")
+      .AppendASCII("certificate");
 }
 
 base::FilePath GetCastCertificatesSubDirectoryFromPathService() {

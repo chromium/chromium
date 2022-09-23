@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_certificate/net_trust_store.h"
+#include "components/media_router/common/providers/cast/certificate/net_trust_store.h"
 
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "components/cast_certificate/net_parsed_certificate.h"
+#include "components/media_router/common/providers/cast/certificate/net_parsed_certificate.h"
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_issuer_source_static.h"
 #include "net/cert/pki/common_cert_errors.h"
@@ -31,8 +31,8 @@ namespace {
 //
 // These constants are defined by the files included next:
 
-#include "components/cast_certificate/cast_root_ca_cert_der-inc.h"
-#include "components/cast_certificate/eureka_root_ca_der-inc.h"
+#include "components/media_router/common/providers/cast/certificate/cast_root_ca_cert_der-inc.h"
+#include "components/media_router/common/providers/cast/certificate/eureka_root_ca_der-inc.h"
 
 // -------------------------------------------------------------------------
 // Cast CRL trust anchors.
@@ -44,7 +44,7 @@ namespace {
 //
 // These constants are defined by the file included next:
 
-#include "components/cast_certificate/cast_crl_root_ca_cert_der-inc.h"
+#include "components/media_router/common/providers/cast/certificate/cast_crl_root_ca_cert_der-inc.h"
 
 }  // namespace
 

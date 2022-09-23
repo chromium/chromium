@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_certificate/net_parsed_certificate.h"
+#include "components/media_router/common/providers/cast/certificate/net_parsed_certificate.h"
 
 #include "base/containers/contains.h"
 #include "net/cert/pki/parse_name.h"

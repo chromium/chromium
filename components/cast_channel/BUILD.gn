@@ -41,10 +41,10 @@ static_library("cast_channel") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//components/cast_certificate",
-    "//components/cast_certificate:openscreen_certificate_verifier",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
+    "//components/media_router/common/providers/cast/certificate",
+    "//components/media_router/common/providers/cast/certificate:openscreen_certificate_verifier",
     "//components/openscreen_platform",
     "//components/prefs",
     "//components/version_info",
@@ -100,9 +100,9 @@ source_set("unit_tests") {
     ":cast_channel",
     ":test_support",
     "//base/test:test_support",
-    "//components/cast_certificate",
-    "//components/cast_certificate:cast_certificate_reader",
-    "//components/cast_certificate:test_support",
+    "//components/media_router/common/providers/cast/certificate",
+    "//components/media_router/common/providers/cast/certificate:certificate_reader",
+    "//components/media_router/common/providers/cast/certificate:test_support",
     "//components/openscreen_platform",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -134,8 +134,7 @@ if (use_fuzzing_engine) {
 
   data_headers("cast_auth_util_fuzzer_certs") {
     namespace = "cast"
-    sources =
-        [ "../test/data/cast_certificate/certificates/chromecast_gen1.pem" ]
+    sources = [ "../test/data/media_router/common/providers/cast//certificate/certificates/chromecast_gen1.pem" ]
   }
 
   fuzzable_proto_library("cast_channel_fuzzer_inputs") {
@@ -181,9 +180,9 @@ fuzzer_test("cast_auth_util_fuzzer") {
     ":cast_auth_util_fuzzer_shared",
     ":cast_channel",
     ":cast_channel_fuzzer_inputs",
-    "//components/cast_certificate",
-    "//components/cast_certificate:cast_certificate_reader",
-    "//components/cast_certificate:test_support",
+    "//components/media_router/common/providers/cast/certificate",
+    "//components/media_router/common/providers/cast/certificate:certificate_reader",
+    "//components/media_router/common/providers/cast/certificate:test_support",
     "//net:test_support",
     "//net/data/ssl/certificates:generate_fuzzer_cert_includes",
     "//third_party/libprotobuf-mutator",
@@ -239,7 +238,7 @@ fuzzer_test("openscreen_cast_auth_util_fuzzer") {
     ":cast_auth_util_fuzzer_shared",
     ":cast_channel_fuzzer_inputs",
     "//base",
-    "//components/cast_certificate:cast_certificate_reader",
+    "//components/media_router/common/providers/cast/certificate:certificate_reader",
     "//components/openscreen_platform",
     "//net/data/ssl/certificates:generate_fuzzer_cert_includes",
     "//third_party/boringssl",

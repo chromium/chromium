@@ -254,7 +254,6 @@ test("extensions_unittests") {
   data = [
     "test/data/",
     "//chrome/test/data/extensions/",
-    "//components/test/data/cast_certificate/",
     "$root_out_dir/content_shell.pak",
     "$root_out_dir/extensions_shell_and_test.pak",
   ]

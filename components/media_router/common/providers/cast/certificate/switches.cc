@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_certificate/switches.h"
+#include "components/media_router/common/providers/cast/certificate/switches.h"
 
 namespace cast_certificate {
 namespace switches {

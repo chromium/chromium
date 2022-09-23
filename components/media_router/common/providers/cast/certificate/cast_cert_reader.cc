@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_certificate/cast_cert_reader.h"
+#include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"

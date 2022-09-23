@@ -324,7 +324,6 @@ test("components_unittests") {
       "//components/browsing_data/content:unit_tests",
       "//components/browsing_topics:unit_tests",
       "//components/captive_portal/content:unit_tests",
-      "//components/cast_certificate:unit_tests",
       "//components/cast_channel:unit_tests",
       "//components/cast_receiver:unit_tests",
       "//components/cast_streaming:unit_tests",

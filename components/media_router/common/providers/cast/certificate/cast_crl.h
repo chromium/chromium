@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_CERTIFICATE_CAST_CRL_H_
-#define COMPONENTS_CAST_CERTIFICATE_CAST_CRL_H_
+#ifndef COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_CAST_CRL_H_
+#define COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_CAST_CRL_H_
 
 #include <memory>
 #include <string>
@@ -64,4 +64,4 @@ std::unique_ptr<CastCRL> ParseAndVerifyCRLUsingCustomTrustStore(
 
 }  // namespace cast_certificate
 
-#endif  // COMPONENTS_CAST_CERTIFICATE_CAST_CRL_H_
+#endif  // COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_CAST_CRL_H_

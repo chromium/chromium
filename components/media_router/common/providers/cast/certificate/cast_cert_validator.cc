@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_certificate/cast_cert_validator.h"
+#include "components/media_router/common/providers/cast/certificate/cast_cert_validator.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -19,7 +19,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/cast_certificate/cast_crl.h"
+#include "components/media_router/common/providers/cast/certificate/cast_crl.h"
 #include "net/cert/pki/cert_issuer_source_static.h"
 #include "net/cert/pki/certificate_policies.h"
 #include "net/cert/pki/common_cert_errors.h"
@@ -40,8 +40,8 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
-#include "components/cast_certificate/cast_cert_reader.h"
-#include "components/cast_certificate/switches.h"
+#include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
+#include "components/media_router/common/providers/cast/certificate/switches.h"
 
 namespace cast_certificate {
 namespace {
@@ -61,8 +61,8 @@ namespace {
 //
 // These constants are defined by the files included next:
 
-#include "components/cast_certificate/cast_root_ca_cert_der-inc.h"
-#include "components/cast_certificate/eureka_root_ca_der-inc.h"
+#include "components/media_router/common/providers/cast/certificate/cast_root_ca_cert_der-inc.h"
+#include "components/media_router/common/providers/cast/certificate/eureka_root_ca_der-inc.h"
 
 class CastTrustStore {
  public:

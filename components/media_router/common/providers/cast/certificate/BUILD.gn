@@ -4,14 +4,14 @@
 
 import("//third_party/openscreen/src/build/config/cast.gni")
 
-config("certificate_config") {
+config("developer_certificate_config") {
   defines = []
   if (cast_allow_developer_certificate) {
     defines += [ "CAST_ALLOW_DEVELOPER_CERTIFICATE" ]
   }
 }
 
-source_set("cast_certificate_reader") {
+source_set("certificate_reader") {
   sources = [
     "cast_cert_reader.cc",
     "cast_cert_reader.h",
@@ -22,23 +22,23 @@ source_set("cast_certificate_reader") {
   ]
 }
 
-source_set("cast_certificate_roots") {
+source_set("certificate_roots") {
   sources = [
     "cast_root_ca_cert_der-inc.h",
     "eureka_root_ca_der-inc.h",
   ]
 }
 
-static_library("cast_certificate") {
+static_library("certificate") {
   sources = [
     "cast_cert_validator.cc",
     "cast_cert_validator.h",
     "cast_crl.cc",
     "cast_crl.h",
   ]
-  configs += [ ":certificate_config" ]
+  configs += [ ":developer_certificate_config" ]
   deps = [
-    ":cast_certificate_roots",
+    ":certificate_roots",
     "//base",
     "//net",
     "//third_party/boringssl",
@@ -47,7 +47,7 @@ static_library("cast_certificate") {
     # Although we won't use the reader unless cast_allow_developer_certificate
     # is enabled, the buildfiles generation step requires the inclusion
     # anyway since it doesn't check preprocesser macros.
-    ":cast_certificate_reader",
+    ":certificate_reader",
   ]
   if (cast_allow_developer_certificate) {
     sources += [
@@ -65,7 +65,7 @@ source_set("openscreen_certificate_verifier") {
     "net_trust_store.h",
   ]
   public_deps = [
-    ":cast_certificate_roots",
+    ":certificate_roots",
     "//base",
     "//net",
     "//third_party/openscreen/src/cast/common:public",
@@ -79,8 +79,8 @@ static_library("test_support") {
     "cast_cert_test_helpers.h",
   ]
   deps = [
-    ":cast_certificate",
-    ":cast_certificate_reader",
+    ":certificate",
+    ":certificate_reader",
     "//base",
     "//net",
     "//testing/gtest",
@@ -95,8 +95,8 @@ source_set("unit_tests") {
     "cast_crl_unittest.cc",
   ]
   deps = [
-    ":cast_certificate",
-    ":cast_certificate_reader",
+    ":certificate",
+    ":certificate_reader",
     ":test_support",
     "//base",
     "//base/test:test_support",

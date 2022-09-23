@@ -57,10 +57,10 @@ chrome/install_static/test/scoped_install_details.h
 chrome/installer/util/google_update_settings.h
 components/browser_watcher/features.h
 components/browser_watcher/stability_paths.h
-components/cast_certificate/cast_crl_root_ca_cert_der-inc.h
 components/cdm/browser/cdm_message_filter_android.h
 components/device_event_log/device_event_log_export.h
 components/login/login_export.h
+components/media_router/common/providers/cast/certificate/cast_crl_root_ca_cert_der-inc.h
 components/nacl/browser/nacl_browser_delegate.h
 components/nacl/renderer/ppb_nacl_private.h
 components/policy/core/browser/configuration_policy_handler_parameters.h
