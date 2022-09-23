@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_conversions.h"
 
 namespace blink {
 
@@ -384,6 +385,12 @@ SkColor4f Color::toSkColor4f() const {
   switch (serialization_type_) {
     case SerializationType::kRGB:
       return SkColor4f{param0_, param1_, param2_, alpha_};
+    case SerializationType::kLab:
+      return gfx::LabToSkColor4f(param0_, param1_, param2_, alpha_);
+    case SerializationType::kOKLab:
+      // TODO(crbug.com/1354622): Implement CSSColor4 types.
+      // https://www.w3.org/TR/css-color-4/
+      return SkColor4f{0.0f, 0.0f, 0.0f, 0.0f};
     case SerializationType::kColor:
       switch (color_function_space_) {
         case ColorFunctionSpace::kSRGB:
@@ -392,11 +399,6 @@ SkColor4f Color::toSkColor4f() const {
           NOTIMPLEMENTED();
           return SkColor4f{0.f, 0.f, 0.f, 0.f};
       }
-    case SerializationType::kLab:
-    case SerializationType::kOKLab:
-      // TODO(crbug.com/1354622): Implement CSSColor4 types.
-      // https://www.w3.org/TR/css-color-4/
-      return SkColor4f{0.0f, 0.0f, 0.0f, 0.0f};
     default:
       NOTIMPLEMENTED();
       return SkColor4f{0.f, 0.f, 0.f, 0.f};

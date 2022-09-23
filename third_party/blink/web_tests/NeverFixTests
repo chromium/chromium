@@ -959,22 +959,6 @@ external/wpt/css/css-backgrounds/css3-border-image-repeat-repeat.html [ Skip ]
 external/wpt/css/css-backgrounds/css3-border-image-repeat-stretch.html [ Skip ]
 external/wpt/css/css-backgrounds/first-letter-space-not-selected.html [ Skip ]
 
-# lab() and lch() aren't supported.
-external/wpt/css/css-color/lab-001.html [ Skip ]
-external/wpt/css/css-color/lab-002.html [ Skip ]
-external/wpt/css/css-color/lab-003.html [ Skip ]
-external/wpt/css/css-color/lab-004.html [ Skip ]
-external/wpt/css/css-color/lab-005.html [ Skip ]
-external/wpt/css/css-color/lab-006.html [ Skip ]
-external/wpt/css/css-color/lab-007.html [ Skip ]
-external/wpt/css/css-color/lch-001.html [ Skip ]
-external/wpt/css/css-color/lch-002.html [ Skip ]
-external/wpt/css/css-color/lch-003.html [ Skip ]
-external/wpt/css/css-color/lch-004.html [ Skip ]
-external/wpt/css/css-color/lch-005.html [ Skip ]
-external/wpt/css/css-color/lch-006.html [ Skip ]
-external/wpt/css/css-color/lch-007.html [ Skip ]
-
 # Failures on the initial import of css-color. Test suite had many other bugs,
 # so these may also be incorrect tests, but probably some real issues too.
 external/wpt/css/css-color/t32-opacity-offscreen-multiple-boxes-1-c.xht [ Skip ]

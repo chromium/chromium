@@ -18,7 +18,7 @@ PASS Property color value 'color-contrast(wheat vs bisque, darkgoldenrod, olive 
 PASS Property color value 'color-contrast(green vs bisque, darkgoldenrod, olive to 100)'
 PASS Property color value 'color-contrast(green vs color(display-p3 0 1 0), color(display-p3 0 0 1))'
 FAIL Property color value 'color-contrast(color(display-p3 1 1 0) vs color(display-p3 0 1 0), color(display-p3 0 0 1))' assert_equals: expected "color(display-p3 0 0 1)" but got "color(display-p3 0 1 0)"
-FAIL Property color value 'color-contrast(green vs lab(50% -160 160), lch(20% 50 20deg))' assert_equals: expected "lch(20% 50 20)" but got "lab(50% -160 160)"
-FAIL Property color value 'color-contrast(lab(50% -160 160) vs green, lch(20% 50 20deg))' assert_equals: expected "lch(20% 50 20)" but got "rgb(0, 128, 0)"
+PASS Property color value 'color-contrast(green vs lab(50% -160 160), lch(20% 50 20deg))'
+PASS Property color value 'color-contrast(lab(50% -160 160) vs green, lch(20% 50 20deg))'
 Harness: the test ran to completion.
 
