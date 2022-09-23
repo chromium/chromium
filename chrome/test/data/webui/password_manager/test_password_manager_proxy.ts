@@ -4,8 +4,10 @@
 
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
-import {PasswordManagerProxy, SavedPasswordListChangedListener} from 'chrome://password-manager/password_manager.js';
+import {PasswordCheckStatusChangedListener, PasswordManagerProxy, SavedPasswordListChangedListener} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+import {makePasswordCheckStatus} from './test_util.js';
 
 /**
  * Test implementation
@@ -14,24 +16,29 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     PasswordManagerProxy {
   data: {
     passwords: chrome.passwordsPrivate.PasswordUiEntry[],
+    checkStatus: chrome.passwordsPrivate.PasswordCheckStatus,
   };
 
   listeners: {
     savedPasswordListChangedListener: SavedPasswordListChangedListener|null,
+    passwordCheckStatusListener: PasswordCheckStatusChangedListener|null,
   };
 
   constructor() {
     super([
+      'getPasswordCheckStatus',
       'getSavedPasswordList',
     ]);
 
     // Set these to have non-empty data.
     this.data = {
       passwords: [],
+      checkStatus: makePasswordCheckStatus(),
     };
 
     // Holds listeners so they can be called when needed.
     this.listeners = {
+      passwordCheckStatusListener: null,
       savedPasswordListChangedListener: null,
     };
   }
@@ -46,8 +53,22 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.listeners.savedPasswordListChangedListener = null;
   }
 
+  addPasswordCheckStatusListener(listener: PasswordCheckStatusChangedListener) {
+    this.listeners.passwordCheckStatusListener = listener;
+  }
+
+  removePasswordCheckStatusListener(_listener:
+                                        PasswordCheckStatusChangedListener) {
+    this.listeners.passwordCheckStatusListener = null;
+  }
+
   getSavedPasswordList(): Promise<chrome.passwordsPrivate.PasswordUiEntry[]> {
     this.methodCalled('getSavedPasswordList');
     return Promise.resolve(this.data.passwords);
+  }
+
+  getPasswordCheckStatus() {
+    this.methodCalled('getPasswordCheckStatus');
+    return Promise.resolve(this.data.checkStatus);
   }
 }
