@@ -317,7 +317,9 @@ void AppTestHelper::FirstTaskRun() {
     {"expect_last_checked", WithSystemScope(Wrap(&ExpectLastChecked))},
     {"expect_last_started", WithSystemScope(Wrap(&ExpectLastStarted))},
     {"run_offline_install",
-     WithSwitch("silent", WithSystemScope(Wrap(&RunOfflineInstall)))},
+     WithSwitch("silent",
+                WithSwitch("legacy_install",
+                           WithSystemScope(Wrap(&RunOfflineInstall))))},
   };
 
   const base::CommandLine* command_line =

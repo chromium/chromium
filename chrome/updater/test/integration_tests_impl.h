@@ -243,7 +243,9 @@ void InstallApp(UpdaterScope scope, const std::string& app_id);
 
 void UninstallApp(UpdaterScope scope, const std::string& app_id);
 
-void RunOfflineInstall(UpdaterScope scope, bool is_silent_install);
+void RunOfflineInstall(UpdaterScope scope,
+                       bool is_legacy_install,
+                       bool is_silent_install);
 
 }  // namespace updater::test
 

@@ -322,8 +322,8 @@ class IntegrationTest : public ::testing::Test {
 
   void ExpectLastStarted() { test_commands_->ExpectLastStarted(); }
 
-  void RunOfflineInstall(bool is_silent_install) {
-    test_commands_->RunOfflineInstall(is_silent_install);
+  void RunOfflineInstall(bool is_legacy_install, bool is_silent_install) {
+    test_commands_->RunOfflineInstall(is_legacy_install, is_silent_install);
   }
 
   scoped_refptr<IntegrationTestCommands> test_commands_;
@@ -904,14 +904,21 @@ TEST_F(IntegrationTest, RecoveryNoUpdater) {
 TEST_F(IntegrationTest, OfflineInstall) {
   Install();
   ExpectInstalled();
-  RunOfflineInstall(/*is_silent_install=*/false);
+  RunOfflineInstall(/*is_legacy_install=*/false, /*is_silent_install=*/false);
   Uninstall();
 }
 
 TEST_F(IntegrationTest, SilentOfflineInstall) {
   Install();
   ExpectInstalled();
-  RunOfflineInstall(/*is_silent_install=*/true);
+  RunOfflineInstall(/*is_legacy_install=*/false, /*is_silent_install=*/true);
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, LegacySilentOfflineInstall) {
+  Install();
+  ExpectInstalled();
+  RunOfflineInstall(/*is_legacy_install=*/true, /*is_silent_install=*/true);
   Uninstall();
 }
 

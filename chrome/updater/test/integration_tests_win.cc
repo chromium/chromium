@@ -355,6 +355,65 @@ void SetupAppCommand(UpdaterScope scope,
           {cmd_exe_command_line.GetCommandLineString(), L" /c \"exit %1\""}));
 }
 
+base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
+                                          const base::FilePath& exe_path,
+                                          UpdaterScope install_scope,
+                                          const std::wstring& app_id,
+                                          const base::FilePath& offline_dir,
+                                          bool is_silent_install) {
+  auto launch_legacy_offline_install = [&]() -> base::Process {
+    auto build_legacy_switch =
+        [](const std::string& switch_name) -> std::wstring {
+      return base::ASCIIToWide(base::StrCat({"/", switch_name}));
+    };
+    std::vector<std::wstring> install_cmd_args = {
+        base::StrCat({L"\"", exe_path.value(), L"\""}),
+
+        install_scope == UpdaterScope::kSystem
+            ? build_legacy_switch(updater::kSystemSwitch)
+            : L"",
+
+        build_legacy_switch(updater::kHandoffSwitch),
+        base::StrCat({L"\"appguid=", app_id, L"&lang=en\""}),
+
+        build_legacy_switch(updater::kSessionIdSwitch),
+        L"{E85204C6-6F2F-40BF-9E6C-4952208BB977}",
+
+        build_legacy_switch(updater::kOfflineDirSwitch),
+        base::StrCat({L"\"", offline_dir.value(), L"\""}),
+
+        is_silent_install ? build_legacy_switch(updater::kSilentSwitch) : L"",
+    };
+
+    return base::LaunchProcess(base::JoinString(install_cmd_args, L" "), {});
+  };
+
+  auto launch_offline_install = [&]() -> base::Process {
+    base::CommandLine install_cmd(exe_path);
+
+    install_cmd.AppendSwitch(kEnableLoggingSwitch);
+    install_cmd.AppendSwitchASCII(kLoggingModuleSwitch,
+                                  kLoggingModuleSwitchValue);
+    if (install_scope == UpdaterScope::kSystem)
+      install_cmd.AppendSwitch(kSystemSwitch);
+
+    install_cmd.AppendSwitchNative(
+        updater::kHandoffSwitch,
+        base::StrCat({L"appguid=", app_id, L"&lang=en"}));
+    install_cmd.AppendSwitchASCII(updater::kSessionIdSwitch,
+                                  "{E85204C6-6F2F-40BF-9E6C-4952208BB977}");
+    install_cmd.AppendSwitchNative(updater::kOfflineDirSwitch,
+                                   offline_dir.value());
+    if (is_silent_install)
+      install_cmd.AppendSwitch(updater::kSilentSwitch);
+
+    return base::LaunchProcess(install_cmd, {});
+  };
+
+  return is_legacy_install ? launch_legacy_offline_install()
+                           : launch_offline_install();
+}
+
 class WindowEnumerator {
  public:
   WindowEnumerator(HWND parent,
@@ -1381,7 +1440,9 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id) {
   ASSERT_EQ(key.DeleteKey(base::SysUTF8ToWide(app_id).c_str()), ERROR_SUCCESS);
 }
 
-void RunOfflineInstall(UpdaterScope scope, bool is_silent_install) {
+void RunOfflineInstall(UpdaterScope scope,
+                       bool is_legacy_install,
+                       bool is_silent_install) {
   constexpr wchar_t kTestAppID[] = L"{CDABE316-39CD-43BA-8440-6D1E0547AEE6}";
   constexpr char kManifestFormat[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -1481,26 +1542,11 @@ void RunOfflineInstall(UpdaterScope scope, bool is_silent_install) {
   const absl::optional<base::FilePath> updater_exe =
       GetInstalledExecutablePath(scope);
   ASSERT_TRUE(updater_exe.has_value());
-  base::CommandLine offline_install_cmd(updater_exe.value());
 
-  offline_install_cmd.AppendSwitch(kEnableLoggingSwitch);
-  offline_install_cmd.AppendSwitchASCII(kLoggingModuleSwitch,
-                                        kLoggingModuleSwitchValue);
-  if (scope == UpdaterScope::kSystem)
-    offline_install_cmd.AppendSwitch(kSystemSwitch);
-
-  offline_install_cmd.AppendSwitchNative(
-      updater::kHandoffSwitch,
-      base::StrCat({L"appguid=", kTestAppID, L"&lang=en"}));
-  offline_install_cmd.AppendSwitchASCII(
-      updater::kSessionIdSwitch, "{E85204C6-6F2F-40BF-9E6C-4952208BB977}");
-  offline_install_cmd.AppendSwitchNative(updater::kOfflineDirSwitch,
-                                         offline_dir.value());
-  if (is_silent_install)
-    offline_install_cmd.AppendSwitch(updater::kSilentSwitch);
-
-  base::Process process = base::LaunchProcess(offline_install_cmd, {});
-  EXPECT_TRUE(process.IsValid());
+  ASSERT_TRUE(
+      LaunchOfflineInstallProcess(is_legacy_install, updater_exe.value(), scope,
+                                  kTestAppID, offline_dir, is_silent_install)
+          .IsValid());
 
   if (is_silent_install) {
     EXPECT_TRUE(WaitForUpdaterExit(scope));
@@ -1552,10 +1598,9 @@ void RunOfflineInstall(UpdaterScope scope, bool is_silent_install) {
             ERROR_SUCCESS);
   EXPECT_EQ(value, L"CoolApp");
 
-  // TODO(crbug.com/1286580): Remove this `if` clause when the silent install
-  // launches post install command.
   if (!is_silent_install) {
-    // Event should have been signaled by the post-install command via the
+    // Silent install does not run post-install command. For other cases the
+    // event should have been signaled by the post-install command via the
     // installer result API.
     EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
   }

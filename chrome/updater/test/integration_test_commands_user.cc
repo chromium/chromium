@@ -255,8 +255,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::UninstallApp(updater_scope_, app_id);
   }
 
-  void RunOfflineInstall(bool is_silent_install) override {
-    updater::test::RunOfflineInstall(updater_scope_, is_silent_install);
+  void RunOfflineInstall(bool is_legacy_install,
+                         bool is_silent_install) override {
+    updater::test::RunOfflineInstall(updater_scope_, is_legacy_install,
+                                     is_silent_install);
   }
 
  private:

@@ -424,7 +424,9 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id) {
                           base::FilePath(FILE_PATH_LITERAL("NONE")));
 }
 
-void RunOfflineInstall(UpdaterScope scope, bool is_silent_install) {
+void RunOfflineInstall(UpdaterScope scope,
+                       bool is_legacy_install,
+                       bool is_silent_install) {
   // TODO(crbug.com/1286574).
 }
 
