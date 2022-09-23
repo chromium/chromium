@@ -102,6 +102,8 @@ class TestRunnerTest(unittest.TestCase):
           '--user-data-dir=/tmp/ash-data',
           '--enable-wayland-server',
           '--no-startup-window',
+          '--disable-lacros-keep-alive',
+          '--disable-login-lacros-opening',
           '--enable-features=LacrosSupport,LacrosPrimary,LacrosOnly',
           '--ash-ready-file-path=/tmp/ash-data/ash_ready.txt',
           '--wayland-server-socket=wayland-exo',
