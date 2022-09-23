@@ -225,11 +225,13 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
   void OnResponse(int request_id,
                   bool success,
                   base::Value::List response,
-                  const std::string& error) {
+                  const std::string& error,
+                  mojom::ExtraResponseDataPtr response_data) {
     ExtensionsRendererClient::Get()
         ->GetDispatcher()
         ->bindings_system()
-        ->HandleResponse(request_id, success, std::move(response), error);
+        ->HandleResponse(request_id, success, std::move(response), error,
+                         std::move(response_data));
   }
 
   mojom::EventRouter* GetEventRouter() {

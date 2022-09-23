@@ -630,13 +630,15 @@ void NativeExtensionBindingsSystem::HandleResponse(
     int request_id,
     bool success,
     const base::Value::List& response,
-    const std::string& error) {
+    const std::string& error,
+    mojom::ExtraResponseDataPtr extra_data) {
   // Some API calls result in failure, but don't set an error. Use a generic and
   // unhelpful error string.
   // TODO(devlin): Track these down and fix them. See crbug.com/648275.
   api_system_.CompleteRequest(
       request_id, response,
-      !success && error.empty() ? "Unknown error." : error);
+      !success && error.empty() ? "Unknown error." : error,
+      std::move(extra_data));
   ipc_message_sender_->SendOnRequestResponseReceivedIPC(request_id);
 }
 

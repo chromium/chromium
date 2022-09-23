@@ -51,7 +51,8 @@ bool SendResponseHelper::GetResponse() {
 
 void SendResponseHelper::OnResponse(ExtensionFunction::ResponseType response,
                                     base::Value::List results,
-                                    const std::string& error) {
+                                    const std::string& error,
+                                    mojom::ExtraResponseDataPtr) {
   ASSERT_NE(ExtensionFunction::BAD_MESSAGE, response);
   response_ = std::make_unique<bool>(response == ExtensionFunction::SUCCEEDED);
   run_loop_.Quit();

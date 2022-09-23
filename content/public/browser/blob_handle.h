@@ -9,6 +9,7 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
+#include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 
 namespace content {
 
@@ -19,6 +20,7 @@ class BlobHandle {
   virtual ~BlobHandle() {}
   virtual std::string GetUUID() = 0;
   virtual mojo::PendingRemote<blink::mojom::Blob> PassBlob() = 0;
+  virtual blink::mojom::SerializedBlobPtr Serialize() = 0;
 
  protected:
   BlobHandle() {}

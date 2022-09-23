@@ -16,6 +16,7 @@
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
+#include "third_party/blink/public/web/web_blob.h"
 
 namespace extensions {
 
@@ -29,26 +30,33 @@ constexpr const char kExceptionHandlerKey[] = "exceptionHandler";
 // arguments were used in construction).
 class APIRequestHandler::ArgumentAdapter {
  public:
-  explicit ArgumentAdapter(const base::Value::List* base_argumements);
+  ArgumentAdapter(const base::Value::List* base_argumements,
+                  mojom::ExtraResponseDataPtr extra_data);
   explicit ArgumentAdapter(
       const std::vector<v8::Local<v8::Value>>& v8_arguments);
 
-  ArgumentAdapter(const ArgumentAdapter&) = delete;
+  ArgumentAdapter(ArgumentAdapter&) = delete;
   ArgumentAdapter& operator=(const ArgumentAdapter&) = delete;
+  ArgumentAdapter(ArgumentAdapter&&) = default;
+  ArgumentAdapter& operator=(ArgumentAdapter&&) = default;
 
   ~ArgumentAdapter();
 
   const std::vector<v8::Local<v8::Value>>& GetArguments(
       v8::Local<v8::Context> context) const;
 
+  mojom::ExtraResponseDataPtr TakeExtraData() { return std::move(extra_data_); }
+
  private:
   const base::Value::List* base_arguments_ = nullptr;
   mutable std::vector<v8::Local<v8::Value>> v8_arguments_;
+  mojom::ExtraResponseDataPtr extra_data_ = nullptr;
 };
 
 APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
-    const base::Value::List* base_arguments)
-    : base_arguments_(base_arguments) {}
+    const base::Value::List* base_arguments,
+    mojom::ExtraResponseDataPtr extra_data)
+    : base_arguments_(base_arguments), extra_data_(std::move(extra_data)) {}
 APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
     const std::vector<v8::Local<v8::Value>>& v8_arguments)
     : v8_arguments_(v8_arguments) {}
@@ -106,7 +114,8 @@ class APIRequestHandler::AsyncResultHandler {
   void ResolveRequest(v8::Local<v8::Context> context,
                       APILastError* last_error,
                       const std::vector<v8::Local<v8::Value>>& response_args,
-                      const std::string& error);
+                      const std::string& error,
+                      mojom::ExtraResponseDataPtr extra_data);
 
   // Returns true if the request handler is using a custom callback.
   bool has_custom_callback() const { return !custom_callback_.IsEmpty(); }
@@ -198,7 +207,8 @@ void APIRequestHandler::AsyncResultHandler::ResolveRequest(
     v8::Local<v8::Context> context,
     APILastError* last_error,
     const std::vector<v8::Local<v8::Value>>& response_args,
-    const std::string& error) {
+    const std::string& error,
+    mojom::ExtraResponseDataPtr extra_data) {
   v8::Isolate* isolate = context->GetIsolate();
 
   // Set runtime.lastError if there is an error and this isn't a promise-based
@@ -213,13 +223,28 @@ void APIRequestHandler::AsyncResultHandler::ResolveRequest(
   // arguments before we send them back.
   // Note: a request can end up with a result modifier and be returning an empty
   // set of args if we are responding that an error occurred.
-  const std::vector<v8::Local<v8::Value>> args =
+  std::vector<v8::Local<v8::Value>> args =
       result_modifier_.is_null() || response_args.empty()
           ? response_args
           : std::move(result_modifier_)
                 .Run(response_args, context, async_type_);
 
   if (has_custom_callback()) {
+    // Blobs that are part of the response are passed in as an extra parameter
+    // to the custom callback. The custom callback can then incorporate these
+    // blobs appropriately in its response.
+    if (extra_data) {
+      std::vector<v8::Local<v8::Value>> v8_blobs;
+      for (auto& blob : extra_data->blobs) {
+        auto web_blob =
+            blink::WebBlob::CreateFromSerializedBlob(std::move(blob));
+        v8_blobs.push_back(web_blob.ToV8Value(context->GetIsolate()));
+      }
+      auto blobs = v8::Array::New(context->GetIsolate(), v8_blobs.data(),
+                                  v8_blobs.size());
+      args.push_back(std::move(blobs));
+    }
+
     // Custom callback case; the custom callback will invoke a curried-in
     // callback, which will trigger the response in the extension (either
     // promise or callback).
@@ -457,10 +482,14 @@ v8::Local<v8::Promise> APIRequestHandler::StartRequest(
   return promise;
 }
 
-void APIRequestHandler::CompleteRequest(int request_id,
-                                        const base::Value::List& response_args,
-                                        const std::string& error) {
-  CompleteRequestImpl(request_id, ArgumentAdapter(&response_args), error);
+void APIRequestHandler::CompleteRequest(
+    int request_id,
+    const base::Value::List& response_args,
+    const std::string& error,
+    mojom::ExtraResponseDataPtr extra_data) {
+  CompleteRequestImpl(request_id,
+                      ArgumentAdapter(&response_args, std::move(extra_data)),
+                      error);
 }
 
 void APIRequestHandler::CompleteRequest(
@@ -566,7 +595,7 @@ APIRequestHandler::GetAsyncResultHandler(
 }
 
 void APIRequestHandler::CompleteRequestImpl(int request_id,
-                                            const ArgumentAdapter& arguments,
+                                            ArgumentAdapter arguments,
                                             const std::string& error) {
   auto iter = pending_requests_.find(request_id);
   // The request may have been removed if the context was invalidated before a
@@ -613,9 +642,8 @@ void APIRequestHandler::CompleteRequestImpl(int request_id,
   }
 
   v8::TryCatch try_catch(isolate);
-
-  pending_request.async_handler->ResolveRequest(context, &last_error_,
-                                                response_args, error);
+  pending_request.async_handler->ResolveRequest(
+      context, &last_error_, response_args, error, arguments.TakeExtraData());
 
   // Since arbitrary JS has ran, the context may have been invalidated. If it
   // was, bail.

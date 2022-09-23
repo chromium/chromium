@@ -25,6 +25,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/extra_response_data.mojom.h"
 #include "ipc/ipc_message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -105,9 +106,11 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     BAD_MESSAGE
   };
 
-  using ResponseCallback = base::OnceCallback<void(ResponseType type,
-                                                   base::Value::List results,
-                                                   const std::string& error)>;
+  using ResponseCallback = base::OnceCallback<void(
+      ResponseType type,
+      base::Value::List results,
+      const std::string& error,
+      extensions::mojom::ExtraResponseDataPtr response_data)>;
 
   ExtensionFunction();
 
@@ -490,8 +493,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   void WriteToConsole(blink::mojom::ConsoleMessageLevel level,
                       const std::string& message);
 
-  // Sets the Blob UUIDs whose ownership is being transferred to the renderer.
-  void SetTransferredBlobUUIDs(const std::vector<std::string>& blob_uuids);
+  // Sets the Blobs whose ownership is being transferred to the renderer.
+  void SetTransferredBlobs(std::vector<blink::mojom::SerializedBlobPtr> blobs);
 
   bool has_args() const { return args_.has_value(); }
 
@@ -521,10 +524,6 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Call with true to indicate success, false to indicate failure. If this
   // failed, |error_| should be set.
   void SendResponseImpl(bool success);
-
-  // The callback for mojom::Renderer::TransferBlobs().
-  void OnTransferBlobsAck(int process_id,
-                          const std::vector<std::string>& blob_uuids);
 
   // The arguments to the API. Only non-null if arguments were specified.
   absl::optional<base::Value::List> args_;
@@ -636,7 +635,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   std::unique_ptr<RenderFrameHostTracker> tracker_;
 
   // The blobs transferred to the renderer process.
-  std::vector<std::string> transferred_blob_uuids_;
+  std::vector<blink::mojom::SerializedBlobPtr> transferred_blobs_;
 
   int worker_thread_id_ = -1;
 };

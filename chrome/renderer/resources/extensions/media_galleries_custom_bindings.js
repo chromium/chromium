@@ -70,15 +70,9 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
     };
   });
 
-  function getMetadataCallback(uuid, callback, response) {
-    if (response && response.attachedImagesBlobInfo) {
-      for (var i = 0; i < response.attachedImagesBlobInfo.length; i++) {
-        var blobInfo = response.attachedImagesBlobInfo[i];
-        var blob = blobNatives.TakeBrowserProcessBlob(
-            blobInfo.blobUUID, blobInfo.type, blobInfo.size);
-        response.metadata.attachedImages.push(blob);
-      }
-    }
+  function getMetadataCallback(uuid, callback, response, blobs) {
+    if (response && blobs)
+      response.metadata.attachedImages = blobs;
 
     if (callback)
       callback(response ? response.metadata : null);

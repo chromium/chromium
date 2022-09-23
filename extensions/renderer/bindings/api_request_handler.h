@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/values.h"
+#include "extensions/common/mojom/extra_response_data.mojom.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_last_error.h"
 #include "extensions/renderer/bindings/interaction_provider.h"
@@ -99,7 +100,8 @@ class APIRequestHandler {
   // invalidated after this!
   void CompleteRequest(int request_id,
                        const base::Value::List& response_list,
-                       const std::string& error);
+                       const std::string& error,
+                       mojom::ExtraResponseDataPtr extra_data = nullptr);
   void CompleteRequest(int request_id,
                        const std::vector<v8::Local<v8::Value>>& response,
                        const std::string& error);
@@ -160,7 +162,7 @@ class APIRequestHandler {
 
   // Common implementation for completing a request.
   void CompleteRequestImpl(int request_id,
-                           const ArgumentAdapter& arguments,
+                           ArgumentAdapter arguments,
                            const std::string& error);
 
   // The next available request identifier.

@@ -31,30 +31,6 @@ BlobNativeHandler::BlobNativeHandler(ScriptContext* context)
 
 void BlobNativeHandler::AddRoutes() {
   RouteHandlerFunction("GetBlobUuid", base::BindRepeating(&GetBlobUuid));
-  RouteHandlerFunction(
-      "TakeBrowserProcessBlob",
-      base::BindRepeating(&BlobNativeHandler::TakeBrowserProcessBlob,
-                          base::Unretained(this)));
-}
-
-// Take ownership of a Blob created on the browser process. Expects the Blob's
-// UUID, type, and size as arguments. Returns the Blob we just took to
-// Javascript. The Blob reference in the browser process is dropped through
-// a separate flow to avoid leaking Blobs if the script context is destroyed.
-void BlobNativeHandler::TakeBrowserProcessBlob(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  CHECK_EQ(3, args.Length());
-  CHECK(args[0]->IsString());
-  CHECK(args[1]->IsString());
-  CHECK(args[2]->IsInt32());
-  v8::Isolate* isolate = args.GetIsolate();
-  std::string uuid(*v8::String::Utf8Value(isolate, args[0]));
-  std::string type(*v8::String::Utf8Value(isolate, args[1]));
-  blink::WebBlob blob = blink::WebBlob::CreateFromUUID(
-      blink::WebString::FromUTF8(uuid), blink::WebString::FromUTF8(type),
-      args[2].As<v8::Int32>()->Value());
-  args.GetReturnValue().Set(
-      blob.ToV8Value(context()->v8_context()->Global(), isolate));
 }
 
 }  // namespace extensions

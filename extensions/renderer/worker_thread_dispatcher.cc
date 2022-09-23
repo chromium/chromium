@@ -352,14 +352,16 @@ mojom::EventRouter* WorkerThreadDispatcher::GetEventRouterOnIO() {
   return event_router_remote_.get();
 }
 
-void WorkerThreadDispatcher::OnResponseWorker(int worker_thread_id,
-                                              int request_id,
-                                              bool succeeded,
-                                              const base::Value::List& response,
-                                              const std::string& error) {
+void WorkerThreadDispatcher::OnResponseWorker(
+    int worker_thread_id,
+    int request_id,
+    bool succeeded,
+    ExtensionMsg_ResponseWorkerData response,
+    const std::string& error) {
   ServiceWorkerData* data = g_data_tls.Pointer()->Get();
-  data->bindings_system()->HandleResponse(request_id, succeeded, response,
-                                          error);
+  data->bindings_system()->HandleResponse(request_id, succeeded,
+                                          response.results, error,
+                                          std::move(response.extra_data));
 }
 
 void WorkerThreadDispatcher::DispatchEventHelper(

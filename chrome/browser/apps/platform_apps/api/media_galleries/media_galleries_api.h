@@ -186,7 +186,7 @@ class MediaGalleriesGetMetadataFunction : public ExtensionFunction {
   void ConstructNextBlob(
       base::Value::Dict result_dictionary,
       std::unique_ptr<std::vector<metadata::AttachedImage>> attached_images,
-      std::unique_ptr<std::vector<std::string>> blob_uuids,
+      std::vector<blink::mojom::SerializedBlobPtr> blobs,
       std::unique_ptr<content::BlobHandle> current_blob);
 };
 

@@ -24,9 +24,6 @@ class BlobNativeHandler : public ObjectBackedNativeHandler {
 
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
-
- private:
-  void TakeBrowserProcessBlob(const v8::FunctionCallbackInfo<v8::Value>& args);
 };
 
 }  // namespace extensions

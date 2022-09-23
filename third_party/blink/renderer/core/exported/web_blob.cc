@@ -32,6 +32,9 @@
 
 #include <memory>
 
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
+#include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -41,10 +44,10 @@
 
 namespace blink {
 
-WebBlob WebBlob::CreateFromUUID(const WebString& uuid,
-                                const WebString& type,
-                                uint64_t size) {
-  return MakeGarbageCollected<Blob>(BlobDataHandle::Create(uuid, type, size));
+WebBlob WebBlob::CreateFromSerializedBlob(mojom::SerializedBlobPtr blob) {
+  return MakeGarbageCollected<Blob>(BlobDataHandle::Create(
+      String::FromUTF8(blob->uuid), String::FromUTF8(blob->content_type),
+      blob->size, ToCrossVariantMojoType(std::move(blob->blob))));
 }
 
 WebBlob WebBlob::CreateFromFile(const WebString& path, uint64_t size) {
@@ -78,12 +81,7 @@ WebString WebBlob::Uuid() {
   return private_->Uuid();
 }
 
-v8::Local<v8::Value> WebBlob::ToV8Value(v8::Local<v8::Object> creation_context,
-                                        v8::Isolate* isolate) {
-  // We no longer use |creationContext| because it's often misused and points
-  // to a context faked by user script.
-  DCHECK(creation_context->GetCreationContextChecked() ==
-         isolate->GetCurrentContext());
+v8::Local<v8::Value> WebBlob::ToV8Value(v8::Isolate* isolate) {
   if (!private_.Get())
     return v8::Local<v8::Value>();
   return ToV8(private_.Get(), isolate->GetCurrentContext()->Global(), isolate);

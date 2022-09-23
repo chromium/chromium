@@ -68,7 +68,8 @@ class APIBindingsSystem {
   // with |response|. If |error| is non-empty, sets the last error.
   void CompleteRequest(int request_id,
                        const base::Value::List& response,
-                       const std::string& error);
+                       const std::string& error,
+                       mojom::ExtraResponseDataPtr extra_data = nullptr);
 
   // Notifies the APIEventHandler to fire the corresponding event, notifying
   // listeners.

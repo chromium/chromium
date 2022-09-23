@@ -54,7 +54,8 @@ class SendResponseHelper {
   // Response handler.
   void OnResponse(ExtensionFunction::ResponseType response,
                   base::Value::List results,
-                  const std::string& error);
+                  const std::string& error,
+                  mojom::ExtraResponseDataPtr);
 
   base::RunLoop run_loop_;
   std::unique_ptr<bool> response_;

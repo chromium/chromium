@@ -74,7 +74,7 @@ bool IsRequestFromServiceWorker(const mojom::RequestParams& request_params) {
 void ResponseCallbackOnError(ExtensionFunction::ResponseCallback callback,
                              ExtensionFunction::ResponseType type,
                              const std::string& error) {
-  std::move(callback).Run(type, base::Value::List(), error);
+  std::move(callback).Run(type, base::Value::List(), error, nullptr);
 }
 
 // Returns `true` if `render_process_host` can legitimately claim to send IPC
@@ -257,9 +257,11 @@ class ExtensionFunctionDispatcher::ResponseCallbackWrapper
       mojom::LocalFrameHost::RequestCallback callback,
       ExtensionFunction::ResponseType type,
       base::Value::List results,
-      const std::string& error) {
+      const std::string& error,
+      mojom::ExtraResponseDataPtr response_data) {
     std::move(callback).Run(type == ExtensionFunction::SUCCEEDED,
-                            std::move(results), error);
+                            std::move(results), error,
+                            std::move(response_data));
   }
 
   base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;
@@ -319,14 +321,18 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
                                     int worker_thread_id,
                                     ExtensionFunction::ResponseType type,
                                     base::Value::List results,
-                                    const std::string& error) {
+                                    const std::string& error,
+                                    mojom::ExtraResponseDataPtr extra_data) {
     if (type == ExtensionFunction::BAD_MESSAGE) {
       // The renderer will be shut down from ExtensionFunction::SetBadMessage().
       return;
     }
+    ExtensionMsg_ResponseWorkerData response;
+    response.results = std::move(results);
+    response.extra_data = std::move(extra_data);
     render_process_host_->Send(new ExtensionMsg_ResponseWorker(
         worker_thread_id, request_id, type == ExtensionFunction::SUCCEEDED,
-        std::move(results), error));
+        std::move(response), error));
   }
 
   base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;
@@ -387,8 +393,8 @@ void ExtensionFunctionDispatcher::Dispatch(
           ValidateRequest(*params, &frame, *frame.GetProcess())) {
     // Kill the renderer if it's an invalid request.
     const char* msg = ToString(*bad_message_code);
-    std::move(callback).Run(ExtensionFunction::FAILED, base::Value::List(),
-                            msg);
+    std::move(callback).Run(ExtensionFunction::FAILED, base::Value::List(), msg,
+                            nullptr);
     mojo::ReportBadMessage(msg);
     return;
   }

@@ -33,7 +33,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/bad_message.h"
-#include "extensions/browser/blob_holder.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_registry.h"
@@ -485,8 +484,8 @@ ExtensionFunction::~ExtensionFunction() {
   if (!response_callback_.is_null()) {
     constexpr char kShouldCallMojoCallback[] = "Ignored did_respond()";
     std::move(response_callback_)
-        .Run(ResponseType::FAILED, base::Value::List(),
-             kShouldCallMojoCallback);
+        .Run(ResponseType::FAILED, base::Value::List(), kShouldCallMojoCallback,
+             nullptr);
   }
 #endif  // DCHECK_IS_ON()
 }
@@ -750,20 +749,7 @@ void ExtensionFunction::Respond(ResponseValue result) {
   SendResponseImpl(result->Apply());
 }
 
-void ExtensionFunction::OnResponded() {
-  if (!transferred_blob_uuids_.empty()) {
-    extensions::mojom::Renderer* renderer =
-        extensions::RendererStartupHelperFactory::GetForBrowserContext(
-            browser_context())
-            ->GetRenderer(
-                content::RenderProcessHost::FromID(source_process_id()));
-    if (renderer) {
-      renderer->TransferBlobs(
-          base::BindOnce(&ExtensionFunction::OnTransferBlobsAck, this,
-                         source_process_id(), transferred_blob_uuids_));
-    }
-  }
-}
+void ExtensionFunction::OnResponded() {}
 
 bool ExtensionFunction::HasOptionalArgument(size_t index) {
   DCHECK(args_);
@@ -779,10 +765,10 @@ void ExtensionFunction::WriteToConsole(blink::mojom::ConsoleMessageLevel level,
   render_frame_host_->AddMessageToConsole(level, message);
 }
 
-void ExtensionFunction::SetTransferredBlobUUIDs(
-    const std::vector<std::string>& blob_uuids) {
-  DCHECK(transferred_blob_uuids_.empty());  // Should only be called once.
-  transferred_blob_uuids_ = blob_uuids;
+void ExtensionFunction::SetTransferredBlobs(
+    std::vector<blink::mojom::SerializedBlobPtr> blobs) {
+  DCHECK(transferred_blobs_.empty());  // Should only be called once.
+  transferred_blobs_ = std::move(blobs);
 }
 
 void ExtensionFunction::SendResponseImpl(bool success) {
@@ -809,22 +795,17 @@ void ExtensionFunction::SendResponseImpl(bool success) {
     results = std::move(*results_);
   }
 
-  std::move(response_callback_).Run(response, std::move(results), GetError());
+  extensions::mojom::ExtraResponseDataPtr extra_data;
+  if (!transferred_blobs_.empty()) {
+    extra_data = extensions::mojom::ExtraResponseData::New(
+        std::move(transferred_blobs_));
+  }
+  std::move(response_callback_)
+      .Run(response, std::move(results), GetError(), std::move(extra_data));
   LogUma(success, timer_.Elapsed(), IsKiosk(extension_.get()),
          histogram_value_);
 
   OnResponded();
-}
-
-void ExtensionFunction::OnTransferBlobsAck(
-    int process_id,
-    const std::vector<std::string>& blob_uuids) {
-  content::RenderProcessHost* process =
-      content::RenderProcessHost::FromID(process_id);
-  if (!process)
-    return;
-
-  extensions::BlobHolder::FromRenderProcessHost(process)->DropBlobs(blob_uuids);
 }
 
 ExtensionFunction::ScopedUserGestureForTests::ScopedUserGestureForTests() {

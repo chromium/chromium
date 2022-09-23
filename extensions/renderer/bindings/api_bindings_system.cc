@@ -116,10 +116,13 @@ void APIBindingsSystem::InitializeType(const std::string& type_name) {
   api_bindings_[api_name] = CreateNewAPIBinding(api_name);
 }
 
-void APIBindingsSystem::CompleteRequest(int request_id,
-                                        const base::Value::List& response,
-                                        const std::string& error) {
-  request_handler_.CompleteRequest(request_id, response, error);
+void APIBindingsSystem::CompleteRequest(
+    int request_id,
+    const base::Value::List& response,
+    const std::string& error,
+    mojom::ExtraResponseDataPtr extra_data) {
+  request_handler_.CompleteRequest(request_id, response, error,
+                                   std::move(extra_data));
 }
 
 void APIBindingsSystem::FireEventInContext(

@@ -13,6 +13,7 @@ include_rules = [
   "+extensions/common/event_matcher.h",
   "+extensions/common/mojom/event_dispatcher.mojom.h",
   "+extensions/common/mojom/event_dispatcher.mojom-forward.h",
+  "+extensions/common/mojom/extra_response_data.mojom.h",
   "+extensions/common/value_counter.h",
 ]
 

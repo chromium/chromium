@@ -30,6 +30,7 @@
 #include "extensions/common/draggable_region.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_guid.h"
+#include "extensions/common/extension_param_traits.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
@@ -256,6 +257,15 @@ IPC_STRUCT_TRAITS_BEGIN(extensions::PortId)
   IPC_STRUCT_TRAITS_MEMBER(serialization_format)
 IPC_STRUCT_TRAITS_END()
 
+// Struct to work around the maximum number of parameters in the
+// ExtensionMsg_ResponseWorker message.
+IPC_STRUCT_BEGIN(ExtensionMsg_ResponseWorkerData)
+  // Response wrapper, the response data (if any) is the first element in this
+  // list.
+  IPC_STRUCT_MEMBER(base::Value::List, results)
+  IPC_STRUCT_MEMBER(extensions::mojom::ExtraResponseDataPtr, extra_data)
+IPC_STRUCT_END()
+
 // Singly-included section for custom IPC traits.
 #ifndef INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
 #define INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
@@ -429,15 +439,13 @@ IPC_MESSAGE_CONTROL1(ExtensionHostMsg_RequestWorker,
                      extensions::mojom::RequestParams)
 
 // The browser sends this message in response to all service worker extension
-// api calls. The response data (if any) is the first element in the Value::List
-// parameter.
-IPC_MESSAGE_CONTROL5(
-    ExtensionMsg_ResponseWorker,
-    int /* thread_id */,
-    int /* request_id */,
-    bool /* success */,
-    base::Value::List /* response wrapper (see comment above) */,
-    std::string /* error */)
+// api calls.
+IPC_MESSAGE_CONTROL5(ExtensionMsg_ResponseWorker,
+                     int /* thread_id */,
+                     int /* request_id */,
+                     bool /* success */,
+                     ExtensionMsg_ResponseWorkerData /* response */,
+                     std::string /* error */)
 
 // Asks the browser to increment the pending activity count for
 // the worker with version id |service_worker_version_id|.

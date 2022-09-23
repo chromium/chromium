@@ -226,8 +226,6 @@ source_set("browser_sources") {
     "app_window/size_constraints.h",
     "bad_message.cc",
     "bad_message.h",
-    "blob_holder.cc",
-    "blob_holder.h",
     "blob_reader.cc",
     "blob_reader.h",
     "blocked_action_type.h",

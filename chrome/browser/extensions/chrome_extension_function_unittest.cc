@@ -24,7 +24,8 @@ namespace {
 void SuccessCallback(bool* did_respond,
                      ExtensionFunction::ResponseType type,
                      base::Value::List results,
-                     const std::string& error) {
+                     const std::string& error,
+                     mojom::ExtraResponseDataPtr) {
   EXPECT_EQ(ExtensionFunction::ResponseType::SUCCEEDED, type);
   *did_respond = true;
 }
@@ -32,7 +33,8 @@ void SuccessCallback(bool* did_respond,
 void FailCallback(bool* did_respond,
                   ExtensionFunction::ResponseType type,
                   base::Value::List results,
-                  const std::string& error) {
+                  const std::string& error,
+                  mojom::ExtraResponseDataPtr) {
   EXPECT_EQ(ExtensionFunction::ResponseType::FAILED, type);
   *did_respond = true;
 }

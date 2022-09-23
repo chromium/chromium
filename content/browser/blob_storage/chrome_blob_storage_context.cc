@@ -72,10 +72,17 @@ class BlobHandleImpl : public BlobHandle {
 
   mojo::PendingRemote<blink::mojom::Blob> PassBlob() override {
     mojo::PendingRemote<blink::mojom::Blob> result;
-    storage::BlobImpl::Create(
-        std::make_unique<storage::BlobDataHandle>(*handle_),
-        result.InitWithNewPipeAndPassReceiver());
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(base::IgnoreResult(&storage::BlobImpl::Create),
+                       std::make_unique<storage::BlobDataHandle>(*handle_),
+                       result.InitWithNewPipeAndPassReceiver()));
     return result;
+  }
+
+  blink::mojom::SerializedBlobPtr Serialize() override {
+    return blink::mojom::SerializedBlob::New(
+        handle_->uuid(), handle_->content_type(), handle_->size(), PassBlob());
   }
 
  private:

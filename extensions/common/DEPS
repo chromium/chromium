@@ -12,6 +12,7 @@ include_rules = [
   "+services/network/public/mojom/cors_origin_pattern.mojom-forward.h",
   "+services/network/public/mojom/cors_origin_pattern.mojom.h",
   "+third_party/blink/public/common/privacy_budget",
+  "+third_party/blink/public/mojom/blob",
   "+third_party/re2",
   "+third_party/zlib",
   "+ui/accessibility",
