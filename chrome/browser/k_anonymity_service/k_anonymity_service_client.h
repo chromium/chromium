@@ -33,6 +33,9 @@
 // simplify implementation. With only one request out at a time 1) it is clear
 // which request the responses are associated with and 2) the limit on the
 // number of outstanding requests can be handled by the caller.
+//
+// IDs passed into the KAnonymityServiceClient will be hashed with SHA256
+// to convert them to a fixed size before being sent to the KAnonymity service.
 class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
                                 public KeyedService {
  public:

@@ -7,17 +7,11 @@
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
-#include "crypto/sha2.h"
 
 namespace content {
 namespace {
 
 constexpr base::TimeDelta kUpdateExpiration = base::Hours(24);
-
-// Calculates a SHA256 hash of the input string.
-std::string KAnonHash(const std::string& input) {
-  return crypto::SHA256HashString(input);
-}
 
 }  // namespace
 
@@ -39,43 +33,38 @@ void InterestGroupKAnonymityManager::QueryKAnonymityForInterestGroup(
   if (!k_anonymity_service_)
     return;
 
-  std::vector<std::string> unhashed_ids_to_query;
+  std::vector<std::string> ids_to_query;
   base::Time check_time = base::Time::Now();
 
   if (!storage_group.name_kanon ||
       storage_group.name_kanon->last_updated < check_time - kUpdateExpiration) {
-    unhashed_ids_to_query.push_back(KAnonKeyFor(
-        storage_group.interest_group.owner, storage_group.interest_group.name));
+    ids_to_query.push_back(KAnonKeyFor(storage_group.interest_group.owner,
+                                       storage_group.interest_group.name));
   }
 
   if (storage_group.interest_group.daily_update_url) {
     if (!storage_group.daily_update_url_kanon ||
         storage_group.daily_update_url_kanon->last_updated <
             check_time - kUpdateExpiration) {
-      unhashed_ids_to_query.push_back(
+      ids_to_query.push_back(
           storage_group.interest_group.daily_update_url->spec());
     }
   }
 
   for (const auto& ad : storage_group.ads_kanon) {
     if (ad.last_updated < check_time - kUpdateExpiration) {
-      unhashed_ids_to_query.push_back(ad.key);
+      ids_to_query.push_back(ad.key);
     }
   }
 
-  if (unhashed_ids_to_query.empty())
+  if (ids_to_query.empty())
     return;
 
-  std::vector<std::string> hashed_ids_to_query;
-  for (const auto& input : unhashed_ids_to_query) {
-    hashed_ids_to_query.push_back(KAnonHash(input));
-  }
-
   k_anonymity_service_->QuerySets(
-      std::move(hashed_ids_to_query),
+      ids_to_query,
       base::BindOnce(&InterestGroupKAnonymityManager::QuerySetsCallback,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(unhashed_ids_to_query), std::move(check_time)));
+                     weak_ptr_factory_.GetWeakPtr(), ids_to_query,
+                     std::move(check_time)));
 }
 
 void InterestGroupKAnonymityManager::QuerySetsCallback(
@@ -131,11 +120,9 @@ void InterestGroupKAnonymityManager::OnGotLastReportedTime(
       last_update_time.value_or(base::Time()) + kUpdateExpiration)
     return;
 
-  std::string hash = KAnonHash(key);
   k_anonymity_service_->JoinSet(
-      std::move(hash),
-      base::BindOnce(&InterestGroupKAnonymityManager::JoinSetCallback,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(key)));
+      key, base::BindOnce(&InterestGroupKAnonymityManager::JoinSetCallback,
+                          weak_ptr_factory_.GetWeakPtr(), key));
 }
 
 void InterestGroupKAnonymityManager::JoinSetCallback(std::string key,
