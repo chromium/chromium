@@ -21,8 +21,10 @@ void MetricsLogStore::RegisterPrefs(PrefRegistrySimple* registry) {
 
 MetricsLogStore::MetricsLogStore(PrefService* local_state,
                                  StorageLimits storage_limits,
-                                 const std::string& signing_key)
+                                 const std::string& signing_key,
+                                 MetricsLogsEventManager* logs_event_manager)
     : unsent_logs_loaded_(false),
+      logs_event_manager_(logs_event_manager),
       initial_log_queue_(std::make_unique<UnsentLogStoreMetricsImpl>(),
                          local_state,
                          prefs::kMetricsInitialLogs,
@@ -30,7 +32,8 @@ MetricsLogStore::MetricsLogStore(PrefService* local_state,
                          storage_limits.min_initial_log_queue_count,
                          storage_limits.min_initial_log_queue_size,
                          0,  // Each individual initial log can be any size.
-                         signing_key),
+                         signing_key,
+                         logs_event_manager),
       ongoing_log_queue_(std::make_unique<UnsentLogStoreMetricsImpl>(),
                          local_state,
                          prefs::kMetricsOngoingLogs,
@@ -38,7 +41,8 @@ MetricsLogStore::MetricsLogStore(PrefService* local_state,
                          storage_limits.min_ongoing_log_queue_count,
                          storage_limits.min_ongoing_log_queue_size,
                          storage_limits.max_ongoing_log_size,
-                         signing_key) {}
+                         signing_key,
+                         logs_event_manager) {}
 
 MetricsLogStore::~MetricsLogStore() {}
 
@@ -69,6 +73,7 @@ void MetricsLogStore::SetAlternateOngoingLogStore(
   DCHECK(!has_alternate_ongoing_log_store());
   DCHECK(unsent_logs_loaded_);
   alternate_ongoing_log_queue_ = std::move(log_store);
+  alternate_ongoing_log_queue_->SetLogsEventManager(logs_event_manager_);
   alternate_ongoing_log_queue_->LoadPersistedUnsentLogs();
 }
 

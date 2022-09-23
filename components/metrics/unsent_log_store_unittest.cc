@@ -92,22 +92,24 @@ class TestUnsentLogStore : public UnsentLogStore {
       : UnsentLogStore(std::make_unique<UnsentLogStoreMetricsImpl>(),
                        service,
                        kTestPrefName,
-                       nullptr,
+                       /*metadata_pref_name=*/nullptr,
                        kLogCountLimit,
                        min_log_bytes,
-                       /* max_log_size= */ 0,
-                       std::string()) {}
+                       /*max_log_size=*/0,
+                       /*signing_key=*/std::string(),
+                       /*logs_event_manager=*/nullptr) {}
   TestUnsentLogStore(PrefService* service,
                      size_t min_log_bytes,
                      const std::string& signing_key)
       : UnsentLogStore(std::make_unique<UnsentLogStoreMetricsImpl>(),
                        service,
                        kTestPrefName,
-                       nullptr,
+                       /*metadata_pref_name=*/nullptr,
                        kLogCountLimit,
                        min_log_bytes,
-                       /* max_log_size = */ 0,
-                       signing_key) {}
+                       /*max_log_size=*/0,
+                       signing_key,
+                       /*logs_event_manager=*/nullptr) {}
   TestUnsentLogStore(std::unique_ptr<UnsentLogStoreMetrics> metrics,
                      PrefService* service,
                      size_t max_log_size)
@@ -116,9 +118,10 @@ class TestUnsentLogStore : public UnsentLogStore {
                        kTestPrefName,
                        kTestMetaDataPrefName,
                        kLogCountLimit,
-                       /* min_log_bytes= */ 1,
+                       /*min_log_bytes=*/1,
                        max_log_size,
-                       std::string()) {}
+                       /*signing_key=*/std::string(),
+                       /*logs_event_manager=*/nullptr) {}
 
   TestUnsentLogStore(const TestUnsentLogStore&) = delete;
   TestUnsentLogStore& operator=(const TestUnsentLogStore&) = delete;

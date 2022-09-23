@@ -26,12 +26,15 @@ class MetricsServiceClient;
 // endpoint, and logs some histograms with the UMA prefix.
 class MetricsReportingService : public ReportingService {
  public:
-  // Creates a ReportingService with the given |client|, |local_state|.
-  // Does not take ownership of the parameters; instead it stores a weak
-  // pointer to each. Caller should ensure that the parameters are valid for
-  // the lifetime of this class.
+  // Creates a ReportingService with the given |client|, |local_state|, and
+  // |logs_event_manager_|. Does not take ownership of the parameters; instead
+  // it stores a weak pointer to each. Caller should ensure that the parameters
+  // are valid for the lifetime of this class. |logs_event_manager| is used to
+  // notify observers of log events. Can be set to null if observing the events
+  // is not necessary.
   MetricsReportingService(MetricsServiceClient* client,
-                          PrefService* local_state);
+                          PrefService* local_state,
+                          MetricsLogsEventManager* logs_event_manager_);
 
   MetricsReportingService(const MetricsReportingService&) = delete;
   MetricsReportingService& operator=(const MetricsReportingService&) = delete;

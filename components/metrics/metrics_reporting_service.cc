@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
@@ -24,14 +25,18 @@ void MetricsReportingService::RegisterPrefs(PrefRegistrySimple* registry) {
   MetricsLogStore::RegisterPrefs(registry);
 }
 
-MetricsReportingService::MetricsReportingService(MetricsServiceClient* client,
-                                                 PrefService* local_state)
+MetricsReportingService::MetricsReportingService(
+    MetricsServiceClient* client,
+    PrefService* local_state,
+    MetricsLogsEventManager* logs_event_manager_)
     : ReportingService(client,
                        local_state,
-                       client->GetStorageLimits().max_ongoing_log_size),
+                       client->GetStorageLimits().max_ongoing_log_size,
+                       logs_event_manager_),
       metrics_log_store_(local_state,
                          client->GetStorageLimits(),
-                         client->GetUploadSigningKey()) {}
+                         client->GetUploadSigningKey(),
+                         logs_event_manager_) {}
 
 MetricsReportingService::~MetricsReportingService() {}
 

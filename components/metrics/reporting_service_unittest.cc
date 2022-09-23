@@ -83,7 +83,10 @@ class TestLogStore : public LogStore {
 class TestReportingService : public ReportingService {
  public:
   TestReportingService(MetricsServiceClient* client, PrefService* local_state)
-      : ReportingService(client, local_state, 100) {
+      : ReportingService(client,
+                         local_state,
+                         100,
+                         /*logs_event_manager=*/nullptr) {
     Initialize();
   }
 

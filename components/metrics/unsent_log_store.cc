@@ -172,7 +172,8 @@ UnsentLogStore::UnsentLogStore(std::unique_ptr<UnsentLogStoreMetrics> metrics,
                                size_t min_log_count,
                                size_t min_log_bytes,
                                size_t max_log_size,
-                               const std::string& signing_key)
+                               const std::string& signing_key,
+                               MetricsLogsEventManager* logs_event_manager)
     : metrics_(std::move(metrics)),
       local_state_(local_state),
       log_data_pref_name_(log_data_pref_name),
@@ -181,6 +182,7 @@ UnsentLogStore::UnsentLogStore(std::unique_ptr<UnsentLogStoreMetrics> metrics,
       min_log_bytes_(min_log_bytes),
       max_log_size_(max_log_size != 0 ? max_log_size : static_cast<size_t>(-1)),
       signing_key_(signing_key),
+      logs_event_manager_(logs_event_manager),
       staged_log_index_(-1) {
   DCHECK(local_state_);
   // One of the limit arguments must be non-zero.
@@ -387,6 +389,11 @@ void UnsentLogStore::Purge() {
   // meaningful.
   if (metadata_pref_name_)
     local_state_->ClearPref(metadata_pref_name_);
+}
+
+void UnsentLogStore::SetLogsEventManager(
+    MetricsLogsEventManager* logs_event_manager) {
+  logs_event_manager_ = logs_event_manager;
 }
 
 void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {

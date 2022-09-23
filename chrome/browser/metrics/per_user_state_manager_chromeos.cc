@@ -508,7 +508,10 @@ void PerUserStateManagerChromeOS::AssignUserLogStore() {
       prefs::kMetricsUserMetricLogs, prefs::kMetricsUserMetricLogsMetadata,
       storage_limits_.min_ongoing_log_queue_count,
       storage_limits_.min_ongoing_log_queue_size,
-      storage_limits_.max_ongoing_log_size, signing_key_));
+      storage_limits_.max_ongoing_log_size, signing_key_,
+      // |logs_event_manager| will be set by the metrics service directly in
+      // MetricsLogStore::SetAlternateOngoingLogStore().
+      /*logs_event_manager=*/nullptr));
 }
 
 void PerUserStateManagerChromeOS::NotifyObservers(bool metrics_consent) {

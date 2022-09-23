@@ -153,6 +153,7 @@
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_manager.h"
 #include "components/metrics/metrics_log_uploader.h"
+#include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_rotation_scheduler.h"
 #include "components/metrics/metrics_service_client.h"
@@ -234,7 +235,7 @@ void MetricsService::RegisterPrefs(PrefRegistrySimple* registry) {
 MetricsService::MetricsService(MetricsStateManager* state_manager,
                                MetricsServiceClient* client,
                                PrefService* local_state)
-    : reporting_service_(client, local_state),
+    : reporting_service_(client, local_state, &logs_event_manager_),
       histogram_snapshot_manager_(this),
       state_manager_(state_manager),
       client_(client),
@@ -1005,6 +1006,16 @@ std::unique_ptr<MetricsLog> MetricsService::CreateLog(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return new_metrics_log;
+}
+
+void MetricsService::AddLogsObserver(
+    MetricsLogsEventManager::Observer* observer) {
+  logs_event_manager_.AddObserver(observer);
+}
+
+void MetricsService::RemoveLogsObserver(
+    MetricsLogsEventManager::Observer* observer) {
+  logs_event_manager_.RemoveObserver(observer);
 }
 
 base::CallbackListSubscription MetricsService::AddEnablementObserver(

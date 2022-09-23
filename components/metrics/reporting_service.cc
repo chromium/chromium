@@ -30,9 +30,11 @@ void ReportingService::RegisterPrefs(PrefRegistrySimple* registry) {
 
 ReportingService::ReportingService(MetricsServiceClient* client,
                                    PrefService* local_state,
-                                   size_t max_retransmit_size)
+                                   size_t max_retransmit_size,
+                                   MetricsLogsEventManager* logs_event_manager)
     : client_(client),
       max_retransmit_size_(max_retransmit_size),
+      logs_event_manager_(logs_event_manager),
       reporting_active_(false),
       log_upload_in_progress_(false),
       data_use_tracker_(DataUseTracker::Create(local_state)) {

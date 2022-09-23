@@ -4,6 +4,7 @@
 
 #include "components/metrics/metrics_log_store.h"
 
+#include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
@@ -23,10 +24,11 @@ class TestUnsentLogStore : public UnsentLogStore {
                        service,
                        kTestPrefName,
                        nullptr,
-                       /* min_log_count= */ 3,
-                       /* min_log_bytes= */ 1,
-                       /* max_log_size= */ 0,
-                       std::string()) {}
+                       /*min_log_count=*/3,
+                       /*min_log_bytes=*/1,
+                       /*max_log_size=*/0,
+                       /*signing_key=*/std::string(),
+                       /*logs_event_manager=*/nullptr) {}
   ~TestUnsentLogStore() override = default;
 
   TestUnsentLogStore(const TestUnsentLogStore&) = delete;
@@ -69,7 +71,8 @@ class MetricsLogStoreTest : public testing::Test {
 
 TEST_F(MetricsLogStoreTest, StandardFlow) {
   MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                            std::string());
+                            /*signing_key=*/std::string(),
+                            /*logs_event_manager=*/nullptr);
   log_store.LoadPersistedUnsentLogs();
 
   // Make sure a new manager has a clean slate.
@@ -94,7 +97,8 @@ TEST_F(MetricsLogStoreTest, StoreAndLoad) {
   // leadup to quitting, then persist as would be done on quit.
   {
     MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                              std::string());
+                              /*signing_key=*/std::string(),
+                              /*logs_event_manager=*/nullptr);
     log_store.LoadPersistedUnsentLogs();
     EXPECT_FALSE(log_store.has_unsent_logs());
     log_store.StoreLog("a", MetricsLog::ONGOING_LOG, LogMetadata());
@@ -106,7 +110,8 @@ TEST_F(MetricsLogStoreTest, StoreAndLoad) {
   // Relaunch load and store more logs.
   {
     MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                              std::string());
+                              /*signing_key=*/std::string(),
+                              /*logs_event_manager=*/nullptr);
     log_store.LoadPersistedUnsentLogs();
     EXPECT_TRUE(log_store.has_unsent_logs());
     EXPECT_EQ(0U, TypeCount(MetricsLog::INITIAL_STABILITY_LOG));
@@ -128,7 +133,8 @@ TEST_F(MetricsLogStoreTest, StoreAndLoad) {
   // Relaunch and verify that once logs are handled they are not re-persisted.
   {
     MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                              std::string());
+                              /*signing_key=*/std::string(),
+                              /*logs_event_manager=*/nullptr);
     log_store.LoadPersistedUnsentLogs();
     EXPECT_TRUE(log_store.has_unsent_logs());
 
@@ -163,7 +169,8 @@ TEST_F(MetricsLogStoreTest, StoreAndLoad) {
 TEST_F(MetricsLogStoreTest, StoreStagedOngoingLog) {
   // Ensure that types are preserved when storing staged logs.
   MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                            std::string());
+                            /*signing_key=*/std::string(),
+                            /*logs_event_manager=*/nullptr);
   log_store.LoadPersistedUnsentLogs();
   log_store.StoreLog("a", MetricsLog::ONGOING_LOG, LogMetadata());
   log_store.StageNextLog();
@@ -176,7 +183,8 @@ TEST_F(MetricsLogStoreTest, StoreStagedOngoingLog) {
 TEST_F(MetricsLogStoreTest, StoreStagedInitialLog) {
   // Ensure that types are preserved when storing staged logs.
   MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                            std::string());
+                            /*signing_key=*/std::string(),
+                            /*logs_event_manager=*/nullptr);
   log_store.LoadPersistedUnsentLogs();
   log_store.StoreLog("b", MetricsLog::INITIAL_STABILITY_LOG, LogMetadata());
   log_store.StageNextLog();
@@ -190,7 +198,8 @@ TEST_F(MetricsLogStoreTest, LargeLogDiscarding) {
   // Set the size threshold very low, to verify that it's honored.
   client_.set_max_ongoing_log_size(1);
   MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                            std::string());
+                            /*signing_key=*/std::string(),
+                            /*logs_event_manager=*/nullptr);
   log_store.LoadPersistedUnsentLogs();
 
   log_store.StoreLog("persisted", MetricsLog::INITIAL_STABILITY_LOG,
@@ -207,7 +216,8 @@ TEST_F(MetricsLogStoreTest, DiscardOrder) {
   // Ensure that the correct log is discarded if new logs are pushed while
   // a log is staged.
   MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                            std::string());
+                            /*signing_key=*/std::string(),
+                            /*logs_event_manager=*/nullptr);
   log_store.LoadPersistedUnsentLogs();
 
   log_store.StoreLog("a", MetricsLog::ONGOING_LOG, LogMetadata());
@@ -229,7 +239,8 @@ TEST_F(MetricsLogStoreTest, DiscardOrder) {
 
 TEST_F(MetricsLogStoreTest, WritesToAlternateOngoingLogStore) {
   MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                            std::string());
+                            /*signing_key=*/std::string(),
+                            /*logs_event_manager=*/nullptr);
   std::unique_ptr<TestUnsentLogStore> alternate_ongoing_log_store =
       std::make_unique<TestUnsentLogStore>(&pref_service_);
   TestUnsentLogStore* alternate_ongoing_log_store_ptr =
@@ -249,9 +260,39 @@ TEST_F(MetricsLogStoreTest, WritesToAlternateOngoingLogStore) {
   EXPECT_EQ(2U, alternate_ongoing_log_store_ptr->size());
 }
 
+TEST_F(MetricsLogStoreTest, AlternateOngoingLogStoreGetsEventsLogsManager) {
+  // Create a MetricsLogStore with a MetricsLogsEventManager.
+  MetricsLogsEventManager logs_event_manager;
+  MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
+                            /*signing_key=*/std::string(), &logs_event_manager);
+
+  // Create an UnsentLogStore that will be used as an alternate ongoing log
+  // store.
+  std::unique_ptr<TestUnsentLogStore> alternate_ongoing_log_store =
+      std::make_unique<TestUnsentLogStore>(&pref_service_);
+  TestUnsentLogStore* alternate_ongoing_log_store_ptr =
+      alternate_ongoing_log_store.get();
+
+  // Verify that |alternate_ongoing_log_store| has no logs event manager.
+  EXPECT_FALSE(
+      alternate_ongoing_log_store_ptr->GetLogsEventManagerForTesting());
+
+  // Needs to be called before we can set |log_store|'s alternate ongoing log
+  // store.
+  log_store.LoadPersistedUnsentLogs();
+
+  // Verify that after setting |log_store|'s alternate ongoing log store to
+  // |alternate_ongoing_log_store|, the latter should have the former's logs
+  // event manager.
+  log_store.SetAlternateOngoingLogStore(std::move(alternate_ongoing_log_store));
+  EXPECT_EQ(alternate_ongoing_log_store_ptr->GetLogsEventManagerForTesting(),
+            &logs_event_manager);
+}
+
 TEST_F(MetricsLogStoreTest, StagesInitialOverBothOngoing) {
   MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                            std::string());
+                            /*signing_key=*/std::string(),
+                            /*logs_event_manager=*/nullptr);
   std::unique_ptr<TestUnsentLogStore> alternate_ongoing_log_store =
       std::make_unique<TestUnsentLogStore>(&pref_service_);
   TestUnsentLogStore* alternate_ongoing_log_store_ptr =
@@ -277,7 +318,8 @@ TEST_F(MetricsLogStoreTest, StagesInitialOverBothOngoing) {
 
 TEST_F(MetricsLogStoreTest, StagesAlternateOverOngoing) {
   MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                            std::string());
+                            /*signing_key=*/std::string(),
+                            /*logs_event_manager=*/nullptr);
   std::unique_ptr<TestUnsentLogStore> alternate_ongoing_log_store =
       std::make_unique<TestUnsentLogStore>(&pref_service_);
   TestUnsentLogStore* alternate_ongoing_log_store_ptr =
@@ -302,7 +344,8 @@ TEST_F(MetricsLogStoreTest, StagesAlternateOverOngoing) {
 TEST_F(MetricsLogStoreTest,
        UnboundAlternateOngoingLogStoreWritesToNativeOngoing) {
   MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                            std::string());
+                            /*signing_key=*/std::string(),
+                            /*logs_event_manager=*/nullptr);
   std::unique_ptr<TestUnsentLogStore> alternate_ongoing_log_store =
       std::make_unique<TestUnsentLogStore>(&pref_service_);
 
@@ -327,7 +370,8 @@ TEST_F(MetricsLogStoreTest,
 TEST_F(MetricsLogStoreTest,
        StageOngoingLogWhenAlternateOngoingLogStoreIsEmpty) {
   MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
-                            std::string());
+                            /*signing_key=*/std::string(),
+                            /*logs_event_manager=*/nullptr);
   std::unique_ptr<TestUnsentLogStore> alternate_ongoing_log_store =
       std::make_unique<TestUnsentLogStore>(&pref_service_);
 

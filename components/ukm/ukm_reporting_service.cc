@@ -80,7 +80,10 @@ void UkmReportingService::RegisterPrefs(PrefRegistrySimple* registry) {
 
 UkmReportingService::UkmReportingService(metrics::MetricsServiceClient* client,
                                          PrefService* local_state)
-    : ReportingService(client, local_state, kMaxLogRetransmitSize),
+    : ReportingService(client,
+                       local_state,
+                       kMaxLogRetransmitSize,
+                       /*logs_event_manager=*/nullptr),
       unsent_log_store_(std::make_unique<ukm::UnsentLogStoreMetricsImpl>(),
                         local_state,
                         prefs::kUkmUnsentLogStore,
@@ -88,7 +91,8 @@ UkmReportingService::UkmReportingService(metrics::MetricsServiceClient* client,
                         kMinUnsentLogCount,
                         kMinUnsentLogBytes,
                         kMaxLogRetransmitSize,
-                        client->GetUploadSigningKey()) {}
+                        client->GetUploadSigningKey(),
+                        /*logs_event_manager=*/nullptr) {}
 
 UkmReportingService::~UkmReportingService() {}
 

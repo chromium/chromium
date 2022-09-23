@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/metrics/data_use_tracker.h"
 #include "components/metrics/metrics_log_uploader.h"
+#include "components/metrics/metrics_logs_event_manager.h"
 #include "third_party/metrics_proto/reporting_info.pb.h"
 #include "url/gurl.h"
 
@@ -35,13 +36,16 @@ class MetricsServiceClient;
 // occur while attempting to upload logs.
 class ReportingService {
  public:
-  // Creates a ReportingService with the given |client|, |local_state|, and
-  // |max_retransmit_size|. Does not take ownership of the parameters; instead
-  // it stores a weak pointer to each. Caller should ensure that the parameters
-  // are valid for the lifetime of this class.
+  // Creates a ReportingService with the given |client|, |local_state|,
+  // |max_retransmit_size|, and |logs_event_manager|. Does not take ownership
+  // of the parameters; instead it stores a weak pointer to each. Caller should
+  // ensure that the parameters are valid for the lifetime of this class.
+  // |logs_event_manager| is used to notify observers of log events. Can be set
+  // to null if observing the events is not necessary.
   ReportingService(MetricsServiceClient* client,
                    PrefService* local_state,
-                   size_t max_retransmit_size);
+                   size_t max_retransmit_size,
+                   MetricsLogsEventManager* logs_event_manager);
 
   ReportingService(const ReportingService&) = delete;
   ReportingService& operator=(const ReportingService&) = delete;
@@ -114,6 +118,9 @@ class ReportingService {
 
   // Largest log size to attempt to retransmit.
   size_t max_retransmit_size_;
+
+  // Event manager to notify observers of log updates.
+  const raw_ptr<MetricsLogsEventManager> logs_event_manager_;
 
   // Indicate whether recording and reporting are currently happening.
   // These should not be set directly, but by calling SetRecording and

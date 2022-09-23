@@ -61,10 +61,11 @@ class TestUnsentLogStore : public UnsentLogStore {
                        service,
                        kTestPrefName,
                        nullptr,
-                       /* min_log_count= */ 3,
-                       /* min_log_bytes= */ 1,
-                       /* max_log_size= */ 0,
-                       std::string()) {}
+                       /*min_log_count=*/3,
+                       /*min_log_bytes=*/1,
+                       /*max_log_size=*/0,
+                       /*signing_key=*/std::string(),
+                       /*logs_event_manager=*/nullptr) {}
   ~TestUnsentLogStore() override = default;
 
   TestUnsentLogStore(const TestUnsentLogStore&) = delete;

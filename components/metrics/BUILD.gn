@@ -66,6 +66,8 @@ static_library("metrics") {
     "metrics_log_store.cc",
     "metrics_log_store.h",
     "metrics_log_uploader.h",
+    "metrics_logs_event_manager.cc",
+    "metrics_logs_event_manager.h",
     "metrics_pref_names.cc",
     "metrics_pref_names.h",
     "metrics_provider.cc",
