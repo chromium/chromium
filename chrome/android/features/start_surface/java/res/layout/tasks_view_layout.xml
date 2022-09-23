@@ -10,7 +10,7 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/task_surface_header"
@@ -101,6 +101,6 @@ found in the LICENSE file.
     <FrameLayout
         android:id="@+id/tasks_surface_body"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 </org.chromium.chrome.features.tasks.TasksView>
