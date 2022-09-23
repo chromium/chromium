@@ -31,7 +31,7 @@ base::Value::Dict Parse(const std::string& json, bool* parser_error) {
   if (*parser_error)
     return base::Value::Dict();
   else
-    return std::move(parsed->GetDict());
+    return std::move(*parsed).TakeDict();
 }
 
 }  // namespace
