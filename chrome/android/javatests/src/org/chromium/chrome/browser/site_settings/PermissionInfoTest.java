@@ -107,6 +107,7 @@ public class PermissionInfoTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @DisabledTest(message = "https://crbug.com/1342630")
     public void testResetDSEGeolocation_InPrimaryOTRProfile_DefaultsToAskFromBlock()
             throws Throwable {
         Profile primaryOTRProfile = getPrimaryOTRProfile();
@@ -119,6 +120,7 @@ public class PermissionInfoTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @DisabledTest(message = "https://crbug.com/1342630")
     public void testResetDSEGeolocation_InNonPrimaryOTRProfile_DefaultsToAskFromBlock()
             throws Throwable {
         Profile nonPrimaryOTRProfile = getNonPrimaryOTRProfile();
