@@ -42,6 +42,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
       ImageElementBase*,
       absl::optional<gfx::Rect>,
       ScriptState*,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       mojom::blink::PreferredColorScheme,
       ExceptionState&,
       const ImageBitmapOptions* = ImageBitmapOptions::Create());

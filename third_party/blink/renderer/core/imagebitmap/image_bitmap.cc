@@ -888,6 +888,7 @@ ScriptPromise ImageBitmap::CreateAsync(
     ImageElementBase* image,
     absl::optional<gfx::Rect> crop_rect,
     ScriptState* script_state,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojom::blink::PreferredColorScheme preferred_color_scheme,
     ExceptionState& exception_state,
     const ImageBitmapOptions* options) {
@@ -946,14 +947,13 @@ ScriptPromise ImageBitmap::CreateAsync(
   ScriptPromise promise = resolver->Promise();
 
   worker_pool::PostTask(
-      FROM_HERE,
-      CrossThreadBindOnce(
-          &RasterizeImageOnBackgroundThread, std::move(paint_record),
-          draw_dst_rect, Thread::MainThread()->GetDeprecatedTaskRunner(),
-          CrossThreadBindOnce(&ResolvePromiseOnOriginalThread,
-                              WrapCrossThreadPersistent(resolver),
-                              !image->WouldTaintOrigin(),
-                              std::move(passed_parsed_options))));
+      FROM_HERE, CrossThreadBindOnce(
+                     &RasterizeImageOnBackgroundThread, std::move(paint_record),
+                     draw_dst_rect, std::move(task_runner),
+                     CrossThreadBindOnce(&ResolvePromiseOnOriginalThread,
+                                         WrapCrossThreadPersistent(resolver),
+                                         !image->WouldTaintOrigin(),
+                                         std::move(passed_parsed_options))));
   return promise;
 }
 
