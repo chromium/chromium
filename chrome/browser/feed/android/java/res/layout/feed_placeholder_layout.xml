@@ -9,12 +9,6 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_marginBottom="@dimen/feed_divider_margin_bottom"
-        style="@style/FeedHorizontalDivider" />
-
     <LinearLayout
         android:id="@+id/feed_placeholder_header"
         android:layout_width="match_parent"
