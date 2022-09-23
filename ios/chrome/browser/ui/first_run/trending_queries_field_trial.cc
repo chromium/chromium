@@ -16,18 +16,10 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/common/channel_info.h"
 
-// Name of the Trending Queries Field Trial.
-const char kTrendingQueriesFieldTrialName[] = "TrendingQueriesNewUsers";
-
 namespace {
-// Store local state preference with whether the client has participated in
-// kTrendingQueriesFieldTrialName experiment or not.
-const char kTrialPrefName[] = "trending_queries.trial_version";
 // The placeholder trial version that is stored for a client who has not been
 // enrolled in the experiment.
 const int kPlaceholderTrialVersion = -1;
-// The current trial version; should be updated when the experiment is modified.
-const int kCurrentTrialVersion = 2;
 
 // Group names for the Trending Queries feature.
 const char kTrendingQueriesEnabledModuleEnabledGroup[] =
@@ -72,9 +64,6 @@ std::map<variations::VariationID, int> GetGroupWeights() {
 
 // Configures `group_name` with variationID |group_id| of size `group_weight`
 // for TrialConfig `config` with the following parameters:
-// `start_surface_duration`: double string the new duration of time before
-// opening the Start Surface. `should_hide_shortcuts_for_trending_queries`:
-// string boolean of whether shortcuts should be hidden for
 // kTrendingQueriesModule. `should_minimize_spacing_for_modules`: string boolean
 // of whether to minimize spacing in kContentSuggestionsUIModuleRefresh.
 // `should_remove_headers_for_modules`: string boolean of whether the header
@@ -85,22 +74,19 @@ void ConfigureGroupForConfig(
     const std::string& group_name,
     const variations::VariationID group_id,
     int group_weight,
-    const std::string& start_surface_duration,
     const std::string& should_hide_shortcuts_for_trending_queries,
     const std::string& should_minimize_spacing_for_modules,
     const std::string& should_remove_headers_for_modules) {
   config.AddGroup(group_name, group_id, group_weight);
   base::FieldTrialParams params;
-  params[kReturnToStartSurfaceInactiveDurationInSeconds] =
-      start_surface_duration;
   params[kTrendingQueriesHideShortcutsParam] =
       should_hide_shortcuts_for_trending_queries;
   params[kContentSuggestionsUIModuleRefreshMinimizeSpacingParam] =
       should_minimize_spacing_for_modules;
   params[kContentSuggestionsUIModuleRefreshRemoveHeadersParam] =
       should_remove_headers_for_modules;
-  base::AssociateFieldTrialParams(kTrendingQueriesFieldTrialName, group_name,
-                                  params);
+  base::AssociateFieldTrialParams(
+      kModularHomeTrendingQueriesClientSideFieldTrialName, group_name, params);
 }
 
 }  // namespace
@@ -121,7 +107,8 @@ void CreateTrendingQueriesTrial(
     std::map<variations::VariationID, int> weight_by_id,
     const base::FieldTrial::EntropyProvider& low_entropy_provider,
     base::FeatureList* feature_list) {
-  FirstRunFieldTrialConfig config(kTrendingQueriesFieldTrialName);
+  FirstRunFieldTrialConfig config(
+      kModularHomeTrendingQueriesClientSideFieldTrialName);
 
   // Control group.
   config.AddGroup(kTrendingQueriesControlGroup, kTrendingQueriesControlID,
@@ -131,13 +118,13 @@ void CreateTrendingQueriesTrial(
   ConfigureGroupForConfig(config, kTrendingQueriesEnabledModuleEnabledGroup,
                           kTrendingQueriesEnabledModuleEnabledID,
                           weight_by_id[kTrendingQueriesEnabledModuleEnabledID],
-                          "21600", "true", "false", "false");
+                          "true", "false", "false");
 
   ConfigureGroupForConfig(
       config, kTrendingQueriesEnabledMinimalSpacingModuleEnabledGroup,
       kTrendingQueriesEnabledMinimalSpacingModuleEnabledID,
       weight_by_id[kTrendingQueriesEnabledMinimalSpacingModuleEnabledID],
-      "21600", "true", "true", "false");
+      "true", "true", "false");
 
   ConfigureGroupForConfig(
       config,
@@ -145,13 +132,13 @@ void CreateTrendingQueriesTrial(
       kTrendingQueriesEnabledMinimalSpacingRemoveHeaderModuleEnabledID,
       weight_by_id
           [kTrendingQueriesEnabledMinimalSpacingRemoveHeaderModuleEnabledID],
-      "21600", "true", "true", "true");
+      "true", "true", "true");
 
   ConfigureGroupForConfig(
       config, kTrendingQueriesKeepShortcutsEnabledModuleEnabledGroup,
       kTrendingQueriesKeepShortcutsEnabledModuleEnabledID,
       weight_by_id[kTrendingQueriesKeepShortcutsEnabledModuleEnabledID],
-      "21600", "false", "false", "false");
+      "false", "false", "false");
 
   scoped_refptr<base::FieldTrial> trial = config.CreateOneTimeRandomizedTrial(
       kTrendingQueriesDefaultGroup, low_entropy_provider);
@@ -167,25 +154,17 @@ void CreateTrendingQueriesTrial(
           kTrendingQueriesEnabledMinimalSpacingRemoveHeaderModuleEnabledGroup ||
       group_name == kTrendingQueriesKeepShortcutsEnabledModuleEnabledGroup) {
     feature_list->RegisterFieldTrialOverride(
-        kStartSurface.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
-        trial.get());
+        kTrendingQueriesModuleNewUser.name,
+        base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
     feature_list->RegisterFieldTrialOverride(
-        kTrendingQueriesModule.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
-        trial.get());
-    feature_list->RegisterFieldTrialOverride(
-        kContentSuggestionsUIModuleRefresh.name,
+        kContentSuggestionsUIModuleRefreshNewUser.name,
         base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
   } else if (group_name == kTrendingQueriesControlGroup) {
-    // Enabled by default, so for consistency's sake also register it in control
-    // group.
     feature_list->RegisterFieldTrialOverride(
-        kStartSurface.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
-        trial.get());
-    feature_list->RegisterFieldTrialOverride(
-        kTrendingQueriesModule.name,
+        kTrendingQueriesModuleNewUser.name,
         base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
     feature_list->RegisterFieldTrialOverride(
-        kContentSuggestionsUIModuleRefresh.name,
+        kContentSuggestionsUIModuleRefreshNewUser.name,
         base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
   }
 }
@@ -197,20 +176,24 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
             base::FeatureList* feature_list,
             PrefService* local_state) {
-  // Don't create the trial if it was already created for testing. This is only
-  // expected when the browser is used for development purpose. The trial
-  // created when the about flag is set will have the same name as the
-  // `kTrendingQueriesModule`. This condition is to avoid having multiple trials
-  // overriding the same feature. A trial might have also been created with the
-  // commandline arguments.
-  if (base::FieldTrialList::TrialExists(kTrendingQueriesFieldTrialName)) {
+  // Don't create the trial if either feature is enabled in chrome://flags. This
+  // condition is to avoid having multiple registered trials overriding the same
+  // feature.
+  if (base::FieldTrialList::TrialExists(
+          kContentSuggestionsUIModuleRefreshFlagOverrideFieldTrialName) ||
+      base::FieldTrialList::TrialExists(
+          kTrendingQueriesFlagOverrideFieldTrialName)) {
     return;
   }
 
   // If the client is already an existing client by the time this experiment
   // began running, don't register (e.g. the client is not in a First Run
-  // experience and was never grouped client-side into this study when it went 
+  // experience and was never grouped client-side into this study when it went
   // through First Run).
+  // If this is not First Run, but the client has the correct pref saved, that
+  // means the user was bucketed into the trial when it went through First Run.
+  // Thus, it is important to register the trial, so those clients can persist
+  // the behavior that was chosen on first run.
   if (!FirstRun::IsChromeFirstRun() &&
       local_state->GetInteger(kTrialPrefName) != kCurrentTrialVersion) {
     return;

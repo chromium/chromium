@@ -615,16 +615,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     [self.consumer setTrendingQueriesWithConfigs:@[]];
     return;
   }
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  BOOL isSignedIn =
-      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (ShouldOnlyShowTrendingQueriesForSignedOut() && isSignedIn) {
-    // Notify consumer with empty array so it knows to remove the module.
-    [self.consumer setTrendingQueriesWithConfigs:@[]];
-    return;
-  }
 
   // Fetch Trending Queries
   TemplateURLRef::SearchTermsArgs args;

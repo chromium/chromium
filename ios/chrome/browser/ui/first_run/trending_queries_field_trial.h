@@ -11,8 +11,6 @@
 class PrefService;
 class PrefRegistrySimple;
 
-extern const char kTrendingQueriesFieldTrialName[];
-
 namespace {
 
 // Variation IDs for Trending Queries experiment arms.

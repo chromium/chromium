@@ -49,11 +49,11 @@ TEST_F(TrendingQueriesFieldTrialTest, TestDefault) {
   // Substitute the existing feature list with the one with field trial
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(
-      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
-  EXPECT_FALSE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
+  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
+      kModularHomeTrendingQueriesClientSideFieldTrialName));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTrendingQueriesModuleNewUser));
   EXPECT_FALSE(
-      base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh));
+      base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefreshNewUser));
 }
 
 // Tests control field trial.
@@ -66,12 +66,11 @@ TEST_F(TrendingQueriesFieldTrialTest, TestControl) {
   // Substitute the existing feature list with the one with field trial
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(
-      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
-  EXPECT_FALSE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
+  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
+      kModularHomeTrendingQueriesClientSideFieldTrialName));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTrendingQueriesModuleNewUser));
   EXPECT_FALSE(
-      base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kStartSurface));
+      base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefreshNewUser));
 }
 
 // Tests kTrendingQueriesEnabledModuleEnabledID field trial.
@@ -84,22 +83,19 @@ TEST_F(TrendingQueriesFieldTrialTest, TestTrendingQueriesEnabledModuleEnabled) {
   // Substitute the existing feature list with the one with field trial
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(
-      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kStartSurface));
-  EXPECT_EQ(base::GetFieldTrialParamByFeatureAsDouble(
-                kStartSurface, kReturnToStartSurfaceInactiveDurationInSeconds,
-                60 * 60 * 12),
-            60 * 60 * 6);
+  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
+      kModularHomeTrendingQueriesClientSideFieldTrialName));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModuleNewUser));
+  EXPECT_TRUE(
+      base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefreshNewUser));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
-      kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, false));
+      kTrendingQueriesModuleNewUser, kTrendingQueriesHideShortcutsParam,
+      false));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
-      kContentSuggestionsUIModuleRefresh,
+      kContentSuggestionsUIModuleRefreshNewUser,
       kContentSuggestionsUIModuleRefreshMinimizeSpacingParam, true));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
-      kContentSuggestionsUIModuleRefresh,
+      kContentSuggestionsUIModuleRefreshNewUser,
       kContentSuggestionsUIModuleRefreshRemoveHeadersParam, true));
 }
 
@@ -114,22 +110,19 @@ TEST_F(TrendingQueriesFieldTrialTest,
   // Substitute the existing feature list with the one with field trial
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(
-      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kStartSurface));
-  EXPECT_EQ(base::GetFieldTrialParamByFeatureAsDouble(
-                kStartSurface, kReturnToStartSurfaceInactiveDurationInSeconds,
-                60 * 60 * 12),
-            60 * 60 * 6);
+  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
+      kModularHomeTrendingQueriesClientSideFieldTrialName));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModuleNewUser));
+  EXPECT_TRUE(
+      base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefreshNewUser));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
-      kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, false));
+      kTrendingQueriesModuleNewUser, kTrendingQueriesHideShortcutsParam,
+      false));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
-      kContentSuggestionsUIModuleRefresh,
+      kContentSuggestionsUIModuleRefreshNewUser,
       kContentSuggestionsUIModuleRefreshMinimizeSpacingParam, false));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
-      kContentSuggestionsUIModuleRefresh,
+      kContentSuggestionsUIModuleRefreshNewUser,
       kContentSuggestionsUIModuleRefreshRemoveHeadersParam, true));
 }
 
@@ -146,22 +139,19 @@ TEST_F(TrendingQueriesFieldTrialTest,
   // Substitute the existing feature list with the one with field trial
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(
-      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kStartSurface));
-  EXPECT_EQ(base::GetFieldTrialParamByFeatureAsDouble(
-                kStartSurface, kReturnToStartSurfaceInactiveDurationInSeconds,
-                60 * 60 * 12),
-            60 * 60 * 6);
+  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
+      kModularHomeTrendingQueriesClientSideFieldTrialName));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModuleNewUser));
+  EXPECT_TRUE(
+      base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefreshNewUser));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
-      kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, false));
+      kTrendingQueriesModuleNewUser, kTrendingQueriesHideShortcutsParam,
+      false));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
-      kContentSuggestionsUIModuleRefresh,
+      kContentSuggestionsUIModuleRefreshNewUser,
       kContentSuggestionsUIModuleRefreshMinimizeSpacingParam, false));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
-      kContentSuggestionsUIModuleRefresh,
+      kContentSuggestionsUIModuleRefreshNewUser,
       kContentSuggestionsUIModuleRefreshRemoveHeadersParam, false));
 }
 
@@ -176,21 +166,17 @@ TEST_F(TrendingQueriesFieldTrialTest,
   // Substitute the existing feature list with the one with field trial
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(
-      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kStartSurface));
-  EXPECT_EQ(base::GetFieldTrialParamByFeatureAsDouble(
-                kStartSurface, kReturnToStartSurfaceInactiveDurationInSeconds,
-                60 * 60 * 12),
-            60 * 60 * 6);
+  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
+      kModularHomeTrendingQueriesClientSideFieldTrialName));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModuleNewUser));
+  EXPECT_TRUE(
+      base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefreshNewUser));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
-      kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, true));
+      kTrendingQueriesModuleNewUser, kTrendingQueriesHideShortcutsParam, true));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
-      kContentSuggestionsUIModuleRefresh,
+      kContentSuggestionsUIModuleRefreshNewUser,
       kContentSuggestionsUIModuleRefreshMinimizeSpacingParam, true));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
-      kContentSuggestionsUIModuleRefresh,
+      kContentSuggestionsUIModuleRefreshNewUser,
       kContentSuggestionsUIModuleRefreshRemoveHeadersParam, true));
 }

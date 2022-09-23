@@ -453,4 +453,8 @@ source_set("feature_flags") {
     "content_suggestions_feature.mm",
   ]
   public_deps = [ "//base" ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/application_context",
+  ]
 }
