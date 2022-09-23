@@ -61,6 +61,14 @@ MATCHER(HasReferringVisit, "") {
   return arg.originator_referring_visit_id() != 0;
 }
 
+MATCHER(HasReferrerURL, "") {
+  return !arg.referrer_url().empty();
+}
+
+MATCHER_P(ReferrerURLIs, referrer_url, "") {
+  return arg.referrer_url() == referrer_url;
+}
+
 MATCHER(HasVisitDuration, "") {
   return arg.visit_duration_micros() > 0;
 }
@@ -275,10 +283,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsAllFields) {
   EXPECT_TRUE(WaitForHistory(UnorderedElementsAre(
       AllOf(StandardFieldsArePopulated(), UrlIs(url1.spec()),
             CoreTransitionIs(sync_pb::SyncEnums_PageTransition_AUTO_BOOKMARK),
-            Not(HasReferringVisit()), HasVisitDuration()),
+            Not(HasReferringVisit()), Not(HasReferrerURL()),
+            HasVisitDuration()),
       AllOf(StandardFieldsArePopulated(), UrlIs(url2.spec()),
             CoreTransitionIs(sync_pb::SyncEnums_PageTransition_LINK),
-            HasReferringVisit()))));
+            HasReferringVisit(), ReferrerURLIs(url1.spec())))));
 }
 
 }  // namespace

@@ -616,6 +616,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   bool GetURLByID(URLID url_id, URLRow* url_row) override;
 
+  bool GetVisitByID(VisitID visit_id, VisitRow* visit_row) override;
+
   // Returns the visit matching a given timestamp. In case of redirects (where
   // multiple visits can have the same timestamp), returns the last visit in the
   // redirect chain.

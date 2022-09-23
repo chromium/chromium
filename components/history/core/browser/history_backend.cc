@@ -1581,6 +1581,12 @@ bool HistoryBackend::GetURLByID(URLID url_id, URLRow* url_row) {
   return false;
 }
 
+bool HistoryBackend::GetVisitByID(VisitID visit_id, VisitRow* visit_row) {
+  if (db_)
+    return db_->GetRowForVisit(visit_id, visit_row);
+  return false;
+}
+
 bool HistoryBackend::GetLastVisitByTime(base::Time visit_time,
                                         VisitRow* visit_row) {
   if (db_)

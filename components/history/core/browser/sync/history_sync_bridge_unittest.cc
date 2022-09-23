@@ -252,7 +252,8 @@ class HistorySyncBridgeTest : public testing::Test {
 
   std::pair<URLRow, VisitRow> AddVisitToBackendAndAdvanceClock(
       const GURL& url,
-      ui::PageTransition transition) {
+      ui::PageTransition transition,
+      VisitID referring_visit = kInvalidVisitID) {
     // After grabbing the visit time, advance the mock time so that the next
     // visit will get a unique time.
     base::Time visit_time = base::Time::Now();
@@ -274,6 +275,7 @@ class HistorySyncBridgeTest : public testing::Test {
     visit_row.transition =
         ui::PageTransitionFromInt(transition | ui::PAGE_TRANSITION_CHAIN_START |
                                   ui::PAGE_TRANSITION_CHAIN_END);
+    visit_row.referring_visit = referring_visit;
     visit_row.visit_id = backend()->AddVisit(visit_row);
 
     return {url_row, visit_row};
@@ -531,6 +533,41 @@ TEST_F(HistorySyncBridgeTest, UploadsNewLocalVisit) {
       ui::PAGE_TRANSITION_TYPED));
   EXPECT_FALSE(history.page_transition().forward_back());
   EXPECT_TRUE(history.page_transition().from_address_bar());
+}
+
+TEST_F(HistorySyncBridgeTest, UploadsReferrerURL) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Visit a first visit (which will become the referrer).
+  auto [url_row1, visit_row1] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.referrer.com"),
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row1, visit_row1);
+
+  // Visit a second visit, which has the first one as its referrer.
+  auto [url_row2, visit_row2] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url.com"),
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK),
+      /*referring_visit=*/visit_row1.visit_id);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row2, visit_row2);
+
+  // Check that the second entity has the first one as its referrer, with both
+  // visit ID and the actual URL.
+  ASSERT_EQ(processor()->GetEntities().size(), 2u);
+  const std::string storage_key2 =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
+          visit_row2.visit_time);
+  ASSERT_EQ(processor()->GetEntities().count(storage_key2), 1u);
+  const syncer::EntityData& entity2 =
+      processor()->GetEntities().at(storage_key2);
+  ASSERT_TRUE(entity2.specifics.has_history());
+  const sync_pb::HistorySpecifics& history2 = entity2.specifics.history();
+  EXPECT_EQ(history2.originator_referring_visit_id(), visit_row1.visit_id);
+  EXPECT_EQ(history2.referrer_url(), url_row1.url());
 }
 
 TEST_F(HistorySyncBridgeTest, UploadsUpdatedLocalVisit) {

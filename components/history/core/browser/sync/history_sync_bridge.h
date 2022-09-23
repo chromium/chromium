@@ -89,6 +89,8 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   std::unique_ptr<syncer::EntityData> QueryRedirectChainAndMakeEntityData(
       const VisitRow& final_visit);
 
+  GURL GetURLForVisit(VisitID visit_id);
+
   // Adds visit(s) corresponding to the `specifics` to the HistoryBackend.
   // Returns true on success, or false in case of backend errors.
   bool AddEntityInBackend(VisitIDRemapper* id_remapper,

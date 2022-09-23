@@ -39,6 +39,7 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
   // HistoryBackendForSync implementation.
   bool IsExpiredVisitTime(const base::Time& time) const override;
   bool GetURLByID(URLID url_id, URLRow* url_row) override;
+  bool GetVisitByID(VisitID visit_id, VisitRow* visit_row) override;
   bool GetLastVisitByTime(base::Time visit_time, VisitRow* visit_row) override;
   VisitVector GetRedirectChain(VisitRow visit) override;
   bool GetForeignVisit(const std::string& originator_cache_guid,

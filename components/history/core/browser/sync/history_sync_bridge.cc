@@ -245,6 +245,7 @@ absl::optional<VisitContentAnnotations> MakeContentAnnotations(
 std::unique_ptr<syncer::EntityData> MakeEntityData(
     const std::string& local_cache_guid,
     const std::vector<AnnotatedVisit>& redirect_visits,
+    const GURL& referrer_url,
     const std::vector<GURL>& favicon_urls) {
   DCHECK(!local_cache_guid.empty());
   DCHECK(!redirect_visits.empty());
@@ -308,6 +309,10 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
   // chain, since they only make sense for that one.
   history->set_originator_referring_visit_id(first_visit.referring_visit);
   history->set_originator_opener_visit_id(first_visit.opener_visit);
+
+  if (referrer_url.is_valid()) {
+    history->set_referrer_url(referrer_url.spec());
+  }
 
   // The final visit is the one where the user actually ended up, so it's the
   // only one that can have a (non-zero) visit duration.
@@ -820,11 +825,33 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
     return nullptr;
   }
 
+  GURL referrer_url =
+      GetURLForVisit(annotated_visits.front().visit_row.referring_visit);
+
   std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(
       annotated_visits.back().url_row.url());
   // Note: `favicon_urls` may legitimately be empty, that's fine.
 
-  return MakeEntityData(GetLocalCacheGuid(), annotated_visits, favicon_urls);
+  return MakeEntityData(GetLocalCacheGuid(), annotated_visits, referrer_url,
+                        favicon_urls);
+}
+
+GURL HistorySyncBridge::GetURLForVisit(VisitID visit_id) {
+  if (visit_id == kInvalidVisitID) {
+    return GURL();
+  }
+
+  VisitRow visit_row;
+  if (!history_backend_->GetVisitByID(visit_id, &visit_row)) {
+    return GURL();
+  }
+
+  URLRow url_row;
+  if (!history_backend_->GetURLByID(visit_row.url_id, &url_row)) {
+    return GURL();
+  }
+
+  return url_row.url();
 }
 
 bool HistorySyncBridge::AddEntityInBackend(

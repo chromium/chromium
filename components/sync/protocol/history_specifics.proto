@@ -103,4 +103,8 @@ message HistorySpecifics {
 
   // URL of the favicon for this page.
   optional string favicon_url = 17;
+
+  // The URL of the referrer (indicated by `originator_referring_visit_id`), if
+  // any.
+  optional string referrer_url = 18;
 }

@@ -84,6 +84,17 @@ bool TestHistoryBackendForSync::GetURLByID(URLID url_id, URLRow* url_row) {
   return false;
 }
 
+bool TestHistoryBackendForSync::GetVisitByID(VisitID visit_id,
+                                             VisitRow* visit_row) {
+  for (const VisitRow& row : visits_) {
+    if (row.visit_id == visit_id) {
+      *visit_row = row;
+      return true;
+    }
+  }
+  return false;
+}
+
 bool TestHistoryBackendForSync::GetLastVisitByTime(base::Time visit_time,
                                                    VisitRow* visit_row) {
   *visit_row = VisitRow();
