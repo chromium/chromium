@@ -70964,6 +70964,9 @@ Called by update_net_trust_anchors.py.-->
   </summary>
   <int value="1" label="Dialog using the signin Profile"/>
   <int value="2" label="Singleton tab using the active user Profile"/>
+  <int value="3" label="Browser tab using the active user Profile"/>
+  <int value="4" label="Browser tab using an incognito Profile"/>
+  <int value="5" label="Dialog using an incognito Profile"/>
 </enum>
 
 <enum name="NetworkPortalStatus">

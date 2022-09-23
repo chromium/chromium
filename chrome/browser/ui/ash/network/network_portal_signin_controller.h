@@ -16,9 +16,20 @@ class NetworkPortalSigninController : public NetworkPortalWebDialog::Delegate {
   // Keep this in sync with the NetworkPortalSigninMode enum in
   // tools/metrics/histograms/enums.xml.
   enum class SigninMode {
+    // Show in a dialog window using the signin (oobe/login) profile.
     kSigninDialog = 1,
+    // Show in a singleton tab (i.e. reuse a tab with the same URL if it exists)
+    // using the active user profile. In practice since the signin page will
+    // immediately redirect, this will behave the same as kNormalTab unless
+    // the probe URL fails to redirect.
     kSingletonTab = 2,
-    kMaxValue = 2,
+    // Show in a new tab using the active user profile.
+    kNormalTab = 3,
+    // Show in a new tab in an incognito window.
+    kIncognitoTab = 4,
+    // Show in a dialog window using an incognito profile.
+    kIncognitoDialog = 5,
+    kMaxValue = 5,
   };
   friend std::ostream& operator<<(std::ostream& stream,
                                   const SigninMode& signin_mode);
@@ -47,9 +58,10 @@ class NetworkPortalSigninController : public NetworkPortalWebDialog::Delegate {
  protected:
   // May be overridden in tests.
   virtual void ShowDialog(Profile* profile, const GURL& url);
+  virtual void ShowTab(Profile* profile, const GURL& url);
   virtual void ShowSingletonTab(Profile* profile, const GURL& url);
 
-  SigninMode GetSigninMode();
+  SigninMode GetSigninMode() const;
 
  private:
   NetworkPortalWebDialog* dialog_ = nullptr;
