@@ -119,6 +119,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelApiWithExtensionTest, ExtensionRegistry) {
     EXPECT_EQ("default_path.html", options.path.value());
 
     // Test case to verify that stored options are cleared on un-load/install.
+    EXPECT_TRUE(service->HasExtensionPanelOptionsForTest(extension->id()));
     extensions::TestExtensionRegistryObserver observer(
         extensions::ExtensionRegistry::Get(profile()), extension->id());
     test_case(extension->id(), &observer, extension_service());
