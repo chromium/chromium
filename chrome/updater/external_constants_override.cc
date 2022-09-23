@@ -192,7 +192,7 @@ ExternalConstantsOverrider::FromDefaultJSONFile(
   }
 
   return base::MakeRefCounted<ExternalConstantsOverrider>(
-      std::move(parsed_value->GetDict()), next_provider);
+      std::move(*parsed_value).TakeDict(), next_provider);
 }
 
 // Declared in external_constants.h. This implementation of the function is
