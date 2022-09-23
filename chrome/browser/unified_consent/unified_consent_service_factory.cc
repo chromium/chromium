@@ -10,6 +10,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -36,6 +37,7 @@ std::vector<std::string> GetSyncedServicePrefNames() {
     prefs::kSearchSuggestEnabled, embedder_support::kAlternateErrorPagesEnabled,
         prefs::kSafeBrowsingEnabled, prefs::kSafeBrowsingScoutReportingEnabled,
         spellcheck::prefs::kSpellCheckUseSpellingService,
+        commerce::kPriceEmailNotificationsEnabled,
 #if BUILDFLAG(IS_ANDROID)
         prefs::kContextualSearchEnabled
 #endif

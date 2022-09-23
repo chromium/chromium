@@ -17,6 +17,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -69,6 +70,7 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
     public static final String PREF_METRICS_SETTINGS = "metrics_settings";
     @VisibleForTesting
     public static final String PREF_PRICE_TRACKING_ANNOTATIONS = "price_tracking_annotations";
+    private static final String PREF_PRICE_NOTIFICATION_SECTION = "price_notifications_section";
 
     private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
     private final PrivacyPreferencesManagerImpl mPrivacyPrefManager =
@@ -83,6 +85,7 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
     private ChromeSwitchPreference mPriceTrackingAnnotations;
     private @Nullable ChromeSwitchPreference mAutofillAssistant;
     private @Nullable Preference mContextualSearch;
+    private Preference mPriceNotificationSection;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, String rootKey) {
@@ -152,6 +155,14 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
         } else {
             mPriceTrackingAnnotations.setOnPreferenceChangeListener(this);
             mPriceTrackingAnnotations.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        }
+
+        mPriceNotificationSection = findPreference(PREF_PRICE_NOTIFICATION_SECTION);
+        if (ShoppingFeatures.isShoppingListEnabled()) {
+            mPriceNotificationSection.setVisible(true);
+        } else {
+            removePreference(getPreferenceScreen(), mPriceNotificationSection);
+            mPriceNotificationSection = null;
         }
 
         updatePreferences();

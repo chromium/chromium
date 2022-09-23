@@ -127,6 +127,18 @@ public class ShoppingService {
                 mNativeShoppingServiceAndroid, this, url, callback);
     }
 
+    /**
+     * Requests that the service fetch the price notification email preference from the backend.
+     * This call will update the preference kept by the pref service directly -- changes to the
+     * value should also be observed through the pref service. This method should only be used in
+     * the context of settings UI.
+     */
+    public void fetchPriceEmailPref() {
+        if (mNativeShoppingServiceAndroid == 0) return;
+
+        ShoppingServiceJni.get().fetchPriceEmailPref(mNativeShoppingServiceAndroid, this);
+    }
+
     @CalledByNative
     private void destroy() {
         mNativeShoppingServiceAndroid = 0;
@@ -172,5 +184,6 @@ public class ShoppingService {
                 long nativeShoppingServiceAndroid, ShoppingService caller, GURL url);
         void getMerchantInfoForUrl(long nativeShoppingServiceAndroid, ShoppingService caller,
                 GURL url, MerchantInfoCallback callback);
+        void fetchPriceEmailPref(long nativeShoppingServiceAndroid, ShoppingService caller);
     }
 }

@@ -47,6 +47,12 @@ found in the LICENSE file.
         android:summary="@string/track_prices_on_tabs_description"
         android:persistent="false"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="price_notifications_section"
+        android:title="@string/price_notifications_settings_title"
+        android:summary="@string/price_notifications_settings_description"
+        android:fragment="org.chromium.chrome.browser.commerce.PriceNotificationPreferenceFragment"
+        app:isPreferenceVisible="false"/>
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="autofill_assistant_subsection"
         android:title="@string/prefs_autofill_assistant_title"
         android:summary="@string/prefs_autofill_assistant_summary"

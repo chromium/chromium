@@ -119,4 +119,12 @@ void ShoppingServiceAndroid::HandleMerchantInfoCallback(
       info_java_object);
 }
 
+void ShoppingServiceAndroid::FetchPriceEmailPref(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  CHECK(shopping_service_);
+
+  shopping_service_->FetchPriceEmailPref();
+}
+
 }  // namespace commerce
