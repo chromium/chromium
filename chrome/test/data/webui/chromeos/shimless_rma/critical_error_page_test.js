@@ -17,7 +17,7 @@ export function criticalErrorPageTest() {
    * shutdown buttons.
    * @type {?ShimlessRma}
    */
-  let shimless_rma_component = null;
+  let shimlessRmaComponent = null;
 
   /** @type {?CriticalErrorPage} */
   let component = null;
@@ -34,8 +34,8 @@ export function criticalErrorPageTest() {
   teardown(() => {
     component.remove();
     component = null;
-    shimless_rma_component.remove();
-    shimless_rma_component = null;
+    shimlessRmaComponent.remove();
+    shimlessRmaComponent = null;
     service.reset();
   });
 
@@ -45,10 +45,10 @@ export function criticalErrorPageTest() {
   function initializeCriticalErrorPage() {
     assertFalse(!!component);
 
-    shimless_rma_component =
+    shimlessRmaComponent =
         /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
-    assertTrue(!!shimless_rma_component);
-    document.body.appendChild(shimless_rma_component);
+    assertTrue(!!shimlessRmaComponent);
+    document.body.appendChild(shimlessRmaComponent);
 
     component = /** @type {!CriticalErrorPage} */ (
         document.createElement('critical-error-page'));

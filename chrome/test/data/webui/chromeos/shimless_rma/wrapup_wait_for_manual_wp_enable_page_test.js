@@ -17,7 +17,7 @@ export function wrapupWaitForManualWpEnablePageTest() {
    * write protect is enabled.
    * @type {?ShimlessRma}
    */
-  let shimless_rma_component = null;
+  let shimlessRmaComponent = null;
 
   /** @type {?WrapupWaitForManualWpEnablePage} */
   let component = null;
@@ -32,8 +32,8 @@ export function wrapupWaitForManualWpEnablePageTest() {
   });
 
   teardown(() => {
-    shimless_rma_component.remove();
-    shimless_rma_component = null;
+    shimlessRmaComponent.remove();
+    shimlessRmaComponent = null;
     component.remove();
     component = null;
     service.reset();
@@ -45,10 +45,10 @@ export function wrapupWaitForManualWpEnablePageTest() {
   function initializeWaitForManualWpEnablePage() {
     assertFalse(!!component);
 
-    shimless_rma_component =
+    shimlessRmaComponent =
         /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
-    assertTrue(!!shimless_rma_component);
-    document.body.appendChild(shimless_rma_component);
+    assertTrue(!!shimlessRmaComponent);
+    document.body.appendChild(shimlessRmaComponent);
 
     component = /** @type {!WrapupWaitForManualWpEnablePage} */ (
         document.createElement('wrapup-wait-for-manual-wp-enable-page'));

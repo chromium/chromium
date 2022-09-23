@@ -20,7 +20,7 @@ export function reimagingCalibrationFailedPageTest() {
    * when handling calibration overall progress signals.
    * @type {?ShimlessRma}
    */
-  let shimless_rma_component = null;
+  let shimlessRmaComponent = null;
 
   /** @type {?ReimagingCalibrationFailedPage} */
   let component = null;
@@ -37,8 +37,8 @@ export function reimagingCalibrationFailedPageTest() {
   teardown(() => {
     component.remove();
     component = null;
-    shimless_rma_component.remove();
-    shimless_rma_component = null;
+    shimlessRmaComponent.remove();
+    shimlessRmaComponent = null;
     service.reset();
   });
 
@@ -49,10 +49,10 @@ export function reimagingCalibrationFailedPageTest() {
   function initializeCalibrationPage(calibrationComponents) {
     assertFalse(!!component);
 
-    shimless_rma_component =
+    shimlessRmaComponent =
         /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
-    assertTrue(!!shimless_rma_component);
-    document.body.appendChild(shimless_rma_component);
+    assertTrue(!!shimlessRmaComponent);
+    document.body.appendChild(shimlessRmaComponent);
 
     // Initialize the fake data.
     service.setGetCalibrationComponentListResult(calibrationComponents);

@@ -19,7 +19,7 @@ export function wrapupRepairCompletePageTest() {
    * the rework button.
    * @type {?ShimlessRma}
    */
-  let shimless_rma_component = null;
+  let shimlessRmaComponent = null;
 
   /** @type {?WrapupRepairCompletePage} */
   let component = null;
@@ -36,8 +36,8 @@ export function wrapupRepairCompletePageTest() {
   teardown(() => {
     component.remove();
     component = null;
-    shimless_rma_component.remove();
-    shimless_rma_component = null;
+    shimlessRmaComponent.remove();
+    shimlessRmaComponent = null;
     service.reset();
   });
 
@@ -47,10 +47,10 @@ export function wrapupRepairCompletePageTest() {
   function initializeRepairCompletePage() {
     assertFalse(!!component);
 
-    shimless_rma_component =
+    shimlessRmaComponent =
         /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
-    assertTrue(!!shimless_rma_component);
-    document.body.appendChild(shimless_rma_component);
+    assertTrue(!!shimlessRmaComponent);
+    document.body.appendChild(shimlessRmaComponent);
 
     component = /** @type {!WrapupRepairCompletePage} */ (
         document.createElement('wrapup-repair-complete-page'));

@@ -18,7 +18,7 @@ export function hardwareErrorPageTest() {
    * shutdown button.
    * @type {?ShimlessRma}
    */
-  let shimless_rma_component = null;
+  let shimlessRmaComponent = null;
 
   /** @type {?HardwareErrorPage} */
   let component = null;
@@ -35,8 +35,8 @@ export function hardwareErrorPageTest() {
   teardown(() => {
     component.remove();
     component = null;
-    shimless_rma_component.remove();
-    shimless_rma_component = null;
+    shimlessRmaComponent.remove();
+    shimlessRmaComponent = null;
     service.reset();
   });
 
@@ -46,10 +46,10 @@ export function hardwareErrorPageTest() {
   function initializeHardwareErrorPage() {
     assertFalse(!!component);
 
-    shimless_rma_component =
+    shimlessRmaComponent =
         /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
-    assertTrue(!!shimless_rma_component);
-    document.body.appendChild(shimless_rma_component);
+    assertTrue(!!shimlessRmaComponent);
+    document.body.appendChild(shimlessRmaComponent);
 
     component = /** @type {!HardwareErrorPage} */ (
         document.createElement('hardware-error-page'));

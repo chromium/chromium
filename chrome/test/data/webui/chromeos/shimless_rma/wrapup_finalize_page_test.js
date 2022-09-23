@@ -18,7 +18,7 @@ export function wrapupFinalizePageTest() {
    * when handling calibration overall progress signals.
    * @type {?ShimlessRma}
    */
-  let shimless_rma_component = null;
+  let shimlessRmaComponent = null;
 
   /** @type {?WrapupFinalizePage} */
   let component = null;
@@ -33,8 +33,8 @@ export function wrapupFinalizePageTest() {
   });
 
   teardown(() => {
-    shimless_rma_component.remove();
-    shimless_rma_component = null;
+    shimlessRmaComponent.remove();
+    shimlessRmaComponent = null;
     component.remove();
     component = null;
     service.reset();
@@ -46,10 +46,10 @@ export function wrapupFinalizePageTest() {
   function initializeFinalizePage() {
     assertFalse(!!component);
 
-    shimless_rma_component =
+    shimlessRmaComponent =
         /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
-    assertTrue(!!shimless_rma_component);
-    document.body.appendChild(shimless_rma_component);
+    assertTrue(!!shimlessRmaComponent);
+    document.body.appendChild(shimlessRmaComponent);
 
     component = /** @type {!WrapupFinalizePage} */ (
         document.createElement('wrapup-finalize-page'));

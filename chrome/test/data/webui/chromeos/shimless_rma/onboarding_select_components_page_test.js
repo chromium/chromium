@@ -20,7 +20,7 @@ export function onboardingSelectComponentsPageTest() {
    * the rework button.
    * @type {?ShimlessRma}
    */
-  let shimless_rma_component = null;
+  let shimlessRmaComponent = null;
 
   /** @type {?OnboardingSelectComponentsPageElement} */
   let component = null;
@@ -37,8 +37,8 @@ export function onboardingSelectComponentsPageTest() {
   teardown(() => {
     component.remove();
     component = null;
-    shimless_rma_component.remove();
-    shimless_rma_component = null;
+    shimlessRmaComponent.remove();
+    shimlessRmaComponent = null;
     service.reset();
   });
 
@@ -52,10 +52,10 @@ export function onboardingSelectComponentsPageTest() {
     // Initialize the fake data.
     service.setGetComponentListResult(deviceComponents);
 
-    shimless_rma_component =
+    shimlessRmaComponent =
         /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
-    assertTrue(!!shimless_rma_component);
-    document.body.appendChild(shimless_rma_component);
+    assertTrue(!!shimlessRmaComponent);
+    document.body.appendChild(shimlessRmaComponent);
 
     component = /** @type {!OnboardingSelectComponentsPageElement} */ (
         document.createElement('onboarding-select-components-page'));
