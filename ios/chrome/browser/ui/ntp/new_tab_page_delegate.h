@@ -23,6 +23,9 @@
 // Returns whether the current NTP is a start surface.
 - (BOOL)isStartSurface;
 
+// Called when the feed top section is manually dismissed.
+- (void)handleFeedTopSectionClosed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_DELEGATE_H_

@@ -886,6 +886,10 @@ const base::Feature kEnableCheckForNewFollowContent{
   return NTPHelper && NTPHelper->ShouldShowStartSurface();
 }
 
+- (void)handleFeedTopSectionClosed {
+  [self.ntpViewController updateScrollPositionForFeedTopSectionClosed];
+}
+
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState

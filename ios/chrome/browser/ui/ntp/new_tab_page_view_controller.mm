@@ -487,6 +487,12 @@
   }
 }
 
+- (void)updateScrollPositionForFeedTopSectionClosed {
+  if (self.fakeOmniboxPinnedToTop) {
+    [self setContentOffset:[self scrollPosition] + [self feedTopSectionHeight]];
+  }
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {

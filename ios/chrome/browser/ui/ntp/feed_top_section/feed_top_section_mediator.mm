@@ -124,6 +124,7 @@
 
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
     (SigninPromoViewMediator*)mediator {
+  [self.ntpDelegate handleFeedTopSectionClosed];
   self.shouldShowSigninPromo = NO;
 }
 

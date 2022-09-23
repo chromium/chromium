@@ -132,6 +132,9 @@
 // ensure the feed is still scrollable to the minimum height.
 - (void)updateFeedInsetsForMinimumHeight;
 
+// Updates the scroll position to account for the feed promo being removed.
+- (void)updateScrollPositionForFeedTopSectionClosed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_VIEW_CONTROLLER_H_
