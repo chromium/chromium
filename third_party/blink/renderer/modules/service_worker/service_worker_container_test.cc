@@ -19,11 +19,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/modules/service_worker/navigator_service_worker.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -448,6 +450,63 @@ TEST_F(ServiceWorkerContainerTest, Register_TypeOptionDelegatesToProvider) {
     EXPECT_EQ(mojom::ServiceWorkerUpdateViaCache::kImports,
               stub_provider.UpdateViaCache());
   }
+}
+
+WebServiceWorkerObjectInfo MakeServiceWorkerObjectInfo() {
+  return {1,
+          mojom::blink::ServiceWorkerState::kActivated,
+          WebURL(KURL(KURL(), "http://localhost/x/y/worker.js")),
+          {},
+          {}};
+}
+
+TransferableMessage MakeTransferableMessage() {
+  TransferableMessage message;
+  message.owned_encoded_message = {0xff, 0x09, '0'};
+  message.encoded_message = message.owned_encoded_message;
+  message.sender_agent_cluster_id = base::UnguessableToken::Create();
+  return message;
+}
+
+TEST_F(ServiceWorkerContainerTest, ReceiveMessage) {
+  SetPageURL("http://localhost/x/index.html");
+
+  StubWebServiceWorkerProvider stub_provider;
+  ServiceWorkerContainer* container = ServiceWorkerContainer::CreateForTesting(
+      *GetFrame().DomWindow(), stub_provider.Provider());
+
+  base::RunLoop run_loop;
+  auto* wait = MakeGarbageCollected<WaitForEvent>();
+  wait->AddEventListener(container, event_type_names::kMessage);
+  wait->AddEventListener(container, event_type_names::kMessageerror);
+  wait->AddCompletionClosure(run_loop.QuitClosure());
+  container->ReceiveMessage(MakeServiceWorkerObjectInfo(),
+                            MakeTransferableMessage());
+  run_loop.Run();
+
+  auto* event = wait->GetLastEvent();
+  EXPECT_EQ(event->type(), event_type_names::kMessage);
+}
+
+TEST_F(ServiceWorkerContainerTest, ReceiveMessageLockedToAgentCluster) {
+  SetPageURL("http://localhost/x/index.html");
+
+  StubWebServiceWorkerProvider stub_provider;
+  ServiceWorkerContainer* container = ServiceWorkerContainer::CreateForTesting(
+      *GetFrame().DomWindow(), stub_provider.Provider());
+
+  base::RunLoop run_loop;
+  auto* wait = MakeGarbageCollected<WaitForEvent>();
+  wait->AddEventListener(container, event_type_names::kMessage);
+  wait->AddEventListener(container, event_type_names::kMessageerror);
+  wait->AddCompletionClosure(run_loop.QuitClosure());
+  auto message = MakeTransferableMessage();
+  message.locked_to_sender_agent_cluster = true;
+  container->ReceiveMessage(MakeServiceWorkerObjectInfo(), std::move(message));
+  run_loop.Run();
+
+  auto* event = wait->GetLastEvent();
+  EXPECT_EQ(event->type(), event_type_names::kMessageerror);
 }
 
 }  // namespace
