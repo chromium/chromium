@@ -405,10 +405,8 @@ void KAnonymityTrustTokenGetter::CheckTrustTokens() {
   url::Origin issuer = url::Origin::Create(GURL(kKAnonymityAuthServer));
   trust_token_query_answerer_->HasTrustTokens(
       issuer,
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&KAnonymityTrustTokenGetter::OnHasTrustTokensComplete,
-                         weak_ptr_factory_.GetWeakPtr()),
-          nullptr));
+      base::BindOnce(&KAnonymityTrustTokenGetter::OnHasTrustTokensComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void KAnonymityTrustTokenGetter::OnHasTrustTokensComplete(
