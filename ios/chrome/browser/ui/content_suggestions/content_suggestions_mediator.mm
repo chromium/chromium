@@ -376,7 +376,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   [self.NTPMetrics recordContentSuggestionsActionForType:
                        IOSContentSuggestionsActionType::kTrendingQuery];
   UrlLoadParams params = UrlLoadParams::InCurrentTab(config.URL);
-  params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+  params.web_params.transition_type = ui::PAGE_TRANSITION_LINK;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 

@@ -290,7 +290,7 @@ TEST_F(ContentSuggestionsMediatorTest,
   [mediator_ loadSuggestedQuery:config];
   EXPECT_EQ(url, url_loader_->last_params.web_params.url);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+      ui::PAGE_TRANSITION_LINK,
       url_loader_->last_params.web_params.transition_type));
   histogram_tester_->ExpectUniqueSample(
       "IOS.ContentSuggestions.ActionOnNTP",
