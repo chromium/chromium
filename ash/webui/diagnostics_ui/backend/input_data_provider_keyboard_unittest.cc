@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <tuple>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_suite.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider_keyboard.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-forward.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-shared.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "content/public/test/browser_task_environment.h"
@@ -30,6 +33,10 @@ constexpr uint32_t kEvdevId = 5;
 constexpr char kFilePath[] = "/dev/input/event5";
 constexpr mojom::ConnectionType kConnectionType =
     mojom::ConnectionType::kInternal;
+
+// Value that marks a key is not in the top row when returned from
+// `ConstructInputKeyEvent`
+constexpr int kNotInTopRowValue = -1;
 
 enum VivaldiTopRowScanCode {
   kPreviousTrack = 0x90,
@@ -97,7 +104,7 @@ class InputDataProviderKeyboardTest : public ash::AshTestBase {
     input_data_provider_keyboard_ =
         std::make_unique<InputDataProviderKeyboard>();
 
-    InitInputDeviceInformation();
+    InitInputDeviceInformation(ui::kEveKeyboard);
 
     ui::ResourceBundle::CleanupSharedInstance();
     AshTestSuite::LoadTestResources();
@@ -105,6 +112,9 @@ class InputDataProviderKeyboardTest : public ash::AshTestBase {
 
     chromeos::system::StatisticsProvider::SetTestProvider(
         &statistics_provider_);
+
+    keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
+        &device_information, &aux_data_);
   }
 
   void TearDown() override {
@@ -112,16 +122,16 @@ class InputDataProviderKeyboardTest : public ash::AshTestBase {
     keyboard_info_.reset();
   }
 
-  void InitInputDeviceInformation() {
+  void InitInputDeviceInformation(ui::DeviceCapabilities capabilities) {
     device_information.evdev_id = kEvdevId;
     device_information.path = base::FilePath(kFilePath);
     device_information.connection_type = kConnectionType;
 
-    ui::CapabilitiesToDeviceInfo(ui::kEveKeyboard,
+    ui::CapabilitiesToDeviceInfo(capabilities,
                                  &device_information.event_device_info);
 
     device_information.input_device =
-        InputDeviceFromCapabilities(kEvdevId, ui::kEveKeyboard);
+        InputDeviceFromCapabilities(kEvdevId, capabilities);
   }
 
  protected:
@@ -294,7 +304,10 @@ INSTANTIATE_TEST_SUITE_P(
             {"ANSI", mojom::MechanicalLayout::kAnsi},
             {"ISO", mojom::MechanicalLayout::kIso},
             {"JIS", mojom::MechanicalLayout::kJis},
-            {"JUNK_IDENTIFIER", mojom::MechanicalLayout::kUnknown}}));
+            {"JUNK_IDENTIFIER", mojom::MechanicalLayout::kUnknown}}),
+    [](const testing::TestParamInfo<MechanicalLayoutTest::ParamType>& info) {
+      return std::get<0>(info.param);
+    });
 
 TEST_P(MechanicalLayoutTest, CheckLayout) {
   statistics_provider_.SetMachineStatistic(
@@ -304,6 +317,208 @@ TEST_P(MechanicalLayoutTest, CheckLayout) {
       &device_information, &aux_data_);
 
   EXPECT_EQ(expected_layout_, keyboard_info_->mechanical_layout);
+}
+
+class RegionCodeTest : public VivaldiKeyboardTestBase,
+                       public testing::WithParamInterface<std::string> {
+  void SetUp() override {
+    VivaldiKeyboardTestBase::SetUp();
+    region_code_ = GetParam();
+  }
+
+ protected:
+  std::string region_code_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    // Empty to simplify gtest output
+    ,
+    RegionCodeTest,
+    testing::Values("us", "jp", "de"),
+    [](const testing::TestParamInfo<RegionCodeTest::ParamType>& info) {
+      return info.param;
+    });
+
+TEST_P(RegionCodeTest, CheckRegionCode) {
+  statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
+                                           region_code_);
+
+  keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
+      &device_information, &aux_data_);
+
+  EXPECT_EQ(region_code_, keyboard_info_->region_code);
+}
+
+class HasNumpadTest : public VivaldiKeyboardTestBase {};
+TEST_F(HasNumpadTest, SwitchEnabled) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasNumberPad);
+
+  keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
+      &device_information, &aux_data_);
+
+  EXPECT_EQ(mojom::NumberPadPresence::kPresent,
+            keyboard_info_->number_pad_present);
+}
+
+TEST_F(HasNumpadTest, SwitchDisabled) {
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kHasNumberPad);
+
+  keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
+      &device_information, &aux_data_);
+
+  EXPECT_EQ(mojom::NumberPadPresence::kNotPresent,
+            keyboard_info_->number_pad_present);
+}
+
+class AssistantKeyTest : public VivaldiKeyboardTestBase {
+  void SetUp() override { VivaldiKeyboardTestBase::SetUp(); }
+};
+
+TEST_F(AssistantKeyTest, DrobitNoAssistantKey) {
+  InitInputDeviceInformation(ui::kDrobitKeyboard);
+
+  keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
+      &device_information, &aux_data_);
+
+  EXPECT_FALSE(keyboard_info_->has_assistant_key);
+}
+
+TEST_F(AssistantKeyTest, EveHasAssistantKey) {
+  InitInputDeviceInformation(ui::kEveKeyboard);
+
+  keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
+      &device_information, &aux_data_);
+
+  EXPECT_TRUE(keyboard_info_->has_assistant_key);
+}
+
+class ConstructInputKeyEventTest
+    : public VivaldiKeyboardTestBase,
+      public testing::WithParamInterface<
+          std::tuple<std::tuple<uint32_t, uint32_t>, bool>> {
+ public:
+  void SetUp() override {
+    VivaldiKeyboardTestBase::SetUp();
+    InitAuxData();
+    std::tie(key_code_, scan_code_) = std::get<0>(GetParam());
+    down_ = std::get<1>(GetParam());
+  }
+
+  void InitAuxData() {
+    base::flat_map<uint32_t, uint32_t>& map =
+        aux_data_.top_row_key_scancode_indexes;
+    map.clear();
+    map[VivaldiTopRowScanCode::kBack] = 0;
+    map[VivaldiTopRowScanCode::kRefresh] = 1;
+    map[VivaldiTopRowScanCode::kFullscreen] = 2;
+    map[VivaldiTopRowScanCode::kOverview] = 3;
+    map[VivaldiTopRowScanCode::kScreenshot] = 4;
+    map[VivaldiTopRowScanCode::kScreenBrightnessDown] = 5;
+    map[VivaldiTopRowScanCode::kScreenBrightnessUp] = 6;
+  }
+
+ protected:
+  uint32_t key_code_;
+  uint32_t scan_code_;
+  bool down_;
+};
+
+class NormalKeyConstructInputKeyEventTest : public ConstructInputKeyEventTest {
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    // Empty to simplify gtest output
+    ,
+    NormalKeyConstructInputKeyEventTest,
+    testing::Combine(
+        testing::ValuesIn(std::vector<std::tuple<uint32_t, uint32_t>>{
+            {KEY_A, ui::VKEY_A},
+            {KEY_5, ui::VKEY_5},
+            {KEY_ESC, ui::VKEY_ESCAPE},
+            {KEY_SPACE, ui::VKEY_SPACE}}),
+        testing::Bool()));
+
+TEST_P(NormalKeyConstructInputKeyEventTest, NormalKey) {
+  auto result = input_data_provider_keyboard_->ConstructInputKeyEvent(
+      keyboard_info_, &aux_data_, key_code_, scan_code_, down_);
+
+  EXPECT_EQ(keyboard_info_->id, result->id);
+  EXPECT_EQ(key_code_, result->key_code);
+  EXPECT_EQ(scan_code_, result->scan_code);
+  EXPECT_EQ(down_ ? mojom::KeyEventType::kPress : mojom::KeyEventType::kRelease,
+            result->type);
+
+  // ConstructInputKeyEvent returns -1 when the key is not in the top row
+  EXPECT_EQ(kNotInTopRowValue, result->top_row_position);
+}
+
+class TopRowKeyConstructInputKeyEventTest : public ConstructInputKeyEventTest {
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    // Empty to simplify gtest output
+    ,
+    TopRowKeyConstructInputKeyEventTest,
+    testing::Combine(
+        testing::ValuesIn(std::vector<std::tuple<uint32_t, uint32_t>>{
+            {KEY_BACK, VivaldiTopRowScanCode::kBack},
+            {KEY_REFRESH, VivaldiTopRowScanCode::kRefresh},
+            {KEY_FULL_SCREEN, VivaldiTopRowScanCode::kFullscreen},
+            {KEY_SCALE, VivaldiTopRowScanCode::kOverview}}),
+        testing::Bool()));
+
+TEST_P(TopRowKeyConstructInputKeyEventTest, TopRowKey) {
+  auto result = input_data_provider_keyboard_->ConstructInputKeyEvent(
+      keyboard_info_, &aux_data_, key_code_, scan_code_, down_);
+
+  EXPECT_EQ(keyboard_info_->id, result->id);
+  EXPECT_EQ(key_code_, result->key_code);
+  EXPECT_EQ(scan_code_, result->scan_code);
+  EXPECT_EQ(down_ ? mojom::KeyEventType::kPress : mojom::KeyEventType::kRelease,
+            result->type);
+
+  EXPECT_EQ(
+      static_cast<int32_t>(aux_data_.top_row_key_scancode_indexes[scan_code_]),
+      result->top_row_position);
+}
+
+class FKeyConstructInputKeyEventTest : public ConstructInputKeyEventTest {};
+
+INSTANTIATE_TEST_SUITE_P(
+    // Empty to simplify gtest output
+    ,
+    FKeyConstructInputKeyEventTest,
+    testing::Combine(
+        testing::ValuesIn(std::vector<std::tuple<uint32_t, uint32_t>>{
+            {KEY_F1, ui::VKEY_F1},
+            {KEY_F2, ui::VKEY_F2},
+            {KEY_F3, ui::VKEY_F3},
+            {KEY_F4, ui::VKEY_F4},
+            {KEY_F5, ui::VKEY_F5},
+            {KEY_F6, ui::VKEY_F6},
+            {KEY_F7, ui::VKEY_F7},
+            {KEY_F8, ui::VKEY_F8},
+            {KEY_F9, ui::VKEY_F9},
+            {KEY_F10, ui::VKEY_F10},
+            {KEY_F11, ui::VKEY_F11},
+            {KEY_F12, ui::VKEY_F12},
+            {KEY_F13, ui::VKEY_F13},
+            {KEY_F14, ui::VKEY_F14},
+            {KEY_F15, ui::VKEY_F15}}),
+        testing::Bool()));
+
+TEST_P(FKeyConstructInputKeyEventTest, FKey) {
+  auto result = input_data_provider_keyboard_->ConstructInputKeyEvent(
+      keyboard_info_, &aux_data_, key_code_, scan_code_, down_);
+
+  EXPECT_EQ(keyboard_info_->id, result->id);
+  EXPECT_EQ(key_code_, result->key_code);
+  EXPECT_EQ(scan_code_, result->scan_code);
+  EXPECT_EQ(down_ ? mojom::KeyEventType::kPress : mojom::KeyEventType::kRelease,
+            result->type);
+
+  EXPECT_EQ(static_cast<int>(scan_code_ - ui::VKEY_F1),
+            result->top_row_position);
 }
 
 }  // namespace ash::diagnostics
