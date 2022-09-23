@@ -46,7 +46,7 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "window_open_disposition_mojom_traits.h" ]
-      traits_public_deps = [ "//ui/base" ]
+      traits_public_deps = [ "//ui/base:types" ]
     },
   ]
 

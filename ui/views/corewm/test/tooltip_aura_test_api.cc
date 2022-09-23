@@ -5,6 +5,7 @@
 #include "ui/views/corewm/test/tooltip_aura_test_api.h"
 
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"

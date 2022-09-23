@@ -27,6 +27,7 @@ enum class TabGroupColorId;
 class TabGroupId;
 }  // namespace tab_groups
 namespace ui {
+class Event;
 class ListSelectionModel;
 class LocatedEvent;
 class MouseEvent;

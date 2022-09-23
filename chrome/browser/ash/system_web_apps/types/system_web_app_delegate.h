@@ -26,6 +26,10 @@ namespace apps {
 struct AppLaunchParams;
 }
 
+namespace gfx {
+class Rect;
+}
+
 namespace web_app {
 class WebAppProvider;
 }

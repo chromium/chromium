@@ -4,6 +4,7 @@
 
 #include "ui/base/cocoa/cocoa_base_utils.h"
 
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 
 namespace ui {

@@ -22,6 +22,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "v8/include/v8-isolate.h"
 

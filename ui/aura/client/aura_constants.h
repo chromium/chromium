@@ -17,11 +17,9 @@ namespace gfx {
 class ImageSkia;
 }
 
-namespace ws {
-namespace mojom {
-enum class WindowType;
+namespace ui {
+struct OwnedWindowAnchor;
 }
-}  // namespace ws
 
 namespace aura {
 namespace client {

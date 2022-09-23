@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -29,7 +30,7 @@ struct ShellPopupParams {
 
   // This parameter is temporarily optional. Later, when all the clients
   // start to pass these parameters, absl::optional type will be removed.
-  absl::optional<ui::OwnedWindowAnchor> anchor;
+  absl::optional<OwnedWindowAnchor> anchor;
 };
 
 // A wrapper around different versions of xdg popups.

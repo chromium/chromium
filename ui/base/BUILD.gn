@@ -95,6 +95,16 @@ source_set("hit_test") {
   ]
 }
 
+# This target is used by mojom files, so it should have very few dependencies
+# (ideally none).
+source_set("types") {
+  sources = [ "window_open_disposition.h" ]
+  if (!is_ios) {
+    sources += [ "ui_base_types.h" ]
+  }
+  deps = [ "//build:chromeos_buildflags" ]
+}
+
 component("base") {
   output_name = "ui_base"
 
@@ -196,8 +206,8 @@ component("base") {
     "webui/resource_path.h",
     "webui/web_ui_util.cc",
     "webui/web_ui_util.h",
-    "window_open_disposition.cc",
-    "window_open_disposition.h",
+    "window_open_disposition_utils.cc",
+    "window_open_disposition_utils.h",
   ]
 
   libs = []
@@ -366,6 +376,7 @@ component("base") {
       "base_window.cc",
       "base_window.h",
       "emoji/emoji_panel_helper.h",
+      "owned_window_anchor.h",
       "pointer/pointer_device.h",
       "pointer/pointer_device_util.cc",
       "pointer/touch_editing_controller.cc",
@@ -374,12 +385,17 @@ component("base") {
       "text/bytes_formatting.h",
       "themed_vector_icon.cc",
       "themed_vector_icon.h",
-      "ui_base_types.cc",
-      "ui_base_types.h",
       "user_activity/user_activity_detector.cc",
       "user_activity/user_activity_detector.h",
       "user_activity/user_activity_observer.h",
     ]
+
+    if (!is_android) {
+      sources += [
+        "menu_source_utils.cc",
+        "menu_source_utils.h",
+      ]
+    }
 
     if (is_linux || is_chromeos) {
       sources += [
@@ -458,6 +474,7 @@ component("base") {
     ":buildflags",
     ":features",
     ":hit_test",
+    ":types",
     ":ui_data_pack",
     "//base",
     "//skia",
@@ -619,7 +636,6 @@ component("base") {
       "models/button_menu_item_model.cc",
       "pointer/touch_editing_controller.cc",
       "theme_provider.cc",
-      "ui_base_types.cc",
     ]
   }
 

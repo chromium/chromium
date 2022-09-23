@@ -28,6 +28,7 @@ class SkPath;
 namespace ui {
 
 class Event;
+struct OwnedWindowAnchor;
 
 enum class PlatformWindowState {
   kUnknown,

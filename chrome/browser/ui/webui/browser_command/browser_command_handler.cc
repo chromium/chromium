@@ -29,6 +29,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/base/window_open_disposition_utils.h"
 
 using browser_command::mojom::ClickInfoPtr;
 using browser_command::mojom::Command;

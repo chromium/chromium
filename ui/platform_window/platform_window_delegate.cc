@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/owned_window_anchor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 

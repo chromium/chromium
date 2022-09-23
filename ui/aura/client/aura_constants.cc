@@ -5,6 +5,7 @@
 #include "ui/aura/client/aura_constants.h"
 
 #include "ui/base/class_property.h"
+#include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"

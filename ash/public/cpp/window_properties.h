@@ -26,6 +26,7 @@ enum class WindowStateType;
 
 namespace gfx {
 class Rect;
+class Size;
 }
 
 namespace ash {

@@ -6,16 +6,11 @@
 #define UI_BASE_UI_BASE_TYPES_H_
 
 #include <cstdint>
-#include <type_traits>
 
-#include "base/component_export.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
-
-class Event;
 
 // This enum must be version-skew tolerant. It is persisted to disk by ChromeOS
 // full restore, and read from disk by a possibly newer version of chrome. This
@@ -189,38 +184,6 @@ enum class OwnedWindowConstraintAdjustment : uint32_t {
   kAdjustmentRezizeY = 1 << 5,
 };
 
-// Structure that describes anchor for an owned window. Owned windows are the
-// windows that must be owned by their context (for example, menus, tooltips),
-// and they must be positioned in such a way that a system compositor can
-// reposition them using provided anchor. Ozone/Wayland is an example user of
-// this.
-struct OwnedWindowAnchor {
-  gfx::Rect anchor_rect;
-  OwnedWindowAnchorPosition anchor_position = OwnedWindowAnchorPosition::kNone;
-  OwnedWindowAnchorGravity anchor_gravity = OwnedWindowAnchorGravity::kNone;
-  OwnedWindowConstraintAdjustment constraint_adjustment =
-      OwnedWindowConstraintAdjustment::kAdjustmentNone;
-};
-
-COMPONENT_EXPORT(UI_BASE)
-MenuSourceType GetMenuSourceTypeForEvent(const ui::Event& event);
-
 }  // namespace ui
-
-inline constexpr ui::OwnedWindowConstraintAdjustment operator|(
-    ui::OwnedWindowConstraintAdjustment l,
-    ui::OwnedWindowConstraintAdjustment r) {
-  using T = std::underlying_type_t<ui::OwnedWindowConstraintAdjustment>;
-  return static_cast<ui::OwnedWindowConstraintAdjustment>(static_cast<T>(l) |
-                                                          static_cast<T>(r));
-}
-
-inline constexpr ui::OwnedWindowConstraintAdjustment operator&(
-    ui::OwnedWindowConstraintAdjustment l,
-    ui::OwnedWindowConstraintAdjustment r) {
-  using T = std::underlying_type_t<ui::OwnedWindowConstraintAdjustment>;
-  return static_cast<ui::OwnedWindowConstraintAdjustment>(static_cast<T>(l) &
-                                                          static_cast<T>(r));
-}
 
 #endif  // UI_BASE_UI_BASE_TYPES_H_
