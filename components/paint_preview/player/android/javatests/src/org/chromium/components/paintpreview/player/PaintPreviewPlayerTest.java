@@ -11,6 +11,7 @@ import android.support.test.InstrumentationRegistry;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.uiautomator.By;
@@ -30,8 +31,10 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -59,10 +62,19 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
     @Rule
     public TemporaryFolder mTempFolder = new TemporaryFolder();
 
+    private FrameLayout mLayout;
     private PlayerManager mPlayerManager;
     private TestLinkClickHandler mLinkClickHandler;
     private CallbackHelper mRefreshedCallback;
     private boolean mInitializationFailed;
+
+    @Rule
+    public RenderTestRule mRenderTestRule =
+            new RenderTestRule.Builder()
+                    .setCorpus(RenderTestRule.Corpus.ANDROID_RENDER_TESTS_PUBLIC)
+                    .setBugComponent(RenderTestRule.Component.FREEZE_DRIED_TABS)
+                    .setRevision(0)
+                    .build();
 
     /**
      * LinkClickHandler implementation for caching the last URL that was clicked.
@@ -74,6 +86,15 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         public void onLinkClicked(GURL url) {
             mUrl = url;
         }
+    }
+
+    @Override
+    public void setUpTest() throws Exception {
+        super.setUpTest();
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            mLayout = new FrameLayout(getActivity());
+            getActivity().setContentView(mLayout);
+        });
     }
 
     @Override
@@ -90,7 +111,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
     private void displayTest(boolean multipleFrames) {
         initPlayerManager(multipleFrames);
         final View playerHostView = mPlayerManager.getView();
-        final View activityContentView = getActivity().findViewById(android.R.id.content);
+        final View activityContentView = mLayout;
 
         // Assert that the player view has the same dimensions as the content view.
         CriteriaHelper.pollUiThread(() -> {
@@ -108,8 +129,10 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
      */
     @Test
     @MediumTest
-    public void singleFrameDisplayTest() {
+    @Feature({"RenderTest"})
+    public void singleFrameDisplayTest() throws Exception {
         displayTest(false);
+        mRenderTestRule.render(mPlayerManager.getView(), "single_frame");
     }
 
     /**
@@ -118,8 +141,36 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
      */
     @Test
     @MediumTest
-    public void multiFrameDisplayTest() {
+    @Feature({"RenderTest"})
+    public void multiFrameDisplayTest() throws Exception {
         displayTest(true);
+        mRenderTestRule.render(mPlayerManager.getView(), "multi_frame");
+    }
+
+    /**
+     * Tests the player correctly initializes and displays a sample paint preview with multiple
+     * frames with horizontal orientation.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void singleFrameDisplayTest_Wide() throws Exception {
+        makeLayoutWide();
+        displayTest(false);
+        mRenderTestRule.render(mPlayerManager.getView(), "single_frame_wide");
+    }
+
+    /**
+     * Tests the player correctly initializes and displays a sample paint preview with multiple
+     * frames with horizontal orientation.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void multiFrameDisplayTest_Wide() throws Exception {
+        makeLayoutWide();
+        displayTest(true);
+        mRenderTestRule.render(mPlayerManager.getView(), "multi_frame_wide");
     }
 
     /**
@@ -436,8 +487,8 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                         @Override
                         public void onAccessibilityNotSupported() {}
                     }, 0xffffffff, false);
+            mLayout.addView(mPlayerManager.getView());
             mPlayerManager.setCompressOnClose(false);
-            getActivity().setContentView(mPlayerManager.getView());
         });
 
         // Wait until PlayerManager is initialized.
@@ -514,5 +565,18 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
             Criteria.checkThat(msg, url, Matchers.notNullValue());
             Criteria.checkThat(msg, url.getSpec(), Matchers.is(expectedUrl));
         }, TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    private void makeLayoutWide() throws Exception {
+        CallbackHelper widened = new CallbackHelper();
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mLayout.getLayoutParams();
+            params.width = mLayout.getWidth() * 2;
+            params.height = mLayout.getHeight() * 2;
+            mLayout.setLayoutParams(params);
+            mLayout.invalidate();
+            widened.notifyCalled();
+        });
+        widened.waitForFirst();
     }
 }

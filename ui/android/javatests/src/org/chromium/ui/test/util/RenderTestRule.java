@@ -119,10 +119,10 @@ public class RenderTestRule extends TestWatcher {
     }
 
     @StringDef({Component.BLINK_CONTACTS, Component.BLINK_FORMS_COLOR, Component.BLINK_PAYMENTS,
-            Component.PRIVACY, Component.PRIVACY_INCOGNITO, Component.SERVICES_SIGN_IN,
-            Component.SERVICES_SYNC, Component.UI_BROWSER_AUTOFILL, Component.UI_BROWSER_BOOKMARKS,
-            Component.UI_BROWSER_BUBBLES_PAGE_INFO, Component.UI_BROWSER_CONTENT_SUGGESTIONS,
-            Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED,
+            Component.FREEZE_DRIED_TABS, Component.PRIVACY, Component.PRIVACY_INCOGNITO,
+            Component.SERVICES_SIGN_IN, Component.SERVICES_SYNC, Component.UI_BROWSER_AUTOFILL,
+            Component.UI_BROWSER_BOOKMARKS, Component.UI_BROWSER_BUBBLES_PAGE_INFO,
+            Component.UI_BROWSER_CONTENT_SUGGESTIONS, Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED,
             Component.UI_BROWSER_CONTENT_SUGGESTIONS_HISTORY, Component.UI_BROWSER_FIRST_RUN,
             Component.UI_BROWSER_INCOGNITO, Component.UI_BROWSER_INFOBARS,
             Component.UI_BROWSER_MEDIA_PICKER, Component.UI_BROWSER_MOBILE,
@@ -142,6 +142,7 @@ public class RenderTestRule extends TestWatcher {
         String BLINK_CONTACTS = "Blink>Contacts";
         String BLINK_FORMS_COLOR = "Blink>Forms>Color";
         String BLINK_PAYMENTS = "Blink>Payments";
+        String FREEZE_DRIED_TABS = "Internals>FreezeDriedTabs";
         String PRIVACY = "Privacy";
         String PRIVACY_INCOGNITO = "Privacy>Incognito";
         String SERVICES_SIGN_IN = "Services>SignIn";

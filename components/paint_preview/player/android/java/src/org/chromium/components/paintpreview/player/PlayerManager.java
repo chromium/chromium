@@ -197,10 +197,12 @@ public class PlayerManager {
                 scrollOffsets, subFramesCount, subFrameGuids, subFrameClipRects,
                 mIgnoreInitialScrollOffset);
 
+        float initialScaleFactor = Math.max(
+                pageScaleFactor, mHostView.getWidth() / ((float) mRootFrameData.getContentWidth()));
         mRootFrameCoordinator = new PlayerFrameCoordinator(mContext, mDelegate,
                 mRootFrameData.getGuid(), mRootFrameData.getContentWidth(),
                 mRootFrameData.getContentHeight(), mRootFrameData.getInitialScrollX(),
-                mRootFrameData.getInitialScrollY(), pageScaleFactor, true,
+                mRootFrameData.getInitialScrollY(), initialScaleFactor, true,
                 mPlayerSwipeRefreshHandler, mPlayerGestureListener, mListener::onFirstPaint,
                 mListener::isAccessibilityEnabled, this::initializeAccessibility);
         buildSubFrameCoordinators(mRootFrameCoordinator, mRootFrameData);
