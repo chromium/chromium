@@ -20,13 +20,16 @@ BiometricAuthenticationForFillingBubbleView::
         content::WebContents* web_contents,
         views::View* anchor_view,
         PrefService* prefs,
-        PasswordBubbleControllerBase::DisplayReason display_reason)
+        DisplayReason display_reason)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
                              /*easily_dismissable=*/true),
-      controller_(PasswordsModelDelegateFromWebContents(web_contents),
-                  prefs,
-                  display_reason) {
+      controller_(
+          PasswordsModelDelegateFromWebContents(web_contents),
+          prefs,
+          display_reason == AUTOMATIC
+              ? PasswordBubbleControllerBase::DisplayReason::kAutomatic
+              : PasswordBubbleControllerBase::DisplayReason::kUserAction) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   SetButtons((ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));

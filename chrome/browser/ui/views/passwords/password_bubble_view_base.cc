@@ -30,6 +30,10 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/views/controls/button/button.h"
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/views/passwords/biometric_authentication_for_filling_bubble_view.h"
+#endif
+
 // static
 PasswordBubbleViewBase* PasswordBubbleViewBase::g_manage_passwords_bubble_ =
     nullptr;
@@ -98,6 +102,15 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
              model_state ==
                  password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX) {
     view = new PostSaveCompromisedBubbleView(web_contents, anchor_view);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  } else if (model_state ==
+             password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE) {
+    view = new BiometricAuthenticationForFillingBubbleView(
+        web_contents, anchor_view,
+        Profile::FromBrowserContext(web_contents->GetBrowserContext())
+            ->GetPrefs(),
+        reason);
+#endif
   } else {
     NOTREACHED();
   }

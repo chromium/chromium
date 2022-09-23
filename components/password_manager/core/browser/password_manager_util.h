@@ -172,6 +172,9 @@ bool IsBiometricAuthenticationForFillingEnabled(
 
 bool ShouldBiometricAuthenticationForFillingToggleBeVisible(
     const PrefService* local_state);
+
+bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
+    password_manager::PasswordManagerClient* client);
 #endif
 
 // Helper which checks if biometric authentication is available.

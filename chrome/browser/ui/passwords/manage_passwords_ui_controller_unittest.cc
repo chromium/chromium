@@ -1848,4 +1848,25 @@ TEST_F(ManagePasswordsUIControllerTest,
                 password_manager::prefs::
                     kBiometricAuthBeforeFillingPromoShownCounter));
 }
+
+// On one specific tab BiometricAuthForFilling promo should be shown no more
+// than once.
+TEST_F(ManagePasswordsUIControllerTest,
+       ShouldNotShowBiometricAuthenticationForFillingPromoTwiceOnTheSameTab) {
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, false);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter, 0);
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+}
+
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

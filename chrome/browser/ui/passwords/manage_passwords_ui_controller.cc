@@ -321,7 +321,11 @@ void ManagePasswordsUIController::OnBiometricAuthenticationForFilling(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   const std::string promo_shown_counter =
       password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter;
-  if (prefs->GetBoolean(
+  // Checking GetIfBiometricAuthenticationPromoWasShown() prevents from
+  // displaying multiple prompts on the same tab (eg. when there are multiple
+  // password forms).
+  if (was_biometric_authentication_for_filling_promo_shown_ ||
+      prefs->GetBoolean(
           password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo) ||
       prefs->GetInteger(promo_shown_counter) >=
           kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown ||
@@ -334,6 +338,7 @@ void ManagePasswordsUIController::OnBiometricAuthenticationForFilling(
 
   passwords_data_.OnBiometricAuthenticationForFilling();
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  was_biometric_authentication_for_filling_promo_shown_ = true;
   UpdateBubbleAndIconVisibility();
 #else
   NOTIMPLEMENTED();

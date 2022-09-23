@@ -360,6 +360,10 @@ class ManagePasswordsUIController
 
   scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator_;
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  bool was_biometric_authentication_for_filling_promo_shown_ = false;
+#endif
+
   // The bubbles of different types can pop up unpredictably superseding each
   // other. However, closing the bubble may affect the state of
   // ManagePasswordsUIController internally. This is undesired if

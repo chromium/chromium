@@ -37,6 +37,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using autofill::password_generation::PasswordGenerationType;
+using device_reauth::MockBiometricAuthenticator;
 using password_manager::PasswordForm;
 
 namespace password_manager_util {
@@ -66,6 +67,10 @@ class MockPasswordManagerClient
   MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
+  MOCK_METHOD(scoped_refptr<device_reauth::BiometricAuthenticator>,
+              GetBiometricAuthenticator,
+              (),
+              (override));
 };
 
 class MockAutofillClient : public autofill::AutofillClient {
@@ -357,6 +362,8 @@ class PasswordManagerUtilTest : public testing::Test {
     ON_CALL(mock_client_, GetLocalStatePrefs())
         .WillByDefault(Return(&pref_service_));
     ON_CALL(mock_client_, GetPrefs()).WillByDefault(Return(&pref_service_));
+    ON_CALL(mock_client_, GetBiometricAuthenticator())
+        .WillByDefault(Return(authenticator_));
     ON_CALL(*authenticator_, CanAuthenticate).WillByDefault(Return(true));
 #endif
   }
@@ -936,6 +943,48 @@ TEST_F(PasswordManagerUtilTest, CanUseBiometricAuth) {
       device_reauth::BiometricAuthRequester::kAutofillSuggestion,
       &mock_client_));
 }
+
+TEST_F(PasswordManagerUtilTest, BiometricsUnavailable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+
+  SetBiometricAuthenticationBeforeFilling(/*available=*/false);
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(false));
+  EXPECT_FALSE(
+      ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
+}
+
+TEST_F(PasswordManagerUtilTest, BiometricForFillingFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+  SetBiometricAuthenticationBeforeFilling(/*available=*/false);
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(true));
+  EXPECT_FALSE(
+      ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
+}
+
+TEST_F(PasswordManagerUtilTest, BiometricForFillingEnabed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+  SetBiometricAuthenticationBeforeFilling(/*available=*/true);
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(true));
+  EXPECT_FALSE(
+      ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
+}
+
+TEST_F(PasswordManagerUtilTest, ShouldShowBiometricAuthPromo) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+  SetBiometricAuthenticationBeforeFilling(/*available=*/false);
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(true));
+  EXPECT_TRUE(
+      ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
+}
+
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 }  // namespace password_manager_util

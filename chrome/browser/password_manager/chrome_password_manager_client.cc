@@ -652,11 +652,9 @@ void ChromePasswordManagerClient::PasswordWasAutofilled(
                                                        federated_matches);
 #endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1365813): Add missing checks and move them to
-  // password manager utils.
   if (was_autofilled_on_pageload &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kBiometricAuthenticationForFilling)) {
+      password_manager_util::
+          ShouldShowBiometricAuthenticationBeforeFillingPromo(this)) {
     PasswordsClientUIDelegateFromWebContents(web_contents())
         ->OnBiometricAuthenticationForFilling(GetPrefs());
   }

@@ -17,7 +17,7 @@ class BiometricAuthenticationForFillingBubbleView
       content::WebContents* web_contents,
       views::View* anchor_view,
       PrefService* prefs,
-      PasswordBubbleControllerBase::DisplayReason display_reason);
+      DisplayReason display_reason);
   ~BiometricAuthenticationForFillingBubbleView() override;
 
  private:
