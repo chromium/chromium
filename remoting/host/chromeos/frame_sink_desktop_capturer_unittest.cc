@@ -79,27 +79,33 @@ struct CaptureResult {
   std::unique_ptr<DesktopFrame> frame;
 };
 
-struct FrameParameters {
+class FrameParameters {
+ public:
   FrameParameters() = default;
 
   FrameParameters WithSize(Size size) {
-    this->size = size;
+    size_ = size;
     return *this;
   }
 
   FrameParameters WithUpdatedRegion(Rect updated_region) {
-    this->updated_region = updated_region;
+    updated_region_ = updated_region;
     return *this;
   }
 
   FrameParameters WithScaleFactor(float scale_factor) {
-    this->scale_factor = scale_factor;
+    scale_factor_ = scale_factor;
     return *this;
   }
 
-  Size size{kAnyWidth, kAnyHeight};
-  Rect updated_region{0, 0, kAnyWidth, kAnyHeight};
-  float scale_factor = 1.0;
+  const Size& size() { return size_; }
+  const Rect& updated_region() { return updated_region_; }
+  float scale_factor() { return scale_factor_; }
+
+ private:
+  Size size_{kAnyWidth, kAnyHeight};
+  Rect updated_region_{0, 0, kAnyWidth, kAnyHeight};
+  float scale_factor_ = 1.0;
 };
 
 class DesktopCapturerCallback : public DesktopCapturer::Callback {
@@ -204,7 +210,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
 
   void SendFrame(FrameParameters params = FrameParameters()) {
     scoped_refptr<VideoFrame> frame =
-        frame_pool_->ReserveVideoFrame(kPixelFormat, params.size);
+        frame_pool_->ReserveVideoFrame(kPixelFormat, params.size());
     frame->set_color_space(ColorSpace(ColorSpace::PrimaryID::ADOBE_RGB,
                                       ColorSpace::TransferID::LINEAR));
 
@@ -214,19 +220,19 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
                 handle->get_read_only_shmem_region().IsValid());
 
     auto metadata = frame->metadata();
-    metadata.device_scale_factor = params.scale_factor;
-    metadata.capture_update_rect = params.updated_region;
+    metadata.device_scale_factor = params.scale_factor();
+    metadata.capture_update_rect = params.updated_region();
 
     // Assemble frame layout, format, and metadata into a mojo struct to send to
     // the consumer.
     auto info = media::mojom::VideoFrameInfo::New(
         frame->timestamp(), metadata, frame->format(), frame->coded_size(),
-        /*visible_rect=*/gfx::Rect(params.size),
+        /*visible_rect=*/gfx::Rect(params.size()),
         /*is_premapped=*/false, frame->ColorSpace(),
         /*strides=*/nullptr);
 
     auto done_callback = std::make_unique<FakeFrameDeliveryCallback>(frame);
-    Rect content_rect{params.size.width(), params.size.height()};
+    Rect content_rect{params.size().width(), params.size().height()};
 
     remote_->OnFrameCaptured(std::move(handle), std::move(info), content_rect,
                              done_callback->BindNewPipeAndPassRemote());
