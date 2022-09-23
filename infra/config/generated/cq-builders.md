@@ -23,8 +23,6 @@ These builders must pass before a CL may land that affects files outside of
 
 * [android-marshmallow-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-marshmallow-x86-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-x86-rel""))
 
-* [android-pie-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-pie-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-pie-arm64-rel""))
-
 * [android_compile_dbg](https://ci.chromium.org/p/chromium/builders/try/android_compile_dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_compile_dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android_compile_dbg""))
 
 * [android_cronet](https://ci.chromium.org/p/chromium/builders/try/android_cronet) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_cronet"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android_cronet""))
