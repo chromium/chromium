@@ -598,13 +598,13 @@ void TaskQueueImpl::ReloadEmptyImmediateWorkQueue() {
 }
 
 void TaskQueueImpl::TakeImmediateIncomingQueueTasks(TaskDeque* queue) {
-  base::internal::CheckedAutoLock lock(any_thread_lock_);
   DCHECK(queue->empty());
-  queue->swap(any_thread_.immediate_incoming_queue);
+  // Now is a good time to consider reducing the empty queue's capacity if we're
+  // wasting memory, before we make it the `immediate_incoming_queue`.
+  queue->MaybeShrinkQueue();
 
-  // Since |immediate_incoming_queue| is empty, now is a good time to consider
-  // reducing it's capacity if we're wasting memory.
-  any_thread_.immediate_incoming_queue.MaybeShrinkQueue();
+  base::internal::CheckedAutoLock lock(any_thread_lock_);
+  queue->swap(any_thread_.immediate_incoming_queue);
 
   // Activate delayed fence if necessary. This is ideologically similar to
   // ActivateDelayedFenceIfNeeded, but due to immediate tasks being posted
@@ -1386,10 +1386,10 @@ bool TaskQueueImpl::RequiresTaskTiming() const {
 std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle>
 TaskQueueImpl::AddOnTaskPostedHandler(OnTaskPostedHandler handler) {
   DCHECK(should_notify_observers_ && !handler.is_null());
-  base::internal::CheckedAutoLock lock(any_thread_lock_);
   std::unique_ptr<OnTaskPostedCallbackHandleImpl> handle =
       std::make_unique<OnTaskPostedCallbackHandleImpl>(this,
                                                        associated_thread_);
+  base::internal::CheckedAutoLock lock(any_thread_lock_);
   any_thread_.on_task_posted_handlers.insert(
       {handle.get(), std::move(handler)});
   return handle;
