@@ -178,6 +178,8 @@ class WTF_EXPORT StringBuilder {
 
   unsigned length() const { return length_; }
   bool empty() const { return !length_; }
+  // TODO(wangxianzhu): This is deprecated. Remove it.
+  bool IsEmpty() const { return empty(); }
 
   unsigned Capacity() const;
   // Increase the capacity of the backing buffer to at least |new_capacity|. The

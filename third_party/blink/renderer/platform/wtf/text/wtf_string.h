@@ -120,6 +120,8 @@ class WTF_EXPORT String {
   explicit operator bool() const { return !IsNull(); }
   bool IsNull() const { return !impl_; }
   bool empty() const { return !impl_ || !impl_->length(); }
+  // TODO(wangxianzhu): This is deprecated. Remove it.
+  bool IsEmpty() const { return empty(); }
 
   StringImpl* Impl() const { return impl_.get(); }
   scoped_refptr<StringImpl> ReleaseImpl() { return std::move(impl_); }
