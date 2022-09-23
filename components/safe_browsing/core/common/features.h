@@ -187,9 +187,6 @@ BASE_DECLARE_FEATURE(kUseNewDownloadWarnings);
 // the screen.
 BASE_DECLARE_FEATURE(kVisualFeaturesSizes);
 
-// Controls whether we send visual features in CSPP pings.
-BASE_DECLARE_FEATURE(kVisualFeaturesInCsppPings);
-
 // Controls whether we send visual features in password reuse pings.
 BASE_DECLARE_FEATURE(kVisualFeaturesForReusePings);
 

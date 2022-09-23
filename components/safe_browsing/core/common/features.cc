@@ -199,10 +199,6 @@ BASE_FEATURE(kVisualFeaturesSizes,
              "VisualFeaturesSizes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kVisualFeaturesInCsppPings,
-             "VisualFeaturesInCsppPings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kVisualFeaturesForReusePings,
              "VisualFeaturesInReusePings",
              base::FEATURE_DISABLED_BY_DEFAULT);
