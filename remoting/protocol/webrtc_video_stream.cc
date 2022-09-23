@@ -217,9 +217,15 @@ void WebrtcVideoStream::Core::CaptureNextFrame() {
 WebrtcVideoStream::WebrtcVideoStream(const std::string& stream_name,
                                      const SessionOptions& session_options)
     : stream_name_(stream_name), session_options_(session_options) {
-  // TODO(joedow): Detangle the mouse cursor composer classes so the capturer
-  // and scheduler can be run on a dedicated thread.
+// TODO(joedow): Dig into the threading model on other platforms to see if they
+// can also be updated to run on a dedicated thread.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+  core_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::TaskPriority::HIGHEST},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+#else
   core_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+#endif
 }
 
 WebrtcVideoStream::~WebrtcVideoStream() {
