@@ -17,6 +17,7 @@ using TaskAttributionIdType = uint32_t;
 // while abstracting the underlying value from callers.
 class TaskAttributionId {
  public:
+  TaskAttributionId() = default;
   explicit TaskAttributionId(TaskAttributionIdType value) : value_(value) {}
   TaskAttributionId(const TaskAttributionId&) = default;
   TaskAttributionId& operator=(const TaskAttributionId&) = default;
@@ -34,7 +35,7 @@ class TaskAttributionId {
   TaskAttributionId NextId() const { return TaskAttributionId(value_ + 1); }
 
  private:
-  TaskAttributionIdType value_;
+  TaskAttributionIdType value_ = {0};
 };
 
 }  // namespace blink::scheduler

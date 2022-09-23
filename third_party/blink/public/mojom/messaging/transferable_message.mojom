@@ -11,6 +11,7 @@ import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
 import "third_party/blink/public/mojom/messaging/delegated_capability.mojom";
 import "third_party/blink/public/mojom/messaging/message_port_descriptor.mojom";
 import "third_party/blink/public/mojom/messaging/user_activation_snapshot.mojom";
+import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
 
 // A MessagePort is represented as a raw mojo message pipe, as such no interface
 // definition exists for it here. Messages on this pipe are serialized versions
@@ -36,4 +37,6 @@ struct TransferableMessage {
   UserActivationSnapshot? user_activation;
   // What capability, if any, is delegated to the destination frame.
   DelegatedCapability delegated_capability = kNone;
+  // The ID of the task initiating the message.
+  TaskAttributionId? parent_task_id;
 };

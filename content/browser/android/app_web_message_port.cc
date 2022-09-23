@@ -106,9 +106,10 @@ void AppWebMessagePort::PostMessage(
   transferable_message.ports =
       blink::MessagePortChannel::CreateFromHandles(Release(env, j_ports));
   // As the message is posted from an Android app and not from another renderer,
-  // set the agent cluster ID to the embedder's.
+  // set the agent cluster ID to the embedder's, and nullify its parent task ID.
   transferable_message.sender_agent_cluster_id =
       blink::WebMessagePort::GetEmbedderAgentClusterID();
+  transferable_message.parent_task_id = absl::nullopt;
 
   mojo::Message mojo_message =
       blink::mojom::TransferableMessage::SerializeAsMessage(

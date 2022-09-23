@@ -12623,6 +12623,11 @@ void RenderFrameHostImpl::PostMessageEvent(
   if (message.delegated_capability != blink::mojom::DelegatedCapability::kNone)
     ReceivedDelegatedCapability(message.delegated_capability);
 
+  // This is always called from either another renderer (through RemoteFrame) or
+  // from the embedder itself. As such, we nullify the parent task ID here, to
+  // prevent this information from leaking between renderers.
+  message.parent_task_id = absl::nullopt;
+
   GetAssociatedLocalFrame()->PostMessageEvent(
       source_token, source_origin, target_origin, std::move(message));
 }

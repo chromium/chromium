@@ -10,9 +10,11 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/messaging/cloneable_message.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/mojom/array_buffer/array_buffer_contents.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-shared.h"
+#include "third_party/blink/public/mojom/messaging/task_attribution_id.mojom.h"
 #include "third_party/blink/public/mojom/messaging/user_activation_snapshot.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -42,6 +44,9 @@ struct BLINK_COMMON_EXPORT TransferableMessage : public CloneableMessage {
   // What capability, if any, is delegated to the destination frame.
   mojom::DelegatedCapability delegated_capability =
       mojom::DelegatedCapability::kNone;
+
+  // The transferable message's parent task ID.
+  absl::optional<scheduler::TaskAttributionId> parent_task_id;
 };
 
 }  // namespace blink

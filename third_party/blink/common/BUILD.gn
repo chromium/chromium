@@ -193,6 +193,7 @@ source_set("common") {
     "messaging/message_port_descriptor.cc",
     "messaging/message_port_descriptor_mojom_traits.cc",
     "messaging/string_message_codec.cc",
+    "messaging/task_attribution_id_mojom_traits.cc",
     "messaging/transferable_message.cc",
     "messaging/transferable_message_mojom_traits.cc",
     "messaging/web_message_port.cc",

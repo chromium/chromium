@@ -20,7 +20,8 @@ bool StructTraits<blink::mojom::TransferableMessage::DataView,
       !data.ReadArrayBufferContentsArray(&out->array_buffer_contents_array) ||
       !data.ReadImageBitmapContentsArray(&out->image_bitmap_contents_array) ||
       !data.ReadPorts(&ports) || !data.ReadStreamChannels(&stream_channels) ||
-      !data.ReadUserActivation(&out->user_activation)) {
+      !data.ReadUserActivation(&out->user_activation) ||
+      !data.ReadParentTaskId(&out->parent_task_id)) {
     return false;
   }
 

@@ -81,6 +81,10 @@ void StartWorkerToDispatchExtendableMessageEvent(
     return;
   }
 
+  // As we don't track tasks between workers and renderers, we can nullify the
+  // message's parent task ID.
+  message.parent_task_id = absl::nullopt;
+
   worker->RunAfterStartWorker(
       ServiceWorkerMetrics::EventType::MESSAGE,
       base::BindOnce(&DispatchExtendableMessageEventAfterStartWorker, worker,
@@ -285,6 +289,10 @@ void ServiceWorkerObjectHost::DispatchExtendableMessageEvent(
     return;
   }
   DCHECK_EQ(container_origin_, url::Origin::Create(container_host_->url()));
+
+  // As we don't track tasks between workers and renderers, we can nullify the
+  // message's parent task ID.
+  message.parent_task_id = absl::nullopt;
 
   if (container_host_->IsContainerForServiceWorker()) {
     // Clamp timeout to the sending worker's remaining timeout, to prevent

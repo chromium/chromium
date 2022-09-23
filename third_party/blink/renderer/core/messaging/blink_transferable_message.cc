@@ -54,6 +54,8 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
   }
   result.delegated_capability = message.delegated_capability;
 
+  result.parent_task_id = message.parent_task_id;
+
   if (!message.array_buffer_contents_array.empty()) {
     SerializedScriptValue::ArrayBufferContentsArray array_buffer_contents_array;
     array_buffer_contents_array.ReserveInitialCapacity(
