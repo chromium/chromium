@@ -1247,6 +1247,7 @@ test("content_browsertests") {
     "../browser/blob_storage/blob_url_browsertest.cc",
     "../browser/bluetooth/web_bluetooth_service_impl_browsertest.cc",
     "../browser/bookmarklet_browsertest.cc",
+    "../browser/browser_child_process_observer_browsertest.cc",
     "../browser/browser_thread_browsertest.cc",
     "../browser/browsing_data/browsing_data_remover_impl_browsertest.cc",
     "../browser/browsing_data/clear_site_data_handler_browsertest.cc",
