@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayKioskEnabled) {
   std::unique_ptr<base::DictionaryValue> set_info_value =
       provider_->GetSetInfoValue();
   ASSERT_TRUE(set_info_value);
-  base::Value::Dict set_info = std::move(set_info_value->GetDict());
+  base::Value::Dict set_info = std::move(*set_info_value).TakeDict();
 
   EXPECT_TRUE(api_test_utils::GetBoolean(set_info, "isPrimary"));
   EXPECT_EQ("mirroringId",
