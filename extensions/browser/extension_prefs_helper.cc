@@ -8,9 +8,17 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/pref_names.h"
 
 namespace extensions {
+
+using content::BrowserContext;
+
+// static
+ExtensionPrefsHelper* ExtensionPrefsHelper::Get(BrowserContext* context) {
+  return ExtensionPrefsHelperFactory::GetForBrowserContext(context);
+}
 
 ExtensionPrefsHelper::ExtensionPrefsHelper(ExtensionPrefs* prefs,
                                            ExtensionPrefValueMap* value_map)
