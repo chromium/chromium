@@ -157,6 +157,21 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
             for edge in dep.dependency_path.iter() {
                 println!("    {edge}");
             }
+        } else if !dep.is_local {
+            // Transitive deps may be requested with version requirements stricter than
+            // ours: e.g. 1.57 instead of just major version 1. If the version we have
+            // checked in, e.g. 1.56, has the same epoch but doesn't meet the version
+            // requirement, the symptom is Cargo will resolve the dependency to an
+            // upstream source instead of our local path. We must detect this case to
+            // ensure correctness.
+            has_error = true;
+            println!(
+                "Resolved {} {} to an upstream source. The requested version \
+                 likely has the same epoch as the discovered crate but \
+                 something has a more stringent version requirement.",
+                dep.package_name, dep.version
+            );
+            println!("    Resolved version: {}", dep.version);
         }
     }
 
@@ -165,23 +180,6 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
             has_error = true;
             println!("Unused crate: {present_crate}");
         }
-    }
-
-    // Transitive deps may be requested with version requirements stricter than
-    // ours: e.g. 1.57 instead of just major version 1. If the version we have
-    // checked in, e.g. 1.56, has the same epoch but doesn't meet the version
-    // requirement, the symptom is Cargo will resolve the dependency to an
-    // upstream source instead of our local path. We must detect this case to
-    // ensure correctness.
-    for nonlocal_dep in dependencies.iter().filter(|dep| !dep.is_local) {
-        has_error = true;
-        println!(
-            "Resolved {} {} to an upstream source. The requested version \
-             likely has the same epoch as the discovered crate but \
-             something has a more stringent version requirement.",
-            nonlocal_dep.package_name, nonlocal_dep.version
-        );
-        println!("    Resolved version: {}", nonlocal_dep.version);
     }
 
     if has_error {
@@ -272,7 +270,6 @@ fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> E
     // dependencies point to our Rust source package. Build rules will be
     // generated for these crates separately from std, alloc, and core which
     // need special treatment.
-    let mut req_crates = HashSet::<&StdVendoredCrate>::new();
     let src_prefix = paths.root.join(paths.rust_src);
     for dep in &dependencies {
         // Skip workspace members. They are not third-party deps in this
