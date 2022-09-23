@@ -1697,6 +1697,29 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByRemoval(
   }
 }
 
+void StyleEngine::ScheduleInvalidationsForHasPseudoWhenAllChildrenRemoved(
+    Element& parent) {
+  if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled())
+    return;
+
+  if (ShouldSkipInvalidationFor(parent))
+    return;
+
+  const RuleFeatureSet& features = GetRuleFeatureSet();
+  if (!features.NeedsHasInvalidationForInsertionOrRemoval())
+    return;
+
+  if (!InsertionOrRemovalPossiblyAffectHasStateOfAncestorsOrAncestorSiblings(
+          &parent)) {
+    // Removed children will not affect :has() state
+    return;
+  }
+
+  // Always invalidate elements possibly affected by the removed children.
+  InvalidateAncestorsOrSiblingsAffectedByHas(&parent,
+                                             nullptr /* previous_sibling */);
+}
+
 void StyleEngine::InvalidateStyle() {
   StyleInvalidator style_invalidator(
       pending_invalidations_.GetPendingInvalidationMap());

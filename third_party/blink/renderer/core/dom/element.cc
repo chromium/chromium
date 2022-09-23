@@ -5227,23 +5227,29 @@ void Element::ChildrenChanged(const ChildrenChange& change) {
   CheckForEmptyStyleChange(change.sibling_before_change,
                            change.sibling_after_change);
 
-  if (!change.ByParser() && change.IsChildElementChange()) {
-    Element* changed_element = To<Element>(change.sibling_changed);
-    bool removed = change.type == ChildrenChangeType::kElementRemoved;
-    CheckForSiblingStyleChanges(
-        removed ? kSiblingElementRemoved : kSiblingElementInserted,
-        changed_element, change.sibling_before_change,
-        change.sibling_after_change);
-    if (removed) {
+  if (!change.ByParser()) {
+    if (change.IsChildElementChange()) {
+      Element* changed_element = To<Element>(change.sibling_changed);
+      bool removed = change.type == ChildrenChangeType::kElementRemoved;
+      CheckForSiblingStyleChanges(
+          removed ? kSiblingElementRemoved : kSiblingElementInserted,
+          changed_element, change.sibling_before_change,
+          change.sibling_after_change);
+      if (removed) {
+        GetDocument()
+            .GetStyleEngine()
+            .ScheduleInvalidationsForHasPseudoAffectedByRemoval(
+                this, change.sibling_before_change, *changed_element);
+      } else {
+        GetDocument()
+            .GetStyleEngine()
+            .ScheduleInvalidationsForHasPseudoAffectedByInsertion(
+                this, change.sibling_before_change, *changed_element);
+      }
+    } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
       GetDocument()
           .GetStyleEngine()
-          .ScheduleInvalidationsForHasPseudoAffectedByRemoval(
-              this, change.sibling_before_change, *changed_element);
-    } else {
-      GetDocument()
-          .GetStyleEngine()
-          .ScheduleInvalidationsForHasPseudoAffectedByInsertion(
-              this, change.sibling_before_change, *changed_element);
+          .ScheduleInvalidationsForHasPseudoWhenAllChildrenRemoved(*this);
     }
   }
 

@@ -426,6 +426,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       Element* parent,
       Node* node_before_change,
       Element& element);
+  void ScheduleInvalidationsForHasPseudoWhenAllChildrenRemoved(Element& parent);
 
   void NodeWillBeRemoved(Node&);
   void ChildrenRemoved(ContainerNode& parent);
