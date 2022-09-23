@@ -412,8 +412,12 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      */
     @Override
     public boolean isDownloadInterstitialItem(GURL originalUrl, String guid) {
-        if (mDownloadInterstitialSources.contains(originalUrl)) {
+        if (mDownloadInterstitialSources != null
+                && mDownloadInterstitialSources.contains(originalUrl)) {
             return true;
+        }
+        if (mInterstitialItems == null) {
+            return false;
         }
         for (ContentId id : mInterstitialItems) {
             if (id.id.equals(guid)) {
