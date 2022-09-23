@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
 IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
                        DisabledDialogCancelButtonNavigatesToSettings) {
   base::HistogramTester histograms;
-  auto* dialog = ShowTailoredSecurityEnabledDialog(browser());
+  auto* dialog = ShowTailoredSecurityDisabledDialog(browser());
   auto* bubble_delegate = dialog->widget_delegate()->AsBubbleDialogDelegate();
 
   ClickButton(bubble_delegate, bubble_delegate->GetCancelButton());
