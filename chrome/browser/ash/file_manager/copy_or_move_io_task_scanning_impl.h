@@ -30,11 +30,12 @@ namespace file_manager::io_task {
 // This class performs enterprise connector checks for each source file system
 // url.
 //
-// For `block_until_verdict == kBlock`, scans are performed before the copy/move
-// operation is started. The scanning results are then used during the transfer
-// to block specific files, i.e., when they contain malware or sensitive data.
+// For `settings.block_until_verdict == kBlock`, scans are performed before the
+// copy/move operation is started. The scanning results are then used during the
+// transfer to block specific files, i.e., when they contain malware or
+// sensitive data.
 //
-// For `block_until_verdict == kNoBlock`, scans are performed after the
+// For `settings.block_until_verdict == kNoBlock`, scans are performed after the
 // copy/move operation has completed and the results are only used for
 // reporting. This is done to minimize the influence of the scan to the user
 // experience. As the source might no longer exist after the scan, e.g., because

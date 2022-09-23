@@ -458,7 +458,8 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
   }
 
   void ScanningHasCompletedCallback() {
-    DCHECK(run_loop_);
+    DCHECK(run_loop_)
+        << "run loop not configured, missing call to `setupScanningRunLoop`";
     ++finished_file_transfer_analysis_delegates_;
     DCHECK_LE(finished_file_transfer_analysis_delegates_,
               expected_number_of_file_transfer_analysis_delegates_);

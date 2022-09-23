@@ -260,7 +260,7 @@ const MOVE_FAIL_FILE_MESSAGE = 'Move failed. The file could not be accessed ' +
 /**
  * Opens a Files app's main window and creates the source and destination
  * entries.
- * @param {TransferInfo} transferInfo Options for the transfer.
+ * @param {!TransferInfo} transferInfo Options for the transfer.
  * @return {Promise} Promise to be fulfilled with the window ID.
  */
 async function setupForFileTransferConnector(
@@ -285,8 +285,8 @@ async function setupForFileTransferConnector(
 
 /**
  * Returns all entries that are children of the passed directory.
- * @param {Array<TestEntryInfo>} entries The entries.
- * @param {Array<string>} directory The directory path.
+ * @param {!Array<!TestEntryInfo>} entries The entries.
+ * @param {!Array<string>} directory The directory path.
  *  Contains the path of the current directory, e.g., ["A", "B"] for A/B/.
  */
 function getCurrentEntries(entries, directory) {
@@ -301,9 +301,10 @@ function getCurrentEntries(entries, directory) {
  * Verifies the recursive contents of the current path by checking the file list
  * of the current path and its ancestors.
  * @param {string} appId App window Id.
- * @param {Array<TestEntryInfo>} expectedEntries Expected contents of file list.
+ * @param {!Array<!TestEntryInfo>} expectedEntries Expected contents of file
+ *     list.
  * @param {string} rootDirectory The path to the root directory for the check.
- * @param {Array<string>} currentSubDirectory The current directory path split
+ * @param {!Array<string>} currentSubDirectory The current directory path split
  *     at '/', e.g., ["A", "B"] for A/B/.
  */
 async function verifyDirectoryRecursively(
@@ -356,8 +357,8 @@ async function showAllPlayFiles(appId) {
 
 /**
  * Test function to copy from the specified source to the specified destination.
- * @param {TransferInfo} transferInfo Options for the transfer.
- * @param {Array<TestEntryInfo>} entryTestSet The set of file and directory
+ * @param {!TransferInfo} transferInfo Options for the transfer.
+ * @param {!Array<!TestEntryInfo>} entryTestSet The set of file and directory
  *     entries to be used for the test.
  * @param {string} expectedFinalMsg The final message to expect at the progress
  *     center.
@@ -468,7 +469,7 @@ async function transferBetweenVolumes(
  *
  * @param {string} appId The app id of the files app window.
  * @param {!TransferInfo} transferInfo Options for the transfer.
- * @param {!Array<TestEntryInfo>} entryTestSet The set of file and directory
+ * @param {!Array<!TestEntryInfo>} entryTestSet The set of file and directory
  *     entries to be used for the test.
  * @param {string} expectedFinalMsg The final message to expect at the progress
  *     center.
@@ -551,7 +552,7 @@ async function verifyAfterPasteBlocking(
  *
  * @param {string} appId The app id of the files app window.
  * @param {!TransferInfo} transferInfo Options for the transfer.
- * @param {!Array<TestEntryInfo>} entryTestSet The set of file and directory
+ * @param {!Array<!TestEntryInfo>} entryTestSet The set of file and directory
  *     entries to be used for the test.
  */
 async function verifyAfterPasteReportOnly(appId, transferInfo, entryTestSet) {
