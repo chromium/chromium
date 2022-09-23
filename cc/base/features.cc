@@ -70,4 +70,8 @@ const base::Feature kNormalPriorityImageDecoding{
 const base::Feature kSkipCommitsIfNotSynchronizingCompositorState{
     "SkipCommitsIfNotSynchronizingCompositorState",
     base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kUseDMSAAForTiles{"UseDMSAAForTiles",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features

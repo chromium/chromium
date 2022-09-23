@@ -74,6 +74,9 @@ CC_BASE_EXPORT extern const base::Feature kNormalPriorityImageDecoding;
 // being deferred.
 CC_BASE_EXPORT extern const base::Feature
     kSkipCommitsIfNotSynchronizingCompositorState;
+
+// Use DMSAA instead of MSAA for rastering tiles.
+CC_BASE_EXPORT extern const base::Feature kUseDMSAAForTiles;
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

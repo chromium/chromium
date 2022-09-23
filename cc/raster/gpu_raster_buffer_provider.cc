@@ -20,6 +20,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
+#include "cc/base/features.h"
 #include "cc/base/histograms.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_canvas.h"
@@ -151,7 +152,9 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
       max_tile_size_(max_tile_size),
       pending_raster_queries_(pending_raster_queries),
       raster_metric_probability_(raster_metric_probability),
-      is_using_raw_draw_(features::IsUsingRawDraw()) {
+      is_using_raw_draw_(features::IsUsingRawDraw()),
+      is_using_dmsaa_(
+          base::FeatureList::IsEnabled(features::kUseDMSAAForTiles)) {
   DCHECK(pending_raster_queries);
   DCHECK(compositor_context_provider);
   DCHECK(worker_context_provider);
@@ -371,9 +374,11 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   }
 
   // Assume legacy MSAA if sample count is positive.
-  gpu::raster::MsaaMode msaa_mode = playback_settings.msaa_sample_count > 0
-                                        ? gpu::raster::kMSAA
-                                        : gpu::raster::kNoMSAA;
+  gpu::raster::MsaaMode msaa_mode =
+      playback_settings.msaa_sample_count > 0
+          ? (client_->is_using_dmsaa_ ? gpu::raster::kDMSAA
+                                      : gpu::raster::kMSAA)
+          : gpu::raster::kNoMSAA;
   // msaa_sample_count should be 1, 2, 4, 8, 16, 32, 64,
   // and log2(msaa_sample_count) should be [0,6].
   // If playback_settings.msaa_sample_count <= 0, the MSAA is not used. It is

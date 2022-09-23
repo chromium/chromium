@@ -443,7 +443,9 @@ LayerTreeHostImpl::LayerTreeHostImpl(
                       compositor_frame_reporting_controller_.get()),
       lcd_text_metrics_reporter_(LCDTextMetricsReporter::CreateIfNeeded(this)),
       frame_rate_estimator_(GetTaskRunner()),
-      contains_srgb_cache_(kContainsSrgbCacheSize) {
+      contains_srgb_cache_(kContainsSrgbCacheSize),
+      use_dmsaa_for_tiles_(
+          base::FeatureList::IsEnabled(features::kUseDMSAAForTiles)) {
   DCHECK(mutator_host_);
   mutator_host_->SetMutatorHostClient(this);
   mutator_events_ = mutator_host_->CreateEvents();
@@ -1974,7 +1976,7 @@ int LayerTreeHostImpl::GetMSAASampleCountForRaster(
 
   if (display_list->HasNonAAPaint()) {
     UMA_HISTOGRAM_BOOLEAN("GPU.SupportsDisableMsaa", supports_disable_msaa_);
-    if (!supports_disable_msaa_)
+    if (!supports_disable_msaa_ || use_dmsaa_for_tiles_)
       return 0;
   }
 

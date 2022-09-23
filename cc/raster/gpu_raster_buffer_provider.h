@@ -149,6 +149,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   // Accessed with the worker context lock acquired.
   base::MetricsSubSampler metrics_subsampler_;
   const bool is_using_raw_draw_;
+  const bool is_using_dmsaa_;
 };
 
 }  // namespace cc
