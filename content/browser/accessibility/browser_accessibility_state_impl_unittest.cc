@@ -37,6 +37,7 @@ class BrowserAccessibilityStateImplTest : public ::testing::Test {
   void TearDown() override {
     // Disable accessibility so that it does not impact subsequent tests.
     state_->DisableAccessibility();
+    ui::SetEventTickClockForTesting(nullptr);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
