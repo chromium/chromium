@@ -4432,8 +4432,10 @@ void HTMLMediaElement::DidPlayerMediaPositionStateChange(
     double playback_rate,
     base::TimeDelta duration,
     base::TimeDelta position) {
+  // https://linear.app/replay/issue/RUN-616
   recordreplay::Assert("HTMLMediaElement::DidPlayerMediaPositionStateChange");
   for (auto& observer : media_player_observer_remote_set_) {
+    // https://linear.app/replay/issue/RUN-616
     recordreplay::Assert("HTMLMediaElement::DidPlayerMediaPositionStateChange #1");
     observer->OnMediaPositionStateChanged(
         media_session::mojom::blink::MediaPosition::New(
