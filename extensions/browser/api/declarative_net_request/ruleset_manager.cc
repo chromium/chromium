@@ -13,6 +13,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/web_cache/browser/web_cache_manager.h"
@@ -138,11 +139,8 @@ const CompositeMatcher* RulesetManager::GetMatcherForExtension(
   // This is O(n) but it's ok since the number of extensions will be small and
   // we have to maintain the rulesets sorted in decreasing order of installation
   // time.
-  auto iter =
-      std::find_if(rulesets_.begin(), rulesets_.end(),
-                   [&extension_id](const ExtensionRulesetData& ruleset) {
-                     return ruleset.extension_id == extension_id;
-                   });
+  auto iter = base::ranges::find(rulesets_, extension_id,
+                                 &ExtensionRulesetData::extension_id);
 
   // There must be ExtensionRulesetData corresponding to this |extension_id|.
   if (iter == rulesets_.end())

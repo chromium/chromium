@@ -4,7 +4,6 @@
 
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 
-#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <set>
@@ -13,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
@@ -77,10 +77,7 @@ CompositeMatcher::CompositeMatcher(MatcherList matchers,
 CompositeMatcher::~CompositeMatcher() = default;
 
 const RulesetMatcher* CompositeMatcher::GetMatcherWithID(RulesetID id) const {
-  auto it = std::find_if(matchers_.begin(), matchers_.end(),
-                         [&id](const std::unique_ptr<RulesetMatcher>& matcher) {
-                           return matcher->id() == id;
-                         });
+  auto it = base::ranges::find(matchers_, id, &RulesetMatcher::id);
   return it == matchers_.end() ? nullptr : it->get();
 }
 

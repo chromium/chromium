@@ -4,12 +4,12 @@
 
 #include "extensions/shell/browser/shell_desktop_controller_aura.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -202,11 +202,9 @@ void ShellDesktopControllerAura::CloseAppWindows() {
 
 void ShellDesktopControllerAura::CloseRootWindowController(
     RootWindowController* root_window_controller) {
-  const auto it = std::find_if(
-      root_window_controllers_.cbegin(), root_window_controllers_.cend(),
-      [root_window_controller](const auto& candidate_pair) {
-        return candidate_pair.second.get() == root_window_controller;
-      });
+  const auto it = base::ranges::find(
+      root_window_controllers_, root_window_controller,
+      [](const auto& candidate_pair) { return candidate_pair.second.get(); });
   DCHECK(it != root_window_controllers_.end());
   TearDownRootWindowController(it->second.get());
   root_window_controllers_.erase(it);

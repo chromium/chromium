@@ -5,10 +5,10 @@
 #include "extensions/shell/browser/root_window_controller.h"
 #include "base/memory/raw_ptr.h"
 
-#include <algorithm>
 #include <list>
 #include <memory>
 
+#include "base/ranges/algorithm.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -49,11 +49,9 @@ class FakeDesktopDelegate : public RootWindowController::DesktopDelegate {
   // RootWindowController::DesktopDelegate:
   void CloseRootWindowController(
       RootWindowController* root_window_controller) override {
-    auto it = std::find_if(root_window_controllers_.begin(),
-                           root_window_controllers_.end(),
-                           [&](const auto& candidate) {
-                             return candidate.get() == root_window_controller;
-                           });
+    auto it =
+        base::ranges::find(root_window_controllers_, root_window_controller,
+                           &std::unique_ptr<RootWindowController>::get);
     DCHECK(it != root_window_controllers_.end());
     root_window_controllers_.erase(it);
   }

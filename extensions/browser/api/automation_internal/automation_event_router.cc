@@ -4,13 +4,13 @@
 
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -232,11 +232,8 @@ void AutomationEventRouter::Register(const ExtensionId& extension_id,
                                      ui::AXTreeID ax_tree_id,
                                      bool desktop) {
   DCHECK(desktop || ax_tree_id != ui::AXTreeIDUnknown());
-  const auto& iter =
-      std::find_if(listeners_.begin(), listeners_.end(),
-                   [listener_process_id](const auto& item) {
-                     return item->process_id == listener_process_id;
-                   });
+  const auto& iter = base::ranges::find(listeners_, listener_process_id,
+                                        &AutomationListener::process_id);
 
   // Add a new entry if we don't have one with that process.
   if (iter == listeners_.end()) {

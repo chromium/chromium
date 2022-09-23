@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "base/supports_user_data.h"
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/api/messaging/message.h"
@@ -95,11 +96,8 @@ void OneTimeMessageResponseHelper(
 
   v8::Local<v8::External> external = info.Data().As<v8::External>();
   auto* raw_callback = static_cast<OneTimeMessageCallback*>(external->Value());
-  auto iter = std::find_if(
-      data->pending_callbacks.begin(), data->pending_callbacks.end(),
-      [raw_callback](const std::unique_ptr<OneTimeMessageCallback>& callback) {
-        return callback.get() == raw_callback;
-      });
+  auto iter = base::ranges::find(data->pending_callbacks, raw_callback,
+                                 &std::unique_ptr<OneTimeMessageCallback>::get);
   if (iter == data->pending_callbacks.end())
     return;
 

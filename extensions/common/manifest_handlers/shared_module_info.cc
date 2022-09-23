@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
 
 #include "base/lazy_instance.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -151,9 +151,8 @@ bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
   if (has_export && manifest_keys.export_->allowlist) {
     auto begin = manifest_keys.export_->allowlist->begin();
     auto end = manifest_keys.export_->allowlist->end();
-    auto it = std::find_if_not(begin, end, [](const std::string& id) {
-      return crx_file::id_util::IdIsValid(id);
-    });
+    auto it = base::ranges::find_if_not(*manifest_keys.export_->allowlist,
+                                        &crx_file::id_util::IdIsValid);
     if (it != end) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidExportAllowlistString,

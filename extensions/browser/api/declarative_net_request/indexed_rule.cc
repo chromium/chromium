@@ -4,7 +4,6 @@
 
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
@@ -13,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
@@ -652,14 +652,13 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
                 indexed_rule->tab_ids);
     ParseTabIds(base::OptionalToPtr(parsed_rule.condition.excluded_tab_ids),
                 indexed_rule->excluded_tab_ids);
-    auto common_tab_id_it =
-        std::find_if(indexed_rule->tab_ids.begin(), indexed_rule->tab_ids.end(),
-                     [indexed_rule](int included_tab_id) {
-                       return base::Contains(indexed_rule->excluded_tab_ids,
-                                             included_tab_id);
-                     });
-    if (common_tab_id_it != indexed_rule->tab_ids.end())
+    if (base::ranges::any_of(
+            indexed_rule->tab_ids, [indexed_rule](int included_tab_id) {
+              return base::Contains(indexed_rule->excluded_tab_ids,
+                                    included_tab_id);
+            })) {
       return ParseResult::ERROR_TAB_ID_DUPLICATED;
+    }
 
     // When both `tab_ids` and `excluded_tab_ids` are populated, only the
     // included tab IDs are relevant.

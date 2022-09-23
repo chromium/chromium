@@ -660,8 +660,8 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
     // Find the first matching directive. As per
     // http://www.w3.org/TR/CSP/#parse-a-csp-policy, duplicate directive names
     // are ignored.
-    auto it = std::find_if(
-        csp_parser.directives().begin(), csp_parser.directives().end(),
+    auto it = base::ranges::find_if(
+        csp_parser.directives(),
         [mapping](const CSPParser::Directive& directive) {
           return mapping->status.Matches(directive.directive_name);
         });
@@ -701,9 +701,8 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
     }
 
     auto directive_values = mapping.directive->directive_values;
-    auto it = std::find_if_not(
-        directive_values.begin(), directive_values.end(),
-        [](base::StringPiece source) {
+    auto it = base::ranges::find_if_not(
+        directive_values, [](base::StringPiece source) {
           std::string source_lower = base::ToLowerASCII(source);
 
           return source_lower == kSelfSource || source_lower == kNoneSource ||

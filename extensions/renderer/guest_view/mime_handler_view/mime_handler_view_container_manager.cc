@@ -4,13 +4,13 @@
 
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/renderer/render_frame.h"
@@ -268,10 +268,9 @@ MimeHandlerViewContainerManager::GetFrameContainer(
 void MimeHandlerViewContainerManager::RemoveFrameContainer(
     MimeHandlerViewFrameContainer* frame_container,
     bool retain_manager) {
-  auto it = std::find_if(frame_containers_.cbegin(), frame_containers_.cend(),
-                         [&frame_container](const auto& iter) {
-                           return iter.get() == frame_container;
-                         });
+  auto it =
+      base::ranges::find(frame_containers_, frame_container,
+                         &std::unique_ptr<MimeHandlerViewFrameContainer>::get);
   if (it == frame_containers_.cend())
     return;
   frame_containers_.erase(it);

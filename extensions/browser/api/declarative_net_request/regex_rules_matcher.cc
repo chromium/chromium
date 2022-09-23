@@ -134,13 +134,12 @@ absl::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
     const RequestParams& params) const {
   const std::vector<RegexRuleInfo>& potential_matches =
       GetPotentialMatches(params);
-  auto info = std::find_if(potential_matches.begin(), potential_matches.end(),
-                           [&params](const RegexRuleInfo& info) {
-                             return info.regex_rule->action_type() ==
-                                        flat::ActionType_allow_all_requests &&
-                                    re2::RE2::PartialMatch(params.url->spec(),
-                                                           *info.regex);
-                           });
+  auto info = base::ranges::find_if(
+      potential_matches, [&params](const RegexRuleInfo& info) {
+        return info.regex_rule->action_type() ==
+                   flat::ActionType_allow_all_requests &&
+               re2::RE2::PartialMatch(params.url->spec(), *info.regex);
+      });
   if (info == potential_matches.end())
     return absl::nullopt;
 
@@ -152,9 +151,8 @@ RegexRulesMatcher::GetBeforeRequestActionIgnoringAncestors(
     const RequestParams& params) const {
   const std::vector<RegexRuleInfo>& potential_matches =
       GetPotentialMatches(params);
-  auto info = std::find_if(
-      potential_matches.begin(), potential_matches.end(),
-      [&params](const RegexRuleInfo& info) {
+  auto info = base::ranges::find_if(
+      potential_matches, [&params](const RegexRuleInfo& info) {
         return IsBeforeRequestAction(info.regex_rule->action_type()) &&
                re2::RE2::PartialMatch(params.url->spec(), *info.regex);
       });

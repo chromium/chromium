@@ -16,6 +16,7 @@
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -2670,10 +2671,9 @@ void ExtensionPrefs::MigrateToNewExternalUninstallPref() {
   base::Value::List& current_ids = update.Get();
   for (const auto& id : uninstalled_ids) {
     auto existing_entry =
-        std::find_if(current_ids.begin(), current_ids.end(),
-                     [&id](const base::Value& value) {
-                       return value.is_string() && value.GetString() == id;
-                     });
+        base::ranges::find_if(current_ids, [&id](const base::Value& value) {
+          return value.is_string() && value.GetString() == id;
+        });
     if (existing_entry == current_ids.end())
       current_ids.Append(id);
 
@@ -2685,11 +2685,10 @@ bool ExtensionPrefs::ShouldInstallObsoleteComponentExtension(
     const std::string& extension_id) {
   ScopedListPrefUpdate update(prefs_, pref_names::kDeletedComponentExtensions);
   base::Value::List& current_ids = update.Get();
-  auto existing_entry = std::find_if(current_ids.begin(), current_ids.end(),
-                                     [&extension_id](const base::Value& value) {
-                                       return value.is_string() &&
-                                              value.GetString() == extension_id;
-                                     });
+  auto existing_entry = base::ranges::find_if(
+      current_ids, [&extension_id](const base::Value& value) {
+        return value.is_string() && value.GetString() == extension_id;
+      });
   return (existing_entry == current_ids.end());
 }
 
@@ -2698,11 +2697,10 @@ void ExtensionPrefs::MarkObsoleteComponentExtensionAsRemoved(
     const ManifestLocation location) {
   ScopedListPrefUpdate update(prefs_, pref_names::kDeletedComponentExtensions);
   base::Value::List& current_ids = update.Get();
-  auto existing_entry = std::find_if(current_ids.begin(), current_ids.end(),
-                                     [&extension_id](const base::Value& value) {
-                                       return value.is_string() &&
-                                              value.GetString() == extension_id;
-                                     });
+  auto existing_entry = base::ranges::find_if(
+      current_ids, [&extension_id](const base::Value& value) {
+        return value.is_string() && value.GetString() == extension_id;
+      });
   // This should only be called once per extension.
   DCHECK(existing_entry == current_ids.end());
   current_ids.Append(extension_id);

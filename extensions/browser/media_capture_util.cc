@@ -4,12 +4,12 @@
 
 #include "extensions/browser/media_capture_util.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "content/public/browser/media_capture_devices.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -30,11 +30,8 @@ const MediaStreamDevice* GetRequestedDeviceOrDefault(
     const MediaStreamDevices& devices,
     const std::string& requested_device_id) {
   if (!requested_device_id.empty()) {
-    auto it =
-        std::find_if(devices.begin(), devices.end(),
-                     [requested_device_id](const MediaStreamDevice& device) {
-                       return device.id == requested_device_id;
-                     });
+    auto it = base::ranges::find(devices, requested_device_id,
+                                 &MediaStreamDevice::id);
     return it != devices.end() ? &(*it) : nullptr;
   }
 
