@@ -30,6 +30,14 @@
         padding-inline-end: var(--cr-section-padding);
         padding-inline-start: var(--cr-section-padding);
       }
+
+      #fpsLearnMore {
+        margin: 0 var(--cr-icon-button-margin-start);
+        padding-bottom: 16px;
+        padding-inline-end: var(--cr-section-padding);
+        padding-inline-start: var(--cr-section-padding);
+        width: 60%;
+      }
     </style>
     <div id="sort">
       <label id="sortLabel">$i18n{siteSettingsAllSitesSort}</label>
@@ -48,13 +56,19 @@
     </div>
     <div id="clearAllContainer">
       <div id="clearLabel">
-        [[getClearStorageDescription_(totalUsage_, filter)]]
+          [[getClearStorageDescription_(totalUsage_, filter)]]
       </div>
       <div id="clearAllButton">
         <cr-button type="button" on-click="onConfirmClearAllData_">
           [[getClearDataButtonString_(filter)]]
         </cr-button>
       </div>
+    </div>
+    <div id="fpsLearnMore"
+        hidden$="[[!shouldShowFpsLearnMore_(filter, filteredList_)]]">
+      <localized-link localized-string="[[getFpsLearnMoreLabel_(filter)]]"
+          link-url="$i18n{cookiesSettingsHelpCenterURL}">
+      </localized-link>
     </div>
     <div class="list-frame" hidden$="[[!siteGroupMapEmpty_(siteGroupMap)]]">
       <div class="list-item secondary">$i18n{emptyAllSitesPage}</div>

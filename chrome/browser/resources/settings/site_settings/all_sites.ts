@@ -473,6 +473,11 @@ export class AllSitesElement extends AllSitesElementBase {
     this.$.menu.get().showAt(target);
   }
 
+  private shouldShowFpsLearnMore_(): boolean {
+    return this.filter.startsWith('related:') && this.filteredList_ &&
+        this.filteredList_.length > 0;
+  }
+
   private onShowRelatedSites_() {
     this.$.menu.get().close();
     const siteGroup = this.filteredList_[this.actionMenuModel_!.index];
@@ -587,6 +592,11 @@ export class AllSitesElement extends AllSitesElementBase {
     return this.filter !== '';
   }
 
+  private getFpsLearnMoreLabel_() {
+    const fpsOwner = this.filter.substring(this.filter.indexOf(':') + 1);
+    return loadTimeData.getStringF(
+        'siteSettingsFirstPartySetsLearnMore', fpsOwner);
+  }
   /**
    * Selects the appropriate string to display for clear button based on whether
    * a filter is applied.

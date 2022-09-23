@@ -1668,4 +1668,38 @@ suite('AllSites_EnableFirstPartySets', function() {
             '· Allowed for 1 google.com site',
             siteEntries[1]!.$.fpsMembership.innerText.trim());
       });
+
+  test(
+      'show learn more about first party sets link when filtering by fps owner',
+      function() {
+        TEST_SITE_GROUPS.forEach(siteGroup => {
+          testElement.siteGroupMap.set(
+              siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+        });
+        testElement.forceListUpdateForTesting();
+        flush();
+        let fpsLearnMore =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#fpsLearnMore');
+        // When no filter is applied (as the test starts) the learn more link
+        // should be hidden.
+        assertTrue(fpsLearnMore!.hidden);
+
+        testElement.filter = 'related:foo.com';
+        flush();
+
+        fpsLearnMore =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#fpsLearnMore');
+        assertFalse(fpsLearnMore!.hidden);
+        const textContainer = testElement.shadowRoot!
+                                  .querySelector<HTMLElement>(
+                                      'localized-link')!.shadowRoot!.innerHTML;
+        assertTrue(textContainer.search('foo.com') !== -1);
+
+        testElement.filter = 'related:bar.com';
+        flush();
+
+        fpsLearnMore =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#fpsLearnMore');
+        assertTrue(fpsLearnMore!.hidden);
+      });
 });

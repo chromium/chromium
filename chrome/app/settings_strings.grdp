@@ -3366,6 +3366,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_DISPLAYED_STORAGE_DIALOG_TITLE" desc="Title of the dialog that warns about deleting displayed site data.">
     Clear displayed data?
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_LEARN_MORE" translateable="false" desc="Placeholder string for first party sets informational learn more link shown when sites are filtered by first party set owner">
+     These sites are in <ph name="FPS_OWNER">$1<ex>google.com</ex></ph>'s group of sites that can see your activity in the group. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_DESCRIPTION" desc="Label describing how much total disk space chrome is using, next to the clear all button">
     Total storage used by sites: <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph>
   </message>
