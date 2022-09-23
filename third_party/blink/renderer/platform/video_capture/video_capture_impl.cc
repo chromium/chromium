@@ -533,10 +533,15 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
 
   // TODO(sunnyps): Get rid of NV12_DUAL_GMB format and instead rely on enabled
   // by default multi plane shared images on Windows.
-  if (output_format ==
+
+  const bool use_multiplane =
+#if BUILDFLAG(IS_WIN)
+      output_format ==
           media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB ||
-      base::FeatureList::IsEnabled(
-          media::kMultiPlaneVideoCaptureSharedImages)) {
+#endif
+      base::FeatureList::IsEnabled(media::kMultiPlaneVideoCaptureSharedImages);
+
+  if (use_multiplane) {
     planes.push_back(gfx::BufferPlane::Y);
     planes.push_back(gfx::BufferPlane::UV);
   } else {
