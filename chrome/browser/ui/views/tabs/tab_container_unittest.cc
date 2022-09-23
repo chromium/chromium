@@ -46,8 +46,8 @@ class FakeTabDragContext : public TabDragContextBase {
   void UpdateAnimationTarget(TabSlotView* tab_slot_view,
                              const gfx::Rect& target_bounds) override {}
   bool IsDragSessionActive() const override { return drag_session_active_; }
-  bool IsEndingDrag() const override { return false; }
-  void FinishEndingDrag() override {}
+  bool IsAnimatingDragEnd() const override { return false; }
+  void CompleteEndDragAnimations() override {}
   int GetTabDragAreaWidth() const override { return width(); }
 
   void set_drag_session_active(bool active) { drag_session_active_ = active; }
@@ -895,19 +895,12 @@ TEST_F(TabContainerTest, PreferredWidth) {
   const gfx::Rect initial_tab_bounds = tab->bounds();
   ASSERT_TRUE(tab_container_->IsAnimating());
 
-  EXPECT_EQ(tab_container_->CalculatePreferredSize().width(),
+  EXPECT_EQ(tab_container_->GetPreferredSize().width(),
             initial_tab_bounds.right());
 
   // Complete the animation and the preferred width should match ideal bounds.
   tab_container_->CompleteAnimationAndLayout();
   ASSERT_NE(initial_tab_bounds, tab_container_->GetIdealBounds(0));
-  EXPECT_EQ(tab_container_->CalculatePreferredSize().width(),
+  EXPECT_EQ(tab_container_->GetPreferredSize().width(),
             tab_container_->GetIdealBounds(0).right());
-
-  // Emulate dragging the tab ten pixels to the right.
-  tab->SetBounds(tab->bounds().x() + 10, tab->bounds().y(),
-                 tab->bounds().width(), tab->bounds().height());
-  drag_context_->set_drag_session_active(true);
-  EXPECT_EQ(tab_container_->CalculatePreferredSize().width(),
-            tab->bounds().right());
 }

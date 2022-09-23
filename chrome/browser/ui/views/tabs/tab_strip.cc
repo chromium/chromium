@@ -162,7 +162,13 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   // from us before our destructor is even called.
   ~TabDragContextImpl() override = default;
 
-  void Layout() override { SetBoundsRect(parent()->GetLocalBounds()); }
+  gfx::Size CalculatePreferredSize() const override {
+    int max_child_x = 0;
+    for (views::View* child : children())
+      max_child_x = std::max(max_child_x, child->bounds().right());
+
+    return gfx::Size(max_child_x, GetLayoutConstant(TAB_HEIGHT));
+  }
 
   bool OnMouseDragged(const ui::MouseEvent& event) override {
     ContinueDrag(this, event);
@@ -381,14 +387,14 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     return drag_controller_ != nullptr;
   }
 
-  bool IsEndingDrag() const override {
+  bool IsAnimatingDragEnd() const override {
     // The drag is ending if we're animating tabs back to the TabContainer, or
     // if the TabDragController is in the kStopped state.
     return (drag_controller_ == nullptr && bounds_animator_.IsAnimating()) ||
            (drag_controller_ && !drag_controller_->active());
   }
 
-  void FinishEndingDrag() override {
+  void CompleteEndDragAnimations() override {
     // Finishing animations will return tabs to the TabContainer via
     // ResetDraggingStateDelegate::AnimationEnded.
     bounds_animator_.Complete();
@@ -448,33 +454,14 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     if (!GetTabCount())
       return 0;
 
-    absl::optional<int> index;
     // If we're dragging a group by its header, the first element of
     // |dragged_views| is a group header, and the second one is the first tab
     // in that group.
-    int first_dragged_tab_index = group.has_value() ? 1 : 0;
-    if (static_cast<size_t>(first_dragged_tab_index) >= dragged_views.size()) {
-      // TODO(tbergquist): This shouldn't happen, but we're getting crashes
-      // that indicate that it might be anyways. This logging might help
-      // narrow down exactly which cases it's happening in.
-      NOTREACHED()
-          << "Calculating a drag insertion index from invalid dependencies: "
-          << "Dragging a group: " << group.has_value()
-          << ", dragged_views.size(): " << dragged_views.size()
-          << ", num_dragged_tabs: " << num_dragged_tabs;
-    } else {
-      int first_dragged_tab_model_index =
-          tab_strip_->GetModelIndexOf(dragged_views[first_dragged_tab_index]);
-      index =
-          CalculateInsertionIndex(dragged_bounds, first_dragged_tab_model_index,
-                                  num_dragged_tabs, std::move(group));
-    }
-
-    if (!index) {
-      const int last_tab_right =
-          tab_strip_->tab_container_->GetIdealBounds(GetTabCount() - 1).right();
-      index = (dragged_bounds.right() > last_tab_right) ? GetTabCount() : 0;
-    }
+    const int first_dragged_tab_model_index =
+        tab_strip_->GetModelIndexOf(dragged_views[group.has_value() ? 1 : 0]);
+    const int index =
+        CalculateInsertionIndex(dragged_bounds, first_dragged_tab_model_index,
+                                num_dragged_tabs, std::move(group));
 
     const Tab* last_visible_tab = tab_strip_->GetLastVisibleTab();
     int last_insertion_point =
@@ -484,7 +471,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     last_insertion_point = std::max(0, last_insertion_point - num_dragged_tabs);
 
     // Ensure the first dragged tab always stays in the visible index range.
-    return std::min(*index, last_insertion_point);
+    return std::min(index, last_insertion_point);
   }
 
   std::vector<gfx::Rect> CalculateBoundsForDraggedViews(
@@ -513,7 +500,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     // Ensure that the tab strip and its parent views are correctly re-laid out
     // after repositioning dragged tabs. This avoids visual/layout issues such
     // as https://crbug.com/1151092.
-    tab_strip_->PreferredSizeChanged();
+    PreferredSizeChanged();
 
     // Reset the layout size as we've effectively laid out a different size.
     // This ensures a layout happens after the drag is done.
@@ -619,9 +606,9 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       }
     }
     tab_strip_->tab_container_->SetTabSlotVisibility();
-    // The rightmost tab may have moved, which would change the tabstrip's
+    // The rightmost dragged tab may have moved, which would change our
     // preferred width.
-    tab_strip_->PreferredSizeChanged();
+    PreferredSizeChanged();
 
     // If the dragged tabs are in a group, we need to update the bounds of the
     // corresponding underline and header.
@@ -909,7 +896,11 @@ TabStrip::~TabStrip() {
   // Disengage the drag controller before doing any additional cleanup. This
   // call can interact with child views so we can't reliably do it during member
   // destruction.
+  // End any ongoing drag session.
   drag_context_->DestroyDragController();
+  // Immediately clean up that drag session instead of allowing things to
+  // animate back into place over time.
+  drag_context_->CompleteEndDragAnimations();
 
   // |tab_container_|'s tabs may call back to us or to |drag_context_| from
   // their destructors. Delete them first so that if they call back we aren't in
@@ -958,7 +949,8 @@ void TabStrip::SetBackgroundOffset(int background_offset) {
 }
 
 bool TabStrip::IsRectInWindowCaption(const gfx::Rect& rect) {
-  return tab_container_->IsRectInWindowCaption(rect);
+  // `rect` is in the window caption if it doesn't hit any content area.
+  return !tab_container_->IsRectInContentArea(rect);
 }
 
 bool TabStrip::IsTabStripCloseable() const {
@@ -1806,18 +1798,34 @@ views::SizeBounds TabStrip::GetAvailableSize(const views::View* child) const {
   return parent()->GetAvailableSize(this);
 }
 
+gfx::Size TabStrip::GetMinimumSize() const {
+  // `tab_container_` and `drag_context_` overlap (both share TabStrip's
+  // origin), so we need to be able to cover the union of their bounds.
+  gfx::Size min_size = tab_container_->GetMinimumSize();
+  min_size.SetToMax(drag_context_->GetMinimumSize());
+
+  return min_size;
+}
+
+gfx::Size TabStrip::CalculatePreferredSize() const {
+  // `tab_container_` and `drag_context_` overlap (both share TabStrip's
+  // origin), so we need to be able to cover the union of their bounds.
+  gfx::Size preferred_size = tab_container_->GetPreferredSize();
+  preferred_size.SetToMax(drag_context_->GetPreferredSize());
+
+  return preferred_size;
+}
+
 void TabStrip::Layout() {
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
-    // With tab scrolling, the TabStrip is solely responsible for its own width
-    // (It's the contents view of a ScrollView, and with sizing freedom comes
-    // sizing responsibility).
+    // With tab scrolling, the TabStrip is the contents view of a ScrollView and
+    // as such is expected to set its own bounds during layout.
+    // (With great sizing power comes great sizing responsibility).
 
-    // We can figure out our width based on the preferences of our TabContainer
-    // and the available width in the tab strip region:
-    // We should never be larger than our container's preferred width.
-    const int max_width = tab_container_->CalculatePreferredSize().width();
-    // We should never be smaller than our container's minimum width.
-    const int min_width = tab_container_->GetMinimumSize().width();
+    // We should never be larger than our preferred width.
+    const int max_width = GetPreferredSize().width();
+    // We should never be smaller than our minimum width.
+    const int min_width = GetMinimumSize().width();
     // If we can, we should fit within the tab strip region to avoid scrolling.
     const int available_width =
         tab_container_->GetAvailableWidthForTabContainer();
@@ -1825,10 +1833,9 @@ void TabStrip::Layout() {
     const int width = std::min(max_width, std::max(min_width, available_width));
     SetBounds(0, 0, width, GetLayoutConstant(TAB_HEIGHT));
   }
-  views::View::Layout();
 
-  // drag_context_ isn't part of normal layout since it overlays the tabstrip.
-  drag_context_->Layout();
+  tab_container_->SetBoundsRect(GetLocalBounds());
+  drag_context_->SetBoundsRect(GetLocalBounds());
 }
 
 void TabStrip::ChildPreferredSizeChanged(views::View* child) {
@@ -1863,15 +1870,6 @@ void TabStrip::Init() {
   SetNotifyEnterExitOnChild(true);
 
   UpdateContrastRatioValues();
-
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetChildViewIgnoredByLayout(&*drag_context_, true);
-  tab_container_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                               views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kPreferred));
 }
 
 std::map<tab_groups::TabGroupId, TabGroupHeader*> TabStrip::GetGroupHeaders() {

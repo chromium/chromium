@@ -860,6 +860,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
                                    const View* target,
                                    gfx::Point* point);
 
+  [[nodiscard]] static gfx::Point ConvertPointToTarget(const View* source,
+                                                       const View* target,
+                                                       const gfx::Point& point);
+
   // Convert |rect| from the coordinate system of |source| to the coordinate
   // system of |target|.
   //
@@ -869,6 +873,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   static void ConvertRectToTarget(const View* source,
                                   const View* target,
                                   gfx::RectF* rect);
+  [[nodiscard]] static gfx::RectF ConvertRectToTarget(const View* source,
+                                                      const View* target,
+                                                      const gfx::RectF& rect);
 
   // Convert a point from a View's coordinate system to that of its Widget.
   static void ConvertPointToWidget(const View* src, gfx::Point* point);

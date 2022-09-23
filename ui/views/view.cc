@@ -47,6 +47,7 @@
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/interpolated_transform.h"
@@ -1024,6 +1025,15 @@ void View::ConvertPointToTarget(const View* source,
 }
 
 // static
+gfx::Point View::ConvertPointToTarget(const View* source,
+                                      const View* target,
+                                      const gfx::Point& point) {
+  gfx::Point local_point = point;
+  ConvertPointToTarget(source, target, &local_point);
+  return local_point;
+}
+
+// static
 void View::ConvertRectToTarget(const View* source,
                                const View* target,
                                gfx::RectF* rect) {
@@ -1040,6 +1050,15 @@ void View::ConvertRectToTarget(const View* source,
 
   if (target != root)
     target->ConvertRectFromAncestor(root, rect);
+}
+
+// static
+gfx::RectF View::ConvertRectToTarget(const View* source,
+                                     const View* target,
+                                     const gfx::RectF& rect) {
+  gfx::RectF local_rect = rect;
+  ConvertRectToTarget(source, target, &local_rect);
+  return local_rect;
 }
 
 // static

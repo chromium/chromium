@@ -9,13 +9,16 @@
 #include "base/bind.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_container_impl.h"
 #include "tab_strip_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_selection_model.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 class PinnedTabContainerController final : public TabContainerController {
@@ -284,7 +287,7 @@ std::unique_ptr<Tab> CompoundTabContainer::TransferTabOut(int model_index) {
 }
 
 void CompoundTabContainer::StoppedDraggingView(TabSlotView* view) {
-  NOTREACHED();
+  GetTabContainerFor(view)->StoppedDraggingView(view);
 }
 
 void CompoundTabContainer::ScrollTabToVisible(int model_index) {
@@ -346,10 +349,11 @@ int CompoundTabContainer::GetModelIndexOf(const TabSlotView* slot_view) const {
 }
 
 Tab* CompoundTabContainer::GetTabAtModelIndex(int index) const {
-  CHECK(controller_->IsValidModelIndex(index));
-  if (index < NumPinnedTabs())
+  CHECK(index < GetTabCount());
+  const int num_pinned_tabs = NumPinnedTabs();
+  if (index < num_pinned_tabs)
     return pinned_tab_container_->GetTabAtModelIndex(index);
-  return unpinned_tab_container_->GetTabAtModelIndex(index - NumPinnedTabs());
+  return unpinned_tab_container_->GetTabAtModelIndex(index - num_pinned_tabs);
 }
 
 int CompoundTabContainer::GetTabCount() const {
@@ -377,24 +381,20 @@ void CompoundTabContainer::HandleLongTap(ui::GestureEvent* event) {
   NOTREACHED();
 }
 
-bool CompoundTabContainer::IsRectInWindowCaption(const gfx::Rect& rect) {
-  gfx::RectF rect_in_child_coords(rect);
-  ConvertRectToTarget(this, base::to_address(pinned_tab_container_),
-                      &rect_in_child_coords);
-  if (!pinned_tab_container_->IsRectInWindowCaption(
-          ToEnclosingRect(rect_in_child_coords))) {
-    return false;
+bool CompoundTabContainer::IsRectInContentArea(const gfx::Rect& rect) {
+  if (pinned_tab_container_->IsRectInContentArea(ToEnclosingRect(
+          ConvertRectToTarget(this, base::to_address(pinned_tab_container_),
+                              gfx::RectF(rect))))) {
+    return true;
   }
 
-  ConvertRectToTarget(base::to_address(pinned_tab_container_),
-                      base::to_address(unpinned_tab_container_),
-                      &rect_in_child_coords);
-  return unpinned_tab_container_->IsRectInWindowCaption(
-      ToEnclosingRect(rect_in_child_coords));
+  return unpinned_tab_container_->IsRectInContentArea(
+      ToEnclosingRect(ConvertRectToTarget(
+          this, base::to_address(unpinned_tab_container_), gfx::RectF(rect))));
 }
 
 void CompoundTabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
-  NOTREACHED();
+  GetTabContainerFor(view)->OnTabSlotAnimationProgressed(view);
 }
 
 void CompoundTabContainer::OnTabCloseAnimationCompleted(Tab* tab) {
@@ -406,8 +406,8 @@ void CompoundTabContainer::StartBasicAnimation() {
 }
 
 void CompoundTabContainer::InvalidateIdealBounds() {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
+  pinned_tab_container_->InvalidateIdealBounds();
+  unpinned_tab_container_->InvalidateIdealBounds();
 }
 
 bool CompoundTabContainer::IsAnimating() const {
@@ -416,11 +416,14 @@ bool CompoundTabContainer::IsAnimating() const {
 }
 
 void CompoundTabContainer::CancelAnimation() {
-  // TODO(crbug.com/1346023): Impl
+  pinned_tab_container_->CancelAnimation();
+  unpinned_tab_container_->CancelAnimation();
 }
 
 void CompoundTabContainer::CompleteAnimationAndLayout() {
-  // TODO(crbug.com/1346023): Impl
+  pinned_tab_container_->CompleteAnimationAndLayout();
+  unpinned_tab_container_->CompleteAnimationAndLayout();
+  Layout();
 }
 
 int CompoundTabContainer::GetAvailableWidthForTabContainer() const {
@@ -469,16 +472,23 @@ int CompoundTabContainer::GetInactiveTabWidth() const {
 }
 
 gfx::Rect CompoundTabContainer::GetIdealBounds(int model_index) const {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
-  return gfx::Rect();
+  const raw_ref<TabContainer> sub_container = model_index < NumPinnedTabs()
+                                                  ? pinned_tab_container_
+                                                  : unpinned_tab_container_;
+  const int submodel_index = model_index < NumPinnedTabs()
+                                 ? model_index
+                                 : model_index - NumPinnedTabs();
+
+  return gfx::ToEnclosingRect(ConvertRectToTarget(
+      base::to_address(sub_container), this,
+      gfx::RectF(sub_container->GetIdealBounds(submodel_index))));
 }
 
 gfx::Rect CompoundTabContainer::GetIdealBounds(
     tab_groups::TabGroupId group) const {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
-  return gfx::Rect();
+  return gfx::ToEnclosingRect(ConvertRectToTarget(
+      base::to_address(unpinned_tab_container_), this,
+      gfx::RectF(unpinned_tab_container_->GetIdealBounds(group))));
 }
 
 void CompoundTabContainer::Layout() {
@@ -493,16 +503,8 @@ void CompoundTabContainer::PaintChildren(const views::PaintInfo& paint_info) {
   views::View::PaintChildren(paint_info);
 }
 
-gfx::Size CompoundTabContainer::GetMinimumSize() const {
-  // TODO(crub.com/1346023): Probably need something special in here for drag at
-  // end of tabstrip scenarios.
-  return views::View::GetMinimumSize();
-}
-
-gfx::Size CompoundTabContainer::CalculatePreferredSize() const {
-  // TODO(crub.com/1346023): Probably need something special in here for drag at
-  // end of tabstrip scenarios.
-  return views::View::CalculatePreferredSize();
+void CompoundTabContainer::ChildPreferredSizeChanged(views::View* child) {
+  PreferredSizeChanged();
 }
 
 BrowserRootView::DropIndex CompoundTabContainer::GetDropIndex(
@@ -579,6 +581,15 @@ void CompoundTabContainer::TransferTabBetweenContainers(int from_model_index,
   Layout();
 }
 
+raw_ref<TabContainer> CompoundTabContainer::GetTabContainerFor(
+    TabSlotView* view) {
+  if (view->GetTabSlotViewType() == TabSlotView::ViewType::kTabGroupHeader)
+    return unpinned_tab_container_;
+
+  Tab* tab = views::AsViewClass<Tab>(view);
+  return tab->data().pinned ? pinned_tab_container_ : unpinned_tab_container_;
+}
+
 TabContainer* CompoundTabContainer::GetTabContainerAt(
     gfx::Point point_in_local_coords) {
   if (pinned_tab_container_->bounds().Contains(point_in_local_coords))
@@ -600,7 +611,7 @@ int CompoundTabContainer::GetAvailableWidthForUnpinnedTabContainer(
   // not correct during animations and b) expensive to call, maybe triggering
   // TabStrip relayout sometimes. Could be the cause of the lag spike issue.
   return available_width_callback.Run() -
-         pinned_tab_container_->CalculatePreferredSize().width();
+         pinned_tab_container_->GetPreferredSize().width();
 }
 
 BEGIN_METADATA(CompoundTabContainer, views::View)

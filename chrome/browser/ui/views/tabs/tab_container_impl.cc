@@ -294,7 +294,18 @@ std::unique_ptr<Tab> TabContainerImpl::TransferTabOut(int model_index) {
 }
 
 void TabContainerImpl::StoppedDraggingView(TabSlotView* view) {
-  AddChildView(view);
+  // Take `view` back now that it's done dragging.
+
+  // If `view` has no parent (vs the expected case where its parent is a
+  // TabDragContext), then it's been removed from the View hierarchy as part of
+  // deletion, and we shouldn't interfere.
+  if (view->parent()) {
+    const gfx::Rect bounds_in_tab_container_coords = gfx::ToEnclosingRect(
+        ConvertRectToTarget(view->parent(), this, gfx::RectF(view->bounds())));
+    AddChildView(view);
+    view->SetBoundsRect(bounds_in_tab_container_coords);
+  }
+
   Tab* tab = views::AsViewClass<Tab>(view);
   if (tab && tab->closing()) {
     // This tab was closed during the drag. It's already been removed from our
@@ -303,6 +314,10 @@ void TabContainerImpl::StoppedDraggingView(TabSlotView* view) {
     OnTabCloseAnimationCompleted(tab);
     return;
   }
+
+  if (!view->parent())
+    return;
+
   OrderTabSlotView(view);
 
   if (view->group())
@@ -509,11 +524,11 @@ void TabContainerImpl::HandleLongTap(ui::GestureEvent* event) {
   }
 }
 
-bool TabContainerImpl::IsRectInWindowCaption(const gfx::Rect& rect) {
+bool TabContainerImpl::IsRectInContentArea(const gfx::Rect& rect) {
   // If there is no control at this location, the hit is in the caption area.
   const views::View* v = GetEventHandlerForRect(rect);
   if (v == this)
-    return true;
+    return false;
 
   if (controller_->CanExtendDragHandle()) {
     // When the window has a top drag handle, a thin strip at the top of
@@ -523,20 +538,20 @@ bool TabContainerImpl::IsRectInWindowCaption(const gfx::Rect& rect) {
     const int drag_handle_extension =
         TabStyle::GetDragHandleExtension(height());
 
-    // A hit on the tab is not in the caption unless it is in the thin strip
-    // mentioned above.
+    // A hit on an inactive tab is in the content area unless it is in the thin
+    // strip mentioned above.
     const absl::optional<size_t> tab_index = tabs_view_model_.GetIndexOfView(v);
     if (tab_index.has_value() && IsValidModelIndex(tab_index.value())) {
       Tab* tab = GetTabAtModelIndex(tab_index.value());
       gfx::Rect tab_drag_handle = tab->GetMirroredBounds();
       tab_drag_handle.set_height(drag_handle_extension);
-      return !tab->IsActive() && tab_drag_handle.Intersects(rect);
+      return tab->IsActive() || !tab_drag_handle.Intersects(rect);
     }
   }
 
   // |v| is some other view (e.g. a close button in a tab) and therefore |rect|
   // is in client area.
-  return false;
+  return true;
 }
 
 void TabContainerImpl::OnTabSlotAnimationProgressed(TabSlotView* view) {
@@ -561,7 +576,7 @@ bool TabContainerImpl::IsAnimating() const {
 }
 
 void TabContainerImpl::CancelAnimation() {
-  drag_context_->FinishEndingDrag();
+  drag_context_->CompleteEndDragAnimations();
   bounds_animator_.Cancel();
 }
 
@@ -708,38 +723,24 @@ gfx::Size TabContainerImpl::GetMinimumSize() const {
 }
 
 gfx::Size TabContainerImpl::CalculatePreferredSize() const {
-  // The width spanned by all of the child views, with their current bounds.
-  int max_child_x = 0;
-  // The visual order of the tabs can be out of sync with the logical order,
-  // so we have to check all of them to find the visually trailing-most one.
-  for (views::View* child : children())
-    max_child_x = std::max(max_child_x, child->bounds().right());
-
-  // We also need to check each tab, in case the rightmost tab is currently
-  // being dragged. Group headers don't need such treatment, since any drag
-  // session including such a header must also include a tab to its right.
-  for (Tab* tab : layout_helper_->GetTabs())
-    max_child_x = std::max(max_child_x, tab->bounds().right());
-
-  // The width that would be spanned by our children after animations complete.
-  const int ideal_width = override_available_width_for_tabs_.value_or(
-      layout_helper_->CalculatePreferredWidth());
-
-  int preferred_width;
-  if (IsDragSessionActive() || IsDragSessionEnding()) {
-    // During a drag session (or while animating back to ideal bounds after
-    // finishing one), we want to cover both the current and ideal bounds of our
-    // children, so we behave predictably when dragging the rightmost tab.
-    preferred_width = std::max(max_child_x, ideal_width);
-  } else if (IsAnimating()) {
+  int preferred_width = 0;
+  // Our preferred size is different in different contexts to enable UI polish.
+  if (IsAnimating() && !IsDragSessionActive() && !IsDragSessionEnding()) {
     // During animations not related to a drag session, we want to tightly hug
     // our tabs. This allows the NTB to slide smoothly as tabs are opened and
     // closed.
-    preferred_width = max_child_x;
+
+    // The visual order of the tabs can be out of sync with the logical order,
+    // so we have to check all of them to find the visually trailing-most one.
+    for (views::View* child : children())
+      preferred_width = std::max(preferred_width, child->bounds().right());
   } else {
-    // Otherwise, the tabstrip is in a steady state, so we want to use our ideal
-    // width.
-    preferred_width = ideal_width;
+    // Otherwise, the tabstrip is in a steady state, so we want to use the width
+    // that would be spanned by our children after animations complete. This
+    // allows tabs to resize directly with window resizes instead of mediating
+    // that through animation.
+    preferred_width = override_available_width_for_tabs_.value_or(
+        layout_helper_->CalculatePreferredWidth());
   }
 
   return gfx::Size(preferred_width, GetLayoutConstant(TAB_HEIGHT));
@@ -1135,7 +1136,12 @@ void TabContainerImpl::OnTabCloseAnimationCompleted(Tab* tab) {
   DCHECK(tab->closing());
 
   layout_helper_->RemoveTab(tab);
-  tab->parent()->RemoveChildViewT(tab);
+
+  // Delete `tab`. In relatively rare cases (e.g. browser shutdown during a drag
+  // session), this method might be called as part of `tab` destruction, in
+  // which case we shouldn't interfere.
+  if (tab->parent())
+    tab->parent()->RemoveChildViewT(tab);
 }
 
 void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,
@@ -1226,7 +1232,7 @@ bool TabContainerImpl::IsDragSessionActive() const {
 
 bool TabContainerImpl::IsDragSessionEnding() const {
   // `drag_context_` may be null in tests.
-  return drag_context_ && drag_context_->IsEndingDrag();
+  return drag_context_ && drag_context_->IsAnimatingDragEnd();
 }
 
 void TabContainerImpl::AddMessageLoopObserver() {
@@ -1285,9 +1291,8 @@ bool TabContainerImpl::IsPointInTab(
   if (tab->parent() != this)
     return false;
 
-  gfx::Point point_in_tab_coords(point_in_tabstrip_coords);
-  View::ConvertPointToTarget(this, tab, &point_in_tab_coords);
-  return tab->HitTestPoint(point_in_tab_coords);
+  return tab->HitTestPoint(
+      View::ConvertPointToTarget(this, tab, point_in_tabstrip_coords));
 }
 
 Tab* TabContainerImpl::FindTabHitByPoint(const gfx::Point& point) {

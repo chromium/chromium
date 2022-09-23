@@ -86,7 +86,7 @@ class TabContainerImpl : public TabContainer,
 
   void HandleLongTap(ui::GestureEvent* event) override;
 
-  bool IsRectInWindowCaption(const gfx::Rect& rect) override;
+  bool IsRectInContentArea(const gfx::Rect& rect) override;
 
   void OnTabSlotAnimationProgressed(TabSlotView* view) override;
 

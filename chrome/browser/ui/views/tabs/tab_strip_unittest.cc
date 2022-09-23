@@ -690,6 +690,29 @@ TEST_P(TabStripTest, RelayoutAfterDraggedTabBoundsUpdate) {
   EXPECT_EQ(1, view_observer.size_change_count);
 }
 
+TEST_P(TabStripTest, PreferredWidthDuringDrag) {
+  // Start with two full-width tabs.
+  controller_->AddTab(0, false);
+  controller_->AddTab(1, true);
+  SetMaxTabStripWidth(1000);
+  CompleteAnimationAndLayout();
+
+  Tab* const dragged_tab = tab_strip_->tab_at(1);
+  gfx::Rect dragged_tab_bounds = dragged_tab->bounds();
+  const int original_preferred_width = tab_strip_->GetPreferredSize().width();
+
+  // Drag the second tab Y to the right.
+  tab_strip_->GetDragContext()->StartedDragging({dragged_tab});
+  constexpr int kXOffset = 10;
+  dragged_tab_bounds.Offset(kXOffset, 0);
+  tab_strip_->GetDragContext()->SetBoundsForDrag({dragged_tab},
+                                                 {dragged_tab_bounds});
+
+  // Preferred width should be larger by Y.
+  EXPECT_EQ(original_preferred_width + kXOffset,
+            tab_strip_->GetPreferredSize().width());
+}
+
 // TabStripTestWithScrollingDisabled contains tests that will run with scrolling
 // disabled.
 // TODO(http://crbug.com/951078) Remove these tests as well as tests in

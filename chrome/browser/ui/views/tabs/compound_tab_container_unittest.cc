@@ -25,8 +25,8 @@ class FakeTabDragContext : public TabDragContextBase {
   void UpdateAnimationTarget(TabSlotView* tab_slot_view,
                              const gfx::Rect& target_bounds) override {}
   bool IsDragSessionActive() const override { return false; }
-  bool IsEndingDrag() const override { return false; }
-  void FinishEndingDrag() override {}
+  bool IsAnimatingDragEnd() const override { return false; }
+  void CompleteEndDragAnimations() override {}
   int GetTabDragAreaWidth() const override { return width(); }
 };
 

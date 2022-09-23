@@ -39,11 +39,11 @@ class TabDragContextBase : public views::View {
 
   // Returns true if this DragContext is in the process of returning tabs to the
   // associated TabContainer.
-  virtual bool IsEndingDrag() const = 0;
+  virtual bool IsAnimatingDragEnd() const = 0;
 
   // Immediately completes any ongoing end drag animations, returning the tabs
   // to the associated TabContainer immediately.
-  virtual void FinishEndingDrag() = 0;
+  virtual void CompleteEndDragAnimations() = 0;
 
   // Returns the width of the region in which dragged tabs are allowed to exist.
   virtual int GetTabDragAreaWidth() const = 0;

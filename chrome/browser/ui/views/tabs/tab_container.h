@@ -90,7 +90,7 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
 
   virtual void HandleLongTap(ui::GestureEvent* event) = 0;
 
-  virtual bool IsRectInWindowCaption(const gfx::Rect& rect) = 0;
+  virtual bool IsRectInContentArea(const gfx::Rect& rect) = 0;
 
   // Animation stuff. Will be public until fully moved down into TabContainer.
 
@@ -153,10 +153,6 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   // Returns ideal bounds for the group header associated with `group` in this
   // TabContainer's coordinate space.
   virtual gfx::Rect GetIdealBounds(tab_groups::TabGroupId group) const = 0;
-
-  // Views::View:
-  // We're changing visibility of this to public for TabContainer.
-  gfx::Size CalculatePreferredSize() const override = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_H_

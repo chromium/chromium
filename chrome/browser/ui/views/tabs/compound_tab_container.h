@@ -61,7 +61,7 @@ class CompoundTabContainer : public TabContainer {
       Tab* tab,
       TabSlotController::HoverCardUpdateType update_type) override;
   void HandleLongTap(ui::GestureEvent* event) override;
-  bool IsRectInWindowCaption(const gfx::Rect& rect) override;
+  bool IsRectInContentArea(const gfx::Rect& rect) override;
   void OnTabSlotAnimationProgressed(TabSlotView* view) override;
   void OnTabCloseAnimationCompleted(Tab* tab) override;
   void StartBasicAnimation() override;
@@ -85,8 +85,7 @@ class CompoundTabContainer : public TabContainer {
   // views::View
   void Layout() override;
   void PaintChildren(const views::PaintInfo& paint_info) override;
-  gfx::Size GetMinimumSize() const override;
-  gfx::Size CalculatePreferredSize() const override;
+  void ChildPreferredSizeChanged(views::View* child) override;
 
   // BrowserRootView::DropTarget:
   BrowserRootView::DropIndex GetDropIndex(
@@ -111,6 +110,10 @@ class CompoundTabContainer : public TabContainer {
   // holds it into the other TabContainer, inserting it into that container at
   // the index that corresponds to `to_model_index`.
   void TransferTabBetweenContainers(int from_model_index, int to_model_index);
+
+  // Returns the child TabContainer that should contain `view`. NB this can be
+  // different from `view->parent()` e.g. while `view` is being dragged.
+  raw_ref<TabContainer> GetTabContainerFor(TabSlotView* view);
 
   TabContainer* GetTabContainerAt(gfx::Point point_in_local_coords);
 
