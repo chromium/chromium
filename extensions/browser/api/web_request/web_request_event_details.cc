@@ -83,7 +83,7 @@ void WebRequestEventDetails::SetRequestBody(WebRequestInfo* request) {
     return;
   request_body_ = absl::nullopt;
   if (request->request_body_data) {
-    request_body_ = std::move(request->request_body_data->GetDict());
+    request_body_ = std::move(*request->request_body_data).TakeDict();
     request->request_body_data.reset();
   }
 }
