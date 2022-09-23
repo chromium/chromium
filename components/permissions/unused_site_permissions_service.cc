@@ -4,12 +4,12 @@
 
 #include "components/permissions/unused_site_permissions_service.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -22,6 +22,39 @@
 #include "url/origin.h"
 
 namespace permissions {
+namespace {
+
+// Called on a background thread.
+UnusedSitePermissionsService::UnusedPermissionMap GetUnusedPermissionsMap(
+    base::Clock* clock,
+    scoped_refptr<HostContentSettingsMap> hcsm) {
+  UnusedSitePermissionsService::UnusedPermissionMap recently_unused;
+  base::Time threshold =
+      clock->Now() - content_settings::GetCoarseTimePrecision();
+
+  auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
+  for (const content_settings::ContentSettingsInfo* info : *registry) {
+    ContentSettingsType type = info->website_settings_info()->type();
+    if (!content_settings::CanTrackLastVisit(type))
+      continue;
+    ContentSettingsForOneType settings;
+    hcsm->GetSettingsForOneType(type, &settings);
+    for (const auto& setting : settings) {
+      // Skip wildcard pattern that are not host specific. These shouldn't
+      // track visit timestamps as they would match any URL.
+      if (setting.primary_pattern.GetHost().empty())
+        continue;
+      if (setting.metadata.last_visited != base::Time() &&
+          setting.metadata.last_visited < threshold) {
+        auto& list = recently_unused[setting.primary_pattern.GetHost()];
+        list.push_back({type, std::move(setting)});
+      }
+    }
+  }
+  return recently_unused;
+}
+
+}  // namespace
 
 UnusedSitePermissionsService::TabHelper::TabHelper(
     content::WebContents* web_contents,
@@ -51,7 +84,9 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
 
 UnusedSitePermissionsService::~UnusedSitePermissionsService() = default;
 
-void UnusedSitePermissionsService::Shutdown() {}
+void UnusedSitePermissionsService::Shutdown() {
+  update_timer_.Stop();
+}
 
 void UnusedSitePermissionsService::StartRepeatedUpdates() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -75,8 +110,7 @@ void UnusedSitePermissionsService::UpdateUnusedPermissionsAsync(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&UnusedSitePermissionsService::GetUnusedPermissionsMap,
-                     base::Unretained(this)),
+      base::BindOnce(&GetUnusedPermissionsMap, clock_, hcsm_),
       base::BindOnce(
           &UnusedSitePermissionsService::OnUnusedPermissionsMapRetrieved,
           AsWeakPtr(), std::move(callback)));
@@ -105,35 +139,6 @@ void UnusedSitePermissionsService::OnPageVisited(const url::Origin& origin) {
   if (site_permissions.empty()) {
     recently_unused_permissions_.erase(host_entry);
   }
-}
-
-// Called on a background thread.
-UnusedSitePermissionsService::UnusedPermissionMap
-UnusedSitePermissionsService::GetUnusedPermissionsMap() {
-  UnusedPermissionMap recently_unused;
-  base::Time threshold =
-      clock_->Now() - content_settings::GetCoarseTimePrecision();
-
-  auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
-  for (const content_settings::ContentSettingsInfo* info : *registry) {
-    ContentSettingsType type = info->website_settings_info()->type();
-    if (!content_settings::CanTrackLastVisit(type))
-      continue;
-    ContentSettingsForOneType settings;
-    hcsm_->GetSettingsForOneType(type, &settings);
-    for (const auto& setting : settings) {
-      // Skip wildcard pattern that are not host specific. These shouldn't
-      // track visit timestamps as they would match any URL.
-      if (setting.primary_pattern.GetHost().empty())
-        continue;
-      if (setting.metadata.last_visited != base::Time() &&
-          setting.metadata.last_visited < threshold) {
-        auto& list = recently_unused[setting.primary_pattern.GetHost()];
-        list.push_back({type, std::move(setting)});
-      }
-    }
-  }
-  return recently_unused;
 }
 
 void UnusedSitePermissionsService::OnUnusedPermissionsMapRetrieved(

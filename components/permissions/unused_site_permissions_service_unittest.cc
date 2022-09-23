@@ -6,7 +6,6 @@
 #include <ctime>
 #include <memory>
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"

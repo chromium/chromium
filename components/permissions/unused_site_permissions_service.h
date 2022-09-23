@@ -82,18 +82,15 @@ class UnusedSitePermissionsService
   std::vector<ContentSettingEntry> GetTrackedUnusedPermissionsForTesting();
   void UpdateUnusedPermissionsForTesting();
 
- private:
   using UnusedPermissionMap =
       std::map<std::string, std::list<ContentSettingEntry>>;
 
+ private:
   // Called by TabHelper when a URL was visited.
   void OnPageVisited(const url::Origin& origin);
 
   // Called on UI thread
   void UpdateUnusedPermissionsAsync(base::RepeatingClosure callback);
-
-  // Called on a background thread.
-  UnusedPermissionMap GetUnusedPermissionsMap();
 
   // Called on UI thread.
   void OnUnusedPermissionsMapRetrieved(base::OnceClosure callback,
