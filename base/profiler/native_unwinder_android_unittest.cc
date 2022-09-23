@@ -38,16 +38,13 @@ void AddMapInfo(uint64_t start,
                 uint64_t end,
                 uint64_t offset,
                 uint64_t flags,
-                const std::string& name,
+                std::string name,
                 const std::string& binary_build_id,
                 unwindstack::Maps& maps) {
   maps.Add(start, end, offset, flags, name, /* load_bias = */ 0u);
   unwindstack::MapInfo& map_info = **std::prev(maps.end());
-  // Yes, this *is* how MapInfo wants this field set. The string is deleted in
-  // its destructor.
-  map_info.build_id =
-      reinterpret_cast<uintptr_t>(new std::string(binary_build_id));
-  map_info.elf_offset = map_info.offset;
+  map_info.SetBuildID(std::move(name));
+  map_info.set_elf_offset(map_info.offset());
 }
 
 }  // namespace
@@ -226,10 +223,10 @@ TEST(NativeUnwinderAndroidTest, ExcludeOtherLibrary) {
       NativeUnwinderAndroid::CreateProcessMemory();
   ModuleCache module_cache;
   unwindstack::MapInfo* other_library_map =
-      maps->Find(GetAddressInOtherLibrary(other_library));
+      maps->Find(GetAddressInOtherLibrary(other_library)).get();
   ASSERT_NE(nullptr, other_library_map);
   auto unwinder = std::make_unique<NativeUnwinderAndroid>(
-      maps.get(), memory.get(), other_library_map->start);
+      maps.get(), memory.get(), other_library_map->start());
   unwinder->Initialize(&module_cache);
 
   std::vector<Frame> sample =
@@ -284,10 +281,10 @@ TEST(NativeUnwinderAndroidTest, MAYBE_ResumeUnwinding) {
 
   ModuleCache module_cache_for_chrome;
   unwindstack::MapInfo* other_library_map =
-      maps->Find(GetAddressInOtherLibrary(other_library));
+      maps->Find(GetAddressInOtherLibrary(other_library)).get();
   ASSERT_NE(nullptr, other_library_map);
   auto unwinder_for_chrome = std::make_unique<NativeUnwinderAndroid>(
-      maps.get(), memory.get(), other_library_map->start);
+      maps.get(), memory.get(), other_library_map->start());
   unwinder_for_chrome->Initialize(&module_cache_for_chrome);
 
   std::vector<Frame> sample = CaptureScenario(
