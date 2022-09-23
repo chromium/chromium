@@ -224,7 +224,9 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
       # don't make it too short.
       self._browser.tabs[-1].EvaluateJavaScript('var cat = "dog";', timeout=10)
     except (exceptions.AppCrashException, exceptions.TimeoutException) as e:
-      self.assertTrue(e.is_valid_dump)
+      # TimeoutException does not have is_valid_dump.
+      if hasattr(e, 'is_valid_dump'):
+        self.assertTrue(e.is_valid_dump)
       # We should get one minidump from the GPU process (gl::Crash()) and one
       # minidump from the renderer process (base::debug::BreakDebugger()).
       self.assertContainsAtLeastOne(FORCED_RENDERER_CRASH_SIGNATURES,
