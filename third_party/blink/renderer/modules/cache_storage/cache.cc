@@ -169,6 +169,11 @@ bool ShouldGenerateV8CodeCache(ScriptState* script_state,
   if (!global_scope->IsInstalling())
     return false;
 
+  // Bytecode varies between recording, replaying, and regular execution
+  // and is not cached when recording/replaying.
+  if (recordreplay::IsRecordingOrReplaying())
+    return false;
+
   return true;
 }
 
