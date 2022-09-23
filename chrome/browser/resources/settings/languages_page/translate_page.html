@@ -5,8 +5,7 @@
     sub-label="$i18n{offerToEnableTranslateSublabel}"
     on-settings-boolean-control-change="onTranslateToggleChange_">
 </settings-toggle-button>
-<iron-collapse id="spellCheckCollapse"
-    opened="[[prefs.translate.enabled.value]]">
+<iron-collapse opened="[[prefs.translate.enabled.value]]">
   <div class="cr-row continuation">
     <div id="targetLanguageLabel" class="flex cr-padded-text"
         aria-hidden="true">
@@ -63,7 +62,7 @@
         <div class="list-item">
           <div class="start cr-padded-text">[[item.displayName]]</div>
           <cr-icon-button class="icon-delete-gray" value="[[item.code]]"
-              disabled="[[isLanguageRemoveDisabled_()]]"
+              disabled="[[hasLength_(languages.neverTranslate, 1)]]"
               on-click="onRemoveNeverTranslateLanguageClick_">
           </cr-icon-button>
         </div>

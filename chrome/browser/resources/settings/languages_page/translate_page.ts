@@ -156,14 +156,6 @@ export class SettingsTranslatePageElement extends
   }
 
   /**
-   * Never translate languages list length must always be greater than or equal
-   * to 1. If there is only one language, the icon is disabled.
-   */
-  private isLanguageRemoveDisabled_(): boolean {
-    return this.languages!.neverTranslate.length === 1;
-  }
-
-  /**
    * Stamps and opens the Add Languages dialog, registering a listener to
    * disable the dialog's dom-if again on close.
    */
@@ -208,10 +200,17 @@ export class SettingsTranslatePageElement extends
   }
 
   /**
-   * @return Whether the list is non-null and has items.
+   * @return Whether the list has any items.
    */
   private hasSome_(list: any[]): boolean {
-    return !!(list && list.length);
+    return !!list.length;
+  }
+
+  /**
+   * @return Whether the list is has the given length.
+   */
+  private hasLength_(list: any[], length: number): boolean {
+    return list.length === length;
   }
 
   /**

@@ -3,25 +3,23 @@
 // found in the LICENSE file.
 
 // clang-format off
-import { PromiseResolver } from 'chrome://resources/js/promise_resolver.js';
-import { flush } from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import { LanguageHelper, LanguagesBrowserProxyImpl, SettingsAddLanguagesDialogElement, SettingsTranslatePageElement } from 'chrome://settings/lazy_load.js';
-import { CrSettingsPrefs, loadTimeData } from 'chrome://settings/settings.js';
-import { assertDeepEquals, assertEquals, assertTrue, assertFalse } from 'chrome://webui-test/chai_assert.js';
-import { eventToPromise, fakeDataBind } from 'chrome://webui-test/test_util.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrIconButtonElement, LanguageHelper, LanguagesBrowserProxyImpl, SettingsAddLanguagesDialogElement, SettingsTranslatePageElement} from 'chrome://settings/lazy_load.js';
+import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {assertDeepEquals, assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
 
-import { FakeLanguageSettingsPrivate, getFakeLanguagePrefs } from './fake_language_settings_private.js';
-import { FakeSettingsPrivate } from './fake_settings_private.js';
-import { TestLanguagesBrowserProxy } from './test_languages_browser_proxy.js';
-
+import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from './fake_language_settings_private.js';
+import {FakeSettingsPrivate} from './fake_settings_private.js';
+import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 // clang-format on
 
 const translate_page_tests = {
   TestNames: {
-    TargetLanguageSelect: 'target language select',
+    TranslateSettings: 'base translate settings',
     AlwaysTranslateDialog: 'always translate dialog',
     NeverTranslateDialog: 'never translate dialog',
-    TranslateToggle: 'offer to translate toggle',
   },
 };
 
@@ -90,7 +88,7 @@ suite('translate page settings', function() {
     document.body.innerHTML = '';
   });
 
-  suite(translate_page_tests.TestNames.TargetLanguageSelect, function() {
+  suite(translate_page_tests.TestNames.TranslateSettings, function() {
     test('change target language', function() {
       const targetLanguageSelector = translatePage.shadowRoot!.querySelector
           <HTMLSelectElement>('#targetLanguage');
@@ -104,9 +102,44 @@ suite('translate page settings', function() {
 
       assertEquals(translatePage.getPref(translateTarget).value, 'sw');
     });
-  });
 
-  suite(translate_page_tests.TestNames.TranslateToggle, function() {
+    test('never translate remove icon enabled state', function() {
+      // The icon should be disabled if there is only one element on the list
+      // and enabled if there are more than one.
+      const neverTranslateDiv =
+          translatePage.shadowRoot!.querySelector<HTMLElement>(
+              '#neverTranslateList');
+      assertTrue(!!neverTranslateDiv);
+
+      // Initially only one disabled icon
+      let deleteIcons = neverTranslateDiv.querySelectorAll<CrIconButtonElement>(
+          '.icon-delete-gray');
+      assertEquals(1, deleteIcons.length);
+      assertTrue(deleteIcons[0]!.disabled);
+
+      // Add another language to never translate.
+      languageHelper.disableTranslateLanguage('sw');
+      flush();
+
+      // All icons should be enabled now.
+      deleteIcons = neverTranslateDiv.querySelectorAll<CrIconButtonElement>(
+          '.icon-delete-gray');
+      assertEquals(2, deleteIcons.length);
+      for (const icon of deleteIcons) {
+        assertFalse(icon.disabled);
+      }
+
+      // Remove language and icon should be disabled again.
+      languageHelper.enableTranslateLanguage('sw');
+      flush();
+
+      // All icons should be enabled now.
+      deleteIcons = neverTranslateDiv.querySelectorAll<CrIconButtonElement>(
+          '.icon-delete-gray');
+      assertEquals(1, deleteIcons.length);
+      assertTrue(deleteIcons[0]!.disabled);
+    });
+
     test('test translate.enable toggle', function() {
       const settingsToggle =
           translatePage.shadowRoot!.querySelector<HTMLElement>(
