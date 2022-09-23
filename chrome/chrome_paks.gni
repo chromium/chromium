@@ -117,6 +117,7 @@ template("chrome_extra_paks") {
       "//chrome/common:resources",
       "//components/autofill/core/browser:autofill_address_rewriter_resources",
       "//components/history_clusters/history_clusters_internals/resources",
+      "//components/metrics/debug:resources",
       "//components/optimization_guide/optimization_guide_internals/resources",
       "//components/resources",
       "//content:content_resources",

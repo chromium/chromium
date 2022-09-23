@@ -131,6 +131,7 @@ extern const char kChromeUIMediaEngagementHost[];
 extern const char kChromeUIMediaHistoryHost[];
 extern const char kChromeUIMediaRouterInternalsHost[];
 extern const char kChromeUIMemoryInternalsHost[];
+extern const char kChromeUIMetricsInternalsHost[];
 extern const char kChromeUINTPTilesInternalsHost[];
 extern const char kChromeUINaClHost[];
 extern const char kChromeUINetExportHost[];

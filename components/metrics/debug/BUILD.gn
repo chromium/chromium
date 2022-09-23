@@ -1,0 +1,19 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "metrics_internals"
+
+  static_files = [ "metrics_internals.html" ]
+
+  non_web_component_files = [ "metrics_internals.ts" ]
+
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_deps = [ "//ui/webui/resources:library" ]
+  ts_use_local_config = false
+
+  grit_output_dir = "$root_gen_dir/components"
+}
