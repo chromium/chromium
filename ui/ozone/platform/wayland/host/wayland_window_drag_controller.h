@@ -85,8 +85,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   bool IsExtendedDragAvailable() const;
 
   // Makes IsExtendedDragAvailable() always return true.
-  void SetExtendedDragAvailableForTesting() {
-    set_extended_drag_available_for_testing_ = true;
+  void SetExtendedDragAvailableForTesting(bool available) {
+    set_extended_drag_available_for_testing_ = available;
   }
 
   WaylandWindow* origin_window_for_testing() { return origin_window_; }
