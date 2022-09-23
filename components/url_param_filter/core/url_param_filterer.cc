@@ -102,7 +102,7 @@ std::map<std::string, ClassificationExperimentStatus> GetBlockedParameters(
 FilterResult FilterUrl(const GURL& source_url,
                        const GURL& destination_url,
                        const ClassificationMap& classification_map,
-                       const bool check_nested,
+                       const NestedFilterOption check_nested,
                        const FilterClassification::UseCase use_case) {
   GURL result = GURL{destination_url};
   int filtered_params_count = 0;
@@ -133,11 +133,12 @@ FilterResult FilterUrl(const GURL& source_url,
     auto classification = blocked_parameters.find(base::ToLowerASCII(key));
     if (classification == blocked_parameters.end()) {
       std::string value = std::string{it.GetValue()};
-      if (check_nested) {
+      if (check_nested == NestedFilterOption::kFilterNested) {
         GURL nested = GURL{base::UnescapeBinaryURLComponent(value)};
         if (nested.is_valid()) {
-          FilterResult nested_result = FilterUrl(
-              destination_url, nested, classification_map, false, use_case);
+          FilterResult nested_result =
+              FilterUrl(destination_url, nested, classification_map,
+                        NestedFilterOption::kNoFilterNested, use_case);
           // If a nested URL contains a param we must filter, do so now.
           if (nested != nested_result.filtered_url) {
             value = base::EscapeQueryParamValue(
@@ -180,8 +181,8 @@ FilterResult FilterUrl(const GURL& source_url,
                        const GURL& destination_url,
                        const ClassificationMap& classification_map,
                        const FilterClassification::UseCase use_case) {
-  return FilterUrl(source_url, destination_url, classification_map, true,
-                   use_case);
+  return FilterUrl(source_url, destination_url, classification_map,
+                   NestedFilterOption::kFilterNested, use_case);
 }
 
 FilterResult FilterUrl(const GURL& source_url, const GURL& destination_url) {
@@ -195,14 +196,13 @@ FilterResult FilterUrl(const GURL& source_url, const GURL& destination_url) {
 
 FilterResult FilterUrl(const GURL& source_url,
                        const GURL& destination_url,
-                       NestedFilterOption filter_nested_urls) {
+                       const NestedFilterOption filter_nested_urls) {
   if (!base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
     return FilterResult{destination_url, 0};
   }
   return FilterUrl(source_url, destination_url,
                    ClassificationsLoader::GetInstance()->GetClassifications(),
-                   filter_nested_urls == NestedFilterOption::kFilterNested,
-                   FilterClassification::USE_CASE_UNKNOWN);
+                   filter_nested_urls, FilterClassification::USE_CASE_UNKNOWN);
 }
 
 FilterResult FilterUrl(const GURL& source_url,

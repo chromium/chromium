@@ -56,7 +56,7 @@ FilterResult FilterUrl(const GURL& source_url, const GURL& destination_url);
 // consumption.
 FilterResult FilterUrl(const GURL& source_url,
                        const GURL& destination_url,
-                       NestedFilterOption filter_nested_urls);
+                       const NestedFilterOption filter_nested_urls);
 
 // Filter the destination URL according to the default parameter classifications
 // for the source and destination URLs, only if the classifications include the
