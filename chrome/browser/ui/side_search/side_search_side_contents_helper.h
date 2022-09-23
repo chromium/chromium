@@ -96,6 +96,10 @@ class SideSearchSideContentsHelper
     auto_triggered_ = auto_triggered;
   }
 
+  void set_is_created_from_menu_option(bool is_created_from_menu_option) {
+    is_created_from_menu_option_ = is_created_from_menu_option;
+  }
+
  private:
   friend class content::WebContentsUserData<SideSearchSideContentsHelper>;
   explicit SideSearchSideContentsHelper(content::WebContents* web_contents);
@@ -121,6 +125,11 @@ class SideSearchSideContentsHelper
   // Tracks whether or not the current search journey was automatically
   // triggered (i.e. the user did not explicitly open the side panel).
   bool auto_triggered_ = false;
+
+  // Tracks if this helper is created from menu option. It differentiates
+  // how a side panel journey starts (i.e. from omnibox icon, toolbar button, or
+  // menu option) and thus helps emit journey related metrics.
+  bool is_created_from_menu_option_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
