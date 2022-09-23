@@ -18,8 +18,9 @@ constexpr uint64_t BlobUtils::kUnknownSize;
 
 namespace {
 
-const base::Feature kBlobDataPipeTuningFeature{
-    "BlobDataPipeTuning", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBlobDataPipeTuningFeature,
+             "BlobDataPipeTuning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr int kBlobMinDataPipeCapacity = 1024;
 

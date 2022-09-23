@@ -23,8 +23,9 @@ namespace blink {
 namespace {
 
 // Feature for throttling field trial.
-const base::Feature kResourceLoadThrottlingTrial{
-    "ResourceLoadScheduler", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kResourceLoadThrottlingTrial,
+             "ResourceLoadScheduler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Field trial parameters.
 // Note: bg_limit is supported on m61+, but bg_sub_limit is only on m63+.

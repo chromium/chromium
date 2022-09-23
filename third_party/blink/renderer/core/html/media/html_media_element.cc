@@ -146,8 +146,9 @@ namespace {
 //
 // TODO(crbug.com/1260456): Cleanup in M98 if not the dispatching the "progress"
 // event periodically doesn't cause issues in M97.
-const base::Feature kRepeatProgressEventForMediaStream{
-    "RepeatProgressEventForMediaStream", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRepeatProgressEventForMediaStream,
+             "RepeatProgressEventForMediaStream",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This enum is used to record histograms. Do not reorder.
 enum class MediaControlsShow {

@@ -32,8 +32,9 @@
 namespace blink {
 namespace {
 
-const base::Feature kUseCompositorJob{"UseCompositorJob",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseCompositorJob,
+             "UseCompositorJob",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Task categories running at normal thread priority.
 constexpr cc::TaskCategory kNormalThreadPriorityCategories[] = {

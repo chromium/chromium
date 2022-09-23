@@ -123,14 +123,14 @@ namespace {
 // This feature will only take effect if `kTwoCopyCanvasCapture` is also
 // enabled.
 // TODO(https://crbug.com/1298812): Investigate why this fails on Windows.
-const base::Feature kOneCopyCanvasCapture {
-  "OneCopyCanvasCapture",
+BASE_FEATURE(kOneCopyCanvasCapture,
+             "OneCopyCanvasCapture",
 #if BUILDFLAG(IS_MAC)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 // These values come from the WhatWG spec.
 constexpr int kDefaultCanvasWidth = 300;

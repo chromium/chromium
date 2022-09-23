@@ -43,7 +43,7 @@ class VideoFrameBufferInit;
 class VideoFrameCopyToOptions;
 class VideoFrameInit;
 
-extern const MODULES_EXPORT base::Feature kRemoveWebCodecsSpecViolations;
+MODULES_EXPORT BASE_DECLARE_FEATURE(kRemoveWebCodecsSpecViolations);
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,

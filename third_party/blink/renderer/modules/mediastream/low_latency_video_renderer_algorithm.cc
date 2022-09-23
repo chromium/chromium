@@ -32,8 +32,9 @@ constexpr double kVsyncBoundaryErrorRate = 0.05;
 
 namespace features {
 
-const base::Feature kLowLatencyVideoRendererAlgorithm{
-    "LowLatencyVideoRendererAlgorithm", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kLowLatencyVideoRendererAlgorithm,
+             "LowLatencyVideoRendererAlgorithm",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 

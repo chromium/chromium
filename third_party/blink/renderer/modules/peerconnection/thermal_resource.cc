@@ -16,14 +16,14 @@ const int kReportIntervalSeconds = 10;
 
 }  // namespace
 
-const base::Feature kWebRtcThermalResource {
-  "WebRtcThermalResource",
+BASE_FEATURE(kWebRtcThermalResource,
+             "WebRtcThermalResource",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 // static
 scoped_refptr<ThermalResource> ThermalResource::Create(

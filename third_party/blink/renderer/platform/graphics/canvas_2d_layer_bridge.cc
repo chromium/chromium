@@ -60,16 +60,17 @@ namespace blink {
 
 namespace {
 
-const base::Feature kCanvas2DHibernation {
-  "Canvas2DHibernation",
+BASE_FEATURE(
+    kCanvas2DHibernation,
+    "Canvas2DHibernation",
 #if BUILDFLAG(IS_MAC)
-      // Canvas hibernation is not always enabled on MacOS X due to a bug that
-      // causes content loss. TODO: Find a better fix for crbug.com/588434
-      base::FeatureState::FEATURE_DISABLED_BY_DEFAULT
+    // Canvas hibernation is not always enabled on MacOS X due to a bug that
+    // causes content loss. TODO: Find a better fix for crbug.com/588434
+    base::FeatureState::FEATURE_DISABLED_BY_DEFAULT
 #else
-      base::FeatureState::FEATURE_ENABLED_BY_DEFAULT
+    base::FeatureState::FEATURE_ENABLED_BY_DEFAULT
 #endif
-};
+);
 }
 
 // static

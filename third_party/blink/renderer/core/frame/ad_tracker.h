@@ -33,7 +33,7 @@ class ExecuteScript;
 }  // namespace probe
 
 namespace features {
-CORE_EXPORT extern const base::Feature kAsyncStackAdTagging;
+CORE_EXPORT BASE_DECLARE_FEATURE(kAsyncStackAdTagging);
 }  // namespace features
 
 // Tracker for tagging resources as ads based on the call stack scripts.

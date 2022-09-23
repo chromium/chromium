@@ -115,7 +115,7 @@ enum class CommitResult : int32_t;
 }
 
 // Enables code caching for inline scripts.
-extern const base::Feature kCacheInlineScriptCode;
+BASE_DECLARE_FEATURE(kCacheInlineScriptCode);
 
 // The DocumentLoader fetches a main resource and handles the result.
 // TODO(https://crbug.com/855189). This was originally structured to have a

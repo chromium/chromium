@@ -718,8 +718,9 @@ VideoDeviceCaptureCapabilities& VideoDeviceCaptureCapabilities::operator=(
 // Enables debug logging of capabilities processing when picking a video.
 // TODO(crbug.com/1275617): Remove this and calls once investigation is
 // complete.
-const base::Feature kMediaStreamCapabilitiesDebugLogging{
-    "MediaStreamCapabilitiesDebugLogging", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMediaStreamCapabilitiesDebugLogging,
+             "MediaStreamCapabilitiesDebugLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(crbug.com/1275617): Remove this and calls once investigation is
 // complete.

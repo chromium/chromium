@@ -39,8 +39,9 @@
 namespace blink {
 
 namespace {
-const base::Feature kFontCacheNoSizeInKey{"FontCacheNoSizeInKey",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kFontCacheNoSizeInKey,
+             "FontCacheNoSizeInKey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }
 
 #if defined(USE_PARALLEL_TEXT_SHAPING)

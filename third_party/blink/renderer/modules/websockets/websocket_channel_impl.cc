@@ -100,8 +100,9 @@ enum WebSocketOpCode {
 //
 // TODO(crbug.com/1121725): Cleanup this feature in June 2021, when it becomes
 // enabled by default on Stable.
-const base::Feature kAllowAggressiveThrottlingWithWebSocket{
-    "AllowAggressiveThrottlingWithWebSocket", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAllowAggressiveThrottlingWithWebSocket,
+             "AllowAggressiveThrottlingWithWebSocket",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

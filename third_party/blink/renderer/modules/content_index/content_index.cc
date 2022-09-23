@@ -24,8 +24,9 @@ namespace features {
 
 // If enabled, registering content index entries will perform a check
 // to see if the provided launch url is offline-capable.
-const base::Feature kContentIndexCheckOffline{
-    "ContentIndexCheckOffline", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kContentIndexCheckOffline,
+             "ContentIndexCheckOffline",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 

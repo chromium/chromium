@@ -64,8 +64,9 @@
 
 namespace blink {
 
-const base::Feature kAsyncFontAccess{"AsyncFontAccess",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAsyncFontAccess,
+             "AsyncFontAccess",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kColorEmojiLocale[] = "und-Zsye";
 

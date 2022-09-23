@@ -59,8 +59,9 @@ namespace {
 // family name and not using the text size for looking up the system render
 // style, which will hopefully result in a large decrease in the number of slow
 // fontconfig lookups.
-const base::Feature kOptimizeLinuxFonts{"OptimizeLinuxFonts",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOptimizeLinuxFonts,
+             "OptimizeLinuxFonts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace

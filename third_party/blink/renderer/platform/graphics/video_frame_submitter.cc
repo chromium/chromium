@@ -46,8 +46,9 @@ namespace {
 // other VideoFrameSubmitter living on the same thread with the same parent
 // FrameSinkId. This is used to aggregate Viz communication and substantially
 // reduce IPC traffic when many VideoFrameSubmitters are active within a frame.
-const base::Feature kUseVideoFrameSinkBundle{"UseVideoFrameSinkBundle",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUseVideoFrameSinkBundle,
+             "UseVideoFrameSinkBundle",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Builds a cc::FrameInfo representing a video frame, which is considered
 // Compositor-only.

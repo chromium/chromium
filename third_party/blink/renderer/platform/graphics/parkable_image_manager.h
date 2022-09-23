@@ -20,7 +20,7 @@ namespace blink {
 class ParkableImageImpl;
 class ParkableImage;
 
-PLATFORM_EXPORT extern const base::Feature kParkableImagesToDisk;
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kParkableImagesToDisk);
 
 // Manages parkable images, which are used in blink::BitmapImage. Currently,
 // only records metrics for this. In the future we will park eligible images

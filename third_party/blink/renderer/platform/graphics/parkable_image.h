@@ -23,7 +23,7 @@ namespace blink {
 class SegmentReader;
 class ParkableImageManager;
 
-PLATFORM_EXPORT extern const base::Feature kDelayParkingImages;
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kDelayParkingImages);
 
 // Implementation of ParkableImage. See ParkableImage below.
 // We split ParkableImage like this because we want to avoid destroying the

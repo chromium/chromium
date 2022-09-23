@@ -31,8 +31,9 @@ namespace blink {
 
 namespace {
 // Kill switch to disable WebRTC Media Capabilities stats collection.
-const base::Feature kWebrtcMediaCapabilitiesStatsCollection{
-    "WebrtcMediaCapabilitiesStatsCollection", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kWebrtcMediaCapabilitiesStatsCollection,
+             "WebrtcMediaCapabilitiesStatsCollection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 template <typename Factory>
 bool IsFormatSupported(const Factory* factory,

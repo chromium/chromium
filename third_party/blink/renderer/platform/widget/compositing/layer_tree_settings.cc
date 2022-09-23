@@ -31,8 +31,9 @@ namespace blink {
 
 namespace {
 
-const base::Feature kUnpremultiplyAndDitherLowBitDepthTiles = {
-    "UnpremultiplyAndDitherLowBitDepthTiles", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUnpremultiplyAndDitherLowBitDepthTiles,
+             "UnpremultiplyAndDitherLowBitDepthTiles",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // With 32 bit pixels, this would mean less than 400kb per buffer. Much less

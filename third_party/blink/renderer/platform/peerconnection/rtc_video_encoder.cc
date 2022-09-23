@@ -458,8 +458,9 @@ namespace features {
 
 // Fallback from hardware encoder (if available) to software, for WebRTC
 // screensharing that uses temporal scalability.
-const base::Feature kWebRtcScreenshareSwEncoding{
-    "WebRtcScreenshareSwEncoding", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kWebRtcScreenshareSwEncoding,
+             "WebRtcScreenshareSwEncoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 

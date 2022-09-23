@@ -56,8 +56,9 @@ const char* const Partitions::kAllocatedObjectPoolName =
 
 #if defined(PA_ALLOW_PCSCAN)
 // Runs PCScan on WTF partitions.
-const base::Feature kPCScanBlinkPartitions{
-    "PartitionAllocPCScanBlinkPartitions", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPCScanBlinkPartitions,
+             "PartitionAllocPCScanBlinkPartitions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 bool Partitions::initialized_ = false;

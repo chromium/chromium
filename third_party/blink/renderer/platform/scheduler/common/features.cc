@@ -94,9 +94,9 @@ base::TimeDelta GetForegroundTimersThrottledWakeUpInterval() {
       kForegroundTimersThrottledWakeUpIntervalMills.Get());
 }
 
-const base::Feature kThreadedScrollPreventRenderingStarvation{
-    "ThreadedScrollPreventRenderingStarvation",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kThreadedScrollPreventRenderingStarvation,
+             "ThreadedScrollPreventRenderingStarvation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<CompositorTQPolicyDuringThreadedScroll>::Option
     kCompositorTQPolicyDuringThreadedScrollOptions[] = {

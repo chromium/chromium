@@ -16,7 +16,7 @@
 
 namespace blink {
 
-MODULES_EXPORT extern const base::Feature kWebRtcThermalResource;
+MODULES_EXPORT BASE_DECLARE_FEATURE(kWebRtcThermalResource);
 
 // The ThermalResource reports kOveruse or kUnderuse every 10 seconds(*) while
 // it has a registered listener and the DeviceThermalMeasurement is known.

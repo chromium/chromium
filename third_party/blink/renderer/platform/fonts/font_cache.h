@@ -87,7 +87,7 @@ class FontPlatformDataCache;
 class SimpleFontData;
 class WebFontPrewarmer;
 
-PLATFORM_EXPORT extern const base::Feature kAsyncFontAccess;
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kAsyncFontAccess);
 
 enum class AlternateFontName {
   kAllowAlternate,

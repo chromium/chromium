@@ -49,8 +49,9 @@ namespace blink {
 
 constexpr int kMaxFirstFrameLogs = 5;
 
-const base::Feature kTimeoutHangingVideoCaptureStarts{
-    "TimeoutHangingVideoCaptureStarts", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTimeoutHangingVideoCaptureStarts,
+             "TimeoutHangingVideoCaptureStarts",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 using VideoFrameBufferHandleType = media::mojom::blink::VideoBufferHandle::Tag;
 

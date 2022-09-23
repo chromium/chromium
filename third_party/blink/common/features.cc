@@ -238,8 +238,9 @@ BASE_FEATURE(kAnchorElementInteraction,
 // Enable "interoperable" Android virtual-keyboard. i.e. the keyboard doesn't
 // affect page layout, resizing only the visual viewport. This matches WebKit
 // and ChromeOS behavior.
-const base::Feature kOSKResizesVisualViewport{
-    "OSKResizesVisualViewport", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOSKResizesVisualViewport,
+             "OSKResizesVisualViewport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable browser-initiated dedicated worker script loading
 // (PlzDedicatedWorker). https://crbug.com/906991

@@ -25,8 +25,9 @@
 
 namespace blink {
 
-const base::Feature kDelayParkingImages{"DelayParkingImages",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDelayParkingImages,
+             "DelayParkingImages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -96,8 +97,9 @@ void AsanUnpoisonBuffer(RWBuffer* rw_buffer) {
 
 }  // namespace
 
-const base::Feature kUseParkableImageSegmentReader{
-    "UseParkableImageSegmentReader", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseParkableImageSegmentReader,
+             "UseParkableImageSegmentReader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::TimeDelta ParkableImageImpl::kParkingDelay;
 

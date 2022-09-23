@@ -237,8 +237,9 @@ void RealtimeAudioDestinationHandler::Render(
 
 // A flag for using FakeAudioWorker when an AudioContext with "playback"
 // latency outputs silence.
-const base::Feature kUseFakeAudioWorkerForPlaybackLatency{
-    "UseFakeAudioWorkerForPlaybackLatency", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUseFakeAudioWorkerForPlaybackLatency,
+             "UseFakeAudioWorkerForPlaybackLatency",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 void RealtimeAudioDestinationHandler::SetDetectSilenceIfNecessary(
     bool has_automatic_pull_nodes) {

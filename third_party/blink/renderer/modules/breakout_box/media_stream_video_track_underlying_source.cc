@@ -30,8 +30,9 @@ bool IsScreenOrWindowCapture(const std::string& device_id) {
 }
 }  // namespace
 
-const base::Feature kBreakoutBoxFrameLimiter{"BreakoutBoxFrameLimiter",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kBreakoutBoxFrameLimiter,
+             "BreakoutBoxFrameLimiter",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const int MediaStreamVideoTrackUnderlyingSource::kMaxMonitoredFrameCount = 20;
 const int MediaStreamVideoTrackUnderlyingSource::kMinMonitoredFrameCount = 2;
