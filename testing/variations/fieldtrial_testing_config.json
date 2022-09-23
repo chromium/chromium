@@ -5996,6 +5996,32 @@
             ]
         }
     ],
+    "JourneysAndroidPreStable": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220919",
+                    "params": {
+                        "annotate_title_instead_of_page_content": "true",
+                        "extract_related_searches": "true",
+                        "models_to_execute_v2": "OPTIMIZATION_TARGET_PAGE_ENTITIES:ar:de:en:en-AU:en-CA:en-GB:en-US:es:fr:it:nl:pl:pt:ru:tr:zh",
+                        "supported_locales": "ar,de,en,en-AU,en-CA,en-GB,en-US,es,fr,it,nl,pl,pt,ru,tr,zh",
+                        "write_to_history_service": "true"
+                    },
+                    "enable_features": [
+                        "Journeys",
+                        "JourneysLabel",
+                        "JourneysOmniboxAction",
+                        "PageContentAnnotations",
+                        "PageEntitiesPageContentAnnotations"
+                    ]
+                }
+            ]
+        }
+    ],
     "JourneysArPlRuZh": [
         {
             "platforms": [
@@ -7375,29 +7401,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableOverlayPrioritization"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PageContentAnnotationsAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledNoFilters_20220502",
-                    "params": {
-                        "extract_related_searches": "true",
-                        "models_to_execute_v2": "OPTIMIZATION_TARGET_PAGE_ENTITIES:de:en:en-AU:en-CA:en-GB:en-US:es:fr:it:nl:pt:tr",
-                        "supported_locales": "de,en,en-AU,en-CA,en-GB,en-US,es,fr,it,nl,pt,tr",
-                        "write_to_history_service": "true"
-                    },
-                    "enable_features": [
-                        "PageContentAnnotations",
-                        "PageEntitiesModelBypassFilters",
-                        "PageEntitiesPageContentAnnotations"
                     ]
                 }
             ]
