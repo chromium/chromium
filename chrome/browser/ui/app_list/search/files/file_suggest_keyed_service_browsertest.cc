@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/files/drive_file_suggestion_provider.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_test_util.h"
@@ -115,8 +116,9 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
     MockObserver observer(service);
 
     // Update the item suggest cache with a non-existed file id.
-    service->item_suggest_cache_for_test()->UpdateCacheWithJsonForTest(
-        CreateItemSuggestUpdateJsonString(
+    service->drive_file_suggestion_provider_for_test()
+        ->item_suggest_cache_for_test()
+        ->UpdateCacheWithJsonForTest(CreateItemSuggestUpdateJsonString(
             {{non_existed_id, "display text 1", "prediction reason 1"}},
             "suggestion id 0"));
 
@@ -139,8 +141,9 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
         {{"abc123", "display text 1", "prediction reason 1"},
          {non_existed_id, "display text 2", "prediction reason 2"}},
         "suggestion id 1");
-    service->item_suggest_cache_for_test()->UpdateCacheWithJsonForTest(
-        json_string);
+    service->drive_file_suggestion_provider_for_test()
+        ->item_suggest_cache_for_test()
+        ->UpdateCacheWithJsonForTest(json_string);
 
     observer.WaitUntilFetchingSuggestData();
     const auto& fetched_data = observer.last_fetched_data();
@@ -162,8 +165,9 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
         {{"abc123", "display text 1", "prediction reason 1"},
          {"qwertyqwerty", "display text 2", "prediction reason 2"}},
         "suggestion id 2");
-    service->item_suggest_cache_for_test()->UpdateCacheWithJsonForTest(
-        json_string);
+    service->drive_file_suggestion_provider_for_test()
+        ->item_suggest_cache_for_test()
+        ->UpdateCacheWithJsonForTest(json_string);
 
     observer.WaitUntilFetchingSuggestData();
     tester.ExpectBucketCount("Ash.Search.DriveFileSuggestDataValidation.Status",

@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/files/drive_file_suggestion_provider.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_test_util.h"
@@ -105,6 +106,7 @@ class HoldingSpaceSuggestionsDelegateBrowserTest
       update_params.push_back({file_id, "display text", "prediction reason"});
 
     GetFileSuggestKeyedService()
+        ->drive_file_suggestion_provider_for_test()
         ->item_suggest_cache_for_test()
         ->UpdateCacheWithJsonForTest(
             app_list::CreateItemSuggestUpdateJsonString(update_params,
