@@ -104,9 +104,9 @@ void PrinterAuthenticator::ToNextStep(PrinterAuthenticator::Step current_step,
       if (status == oauth2::StatusCode::kOK) {
         status = auth_manager_->SaveAuthorizationServerAsTrusted(oauth_server_);
         if (status == oauth2::StatusCode::kOK) {
-          auth_manager_->InitAuthorization(
-              oauth_server_, oauth_scope_,
-              OnComplete(Step::kInitAuthorization));
+          auth_manager_->GetEndpointAccessToken(
+              oauth_server_, printer_.uri(), oauth_scope_,
+              OnComplete(Step::kGetAccessToken));
           return;
         }
       }

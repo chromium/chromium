@@ -171,7 +171,7 @@ TEST_F(PrintingPrinterAuthenticatorTest, ServerSavedAsTrusted) {
       {oauth2::StatusCode::kUntrustedAuthorizationServer});
   // Response from IsTrustedDialog: StatusCode::kOK
   ExpectCallSaveAuthorizationServerAsTrusted(oauth2::StatusCode::kOK);
-  ExpectCallInitAuthorization(
+  ExpectCallGetEndpointAccessToken(
       {oauth2::StatusCode::kClientNotRegistered, "error"});
   CallbackResult result = CallObtainAccessTokenIfNeeded();
   EXPECT_EQ(result.status, oauth2::StatusCode::kClientNotRegistered);
