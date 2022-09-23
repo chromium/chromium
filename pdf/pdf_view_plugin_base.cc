@@ -12,7 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
@@ -20,7 +19,6 @@
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
-#include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -72,21 +70,6 @@ constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
 PdfViewPluginBase::PdfViewPluginBase() = default;
 
 PdfViewPluginBase::~PdfViewPluginBase() = default;
-
-void PdfViewPluginBase::Invalidate(const gfx::Rect& rect) {
-  if (in_paint_) {
-    deferred_invalidates_.push_back(rect);
-    return;
-  }
-
-  gfx::Rect offset_rect = rect + available_area_.OffsetFromOrigin();
-  paint_manager_.InvalidateRect(offset_rect);
-}
-
-void PdfViewPluginBase::DidScroll(const gfx::Vector2d& offset) {
-  if (!image_data_.drawsNothing())
-    paint_manager_.ScrollRect(available_area_, offset);
-}
 
 void PdfViewPluginBase::DocumentLoadComplete() {
   DCHECK_EQ(DocumentLoadState::kLoading, document_load_state_);
@@ -197,13 +180,6 @@ void PdfViewPluginBase::SendLoadingProgress(double percentage) {
   SendMessage(std::move(message));
 }
 
-void PdfViewPluginBase::OnPaint(const std::vector<gfx::Rect>& paint_rects,
-                                std::vector<PaintReadyRect>& ready,
-                                std::vector<gfx::Rect>& pending) {
-  base::AutoReset<bool> auto_reset_in_paint(&in_paint_, true);
-  DoPaint(paint_rects, ready, pending);
-}
-
 int PdfViewPluginBase::GetContentRestrictions() const {
   int content_restrictions = kContentRestrictionCut | kContentRestrictionPaste;
   if (!engine()->HasPermission(DocumentPermission::kCopy))
@@ -224,100 +200,6 @@ AccessibilityDocInfo PdfViewPluginBase::GetAccessibilityDocInfo() const {
       engine()->HasPermission(DocumentPermission::kCopyAccessible);
   doc_info.text_copyable = engine()->HasPermission(DocumentPermission::kCopy);
   return doc_info;
-}
-
-void PdfViewPluginBase::InvalidateAfterPaintDone() {
-  if (deferred_invalidates_.empty())
-    return;
-
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&PdfViewPluginBase::ClearDeferredInvalidates,
-                                GetWeakPtr()));
-}
-
-void PdfViewPluginBase::OnGeometryChanged(double old_zoom,
-                                          float old_device_scale) {
-  RecalculateAreas(old_zoom, old_device_scale);
-
-  if (accessibility_state_ == AccessibilityState::kLoaded)
-    PrepareAndSetAccessibilityViewportInfo();
-}
-
-void PdfViewPluginBase::RecalculateAreas(double old_zoom,
-                                         float old_device_scale) {
-  if (zoom_ != old_zoom || device_scale() != old_device_scale)
-    engine()->ZoomUpdated(zoom_ * device_scale());
-
-  available_area_ = gfx::Rect(plugin_rect().size());
-  int doc_width = GetDocumentPixelWidth();
-  if (doc_width < available_area_.width()) {
-    // Center the document horizontally inside the plugin rectangle.
-    available_area_.Offset((plugin_rect().width() - doc_width) / 2, 0);
-    available_area_.set_width(doc_width);
-  }
-
-  // The distance between top of the plugin and the bottom of the document in
-  // pixels.
-  int bottom_of_document = GetDocumentPixelHeight();
-  if (bottom_of_document < plugin_rect().height())
-    available_area_.set_height(bottom_of_document);
-
-  CalculateBackgroundParts();
-
-  engine()->PageOffsetUpdated(available_area_.OffsetFromOrigin());
-  engine()->PluginSizeUpdated(available_area_.size());
-}
-
-void PdfViewPluginBase::CalculateBackgroundParts() {
-  background_parts_.clear();
-  int left_width = available_area_.x();
-  int right_start = available_area_.right();
-  int right_width = std::abs(plugin_rect().width() - available_area_.right());
-  int bottom = std::min(available_area_.bottom(), plugin_rect().height());
-
-  // Note: we assume the display of the PDF document is always centered
-  // horizontally, but not necessarily centered vertically.
-  // Add the left rectangle.
-  BackgroundPart part = {gfx::Rect(left_width, bottom), GetBackgroundColor()};
-  if (!part.location.IsEmpty())
-    background_parts_.push_back(part);
-
-  // Add the right rectangle.
-  part.location = gfx::Rect(right_start, 0, right_width, bottom);
-  if (!part.location.IsEmpty())
-    background_parts_.push_back(part);
-
-  // Add the bottom rectangle.
-  part.location = gfx::Rect(0, bottom, plugin_rect().width(),
-                            plugin_rect().height() - bottom);
-  if (!part.location.IsEmpty())
-    background_parts_.push_back(part);
-}
-
-gfx::PointF PdfViewPluginBase::GetScrollPositionFromOffset(
-    const gfx::Vector2dF& scroll_offset) const {
-  gfx::PointF scroll_origin;
-
-  // TODO(crbug.com/1140374): Right-to-left scrolling currently is not
-  // compatible with the PDF viewer's sticky "scroller" element.
-  if (ui_direction() == base::i18n::RIGHT_TO_LEFT && IsPrintPreview()) {
-    scroll_origin.set_x(
-        std::max(document_size_.width() * static_cast<float>(zoom_) -
-                     plugin_dip_size().width(),
-                 0.0f));
-  }
-
-  return scroll_origin + scroll_offset;
-}
-
-int PdfViewPluginBase::GetDocumentPixelWidth() const {
-  return static_cast<int>(
-      std::ceil(document_size_.width() * zoom() * device_scale()));
-}
-
-int PdfViewPluginBase::GetDocumentPixelHeight() const {
-  return static_cast<int>(
-      std::ceil(document_size_.height() * zoom() * device_scale()));
 }
 
 void PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
@@ -361,98 +243,6 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
                          &viewport_info.selection_end_char_index);
 
   SetAccessibilityViewportInfo(std::move(viewport_info));
-}
-
-void PdfViewPluginBase::SetZoom(double scale) {
-  double old_zoom = zoom_;
-  zoom_ = scale;
-
-  OnGeometryChanged(old_zoom, device_scale());
-  if (!document_size_.IsEmpty())
-    paint_manager_.InvalidateRect(gfx::Rect(plugin_rect().size()));
-}
-
-void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
-                                std::vector<PaintReadyRect>& ready,
-                                std::vector<gfx::Rect>& pending) {
-  if (image_data_.drawsNothing()) {
-    DCHECK(plugin_rect().IsEmpty());
-    return;
-  }
-
-  PrepareForFirstPaint(ready);
-
-  if (!received_viewport_message() || !needs_reraster())
-    return;
-
-  engine()->PrePaint();
-
-  std::vector<gfx::Rect> ready_rects;
-  for (const gfx::Rect& paint_rect : paint_rects) {
-    // Intersect with plugin area since there could be pending invalidates from
-    // when the plugin area was larger.
-    gfx::Rect rect =
-        gfx::IntersectRects(paint_rect, gfx::Rect(plugin_rect().size()));
-    if (rect.IsEmpty())
-      continue;
-
-    // Paint the rendering of the PDF document.
-    gfx::Rect pdf_rect = gfx::IntersectRects(rect, available_area_);
-    if (!pdf_rect.IsEmpty()) {
-      pdf_rect.Offset(-available_area_.x(), 0);
-
-      std::vector<gfx::Rect> pdf_ready;
-      std::vector<gfx::Rect> pdf_pending;
-      engine()->Paint(pdf_rect, image_data_, pdf_ready, pdf_pending);
-      for (gfx::Rect& ready_rect : pdf_ready) {
-        ready_rect.Offset(available_area_.OffsetFromOrigin());
-        ready_rects.push_back(ready_rect);
-      }
-      for (gfx::Rect& pending_rect : pdf_pending) {
-        pending_rect.Offset(available_area_.OffsetFromOrigin());
-        pending.push_back(pending_rect);
-      }
-    }
-
-    // Ensure the region above the first page (if any) is filled;
-    const int32_t first_page_ypos = 0 == engine()->GetNumberOfPages()
-                                        ? 0
-                                        : engine()->GetPageScreenRect(0).y();
-    if (rect.y() < first_page_ypos) {
-      gfx::Rect region = gfx::IntersectRects(
-          rect, gfx::Rect(gfx::Size(plugin_rect().width(), first_page_ypos)));
-      image_data_.erase(GetBackgroundColor(), gfx::RectToSkIRect(region));
-      ready_rects.push_back(region);
-    }
-
-    // Ensure the background parts are filled.
-    for (const BackgroundPart& background_part : background_parts_) {
-      gfx::Rect intersection =
-          gfx::IntersectRects(background_part.location, rect);
-      if (!intersection.IsEmpty()) {
-        image_data_.erase(background_part.color,
-                          gfx::RectToSkIRect(intersection));
-        ready_rects.push_back(intersection);
-      }
-    }
-  }
-
-  engine()->PostPaint();
-
-  // TODO(crbug.com/1263614): Write pixels directly to the `SkSurface` in
-  // `PaintManager`, rather than using an intermediate `SkBitmap` and `SkImage`.
-  sk_sp<SkImage> painted_image = image_data_.asImage();
-  for (const gfx::Rect& ready_rect : ready_rects)
-    ready.emplace_back(ready_rect, painted_image);
-
-  InvalidateAfterPaintDone();
-}
-
-void PdfViewPluginBase::ClearDeferredInvalidates() {
-  DCHECK(!in_paint_);
-  for (const gfx::Rect& rect : deferred_invalidates_)
-    Invalidate(rect);
-  deferred_invalidates_.clear();
 }
 
 void PdfViewPluginBase::LoadAccessibility() {

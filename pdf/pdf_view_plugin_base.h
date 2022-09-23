@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
@@ -28,14 +27,11 @@
 
 namespace gfx {
 class PointF;
-class Vector2d;
-class Vector2dF;
 }  // namespace gfx
 
 namespace chrome_pdf {
 
 class PDFiumEngine;
-class PaintReadyRect;
 struct AccessibilityCharInfo;
 struct AccessibilityDocInfo;
 struct AccessibilityPageInfo;
@@ -67,8 +63,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   PdfViewPluginBase& operator=(const PdfViewPluginBase& other) = delete;
 
   // PDFEngine::Client:
-  void Invalidate(const gfx::Rect& rect) override;
-  void DidScroll(const gfx::Vector2d& offset) override;
   void DocumentLoadComplete() override;
   void DocumentLoadFailed() override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
@@ -76,11 +70,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void SetIsSelecting(bool is_selecting) override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void DocumentFocusChanged(bool document_has_focus) override;
-
-  // PaintManager::Client:
-  void OnPaint(const std::vector<gfx::Rect>& paint_rects,
-               std::vector<PaintReadyRect>& ready,
-               std::vector<gfx::Rect>& pending) override;
 
   // Gets the content restrictions based on the permissions which `engine_` has.
   int GetContentRestrictions() const;
@@ -93,11 +82,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   }
 
  protected:
-  struct BackgroundPart {
-    gfx::Rect location;
-    uint32_t color;
-  };
-
   PdfViewPluginBase();
   ~PdfViewPluginBase() override;
 
@@ -127,26 +111,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Sends the loading progress, where `percentage` represents the progress, or
   // -1 for loading error.
   void SendLoadingProgress(double percentage);
-
-  // Schedules invalidation tasks after painting finishes.
-  void InvalidateAfterPaintDone();
-
-  // Updates the available area and the background parts, notifies the PDF
-  // engine, and updates the accessibility information.
-  void OnGeometryChanged(double old_zoom, float old_device_scale);
-
-  // A helper of OnGeometryChanged() which updates the available area and
-  // the background parts, and notifies the PDF engine of geometry changes.
-  void RecalculateAreas(double old_zoom, float old_device_scale);
-
-  // Figures out the location of any background rectangles (i.e. those that
-  // aren't painted by the PDF engine).
-  void CalculateBackgroundParts();
-
-  // Computes document width/height in device pixels, based on current zoom and
-  // device scale
-  int GetDocumentPixelWidth() const;
-  int GetDocumentPixelHeight() const;
 
   // Sets the text input type for this plugin based on `in_focus`.
   virtual void SetFormTextFieldInFocus(bool in_focus) = 0;
@@ -202,33 +166,19 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   PaintManager& paint_manager() { return paint_manager_; }
 
-  SkBitmap& image_data() { return image_data_; }
-
   virtual bool full_frame() const = 0;
 
   const gfx::Rect& available_area() const { return available_area_; }
-
-  const gfx::Size& document_size() const { return document_size_; }
-  void set_document_size(const gfx::Size& size) { document_size_ = size; }
-
-  virtual const gfx::Size& plugin_dip_size() const = 0;
+  gfx::Rect& mutable_available_area() { return available_area_; }
 
   // TODO(crbug.com/1288847): Don't provide direct access to the origin of
   // `plugin_rect_`, as this exposes the unintuitive "paint offset."
   virtual const gfx::Rect& plugin_rect() const = 0;
 
-  // Sets the new zoom scale.
-  void SetZoom(double scale);
-
   double zoom() const { return zoom_; }
+  void set_zoom(double zoom) { zoom_ = zoom; }
 
   virtual float device_scale() const = 0;
-
-  virtual bool needs_reraster() const = 0;
-
-  virtual base::i18n::TextDirection ui_direction() const = 0;
-
-  virtual bool received_viewport_message() const = 0;
 
   double last_progress_sent() const { return last_progress_sent_; }
   void set_last_progress_sent(double progress) {
@@ -252,25 +202,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
     return size > 0 && size <= kMaximumSavedFileSize;
   }
 
-  // Converts a scroll offset (which is relative to a UI direction-dependent
-  // scroll origin) to a scroll position (which is always relative to the
-  // top-left corner).
-  gfx::PointF GetScrollPositionFromOffset(
-      const gfx::Vector2dF& scroll_offset) const;
-
-  // Paints the given invalid area of the plugin to the given graphics device.
-  // PaintManager::Client::OnPaint() should be its only caller.
-  void DoPaint(const std::vector<gfx::Rect>& paint_rects,
-               std::vector<PaintReadyRect>& ready,
-               std::vector<gfx::Rect>& pending);
-
-  // The preparation when painting on the image data buffer for the first
-  // time.
-  virtual void PrepareForFirstPaint(std::vector<PaintReadyRect>& ready) = 0;
-
-  // Callback to clear deferred invalidates after painting finishes.
-  void ClearDeferredInvalidates();
-
   // Starts loading accessibility information.
   void LoadAccessibility();
 
@@ -280,27 +211,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   PaintManager paint_manager_{this};
 
-  // Image data buffer for painting.
-  SkBitmap image_data_;
-
-  std::vector<BackgroundPart> background_parts_;
-
-  // Deferred invalidates while `in_paint_` is true.
-  std::vector<gfx::Rect> deferred_invalidates_;
-
   // Remaining area, in pixels, to render the pdf in after accounting for
   // horizontal centering.
   gfx::Rect available_area_;
 
-  // The size of the entire document in pixels (i.e. if each page is 800 pixels
-  // high and there are 10 pages, the height will be 8000).
-  gfx::Size document_size_;
-
   // Current zoom factor.
   double zoom_ = 1.0;
-
-  // Whether OnPaint() is in progress or not.
-  bool in_paint_ = false;
 
   // The last document load progress value sent to the web page.
   double last_progress_sent_ = 0.0;
