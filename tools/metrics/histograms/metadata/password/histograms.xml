@@ -506,7 +506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreVsProfileStore3.{DifferenceType}"
-    units="accounts" expires_after="2022-10-31">
+    units="accounts" expires_after="2023-05-01">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -1683,7 +1683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.MediationSilent"
-    enum="CredentialManagerGetResult" expires_after="2022-10-30">
+    enum="CredentialManagerGetResult" expires_after="2023-05-01">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -3121,7 +3121,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.{Store}BlacklistedSitesHiRes2{CustomPassphraseStatus}"
-    units="sites" expires_after="2022-11-01">
+    units="sites" expires_after="2023-05-01">
   <owner>kazinova@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -3210,7 +3210,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.{Store}{Metric2}.{PasswordType}{CustomPassphraseStatus}"
-    units="units" expires_after="2022-10-24">
+    units="units" expires_after="2023-05-01">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
