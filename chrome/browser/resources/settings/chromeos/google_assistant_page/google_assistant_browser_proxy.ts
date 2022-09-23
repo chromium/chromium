@@ -7,44 +7,37 @@
  * to interact with the browser.
  */
 
-  /** @interface */
-export class GoogleAssistantBrowserProxy {
+export interface GoogleAssistantBrowserProxy {
   /** Launches into the Google Assistant app settings. */
-  showGoogleAssistantSettings() {}
+  showGoogleAssistantSettings(): void;
 
   /** Retrain the Assistant voice model. */
-  retrainAssistantVoiceModel() {}
+  retrainAssistantVoiceModel(): void;
 
   /** Sync the voice model status. */
-  syncVoiceModelStatus() {}
+  syncVoiceModelStatus(): void;
 }
 
-/** @type {?GoogleAssistantBrowserProxy} */
-let instance = null;
+let instance: GoogleAssistantBrowserProxy|null = null;
 
-/** @implements {GoogleAssistantBrowserProxy} */
-export class GoogleAssistantBrowserProxyImpl {
-  /** @return {!GoogleAssistantBrowserProxy} */
-  static getInstance() {
+export class GoogleAssistantBrowserProxyImpl implements
+    GoogleAssistantBrowserProxy {
+  static getInstance(): GoogleAssistantBrowserProxy {
     return instance || (instance = new GoogleAssistantBrowserProxyImpl());
   }
 
-  /** @param {!GoogleAssistantBrowserProxy} obj */
-  static setInstanceForTesting(obj) {
+  static setInstanceForTesting(obj: GoogleAssistantBrowserProxy): void {
     instance = obj;
   }
 
-  /** @override */
   showGoogleAssistantSettings() {
     chrome.send('showGoogleAssistantSettings');
   }
 
-  /** @override */
   retrainAssistantVoiceModel() {
     chrome.send('retrainAssistantVoiceModel');
   }
 
-  /** @override */
   syncVoiceModelStatus() {
     chrome.send('syncVoiceModelStatus');
   }

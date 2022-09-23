@@ -355,7 +355,6 @@ preprocess_if_expr("preprocess_browser_settings_tsc") {
     "controls/password_prompt_dialog.js",
     "controls/settings_slider.js",
     "controls/settings_textarea.js",
-    "controls/settings_toggle_button.js",
     "people_page/signout_dialog.js",
     "people_page/sync_account_control.js",
     "people_page/sync_controls.js",
@@ -372,7 +371,6 @@ preprocess_if_expr("preprocess_browser_settings_tsc") {
   # Files that don't have a corresponding HTML file.
   in_files = [
     "appearance_page/fonts_browser_proxy.js",
-    "controls/settings_boolean_control_mixin.js",
     "extension_control_browser_proxy.js",
     "icons.html.js",
     "people_page/profile_info_browser_proxy.js",
@@ -409,7 +407,6 @@ group("generate_web_components") {
     "bluetooth_page:web_components",
     "crostini_page:web_components",
     "device_page:web_components",
-    "google_assistant_page:web_components",
     "guest_os:web_components",
     "internet_page:web_components",
     "kerberos_page:web_components",
@@ -438,7 +435,6 @@ group("closure_compile_module") {
     "bluetooth_page:closure_compile_module",
     "crostini_page:closure_compile_module",
     "device_page:closure_compile_module",
-    "google_assistant_page:closure_compile_module",
     "guest_os:closure_compile_module",
     "internet_page:closure_compile_module",
     "kerberos_page:closure_compile_module",

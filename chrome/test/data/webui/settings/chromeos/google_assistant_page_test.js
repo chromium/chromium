@@ -10,39 +10,10 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
-/**
- * @implements {GoogleAssistantBrowserProxy}
- */
-class TestGoogleAssistantBrowserProxy extends TestBrowserProxy {
-  constructor() {
-    super([
-      'showGoogleAssistantSettings',
-      'retrainAssistantVoiceModel',
-      'syncVoiceModelStatus',
-    ]);
-  }
-
-  /** @override */
-  showGoogleAssistantSettings() {
-    this.methodCalled('showGoogleAssistantSettings');
-  }
-
-  /** @override */
-  retrainAssistantVoiceModel() {
-    this.methodCalled('retrainAssistantVoiceModel');
-  }
-
-  /** @override */
-  syncVoiceModelStatus() {
-    this.methodCalled('syncVoiceModelStatus');
-  }
-}
-
 suite('GoogleAssistantHandler', function() {
   /** @type {SettingsGoogleAssistantPageElement} */
   let page = null;
 
-  /** @type {?TestGoogleAssistantBrowserProxy} */
   let browserProxy = null;
 
   suiteSetup(function() {
@@ -53,7 +24,7 @@ suite('GoogleAssistantHandler', function() {
   });
 
   setup(function() {
-    browserProxy = new TestGoogleAssistantBrowserProxy();
+    browserProxy = TestBrowserProxy.fromClass(GoogleAssistantBrowserProxyImpl);
     GoogleAssistantBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
@@ -162,7 +133,7 @@ suite('GoogleAssistantHandler', function() {
     page.setPrefValue('settings.voice_interaction.hotword.enabled', true);
     page.setPrefValue(
         'settings.voice_interaction.activity_control.consent_status',
-        ConsentStatus.kActivityControlAccepted);
+        ConsentStatus.ACTIVITY_CONTROL_ACCEPTED);
     flush();
     button = page.shadowRoot.querySelector('#retrain-voice-model');
     assertTrue(!!button);
@@ -200,7 +171,7 @@ suite('GoogleAssistantHandler', function() {
     page.setPrefValue('settings.voice_interaction.hotword.enabled', true);
     page.setPrefValue(
         'settings.voice_interaction.activity_control.consent_status',
-        ConsentStatus.kActivityControlAccepted);
+        ConsentStatus.ACTIVITY_CONTROL_ACCEPTED);
     flush();
 
     const params = new URLSearchParams();
@@ -293,7 +264,6 @@ suite('GoogleAssistantHandlerWithNoDspHotword', function() {
   /** @type {SettingsGoogleAssistantPageElement} */
   let page = null;
 
-  /** @type {?TestGoogleAssistantBrowserProxy} */
   let browserProxy = null;
 
   suiteSetup(function() {
@@ -304,7 +274,7 @@ suite('GoogleAssistantHandlerWithNoDspHotword', function() {
   });
 
   setup(function() {
-    browserProxy = new TestGoogleAssistantBrowserProxy();
+    browserProxy = TestBrowserProxy.fromClass(GoogleAssistantBrowserProxyImpl);
     GoogleAssistantBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
