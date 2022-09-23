@@ -40,8 +40,6 @@ namespace content {
 
 namespace {
 
-using FlattenedSets = FirstPartySetsHandlerImpl::FlattenedSets;
-using SingleSet = FirstPartySetParser::SingleSet;
 using ParseErrorType = FirstPartySetsHandler::ParseErrorType;
 using ParseWarningType = FirstPartySetsHandler::ParseWarningType;
 

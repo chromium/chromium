@@ -32,8 +32,6 @@ class FirstPartySetsManager {
  public:
   using EntriesResult =
       base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
-  using FlattenedSets =
-      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
 
   explicit FirstPartySetsManager(bool enabled);
   ~FirstPartySetsManager();

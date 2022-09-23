@@ -31,7 +31,6 @@
 namespace content {
 
 namespace {
-using SingleSet = FirstPartySetParser::SingleSet;
 
 constexpr base::FilePath::CharType kFirstPartySetsDatabase[] =
     FILE_PATH_LITERAL("first_party_sets.db");

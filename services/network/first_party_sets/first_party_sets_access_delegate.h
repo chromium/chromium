@@ -32,7 +32,6 @@ class FirstPartySetsAccessDelegate
     : public mojom::FirstPartySetsAccessDelegate {
  public:
   using EntriesResult = FirstPartySetsManager::EntriesResult;
-  using FlattenedSets = FirstPartySetsManager::FlattenedSets;
 
   // Construct a FirstPartySetsAccessDelegate that provides customizations
   // and serves mojo requests for the underlying First-Party Sets info.

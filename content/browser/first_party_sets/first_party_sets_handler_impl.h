@@ -45,8 +45,6 @@ class BrowserContext;
 // the current First-Party Sets data to disk.
 class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
  public:
-  using FlattenedSets =
-      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
   using SetsReadyOnceCallback = base::OnceCallback<void(net::PublicSets)>;
 
   static FirstPartySetsHandlerImpl* GetInstance();

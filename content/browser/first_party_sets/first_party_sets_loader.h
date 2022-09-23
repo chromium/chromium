@@ -26,8 +26,6 @@ namespace content {
 class CONTENT_EXPORT FirstPartySetsLoader {
  public:
   using LoadCompleteOnceCallback = base::OnceCallback<void(net::PublicSets)>;
-  using FlattenedSets = FirstPartySetParser::SetsMap;
-  using SingleSet = FirstPartySetParser::SingleSet;
 
   explicit FirstPartySetsLoader(LoadCompleteOnceCallback on_load_complete);
 
