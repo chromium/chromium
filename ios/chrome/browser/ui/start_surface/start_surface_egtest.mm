@@ -36,15 +36,23 @@ const CGFloat kWaitElementTimeout = 2;
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(
-      std::string("--force-fieldtrial-params=StartSurface.ShrinkLogo:"
-                  "ReturnToStartSurfaceInactiveDurationInSeconds/0"));
+      "--enable-features=" + std::string(kStartSurface.name) + "<" +
+      std::string(kStartSurface.name));
+  config.additional_args.push_back(
+      "--force-fieldtrials=" + std::string(kStartSurface.name) + "/Test");
+  config.additional_args.push_back(
+      "--force-fieldtrial-params=" + std::string(kStartSurface.name) +
+      ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
+      "/" + "0");
+  //  config.additional_args.push_back(
+  //      std::string("--force-fieldtrial-params=StartSurface.ShrinkLogo:"
+  //                  "ReturnToStartSurfaceInactiveDurationInSeconds/0"));
   return config;
 }
 
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile.
-// TODO(crbug.com/1323001): Fix flakiness.
-- (void)DISABLED_testColdStartOpenStartSurface {
+- (void)testColdStartOpenStartSurface {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];

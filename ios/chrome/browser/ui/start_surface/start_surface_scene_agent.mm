@@ -36,10 +36,16 @@ namespace {
 const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
 }  // namespace
 
-@interface StartSurfaceSceneAgent ()
+@interface StartSurfaceSceneAgent () <AppStateObserver>
 
 // Caches the previous activation level.
 @property(nonatomic, assign) SceneActivationLevel previousActivationLevel;
+
+// YES if The AppState was not ready before the SceneState reached a valid
+// activation level, so therefore this agent needs to wait for the AppState's
+// initStage to reach a valid stage before checking whether the Start Surface
+// should be shown.
+@property(nonatomic, assign) BOOL waitingForAppStateAfterSceneStateReady;
 
 @end
 
@@ -53,7 +59,32 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   return self;
 }
 
+#pragma mark - ObservingSceneAgent
+
+- (void)setSceneState:(SceneState*)sceneState {
+  [super setSceneState:sceneState];
+
+  [self.sceneState.appState addObserver:self];
+}
+
+#pragma mark - AppStateObserver
+
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  if (appState.initStage >= InitStageFirstRun &&
+      self.waitingForAppStateAfterSceneStateReady) {
+    self.waitingForAppStateAfterSceneStateReady = NO;
+    [self showStartSurfaceIfNecessary];
+  }
+}
+
 #pragma mark - SceneStateObserver
+
+- (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  // Tear down objects tied to the scene state before it is deleted.
+  [self.sceneState.appState removeObserver:self];
+  self.waitingForAppStateAfterSceneStateReady = NO;
+}
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
@@ -89,6 +120,13 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
 }
 
 - (void)showStartSurfaceIfNecessary {
+  if (self.sceneState.appState.initStage <= InitStageFirstRun) {
+    // NO if the app is not yet ready to present normal UI that is required by
+    // Start Surface.
+    self.waitingForAppStateAfterSceneStateReady = YES;
+    return;
+  }
+
   if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
     return;
   }
