@@ -53,7 +53,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
 
   void SetUp() override {
     WaylandDragDropTest::SetUp();
-    drag_controller()->SetExtendedDragAvailableForTesting(true);
+    drag_controller()->set_extended_drag_available_for_testing(true);
 
     EXPECT_FALSE(window_->HasPointerFocus());
     EXPECT_EQ(State::kIdle, drag_controller()->state());
@@ -1325,7 +1325,7 @@ TEST_P(WaylandWindowDragControllerTest,
 TEST_P(WaylandWindowDragControllerTest, ExtendedDragUnavailable) {
   ASSERT_TRUE(GetWmMoveLoopHandler(*window_));
   ASSERT_TRUE(GetWaylandExtension(*window_));
-  drag_controller()->SetExtendedDragAvailableForTesting(false);
+  drag_controller()->set_extended_drag_available_for_testing(false);
 
   SendPointerEnter(window_.get(), &delegate_);
   SendPointerPress(window_.get(), &delegate_, BTN_LEFT);

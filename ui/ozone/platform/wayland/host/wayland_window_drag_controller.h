@@ -85,8 +85,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   bool IsExtendedDragAvailable() const;
 
   // Makes IsExtendedDragAvailable() always return true.
-  void SetExtendedDragAvailableForTesting(bool available) {
-    set_extended_drag_available_for_testing_ = available;
+  void set_extended_drag_available_for_testing(bool available) {
+    extended_drag_available_for_testing_ = available;
   }
 
   WaylandWindow* origin_window_for_testing() { return origin_window_; }
@@ -140,7 +140,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   void SetDraggedWindow(WaylandToplevelWindow* window,
                         const gfx::Vector2d& offset);
   // Tells if "extended drag" extension is available, ignoring
-  // |set_extended_drag_available_for_testing_|.
+  // |extended_drag_available_for_testing_|.
   bool IsExtendedDragAvailableInternal() const;
 
   const raw_ptr<WaylandConnection> connection_;
@@ -190,7 +190,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // is used to make window drag controller resistant to such scenarios.
   bool should_process_drag_event_ = false;
 
-  bool set_extended_drag_available_for_testing_ = false;
+  bool extended_drag_available_for_testing_ = false;
 
   base::WeakPtrFactory<WaylandWindowDragController> weak_factory_{this};
 };

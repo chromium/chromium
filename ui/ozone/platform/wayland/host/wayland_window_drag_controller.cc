@@ -559,9 +559,8 @@ void WaylandWindowDragController::SetDraggedWindow(
 }
 
 bool WaylandWindowDragController::IsExtendedDragAvailable() const {
-  return set_extended_drag_available_for_testing_
-             ? true
-             : IsExtendedDragAvailableInternal();
+  return extended_drag_available_for_testing_ ||
+         IsExtendedDragAvailableInternal();
 }
 
 bool WaylandWindowDragController::IsExtendedDragAvailableInternal() const {
