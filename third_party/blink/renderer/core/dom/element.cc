@@ -8730,11 +8730,9 @@ void Element::SetAttributeHinted(AtomicString local_name,
         "'" + local_name + "' is not a valid attribute name.");
     return;
   }
-
   SynchronizeAttributeHinted(local_name, hint);
-  wtf_size_t index;
-  QualifiedName q_name = QualifiedName::Null();
-  std::tie(index, q_name) =
+
+  const auto [index, q_name] =
       LookupAttributeQNameHinted(std::move(local_name), hint);
 
   AtomicString trusted_value(TrustedTypesCheckFor(
@@ -8757,11 +8755,9 @@ void Element::SetAttributeHinted(AtomicString local_name,
         "'" + local_name + "' is not a valid attribute name.");
     return;
   }
-
   SynchronizeAttributeHinted(local_name, hint);
-  wtf_size_t index;
-  QualifiedName q_name = QualifiedName::Null();
-  std::tie(index, q_name) =
+
+  const auto [index, q_name] =
       LookupAttributeQNameHinted(std::move(local_name), hint);
   AtomicString value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(q_name), trusted_string,
