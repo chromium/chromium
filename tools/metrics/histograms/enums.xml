@@ -75135,6 +75135,38 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Data"/>
 </enum>
 
+<enum name="PageActionCTREvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Clicked"/>
+</enum>
+
+<enum name="PageActionIconType">
+  <int value="0" label="Bookmarks Star"/>
+  <int value="1" label="Click to Call"/>
+  <int value="2" label="Cookie Controls"/>
+  <int value="3" label="File System Access"/>
+  <int value="4" label="Find"/>
+  <int value="5" label="High Efficiency"/>
+  <int value="6" label="Intent Picker"/>
+  <int value="7" label="Local Card Migration"/>
+  <int value="8" label="Manage Passwords"/>
+  <int value="9" label="Payments Offer Notification"/>
+  <int value="10" label="Price Tracking"/>
+  <int value="11" label="PWA Install"/>
+  <int value="12" label="QR Code Generator"/>
+  <int value="13" label="Reader Mode"/>
+  <int value="14" label="Save Autofill Address"/>
+  <int value="15" label="Save Card"/>
+  <int value="16" label="Send Tab to Self"/>
+  <int value="17" label="Sharing Hub"/>
+  <int value="18" label="Side Search"/>
+  <int value="19" label="SMS Remote Fetcher"/>
+  <int value="20" label="Translate"/>
+  <int value="21" label="Virtual Card Enroll"/>
+  <int value="22" label="Virtual Card Manual Fallback"/>
+  <int value="23" label="Zoom"/>
+</enum>
+
 <enum name="PageEndReason">
   <int value="0" label="END_NONE">
     Page lifetime has not yet ended (page is still active)

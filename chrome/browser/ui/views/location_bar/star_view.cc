@@ -50,7 +50,8 @@ StarView::StarView(CommandUpdater* command_updater,
                          IDC_BOOKMARK_THIS_TAB,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
-                         "BookmarksStar"),
+                         "BookmarksStar",
+                         false),
       browser_(browser) {
   DCHECK(browser_);
 

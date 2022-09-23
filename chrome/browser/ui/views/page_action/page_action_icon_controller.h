@@ -10,8 +10,12 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
 #include "components/zoom/zoom_event_manager.h"
 #include "components/zoom/zoom_event_manager_observer.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"
@@ -20,7 +24,9 @@ class PageActionIconContainer;
 struct PageActionIconParams;
 class ZoomView;
 
-class PageActionIconController : public zoom::ZoomEventManagerObserver {
+class PageActionIconController : public PageActionIconViewObserver,
+                                 public zoom::ZoomEventManagerObserver,
+                                 public content::WebContentsObserver {
  public:
   PageActionIconController();
   PageActionIconController(const PageActionIconController&) = delete;
@@ -31,6 +37,7 @@ class PageActionIconController : public zoom::ZoomEventManagerObserver {
             PageActionIconContainer* icon_container);
 
   PageActionIconView* GetIconView(PageActionIconType type);
+  PageActionIconType GetIconType(PageActionIconView* view);
 
   // Updates the visual state of all enabled page action icons.
   void UpdateAll();
@@ -50,13 +57,43 @@ class PageActionIconController : public zoom::ZoomEventManagerObserver {
   // See comment in browser_window.h for more info.
   void ZoomChangedForActiveTab(bool can_show_bubble);
 
+  // Observe the new web contents.
+  void UpdateWebContents(content::WebContents* contents);
+
+  // WebContentsObserver
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
+
   std::vector<const PageActionIconView*> GetPageActionIconViewsForTesting()
       const;
 
  private:
+  // PageActionIconViewObserver:
+  void OnPageActionIconViewShown(PageActionIconView* view) override;
+  void OnPageActionIconViewClicked(PageActionIconView* view) override;
+
   // ZoomEventManagerObserver:
   // Updates the view for the zoom icon when default zoom levels change.
   void OnDefaultZoomLevelChanged() override;
+
+  // Returns the number of page actions which are currently visible. Does not
+  // include permanent page actions, such as the bookmarks star and sharing
+  // hub.
+  int VisibleEphemeralActionCount() const;
+
+  // Logs UMA data about the set of currently visible page actions overall, eg.
+  // the total number of page actions shown.
+  void RecordOverallMetrics() const;
+
+  // Logs UMA data about an individual visible page action, eg. the type of
+  // action shown.
+  void RecordIndividualMetrics(PageActionIconType type,
+                               PageActionIconView* view) const;
+
+  // Logs UMA data when an individual visible page action is clicked.
+  void RecordClickMetrics(PageActionIconType type,
+                          PageActionIconView* view) const;
 
   raw_ptr<PageActionIconContainer> icon_container_ = nullptr;
 
