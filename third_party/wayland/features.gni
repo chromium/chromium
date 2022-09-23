@@ -28,10 +28,16 @@ declare_args() {
   # This may be set by Chromium packagers who do not wish to use the bundled
   # wayland scanner.
   use_system_wayland_scanner = use_system_libwayland_client
+}
 
+declare_args() {
   # Path to the wayland-scanner in the sysroot.
   assert(host_os == "linux")
-  if (use_system_libwayland_client) {
-    system_wayland_scanner_path = "$sysroot/usr/bin/wayland-scanner"
+  if (use_system_wayland_scanner) {
+    if (use_sysroot) {
+      system_wayland_scanner_path = "$sysroot/usr/bin/wayland-scanner"
+    } else {
+      system_wayland_scanner_path = "/usr/bin/wayland-scanner"
+    }
   }
 }
