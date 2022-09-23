@@ -1728,8 +1728,7 @@
                         "foreground_cache_size": "2",
                         "grace_period_to_finish_loading_in_seconds": "60",
                         "max_buffered_bytes": "200000",
-                        "max_buffered_bytes_per_process": "1024000",
-                        "supported_features": "MediaSessionImplOnServiceCreated"
+                        "max_buffered_bytes_per_process": "1024000"
                     },
                     "enable_features": [
                         "BackForwardCache",
@@ -1763,7 +1762,6 @@
                         "grace_period_to_finish_loading_in_seconds": "60",
                         "max_buffered_bytes": "200000",
                         "max_buffered_bytes_per_process": "1024000",
-                        "supported_features": "MediaSessionImplOnServiceCreated",
                         "unload_support": "no"
                     },
                     "enable_features": [
