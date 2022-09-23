@@ -323,8 +323,7 @@ bool DoContentScriptsMatch(const Extension& extension,
               ExtensionIdForTracing(extension.id()));
   content::RenderProcessHost& process = *frame->GetProcess();
 
-  auto* guest = guest_view::GuestViewBase::FromWebContents(
-      content::WebContents::FromRenderFrameHost(frame));
+  auto* guest = guest_view::GuestViewBase::FromRenderFrameHost(frame);
   if (guest) {
     // Return true if `extension` is an owner of `guest` and it registered
     // content scripts using the `webview.addContentScripts` API.
