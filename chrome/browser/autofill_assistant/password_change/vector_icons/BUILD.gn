@@ -9,15 +9,24 @@ aggregate_vector_icons("apc_vector_icons") {
 
   sources = [
     "bad_new_password.icon",
+    "bad_new_password_dark.icon",
     "changed_password.icon",
+    "changed_password_dark.icon",
     "choose_new_password.icon",
+    "choose_new_password_dark.icon",
     "enter_old_password.icon",
+    "enter_old_password_dark.icon",
     "error_occurred.icon",
+    "error_occurred_dark.icon",
     "open_site_settings.icon",
+    "open_site_settings_dark.icon",
     "password_change_progress_start.icon",
     "save_new_password.icon",
+    "save_new_password_dark.icon",
     "unspecified_state.icon",
+    "unspecified_state_dark.icon",
     "user_action_required.icon",
+    "user_action_required_dark.icon",
   ]
 }
 
