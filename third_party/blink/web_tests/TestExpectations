@@ -7126,4 +7126,14 @@ crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-storage-key-t
 # The ones defined in VirtualTestSuites are run instead.
 crbug.com/1293679 wpt_internal/pending_beacon/* [ Skip ]
 
+# TODO(crbug.com/1367103): Re-enable this test
 external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Skip ]
+
+# TODO(crbug.com/1367113): Re-enable this test
+fast/dom/shadow/event-path-load.html [ Skip ]
+
+# TODO(crbug.com/1367113): Re-enable this test
+http/tests/security/cors-check-for-cached-image.html [ Skip ]
+
+# TODO(crbug.com/1367113): Re-enable this test
+paint/images/animated-gif-last-frame-crash.html [ Skip ]
