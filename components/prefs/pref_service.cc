@@ -678,7 +678,7 @@ const base::Value* PrefService::GetPreferenceValue(
   if (!pref_value_store_->GetValue(path, default_type, &found_value)) {
     // Every registered preference has at least a default value.
     NOTREACHED() << "no valid value found for registered pref " << path;
-    return nullptr;
+    return default_value;
   }
 
   DCHECK_EQ(found_value->type(), default_type);
