@@ -192,7 +192,7 @@ void NetworkingPrivateServiceClient::SetProperties(
       FROM_HERE,
       base::BindOnce(&WiFiService::SetProperties,
                      base::Unretained(wifi_service_.get()), guid,
-                     std::move(properties.GetDict()), error),
+                     std::move(properties).TakeDict(), error),
       base::BindOnce(&NetworkingPrivateServiceClient::AfterSetProperties,
                      weak_factory_.GetWeakPtr(), service_callbacks->id,
                      base::Owned(error)));
@@ -214,7 +214,7 @@ void NetworkingPrivateServiceClient::CreateNetwork(
       FROM_HERE,
       base::BindOnce(&WiFiService::CreateNetwork,
                      base::Unretained(wifi_service_.get()), shared,
-                     std::move(properties.GetDict()), network_guid, error),
+                     std::move(properties).TakeDict(), network_guid, error),
       base::BindOnce(&NetworkingPrivateServiceClient::AfterCreateNetwork,
                      weak_factory_.GetWeakPtr(), service_callbacks->id,
                      base::Owned(network_guid), base::Owned(error)));
