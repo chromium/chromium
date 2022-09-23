@@ -680,6 +680,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusEvent) {
 
 IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusTakeFocus) {
   TestHelper("testFocusTakeFocus", "web_view/focus", NO_TEST_SERVER);
+  ASSERT_TRUE(GetGuestRenderFrameHost());
 
   // Compute where to click in the window to focus the guest input box.
   int clickX, clickY;
@@ -692,9 +693,11 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusTakeFocus) {
 
   ExtensionTestMessageListener next_step_listener("TEST_STEP_PASSED");
   next_step_listener.set_failure_message("TEST_STEP_FAILED");
-  content::SimulateMouseClickAt(DeprecatedGuestWebContents(), 0,
-                                blink::WebMouseEvent::Button::kLeft,
-                                gfx::Point(clickX, clickY));
+  WaitForHitTestData(GetGuestRenderFrameHost());
+  content::SimulateMouseClickAt(
+      embedder_web_contents(), 0, blink::WebMouseEvent::Button::kLeft,
+      GetGuestRenderFrameHost()->GetView()->TransformPointToRootCoordSpace(
+          gfx::Point(clickX, clickY)));
   ASSERT_TRUE(next_step_listener.WaitUntilSatisfied());
 
   // TAB back out to the embedder's input.
