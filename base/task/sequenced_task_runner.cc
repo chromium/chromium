@@ -7,10 +7,24 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
+#include "base/threading/thread_local.h"
 #include "base/time/time.h"
 
 namespace base {
+
+namespace {
+
+ThreadLocalPointer<SequencedTaskRunner::CurrentDefaultHandle>&
+CurrentDefaultHandleTls() {
+  static NoDestructor<
+      ThreadLocalPointer<SequencedTaskRunner::CurrentDefaultHandle>>
+      instance;
+  return *instance;
+}
+
+}  // namespace
 
 bool SequencedTaskRunner::PostNonNestableTask(const Location& from_here,
                                               OnceClosure task) {
@@ -70,6 +84,36 @@ bool SequencedTaskRunner::PostDelayedTaskAt(
                          delayed_run_time.is_null()
                              ? base::TimeDelta()
                              : delayed_run_time - TimeTicks::Now());
+}
+
+// static
+const scoped_refptr<SequencedTaskRunner>&
+SequencedTaskRunner::GetCurrentDefault() {
+  const CurrentDefaultHandle* current_default = CurrentDefaultHandleTls().Get();
+  CHECK(current_default)
+      << "Error: This caller requires a sequenced context (i.e. the current "
+         "task needs to run from a SequencedTaskRunner). If you're in a test "
+         "refer to //docs/threading_and_tasks_testing.md.";
+  return current_default->task_runner_;
+}
+
+// static
+bool SequencedTaskRunner::HasCurrentDefault() {
+  return !!CurrentDefaultHandleTls().Get();
+}
+
+SequencedTaskRunner::CurrentDefaultHandle::CurrentDefaultHandle(
+    scoped_refptr<SequencedTaskRunner> task_runner)
+    : task_runner_(std::move(task_runner)) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(!SequencedTaskRunner::HasCurrentDefault());
+  CurrentDefaultHandleTls().Set(this);
+}
+
+SequencedTaskRunner::CurrentDefaultHandle::~CurrentDefaultHandle() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_EQ(CurrentDefaultHandleTls().Get(), this);
+  CurrentDefaultHandleTls().Set(nullptr);
 }
 
 bool SequencedTaskRunner::DeleteOrReleaseSoonInternal(

@@ -40,10 +40,10 @@ public Run\*() methods that merely forward to the private member).
 
 ### base::test::SingleThreadTaskEnvironment
 
-Your component uses `base::ThreadTaskRunnerHandle::Get()` or
-`base::SequencedTaskRunnerHandle::Get()` to post tasks to the thread it was
-created on? You'll need at least a `base::test::SingleThreadTaskEnvironment` in
-order for these APIs to be functional and `base::RunLoop` to run the posted
+Your component uses `base::SingleThreadTaskRunner::GetCurrentDefault()` or
+`base::SequencedTaskRunner::GetCurrentDefault()` to post tasks to the thread it
+was created on? You'll need at least a `base::test::SingleThreadTaskEnvironment`
+in order for these APIs to be functional and `base::RunLoop` to run the posted
 tasks.
 
 Typically this will look something like this:
@@ -52,7 +52,7 @@ foo.h
 ```c++
 class Foo {
  public:
-  Foo() : owning_sequence_(base::SequencedTaskRunnerHandle::Get()) {}
+  Foo() : owning_sequence_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   DoSomethingAndReply(base::OnceClosure on_done) {
     DCHECK(owning_sequence_->RunsTasksInCurrentSequence());

@@ -492,6 +492,15 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       (),
     ),
     BanRule(
+      r'/\b(?!(Sequenced|SingleThread))\w*TaskRunner::(GetCurrentDefault|CurrentDefaultHandle)',
+      (
+        'It is not allowed to call these methods from the subclasses ',
+        'of Sequenced or SingleThread task runners.',
+      ),
+      True,
+      (),
+    ),
+    BanRule(
       r'/(Time(|Delta|Ticks)|ThreadTicks)::FromInternalValue|ToInternalValue',
       (
         'base::TimeXXX::FromInternalValue() and ToInternalValue() are',
