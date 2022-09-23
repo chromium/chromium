@@ -22,24 +22,72 @@
 
 namespace {
 
+// Helper to keep a mapping of files to the index of their corresponding parent
+// entry in content::DropData::filenames. For instance, this means that for a
+// DropData with filenames = [ "a.txt", "dir/"], `PathsAndIndexes` might be
+// populated with { "a.txt": 0, "dir/sub_1.txt": 1, "dir/sub_2.txt": 1 }.
+using PathsAndIndexes = std::map<base::FilePath, size_t>;
+
+// Helper struct to hold all relevant data to a drag-drop content analysis scan.
+struct ContentAnalysisDropData {
+  enterprise_connectors::ContentAnalysisDelegate::Data analysis_data;
+  PathsAndIndexes paths_and_indexes;
+};
+
 void CompletionCallback(
     content::DropData drop_data,
+    PathsAndIndexes paths_and_indexes,
     content::WebContentsViewDelegate::DropCompletionCallback callback,
     const enterprise_connectors::ContentAnalysisDelegate::Data& data,
     const enterprise_connectors::ContentAnalysisDelegate::Result& result) {
-  // If any result is negative, block the drop.
-  bool all_true = !base::Contains(result.text_results, false) &&
-                  !base::Contains(result.paths_results, false);
+  // If there are no negative results, proceed with just `drop_data`.
+  bool all_text_results_allowed = !base::Contains(result.text_results, false);
+  bool all_file_results_allowed = !base::Contains(result.paths_results, false);
+  if (all_text_results_allowed && all_file_results_allowed) {
+    std::move(callback).Run(std::move(drop_data));
+    return;
+  }
 
-  std::move(callback).Run(
-      all_true ? absl::optional<content::DropData>(std::move(drop_data))
-               : absl::nullopt);
+  // For text drag-drops, block the drop if any result is negative.
+  if (!all_text_results_allowed) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  // For file drag-drops, block file paths depending on the verdict obtained for
+  // child paths.
+  DCHECK_EQ(paths_and_indexes.size(), result.paths_results.size());
+  std::set<size_t> file_indexes_to_filter;
+  for (size_t i = 0; i < result.paths_results.size(); ++i) {
+    if (result.paths_results[i])
+      continue;
+    file_indexes_to_filter.insert(paths_and_indexes.at(data.paths[i]));
+  }
+
+  // If every file path should be filtered, the drop is aborted, otherwise it
+  // continues by filtering the list.
+  if (file_indexes_to_filter.size() == drop_data.filenames.size()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  std::vector<ui::FileInfo> final_filenames;
+  for (size_t i = 0; i < drop_data.filenames.size(); ++i) {
+    if (file_indexes_to_filter.count(i))
+      continue;
+    final_filenames.push_back(std::move(drop_data.filenames[i]));
+  }
+
+  drop_data.filenames = std::move(final_filenames);
+  std::move(callback).Run(std::move(drop_data));
 }
 
-enterprise_connectors::ContentAnalysisDelegate::Data GetPathsToScan(
+ContentAnalysisDropData GetPathsToScan(
     const std::vector<ui::FileInfo>& filenames,
     enterprise_connectors::ContentAnalysisDelegate::Data data) {
-  for (const auto& file : filenames) {
+  ContentAnalysisDropData content_analysis_drop_data;
+  for (size_t i = 0; i < filenames.size(); ++i) {
+    const ui::FileInfo& file = filenames.at(i);
     base::File::Info info;
 
     // Ignore the path if it's a symbolic link.
@@ -53,12 +101,17 @@ enterprise_connectors::ContentAnalysisDelegate::Data GetPathsToScan(
       for (base::FilePath sub_path = file_enumerator.Next(); !sub_path.empty();
            sub_path = file_enumerator.Next()) {
         data.paths.push_back(sub_path);
+        content_analysis_drop_data.paths_and_indexes.insert({sub_path, i});
       }
     } else {
       data.paths.push_back(file.path);
+      content_analysis_drop_data.paths_and_indexes.insert({file.path, i});
     }
   }
-  return data;
+
+  content_analysis_drop_data.analysis_data = std::move(data);
+
+  return content_analysis_drop_data;
 }
 
 // Helper class to handle WebContents being destroyed while files are opened in
@@ -75,13 +128,13 @@ class HandleDropScanData : public content::WebContentsObserver {
         drop_data_(std::move(drop_data)),
         callback_(std::move(callback)) {}
 
-  void ScanData(
-      enterprise_connectors::ContentAnalysisDelegate::Data analysis_data) {
+  void ScanData(ContentAnalysisDropData content_analysis_drop_data) {
     DCHECK(web_contents());
 
     enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
-        web_contents(), std::move(analysis_data),
+        web_contents(), std::move(content_analysis_drop_data.analysis_data),
         base::BindOnce(&CompletionCallback, std::move(drop_data_),
+                       std::move(content_analysis_drop_data.paths_and_indexes),
                        std::move(callback_)),
         safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP);
 
@@ -139,7 +192,10 @@ void HandleOnPerformDrop(
   auto* handle_drop_scan_data =
       new HandleDropScanData(web_contents, drop_data, std::move(scan_callback));
   if (drop_data.filenames.empty()) {
-    handle_drop_scan_data->ScanData(std::move(data));
+    handle_drop_scan_data->ScanData({
+        .analysis_data = std::move(data),
+        .paths_and_indexes = {},
+    });
   } else {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},

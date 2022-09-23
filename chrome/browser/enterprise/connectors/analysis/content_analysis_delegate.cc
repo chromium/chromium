@@ -140,6 +140,8 @@ ContentAnalysisAcknowledgement::FinalAction GetFinalAction(
 
 ContentAnalysisDelegate::Data::Data() = default;
 ContentAnalysisDelegate::Data::Data(Data&& other) = default;
+ContentAnalysisDelegate::Data& ContentAnalysisDelegate::Data::operator=(
+    ContentAnalysisDelegate::Data&& other) = default;
 ContentAnalysisDelegate::Data::~Data() = default;
 
 ContentAnalysisDelegate::Result::Result() = default;

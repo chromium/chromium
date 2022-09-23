@@ -69,6 +69,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   struct Data {
     Data();
     Data(Data&& other);
+    Data& operator=(Data&&);
     ~Data();
 
     // URL of the page that is to receive sensitive data.
