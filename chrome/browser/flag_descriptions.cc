@@ -170,6 +170,11 @@ const char kPasswordViewPageInSettingsDescription[] =
     "Enables a new password details subpage in the settings password "
     "management UI.";
 
+const char kPrivacyIndicatorsName[] = "Enable Privacy Indicators";
+const char kPrivacyIndicatorsDescription[] =
+    "While screen sharing or camera/microphone is being accessed, show a green "
+    "icon in the status area as well as add a silent notification to the tray.";
+
 const char kEnableBluetoothSerialPortProfileInSerialApiName[] =
     "Enable Bluetooth Serial Port Profile in Serial API";
 const char kEnableBluetoothSerialPortProfileInSerialApiDescription[] =

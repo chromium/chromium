@@ -56613,6 +56613,7 @@ from previous Chrome versions.
       label="OmniboxGroupSuggestionsBySearchVsUrl:enabled"/>
   <int value="-1996087238" label="kAutofillEnableOffersInDownstream:enabled"/>
   <int value="-1995534832" label="DownloadProgressMessage:disabled"/>
+  <int value="-1993745822" label="PrivacyIndicators:disabled"/>
   <int value="-1993739187"
       label="AutofillHighlightOnlyChangedValuesInPreviewMode:disabled"/>
   <int value="-1993730028" label="CrostiniPortForwarding:enabled"/>
@@ -59596,6 +59597,7 @@ from previous Chrome versions.
   <int value="-199690952" label="PageInfoV2:enabled"/>
   <int value="-198388861" label="ArcNearbyShareFuseBox:disabled"/>
   <int value="-198002129" label="MetricsSettingsAndroid:disabled"/>
+  <int value="-197862414" label="PrivacyIndicators:enabled"/>
   <int value="-196110497" label="force-text-direction"/>
   <int value="-195242003"
       label="PrivateNetworkAccessRespectPreflightResults:disabled"/>

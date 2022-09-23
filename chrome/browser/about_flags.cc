@@ -7003,6 +7003,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(supervised_users::kLocalWebApprovals)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-privacy-indicators", flag_descriptions::kPrivacyIndicatorsName,
+     flag_descriptions::kPrivacyIndicatorsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPrivacyIndicators)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     {"enable-web-filter-interstitial-refresh",
      flag_descriptions::kWebFilterInterstitialRefreshName,

@@ -2771,6 +2771,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "enable-privacy-indicators",
+    "owners": [ "leandre" ],
+    "expiry_milestone": 111
+  },
+  {
     "name": "enable-projector",
     "owners": [ "llin", "cros-projector@google.com" ],
     "expiry_milestone": 105

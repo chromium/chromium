@@ -125,6 +125,9 @@ extern const char kPasswordNotesDescription[];
 extern const char kPasswordViewPageInSettingsName[];
 extern const char kPasswordViewPageInSettingsDescription[];
 
+extern const char kPrivacyIndicatorsName[];
+extern const char kPrivacyIndicatorsDescription[];
+
 extern const char kEnableBluetoothSerialPortProfileInSerialApiName[];
 extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
 
