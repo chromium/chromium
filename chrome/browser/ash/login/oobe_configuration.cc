@@ -82,7 +82,7 @@ void OobeConfiguration::OnConfigurationCheck(bool has_configuration,
   } else if (!configuration::ValidateConfiguration(parsed_json->GetDict())) {
     LOG(ERROR) << "Invalid OOBE configuration";
   } else {
-    configuration_ = std::move(parsed_json->GetDict());
+    configuration_ = std::move(*parsed_json).TakeDict();
     UpdateConfigurationValues();
   }
   NotifyObservers();
