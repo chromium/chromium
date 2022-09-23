@@ -4,11 +4,10 @@
 
 #include "weblayer/browser/browser_impl.h"
 
-#include <algorithm>
-
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/base32/base32.h"
 #include "components/prefs/pref_service.h"
@@ -431,8 +430,7 @@ std::unique_ptr<Tab> BrowserImpl::RemoveTab(Tab* tab) {
   TabImpl* tab_impl = static_cast<TabImpl*>(tab);
   DCHECK_EQ(this, tab_impl->browser());
   static_cast<TabImpl*>(tab)->set_browser(nullptr);
-  auto iter =
-      std::find_if(tabs_.begin(), tabs_.end(), base::MatchesUniquePtr(tab));
+  auto iter = base::ranges::find_if(tabs_, base::MatchesUniquePtr(tab));
   DCHECK(iter != tabs_.end());
   std::unique_ptr<Tab> owned_tab = std::move(*iter);
   tabs_.erase(iter);
