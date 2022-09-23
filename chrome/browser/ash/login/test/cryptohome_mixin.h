@@ -27,6 +27,7 @@ class CryptohomeMixin : public InProcessBrowserTestMixin {
   void SetUpOnMainThread() override;
 
   void MarkUserAsExisting(const AccountId& user);
+  void AddGaiaPassword(const AccountId& user, std::string password);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CryptohomeMixinTest,
