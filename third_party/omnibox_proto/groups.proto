@@ -49,7 +49,7 @@ message GroupConfig {
 // Specifically the mapping from suggestion group IDs (GroupId) to suggestion
 // group configurations (GroupConfig).
 message GroupsInfo {
-  map<uint32, GroupConfig> group_configs_map = 1;
+  map<uint32, GroupConfig> group_configs = 1;
 }
 
 // Suggestion group IDs supported by Chrome Omnibox. These entries must not
@@ -69,6 +69,10 @@ enum GroupId {
   GROUP_POLARIS_RESERVED_9 = 10008;
   GROUP_POLARIS_RESERVED_10 = 10009;
   GROUP_POLARIS_RESERVED_MAX = 19999;
+  // Mobile-specific auxiliary suggestions. These suggestions (e.g. Clipboard,
+  // Search-ready Omnibox, Most Visited sites) are placed on top of any other
+  // content.
+  GROUP_MOBILE_AUXILIARY_TOP = 30000;
   // Reserved for personalized zero-prefix suggestions.
   // Produced by ZeroSuggestProvider and LocalHistoryZeroSuggestProvider.
   GROUP_PERSONALIZED_ZERO_SUGGEST = 40000;

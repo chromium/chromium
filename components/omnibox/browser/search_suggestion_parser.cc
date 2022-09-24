@@ -628,7 +628,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         for (auto it : headers->DictItems()) {
           int suggestion_group_id;
           if (base::StringToInt(it.first, &suggestion_group_id)) {
-            (*groups_info.mutable_group_configs_map())[suggestion_group_id]
+            (*groups_info.mutable_group_configs())[suggestion_group_id]
                 .set_header_text(it.second.GetString());
           }
         }
@@ -638,7 +638,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       if (hidden_group_ids) {
         for (const auto& value : hidden_group_ids->GetList()) {
           if (value.is_int()) {
-            (*groups_info.mutable_group_configs_map())[value.GetInt()]
+            (*groups_info.mutable_group_configs())[value.GetInt()]
                 .set_visibility(omnibox::GroupConfig_Visibility_HIDDEN);
           }
         }
@@ -897,14 +897,14 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     // Do not propagate the server-provided group IDs without any associated
     // group config.
-    if (!base::Contains(groups_info.group_configs_map(), suggestion_group_id)) {
+    if (!base::Contains(groups_info.group_configs(), suggestion_group_id)) {
       suggest_result.set_suggestion_group_id(absl::nullopt);
       continue;
     }
 
     // Add the group information for the group associated with the suggestion.
     add_group_info(suggestion_group_id,
-                   groups_info.group_configs_map().at(suggestion_group_id));
+                   groups_info.group_configs().at(suggestion_group_id));
 
     // Update or reset the group ID in the suggestion.
     if (base::Contains(chrome_group_ids_map, suggestion_group_id)) {
@@ -918,7 +918,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   // Add the group information for the remaining groups without any suggestions.
   // The only known use case is the personalized zero-suggest which is also
   // produced by Chrome and relies on the server-provided group config to show.
-  for (const auto& entry : groups_info.group_configs_map()) {
+  for (const auto& entry : groups_info.group_configs()) {
     // Do not use GroupIdForNumber() because |groups_info| keys may not be
     // present in omnibox::GroupId. However, casting int values into
     // omnibox::GroupId enum without testing membership is expected to be safe

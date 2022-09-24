@@ -771,7 +771,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo_FromProto) {
 
   {
     omnibox::GroupsInfo groups_info;
-    auto* group_configs_map = groups_info.mutable_group_configs_map();
+    auto* group_configs_map = groups_info.mutable_group_configs();
     auto& group_config_1 = (*group_configs_map)
         [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS];
     group_config_1.set_header_text("Related Entities");
@@ -864,7 +864,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo_FromProto) {
   }
   {
     omnibox::GroupsInfo groups_info;
-    auto* group_configs_map = groups_info.mutable_group_configs_map();
+    auto* group_configs_map = groups_info.mutable_group_configs();
     auto& group_config_1 = (*group_configs_map)
         [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS];
     group_config_1.set_header_text("Related Entities");
@@ -965,7 +965,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo_FromProto) {
   }
   {
     omnibox::GroupsInfo groups_info;
-    auto* group_configs_map = groups_info.mutable_group_configs_map();
+    auto* group_configs_map = groups_info.mutable_group_configs();
     auto& group_config_1 =
         (*group_configs_map)[omnibox::GROUP_PREVIOUS_SEARCH_RELATED];
     group_config_1.set_header_text("Related Searches");
