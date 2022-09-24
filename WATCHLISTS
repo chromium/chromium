@@ -32,6 +32,10 @@
     'accessibility_component_extensions': {
       'filepath': 'chrome/browser/resources/chromeos/accessibility'
     },
+    'accessibility_features_ash': {
+      'filepath': 'ash/accessibility/' \
+                  '|ash/color_enhancement/',
+    },
     'accessibility_minimal_core': {
       'filepath': 'ui/accessibility/(ax_enums|ax_event_generator|ax_node\.|ax_node_data\.|ax_tree\.|ax_tree_serializer)' \
                   '|ui/accessibility/platform/ax_platform_node_(base|mac|win)' \
@@ -39,8 +43,8 @@
                   '|content/renderer/accessibility/render_accessibility_impl' \
                   '|content/browser/accessibility/browser_accessibility(\.|_manager|_win|_com|_cocoa)'
     },
-    'accessibility_services_ash': {
-      'filepath': 'ash/accessibility/',
+    'accessibility_service': {
+      'filepath': 'services/accessibility/',
     },
     'add_to_homescreen': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/webapps/|'\
@@ -2208,8 +2212,9 @@
     'accessibility_component_extensions': ['anastasi+watch@google.com',
                                            'katie+watch@chromium.org',
                                            'shannc+watch@chromium.org'],
+    'accessibility_features_ash': ['katie+watch@chromium.org'],
     'accessibility_minimal_core': ['aleventhal+watcha11y@chromium.org'],
-    'accessibility_services_ash': ['katie+watch@chromium.org'],
+    'accessibility_service': ['katie+watch@chromium.org'],
     'add_to_homescreen': ['dominickn+watch-a2hs@chromium.org',
                           'pkotwicz+watch@chromium.org',
                           'webapks-watchlist@chromium.org'],
