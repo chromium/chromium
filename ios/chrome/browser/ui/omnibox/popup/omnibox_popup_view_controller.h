@@ -12,8 +12,13 @@
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 
-@protocol ImageRetriever;
+@protocol CarouselItemMenuProvider;
 @protocol FaviconRetriever;
+class LargeIconCache;
+namespace favicon {
+class LargeIconService;
+}
+@protocol ImageRetriever;
 @protocol PopupMatchPreviewDelegate;
 
 // View controller used to display a list of omnibox autocomplete matches in the
@@ -37,6 +42,9 @@
 @property(nonatomic, weak) id<PopupMatchPreviewDelegate> matchPreviewDelegate;
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;
 @property(nonatomic, weak) id<FaviconRetriever> faviconRetriever;
+@property(nonatomic, assign) favicon::LargeIconService* largeIconService;
+@property(nonatomic, assign) LargeIconCache* largeIconCache;
+@property(nonatomic, weak) id<CarouselItemMenuProvider> carouselMenuProvider;
 
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestionGroup>>* currentResult;

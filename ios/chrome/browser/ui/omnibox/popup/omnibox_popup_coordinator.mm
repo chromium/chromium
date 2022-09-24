@@ -5,21 +5,29 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_coordinator.h"
 
 #import "base/feature_list.h"
+#import "components/favicon/core/large_icon_service.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_container_view.h"
@@ -39,7 +47,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface OmniboxPopupCoordinator () {
+@interface OmniboxPopupCoordinator () <CarouselItemMenuProvider> {
   std::unique_ptr<OmniboxPopupViewIOS> _popupView;
 }
 
@@ -100,6 +108,14 @@
     self.popupViewController.delegate = self.mediator;
     self.popupViewController.dataSource = self.mediator;
     self.popupViewController.incognito = isIncognito;
+    favicon::LargeIconService* largeIconService =
+        IOSChromeLargeIconServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    LargeIconCache* cache = IOSChromeLargeIconCacheFactory::GetForBrowserState(
+        self.browser->GetBrowserState());
+    self.popupViewController.largeIconService = largeIconService;
+    self.popupViewController.largeIconCache = cache;
+    self.popupViewController.carouselMenuProvider = self;
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:self.popupViewController
                      forProtocol:@protocol(OmniboxSuggestionCommands)];
@@ -146,6 +162,40 @@
 
 - (BOOL)hasResults {
   return self.mediator.hasResults;
+}
+
+#pragma mark - CarouselItemMenuProvider
+
+// Context Menu for carousel `item` in `view`.
+- (UIContextMenuConfiguration*)
+    contextMenuConfigurationForCarouselItem:(CarouselItem*)carouselItem
+                                   fromView:(UIView*)view {
+  __weak __typeof(self) weakSelf = self;
+
+  UIContextMenuActionProvider actionProvider = ^(
+      NSArray<UIMenuElement*>* suggestedActions) {
+    DCHECK(weakSelf);
+
+    OmniboxPopupCoordinator* strongSelf = weakSelf;
+
+    BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
+        initWithBrowser:strongSelf.browser
+               scenario:MenuScenario::kMostVisitedEntry];
+
+    NSMutableArray<UIMenuElement*>* menuElements =
+        [[NSMutableArray alloc] init];
+
+    [menuElements
+        addObject:[actionFactory actionToRemoveWithBlock:^{
+                      // TODO(crbug.com/1365374): add block to remove suggestion
+                  }]];
+
+    return [UIMenu menuWithTitle:@"" children:menuElements];
+  };
+  return
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
 }
 
 @end

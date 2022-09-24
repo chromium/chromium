@@ -299,7 +299,7 @@ const CGFloat kOmniboxIconSize = 16;
   return formatter;
 }
 
-// Extracts tiles from AutocompleteMatch of type TILE_NAVSUGGEST.
+// Extracts carousel items from AutocompleteMatch of type TILE_NAVSUGGEST.
 - (id<AutocompleteSuggestionGroup>)extractTiles:
     (const AutocompleteMatch&)match {
   DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
