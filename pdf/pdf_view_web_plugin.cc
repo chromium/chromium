@@ -633,7 +633,7 @@ void PdfViewWebPlugin::PrintEnd() {
       engine_->PrintPages(pages_to_print_, print_params_.value()));
 
   if (print_pages_called_)
-    UserMetricsRecordAction("PDF.PrintPage");
+    client_->RecordComputedAction("PDF.PrintPage");
   print_pages_called_ = false;
   print_params_.reset();
   engine_->PrintEnd();
@@ -805,7 +805,7 @@ void PdfViewWebPlugin::DidScroll(const gfx::Vector2d& offset) {
 }
 
 void PdfViewWebPlugin::ScrollToX(int x_screen_coords) {
-  const float x_scroll_pos = x_screen_coords / device_scale();
+  const float x_scroll_pos = x_screen_coords / device_scale_;
 
   base::Value::Dict message;
   message.Set("type", "setScrollPosition");
@@ -814,7 +814,7 @@ void PdfViewWebPlugin::ScrollToX(int x_screen_coords) {
 }
 
 void PdfViewWebPlugin::ScrollToY(int y_screen_coords) {
-  const float y_scroll_pos = y_screen_coords / device_scale();
+  const float y_scroll_pos = y_screen_coords / device_scale_;
 
   base::Value::Dict message;
   message.Set("type", "setScrollPosition");
@@ -823,8 +823,8 @@ void PdfViewWebPlugin::ScrollToY(int y_screen_coords) {
 }
 
 void PdfViewWebPlugin::ScrollBy(const gfx::Vector2d& delta) {
-  const float x_delta = delta.x() / device_scale();
-  const float y_delta = delta.y() / device_scale();
+  const float x_delta = delta.x() / device_scale_;
+  const float y_delta = delta.y() / device_scale_;
 
   base::Value::Dict message;
   message.Set("type", "scrollBy");
@@ -834,7 +834,7 @@ void PdfViewWebPlugin::ScrollBy(const gfx::Vector2d& delta) {
 }
 
 void PdfViewWebPlugin::ScrollToPage(int page) {
-  if (!engine() || engine()->GetNumberOfPages() == 0)
+  if (!engine_ || engine_->GetNumberOfPages() == 0)
     return;
 
   base::Value::Dict message;
@@ -1064,7 +1064,7 @@ void PdfViewWebPlugin::DocumentHasUnsupportedFeature(
   if (unsupported_features_reported_.insert(metric).second)
     client_->RecordComputedAction(metric);
 
-  if (!full_frame() || notified_browser_about_unsupported_feature_)
+  if (!full_frame_ || notified_browser_about_unsupported_feature_)
     return;
 
   notified_browser_about_unsupported_feature_ = true;
@@ -1269,7 +1269,7 @@ void PdfViewWebPlugin::HandleGetThumbnailMessage(
   base::Value::Dict reply = PrepareReplyMessage("getThumbnailReply", message);
 
   engine_->RequestThumbnail(
-      page_index, device_scale(),
+      page_index, device_scale_,
       base::BindOnce(&PdfViewWebPlugin::SendThumbnail,
                      weak_factory_.GetWeakPtr(), std::move(reply)));
 }
@@ -1487,9 +1487,9 @@ void PdfViewWebPlugin::HandleViewportMessage(const base::Value::Dict& message) {
   double old_zoom = zoom();
   set_zoom(new_zoom);
 
-  OnGeometryChanged(old_zoom, device_scale());
+  OnGeometryChanged(old_zoom, device_scale_);
   if (!document_size_.IsEmpty())
-    paint_manager().InvalidateRect(gfx::Rect(plugin_rect().size()));
+    paint_manager().InvalidateRect(gfx::Rect(plugin_rect_.size()));
 
   UpdateScroll(GetScrollPositionFromOffset(scroll_offset));
 }
@@ -1571,7 +1571,7 @@ void PdfViewWebPlugin::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                                std::vector<PaintReadyRect>& ready,
                                std::vector<gfx::Rect>& pending) {
   if (image_data_.drawsNothing()) {
-    DCHECK(plugin_rect().IsEmpty());
+    DCHECK(plugin_rect_.IsEmpty());
     return;
   }
 
@@ -1587,7 +1587,7 @@ void PdfViewWebPlugin::DoPaint(const std::vector<gfx::Rect>& paint_rects,
     // Intersect with plugin area since there could be pending invalidates from
     // when the plugin area was larger.
     gfx::Rect rect =
-        gfx::IntersectRects(paint_rect, gfx::Rect(plugin_rect().size()));
+        gfx::IntersectRects(paint_rect, gfx::Rect(plugin_rect_.size()));
     if (rect.IsEmpty())
       continue;
 
@@ -1615,7 +1615,7 @@ void PdfViewWebPlugin::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                                         : engine_->GetPageScreenRect(0).y();
     if (rect.y() < first_page_ypos) {
       gfx::Rect region = gfx::IntersectRects(
-          rect, gfx::Rect(gfx::Size(plugin_rect().width(), first_page_ypos)));
+          rect, gfx::Rect(gfx::Size(plugin_rect_.width(), first_page_ypos)));
       image_data_.erase(GetBackgroundColor(), gfx::RectToSkIRect(region));
       ready_rects.push_back(region);
     }
@@ -1665,21 +1665,21 @@ void PdfViewWebPlugin::OnGeometryChanged(double old_zoom,
 
 void PdfViewWebPlugin::RecalculateAreas(double old_zoom,
                                         float old_device_scale) {
-  if (zoom() != old_zoom || device_scale() != old_device_scale)
-    engine_->ZoomUpdated(zoom() * device_scale());
+  if (zoom() != old_zoom || device_scale_ != old_device_scale)
+    engine_->ZoomUpdated(zoom() * device_scale_);
 
-  mutable_available_area() = gfx::Rect(plugin_rect().size());
+  mutable_available_area() = gfx::Rect(plugin_rect_.size());
   int doc_width = GetDocumentPixelWidth();
   if (doc_width < available_area().width()) {
     // Center the document horizontally inside the plugin rectangle.
-    mutable_available_area().Offset((plugin_rect().width() - doc_width) / 2, 0);
+    mutable_available_area().Offset((plugin_rect_.width() - doc_width) / 2, 0);
     mutable_available_area().set_width(doc_width);
   }
 
   // The distance between top of the plugin and the bottom of the document in
   // pixels.
   int bottom_of_document = GetDocumentPixelHeight();
-  if (bottom_of_document < plugin_rect().height())
+  if (bottom_of_document < plugin_rect_.height())
     mutable_available_area().set_height(bottom_of_document);
 
   CalculateBackgroundParts();
@@ -1692,8 +1692,8 @@ void PdfViewWebPlugin::CalculateBackgroundParts() {
   background_parts_.clear();
   int left_width = available_area().x();
   int right_start = available_area().right();
-  int right_width = std::abs(plugin_rect().width() - available_area().right());
-  int bottom = std::min(available_area().bottom(), plugin_rect().height());
+  int right_width = std::abs(plugin_rect_.width() - available_area().right());
+  int bottom = std::min(available_area().bottom(), plugin_rect_.height());
 
   // Note: we assume the display of the PDF document is always centered
   // horizontally, but not necessarily centered vertically.
@@ -1708,20 +1708,20 @@ void PdfViewWebPlugin::CalculateBackgroundParts() {
     background_parts_.push_back(part);
 
   // Add the bottom rectangle.
-  part.location = gfx::Rect(0, bottom, plugin_rect().width(),
-                            plugin_rect().height() - bottom);
+  part.location = gfx::Rect(0, bottom, plugin_rect_.width(),
+                            plugin_rect_.height() - bottom);
   if (!part.location.IsEmpty())
     background_parts_.push_back(part);
 }
 
 int PdfViewWebPlugin::GetDocumentPixelWidth() const {
   return static_cast<int>(
-      std::ceil(document_size_.width() * zoom() * device_scale()));
+      std::ceil(document_size_.width() * zoom() * device_scale_));
 }
 
 int PdfViewWebPlugin::GetDocumentPixelHeight() const {
   return static_cast<int>(
-      std::ceil(document_size_.height() * zoom() * device_scale()));
+      std::ceil(document_size_.height() * zoom() * device_scale_));
 }
 
 void PdfViewWebPlugin::InvalidateAfterPaintDone() {
@@ -1983,8 +1983,8 @@ bool PdfViewWebPlugin::HandleWebInputEvent(const blink::WebInputEvent& event) {
   // `engine_` expects input events in device coordinates.
   std::unique_ptr<blink::WebInputEvent> transformed_event =
       ui::TranslateAndScaleWebInputEvent(
-          event, gfx::Vector2dF(-available_area().x() / device_scale(), 0),
-          device_scale());
+          event, gfx::Vector2dF(-available_area().x() / device_scale_, 0),
+          device_scale_);
 
   const blink::WebInputEvent& event_to_handle =
       transformed_event ? *transformed_event : event;
@@ -2290,7 +2290,7 @@ gfx::Point PdfViewWebPlugin::FrameToPdfCoordinates(
     const gfx::PointF& frame_coordinates) const {
   // TODO(crbug.com/1288847): Use methods on `blink::WebPluginContainer`.
   return gfx::ToFlooredPoint(
-             gfx::ScalePoint(frame_coordinates, device_scale())) -
+             gfx::ScalePoint(frame_coordinates, device_scale_)) -
          gfx::Vector2d(available_area().x(), 0);
 }
 
