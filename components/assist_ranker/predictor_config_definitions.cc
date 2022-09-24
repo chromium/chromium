@@ -11,8 +11,9 @@
 namespace assist_ranker {
 
 #if BUILDFLAG(IS_ANDROID)
-const base::Feature kContextualSearchRankerQuery{
-    "ContextualSearchRankerQuery", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kContextualSearchRankerQuery,
+             "ContextualSearchRankerQuery",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 

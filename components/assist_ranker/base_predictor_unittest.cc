@@ -37,8 +37,9 @@ const char kTestNavigationUrl[] = "https://foo.com";
 
 const base::flat_set<std::string> kFeatureAllowlist;
 
-const base::Feature kTestRankerQuery{"TestRankerQuery",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTestRankerQuery,
+             "TestRankerQuery",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kTestRankerUrl{
     &kTestRankerQuery, kTestUrlParamName, kTestDefaultModelUrl};
