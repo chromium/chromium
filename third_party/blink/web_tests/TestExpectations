@@ -1484,7 +1484,6 @@ crbug.com/716567 external/wpt/css/css-fonts/font-variant-alternates-15.html [ Fa
 crbug.com/716567 external/wpt/css/css-fonts/font-variant-alternates-16.html [ Failure ]
 crbug.com/716567 external/wpt/css/css-fonts/font-variant-alternates-17.html [ Failure ]
 crbug.com/716567 external/wpt/css/css-fonts/font-variant-alternates-18.html [ Failure ]
-crbug.com/1240186 [ Mac ] external/wpt/css/css-fonts/font-variant-ligatures-11.optional.html [ Failure ]
 crbug.com/1212668 external/wpt/css/css-fonts/font-variant-position.html [ Failure ]
 crbug.com/1240236 [ Mac ] external/wpt/css/css-fonts/system-ui-ar.html [ Failure ]
 crbug.com/1240236 [ Mac ] external/wpt/css/css-fonts/system-ui-ur.html [ Failure ]
