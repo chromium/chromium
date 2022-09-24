@@ -1396,6 +1396,9 @@
   <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING" desc="High efficiency mode setting label">
     Memory Saver
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_HEADER" desc="Heading for the exceptions list for tab discarding in the performance settings. Tabs will not be discarded by high efficiency mode if on a site matching a rule in this list.">
+    Always keep these sites active
+  </message>
   <message name="IDS_SETTINGS_BATTERY_PAGE_TITLE" desc="Title of the battery page">
     Battery
   </message>

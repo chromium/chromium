@@ -155,6 +155,8 @@ export {SettingsSyncEncryptionOptionsElement} from './people_page/sync_encryptio
 export {SettingsSyncPageElement} from './people_page/sync_page.js';
 export {SettingsBatteryPageElement} from './performance_page/battery_page.js';
 export {SettingsPerformancePageElement} from './performance_page/performance_page.js';
+export {TabDiscardExceptionEntryElement} from './performance_page/tab_discard_exception_entry.js';
+export {TabDiscardExceptionListElement} from './performance_page/tab_discard_exception_list.js';
 export {AutofillAssistantBrowserProxy, AutofillAssistantBrowserProxyImpl} from './privacy_page/autofill_assistant_browser_proxy.js';
 export {SettingsCollapseRadioButtonElement} from './privacy_page/collapse_radio_button.js';
 export {SettingsCookiesPageElement} from './privacy_page/cookies_page.js';

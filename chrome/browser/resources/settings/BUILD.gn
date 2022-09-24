@@ -159,6 +159,8 @@ build_webui("build") {
     "on_startup_page/startup_urls_page.ts",
     "performance_page/battery_page.ts",
     "performance_page/performance_page.ts",
+    "performance_page/tab_discard_exception_entry.ts",
+    "performance_page/tab_discard_exception_list.ts",
     "people_page/people_page.ts",
     "people_page/signout_dialog.ts",
     "people_page/sync_account_control.ts",

@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SettingsPerformancePageElement} from 'chrome://settings/lazy_load.js';
+import {SettingsPerformancePageElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/lazy_load.js';
 import {OpenWindowProxyImpl, PerformanceBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -19,9 +19,25 @@ suite('PerformancePage', function() {
   let performancePage: SettingsPerformancePageElement;
   let performanceBrowserProxy: TestPerformanceBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
+  let tabDiscardExceptionsList: TabDiscardExceptionListElement;
 
   const highEfficiencyModeEnabledPref =
       'prefs.performance_tuning.high_efficiency_mode.enabled.value';
+  const tabDiscardExceptionsPref =
+      'prefs.performance_tuning.tab_discarding.exceptions.value';
+
+  function getExceptionListEntries():
+      NodeListOf<TabDiscardExceptionEntryElement> {
+    return tabDiscardExceptionsList.$.container
+        .querySelectorAll<TabDiscardExceptionEntryElement>(
+            'tab-discard-exception-entry:not([hidden])');
+  }
+
+  function clickDeleteMenuItem() {
+    const buttons = tabDiscardExceptionsList.$.menu.querySelectorAll('button');
+    assertEquals(2, buttons.length);
+    buttons[1]!.click();
+  }
 
   setup(function() {
     performanceBrowserProxy = new TestPerformanceBrowserProxy();
@@ -40,10 +56,18 @@ suite('PerformancePage', function() {
             value: false,
           },
         },
+        tab_discarding: {
+          exceptions: {
+            type: chrome.settingsPrivate.PrefType.LIST,
+            value: [],
+          },
+        },
       },
     });
     document.body.appendChild(performancePage);
     flush();
+
+    tabDiscardExceptionsList = performancePage.$.tabDiscardExceptionsList;
   });
 
   test('testHighEfficiencyModeEnabled', function() {
@@ -61,11 +85,8 @@ suite('PerformancePage', function() {
   });
 
   test('testLearnMoreLink', async function() {
-    const settingsToggleButton =
-        performancePage.shadowRoot!.querySelector('settings-toggle-button');
-    assertTrue(!!settingsToggleButton);
     const learnMoreLink =
-        settingsToggleButton.shadowRoot!.querySelector<HTMLElement>(
+        performancePage.$.toggleButton.shadowRoot!.querySelector<HTMLElement>(
             '#highEfficiencyLearnMore');
     assertTrue(!!learnMoreLink);
     learnMoreLink.click();
@@ -74,11 +95,8 @@ suite('PerformancePage', function() {
   });
 
   test('testSendFeedbackLink', async function() {
-    const settingsToggleButton =
-        performancePage.shadowRoot!.querySelector('settings-toggle-button');
-    assertTrue(!!settingsToggleButton);
     const sendFeedbackLink =
-        settingsToggleButton.shadowRoot!.querySelector<HTMLElement>(
+        performancePage.$.toggleButton.shadowRoot!.querySelector<HTMLElement>(
             '#highEfficiencySendFeedback');
 
     // <if expr="_google_chrome">
@@ -91,5 +109,39 @@ suite('PerformancePage', function() {
     // <if expr="not _google_chrome">
     assertFalse(!!sendFeedbackLink);
     // </if>
+  });
+
+  test('testTabDiscardExceptionsList', function() {
+    // no sites added message should be shown when list is empty
+    assertFalse(tabDiscardExceptionsList.$.noSitesAdded.hidden);
+    assertEquals(0, getExceptionListEntries().length);
+
+    // list should be updated when pref is changed
+    performancePage.set(tabDiscardExceptionsPref, ['foo', 'bar']);
+    flush();
+    assertTrue(tabDiscardExceptionsList.$.noSitesAdded.hidden);
+    assertEquals(2, getExceptionListEntries().length);
+  });
+
+  test('testTabDiscardExceptionsListDelete', function() {
+    performancePage.set(tabDiscardExceptionsPref, ['foo', 'bar']);
+    flush();
+    let entries = getExceptionListEntries();
+    assertEquals(2, entries.length);
+    assertEquals('foo', entries[0]!.get('site'));
+    assertEquals('bar', entries[1]!.get('site'));
+
+    entries[0]!.$.button.click();
+    clickDeleteMenuItem();
+    flush();
+    entries = getExceptionListEntries();
+    assertEquals(1, entries.length);
+    assertEquals('bar', entries[0]!.get('site'));
+
+    entries[0]!.$.button.click();
+    clickDeleteMenuItem();
+    flush();
+    entries = getExceptionListEntries();
+    assertEquals(0, entries.length);
   });
 });

@@ -929,6 +929,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [performance_manager::user_tuning::prefs::kBatterySaverModeState] =
           settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_allowlist)
+      [performance_manager::user_tuning::prefs::kTabDiscardingExceptions] =
+          settings_api::PrefType::PREF_TYPE_LIST;
 
   return *s_allowlist;
 }

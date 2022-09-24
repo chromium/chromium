@@ -747,6 +747,8 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_ON_BATTERY_LABEL},
       {"batterySaverModeEnabledBelowThresholdLabel",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_BELOW_THRESHOLD_LABEL},
+      {"tabDiscardingExceptionsHeader",
+       IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_HEADER},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
