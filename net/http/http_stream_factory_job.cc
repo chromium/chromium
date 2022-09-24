@@ -66,8 +66,9 @@ namespace {
 
 // Experiment to preconnect only one connection if HttpServerProperties is
 // not supported or initialized.
-const base::Feature kLimitEarlyPreconnectsExperiment{
-    "LimitEarlyPreconnects", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kLimitEarlyPreconnectsExperiment,
+             "LimitEarlyPreconnects",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

@@ -215,8 +215,9 @@ using simple_util::GetDataSizeFromFileSize;
 using simple_util::GetFileSizeFromDataSize;
 using simple_util::GetFileIndexFromStreamIndex;
 
-const base::Feature kSimpleCachePrefetchExperiment = {
-    "SimpleCachePrefetchExperiment2", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSimpleCachePrefetchExperiment,
+             "SimpleCachePrefetchExperiment2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kSimpleCacheFullPrefetchBytesParam[] = "FullPrefetchBytes";
 constexpr base::FeatureParam<int> kSimpleCacheFullPrefetchSize{
