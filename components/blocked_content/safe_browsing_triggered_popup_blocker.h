@@ -25,7 +25,7 @@ class PrefRegistrySyncable;
 }
 
 namespace blocked_content {
-extern const base::Feature kAbusiveExperienceEnforce;
+BASE_DECLARE_FEATURE(kAbusiveExperienceEnforce);
 
 constexpr char kAbusiveEnforceMessage[] =
     "Chrome prevented this site from opening a new tab or window. Learn more "
