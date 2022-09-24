@@ -245,6 +245,10 @@ base::Value::Dict PrepareReplyMessage(base::StringPiece reply_type,
   return reply;
 }
 
+bool IsSaveDataSizeValid(size_t size) {
+  return size > 0 && size <= PdfViewWebPlugin::kMaximumSavedFileSize;
+}
+
 }  // namespace
 
 std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::Client::CreateEngine(

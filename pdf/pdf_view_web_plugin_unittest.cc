@@ -1713,7 +1713,7 @@ class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
       doc_attachment_info_list()[2].name = u"attachment3.mov";
       doc_attachment_info_list()[2].is_readable = true;
       doc_attachment_info_list()[2].size_bytes =
-          PdfViewPluginBase::kMaximumSavedFileSize + 1;
+          PdfViewWebPlugin::kMaximumSavedFileSize + 1;
     }
 
     void InitializeDocumentMetadata() {
