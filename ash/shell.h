@@ -89,6 +89,7 @@ class AdaptiveChargingController;
 class AmbientController;
 class AppListControllerImpl;
 class AppListFeatureUsageMetrics;
+class AshAcceleratorConfiguration;
 class AshColorProvider;
 class AshDBusServices;
 class AshFocusRules;
@@ -364,6 +365,9 @@ class ASH_EXPORT Shell : public SessionObserver,
     return adaptive_charging_controller_.get();
   }
   AmbientController* ambient_controller() { return ambient_controller_.get(); }
+  AshAcceleratorConfiguration* ash_accelerator_configuration() {
+    return ash_accelerator_configuration_.get();
+  }
   AssistantControllerImpl* assistant_controller() {
     return assistant_controller_.get();
   }
@@ -794,6 +798,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<UserMetricsRecorder> user_metrics_recorder_;
   std::unique_ptr<WindowPositioner> window_positioner_;
 
+  std::unique_ptr<AshAcceleratorConfiguration> ash_accelerator_configuration_;
   std::unique_ptr<AcceleratorControllerImpl> accelerator_controller_;
   std::unique_ptr<AccessibilityControllerImpl> accessibility_controller_;
   std::unique_ptr<AccessibilityDelegate> accessibility_delegate_;

@@ -106,7 +106,7 @@ class ASH_EXPORT AcceleratorControllerImpl
     AcceleratorControllerImpl* controller_;  // Not owned.
   };
 
-  AcceleratorControllerImpl();
+  explicit AcceleratorControllerImpl(AshAcceleratorConfiguration* config);
   AcceleratorControllerImpl(const AcceleratorControllerImpl&) = delete;
   AcceleratorControllerImpl& operator=(const AcceleratorControllerImpl&) =
       delete;
@@ -193,7 +193,7 @@ class ASH_EXPORT AcceleratorControllerImpl
   bool ShouldPreventProcessingAccelerators() const;
 
   AshAcceleratorConfiguration* accelerator_configuration() {
-    return accelerator_configuration_.get();
+    return accelerator_configuration_;
   }
 
  private:
@@ -247,7 +247,7 @@ class ASH_EXPORT AcceleratorControllerImpl
   std::unique_ptr<AcceleratorHistoryImpl> accelerator_history_;
 
   // Manages all accelerator mappings.
-  std::unique_ptr<AshAcceleratorConfiguration> accelerator_configuration_;
+  AshAcceleratorConfiguration* accelerator_configuration_;
 
   // Handles the exit accelerator which requires a double press to exit and
   // shows a popup with an explanation.

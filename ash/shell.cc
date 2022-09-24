@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/accelerators/ash_focus_manager_factory.h"
 #include "ash/accelerators/magnifier_key_scroller.h"
 #include "ash/accelerators/pre_target_accelerator_handler.h"
@@ -1217,7 +1218,12 @@ void Shell::Init(
   cursor_manager_->SetDisplay(
       display::Screen::GetScreen()->GetPrimaryDisplay());
 
-  accelerator_controller_ = std::make_unique<AcceleratorControllerImpl>();
+  ash_accelerator_configuration_ =
+      std::make_unique<AshAcceleratorConfiguration>();
+  ash_accelerator_configuration_->Initialize();
+  accelerator_controller_ = std::make_unique<AcceleratorControllerImpl>(
+      ash_accelerator_configuration_.get());
+
   clipboard_history_controller_ =
       std::make_unique<ClipboardHistoryControllerImpl>();
 

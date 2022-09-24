@@ -397,11 +397,11 @@ void AcceleratorControllerImpl::TestApi::SetSideVolumeButtonLocation(
           region, side);
 }
 
-AcceleratorControllerImpl::AcceleratorControllerImpl()
+AcceleratorControllerImpl::AcceleratorControllerImpl(
+    AshAcceleratorConfiguration* config)
     : accelerator_manager_(std::make_unique<ui::AcceleratorManager>()),
       accelerator_history_(std::make_unique<AcceleratorHistoryImpl>()),
-      accelerator_configuration_(
-          std::make_unique<AshAcceleratorConfiguration>()) {
+      accelerator_configuration_(config) {
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
     // Observe input method changes to determine when to use positional
     // shortcuts. Calling AddObserver will cause InputMethodChanged to be
@@ -583,7 +583,6 @@ void AcceleratorControllerImpl::Init() {
   for (size_t i = 0; i < kActionsKeepingMenuOpenLength; ++i)
     actions_keeping_menu_open_.insert(kActionsKeepingMenuOpen[i]);
 
-  accelerator_configuration_->Initialize();
   RegisterAccelerators(accelerator_configuration_->GetAllAcceleratorInfos());
 
   if (debug::DebugAcceleratorsEnabled()) {
