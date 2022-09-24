@@ -242,15 +242,22 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
     MergeMatchesByProvider(&pair.second, matches_per_provider[pair.first]);
   }
 
-  // Make sure previous matches adhere to |input.prevent_inline_autocomplete()|.
-  // Previous matches are demoted in |MergeMatchesByProvider()| anyways, making
+  // Make sure previous matches adhere to `input.prevent_inline_autocomplete()`.
+  // Previous matches are demoted in `MergeMatchesByProvider()` anyways, making
   // them unlikely to be default; however, without this safeguard, they may
   // still be deduped with a higher-relevance yet not-allowed-to-be-default
-  // match later, resulting in a default match with autocompletion when
-  // |prevent_inline_autocomplete| is false.
+  // match later, resulting in a default match with autocompletion even when
+  // `prevent_inline_autocomplete` is true. Some providers don't set
+  // `inline_autocompletion` for matches not allowed to be default, which
+  // `SetAllowedToBeDefault()` relies on; so don't invoke it for those
+  // suggestions. Skipping those suggestions is fine, since
+  // `SetAllowedToBeDefault()` here is only intended to make
+  // `allowed_to_be_default` more conservative (true -> false, not vice versa).
   for (auto& m : matches_) {
-    if (input.prevent_inline_autocomplete() && m.from_previous)
+    if (input.prevent_inline_autocomplete() && m.from_previous &&
+        m.allowed_to_be_default_match) {
       m.SetAllowedToBeDefault(input);
+    }
   }
 }
 

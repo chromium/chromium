@@ -464,8 +464,7 @@ TEST_F(AutocompleteResultTest, TransferOldMatchesAllowedToBeDefault) {
 // |inline_autocompletion|, or false |allowed_to_be_default|. Tests all 12
 // combinations of 1) last match has a lower or higher relevance than current
 // match, 2) last match was allowed to be default, 3) last match had
-// autocompletion (only possible if its allowed to be default), and 4) current
-// match is allowed to be default.
+// autocompletion, and 4) current match is allowed to be default.
 TEST_F(AutocompleteResultTest,
        TransferOldMatchesAllowedToBeDefaultWithPreventInlineAutocompletion) {
   AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
@@ -475,10 +474,12 @@ TEST_F(AutocompleteResultTest,
   {
     SCOPED_TRACE(
         "Current matches not allowed to be default and scored higher.");
-    // 1) |allowed_to_be_default| should be true only for |last| matches without
-    // autocompletion.
-    // 2) When |allowed_to_be_default| is false, |current| matches should be
-    // preferred as they're scored higher.
+    // 1) `allowed_to_be_default` should be true only for `last` matches without
+    //    autocompletion.
+    // 2) `allowed_to_be_default` should not be set true for previously not
+    //     allowed matches, even if they don't have inline autocompletion.
+    // 3) When `allowed_to_be_default` is false, `current` matches should be
+    //    preferred as they're scored higher.
     // clang-format off
     TestData last[] = {
         {0, 1, 1020, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, {}, "autocompletion"},
@@ -493,7 +494,7 @@ TEST_F(AutocompleteResultTest,
     TestData result[] = {
         {1, 1, 1510, true},
         {0, 2, 1520, false},
-        {2, 1, 1500, true},
+        {2, 2, 1500, false},
     };
     // clang-format on
 
@@ -504,7 +505,7 @@ TEST_F(AutocompleteResultTest,
 
   {
     SCOPED_TRACE("Current matches not allowed to be default and scored lower.");
-    // Similar to above, except |last| matches should be preferred in deduping
+    // Similar to above, except `last` matches should be preferred in deduping
     // as they're scored higher.
     // clang-format off
     TestData last[] = {
@@ -523,7 +524,7 @@ TEST_F(AutocompleteResultTest,
         {1, 1, 1010, true},
         {3, 2, 1500, false},
         {0, 1, 1020, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, {}, "autocompletion"},
-        {2, 1, 1000, true},
+        {2, 1, 1000, false},
     };
     // clang-format on
 
@@ -534,7 +535,7 @@ TEST_F(AutocompleteResultTest,
 
   {
     SCOPED_TRACE("Current matches allowed to be default and scored higher.");
-    // Deduping should prefer the |current| matches as they're both allowed to
+    // Deduping should prefer the `current` matches as they're both allowed to
     // be default and scored higher.
     // clang-format off
     TestData last[] = {
@@ -561,10 +562,9 @@ TEST_F(AutocompleteResultTest,
 
   {
     SCOPED_TRACE("Current matches allowed to be default and scored lower.");
-    // |last| matches with empty autocompletion should be made allowed to be
-    // default and preferred in deduping as they're scored higher. Otherwise,
-    // |current| matches should be preferred in deduping as they're allowed to
-    // be default.
+    // `last` matches still allowed to be default after transferring should be
+    // preferred in deduping as they're scored higher. Otherwise, `current`
+    // matches should be preferred in deduping as they're allowed to be default.
     // clang-format off
     TestData last[] = {
         {0, 1, 1020, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, {}, "autocompletion"},
@@ -582,7 +582,7 @@ TEST_F(AutocompleteResultTest,
         {3, 2, 1500, true},
         {0, 2, 1020, true},
         {1, 1, 1010, true},
-        {2, 1, 1000, true},
+        {2, 2, 1000, true},
     };
     // clang-format on
 
