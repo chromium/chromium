@@ -47,9 +47,9 @@ const int kMaxBytesPerCopyOperation = 1024 * 1024 * 4;
 // at normal thread priority.
 // TODO(crbug.com/1072756): Cleanup the feature when the Stable experiment is
 // complete, on November 25, 2020.
-const base::Feature kOneCopyRasterBufferPlaybackNormalThreadPriority{
-    "OneCopyRasterBufferPlaybackNormalThreadPriority",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOneCopyRasterBufferPlaybackNormalThreadPriority,
+             "OneCopyRasterBufferPlaybackNormalThreadPriority",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

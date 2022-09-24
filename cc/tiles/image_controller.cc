@@ -19,8 +19,9 @@ namespace {
 
 // When this feature is enabled, StopWorkerTasks() skips waiting synchronously
 // if no task is running.
-const base::Feature kImageControllerWaitOnlyForRunningTask{
-    "ImageControllerWaitOnlyForRunningTask", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kImageControllerWaitOnlyForRunningTask,
+             "ImageControllerWaitOnlyForRunningTask",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

@@ -18,8 +18,9 @@ namespace features {
 //   This means it might only decode one frame, resuming where it left off.
 //   However, if the animation updates faster than the display's refresh rate,
 //   it is possible to decode more than a single frame.
-const base::Feature kAnimatedImageResume = {"AnimatedImageResume",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAnimatedImageResume,
+             "AnimatedImageResume",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsImpulseScrollAnimationEnabled() {
   return base::FeatureList::IsEnabled(features::kWindowsScrollingPersonality);
@@ -27,51 +28,60 @@ bool IsImpulseScrollAnimationEnabled() {
 
 // Whether the compositor should attempt to sync with the scroll handlers before
 // submitting a frame.
-const base::Feature kSynchronizedScrolling = {
-    "SynchronizedScrolling",
+BASE_FEATURE(kSynchronizedScrolling,
+             "SynchronizedScrolling",
 #if BUILDFLAG(IS_ANDROID)
-    base::FEATURE_DISABLED_BY_DEFAULT};
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #else
-    base::FEATURE_ENABLED_BY_DEFAULT};
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-const base::Feature kRemoveMobileViewportDoubleTap{
-    "RemoveMobileViewportDoubleTap", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kRemoveMobileViewportDoubleTap,
+             "RemoveMobileViewportDoubleTap",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kScrollUnification{"ScrollUnification",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kScrollUnification,
+             "ScrollUnification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSchedulerSmoothnessForAnimatedScrolls{
-    "SmoothnessModeForAnimatedScrolls", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSchedulerSmoothnessForAnimatedScrolls,
+             "SmoothnessModeForAnimatedScrolls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kHudDisplayForPerformanceMetrics{
-    "HudDisplayForPerformanceMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kHudDisplayForPerformanceMetrics,
+             "HudDisplayForPerformanceMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kJankInjectionAblationFeature{
-    "JankInjectionAblation", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kJankInjectionAblationFeature,
+             "JankInjectionAblation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPreferNewContentForCheckerboardedScrolls{
-    "PreferNewContentForCheckerboardedScrolls",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPreferNewContentForCheckerboardedScrolls,
+             "PreferNewContentForCheckerboardedScrolls",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kDurationEstimatesInCompositorTimingHistory{
-    "DurationEstimatesInCompositorTimingHistory",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDurationEstimatesInCompositorTimingHistory,
+             "DurationEstimatesInCompositorTimingHistory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kNonBlockingCommit{"NonBlockingCommit",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNonBlockingCommit,
+             "NonBlockingCommit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSlidingWindowForDroppedFrameCounter{
-    "SlidingWindowForDroppedFrameCounter", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSlidingWindowForDroppedFrameCounter,
+             "SlidingWindowForDroppedFrameCounter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kNormalPriorityImageDecoding{
-    "NormalPriorityImageDecoding", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNormalPriorityImageDecoding,
+             "NormalPriorityImageDecoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSkipCommitsIfNotSynchronizingCompositorState{
-    "SkipCommitsIfNotSynchronizingCompositorState",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSkipCommitsIfNotSynchronizingCompositorState,
+             "SkipCommitsIfNotSynchronizingCompositorState",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kUseDMSAAForTiles{"UseDMSAAForTiles",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseDMSAAForTiles,
+             "UseDMSAAForTiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
