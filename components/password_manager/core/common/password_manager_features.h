@@ -82,6 +82,7 @@ BASE_DECLARE_FEATURE(kUnifiedCredentialManagerDryRun);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroid);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerErrorMessages);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly);
+BASE_DECLARE_FEATURE(kUnifiedPasswordManagerReenrollment);
 #endif
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 
@@ -117,6 +118,7 @@ constexpr base::FeatureParam<UpmExperimentVariation>
                                  UpmExperimentVariation::kEnableForSyncingUsers,
                                  &kUpmExperimentVariationOption};
 
+extern const base::FeatureParam<int> kMaxUPMReenrollmentAttempts;
 #endif
 
 // Field trial and corresponding parameters.

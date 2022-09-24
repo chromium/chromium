@@ -285,6 +285,12 @@ BASE_FEATURE(kUnifiedPasswordManagerErrorMessages,
 BASE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly,
              "UnifiedPasswordManagerSyncUsingAndroidBackendOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables automatic reenrollment into the Unified Password Manager for clients
+// that were previously evicted after experiencing errors.
+BASE_FEATURE(kUnifiedPasswordManagerReenrollment,
+             "UnifiedPasswordManagerReenrollment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables support of sending additional votes on username first flow. The votes
@@ -317,6 +323,12 @@ extern const base::FeatureParam<std::string> kIgnoredGmsApiErrors = {
 // User could still be evicted if retries do not resolve the error.
 extern const base::FeatureParam<std::string> kRetriableGmsApiErrors = {
     &kUnifiedPasswordManagerAndroid, "retriable_api_errors", ""};
+
+// The maximum possible number of reenrollments into the UPM. Needed to avoid a
+// patchy experience for users who experience errors in communication with
+// Google Mobile Services on a regular basis.
+extern const base::FeatureParam<int> kMaxUPMReenrollmentAttempts = {
+    &kUnifiedPasswordManagerReenrollment, "max_reenrollment_attempts", 0};
 #endif
 
 // Field trial identifier for password generation requirements.

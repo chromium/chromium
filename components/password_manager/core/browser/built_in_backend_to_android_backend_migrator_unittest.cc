@@ -75,6 +75,12 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
         prefs::kRequiresMigrationAfterSyncStatusChange, false);
     prefs_.registry()->RegisterStringPref(::prefs::kGoogleServicesLastUsername,
                                           "testaccount@gmail.com");
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
+    prefs_.registry()->RegisterIntegerPref(
+        prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
+    prefs_.registry()->RegisterIntegerPref(
+        prefs::kTimesReenrolledToGoogleMobileServices, 0);
     CreateMigrator(&built_in_backend_, &android_backend_, &prefs_);
   }
 
@@ -128,7 +134,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   Init();
   InitSyncService(/*is_password_sync_enabled=*/true);
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   EXPECT_EQ(1, prefs()->GetInteger(
@@ -147,7 +154,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 
   InitSyncService(/*is_password_sync_enabled=*/false);
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   EXPECT_EQ(0, prefs()->GetInteger(
@@ -165,7 +173,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 
   InitSyncService(/*is_password_sync_enabled=*/false);
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   EXPECT_EQ(1, prefs()->GetInteger(
@@ -185,7 +194,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   prefs()->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
                      (base::Time::Now() - base::Hours(2)).ToDoubleT());
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   EXPECT_EQ(0, prefs()->GetInteger(
@@ -204,7 +214,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       /*disabled_features=*/{});
   Init(/*current_migration_version=*/1);
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   EXPECT_EQ(1, prefs()->GetInteger(
@@ -222,7 +233,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       /*disabled_features=*/{});
   Init(/*current_migration_version=*/1);
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   EXPECT_EQ(1, prefs()->GetInteger(
@@ -295,7 +307,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   form_with_local_data.skip_zero_click = true;
   built_in_backend().AddLoginAsync(form_with_local_data, base::DoNothing());
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
@@ -328,7 +341,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   form_with_local_data.skip_zero_click = true;
   android_backend().AddLoginAsync(form_with_local_data, base::DoNothing());
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
@@ -364,7 +378,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   form_1.password_value.clear();
   built_in_backend().AddLoginAsync(form_2, base::DoNothing());
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
@@ -398,7 +413,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   android_backend().AddLoginAsync(form_1, base::DoNothing());
   RunUntilIdle();
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
@@ -412,6 +428,50 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   android_backend().GetAllLoginsAsync(mock_reply.Get());
   built_in_backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       ReenrollmentAttemptShouldMoveLocalOnlyDataToAndroidBackend) {
+  feature_list().InitAndEnableFeatureWithParameters(
+      /*feature=*/features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
+
+  Init();
+  InitSyncService(/*is_password_sync_enabled=*/true);
+
+  prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                      true);
+  const int initial_num_reenrollments =
+      prefs()->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices);
+
+  PasswordForm form = CreateTestPasswordForm();
+  android_backend().AddLoginAsync(form, base::DoNothing());
+
+  // 'skip_zero_click' is a local only field in PasswordForm and hence not
+  // available in Android backend before the migration.
+  PasswordForm form_with_local_data = form;
+  form_with_local_data.skip_zero_click = true;
+  built_in_backend().AddLoginAsync(form_with_local_data, base::DoNothing());
+
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/true);
+  RunUntilIdle();
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  std::vector<std::unique_ptr<PasswordForm>> expected_logins_android_backend;
+  expected_logins_android_backend.push_back(
+      std::make_unique<PasswordForm>(form_with_local_data));
+  EXPECT_CALL(mock_reply,
+              Run(LoginsResultsOrErrorAre(&expected_logins_android_backend)));
+  android_backend().GetAllLoginsAsync(mock_reply.Get());
+  RunUntilIdle();
+
+  // Since the migration has completed successfully, the user should be
+  // reenrolled into UPM.
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices),
+            initial_num_reenrollments + 1);
 }
 
 // Holds the built in and android backend's logins and the expected result after
@@ -492,7 +552,8 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   }
   RunUntilIdle();
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   // The built-in logins should not be affected.
@@ -533,7 +594,8 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   }
   RunUntilIdle();
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   for (auto* const backend : {&android_backend(), &built_in_backend()}) {
@@ -566,7 +628,8 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   }
   RunUntilIdle();
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
   for (auto* const backend : {&android_backend(), &built_in_backend()}) {
@@ -643,6 +706,12 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
         prefs::kRequiresMigrationAfterSyncStatusChange, false);
     prefs()->registry()->RegisterStringPref(
         ::prefs::kGoogleServicesLastUsername, "testaccount@gmail.com");
+    prefs()->registry()->RegisterBooleanPref(
+        prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
+    prefs()->registry()->RegisterIntegerPref(
+        prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
+    prefs()->registry()->RegisterIntegerPref(
+        prefs::kTimesReenrolledToGoogleMobileServices, 0);
 
     // Enable UPM on the stage 'kEnableForSyncingUsers'.
     feature_list().InitAndEnableFeatureWithParameters(
@@ -665,6 +734,11 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
 
     if (GetParam().is_non_syncable_data_migration) {
       prefs()->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, true);
+    }
+
+    if (GetParam().expected_migration_type == "ReenrollmentAttempt") {
+      prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                          true);
     }
   }
 
@@ -691,7 +765,8 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestMetrics,
 
   if (GetParam().expected_migration_type == "InitialMigrationForSyncUsers" ||
       GetParam().expected_migration_type ==
-          "NonSyncableDataMigrationToAndroidBackend") {
+          "NonSyncableDataMigrationToAndroidBackend" ||
+      GetParam().expected_migration_type == "ReenrollmentAttemptMigration") {
     EXPECT_CALL(built_in_backend_, GetAllLoginsAsync)
         .WillOnce(WithArg<0>(Invoke(test_migration_callback)));
   } else if (GetParam().expected_migration_type ==
@@ -700,7 +775,8 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestMetrics,
         .WillOnce(WithArg<1>(Invoke(test_migration_callback)));
   }
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(GetParam().expected_migration_type ==
+                                        "ReenrollmentAttemptMigration");
   FastForwardBy(kLatencyDelta);
 
   histogram_tester.ExpectTotalCount(latency_metric_, 1);
@@ -760,7 +836,21 @@ INSTANTIATE_TEST_SUITE_P(
             .is_non_syncable_data_migration = true,
             .is_successful_migration = false,
             .expected_migration_type =
-                "NonSyncableDataMigrationToBuiltInBackend"}));
+                "NonSyncableDataMigrationToBuiltInBackend"},
+        // Successful reenrollment attempt.
+        MigrationParamForMetrics{
+            .migration_ran_before = true,
+            .is_sync_enabled = true,
+            .is_non_syncable_data_migration = false,
+            .is_successful_migration = true,
+            .expected_migration_type = "ReenrollmentAttemptMigration"},
+        // Unsuccessful reenrollment attempt.
+        MigrationParamForMetrics{
+            .migration_ran_before = true,
+            .is_sync_enabled = true,
+            .is_non_syncable_data_migration = false,
+            .is_successful_migration = false,
+            .expected_migration_type = "ReenrollmentAttemptMigration"}));
 
 class BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest
     : public BuiltInBackendToAndroidBackendMigratorTest {
@@ -809,7 +899,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   // executed. Check that exactly one UpdateLoginAsync() is called.
   EXPECT_CALL(android_backend_, UpdateLoginAsync).Times(1);
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
 
   // Migration version is still 0 since migration didn't complete.
   EXPECT_EQ(0, prefs()->GetInteger(
@@ -853,7 +944,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   // executed. Check that exactly one AddLoginAsync() is called.
   EXPECT_CALL(android_backend_, AddLoginAsync).Times(1);
 
-  migrator()->StartMigrationIfNecessary();
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
 
   // Migration version is still 0 since migration didn't complete.
   EXPECT_EQ(0, prefs()->GetInteger(

@@ -106,6 +106,11 @@ bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
              syncer::UserSelectableType::kPasswords);
 }
 
+bool IsPasswordSyncActive(const syncer::SyncService* sync_service) {
+  return IsPasswordSyncEnabled(sync_service) &&
+         sync_service->GetActiveDataTypes().Has(syncer::PASSWORDS);
+}
+
 absl::optional<std::string> GetSyncingAccount(
     const syncer::SyncService* sync_service) {
   if (!sync_service || !IsPasswordSyncEnabled(sync_service))

@@ -90,6 +90,9 @@ chromium-metrics-reviews@google.com.
   <variant name="NonSyncableDataMigrationToBuiltInBackend"
       summary="migrating non-syncable data to the built-in backend when
                password sync gets disabled"/>
+  <variant name="ReenrollmentAttemptMigration"
+      summary="migrating non-syncable data to the android backend when
+               performing reenrollment possibility check"/>
 </variants>
 
 <histogram name="KeyboardAccessory.AccessoryActionImpression"
@@ -2133,6 +2136,19 @@ chromium-metrics-reviews@google.com.
     (potentially) requests all logins to notify consumers because data may have
     changed. Changes can occur within Chrome (e.g. after saving/updating a
     password) or externally.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordStore.TimesReenrolledInUPM"
+    units="Times" expires_after="2023-03-19">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Recorded on Android when the password store backend is created. This happens
+    on startup and once per profile, only for users in the UPM experiment. Users
+    can be unenrolled from UPM after encountering errors in communication with
+    the backend and reenrolled back if the backend communication is considered
+    reliable again. Records the number of times the user was reenrolled.
   </summary>
 </histogram>
 

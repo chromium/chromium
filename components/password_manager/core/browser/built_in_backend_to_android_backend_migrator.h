@@ -42,6 +42,12 @@ class BuiltInBackendToAndroidBackendMigrator {
     // includes both the initial migration (to the android backend) and the
     // rolling migration (to the built-in backend).
     kForLocalUsers,
+    // When the sync user is unenrolled into the UPM experiment, but the sync
+    // functions without errors on the device, automatic UPM reenrollment
+    // attempts will be made. Because the user is syncing, the android backend
+    // already has all credentials, so only the non-syncable data should be
+    // moved.
+    kReenrollmentAttempt,
   };
 
   // |built_in_backend| and |android_backend| must not be null and must outlive
@@ -60,9 +66,11 @@ class BuiltInBackendToAndroidBackendMigrator {
       BuiltInBackendToAndroidBackendMigrator&&) = delete;
   ~BuiltInBackendToAndroidBackendMigrator();
 
-  void StartMigrationIfNecessary();
+  void StartMigrationIfNecessary(bool should_attempt_upm_reenrollment);
 
   void OnSyncServiceInitialized(syncer::SyncService* sync_service);
+
+  base::WeakPtr<BuiltInBackendToAndroidBackendMigrator> GetWeakPtr();
 
  private:
   struct IsPasswordLess;
@@ -76,7 +84,7 @@ class BuiltInBackendToAndroidBackendMigrator {
   void UpdateMigrationVersionInPref();
 
   // Returns the type of migration that should happen next.
-  MigrationType GetMigrationType() const;
+  MigrationType GetMigrationType(bool should_attempt_upm_reenrollment) const;
 
   // Schedules async call(s) to read passwords with a callback to migrate
   // passwords once they are retrieved.
@@ -155,7 +163,7 @@ class BuiltInBackendToAndroidBackendMigrator {
 
   raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
-  bool non_syncable_data_migration_in_progress_ = false;
+  MigrationType migration_in_progress_type_ = MigrationType::kNone;
 
   base::WeakPtrFactory<BuiltInBackendToAndroidBackendMigrator>
       weak_ptr_factory_{this};
