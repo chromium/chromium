@@ -8,6 +8,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
+#include "third_party/pdfium/public/fpdf_searchex.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -105,20 +106,46 @@ std::u16string PDFiumRange::GetText() const {
   AdjustForBackwardsRange(index, count);
   if (count > 0) {
     // Note that the `expected_size` value includes the NUL terminator.
+    //
+    // Cannot set `check_expected_size` to true here because the fix to
+    // https://crbug.com/pdfium/1139 made it such that FPDFText_GetText() is
+    // not always consistent with FPDFText_CountChars() and may trim characters.
+    //
+    // Instead, treat `count` as the requested count, but use the size of
+    // `result` as the source of truth for how many characters
+    // FPDFText_GetText() actually wrote out.
     PDFiumAPIStringBufferAdapter<std::u16string> api_string_adapter(
-        &result, /*expected_size=*/count + 1, /*check_expected_size=*/true);
+        &result, /*expected_size=*/count + 1, /*check_expected_size=*/false);
     unsigned short* data =
         reinterpret_cast<unsigned short*>(api_string_adapter.GetData());
     int written = FPDFText_GetText(page_->GetTextPage(), index, count, data);
+    // FPDFText_GetText() returns 0 on failure. Never negative value.
+    DCHECK_GE(written, 0);
     api_string_adapter.Close(written);
 
     const gfx::RectF page_bounds = page_->GetCroppedRect();
     std::u16string in_bound_text;
     in_bound_text.reserve(result.size());
-    for (int i = 0; i < count; ++i) {
+
+    // If FPDFText_GetText() trimmed off characters, figure out how many were
+    // trimmed from the front. Store the result in `index_offset`, so the
+    // IsCharInPageBounds() calls below can have the correct index.
+    CHECK_GE(static_cast<size_t>(count), result.size());
+    size_t trimmed_count = static_cast<size_t>(count) - result.size();
+    int index_offset = 0;
+    while (trimmed_count) {
+      if (FPDFText_GetTextIndexFromCharIndex(page_->GetTextPage(),
+                                             index + index_offset) >= 0) {
+        break;
+      }
+      --trimmed_count;
+      ++index_offset;
+    }
+
+    for (size_t i = 0; i < result.size(); ++i) {
       // Filter out characters outside the page bounds, which are semantically
       // not part of the page.
-      if (page_->IsCharInPageBounds(index + i, page_bounds))
+      if (page_->IsCharInPageBounds(index + index_offset + i, page_bounds))
         in_bound_text += result[i];
     }
     result = in_bound_text;
