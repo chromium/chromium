@@ -159,6 +159,7 @@ dictionary RTCAudioSourceStats : RTCMediaSourceStats {
               double              echoReturnLoss;
               double              echoReturnLossEnhancement;
               double              droppedSamplesDuration;
+              unsigned long       droppedSamplesEvents;
               double              totalCaptureDelay;
               unsigned long long  totalSamplesCaptured;
 };
@@ -171,10 +172,11 @@ dictionary RTCVideoSourceStats : RTCMediaSourceStats {
 };
 
 dictionary RTCAudioPlayoutStats : RTCStats {
-             double synthesizedSamplesDuration;
-             double totalSamplesDuration;
-             double totalPlayoutDelay;
-             double totalSamplesCount;
+             double        synthesizedSamplesDuration;
+             unsigned long synthesizedSamplesEvents;
+             double        totalSamplesDuration;
+             double        totalPlayoutDelay;
+             double        totalSamplesCount;
 };
 
 dictionary RTCPeerConnectionStats : RTCStats {

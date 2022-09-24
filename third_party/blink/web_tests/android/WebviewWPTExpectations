@@ -125,7 +125,6 @@ crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/navigat
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-report-to.https.html [ Failure ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin.https.html [ Failure ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-unsafe-none-report-to.https.html [ Failure ]
-crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-redirect-with-same-origin-allow-popups.https.html [ Failure ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/resource-popup.https.html [ Timeout ]
 
 # https://crbug.com/154571: SharedWorker is not supported on Android.
@@ -3051,11 +3050,6 @@ crbug.com/1050754 external/wpt/infrastructure/server/order-of-metas.any.sharedwo
 crbug.com/1050754 external/wpt/infrastructure/server/secure-context.https.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/infrastructure/server/title.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/infrastructure/server/wpt-server-http.sub.html [ Failure ]
-crbug.com/1050754 external/wpt/infrastructure/testdriver/actions/multiTouchPoints.html [ Failure Timeout ]
-crbug.com/1050754 external/wpt/infrastructure/testdriver/actions/multiTouchPointsReleaseFirstPoint.html [ Failure Timeout ]
-crbug.com/1050754 external/wpt/infrastructure/testdriver/actions/multiTouchPointsReleaseSecondPoint.html [ Failure Timeout ]
-crbug.com/1050754 external/wpt/infrastructure/testdriver/actions/multiTouchPointsTwoTouchStarts.html [ Failure Timeout ]
-crbug.com/1050754 external/wpt/infrastructure/testdriver/actions/multiTouchPointsWithPause.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/infrastructure/testdriver/click_nested.html [ Pass Timeout ]
 crbug.com/1050754 external/wpt/infrastructure/testdriver/click_nested_crossorigin.sub.html [ Timeout ]
 crbug.com/1050754 external/wpt/infrastructure/testdriver/file_upload.sub.html [ Failure ]
@@ -4845,7 +4839,6 @@ crbug.com/1050754 external/wpt/webaudio/the-audio-api/the-convolvernode-interfac
 crbug.com/1050754 external/wpt/webaudio/the-audio-api/the-convolvernode-interface/realtime-conv.html [ Failure ]
 crbug.com/1050754 external/wpt/webaudio/the-audio-api/the-delaynode-interface/delaynode-channel-count-1.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/cors-check.https.html [ Failure ]
-crbug.com/1050754 external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/mediaElementAudioSourceToScriptProcessorTest.html [ Failure ]
 crbug.com/1050754 external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/no-cors.https.html [ Failure ]
 crbug.com/1050754 external/wpt/webauthn/createcredential-badargs-authnrselection.https.html [ Crash Failure ]
 crbug.com/1050754 external/wpt/webauthn/createcredential-badargs-challenge.https.html [ Crash Failure ]

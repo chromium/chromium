@@ -2719,19 +2719,6 @@
      * to reduce intermittents without compromising test execution
      * speed when the condition is quickly met.
      *
-     * @example
-     * async_test(t => {
-     *  const popup = window.open("resources/coop-coep.py?coop=same-origin&coep=&navigate=about:blank");
-     *  t.add_cleanup(() => popup.close());
-     *  assert_equals(window, popup.opener);
-     *
-     *  popup.onload = t.step_func(() => {
-     *    assert_true(popup.location.href.endsWith("&navigate=about:blank"));
-     *    // Use step_wait_func_done as about:blank cannot message back.
-     *    t.step_wait_func_done(() => popup.location.href === "about:blank");
-     *  });
-     * }, "Navigating a popup to about:blank");
-     *
      * @param {Function} cond A function taking no arguments and
      *                        returning a boolean. The callback is called
      *                        when this function returns true.
@@ -2773,6 +2760,19 @@
      * whenever possible since it allows the timeout to be longer
      * to reduce intermittents without compromising test execution speed
      * when the condition is quickly met.
+     *
+     * @example
+     * async_test(t => {
+     *  const popup = window.open("resources/coop-coep.py?coop=same-origin&coep=&navigate=about:blank");
+     *  t.add_cleanup(() => popup.close());
+     *  assert_equals(window, popup.opener);
+     *
+     *  popup.onload = t.step_func(() => {
+     *    assert_true(popup.location.href.endsWith("&navigate=about:blank"));
+     *    // Use step_wait_func_done as about:blank cannot message back.
+     *    t.step_wait_func_done(() => popup.location.href === "about:blank");
+     *  });
+     * }, "Navigating a popup to about:blank");
      *
      * @param {Function} cond A function taking no arguments and
      *                        returning a boolean. The callback is called

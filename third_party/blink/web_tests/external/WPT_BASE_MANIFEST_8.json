@@ -3477,6 +3477,13 @@
       {}
      ]
     ],
+    "when-defined-reentry-crash.html": [
+     "38614cbbd7836a955c40ea64165a22bcb44f7e63",
+     [
+      null,
+      {}
+     ]
+    ],
     "xhtml-crash.xhtml": [
      "8b45d2ecc830c088019b4896f1cdf0d29c0d47fb",
      [
@@ -248218,6 +248225,19 @@
     },
     "struct": {
      "reftests": {
+      "currentScale-change-repaint.html": [
+       "bd2773b5902bb5e8ab5383526412337eaf45a31a",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "requiredextensions-empty-string.svg": [
        "28f5da4a3e4358821d907a2883b6ef8fa40eeaa4",
        [
@@ -254208,7 +254228,7 @@
     },
     "resources": {
      "bluetooth-fake-devices.js": [
-      "5694b0803a388946e0df615a135120ebcd61d0e6",
+      "b718ab579a1822e08d7f9026ceb519eccabca39f",
       []
      ],
      "bluetooth-scanning-helpers.js": [
@@ -312347,7 +312367,7 @@
          []
         ],
         "helper.sub.js": [
-         "4b42d91670252f929306fcda2e34dd4e61ea3265",
+         "bae56869add48a2a7bfc0c9372fd560282b301f8",
          []
         ],
         "inflight-fetch-helper.js": [
@@ -312355,7 +312375,7 @@
          []
         ],
         "service-worker.js": [
-         "60dceb0a6a6f5f2cf882610e3bd19e15e9533458",
+         "df9ce65acdaba652fe9fe18c93d4b821e1484484",
          []
         ],
         "slow.py": [
@@ -329377,6 +329397,10 @@
       "iframeChild.html": [
        "a46c54a7b7b51fec65d335ad54fc8fb4ca4c2050",
        []
+      ],
+      "touchEvents.js": [
+       "c1213b6693bd8a43da07e57c9c6bab11e0a64184",
+       []
       ]
      },
      "click_child.html": [
@@ -329785,7 +329809,7 @@
      []
     ],
     "compute-pressure.idl": [
-     "944852b87472533f784e6a4947498d9acae7b89b",
+     "e855b30cd9bc8bdcb835a38be0e57b9d44d725d4",
      []
     ],
     "console.idl": [
@@ -330149,7 +330173,7 @@
      []
     ],
     "media-source.idl": [
-     "06ad5dc4a3e74493220e491b4b7331b4fe90ed2e",
+     "11059437f625a53caf328b488cad6e2018e01a19",
      []
     ],
     "mediacapture-automation.idl": [
@@ -330469,7 +330493,7 @@
      []
     ],
     "video-rvfc.idl": [
-     "4c76b8e7d4f75e40b013adc3c6a6ed8f8585a0b2",
+     "adb4ef2301da9084f6bf546d44a5c923416c5a5f",
      []
     ],
     "virtual-keyboard.idl": [
@@ -330585,7 +330609,7 @@
      []
     ],
     "webrtc-stats.idl": [
-     "0d6971d4af2f9536c32e80a1812a9518e76a7f9d",
+     "9458096214ab85d6c6d7334b985038683c78a38a",
      []
     ],
     "webrtc-svc.idl": [
@@ -330649,7 +330673,7 @@
      []
     ],
     "webxrlayers.idl": [
-     "f7ad942045a28ab69b93967a47a3b66a57033005",
+     "785a742e0b58a28a36c31680dcff4f85bda57aa0",
      []
     ],
     "window-controls-overlay.idl": [
@@ -338233,7 +338257,7 @@
      []
     ],
     "testharness.js": [
-     "bfb5cc087775da9a75a2c2976c53dfef67c22a3e",
+     "c3072c2936bf37259257c59a98cfa5d1e9622c74",
      []
     ],
     "testharness.js.headers": [
@@ -345221,7 +345245,7 @@
      []
     ],
     "viewport_support.js": [
-     "7da5670d9027249e444f05badae048874a702bc7",
+     "a82bd2b028010e053199e55bd7bb357361581e6f",
      []
     ]
    },
@@ -347653,7 +347677,7 @@
        []
       ],
       "fixtures.py": [
-       "30f93d4cea0fb44e0930c98eeb881b4dc19d1c88",
+       "e63c0d01d269d277fb299d6bf1f6cb41bdd5a091",
        []
       ],
       "fixtures_bidi.py": [
@@ -348569,7 +348593,7 @@
      []
     ],
     "supported-stats-expected.txt": [
-     "2644e3c93dab073277f1ffdde423147f0a5a1364",
+     "7b8fbe8bc418573d8afe54aa9e5b2d9ebdea4361",
      []
     ]
    },
@@ -375710,6 +375734,53 @@
      ],
      [
       "compression/compression-bad-chunks.tentative.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "compression-constructor-error.tentative.any.js": [
+     "2d5271c11d31f46ec79a382a2fd44aad2a4b79d9",
+     [
+      "compression/compression-constructor-error.tentative.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compression/compression-constructor-error.tentative.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compression/compression-constructor-error.tentative.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compression/compression-constructor-error.tentative.any.worker.html",
       {
        "script_metadata": [
         [
@@ -454327,6 +454398,15 @@
          }
         ]
        ],
+       "service-worker-client-postmessage.https.html": [
+        "acc682a073ab913e79b094d45029eaade70bea1c",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
        "service-worker-clients-claim.https.html": [
         "d9540c221bdf21e8e4256f30548aedbfee46e218",
         [
@@ -481470,7 +481550,7 @@
         ]
        ],
        "reporting-coop-navigated-opener.https.html": [
-        "487a4665d79c19ce00b1e5084a0929c1e6946f61",
+        "1ee64f9fbea1d0211f28c7adf320b87021ba9e9a",
         [
          null,
          {
@@ -481531,7 +481611,7 @@
         ]
        ],
        "reporting-redirect-with-same-origin-allow-popups.https.html": [
-        "b19cdd5a9c1e131711e832237daa90a85b5bf1dd",
+        "cb101f34797c4d7b88e532a9933ff19f616d3724",
         [
          null,
          {
@@ -504826,7 +504906,7 @@
        ]
       ],
       "elementTiming.html": [
-       "ec71e0477ba1ff98836bca7db9a19484cc01d4d2",
+       "33731e92999809204821e25e96ede246fd5f7e0e",
        [
         null,
         {
@@ -504871,7 +504951,7 @@
        ]
       ],
       "multiTouchPoints.html": [
-       "3933db156297d840c96154daa6cb71d62c6562cf",
+       "64aa4296310036b662707f6e8c98ecbdd658f934",
        [
         null,
         {
@@ -504880,7 +504960,7 @@
        ]
       ],
       "multiTouchPointsReleaseFirstPoint.html": [
-       "1f166674991fbd3c31419e4c3f194ca5bd28db64",
+       "41027beb67c0c099df7c26a1096382e9a73d1822",
        [
         null,
         {
@@ -504889,7 +504969,16 @@
        ]
       ],
       "multiTouchPointsReleaseSecondPoint.html": [
-       "ba976939365f087a929b4c027d55876963a00177",
+       "58a2263f5b9fc7d42cd5e6415fd6ad0f2282135d",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "multiTouchPointsSimultaneousMove.html": [
+       "5be5b4489656e146ff13676144c352326553f206",
        [
         null,
         {
@@ -504898,7 +504987,7 @@
        ]
       ],
       "multiTouchPointsTwoTouchStarts.html": [
-       "788d96e1fd6aa74d98f28ac44d92cccb86c71a2b",
+       "06f48ebc38a17ee952cbfb208724a7ba73b457eb",
        [
         null,
         {
@@ -504907,7 +504996,7 @@
        ]
       ],
       "multiTouchPointsWithPause.html": [
-       "85a0561c620565f75aa4d997867a8666623ef950",
+       "6b89d74c6573502e63148f0dd779808348951699",
        [
         null,
         {
@@ -517537,6 +517626,20 @@
        {}
       ]
      ],
+     "dispose-for-full-session-history.tentative.html": [
+      "9bed225cf36550a71942188a2b9d701e02244cdb",
+      [
+       null,
+       {}
+      ]
+     ],
+     "dispose-for-navigation-in-child.html": [
+      "24828770852687fc0af9aa1473119e2ac40f6a1a",
+      [
+       null,
+       {}
+      ]
+     ],
      "dispose-same-document-intercept.html": [
       "44aa096aafec78dd06215b90ac75316d61b5c5e2",
       [
@@ -517574,6 +517677,13 @@
      ],
      "dispose-same-document.html": [
       "27806ce3c86a672701785be2453788e50b9b7388",
+      [
+       null,
+       {}
+      ]
+     ],
+     "dispose-skip-current-on-truncate.html": [
+      "56ec4d301f9540fc7baf3f0f8daf52df6b4ea4b2",
       [
        null,
        {}
@@ -567606,7 +567716,7 @@
        ]
       ],
       "mediaElementAudioSourceToScriptProcessorTest.html": [
-       "6a1a894b121e7c6107210bfbd7736a38ae6090a6",
+       "56d0787b7673b11d903de23159b49ba15b85c1f4",
        [
         null,
         {}
@@ -611072,15 +611182,6 @@
         {}
        ]
       ],
-      "pointer.py": [
-       "53e1535019bc4366746cef979e444e0d7d25c529",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
       "pointer_contextmenu.py": [
        "50f684327f2ab044905cbd3b0da59336ead25f20",
        [
@@ -611102,6 +611203,15 @@
         {}
        ]
       ],
+      "pointer_mouse.py": [
+       "462e5a70171caae0f0fe944581f7789b4a9fdb56",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
+       ]
+      ],
       "pointer_origin.py": [
        "c4e5db7a00176ed647561b5db9c7f896e67e42c1",
        [
@@ -611114,6 +611224,24 @@
        [
         null,
         {}
+       ]
+      ],
+      "pointer_pen.py": [
+       "6637f0315314ec4e7169173c44ec06d2b4d1e105",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
+       ]
+      ],
+      "pointer_touch.py": [
+       "9e76273cbbba7a4cc928a490d1cc64264d8b691b",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
        ]
       ],
       "pointer_tripleclick.py": [

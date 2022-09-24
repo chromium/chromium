@@ -52,7 +52,7 @@ function redirect_test( popup_origin ) {
     // reporter.
     const opener_report_token= token();
     const opener_token = token();
-    const opener_reportTo = reportToHeaders(opener_report_token);
+    const opener_reportTo = reportingEndpointsHeaders(opener_report_token);
     const opener_url = same_origin.host + executor_path +
       opener_reportTo.header + opener_reportTo.coopSameOriginAllowPopupsHeader +
       `&uuid=${opener_token}`;

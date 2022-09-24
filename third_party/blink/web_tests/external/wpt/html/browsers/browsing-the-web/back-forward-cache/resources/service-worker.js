@@ -1,16 +1,29 @@
 self.addEventListener('message', function(event) {
-    self.clients.claim()
-      .then(function(result) {
-          if (result !== undefined) {
-              event.data.port.postMessage(
-                  'FAIL: claim() should be resolved with undefined');
-              return;
-          }
-          event.data.port.postMessage('PASS');
-        })
-      .catch(function(error) {
-          event.data.port.postMessage('FAIL: exception: ' + error.name);
+    if (event.data.type == "claim") {
+      self.clients.claim()
+        .then(function(result) {
+            if (result !== undefined) {
+                event.data.port.postMessage(
+                    'FAIL: claim() should be resolved with undefined');
+                return;
+            }
+            event.data.port.postMessage('PASS');
+          })
+        .catch(function(error) {
+            event.data.port.postMessage('FAIL: exception: ' + error.name);
+          });
+    } else if (event.data.type == "storeClients") {
+      self.clients.matchAll()
+        .then(function(result) {
+          self.storedClients = result;
+          event.data.port.postMessage("PASS");
         });
+    } else if (event.data.type == "postMessageToStoredClients") {
+      for (let client of self.storedClients) {
+        client.postMessage("dummyValue");
+      }
+      event.data.port.postMessage("PASS");
+    }
   });
 
 self.addEventListener('fetch', e => {

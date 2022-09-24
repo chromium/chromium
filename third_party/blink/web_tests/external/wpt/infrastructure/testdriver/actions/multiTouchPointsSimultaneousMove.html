@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>TestDriver actions: two touch points with one moving one pause</title>
+<title>TestDriver actions: two touch points with both moving</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -27,6 +27,7 @@ div#test1{
 <script>
 promise_test(async t => {
   let test1 = document.getElementById("test1");
+
   const events = [];
   addPointerEventListeners(t, test1, events);
 
@@ -37,20 +38,21 @@ promise_test(async t => {
       .pointerMove(10, 0, {origin: test1, sourceName: "touchPointer2"})
       .pointerDown({sourceName: "touchPointer1"})
       .pointerDown({sourceName: "touchPointer2"})
-      .pointerUp({sourceName: "touchPointer1"})
+      .pointerMove(0, 10, {origin: test1, sourceName: "touchPointer1"})
       .pointerMove(10, 10, {origin: test1, sourceName: "touchPointer2"})
+      .pointerUp({sourceName: "touchPointer1"})
       .pointerUp({sourceName: "touchPointer2"})
       .send();
 
-   const expected = [{type: "pointerdown", pointerId: 2, clientX: 50, clientY: 50},
-                     {type: "pointerdown", pointerId: 3, clientX: 60, clientY: 50},
-                     {type: "pointerup", pointerId: 2},
-                     {type: "pointermove", pointerId: 3, clientX: 60, clientY:60},
-                     {type: "pointerup", pointerId: 3}];
-
-   assert_equals(events.length, expected.length, "Expected number of events");
-   for (let i=0; i<expected.length; i++) {
-      eventEquals(events[i], expected[i]);
-   }
+  const expected = [{type: "pointerdown", pointerId: 2, clientX: 50, clientY: 50},
+                    {type: "pointerdown", pointerId: 3, clientX: 60, clientY: 50},
+                    {type: "pointermove", pointerId: 2, clientX: 50, clientY: 60},
+                    {type: "pointermove", pointerId: 3, clientX: 60, clientY: 60},
+                    {type: "pointerup", pointerId: 2, clientX: 50, clientY: 60},
+                    {type: "pointerup", pointerId: 3, clientX: 60, clientY: 60}];
+  assert_equals(events.length, expected.length);
+  for (let i=0; i<expected.length; i++) {
+    eventEquals(events[i], expected[i]);
+  }
 });
 </script>

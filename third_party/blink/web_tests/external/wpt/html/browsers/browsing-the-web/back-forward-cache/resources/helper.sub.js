@@ -197,6 +197,33 @@ async function claim(t, worker) {
       resolve();
     });
   });
-  worker.postMessage({port: channel.port2}, [channel.port2]);
+  worker.postMessage({type: "claim", port: channel.port2}, [channel.port2]);
+  await saw_message;
+}
+
+// Assigns the current client to a local variable on the service worker.
+async function storeClients(t, worker) {
+  const channel = new MessageChannel();
+  const saw_message = new Promise(function(resolve) {
+    channel.port1.onmessage = t.step_func(function(e) {
+      assert_equals(e.data, 'PASS', 'storeClients');
+      resolve();
+    });
+  });
+  worker.postMessage({type: "storeClients", port: channel.port2}, [channel.port2]);
+  await saw_message;
+}
+
+// Call storedClients.postMessage("") on the service worker
+async function postMessageToStoredClients(t, worker) {
+  const channel = new MessageChannel();
+  const saw_message = new Promise(function(resolve) {
+    channel.port1.onmessage = t.step_func(function(e) {
+      assert_equals(e.data, 'PASS', 'postMessageToStoredClients');
+      resolve();
+    });
+  });
+  worker.postMessage({type: "postMessageToStoredClients",
+                      port: channel.port2}, [channel.port2]);
   await saw_message;
 }

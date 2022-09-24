@@ -248,3 +248,9 @@ def iframe(inline):
         return "<iframe src='{}'></iframe>".format(inline(src, **kwargs))
 
     return iframe
+
+
+@pytest.fixture
+async def top_context(bidi_session):
+    contexts = await bidi_session.browsing_context.get_tree()
+    return contexts[0]

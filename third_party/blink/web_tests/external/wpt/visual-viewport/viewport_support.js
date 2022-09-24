@@ -7,8 +7,8 @@
 // separation.
 function pinchZoomIn() {
   const viewport = window.visualViewport;
-  const center_x = (viewport.width * viewport.scale) / 2;
-  const center_y = (viewport.height * viewport.scale) / 2;
+  const center_x = Math.floor((viewport.width * viewport.scale) / 2);
+  const center_y = Math.floor((viewport.height * viewport.scale) / 2);
 
   return new test_driver.Actions()
       .setContext(window)

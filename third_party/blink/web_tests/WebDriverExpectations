@@ -88,6 +88,13 @@ crbug.com/1167321 [ Linux ] external/wpt/webdriver/tests/find_element_from_shado
 crbug.com/1167321 [ Linux ] external/wpt/webdriver/tests/find_element_from_shadow_root/find.py>>test_find_element[xpath-//a] [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer_mouse.py>>test_drag_and_drop_with_draggable_element[0] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer_mouse.py>>test_drag_and_drop_with_draggable_element[300] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer_mouse.py>>test_drag_and_drop_with_draggable_element[800] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer_mouse.py>>test_no_browsing_context [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer_pen.py>>test_no_browsing_context [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer_pen.py>>test_pen_pointer_properties [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer_touch.py>>test_no_browsing_context [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_element_property/get.py>>test_web_reference[frame-Frame] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_element_property/get.py>>test_web_reference[window-Window] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_computed_label/get.py>>test_stale_element_reference[child_context] [ Failure ]

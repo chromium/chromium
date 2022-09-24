@@ -17,7 +17,10 @@ enum EndOfStreamError {
 [Exposed=(Window,DedicatedWorker)]
 interface MediaSource : EventTarget {
     constructor();
-    [SameObject] readonly attribute MediaSourceHandle   handle;
+
+    [ SameObject, Exposed=DedicatedWorker ]
+    readonly              attribute MediaSourceHandle   handle;
+
     readonly              attribute SourceBufferList    sourceBuffers;
     readonly              attribute SourceBufferList    activeSourceBuffers;
     readonly              attribute ReadyState          readyState;
