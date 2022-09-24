@@ -7,6 +7,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 
@@ -27,7 +28,10 @@
 @property(nonatomic) BOOL hasAccountInfo;
 
 // The PromosManager is used to register promos.
-@property(nonatomic) PromosManager* promosManager;
+@property(nonatomic, assign) PromosManager* promosManager;
+
+// The AuthenticationManager is used to reset the reauth infobar prompt.
+@property(nonatomic, assign) AuthenticationService* authenticationService;
 
 // Stores the PostRestoreSignInType which can be kAlert, kFullscreen, or
 // kDisabled.
@@ -45,6 +49,20 @@
 @end
 
 @implementation PostRestoreAppAgent
+
+#pragma mark - Initializers
+
+- (id)initWithPromosManager:(PromosManager*)promosManager
+      authenticationService:(AuthenticationService*)authenticationService {
+  DCHECK(authenticationService);
+
+  self = [super init];
+  if (self) {
+    _promosManager = promosManager;
+    _authenticationService = authenticationService;
+  }
+  return self;
+}
 
 #pragma mark - AppStateAgent
 
@@ -65,6 +83,8 @@
     [self maybeRegisterPromo];
     [self.appState removeObserver:self];
     [self.appState removeAgent:self];
+    _promosManager = nil;
+    _authenticationService = nil;
   }
 }
 
@@ -115,6 +135,10 @@
 // Registers the promo with the PromosManager.
 - (void)registerPromo {
   DCHECK(_promosManager);
+  // Disable the reauth infobar so that we don't prompt the user twice about
+  // reauthenticating.
+  _authenticationService->ResetReauthPromptForSignInAndSync();
+
   _promosManager->RegisterPromoForSingleDisplay(self.promoForEnabledFeature);
 }
 

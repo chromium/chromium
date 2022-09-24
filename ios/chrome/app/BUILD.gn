@@ -92,7 +92,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/metrics:metrics",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/promos_manager:promos_manager",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:signin_util",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/main:scene",
     "//ios/chrome/browser/ui/main:scene_state_header",
@@ -303,6 +305,7 @@ source_set("post_restore_app_agent") {
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/browser/application_context:application_context",
     "//ios/chrome/browser/promos_manager:promos_manager",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/ui/post_restore_signin:features",
   ]

@@ -10,10 +10,16 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -28,40 +34,43 @@ class PostRestoreAppAgentTest : public PlatformTest {
  public:
   explicit PostRestoreAppAgentTest() { CreateAppAgent(); }
 
+  IOSChromeScopedTestingLocalState local_state_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   PostRestoreAppAgent* appAgent_;
-  std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<PromosManager> promos_manager_;
+  AuthenticationService* auth_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mockAppState_;
 
   void CreateAppAgent() {
-    CreatePromosManager();
-    appAgent_ = [[PostRestoreAppAgent alloc] init];
-    appAgent_.promosManager = promos_manager_.get();
+    appAgent_ =
+        [[PostRestoreAppAgent alloc] initWithPromosManager:CreatePromosManager()
+                                     authenticationService:CreateAuthService()];
     mockAppState_ = OCMClassMock([AppState class]);
     [appAgent_ setAppState:mockAppState_];
   }
 
-  void CreatePromosManager() {
-    CreatePrefs();
-    promos_manager_ = std::make_unique<PromosManager>(local_state_.get());
+  PromosManager* CreatePromosManager() {
+    promos_manager_ = std::make_unique<PromosManager>(local_state_.Get());
     promos_manager_->Init();
+    return promos_manager_.get();
   }
 
-  // Create pref registry for tests.
-  void CreatePrefs() {
-    local_state_ = std::make_unique<TestingPrefServiceSimple>();
-
-    local_state_->registry()->RegisterListPref(
-        prefs::kIosPromosManagerImpressions);
-    local_state_->registry()->RegisterListPref(
-        prefs::kIosPromosManagerActivePromos);
-    local_state_->registry()->RegisterListPref(
-        prefs::kIosPromosManagerSingleDisplayActivePromos);
+  AuthenticationService* CreateAuthService() {
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &AuthenticationServiceFake::CreateAuthenticationService));
+    browser_state_ = builder.Build();
+    auth_service_ =
+        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+    return auth_service_;
   }
 
   int CountSingleDisplayActivePromos() {
-    return local_state_
+    return local_state_.Get()
         ->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
         .size();
   }
@@ -114,8 +123,8 @@ TEST_F(PostRestoreAppAgentTest, registerPromoFullscreen) {
   accountInfo.email = std::string("person@example.org");
   StorePreRestoreIdentity(accountInfo);
   MockAppStateChange(InitStageFinal);
-  const base::Value::List& promos =
-      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos);
+  const base::Value::List& promos = local_state_.Get()->GetList(
+      prefs::kIosPromosManagerSingleDisplayActivePromos);
   std::string expectedName = promos_manager::NameForPromo(
       promos_manager::Promo::PostRestoreSignInFullscreen);
   EXPECT_EQ(promos[0], expectedName);
@@ -127,9 +136,20 @@ TEST_F(PostRestoreAppAgentTest, registerPromoAlert) {
   accountInfo.email = std::string("person@example.org");
   StorePreRestoreIdentity(accountInfo);
   MockAppStateChange(InitStageFinal);
-  const base::Value::List& promos =
-      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos);
+  const base::Value::List& promos = local_state_.Get()->GetList(
+      prefs::kIosPromosManagerSingleDisplayActivePromos);
   std::string expectedName = promos_manager::NameForPromo(
       promos_manager::Promo::PostRestoreSignInAlert);
   EXPECT_EQ(promos[0], expectedName);
+}
+
+TEST_F(PostRestoreAppAgentTest, registerPromoDisablesReauthPrompt) {
+  EnableFeatureVariationFullscreen();
+  AccountInfo accountInfo;
+  accountInfo.email = std::string("person@example.org");
+  StorePreRestoreIdentity(accountInfo);
+  auth_service_->SetReauthPromptForSignInAndSync();
+  EXPECT_TRUE(auth_service_->ShouldReauthPromptForSignInAndSync());
+  MockAppStateChange(InitStageFinal);
+  EXPECT_FALSE(auth_service_->ShouldReauthPromptForSignInAndSync());
 }

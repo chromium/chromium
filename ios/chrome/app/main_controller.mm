@@ -502,6 +502,14 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       ChromeWebUIIOSControllerFactory::GetInstance());
 
   [NSURLCache setSharedURLCache:[EmptyNSURLCache emptyNSURLCache]];
+
+  [self.appState
+      addAgent:[[PostRestoreAppAgent alloc]
+                   initWithPromosManager:GetApplicationContext()
+                                             ->GetPromosManager()
+                   authenticationService:
+                       AuthenticationServiceFactory::GetForBrowserState(
+                           self.appState.mainBrowserState)]];
 }
 
 // This initialization must happen before any windows are created.
@@ -701,7 +709,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   [self.appState addAgent:[[CredentialProviderAppAgent alloc] init]];
 #endif
-  [self.appState addAgent:[[PostRestoreAppAgent alloc] init]];
 }
 
 #pragma mark - SceneStateObserver
