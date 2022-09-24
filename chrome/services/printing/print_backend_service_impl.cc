@@ -41,6 +41,13 @@
 #include "printing/backend/cups_connection_pool.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/no_destructor.h"
+#include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_delegate_stub.h"
+#include "ui/linux/linux_ui_factory.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/containers/queue.h"
 #include "base/win/win_util.h"
@@ -54,6 +61,14 @@
 namespace printing {
 
 namespace {
+
+#if BUILDFLAG(IS_LINUX)
+void InstantiateLinuxUiDelegate() {
+  // TODO(crbug.com/809738)  Until a real UI can be used in a utility process,
+  // need to use the stub version.
+  static base::NoDestructor<ui::LinuxUiDelegateStub> linux_ui_delegate;
+}
+#endif
 
 scoped_refptr<base::SequencedTaskRunner> GetPrintingTaskRunner() {
   static constexpr base::TaskTraits kTraits = {
@@ -407,6 +422,13 @@ void PrintBackendServiceImpl::Init(const std::string& locale) {
   // `InitCommon()`.
   InitializeProcessForPrinting();
   print_backend_ = PrintBackend::CreateInstance(locale);
+#if BUILDFLAG(IS_LINUX)
+  // Test framework already initializes the UI, so this should not go in
+  // `InitCommon()`.  Additionally, low-level Linux UI is not needed when tests
+  // are using `TestPrintingContext`.
+  InstantiateLinuxUiDelegate();
+  ui::LinuxUi::SetInstance(ui::GetDefaultLinuxUi());
+#endif
 
   InitCommon(locale);
 }

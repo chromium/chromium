@@ -92,6 +92,13 @@ source_set("lib") {
       "//components/crash/core/common",
       "//ui/gfx",
     ]
+
+    if (is_linux) {
+      deps += [
+        "//ui/linux:linux_ui",
+        "//ui/linux:linux_ui_factory",
+      ]
+    }
   }
 }
 

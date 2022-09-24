@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -25,6 +26,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
+#include "printing/printing_features.h"
 #include "ui/aura/window.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
@@ -417,8 +419,11 @@ void PrintDialogGtk::ShowDialog(
 
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
                                    const std::u16string& document_name) {
-  // This runs on the print worker thread, does not block the UI thread.
-  DCHECK(!owning_task_runner()->RunsTasksInCurrentSequence());
+  // For in-browser printing, this runs on the print worker thread, so it does
+  // not block the UI thread.  For OOP it runs on the service document task
+  // runner.
+  DCHECK_EQ(owning_task_runner()->RunsTasksInCurrentSequence(),
+            printing::features::kEnableOopPrintDriversJobPrint.Get());
 
   // The document printing tasks can outlive the PrintingContext that created
   // this dialog.
