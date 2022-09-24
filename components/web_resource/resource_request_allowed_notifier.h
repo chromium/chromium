@@ -148,7 +148,7 @@ class ResourceRequestAllowedNotifier
   base::WeakPtrFactory<ResourceRequestAllowedNotifier> weak_factory_{this};
 };
 
-extern const base::Feature kResourceRequestAllowedMigration;
+BASE_DECLARE_FEATURE(kResourceRequestAllowedMigration);
 
 }  // namespace web_resource
 
