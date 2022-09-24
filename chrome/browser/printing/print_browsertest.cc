@@ -211,19 +211,6 @@ std::unique_ptr<TestPrintingContext> MakeDefaultTestPrintingContext(
   return context;
 }
 
-mojom::PrintParamsPtr GetPrintParams() {
-  auto params = mojom::PrintParams::New();
-  params->page_size = gfx::Size(612, 792);
-  params->content_size = gfx::Size(540, 720);
-  params->printable_area = gfx::Rect(612, 792);
-  params->dpi = gfx::Size(72, 72);
-  params->document_cookie = kDefaultDocumentCookie;
-  params->pages_per_sheet = 4;
-  params->printed_doc_type = IsOopifEnabled() ? mojom::SkiaDocumentType::kMSKP
-                                              : mojom::SkiaDocumentType::kPDF;
-  return params;
-}
-
 void OnDidUpdatePrintSettings(
     std::unique_ptr<PrintSettings>& snooped_settings,
     scoped_refptr<PrintQueriesQueue> queue,
@@ -242,8 +229,6 @@ void OnDidUpdatePrintSettings(
         std::make_unique<PrintSettings>(printer_query->settings());
   }
   bool canceled = printer_query->last_status() == mojom::ResultCode::kCanceled;
-
-  params->params = GetPrintParams();
 
   std::move(callback).Run(std::move(params), canceled);
 
@@ -1989,9 +1974,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintNup) {
   TestPrintViewManager print_view_manager(web_contents);
   PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
 
-  // TODO(crbug.com/1283182)  Match the hard-coded `pages_per_sheet` in
-  // `GetPrintParams()`.  The number of pages per sheet should really be
-  // specified locally here in this test.
+  // Override print parameters to do N-up, specify 4 pages per sheet.
   const PrintParams kParams{.pages_per_sheet = 4};
   PrintAndWaitUntilPreviewIsReady(kParams);
 
@@ -2014,9 +1997,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, PrintNup) {
   TestPrintViewManager print_view_manager(web_contents);
   PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
 
-  // TODO(crbug.com/1283182)  Match the hard-coded `pages_per_sheet` in
-  // `GetPrintParams()`.  The number of pages per sheet should really be
-  // specified locally here in this test.
+  // Override print parameters to do N-up, specify 4 pages per sheet.
   const PrintParams kParams{.pages_per_sheet = 4};
   PrintAndWaitUntilPreviewIsReady(kParams);
 
@@ -3004,17 +2985,9 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   TestPrintViewManager print_view_manager(web_contents);
   PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
 
-  // TODO(crbug.com/1283182)  Match the hard-coded `pages_per_sheet` from
-  // `GetPrintParams()` which is called because of use of
-  // `TestPrintViewManager`.  This should go away once `GetPrintParams()` is
-  // removed, as this test is not interested in N-up.
-  const PrintParams kParams{.pages_per_sheet = 4};
-  PrintAndWaitUntilPreviewIsReady(kParams);
+  PrintAndWaitUntilPreviewIsReady();
 
-  // TODO(crbug.com/1283182)  This should really generate 3 pages, but only
-  // generates 1 because of the hard-coded `pages_per_sheet` in
-  // `GetPrintParams()`.
-  EXPECT_EQ(rendered_page_count(), 1u);
+  EXPECT_EQ(rendered_page_count(), 3u);
 
   ASSERT_TRUE(print_view_manager.snooped_settings());
   EXPECT_EQ(print_view_manager.snooped_settings()->copies(),
