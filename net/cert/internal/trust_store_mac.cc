@@ -624,8 +624,9 @@ class KeychainChangedNotifier {
 
   KeychainChangedNotifier() {
     DCHECK(GetNetworkNotificationThreadMac()->RunsTasksInCurrentSequence());
-    OSStatus status = SecKeychainAddCallback(
-        &KeychainChangedNotifier::KeychainCallback, event_mask, this);
+    OSStatus status =
+        SecKeychainAddCallback(&KeychainChangedNotifier::KeychainCallback,
+                               event_mask, /*context=*/nullptr);
     if (status != noErr)
       OSSTATUS_LOG(ERROR, status) << "SecKeychainAddCallback failed";
   }
@@ -637,9 +638,13 @@ class KeychainChangedNotifier {
   static OSStatus KeychainCallback(SecKeychainEvent keychain_event,
                                    SecKeychainCallbackInfo* info,
                                    void* context) {
-    KeychainChangedNotifier* notifier =
-        reinterpret_cast<KeychainChangedNotifier*>(context);
-    notifier->callback_list_.Notify();
+    // Since SecKeychainAddCallback is keyed on the function pointer only, we
+    // need to ensure that each template instantiation of this function has a
+    // different address. Calling the static Get() method here to get the
+    // |callback_list_| (rather than passing a |this| pointer through
+    // |context|) should require each instantiation of KeychainCallback to be
+    // unique.
+    Get()->callback_list_.Notify();
     return errSecSuccess;
   }
 
@@ -956,8 +961,10 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
   void MaybeInitializeCache() EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
     cache_lock_.AssertAcquired();
 
-    int64_t keychain_trust_iteration = keychain_trust_observer_->Iteration();
-    if (trust_iteration_ != keychain_trust_iteration) {
+    const int64_t keychain_trust_iteration =
+        keychain_trust_observer_->Iteration();
+    const bool trust_changed = trust_iteration_ != keychain_trust_iteration;
+    if (trust_changed) {
       base::ElapsedTimer trust_domain_cache_init_timer;
       trust_iteration_ = keychain_trust_iteration;
       user_domain_cache_.Initialize();
@@ -974,11 +981,12 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
           trust_domain_cache_init_timer.Elapsed());
     }
 
-    int64_t keychain_certs_iteration = keychain_certs_observer_->Iteration();
+    const int64_t keychain_certs_iteration =
+        keychain_certs_observer_->Iteration();
+    const bool certs_changed = certs_iteration_ != keychain_certs_iteration;
     // Intermediates cache is updated on trust changes too, since the
     // intermediates cache is exclusive of any certs in trust domain caches.
-    if (trust_iteration_ != keychain_trust_iteration ||
-        certs_iteration_ != keychain_certs_iteration) {
+    if (trust_changed || certs_changed) {
       certs_iteration_ = keychain_certs_iteration;
       IntializeIntermediatesCache();
     }
