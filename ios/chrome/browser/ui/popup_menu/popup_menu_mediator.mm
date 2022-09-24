@@ -749,6 +749,17 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   self.requestMobileSiteItem.enabled =
       [self userAgentType] == web::UserAgentType::DESKTOP;
 
+  // Update follow menu item.
+  if (self.followItem &&
+      GetFollowActionState(self.webState) != FollowActionStateHidden) {
+    DCHECK(IsWebChannelsEnabled());
+    FollowTabHelper* followTabHelper =
+        FollowTabHelper::FromWebState(self.webState);
+    if (followTabHelper) {
+      followTabHelper->UpdateFollowMenuItem();
+    }
+  }
+
   // Reload the items.
   [self.popupMenu itemsHaveChanged:self.specificItems];
 }

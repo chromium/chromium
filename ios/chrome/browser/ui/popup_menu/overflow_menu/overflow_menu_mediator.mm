@@ -925,6 +925,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   if (self.followAction &&
       GetFollowActionState(self.webState) != FollowActionStateHidden) {
     DCHECK(IsWebChannelsEnabled());
+
+    FollowTabHelper* followTabHelper =
+        FollowTabHelper::FromWebState(self.webState);
+    if (followTabHelper) {
+      followTabHelper->UpdateFollowMenuItem();
+    }
+
     [pageActions addObject:self.followAction];
   }
 
