@@ -2,7 +2,7 @@
 
 import pytest
 
-from webdriver.error import NoSuchWindowException, StaleElementReferenceException
+from webdriver.error import InvalidArgumentException, NoSuchWindowException, StaleElementReferenceException
 
 from tests.perform_actions.support.mouse import get_inview_center, get_viewport_rect
 from tests.perform_actions.support.refine import get_events
@@ -183,3 +183,12 @@ def test_drag_and_drop_with_draggable_element(session_new_window,
     assert "dragenter" in drag_events_captured
     assert "dragleave" in drag_events_captured
     assert "drop" in drag_events_captured
+
+
+@pytest.mark.parametrize("missing", ["x", "y"])
+def test_missing_coordinates(session, test_actions_page, mouse_chain, missing):
+    outer = session.find.css("#outer", all=False)
+    actions = mouse_chain.pointer_move(x=0, y=0, origin=outer)
+    del actions._actions[-1][missing]
+    with pytest.raises(InvalidArgumentException):
+        actions.perform()

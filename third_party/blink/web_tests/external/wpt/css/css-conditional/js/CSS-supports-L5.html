@@ -26,14 +26,18 @@
   }, "font-tech() function accepts a known technology");
 
   test(function() {
+    assert_equals(CSS.supports("font-tech(feature-opentype)"), false);
+  }, "font-tech() function doesn't accept singular feature-* form for technology");
+
+  test(function() {
     assert_equals(CSS.supports("font-tech(foobar)"), false);
   }, "font-tech() function doesn't accept an unknown technology");
 
   test(function() {
-    assert_equals(CSS.supports("font-tech(feature-opentype, color-COLRv0)"), false);
+    assert_equals(CSS.supports("font-tech(features-opentype, color-COLRv0)"), false);
   }, "font-tech() function doesn't accept a technology list");
 
   test(function() {
-    assert_equals(CSS.supports("font-tech('feature-opentype')"), false);
+    assert_equals(CSS.supports("font-tech('features-opentype')"), false);
   }, "font-tech() function doesn't accept a string.");
 </script>

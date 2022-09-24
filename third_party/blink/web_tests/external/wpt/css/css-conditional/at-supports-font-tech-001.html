@@ -7,10 +7,10 @@
 <style>
   div {
     background: red;
-    height: 12.5px;
+    height: 10px;
     width: 100px;
   }
-  /* assume all browsers support at least feature-opentype and color-COLRv0 */
+  /* assume all browsers support at least features-opentype and color-COLRv0 */
   @supports font-tech(features-opentype) {
     #test1 { background: green };
   }
@@ -36,6 +36,12 @@
   @supports not font-tech("features-opentype") {
     #test8 { background: green };
   }
+  @supports not font-tech(feature-opentype) {
+    #test9 { background: green };
+  }
+  @supports not font-tech(colors-COLRv0) {
+    #test10 { background: green };
+  }
 </style>
 <p>Test passes if there is a <strong>filled green square</strong> and <strong>no red</strong>.</p>
 <div id=test1></div>
@@ -46,3 +52,5 @@
 <div id=test6></div>
 <div id=test7></div>
 <div id=test8></div>
+<div id=test9></div>
+<div id=test10></div>

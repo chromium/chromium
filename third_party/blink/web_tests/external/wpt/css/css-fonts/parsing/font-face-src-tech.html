@@ -29,6 +29,9 @@
     { src: 'url("foo.ttf") tech(features-opentype, color-COLRv0, variations, palettes)', valid: true },
     { src: 'url("foo.ttf") tech(features-opentype color-COLRv0 variations palettes)', valid: false },
     // Invalid font-tech keywords should be a parse error
+    { src: 'url("foo.ttf") tech(feature-opentype)', valid: false },
+    { src: 'url("foo.ttf") tech(feature-aat)', valid: false },
+    { src: 'url("foo.ttf") tech(feature-graphite)', valid: false },
     { src: 'url("foo.ttf") tech(auto)', valid: false },
     { src: 'url("foo.ttf") tech(default)', valid: false },
     { src: 'url("foo.ttf") tech(inherit)', valid: false },
