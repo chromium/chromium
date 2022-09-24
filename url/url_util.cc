@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "url/url_canon_internal.h"
@@ -522,10 +523,7 @@ void DoAddSchemeWithHandler(const char* new_scheme,
   DCHECK(strlen(new_scheme) > 0);
   DCHECK(strlen(handler) > 0);
   DCHECK_EQ(base::ToLowerASCII(new_scheme), new_scheme);
-  DCHECK(std::find_if(schemes->begin(), schemes->end(),
-                      [&new_scheme](const SchemeWithHandler& scheme) {
-                        return scheme.scheme == new_scheme;
-                      }) == schemes->end());
+  DCHECK(!base::Contains(*schemes, new_scheme, &SchemeWithHandler::scheme));
   schemes->push_back({new_scheme, handler});
 }
 
@@ -534,8 +532,7 @@ void DoAddScheme(const char* new_scheme, std::vector<std::string>* schemes) {
   DCHECK(schemes);
   DCHECK(strlen(new_scheme) > 0);
   DCHECK_EQ(base::ToLowerASCII(new_scheme), new_scheme);
-  DCHECK(std::find(schemes->begin(), schemes->end(), new_scheme) ==
-         schemes->end());
+  DCHECK(!base::Contains(*schemes, new_scheme));
   schemes->push_back(new_scheme);
 }
 
@@ -546,10 +543,7 @@ void DoAddSchemeWithType(const char* new_scheme,
   DCHECK(schemes);
   DCHECK(strlen(new_scheme) > 0);
   DCHECK_EQ(base::ToLowerASCII(new_scheme), new_scheme);
-  DCHECK(std::find_if(schemes->begin(), schemes->end(),
-                      [&new_scheme](const SchemeWithType& scheme) {
-                        return scheme.scheme == new_scheme;
-                      }) == schemes->end());
+  DCHECK(!base::Contains(*schemes, new_scheme, &SchemeWithType::scheme));
   schemes->push_back({new_scheme, type});
 }
 
