@@ -15,6 +15,7 @@
 #include "ash/wm/window_util.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
@@ -53,9 +54,13 @@ gfx::Transform GetWindowTransformToShelf(aura::Window* window) {
   // the window's transform. The transform that should be applied to the
   // window is calculated relative to the window bounds with no transforms
   // applied, and thus need the un-transformed window origin.
-  const gfx::Rect window_bounds = window->GetBoundsInScreen();
-  gfx::Point origin_without_transform = window_bounds.origin();
-  window->transform().TransformPointReverse(&origin_without_transform);
+  const gfx::RectF window_bounds(window->GetBoundsInScreen());
+  gfx::PointF origin_without_transform = window_bounds.origin();
+  if (const absl::optional<gfx::PointF> transformed_point =
+          window->transform().TransformPointReverse(origin_without_transform);
+      transformed_point.has_value()) {
+    origin_without_transform = transformed_point.value();
+  }
 
   gfx::Transform transform;
   Shelf* shelf = Shelf::ForWindow(window);
@@ -64,17 +69,17 @@ gfx::Transform GetWindowTransformToShelf(aura::Window* window) {
       shelf->GetScreenBoundsOfItemIconForWindow(window);
 
   if (!shelf_item_bounds.IsEmpty()) {
-    auto shelf_item_center = shelf_item_bounds.CenterPoint();
+    const gfx::RectF shelf_item_bounds_f(shelf_item_bounds);
+    const gfx::PointF shelf_item_center = shelf_item_bounds_f.CenterPoint();
     transform.Translate(shelf_item_center.x() - origin_without_transform.x(),
                         shelf_item_center.y() - origin_without_transform.y());
-    transform.Scale(
-        float(shelf_item_bounds.width()) / float(window_bounds.width()),
-        float(shelf_item_bounds.height()) / float(window_bounds.height()));
+    transform.Scale(shelf_item_bounds_f.width() / window_bounds.width(),
+                    shelf_item_bounds_f.height() / window_bounds.height());
   } else {
-    const gfx::Rect shelf_bounds = shelf->GetIdealBounds();
-    transform.Translate(
-        shelf_bounds.CenterPoint().x() - origin_without_transform.x(),
-        shelf_bounds.CenterPoint().y() - origin_without_transform.y());
+    const gfx::PointF shelf_center_point =
+        gfx::RectF(shelf->GetIdealBounds()).CenterPoint();
+    transform.Translate(shelf_center_point.x() - origin_without_transform.x(),
+                        shelf_center_point.y() - origin_without_transform.y());
     transform.Scale(kWindowScaleDownFactor, kWindowScaleDownFactor);
   }
   return transform;

@@ -461,17 +461,17 @@ Vector2dF Transform::To2dTranslation() const {
 
 void Transform::TransformPoint(Point* point) const {
   DCHECK(point);
-  TransformPointInternal(matrix_, point);
+  *point = TransformPointInternal(matrix_, *point);
 }
 
 void Transform::TransformPoint(PointF* point) const {
   DCHECK(point);
-  TransformPointInternal(matrix_, point);
+  *point = TransformPointInternal(matrix_, *point);
 }
 
 void Transform::TransformPoint(Point3F* point) const {
   DCHECK(point);
-  TransformPointInternal(matrix_, point);
+  *point = TransformPointInternal(matrix_, *point);
 }
 
 void Transform::TransformVector(Vector3dF* vector) const {
@@ -484,28 +484,31 @@ void Transform::TransformVector4(float vector[4]) const {
   matrix_.mapScalars(vector);
 }
 
-bool Transform::TransformPointReverse(Point* point) const {
-  DCHECK(point);
-
+absl::optional<PointF> Transform::TransformPointReverse(
+    const PointF& point) const {
   // TODO(sad): Try to avoid trying to invert the matrix.
   Matrix44 inverse(Matrix44::kUninitialized_Constructor);
   if (!matrix_.invert(&inverse))
-    return false;
-
-  TransformPointInternal(inverse, point);
-  return true;
+    return absl::nullopt;
+  return absl::make_optional(TransformPointInternal(inverse, point));
 }
 
-bool Transform::TransformPointReverse(Point3F* point) const {
-  DCHECK(point);
-
+absl::optional<Point> Transform::TransformPointReverse(
+    const Point& point) const {
   // TODO(sad): Try to avoid trying to invert the matrix.
   Matrix44 inverse(Matrix44::kUninitialized_Constructor);
   if (!matrix_.invert(&inverse))
-    return false;
+    return absl::nullopt;
+  return absl::make_optional(TransformPointInternal(inverse, point));
+}
 
-  TransformPointInternal(inverse, point);
-  return true;
+absl::optional<Point3F> Transform::TransformPointReverse(
+    const Point3F& point) const {
+  // TODO(sad): Try to avoid trying to invert the matrix.
+  Matrix44 inverse(Matrix44::kUninitialized_Constructor);
+  if (!matrix_.invert(&inverse))
+    return absl::nullopt;
+  return absl::make_optional(TransformPointInternal(inverse, point));
 }
 
 void Transform::TransformRect(RectF* rect) const {
@@ -599,20 +602,20 @@ void Transform::RoundTranslationComponents() {
   matrix_.setRC(1, 3, std::round(matrix_.rc(1, 3)));
 }
 
-void Transform::TransformPointInternal(const Matrix44& xform,
-                                       Point3F* point) const {
+Point3F Transform::TransformPointInternal(const Matrix44& xform,
+                                          const Point3F& point) const {
   if (xform.isIdentity())
-    return;
+    return point;
 
-  SkScalar p[4] = {point->x(), point->y(), point->z(), 1};
+  SkScalar p[4] = {point.x(), point.y(), point.z(), 1};
 
   xform.mapScalars(p);
 
   if (p[3] != SK_Scalar1 && p[3] != 0.f) {
     float w_inverse = SK_Scalar1 / p[3];
-    point->SetPoint(p[0] * w_inverse, p[1] * w_inverse, p[2] * w_inverse);
+    return gfx::Point3F(p[0] * w_inverse, p[1] * w_inverse, p[2] * w_inverse);
   } else {
-    point->SetPoint(p[0], p[1], p[2]);
+    return gfx::Point3F(p[0], p[1], p[2]);
   }
 }
 
@@ -630,23 +633,19 @@ void Transform::TransformVectorInternal(const Matrix44& xform,
   vector->set_z(p[2]);
 }
 
-void Transform::TransformPointInternal(const Matrix44& xform,
-                                       PointF* point) const {
+PointF Transform::TransformPointInternal(const Matrix44& xform,
+                                         const PointF& point) const {
   if (xform.isIdentity())
-    return;
+    return point;
 
-  SkScalar p[4] = {SkIntToScalar(point->x()), SkIntToScalar(point->y()), 0, 1};
-
+  SkScalar p[4] = {SkIntToScalar(point.x()), SkIntToScalar(point.y()), 0, 1};
   xform.mapScalars(p);
-
-  point->SetPoint(p[0], p[1]);
+  return gfx::PointF(p[0], p[1]);
 }
 
-void Transform::TransformPointInternal(const Matrix44& xform,
-                                       Point* point) const {
-  PointF point_float(*point);
-  TransformPointInternal(xform, &point_float);
-  *point = ToRoundedPoint(point_float);
+Point Transform::TransformPointInternal(const Matrix44& xform,
+                                        const Point& point) const {
+  return ToRoundedPoint(TransformPointInternal(xform, PointF(point)));
 }
 
 bool Transform::ApproximatelyEqual(const gfx::Transform& transform) const {

@@ -22,6 +22,7 @@
 #include "components/viz/test/surface_id_allocator_set.h"
 #include "components/viz/test/test_latest_local_surface_id_lookup_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 namespace {
@@ -688,9 +689,8 @@ TEST_F(HitTestAggregatorTest, ClippedChildWithTabAndTransparentBackground) {
   EXPECT_EQ(region.rect, gfx::Rect(300, 100, 1600, 800));
   EXPECT_EQ(region.child_count, 2);
 
-  gfx::Point point(300, 300);
-  EXPECT_TRUE(region.transform.TransformPointReverse(&point));
-  EXPECT_EQ(gfx::Point(100, 200), point);
+  EXPECT_EQ(gfx::Point(100, 200),
+            region.transform.TransformPointReverse(gfx::Point(300, 300)));
 
   region = host_regions()[2];
   EXPECT_EQ(HitTestRegionFlags::kHitTestChildSurface |

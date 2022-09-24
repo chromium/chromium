@@ -12,6 +12,7 @@
 #include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point.h"
@@ -71,9 +72,12 @@ namespace {
   EXPECT_NEAR((c), (transform).rc(2, 2), (errorThreshold));     \
   EXPECT_NEAR((d), (transform).rc(2, 3), (errorThreshold));
 
+bool PointsAreNearlyEqual(const PointF& lhs, const PointF& rhs) {
+  return lhs.IsWithinDistance(rhs, 0.01f);
+}
+
 bool PointsAreNearlyEqual(const Point3F& lhs, const Point3F& rhs) {
-  float epsilon = 0.0001f;
-  return lhs.SquaredDistanceTo(rhs) < epsilon;
+  return lhs.SquaredDistanceTo(rhs) < 0.0001f;
 }
 
 bool MatricesAreNearlyEqual(const Transform& lhs, const Transform& rhs) {
@@ -319,8 +323,10 @@ TEST(XFormTest, SetTranslate) {
       xform.TransformPoint(&p1);
       if (value.tx == value.tx && value.ty == value.ty) {
         EXPECT_TRUE(PointsAreNearlyEqual(p1, p2));
-        xform.TransformPointReverse(&p1);
-        EXPECT_TRUE(PointsAreNearlyEqual(p1, p0));
+        const absl::optional<Point3F> transformed_p1 =
+            xform.TransformPointReverse(p1);
+        ASSERT_TRUE(transformed_p1.has_value());
+        EXPECT_TRUE(PointsAreNearlyEqual(transformed_p1.value(), p0));
       }
     }
   }
@@ -365,8 +371,10 @@ TEST(XFormTest, SetScale) {
       if (value.s == value.s) {
         EXPECT_TRUE(PointsAreNearlyEqual(p1, p2));
         if (value.s != 0.0f) {
-          xform.TransformPointReverse(&p1);
-          EXPECT_TRUE(PointsAreNearlyEqual(p1, p0));
+          const absl::optional<Point3F> transformed_p1 =
+              xform.TransformPointReverse(p1);
+          ASSERT_TRUE(transformed_p1.has_value());
+          EXPECT_TRUE(PointsAreNearlyEqual(transformed_p1.value(), p0));
         }
       }
     }
@@ -400,8 +408,10 @@ TEST(XFormTest, SetRotate) {
     if (value.degree == value.degree) {
       xform.TransformPoint(&p1);
       EXPECT_TRUE(PointsAreNearlyEqual(p1, p2));
-      xform.TransformPointReverse(&p1);
-      EXPECT_TRUE(PointsAreNearlyEqual(p1, p0));
+      const absl::optional<Point3F> transformed_p1 =
+          xform.TransformPointReverse(p1);
+      ASSERT_TRUE(transformed_p1.has_value());
+      EXPECT_TRUE(PointsAreNearlyEqual(transformed_p1.value(), p0));
     }
   }
 }
@@ -532,9 +542,11 @@ TEST(XFormTest, SetTranslate2D) {
         if (value.tx == value.tx && value.ty == value.ty) {
           EXPECT_EQ(p1.x(), p2.x());
           EXPECT_EQ(p1.y(), p2.y());
-          xform.TransformPointReverse(&p1);
-          EXPECT_EQ(p1.x(), p0.x());
-          EXPECT_EQ(p1.y(), p0.y());
+          const absl::optional<Point> transformed_p1 =
+              xform.TransformPointReverse(p1);
+          ASSERT_TRUE(transformed_p1.has_value());
+          EXPECT_EQ(transformed_p1->x(), p0.x());
+          EXPECT_EQ(transformed_p1->y(), p0.y());
         }
       }
     }
@@ -582,9 +594,11 @@ TEST(XFormTest, SetScale2D) {
           EXPECT_EQ(p1.x(), p2.x());
           EXPECT_EQ(p1.y(), p2.y());
           if (value.s != 0.0f) {
-            xform.TransformPointReverse(&p1);
-            EXPECT_EQ(p1.x(), p0.x());
-            EXPECT_EQ(p1.y(), p0.y());
+            const absl::optional<Point> transformed_p1 =
+                xform.TransformPointReverse(p1);
+            ASSERT_TRUE(transformed_p1.has_value());
+            EXPECT_EQ(transformed_p1->x(), p0.x());
+            EXPECT_EQ(transformed_p1->y(), p0.y());
           }
         }
       }
@@ -620,9 +634,11 @@ TEST(XFormTest, SetRotate2D) {
         xform.TransformPoint(&pt);
         EXPECT_EQ(value.xprime, pt.x());
         EXPECT_EQ(value.yprime, pt.y());
-        xform.TransformPointReverse(&pt);
-        EXPECT_EQ(pt.x(), value.x);
-        EXPECT_EQ(pt.y(), value.y);
+        const absl::optional<Point> transformed_pt =
+            xform.TransformPointReverse(pt);
+        ASSERT_TRUE(transformed_pt.has_value());
+        EXPECT_EQ(transformed_pt->x(), value.x);
+        EXPECT_EQ(transformed_pt->y(), value.y);
       }
     }
   }
@@ -2873,6 +2889,41 @@ TEST(XFormTest, RotationSinCos) {
                       Transform::RotationAboutZAxisSinCos(-1, 0));
   EXPECT_TRANSFORM_EQ(Transform::RotationUnitSinCos(0, 0, 1, 0, 1),
                       Transform::RotationAboutZAxisSinCos(0, 1));
+}
+
+TEST(XFormTest, TransformPointReverse) {
+  Transform transform;
+  transform.Translate(1, 2);
+  transform.Rotate(70);
+  transform.Scale(3, 4);
+  transform.Skew(30, 70);
+
+  const PointF point_f(12.34f, 56.78f);
+  PointF transformed_point_f = point_f;
+  transform.TransformPoint(&transformed_point_f);
+  const absl::optional<PointF> reverted_point_f =
+      transform.TransformPointReverse(transformed_point_f);
+  ASSERT_TRUE(reverted_point_f.has_value());
+  EXPECT_TRUE(PointsAreNearlyEqual(reverted_point_f.value(), point_f));
+
+  const Point point(12, 13);
+  Point transformed_point = point;
+  transform.TransformPoint(&transformed_point);
+  EXPECT_EQ(point, transform.TransformPointReverse(transformed_point));
+
+  Transform transform3d;
+  transform3d.Translate3d(1, 2, 3);
+  transform3d.RotateAbout(Vector3dF(4, 5, 6), 70);
+  transform3d.Scale3d(7, 8, 9);
+  transform3d.Skew(30, 70);
+
+  const Point3F point_3f(14, 15, 16);
+  Point3F transformed_point_3f = point_3f;
+  transform3d.TransformPoint(&transformed_point_3f);
+  const absl::optional<Point3F> reverted_point_3f =
+      transform3d.TransformPointReverse(transformed_point_3f);
+  ASSERT_TRUE(reverted_point_3f.has_value());
+  EXPECT_TRUE(PointsAreNearlyEqual(reverted_point_3f.value(), point_3f));
 }
 
 }  // namespace

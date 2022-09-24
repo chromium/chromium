@@ -30,6 +30,7 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer_animator.h"
@@ -1451,13 +1452,17 @@ bool Layer::ConvertPointFromAncestor(const Layer* ancestor,
                                      bool use_target_transform,
                                      gfx::PointF* point) const {
   gfx::Transform transform;
-  bool result = use_target_transform
-                    ? GetTargetTransformRelativeTo(ancestor, &transform)
-                    : GetTransformRelativeTo(ancestor, &transform);
-  auto p = gfx::Point3F(*point);
-  transform.TransformPointReverse(&p);
-  *point = p.AsPointF();
-  return result;
+  if (!(use_target_transform
+            ? GetTargetTransformRelativeTo(ancestor, &transform)
+            : GetTransformRelativeTo(ancestor, &transform))) {
+    return false;
+  }
+  const absl::optional<gfx::PointF> transformed_point =
+      transform.TransformPointReverse(*point);
+  if (!transformed_point.has_value())
+    return false;
+  *point = transformed_point.value();
+  return true;
 }
 
 void Layer::SetBoundsFromAnimation(const gfx::Rect& bounds,

@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/matrix44.h"
@@ -248,13 +249,18 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Applies the transformation to the vector.
   void TransformVector4(float vector[4]) const;
 
-  // Applies the reverse transformation on the point. Returns true if the
-  // transformation can be inverted.
-  bool TransformPointReverse(Point3F* point) const;
+  // Applies the reverse transformation on `point`. Returns `absl::nullopt` if
+  // the transformation cannot be inverted.
+  absl::optional<PointF> TransformPointReverse(const PointF& point) const;
 
-  // Applies the reverse transformation on the point. Returns true if the
-  // transformation can be inverted. Rounds the result to the nearest point.
-  bool TransformPointReverse(Point* point) const;
+  // Applies the reverse transformation on `point`. Returns `absl::nullopt` if
+  // the transformation cannot be inverted. Rounds the result to the nearest
+  // point.
+  absl::optional<Point> TransformPointReverse(const Point& point) const;
+
+  // Applies the reverse transformation on `point`. Returns `absl::nullopt` if
+  // the transformation cannot be inverted.
+  absl::optional<Point3F> TransformPointReverse(const Point3F& point) const;
 
   // Applies transformation on the given rect. After the function completes,
   // |rect| will be the smallest axis aligned bounding rect containing the
@@ -328,11 +334,13 @@ class GEOMETRY_SKIA_EXPORT Transform {
   std::string ToString() const;
 
  private:
-  void TransformPointInternal(const Matrix44& xform, Point* point) const;
+  Point TransformPointInternal(const Matrix44& xform, const Point& point) const;
 
-  void TransformPointInternal(const Matrix44& xform, PointF* point) const;
+  PointF TransformPointInternal(const Matrix44& xform,
+                                const PointF& point) const;
 
-  void TransformPointInternal(const Matrix44& xform, Point3F* point) const;
+  Point3F TransformPointInternal(const Matrix44& xform,
+                                 const Point3F& point) const;
 
   void TransformVectorInternal(const Matrix44& xform, Vector3dF* vector) const;
 

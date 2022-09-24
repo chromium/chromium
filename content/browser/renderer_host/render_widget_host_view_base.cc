@@ -30,6 +30,7 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/page_visibility_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_types.h"
@@ -929,18 +930,19 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
 
   float device_scale_factor = original_view->GetDeviceScaleFactor();
   DCHECK_GT(device_scale_factor, 0.0f);
-  gfx::Point3F point_in_pixels =
-      gfx::Point3F(gfx::ConvertPointToPixels(point, device_scale_factor));
   // TODO(crbug.com/966995): Optimize so that |point_in_pixels| doesn't need to
   // be in the coordinate space of the root surface in HitTestQuery.
   gfx::Transform transform_root_to_original;
   query->GetTransformToTarget(original_view->GetFrameSinkId(),
                               &transform_root_to_original);
-  if (!transform_root_to_original.TransformPointReverse(&point_in_pixels))
+  const absl::optional<gfx::Point3F> point_in_pixels =
+      transform_root_to_original.TransformPointReverse(
+          gfx::Point3F(gfx::ConvertPointToPixels(point, device_scale_factor)));
+  if (!point_in_pixels.has_value())
     return false;
   gfx::PointF transformed_point_in_physical_pixels;
   if (!query->TransformLocationForTarget(
-          target_ancestors, point_in_pixels.AsPointF(),
+          target_ancestors, point_in_pixels->AsPointF(),
           &transformed_point_in_physical_pixels)) {
     return false;
   }

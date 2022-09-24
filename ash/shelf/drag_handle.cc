@@ -17,6 +17,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "base/bind.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -249,18 +250,23 @@ gfx::Rect DragHandle::GetAnchorBoundsInScreen() const {
   // anchor for contextual nudges, and their bounds are set relative to the
   // handle bounds without transform (for example, for in-app to home nudge both
   // drag handle and the nudge will have non-indentity, identical transforms).
-  gfx::Point origin_in_screen = anchor_bounds.origin();
-  layer()->transform().TransformPointReverse(&origin_in_screen);
+  gfx::PointF origin_in_screen = gfx::PointF(anchor_bounds.origin());
+  if (const absl::optional<gfx::PointF> transformed_point =
+          layer()->transform().TransformPointReverse(origin_in_screen);
+      transformed_point.has_value()) {
+    origin_in_screen = transformed_point.value();
+  }
 
   // If the parent widget has a transform set, it should be ignored as well (the
   // transform is set during shelf widget animations, and will animate to
   // identity transform), so the nudge bounds are set relative to the target
   // shelf bounds.
   aura::Window* const widget_window = GetWidget()->GetNativeWindow();
-  origin_in_screen += widget_window->bounds().origin().OffsetFromOrigin();
+  origin_in_screen +=
+      gfx::Vector2dF(widget_window->bounds().origin().OffsetFromOrigin());
   wm::ConvertPointToScreen(widget_window->parent(), &origin_in_screen);
 
-  anchor_bounds.set_origin(origin_in_screen);
+  anchor_bounds.set_origin(gfx::ToRoundedPoint(origin_in_screen));
   return anchor_bounds;
 }
 

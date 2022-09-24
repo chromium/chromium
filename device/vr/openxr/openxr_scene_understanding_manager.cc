@@ -6,6 +6,7 @@
 #include <chrono>
 #include "base/containers/contains.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 // - UpdateInterval is the idle time between triggering a scene-compute query
@@ -158,7 +159,11 @@ void OpenXRSceneUnderstandingManager::RequestHitTest(
           ray_origin +
           gfx::ScaleVector3d(ray_direction, distance_to_plane.value());
       gfx::Point3F hitpoint_in_plane_space = hitpoint_position;
-      mojo_to_plane.TransformPointReverse(&hitpoint_in_plane_space);
+      if (const absl::optional<gfx::Point3F> transformed_point =
+              mojo_to_plane.TransformPointReverse(hitpoint_in_plane_space);
+          transformed_point.has_value()) {
+        hitpoint_in_plane_space = transformed_point.value();
+      }
 
       // Check to make sure that the hitpoint is within the plane boundaries.
       // XrScenePlaneMSFT does provide the triangle mesh for the plane

@@ -4,6 +4,7 @@
 
 #include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -126,13 +127,18 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
       views::View* view = widget->GetContentsView();
       if (!view || !view->context_menu_controller())
         break;
-      gfx::Point location(event->location());
       // Controller requires locations to be in DIP, while |this| receives the
       // location in px.
-      desktop_window_tree_host_->GetRootTransform().TransformPointReverse(
-          &location);
-      views::View::ConvertPointToScreen(view, &location);
-      view->ShowContextMenu(location, ui::MENU_SOURCE_MOUSE);
+      gfx::PointF location = event->location_f();
+      if (const absl::optional<gfx::PointF> transformed =
+              desktop_window_tree_host_->GetRootTransform()
+                  .TransformPointReverse(location);
+          transformed.has_value()) {
+        location = transformed.value();
+      }
+      gfx::Point location_in_screen = gfx::ToRoundedPoint(location);
+      views::View::ConvertPointToScreen(view, &location_in_screen);
+      view->ShowContextMenu(location_in_screen, ui::MENU_SOURCE_MOUSE);
       event->SetHandled();
       break;
   }

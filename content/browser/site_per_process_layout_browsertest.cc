@@ -23,6 +23,7 @@
 #include "content/test/render_document_feature.h"
 #include "content/test/render_widget_host_visibility_observer.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window_tree_host.h"
@@ -779,16 +780,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(filter->MessageReceived());
 
   // +4 for a 2px border on each iframe.
-  gfx::PointF expected(iframe_b_offset_left + iframe_c_offset_left + 4,
-                       iframe_b_offset_top + iframe_c_offset_top + 4);
+  gfx::Vector2dF expected(iframe_b_offset_left + iframe_c_offset_left + 4,
+                          iframe_b_offset_top + iframe_c_offset_top + 4);
   const float device_scale_factor =
       root->render_manager()->GetRenderWidgetHostView()->GetDeviceScaleFactor();
   // Convert from CSS to physical pixels
   expected.Scale(device_scale_factor);
   gfx::Transform actual = filter->GetIntersectionState()->main_frame_transform;
-  gfx::Point viewport_offset;
-  EXPECT_TRUE(actual.TransformPointReverse(&viewport_offset));
-  viewport_offset = gfx::Point(-viewport_offset.x(), -viewport_offset.y());
+  const absl::optional<gfx::PointF> viewport_offset_source_point =
+      actual.TransformPointReverse(gfx::PointF());
+  ASSERT_TRUE(viewport_offset_source_point.has_value());
+  const gfx::Vector2dF viewport_offset =
+      gfx::PointF() - viewport_offset_source_point.value();
   float tolerance = ceilf(device_scale_factor);
   EXPECT_NEAR(expected.x(), viewport_offset.x(), tolerance);
   EXPECT_NEAR(expected.y(), viewport_offset.y(), tolerance);

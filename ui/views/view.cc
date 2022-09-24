@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -2964,9 +2965,11 @@ bool View::ConvertPointFromAncestor(const View* ancestor,
                                     gfx::Point* point) const {
   gfx::Transform trans;
   bool result = GetTransformRelativeTo(ancestor, &trans);
-  auto p = gfx::Point3F(gfx::PointF(*point));
-  trans.TransformPointReverse(&p);
-  *point = gfx::ToFlooredPoint(p.AsPointF());
+  if (const absl::optional<gfx::PointF> transformed_point =
+          trans.TransformPointReverse(gfx::PointF(*point));
+      transformed_point.has_value()) {
+    *point = gfx::ToFlooredPoint(transformed_point.value());
+  }
   return result;
 }
 

@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/point.h"
@@ -565,11 +566,15 @@ void ActionMove::CalculateMoveVector(gfx::PointF& touch_press_pos,
     move_vector_ -= new_move;
   }
 
-  auto location =
-      gfx::Point((int)touch_press_pos.x(), (int)touch_press_pos.y());
-  if (rotation_transform)
-    rotation_transform->TransformPointReverse(&location);
-  last_touch_root_location_ = gfx::PointF(location) + move_vector_;
+  gfx::PointF location = touch_press_pos;
+  if (rotation_transform) {
+    if (const absl::optional<gfx::PointF> transformed_location =
+            rotation_transform->TransformPointReverse(location);
+        transformed_location.has_value()) {
+      location = transformed_location.value();
+    }
+  }
+  last_touch_root_location_ = location + move_vector_;
 
   float x = last_touch_root_location_.x();
   float y = last_touch_root_location_.y();

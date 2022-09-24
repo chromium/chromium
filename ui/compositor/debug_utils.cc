@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/numerics/math_constants.h"
 #include "cc/trees/layer_tree_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -25,13 +26,20 @@ namespace {
 
 void PrintLayerHierarchyImp(const Layer* layer,
                             int indent,
-                            gfx::Point mouse_location,
+                            const gfx::Point& mouse_location,
                             std::ostringstream* out) {
   std::string indent_str(indent, ' ');
 
-  layer->transform().TransformPointReverse(&mouse_location);
-  bool mouse_inside_layer_bounds = layer->bounds().Contains(mouse_location);
-  mouse_location.Offset(-layer->bounds().x(), -layer->bounds().y());
+  gfx::Point transformed_mouse_location = mouse_location;
+  if (const absl::optional<gfx::Point> transformed =
+          layer->transform().TransformPointReverse(transformed_mouse_location);
+      transformed.has_value()) {
+    transformed_mouse_location = transformed.value();
+  }
+  const bool mouse_inside_layer_bounds =
+      layer->bounds().Contains(transformed_mouse_location);
+  const gfx::Point mouse_location_in_layer =
+      transformed_mouse_location - layer->bounds().origin().OffsetFromOrigin();
 
   *out << indent_str;
   if (mouse_inside_layer_bounds)
@@ -114,10 +122,8 @@ void PrintLayerHierarchyImp(const Layer* layer,
 
   *out << '\n';
 
-  for (size_t i = 0, count = layer->children().size(); i < count; ++i) {
-    PrintLayerHierarchyImp(
-        layer->children()[i], indent + 3, mouse_location, out);
-  }
+  for (ui::Layer* child : layer->children())
+    PrintLayerHierarchyImp(child, indent + 3, mouse_location_in_layer, out);
 }
 
 }  // namespace
