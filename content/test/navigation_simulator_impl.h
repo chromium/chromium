@@ -228,6 +228,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
     supports_loading_mode_header_ = value;
   }
 
+  void set_post_id(int64_t post_id) { post_id_ = post_id; }
+
  private:
   NavigationSimulatorImpl(const GURL& original_url,
                           bool browser_initiated,

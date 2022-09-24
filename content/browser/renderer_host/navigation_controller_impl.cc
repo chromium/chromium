@@ -890,9 +890,6 @@ void NavigationControllerImpl::Reload(ReloadType reload_type,
     return;
   }
 
-  // Set ReloadType for |entry|.
-  entry->set_reload_type(reload_type);
-
   if (g_check_for_repost && check_for_repost && entry->GetHasPostData()) {
     // The user is asking to reload a page with POST data. Prompt to make sure
     // they really want to do this. If they do, the dialog will call us back
@@ -903,6 +900,9 @@ void NavigationControllerImpl::Reload(ReloadType reload_type,
     delegate_->ActivateAndShowRepostFormWarningDialog();
     return;
   }
+
+  // Set ReloadType for |entry|.
+  entry->set_reload_type(reload_type);
 
   if (!IsInitialNavigation())
     DiscardNonCommittedEntries();

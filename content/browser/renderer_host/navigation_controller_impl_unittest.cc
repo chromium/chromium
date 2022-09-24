@@ -275,12 +275,15 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
 
   FrameTreeNode* root_ftn() { return contents()->GetPrimaryFrameTree().root(); }
 
+  void BeforeFormRepostWarningShow() override { form_repost_counter_++; }
+
  protected:
   GURL navigated_url_;
   size_t navigation_entry_committed_counter_ = 0;
   size_t navigation_entry_changed_counter_ = 0;
   size_t navigation_list_pruned_counter_ = 0;
   size_t navigation_entries_deleted_counter_ = 0;
+  size_t form_repost_counter_ = 0;
   PrunedDetails last_navigation_entry_pruned_details_;
   ReloadType last_reload_type_;
 };
@@ -717,6 +720,40 @@ TEST_F(NavigationControllerTest, LoadURLWithExtraParams_Data_Android) {
   CheckNavigationEntryMatchLoadParams(load_url_params, entry);
 }
 #endif
+
+TEST_F(NavigationControllerTest, KeepReloadTypeWhenCancelRepost) {
+  NavigationControllerImpl& controller = controller_impl();
+  GURL url("https://posturl");
+
+  auto navigation =
+      NavigationSimulatorImpl::CreateBrowserInitiated(url, contents());
+  NavigationController::LoadURLParams load_url_params(url);
+  load_url_params.transition_type = ui::PAGE_TRANSITION_TYPED;
+  load_url_params.load_type = NavigationController::LOAD_TYPE_HTTP_POST;
+  const char* raw_data = "post\n\n\0data";
+  const int length = 11;
+  const int64_t identifier = 1;
+  load_url_params.post_data =
+      network::ResourceRequestBody::CreateFromBytes(raw_data, length);
+  load_url_params.post_data->set_identifier(identifier);
+  navigation->SetLoadURLParams(&load_url_params);
+  navigation->Start();
+
+  // Set the post_id according to identifier.
+  navigation->set_post_id(identifier);
+  navigation->Commit();
+
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+  ReloadType initial_reload_type = entry->reload_type();
+  EXPECT_EQ(initial_reload_type, ReloadType::NONE);
+
+  controller.Reload(ReloadType::BYPASSING_CACHE, true);
+  EXPECT_EQ(1U, form_repost_counter_);
+  EXPECT_EQ(entry->reload_type(), initial_reload_type);
+  controller.CancelPendingReload();
+  // ReloadType should not change because we canceled pending reload.
+  EXPECT_EQ(entry->reload_type(), initial_reload_type);
+}
 
 TEST_F(NavigationControllerTest, LoadURLWithExtraParams_HttpPost) {
   NavigationControllerImpl& controller = controller_impl();
