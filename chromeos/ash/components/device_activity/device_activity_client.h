@@ -35,18 +35,6 @@ namespace device_activity {
 // Forward declaration from device_active_use_case.h
 class DeviceActiveUseCase;
 
-// Create a delegate which can be used to create fakes in unit tests.
-// Fake via. delegate is required for creating deterministic unit tests.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) PsmDelegate {
- public:
-  virtual ~PsmDelegate() = default;
-  virtual rlwe::StatusOr<
-      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>>
-  CreatePsmClient(private_membership::rlwe::RlweUseCase use_case,
-                  const std::vector<private_membership::rlwe::RlwePlaintextId>&
-                      plaintext_ids) = 0;
-};
-
 // Observes the network for connected state to determine whether the device
 // is active in a given window.
 // State Transition flow:
@@ -128,7 +116,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   DeviceActivityClient(
       NetworkStateHandler* handler,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<PsmDelegate> psm_delegate,
       std::unique_ptr<base::RepeatingTimer> report_timer,
       const std::string& fresnel_server_url,
       const std::string& api_key,
@@ -252,9 +239,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // The URLLoaderFactory we use to issue network requests.
   // |url_loader_factory_| outlives |url_loader_|.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // Abstract class used to generate the |psm_rlwe_client_|.
-  std::unique_ptr<PsmDelegate> psm_delegate_;
 
   // Tries reporting device actives every |kTimeToRepeat| from when this class
   // is initialized. Time of class initialization depends on when the device is

@@ -34,6 +34,36 @@ constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
     MarketSegment::MARKET_SEGMENT_UNKNOWN /* market_segment */,
 };
 
+class FakePsmDelegate : public PsmDelegate {
+ public:
+  FakePsmDelegate(const std::string& ec_cipher_key,
+                  const std::string& seed,
+                  const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids)
+      : ec_cipher_key_(ec_cipher_key),
+        seed_(seed),
+        plaintext_ids_(plaintext_ids) {}
+  FakePsmDelegate(const FakePsmDelegate&) = delete;
+  FakePsmDelegate& operator=(const FakePsmDelegate&) = delete;
+  ~FakePsmDelegate() override = default;
+
+  // PsmDelegate:
+  rlwe::StatusOr<
+      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>>
+  CreatePsmClient(private_membership::rlwe::RlweUseCase use_case,
+                  const std::vector<private_membership::rlwe::RlwePlaintextId>&
+                      plaintext_ids) override {
+    return psm_rlwe::PrivateMembershipRlweClient::CreateForTesting(
+        use_case, plaintext_ids, std::string() /* ec_cipher_key */,
+        std::string() /* seed */);
+  }
+
+ private:
+  // Used by the PSM client to generate deterministic request/response protos.
+  std::string ec_cipher_key_;
+  std::string seed_;
+  std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids_;
+};
+
 }  // namespace
 
 class FirstActiveUseCaseImplTest : public testing::Test {
@@ -52,8 +82,13 @@ class FirstActiveUseCaseImplTest : public testing::Test {
     chromeos::system::StatisticsProvider::SetTestProvider(
         &statistics_provider_);
 
+    const std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids;
     first_active_use_case_impl_ = std::make_unique<FirstActiveUseCaseImpl>(
-        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_);
+        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_,
+        // |FakePsmDelegate| can use any test case parameters.
+        std::make_unique<FakePsmDelegate>(std::string() /* ec_cipher_key */,
+                                          std::string() /* seed */,
+                                          std::move(plaintext_ids)));
   }
 
   void TearDown() override { first_active_use_case_impl_.reset(); }
@@ -243,29 +278,6 @@ TEST_F(FirstActiveUseCaseImplTest, ValidateWindowIdFormattedCorrectly) {
   EXPECT_EQ(first_active_use_case_impl_->GenerateUTCWindowIdentifier(
                 new_first_active_ts),
             "20220101");
-}
-
-TEST_F(FirstActiveUseCaseImplTest, ExpectedMetadataIsSet) {
-  base::Time new_first_active_ts;
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 23:59:59 GMT", &new_first_active_ts));
-
-  // Window identifier must be set before PSM id, and hence import request body
-  // can be generated.
-  first_active_use_case_impl_->SetWindowIdentifier(
-      first_active_use_case_impl_->GenerateUTCWindowIdentifier(
-          new_first_active_ts));
-
-  ImportDataRequest req =
-      first_active_use_case_impl_->GenerateImportRequestBody();
-  EXPECT_EQ(req.device_metadata().chromeos_channel(), Channel::CHANNEL_STABLE);
-  EXPECT_FALSE(req.device_metadata().chromeos_version().empty());
-
-  // TODO(hirthanan): Enable when rolling out check membership requests for the
-  // first active use case.
-  // EXPECT_EQ(req.device_metadata().hardware_id(), kHardwareClassKeyNotFound);
-  // EXPECT_EQ(req.device_metadata().market_segment(),
-  //          MarketSegment::MARKET_SEGMENT_UNKNOWN);
 }
 
 }  // namespace device_activity

@@ -20,12 +20,14 @@ namespace psm_rlwe = private_membership::rlwe;
 FirstActiveUseCaseImpl::FirstActiveUseCaseImpl(
     const std::string& psm_device_active_secret,
     const ChromeDeviceMetadataParameters& chrome_passed_device_params,
-    PrefService* local_state)
+    PrefService* local_state,
+    std::unique_ptr<PsmDelegate> psm_delegate)
     : DeviceActiveUseCase(psm_device_active_secret,
                           chrome_passed_device_params,
                           prefs::kDeviceActiveLastKnownFirstActivePingTimestamp,
                           psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE,
-                          local_state) {}
+                          local_state,
+                          std::move(psm_delegate)) {}
 
 FirstActiveUseCaseImpl::~FirstActiveUseCaseImpl() = default;
 

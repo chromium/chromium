@@ -28,7 +28,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   FirstActiveUseCaseImpl(
       const std::string& psm_device_active_secret,
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
-      PrefService* local_state);
+      PrefService* local_state,
+      std::unique_ptr<PsmDelegate> psm_delegate);
   FirstActiveUseCaseImpl(const FirstActiveUseCaseImpl&) = delete;
   FirstActiveUseCaseImpl& operator=(const FirstActiveUseCaseImpl&) = delete;
   ~FirstActiveUseCaseImpl() override;

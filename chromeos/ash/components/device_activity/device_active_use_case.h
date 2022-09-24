@@ -34,6 +34,18 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   MarketSegment market_segment;
 };
 
+// Create a delegate which can be used to create fakes in unit tests.
+// Fake via. delegate is required for creating deterministic unit tests.
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) PsmDelegate {
+ public:
+  virtual ~PsmDelegate() = default;
+  virtual rlwe::StatusOr<
+      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>>
+  CreatePsmClient(private_membership::rlwe::RlweUseCase use_case,
+                  const std::vector<private_membership::rlwe::RlwePlaintextId>&
+                      plaintext_ids) = 0;
+};
+
 // Base class for device active use cases.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
     DeviceActiveUseCase {
@@ -43,10 +55,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
       const std::string& use_case_pref_key,
       private_membership::rlwe::RlweUseCase psm_use_case,
-      PrefService* local_state);
+      PrefService* local_state,
+      std::unique_ptr<PsmDelegate> psm_delegate);
   DeviceActiveUseCase(const DeviceActiveUseCase&) = delete;
   DeviceActiveUseCase& operator=(const DeviceActiveUseCase&) = delete;
   virtual ~DeviceActiveUseCase();
+
+  // Method used to reset the non constant saved state of the device active use
+  // case. The state should be cleared after reporting device actives.
+  void ClearSavedState();
 
   // Generate the window identifier for the use case.
   // Granularity of formatted date will be based on the use case.
@@ -83,19 +100,26 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   absl::optional<std::string> GetWindowIdentifier() const;
 
-  // Method also assigns |psm_id_| to absl::nullopt so that subsequent calls to
-  // GetPsmIdentifier use the updated window id value.
-  void SetWindowIdentifier(absl::optional<std::string> window_id);
+  // Updates the window identifier, which updates the |psm_id_| and
+  // |psm_rlwe_client_|.
+  bool SetWindowIdentifier(absl::optional<std::string> window_id);
+
+  // This method will return nullopt if this method is called before the window
+  // identifier was set successfully.
+  absl::optional<private_membership::rlwe::RlwePlaintextId> GetPsmIdentifier()
+      const;
 
   // Calculates an HMAC of |message| using |key|, encoded as a hexadecimal
   // string. Return empty string if HMAC fails.
   std::string GetDigestString(const std::string& key,
                               const std::string& message) const;
 
-  absl::optional<private_membership::rlwe::RlwePlaintextId> GetPsmIdentifier();
-
-  void SetPsmIdentifier(
-      absl::optional<private_membership::rlwe::RlwePlaintextId> psm_id);
+  // Uniquely identifies a window of time for device active counting.
+  //
+  // Generated on demand each time the |window_id_| is regenerated.
+  // This field is used apart of PSM Oprf, Query, and Import requests.
+  absl::optional<private_membership::rlwe::RlwePlaintextId>
+  GeneratePsmIdentifier(absl::optional<std::string> window_id) const;
 
   // Returns memory address to the |psm_rlwe_client_| unique pointer, or null if
   // not set.
@@ -128,17 +152,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   MarketSegment GetMarketSegment() const;
 
  private:
-  // Field is used to identify a fixed window of time for device active
-  // counting. Privacy compliance is guaranteed by retrieving the
-  // |psm_device_active_secret_| from chromeos, and performing an additional
-  // HMAC-SHA256 hash on generated plaintext string.
-  //
-  // Generated on demand each time the state machine leaves the idle state.
-  // It is reused by several states. It is reset to nullopt.
-  // This field is used apart of PSM Oprf, Query, and Import requests.
-  absl::optional<private_membership::rlwe::RlwePlaintextId>
-  GeneratePsmIdentifier() const;
-
   // The ChromeOS platform code will provide a derived PSM device active secret
   // via callback.
   //
@@ -164,6 +177,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // |local_state_| outlives the lifetime of this class.
   // Used local state prefs are initialized by |DeviceActivityController|.
   PrefService* const local_state_;
+
+  // Abstract class used to generate the |psm_rlwe_client_|.
+  std::unique_ptr<PsmDelegate> psm_delegate_;
 
   // Singleton lives throughout class lifetime.
   chromeos::system::StatisticsProvider* const statistics_provider_;

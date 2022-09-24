@@ -16,6 +16,7 @@
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/device_activity/daily_use_case_impl.h"
+#include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "chromeos/ash/components/device_activity/device_activity_controller.h"
 #include "chromeos/ash/components/device_activity/first_active_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
@@ -131,8 +132,6 @@ base::TimeDelta TimeUntilNewUTCMonth() {
   return new_ts - current_ts;
 }
 
-}  // namespace
-
 class FakePsmDelegate : public PsmDelegate {
  public:
   FakePsmDelegate(const std::string& ec_cipher_key,
@@ -167,10 +166,12 @@ class FakeDailyUseCaseImpl : public DailyUseCaseImpl {
   FakeDailyUseCaseImpl(
       const std::string& psm_device_active_secret,
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
-      PrefService* local_state)
+      PrefService* local_state,
+      std::unique_ptr<PsmDelegate> psm_delegate)
       : DailyUseCaseImpl(psm_device_active_secret,
                          chrome_passed_device_params,
-                         local_state) {}
+                         local_state,
+                         std::move(psm_delegate)) {}
   FakeDailyUseCaseImpl(const FakeDailyUseCaseImpl&) = delete;
   FakeDailyUseCaseImpl& operator=(const FakeDailyUseCaseImpl&) = delete;
   ~FakeDailyUseCaseImpl() override = default;
@@ -181,10 +182,12 @@ class FakeMonthlyUseCaseImpl : public MonthlyUseCaseImpl {
   FakeMonthlyUseCaseImpl(
       const std::string& psm_device_active_secret,
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
-      PrefService* local_state)
+      PrefService* local_state,
+      std::unique_ptr<PsmDelegate> psm_delegate)
       : MonthlyUseCaseImpl(psm_device_active_secret,
                            chrome_passed_device_params,
-                           local_state) {}
+                           local_state,
+                           std::move(psm_delegate)) {}
   FakeMonthlyUseCaseImpl(const FakeMonthlyUseCaseImpl&) = delete;
   FakeMonthlyUseCaseImpl& operator=(const FakeMonthlyUseCaseImpl&) = delete;
   ~FakeMonthlyUseCaseImpl() override = default;
@@ -195,15 +198,19 @@ class FakeFirstActiveUseCaseImpl : public FirstActiveUseCaseImpl {
   FakeFirstActiveUseCaseImpl(
       const std::string& psm_device_active_secret,
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
-      PrefService* local_state)
+      PrefService* local_state,
+      std::unique_ptr<PsmDelegate> psm_delegate)
       : FirstActiveUseCaseImpl(psm_device_active_secret,
                                chrome_passed_device_params,
-                               local_state) {}
+                               local_state,
+                               std::move(psm_delegate)) {}
   FakeFirstActiveUseCaseImpl(const FakeFirstActiveUseCaseImpl&) = delete;
   FakeFirstActiveUseCaseImpl& operator=(const FakeFirstActiveUseCaseImpl&) =
       delete;
   ~FakeFirstActiveUseCaseImpl() override = default;
 };
+
+}  // namespace
 
 // TODO(crbug/1317652): Refactor checking if current use case local pref is
 // unset. We may also want to abstract the psm network responses for the unit
@@ -323,20 +330,30 @@ class DeviceActivityClientTest : public testing::Test {
     // should maintain ownership of.
     std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
     use_cases.push_back(std::make_unique<FakeDailyUseCaseImpl>(
-        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_));
-    use_cases.push_back(std::make_unique<FakeMonthlyUseCaseImpl>(
-        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_));
-    use_cases.push_back(std::make_unique<FakeFirstActiveUseCaseImpl>(
-        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_));
-
-    device_activity_client_ = std::make_unique<DeviceActivityClient>(
-        network_state_test_helper_->network_state_handler(),
-        test_shared_loader_factory_,
+        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_,
         // |FakePsmDelegate| can use any test case parameters.
         std::make_unique<FakePsmDelegate>(
             psm_test_data_->nonmember_test_case.ec_cipher_key(),
             psm_test_data_->nonmember_test_case.seed(),
-            GetPlaintextIds(psm_test_data_->nonmember_test_case)),
+            GetPlaintextIds(psm_test_data_->nonmember_test_case))));
+    use_cases.push_back(std::make_unique<FakeMonthlyUseCaseImpl>(
+        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_,
+        // |FakePsmDelegate| can use any test case parameters.
+        std::make_unique<FakePsmDelegate>(
+            psm_test_data_->nonmember_test_case.ec_cipher_key(),
+            psm_test_data_->nonmember_test_case.seed(),
+            GetPlaintextIds(psm_test_data_->nonmember_test_case))));
+    use_cases.push_back(std::make_unique<FakeFirstActiveUseCaseImpl>(
+        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_,
+        // |FakePsmDelegate| can use any test case parameters.
+        std::make_unique<FakePsmDelegate>(
+            psm_test_data_->nonmember_test_case.ec_cipher_key(),
+            psm_test_data_->nonmember_test_case.seed(),
+            GetPlaintextIds(psm_test_data_->nonmember_test_case))));
+
+    device_activity_client_ = std::make_unique<DeviceActivityClient>(
+        network_state_test_helper_->network_state_handler(),
+        test_shared_loader_factory_,
         std::make_unique<base::MockRepeatingTimer>(), kTestFresnelBaseUrl,
         kFakeFresnelApiKey, std::move(use_cases));
   }

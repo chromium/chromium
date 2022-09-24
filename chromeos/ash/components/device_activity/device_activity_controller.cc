@@ -239,15 +239,17 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
   // smallest to largest window. i.e. Daily > Monthly > First Active.
   std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
   use_cases.push_back(std::make_unique<DailyUseCaseImpl>(
-      psm_device_active_secret, chrome_passed_device_params_, local_state));
+      psm_device_active_secret, chrome_passed_device_params_, local_state,
+      std::make_unique<PsmDelegateImpl>()));
   use_cases.push_back(std::make_unique<MonthlyUseCaseImpl>(
-      psm_device_active_secret, chrome_passed_device_params_, local_state));
+      psm_device_active_secret, chrome_passed_device_params_, local_state,
+      std::make_unique<PsmDelegateImpl>()));
   use_cases.push_back(std::make_unique<FirstActiveUseCaseImpl>(
-      psm_device_active_secret, chrome_passed_device_params_, local_state));
+      psm_device_active_secret, chrome_passed_device_params_, local_state,
+      std::make_unique<PsmDelegateImpl>()));
 
   da_client_network_ = std::make_unique<DeviceActivityClient>(
       NetworkHandler::Get()->network_state_handler(), url_loader_factory,
-      std::make_unique<PsmDelegateImpl>(),
       std::make_unique<base::RepeatingTimer>(), kFresnelBaseUrl,
       google_apis::GetFresnelAPIKey(), std::move(use_cases));
 }

@@ -28,7 +28,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) DailyUseCaseImpl
   DailyUseCaseImpl(
       const std::string& psm_device_active_secret,
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
-      PrefService* local_state);
+      PrefService* local_state,
+      std::unique_ptr<PsmDelegate> psm_delegate);
   DailyUseCaseImpl(const DailyUseCaseImpl&) = delete;
   DailyUseCaseImpl& operator=(const DailyUseCaseImpl&) = delete;
   ~DailyUseCaseImpl() override;

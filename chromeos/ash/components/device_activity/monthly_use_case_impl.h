@@ -28,7 +28,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   MonthlyUseCaseImpl(
       const std::string& psm_device_active_secret,
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
-      PrefService* local_state);
+      PrefService* local_state,
+      std::unique_ptr<PsmDelegate> psm_delegate);
   MonthlyUseCaseImpl(const MonthlyUseCaseImpl&) = delete;
   MonthlyUseCaseImpl& operator=(const MonthlyUseCaseImpl&) = delete;
   ~MonthlyUseCaseImpl() override;

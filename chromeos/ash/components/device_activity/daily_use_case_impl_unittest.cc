@@ -29,6 +29,36 @@ constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
     MarketSegment::MARKET_SEGMENT_UNKNOWN /* market_segment */,
 };
 
+class FakePsmDelegate : public PsmDelegate {
+ public:
+  FakePsmDelegate(const std::string& ec_cipher_key,
+                  const std::string& seed,
+                  const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids)
+      : ec_cipher_key_(ec_cipher_key),
+        seed_(seed),
+        plaintext_ids_(plaintext_ids) {}
+  FakePsmDelegate(const FakePsmDelegate&) = delete;
+  FakePsmDelegate& operator=(const FakePsmDelegate&) = delete;
+  ~FakePsmDelegate() override = default;
+
+  // PsmDelegate:
+  rlwe::StatusOr<
+      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>>
+  CreatePsmClient(private_membership::rlwe::RlweUseCase use_case,
+                  const std::vector<private_membership::rlwe::RlwePlaintextId>&
+                      plaintext_ids) override {
+    return psm_rlwe::PrivateMembershipRlweClient::CreateForTesting(
+        use_case, plaintext_ids, /*ec_cipher_key=*/std::string(),
+        /*seed=*/std::string());
+  }
+
+ private:
+  // Used by the PSM client to generate deterministic request/response protos.
+  std::string ec_cipher_key_;
+  std::string seed_;
+  std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids_;
+};
+
 }  // namespace
 
 class DailyUseCaseImplTest : public testing::Test {
@@ -43,8 +73,13 @@ class DailyUseCaseImplTest : public testing::Test {
   void SetUp() override {
     DeviceActivityController::RegisterPrefs(local_state_.registry());
 
+    const std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids;
     daily_use_case_impl_ = std::make_unique<DailyUseCaseImpl>(
-        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_);
+        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_,
+        // |FakePsmDelegate| can use any test case parameters.
+        std::make_unique<FakePsmDelegate>(std::string() /* ec_cipher_key */,
+                                          std::string() /* seed */,
+                                          std::move(plaintext_ids)));
   }
 
   void TearDown() override { daily_use_case_impl_.reset(); }

@@ -209,14 +209,12 @@ void DeviceActivityClient::RecordDeviceActivityMethodCalled(
 DeviceActivityClient::DeviceActivityClient(
     NetworkStateHandler* handler,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<PsmDelegate> psm_delegate,
     std::unique_ptr<base::RepeatingTimer> report_timer,
     const std::string& fresnel_base_url,
     const std::string& api_key,
     std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases)
     : network_state_handler_(handler),
       url_loader_factory_(url_loader_factory),
-      psm_delegate_(std::move(psm_delegate)),
       report_timer_(std::move(report_timer)),
       fresnel_base_url_(fresnel_base_url),
       api_key_(api_key),
@@ -226,7 +224,6 @@ DeviceActivityClient::DeviceActivityClient(
 
   DCHECK(network_state_handler_);
   DCHECK(url_loader_factory_);
-  DCHECK(psm_delegate_);
   DCHECK(report_timer_);
   DCHECK(!use_cases_.empty());
 
@@ -393,8 +390,7 @@ void DeviceActivityClient::CancelUseCases() {
   std::swap(pending_use_cases_, pending_use_cases);
 
   for (auto* use_case : GetUseCases()) {
-    // Setting  the window identifier resets the object to a fresh state.
-    use_case->SetWindowIdentifier(absl::nullopt);
+    use_case->ClearSavedState();
   }
 
   TransitionToIdle(nullptr);
@@ -415,28 +411,14 @@ void DeviceActivityClient::TransitionOutOfIdle(
   // support for additional use cases (i.e MONTHLY, FIRST_ACTIVE, etc.).
   if (current_use_case->IsDevicePingRequired(
           last_transition_out_of_idle_time_)) {
-    current_use_case->SetWindowIdentifier(
+    bool success = current_use_case->SetWindowIdentifier(
         current_use_case->GenerateUTCWindowIdentifier(
             last_transition_out_of_idle_time_));
-    auto current_psm_id = current_use_case->GetPsmIdentifier();
 
-    // Check if the PSM id is generated.
-    if (!current_psm_id.has_value()) {
+    if (!success) {
       TransitionToIdle(current_use_case);
       return;
     }
-
-    std::vector<psm_rlwe::RlwePlaintextId> psm_rlwe_ids = {
-        current_psm_id.value()};
-    auto status_or_client = psm_delegate_->CreatePsmClient(
-        current_use_case->GetPsmUseCase(), psm_rlwe_ids);
-
-    if (!status_or_client.ok()) {
-      TransitionToIdle(current_use_case);
-      return;
-    }
-
-    current_use_case->SetPsmRlweClient(std::move(status_or_client.value()));
 
     switch (current_use_case->GetPsmUseCase()) {
       case psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY:
@@ -897,8 +879,7 @@ void DeviceActivityClient::TransitionToIdle(
   state_ = State::kIdle;
 
   if (current_use_case) {
-    // This will also reset the |current_use_case| psm_id field.
-    current_use_case->SetWindowIdentifier(absl::nullopt);
+    current_use_case->ClearSavedState();
     current_use_case = nullptr;
 
     // Pop the front of the queue since the use case has tried reporting.
