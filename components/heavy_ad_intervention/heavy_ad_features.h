@@ -19,9 +19,9 @@ extern const char kHeavyAdReportingOnlyParamName[];
 // ad intervention.
 extern const char kHeavyAdReportingEnabledParamName[];
 
-extern const base::Feature kHeavyAdIntervention;
-extern const base::Feature kHeavyAdInterventionWarning;
-extern const base::Feature kHeavyAdPrivacyMitigations;
+BASE_DECLARE_FEATURE(kHeavyAdIntervention);
+BASE_DECLARE_FEATURE(kHeavyAdInterventionWarning);
+BASE_DECLARE_FEATURE(kHeavyAdPrivacyMitigations);
 
 }  // namespace features
 
