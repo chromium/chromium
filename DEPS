@@ -1243,7 +1243,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + '199de96b345ada7c6e7e6ba3d2fa7a6911b8767d',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '34780d8bd13d0af0cf17a22789ef286e8512594d',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + 'dceb779ecd822f55b4ae78f760371b0e08a889f2',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '8de89a7a36cd024dcd30ac9f67f3f02c37a7c8fb',
@@ -1568,7 +1568,7 @@ deps = {
   },
 
   'src/third_party/neon_2_sse/src':
-    Var('chromium_git') + '/external/github.com/intel/ARM_NEON_2_x86_SSE.git' + '@' + '8dbe2461c89760ac4b204aa0eafb72413a97957d',
+    Var('chromium_git') + '/external/github.com/intel/ARM_NEON_2_x86_SSE.git' + '@' + 'a15b489e1222b2087007546b4912e21293ea86ff',
 
   'src/third_party/netty-tcnative/src': {
       'url': Var('chromium_git') + '/external/netty-tcnative.git' + '@' + '7eeb50be90c9ba0f6afa3375132df63942a0f32d',
@@ -1744,7 +1744,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '620ab3e167b0a64b6732dac16fd0edaf8284cb8e',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'ff731e32eab39bfc7d06e443ce0fda6524aad24d',
 
   'src/third_party/turbine': {
       'packages': [
@@ -1818,7 +1818,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '8e3d3359f9bec608e09fac1f7054a2a14b1bd73c',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '52e1c8afb01b534481ebe8bd3c769ea0c6404e77',
 
   'src/tools/page_cycler/acid3':
     Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + '6be0a66a1ebd7ebc5abc1b2f405a945f6d871521',

@@ -7,6 +7,7 @@ config("eigen_includes") {
 
   cflags = [
     "-Wno-deprecated-copy",
+    "-Wno-deprecated-declarations",
     "-Wno-extra-semi",
     "-Wno-unused-function",
     "-Wno-unused-result",
