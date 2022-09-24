@@ -406,16 +406,12 @@ views::View* PartialTranslateBubbleView::GetCurrentView() const {
 
 void PartialTranslateBubbleView::ShowTranslated() {
   SwitchView(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
-  // Update text direction, if necesssary.
-  SetTextAlignmentForLocaleTextDirection(model_->GetTargetLanguageCode());
   translate::ReportPartialTranslateBubbleUiAction(
       translate::PartialTranslateBubbleUiEvent::TARGET_LANGUAGE_TAB_SELECTED);
 }
 
 void PartialTranslateBubbleView::ShowOriginal() {
   SwitchView(PartialTranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
-  // Update text direction, if necesssary.
-  SetTextAlignmentForLocaleTextDirection(model_->GetSourceLanguageCode());
   translate::ReportPartialTranslateBubbleUiAction(
       translate::PartialTranslateBubbleUiEvent::SOURCE_LANGUAGE_TAB_SELECTED);
 }
@@ -437,7 +433,6 @@ void PartialTranslateBubbleView::ConfirmAdvancedOptions() {
 
     // Update max width of text selection label to match width of bubble, which
     // changes with the lengths of the languages displayed in the tabbed pane.
-    SetTextAlignmentForLocaleTextDirection(model_->GetTargetLanguageCode());
     partial_text_label_->SizeToFit(
         tab_view_top_row_->GetPreferredSize().width());
     SwitchView(PartialTranslateBubbleModel::VIEW_STATE_WAITING);
@@ -1040,9 +1035,11 @@ void PartialTranslateBubbleView::UpdateTextForViewState(
   if (view_state == PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE ||
       view_state == PartialTranslateBubbleModel::VIEW_STATE_TRANSLATING) {
     partial_text_label_->SetText(model_->GetTargetText());
+    SetTextAlignmentForLocaleTextDirection(model_->GetTargetLanguageCode());
   } else if (view_state ==
              PartialTranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE) {
     partial_text_label_->SetText(model_->GetSourceText());
+    SetTextAlignmentForLocaleTextDirection(model_->GetSourceLanguageCode());
   }
 }
 
