@@ -780,9 +780,9 @@ const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore(
     "LocalHistoryZeroSuggestRelevanceScore",
     500);
 
-const base::Feature kUseSharedInstanceForZeroSuggestPrefetching{
-    "UseSharedInstanceForZeroSuggestPrefetching",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUseSharedInstanceForZeroSuggestPrefetching,
+             "UseSharedInstanceForZeroSuggestPrefetching",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool UseSharedInstanceForZeroSuggestPrefetching() {
   return base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching) &&
