@@ -71,7 +71,7 @@ class DefinitionResultParserTest : public testing::Test {
 
   void SetHeadWord(Value* result, const std::string& headword) {
     result->FindListPath("dictionaryResult.entries")
-        ->GetListDeprecated()[0]
+        ->GetList()[0]
         .SetStringPath("headword", headword);
   }
 

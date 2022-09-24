@@ -49,11 +49,10 @@ void TranslationResponseParser::OnJsonParsed(
     return;
   }
 
-  DCHECK(translations->GetListDeprecated().size() == 1);
+  DCHECK(translations->GetList().size() == 1);
 
   const std::string* translated_text_ptr =
-      translations->GetListDeprecated().front().FindStringPath(
-          "translatedText");
+      translations->GetList().front().FindStringPath("translatedText");
   if (!translated_text_ptr) {
     LOG(ERROR) << "Can't find a translated text.";
     std::move(complete_callback_).Run(nullptr);

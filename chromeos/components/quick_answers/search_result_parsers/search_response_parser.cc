@@ -62,7 +62,7 @@ void SearchResponseParser::OnJsonParsed(
     return;
   }
 
-  for (const auto& entry : entries->GetListDeprecated()) {
+  for (const auto& entry : entries->GetList()) {
     auto quick_answer = std::make_unique<QuickAnswer>();
     if (ProcessResult(&entry, quick_answer.get())) {
       std::move(complete_callback_).Run(std::move(quick_answer));
