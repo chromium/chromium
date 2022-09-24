@@ -188,7 +188,12 @@ std::unique_ptr<SkiaImageRepresentation> OzoneImageBacking::ProduceSkia(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   if (context_state->GrContextIsGL()) {
-    auto gl_representation = ProduceGLTexture(manager, tracker);
+    std::unique_ptr<GLTextureImageRepresentationBase> gl_representation;
+    if (use_passthrough_) {
+      gl_representation = ProduceGLTexturePassthrough(manager, tracker);
+    } else {
+      gl_representation = ProduceGLTexture(manager, tracker);
+    }
     if (!gl_representation) {
       LOG(ERROR) << "OzoneImageBacking::ProduceSkia failed to create GL "
                     "representation";
@@ -244,7 +249,8 @@ OzoneImageBacking::OzoneImageBacking(
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<gfx::NativePixmap> pixmap,
     scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
-    const GpuDriverBugWorkarounds& workarounds)
+    const GpuDriverBugWorkarounds& workarounds,
+    bool use_passthrough)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -258,7 +264,8 @@ OzoneImageBacking::OzoneImageBacking(
       pixmap_(std::move(pixmap)),
       dawn_procs_(std::move(dawn_procs)),
       context_state_(std::move(context_state)),
-      workarounds_(workarounds) {
+      workarounds_(workarounds),
+      use_passthrough_(use_passthrough) {
   bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY);
   bool used_by_gl =

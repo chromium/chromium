@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 
 struct DawnProcTable;
@@ -24,7 +25,8 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
     : public SharedImageBackingFactory {
  public:
   explicit OzoneImageBackingFactory(SharedContextState* shared_context_state,
-                                    const GpuDriverBugWorkarounds& workarounds);
+                                    const GpuDriverBugWorkarounds& workarounds,
+                                    const GpuPreferences& gpu_preferences);
 
   ~OzoneImageBackingFactory() override;
 
@@ -78,6 +80,7 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
   const raw_ptr<SharedContextState> shared_context_state_;
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
   const GpuDriverBugWorkarounds workarounds_;
+  bool use_passthrough_;
 
   std::unique_ptr<OzoneImageBacking> CreateSharedImageInternal(
       const Mailbox& mailbox,
