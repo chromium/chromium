@@ -83,7 +83,6 @@ void PopulateCacheEntry(HttpCache* cache, const GURL& request_url) {
   AddMockTransaction(mock_trans.get());
 
   MockHttpRequest request(*(mock_trans.get()));
-
   std::unique_ptr<HttpTransaction> trans;
   int rv = cache->CreateTransaction(DEFAULT_PRIORITY, &trans);
   EXPECT_THAT(rv, IsOk());

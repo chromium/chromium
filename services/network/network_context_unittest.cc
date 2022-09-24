@@ -1851,6 +1851,9 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
         request_info.is_subframe_document_resource =
             is_subframe_document_resource;
         request_info.network_isolation_key = isolation_key;
+        request_info.network_anonymization_key =
+            net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+                isolation_key);
         disk_cache::EntryResult result = backend->OpenOrCreateEntry(
             *net::HttpCache::GenerateCacheKeyForRequest(&request_info),
             net::LOWEST, base::BindOnce([](disk_cache::EntryResult) {}));

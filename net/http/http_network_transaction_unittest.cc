@@ -621,6 +621,9 @@ class HttpNetworkTransactionTest : public PlatformTest,
       NetworkIsolationKey(SchemefulSite(GURL("https://foo.test/")),
                           SchemefulSite(GURL("https://bar.test/")));
 
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey =
+      NetworkAnonymizationKey(SchemefulSite(GURL("https://foo.test/")),
+                              SchemefulSite(GURL("https://bar.test/")));
   // These clocks are defined here, even though they're only used in the
   // Reporting tests below, since they need to be destroyed after
   // |session_deps_|.
@@ -4555,8 +4558,10 @@ TEST_F(HttpNetworkTransactionTest,
        BasicAuthProxyMatchesServerAuthWithNetworkIsolationKeyNoTunnel) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   // This test would need to use a single socket without this option enabled.
   // Best to use this option when it would affect a test, as it will eventually
@@ -4669,6 +4674,7 @@ TEST_F(HttpNetworkTransactionTest,
   request.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request.network_isolation_key = kNetworkIsolationKey1;
+  request.network_anonymization_key = kNetworkAnonymizationKey1;
 
   auto trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
@@ -4734,6 +4740,8 @@ TEST_F(HttpNetworkTransactionTest,
   // another socket, reuse the cached proxy credentials, but result in a server
   // auth challenge.
   request.network_isolation_key = kNetworkIsolationKey2;
+  request.network_anonymization_key = kNetworkAnonymizationKey2;
+
   trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
   rv = trans->Start(&request, callback.callback(), net_log_with_source);
@@ -4788,6 +4796,7 @@ TEST_F(HttpNetworkTransactionTest,
   // Make a request with the original NetworkIsolationKey. It should reuse the
   // first socket, and the proxy credentials sent on the first socket.
   request.network_isolation_key = kNetworkIsolationKey1;
+  request.network_anonymization_key = kNetworkAnonymizationKey1;
   trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
   rv = trans->Start(&request, callback.callback(), net_log_with_source);
@@ -4809,8 +4818,10 @@ TEST_F(HttpNetworkTransactionTest,
        BasicAuthProxyMatchesServerAuthWithNetworkIsolationKeyWithTunnel) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   // This test would need to use a single socket without this option enabled.
   // Best to use this option when it would affect a test, as it will eventually
@@ -4942,6 +4953,7 @@ TEST_F(HttpNetworkTransactionTest,
   request.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request.network_isolation_key = kNetworkIsolationKey1;
+  request.network_anonymization_key = kNetworkAnonymizationKey1;
 
   auto trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
@@ -5007,6 +5019,8 @@ TEST_F(HttpNetworkTransactionTest,
   // another socket, reuse the cached proxy credentials, but result in a server
   // auth challenge.
   request.network_isolation_key = kNetworkIsolationKey2;
+  request.network_anonymization_key = kNetworkAnonymizationKey2;
+
   trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
   rv = trans->Start(&request, callback.callback(), net_log_with_source);
@@ -5061,6 +5075,8 @@ TEST_F(HttpNetworkTransactionTest,
   // Make a request with the original NetworkIsolationKey. It should reuse the
   // first socket, and the proxy credentials sent on the first socket.
   request.network_isolation_key = kNetworkIsolationKey1;
+  request.network_anonymization_key = kNetworkAnonymizationKey1;
+
   trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
   rv = trans->Start(&request, callback.callback(), net_log_with_source);
@@ -13626,8 +13642,10 @@ TEST_F(HttpNetworkTransactionTest,
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   MockRead data_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"),
@@ -13643,6 +13661,7 @@ TEST_F(HttpNetworkTransactionTest,
   request.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request.network_isolation_key = kNetworkIsolationKey1;
+  request.network_anonymization_key = kNetworkAnonymizationKey1;
 
   StaticSocketDataProvider data(data_reads, base::span<MockWrite>());
   session_deps_.socket_factory->AddSocketDataProvider(&data);
@@ -20180,7 +20199,7 @@ class HttpNetworkTransactionReportingTest
     request.traffic_annotation =
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
     request.network_isolation_key = kNetworkIsolationKey;
-
+    request.network_anonymization_key = kNetworkAnonymizationKey;
     MockWrite data_writes[] = {
         MockWrite("GET / HTTP/1.1\r\n"
                   "Host: www.example.org\r\n"
@@ -20294,6 +20313,7 @@ class HttpNetworkTransactionNetworkErrorLoggingTest
     request_.method = "GET";
     request_.url = GURL(url_);
     request_.network_isolation_key = kNetworkIsolationKey;
+    request_.network_anonymization_key = kNetworkAnonymizationKey;
     request_.extra_headers = extra_headers_;
     request_.reporting_upload_depth = reporting_upload_depth_;
     request_.traffic_annotation =
@@ -22663,6 +22683,8 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolation) {
   const SchemefulSite kSite2(GURL("http://origin2/"));
   NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
   NetworkIsolationKey network_isolation_key2(kSite2, kSite2);
+  NetworkAnonymizationKey network_anonymization_key1(kSite1, kSite1);
+  NetworkAnonymizationKey network_anonymization_key2(kSite2, kSite2);
 
   for (bool partition_connections : {false, true}) {
     SCOPED_TRACE(partition_connections);
@@ -22765,6 +22787,7 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolation) {
     request1.traffic_annotation =
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
     request1.network_isolation_key = network_isolation_key1;
+    request1.network_anonymization_key = network_anonymization_key1;
     auto trans1 = std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY,
                                                            session.get());
     int rv = trans1->Start(&request1, callback.callback(), NetLogWithSource());
@@ -22780,6 +22803,7 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolation) {
     request2.traffic_annotation =
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
     request2.network_isolation_key = network_isolation_key2;
+    request2.network_anonymization_key = network_anonymization_key2;
     auto trans2 = std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY,
                                                            session.get());
     rv = trans2->Start(&request2, callback.callback(), NetLogWithSource());
@@ -22795,6 +22819,7 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolation) {
     request3.traffic_annotation =
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
     request3.network_isolation_key = network_isolation_key1;
+    request3.network_anonymization_key = network_anonymization_key1;
     auto trans3 = std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY,
                                                            session.get());
     rv = trans3->Start(&request3, callback.callback(), NetLogWithSource());
@@ -22811,6 +22836,8 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationH2) {
   const SchemefulSite kSite2(GURL("http://origin2/"));
   NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
   NetworkIsolationKey network_isolation_key2(kSite2, kSite2);
+  NetworkAnonymizationKey network_anonymization_key1(kSite1, kSite1);
+  NetworkAnonymizationKey network_anonymization_key2(kSite2, kSite2);
 
   // Whether to use an H2 proxy. When false, uses HTTPS H2 requests without a
   // proxy, when true, uses HTTP requests over an H2 proxy. It's unnecessary to
@@ -22979,6 +23006,8 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationH2) {
       request1.traffic_annotation =
           net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
       request1.network_isolation_key = network_isolation_key1;
+      request1.network_anonymization_key = network_anonymization_key1;
+
       auto trans1 =
           std::make_unique<HttpNetworkTransaction>(LOWEST, session.get());
       int rv =
@@ -22995,6 +23024,7 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationH2) {
       request2.traffic_annotation =
           net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
       request2.network_isolation_key = network_isolation_key2;
+      request2.network_anonymization_key = network_anonymization_key2;
       auto trans2 =
           std::make_unique<HttpNetworkTransaction>(LOWEST, session.get());
       rv = trans2->Start(&request2, callback.callback(), NetLogWithSource());
@@ -23010,6 +23040,8 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationH2) {
       request3.traffic_annotation =
           net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
       request3.network_isolation_key = network_isolation_key1;
+      request3.network_anonymization_key = network_anonymization_key1;
+
       auto trans3 =
           std::make_unique<HttpNetworkTransaction>(LOWEST, session.get());
       rv = trans3->Start(&request3, callback.callback(), NetLogWithSource());
@@ -23043,7 +23075,9 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
   NetworkIsolationKey preconnect1_isolation_key(kSite1, kSite1);
   NetworkIsolationKey preconnect2_isolation_key(kSite2, kSite2);
   NetworkIsolationKey not_preconnected_isolation_key(kSite3, kSite3);
-
+  NetworkAnonymizationKey preconnect1_anonymization_key(kSite1, kSite1);
+  NetworkAnonymizationKey preconnect2_anonymization_key(kSite2, kSite2);
+  NetworkAnonymizationKey not_preconnected_anonymization_key(kSite3, kSite3);
   // Test that only preconnects with
   for (TestCase test_case :
        {TestCase::kUseFirstPreconnect, TestCase::kUseSecondPreconnect,
@@ -23080,23 +23114,28 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
                                          base::span<const MockWrite>());
 
     NetworkIsolationKey network_isolation_key_for_request;
+    NetworkAnonymizationKey network_anonymization_key_for_request;
 
     switch (test_case) {
       case TestCase::kUseFirstPreconnect:
         session_deps.socket_factory->AddSocketDataProvider(&used_socket_data);
         session_deps.socket_factory->AddSocketDataProvider(&preconnect2_data);
         network_isolation_key_for_request = preconnect1_isolation_key;
+        network_anonymization_key_for_request = preconnect1_anonymization_key;
         break;
       case TestCase::kUseSecondPreconnect:
         session_deps.socket_factory->AddSocketDataProvider(&preconnect1_data);
         session_deps.socket_factory->AddSocketDataProvider(&used_socket_data);
         network_isolation_key_for_request = preconnect2_isolation_key;
+        network_anonymization_key_for_request = preconnect2_anonymization_key;
         break;
       case TestCase::kDontUsePreconnect:
         session_deps.socket_factory->AddSocketDataProvider(&preconnect1_data);
         session_deps.socket_factory->AddSocketDataProvider(&preconnect2_data);
         session_deps.socket_factory->AddSocketDataProvider(&used_socket_data);
         network_isolation_key_for_request = not_preconnected_isolation_key;
+        network_anonymization_key_for_request =
+            not_preconnected_anonymization_key;
         break;
     }
 
@@ -23110,12 +23149,15 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     request.network_isolation_key = preconnect1_isolation_key;
+    request.network_anonymization_key = preconnect1_anonymization_key;
     session->http_stream_factory()->PreconnectStreams(1, request);
 
     request.network_isolation_key = preconnect2_isolation_key;
+    request.network_anonymization_key = preconnect2_anonymization_key;
     session->http_stream_factory()->PreconnectStreams(1, request);
 
     request.network_isolation_key = network_isolation_key_for_request;
+    request.network_anonymization_key = network_anonymization_key_for_request;
 
     EXPECT_EQ(2, GetIdleSocketCountInTransportSocketPool(session.get()));
 
@@ -23161,6 +23203,8 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSL) {
   const SchemefulSite kSite2(GURL("http://origin2/"));
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // The server always sends Connection: close, so each request goes over a
@@ -23226,6 +23270,8 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSL) {
   request1.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request1.network_isolation_key = kNetworkIsolationKey1;
+  request1.network_anonymization_key = kNetworkAnonymizationKey1;
+
   auto trans1 =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
   int rv = trans1->Start(&request1, callback.callback(), NetLogWithSource());
@@ -23241,6 +23287,7 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSL) {
   request2.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request2.network_isolation_key = kNetworkIsolationKey2;
+  request2.network_anonymization_key = kNetworkAnonymizationKey2;
   auto trans2 =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
   rv = trans2->Start(&request2, callback.callback(), NetLogWithSource());
@@ -23256,6 +23303,7 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSL) {
   request3.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request3.network_isolation_key = kNetworkIsolationKey1;
+  request3.network_anonymization_key = kNetworkAnonymizationKey1;
   auto trans3 =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
   rv = trans3->Start(&request3, callback.callback(), NetLogWithSource());
@@ -23283,6 +23331,8 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSLProxy) {
   const SchemefulSite kSite2(GURL("http://origin2/"));
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // Make both a tunneled and non-tunneled request.
@@ -23292,6 +23342,7 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSLProxy) {
   request1.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request1.network_isolation_key = kNetworkIsolationKey1;
+  request1.network_anonymization_key = kNetworkAnonymizationKey1;
 
   HttpRequestInfo request2;
   request2.method = "GET";
@@ -23299,6 +23350,7 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSLProxy) {
   request2.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request2.network_isolation_key = kNetworkIsolationKey2;
+  request2.network_anonymization_key = kNetworkAnonymizationKey2;
 
   const MockWrite kWrites1[] = {
       MockWrite("CONNECT foo.test:443 HTTP/1.1\r\n"

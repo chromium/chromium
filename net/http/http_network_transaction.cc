@@ -151,6 +151,7 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
     return ERR_CACHE_MISS;
 
   DCHECK(request_info->traffic_annotation.is_valid());
+  DCHECK(request_info->IsConsistent());
   net_log_ = net_log;
   request_ = request_info;
   url_ = request_->url;

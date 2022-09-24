@@ -229,6 +229,7 @@ int HttpCache::Transaction::Start(const HttpRequestInfo* request,
                                   CompletionOnceCallback callback,
                                   const NetLogWithSource& net_log) {
   DCHECK(request);
+  DCHECK(request->IsConsistent());
   DCHECK(!callback.is_null());
   TRACE_EVENT_WITH_FLOW1("net", "HttpCacheTransaction::Start",
                          TRACE_ID_LOCAL(trace_id_), TRACE_EVENT_FLAG_FLOW_OUT,

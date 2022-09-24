@@ -349,8 +349,10 @@ class NetworkDoubleKeyIsolationNavigationBrowserTest
     : public ContentBrowserTest {
  public:
   NetworkDoubleKeyIsolationNavigationBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
+    scoped_feature_list_.InitWithFeatures(
+        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame,
+         net::features::kEnableDoubleKeyNetworkAnonymizationKey},
+        {});
   }
 
  protected:

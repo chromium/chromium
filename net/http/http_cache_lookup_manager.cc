@@ -10,8 +10,8 @@
 #include "base/containers/contains.h"
 #include "base/values.h"
 #include "net/base/load_flags.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/http/http_request_info.h"
-
 namespace net {
 
 // Returns parameters associated with the start of a server push lookup
@@ -47,6 +47,9 @@ int HttpCacheLookupManager::LookupTransaction::StartLookup(
 
   request_->url = push_helper_->GetURL();
   request_->network_isolation_key = push_helper_->GetNetworkIsolationKey();
+  request_->network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          push_helper_->GetNetworkIsolationKey());
   request_->method = "GET";
   request_->load_flags = LOAD_ONLY_FROM_CACHE | LOAD_SKIP_CACHE_VALIDATION;
   cache->CreateTransaction(DEFAULT_PRIORITY, &transaction_);

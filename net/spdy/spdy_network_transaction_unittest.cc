@@ -5662,6 +5662,9 @@ TEST_F(SpdyNetworkTransactionTest, HTTP11RequiredRetryWithNetworkIsolationKey) {
 
     request_.method = "GET";
     request_.network_isolation_key = kNetworkIsolationKeys[i];
+    request_.network_anonymization_key =
+        net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+            kNetworkIsolationKeys[i]);
 
     // First socket: HTTP/2 request rejected with HTTP_1_1_REQUIRED.
     SpdyTestUtil spdy_util;
@@ -5928,6 +5931,9 @@ TEST_F(SpdyNetworkTransactionTest,
         proxy_scheme_host_port, kNetworkIsolationKeys[i]));
 
     request_.network_isolation_key = kNetworkIsolationKeys[i];
+    request_.network_anonymization_key =
+        net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+            kNetworkIsolationKeys[i]);
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, helper.session());
     TestCompletionCallback callback;
     int rv = trans.Start(&request_, callback.callback(), log_);
@@ -6709,6 +6715,9 @@ class SpdyNetworkTransactionPushUrlTest
     // Set a NetworkIsolationKey for the |expect_ct_error| case, to make sure
     // NetworkIsolationKeys are respected.
     request_.network_isolation_key = NetworkIsolationKey::CreateTransient();
+    request_.network_anonymization_key =
+        net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+            request_.network_isolation_key);
 
     auto ssl_provider = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
     ssl_provider->ssl_info.client_cert_sent = GetParam().client_cert_sent;
@@ -6964,6 +6973,9 @@ TEST_F(SpdyNetworkTransactionTest,
   // Use a different NetworkIsolationKey than |spdy_session| (which uses an
   // empty one).
   push_request.network_isolation_key = NetworkIsolationKey::CreateTransient();
+  push_request.network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          push_request.network_isolation_key);
   push_request.method = "GET";
   push_request.url = GURL(url_to_push);
   push_request.traffic_annotation =
@@ -6980,6 +6992,7 @@ TEST_F(SpdyNetworkTransactionTest,
   // SpdySession's. This request should successfully get the pushed stream.
   HttpNetworkTransaction trans2(DEFAULT_PRIORITY, helper.session());
   push_request.network_isolation_key = NetworkIsolationKey();
+  push_request.network_anonymization_key = NetworkAnonymizationKey();
   TestCompletionCallback callback2;
   rv = trans1.Start(&push_request, callback2.callback(), log_);
   EXPECT_THAT(callback2.GetResult(rv), IsOk());

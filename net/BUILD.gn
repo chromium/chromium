@@ -4192,6 +4192,7 @@ test("net_unittests") {
     "http/http_proxy_client_socket_unittest.cc",
     "http/http_proxy_connect_job_unittest.cc",
     "http/http_request_headers_unittest.cc",
+    "http/http_request_info_unittest.cc",
     "http/http_response_body_drainer_unittest.cc",
     "http/http_response_headers_unittest.cc",
     "http/http_response_info_unittest.cc",

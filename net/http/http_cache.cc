@@ -29,11 +29,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
+#include "http_request_info.h"
 #include "net/base/cache_type.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/upload_data_stream.h"
 #include "net/disk_cache/disk_cache.h"
@@ -356,6 +358,10 @@ void HttpCache::OnExternalCacheHit(
   request_info.url = url;
   request_info.method = http_method;
   request_info.network_isolation_key = network_isolation_key;
+  request_info.network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          network_isolation_key);
+
   request_info.is_subframe_document_resource = is_subframe_document_resource;
   if (base::FeatureList::IsEnabled(features::kSplitCacheByIncludeCredentials)) {
     if (!used_credentials)
@@ -688,6 +694,9 @@ void HttpCache::DoomMainEntryForUrl(const GURL& url,
   temp_info.url = url;
   temp_info.method = "GET";
   temp_info.network_isolation_key = isolation_key;
+  temp_info.network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          isolation_key);
   temp_info.is_subframe_document_resource = is_subframe_document_resource;
   // This method is always used for "POST" requests, which never use the
   // single-keyed cache, so therefore it is correct that use_single_keyed_cache

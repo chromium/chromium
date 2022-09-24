@@ -2694,8 +2694,10 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
@@ -2705,6 +2707,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   request_info.method = "GET";
   request_info.url = GURL("http://www.example.com");
   request_info.network_isolation_key = kNetworkIsolationKey1;
+  request_info.network_anonymization_key = kNetworkAnonymizationKey1;
   Initialize(request_info);
 
   // Sets server support HTTP/2, using kNetworkIsolationKey.
@@ -2739,6 +2742,9 @@ TEST_P(HttpStreamFactoryJobControllerTest,
     }
 
     request_info.network_isolation_key = other_network_isolation_key;
+    request_info.network_anonymization_key =
+        net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+            other_network_isolation_key);
     MockHttpStreamRequestDelegate request_delegate;
     auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
         factory_, &request_delegate, session_.get(), &job_factory_,
@@ -3142,6 +3148,9 @@ TEST_F(JobControllerLimitMultipleH2Requests,
          {NetworkIsolationKey(), kNetworkIsolationKey1,
           kNetworkIsolationKey2}) {
       request_info.network_isolation_key = network_isolation_key;
+      request_info.network_anonymization_key =
+          net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+              network_isolation_key);
       // For kNetworkIsolationKey1, all requests but the first will be
       // throttled.
       if (i == 0 || network_isolation_key != kNetworkIsolationKey1) {
@@ -3739,7 +3748,12 @@ void HttpStreamFactoryJobControllerTestBase::TestAltSvcVersionSelection(
   NetworkIsolationKey network_isolation_key(
       SchemefulSite(GURL("https://example.com")),
       SchemefulSite(GURL("https://example.com")));
+  NetworkAnonymizationKey network_anonymization_key(
+      SchemefulSite(GURL("https://example.com")),
+      SchemefulSite(GURL("https://example.com")));
   request_info.network_isolation_key = network_isolation_key;
+  request_info.network_anonymization_key = network_anonymization_key;
+
   Initialize(request_info);
   url::SchemeHostPort origin(request_info.url);
   auto headers = base::MakeRefCounted<HttpResponseHeaders>("");
