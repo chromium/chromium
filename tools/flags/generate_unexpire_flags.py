@@ -68,10 +68,9 @@ namespace flags {
 
   features = [(m, 'UnexpireFlagsM' + str(m)) for m in recent_mstones(mstone)]
   for feature in features:
-    body += 'const base::Feature k{f} {{\n'.format(f=feature[1])
-    body += '  "{f}",\n'.format(f=feature[1])
-    body += '  base::FEATURE_DISABLED_BY_DEFAULT\n'
-    body += '};\n\n'
+    body += f'BASE_FEATURE(k{feature[1]},\n'
+    body += f'             "{feature[1]}",\n'
+    body += f'             base::FEATURE_DISABLED_BY_DEFAULT);\n\n'
 
   body += """// Returns the unexpire feature for the given mstone, if any.
 const base::Feature* GetUnexpireFeatureForMilestone(int milestone) {
@@ -107,7 +106,7 @@ namespace flags {
 """
 
   for m in recent_mstones(mstone):
-    body += 'extern const base::Feature kUnexpireFlagsM{m};\n'.format(m=m)
+    body += f'BASE_DECLARE_FEATURE(kUnexpireFlagsM{m});\n'
 
   body += """
 // Returns the base::Feature used to decide whether flag expiration is enabled
