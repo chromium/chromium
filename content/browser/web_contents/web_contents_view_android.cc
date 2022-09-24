@@ -29,7 +29,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/drop_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/overscroll_refresh_handler.h"
@@ -56,8 +55,11 @@ namespace {
 
 // Returns the minimum distance in DIPs, for drag event being considered as an
 // intentional drag.
-int DragMovementThresholdDip() {
-  static int radius = features::kTouchDragMovementThresholdDip.Get();
+float DragMovementThresholdDip() {
+  static float radius = base::GetFieldTrialParamByFeatureAsDouble(
+      features::kTouchDragAndContextMenu,
+      features::kDragAndDropMovementThresholdDipParam,
+      /*default_value=*/gfx::ViewConfiguration::GetTouchSlopInDips());
   return radius;
 }
 
@@ -467,7 +469,7 @@ void WebContentsViewAndroid::OnDragUpdated(const gfx::PointF& location,
       is_active_drag_ = true;
       drag_entered_location_ = location;
     } else if (!drag_exceeded_movement_threshold_) {
-      int radius = DragMovementThresholdDip();
+      float radius = DragMovementThresholdDip();
       if (!drag_location_.IsWithinDistance(drag_entered_location_, radius)) {
         drag_exceeded_movement_threshold_ = true;
         if (delegate_)
