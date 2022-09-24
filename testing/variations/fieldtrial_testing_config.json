@@ -5395,6 +5395,21 @@
             ]
         }
     ],
+    "IOSExpKitMaps": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MapsExperienceKit"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFastApplicationWillTerminate": [
         {
             "platforms": [
