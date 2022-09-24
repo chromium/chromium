@@ -69,6 +69,9 @@
 # This is for things like tests that will never be supported on a particular
 # platform/configuration.
 
+# M106 is the last release that supports Android 6.0 Marshmallow
+crbug.com/1367481 [ android-marshmallow ] WebCodecs_* [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
