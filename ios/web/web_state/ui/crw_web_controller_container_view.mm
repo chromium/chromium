@@ -175,11 +175,12 @@
 - (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
                      rect:(CGRect)rect {
   [self becomeFirstResponder];
+  // Remove observer, because showMenuFromView will call it when replacing an
+  // existing menu.
   [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(didHideMenuNotification)
-             name:UIMenuControllerDidHideMenuNotification
-           object:nil];
+      removeObserver:self
+                name:UIMenuControllerDidHideMenuNotification
+              object:nil];
 
   _currentMenuItems = [[NSMutableDictionary alloc] init];
   NSMutableArray* menuItems = [[NSMutableArray alloc] init];
@@ -196,6 +197,12 @@
   menu.menuItems = menuItems;
 
   [menu showMenuFromView:self rect:rect];
+
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(didHideMenuNotification)
+             name:UIMenuControllerDidHideMenuNotification
+           object:nil];
 }
 
 // Called when menu is dismissed for cleanup.

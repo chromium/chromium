@@ -42,10 +42,12 @@
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/wk_back_forward_list_item_holder.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/deprecated/crw_js_injection_evaluator.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/permissions/permissions.h"
+#import "ios/web/public/ui/crw_context_menu_item.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/ui/page_display_state.h"
 #import "ios/web/public/web_client.h"
@@ -298,7 +300,8 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     web::TextFragmentsManagerImpl::CreateForWebState(_webStateImpl);
 
     if (base::FeatureList::IsEnabled(
-            web::features::kEnableWebPageAnnotations)) {
+            web::features::kEnableWebPageAnnotations) &&
+        !browserState->IsOffTheRecord()) {
       web::AnnotationsTextManager::CreateForWebState(_webStateImpl);
     }
 
@@ -1132,7 +1135,24 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
                      rect:(CGRect)rect {
-  [_containerView showMenuWithItems:items rect:rect];
+  // Add `hideHighlight` to all items' action.
+  NSMutableArray<CRWContextMenuItem*>* wrappedItems =
+      [[NSMutableArray alloc] init];
+  __weak CRWWebController* weakSelf = self;
+  for (CRWContextMenuItem* item in items) {
+    auto strongAction = item.action;
+    [wrappedItems
+        addObject:[CRWContextMenuItem itemWithID:item.ID
+                                           title:item.title
+                                           image:item.image
+                                          action:^{
+                                            [weakSelf hideHighlight];
+                                            if (weakSelf && strongAction) {
+                                              strongAction();
+                                            }
+                                          }]];
+  }
+  [_containerView showMenuWithItems:wrappedItems rect:rect];
 }
 
 // Hides the context menu.
@@ -1143,7 +1163,11 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 // Hides highlights triggered by custom context menu.
 - (void)hideHighlight {
   if (base::FeatureList::IsEnabled(web::features::kEnableWebPageAnnotations)) {
-    web::AnnotationsTextManager::FromWebState(_webStateImpl)->RemoveHighlight();
+    web::AnnotationsTextManager* manager =
+        web::AnnotationsTextManager::FromWebState(_webStateImpl);
+    if (manager) {
+      manager->RemoveHighlight();
+    }
   }
 }
 
