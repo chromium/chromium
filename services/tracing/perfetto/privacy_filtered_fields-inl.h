@@ -460,8 +460,12 @@ constexpr MessageInfo kEventCategory = {kEventCategoryIndices, nullptr};
 constexpr int kEventNameIndices[] = {1, 2, -1};
 constexpr MessageInfo kEventName = {kEventNameIndices, nullptr};
 
+// Proto Message: InternedString
+constexpr int kInternedStringIndices[] = {1, 2, -1};
+constexpr MessageInfo kInternedString = {kInternedStringIndices, nullptr};
+
 // Proto Message: Frame
-constexpr int kFrameIndices[] = {1, 3, 4, -1};
+constexpr int kFrameIndices[] = {1, 2, 3, 4, -1};
 constexpr MessageInfo kFrame = {kFrameIndices, nullptr};
 
 // Proto Message: Callstack
@@ -487,17 +491,13 @@ constexpr MessageInfo kUnsymbolizedSourceLocation = {
     kUnsymbolizedSourceLocationIndices, nullptr};
 
 // Proto Message: InternedData
-constexpr int kInternedDataIndices[] = {1, 2, 4, 6, 7, 16, 17, 19, 28, -1};
+constexpr int kInternedDataIndices[] = {1, 2, 4, 5, 6, 7, 16, 17, 19, 28, -1};
 constexpr MessageInfo const* kInternedDataComplexMessages[] = {
-    &kEventCategory,
-    &kEventName,
-    &kSourceLocation,
-    &kFrame,
-    &kCallstack,
-    &kInternedBuildId,
-    &kInternedMappingPath,
-    &kMapping,
-    &kUnsymbolizedSourceLocation};
+    &kEventCategory,   &kEventName,
+    &kSourceLocation,  &kInternedString,
+    &kFrame,           &kCallstack,
+    &kInternedBuildId, &kInternedMappingPath,
+    &kMapping,         &kUnsymbolizedSourceLocation};
 constexpr MessageInfo kInternedData = {kInternedDataIndices,
                                        kInternedDataComplexMessages};
 
