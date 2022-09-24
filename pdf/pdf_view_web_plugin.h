@@ -383,7 +383,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void OnPrintPreviewLoaded() override;
   void OnDocumentLoadComplete() override;
   void SendMessage(base::Value::Dict message) override;
-  void SetFormTextFieldInFocus(bool in_focus) override;
   void SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) override;
   void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,
                                 std::vector<AccessibilityTextRunInfo> text_runs,

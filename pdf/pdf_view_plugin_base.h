@@ -109,9 +109,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // -1 for loading error.
   void SendLoadingProgress(double percentage);
 
-  // Sets the text input type for this plugin based on `in_focus`.
-  virtual void SetFormTextFieldInFocus(bool in_focus) = 0;
-
   // Sets the accessibility information about the PDF document in the renderer.
   virtual void SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) = 0;
 

@@ -1077,7 +1077,10 @@ void PdfViewWebPlugin::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
   message.Set("focused", type != PDFEngine::FocusFieldType::kNoFocus);
   SendMessage(std::move(message));
 
-  SetFormTextFieldInFocus(type == PDFEngine::FocusFieldType::kText);
+  text_input_type_ = type == PDFEngine::FocusFieldType::kText
+                         ? blink::WebTextInputType::kWebTextInputTypeText
+                         : blink::WebTextInputType::kWebTextInputTypeNone;
+  client_->UpdateTextInputState();
 }
 
 bool PdfViewWebPlugin::IsPrintPreview() const {
@@ -1822,12 +1825,6 @@ void PdfViewWebPlugin::OnDocumentLoadComplete() {
 
 void PdfViewWebPlugin::SendMessage(base::Value::Dict message) {
   client_->PostMessage(std::move(message));
-}
-
-void PdfViewWebPlugin::SetFormTextFieldInFocus(bool in_focus) {
-  text_input_type_ = in_focus ? blink::WebTextInputType::kWebTextInputTypeText
-                              : blink::WebTextInputType::kWebTextInputTypeNone;
-  client_->UpdateTextInputState();
 }
 
 void PdfViewWebPlugin::SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) {
