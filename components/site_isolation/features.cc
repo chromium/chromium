@@ -9,8 +9,9 @@
 namespace site_isolation {
 namespace features {
 
-const base::Feature kCacheSiteIsolationMemoryThreshold{
-    "CacheSiteIsolationMemoryThreshold", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCacheSiteIsolationMemoryThreshold,
+             "CacheSiteIsolationMemoryThreshold",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls a mode for dynamically process-isolating sites where the user has
 // entered a password.  This is intended to be used primarily when full site
@@ -18,16 +19,16 @@ const base::Feature kCacheSiteIsolationMemoryThreshold{
 // SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled() rather than
 // checking the feature directly, since that decision is influenced by other
 // factors as well.
-const base::Feature kSiteIsolationForPasswordSites {
-  "site-isolation-for-password-sites",
+BASE_FEATURE(kSiteIsolationForPasswordSites,
+             "site-isolation-for-password-sites",
 // Enabled by default on Android; see https://crbug.com/849815.  Note that this
 // should not affect Android Webview, which does not include this code.
 #if BUILDFLAG(IS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 // Controls a mode for dynamically process-isolating sites where the user has
 // logged in via OAuth.  These sites are determined by runtime heuristics.
@@ -40,15 +41,15 @@ const base::Feature kSiteIsolationForPasswordSites {
 //
 // This feature does not affect Android Webview, which does not include this
 // code.
-const base::Feature kSiteIsolationForOAuthSites{
-  "SiteIsolationForOAuthSites",
+BASE_FEATURE(kSiteIsolationForOAuthSites,
+             "SiteIsolationForOAuthSites",
 // Enabled by default on Android only; see https://crbug.com/1206770.
 #if BUILDFLAG(IS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 // kSiteIsolationMemoryThresholds is checked before individual site isolation
 // mode base::Features (such as kSitePerProcess or
@@ -62,8 +63,9 @@ const base::Feature kSiteIsolationForOAuthSites{
 // On devices below the memory threshold, the site isolation features such as
 // kSitePerProcess won't be checked at all, and field trials won't activate
 // either the control or the experiment group.
-const base::Feature kSiteIsolationMemoryThresholds{
-    "SiteIsolationMemoryThresholds", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSiteIsolationMemoryThresholds,
+             "SiteIsolationMemoryThresholds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const char kStrictSiteIsolationMemoryThresholdParamName[] =
     "strict_site_isolation_threshold_mb";
 const char kPartialSiteIsolationMemoryThresholdParamName[] =
