@@ -3045,10 +3045,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_TRUE(stop_invoked());
 }
 
-// TODO(crbug.com/1326580):  Enable once multipage printing doesn't get stuck
-// because of insufficient rendered preview pages due to forced N-up.
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
-                       DISABLED_StartPrintingMultipage) {
+                       StartPrintingMultipage) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
