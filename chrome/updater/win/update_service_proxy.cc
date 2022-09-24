@@ -49,11 +49,9 @@ class UpdaterObserver
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           IUpdaterObserver> {
  public:
-  UpdaterObserver(Microsoft::WRL::ComPtr<IUpdater> updater,
-                  UpdateService::StateChangeCallback state_update_callback,
+  UpdaterObserver(UpdateService::StateChangeCallback state_update_callback,
                   UpdateService::Callback callback)
-      : updater_(updater),
-        state_update_callback_(state_update_callback),
+      : state_update_callback_(state_update_callback),
         callback_(std::move(callback)) {}
   UpdaterObserver(const UpdaterObserver&) = delete;
   UpdaterObserver& operator=(const UpdaterObserver&) = delete;
@@ -86,7 +84,6 @@ class UpdaterObserver
   UpdateService::Callback Disconnect() {
     CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
     VLOG(2) << __func__;
-    updater_ = nullptr;
     state_update_callback_.Reset();
     return std::move(callback_);
   }
@@ -205,10 +202,6 @@ class UpdaterObserver
   // The reference of the thread this object is bound to.
   base::PlatformThreadRef com_thread_ref_;
 
-  // Keeps a reference of the updater object alive, while this object is
-  // owned by the COM RPC runtime.
-  Microsoft::WRL::ComPtr<IUpdater> updater_;
-
   // Called by IUpdaterObserver::OnStateChange when update state changes occur.
   UpdateService::StateChangeCallback state_update_callback_;
 
@@ -225,9 +218,9 @@ class UpdaterRegisterAppCallback
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           IUpdaterRegisterAppCallback> {
  public:
-  UpdaterRegisterAppCallback(Microsoft::WRL::ComPtr<IUpdater> updater,
-                             UpdateService::RegisterAppCallback callback)
-      : updater_(updater), callback_(std::move(callback)) {}
+  explicit UpdaterRegisterAppCallback(
+      UpdateService::RegisterAppCallback callback)
+      : callback_(std::move(callback)) {}
   UpdaterRegisterAppCallback(const UpdaterRegisterAppCallback&) = delete;
   UpdaterRegisterAppCallback& operator=(const UpdaterRegisterAppCallback&) =
       delete;
@@ -247,7 +240,6 @@ class UpdaterRegisterAppCallback
   UpdateService::RegisterAppCallback Disconnect() {
     CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
     VLOG(2) << __func__;
-    updater_ = nullptr;
     return std::move(callback_);
   }
 
@@ -260,10 +252,6 @@ class UpdaterRegisterAppCallback
 
   // The reference of the thread this object is bound to.
   base::PlatformThreadRef com_thread_ref_;
-
-  // Keeps a reference of the updater object alive, while this object is
-  // owned by the COM RPC runtime.
-  Microsoft::WRL::ComPtr<IUpdater> updater_;
 
   // Called by IUpdaterObserver::OnComplete when the COM RPC call is done.
   UpdateService::RegisterAppCallback callback_;
@@ -278,9 +266,8 @@ class UpdaterCallback
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           IUpdaterCallback> {
  public:
-  UpdaterCallback(Microsoft::WRL::ComPtr<IUpdater> updater,
-                  base::OnceCallback<void(LONG)> callback)
-      : updater_(updater), callback_(std::move(callback)) {}
+  explicit UpdaterCallback(base::OnceCallback<void(LONG)> callback)
+      : callback_(std::move(callback)) {}
   UpdaterCallback(const UpdaterCallback&) = delete;
   UpdaterCallback& operator=(const UpdaterCallback&) = delete;
 
@@ -300,7 +287,6 @@ class UpdaterCallback
   base::OnceCallback<void(LONG)> Disconnect() {
     CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
     VLOG(2) << __func__;
-    updater_ = nullptr;
     return std::move(callback_);
   }
 
@@ -313,10 +299,6 @@ class UpdaterCallback
 
   // The reference of the thread this object is bound to.
   base::PlatformThreadRef com_thread_ref_;
-
-  // Keeps a reference of the updater object alive, while this object is
-  // owned by the COM RPC runtime.
-  Microsoft::WRL::ComPtr<IUpdater> updater_;
 
   base::OnceCallback<void(LONG)> callback_;
 
@@ -439,9 +421,8 @@ class UpdateServiceProxyImpl
       std::move(callback).Run(hresult());
       return;
     }
-    auto callback_wrapper = Microsoft::WRL::Make<UpdaterCallback>(
-        get_interface(),
-        base::BindOnce(
+    auto callback_wrapper =
+        Microsoft::WRL::Make<UpdaterCallback>(base::BindOnce(
             [](base::OnceCallback<void(int)> callback, LONG status_code) {
               std::move(callback).Run(status_code);
             },
@@ -493,8 +474,8 @@ class UpdateServiceProxyImpl
       return;
     }
 
-    auto callback_wrapper = Microsoft::WRL::Make<UpdaterRegisterAppCallback>(
-        get_interface(), std::move(callback));
+    auto callback_wrapper =
+        Microsoft::WRL::Make<UpdaterRegisterAppCallback>(std::move(callback));
     if (HRESULT hr = get_interface()->RegisterApp(
             app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
             ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
@@ -523,7 +504,6 @@ class UpdateServiceProxyImpl
       return;
     }
     auto callback_wrapper = Microsoft::WRL::Make<UpdaterCallback>(
-        get_interface(),
         base::BindOnce([](base::OnceClosure callback,
                           LONG /*status_code*/) { std::move(callback).Run(); },
                        std::move(callback)));
@@ -542,8 +522,8 @@ class UpdateServiceProxyImpl
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
       return;
     }
-    auto observer = Microsoft::WRL::Make<UpdaterObserver>(
-        get_interface(), state_update, std::move(callback));
+    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+                                                          std::move(callback));
     if (HRESULT hr = get_interface()->UpdateAll(observer.Get()); FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdater::UpdateAll" << std::hex << hr;
       observer->Disconnect().Run(UpdateService::Result::kServiceFailed);
@@ -580,8 +560,8 @@ class UpdateServiceProxyImpl
       return;
     }
 
-    auto observer = Microsoft::WRL::Make<UpdaterObserver>(
-        get_interface(), state_update, std::move(callback));
+    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+                                                          std::move(callback));
     HRESULT hr = get_interface()->Update(
         app_id_w.c_str(), install_data_index_w.c_str(),
         static_cast<int>(priority),
@@ -648,8 +628,8 @@ class UpdateServiceProxyImpl
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
       return;
     }
-    auto observer = Microsoft::WRL::Make<UpdaterObserver>(
-        get_interface(), state_update, std::move(callback));
+    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+                                                          std::move(callback));
     HRESULT hr = get_interface()->Install(
         app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
         ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
@@ -713,8 +693,8 @@ class UpdateServiceProxyImpl
       return;
     }
 
-    auto observer = Microsoft::WRL::Make<UpdaterObserver>(
-        get_interface(), state_update, std::move(callback));
+    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+                                                          std::move(callback));
     HRESULT hr = get_interface()->RunInstaller(
         app_id_w.c_str(), installer_path.value().c_str(),
         install_args_w.c_str(), install_data_w.c_str(),

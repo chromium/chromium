@@ -35,10 +35,8 @@ class UpdaterInternalCallback
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           IUpdaterInternalCallback> {
  public:
-  UpdaterInternalCallback(
-      Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal,
-      base::OnceClosure callback)
-      : updater_internal_(updater_internal), callback_(std::move(callback)) {}
+  explicit UpdaterInternalCallback(base::OnceClosure callback)
+      : callback_(std::move(callback)) {}
 
   UpdaterInternalCallback(const UpdaterInternalCallback&) = delete;
   UpdaterInternalCallback& operator=(const UpdaterInternalCallback&) = delete;
@@ -64,10 +62,6 @@ class UpdaterInternalCallback
   // The reference of the thread this object is bound to.
   base::PlatformThreadRef com_thread_ref_;
 
-  // Keeps a reference of the updater object alive, while this object is
-  // owned by the COM RPC runtime.
-  Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal_;
-
   // Called by IUpdaterInternalCallback::Run when the COM RPC call is done.
   base::OnceClosure callback_;
 };
@@ -81,7 +75,6 @@ IFACEMETHODIMP UpdaterInternalCallback::Run(LONG result) {
 base::OnceClosure UpdaterInternalCallback::Disconnect() {
   DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
   VLOG(2) << __func__;
-  updater_internal_ = nullptr;
   return std::move(callback_);
 }
 
@@ -120,8 +113,8 @@ class UpdateServiceInternalProxyImpl
       std::move(callback).Run();
       return;
     }
-    auto callback_wrapper = Microsoft::WRL::Make<UpdaterInternalCallback>(
-        get_interface(), std::move(callback));
+    auto callback_wrapper =
+        Microsoft::WRL::Make<UpdaterInternalCallback>(std::move(callback));
     HRESULT hr = get_interface()->Run(callback_wrapper.Get());
     if (FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdaterInternal::Run" << std::hex << hr;
@@ -136,8 +129,8 @@ class UpdateServiceInternalProxyImpl
       std::move(callback).Run();
       return;
     }
-    auto callback_wrapper = Microsoft::WRL::Make<UpdaterInternalCallback>(
-        get_interface(), std::move(callback));
+    auto callback_wrapper =
+        Microsoft::WRL::Make<UpdaterInternalCallback>(std::move(callback));
     HRESULT hr =
         get_interface()->InitializeUpdateService(callback_wrapper.Get());
     if (FAILED(hr)) {
