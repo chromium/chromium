@@ -75169,6 +75169,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="23" label="Zoom"/>
 </enum>
 
+<enum name="PageActionPageEvent">
+  <int value="0" label="Page Shown"/>
+  <int value="1" label="Action Shown"/>
+  <int value="2" label="Multiple Actions Shown"/>
+</enum>
+
 <enum name="PageEndReason">
   <int value="0" label="END_NONE">
     Page lifetime has not yet ended (page is still active)

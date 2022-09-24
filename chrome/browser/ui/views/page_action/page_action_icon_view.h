@@ -42,6 +42,14 @@ enum class PageActionCTREvent {
   kMaxValue = kClicked,
 };
 
+// Used for histograms, do not reorder.
+enum class PageActionPageEvent {
+  kPageShown = 0,
+  kActionShown,
+  kMultipleActionsShown,
+  kMaxValue = kMultipleActionsShown,
+};
+
 // Represents an inbuilt (as opposed to an extension) page action icon that
 // shows a bubble when clicked.
 class PageActionIconView : public IconLabelBubbleView {

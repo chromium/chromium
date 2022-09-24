@@ -84,7 +84,7 @@ class PageActionIconController : public PageActionIconViewObserver,
 
   // Logs UMA data about the set of currently visible page actions overall, eg.
   // the total number of page actions shown.
-  void RecordOverallMetrics() const;
+  void RecordOverallMetrics();
 
   // Logs UMA data about an individual visible page action, eg. the type of
   // action shown.
@@ -105,6 +105,11 @@ class PageActionIconController : public PageActionIconViewObserver,
   base::ScopedObservation<zoom::ZoomEventManager,
                           zoom::ZoomEventManagerObserver>
       zoom_observation_{this};
+
+  // Max number of actions shown concurrently after the latest page change, as
+  // tracked in metrics logging. Used to ensure we don't double-count certain
+  // metrics.
+  int max_actions_recorded_on_current_page_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_CONTROLLER_H_
