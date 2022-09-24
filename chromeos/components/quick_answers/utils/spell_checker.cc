@@ -40,51 +40,62 @@ void SpellChecker::CheckSpelling(const std::string& word,
 }
 
 void SpellChecker::OnSettingsEnabled(bool enabled) {
-  feature_enabled_ = enabled;
+  CheckEligibilityAndUpdateLanguages(/*should_recreate_languages_list=*/false);
+}
 
-  OnStateUpdated();
+void SpellChecker::OnConsentStatusUpdated(prefs::ConsentStatus status) {
+  CheckEligibilityAndUpdateLanguages(/*should_recreate_languages_list=*/false);
 }
 
 void SpellChecker::OnApplicationLocaleReady(const std::string& locale) {
-  application_locale_ = locale;
-
-  OnStateUpdated();
+  CheckEligibilityAndUpdateLanguages(/*should_recreate_languages_list=*/true);
 }
 
 void SpellChecker::OnPreferredLanguagesChanged(
     const std::string& preferred_languages) {
-  preferred_languages_ = preferred_languages;
-
-  OnStateUpdated();
+  CheckEligibilityAndUpdateLanguages(/*should_recreate_languages_list=*/true);
 }
 
 void SpellChecker::OnEligibilityChanged(bool eligible) {
-  feature_eligible_ = eligible;
-
-  OnStateUpdated();
+  CheckEligibilityAndUpdateLanguages(/*should_recreate_languages_list=*/false);
 }
 
-void SpellChecker::OnStateUpdated() {
-  if (!feature_eligible_.has_value() || !feature_enabled_.has_value() ||
-      !application_locale_.has_value() || !preferred_languages_.has_value()) {
-    // Still waiting for all of the states to be ready.
+void SpellChecker::OnPrefsInitialized() {
+  CheckEligibilityAndUpdateLanguages(/*should_recreate_languages_list=*/false);
+}
+
+void SpellChecker::CheckEligibilityAndUpdateLanguages(
+    bool should_recreate_languages_list) {
+  // Still waiting for all of the states to be ready.
+  if (!QuickAnswersState::Get()->prefs_initialized()) {
     return;
   }
 
-  if (!feature_eligible_.value() || !feature_enabled_.value()) {
+  bool should_enable_to_show_consent =
+      QuickAnswersState::Get()->consent_status() ==
+      prefs::ConsentStatus::kUnknown;
+  if (!QuickAnswersState::Get()->is_eligible() ||
+      (!QuickAnswersState::Get()->settings_enabled() &&
+       !should_enable_to_show_consent)) {
     spellcheck_languages_.clear();
     languages_list_version_++;
     return;
   }
 
+  // Return if languages list is already initialized and no need to recreate.
+  if (!spellcheck_languages_.empty() && !should_recreate_languages_list) {
+    return;
+  }
+
   // Add application language.
   std::set<std::string> languages;
-  languages.insert(l10n_util::GetLanguage(application_locale_.value()));
+  languages.insert(
+      l10n_util::GetLanguage(QuickAnswersState::Get()->application_locale()));
 
   // Add preferred languages if supported.
   if (chromeos::features::IsQuickAnswersForMoreLocalesEnabled()) {
     auto preferred_languages_list =
-        base::SplitString(preferred_languages_.value(), ",",
+        base::SplitString(QuickAnswersState::Get()->preferred_languages(), ",",
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     for (const std::string& locale : preferred_languages_list) {
       auto language = l10n_util::GetLanguage(locale);

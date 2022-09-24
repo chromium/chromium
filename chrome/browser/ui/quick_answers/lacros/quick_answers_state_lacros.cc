@@ -76,6 +76,8 @@ QuickAnswersStateLacros::QuickAnswersStateLacros() {
                           base::Unretained(this)));
 
   prefs_initialized_ = true;
+  for (auto& observer : observers_)
+    observer.OnPrefsInitialized();
 
   UpdateEligibility();
 }
@@ -156,6 +158,9 @@ void QuickAnswersStateLacros::OnConsentStatusChanged(base::Value value) {
   DCHECK(value.is_int());
   consent_status_ =
       static_cast<quick_answers::prefs::ConsentStatus>(value.GetInt());
+
+  for (auto& observer : observers_)
+    observer.OnConsentStatusUpdated(consent_status_);
 }
 
 void QuickAnswersStateLacros::OnDefinitionEnabledChanged(base::Value value) {

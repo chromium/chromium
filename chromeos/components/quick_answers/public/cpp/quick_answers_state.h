@@ -33,10 +33,13 @@ enum class ConsentResultType {
 class QuickAnswersStateObserver : public base::CheckedObserver {
  public:
   virtual void OnSettingsEnabled(bool enabled) {}
+  virtual void OnConsentStatusUpdated(
+      quick_answers::prefs::ConsentStatus status) {}
   virtual void OnApplicationLocaleReady(const std::string& locale) {}
   virtual void OnPreferredLanguagesChanged(
       const std::string& preferred_languages) {}
   virtual void OnEligibilityChanged(bool eligible) {}
+  virtual void OnPrefsInitialized() {}
 };
 
 // A class that holds Quick Answers related prefs and states.
@@ -76,6 +79,7 @@ class QuickAnswersState {
   }
   bool spoken_feedback_enabled() const { return spoken_feedback_enabled_; }
   bool is_eligible() const { return is_eligible_; }
+  bool prefs_initialized() const { return prefs_initialized_; }
 
   void set_eligibility_for_testing(bool is_eligible) {
     is_eligible_ = is_eligible;

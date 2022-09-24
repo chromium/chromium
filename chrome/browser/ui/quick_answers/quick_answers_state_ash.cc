@@ -101,6 +101,9 @@ void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   UpdateSpokenFeedbackEnabled();
 
   prefs_initialized_ = true;
+  for (auto& observer : observers_) {
+    observer.OnPrefsInitialized();
+  }
 
   UpdateEligibility();
 }
@@ -128,9 +131,9 @@ void QuickAnswersStateAsh::OnConsentResult(ConsentResultType result) {
 
   switch (result) {
     case ConsentResultType::kAllow:
-      prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kAccepted);
       // Enable Quick Answers if the user accepted the consent.
       prefs->SetBoolean(kQuickAnswersEnabled, true);
+      prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kAccepted);
       break;
     case ConsentResultType::kNoThanks:
       prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
@@ -182,6 +185,9 @@ void QuickAnswersStateAsh::UpdateConsentStatus() {
       pref_change_registrar_->prefs()->GetInteger(kQuickAnswersConsentStatus));
 
   consent_status_ = consent_status;
+
+  for (auto& observer : observers_)
+    observer.OnConsentStatusUpdated(consent_status_);
 }
 
 void QuickAnswersStateAsh::UpdateDefinitionEnabled() {

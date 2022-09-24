@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/utils/spell_check_language.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -43,18 +44,23 @@ class SpellChecker : public QuickAnswersStateObserver {
 
   // QuickAnswersStateObserver:
   void OnSettingsEnabled(bool enabled) override;
+  void OnConsentStatusUpdated(prefs::ConsentStatus status) override;
   void OnApplicationLocaleReady(const std::string& locale) override;
   void OnPreferredLanguagesChanged(
       const std::string& preferred_languages) override;
   void OnEligibilityChanged(bool eligible) override;
+  void OnPrefsInitialized() override;
 
   base::WeakPtr<SpellChecker> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
+  // Check feature eligibility and correspondingly update languages list. If
+  // |should_recreate_languages_list| is false, languages list will not be
+  // updated as long as feature eligibility stay unchanged.
   // Called when the Quick answers states are updated.
-  void OnStateUpdated();
+  void CheckEligibilityAndUpdateLanguages(bool should_recreate_languages_list);
 
   // Collect spell check results from the language indicated by |iterator|. Run
   // |callback| with true if the word is found in the current language,
@@ -66,12 +72,6 @@ class SpellChecker : public QuickAnswersStateObserver {
                       bool is_correct);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // States of the Quick answers feature.
-  absl::optional<bool> feature_eligible_;
-  absl::optional<bool> feature_enabled_;
-  absl::optional<std::string> application_locale_;
-  absl::optional<std::string> preferred_languages_;
 
   // List of spell check languages.
   std::vector<std::unique_ptr<SpellCheckLanguage>> spellcheck_languages_;

@@ -85,7 +85,9 @@ bool QuickAnswersState::IsSupportedLanguage(const std::string& language) {
 void QuickAnswersState::InitializeObserver(
     QuickAnswersStateObserver* observer) {
   if (prefs_initialized_) {
+    observer->OnPrefsInitialized();
     observer->OnSettingsEnabled(settings_enabled_);
+    observer->OnConsentStatusUpdated(consent_status_);
     observer->OnApplicationLocaleReady(resolved_application_locale_);
     observer->OnPreferredLanguagesChanged(preferred_languages_);
     observer->OnEligibilityChanged(is_eligible_);
