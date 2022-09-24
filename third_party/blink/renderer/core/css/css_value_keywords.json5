@@ -1480,8 +1480,7 @@
     // (device-posture) media feature
     "continuous",
     "folded",
-    "folded-over",
-
+    
     // scrollbar-gutter
     // auto
     "stable",

@@ -17,5 +17,4 @@ interface DevicePosture : EventTarget {
 enum DevicePostureType {
   "continuous",
   "folded",
-  "folded-over"
 };

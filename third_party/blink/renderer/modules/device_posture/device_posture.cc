@@ -19,8 +19,6 @@ String PostureToString(device::mojom::blink::DevicePostureType posture) {
       return "continuous";
     case device::mojom::blink::DevicePostureType::kFolded:
       return "folded";
-    case device::mojom::blink::DevicePostureType::kFoldedOver:
-      return "folded-over";
   }
 }
 

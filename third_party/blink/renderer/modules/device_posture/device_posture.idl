@@ -5,7 +5,6 @@
 enum DevicePostureType {
   "continuous",
   "folded",
-  "folded-over"
 };
 
 [Exposed=Window, RuntimeEnabled=DevicePosture, SecureContext]

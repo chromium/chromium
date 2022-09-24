@@ -121,8 +121,7 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
 
   if (RuntimeEnabledFeatures::DevicePostureEnabled()) {
     if (media_feature == media_feature_names::kDevicePostureMediaFeature) {
-      return ident == CSSValueID::kContinuous || ident == CSSValueID::kFolded ||
-             ident == CSSValueID::kFoldedOver;
+      return ident == CSSValueID::kContinuous || ident == CSSValueID::kFolded;
     }
   }
 

@@ -1263,8 +1263,6 @@ static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,
       return device_posture == DevicePostureType::kContinuous;
     case CSSValueID::kFolded:
       return device_posture == DevicePostureType::kFolded;
-    case CSSValueID::kFoldedOver:
-      return device_posture == DevicePostureType::kFoldedOver;
     default:
       NOTREACHED();
       return false;

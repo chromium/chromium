@@ -9,7 +9,6 @@ module device.mojom;
 enum DevicePostureType {
   kContinuous,
   kFolded,
-  kFoldedOver,
 };
 
 // This interface is used to get the posture of the device from
