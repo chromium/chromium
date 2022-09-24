@@ -237,6 +237,9 @@ class BrowserChildProcessHostImpl
   // sent for this instance.
   bool launched_and_connected_ = false;
 
+  // Whether the child process exited abnormally (killed or crashed).
+  bool exited_abnormally_ = false;
+
 #if BUILDFLAG(IS_ANDROID)
   // whether the child process can use pre-warmed up connection for better
   // performance.
