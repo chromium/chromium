@@ -32,6 +32,7 @@ import {Debouncer, DomIf, microTask, mixinBehaviors, PolymerElement, timeOut} fr
 import {loadTimeData} from '../../i18n_setup.js';
 import {SettingsPrefsElement} from '../../prefs/prefs.js';
 import {Route, Router} from '../../router.js';
+import {cast} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
 import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
@@ -379,15 +380,11 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
   }
 
   private getDrawer_(): CrDrawerElement {
-    const drawer = this.shadowRoot!.querySelector('#drawer');
-    assert(drawer);
-    return drawer as CrDrawerElement;
+    return cast(this.shadowRoot!.getElementById('drawer'), CrDrawerElement);
   }
 
   private getToolbar_(): OsToolbarElement {
-    const toolbar = this.shadowRoot!.querySelector('os-toolbar');
-    assert(toolbar);
-    return toolbar;
+    return cast(this.shadowRoot!.querySelector('os-toolbar'), OsToolbarElement);
   }
 
   private onRefreshPref_(e: CustomEvent<string>) {

@@ -14,13 +14,13 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../../settings_shared.css.js';
 import '../os_icons.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
+import {castExists} from '../assert_extras.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
@@ -108,8 +108,7 @@ class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     // Focus the initially selected path.
     const anchors = this.shadowRoot!.querySelectorAll('a');
     for (let i = 0; i < anchors.length; ++i) {
-      const href = anchors[i].getAttribute('href');
-      assert(href);
+      const href = castExists(anchors[i].getAttribute('href'));
       const anchorRoute = Router.getInstance().getRouteForPath(href);
       if (anchorRoute && anchorRoute.contains(newRoute)) {
         this.setSelectedUrl_(anchors[i].href);
