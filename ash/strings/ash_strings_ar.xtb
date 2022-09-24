@@ -1159,6 +1159,7 @@
 <translation id="7633755430369750696">عرض إعدادات ميزة "المشاركة عن قرب"</translation>
 <translation id="7634648064048557203">تم توجيه الكاميرا إلى الزاوية السفلية اليمنى.</translation>
 <translation id="7641938616688887143">تسجيل</translation>
+<translation id="7642106959537987271">وضع "قلب الألوان"</translation>
 <translation id="7642647758716480637">فتح الإعدادات للشبكة <ph name="NETWORK_NAME" />،<ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (المالك)</translation>
 <translation id="7647488630410863958">فتح قفل الجهاز لعرض الإشعارات</translation>
@@ -1264,6 +1265,7 @@
 <translation id="8209010265547628927">إعادة الضبط</translation>
 <translation id="8214996719228530800">‏قناة إصدار Canary</translation>
 <translation id="8219451629189078428">‏يجب أن يكون جهاز Chromebook قيد التشغيل ومتّصلاً بمصدر طاقة خلال هذه المدة. ويجب توصيل كابلات الشاحن أو المحوِّل بشكل محكم بكلٍ من جهاز Chromebook والمقبس الكهربائي. يُرجى عدم إيقاف تشغيل جهاز Chromebook.</translation>
+<translation id="8230305195727960608">وضع "قلب الألوان"</translation>
 <translation id="8236042855478648955">حان وقت الراحة</translation>
 <translation id="8246282815785366524">مرحبًا بك من جديد، <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781">حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، بطارية الهاتف <ph name="BATTERY_STATUS" /></translation>
@@ -1390,6 +1392,7 @@
 <translation id="8982906748181120328">مشاركة عن قرب</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">استخدام <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">‏تم تفعيل وضع "قلب الألوان". اضغط على "Ctrl + M + مفتاح البحث" مرة أخرى لإيقافه.</translation>
 <translation id="899350903320462459">فتح قفل الجهاز بواسطة <ph name="LOGIN_ID" /> لتنفيذ إجراء الإشعارات</translation>
 <translation id="9000771174482730261">إدارة مساحة التخزين</translation>
 <translation id="9017320285115481645">‏يُرجى إدخال رمز الدخول المخصّص للوالدين في Family Link.</translation>
@@ -1438,6 +1441,7 @@
 <translation id="921989828232331238">قفّل أحد الوالدين جهازك لليوم</translation>
 <translation id="9220525904950070496">إزالة الحساب</translation>
 <translation id="923686485342484400">‏للخروج اضغط على Ctrl Shift Q مرتين.</translation>
+<translation id="92580429198593979">لقد ضغطت على اختصار لوحة المفاتيح المتعلّق بميزة "قلب الألوان". هل تريد تفعيل هذه الميزة؟</translation>
 <translation id="925832987464884575">إخفاء المعاينات</translation>
 <translation id="937214777182567951">يتطلّب <ph name="MANAGER" /> منك تحديث جهاز <ph name="DEVICE_TYPE" /> فورًا.</translation>
 <translation id="938963181863597773">ماذا يتضمّن تقويمي؟</translation>

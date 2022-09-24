@@ -2173,6 +2173,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2977480621796371840">Quitar do grupo</translation>
 <translation id="2979639724566107830">Abre o marcador nunha ventá nova</translation>
 <translation id="2981113813906970160">Mostrar cursor do rato grande</translation>
+<translation id="2981293774053328982">Este ficheiro contén software malicioso que pode poñer en risco as túas contas persoais e das redes sociais</translation>
 <translation id="2983373101216420412">Nivel de batería do estoxo: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2985348301114641460">Queres enviarlle unha solicitude ao teu administrador para que instale <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2987620471460279764">O texto compartiuse desde outro dispositivo</translation>
@@ -6718,6 +6719,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7404065585741198296">O teu teléfono cun cable USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{A comprobación de seguranza executouse hai 1 hora}other{A comprobación de seguranza executouse hai {NUM_HOURS} horas}}</translation>
 <translation id="740624631517654988">Ventá emerxente bloqueada</translation>
+<translation id="7406912950279255498">Modo de inversión da cor</translation>
 <translation id="7407430846095439694">Importar e vincular</translation>
 <translation id="7407504355934009739">A maioría de usuarios bloquean as notificacións deste sitio</translation>
 <translation id="740810853557944681">Engadir un servidor de impresión</translation>
@@ -7665,6 +7667,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
     <ph name="BEGIN_PARAGRAPH3" />O propietario pode controlar esta función desde Configuración &gt; Configuración avanzada &gt; Enviar de forma automática datos de uso e diagnóstico a Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Se está activada para o teu fillo a Actividade web e das aplicacións adicional, estes datos pódense gardar na súa Conta de Google. Obtén máis información acerca destas opcións de configuración e de como se axustan en families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">O certificado de cliente non é válido</translation>
+<translation id="8270162672241199380">Instalador de Steam</translation>
 <translation id="827097179112817503">Mostrar botón de inicio</translation>
 <translation id="8271268254812352141">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido. Personaliza os idiomas de tradución en <ph name="LINK_BEGIN" />Idiomas dos sitios web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Se es o pai ou a nai, os seguintes pasos están pensados para ti. Podes devolverlle o dispositivo (<ph name="DEVICE_TYPE" />) ao neno ou nena despois de configurar a conta.</translation>

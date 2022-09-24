@@ -1158,6 +1158,7 @@ Nova instalación</translation>
 <translation id="7633755430369750696">Mostrar a configuración da función Compartir por Nearby.</translation>
 <translation id="7634648064048557203">Cámara axustada á esquina inferior dereita</translation>
 <translation id="7641938616688887143">Zona que se gravará</translation>
+<translation id="7642106959537987271">modo de inversión da cor</translation>
 <translation id="7642647758716480637">Abrir a configuración para <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario)</translation>
 <translation id="7647488630410863958">Desbloquea o dispositivo para ver as notificacións</translation>
@@ -1263,6 +1264,7 @@ Nova instalación</translation>
 <translation id="8209010265547628927">Restablecer</translation>
 <translation id="8214996719228530800">Canle Canary</translation>
 <translation id="8219451629189078428">Durante este tempo, o Chromebook ten que permanecer acendido e enchufado. Asegúrate de que os cables do adaptador ou do cargador estean ben inseridos tanto no Chromebook como no enchufe. Non apagues o Chromebook.</translation>
+<translation id="8230305195727960608">Modo de inversión da cor</translation>
 <translation id="8236042855478648955">É hora de que fagas unha pausa</translation>
 <translation id="8246282815785366524">Dámosche a benvida de novo, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, batería do teléfono ao <ph name="BATTERY_STATUS" /></translation>
@@ -1389,6 +1391,7 @@ Nova instalación</translation>
 <translation id="8982906748181120328">Visibilidade</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Usando: <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Activouse o modo de inversión da cor. Preme Control + Buscar + H de novo para desactivalo.</translation>
 <translation id="899350903320462459">Desbloquea o dispositivo como <ph name="LOGIN_ID" /> para levar a cabo a acción de notificación</translation>
 <translation id="9000771174482730261">XESTIONAR ALMACENAMENTO</translation>
 <translation id="9017320285115481645">Introduce o código de acceso parental de Family Link.</translation>
@@ -1437,6 +1440,7 @@ Nova instalación</translation>
 <translation id="921989828232331238">O teu pai ou nai bloqueou o dispositivo para todo o día</translation>
 <translation id="9220525904950070496">Quitar conta</translation>
 <translation id="923686485342484400">Preme Control, maiúsculas e Q dúas veces para pechar sesión.</translation>
+<translation id="92580429198593979">Premiches o atallo de teclado da inversión da cor. Queres activala?</translation>
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> require que actualices o teu dispositivo (<ph name="DEVICE_TYPE" />) de inmediato</translation>
 <translation id="938963181863597773">Que hai no meu calendario?</translation>

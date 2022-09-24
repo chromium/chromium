@@ -1158,6 +1158,7 @@ Frissen telepítve</translation>
 <translation id="7633755430369750696">A Közeli megosztás funkció beállításainak megjelenítése.</translation>
 <translation id="7634648064048557203">Kamera a jobb alsó sarokhoz igazítva</translation>
 <translation id="7641938616688887143">Rögzítés</translation>
+<translation id="7642106959537987271">színinvertálás mód</translation>
 <translation id="7642647758716480637">Beállítások megnyitása: <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (tulajdonos)</translation>
 <translation id="7647488630410863958">Az eszköz zárolásának feloldása az értesítések megtekintéséhez</translation>
@@ -1263,6 +1264,7 @@ Frissen telepítve</translation>
 <translation id="8209010265547628927">Újraindítás</translation>
 <translation id="8214996719228530800">Canary csatorna</translation>
 <translation id="8219451629189078428">Ez idő alatt Chromebookjának bekapcsolva kell maradnia, és csatlakoztatva kell lennie áramforráshoz. Gondoskodjon arról, hogy a töltő-, illetve adapterkábelek teljes mértékben csatlakoztatva legyenek mind a Chromebookhoz, mind a konnektorhoz. Ne kapcsolja ki a Chromebookot.</translation>
+<translation id="8230305195727960608">Színinvertálás mód</translation>
 <translation id="8236042855478648955">Ideje pihenni</translation>
 <translation id="8246282815785366524">Üdvözöljük ismét, kedves <ph name="GIVEN_NAME" />!</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />, a telefon akkumulátora: <ph name="BATTERY_STATUS" /></translation>
@@ -1389,6 +1391,7 @@ Frissen telepítve</translation>
 <translation id="8982906748181120328">Közeli láthatóság</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> használata</translation>
+<translation id="8991617137207906966">Színinvertálás mód engedélyezve. A funkció kikapcsolásához nyomja meg újra a Ctrl + Keresés + H billentyűparancsot.</translation>
 <translation id="899350903320462459">Az eszköz zárolásának feloldása az értesítési művelet végrehajtásához a következő felhasználó által: <ph name="LOGIN_ID" />.</translation>
 <translation id="9000771174482730261">TÁRHELY KEZELÉSE</translation>
 <translation id="9017320285115481645">Adja meg a Family Link szülői hozzáférési kódját.</translation>
@@ -1437,6 +1440,7 @@ Frissen telepítve</translation>
 <translation id="921989828232331238">A szülőd zárolta az eszközt mára</translation>
 <translation id="9220525904950070496">Fiók eltávolítása</translation>
 <translation id="923686485342484400">Nyomja meg a Ctrl Shift Q billentyűkombinációt kétszer a kijelentkezéshez.</translation>
+<translation id="92580429198593979">Megnyomta a színinvertálásra szolgáló billentyűparancsot. Bekapcsolja ezt a funkciót?</translation>
 <translation id="925832987464884575">Előnézetek elrejtése</translation>
 <translation id="937214777182567951">A(z) <ph name="MANAGER" /> megköveteli, hogy azonnal frissítse <ph name="DEVICE_TYPE" /> eszközét</translation>
 <translation id="938963181863597773">Mi van a naptáramban?</translation>

@@ -1157,6 +1157,7 @@ Gosodiad newydd</translation>
 <translation id="7633755430369750696">Dangos gosodiadau Rhannu Gerllaw.</translation>
 <translation id="7634648064048557203">Mae'r camera wedi'i snapio i'r gornel dde isaf</translation>
 <translation id="7641938616688887143">Recordio</translation>
+<translation id="7642106959537987271">modd gwrthdroad lliw</translation>
 <translation id="7642647758716480637">Agor y gosodiadau ar gyfer <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (perchennog)</translation>
 <translation id="7647488630410863958">Datglowch y ddyfais i weld eich hysbysiadau</translation>
@@ -1262,6 +1263,7 @@ Gosodiad newydd</translation>
 <translation id="8209010265547628927">Ailosod</translation>
 <translation id="8214996719228530800">Sianel Canary</translation>
 <translation id="8219451629189078428">Mae angen cadw'ch Chromebook ymlaen ac wedi'i gysylltu i'r pŵer am y cyfnod hwn. Gwnewch yn siŵr bod yr gwefrydd neu geblau'r addasydd wedi'u plygio i mewn, i'ch Chromebook yn ogystal ag i'r cyflenwad pŵer. Peidiwch â diffodd eich Chromebook.</translation>
+<translation id="8230305195727960608">Modd Gwrthdroad Lliw</translation>
 <translation id="8236042855478648955">Amser am egwyl</translation>
 <translation id="8246282815785366524">Croeso'n ôl, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Cryfder y Signal <ph name="SIGNAL_STRENGTH" />, Batri'r Ffôn <ph name="BATTERY_STATUS" /></translation>
@@ -1388,6 +1390,7 @@ Gosodiad newydd</translation>
 <translation id="8982906748181120328">Gwelededd gerllaw</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Yn defnyddio <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Mae'r Modd Gwrthdro Lliw wedi'i alluogi. Pwyswch Ctrl+Search+H eto i'w toglo.</translation>
 <translation id="899350903320462459">Datglowch y ddyfais fel <ph name="LOGIN_ID" /> i gyflawni'r weithred hysbysu</translation>
 <translation id="9000771174482730261">RHEOLI'R STORFA</translation>
 <translation id="9017320285115481645">Rhowch god mynediad rhiant Family Link.</translation>
@@ -1436,6 +1439,7 @@ Gosodiad newydd</translation>
 <translation id="921989828232331238">Gwnaeth dy riant gloi dy ddyfais am y dydd</translation>
 <translation id="9220525904950070496">Tynnu cyfrif</translation>
 <translation id="923686485342484400">Pwyswch Control Shift Q ddwywaith i allgofnodi.</translation>
+<translation id="92580429198593979">Gwnaethoch bwyso llwybr byr y bysellfwrdd ar gyfer gwrthdroad lliw. Ydych chi am ei droi ymlaen?</translation>
 <translation id="925832987464884575">Cuddio rhagolygon</translation>
 <translation id="937214777182567951">Mae <ph name="MANAGER" /> yn gofyn i chi ddiweddaru'ch <ph name="DEVICE_TYPE" /> ar unwaith</translation>
 <translation id="938963181863597773">Beth sydd ar fy nghalendr?</translation>

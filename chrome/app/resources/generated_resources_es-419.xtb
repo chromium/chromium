@@ -2171,6 +2171,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2977480621796371840">Quitar del grupo</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
 <translation id="2981113813906970160">Mostrar cursor del mouse grande</translation>
+<translation id="2981293774053328982">Este archivo contiene software malicioso que puede poner en riesgo tus cuentas personales o de redes sociales.</translation>
 <translation id="2983373101216420412">Nivel de batería de la funda <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">¿Deseas enviarle una solicitud al administrador para instalar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Texto compartido desde otro dispositivo</translation>
@@ -6719,6 +6720,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7404065585741198296">Tu teléfono con un cable USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Se ejecutó hace 1 hora la verificación de seguridad}other{Se ejecutó hace {NUM_HOURS} horas la verificación de seguridad}}</translation>
 <translation id="740624631517654988">Ventana emergente (pop-up) bloqueada</translation>
+<translation id="7406912950279255498">Modo de inversión de colores</translation>
 <translation id="7407430846095439694">Importar y vincular</translation>
 <translation id="7407504355934009739">La mayoría de las personas bloquean las notificaciones de este sitio</translation>
 <translation id="740810853557944681">Agrega un servidor de impresión</translation>
@@ -7668,6 +7670,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
     <ph name="BEGIN_PARAGRAPH3" />El propietario puede controlar esta función desde Configuración &gt; Avanzada &gt; Envía a Google datos de uso y diagnóstico automáticamente.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Si activaste la Actividad web y de aplicaciones adicional para tu hijo, es posible que se guarden estos datos en tu Cuenta de Google. Obtén más información acerca de estas opciones de configuración y cómo ajustarlas en families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">El Certificado de cliente no es válido</translation>
+<translation id="8270162672241199380">Instalador de Steam</translation>
 <translation id="827097179112817503">Mostrar el botón de la Página principal</translation>
 <translation id="8271268254812352141">Obtén definiciones, traducciones o conversión de unidades cuando haces clic con el botón derecho o mantienes presionado texto. Personaliza los idiomas de traducción en <ph name="LINK_BEGIN" />Idiomas de sitios web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Los siguientes pasos son para los padres. Después de configurar la cuenta, puedes devolverle el dispositivo <ph name="DEVICE_TYPE" /> a tu hijo.</translation>

@@ -1157,6 +1157,7 @@
 <translation id="7633755430369750696">Паказаць налады функцыі "Абагульванне паблізу".</translation>
 <translation id="7634648064048557203">Акно перадпрагляду камеры прывязана да правага ніжняга вугла</translation>
 <translation id="7641938616688887143">Запісаць</translation>
+<translation id="7642106959537987271">рэжым інверсіі колераў</translation>
 <translation id="7642647758716480637">Адкрыць налады для сеткі "<ph name="NETWORK_NAME" />" (<ph name="CONNECTION_STATUS" />)</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (уладальнік)</translation>
 <translation id="7647488630410863958">Каб прагледзець апавяшчэнні, разблакіруйце прыладу</translation>
@@ -1262,6 +1263,7 @@
 <translation id="8209010265547628927">Скінуць</translation>
 <translation id="8214996719228530800">Версія Canary</translation>
 <translation id="8219451629189078428">У гэты час Chromebook павінен заставацца ўключаным і падключаным да сеткі сілкавання. Упэўніцеся, што кабелі зараднай прылады або адаптара надзейна падключаны як да самога Chromebook, так і да электрычнай разеткі. Не выключайце Chromebook.</translation>
+<translation id="8230305195727960608">Рэжым інверсіі колераў</translation>
 <translation id="8236042855478648955">Час перапынку</translation>
 <translation id="8246282815785366524">З вяртаннем, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" /></translation>
@@ -1388,6 +1390,7 @@
 <translation id="8982906748181120328">Бачн. паблізу</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Выкарыстоўваецца <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Рэжым інверсіі колераў уключаны. Каб выключыць яго, зноў націсніце Ctrl + Пошук + H.</translation>
 <translation id="899350903320462459">Разблакіруйце прыладу як <ph name="LOGIN_ID" />, каб выканаць дзеянне па апавяшчэнні</translation>
 <translation id="9000771174482730261">КІРАВАЦЬ СХОВІШЧАМ</translation>
 <translation id="9017320285115481645">Увядзіце бацькоўскі код доступу Family Link.</translation>
@@ -1436,6 +1439,7 @@
 <translation id="921989828232331238">На сёння бацькі заблакіравалі гэту прыладу</translation>
 <translation id="9220525904950070496">Выдаліць уліковы запіс</translation>
 <translation id="923686485342484400">Каб выйсці з уліковага запісу, двойчы націсніце "Ctrl+Shift+Q".</translation>
+<translation id="92580429198593979">Вы націснулі спалучэнне клавіш для інверсіі колераў. Уключыць яе?</translation>
 <translation id="925832987464884575">Выключыць перадпрагляд</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> патрабуе, каб вы неадкладна абнавілі прыладу <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Што ў маім календары?</translation>

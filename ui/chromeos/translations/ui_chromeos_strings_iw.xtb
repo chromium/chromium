@@ -78,6 +78,7 @@
 <translation id="1722487484194605434">מתבצע כיווץ של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="1722687688096767818">בתהליך הוספת פרופיל…</translation>
 <translation id="1726100011689679555">שרתי שמות</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> פריטים הועברו לאשפה</translation>
 <translation id="1729953886957086472">גרמנית (גרמניה)</translation>
 <translation id="1730235522912993863">‏סינית Cangjie</translation>
 <translation id="1731889557567069540">הועתקו <ph name="NUMBER_OF_ITEMS" /> פריטים.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">‏אין פריטים התואמים ל-&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">מידע</translation>
 <translation id="2902734494705624966">ארה"ב - מורחבת</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> פריטים מועברים לאשפה</translation>
 <translation id="290843123675549676">מראטית</translation>
 <translation id="2923240520113693977">אסטונית</translation>
 <translation id="2938685643439809023">מונגולית</translation>
@@ -459,6 +461,7 @@
 <translation id="5068919226082848014">פיצה</translation>
 <translation id="5081517858322016911">קבצים בנפח כולל של <ph name="TOTAL_FILE_SIZE" /> יימחקו</translation>
 <translation id="508423945471810158">מתבצעת העברה של <ph name="NUMBER_OF_ITEMS" /> פריטים אל <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146">הקובץ <ph name="FILE_NAME" /> הועבר לאשפה</translation>
 <translation id="509429900233858213">אירעה שגיאה.</translation>
 <translation id="5098629044894065541">עברית</translation>
 <translation id="5102922915594634436">ניהול תיקיות מסונכרנות</translation>
@@ -563,6 +566,7 @@
 <translation id="5845721951356578987">אחות</translation>
 <translation id="5861477046012235702">גיימר</translation>
 <translation id="5864471791310927901">‏חיפוש DHCP נכשל</translation>
+<translation id="5887342613489958822">הקובץ <ph name="FILE_NAME" /> מועבר לאשפה</translation>
 <translation id="5896749729057314184">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, לא פעילה, חוזק האות <ph name="SIGNAL_STRENGTH" />%, פרטים</translation>
 <translation id="5911887972742538906">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux.</translation>
 <translation id="5912396950572065471">פורמט</translation>

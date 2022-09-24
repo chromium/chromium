@@ -2442,6 +2442,7 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
           Le message d'avertissement ne s'affiche que si le dépassement du délai d'inactivité entraîne une déconnexion ou l'arrêt de l'appareil.</translation>
 <translation id="3360490004791301756">Autoriser les utilisateurs à profiter de leurs offres via le service d'enregistrement <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3363360928811201045">Ajouter des restrictions aux comptes gérés</translation>
+<translation id="3364400740222114778">Récupération de compte</translation>
 <translation id="3373381043600809954">Activer <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3374587000313305002">Permet de configurer le répertoire utilisé par <ph name="PRODUCT_NAME" /> pour le stockage des données de l'utilisateur.
 
@@ -3365,6 +3366,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="4389073105055031853">Autoriser les utilisateurs à gérer tous les certificats</translation>
 <translation id="4389091865841123886">Configurer l'attestation à distance avec le mécanisme TPM</translation>
+<translation id="4397045637922200204">Désactiver la récupération de compte</translation>
 <translation id="4397464099112037398">Paramètre d'autorisation de positionnement des fenêtres par défaut</translation>
 <translation id="4401496838830169080">Permet de contrôler si la fonctionnalité de navigation sécurisée de <ph name="PRODUCT_NAME" /> est activée ou non, ainsi que le mode dans lequel elle est définie.
 
@@ -6279,6 +6281,15 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7482768039644066614">Activer l'extraction des métadonnées de chargement de la page et les modèles de machine learning pour améliorer l'expérience de navigation</translation>
 <translation id="7485481791539008776">Instructions de sélection de l'imprimante par défaut</translation>
 <translation id="7486205887492534734">Demander lorsque plusieurs certificats correspondent sur l'écran de connexion</translation>
+<translation id="7489661071474025727">Indique si le service de récupération de compte est activé pour vos utilisateurs sur les appareils <ph name="PRODUCT_OS_NAME" />.
+
+      Lorsque cette règle est activée, la récupération des données utilisateur est activée. Si elle est désactivée ou si elle n'est pas configurée, la récupération des données utilisateur n'est pas activée.
+      Configurer cette règle sur le niveau recommandé autorise les utilisateurs à activer ou désactiver la récupération de compte depuis la page des paramètres. Sur le niveau obligatoire, les utilisateurs ne peuvent pas modifier le paramètre de récupération de compte.
+
+      Lorsque la valeur de cette règle est modifiée, les changements prennent effet lors de la prochaine connexion à l'appareil <ph name="PRODUCT_OS_NAME" />, une fois la nouvelle valeur récupérée.
+
+      Remarque : Ce paramètre s'applique uniquement aux nouveaux comptes ajoutés sur les appareils <ph name="PRODUCT_OS_NAME" />.
+      </translation>
 <translation id="7491720878670299691">Fréquence à laquelle les données du réseau sont interrogées pour vérifier la présence d'événements. La valeur minimale autorisée est de 1 minute.
 
       Si cette règle n'est pas configurée, la fréquence par défaut (1 minute) est appliquée.</translation>
@@ -7289,6 +7300,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8543108307976719751">Empêcher les connexions d'accès à distance à cet ordinateur</translation>
 <translation id="8544375438507658205">Moteur de rendu HTML par défaut pour <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Autoriser la synchronisation des SMS entre le téléphone et le Chromebook</translation>
+<translation id="8549906780629620346">Activer la récupération de compte</translation>
 <translation id="8553955290407912156">Permet de dresser la liste des formats d'URL pour lesquels les sites peuvent demander aux utilisateurs de leur accorder l'accès à un appareil HID.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.

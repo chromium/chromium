@@ -1156,6 +1156,7 @@
 <translation id="7633755430369750696">قریبی آلات کے ساتھ اشتراک کی ترتیبات کو دکھائیں۔</translation>
 <translation id="7634648064048557203">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے</translation>
 <translation id="7641938616688887143">ریکارڈ کریں</translation>
+<translation id="7642106959537987271">رنگوں کی تقلیب کی وضع</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" /> کے لیے ترتیبات کھولیں</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (مالک)</translation>
 <translation id="7647488630410863958">اپنی اطلاعات دیکھنے کیلئے آلہ کو غیر مقفل کریں</translation>
@@ -1261,6 +1262,7 @@
 <translation id="8209010265547628927">ری سیٹ کریں</translation>
 <translation id="8214996719228530800">‏Canary چینل</translation>
 <translation id="8219451629189078428">‏اس دوران آپ کے Chromebook کو آن اور پاور سے منسلک رہنے کی ضرورت ہے۔ یقینی بنائیں کہ چارجر یا ایڈاپٹر کیبلز آپ کے Chromebook اور پاور آؤٹ لیٹ دونوں میں مکمل طور پر پلگ کی ہوئی ہیں۔ اپنے Chromebook کو آف نہ کریں۔</translation>
+<translation id="8230305195727960608">رنگوں کی تقلیب کی وضع</translation>
 <translation id="8236042855478648955">وقفے کا وقت ہو گیا</translation>
 <translation id="8246282815785366524">واپسی پر خوش آمدید، <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، فون کی بیٹری <ph name="BATTERY_STATUS" /></translation>
@@ -1387,6 +1389,7 @@
 <translation id="8982906748181120328">قریب کی مرئیت</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> کے ذریعے</translation>
+<translation id="8991617137207906966">‏رنگوں کی تقلیب کی وضع کو فعال کر دیا گیا ہے۔ اسے آف ٹوگل کرنے کیلئے Ctrl+Search+H کو دوبارہ دبائیں۔</translation>
 <translation id="899350903320462459">اطلاع کی کارروائی کرنے کیلئے، آلے کو بطور <ph name="LOGIN_ID" /> غیر مقفل کریں</translation>
 <translation id="9000771174482730261">اسٹوریج کا نظم کریں</translation>
 <translation id="9017320285115481645">‏Family Link کا والدین کا رسائی کا کوڈ درج کریں۔</translation>
@@ -1435,6 +1438,7 @@
 <translation id="921989828232331238">آپ کے والد/والدہ نے آپ کے آلے کو دن بھر کے لئے مقفل کر دیا</translation>
 <translation id="9220525904950070496">اکاؤنٹ ہٹائیں</translation>
 <translation id="923686485342484400">‏سائن آؤٹ کرنے کیلئے Control Shift Q کو دو بار دبائیں۔</translation>
+<translation id="92580429198593979">رنگوں کی تقلیب کیلئے آپ نے کی بورڈ شارٹ کٹ دبایا۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
 <translation id="925832987464884575">پیش مناظر چھپائیں</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> کو درکار ہے کہ آپ <ph name="DEVICE_TYPE" /> کو فوری طور پر اپ ڈیٹ کریں</translation>
 <translation id="938963181863597773">میرے کیلینڈر میں کیا ہے؟</translation>

@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">লেটাৰ ফ'ল্ড</translation>
 <translation id="138218114945450791">পাতল নীলা</translation>
 <translation id="1382194467192730611">আপোনাৰ প্ৰশাসকে অনুমতি দিয়া ইউএছবি ডিভাইচ</translation>
+<translation id="1382378825779654399">কোনো ছাইটত মূল্য কমিলে আপুনি ইমেইলৰ জৰিয়তে সতৰ্কবাৰ্তা পাব। এই পৃষ্ঠাখন <ph name="LAST_BOOKMARKS_FOLDER" />ত ছেভ কৰা হ'ব।</translation>
 <translation id="1382912999714108023">আপোনাৰ বৰ্তমানৰ তথ্য দেখা নাই নেকি? এইটো আপডে’ট কৰিবলৈ অনুগ্ৰহ কৰি আপোনাৰ বেংকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="1384725838384960382">সুৰক্ষিত পৰিশোধৰ ক্ৰিডেনশ্বিয়েলৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ শ্বীট</translation>
 <translation id="1386623374109090026">এন’টেশ্বন</translation>
@@ -1516,6 +1517,7 @@
 <translation id="5018422839182700155">এই পৃষ্ঠাটো খুলিব নোৱাৰি</translation>
 <translation id="5019198164206649151">বেকিং ষ্ট'ৰ বেয়া অৱস্থাত আছে</translation>
 <translation id="5020776957610079374">বিশ্ব সংগীত</translation>
+<translation id="5021557570875267742">Chromeৰ জৰিয়তে মূল্য ট্ৰেক কৰক</translation>
 <translation id="5023310440958281426">আপোনাৰ প্ৰশাসকৰ নীতি পৰীক্ষা কৰক</translation>
 <translation id="5029568752722684782">প্ৰতিলিপিটো মচক</translation>
 <translation id="5030338702439866405">প্ৰদান কৰোঁতা:</translation>
@@ -2236,6 +2238,7 @@
 <translation id="6993898126790112050">৬x৯ (লেফাফা)</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> সদায়েই অনুবাদ কৰক</translation>
 <translation id="6999969238895751684">বিনোদনৰ উদ্যােগ</translation>
+<translation id="7003335073762455340">আপুনি এই প্ৰ'ডাক্টটো ট্ৰেক কৰি আছে। এই পৃষ্ঠাখন <ph name="LAST_BOOKMARKS_FOLDER" />ত ছেভ কৰা হৈছে।</translation>
 <translation id="7004583254764674281">কাৰ্ডসমূহ খৰতকীয়াকৈ নিশ্চিত কৰিবলৈ Windows Hello ব্যৱহাৰ কৰক</translation>
 <translation id="7006930604109697472">তথাপি পঠিয়াওক</translation>
 <translation id="7012363358306927923">China Union Pay</translation>
@@ -2459,6 +2462,7 @@
 <translation id="7564049878696755256">আপুনি <ph name="ORG_NAME" /> একাউণ্টটো এক্সেছ কৰিব নোৱাৰা হ’ব পাৰে বা আপোনাৰ পৰিচয় চুৰি হোৱাৰ নিচিনা ঘটনাৰ মুখামুখী হ’ব পাৰে। Chromeএ আপোনাৰ পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="7564680668369175887">ষ্টেচনৰ ৱাগ’ন</translation>
 <translation id="7567204685887185387">এই ছার্ভাৰটোৱে নিজকে <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে; ইয়াৰ সুৰক্ষাৰ প্ৰমাণপত্ৰ ভুৱাকৈ দিয়া হ'ব পাৰে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে হ'ব পাৰে।</translation>
+<translation id="7568616151991626879">Google Chromeএ <ph name="APP_NAME" />ত আপোনাৰ পাছৱৰ্ড পূৰ কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="7569490014721427265">গ’ল্ফ</translation>
 <translation id="7569761772822664555">সন্ধানৰ ইঞ্জিন পৰিচালনা কৰাৰ বুটাম, আপোনাৰ ডিফ’ল্ট সন্ধানৰ ইঞ্জিন আৰু Site Search পৰিচালনা কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="7569952961197462199">Chromeৰ পৰা ক্ৰেডিট কার্ড আঁতৰাবনে?</translation>
@@ -3030,6 +3034,7 @@
 <translation id="9174623988242579721">নিজৰ উপযোগিতা অনুসৰি নিৰ্মাণ কৰি লোৱা বাহন</translation>
 <translation id="9174917557437862841">টেব সলনি কৰা বুটাম, এই টেবটো ব্যৱহাৰ কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="9179703756951298733">Chromeৰ ছেটিংসমূহত আপোনাৰ পৰিশোধ আৰু ক্ৰেডিট কাৰ্ডৰ তথ্য পৰিচালনা কৰক</translation>
+<translation id="9179907736442194268">কোনো ছাইটত মূল্য কমিলে ইমেইলৰ জৰিয়তে সতৰ্কবাৰ্তা পাওক</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" />এ এটা অসমর্থিত প্ৰ'ট'কল ব্যৱহাৰ কৰে।</translation>
 <translation id="9187461866967718678">দুঃসাহসিক খেল</translation>

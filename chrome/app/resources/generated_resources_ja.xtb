@@ -69,6 +69,7 @@
 <translation id="1061904396131502319">もうすぐ休憩の時間です</translation>
 <translation id="1062628064301375934">ウェブにおけるプライバシーの強化にご協力ください</translation>
 <translation id="1067048845568873861">作成日</translation>
+<translation id="1067661089446014701">セキュリティ強化のため、Google アカウントに保存する前にデバイス上でパスワードを暗号化できます。</translation>
 <translation id="1067922213147265141">他の Google サービス</translation>
 <translation id="1069355737714877171"><ph name="PROFILE_NAME" /> という名前の eSIM プロファイルを削除します</translation>
 <translation id="1070377999570795893">パソコン上の別のプログラムにより、Chrome の動作に影響を及ぼす可能性のある拡張機能が追加されました。
@@ -249,6 +250,7 @@
 <translation id="1223853788495130632">この設定には管理者が特定の値を推奨しています。</translation>
 <translation id="1225177025209879837">リクエストを処理しています...</translation>
 <translation id="1227507814927581609">「<ph name="DEVICE_NAME" />」への接続中に、認証に失敗しました。</translation>
+<translation id="1227993798763400520">キャストできませんでした。もう一度お試しください。</translation>
 <translation id="1230417814058465809">標準保護機能がオンになっています。セキュリティをさらに強化するには、保護強化機能を使用してください。</translation>
 <translation id="1231733316453485619">同期を有効にしますか？</translation>
 <translation id="1232569758102978740">無題</translation>
@@ -1109,6 +1111,7 @@
 <translation id="2031914984822377766">翻訳する<ph name="LINK_BEGIN" />ウェブサイトの言語<ph name="LINK_END" />を追加してください。リストの一番上の言語が翻訳に使用されます。</translation>
 <translation id="2033758234986231162">スマートフォンとの接続を維持できません。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="2034346955588403444">他の Wi-Fi ネットワークを追加</translation>
+<translation id="2035211704574173780">グレースケール</translation>
 <translation id="203574396658008164">ロック画面からメモを取れるようにする</translation>
 <translation id="2037445849770872822">管理機能がこの Google アカウントに設定されました。保護者による使用制限をさらに設定するには、[続行] を選択してください。
 
@@ -2528,6 +2531,7 @@
 <translation id="3363202073972776113">この新しいプロフィールは組織によって管理されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">管理者からのメッセージ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl キーまたは Alt キーのいずれかを使用してください</translation>
+<translation id="3368586359109138591">コピーをダウンロードして別の場所で使用する</translation>
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369067987974711168">このポートのその他の操作を表示</translation>
 <translation id="3369624026883419694">ホストを解決しています...</translation>
@@ -2716,6 +2720,7 @@
 <translation id="3532273508346491126">同期の管理</translation>
 <translation id="3532521178906420528">ネットワーク接続を確立しています...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - オーディオがミュートされています</translation>
+<translation id="3536492240554502321">色相回転</translation>
 <translation id="3537881477201137177">後から [設定] で変更することができます</translation>
 <translation id="3538066758857505094">Linux のアンインストール中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="354060433403403521">AC アダプター</translation>
@@ -3039,6 +3044,7 @@
 <translation id="383669374481694771">このデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。このデータは、Android の機能向上に使用されます。また、統計情報の一部は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="3838085852053358637">拡張機能を読み込めませんでした</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> をもっと見る</translation>
+<translation id="3838487810283346084">保存したパスワードを Google パスワード マネージャーに追加する</translation>
 <translation id="383891835335927981">拡大縮小値を設定したサイトはありません</translation>
 <translation id="3839509547554145593">マウスのスクロール アクセラレーションを有効にする</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> によるクリップボードへのアクセスを常にブロックする</translation>
@@ -4105,6 +4111,7 @@
 <translation id="4871568871368204250">同期の無効化</translation>
 <translation id="4871719318659334896">グループを閉じる</translation>
 <translation id="4872192066608821120">パスワードをインポートするには、CSV ファイルを選択してください</translation>
+<translation id="4872212987539553601">オンデバイスの暗号化を設定</translation>
 <translation id="4873312501243535625">メディア ファイル チェッカー</translation>
 <translation id="4876273079589074638">このクラッシュについて迅速に調査、解決できるよう、具体的な操作についてできるだけ詳しくご説明ください。</translation>
 <translation id="4876895919560854374">画面のロックとロック解除</translation>
@@ -6393,6 +6400,7 @@
 <translation id="7093220653036489319">クイック アンサー</translation>
 <translation id="7093416310351037609">お客様の組織では、データの安全性とセキュリティを確保するため、対象となるすべてのダウンロードを組織の <ph name="WEB_DRIVE" /> アカウントに保存することが要件となっています。</translation>
 <translation id="7093866338626856921">デバイス <ph name="HOSTNAMES" /> とのデータ交換</translation>
+<translation id="7094680343477712655"><ph name="DEVICE_NAME" /> でキャスト リクエストを承認してください。</translation>
 <translation id="7098389117866926363">USB-C デバイス（背面左のポート）</translation>
 <translation id="7098447629416471489">保存したその他の検索エンジンがここに表示されます</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{アプリを削除}other{アプリを削除}}</translation>
@@ -6493,6 +6501,7 @@
 <translation id="7212097698621322584">PIN を変更するには、現在の PIN を入力してください。PIN がわからない場合は、セキュリティ キーをリセットしたうえで新しい PIN を作成する必要があります。</translation>
 <translation id="7213903639823314449">アドレスバーで使用する検索エンジン</translation>
 <translation id="721490496276866468">パスワードをインポート</translation>
+<translation id="7218514093816577632"><ph name="DEVICE_NAME" /> で通知がオンになっていることを確認してください。</translation>
 <translation id="7219473482981809164">ダウンロード可能なプロファイルが複数見つかりました。続行する前に、ダウンロードするプロファイルを選択してください。</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{脆弱なパスワードはありません}=1{脆弱なパスワード: 1 件}other{脆弱なパスワード: {NUM_WEAK} 件}}</translation>
 <translation id="7220019174139618249">パスワードを「<ph name="FOLDER" />」にエクスポートできません</translation>
@@ -6961,6 +6970,7 @@
 <translation id="7664620655576155379">サポートされていない Bluetooth デバイス: 「<ph name="DEVICE_NAME" />」</translation>
 <translation id="7665082356120621510">サイズを予約</translation>
 <translation id="7665369617277396874">アカウントを追加</translation>
+<translation id="766635563210446220">パスワードをインポートできません。<ph name="FILENAME" /> で形式が正しいかどうかを確認してください。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" />を {NUM_WEEKS} 週間以内に返却してください}other{<ph name="DEVICE_TYPE" />を {NUM_WEEKS} 週間以内に返却してください}}</translation>
 <translation id="7668423670802040666"><ph name="ACCOUNT" /> の Google パスワード マネージャー</translation>
 <translation id="7668648754769651616">ユーザー補助機能をオンにするとデバイスが使いやすくなります。クイック設定にアクセスするには、画面下部に表示されている時刻を選択します。</translation>
@@ -7490,6 +7500,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{動画}other{# 件の動画}}</translation>
 <translation id="8143442547342702591">無効なアプリケーション</translation>
 <translation id="8143609395536282994">データを管理する方法:</translation>
+<translation id="8145170459658034418">メモリセーバー</translation>
 <translation id="8146177459103116374">このデバイスでの登録が済んでいる場合は<ph name="LINK2_START" />既存のユーザー<ph name="LINK2_END" />としてログインできます。</translation>
 <translation id="8146287226035613638">使用する言語とその順序を設定できます。ウェブサイトは指定した言語で表示されるようになります（可能な場合）。これらの設定はブラウザの設定と同期されています。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">ログインできませんでした。管理者にお問い合わせいただくか、もう一度お試しください。</translation>
@@ -7549,6 +7560,7 @@
 <translation id="8198456017687137612">タブをキャスト中</translation>
 <translation id="8199300056570174101">ネットワーク（サービス）とデバイスのプロパティ</translation>
 <translation id="8200772114523450471">再開</translation>
+<translation id="8200789660596905522"><ph name="DEVICE_NAME" /> でキャスト リクエストを承認してください。</translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" /> のプロフィールを更新するにはパスワードを再入力してください。</translation>
 <translation id="8203152941016626022">ニアバイシェアのデバイス名</translation>
 <translation id="8203732864715032075">デフォルトでこのパソコンにメッセージの通知を送信する<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>

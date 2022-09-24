@@ -174,6 +174,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1380591466760231819">Dobrez de carta</translation>
 <translation id="138218114945450791">Azul claro</translation>
 <translation id="1382194467192730611">O teu administrador permite utilizar este dispositivo USB</translation>
+<translation id="1382378825779654399">Recibirás alertas por correo electrónico se baixa o prezo en calquera sitio. Esta páxina gardarase en <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Non ves a túa información actual? Ponte en contacto co banco para actualizala.</translation>
 <translation id="1384725838384960382">Folla de autenticación da credencial de pagos seguros</translation>
 <translation id="1386623374109090026">Anotacións</translation>
@@ -1520,6 +1521,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5018422839182700155">Non se pode abrir esta páxina</translation>
 <translation id="5019198164206649151">A memoria auxiliar está en mal estado</translation>
 <translation id="5020776957610079374">Música do mundo</translation>
+<translation id="5021557570875267742">Facer un seguimento dos prezos con Chrome</translation>
 <translation id="5023310440958281426">Comproba as túas políticas de administrador</translation>
 <translation id="5029568752722684782">Borrar copia</translation>
 <translation id="5030338702439866405">Emitido por</translation>
@@ -2241,6 +2243,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6993898126790112050">6x9 (sobre)</translation>
 <translation id="6996312675313362352">Traducir sempre o <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Industria do entretemento</translation>
+<translation id="7003335073762455340">Estás facendo un seguimento deste produto. Gardouse esta páxina en <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Usar Windows Hello para confirmar as tarxetas máis rápido</translation>
 <translation id="7006930604109697472">Enviar de todas formas</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2464,6 +2467,7 @@ Detalles adicionais:
 <translation id="7564049878696755256">Poderías perder o acceso á túa conta de <ph name="ORG_NAME" /> ou alguén podería roubarche a identidade. Chrome recoméndache que cambies de contrasinal agora.</translation>
 <translation id="7564680668369175887">Vehículos familiares</translation>
 <translation id="7567204685887185387">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque é probable que o seu certificado de seguranza se emitise fraudulentamente. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
+<translation id="7568616151991626879">Google Chrome está tentando completar o teu contrasinal en <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569761772822664555">Botón para xestionar motores de busca. Para xestionar o teu motor de busca predeterminado e a busca de sitios, preme Introducir</translation>
 <translation id="7569952961197462199">Queres eliminar a tarxeta de crédito de Chrome?</translation>
@@ -3035,6 +3039,7 @@ Detalles adicionais:
 <translation id="9174623988242579721">Vehículos personalizados e de alto rendemento</translation>
 <translation id="9174917557437862841">Botón de cambio de pestana; preme Intro para cambiar a esta pestana</translation>
 <translation id="9179703756951298733">Xestiona os teus pagos e a información das tarxetas de crédito na configuración de Chrome</translation>
+<translation id="9179907736442194268">Recibe alertas por correo electrónico se baixa o prezo en calquera sitio</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utiliza un protocolo non compatible.</translation>
 <translation id="9187461866967718678">Deportes de risco</translation>

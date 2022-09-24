@@ -2426,6 +2426,7 @@ Yeni oluşturulan profilin ikincil hesapları olmasına izin verilmemesi dışı
           Uyarı mesajı yalnızca boşta kalma işlemi, çıkış yapma veya cihazı kapatma olduğunda gösterilir.</translation>
 <translation id="3360490004791301756">Kullanıcıların <ph name="PRODUCT_OS_NAME" /> kaydı üzerinden teklif kullanmasına izin ver</translation>
 <translation id="3363360928811201045">Yönetilen hesaplara kısıtlama ekleme</translation>
+<translation id="3364400740222114778">Hesap kurtarma</translation>
 <translation id="3373381043600809954"><ph name="PRODUCT_NAME" /> özelliğini etkinleştir</translation>
 <translation id="3374587000313305002"><ph name="PRODUCT_NAME" /> uygulamasının kullanıcı verilerini depolamak için kullanacağı dizini yapılandırır.
 
@@ -3365,6 +3366,7 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="4389073105055031853">Kullanıcıların tüm sertifikaları yönetmelerine izin ver</translation>
 <translation id="4389091865841123886">TPM mekanizmasıyla uzaktan doğrulamayı yapılandırın.</translation>
+<translation id="4397045637922200204">Hesap kurtarmayı devre dışı bırak</translation>
 <translation id="4397464099112037398">Varsayılan pencere yerleşimi izni ayarı</translation>
 <translation id="4401496838830169080"><ph name="PRODUCT_NAME" /> Güvenli Tarama özelliğinin etkin olup olmadığını ve hangi modda çalıştığını kontrol etmenize olanak tanır.
 
@@ -6285,6 +6287,15 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7482768039644066614">Göz atma deneyimini iyileştirmek için makine öğrenimi modellerinin ve sayfa yükleme meta verilerinin getirilmesini etkinleştir</translation>
 <translation id="7485481791539008776">Varsayılan yazıcı seçimi için kurallar</translation>
 <translation id="7486205887492534734">Oturum açma ekranında birden fazla sertifika eşleştiğinde sor</translation>
+<translation id="7489661071474025727">Hesap kurtarma hizmetinin, <ph name="PRODUCT_OS_NAME" /> cihazların kullanıcıları için etkinleştirilip etkinleştirilmeyeceğini belirtir.
+
+      Politika etkinleştirilirse kullanıcı verilerini kurtarma etkinleştirilir. Politika devre dışı bırakılır veya ayarlanmazsa kullanıcı verilerini kurtarma etkinleştirilmez.
+      Politika düzeyi önerilir olarak ayarlanırsa kullanıcılar hesap kurtarmayı etkinleştirme seçeneğini ayarlar sayfasından değiştirebilirler. Politika düzeyi zorunlu seçeneğine ayarlanırsa kullanıcılar hesap kurtarmayı etkinleştirme seçeneğini değiştiremezler.
+
+      Politika değeri değiştirildiğinde güncelleme işlemi, <ph name="PRODUCT_OS_NAME" /> cihaza bir sonraki girişte yeni politika değeri getirildikten sonra tamamlanır.
+
+      Not: Bu ayar yalnızca <ph name="PRODUCT_OS_NAME" /> cihazlara eklenen yeni hesaplar için geçerlidir.
+      </translation>
 <translation id="7491720878670299691">Ağ verilerinin etkinlikler için sorgulanma ve kontrol edilme hızı. İzin verilen minimum sıklık 1 dakikadır.
 
       Ayarlanmazsa 1 dakikalık varsayılan süre geçerli olur.</translation>
@@ -7289,6 +7300,7 @@ Politika ayarlanırsa sınıra uymak için eski anlık görüntüler gerektiğin
 <translation id="8543108307976719751">Bu makineye uzaktan erişim bağlantılarını engelle</translation>
 <translation id="8544375438507658205"><ph name="PRODUCT_FRAME_NAME" /> için varsayılan HTML oluşturucusu</translation>
 <translation id="8544465954173828789">SMS Mesajlarının telefondan Chromebook'a senkronize edilmesine izin ver</translation>
+<translation id="8549906780629620346">Hesap kurtarmayı etkinleştir</translation>
 <translation id="8553955290407912156">Politikayı ayarlamak, kullanıcıların sistemindeki HIB cihazlarına erişim izni isteyemeyecek siteleri belirlemenize olanak sağlar. Bu şekilde, belirli URL kalıplarının yer aldığı bir liste hazırlayabilirsiniz.
 
       Politikayı ayarlamadan bırakırsanız <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (etkinse) bütün siteler için geçerli olur. Etkin değilse kullanıcının ayarları geçerlidir.

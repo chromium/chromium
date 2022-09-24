@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">लेटर फ़ोल्ड</translation>
 <translation id="138218114945450791">हल्का नीला</translation>
 <translation id="1382194467192730611">आपके व्यवस्थापक ने इस यूएसबी डिवाइस की मंज़ूरी दी है</translation>
+<translation id="1382378825779654399">किसी भी साइट पर, प्रॉडक्ट की कीमत कम होने पर आपको ईमेल से सूचना मिलेगी. यह पेज <ph name="LAST_BOOKMARKS_FOLDER" /> में सेव किया जाएगा.</translation>
 <translation id="1382912999714108023">क्या यह मौजूदा जानकारी नहीं है? इसे अपडेट करने के लिए कृपया अपने बैंक से संपर्क करें.</translation>
 <translation id="1384725838384960382">सुरक्षित पेमेंट करने के लिए, क्रेडेंशियल की पुष्टि करने की शीट</translation>
 <translation id="1386623374109090026">टिप्पणियां</translation>
@@ -1520,6 +1521,7 @@
 <translation id="5018422839182700155">यह पेज खुल नहीं पा रहा है</translation>
 <translation id="5019198164206649151">बैकिंग संग्रह खराब स्थिति में है</translation>
 <translation id="5020776957610079374">वर्ल्ड म्यूज़िक</translation>
+<translation id="5021557570875267742">Chrome की मदद से कीमतों को ट्रैक करें</translation>
 <translation id="5023310440958281426">अपने एडमिन की नीतियां देखें</translation>
 <translation id="5029568752722684782">स्‍पष्‍ट कॉपी</translation>
 <translation id="5030338702439866405">जारीकर्ता</translation>
@@ -2241,6 +2243,7 @@
 <translation id="6993898126790112050">6x9 (एन्वेलप)</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="6999969238895751684">मनोरंजन उद्योग</translation>
+<translation id="7003335073762455340">इस प्रॉडक्ट को ट्रैक किया जा रहा है. यह पेज <ph name="LAST_BOOKMARKS_FOLDER" /> में सेव किया गया है.</translation>
 <translation id="7004583254764674281">कार्ड की जल्दी पुष्टि करने के लिए, Windows Hello का इस्तेमाल करें</translation>
 <translation id="7006930604109697472">फिर भी भेजें</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2464,6 +2467,7 @@
 <translation id="7564049878696755256">आपके <ph name="ORG_NAME" /> खाते का एक्सेस खो सकता है या पहचान चोरी हो सकती है. Chrome आपको अभी अपना पासवर्ड बदलने का सुझाव देता है.</translation>
 <translation id="7564680668369175887">स्टेशन वैगन</translation>
 <translation id="7567204685887185387">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; हो सकता है इसका सुरक्षा प्रमाणपत्र धोखे से जारी किया गया हो. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
+<translation id="7568616151991626879">Google Chrome, <ph name="APP_NAME" /> पर आपका पासवर्ड भरने की कोशिश कर रहा है.</translation>
 <translation id="7569490014721427265">गोल्फ़</translation>
 <translation id="7569761772822664555">सर्च इंजन के बटन मैनेज करें, अपने डिफ़ॉल्ट सर्च इंजन और साइट सर्च को मैनेज करने के लिए, Enter दबाएं</translation>
 <translation id="7569952961197462199">Chrome से क्रेडिट कार्ड निकालें?</translation>
@@ -3036,6 +3040,7 @@
 <translation id="9174623988242579721">कस्टमाइज़ किए गए और खास परफ़ॉर्मेंस वाले वाहन</translation>
 <translation id="9174917557437862841">टैब बदलने का बटन, इस टैब पर स्विच करने के लिए Enter दबाएं</translation>
 <translation id="9179703756951298733">Chrome की सेटिंग में, आप पैसे चुकाने और क्रेडिट कार्ड की जानकारी को प्रबंधित कर सकते हैं</translation>
+<translation id="9179907736442194268">किसी भी साइट पर, प्रॉडक्ट की कीमत कम होने पर ईमेल से सूचना पाएं</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> एक असमर्थित प्रोटोकॉल का उपयोग करता है.</translation>
 <translation id="9187461866967718678">जोखिम वाले खेल</translation>

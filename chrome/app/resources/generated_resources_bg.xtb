@@ -2185,6 +2185,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2977480621796371840">Премахване от групата</translation>
 <translation id="2979639724566107830">Отваряне в нов прозорец</translation>
 <translation id="2981113813906970160">Показване на голям курсор на мишката</translation>
+<translation id="2981293774053328982">Този файл съдържа злонамерен софтуер, който може да компрометира личните ви профили или тези в социални мрежи</translation>
 <translation id="2983373101216420412">Нивото на батерията на калъфа е <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Да се изпрати ли заявка до администратора ви за инсталиране на <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2987620471460279764">Текст, споделен от друго устройство</translation>
@@ -6736,6 +6737,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7404065585741198296">Вашият телефон, свързан с USB кабел</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Проверката на безопасността бе изпълнена преди 1 час}other{Проверката на безопасността бе изпълнена преди {NUM_HOURS} часа}}</translation>
 <translation id="740624631517654988">Блокиран бе изскачащ прозорец</translation>
+<translation id="7406912950279255498">Режим на инвертиране на цветовете</translation>
 <translation id="7407430846095439694">Импортиране и свързване</translation>
 <translation id="7407504355934009739">Повечето хора блокират известията от този сайт</translation>
 <translation id="740810853557944681">Добавяне на сървър за отпечатване</translation>
@@ -7685,6 +7687,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <ph name="BEGIN_PARAGRAPH3" />Собственикът може да контролира тази функция от „Настройки“ &gt; „Разширени“ &gt; „Автоматично изпращане до Google на данни за диагностиката и употребата“.<ph name="END_PARAGRAPH3" />
 <ph name="BEGIN_PARAGRAPH4" />Ако сте включили Допълнителна активност в мрежата и приложенията за детето си, тези данни може да се запазват в профила му в Google. Научете повече за съответните настройки и как да ги коригирате на адрес families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Невалиден клиентски сертификат</translation>
+<translation id="8270162672241199380">Инсталационна програма за Steam</translation>
 <translation id="827097179112817503">Показване на бутона за начална страница</translation>
 <translation id="8271268254812352141">Получавайте определения, преводи или преобразувани мерни единици, когато докоснете и задържите текст или кликнете върху него с десния бутон. Персонализирайте езиците за превод в секцията <ph name="LINK_BEGIN" />Езици на уебсайтовете<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Родители, следващите няколко стъпки са предназначени за вас. След настройването на профила можете да върнете устройството <ph name="DEVICE_TYPE" /> на детето.</translation>

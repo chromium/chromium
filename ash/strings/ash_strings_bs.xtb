@@ -1157,7 +1157,7 @@ Nova instalacija</translation>
 <translation id="7633755430369750696">Vidite postavke Dijeljenja u blizini.</translation>
 <translation id="7634648064048557203">Kamera se uklopila u donji desni ugao</translation>
 <translation id="7641938616688887143">Snimaj</translation>
-<translation id="7642106959537987271">način inverzije boja</translation>
+<translation id="7642106959537987271">način rada s inverzijom boja</translation>
 <translation id="7642647758716480637">Otvaranje postavki mreže <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlasnik)</translation>
 <translation id="7647488630410863958">Otključajte uređaj da vidite obavještenja</translation>
@@ -1263,7 +1263,7 @@ Nova instalacija</translation>
 <translation id="8209010265547628927">Vrati na zadano</translation>
 <translation id="8214996719228530800">Canary kanal</translation>
 <translation id="8219451629189078428">Za to vrijeme vaš Chromebook mora ostati uključen i priključen na napajanje. Provjerite jesu li kablovi punjača ili adaptera dobro priključeni u Chromebook i utičnicu. Nemojte isključivati Chromebook.</translation>
-<translation id="8230305195727960608">Način inverzije boja</translation>
+<translation id="8230305195727960608">Način rada s inverzijom boja</translation>
 <translation id="8236042855478648955">Vrijeme je za odmor</translation>
 <translation id="8246282815785366524">Dobro došli nazad, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, baterija telefona <ph name="BATTERY_STATUS" /></translation>
@@ -1390,7 +1390,7 @@ Nova instalacija</translation>
 <translation id="8982906748181120328">Vid. u blizini</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Koristi se <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Omogućen je način inverzije boja. Ponovo pritisnite Ctrl + Search + H da biste ga isključili.</translation>
+<translation id="8991617137207906966">Način rada s inverzijom boja je omogućen. Pritisnite ponovo Ctrl + tipku za pretraživanje + H da ga onemogućite.</translation>
 <translation id="899350903320462459">Otključajte uređaj kao <ph name="LOGIN_ID" /> da izvršite radnju obavještenja</translation>
 <translation id="9000771174482730261">UPRAVLJAJTE POHRANOM</translation>
 <translation id="9017320285115481645">Unesite kôd za pristup roditelja za Family Link.</translation>
@@ -1439,7 +1439,7 @@ Nova instalacija</translation>
 <translation id="921989828232331238">Roditelj je zaključao uređaj za danas</translation>
 <translation id="9220525904950070496">Ukloni račun</translation>
 <translation id="923686485342484400">Dvaput pritisnite Control Shift Q da se odjavite.</translation>
-<translation id="92580429198593979">Pritisnuli ste tipkovni prečac za inverziju boja. Želite li je uključiti?</translation>
+<translation id="92580429198593979">Pritisnuli ste prečicu na tastaturi za inverziju boja. Želite li je uključiti?</translation>
 <translation id="925832987464884575">Sakrij preglede</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> zahtijeva da odmah ažurirate uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Šta ima u mom kalendaru?</translation>
