@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">Advarsel: Disse filene er midlertidige og kan bli slettet automatisk for å frigjøre diskplass.</translation>
 <translation id="3029114385395636667">Slå på Google Dokumenter uten nett for å gjøre Dokumenter, Regneark og Presentasjoner tilgjengelig uten nett.</translation>
 <translation id="303198083543495566">Geografi</translation>
+<translation id="3044404008258011032">For å gjenopprette disse elementene, dra dem til en ny mappe utenfor papirkurven. Den opprinnelige mappen «<ph name="PARENT_FOLDER_NAME" />» for dette elementet er slettet.</translation>
 <translation id="3047197340186497470">Kinesisk dayi</translation>
 <translation id="3067790092342515856">Windows-filer</translation>
 <translation id="3083975830683400843">Chromebit-enheter</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">Aktiverer ...</translation>
 <translation id="4092890906744441904">Irsk</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
+<translation id="4131235941541910880">Flytt elementer du ikke trenger, til papirkurven</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> er flyttet.</translation>
 <translation id="4176286497474237543">Tøm papirkurven nå</translation>
 <translation id="4186579485882418952">Gjør tilgjengelig uten nett</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">Tysk</translation>
 <translation id="4867079195717347957">Klikk for å sortere kolonnen i synkende rekkefølge.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
+<translation id="4874569719830985133">Slett for godt</translation>
 <translation id="4880214202172289027">Volumbryter</translation>
 <translation id="4881695831933465202">Åpne</translation>
+<translation id="4891091358278567964">For å gjenopprette disse elementene, dra dem til en ny mappe utenfor papirkurven. De opprinnelige mappene for disse elementene er slettet.</translation>
 <translation id="4900532980794411603">Del med Parallels Desktop</translation>
 <translation id="4902546322522096650">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – koble til</translation>
 <translation id="4906580650526544301">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – <ph name="PROVIDER_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – detaljer</translation>
@@ -493,6 +497,7 @@
         <ph name="MARKUP_7" />Del, skap og samarbeid<ph name="MARKUP_8" />
         med andre om filer – alt på ett sted.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Gjenopprettede filer fra Google Disk</translation>
+<translation id="5278111733643988471">For å gjenopprette dette elementet, dra det til en ny mappe utenfor papirkurven. Den opprinnelige mappen «<ph name="PARENT_FOLDER_NAME" />» for dette elementet er slettet.</translation>
 <translation id="5286194356314741248">Skanning</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -505,6 +510,7 @@
 <translation id="535792325654997756">Person med katter</translation>
 <translation id="5358764674931277">Bildefrekvens</translation>
 <translation id="5363339716524495120">Skrivespråket er kinesisk</translation>
+<translation id="5364067326287025678">Papirkurven er tom</translation>
 <translation id="5368191757080475556">Del mappe med Linux</translation>
 <translation id="5402367795255837559">Punktskrift</translation>
 <translation id="5411472733320185105">Ikke bruk proxy-tjenerinnstillinger for følgende tjenere og domener:</translation>
@@ -771,6 +777,7 @@
 <translation id="7711920809702896782">Bildeinformasjon</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7732111077498238432">Nettverket er kontrollert av regler</translation>
+<translation id="7736003208887389532">Vil du slette disse filene for godt?</translation>
 <translation id="7748626145866214022">Flere alternativer er tilgjengelige på handlingslinjen. Trykk på Alt + A for å fokusere på handlingslinjen.</translation>
 <translation id="7760449188139285140">Kinesisk wubi</translation>
 <translation id="7765158879357617694">Flytt</translation>
@@ -832,6 +839,7 @@
 <translation id="8249296373107784235">Avbryt</translation>
 <translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
+<translation id="8255595130163158297">Alle elementene i papirkurven blir slettet, og du kan ikke gjenopprette dem.</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="8261561378965667560">Kinesisk array</translation>
 <translation id="8264024885325823677">Denne innstillingen administreres av administratoren.</translation>
@@ -910,6 +918,7 @@
 <translation id="8857149712089373752">Nepali med fonetisk tastatur</translation>
 <translation id="8860454412039442620">Excel-regneark</translation>
 <translation id="8866284467018526531">Arabisk, translitterasjon</translation>
+<translation id="8873014196523807561">For å gjenopprette disse elementene, dra dem til en ny mappe. De opprinnelige mappene for noen av disse elementene er slettet.</translation>
 <translation id="8874184842967597500">Ikke tilkoblet</translation>
 <translation id="8900820606136623064">Ungarsk</translation>
 <translation id="8903931173357132290">Avgangselev</translation>

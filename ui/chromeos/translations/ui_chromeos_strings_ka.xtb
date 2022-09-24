@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">გაფრთხილება: ეს ფაილები დროებითია და შეიძლება ავტომატურად წაიშალოს დისკზე ადგილის გასათავისუფლებლად.</translation>
 <translation id="3029114385395636667">ჩართეთ ხაზგარეშე Google Docs, რათა Docs, Sheets და Slides ხელმისაწვდომი იყოს ხაზგარეშე რეჟიმში.</translation>
 <translation id="303198083543495566">გეოგრაფია</translation>
+<translation id="3044404008258011032">ამ ერთეულების აღსადგენად ჩავლებით გადაიტანეთ ისინი ახალ საქაღალდეში წაშლილებს მიღმა. ამ ერთეულების თავდაპირველი საქაღალდე „<ph name="PARENT_FOLDER_NAME" />“ წაიშალა.</translation>
 <translation id="3047197340186497470">ჩინური Dayi</translation>
 <translation id="3067790092342515856">Windows ფაილები</translation>
 <translation id="3083975830683400843">Chromebit-ები</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">მიმდინარეობს გააქტიურება...</translation>
 <translation id="4092890906744441904">ირლანდიური</translation>
 <translation id="4124935795427217608">ზღაპრული მარტორქა</translation>
+<translation id="4131235941541910880">გადაიტანეთ არასაჭირო ერთეულები წაშლილებში</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> გადატანილია.</translation>
 <translation id="4176286497474237543">წაშლილების ახლავე გასუფთავება</translation>
 <translation id="4186579485882418952">ხაზგარეშე რეჟიმის ჩართვა</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">გერმანული</translation>
 <translation id="4867079195717347957">დააწკაპუნეთ სვეტის კლებადი მიმდევრობით დასალაგებლად.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ბაიტი</translation>
+<translation id="4874569719830985133">სამუდამოდ წაშლა</translation>
 <translation id="4880214202172289027">ხმის სლაიდერი</translation>
 <translation id="4881695831933465202">გახსნა</translation>
+<translation id="4891091358278567964">ამ ერთეულების აღსადგენად ჩავლებით გადაიტანეთ ისინი ახალ საქაღალდეში წაშლილებს მიღმა. ამ ერთეულების თავდაპირველი საქაღალდეები წაიშალა.</translation>
 <translation id="4900532980794411603">Parallels Desktop-თან გაზიარება</translation>
 <translation id="4902546322522096650">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დაკავშირება</translation>
 <translation id="4906580650526544301">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" />%, დეტალები</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />გააზიარეთ, შექმენით და ითამშრომლეთ<ph name="MARKUP_8" />
     ფაილებზე სხვებთან ერთად და ერთი სივრციდან.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">აღდგენილი ფაილი Google Drive-დან</translation>
+<translation id="5278111733643988471">ამ ერთეულის აღსადგენად ჩავლებით გადაიტანეთ ის ახალ საქაღალდეში წაშლილებს მიღმა. ამ ერთეულის თავდაპირველი საქაღალდე „<ph name="PARENT_FOLDER_NAME" />“ წაიშალა.</translation>
 <translation id="5286194356314741248">მიმდინარეობს სკანირება</translation>
 <translation id="5288441970121584418">ბურგერი</translation>
 <translation id="5305688511332277257">არცერთი არ არის დაინსტალირებული</translation>
@@ -504,6 +509,7 @@
 <translation id="535792325654997756">პიროვნება კატებით</translation>
 <translation id="5358764674931277">კადრების სიხშირე</translation>
 <translation id="5363339716524495120">შეყვანის ენაა ჩინური</translation>
+<translation id="5364067326287025678">წაშლილებში არაფერია.</translation>
 <translation id="5368191757080475556">საქაღალდის გაზიარება Linux-თან</translation>
 <translation id="5402367795255837559">ბრაილის შრიფტი</translation>
 <translation id="5411472733320185105">არ გამოიყენოთ პროქსის პარამეტრები ამ საკვანძო კომპიუტერისთვის და დომენებისთვის:</translation>
@@ -770,6 +776,7 @@
 <translation id="7711920809702896782">სურათის ინფორმაცია</translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
 <translation id="7732111077498238432">ქსელი იმართება წესებით</translation>
+<translation id="7736003208887389532">გსურთ, სამუდამოდ წაშალოთ ეს ფაილები?</translation>
 <translation id="7748626145866214022">დამატებითი ვარიანტები ხელმისაწვდომია ქმედებათა ზოლში. ქმედებათა ზოლის ფოკუსში მოსაქცევად გამოიყენეთ კლავიშთა კომბინაცია: Alt + A.</translation>
 <translation id="7760449188139285140">ჩინური Wubi</translation>
 <translation id="7765158879357617694">გადატანა</translation>
@@ -831,6 +838,7 @@
 <translation id="8249296373107784235">შეწყვეტა</translation>
 <translation id="8250690786522693009">ლათინური</translation>
 <translation id="8250920743982581267">დოკუმენტები</translation>
+<translation id="8255595130163158297">წაშლილებში არსებული ყველა ერთეული წაიშლება და მათ აღდგენას ვეღარ მოახერხებთ.</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="8261561378965667560">ჩინური Array</translation>
 <translation id="8264024885325823677">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
@@ -909,6 +917,7 @@
 <translation id="8857149712089373752">ნეპალური ფონეტიკური კლავიატურით</translation>
 <translation id="8860454412039442620">Excel-ის ელცხრილი</translation>
 <translation id="8866284467018526531">არაბული ტრანსლიტერაცია</translation>
+<translation id="8873014196523807561">ამ ერთეულების აღსადგენად ჩავლებით გადაიტანეთ ისინი ახალ საქაღალდეში. ზოგიერთი ამ ერთეულის თავდაპირველი საქაღალდეები წაიშალა.</translation>
 <translation id="8874184842967597500">არ არის დაკავშირებული</translation>
 <translation id="8900820606136623064">უნგრული</translation>
 <translation id="8903931173357132290">კურსდამთავრებული</translation>

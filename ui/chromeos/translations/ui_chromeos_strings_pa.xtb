@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">ਸਾਵਧਾਨ: ਇਹ ਫ਼ਾਈਲਾਂ ਅਸਥਾਈ ਹਨ ਅਤੇ ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਨੂੰ ਖਾਲੀ ਕਰਨ ਲਈ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮਿਟਾਈਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="3029114385395636667">Docs, Sheets ਅਤੇ Slides ਨੂੰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਕਰਵਾਉਣ ਲਈ Google Docs ਆਫ਼ਲਾਈਨ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="303198083543495566">ਭੂਗੋਲ</translation>
+<translation id="3044404008258011032">ਇਨ੍ਹਾਂ ਆਈਟਮਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਰੱਦੀ ਤੋਂ ਬਾਹਰ ਕਿਸੇ ਨਵੇਂ ਫੋਲਡਰ ਵਿੱਚ ਘਸੀਟੋ। ਇਨ੍ਹਾਂ ਆਈਟਮਾਂ ਦੇ ਮੂਲ ਫੋਲਡਰ "<ph name="PARENT_FOLDER_NAME" />" ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="3047197340186497470">ਚੀਨੀ ਡਾਯੀ</translation>
 <translation id="3067790092342515856">Windows ਫ਼ਾਈਲਾਂ</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">ਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4092890906744441904">ਆਇਰਸ਼</translation>
 <translation id="4124935795427217608">ਇੱਕ ਸਿੰਗ ਵਾਲਾ ਘੋੜਾ</translation>
+<translation id="4131235941541910880">ਆਪਣੀਆਂ ਬੇਲੋੜੀਆਂ ਆਈਟਮਾਂ ਰੱਦੀ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ਨੂੰ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="4176286497474237543">ਰੱਦੀ ਫੋਲਡਰ ਨੂੰ ਹੁਣੇ ਖਾਲੀ ਕਰੋ</translation>
 <translation id="4186579485882418952">ਆਫ਼ਲਾਈਨ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">ਜਰਮਨ</translation>
 <translation id="4867079195717347957">ਕਾਲਮ ਨੂੰ ਘੱਟਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ਬਾਈਟ</translation>
+<translation id="4874569719830985133">ਹਮੇਸ਼ਾਂ ਲਈ ਮਿਟਾਓ</translation>
 <translation id="4880214202172289027">ਵੌਲਿਊਮ ਸਲਾਈਡਰ</translation>
 <translation id="4881695831933465202">ਖੋਲ੍ਹੋ</translation>
+<translation id="4891091358278567964">ਇਨ੍ਹਾਂ ਆਈਟਮਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਰੱਦੀ ਤੋਂ ਬਾਹਰ ਕਿਸੇ ਨਵੇਂ ਫੋਲਡਰ ਵਿੱਚ ਘਸੀਟੋ। ਇਨ੍ਹਾਂ ਆਈਟਮਾਂ ਦੇ ਮੂਲ ਫੋਲਡਰਾਂ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="4900532980794411603">Parallels Desktop ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="4902546322522096650">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਕਨੈਕਟ</translation>
 <translation id="4906580650526544301">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਫ਼ੋਨ ਦੀ ਬੈਟਰੀ <ph name="BATTERY_STATUS" />%, ਵੇਰਵੇ</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />ਇੱਕੋ ਥਾਂ ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਹੋਰਾਂ ਨਾਲ<ph name="MARKUP_8" />
     ਸਾਂਝਾ ਕਰੋ, ਬਣਾਓ, ਅਤੇ ਉਹਨਾਂ 'ਤੇ ਸਹਿਯੋਗ ਦਿਓ।<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive ਤੋਂ ਰਿਕਵਰ ਕੀਤੀਆਂ ਫਾਈਲਾਂ</translation>
+<translation id="5278111733643988471">ਇਸ ਆਈਟਮ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਇਸਨੂੰ ਰੱਦੀ ਦੇ ਬਾਹਰ ਕਿਸੇ ਨਵੇਂ ਫੋਲਡਰ ਵਿੱਚ ਘਸੀਟੋ। ਇਸ ਆਈਟਮ ਦੇ ਮੂਲ ਫੋਲਡਰ "<ph name="PARENT_FOLDER_NAME" />" ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="5286194356314741248">ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5288441970121584418">ਬਰਗਰ</translation>
 <translation id="5305688511332277257">ਕੋਈ ਇੰਸਟੌਲ ਨਹੀਂ ਕੀਤਾ</translation>
@@ -504,6 +509,7 @@
 <translation id="535792325654997756">ਬਿੱਲੀਆਂ ਨਾਲ ਵਿਅਕਤੀ</translation>
 <translation id="5358764674931277">ਫ੍ਰੇਮ ਰੇਟ</translation>
 <translation id="5363339716524495120">ਇਨਪੁੱਟ ਭਾਸ਼ਾ ਚੀਨੀ ਹੈ</translation>
+<translation id="5364067326287025678">ਰੱਦੀ ਵਿੱਚ ਕੁਝ ਵੀ ਨਹੀਂ ਹੈ</translation>
 <translation id="5368191757080475556">Linux ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="5402367795255837559">ਬ੍ਰੇਲ</translation>
 <translation id="5411472733320185105">ਇਹਨਾਂ ਹੋਸਟਾਂ ਅਤੇ ਡੋਮੇਨਾਂ ਲਈ ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਨਾ ਵਰਤੋ:</translation>
@@ -770,6 +776,7 @@
 <translation id="7711920809702896782">ਚਿੱਤਰ ਦੀ ਜਾਣਕਾਰੀ</translation>
 <translation id="7724603315864178912">ਕੱਟੋ</translation>
 <translation id="7732111077498238432">ਨੈੱਟਵਰਕ ਨੂੰ ਨੀਤੀ ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="7736003208887389532">ਕੀ ਇਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="7748626145866214022">ਕਾਰਵਾਈ ਬਾਰ 'ਤੇ ਹੋਰ ਵੀ ਵਿਕਲਪ ਉਪਲਬਧ ਹਨ। ਕਾਰਵਾਈ ਬਾਰ 'ਤੇ ਫੋਕਸ ਕਰਨ ਲਈ Alt + A ਦਬਾਓ।</translation>
 <translation id="7760449188139285140">ਚੀਨੀ ਵੂਬੀ</translation>
 <translation id="7765158879357617694">ਮੂਵ ਕਰੋ</translation>
@@ -831,6 +838,7 @@
 <translation id="8249296373107784235">ਰੋਕੋ</translation>
 <translation id="8250690786522693009">ਲਾਤੀਨੀ</translation>
 <translation id="8250920743982581267">ਦਸਤਾਵੇਜ਼</translation>
+<translation id="8255595130163158297">ਰੱਦੀ ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ ਆਈਟਮਾਂ ਮਿਟਾ ਦਿੱਤੀਆਂ ਜਾਣਗੀਆਂ ਅਤੇ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਨਹੀਂ ਕਰ ਸਕੋਗੇ।</translation>
 <translation id="8261506727792406068">ਮਿਟਾਓ</translation>
 <translation id="8261561378965667560">ਚੀਨੀ ਐਰੇ</translation>
 <translation id="8264024885325823677">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ।</translation>
@@ -909,6 +917,7 @@
 <translation id="8857149712089373752">ਧੁਨੀਆਤਮਿਕ ਕੀ-ਬੋਰਡ ਨਾਲ ਨੇਪਾਲੀ</translation>
 <translation id="8860454412039442620">Excel spreadsheet</translation>
 <translation id="8866284467018526531">ਅਰਬੀ ਲਿਪੀਅੰਤਰਨ</translation>
+<translation id="8873014196523807561">ਇਨ੍ਹਾਂ ਆਈਟਮਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਕਿਸੇ ਨਵੇਂ ਫੋਲਡਰ ਵਿੱਚ ਘਸੀਟੋ। ਇਨ੍ਹਾਂ ਵਿੱਚੋਂ ਕੁਝ ਆਈਟਮਾਂ ਦੇ ਮੂਲ ਫੋਲਡਰਾਂ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8874184842967597500">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="8900820606136623064">Hungarian</translation>
 <translation id="8903931173357132290">ਗ੍ਰੈਜੂਏਟ</translation>

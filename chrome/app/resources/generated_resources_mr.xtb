@@ -1630,6 +1630,7 @@
 <translation id="2468178265280335214">टचपॅड स्क्रोल अ‍ॅक्सिलरेशन</translation>
 <translation id="2468205691404969808">जरी तुम्ही त्या पेजना भेट देत नसलात तरी, तुमची प्राधान्ये लक्षात ठेवण्यासाठी कुकीजचा वापर करते</translation>
 <translation id="2468402215065996499">तामागोची</translation>
+<translation id="2468470085922875120">तुम्ही असे पासवर्ड वापरत आहात ज्यांचा अंदाज लावणे कठीण आहे</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - एक टॅब}other{<ph name="GROUP_TITLE" /> - # टॅब}}</translation>
 <translation id="2469141124738294431">VM स्टेटस</translation>
 <translation id="2469259292033957819">तुमच्याकडे सेव्ह केलेली प्रिंटर नाहीत.</translation>
@@ -1967,6 +1968,7 @@
 <translation id="2783321960289401138">शॉर्टकट तयार करा...</translation>
 <translation id="2783829359200813069">एंक्रिप्शन प्रकार निवडा</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> सह तुमची सिक्युरिटी की वापरा</translation>
+<translation id="2785267875302712148">पासवर्ड तपासणी</translation>
 <translation id="2785873697295365461">फाईल वर्णनकर्ते</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">स्थानिक ब्राउझिंग डेटा कायम ठेवा (बुकमार्क, पासवर्ड, इतिहास, इत्यादी.)</translation>
@@ -2042,6 +2044,7 @@
 <translation id="2844169650293029770">USB-C डिव्‍हाइस (डाव्‍या बाजूचे पुढील पोर्ट)</translation>
 <translation id="2844809857160214557">प्रिंट कार्ये पहा आणि व्यवस्थापित करा</translation>
 <translation id="2845382757467349449">नेहमी बुकमार्क बार दर्शवा</translation>
+<translation id="284581348330507117">युनिक पासवर्ड तयार करा</translation>
 <translation id="284805635805850872">धोकादायक सॉफ्टवेअर काढून टाकायचे का?</translation>
 <translation id="2849035674501872372">वर पहा</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2193,6 +2196,7 @@
 <translation id="2985348301114641460">तुमच्या अ‍ॅडमिनिस्ट्रेटरला "<ph name="EXTENSION_NAME" />" इंस्टॉल करण्याची विनंती पाठवायची?</translation>
 <translation id="2987620471460279764">मजकूर इतर डिव्हाइसवरून शेअर केला आहे</translation>
 <translation id="2988018669686457659">स्पेअर रेंडरर</translation>
+<translation id="2988328607561082373">तुम्ही कोणतेही पासवर्ड पुन्हा वापरत नाही आहात</translation>
 <translation id="2989123969927553766">माउस स्क्रोल अ‍ॅक्सिलरेशन</translation>
 <translation id="2989474696604907455">संलग्न केले नाही</translation>
 <translation id="2989786307324390836">DER-एन्कोडेड बायनरी, एकल सर्टिफिकेट</translation>
@@ -2221,6 +2225,7 @@
 <translation id="3009178788565917040">आउटपुट</translation>
 <translation id="3009300415590184725">मोबाइल डेटा सेट अप प्रक्रिया ‍रद्द करु इच्‍छित आहात याबद्दल तुम्हाला खात्री आहे?</translation>
 <translation id="3009779501245596802">अनुक्रमित डेटाबेस</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Your passwords look strong}=1{{COUNT} कमकुवत पासवर्ड}other{{COUNT} कमकुवत पासवर्ड}}</translation>
 <translation id="3010279545267083280">पासवर्ड  हटवला</translation>
 <translation id="3010389206479238935">मध्ये सक्तीने उघडा</translation>
 <translation id="3011384993885886186">गडद करडा</translation>
@@ -4421,6 +4426,7 @@
 <translation id="5153234146675181447">फोन विसरा</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> यासाठी प्रगत सेटिंग्ज</translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{No saved passwords.}=1{{COUNT} साइटसाठी तपासलेले पासवर्ड}other{{COUNT} साइट आणि ॲप्ससाठी तपासलेले पासवर्ड}}</translation>
 <translation id="5154702632169343078">विषय</translation>
 <translation id="5155327081870541046">तुम्हाला शोधायच्या असलेल्या साइटचा शॉर्टकट अ‍ॅड्रेस बारमध्ये एंटर करा जसे की, "@bookmarks". त्यानंतर, तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट दाबा आणि तुमची शोध संज्ञा एंटर करा.</translation>
 <translation id="5156638757840305347">तो दिसतो किंवा हलतो तेव्हा कर्सर हायलाइट केला जातो</translation>
@@ -5001,6 +5007,7 @@
 <translation id="5713158217420111469"><ph name="DEVICE" /> शी कनेक्ट केले आहे</translation>
 <translation id="5713960379473463904">स्पेस इनपुटची शैली</translation>
 <translation id="5715711091495208045">प्लगइन ब्रोकर: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">तुम्ही ते आता बदलले पाहिजेत</translation>
 <translation id="5719603411793408026">डीफॉल्ट शोध इंजीन</translation>
 <translation id="5719854774000914513">साइट HID डिव्हाइसशी कनेक्ट करण्यासाठी विचारू शकतात</translation>
 <translation id="572155275267014074">Android सेटिंग्ज</translation>
@@ -6457,6 +6464,7 @@
 <translation id="7098447629416471489">इतर सेव्ह शोध इंजीन येथे दिसून येतील</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ॲप काढून टाका}other{ॲप्‍स काढून टाका}}</translation>
 <translation id="7099337801055912064">मोठ्या PPD लोड करू शकत नाही. कमाल आकार 250kB आहे.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} धोक्यात असलेला पासवर्ड}other{{COUNT} धोक्यात असलेले पासवर्ड}}</translation>
 <translation id="7102687220333134671">स्वयंचलित अपडेट सुरू केली आहेत</translation>
 <translation id="7102832101143475489">विनंतीची वेळ संपली</translation>
 <translation id="710640343305609397">नेटवर्क सेटिंग्ज उघडा</translation>
@@ -7400,6 +7408,7 @@
 तुमची की फाइल एका सुरक्षित ठिकाणी ठेवा. तुमच्या एक्स्टेंशनच्या नवीन आवृत्या तयार करण्यासाठी तुम्हाला त्याची आवश्यकता असेल.</translation>
 <translation id="8002274832045662704">प्रगत प्रिंटर कॉंफिगरेशन</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> यापुढे उपलब्ध असणार नाही</translation>
+<translation id="8004092996156083991">तुमचे पासवर्ड धोक्यात आले असल्यास, आम्ही तुम्हाला कळवू.</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
 <translation id="8005600846065423578">क्लिपबोर्ड पाहण्यासाठी नेहमी <ph name="HOST" /> ला अनुमती द्या</translation>
 <translation id="8006630792898017994">स्पेस किंवा टॅब</translation>
@@ -7897,6 +7906,7 @@
 <translation id="8470513973197838199"><ph name="ORIGIN" /> साठी सेव्ह केलेले पासवर्ड</translation>
 <translation id="8471525937465764768">दस्तऐवज प्रिंट करणे किंवा स्टोरेज डिव्हाइसमध्ये सेव्ह करणे यांसारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे USB डिव्हाइसशी कनेक्ट करतात</translation>
 <translation id="8471959340398751476">सवलती बंद आहेत. तुम्ही कस्टमाइझ करा मेनूमधून त्या सुरू करू शकता</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Your passwords are unique}=1{{COUNT} पुन्हा वापरलेला पासवर्ड}other{{COUNT} पुन्हा वापरलेले पासवर्ड}}</translation>
 <translation id="8472623782143987204">हार्डवेअर-बॅक्ड</translation>
 <translation id="8473863474539038330">पत्ते आणि बरेच काही</translation>
 <translation id="8475313423285172237">तुमच्या कॉंप्युटरवरील दुसऱ्या प्रोग्रामने Chrome च्या काम करण्याचा मार्ग बदलू शकणारा एक्स्टेंशन जोडला.</translation>
@@ -8376,6 +8386,7 @@
 <translation id="8940081510938872932">तुमचे कॉंप्युटर यावेळी असंख्य गोष्‍टी करत आहे. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="8940381019874223173">तुमच्या Google Photos मधील</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' परवानगी मागे घ्या</translation>
+<translation id="894191600409472540">क्लिष्ट पासवर्ड तयार करा</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">अधिक द्रुतपणे बॅटरी वापरा (सध्या <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">आयकन आकार</translation>
@@ -8599,6 +8610,7 @@
 <translation id="9140067245205650184">तुम्ही एक सपोर्ट नसलेला वैशिष्ट्य फ्लॅग वापरत आहात: <ph name="BAD_FLAG" />. स्थिरता आणि सुरक्षा प्रभावित होईल.</translation>
 <translation id="9142637293078737510">इमेजचे उपनाव</translation>
 <translation id="9143298529634201539">सूचना काढून टाकायची का?</translation>
+<translation id="9143922477019434797">तुमचे पासवर्ड संरक्षित करा</translation>
 <translation id="9147392381910171771">&amp;पर्याय</translation>
 <translation id="9148058034647219655">निर्गमन</translation>
 <translation id="9148126808321036104">पुन्हा साइन इन करा </translation>

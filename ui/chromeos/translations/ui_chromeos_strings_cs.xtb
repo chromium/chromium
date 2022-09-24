@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">Pozor: Tyto soubory jsou dočasné a mohou být automaticky smazány kvůli uvolnění místa na disku.</translation>
 <translation id="3029114385395636667">Pokud si chcete zpřístupnit dokumenty, tabulky a prezentace offline, aktivujte si Dokumenty Google offline.</translation>
 <translation id="303198083543495566">Geografická poloha</translation>
+<translation id="3044404008258011032">Pokud tyto položky chcete obnovit, přetáhněte je do nové složky mimo koš. Původní složka „<ph name="PARENT_FOLDER_NAME" />“ této položky byla smazána.</translation>
 <translation id="3047197340186497470">čínština (Dayi)</translation>
 <translation id="3067790092342515856">Soubory Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">Aktivace...</translation>
 <translation id="4092890906744441904">irština</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
+<translation id="4131235941541910880">Nepotřebné položky přesuňte do koše</translation>
 <translation id="4159731583141908892">Přesunutá položka: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Vysypat koš</translation>
 <translation id="4186579485882418952">Povolit režim offline</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">němčina</translation>
 <translation id="4867079195717347957">Kliknutím sloupec seřadíte sestupně.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> B</translation>
+<translation id="4874569719830985133">Trvale smazat</translation>
 <translation id="4880214202172289027">Posuvník hlasitosti</translation>
 <translation id="4881695831933465202">Otevřít</translation>
+<translation id="4891091358278567964">Pokud tyto položky chcete obnovit, přetáhněte je do nové složky mimo koš. Původní složky těchto položek byly smazány.</translation>
 <translation id="4900532980794411603">Sdílet s nástrojem Parallels Desktop</translation>
 <translation id="4902546322522096650">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, připojit</translation>
 <translation id="4906580650526544301">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />síla signálu: <ph name="SIGNAL_STRENGTH" /> %, baterie telefonu: <ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
@@ -492,6 +496,7 @@
     Vaše soubory jsou bezpečně uloženy na Disku Google bez ohledu na to, co se stane s vaším zařízením.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Sdílejte, vytvářejte a spolupracujte<ph name="MARKUP_8" /> na souborech s ostatními, a to vše na jednom místě.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Obnovené soubory z Disku Google</translation>
+<translation id="5278111733643988471">Pokud tuto položku chcete obnovit, přetáhněte ji do nové složky mimo koš. Původní složka „<ph name="PARENT_FOLDER_NAME" />“ pro tuto položku byla smazána.</translation>
 <translation id="5286194356314741248">Skenování</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -504,6 +509,7 @@
 <translation id="535792325654997756">Člověk s kočkami</translation>
 <translation id="5358764674931277">Snímková frekvence</translation>
 <translation id="5363339716524495120">Jazyk vstupu je čínština</translation>
+<translation id="5364067326287025678">Koš je prázdný</translation>
 <translation id="5368191757080475556">Sdílet složku se systémem Linux</translation>
 <translation id="5402367795255837559">Braillovo písmo</translation>
 <translation id="5411472733320185105">Nepoužívat nastavení proxy serveru pro následující hostitele a domény:</translation>
@@ -770,6 +776,7 @@
 <translation id="7711920809702896782">Informace o obrázku</translation>
 <translation id="7724603315864178912">Vyjmout</translation>
 <translation id="7732111077498238432">Síť podléhá zásadám</translation>
+<translation id="7736003208887389532">Trvale tyto soubory smazat?</translation>
 <translation id="7748626145866214022">Další možnosti jsou k dispozici na panelu akcí. Na panel akcí přejdete stisknutím kláves Alt + A.</translation>
 <translation id="7760449188139285140">čínština (Wubi)</translation>
 <translation id="7765158879357617694">Přesunout</translation>
@@ -831,6 +838,7 @@
 <translation id="8249296373107784235">Zrušit</translation>
 <translation id="8250690786522693009">Latinka</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
+<translation id="8255595130163158297">Všechny položky v koši budou smazány a nebudete je moci obnovit.</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8261561378965667560">čínština (Array)</translation>
 <translation id="8264024885325823677">Toto nastavení spravuje administrátor.</translation>
@@ -909,6 +917,7 @@
 <translation id="8857149712089373752">nepálština s fonetickou klávesnicí</translation>
 <translation id="8860454412039442620">Tabulka aplikace Excel</translation>
 <translation id="8866284467018526531">arabština (přepis)</translation>
+<translation id="8873014196523807561">Pokud tyto položky chcete obnovit, přetáhněte je do nové složky. Původní složky některých z těchto položek byly smazány.</translation>
 <translation id="8874184842967597500">Nepřipojeno</translation>
 <translation id="8900820606136623064">maďarština</translation>
 <translation id="8903931173357132290">Absolvent</translation>

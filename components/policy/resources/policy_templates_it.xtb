@@ -4936,6 +4936,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Specifica le app di Chrome tramite il relativo ID, come pjkljhegncpnkpknbcohdijeoejaedia, le app Android tramite il relativo nome del pacchetto, come com.google.android.gm, e le app web tramite l'URL utilizzato in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, come https://google.com/maps.
 
       Se il criterio non è configurato, gli utenti possono modificare l'elenco di app bloccate in Avvio app.</translation>
+<translation id="6184385589352532028">Non attivare l'API Desk per il controllo di ChromeOS da terze parti</translation>
 <translation id="6190367314942602985">Segnala informazioni di identificazione degli utenti</translation>
 <translation id="6191963383731098056">Questo criterio consente agli amministratori di configurare il colore del tema di <ph name="PRODUCT_NAME" />. La stringa di input deve essere una stringa di colore esadecimale valido corrispondente al formato "#RRGGBB".
 
@@ -6772,6 +6773,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se questo criterio viene impostato su Disattivato o se non viene configurato, l'utente non può usare <ph name="LACROS_NAME" />.
 
       Se questo criterio viene impostato su Attivato, l'utente può usare il browser <ph name="LACROS_NAME" />.</translation>
+<translation id="8020222525161221827">Attiva l'API Desk per il controllo di ChromeOS da terze parti</translation>
 <translation id="802147957407376460">Ruota lo schermo di 0°</translation>
 <translation id="80243978433618492">Non consentire alcun filtro dei parametri URL.</translation>
 <translation id="8025620823136567878">Le scorciatoie da tastiera internazionali sono mappate alla posizione dei tasti sulla tastiera e non al glifo del tasto.</translation>
@@ -7794,6 +7796,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non registrano o non segnalano lo stato dell'audio.
       Eccezione: le informazioni relative al livello del volume di sistema vengono controllate tramite il criterio <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> per M95 e versioni precedenti.</translation>
+<translation id="9071527533179676468">Se il criterio viene impostato su Enabled, le applicazioni web di terze parti possono usare l'API Desk per controllare le scrivanie di ChromeOS. Se il criterio viene impostato su Disabled o se non viene configurato, l'API Desk non sarà disponibile.</translation>
 <translation id="9072475476775217730">Se il criterio viene impostato su Disabled, i popup che indirizzano alla pagina <ph name="BLANK_PAGE_NAME" /> possono accedere (tramite JavaScript) alla pagina che ha richiesto l'apertura del popup.
 
       Se il criterio viene impostato su Enabled o se non viene configurato, la proprietà <ph name="WINDOW_OPENER_PROPERTY" /> viene impostata su <ph name="NULL_VALUE" />, a meno che l'ancoraggio non specifichi <ph name="REL_OPENER_ATTRIBUTE" />.

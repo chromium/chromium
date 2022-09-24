@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Copie de <ph name="FILE_NAME" /> en cours…</translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1190144681599273207">L'obtention de ce fichier utilisera environ <ph name="FILE_SIZE" /> de données mobiles.</translation>
+<translation id="1194390763418645112">Accès aux fichiers par <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1209796539517632982">Serveurs de noms automatiques</translation>
 <translation id="1210831758834677569">Laotien</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome</translation>
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1576937952766665062">Bengali (translittération)</translation>
+<translation id="1577977504532381335">Examiner la politique de l'administrateur</translation>
 <translation id="158849752021629804">Réseau domestique requis</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> Po</translation>
 <translation id="1620510694547887537">Caméra</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Résolution de l'image</translation>
 <translation id="1972984168337863910">Développer les panneaux de commentaires sur les fichiers</translation>
 <translation id="1995337122023280937">Accéder au dossier du fichier</translation>
+<translation id="1999709132469742660">Accès aux fichiers par toutes les URL</translation>
 <translation id="2001796770603320721">Gérer dans Google Disque</translation>
 <translation id="2009067268969781306">Le formatage d'un lecteur effacera toutes les données qu'il contient. Cette action est irréversible.</translation>
 <translation id="2025955442973426285">Tigrina</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Personne avec un café</translation>
 <translation id="2251368349685848079">Restaurer à partir de la corbeille</translation>
 <translation id="2282155092769082568">URL d'autoconfiguration :</translation>
+<translation id="2284767815536050991">dispositif de stockage amovible</translation>
 <translation id="2288278176040912387">Tourne-disque</translation>
 <translation id="2291538123825441971">Ouverture de <ph name="NUMBER_OF_FILES" /> fichiers en cours…</translation>
 <translation id="2303301624314357662">Ouverture du fichier <ph name="FILE_NAME" /> en cours…</translation>
@@ -341,6 +345,7 @@
 <translation id="4057991113334098539">Activation en cours…</translation>
 <translation id="4092890906744441904">Irlandais</translation>
 <translation id="4124935795427217608">Licorne</translation>
+<translation id="4157569377477607576">La politique de l'administrateur ne recommande pas :</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> déplacé.</translation>
 <translation id="4176286497474237543">Vider la corbeille maintenant</translation>
 <translation id="4186579485882418952">Activer le mode hors ligne</translation>
@@ -503,6 +508,7 @@
 <translation id="5323213332664049067">Amérique latine</translation>
 <translation id="5330145655348521461">Ces fichiers sont ouverts sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour les afficher.</translation>
 <translation id="5330512191124428349">En savoir plus</translation>
+<translation id="5337538975554986899">Accès aux fichiers par toutes les URL sauf <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Personne avec des chats</translation>
 <translation id="5358764674931277">Fréquence d'images</translation>
 <translation id="5363339716524495120">La langue d'entrée définie est le chinois</translation>
@@ -527,6 +533,7 @@
 <translation id="5533102081734025921">Image <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Calcul de la taille en cours…</translation>
 <translation id="554153475311314364">Grec (translittération)</translation>
+<translation id="5580591966435005537">machine virtuelle</translation>
 <translation id="5583640892426849032">Effacement arrière</translation>
 <translation id="5583664733673201137">Largeur de ponctuation : pleine</translation>
 <translation id="5602622065581044566">Bulgare avec clavier phonétique</translation>
@@ -587,6 +594,7 @@
 <translation id="61118516107968648">CSV (texte)</translation>
 <translation id="6129953537138746214">Espace</translation>
 <translation id="6133173853026656527">Déplacement de <ph name="FILE_NAME" /> en cours...</translation>
+<translation id="6133877453787250710">L'administrateur surveille :</translation>
 <translation id="613750717151263950">Japonais avec clavier américain</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />; aucun réseau</translation>
 <translation id="6146563240635539929">Vidéos</translation>
@@ -607,6 +615,7 @@
 <translation id="6287852322318138013">Sélectionner une application pour ouvrir ce fichier</translation>
 <translation id="6295542640242147836">Verrouiller la carte SIM</translation>
 <translation id="6296410173147755564">Clé personnelle de déblocage incorrecte</translation>
+<translation id="6308243004861726558">Ce fichier est confidentiel et soumis à la politique de l'administrateur. Les actions d'accès aux fichiers et de transfert de ceux-ci s'appliquent.</translation>
 <translation id="6312403991423642364">Erreur réseau inconnue</translation>
 <translation id="6317608858038767920">Serveur de nom de domaine personnalisé <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Archive <ph name="ARCHIVE_TYPE" /></translation>
@@ -835,6 +844,7 @@
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8261561378965667560">Chinois (tableau)</translation>
+<translation id="8262872909443689080">Politique de l'administrateur</translation>
 <translation id="8264024885325823677">C'est votre administrateur qui gère ce paramètre.</translation>
 <translation id="8269755669432358899">Réduire les panneaux de commentaires sur les fichiers</translation>
 <translation id="8280151743281770066">Phonétique arménien</translation>
@@ -932,6 +942,7 @@
 <translation id="9100610230175265781">Une phrase de passe est requise</translation>
 <translation id="9110990317705400362">Nous recherchons sans cesse à sécuriser voter navigation. Avant, n'importe quel site Web pouvait vous inviter à ajouter une extension à votre navigateur. Avec les dernières versions de Google Chrome, vous devez préciser explicitement à Chrome que vous souhaitez installer ces extensions en les ajoutant depuis la page Extensions. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
+<translation id="9116909380156770361">Transfert de fichiers vers <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">Les membres de « <ph name="DESTINATION_NAME" /> » pourront accéder à ces éléments.</translation>
 <translation id="9131598836763251128">Sélectionner un ou plusieurs fichiers</translation>
@@ -953,6 +964,7 @@
 <translation id="943972244133411984">Modifié par</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="947144732524271678">Vous avez sélectionné une plage de <ph name="ENTRY_COUNT" /> entrées, de <ph name="FROM_ENTRY_NAME" /> à <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">La politique de l'administrateur empêche :</translation>
 <translation id="965477715979482472">Anglais (Afrique du Sud)</translation>
 <translation id="981121421437150478">Hors ligne</translation>
 <translation id="988685240266037636">Un fichier nommé « <ph name="FILE_NAME" /> » existe déjà. Voulez-vous le remplacer?</translation>

@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> कॉपी करत आहे...</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1190144681599273207">ही फाइल प्राप्त करताना अंदाजे <ph name="FILE_SIZE" /> मोबाइल डेटा वापरला जाईल.</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> वरून फाइलचा ॲक्सेस</translation>
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1209796539517632982">स्वयंचलित नाव सर्व्हर</translation>
 <translation id="1210831758834677569">लाओ</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome डिव्हाइस</translation>
 <translation id="1572585716423026576">वॉलपेपर म्हणून सेट करा</translation>
 <translation id="1576937952766665062">बंगाली लिप्यंतरण</translation>
+<translation id="1577977504532381335">ॲडमिन धोरणाचे पुनरावलोकन करा</translation>
 <translation id="158849752021629804">होम नेटवर्क आवश्यक</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">इमेज रिझोल्युशन</translation>
 <translation id="1972984168337863910">फाइल फीडबॅक पॅनलचा विस्तार करा</translation>
 <translation id="1995337122023280937">फाइल स्थानावर जा</translation>
+<translation id="1999709132469742660">सर्व URL वरून फाइलचा ॲक्सेस</translation>
 <translation id="2001796770603320721">ड्राइव्ह मध्ये व्यवस्थापित करा</translation>
 <translation id="2009067268969781306">ड्राइव्ह फॉरमॅट त्यावर स्टोअर केलेला डेटा हटवेल. ही क्रिया पहिल्यासारखी केली जाऊ शकत नाही.</translation>
 <translation id="2025955442973426285">टिग्रीन्या</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">कॉफी पीत असलेली व्यक्ती</translation>
 <translation id="2251368349685848079">ट्रॅशमधून रिस्टोअर करा</translation>
 <translation id="2282155092769082568">स्वयंकॉन्फिगरेशन URL:</translation>
+<translation id="2284767815536050991">काढून टाकण्यायोग्य स्टोरेज</translation>
 <translation id="2288278176040912387">रेकॉर्ड प्लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फाइल उघडत आहे</translation>
 <translation id="2303301624314357662">फाइल <ph name="FILE_NAME" /> उघडत आहे.</translation>
@@ -341,6 +345,7 @@
 <translation id="4057991113334098539">सक्रिय करीत आहे...</translation>
 <translation id="4092890906744441904">आयरिश</translation>
 <translation id="4124935795427217608">युनिकॉर्न</translation>
+<translation id="4157569377477607576">अ‍ॅडमिनिस्ट्रेटर धोरणाची शिफारस केली जात नाही:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> हलवला.</translation>
 <translation id="4176286497474237543">आता ट्रॅश रिकामा करा</translation>
 <translation id="4186579485882418952">ऑफलाइन हे एक्स्टेंशन सुरू करा</translation>
@@ -502,6 +507,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5323213332664049067">लॅटिन अमेरिकन</translation>
 <translation id="5330145655348521461">या फाइल एका भिन्न डेस्कटॉपवर उघडलेल्या आहेत. या पाहण्यासाठी <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) वर हलवा.</translation>
 <translation id="5330512191124428349">माहिती मिळवा</translation>
+<translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> वगळता सर्व URL वरून फाइलचा ॲक्सेस</translation>
 <translation id="535792325654997756">मांजरींसह व्यक्ती</translation>
 <translation id="5358764674931277">फ्रेम दर</translation>
 <translation id="5363339716524495120">इनपुट भाषा चीनी आहे</translation>
@@ -526,6 +532,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> इमेज</translation>
 <translation id="5534520101572674276">आकार मोजत आहे</translation>
 <translation id="554153475311314364">ग्रीक लिप्यंतरण</translation>
+<translation id="5580591966435005537">व्हर्च्युअल मशीन</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">विरामचिन्हाची रुंदी पूर्ण आहे</translation>
 <translation id="5602622065581044566">फोनेटिक कीबोर्डसह बल्गेरियन</translation>
@@ -586,6 +593,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="61118516107968648">CSV मजकूर</translation>
 <translation id="6129953537138746214">जागा</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> हलवित आहे...</translation>
+<translation id="6133877453787250710">अ‍ॅडमिनिस्ट्रेटर मॉनिटर:</translation>
 <translation id="613750717151263950">यूएस कीबोर्डसह जपानी</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, कोणतेही नेटवर्क नाही</translation>
 <translation id="6146563240635539929">व्हिडिओ</translation>
@@ -606,6 +614,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6287852322318138013">ही फाईल उघडण्यासाठी ॲप निवडा</translation>
 <translation id="6295542640242147836">सिम लॉक करा</translation>
 <translation id="6296410173147755564">चुकीचा PUK</translation>
+<translation id="6308243004861726558">ही फाइल गोपनीय आहे आणि अ‍ॅडमिनिस्ट्रेटर धोरणाच्या अधीन आहे पुढील फाइल ॲक्सेस आणि ट्रान्सफर करण्याशी संबंधित कृतींवर हे धोरण लागू होते.</translation>
 <translation id="6312403991423642364">अज्ञात नेटवर्क एरर</translation>
 <translation id="6317608858038767920">कस्टम नेमसर्व्हर <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> संग्रहण</translation>
@@ -834,6 +843,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8250920743982581267">दस्तऐवज</translation>
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8261561378965667560">चीनी ॲरे</translation>
+<translation id="8262872909443689080">अ‍ॅडमिनिस्ट्रेटर धोरण</translation>
 <translation id="8264024885325823677">हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते.</translation>
 <translation id="8269755669432358899">फाइल फीडबॅक पॅनल कोलॅप्स करा</translation>
 <translation id="8280151743281770066">अर्मेनियन ध्वन्यात्मक</translation>
@@ -931,6 +941,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9100610230175265781">सांकेतिक पासफ्रेझ आवश्यक</translation>
 <translation id="9110990317705400362">आम्ही तुमचे ब्राउझिंग सुरक्षित करण्यासाठी सातत्याने मार्ग शोधत आहोत. मागे, तुमच्या ब्राउझरमध्ये एक्स्टेंशन जोडण्यासाठी कोणतीही वेबसाइट तुम्हाला सूचित करू शकत होती. Google Chrome च्या नवीनतम आवृत्तीमध्ये, एक्स्टेंशन पेजद्वारे ते जोडून हे एक्स्टेंशन तुम्ही इंस्टॉल करू इच्छित आहात हे तुम्ही Chrome ला स्पष्टपणे सांगणे आवश्यक आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">अनलॉक करा</translation>
+<translation id="9116909380156770361"><ph name="RESTRICTED_COMPONENTS" /> मध्ये फाइल ट्रान्सफर</translation>
 <translation id="912419004897138677">कोडेक</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' चे सदस्य या आयटमचा ॲक्सेस मिळवतील.</translation>
 <translation id="9131598836763251128">एक किंवा अधिक फाइल निवडा</translation>
@@ -952,6 +963,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="943972244133411984">ने सुधारित केली</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ते <ph name="TO_ENTRY_NAME" /> मधील <ph name="ENTRY_COUNT" /> नोंदींची रेंज निवडली आहे.</translation>
+<translation id="954194396377670556">अ‍ॅडमिनिस्ट्रेटर धोरण पुढील गोष्टी प्रतिबंधित करते:</translation>
 <translation id="965477715979482472">इंग्रजी (दक्षिण आफ्रिका)</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" नावाची फाइल आधीच अस्तित्वात आहे. तुम्हाला ती बदलायची आहे का?</translation>

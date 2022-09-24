@@ -23,6 +23,7 @@
 <translation id="117624967391683467">正在複製 <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1190144681599273207">擷取這個檔案大約會使用 <ph name="FILE_SIZE" /> 行動數據流量。</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> 可存取檔案</translation>
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1209796539517632982">自動名稱伺服器</translation>
 <translation id="1210831758834677569">寮文</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome 裝置</translation>
 <translation id="1572585716423026576">設為桌布</translation>
 <translation id="1576937952766665062">孟加拉文 (音譯)</translation>
+<translation id="1577977504532381335">查看管理員政策</translation>
 <translation id="158849752021629804">需要家用網路</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">攝影機</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">影像解析度</translation>
 <translation id="1972984168337863910">展開檔案意見回饋面板</translation>
 <translation id="1995337122023280937">前往檔案位置</translation>
+<translation id="1999709132469742660">所有網址都能存取檔案</translation>
 <translation id="2001796770603320721">在雲端硬碟中管理</translation>
 <translation id="2009067268969781306">若將硬碟格式化，其中儲存的所有資料都將遭到刪除。這項操作無法復原。</translation>
 <translation id="2025955442973426285">蒂格里亞文</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">喝咖啡的人</translation>
 <translation id="2251368349685848079">從垃圾桶還原</translation>
 <translation id="2282155092769082568">自動設定網址：</translation>
+<translation id="2284767815536050991">外接儲存裝置</translation>
 <translation id="2288278176040912387">唱機</translation>
 <translation id="2291538123825441971">正在開啟 <ph name="NUMBER_OF_FILES" /> 個檔案。</translation>
 <translation id="2303301624314357662">正在開啟「<ph name="FILE_NAME" />」。</translation>
@@ -341,6 +345,7 @@
 <translation id="4057991113334098539">啟用中...</translation>
 <translation id="4092890906744441904">愛爾蘭文</translation>
 <translation id="4124935795427217608">獨角獸</translation>
+<translation id="4157569377477607576">根據管理員政策，建議你不要：</translation>
 <translation id="4159731583141908892">已移動 <ph name="FILE_NAME" />。</translation>
 <translation id="4176286497474237543">立即清空垃圾桶</translation>
 <translation id="4186579485882418952">啟用文件離線版</translation>
@@ -502,6 +507,7 @@
 <translation id="5323213332664049067">拉丁美洲</translation>
 <translation id="5330145655348521461">這些檔案已在其他電腦上開啟。前往 <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 查看。</translation>
 <translation id="5330512191124428349">取得資訊</translation>
+<translation id="5337538975554986899">所有網址都能存取檔案，但 <ph name="NON_RESTRICTED_DESTINATIONS" /> 除外</translation>
 <translation id="535792325654997756">人與貓</translation>
 <translation id="5358764674931277">影格速率</translation>
 <translation id="5363339716524495120">輸入語言為中文</translation>
@@ -526,6 +532,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> 圖片</translation>
 <translation id="5534520101572674276">正在計算大小</translation>
 <translation id="554153475311314364">希臘文 (音譯)</translation>
+<translation id="5580591966435005537">虛擬機器</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">標點符號寬度為全形</translation>
 <translation id="5602622065581044566">保加利亞文搭配拼音鍵盤</translation>
@@ -586,6 +593,7 @@
 <translation id="61118516107968648">CSV 文字</translation>
 <translation id="6129953537138746214">空格</translation>
 <translation id="6133173853026656527">正在移動 <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">管理員會監控：</translation>
 <translation id="613750717151263950">日文搭配美式鍵盤</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />，沒有網路連線</translation>
 <translation id="6146563240635539929">影片</translation>
@@ -606,6 +614,7 @@
 <translation id="6287852322318138013">選取要用來開啟這個檔案的應用程式</translation>
 <translation id="6295542640242147836">鎖定 SIM 卡</translation>
 <translation id="6296410173147755564">PUK 無效</translation>
+<translation id="6308243004861726558">這是機密檔案，因此受到管理員政策限制，適用範圍包括以下檔案存取和傳輸操作。</translation>
 <translation id="6312403991423642364">不明的網路錯誤</translation>
 <translation id="6317608858038767920">自訂網域名稱伺服器 <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> 封存檔</translation>
@@ -834,6 +843,7 @@
 <translation id="8250920743982581267">文件</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8261561378965667560">中文 (行列)</translation>
+<translation id="8262872909443689080">管理員政策</translation>
 <translation id="8264024885325823677">這項設定是由系統管理員管理。</translation>
 <translation id="8269755669432358899">收合檔案意見回饋面板</translation>
 <translation id="8280151743281770066">亞美尼亞文 (拼音)</translation>
@@ -931,6 +941,7 @@
 <translation id="9100610230175265781">請提供通關密語</translation>
 <translation id="9110990317705400362">我們不斷努力提升網路瀏覽的安全性。過去，任何網站都可以提示你在瀏覽器中新增擴充功能。在最新版本的 Google Chrome 中，你必須統一透過「擴充功能」頁面新增擴充功能，讓 Chrome 確實瞭解你要安裝的各項擴充功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">解除鎖定</translation>
+<translation id="9116909380156770361">檔案傳送到<ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">轉碼器</translation>
 <translation id="9130775360844693113">「<ph name="DESTINATION_NAME" />」的成員將可存取這些項目。</translation>
 <translation id="9131598836763251128">選取一或多個檔案</translation>
@@ -952,6 +963,7 @@
 <translation id="943972244133411984">修改者</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="947144732524271678">已選取「<ph name="FROM_ENTRY_NAME" />」至「<ph name="TO_ENTRY_NAME" />」範圍內的 <ph name="ENTRY_COUNT" /> 個項目。</translation>
+<translation id="954194396377670556">根據管理員政策，你無法：</translation>
 <translation id="965477715979482472">英文 (南非)</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="988685240266037636">名稱為「<ph name="FILE_NAME" />」的檔案已經存在，你要取代這個檔案嗎？</translation>

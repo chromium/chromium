@@ -34,7 +34,6 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um Chrome Dino in Chrome zu spielen</translation>
 <translation id="1058479211578257048">Karten werden gespeichert…</translation>
 <translation id="10614374240317010">Nie speichern für…</translation>
-<translation id="1062160989074299343">Prc10 (Umschlag)</translation>
 <translation id="106701514854093668">Desktop-Lesezeichen</translation>
 <translation id="1068672505746868501">Seiten auf <ph name="SOURCE_LANGUAGE" /> nie übersetzen</translation>
 <translation id="1070853536588271387">Hybridfahrzeuge und Fahrzeuge mit alternativem Antrieb</translation>
@@ -137,7 +136,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1314509827145471431">Bindung rechts</translation>
 <translation id="1318023360584041678">In Tabgruppe gespeichert</translation>
 <translation id="1319245136674974084">Für diese App nicht mehr nachfragen</translation>
-<translation id="1320233736580025032">Prc1 (Umschlag)</translation>
 <translation id="1322083935398004629">Politik</translation>
 <translation id="132301787627749051">Nach Bild aus Zwischenablage suchen</translation>
 <translation id="1323433172918577554">Mehr anzeigen</translation>
@@ -238,7 +236,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1521159554480556801">Faser- und Textilkunst</translation>
 <translation id="1521655867290435174">Google Tabellen</translation>
 <translation id="1527263332363067270">Warten auf Verbindung…</translation>
-<translation id="1529521330346880926">10x15 (Umschlag)</translation>
 <translation id="1529789484829130889">Fach 8</translation>
 <translation id="1530707389502320859">Die Website, die du besuchen möchtest, ist möglicherweise eine Fälschung. Angreifer kopieren manchmal Websites und nehmen kleine, unauffällige Änderungen an der URL vor.</translation>
 <translation id="1531205177818805254">Exec</translation>
@@ -477,7 +474,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2166049586286450108">Vollständiger Administratorzugriff</translation>
 <translation id="2166378884831602661">Diese Website kann keine sichere Verbindung bereitstellen</translation>
 <translation id="2168151236314517198">Die Administratorrichtlinie blockiert das Drucken dieses Inhalts</translation>
-<translation id="2169984857010174799">Kaku2 (Umschlag)</translation>
 <translation id="2181821976797666341">Richtlinien</translation>
 <translation id="2183608646556468874">Telefonnummer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 Adresse}other{# Adressen}}</translation>
@@ -522,10 +518,8 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2292556288342944218">Deine Internetverbindung ist gesperrt</translation>
 <translation id="2293443924986248631">Wenn diese Funktion aktiviert ist, können Websites keine Cookies nutzen, die deine Webaktivitäten erfassen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="2295290966866883927">URLs von Seiten, die du besuchst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie werden beispielsweise gescannt, um unsichere Websites zu identifizieren.</translation>
-<translation id="2297722699537546652">B5 (Umschlag)</translation>
 <translation id="2298855485018661510">Schaltfläche zum Verwalten von Cookies – drücke die Eingabetaste, um deine Cookie-Einstellungen in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="2300306941146563769">Nicht hochgeladen</translation>
-<translation id="2310021320168182093">Chou2 (Umschlag)</translation>
 <translation id="2316159751672436664">Bedienungshilfen in den Chrome OS-Einstellungen personalisieren</translation>
 <translation id="2316887270356262533">Es werden weniger als 1 MB Speicherplatz freigegeben. Manche Websites werden beim nächsten Öffnen eventuell langsamer geladen.</translation>
 <translation id="2317259163369394535">Für <ph name="DOMAIN" /> sind ein Nutzername und ein Passwort erforderlich.</translation>
@@ -643,7 +637,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
             <ph name="LIST_ITEM" />Cookies und Websitedaten
             <ph name="LIST_ITEM" />In Formulare eingegebene Informationen
           <ph name="END_LIST" /></translation>
-<translation id="2618023639789766142">C10 (Umschlag)</translation>
 <translation id="2625385379895617796">Deine Uhr geht vor</translation>
 <translation id="262745152991669301">Darf nachfragen, wenn sie eine Verbindung mit USB-Geräten herstellen möchte</translation>
 <translation id="2629325967560697240">Schalte für größtmögliche Sicherheit in Chrome das <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />erweiterte Safe Browsing<ph name="END_ENHANCED_PROTECTION_LINK" /> ein</translation>
@@ -715,7 +708,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2835170189407361413">Formular leeren</translation>
 <translation id="2839032553903800133">Benachrichtigungen blockiert</translation>
 <translation id="2839501879576190149">Warnung: Gefälschte Website</translation>
-<translation id="2850739647070081192">Invite (Umschlag)</translation>
 <translation id="2854764410992194509">Internetanbieter (ISPs)</translation>
 <translation id="2856444702002559011">Hacker könnten versuchen, deine Daten von <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> zu stehlen, zum Beispiel Passwörter, Nachrichten oder Kreditkartendaten. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Diese Website zeigt aufdringliche oder irreführende Werbung an.</translation>
@@ -780,7 +772,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="301521992641321250">Automatisch blockiert</translation>
 <translation id="3016780570757425217">Deinen Standort abrufen</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" /> – drücke die Tabulatortaste und dann die Eingabetaste, um den Vorschlag zu entfernen.</translation>
-<translation id="3023071826883856138">You4 (Umschlag)</translation>
 <translation id="3024663005179499861">Falscher Richtlinientyp</translation>
 <translation id="3029752078111257850">Internationale Nachrichten</translation>
 <translation id="3037177537145227281">Preis wird beobachtet</translation>
@@ -788,7 +779,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3041612393474885105">Zertifikatinformationen</translation>
 <translation id="305162504811187366">Chrome Remote Desktop-Verlauf, einschließlich Zeitstempeln, Hosts und Client-Sitzungs-IDs</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> Preisnachlass auf das Produkt „<ph name="PRODUCT_NAME" />“</translation>
-<translation id="3060227939791841287">C9 (Umschlag)</translation>
 <translation id="3061707000357573562">Patchdienst</translation>
 <translation id="306573536155379004">Spiel gestartet.</translation>
 <translation id="3068991664510324412">Computer- und Videospiele</translation>
@@ -944,7 +934,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3452404311384756672">Abrufintervall: </translation>
 <translation id="3453962258458347894">Anzahl der Wiederholungen</translation>
 <translation id="3454555520521576458">Größe kann geändert werden</translation>
-<translation id="3456231139987291353">Number-11 (Umschlag)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> möchte Texte und Bilder aus der Zwischenablage abrufen</translation>
 <translation id="3461824795358126837">Textmarker</translation>
 <translation id="3462200631372590220">Erweiterte Informationen ausblenden</translation>
@@ -985,7 +974,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3584299510153766161">Doppelte Lochung unten</translation>
 <translation id="3586931643579894722">Details ausblenden</translation>
 <translation id="3587738293690942763">Mitte</translation>
-<translation id="3592413004129370115">Italian (Umschlag)</translation>
 <translation id="3595645257662173296">Welche Hinweise unterstützen dies?</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Du kannst deine Gruppe jederzeit zurücksetzen. Es dauert ungefähr einen Tag, einer neuen Gruppe beizutreten.}=1{Du kannst deine Gruppe jederzeit zurücksetzen. Es dauert ungefähr einen Tag, einer neuen Gruppe beizutreten.}other{Du kannst deine Gruppe jederzeit zurücksetzen. Es dauert {NUM_DAYS} Tage, einer neuen Gruppe beizutreten.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1008,7 +996,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3633738897356909127">Schaltfläche „Chrome aktualisieren“ – drücke die Eingabetaste, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>
 <translation id="3634530185120165534">Fach 5</translation>
 <translation id="3634567936866541746">Du hast dein Passwort gerade auf einer verdächtigen Seite eingegeben. Chrome empfiehlt, deine gespeicherten Passwörter zu überprüfen, um deine Konten besser zu schützen.</translation>
-<translation id="3637033245385760976">Du musst die Chrome-Benachrichtigungen aktivieren. Das geht in den <ph name="NOTIFICATION_SETTINGS" />.</translation>
 <translation id="3637662659967048211">In Google-Konto speichern</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Anwendung:</translation>
@@ -1045,7 +1032,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proxy, Firewall und DNS-Konfiguration prüfen<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">Anwendungen, die diesen Fehler verursachen können, sind Antivirensoftware, Firewalls, Webfilter- oder Proxy-Software.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Präsentation in Google Präsentationen zu erstellen</translation>
-<translation id="373042150751172459">B4 (Umschlag)</translation>
 <translation id="3733139489341305600">Selbstfahrende Autos</translation>
 <translation id="3736520371357197498">Wenn du die Sicherheitsrisiken kennst, kannst du <ph name="BEGIN_LINK" />diese unsichere Website aufrufen<ph name="END_LINK" />, bevor die gefährlichen Programme entfernt wurden.</translation>
 <translation id="3738166223076830879">Dein Browser wird von deinem Administrator verwaltet.</translation>
@@ -1075,7 +1061,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3789841737615482174">Installieren</translation>
 <translation id="3793574014653384240">Anzahl und Ursachen der kürzlich aufgetretenen Abstürze</translation>
 <translation id="3795344968043407227">Indie-Rock und Alternative</translation>
-<translation id="3797522431967816232">Prc3 (Umschlag)</translation>
 <translation id="3799805948399000906">Gewünschte Schriftart</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3807270098669886186">Telekommunikationsunternehmen</translation>
@@ -1149,7 +1134,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063924980214801036">Geräteentsperrung verwenden, um Karten schneller zu bestätigen</translation>
 <translation id="4067098466788473230">Stipendien</translation>
-<translation id="4067263367174615723">C1 (Umschlag)</translation>
 <translation id="4067947977115446013">Gültige Adresse hinzufügen</translation>
 <translation id="4072193657607981494">Richtlinien werden geladen</translation>
 <translation id="4072486802667267160">Bei der Verarbeitung deiner Bestellung ist ein Fehler aufgetreten. Bitte versuche es noch einmal.</translation>
@@ -1209,7 +1193,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4213305257324635756">Animationsfilme</translation>
 <translation id="4213500579045346575">Bodybuilding</translation>
 <translation id="4214357935346142455">Profil der Anmeldeseite</translation>
-<translation id="4215751373031079683">7x9 (Umschlag)</translation>
 <translation id="4220128509585149162">Abstürze</translation>
 <translation id="422022731706691852">Hacker könnten auf <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> versuchen, dich zur Installation von Programmen zu bewegen, die sich nachteilig auf deine Browsernutzung auswirken. Dabei kann zum Beispiel deine Startseite geändert werden oder es erscheint zusätzliche Werbung auf von dir besuchten Websites.<ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;Schritt 1: Beim Portal anmelden&lt;/h4&gt;
@@ -1253,7 +1236,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="42981349822642051">Maximieren</translation>
 <translation id="4300675098767811073">Mehrfache Lochung rechts</translation>
 <translation id="4302514097724775343">Tippe auf den Dino, um die Wiedergabe zu starten</translation>
-<translation id="4302965934281694568">Chou3 (Umschlag)</translation>
 <translation id="4305666528087210886">Zugriff auf die Datei nicht möglich</translation>
 <translation id="4306529830550717874">Adresse speichern?</translation>
 <translation id="4306812610847412719">Zwischenablage</translation>
@@ -1286,7 +1268,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4358461427845829800">Zahlungsmethoden verwalten…</translation>
 <translation id="4359160567981085931">Du hast dein Passwort gerade auf einer verdächtigen Website eingegeben. Chrome kann dir helfen. Wenn du dein Passwort ändern und Google darüber informieren möchtest, dass dein Konto gefährdet sein könnte, klicke auf "Konto schützen".</translation>
 <translation id="4363222835916186793">Benachrichtigungen zu diesem Produkt wurden deaktiviert</translation>
-<translation id="4367563149485757821">Number-12 (Umschlag)</translation>
 <translation id="437040971055499437">Sicherheitshinweis aufgetreten</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Erwarteter <ph name="VALUE_TYPE" />-Wert</translation>
@@ -1333,10 +1314,8 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4506599922270137252">Kontakt mit dem Systemadministrator aufnehmen</translation>
 <translation id="450710068430902550">Datenfreigabe an Administrator</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um diese Seite mit Google Übersetzer übersetzen zu lassen</translation>
-<translation id="4510487217173779431">Chou4 (Umschlag)</translation>
 <translation id="4514308731478712184">„Recherchen“ deaktivieren</translation>
 <translation id="4515275063822566619">Karten und Adressen stammen aus Chrome und aus deinem Google-Konto (<ph name="ACCOUNT_EMAIL" />). Du kannst sie in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> verwalten.</translation>
-<translation id="4517607026994743406">Comm-10 (Umschlag)</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521916730539354575">Linkes Fach</translation>
 <translation id="4522570452068850558">Details</translation>
@@ -1353,7 +1332,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4566017918361049074">Outdoor</translation>
 <translation id="4567686777917670400">Dein Administrator kann die Browsereinstellungen per Remotezugriff ändern. Aktivitäten auf diesem Gerät können auch außerhalb von Chromium verwaltet werden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Lieferung</translation>
-<translation id="4579056131138995126">Personal (Umschlag)</translation>
 <translation id="4582204425268416675">Karte entfernen</translation>
 <translation id="4587425331216688090">Adresse aus Chrome entfernen?</translation>
 <translation id="459089498662672729">Die Administratorrichtlinie empfiehlt, keine Inhalte aus <ph name="ORIGIN_NAME" /> an dieser Stelle einzufügen</translation>
@@ -1362,7 +1340,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4597348597567598915">Größe 8</translation>
 <translation id="4598556348158889687">Speicherplatzverwaltung</translation>
 <translation id="4600084978141515058">Vegane Küche</translation>
-<translation id="4600854749408232102">C6/C5 (Umschlag)</translation>
 <translation id="4602465984861132303">Bowling</translation>
 <translation id="4606870351894164739">Wirkungsvoll</translation>
 <translation id="4607603470419975064">Schaltfläche „Chrome-Tipps aufrufen“ – drücke die Eingabetaste, um mehr über die Funktionen von Chrome zu erfahren</translation>
@@ -1392,7 +1369,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="467809019005607715">Google Präsentationen</translation>
 <translation id="4682496302933121474">Seite übersetzen?</translation>
 <translation id="468314109939257734">Virtuelle Kartennummer anzeigen</translation>
-<translation id="4691835149146451662">Architecture-A (Umschlag)</translation>
 <translation id="4692623383562244444">Suchmaschinen</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Seite</translation>
@@ -1407,7 +1383,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4726672564094551039">Richtlinien neu laden</translation>
 <translation id="4728558894243024398">Plattform</translation>
 <translation id="4731638775147756694">Diese App wurde von deinem Administrator blockiert</translation>
-<translation id="4731967714531604179">Prc2 (Umschlag)</translation>
 <translation id="4733082559415072992"><ph name="URL" /> möchte den Standort deines Geräts nutzen</translation>
 <translation id="4736491186715342415">Kraftfahrzeuge</translation>
 <translation id="4736825316280949806">Chromium neu starten</translation>
@@ -1510,7 +1485,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4976702386844183910">Zuletzt besucht am <ph name="DATE" /></translation>
 <translation id="498323057460789381">Schemavalidierungsfehler: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Mikrofon verwenden?</translation>
-<translation id="4984339528288761049">Prc5 (Umschlag)</translation>
 <translation id="4989163558385430922">Alle ansehen</translation>
 <translation id="4989542687859782284">Nicht verfügbar</translation>
 <translation id="4989809363548539747">Dieses Plug-in wird nicht unterstützt</translation>
@@ -1585,7 +1559,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5146995429444047494">Benachrichtigungen von <ph name="ORIGIN" /> werden blockiert</translation>
 <translation id="514704532284964975"><ph name="URL" /> möchte Informationen auf NFC-Geräten abrufen und ändern, die du mit deinem Smartphone berührst</translation>
 <translation id="5148809049217731050">Vorderseite nach oben</translation>
-<translation id="515292512908731282">C4 (Umschlag)</translation>
 <translation id="5153314898060540200">Hardrock und Progressive Rock</translation>
 <translation id="5158275234811857234">Titelseite</translation>
 <translation id="5159010409087891077">Seite in einem neuen Inkognitofenster öffnen (⇧⌘N)</translation>
@@ -1624,7 +1597,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5250209940322997802">"Mit Netzwerk verbinden"</translation>
 <translation id="52517543715119994">Informationen zu Chrome-Funktionen</translation>
 <translation id="5251803541071282808">Cloud</translation>
-<translation id="5252000469029418751">C7 (Umschlag)</translation>
 <translation id="5254043433801397071">Druckinhalte optimieren</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Trotzdem aufnehmen</translation>
@@ -1706,7 +1678,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5470230812924696184">Hoch- und Tiefbau</translation>
 <translation id="5470861586879999274">&amp;Bearbeiten wiederholen</translation>
 <translation id="5471337644440862957">Komödien</translation>
-<translation id="5478437291406423475">B6/C4 (Umschlag)</translation>
 <translation id="5481076368049295676">Diese Inhalte versuchen möglicherweise, gefährliche Software auf deinem Gerät zu installieren, durch die deine Informationen gestohlen oder gelöscht werden. <ph name="BEGIN_LINK" />Trotzdem anzeigen<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Gültige Adresse hinzufügen</translation>
 <translation id="5485973315555778056">Cloudgerät</translation>
@@ -1728,7 +1699,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um die Bedienungshilfen in den Chrome OS-Einstellungen zu personalisieren</translation>
 <translation id="5528532273234423708">Heimautomatisierung</translation>
 <translation id="55293785478302737">Mehrere Heftklammern</translation>
-<translation id="553484882784876924">Prc6 (Umschlag)</translation>
 <translation id="5535133333442455806">Schaltfläche "Browserdaten löschen" – drücke die Eingabetaste, um deinen Browserverlauf, deine Cookies und andere Daten zu löschen sowie den Cache zu leeren</translation>
 <translation id="5536214594743852365">Abschnitt "<ph name="SECTION" />" einblenden</translation>
 <translation id="5539243836947087108">Raft</translation>
@@ -1779,7 +1749,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5653432653077411130">Wasserversorgung und -aufbereitung</translation>
 <translation id="5654927323611874862">ID für hochgeladenen Absturzbericht:</translation>
 <translation id="5659593005791499971">E-Mail</translation>
-<translation id="5663614846592581799">9x11 (Umschlag)</translation>
 <translation id="5663955426505430495">Der Administrator dieses Geräts hat Erweiterungen für zusätzliche Funktionen installiert. Diese Erweiterungen können auf einige deiner Daten zugreifen.</translation>
 <translation id="5666606186680807225">Strände und Inseln</translation>
 <translation id="5675650730144413517">Diese Seite funktioniert nicht</translation>
@@ -1799,7 +1768,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="571510845185711675">Tierärzte</translation>
 <translation id="5720705177508910913">Aktueller Nutzer</translation>
 <translation id="5723287205918986743">Verteidigungsindustrie</translation>
-<translation id="5728056243719941842">C5 (Umschlag)</translation>
 <translation id="5730040223043577876">Chrome empfiehlt, dein Passwort zurückzusetzen, wenn du es auf anderen Websites verwendet hast.</translation>
 <translation id="5736165827969430182">Metallindustrie und Bergbau</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Karte in deinem Google-Konto speichern}other{Karten in deinem Google-Konto speichern}}</translation>
@@ -1910,7 +1878,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6032524144326295339">Ablage 2</translation>
 <translation id="6032955021262906325">Bindung links</translation>
 <translation id="6034000775414344507">Hellgrau</translation>
-<translation id="6034283069659657473">10x14 (Umschlag)</translation>
 <translation id="6034514109191629503">Akkordeonfaltung</translation>
 <translation id="6039846035001940113">Falls das Problem weiterhin besteht, wende dich an den Inhaber der Website.</translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -2040,7 +2007,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6401136357288658127">Diese Richtlinie ist veraltet. Verwende stattdessen die Richtlinie "<ph name="NEW_POLICY" />".</translation>
 <translation id="6404511346730675251">Lesezeichen bearbeiten</translation>
 <translation id="6405181733356710802">Weiter zu <ph name="APP_NAME" />?</translation>
-<translation id="6406765186087300643">C0 (Umschlag)</translation>
 <translation id="6410264514553301377">Ablaufdatum und CVC für <ph name="CREDIT_CARD" /> eingeben</translation>
 <translation id="6415778972515849510">Mithilfe von Chromium kannst du dein Google-Konto schützen und dein Passwort ändern.</translation>
 <translation id="6425092077175753609">Material</translation>
@@ -2052,7 +2018,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6433797564277305076">Mithilfe der Geräteentsperrung kannst du deine Karten ab sofort schneller bestätigen</translation>
 <translation id="6440503408713884761">Ignoriert</translation>
 <translation id="6443406338865242315">Welche Erweiterungen und Plug-ins du installiert hast</translation>
-<translation id="6446163441502663861">Kahu (Umschlag)</translation>
 <translation id="6446608382365791566">Weitere Informationen hinzufügen</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6451458296329894277">Erneute Formular-Übermittlung bestätigen</translation>
@@ -2092,18 +2057,15 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6569060085658103619">Dies ist eine Erweiterungsseite</translation>
 <translation id="6569366777234823130">Dramen</translation>
 <translation id="6573200754375280815">Doppelte Lochung rechts</translation>
-<translation id="6578796323535178455">C2 (Umschlag)</translation>
 <translation id="657902945730878902">Zeichnen und Malen</translation>
 <translation id="6579630537141957243">MIDI-Gerät verbinden?</translation>
 <translation id="6579990219486187401">Hellrosa</translation>
-<translation id="6583674473685352014">B6 (Umschlag)</translation>
 <translation id="6587182488465657433">Chrome hat das Passwort, das du gerade verwendet hast, in einer Datenpanne gefunden. Wir empfehlen dir, es jetzt zu ändern, und dann deine gespeicherten Passwörter zu prüfen, um deine Konten besser zu schützen.</translation>
 <translation id="6587923378399804057">Von dir kopierter Link</translation>
 <translation id="6591833882275308647">Dein <ph name="DEVICE_TYPE" /> wird nicht verwaltet</translation>
 <translation id="6592952801936330159">Schaltfläche zum Verwalten der Website-Einstellungen – drücke die Eingabetaste, um Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="6596325263575161958">Verschlüsselungsoptionen</translation>
 <translation id="6599642189720630047">Beobachtete Produkte</translation>
-<translation id="6609880536175561541">Prc7 (Umschlag)</translation>
 <translation id="6611723696964473273">Wirtschaftsnachrichten</translation>
 <translation id="6612010098632894193">Onlinevideos</translation>
 <translation id="6615297766614333076">Stapelfach 2</translation>
@@ -2245,7 +2207,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6979440798594660689">Stummschalten (Standard)</translation>
 <translation id="6989763994942163495">Erweiterte Einstellungen anzeigen</translation>
 <translation id="6992499368826755835">Automobilbranche</translation>
-<translation id="6993898126790112050">6x9 (Umschlag)</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> immer übersetzen</translation>
 <translation id="6999969238895751684">Unterhaltungsindustrie</translation>
 <translation id="7003335073762455340">Du beobachtest dieses Produkt. Diese Seite wurde in „<ph name="LAST_BOOKMARKS_FOLDER" />“ gespeichert.</translation>
@@ -2299,7 +2260,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7138472120740807366">Lieferoption</translation>
 <translation id="7139892792842608322">Hauptfach</translation>
 <translation id="714064300541049402">Seite 2 – X-Verschiebung des Bilds</translation>
-<translation id="7152423860607593928">Number-14 (Umschlag)</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}other{<ph name="PAYMENT_METHOD_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}}</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7156870133441232244">Der Server sollte auf TLS 1.2 oder höher aktualisiert werden.</translation>
@@ -2448,7 +2408,6 @@ Weitere Details:
 <translation id="7512685745044087310">Diese Richtlinie kann nicht auf „Wahr“ eingestellt und gleichzeitig verbindlich sein. Deshalb wurde sie zu „Empfohlen“ geändert.</translation>
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7518003948725431193">Für folgende Webadresse wurde keine Webseite gefunden: <ph name="URL" />.</translation>
-<translation id="7520302887438682816">C8 (Umschlag)</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Abschnitt "<ph name="SECTION" />" ausgeblendet</translation>
 <translation id="7523408071729642236">Produktion/Fertigung</translation>
@@ -2456,7 +2415,6 @@ Weitere Details:
 <translation id="7529884293139707752">Heimunterricht</translation>
 <translation id="7535087603100972091">Wert</translation>
 <translation id="7537536606612762813">Verbindlich</translation>
-<translation id="7538364083937897561">A2 (Umschlag)</translation>
 <translation id="7542403920425041731">Nach erfolgter Bestätigung werden die Kartendetails an diese Website weitergegeben.</translation>
 <translation id="7542995811387359312">Die Funktion zur automatischen Ausfüllung der Kreditkartendaten ist deaktiviert, da dieses Formular keine sichere Verbindung nutzt.</translation>
 <translation id="7548892272833184391">Verbindungsfehler beheben</translation>
@@ -2531,7 +2489,6 @@ Weitere Details:
 <translation id="7687451951329798396">Was sagen andere Quellen?</translation>
 <translation id="7693583928066320343">Empfangene Seitenreihenfolge</translation>
 <translation id="7696089921647603491">Classicrock und Oldies</translation>
-<translation id="7697066736081121494">Prc8 (Umschlag)</translation>
 <translation id="769721561045429135">Derzeit können bestimmte Karten nur auf diesem Gerät verwendet werden. Klicke auf "Weiter", um dir die Karten anzusehen.</translation>
 <translation id="7698864304447945242">Google Play-Dienste für AR aktualisieren?</translation>
 <translation id="7699293099605015246">Momentan sind keine Artikel verfügbar</translation>
@@ -2562,7 +2519,6 @@ Weitere Details:
 <translation id="7763386264682878361">Zahlungsmanifest-Parser</translation>
 <translation id="7764225426217299476">Adresse hinzufügen</translation>
 <translation id="7766518757692125295">Skirt</translation>
-<translation id="7770259615151589601">Designated-Long</translation>
 <translation id="7773005668374414287">Gleiche Reihenfolge Vorderseite nach oben</translation>
 <translation id="7791011319128895129">Unveröffentlicht</translation>
 <translation id="7791196057686275387">Bündel</translation>
@@ -2579,7 +2535,6 @@ Weitere Details:
 <translation id="7815407501681723534"><ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> für "<ph name="SEARCH_STRING" />" gefunden</translation>
 <translation id="7822320754433038727">Jagen und Schießen</translation>
 <translation id="782886543891417279">Unter Umständen musst du die Anmeldeseite des verwendeten WLAN-Netzwerken (<ph name="WIFI_NAME" />) aufrufen.</translation>
-<translation id="7836231406687464395">Postfix (Umschlag)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Keine}=1{1 App (<ph name="EXAMPLE_APP_1" />)}=2{2 Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7862185352068345852">Website verlassen?</translation>
@@ -2594,7 +2549,6 @@ Weitere Details:
 <translation id="7887885240995164102">Bild im Bild aktivieren</translation>
 <translation id="7888575728750733395">Rendering Intent für Druck</translation>
 <translation id="7894280532028510793">Wenn die URL keinen Tippfehler enthält, <ph name="BEGIN_LINK" />kannst du die Netzwerkdiagnose durchführen<ph name="END_LINK" />.</translation>
-<translation id="7904208859782148177">C3 (Umschlag)</translation>
 <translation id="7927971017714848357">Grundstücke und Ländereien</translation>
 <translation id="793209273132572360">Adresse aktualisieren?</translation>
 <translation id="7932579305932748336">Im­prä­g­nie­ren</translation>
@@ -2657,7 +2611,6 @@ Weitere Details:
 <translation id="8058009102480785916">Nahrungsmittelindustrie</translation>
 <translation id="8067872629359326442">Du hast dein Passwort gerade auf einer verdächtigen Website eingegeben. Chromium kann dir helfen. Wenn du dein Passwort ändern und Google darüber informieren möchtest, dass dein Konto gefährdet sein könnte, klicke auf "Konto schützen".</translation>
 <translation id="8070439594494267500">App-Symbol</translation>
-<translation id="8074253406171541171">10x13 (Umschlag)</translation>
 <translation id="8075736640322370409">Schnell eine neue Google-Tabelle erstellen</translation>
 <translation id="8075898834294118863">Website-Einstellungen verwalten</translation>
 <translation id="8076492880354921740">Tabs</translation>
@@ -2701,13 +2654,11 @@ Weitere Details:
 <translation id="8201077131113104583">Ungültige Update-URL für Erweiterung mit der ID "<ph name="EXTENSION_ID" />"</translation>
 <translation id="8202097416529803614">Zusammenfassung der Bestellung</translation>
 <translation id="8202370299023114387">Konflikt</translation>
-<translation id="8206978196348664717">Prc4 (Umschlag)</translation>
 <translation id="8210604850413485128">Webhosting</translation>
 <translation id="8211406090763984747">Verbindung ist sicher</translation>
 <translation id="8217240300496046857">Websites können keine Cookies verwenden, die deine Browserdaten über mehrere Websites hinweg erfassen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="8217748145574471584">Personalwesen</translation>
 <translation id="8218327578424803826">Zugewiesener Standort: </translation>
-<translation id="8220146938470311105">C7/C6 (Umschlag)</translation>
 <translation id="8225771182978767009">Die Person, die diesen Computer eingerichtet hat, hat diese Website gesperrt.</translation>
 <translation id="8228419419708659934">Zwei-Seiten-Ansicht</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2831,7 +2782,6 @@ Weitere Details:
 <translation id="8559762987265718583">Es kann keine private Verbindung zu <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> hergestellt werden, weil Datum und Uhrzeit deines Geräts falsch sind (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Getrennte Dokumente/nicht sortierte Kopien</translation>
 <translation id="8564985650692024650">Chromium empfiehlt, dein Passwort für <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> zurückzusetzen, wenn du es auf anderen Websites verwendet hast.</translation>
-<translation id="8573969211731659953">Du wirst über Preisnachlässe informiert. Das lässt sich in den <ph name="NOTIFICATION_SETTINGS" /> ändern.</translation>
 <translation id="8576310925653847813">Heimkinosysteme</translation>
 <translation id="8577348305244205642">Virtuelle Karte nicht verfügbar</translation>
 <translation id="858637041960032120">Weitere Nummer
@@ -3034,7 +2984,6 @@ Weitere Details:
 <translation id="9154194610265714752">Aktualisiert</translation>
 <translation id="9155211586651734179">Verbundene Audio-Peripheriegeräte</translation>
 <translation id="9157595877708044936">Einrichtung läuft...</translation>
-<translation id="9158625974267017556">C6 (Umschlag)</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Websites die Abfrage gespeicherter Zahlungsmethoden erlauben</translation>
 <translation id="9169664750068251925">Auf dieser Website immer blockieren</translation>

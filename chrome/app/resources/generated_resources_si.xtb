@@ -1620,6 +1620,7 @@
 <translation id="2468178265280335214">ස්පර්ශ පුවරු අනුචලන ත්වරණය</translation>
 <translation id="2468205691404969808">ඔබ එම පිටුවලට නොපිවිසුණත්, ඔබගේ අභිරුචි මතක තබා ගැනීමට කුකී භාවිතා කරයි</translation>
 <translation id="2468402215065996499">ටමගොචි</translation>
+<translation id="2468470085922875120">ඔබ අනුමාන කිරීමට අපහසු මුරපද භාවිතා කරයි</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - ටැබ 1}one{<ph name="GROUP_TITLE" /> - ටැබ #}other{<ph name="GROUP_TITLE" /> - ටැබ #}}</translation>
 <translation id="2469141124738294431">VM තත්ත්වය</translation>
 <translation id="2469259292033957819">ඔබට සුරැකි මුරපද කිසිවක් නැත.</translation>
@@ -1957,6 +1958,7 @@
 <translation id="2783321960289401138">කෙටිමඟ තනන්න...</translation>
 <translation id="2783829359200813069">සංකේතන ආකාර තෝරන්න</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> සමග ඔබේ ආරක්ෂක යතුර භාවිත කරන්න</translation>
+<translation id="2785267875302712148">මුරපද පරීක්ෂාව</translation>
 <translation id="2785873697295365461">ගොනු සූචක</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">ස්ථානීය බ්‍රවුස් කිරීමේ දත්ත තබා ගන්න (පිටුසන්, මුරපද, ඉතිහාසය, ආදිය)</translation>
@@ -2032,6 +2034,7 @@
 <translation id="2844169650293029770">USB-C උපාංගය (වම් පස ඉදිරි තොට)</translation>
 <translation id="2844809857160214557">මුද්‍රණ වැඩ බලන්න සහ කළමනා කරන්න</translation>
 <translation id="2845382757467349449">හැමවිට පිටුසලකුණු බාර් එක පෙන්වන්න</translation>
+<translation id="284581348330507117">අනන්‍ය මුරපද තනන්න</translation>
 <translation id="284805635805850872">හානිකර මෘදුකාංග ඉවත් කරන්න ද?</translation>
 <translation id="2849035674501872372">සොයන්න</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2183,6 +2186,7 @@
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" ස්ථාපන කිරීමට ඔබේ පරිපාලකයාට ඉල්ලීමක් යවන්නේද?</translation>
 <translation id="2987620471460279764">අනෙකුත් උපාංගයෙන් බෙදා ගත් පාඨය</translation>
 <translation id="2988018669686457659">අමරත විදැහීම</translation>
+<translation id="2988328607561082373">ඔබ මුරපද කිසිවක් යළි භාවිතා නොකරයි</translation>
 <translation id="2989123969927553766">මූසික අනුචලන ත්වරණය</translation>
 <translation id="2989474696604907455">අමුණා නැත</translation>
 <translation id="2989786307324390836">DER-සංකේතිත ද්වීමය, තනි සහතිකය</translation>
@@ -2211,6 +2215,7 @@
 <translation id="3009178788565917040">ප්‍රතිදානය</translation>
 <translation id="3009300415590184725">ජංගම දත්ත සේවා පිහිටුම් ක්‍රියාවලිය අවලංගු කිරීමට අවශ්‍ය බව සහතිකද?</translation>
 <translation id="3009779501245596802">සුචිගත කළ දත්ත සමුදාය</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{ඔබේ මුරපද ශක්තිමත් බව පෙනේ}=1{{COUNT} දුර්වල මුරපදයක්}one{දුර්වල මුරපද {COUNT}ක්}other{දුර්වල මුරපද {COUNT}ක්}}</translation>
 <translation id="3010279545267083280">රහස්වචනය මකන ලදි</translation>
 <translation id="3010389206479238935">බල කළ විවෘත කිරීම</translation>
 <translation id="3011384993885886186">ලා අළු</translation>
@@ -4413,6 +4418,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5153234146675181447">දුරකථනය අමතක කරන්න</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> සඳහා උසස් සැකසුම්</translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{සුරැකි මුරපද නැත.}=1{{COUNT} අඩවියක් සඳහා මුරපද පරීක්ෂා කරන ලදි}one{අඩවි සහ යෙදුම් {COUNT}ක් සඳහා මුරපද පරීක්ෂා කරන ලදි}other{අඩවි සහ යෙදුම් {COUNT}ක් සඳහා මුරපද පරීක්ෂා කරන ලදි}}</translation>
 <translation id="5154702632169343078">විෂය</translation>
 <translation id="5155327081870541046">ලිපින තීරුවේ, ඔබට සෙවීමට අවශ්‍ය අඩවිය සඳහා වන, "@bookmarks" වැනි, කෙටි මග ඇතුළත් කරන්න. අනතුරුව, ඔබ කැමති යතුරු පුවරුව කෙටි මඟ ඔබාගෙන, ඔබගේ සෙවීම් පදය ඇතුළත් කරන්න.</translation>
 <translation id="5156638757840305347">කර්සරය දිස් වන විට හෝ චලනය වන විට එය උද්දීපනය වේ</translation>
@@ -4994,6 +5000,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5713158217420111469"><ph name="DEVICE" /> වෙත සම්බන්ධ විය</translation>
 <translation id="5713960379473463904">ඉඩ ආදාන විලාසය</translation>
 <translation id="5715711091495208045">ප්ලගින තැරැව්කරු: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">ඔබ දැන් මේවා වෙනස් කළ යුතු ය</translation>
 <translation id="5719603411793408026">පෙරනිමි සෙවීම් යාන්ත්‍රණ</translation>
 <translation id="5719854774000914513">අඩවි HID උපාංග වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
 <translation id="572155275267014074">Android සැකසීම්</translation>
@@ -6449,6 +6456,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7098447629416471489">වෙනත් සුරැකි සෙවීම් යාන්ත්‍රණ මෙහි දිස් වනු ඇත</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{යෙදුම ඉවත් කරන්න}one{යෙදුම් ඉවත් කරන්න}other{යෙදුම් ඉවත් කරන්න}}</translation>
 <translation id="7099337801055912064">විශාල PPD පූරණය කළ නොහැක. උපරිම ප්‍රමාණය 250 kB වේ.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{අවදානමට පත් වූ මුරපද නැත}=1{අවදානමට පත් වූ {COUNT} මුරපදයක්}one{අවදානමට පත් වූ මුරපද {COUNT}ක්}other{අවදානමට පත් වූ මුරපද {COUNT}ක්}}</translation>
 <translation id="7102687220333134671">ස්වයංක්‍රීය යාවත්කාලීන ක්‍රියාත්මක කර ඇත</translation>
 <translation id="7102832101143475489">ඉල්ලීම් කාලය නිමා විය</translation>
 <translation id="710640343305609397">ජාල සැකසීම් විවෘත කරන්න</translation>
@@ -7392,6 +7400,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 ඔබගේ මුලික ගොනුව ආරක්ෂිත ස්ථානයක තබන්න. ඔබට එය ඔබගේ දිගුවේ නව අනුවාද තැනීමට අවශ්‍ය වනු ඇත.</translation>
 <translation id="8002274832045662704">උසස් මුද්‍රක වින්‍යාසය</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> තවදුරටත් නොලැබේ</translation>
+<translation id="8004092996156083991">ඔබේ මුරපද අවදානමට ලක් වී ඇත්නම්, අපි ඔබට දන්වන්නෙමු.</translation>
 <translation id="8004582292198964060">බ්‍රවුසරය</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> හට පසුරු පුවරුව බැලීමට සැමවිටම ඉඩ දෙන්න</translation>
 <translation id="8006630792898017994">ඉඩ හෝ ටැබ</translation>
@@ -7888,6 +7897,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8470513973197838199"><ph name="ORIGIN" /> සඳහා සුරැකි මුරපද</translation>
 <translation id="8471525937465764768">අඩවි සාමාන්‍යයෙන් ලේඛනයක් මුද්‍රණය කිරීම හෝ ගබඩා උපාංගයකට සුරැකීම වැනි විශේෂාංග සඳහා USB උපාංග සමඟ සම්බන්ධ වේ</translation>
 <translation id="8471959340398751476">වට්ටම් ක්‍රියාවිරහිතයි. අභිරුචිකරණ මෙනුවෙන් ඔබට ඒවා ක්‍රියාත්මක කළ හැකිය</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{ඔබේ මුරපද අනන්‍ය වේ}=1{{COUNT} යළි භාවිතා කළ මුරපදයක්}one{යළි භාවිතා කළ මුරපද {COUNT}ක්}other{යළි භාවිතා කළ මුරපද {COUNT}ක්}}</translation>
 <translation id="8472623782143987204">දෘඪාංග-උපකාර ලද</translation>
 <translation id="8473863474539038330">ලිපින සහ තව</translation>
 <translation id="8475313423285172237">ඔබේ පරිගණකයේ වෙනත් වැඩසටහනක් දිගුවක් එක් කර ඇති අතර එයින් Chrome ක්‍රියා කරන ආකරය වෙනස් විය හැකිය.</translation>
@@ -8367,6 +8377,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8940081510938872932">පරිගණකය දැනට කරන වැඩ වැඩියි. පසුව උත්සාහ කරන්න.</translation>
 <translation id="8940381019874223173">ඔබගේ Google ඡායාරූප වෙතින්</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' අවසරය ඉවත් කරන්න</translation>
+<translation id="894191600409472540">ප්‍රබල මුරපද තනන්න</translation>
 <translation id="894360074127026135">Netscape අන්තර්ජාතික ඉහල පියවර</translation>
 <translation id="8944099748578356325">වඩා ඉක්මනින් බැටරිය භාවිත කරන්න (දැනට <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">නිරූපක තරම</translation>
@@ -8590,6 +8601,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9140067245205650184">ඔබ සහාය නොදක්වන විශේෂාංග ධජයක් භාවත කරයි: <ph name="BAD_FLAG" />. ස්ථායීතාව සහ ආරක්ෂාව අනතුරක.</translation>
 <translation id="9142637293078737510">රූප අපනාම</translation>
 <translation id="9143298529634201539">යෝජනාව ඉවත් කරන්නද?</translation>
+<translation id="9143922477019434797">ඔබේ මුරපද ආරක්ෂා කරන්න</translation>
 <translation id="9147392381910171771">&amp;විකල්ප</translation>
 <translation id="9148058034647219655">ඉවත් වන්න</translation>
 <translation id="9148126808321036104">නැවත පිවිසෙන්න</translation>

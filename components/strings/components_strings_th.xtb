@@ -34,7 +34,6 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อเล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
 <translation id="1058479211578257048">กำลังบันทึกบัตร...</translation>
 <translation id="10614374240317010">ไม่เคยบันทึก</translation>
-<translation id="1062160989074299343">Prc10 (ซองจดหมาย)</translation>
 <translation id="106701514854093668">บุ๊กมาร์กบนเดสก์ท็อป</translation>
 <translation id="1068672505746868501">ไม่ต้องแปลหน้าเว็บภาษา<ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">ยานพาหนะไฮบริดและยานพาหนะทางเลือก</translation>
@@ -137,7 +136,6 @@
 <translation id="1314509827145471431">เย็บเล่มด้านขวา</translation>
 <translation id="1318023360584041678">บันทึกไว้ในกลุ่มแท็บ</translation>
 <translation id="1319245136674974084">ไม่ต้องถามอีกสำหรับแอปนี้</translation>
-<translation id="1320233736580025032">Prc1 (ซองจดหมาย)</translation>
 <translation id="1322083935398004629">การเมือง</translation>
 <translation id="132301787627749051">ค้นหารูปภาพในคลิปบอร์ด</translation>
 <translation id="1323433172918577554">แสดงเพิ่มเติม</translation>
@@ -238,7 +236,6 @@
 <translation id="1521159554480556801">ศิลปะเส้นใยและสิ่งทอ</translation>
 <translation id="1521655867290435174">Google ชีต</translation>
 <translation id="1527263332363067270">กำลังรอการเชื่อมต่อ…</translation>
-<translation id="1529521330346880926">10x15 (ซองจดหมาย)</translation>
 <translation id="1529789484829130889">ถาด 8</translation>
 <translation id="1530707389502320859">เว็บไซต์ที่คุณเพิ่งพยายามเข้าถึงดูเป็นเว็บไซต์ปลอม บางครั้งผู้โจมตีจะเลียนแบบเว็บไซต์ต่างๆ โดยทำการเปลี่ยนแปลงเล็กๆ น้อยๆ ที่สังเกตเห็นได้ยากกับ URL</translation>
 <translation id="1531205177818805254">Exec</translation>
@@ -477,7 +474,6 @@
 <translation id="2166049586286450108">การเข้าถึงระดับผู้ดูแลระบบโดยสมบูรณ์</translation>
 <translation id="2166378884831602661">เว็บไซต์นี้ไม่สามารถให้การเชื่อมต่อที่ปลอดภัย</translation>
 <translation id="2168151236314517198">นโยบายของผู้ดูแลระบบบล็อกการพิมพ์เนื้อหานี้ไว้</translation>
-<translation id="2169984857010174799">Kaku2 (ซองจดหมาย)</translation>
 <translation id="2181821976797666341">นโยบาย</translation>
 <translation id="2183608646556468874">หมายเลขโทรศัพท์</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{ที่อยู่ 1 รายการ}other{ที่อยู่ # รายการ}}</translation>
@@ -522,10 +518,8 @@
 <translation id="2292556288342944218">การเข้าถึงอินเทอร์เน็ตของคุณถูกบล็อก</translation>
 <translation id="2293443924986248631">เมื่อเปิดใช้ เว็บไซต์ต่างๆ จะใช้คุกกี้ที่ติดตามคุณในอินเทอร์เน็ตไม่ได้ ฟีเจอร์ในเว็บไซต์บางแห่งอาจใช้งานไม่ได้</translation>
 <translation id="2295290966866883927">URL ของหน้าเว็บที่คุณเข้าชมจะส่งไปยัง Google Cloud หรือบุคคลที่สามเพื่อทำการวิเคราะห์ เช่น อาจสแกนเพื่อตรวจหาเว็บไซต์ที่ไม่ปลอดภัย</translation>
-<translation id="2297722699537546652">B5 (ซองจดหมาย)</translation>
 <translation id="2298855485018661510">ปุ่มจัดการคุกกี้ กด Enter เพื่อจัดการค่ากำหนดของคุกกี้ในการตั้งค่า Chrome</translation>
 <translation id="2300306941146563769">ไม่ได้อัปโหลด</translation>
-<translation id="2310021320168182093">Chou2 (ซองจดหมาย)</translation>
 <translation id="2316159751672436664">ปรับเปลี่ยนเครื่องมือช่วยเหลือพิเศษในแบบของคุณที่การตั้งค่า Chrome OS</translation>
 <translation id="2316887270356262533">หากเพิ่มพื้นที่ว่างไม่ถึง 1 MB ไซต์บางแห่งอาจโหลดช้าลงเมื่อคุณเข้าชมครั้งถัดไป</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> ต้องใช้ชื่อผู้ใช้และรหัสผ่าน</translation>
@@ -643,7 +637,6 @@
             <ph name="LIST_ITEM" />คุกกี้และข้อมูลเว็บไซต์
             <ph name="LIST_ITEM" />ข้อมูลที่ป้อนในแบบฟอร์ม
           <ph name="END_LIST" /></translation>
-<translation id="2618023639789766142">C10 (ซองจดหมาย)</translation>
 <translation id="2625385379895617796">นาฬิกาเร็วเกินไป</translation>
 <translation id="262745152991669301">สามารถขอเชื่อมต่อกับอุปกรณ์ USB ได้</translation>
 <translation id="2629325967560697240"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />เปิดการปกป้องที่ปรับปรุงแล้ว<ph name="END_ENHANCED_PROTECTION_LINK" />เพื่อให้ Chrome รักษาความปลอดภัยในระดับสูงสุด</translation>
@@ -715,7 +708,6 @@
 <translation id="2835170189407361413">ล้างฟอร์ม</translation>
 <translation id="2839032553903800133">บล็อกการแจ้งเตือนอยู่</translation>
 <translation id="2839501879576190149">ระวังเว็บไซต์หลอกลวง</translation>
-<translation id="2850739647070081192">Invite (ซองจดหมาย)</translation>
 <translation id="2854764410992194509">ผู้ให้บริการอินเทอร์เน็ต (ISP)</translation>
 <translation id="2856444702002559011">ผู้โจมตีอาจพยายามขโมยข้อมูลจาก <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (ตัวอย่างเช่น รหัสผ่าน ข้อความ หรือบัตรเครดิต) <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">เว็บไซต์นี้แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
@@ -780,7 +772,6 @@
 <translation id="301521992641321250">ถูกบล็อกโดยอัตโนมัติ</translation>
 <translation id="3016780570757425217">ทราบตำแหน่งของคุณ</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" /> กด Tab ตามด้วย Enter เพื่อนำคำแนะนำออก</translation>
-<translation id="3023071826883856138">You4 (ซองจดหมาย)</translation>
 <translation id="3024663005179499861">ประเภทนโยบายไม่ถูกต้อง</translation>
 <translation id="3029752078111257850">ข่าวรอบโลก</translation>
 <translation id="3037177537145227281">กำลังติดตามราคา</translation>
@@ -788,7 +779,6 @@
 <translation id="3041612393474885105">ข้อมูลในใบรับรอง</translation>
 <translation id="305162504811187366">ประวัติการใช้ Chrome Remote Desktop รวมถึงการประทับเวลา โฮสต์ และรหัสเซสชันไคลเอ็นต์</translation>
 <translation id="3052964831964880138">ลดราคา <ph name="PRICE_DROP" /> สำหรับ <ph name="PRODUCT_NAME" /></translation>
-<translation id="3060227939791841287">C9 (ซองจดหมาย)</translation>
 <translation id="3061707000357573562">แพตช์บริการ</translation>
 <translation id="306573536155379004">เกมเริ่มแล้ว</translation>
 <translation id="3068991664510324412">วิดีโอเกมและเกมคอมพิวเตอร์</translation>
@@ -944,7 +934,6 @@
 <translation id="3452404311384756672">ช่วงการดึงข้อมูล:</translation>
 <translation id="3453962258458347894">จำนวนการลองใหม่</translation>
 <translation id="3454555520521576458">ปรับขนาดได้</translation>
-<translation id="3456231139987291353">Number-11 (ซองจดหมาย)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ต้องการดูข้อความและรูปภาพที่คัดลอกไปยังคลิปบอร์ด</translation>
 <translation id="3461824795358126837">ไฮไลต์</translation>
 <translation id="3462200631372590220">ซ่อนข้อมูลขั้นสูง</translation>
@@ -985,7 +974,6 @@
 <translation id="3584299510153766161">เจาะรูด้านล่าง 2 รู</translation>
 <translation id="3586931643579894722">ซ่อนรายละเอียด</translation>
 <translation id="3587738293690942763">ตรงกลาง</translation>
-<translation id="3592413004129370115">Italian (ซองจดหมาย)</translation>
 <translation id="3595645257662173296">ดูหลักฐานสนับสนุน</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{คุณรีเซ็ตกลุ่มได้ทุกเมื่อ การเข้าร่วมกลุ่มใหม่จะใช้เวลาประมาณ 1 วัน}=1{คุณรีเซ็ตกลุ่มได้ทุกเมื่อ การเข้าร่วมกลุ่มใหม่จะใช้เวลาประมาณ 1 วัน}other{คุณรีเซ็ตกลุ่มได้ทุกเมื่อ การเข้าร่วมกลุ่มใหม่จะใช้เวลาประมาณ {NUM_DAYS} วัน}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1009,7 +997,6 @@
 <translation id="3633738897356909127">ปุ่มอัปเดต Chrome กด Enter เพื่ออัปเดต Chrome จากการตั้งค่า Chrome</translation>
 <translation id="3634530185120165534">ถาด 5</translation>
 <translation id="3634567936866541746">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chrome ขอแนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้เพื่อรักษาความปลอดภัยของบัญชี</translation>
-<translation id="3637033245385760976">ต้องเปิดการแจ้งเตือนของ Chrome ซึ่งทำได้ใน<ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="3637662659967048211">บันทึกลงในบัญชี Google</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">แอปพลิเคชัน:</translation>
@@ -1046,7 +1033,6 @@
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ตรวจสอบพร็อกซี ไฟร์วอลล์ และการกำหนดค่า DNS<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">แอปพลิเคชันที่อาจทำให้เกิดข้อผิดพลาดนี้ ได้แก่ ซอฟต์แวร์ป้องกันไวรัส ซอฟต์แวร์ไฟร์วอลล์ รวมถึงซอฟต์แวร์การกรองเว็บหรือซอฟต์แวร์พร็อกซี</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างงานนำเสนอใหม่ใน Google สไลด์อย่างรวดเร็ว</translation>
-<translation id="373042150751172459">B4 (ซองจดหมาย)</translation>
 <translation id="3733139489341305600">ยานพาหนะแบบไร้คนขับ</translation>
 <translation id="3736520371357197498">หากคุณเข้าใจความเสี่ยงต่อความปลอดภัย คุณสามารถ<ph name="BEGIN_LINK" />ไปยังไซต์ที่ไม่ปลอดภัยนี้<ph name="END_LINK" /> ก่อนจะมีการนำโปรแกรมอันตรายออก</translation>
 <translation id="3738166223076830879">เบราว์เซอร์ของคุณจัดการโดยผู้ดูแลระบบ</translation>
@@ -1076,7 +1062,6 @@
 <translation id="3789841737615482174">ติดตั้ง</translation>
 <translation id="3793574014653384240">จำนวนและสาเหตุของการขัดข้องที่เกิดขึ้นเมื่อเร็วๆ นี้</translation>
 <translation id="3795344968043407227">เพลงอินดี้และอัลเทอร์เนทีฟ</translation>
-<translation id="3797522431967816232">Prc3 (ซองจดหมาย)</translation>
 <translation id="3799805948399000906">ขอแบบอักษรแล้ว</translation>
 <translation id="380329542618494757">ชื่อ</translation>
 <translation id="3807270098669886186">ผู้ให้บริการโทรศัพท์</translation>
@@ -1150,7 +1135,6 @@
 <translation id="4056223980640387499">ซีเปีย</translation>
 <translation id="4063924980214801036">ใช้การปลดล็อกอุปกรณ์เพื่อยืนยันบัตรได้เร็วขึ้น</translation>
 <translation id="4067098466788473230">ทุนการศึกษา</translation>
-<translation id="4067263367174615723">C1 (ซองจดหมาย)</translation>
 <translation id="4067947977115446013">เพิ่มที่อยู่ที่ถูกต้อง</translation>
 <translation id="4072193657607981494">กำลังโหลดนโยบาย</translation>
 <translation id="4072486802667267160">เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อของคุณ โปรดลองอีกครั้ง</translation>
@@ -1210,7 +1194,6 @@
 <translation id="4213305257324635756">ภาพยนตร์แอนิเมชัน</translation>
 <translation id="4213500579045346575">การเพาะกาย</translation>
 <translation id="4214357935346142455">โปรไฟล์ในหน้าจอลงชื่อเข้าใช้</translation>
-<translation id="4215751373031079683">7x9 (ซองจดหมาย)</translation>
 <translation id="4220128509585149162">การขัดข้อง</translation>
 <translation id="422022731706691852">ผู้โจมตีที่อยู่ใน <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> อาจพยายามหลอกล่อให้คุณติดตั้งโปรแกรมที่ทำให้การท่องเว็บเป็นเรื่องอันตราย (ตัวอย่างเช่น การเปลี่ยนหน้าแรกหรือการแสดงโฆษณาเพิ่มเติมในไซต์ที่คุณเข้าชม) <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;ขั้นตอนที่ 1: ลงชื่อเข้าใช้พอร์ทัล&lt;/h4&gt;
@@ -1254,7 +1237,6 @@
 <translation id="42981349822642051">ขยาย</translation>
 <translation id="4300675098767811073">เจาะรูด้านขวาหลายรู</translation>
 <translation id="4302514097724775343">แตะไดโนเสาร์เพื่อเล่น</translation>
-<translation id="4302965934281694568">Chou3 (ซองจดหมาย)</translation>
 <translation id="4305666528087210886">เข้าถึงไฟล์ไม่ได้</translation>
 <translation id="4306529830550717874">บันทึกที่อยู่ไหม</translation>
 <translation id="4306812610847412719">คลิปบอร์ด</translation>
@@ -1288,7 +1270,6 @@
 <translation id="4358461427845829800">จัดการวิธีการชำระเงิน...</translation>
 <translation id="4359160567981085931">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chrome ช่วยได้ หากต้องการเปลี่ยนรหัสผ่านและแจ้งให้ Google ทราบว่าบัญชีของคุณอาจมีความเสี่ยง ให้คลิก "ปกป้องบัญชี"</translation>
 <translation id="4363222835916186793">ปิดการแจ้งเตือนสำหรับผลิตภัณฑ์นี้แล้ว</translation>
-<translation id="4367563149485757821">Number-12 (ซองจดหมาย)</translation>
 <translation id="437040971055499437">มีการดำเนินการด้านความปลอดภัย</translation>
 <translation id="4372516964750095882">กระดาษต่อเนื่องแบบสหรัฐฯ</translation>
 <translation id="4372948949327679948">ค่า <ph name="VALUE_TYPE" /> ที่คาดไว้</translation>
@@ -1335,10 +1316,8 @@
 <translation id="4506599922270137252">ติดต่อผู้ดูแลระบบ</translation>
 <translation id="450710068430902550">การแชร์กับผู้ดูแลระบบ</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อแปลหน้านี้ด้วย Google แปลภาษา</translation>
-<translation id="4510487217173779431">Chou4 (ซองจดหมาย)</translation>
 <translation id="4514308731478712184">ปิดใช้เส้นทางการท่องเว็บ</translation>
 <translation id="4515275063822566619">ข้อมูลบัตรและที่อยู่มาจาก Chrome และบัญชี Google (<ph name="ACCOUNT_EMAIL" />) คุณสามารถจัดการข้อมูลเหล่านี้ใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
-<translation id="4517607026994743406">Comm-10 (ซองจดหมาย)</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> มม. (<ph name="ORIENTATION" />)</translation>
 <translation id="4521916730539354575">ถาดซ้าย</translation>
 <translation id="4522570452068850558">รายละเอียด</translation>
@@ -1355,7 +1334,6 @@
 <translation id="4566017918361049074">กลางแจ้ง</translation>
 <translation id="4567686777917670400">ผู้ดูแลระบบจะเปลี่ยนการตั้งค่าเบราว์เซอร์จากระยะไกลได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium ได้ด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">การจัดส่ง</translation>
-<translation id="4579056131138995126">Personal (ซองจดหมาย)</translation>
 <translation id="4582204425268416675">นำบัตรออก</translation>
 <translation id="4587425331216688090">นำที่อยู่ออกจาก Chrome ไหม</translation>
 <translation id="459089498662672729">นโยบายของผู้ดูแลระบบไม่แนะนำการวางจาก <ph name="ORIGIN_NAME" /> ลงในตำแหน่งนี้</translation>
@@ -1364,7 +1342,6 @@
 <translation id="4597348597567598915">ขนาด 8</translation>
 <translation id="4598556348158889687">การจัดการพื้นที่เก็บข้อมูล</translation>
 <translation id="4600084978141515058">อาหารวีแกน</translation>
-<translation id="4600854749408232102">C6/C5 (ซองจดหมาย)</translation>
 <translation id="4602465984861132303">โบว์ลิ่ง</translation>
 <translation id="4606870351894164739">มีประสิทธิภาพ</translation>
 <translation id="4607603470419975064">ปุ่มดูเคล็ดลับในการใช้ Chrome กด Enter เพื่อดูข้อมูลเกี่ยวกับฟีเจอร์ต่างๆ ของ Chrome</translation>
@@ -1394,7 +1371,6 @@
 <translation id="467809019005607715">Google สไลด์</translation>
 <translation id="4682496302933121474">แปลหน้าเว็บไหม</translation>
 <translation id="468314109939257734">ดูหมายเลขบัตรเสมือนของคุณ</translation>
-<translation id="4691835149146451662">Architecture-A (ซองจดหมาย)</translation>
 <translation id="4692623383562244444">เครื่องมือค้นหา</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ด้านข้าง</translation>
@@ -1409,7 +1385,6 @@
 <translation id="4726672564094551039">โหลดนโยบายซ้ำ</translation>
 <translation id="4728558894243024398">แพลตฟอร์ม</translation>
 <translation id="4731638775147756694">ผู้ดูแลระบบบล็อกแอปพลิเคชันนี้ไว้</translation>
-<translation id="4731967714531604179">Prc2 (ซองจดหมาย)</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ต้องการใช้ตำแหน่งอุปกรณ์ของคุณ</translation>
 <translation id="4736491186715342415">ยานยนต์</translation>
 <translation id="4736825316280949806">รีสตาร์ท Chromium</translation>
@@ -1513,7 +1488,6 @@
 <translation id="4976702386844183910">เข้าชมล่าสุด <ph name="DATE" /></translation>
 <translation id="498323057460789381">ข้อผิดพลาดในการตรวจสอบความถูกต้องของสคีมา: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">ใช้ไมโครโฟนไหม</translation>
-<translation id="4984339528288761049">Prc5 (ซองจดหมาย)</translation>
 <translation id="4989163558385430922">ดูทั้งหมด</translation>
 <translation id="4989542687859782284">ไม่มี</translation>
 <translation id="4989809363548539747">ไม่รองรับปลั๊กอินนี้</translation>
@@ -1588,7 +1562,6 @@
 <translation id="5146995429444047494">บล็อกการแจ้งเตือนของ <ph name="ORIGIN" /> ไว้</translation>
 <translation id="514704532284964975"><ph name="URL" /> ต้องการดูและเปลี่ยนแปลงข้อมูลในอุปกรณ์ NFC ที่คุณแตะจากโทรศัพท์</translation>
 <translation id="5148809049217731050">หงายหน้าขึ้น</translation>
-<translation id="515292512908731282">C4 (ซองจดหมาย)</translation>
 <translation id="5153314898060540200">ฮาร์ดร็อคและโพรเกรสซีฟ</translation>
 <translation id="5158275234811857234">หน้าปก</translation>
 <translation id="5159010409087891077">เปิดหน้าเว็บในหน้าต่างที่ไม่ระบุตัวตนใหม่ (⇧⌘N)</translation>
@@ -1627,7 +1600,6 @@
 <translation id="5250209940322997802">"เชื่อมต่อกับเครือข่าย"</translation>
 <translation id="52517543715119994">ดูข้อมูลเกี่ยวกับฟีเจอร์ของ Chrome</translation>
 <translation id="5251803541071282808">ระบบคลาวด์</translation>
-<translation id="5252000469029418751">C7 (ซองจดหมาย)</translation>
 <translation id="5254043433801397071">เพิ่มประสิทธิภาพเนื้อหาที่พิมพ์</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">จับภาพเลย</translation>
@@ -1709,7 +1681,6 @@
 <translation id="5470230812924696184">การให้คำปรึกษาด้านวิศวกรรมโยธา</translation>
 <translation id="5470861586879999274">&amp;ทำซ้ำการแก้ไข</translation>
 <translation id="5471337644440862957">ภาพยนตร์ตลก</translation>
-<translation id="5478437291406423475">B6/C4 (ซองจดหมาย)</translation>
 <translation id="5481076368049295676">เนื้อหานี้อาจพยายามติดตั้งซอฟต์แวร์อันตรายที่จะขโมยหรือลบข้อมูลในอุปกรณ์ของคุณ <ph name="BEGIN_LINK" />แสดงเนื้อหา<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">เพิ่มที่อยู่ที่ถูกต้อง</translation>
 <translation id="5485973315555778056">เครื่องที่ใช้ระบบคลาวด์</translation>
@@ -1731,7 +1702,6 @@
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปรับเปลี่ยนเครื่องมือช่วยเหลือพิเศษในแบบของคุณที่การตั้งค่า Chrome OS</translation>
 <translation id="5528532273234423708">ระบบอัตโนมัติในบ้าน</translation>
 <translation id="55293785478302737">เย็บขอบ</translation>
-<translation id="553484882784876924">Prc6 (ซองจดหมาย)</translation>
 <translation id="5535133333442455806">ปุ่มล้างข้อมูลการท่องเว็บ กด Enter เพื่อล้างประวัติการท่องเว็บ คุกกี้ แคช และอื่นๆ ในการตั้งค่า Chrome</translation>
 <translation id="5536214594743852365">แสดงส่วน "<ph name="SECTION" />"</translation>
 <translation id="5539243836947087108">Raft</translation>
@@ -1782,7 +1752,6 @@
 <translation id="5653432653077411130">การประปาและการบำบัดน้ำเสีย</translation>
 <translation id="5654927323611874862">รหัสรายงานข้อขัดข้องที่อัปโหลด:</translation>
 <translation id="5659593005791499971">อีเมล</translation>
-<translation id="5663614846592581799">9x11 (ซองจดหมาย)</translation>
 <translation id="5663955426505430495">ผู้ดูแลระบบของอุปกรณ์นี้ได้ติดตั้งส่วนขยายสำหรับฟังก์ชันเพิ่มเติม ส่วนขยายเข้าถึงข้อมูลบางส่วนของคุณได้</translation>
 <translation id="5666606186680807225">ชายหาดและเกาะ</translation>
 <translation id="5675650730144413517">หน้านี้ใช้ไม่ได้</translation>
@@ -1802,7 +1771,6 @@
 <translation id="571510845185711675">สัตวแพทย์</translation>
 <translation id="5720705177508910913">ผู้ใช้ปัจจุบัน</translation>
 <translation id="5723287205918986743">อุตสาหกรรมด้านการป้องกันประเทศ</translation>
-<translation id="5728056243719941842">C5 (ซองจดหมาย)</translation>
 <translation id="5730040223043577876">Chrome ขอแนะนำให้รีเซ็ตรหัสผ่านหากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="5736165827969430182">โลหะและเหมืองแร่</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{บันทึกบัตรลงในบัญชี Google ของคุณ}other{บันทึกบัตรลงในบัญชี Google ของคุณ}}</translation>
@@ -1913,7 +1881,6 @@
 <translation id="6032524144326295339">กล่องจดหมาย 2</translation>
 <translation id="6032955021262906325">เย็บเล่มด้านซ้าย</translation>
 <translation id="6034000775414344507">เทาอ่อน</translation>
-<translation id="6034283069659657473">10x14 (ซองจดหมาย)</translation>
 <translation id="6034514109191629503">พับแบบหีบเพลง</translation>
 <translation id="6039846035001940113">หากยังคงพบปัญหา ให้ติดต่อเจ้าของเว็บไซต์</translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -2044,7 +2011,6 @@
 <translation id="6401136357288658127">นโยบายนี้เลิกใช้งานไปแล้ว คุณควรใช้นโยบาย <ph name="NEW_POLICY" /> แทน</translation>
 <translation id="6404511346730675251">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="6405181733356710802">ไปที่ <ph name="APP_NAME" /> ไหม</translation>
-<translation id="6406765186087300643">C0 (ซองจดหมาย)</translation>
 <translation id="6410264514553301377">ป้อนวันหมดอายุและ CVC ของ <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium ช่วยคุณปกป้องบัญชี Google และเปลี่ยนรหัสผ่านได้</translation>
 <translation id="6425092077175753609">วัสดุ</translation>
@@ -2056,7 +2022,6 @@
 <translation id="6433797564277305076">ยืนยันบัตรได้เร็วขึ้นโดยใช้การปลดล็อกอุปกรณ์จากนี้ไป</translation>
 <translation id="6440503408713884761">ละเว้น</translation>
 <translation id="6443406338865242315">ส่วนขยายและปลั๊กอินที่คุณติดตั้ง</translation>
-<translation id="6446163441502663861">Kahu (ซองจดหมาย)</translation>
 <translation id="6446608382365791566">เพิ่มข้อมูลเพิ่มเติม</translation>
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6451458296329894277">ยืนยันการส่งแบบฟอร์มอีกครั้ง</translation>
@@ -2096,18 +2061,15 @@
 <translation id="6569060085658103619">คุณกำลังดูหน้าส่วนขยาย</translation>
 <translation id="6569366777234823130">ภาพยนตร์ดราม่า</translation>
 <translation id="6573200754375280815">เจาะรูด้านขวา 2 รู</translation>
-<translation id="6578796323535178455">C2 (ซองจดหมาย)</translation>
 <translation id="657902945730878902">การวาดภาพและระบายสี</translation>
 <translation id="6579630537141957243">เชื่อมต่ออุปกรณ์ MIDI ไหม</translation>
 <translation id="6579990219486187401">ชมพูอ่อน</translation>
-<translation id="6583674473685352014">B6 (ซองจดหมาย)</translation>
 <translation id="6587182488465657433">Chrome พบว่ารหัสผ่านที่คุณเพิ่งใช้รั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เราขอแนะนำให้เปลี่ยนรหัสผ่านดังกล่าวทันทีและตรวจสอบรหัสผ่านที่บันทึกไว้เพื่อรักษาความปลอดภัยของบัญชี</translation>
 <translation id="6587923378399804057">ลิงก์ที่คุณคัดลอก</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> ของคุณไม่มีการจัดการ</translation>
 <translation id="6592952801936330159">ปุ่มจัดการการตั้งค่าเว็บไซต์ กด Enter เพื่อจัดการสิทธิ์และข้อมูลที่จัดเก็บในเว็บไซต์ต่างๆ ในการตั้งค่า Chrome</translation>
 <translation id="6596325263575161958">ตัวเลือกการเข้ารหัส</translation>
 <translation id="6599642189720630047">ผลิตภัณฑ์ที่ติดตาม</translation>
-<translation id="6609880536175561541">Prc7 (ซองจดหมาย)</translation>
 <translation id="6611723696964473273">ข่าวเศรษฐกิจ</translation>
 <translation id="6612010098632894193">วิดีโอออนไลน์</translation>
 <translation id="6615297766614333076">สแต็กเกอร์ 2</translation>
@@ -2250,7 +2212,6 @@
 <translation id="6979440798594660689">ปิดเสียง (ค่าเริ่มต้น)</translation>
 <translation id="6989763994942163495">แสดงการตั้งค่าขั้นสูง...</translation>
 <translation id="6992499368826755835">อุตสาหกรรมยานยนต์</translation>
-<translation id="6993898126790112050">6x9 (ซองจดหมาย)</translation>
 <translation id="6996312675313362352">แปลภาษา<ph name="ORIGINAL_LANGUAGE" />เสมอ</translation>
 <translation id="6999969238895751684">อุตสาหกรรมบันเทิง</translation>
 <translation id="7003335073762455340">คุณกำลังติดตามผลิตภัณฑ์นี้ บันทึกหน้านี้ใน<ph name="LAST_BOOKMARKS_FOLDER" />แล้ว</translation>
@@ -2304,7 +2265,6 @@
 <translation id="7138472120740807366">วิธีการนำส่งสินค้า</translation>
 <translation id="7139892792842608322">ถาดหลัก</translation>
 <translation id="714064300541049402">เปลี่ยนตำแหน่งรูปภาพด้าน 2 ตามแกน X</translation>
-<translation id="7152423860607593928">Number-14 (ซองจดหมาย)</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> รายการ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> รายการ}}</translation>
 <translation id="7153618581592392745">ลาเวนเดอร์</translation>
 <translation id="7156870133441232244">ควรอัปเกรดเซิร์ฟเวอร์เป็น TLS 1.2 ขึ้นไป</translation>
@@ -2453,7 +2413,6 @@
 <translation id="7512685745044087310">นโยบายนี้ตั้งค่าเป็น "จริง" ไม่ได้ และกำหนดเป็นการตั้งค่าแบบบังคับไม่ได้ ดังนั้นจึงมีการเปลี่ยนค่าเป็น "ที่แนะนำ"</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7518003948725431193">ไม่พบหน้าเว็บสำหรับที่อยู่เว็บ: <ph name="URL" /></translation>
-<translation id="7520302887438682816">C8 (ซองจดหมาย)</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">ส่วน "<ph name="SECTION" />" ซ่อนอยู่</translation>
 <translation id="7523408071729642236">การผลิต</translation>
@@ -2461,7 +2420,6 @@
 <translation id="7529884293139707752">การเรียนแบบโฮมสคูล</translation>
 <translation id="7535087603100972091">ราคา</translation>
 <translation id="7537536606612762813">จำเป็น</translation>
-<translation id="7538364083937897561">A2 (ซองจดหมาย)</translation>
 <translation id="7542403920425041731">เมื่อคุณยืนยันแล้ว จะมีการแชร์รายละเอียดบัตรของคุณกับไซต์นี้</translation>
 <translation id="7542995811387359312">การป้อนหมายเลขบัตรเครดิตอัตโนมัติถูกปิดใช้งานเนื่องจากฟอร์มนี้ไม่ได้ใช้การเชื่อมต่อที่ปลอดภัย</translation>
 <translation id="7548892272833184391">แก้ไขข้อผิดพลาดในการเชื่อมต่อ</translation>
@@ -2536,7 +2494,6 @@
 <translation id="7687451951329798396">ดูข้อมูลจากแหล่งที่มาอื่นๆ</translation>
 <translation id="7693583928066320343">ลำดับหน้าที่ได้รับ</translation>
 <translation id="7696089921647603491">ร็อกคลาสสิกและเพลงเก่า</translation>
-<translation id="7697066736081121494">Prc8 (ซองจดหมาย)</translation>
 <translation id="769721561045429135">ขณะนี้คุณมีบัตรต่างๆ ที่ใช้ได้ในอุปกรณ์นี้เท่านั้น คลิก "ทำต่อ" เพื่อดูบัตร</translation>
 <translation id="7698864304447945242">อัปเดตบริการ Google Play สำหรับ AR ไหม</translation>
 <translation id="7699293099605015246">บทความไม่พร้อมใช้งานในขณะนี้</translation>
@@ -2567,7 +2524,6 @@
 <translation id="7763386264682878361">โปรแกรมแยกวิเคราะห์ไฟล์ Manifest ของการชำระเงิน</translation>
 <translation id="7764225426217299476">เพิ่มที่อยู่</translation>
 <translation id="7766518757692125295">Skirt</translation>
-<translation id="7770259615151589601">Designated-Long</translation>
 <translation id="7773005668374414287">ลำดับเดียวกันหงายหน้าขึ้น</translation>
 <translation id="7785790577395078482">แท็บเล็ตเครื่องนี้</translation>
 <translation id="7791011319128895129">ยังไม่ได้เผยแพร่</translation>
@@ -2585,7 +2541,6 @@
 <translation id="7815407501681723534">พบ<ph name="SEARCH_RESULTS" /> <ph name="NUMBER_OF_RESULTS" /> รายการสำหรับ "<ph name="SEARCH_STRING" />"</translation>
 <translation id="7822320754433038727">ล่าสัตว์และยิงปืน</translation>
 <translation id="782886543891417279">Wi-Fi ที่คุณใช้ (<ph name="WIFI_NAME" />) อาจต้องการให้คุณไปที่หน้าการเข้าสู่ระบบ</translation>
-<translation id="7836231406687464395">Postfix (ซองจดหมาย)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ไม่มี}=1{1 แอป (<ph name="EXAMPLE_APP_1" />)}=2{2 แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">ออกจากเว็บไซต์ไหม</translation>
@@ -2600,7 +2555,6 @@
 <translation id="7887885240995164102">เข้าสู่การแสดงภาพซ้อนภาพ</translation>
 <translation id="7888575728750733395">การปรับค่าสีการพิมพ์</translation>
 <translation id="7894280532028510793">หากการสะกดถูกต้อง ให้<ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยเครือข่าย<ph name="END_LINK" /></translation>
-<translation id="7904208859782148177">C3 (ซองจดหมาย)</translation>
 <translation id="7927971017714848357">ที่ดินและแปลงที่ดิน</translation>
 <translation id="793209273132572360">อัปเดตที่อยู่ไหม</translation>
 <translation id="7932579305932748336">เคลือบ</translation>
@@ -2663,7 +2617,6 @@
 <translation id="8058009102480785916">การผลิตอาหาร</translation>
 <translation id="8067872629359326442">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chromium ช่วยคุณได้ หากต้องการเปลี่ยนรหัสผ่านและแจ้งให้ Google ทราบว่าบัญชีของคุณอาจมีความเสี่ยง ให้คลิก "ปกป้องบัญชี"</translation>
 <translation id="8070439594494267500">ไอคอนแอป</translation>
-<translation id="8074253406171541171">10x13 (ซองจดหมาย)</translation>
 <translation id="8075736640322370409">สร้างชีตใหม่ใน Google ชีตอย่างรวดเร็ว</translation>
 <translation id="8075898834294118863">จัดการการตั้งค่าเว็บไซต์</translation>
 <translation id="8076492880354921740">แท็บ</translation>
@@ -2708,13 +2661,11 @@
 <translation id="8201077131113104583">การอัปเดต URL ไม่ถูกต้องสำหรับส่วนขยายรหัส "<ph name="EXTENSION_ID" />"</translation>
 <translation id="8202097416529803614">ข้อมูลสรุปคำสั่งซื้อ</translation>
 <translation id="8202370299023114387">ความขัดแย้ง</translation>
-<translation id="8206978196348664717">Prc4 (ซองจดหมาย)</translation>
 <translation id="8210604850413485128">เว็บโฮสติ้ง</translation>
 <translation id="8211406090763984747">การเชื่อมต่อปลอดภัย</translation>
 <translation id="8217240300496046857">เว็บไซต์ต่างๆ จะใช้คุกกี้ที่ติดตามคุณในอินเทอร์เน็ตไม่ได้ ฟีเจอร์ในเว็บไซต์บางแห่งอาจใช้งานไม่ได้</translation>
 <translation id="8217748145574471584">ทรัพยากรบุคคล</translation>
 <translation id="8218327578424803826">ตำแหน่งที่มอบหมาย:</translation>
-<translation id="8220146938470311105">C7/C6 (ซองจดหมาย)</translation>
 <translation id="8225771182978767009">ผู้ที่ตั้งค่าคอมพิวเตอร์เครื่องนี้เลือกบล็อกเว็บไซต์นี้</translation>
 <translation id="8228419419708659934">ดูแบบ 2 หน้า</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2838,7 +2789,6 @@
 <translation id="8559762987265718583">ไม่สามารถเริ่มการเชื่อมต่อส่วนตัวกับ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ได้เนื่องจากวันที่และเวลาของอุปกรณ์ (<ph name="DATE_AND_TIME" />) ไม่ถูกต้อง</translation>
 <translation id="8564182942834072828">เอกสารแยกกัน/ไม่จัดชุดสำเนา</translation>
 <translation id="8564985650692024650">Chromium ขอแนะนำให้รีเซ็ตรหัสผ่าน <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> หากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
-<translation id="8573969211731659953">การแจ้งเตือนเมื่อราคาลดลงเปิดอยู่ คุณเปลี่ยนค่ากำหนดนี้ได้ใน<ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="8576310925653847813">ระบบโฮมเธียเตอร์</translation>
 <translation id="8577348305244205642">บัตรเสมือนไม่พร้อมใช้งาน</translation>
 <translation id="858637041960032120">เพิ่มเบอร์โทร
@@ -3040,7 +2990,6 @@
 <translation id="9154194610265714752">อัปเดตแล้ว</translation>
 <translation id="9155211586651734179">อุปกรณ์ต่อพ่วงเสียงที่ต่อเชื่อมไว้</translation>
 <translation id="9157595877708044936">กำลังตั้งค่า...</translation>
-<translation id="9158625974267017556">C6 (ซองจดหมาย)</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">อนุญาตให้เว็บไซต์ตรวจสอบว่าคุณได้บันทึกวิธีการชำระเงินไว้ไหม</translation>
 <translation id="9169664750068251925">บล็อกบนไซต์นี้เสมอ</translation>

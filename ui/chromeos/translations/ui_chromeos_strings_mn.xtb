@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" />-ийг хуулж байна...</translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="1190144681599273207">Энэ файлыг татаж авахад таны гар утасны ойролцоогоор <ph name="FILE_SIZE" /> дата шаардлагатай.</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" />-н файлын хандалт</translation>
 <translation id="1201402288615127009">Дараагийнх</translation>
 <translation id="1209796539517632982">Автомат нэрийн серверүүд</translation>
 <translation id="1210831758834677569">Лао</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome төхөөрөмжүүд</translation>
 <translation id="1572585716423026576">Дэлгэцийн зураг болгох</translation>
 <translation id="1576937952766665062">Бенгал галиг</translation>
+<translation id="1577977504532381335">Админы бодлогыг хянах</translation>
 <translation id="158849752021629804">Гэрийн сүлжээ хэрэгтэй</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камер</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Зургийн нягтрал</translation>
 <translation id="1972984168337863910">Файлын cанал хүсэлтийн түр зуурын самбарыг дэлгэх</translation>
 <translation id="1995337122023280937">Файлын байршил руу очих</translation>
+<translation id="1999709132469742660">Бүх URL файлд хандах боломжтой</translation>
 <translation id="2001796770603320721">Драйвын файлуудыг удирдах</translation>
 <translation id="2009067268969781306">Драйвыг форматлах нь түүн дээр хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Кофетой хүн</translation>
 <translation id="2251368349685848079">Хогийн савнаас сэргээх</translation>
 <translation id="2282155092769082568">Автоматаар тохируулах URL:</translation>
+<translation id="2284767815536050991">салгах боломжтой хадгалах сан</translation>
 <translation id="2288278176040912387">Бичлэг тоглуулагч</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файлыг нээж байна.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> файлыг нээж байна.</translation>
@@ -224,6 +228,7 @@
 <translation id="3016566519832145558">Анхааруулга: Эдгээр файл нь түр зуурын файлууд бөгөөд дискийн зайг чөлөөлөхийн тулд автоматаар устгаж болно.</translation>
 <translation id="3029114385395636667">Докс, Хүснэгт, Үзүүлэнг офлайнаар боломжтой болгохын тулд Google Докс Офлайныг идэвхжүүлнэ үү.</translation>
 <translation id="303198083543495566">Газар зүй</translation>
+<translation id="3044404008258011032">Эдгээр зүйлийг сэргээхийн тулд хогийн савнаас гадагш шинэ фолдер луу чирнэ үү. Эдгээр зүйлийн эх фолдер болох "<ph name="PARENT_FOLDER_NAME" />"-г устгасан байна.</translation>
 <translation id="3047197340186497470">Хятад даи</translation>
 <translation id="3067790092342515856">Windows-н файлууд</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -341,6 +346,8 @@
 <translation id="4057991113334098539">Идэвхжүүлж байна...</translation>
 <translation id="4092890906744441904">Ирланд</translation>
 <translation id="4124935795427217608">Ганц эвэртэй морь</translation>
+<translation id="4131235941541910880">Хэрэггүй зүйлсээ хогийн сав руу зөөнө үү</translation>
+<translation id="4157569377477607576">Администраторын бодлого дараахыг санал болгодоггүй:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" />-г зөөсөн.</translation>
 <translation id="4176286497474237543">Хогийн савыг одоо суллах</translation>
 <translation id="4186579485882418952">Офлайн горимыг идэвхжүүлэх</translation>
@@ -435,8 +442,10 @@
 <translation id="485316830061041779">Герман</translation>
 <translation id="4867079195717347957">Баганыг буурах дарааллаар эрэмбэлэхийн тулд товшино уу.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> байт</translation>
+<translation id="4874569719830985133">Үүрд устгах</translation>
 <translation id="4880214202172289027">Дууны түвшин тохируулагч</translation>
 <translation id="4881695831933465202">Нээх</translation>
+<translation id="4891091358278567964">Эдгээр зүйлийг сэргээхийн тулд хогийн савнаас гадагш шинэ фолдер луу чирнэ үү. Эдгээр зүйлийн эх фолдерыг устгасан байна.</translation>
 <translation id="4900532980794411603">Parallels Desktop-тай хуваалцах</translation>
 <translation id="4902546322522096650">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, дохионы хүч<ph name="SIGNAL_STRENGTH" />%, холбогдох</translation>
 <translation id="4906580650526544301">Сүлжээ <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />, дэлгэрэнгүй мэдээлэл</translation>
@@ -491,6 +500,7 @@
     <ph name="MARKUP_7" />Бусадтай бүх файлаа<ph name="MARKUP_8" />
     нэг газар үүсгэж, хуваалцаж, ажиллаарай.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive-аас файлуудыг сэргээлээ</translation>
+<translation id="5278111733643988471">Энэ зүйлийг сэргээхийн тулд хогийн савнаас гадагш шинэ фолдер луу чирнэ үү. Энэ зүйлийн эх фолдер болох "<ph name="PARENT_FOLDER_NAME" />"-г устгасан байна.</translation>
 <translation id="5286194356314741248">Скан хийж байна</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5305688511332277257">Юу ч суугдаагүй байна.</translation>
@@ -499,9 +509,11 @@
 <translation id="5323213332664049067">Латин Америк</translation>
 <translation id="5330145655348521461">Эдгээр файлууд өөр компьютер дээр нээгдсэн байна. Нээхийн тулд <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) рүү шилжүүл.</translation>
 <translation id="5330512191124428349">Мэдээлэл авах</translation>
+<translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" />-с бусад бүх URL файлд хандах боломжтой</translation>
 <translation id="535792325654997756">Мууртай хүн</translation>
 <translation id="5358764674931277">Фреймийн хурд</translation>
 <translation id="5363339716524495120">Оролтын хэл нь Хятад хэл юм</translation>
+<translation id="5364067326287025678">Хогийн сав хоосон байна</translation>
 <translation id="5368191757080475556">Linux-тай фолдер хуваалцах</translation>
 <translation id="5402367795255837559">Брайль</translation>
 <translation id="5411472733320185105">Эдгээр сүлжээ эзэмшигч болон домайнуудад прокси тохируулгыг хэрэглэхгүй:</translation>
@@ -523,6 +535,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> зураг</translation>
 <translation id="5534520101572674276">Хэмжээг тооцоолж байна</translation>
 <translation id="554153475311314364">Грек галиг</translation>
+<translation id="5580591966435005537">виртуал машин</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Цэг таслалын өргөн бүтэн байна</translation>
 <translation id="5602622065581044566">Авиа зүйн гартай болгар</translation>
@@ -583,6 +596,7 @@
 <translation id="61118516107968648">CSV текст</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" />-ийг зөөвөрлөж байна...</translation>
+<translation id="6133877453787250710">Администраторын мониторууд:</translation>
 <translation id="613750717151263950">АНУ-ын гартай япон</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, сүлжээ алга байна</translation>
 <translation id="6146563240635539929">Видео</translation>
@@ -603,6 +617,7 @@
 <translation id="6287852322318138013">Аппликейшнээ сонгоод файлаа нээ</translation>
 <translation id="6295542640242147836">SIM-г түгжих</translation>
 <translation id="6296410173147755564">PUK буруу байна</translation>
+<translation id="6308243004861726558">Энэ файл нууцлалтай бөгөөд администраторын бодлогыг дагана. Дараах файлд хандах эрх болон шилжүүлэх үйлдэл хэрэгжинэ.</translation>
 <translation id="6312403991423642364">Сүлжээний алдаа мэдэгдэхгүй байна</translation>
 <translation id="6317608858038767920">Захиалгат нэрийн сервер <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-н архив</translation>
@@ -768,6 +783,7 @@
 <translation id="7711920809702896782">Зургийн мэдээлэл</translation>
 <translation id="7724603315864178912">Хайчлах</translation>
 <translation id="7732111077498238432">Сүлжээг удирдамжаар хянадаг</translation>
+<translation id="7736003208887389532">Эдгээр файлыг бүрмөсөн устгах уу?</translation>
 <translation id="7748626145866214022">Үйлдлийн талбар хэсэгт илүү их сонголт боломжтой байна. Үйлдлийн талбарыг чиглүүлэхийн тулд Alt + A дарна уу.</translation>
 <translation id="7760449188139285140">Хятад вуби</translation>
 <translation id="7765158879357617694">Зөөх</translation>
@@ -829,8 +845,10 @@
 <translation id="8249296373107784235">Цуцлах</translation>
 <translation id="8250690786522693009">Латин цагаан толгойгоор</translation>
 <translation id="8250920743982581267">Документ</translation>
+<translation id="8255595130163158297">Хогийн саван дахь бүх зүйлийг устгах бөгөөд та тэдгээрийг сэргээх боломжгүй болно.</translation>
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="8261561378965667560">Хятад матрицын арга</translation>
+<translation id="8262872909443689080">Администраторын бодлого</translation>
 <translation id="8264024885325823677">Энэ тохиргоог таны администратор удирддаг.</translation>
 <translation id="8269755669432358899">Файлын cанал хүсэлтийн түр зуурын самбарыг буулгах</translation>
 <translation id="8280151743281770066">Армений авиа зүй</translation>
@@ -907,6 +925,7 @@
 <translation id="8857149712089373752">Авиа зүйн гартай балба</translation>
 <translation id="8860454412039442620">Эксел хүснэгт</translation>
 <translation id="8866284467018526531">Араб галиг</translation>
+<translation id="8873014196523807561">Эдгээр зүйлийг сэргээхийн тулд шинэ фолдер луу чирнэ үү. Эдгээр зүйлийн заримынх нь эх фолдерыг устгасан байна.</translation>
 <translation id="8874184842967597500">Холбогдоогүй</translation>
 <translation id="8900820606136623064">Унгар</translation>
 <translation id="8903931173357132290">Төгсөгч</translation>
@@ -928,6 +947,7 @@
 <translation id="9100610230175265781">Нэвтрэх үг шаардлагатай</translation>
 <translation id="9110990317705400362">Бид таны веб хөтчийг илүү аюулгүй болгох аргыг үргэлж хайж байдаг. Өмнө нь ямар ч вебсайт таны веб хөтчид өргөтгөл нэмэхийг таниас хүсэж болдог байсан. Google Chrome-ийн сүүлийн үеийн хувилбаруудын тусламжтай та эдгээр өргөтгөлүүдийг Өргөтгөлийн хуудсанд нэмсэнээр суурьлуулж болох сонголтыг Chrome-д хийж болно. <ph name="BEGIN_LINK" />Дэлгэрэнгүй мэдээллийг<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Нээх</translation>
+<translation id="9116909380156770361"><ph name="RESTRICTED_COMPONENTS" /> руу файл шилжүүлэх</translation>
 <translation id="912419004897138677">Кодлогч</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />'-н гишүүд эдгээр зүйлд хандах эрхтэй болно.</translation>
 <translation id="9131598836763251128">Нэг буюу хэд хэдэн файлуудыг сонгох</translation>
@@ -949,6 +969,7 @@
 <translation id="943972244133411984">Өөрчилсөн</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />-с <ph name="TO_ENTRY_NAME" /> хүртэлх <ph name="ENTRY_COUNT" /> оролтын мужийг сонгосон.</translation>
+<translation id="954194396377670556">Администраторын бодлого дараахаас сэргийлнэ:</translation>
 <translation id="965477715979482472">Англи хэл (Өмнөд Африк)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" нэртэй файл аль хэдийн байна. Та үүнийг солих уу?</translation>

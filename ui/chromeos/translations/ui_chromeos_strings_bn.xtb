@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> অনুলিপি করা হচ্ছে...</translation>
 <translation id="1178581264944972037">বিরতি</translation>
 <translation id="1190144681599273207">এই ফাইল আনয়ন করতে আনুমানিক মোবাইল ডেটার <ph name="FILE_SIZE" /> ব্যবহার করবে৷</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> ফাইল অ্যাক্সেস করেছে</translation>
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1209796539517632982">স্বয়ংক্রিয় নাম সার্ভার</translation>
 <translation id="1210831758834677569">লাও</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome ডিভাইস</translation>
 <translation id="1572585716423026576">ওয়ালপেপার হিসেবে সেট করুন</translation>
 <translation id="1576937952766665062">বাংলা লিপ্যন্তর</translation>
+<translation id="1577977504532381335">অ্যাডমিন নীতি পর্যালোচনা করুন</translation>
 <translation id="158849752021629804">হোম নেটওয়ার্কের প্রয়োজন</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> পিবি</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">ছবির রেজোলিউশন</translation>
 <translation id="1972984168337863910">ফাইল ফিডব্যাক প্যানেল বড় করুন</translation>
 <translation id="1995337122023280937">ফাইল লোকেশনে যান</translation>
+<translation id="1999709132469742660">সব URL-কে ফাইল অ্যাক্সেস করতে</translation>
 <translation id="2001796770603320721">ড্রাইভে পরিচালনা করুন</translation>
 <translation id="2009067268969781306">ড্রাইভ ফরম্যাট করা হলে, সেটিতে সেভ করা সব ডেটা মুছে যাবে। সেটিকে আর আগের অবস্থায় ফেরানো যাবে না।</translation>
 <translation id="2025955442973426285">টাইগ্রিনা</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">কফি কাপ ধরে আছে এমন ব্যক্তির ছবি</translation>
 <translation id="2251368349685848079">ট্র্যাশ থেকে ফিরিয়ে আনুন</translation>
 <translation id="2282155092769082568">স্বতঃকনফিগারেশান URL:</translation>
+<translation id="2284767815536050991">সরিয়ে দেওয়া যায় এমন স্টোরেজ</translation>
 <translation id="2288278176040912387">রেকর্ড প্লেয়ার</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />টি ফাইল খোলা হচ্ছে।</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> খোলা হচ্ছে।</translation>
@@ -224,6 +228,7 @@
 <translation id="3016566519832145558">সতর্কতা: এইসব ফাইল অস্থায়ী এবং ডিস্কের জায়গা খালি করতে অটোমেটিক মুছে যেতে পারে।</translation>
 <translation id="3029114385395636667">Docs, Sheets ও Slides অফলাইনে পেতে, Google Docs-এর 'অফলাইন মোড' চালু করুন।</translation>
 <translation id="303198083543495566">ভূগোল</translation>
+<translation id="3044404008258011032">এইসব আইটেম ফিরিয়ে আনতে, ট্র্যাশের বাইরে নতুন কোনও ফোল্ডারে এগুলি টেনে আনুন। এইসব আইটেমের জন্য থাকা আসল ফোল্ডার "<ph name="PARENT_FOLDER_NAME" />", মুছে ফেলা হয়েছে।</translation>
 <translation id="3047197340186497470">চীনা ডেই</translation>
 <translation id="3067790092342515856">Windows ফাইল</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -341,6 +346,8 @@
 <translation id="4057991113334098539">সক্রিয় করা হচ্ছে...</translation>
 <translation id="4092890906744441904">আইরিশ</translation>
 <translation id="4124935795427217608">ইউনিকর্ন</translation>
+<translation id="4131235941541910880">অপ্রয়োজনীয় আইটেম ট্র্যাশে সরান</translation>
+<translation id="4157569377477607576">অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী এটি করা যাবে না:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> সরানো হয়েছে।</translation>
 <translation id="4176286497474237543">ট্র্যাশ এখনই খালি করুন</translation>
 <translation id="4186579485882418952">'অফলাইন মোড' চালু করুন</translation>
@@ -435,8 +442,10 @@
 <translation id="485316830061041779">জার্মান</translation>
 <translation id="4867079195717347957">কলামের মানগুলি বড় থেকে ছোট ক্রমানুযায়ী সাজাতে ক্লিক করুন।</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> বাইট</translation>
+<translation id="4874569719830985133">স্থায়ীভাবে মুছুন</translation>
 <translation id="4880214202172289027">ভলিউম স্লাইডার</translation>
 <translation id="4881695831933465202">খুলুন</translation>
+<translation id="4891091358278567964">এইসব আইটেম ফিরিয়ে আনতে, ট্র্যাশের বাইরে নতুন কোনও ফোল্ডারে এগুলি টেনে আনুন। এইসব আইটেমের আসল ফোল্ডার মুছে ফেলা হয়েছে।</translation>
 <translation id="4900532980794411603">Parallels Desktop-এর সাথে শেয়ার করুন</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, কানেক্ট করুন</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" /> সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" />%, বিবরণ</translation>
@@ -492,6 +501,7 @@
     আপনার ডিভাইসে কি ঘটছে তা গুরুত্বপূর্ণ নয়, আপনার ফাইলগুলি Google ড্রাইভে নিরাপদভাবে সঞ্চয় করা হয়।
     <ph name="MARKUP_6" />ফাইলগুলি অন্যদের সাথে <ph name="MARKUP_7" />শেয়ার করুন, তৈরি এবং সহযোগিতা<ph name="MARKUP_8" />করুন, সবকিছু এক জায়গাতেই।<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ড্রাইভ থেকে উদ্ধার করা ফাইলগুলি</translation>
+<translation id="5278111733643988471">এই আইটেম ফিরিয়ে আনতে, ট্র্যাশের বাইরে নতুন কোনও ফোল্ডারে এটি টেনে আনুন। এই আইটেমের জন্য থাকা আসল ফোল্ডার "<ph name="PARENT_FOLDER_NAME" />", মুছে ফেলা হয়েছে।</translation>
 <translation id="5286194356314741248">স্ক্যান হচ্ছে</translation>
 <translation id="5288441970121584418">বার্গার</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -501,9 +511,11 @@
 <translation id="5323213332664049067">লাতিন আমেরিকান</translation>
 <translation id="5330145655348521461">এই ফাইলগুলি একটি আলাদা ডেস্কটপে খোলা রয়েছে৷ এটিকে দেখতে <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)-এ সরান৷</translation>
 <translation id="5330512191124428349">তথ্য পান</translation>
+<translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> ছাড়া সব URL ফাইল অ্যাক্সেস করতে পারবে</translation>
 <translation id="535792325654997756">বিড়ালের সাথে ব্যক্তির ছবি</translation>
 <translation id="5358764674931277">ফ্রেম রেট</translation>
 <translation id="5363339716524495120">ইনপুটের ভাষা হল চিনা</translation>
+<translation id="5364067326287025678">ট্র্যাশে কোনও কন্টেন্ট নেই</translation>
 <translation id="5368191757080475556">Linux ব্যবহার করে ফোল্ডার শেয়ার করুন</translation>
 <translation id="5402367795255837559">ব্রেইল</translation>
 <translation id="5411472733320185105">এই হোস্টগুলি এবং ডোমেনগুলির জন্য প্রক্সি সেটিংস ব্যবহার করবেন না:</translation>
@@ -525,6 +537,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ছবি</translation>
 <translation id="5534520101572674276">আকার গণনা করা হচ্ছে</translation>
 <translation id="554153475311314364">গ্রিক লিপ্যন্তর</translation>
+<translation id="5580591966435005537">ভার্চুয়াল মেশিন</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">যতিচিহ্নের প্রস্থ 'সম্পূর্ণ' হিসেবে সেট করা হয়েছে</translation>
 <translation id="5602622065581044566">বুলগেরিয়ান ভাষায় ফোনেটিক কীবোর্ড</translation>
@@ -585,6 +598,7 @@
 <translation id="61118516107968648">CSV টেক্সট</translation>
 <translation id="6129953537138746214">ব্যবধান</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> সরানো হচ্ছে...</translation>
+<translation id="6133877453787250710">অ্যাডমিনিস্ট্রেটর মনিটর:</translation>
 <translation id="613750717151263950">জাপানি ভাষায় ইউএস কীবোর্ড</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, কোনও নেটওয়ার্ক নেই</translation>
 <translation id="6146563240635539929">ভিডিও</translation>
@@ -605,6 +619,7 @@
 <translation id="6287852322318138013">এই ফাইলটি খোলার জন্য একটি অ্যাপ্লিকেশান বেছে নিন</translation>
 <translation id="6295542640242147836">সিম কার্ড লক করা</translation>
 <translation id="6296410173147755564">ভুল PUK দিয়েছেন</translation>
+<translation id="6308243004861726558">এই ফাইলটি গোপনীয় এবং অ্যাডমিনিস্ট্রেটর নীতি সাপেক্ষ। নিম্নলিখিত ফাইল অ্যাক্সেস ও ট্রান্সফার করা সংক্রান্ত অ্যাকশন প্রযোজ্য।</translation>
 <translation id="6312403991423642364">অজানা নেটওয়ার্ক ত্রুটি</translation>
 <translation id="6317608858038767920">কাস্টম নেমসার্ভার <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> আর্কাইভ</translation>
@@ -770,6 +785,7 @@
 <translation id="7711920809702896782">ইমেজর তথ্য</translation>
 <translation id="7724603315864178912">কাটুন</translation>
 <translation id="7732111077498238432">নেটওয়ার্কগুলি নীতি নিয়ন্ত্রিত</translation>
+<translation id="7736003208887389532">এইসব ফাইল স্থায়ীভাবে মুছতে চান?</translation>
 <translation id="7748626145866214022">অ্যাকশন বারে আরও বিকল্প উপলভ্য। অ্যাকশন বারে ফোকাস করতে Alt + A প্রেস করুন।</translation>
 <translation id="7760449188139285140">চীনা উবি</translation>
 <translation id="7765158879357617694">সরান</translation>
@@ -831,8 +847,10 @@
 <translation id="8249296373107784235">বাতিল</translation>
 <translation id="8250690786522693009">ল্যাটিন</translation>
 <translation id="8250920743982581267">দস্তাবেজগুলি</translation>
+<translation id="8255595130163158297">ট্র্যাশে থাকা সবকটি আইটেম মুছে ফেলা হবে এবং আপনি সেগুলি আর ফিরিয়ে আনতে পারবেন না।</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8261561378965667560">চীনা অ্যারে</translation>
+<translation id="8262872909443689080">অ্যাডমিনিস্ট্রেটরের নীতি</translation>
 <translation id="8264024885325823677">এই সেটিং আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে থাকে।</translation>
 <translation id="8269755669432358899">ফাইল ফিডব্যাক প্যানেল আড়াল করুন</translation>
 <translation id="8280151743281770066">আর্মেনিয় ফোনেটিক</translation>
@@ -909,6 +927,7 @@
 <translation id="8857149712089373752">নেপালি ভাষায় ফোনেটিক কীবোর্ড</translation>
 <translation id="8860454412039442620">Excel spreadsheet</translation>
 <translation id="8866284467018526531">আরবি লিপ্যন্তর</translation>
+<translation id="8873014196523807561">এইসব আইটেম ফিরিয়ে আনতে, একটি নতুন ফোল্ডারে সেগুলি টেনে আনুন। এইসব আইটেমের মধ্যে কয়েকটির আসল ফোল্ডার মুছে ফেলা হয়েছে।</translation>
 <translation id="8874184842967597500">সংযুক্ত নয়</translation>
 <translation id="8900820606136623064">হাঙ্গেরিয়</translation>
 <translation id="8903931173357132290">স্নাতক</translation>
@@ -930,6 +949,7 @@
 <translation id="9100610230175265781">পাসফ্রেজের প্রয়োজন</translation>
 <translation id="9110990317705400362">আমরা ক্রমাগত আপনার ব্রাউজিং নিরাপদ করতে উপায় খুঁজছি৷ আগে, যে কোনো ওয়েবসাইট আপনার ব্রাউজারে একটি এক্সটেনশন যোগ করার অনুরোধ জানাতে পারত৷ Google Chrome-এর সাম্প্রতিক ভার্সনে, আপনাকে অবশ্যই Chrome-কে স্পষ্টভাবে বলতে হবে যে আপনি এক্সটেনশনগুলির পৃষ্ঠার মাধ্যমে তাদের যোগ করে এই এক্সটেনশনগুলি ইনস্টল করতে চান৷ <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">আনলক</translation>
+<translation id="9116909380156770361"><ph name="RESTRICTED_COMPONENTS" />-এ ফাইল ট্রান্সফার করা</translation>
 <translation id="912419004897138677">কোডেক</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' এর সদস্যরা এই আইটেমগুলির অ্যাক্সেস পাবেন।</translation>
 <translation id="9131598836763251128">এক বা একাধিক ফাইল বেছে নিন৷</translation>
@@ -951,6 +971,7 @@
 <translation id="943972244133411984">পরিবর্তন করেছেন</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> থেকে <ph name="TO_ENTRY_NAME" />-এর মধ্যে <ph name="ENTRY_COUNT" />টি এন্ট্রি বেছে নেওয়া হয়েছে।</translation>
+<translation id="954194396377670556">অ্যাডমিনিস্ট্রেটরের নীতি যা করতে দেয় না:</translation>
 <translation id="965477715979482472">ইংরাজি (দক্ষিণ আফ্রিকা)</translation>
 <translation id="981121421437150478">অফলাইন</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" নামের ফাইল আগে থেকেই আছে। আপনি কি সেটি প্রতিস্থাপিত করতে চান?</translation>

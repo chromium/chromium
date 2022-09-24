@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">احتیاط: یہ فائلز عارضی ہیں اور ڈسک میں جگہ خالی کرنے کیلئے انہیں خودکار طور پر حذف کیا جا سکتا ہے۔</translation>
 <translation id="3029114385395636667">‏Docs، Sheets اور Slides کو آف لائن دستیاب بنانے کیلئے Google Docs آف لائن کو فعال کریں۔</translation>
 <translation id="303198083543495566">جغرافیہ</translation>
+<translation id="3044404008258011032">ان آئٹمز کو بحال کرنے کے لیے، انہیں کوڑے دان سے باہر ایک نئے فولڈر میں گھسیٹیں۔ ان آئٹمز کے اصل فولڈر "<ph name="PARENT_FOLDER_NAME" />" کو حذف کر دیا گیا ہے۔</translation>
 <translation id="3047197340186497470">‏چینی Dayi</translation>
 <translation id="3067790092342515856">ونڈوز کی فائلز</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">فعال ہو رہا ہے…</translation>
 <translation id="4092890906744441904">آئرش</translation>
 <translation id="4124935795427217608">یونیکارن</translation>
+<translation id="4131235941541910880">ان آئٹمز کو کوڑے دان میں منتقل کریں جن کی آپ کو ضرورت نہیں ہے</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> منتقل ہو گیا۔</translation>
 <translation id="4176286497474237543">کوڑے دان ابھی خالی کریں</translation>
 <translation id="4186579485882418952">آف لائن فعال کریں</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">جرمن</translation>
 <translation id="4867079195717347957">نزولی ترتیب میں کالم ترتیب دینے کیلئے کلک کریں۔</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> بائٹس</translation>
+<translation id="4874569719830985133">ہمیشہ کے لیے حذف کریں</translation>
 <translation id="4880214202172289027">والیوم سلائیڈر</translation>
 <translation id="4881695831933465202">کھولیں</translation>
+<translation id="4891091358278567964">ان آئٹمز کو بحال کرنے کے لیے، انہیں کوڑے دان سے باہر ایک نئے فولڈر میں گھسیٹیں۔ ان آئٹمز کے اصل فولڈرز کو حذف کر دیا گیا ہے۔</translation>
 <translation id="4900532980794411603">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کریں</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، منسلک کریں</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، <ph name="PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی %<ph name="SIGNAL_STRENGTH" />، فون کی بیٹری %<ph name="BATTERY_STATUS" />، تفصیلات</translation>
@@ -493,6 +497,7 @@
     دوسروں کے ساتھ فائلیں <ph name="MARKUP_7" />اشتراک کریں، بنائیں اور ان پر اکٹھے کام کریں<ph name="MARKUP_8" />
     سب کچھ ایک جگہ سے۔<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">‏Google Drive سے بازیافت کردہ فائلیں</translation>
+<translation id="5278111733643988471">اس آئٹم کو بحال کرنے کے لیے، اسے کوڑے دان سے باہر ایک نئے فولڈر میں گھسیٹیں۔ اس آئٹم کا اصل فولڈر "<ph name="PARENT_FOLDER_NAME" />" کو حذف کر دیا گیا ہے۔</translation>
 <translation id="5286194356314741248">اسکین کی جا رہی ہیں</translation>
 <translation id="5288441970121584418">برگر</translation>
 <translation id="5305688511332277257">کوئی بھی انسٹال نہیں ہے</translation>
@@ -504,6 +509,7 @@
 <translation id="535792325654997756">بلیوں کے ساتھ شخص</translation>
 <translation id="5358764674931277">فریم ریٹ</translation>
 <translation id="5363339716524495120">ان پٹ زبان چینی ہے</translation>
+<translation id="5364067326287025678">کوڑے دان میں کچھ نہیں ہے</translation>
 <translation id="5368191757080475556">‏Linux کے ساتھ فولڈر کا اشتراک کریں</translation>
 <translation id="5402367795255837559">بریل</translation>
 <translation id="5411472733320185105">ان میزبانوں اور ڈومینز کیلئے پراکسی ترتیبات استعمال نہ کریں:</translation>
@@ -770,6 +776,7 @@
 <translation id="7711920809702896782">تصویر کی معلومات</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
 <translation id="7732111077498238432">نیٹ ورک پالیسی سے کنٹرول کی جاتی ہے</translation>
+<translation id="7736003208887389532">ان فائلز کو مستقل طور پر حذف کریں؟</translation>
 <translation id="7748626145866214022">‏کارروائی بار پر مزید اختیارات دستیاب ہیں۔ کارروائی بار پر فوکس کرنے کے لئے Alt + A دبائیں۔</translation>
 <translation id="7760449188139285140">‏چینی Wubi</translation>
 <translation id="7765158879357617694">منتقل کریں</translation>
@@ -831,6 +838,7 @@
 <translation id="8249296373107784235">منسوخ کریں</translation>
 <translation id="8250690786522693009">لاطينی</translation>
 <translation id="8250920743982581267">دستاویزات</translation>
+<translation id="8255595130163158297">کوڑے دان میں موجود تمام آئٹمز کو حذف کر دیا جائے گا اور آپ انہیں بحال نہیں کر سکیں گے۔</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8261561378965667560">‏چینی Array</translation>
 <translation id="8264024885325823677">یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
@@ -909,6 +917,7 @@
 <translation id="8857149712089373752">فونیٹک کی بورڈ کے ساتھ نیپالی</translation>
 <translation id="8860454412039442620">‏Excel اسپریڈشیٹ</translation>
 <translation id="8866284467018526531">عربی نقل حرفی</translation>
+<translation id="8873014196523807561">ان آئٹمز کو بحال کرنے کے لیے، انہیں ایک نئے فولڈر میں گھسیٹیں۔ ان میں سے کچھ آئٹمز کے اصل فولڈرز کو حذف کر دیا گیا ہے۔</translation>
 <translation id="8874184842967597500">منسلک نہیں</translation>
 <translation id="8900820606136623064">ہنگیرین</translation>
 <translation id="8903931173357132290">گریجویٹ</translation>

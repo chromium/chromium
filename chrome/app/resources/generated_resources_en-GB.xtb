@@ -1650,6 +1650,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2480868415629598489">Modify data that you copy and paste</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2482895651873876648">Tab moved into group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2484909293434545162">If a site uses cookies, it will appear here</translation>
 <translation id="2484959914739448251">To clear browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK" />enter your passphrase<ph name="END_LINK" />.</translation>
 <translation id="2485394160472549611">Top picks for you</translation>
 <translation id="2485422356828889247">Uninstall</translation>
@@ -8743,6 +8744,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="964286338916298286">Your IT administrator has disabled Chrome Goodies for your device.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Application}other{Applications}}</translation>
 <translation id="964790508619473209">Screen arrangement</translation>
+<translation id="965175368833098333">Memory Saver can reclaim memory from inactive tabs. This frees up your computer's resources for other tasks.</translation>
 <translation id="965211523698323809">Send and receive text messages from your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Report an issue with Google Cast</translation>
 <translation id="967398046773905967">Do not allow any sites to access HID devices</translation>

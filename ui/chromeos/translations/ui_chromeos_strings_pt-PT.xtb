@@ -228,6 +228,7 @@
 <translation id="3016566519832145558">Cuidado: estes ficheiros são temporários e podem ser automaticamente eliminados para libertar espaço em disco.</translation>
 <translation id="3029114385395636667">Ative o Google Docs offline para disponibilizar o Docs, o Sheets e o Slides offline.</translation>
 <translation id="303198083543495566">Geografia</translation>
+<translation id="3044404008258011032">Para restaurar estes itens, arraste-os para uma nova pasta fora do lixo. A pasta original "<ph name="PARENT_FOLDER_NAME" />" para estes itens foi eliminada.</translation>
 <translation id="3047197340186497470">Dayi chinês</translation>
 <translation id="3067790092342515856">Ficheiros do Windows</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -345,6 +346,7 @@
 <translation id="4057991113334098539">A activar...</translation>
 <translation id="4092890906744441904">Irlandês</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
+<translation id="4131235941541910880">Mova os itens de que não precisa para o lixo</translation>
 <translation id="4157569377477607576">A política do administrador não recomenda:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> movido.</translation>
 <translation id="4176286497474237543">Esvaziar lixo agora</translation>
@@ -440,8 +442,10 @@
 <translation id="485316830061041779">Alemão</translation>
 <translation id="4867079195717347957">Clique para ordenar a coluna por ordem descendente.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
+<translation id="4874569719830985133">Eliminar definitivamente</translation>
 <translation id="4880214202172289027">Controlo de deslize do volume</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4891091358278567964">Para restaurar estes itens, arraste-os para uma nova pasta fora do lixo. As pastas originais destes itens foram eliminadas.</translation>
 <translation id="4900532980794411603">Partilhar com o Parallels Desktop</translation>
 <translation id="4902546322522096650">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, ligar</translation>
 <translation id="4906580650526544301">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, bateria do telemóvel: <ph name="BATTERY_STATUS" />%, detalhes</translation>
@@ -498,6 +502,7 @@
     <ph name="MARKUP_7" />Partilhe, crie e colabore<ph name="MARKUP_8" />
     em ficheiros com outras pessoas, tudo num único local.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Ficheiros recuperados do Google Drive</translation>
+<translation id="5278111733643988471">Para restaurar este item, arraste-o para uma nova pasta fora do lixo. A pasta original "<ph name="PARENT_FOLDER_NAME" />" para este item foi eliminada.</translation>
 <translation id="5286194356314741248">A procurar</translation>
 <translation id="5288441970121584418">Hambúrguer</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -511,6 +516,7 @@
 <translation id="535792325654997756">Pessoa com gatos</translation>
 <translation id="5358764674931277">Velocidade de fotogramas</translation>
 <translation id="5363339716524495120">O idioma de entrada é o chinês</translation>
+<translation id="5364067326287025678">Não existe nada no lixo</translation>
 <translation id="5368191757080475556">Partilhar pasta com o Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Não utilize as definições de proxy para os anfitriões e domínios seguintes:</translation>
@@ -780,6 +786,7 @@
 <translation id="7711920809702896782">Informações da imagem</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7732111077498238432">A rede é controlada por políticas.</translation>
+<translation id="7736003208887389532">Eliminar definitivamente estes ficheiros?</translation>
 <translation id="7748626145866214022">Há mais opções disponíveis na barra de ação. Prima Alt + A para focar a barra de ação.</translation>
 <translation id="7760449188139285140">Wubi chinês</translation>
 <translation id="7765158879357617694">Mover</translation>
@@ -841,6 +848,7 @@
 <translation id="8249296373107784235">Abortar</translation>
 <translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Docs</translation>
+<translation id="8255595130163158297">Todos os itens no lixo vão ser eliminados e não vai poder restaurá-los.</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8261561378965667560">Matriz chinesa</translation>
 <translation id="8262872909443689080">Política do administrador</translation>
@@ -920,6 +928,7 @@
 <translation id="8857149712089373752">Nepalês com teclado fonético</translation>
 <translation id="8860454412039442620">Folha de cálculo do Excel</translation>
 <translation id="8866284467018526531">Transliteração de árabe</translation>
+<translation id="8873014196523807561">Para restaurar estes itens, arraste-os para uma nova pasta. As pastas originais de alguns destes itens foram eliminadas.</translation>
 <translation id="8874184842967597500">Sem ligação</translation>
 <translation id="8900820606136623064">Húngaro</translation>
 <translation id="8903931173357132290">Graduado</translation>

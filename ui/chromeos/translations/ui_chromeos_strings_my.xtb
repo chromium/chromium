@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">သတိ- ဤဖိုင်များသည် ယာယီဖြစ်ပြီး ဒစ်ခ်နေရာလွတ်ပြုလုပ်ရန် အလိုအလျောက် ဖျက်နိုင်ပါသည်။</translation>
 <translation id="3029114385395636667">Docs၊ Sheets နှင့် Slides ကို အော့ဖ်လိုင်းသုံးရန် 'Google Docs အော့ဖ်လိုင်း' ဖွင့်ပါ။</translation>
 <translation id="303198083543495566">ပထဝီ</translation>
+<translation id="3044404008258011032">ဤဖိုင်များကို ပြန်ယူရန် အမှိုက်ပုံးပြင်ပရှိ ဖိုင်တွဲအသစ်ထဲသို့ ဖိဆွဲပါ။ ဤဖိုင်များ၏ မူရင်းဖိုင်တွဲ “<ph name="PARENT_FOLDER_NAME" />” ကို ဖျက်လိုက်သည်။</translation>
 <translation id="3047197340186497470">တရုတ် တာ့ရီ</translation>
 <translation id="3067790092342515856">Windows ဖိုင်များ</translation>
 <translation id="3083975830683400843">Chromebit များ</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">စဖွင့်နေပါသည်…</translation>
 <translation id="4092890906744441904">အိုင်းရစ်ရှ်</translation>
 <translation id="4124935795427217608">သိင်္ဂဿမြင်း</translation>
+<translation id="4131235941541910880">မလိုသောဖိုင်များကို အမှိုက်ပုံးသို့ ရွှေ့ပါ</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ကို ရွှေ့ထားသည်။</translation>
 <translation id="4176286497474237543">အမှိုက်ပုံးကို ယခုရှင်းရန်</translation>
 <translation id="4186579485882418952">အော့ဖ်လိုင်းသုံးရန်</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">ဂျာမန်</translation>
 <translation id="4867079195717347957">ကော်လံကို ကြီးစဉ်ငယ်လိုက်စီရန် နှိပ်ပါ။</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ဘိုက်</translation>
+<translation id="4874569719830985133">အပြီးဖျက်ရန်</translation>
 <translation id="4880214202172289027">အတိုးအကျယ် ဆလိုက်ဒါး</translation>
 <translation id="4881695831933465202">ဖွင့်</translation>
+<translation id="4891091358278567964">ဤဖိုင်များကို ပြန်ယူရန် အမှိုက်ပုံးပြင်ပရှိ ဖိုင်တွဲအသစ်ထဲသို့ ဖိဆွဲပါ။ ဤဖိုင်များ၏ မူရင်းဖိုင်တွဲများကို ဖျက်လိုက်သည်။</translation>
 <translation id="4900532980794411603">Parallels Desktop အား မျှဝေရန်</translation>
 <translation id="4902546322522096650">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ချိတ်ဆက်ရန်</translation>
 <translation id="4906580650526544301">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="PHONE_NAME" />၊ <ph name="PROVIDER_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" />%၊ အသေးစိတ်</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />ဖိုင်များကို မျှဝေခြင်း၊ ပြုစုခြင်းနှင့် ပူးပေါင်းလုပ်ဆောင်ခြင်း<ph name="MARKUP_8" />
     တို့ကို တစ်နေရာတည်းတွင်လုပ်ဆောင်နိုင်သည်<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive မှရှာဖွေထားသည့် ဖိုင်များ</translation>
+<translation id="5278111733643988471">ဤဖိုင်ကို ပြန်ယူရန် အမှိုက်ပုံးပြင်ပရှိ ဖိုင်တွဲအသစ်ထဲသို့ ဖိဆွဲပါ။ ဤဖိုင်၏ မူရင်းဖိုင်တွဲ “<ph name="PARENT_FOLDER_NAME" />” ကို ဖျက်လိုက်သည်။</translation>
 <translation id="5286194356314741248">ရှာဖွေနေသည်</translation>
 <translation id="5288441970121584418">အသားညှပ်ပေါင်မုန့်လုံး</translation>
 <translation id="5305688511332277257">ဘာမှ မသွင်းထား</translation>
@@ -504,6 +509,7 @@
 <translation id="535792325654997756">ကြောင်များနှင့်လူ</translation>
 <translation id="5358764674931277">ဖရိမ်ပြနှုန်း</translation>
 <translation id="5363339716524495120">လက်ကွက်ဘာသာစကားသည် Chinese ဖြစ်သည်</translation>
+<translation id="5364067326287025678">အမှိုက်ပုံးထဲတွင် ဘာမျှမရှိပါ</translation>
 <translation id="5368191757080475556">Linux နှင့် ဖိုင်တွဲကို မျှဝေရန်</translation>
 <translation id="5402367795255837559">မျက်မမြင်စာ</translation>
 <translation id="5411472733320185105">ဒီဟို့စ်များ နှင့် ဒိုမိန်များ အတ ွက် ပရောက်စီ ဆက်တင်များကို မသုံးပါနှင့်:</translation>
@@ -770,6 +776,7 @@
 <translation id="7711920809702896782">ဓာတ်ပုံအချက်အလက်</translation>
 <translation id="7724603315864178912">ဖြတ်တောက်</translation>
 <translation id="7732111077498238432">ကွန်ရက်မူဝါဒကို ထိန်းချုပ်ထားပါသည်</translation>
+<translation id="7736003208887389532">ဤဖိုင်များကို အပြီးဖျက်မလား။</translation>
 <translation id="7748626145866214022">လုပ်ဆောင်ချက်ဘားတန်းတွင် နောက်ထပ်ရွေးချယ်စရာများ ရှိပါသည်။ လုပ်ဆောင်ချက်ဘားတန်းကို ရွေးရန် Alt + A ကို နှိပ်ပါ။</translation>
 <translation id="7760449188139285140">တရုတ် ဝူဘီ</translation>
 <translation id="7765158879357617694">ရွှေ့ရန်</translation>
@@ -831,6 +838,7 @@
 <translation id="8249296373107784235">မလုပ်တော့ပါ</translation>
 <translation id="8250690786522693009">လက်တင်</translation>
 <translation id="8250920743982581267">စာရွက်စာတမ်းများ</translation>
+<translation id="8255595130163158297">အမှိုက်ပုံးထဲရှိ ဖိုင်အားလုံးကို ဖျက်လိုက်မည်ဖြစ်ပြီး ၎င်းတို့ကို ပြန်ယူ၍မရပါ။</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8261561378965667560">တရုတ်လက်ကွက် အခင်းအကျင်း</translation>
 <translation id="8264024885325823677">ဤဆက်တင်ကို သင့် 'ကြီးကြပ်သူ' က စီမံသည်။</translation>
@@ -909,6 +917,7 @@
 <translation id="8857149712089373752">အသံထွက်ကီးဘုတ်ဖြင့် နီပေါ</translation>
 <translation id="8860454412039442620">အိတ်ဇ်ဇဲလ် ဇယားစာမျက်နှာပြင်</translation>
 <translation id="8866284467018526531">အာရဗီ အက္ခရာဖလှယ်ခြင်း</translation>
+<translation id="8873014196523807561">ဤဖိုင်များကို ပြန်ယူရန် ဖိုင်တွဲအသစ်ထဲသို့ ဖိဆွဲပါ။ ဤဖိုင်များအနက် အချို့၏ မူရင်းဖိုင်တွဲများကို ဖျက်လိုက်သည်။</translation>
 <translation id="8874184842967597500">ချိတ်ဆက် မထား</translation>
 <translation id="8900820606136623064">ဟန်ဂေရီ</translation>
 <translation id="8903931173357132290">ဘွဲ့ရပုဂ္ဂိုလ်</translation>

@@ -23,7 +23,7 @@
 <translation id="117624967391683467">Kopiranje datoteke <ph name="FILE_NAME" />…</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1190144681599273207">Dohvatanje ovog fajla potrošit će otprilike <ph name="FILE_SIZE" /> podataka na mobilnoj mreži.</translation>
-<translation id="1194390763418645112">Pristup datoteci korisnika <ph name="RESTRICTED_DESTINATIONS" /></translation>
+<translation id="1194390763418645112">Pristup fajlu sa <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Naprijed</translation>
 <translation id="1209796539517632982">Serveri s automatskim nazivima</translation>
 <translation id="1210831758834677569">laoški</translation>
@@ -114,7 +114,7 @@
 <translation id="1942765061641586207">Rezolucija slike</translation>
 <translation id="1972984168337863910">Proširivanje ploča za povratne informacije o fajlovima</translation>
 <translation id="1995337122023280937">Posjeti lokaciju fajla</translation>
-<translation id="1999709132469742660">Pristup datoteci svim URL-ovima</translation>
+<translation id="1999709132469742660">Pristup fajlu putem svih URL-ova</translation>
 <translation id="2001796770603320721">Upravljajte na Disku</translation>
 <translation id="2009067268969781306">Formatiranjem diska ćete izbrisati sve podatke koji su na njemu pohranjeni. Ova radnja se ne može poništiti.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
@@ -145,7 +145,7 @@
 <translation id="2239068707900391003">Osoba s kafom</translation>
 <translation id="2251368349685848079">Vrati iz otpada</translation>
 <translation id="2282155092769082568">URL za automatsku konfiguraciju:</translation>
-<translation id="2284767815536050991">prijenosna pohrana</translation>
+<translation id="2284767815536050991">uklonjiva pohrana</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Broj fajlova koji se trenutno otvara: <ph name="NUMBER_OF_FILES" />.</translation>
 <translation id="2303301624314357662">Otvaranje datoteke <ph name="FILE_NAME" />.</translation>
@@ -228,7 +228,7 @@
 <translation id="3016566519832145558">Oprez: ovi fajlovi su privremeni i moguće je da će se automatski izbrisati radi oslobađanja prostora na disku.</translation>
 <translation id="3029114385395636667">Omogućite Google Dokumente van mreže da vam Dokumenti, Tabele i Slajdovi budu dostupni offline.</translation>
 <translation id="303198083543495566">Geografija</translation>
-<translation id="3044404008258011032">Da biste vratili te stavke, povucite ih u novu mapu izvan otpada. Izbrisana je izvorna mapa <ph name="PARENT_FOLDER_NAME" /> za tu stavku.</translation>
+<translation id="3044404008258011032">Da vratite ove stavke, prevucite ih u novi folder izvan otpada. Izvorni folder "<ph name="PARENT_FOLDER_NAME" />" ovih stavki je izbrisan.</translation>
 <translation id="3047197340186497470">kineski dayi</translation>
 <translation id="3067790092342515856">Windows fajlovi</translation>
 <translation id="3083975830683400843">Uređaji Chromebit</translation>
@@ -346,8 +346,8 @@
 <translation id="4057991113334098539">Aktivacija...</translation>
 <translation id="4092890906744441904">irski</translation>
 <translation id="4124935795427217608">Jednorog</translation>
-<translation id="4131235941541910880">Nepotrebne stavke premjestite u otpad</translation>
-<translation id="4157569377477607576">Prema pravilima administratora ne preporučuje se sljedeće:</translation>
+<translation id="4131235941541910880">Premjestite stavke koje su vam nepotrebne u otpad</translation>
+<translation id="4157569377477607576">Pravila administratora ne preporučuju:</translation>
 <translation id="4159731583141908892">Fajl <ph name="FILE_NAME" /> je premješten.</translation>
 <translation id="4176286497474237543">Isprazni otpad sada</translation>
 <translation id="4186579485882418952">Omogući offline</translation>
@@ -442,10 +442,10 @@
 <translation id="485316830061041779">Njemačka</translation>
 <translation id="4867079195717347957">Kliknite da poredate kolonu silaznim poretkom.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> B</translation>
-<translation id="4874569719830985133">Trajno izbriši</translation>
+<translation id="4874569719830985133">Zauvijek izbriši</translation>
 <translation id="4880214202172289027">Klizač za jačinu zvuka</translation>
 <translation id="4881695831933465202">Otvori</translation>
-<translation id="4891091358278567964">Da biste vratili te stavke, povucite ih u novu mapu izvan otpada. Izbrisane su izvorne mape za te stavke.</translation>
+<translation id="4891091358278567964">Da vratite ove stavke, prevucite ih u novi folder izvan otpada. Izvorni folderi ovih stavki su izbrisani.</translation>
 <translation id="4900532980794411603">Dijeli pomoću aplikacije Parallels Desktop</translation>
 <translation id="4902546322522096650">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, poveži</translation>
 <translation id="4906580650526544301">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, detalji</translation>
@@ -502,7 +502,7 @@
     <ph name="MARKUP_7" />Dijelite, stvarajte i surađujte<ph name="MARKUP_8" />
     na datotekama s drugima i sve to na jednom mjestu.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Oporavljeni fajlovi iz Google Diska</translation>
-<translation id="5278111733643988471">Da biste vratili tu stavku, povucite je u novu mapu izvan otpada. Izbrisana je izvorna mapa <ph name="PARENT_FOLDER_NAME" /> za tu stavku.</translation>
+<translation id="5278111733643988471">Da vratite ovu stavku, prevucite je u novi folder izvan otpada. Izvorni folder "<ph name="PARENT_FOLDER_NAME" />" ove stavke je izbrisan.</translation>
 <translation id="5286194356314741248">Skeniranje</translation>
 <translation id="5288441970121584418">Pljeskavica</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -512,11 +512,11 @@
 <translation id="5323213332664049067">Latinoamerička</translation>
 <translation id="5330145655348521461">Ovi fajlovi su otvoreni na drugoj radnoj površini. Prebacite se na korisnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da ih vidite.</translation>
 <translation id="5330512191124428349">Preuzmite informacije</translation>
-<translation id="5337538975554986899">Pristup datoteci za sve URL-ove osim za <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="5337538975554986899">Pristup fajlu putem svih URL-ova osim <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Osoba s mačkama</translation>
 <translation id="5358764674931277">Broj slika u sekundi</translation>
 <translation id="5363339716524495120">Jezik unosa je kineski</translation>
-<translation id="5364067326287025678">Nema ničega u otpadu</translation>
+<translation id="5364067326287025678">Nema ništa u otpadu</translation>
 <translation id="5368191757080475556">Dijelite folder s Linuxom</translation>
 <translation id="5402367795255837559">Brailleovo pismo</translation>
 <translation id="5411472733320185105">Nemoj koristiti postavke proksija za ove host računare i domene:</translation>
@@ -538,7 +538,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> slika</translation>
 <translation id="5534520101572674276">Izračunavanje veličine</translation>
 <translation id="554153475311314364">grčki (transliteracija)</translation>
-<translation id="5580591966435005537">virtualni uređaj</translation>
+<translation id="5580591966435005537">virtuelna mašina</translation>
 <translation id="5583640892426849032">Tipka za brisanje</translation>
 <translation id="5583664733673201137">Interpunkcija je u punoj širini</translation>
 <translation id="5602622065581044566">bugarski s fonetskom tastaturom</translation>
@@ -599,7 +599,7 @@
 <translation id="61118516107968648">CSV tekst</translation>
 <translation id="6129953537138746214">Tipka za razmak</translation>
 <translation id="6133173853026656527">Premještanje fajla <ph name="FILE_NAME" />...</translation>
-<translation id="6133877453787250710">Administratorski monitori:</translation>
+<translation id="6133877453787250710">Administrator prati:</translation>
 <translation id="613750717151263950">japanski sa SAD tastaturom</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nema mreže</translation>
 <translation id="6146563240635539929">Videozapisi</translation>
@@ -620,7 +620,7 @@
 <translation id="6287852322318138013">Odaberite aplikaciju da otvorite ovaj fajl</translation>
 <translation id="6295542640242147836">Zaključaj SIM</translation>
 <translation id="6296410173147755564">Nevažeći PUK</translation>
-<translation id="6308243004861726558">Datoteka je povjerljiva i podliježe administratorskim pravilima. Primjenjuju se sljedeće radnje pristupa datoteci i prijenosa datoteka.</translation>
+<translation id="6308243004861726558">Fajl je povjerljiv i podložan pravilima administratora. Primjenjuju se sljedeće radnje pristupa i prijenosa fajla.</translation>
 <translation id="6312403991423642364">Nepoznata greška na mreži</translation>
 <translation id="6317608858038767920">Prilagođeni naziv servera <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> arhiva</translation>
@@ -786,7 +786,7 @@
 <translation id="7711920809702896782">Informacije o slici</translation>
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7732111077498238432">Mrežu kontroliraju pravila</translation>
-<translation id="7736003208887389532">Želite li trajno izbrisati te datoteke?</translation>
+<translation id="7736003208887389532">Trajno izbrisati ove fajlove?</translation>
 <translation id="7748626145866214022">Više opcija je dostupno u traci s aktivnostima. Pritisnite Alt + A da fokusirate traku s aktivnostima.</translation>
 <translation id="7760449188139285140">kineski wubi</translation>
 <translation id="7765158879357617694">Pomjeri</translation>
@@ -848,10 +848,10 @@
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="8250690786522693009">latinica</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
-<translation id="8255595130163158297">Sve će se stavke u otpadu izbrisati i nećete ih moći vratiti.</translation>
+<translation id="8255595130163158297">Sve stavke u otpadu će se izbrisati i nećete ih moći vratiti.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8261561378965667560">kineski niz</translation>
-<translation id="8262872909443689080">Administratorsko pravilo</translation>
+<translation id="8262872909443689080">Pravila administratora</translation>
 <translation id="8264024885325823677">Ovom postavkom upravlja vaš administrator.</translation>
 <translation id="8269755669432358899">Sužavanje ploča za povratne informacije o fajlovima</translation>
 <translation id="8280151743281770066">armenska (fonetska)</translation>
@@ -928,7 +928,7 @@
 <translation id="8857149712089373752">nepalski s fonetskom tastaturom</translation>
 <translation id="8860454412039442620">Tabela u Excelu</translation>
 <translation id="8866284467018526531">arapski (transliteracija)</translation>
-<translation id="8873014196523807561">Da biste vratili te stavke, povucite ih u novu mapu. Izbrisane su izvorne mape za neke od tih stavki.</translation>
+<translation id="8873014196523807561">Da vratite ove stavke, prevucite ih u novi folder. Izvorni folderi nekih od ovih stavki su izbrisani.</translation>
 <translation id="8874184842967597500">Nije povezano</translation>
 <translation id="8900820606136623064">Mađarska</translation>
 <translation id="8903931173357132290">Diplomac</translation>
@@ -950,7 +950,7 @@
 <translation id="9100610230175265781">Potreban je pristupni izraz</translation>
 <translation id="9110990317705400362">Stalno tražimo načine da učinimo pregledanje sigurnijim. Prethodno je svaka web lokacija od vas mogla zatražiti da dodate ekstenziju u preglednik. U najnovijoj verziji Google Chromea, izričito morate reći Chromeu da želite instalirati ove ekstenzije tako što ćete ih dodati putem stranice Ekstenzije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Otključaj</translation>
-<translation id="9116909380156770361">Prijenos datoteke na <ph name="RESTRICTED_COMPONENTS" /></translation>
+<translation id="9116909380156770361">Prijenos fajla na <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Kodek</translation>
 <translation id="9130775360844693113">Članovi tima "<ph name="DESTINATION_NAME" />" dobit će pristup ovim stavkama.</translation>
 <translation id="9131598836763251128">Odaberite jedan ili više fajlova</translation>
@@ -972,7 +972,7 @@
 <translation id="943972244133411984">Izmijenio/la</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="947144732524271678">Odabran je niz unosa (<ph name="ENTRY_COUNT" />) od stavke <ph name="FROM_ENTRY_NAME" /> do stavke <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="954194396377670556">Administratorska pravila sprječavaju sljedeće:</translation>
+<translation id="954194396377670556">Pravila administratora sprječavaju:</translation>
 <translation id="965477715979482472">engleski (Južnoafrička Republika)</translation>
 <translation id="981121421437150478">Van mreže</translation>
 <translation id="988685240266037636">Već postoji fajl s nazivom "<ph name="FILE_NAME" />". Želite li ga zamijeniti?</translation>

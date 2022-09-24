@@ -1631,6 +1631,7 @@
 <translation id="2468178265280335214">觸控板捲動加速</translation>
 <translation id="2468205691404969808">使用 Cookie 記住您的偏好設定 (即使你沒有瀏覽這些網頁)</translation>
 <translation id="2468402215065996499">他媽哥池</translation>
+<translation id="2468470085922875120">你目前使用的密碼不容易讓人猜中</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個分頁}other{<ph name="GROUP_TITLE" /> - # 個分頁}}</translation>
 <translation id="2469141124738294431">虛擬機器狀態</translation>
 <translation id="2469259292033957819">你冇任何儲存咗嘅打印機。</translation>
@@ -1968,6 +1969,7 @@
 <translation id="2783321960289401138">建立捷徑…</translation>
 <translation id="2783829359200813069">選取加密類型</translation>
 <translation id="2783952358106015700">透過 <ph name="APP_NAME" /> 使用安全密鑰</translation>
+<translation id="2785267875302712148">密碼安全檢查</translation>
 <translation id="2785873697295365461">檔案描述符</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">保留本機瀏覽資料 (書籤、密碼、記錄等)</translation>
@@ -2043,6 +2045,7 @@
 <translation id="2844169650293029770">USB-C 裝置 (左側前方連接埠)</translation>
 <translation id="2844809857160214557">查看及管理列印工作</translation>
 <translation id="2845382757467349449">永遠顯示書籤列</translation>
+<translation id="284581348330507117">建立專屬密碼</translation>
 <translation id="284805635805850872">要移除有害的軟件嗎？</translation>
 <translation id="2849035674501872372">查詢</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2194,6 +2197,7 @@
 <translation id="2985348301114641460">要向管理員傳送「<ph name="EXTENSION_NAME" />」的安裝要求嗎？</translation>
 <translation id="2987620471460279764">從其他裝置分享的文字</translation>
 <translation id="2988018669686457659">備用轉譯器</translation>
+<translation id="2988328607561082373">目前未重複使用任何密碼</translation>
 <translation id="2989123969927553766">滑鼠捲動加速</translation>
 <translation id="2989474696604907455">不附加</translation>
 <translation id="2989786307324390836">DER 編碼 Binary，單一憑證</translation>
@@ -2222,6 +2226,7 @@
 <translation id="3009178788565917040">輸出</translation>
 <translation id="3009300415590184725">您確定要取消流動數據服務設定程序嗎？</translation>
 <translation id="3009779501245596802">索引數據庫</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{你的密碼強度夠高}=1{{COUNT} 個密碼的強度太低}other{{COUNT} 個密碼的強度太低}}</translation>
 <translation id="3010279545267083280">已刪除密碼</translation>
 <translation id="3010389206479238935">強制開啟方式</translation>
 <translation id="3011384993885886186">暖灰色</translation>
@@ -4424,6 +4429,7 @@
 <translation id="5153234146675181447">刪除手機</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">「<ph name="PRINTING_DESTINATION" />」進階設定</translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{未儲存任何密碼。}=1{已檢查 {COUNT} 個網站的密碼}other{已檢查 {COUNT} 個網站和應用程式的密碼}}</translation>
 <translation id="5154702632169343078">主旨</translation>
 <translation id="5155327081870541046">在網址列輸入您想搜尋網站的捷徑，例如「例如「@bookmarks」)，然後按下您偏好的鍵盤快速鍵，並輸入搜尋字詞。</translation>
 <translation id="5156638757840305347">游標在顯示或移動時會突顯</translation>
@@ -5002,6 +5008,7 @@
 <translation id="5713158217420111469">連咗線去 <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">空格鍵輸入樣式</translation>
 <translation id="5715711091495208045">外掛程式代理組件：<ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">建議你立即變更密碼</translation>
 <translation id="5719603411793408026">預設搜尋引擎</translation>
 <translation id="5719854774000914513">網站可要求連接 USB 裝置</translation>
 <translation id="572155275267014074">Android 設定</translation>
@@ -6457,6 +6464,7 @@
 <translation id="7098447629416471489">已儲存的搜尋引擎將會在這裡顯示</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{移除應用程式}other{移除應用程式}}</translation>
 <translation id="7099337801055912064">無法載入大型 PPD。檔案上限為 250KB。</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{沒有任何密碼遭外洩}=1{{COUNT} 個遭外洩的密碼}other{{COUNT} 個遭外洩的密碼}}</translation>
 <translation id="7102687220333134671">已開啟自動更新功能</translation>
 <translation id="7102832101143475489">要求逾時</translation>
 <translation id="710640343305609397">開啟網絡設定</translation>
@@ -7402,6 +7410,7 @@
 請妥善保管您的金鑰檔案；建立新版本的擴充功能時將需要使用該金鑰檔案。</translation>
 <translation id="8002274832045662704">進階打印機設定</translation>
 <translation id="8002670234429879764">「<ph name="PRINTER_NAME" />」已無法使用</translation>
+<translation id="8004092996156083991">如果密碼外洩，我們會通知你。</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8005600846065423578">一律允許 <ph name="HOST" /> 查看剪貼簿</translation>
 <translation id="8006630792898017994">空格鍵或 Tab 鍵</translation>
@@ -7899,6 +7908,7 @@
 <translation id="8470513973197838199">已儲存 <ph name="ORIGIN" /> 的密碼</translation>
 <translation id="8471525937465764768">網站通常會連接 USB 裝置，以提供列印文件或儲存至儲存裝置等功能</translation>
 <translation id="8471959340398751476">折扣搜尋功能已關閉。您可在自訂選單中開啟此功能</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{沒有重複使用的密碼}=1{{COUNT} 個重複使用的密碼}other{{COUNT} 個重複使用的密碼}}</translation>
 <translation id="8472623782143987204">硬件支援</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
 <translation id="8475313423285172237">電腦中其他程式所新增的擴充功能可能會變更 Chrome 的運作方式。</translation>
@@ -8377,6 +8387,7 @@
 <translation id="8940081510938872932">您的電腦目前處理的項目太多。請稍後再試。</translation>
 <translation id="8940381019874223173">來自您的「Google 相片」</translation>
 <translation id="8941173171815156065">撤銷「<ph name="PERMISSION" />」權限</translation>
+<translation id="894191600409472540">建立高強度密碼</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">加快耗電量 (目前為 <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">圖示大小</translation>
@@ -8600,6 +8611,7 @@
 <translation id="9140067245205650184">您使用的功能分支切換 (<ph name="BAD_FLAG" />) 目前不受支援，有可能會影響穩定性和安全性。</translation>
 <translation id="9142637293078737510">圖片別名</translation>
 <translation id="9143298529634201539">要移除建議嗎？</translation>
+<translation id="9143922477019434797">保護密碼</translation>
 <translation id="9147392381910171771">選項(&amp;O)</translation>
 <translation id="9148058034647219655">結束</translation>
 <translation id="9148126808321036104">重新登入</translation>

@@ -24,6 +24,7 @@
 <translation id="117624967391683467">Αντιγραφή αρχείου <ph name="FILE_NAME" />…</translation>
 <translation id="1178581264944972037">Παύση</translation>
 <translation id="1190144681599273207">Για την ανάκτηση αυτού του αρχείου θα χρησιμοποιηθούν περίπου <ph name="FILE_SIZE" /> δεδομένων κινητής τηλεφωνίας.</translation>
+<translation id="1194390763418645112">Πρόσβαση στο αρχείο από <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1209796539517632982">Αυτόματοι διακομιστές ονομάτων</translation>
 <translation id="1210831758834677569">Λάο</translation>
@@ -62,6 +63,7 @@
 <translation id="1561842594491319104">Συσκευές Chrome</translation>
 <translation id="1572585716423026576">Ορισμός ως ταπετσαρία</translation>
 <translation id="1576937952766665062">Μεταγραφή σε Βεγγαλικά</translation>
+<translation id="1577977504532381335">Έλεγχος πολιτικής διαχειριστή</translation>
 <translation id="158849752021629804">Απαιτείται εγχώριο δίκτυο</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
@@ -114,6 +116,7 @@
 <translation id="1942765061641586207">Ανάλυση εικόνας</translation>
 <translation id="1972984168337863910">Ανάπτυξη πλαισίων σχολίων αρχείων</translation>
 <translation id="1995337122023280937">Μετάβαση στην τοποθεσία αρχείου</translation>
+<translation id="1999709132469742660">Πρόσβαση στο αρχείο για όλα τα URL</translation>
 <translation id="2001796770603320721">Διαχείριση στο Drive</translation>
 <translation id="2009067268969781306">Η διαμόρφωση ενός δίσκου θα διαγράψει όλα τα δεδομένα που έχουν αποθηκευτεί σε αυτόν. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
 <translation id="2025955442973426285">Τιγκρίνια</translation>
@@ -144,6 +147,7 @@
 <translation id="2239068707900391003">Άτομο με καφέ</translation>
 <translation id="2251368349685848079">Επαναφορά από τον κάδο</translation>
 <translation id="2282155092769082568">Αυτόματη διαμόρφωση URL</translation>
+<translation id="2284767815536050991">αφαιρούμενος αποθηκευτικός χώρος</translation>
 <translation id="2288278176040912387">Πικάπ</translation>
 <translation id="2291538123825441971">Άνοιγμα <ph name="NUMBER_OF_FILES" /> αρχείων.</translation>
 <translation id="2303301624314357662">Άνοιγμα αρχείου <ph name="FILE_NAME" />.</translation>
@@ -351,6 +355,7 @@
 <translation id="4092890906744441904">Ιρλανδικά</translation>
 <translation id="4124935795427217608">Μονόκερος</translation>
 <translation id="4131235941541910880">Μεταφέρετε τα στοιχεία που δεν θέλετε στον κάδο</translation>
+<translation id="4157569377477607576">Η πολιτική διαχειριστή δεν συνιστά:</translation>
 <translation id="4159731583141908892">Το αρχείο <ph name="FILE_NAME" /> μετακινήθηκε.</translation>
 <translation id="4176286497474237543">Άδειασμα κάδου τώρα</translation>
 <translation id="4186579485882418952">Ενεργοποίηση πρόσβασης εκτός σύνδεσης</translation>
@@ -519,6 +524,7 @@
 <translation id="5323213332664049067">Λατινικής Αμερικής</translation>
 <translation id="5330145655348521461">Αυτά τα αρχεία άνοιξαν σε διαφορετικό προφίλ. Μεταφερθείτε στο προφίλ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) για να τα δείτε.</translation>
 <translation id="5330512191124428349">Λήψη πληροφοριών</translation>
+<translation id="5337538975554986899">Πρόσβαση στο αρχείο για όλα τα URL εκτός από <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Άτομο με γάτες</translation>
 <translation id="5358764674931277">Ρυθμός καρέ</translation>
 <translation id="5363339716524495120">Η γλώσσα εισόδου είναι τα Κινέζικα</translation>
@@ -545,6 +551,7 @@
 <translation id="5533102081734025921">Εικόνα <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Υπολογισμός μεγέθους</translation>
 <translation id="554153475311314364">Μεταγραφή Ελληνικών</translation>
+<translation id="5580591966435005537">εικονική μηχανή</translation>
 <translation id="5583640892426849032">Πλήκτρο Backspace</translation>
 <translation id="5583664733673201137">Το εύρος στίξης είναι Πλήρες</translation>
 <translation id="5602622065581044566">Βουλγαρικά με φωνητικό πληκτρολόγιο</translation>
@@ -605,6 +612,7 @@
 <translation id="61118516107968648">Κείμενο CSV</translation>
 <translation id="6129953537138746214">Κενό</translation>
 <translation id="6133173853026656527">Μετακίνηση αρχείου <ph name="FILE_NAME" />…</translation>
+<translation id="6133877453787250710">Ο διαχειριστής παρακολουθεί:</translation>
 <translation id="613750717151263950">Ιαπωνικά με πληκτρολόγιο ΗΠΑ</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, κανένα δίκτυο</translation>
 <translation id="6146563240635539929">Βίντεο</translation>
@@ -625,6 +633,7 @@
 <translation id="6287852322318138013">Επιλέξτε μια εφαρμογή για να ανοίξετε αυτό το αρχείο</translation>
 <translation id="6295542640242147836">Κλείδωμα SIM</translation>
 <translation id="6296410173147755564">Μη έγκυρος κωδικός PUK</translation>
+<translation id="6308243004861726558">Αυτό το αρχείο είναι εμπιστευτικό και υπόκειται στην πολιτική διαχειριστή. Ισχύουν οι παρακάτω ενέργειες πρόσβασης και μεταφοράς αρχείου.</translation>
 <translation id="6312403991423642364">Άγνωστο σφάλμα δικτύου</translation>
 <translation id="6317608858038767920">Προσαρμοσμένος διακομιστής ονομάτων <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Αρχείο <ph name="ARCHIVE_TYPE" /></translation>
@@ -860,6 +869,7 @@
 <translation id="8255595130163158297">Όλα τα στοιχεία στον κάδο θα διαγραφούν και δεν θα μπορείτε να τα επαναφέρετε.</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8261561378965667560">Πίνακας Κινεζικών</translation>
+<translation id="8262872909443689080">Πολιτική διαχειριστή</translation>
 <translation id="8264024885325823677">Η διαχείριση αυτής της ρύθμισης πραγματοποιείται από τον διαχειριστή σας.</translation>
 <translation id="8269755669432358899">Σύμπτυξη πλαισίων σχολίων αρχείων</translation>
 <translation id="8280151743281770066">Φωνητικό Αρμενικά</translation>
@@ -963,6 +973,7 @@
 <translation id="9100610230175265781">Απαιτείται φράση πρόσβασης</translation>
 <translation id="9110990317705400362">Αναζητούμε συνεχώς νέους τρόπους για να κάνουμε πιο ασφαλή την περιήγησή σας. Παλιότερα, ένας ιστότοπος μπορούσε να σας ζητήσει να προσθέσετε μια επέκταση στο πρόγραμμα περιήγησής σας. Στις πιο πρόσφατες εκδόσεις του Google Chrome, πρέπει να πείτε ρητά στο Chrome ότι επιθυμείτε την εγκατάσταση αυτών των επεκτάσεων, προσθέτοντάς τες μέσω της σελίδας "Επεκτάσεις". <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Ξεκλείδωμα</translation>
+<translation id="9116909380156770361">Μεταφορά αρχείου σε <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Κωδικοποιητής</translation>
 <translation id="9130775360844693113">Τα μέλη του "<ph name="DESTINATION_NAME" />" θα αποκτήσουν πρόσβαση σε αυτά τα στοιχεία.</translation>
 <translation id="9131598836763251128">Επιλέξτε ένα ή περισσότερα αρχεία</translation>
@@ -984,6 +995,7 @@
 <translation id="943972244133411984">Τροποποιήθηκε από</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
 <translation id="947144732524271678">Επιλέχθηκε ένα εύρος <ph name="ENTRY_COUNT" /> καταχωρίσεων από το <ph name="FROM_ENTRY_NAME" /> έως το <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Η πολιτική διαχειριστή αποτρέπει:</translation>
 <translation id="965477715979482472">Αγγλικά (Νότια Αφρική)</translation>
 <translation id="981121421437150478">Εκτός σύνδεσης</translation>
 <translation id="988685240266037636">Υπάρχει ήδη ένα αρχείο με την ονομασία "<ph name="FILE_NAME" />". Θέλετε να το αντικαταστήσετε;</translation>

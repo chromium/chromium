@@ -424,6 +424,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4536418791685807335">Try signing in again.</translation>
 <translation id="4540780316273593836">Something went wrong</translation>
 <translation id="457386861538956877">More...</translation>
+<translation id="4588014171431912783">Your sync settings will be restored based on your last backup. <ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Keyboard</translation>
 <translation id="4606247758155004938">Your browser is managed by your organisation.</translation>
 <translation id="461440297010471931">Searching with Google</translation>
@@ -703,6 +704,7 @@ Try to use a unique password for every site.</translation>
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
 <translation id="6620279676667515405">Cancel</translation>
 <translation id="6624219055418309072">Block in Incognito</translation>
+<translation id="6625830436658400045">Your sync settings will be restored based on your last backup. You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="6628106477656132239">Invalid Expiry Date</translation>
 <translation id="6634432609054530164">Your organisation turned off Incognito mode</translation>
 <translation id="6638511529934826365">Zoom text…</translation>

@@ -547,6 +547,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1512642802859169995">Tệp <ph name="FILE_NAME" /> đã được mã hóa. Hãy yêu cầu chủ sở hữu tệp giải mã.</translation>
 <translation id="151501797353681931">Đã nhập Từ Safari</translation>
 <translation id="1515163294334130951">Chạy</translation>
+<translation id="1517467582299994451">Để truyền bằng mã, hãy bật chế độ cài đặt đồng bộ hoá trình duyệt Chrome</translation>
 <translation id="1521442365706402292">Quản lý chứng chỉ</translation>
 <translation id="1521774566618522728">Hoạt động hôm nay</translation>
 <translation id="152234381334907219">Không bao giờ lưu</translation>
@@ -792,6 +793,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1723824996674794290">Cửa sổ &amp;Mới</translation>
 <translation id="1724801751621173132">Chế độ nhập</translation>
 <translation id="1725562816265788801">Cuộn thẻ</translation>
+<translation id="1726503915437308071">Phông chữ nghiêng</translation>
 <translation id="1729533290416704613">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn tìm kiếm từ Thanh địa chỉ.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Để xóa ứng dụng, hãy chuyển đến mục Cài đặt &gt; Cửa hàng Google Play &gt; Quản lý tùy chọn Android &gt; Ứng dụng hoặc Trình quản lý ứng dụng. Sau đó, nhấn vào ứng dụng bạn muốn gỡ cài đặt (bạn có thể phải vuốt sang phải hoặc sang trái để tìm ứng dụng). Sau đó, nhấn vào Gỡ cài đặt hoặc Tắt.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Di chuyển đến thẻ cuối cùng</translation>
@@ -1631,6 +1633,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2468178265280335214">Tăng tốc độ cuộn trên bàn di chuột</translation>
 <translation id="2468205691404969808">Sử dụng cookie để ghi nhớ tùy chọn của bạn, ngay cả khi bạn không truy cập vào các trang đó</translation>
 <translation id="2468402215065996499">Máy nuôi thú ảo</translation>
+<translation id="2468470085922875120">Bạn đang sử dụng các mật khẩu khá khó đoán</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 thẻ}other{<ph name="GROUP_TITLE" /> – # thẻ}}</translation>
 <translation id="2469141124738294431">Trạng thái máy ảo</translation>
 <translation id="2469259292033957819">Bạn chưa lưu máy in nào.</translation>
@@ -1795,6 +1798,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2627424346328942291">Không thể chia sẻ</translation>
 <translation id="2628770867680720336">Để bật tùy chọn gỡ lỗi ADB, bạn cần phải đặt lại Chromebook này về trạng thái ban đầu. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Phát triển ứng dụng Android</translation>
+<translation id="2629437048544561682">Xoá canvas</translation>
 <translation id="2631498379019108537">Hiển thị tùy chọn nhập trong giá</translation>
 <translation id="2633212996805280240">Xóa "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> không thể hoàn tất cài đặt nhưng sẽ tiếp tục chạy từ hình ảnh đĩa của trình duyệt này.</translation>
@@ -1968,6 +1972,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2783321960289401138">Tạo lối tắt...</translation>
 <translation id="2783829359200813069">Chọn loại mã hóa</translation>
 <translation id="2783952358106015700">Sử dụng khóa bảo mật cho <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">Kiểm tra mật khẩu</translation>
 <translation id="2785873697295365461">Phần mô tả tệp</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Lưu giữ dữ liệu duyệt web (dấu trang, mật khẩu, nhật ký, v.v.)</translation>
@@ -2043,6 +2048,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2844169650293029770">Thiết bị USB-C (cổng phía trước, bên trái)</translation>
 <translation id="2844809857160214557">Xem và quản lý các lệnh in</translation>
 <translation id="2845382757467349449">Luôn Hiển thị Thanh Dấu trang</translation>
+<translation id="284581348330507117">Tạo mật khẩu không trùng lặp</translation>
 <translation id="284805635805850872">Xóa phần mềm độc hại?</translation>
 <translation id="2849035674501872372">Tra cứu</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2194,6 +2200,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2985348301114641460">Gửi yêu cầu tới quản trị viên để cài đặt "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Văn bản được chia sẻ từ thiết bị khác</translation>
 <translation id="2988018669686457659">Trình kết xuất dự phòng</translation>
+<translation id="2988328607561082373">Bạn không sử dụng lại bất kỳ mật khẩu nào</translation>
 <translation id="2989123969927553766">Tăng tốc độ cuộn chuột</translation>
 <translation id="2989474696604907455">chưa được đính kèm</translation>
 <translation id="2989786307324390836">DER-mã hóa nhị phân, chứng chỉ đơn</translation>
@@ -2222,6 +2229,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3009178788565917040">Thiết bị ra</translation>
 <translation id="3009300415590184725">Bạn có chắc chắn muốn hủy quá trình thiết lập dịch vụ dữ liệu di động không?</translation>
 <translation id="3009779501245596802">Cơ sở dữ liệu được lập chỉ mục</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Mật khẩu của bạn có vẻ mạnh}=1{{COUNT} mật khẩu yếu}other{{COUNT} mật khẩu yếu}}</translation>
 <translation id="3010279545267083280">Đã xóa mật khẩu</translation>
 <translation id="3010389206479238935">Buộc mở trong</translation>
 <translation id="3011384993885886186">Xám ấm</translation>
@@ -2428,6 +2436,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3225319735946384299">Ký Mã</translation>
 <translation id="3226487301970807183">Bật/tắt bảng điều khiển bên đã căn trái</translation>
 <translation id="3227137524299004712">Micrô</translation>
+<translation id="3232558119926886907">Căn phải</translation>
 <translation id="3232754137068452469">Ứng dụng web</translation>
 <translation id="3233271424239923319">Sao lưu các ứng dụng và tệp Linux</translation>
 <translation id="3234251228180563751">Tên người dùng dài hơn 1000 ký tự</translation>
@@ -2472,6 +2481,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3275778809241512831">Khóa bảo mật nội bộ của bạn hiện không an toàn. Vui lòng xóa khóa khỏi mọi dịch vụ mà bạn đã dùng khóa đó. Để khắc phục sự cố này, vui lòng đặt lại khóa bảo mật.</translation>
 <translation id="3275778913554317645">Mở dưới dạng cửa sổ</translation>
 <translation id="3277214528693754078">Di chuyển bằng con trỏ văn bản (duyệt web bằng con nháy)</translation>
+<translation id="3277594800340743211">Bóng lớn</translation>
 <translation id="3278001907972365362">Bạn cần chú ý đến Tài khoản Google của mình</translation>
 <translation id="3279092821516760512">Những người liên hệ mà bạn đã chọn có thể chia sẻ với bạn khi họ ở gần. Quá trình truyền tệp sẽ bắt đầu khi bạn chấp nhận.</translation>
 <translation id="3279230909244266691">Quá trình này có thể mất vài phút. Đang khởi động máy ảo.</translation>
@@ -3928,6 +3938,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4651484272688821107">Không thể tải thành phần trực tuyến có tài nguyên chế độ minh họa.</translation>
 <translation id="4651921906638302153">Không đăng nhập được bằng tài khoản này</translation>
 <translation id="4652935475563630866">Bạn cần chạy lại ứng dụng Parallels Desktop để thay đổi tùy chọn cài đặt máy ảnh. Hãy chạy lại ứng dụng Parallels Desktop để tiếp tục.</translation>
+<translation id="4653116291358041820">Bóng nhỏ</translation>
 <translation id="4653405415038586100">Lỗi khi định cấu hình Linux</translation>
 <translation id="465406513924180949">Bạn đang xem những giỏ hàng giúp bạn dễ dàng tìm lại các mặt hàng mà bạn từng đưa vào các giỏ hàng trên mạng.
         <ph name="BREAK" />
@@ -4163,6 +4174,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4878718769565915065">Không thêm được vân tay vào khóa bảo mật này</translation>
 <translation id="4879491255372875719">Tự động (mặc định)</translation>
 <translation id="4880827082731008257">Nhật ký tìm kiếm</translation>
+<translation id="4881062916686771679">Tệp này chứa phần mềm độc hại có thể xâm phạm tài khoản cá nhân hoặc tài khoản mạng xã hội của bạn, trong đó có <ph name="USER_EMAIL" /></translation>
 <translation id="4881685975363383806">Không nhắc tôi vào lần tới</translation>
 <translation id="4881695831933465202">Mở</translation>
 <translation id="488211015466188466">Theo dõi trang web</translation>
@@ -4262,6 +4274,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4972737347717125191">Các trang web có thể yêu cầu sử dụng dữ liệu và thiết bị thực tế ảo</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Tắt tiếng trang web}other{Tắt tiếng trang web}}</translation>
 <translation id="497403230787583386">Đã kiểm tra bảo mật xong. Tài liệu của bạn sẽ được in.</translation>
+<translation id="4975543297921324897">Phông chữ đơn cách</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Xác nhận truy cập</translation>
 <translation id="4980805016576257426">Tiện ích này có chứa phần mềm độc hại.</translation>
@@ -4424,6 +4437,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5153234146675181447">Quên điện thoại</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Cài đặt nâng cao cho <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Bạn chưa lưu mật khẩu nào.}=1{Đã kiểm tra mật khẩu cho {COUNT} trang web}other{Đã kiểm tra mật khẩu cho {COUNT} trang web và ứng dụng}}</translation>
 <translation id="5154702632169343078">Chủ đề</translation>
 <translation id="5155327081870541046">Trong thanh địa chỉ, hãy nhập lối tắt cho trang web bạn muốn tìm kiếm, chẳng hạn như "@bookmarks". Sau đó, nhấn phím tắt ưu tiên của bạn rồi nhập cụm từ tìm kiếm.</translation>
 <translation id="5156638757840305347">Con trỏ được đánh dấu khi xuất hiện hoặc di chuyển</translation>
@@ -4664,6 +4678,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5390743329570580756">Gửi cho</translation>
 <translation id="5392192690789334093">Được phép gửi thông báo</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Đường liên kết}other{# đường liên kết}}</translation>
+<translation id="5395498824851198390">Phông chữ mặc định</translation>
 <translation id="5396325212236512832">Tự động đăng nhập vào các trang web và ứng dụng bằng thông tin xác thực đã lưu trữ. Nếu bạn tắt tính năng này, bạn sẽ luôn được yêu cầu xác nhận trước khi đăng nhập vào một trang web hoặc ứng dụng.</translation>
 <translation id="5397378439569041789">Đăng ký thiết bị kiosk hoặc thiết bị bảng hiệu</translation>
 <translation id="5397794290049113714">Bạn</translation>
@@ -4938,6 +4953,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5639549361331209298">Tải lại trang này, giữ để xem các tùy chọn khác</translation>
 <translation id="5640133431808313291">Quản lý khóa bảo mật</translation>
 <translation id="5641608986289282154">Bắt đầu sử dụng <ph name="DEVICE_OS" /></translation>
+<translation id="5641648607875312660">Trình chỉnh sửa ảnh chụp màn hình</translation>
 <translation id="5642508497713047">Trình ký CRL</translation>
 <translation id="5643321261065707929">Mạng có đo lượng dữ liệu</translation>
 <translation id="5643620609347735571">Xóa và tiếp tục</translation>
@@ -5004,6 +5020,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5713158217420111469">Đã kết nối với <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Kiểu nhập theo bề rộng</translation>
 <translation id="5715711091495208045">Trình môi giới plugin: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Bạn nên thay đổi các mật khẩu này ngay bây giờ</translation>
 <translation id="5719603411793408026">Công cụ tìm kiếm mặc định</translation>
 <translation id="5719854774000914513">Trang web có thể yêu cầu kết nối với thiết bị HID</translation>
 <translation id="572155275267014074">Cài đặt Android</translation>
@@ -5131,6 +5148,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5842497610951477805">Bật Bluetooth</translation>
 <translation id="5844574845205796324">Đề xuất nội dung mới để khám phá</translation>
 <translation id="5846200638699387931">Lỗi cú pháp về mối quan hệ: <ph name="ERROR_LINE" /></translation>
+<translation id="5846455742152785308">không có bóng</translation>
 <translation id="5846504156837627898">Quản lý quyền của trang web</translation>
 <translation id="5846807460505171493">Cài đặt các bản cập nhật và ứng dụng. Bằng việc tiếp tục, bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật cũng như ứng dụng từ Google, nhà mạng và nhà sản xuất thiết bị, có thể bằng cách sử dụng dữ liệu di động. Một vài ứng dụng có thể cung cấp tùy chọn mua hàng trong ứng dụng.</translation>
 <translation id="5849212445710944278">Đã thêm</translation>
@@ -5495,6 +5513,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6185132558746749656">Vị trí thiết bị</translation>
 <translation id="6190953336330058278">Ứng dụng của Trung tâm điều khiển điện thoại</translation>
 <translation id="6195005504600220730">Đọc thông tin về trình duyệt, hệ điều hành và thiết bị của bạn</translation>
+<translation id="6195155925303302899">Căn giữa</translation>
 <translation id="6195693561221576702">Không thể thiết lập thiết bị này ở chế độ minh họa ngoại tuyến.</translation>
 <translation id="6196640612572343990">Chặn cookie của bên thứ ba</translation>
 <translation id="6196854373336333322">Tiện ích "<ph name="EXTENSION_NAME" />" đã chiếm quyền kiểm soát cài đặt proxy của bạn, điều đó có nghĩa là tiện ích này có thể thay đổi, làm gián đoạn hoặc nghe trộm bất kỳ điều gì bạn thực hiện trực tuyến. Nếu bạn không chắc chắn về lý do thay đổi này diễn ra, bạn có thể không cần tiện ích này.</translation>
@@ -6170,6 +6189,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6828860976882136098">Không thiết lập được cập nhật tự động cho tất cả người dùng (lỗi thực thi kiểm tra <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Chính sách quyền riêng tư của Google</translation>
 <translation id="6831043979455480757">Dịch</translation>
+<translation id="6832218595502288407">Căn trái</translation>
 <translation id="6833479554815567477">Đã di chuyển thẻ khỏi nhóm <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Chuyển sang trình duyệt an toàn và thông minh</translation>
 <translation id="6833996806551876956">Dùng thử hộp cát bảo vệ quyền riêng tư</translation>
@@ -6459,6 +6479,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7098447629416471489">Các công cụ tìm kiếm đã lưu khác sẽ xuất hiện ở đây</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Xóa Ứng dụng}other{Xóa các Ứng dụng}}</translation>
 <translation id="7099337801055912064">Không thể tải PPD có kích cỡ lớn. Kích cỡ tối đa là 250 kB.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Không có mật khẩu nào bị lộ}=1{{COUNT} mật khẩu bị lộ}other{{COUNT} mật khẩu bị lộ}}</translation>
 <translation id="7102687220333134671">Tính năng tự động cập nhật đã được bật</translation>
 <translation id="7102832101143475489">Yêu cầu đã hết giờ</translation>
 <translation id="710640343305609397">Mở tùy chọn cài đặt mạng</translation>
@@ -7404,6 +7425,7 @@ Tệp Khoá: <ph name="KEY_FILE" />
 Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa để tạo phiên bản tiện ích mới của mình.</translation>
 <translation id="8002274832045662704">Cấu hình máy in nâng cao</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> không sử dụng được nữa</translation>
+<translation id="8004092996156083991">Nếu mật khẩu của bạn bị lộ, chúng tôi sẽ thông báo cho bạn.</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
 <translation id="8005600846065423578">Luôn cho phép <ph name="HOST" /> xem bảng nhớ tạm</translation>
 <translation id="8006630792898017994">Phím cách hoặc phím Tab</translation>
@@ -7582,6 +7604,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">Với <ph name="BEGIN_LINK" />Hộp cát về quyền riêng tư<ph name="END_LINK" />, Chrome sẽ phát triển các công nghệ mới để giúp bạn không bị theo dõi trên nhiều trang web trong khi vẫn duy trì môi trường web mở.</translation>
 <translation id="8161293209665121583">Chế độ đọc dành cho trang web</translation>
+<translation id="8161604891089629425">Phông chữ có đường viền</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Di chuyển thẻ sang cửa sổ mới}other{Di chuyển các thẻ sang cửa sổ mới}}</translation>
 <translation id="8165997195302308593">Chuyển tiếp cổng Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{một số điện thoại}other{# số điện thoại}}</translation>
@@ -7807,6 +7830,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8379991678458444070">Đánh dấu thẻ này để quay lại đây nhanh chóng</translation>
 <translation id="8380266723152870797">Tên cửa sổ</translation>
 <translation id="8380941800586852976">Nguy hiểm</translation>
+<translation id="8382677870544805359">Bạn sẽ phải đặt lại thiết bị này về trạng thái ban đầu để sử dụng các tính năng dành cho doanh nghiệp.</translation>
 <translation id="8382715499079447151">Chống nhìn lén</translation>
 <translation id="8382913212082956454">Sao chép địa chỉ &amp;email</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Hãy thử các bước khắc phục sự cố sau:
@@ -7901,6 +7925,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8470513973197838199">Đã lưu mật khẩu cho <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Các trang web thường kết nối với thiết bị USB để áp dụng những tính năng như in tài liệu hoặc lưu vào thiết bị lưu trữ</translation>
 <translation id="8471959340398751476">Tính năng nhận chiết khấu đang tắt. Bạn có thể bật tính năng này trong trình đơn tùy chỉnh</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Các mật khẩu của bạn không trùng lặp}=1{{COUNT} mật khẩu trùng lặp}other{{COUNT} mật khẩu trùng lặp}}</translation>
 <translation id="8472623782143987204">được hỗ trợ bằng phần cứng</translation>
 <translation id="8473863474539038330">Địa chỉ và các lựa chọn khác</translation>
 <translation id="8475313423285172237">Một chương trình khác trên máy tính của bạn đã thêm một tiện ích có thể thay đổi cách Chrome hoạt động.</translation>
@@ -8011,6 +8036,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8596540852772265699">Tệp tùy chỉnh</translation>
 <translation id="8597845839771543242">Định dạng thuộc tính:</translation>
 <translation id="8599681327221583254">Một hoặc nhiều chính sách được định cấu hình không đúng cách. Vui lòng liên hệ với quản trị viên của bạn</translation>
+<translation id="8599864823732014237">Bỏ qua quy trình đăng ký doanh nghiệp?</translation>
 <translation id="8601206103050338563">Xác thực Ứng dụng khách TLS WWW</translation>
 <translation id="8601611099293226919">Tìm kiếm trên màn hình của bạn bằng Google Ống kính</translation>
 <translation id="8602851771975208551">Một chương trình khác trên máy tính của bạn đã thêm một ứng dụng có thể thay đổi cách Chrome hoạt động.</translation>
@@ -8379,6 +8405,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8940081510938872932">Máy tính của bạn hiện đang thực hiện quá nhiều tác vụ.  Hãy thử lại sau.</translation>
 <translation id="8940381019874223173">Từ Google Photos của bạn</translation>
 <translation id="8941173171815156065">Thu hồi quyền '<ph name="PERMISSION" />'</translation>
+<translation id="894191600409472540">Tạo mật khẩu mạnh</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Sử dụng pin nhanh hơn (hiện tại là <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Kích thước biểu tượng</translation>
@@ -8602,6 +8629,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9140067245205650184">Bạn đang sử dụng cờ của tính năng không được hỗ trợ: <ph name="BAD_FLAG" />. Độ ổn định và tính bảo mật sẽ bị ảnh hưởng.</translation>
 <translation id="9142637293078737510">Bí danh hình ảnh</translation>
 <translation id="9143298529634201539">Xóa đề xuất?</translation>
+<translation id="9143922477019434797">Bảo vệ mật khẩu</translation>
 <translation id="9147392381910171771">&amp;Tuỳ chọn</translation>
 <translation id="9148058034647219655">Thoát</translation>
 <translation id="9148126808321036104">Đăng nhập lại</translation>

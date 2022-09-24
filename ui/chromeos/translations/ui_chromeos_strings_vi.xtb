@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Đang sao chép <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="1190144681599273207">Tìm nạp tệp này sẽ sử dụng khoảng <ph name="FILE_SIZE" /> dữ liệu di động.</translation>
+<translation id="1194390763418645112">Hoạt động truy cập vào tệp qua <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1209796539517632982">Máy chủ có tên tự động</translation>
 <translation id="1210831758834677569">Tiếng Lào</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Thiết bị Chrome</translation>
 <translation id="1572585716423026576">Đặt làm hình nền</translation>
 <translation id="1576937952766665062">Tiếng Bangla (chuyển tự)</translation>
+<translation id="1577977504532381335">Xem kỹ chính sách của quản trị viên</translation>
 <translation id="158849752021629804">Cần mạng gia đình</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Độ phân giải hình ảnh</translation>
 <translation id="1972984168337863910">Mở rộng bảng dữ liệu phản hồi về tệp</translation>
 <translation id="1995337122023280937">Chuyển đến vị trí tệp</translation>
+<translation id="1999709132469742660">Hoạt động truy cập vào tệp qua mọi URL</translation>
 <translation id="2001796770603320721">Quản lý trong Drive</translation>
 <translation id="2009067268969781306">Thao tác định dạng ổ sẽ xóa toàn bộ dữ liệu lưu trữ trên ổ đó. Bạn không thể hủy thao tác này sau khi đã thực hiện.</translation>
 <translation id="2025955442973426285">Tiếng Tigrinya</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Người uống cà phê</translation>
 <translation id="2251368349685848079">Khôi phục từ thùng rác</translation>
 <translation id="2282155092769082568">URL tự động định cấu hình:</translation>
+<translation id="2284767815536050991">bộ nhớ di động</translation>
 <translation id="2288278176040912387">Máy quay đĩa hát</translation>
 <translation id="2291538123825441971">Đang mở <ph name="NUMBER_OF_FILES" /> tệp.</translation>
 <translation id="2303301624314357662">Đang mở tệp <ph name="FILE_NAME" />.</translation>
@@ -224,6 +228,7 @@
 <translation id="3016566519832145558">Chú ý: Các tệp này chỉ được lưu trữ tạm thời và có thể tự động bị xóa để giải phóng dung lượng ổ đĩa.</translation>
 <translation id="3029114385395636667">Bật Google Tài liệu ngoại tuyến để sử dụng Tài liệu, Trang tính và Trang trình bày ở chế độ ngoại tuyến.</translation>
 <translation id="303198083543495566">Địa lý</translation>
+<translation id="3044404008258011032">Để khôi phục, hãy kéo các mục này vào một thư mục mới bên ngoài thùng rác. Thư mục gốc "<ph name="PARENT_FOLDER_NAME" />" của những mục này đã bị xoá.</translation>
 <translation id="3047197340186497470">Tiếng Trung (Dayi)</translation>
 <translation id="3067790092342515856">Tệp Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -341,6 +346,8 @@
 <translation id="4057991113334098539">Đang kích hoạt...</translation>
 <translation id="4092890906744441904">Tiếng Ireland</translation>
 <translation id="4124935795427217608">Kỳ lân</translation>
+<translation id="4131235941541910880">Chuyển các mục bạn không cần vào thùng rác</translation>
+<translation id="4157569377477607576">Chính sách của quản trị viên không khuyến khích:</translation>
 <translation id="4159731583141908892">Đã di chuyển <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Dọn sạch thùng rác ngay</translation>
 <translation id="4186579485882418952">Bật chế độ ngoại tuyến</translation>
@@ -435,8 +442,10 @@
 <translation id="485316830061041779">Tiếng Đức</translation>
 <translation id="4867079195717347957">Nhấp để sắp xếp cột theo thứ tự giảm dần.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
+<translation id="4874569719830985133">Xoá vĩnh viễn</translation>
 <translation id="4880214202172289027">Thanh trượt âm lượng</translation>
 <translation id="4881695831933465202">Mở</translation>
+<translation id="4891091358278567964">Để khôi phục, hãy kéo các mục này vào một thư mục mới bên ngoài thùng rác. Các thư mục gốc của những mục này đã bị xoá.</translation>
 <translation id="4900532980794411603">Chia sẻ với ứng dụng Parallels Desktop</translation>
 <translation id="4902546322522096650">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Kết nối</translation>
 <translation id="4906580650526544301">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Thông tin chi tiết</translation>
@@ -493,6 +502,7 @@
     <ph name="MARKUP_7" />Chia sẻ, tạo và cộng tác<ph name="MARKUP_8" />
     trên các tệp với những người khác, tất cả tại cùng một địa điểm.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Tệp được khôi phục từ Google Drive</translation>
+<translation id="5278111733643988471">Để khôi phục, hãy kéo mục này vào một thư mục mới bên ngoài thùng rác. Thư mục gốc "<ph name="PARENT_FOLDER_NAME" />" của mục này đã bị xoá.</translation>
 <translation id="5286194356314741248">Đang quét</translation>
 <translation id="5288441970121584418">Bánh mì kẹp</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -502,9 +512,11 @@
 <translation id="5323213332664049067">Tiếng Mỹ Latinh</translation>
 <translation id="5330145655348521461">Những tệp này được mở trên máy tính khác. Chuyển tới <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) để xem tệp đó.</translation>
 <translation id="5330512191124428349">Nhận thông tin</translation>
+<translation id="5337538975554986899">Hoạt động truy cập vào tệp qua mọi URL, ngoại trừ <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Người với mèo</translation>
 <translation id="5358764674931277">Tốc độ khung hình</translation>
 <translation id="5363339716524495120">Ngôn ngữ nhập là tiếng Trung</translation>
+<translation id="5364067326287025678">Không có gì trong thùng rác</translation>
 <translation id="5368191757080475556">Chia sẻ thư mục với Linux</translation>
 <translation id="5402367795255837559">Chữ nổi</translation>
 <translation id="5411472733320185105">Không sử dụng cài đặt proxy cho các máy chủ và tên miền này:</translation>
@@ -526,6 +538,7 @@
 <translation id="5533102081734025921">Hình ảnh <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Đang tính toán kích thước</translation>
 <translation id="554153475311314364">Tiếng Hy Lạp (chuyển tự)</translation>
+<translation id="5580591966435005537">máy ảo</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Độ rộng dấu câu là Đầy đủ</translation>
 <translation id="5602622065581044566">Tiếng Bulgaria bằng bàn phím phiên âm</translation>
@@ -586,6 +599,7 @@
 <translation id="61118516107968648">Văn bản CSV</translation>
 <translation id="6129953537138746214">Dấu cách</translation>
 <translation id="6133173853026656527">Đang di chuyển <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Quản trị viên sẽ giám sát:</translation>
 <translation id="613750717151263950">Tiếng Nhật bằng bàn phím Anh-Mỹ</translation>
 <translation id="6138894911715675297">Không có mạng <ph name="NETWORK_TYPE" /></translation>
 <translation id="6146563240635539929">Video</translation>
@@ -606,6 +620,7 @@
 <translation id="6287852322318138013">Chọn một ứng dụng để mở tệp này</translation>
 <translation id="6295542640242147836">Khoá SIM</translation>
 <translation id="6296410173147755564">Mã PUK không hợp lệ</translation>
+<translation id="6308243004861726558">Tệp này được bảo mật và phải tuân thủ chính sách của quản trị viên. Các thao tác truy cập và chuyển tệp sau sẽ được áp dụng.</translation>
 <translation id="6312403991423642364">Lỗi mạng không xác định</translation>
 <translation id="6317608858038767920">Máy chủ định danh tùy chỉnh <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Lưu trữ <ph name="ARCHIVE_TYPE" /></translation>
@@ -771,6 +786,7 @@
 <translation id="7711920809702896782">Thông tin về tệp hình ảnh</translation>
 <translation id="7724603315864178912">Cắt</translation>
 <translation id="7732111077498238432">Mạng được kiểm soát bằng chính sách</translation>
+<translation id="7736003208887389532">Xoá vĩnh viễn các tệp này?</translation>
 <translation id="7748626145866214022">Trên thanh hành động có các tùy chọn khác. Nhấn tổ hợp phím Alt + A để đặt tiêu điểm vào thanh hành động.</translation>
 <translation id="7760449188139285140">Tiếng Trung Ngũ bút</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
@@ -832,8 +848,10 @@
 <translation id="8249296373107784235">Hủy bỏ</translation>
 <translation id="8250690786522693009">Tiếng Latinh</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
+<translation id="8255595130163158297">Tất cả các mục trong thùng rác sẽ bị xoá và không thể khôi phục.</translation>
 <translation id="8261506727792406068">Xoá</translation>
 <translation id="8261561378965667560">Tiếng Trung (bộ gõ Array)</translation>
+<translation id="8262872909443689080">Chính sách của quản trị viên</translation>
 <translation id="8264024885325823677">Quản trị viên của bạn quản lý tùy chọn cài đặt này.</translation>
 <translation id="8269755669432358899">Thu gọn bảng dữ liệu phản hồi về tệp</translation>
 <translation id="8280151743281770066">Phiên âm tiếng Armenia</translation>
@@ -910,6 +928,7 @@
 <translation id="8857149712089373752">Tiếng Nepal bằng bàn phím phiên âm</translation>
 <translation id="8860454412039442620">Bảng tính Excel</translation>
 <translation id="8866284467018526531">Tiếng Ả Rập (chuyển tự)</translation>
+<translation id="8873014196523807561">Để khôi phục, hãy kéo các mục này vào một thư mục mới. Các thư mục gốc của một vài mục trong số này đã bị xoá.</translation>
 <translation id="8874184842967597500">Chưa kết nối</translation>
 <translation id="8900820606136623064">Tiếng Hungary</translation>
 <translation id="8903931173357132290">Người tốt nghiệp</translation>
@@ -931,6 +950,7 @@
 <translation id="9100610230175265781">Yêu cầu cụm mật khẩu</translation>
 <translation id="9110990317705400362">Chúng tôi không ngừng tìm cách để giúp cho quá trình duyệt web của bạn trở nên an toàn hơn. Trước đây, bất kỳ trang web nào cũng có thể nhắc bạn thêm tiện ích vào trình duyệt. Trong các phiên bản mới nhất của Google Chrome, bạn phải cho Chrome biết rõ rằng bạn muốn cài đặt các tiện ích này bằng cách thêm chúng thông qua trang Tiện ích. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Mở khóa</translation>
+<translation id="9116909380156770361">Hoạt động chuyển tệp đến <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">Thành viên của '<ph name="DESTINATION_NAME" />' sẽ có quyền truy cập vào các tệp này.</translation>
 <translation id="9131598836763251128">Chọn một hoặc nhiều tệp</translation>
@@ -952,6 +972,7 @@
 <translation id="943972244133411984">Người sửa đổi:</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="947144732524271678">Đã chọn một loạt <ph name="ENTRY_COUNT" /> mục từ <ph name="FROM_ENTRY_NAME" /> đến <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Chính sách của quản trị viên ngăn chặn:</translation>
 <translation id="965477715979482472">Tiếng Anh (Nam Phi)</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
 <translation id="988685240266037636">Một tệp có tên <ph name="FILE_NAME" /> đã tồn tại. Bạn có muốn thay thế tệp đó không?</translation>

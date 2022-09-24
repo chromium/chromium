@@ -1616,6 +1616,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2468178265280335214">Accelerazione di scorrimento del touchpad</translation>
 <translation id="2468205691404969808">Utilizza i cookie per memorizzare le tue preferenze, anche se non visiti quelle pagine</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470085922875120">Stai utilizzando password che sembrano difficili da indovinare</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 scheda}other{<ph name="GROUP_TITLE" /> - # schede}}</translation>
 <translation id="2469141124738294431">Stato VM</translation>
 <translation id="2469259292033957819">Nessuna stampante salvata.</translation>
@@ -1953,6 +1954,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2783321960289401138">Crea scorciatoia...</translation>
 <translation id="2783829359200813069">Seleziona i tipi di crittografia</translation>
 <translation id="2783952358106015700">Utilizza il token di sicurezza con <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">Controllo password</translation>
 <translation id="2785873697295365461">Descrittori di file</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Mantieni dati di navigazione locali (preferiti, password, cronologia e così via)</translation>
@@ -2028,6 +2030,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2844169650293029770">Dispositivo USB-C (porta anteriore sinistra)</translation>
 <translation id="2844809857160214557">Visualizza e gestisci i processi di stampa</translation>
 <translation id="2845382757467349449">Mostra sempre barra dei Preferiti</translation>
+<translation id="284581348330507117">Crea password univoche</translation>
 <translation id="284805635805850872">Rimuovere il software dannoso?</translation>
 <translation id="2849035674501872372">Ricerca</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2179,6 +2182,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2985348301114641460">Inviare all'amministrazione la richiesta di installare "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Testo condiviso da un altro dispositivo</translation>
 <translation id="2988018669686457659">Renderer di riserva</translation>
+<translation id="2988328607561082373">Non stai riutilizzando alcuna password</translation>
 <translation id="2989123969927553766">Accelerazione di scorrimento del mouse</translation>
 <translation id="2989474696604907455">non collegato</translation>
 <translation id="2989786307324390836">Binario codificato DER, singolo certificato</translation>
@@ -2207,6 +2211,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3009178788565917040">Uscita</translation>
 <translation id="3009300415590184725">Annullare la procedura di configurazione del servizio dati mobile?</translation>
 <translation id="3009779501245596802">Indexed databases</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Le tue password sembrano efficaci}=1{{COUNT} password inefficace}other{{COUNT} password inefficaci}}</translation>
 <translation id="3010279545267083280">Password eliminata</translation>
 <translation id="3010389206479238935">Forza l'apertura in</translation>
 <translation id="3011384993885886186">Grigio</translation>
@@ -4408,6 +4413,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5153234146675181447">Elimina telefono</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Impostazioni avanzate per <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Nessuna password salvata.}=1{Sono state controllate le password di {COUNT} sito}other{Sono state controllate le password di {COUNT} siti e app}}</translation>
 <translation id="5154702632169343078">Oggetto</translation>
 <translation id="5155327081870541046">Nella barra degli indirizzi, inserisci la scorciatoia relativa al sito in cui vuoi eseguire la ricerca, come "@segnalibri". Successivamente, digita la tua scorciatoia da tastiera preferita e inserisci il termine di ricerca.</translation>
 <translation id="5156638757840305347">Il cursore è evidenziato quando viene visualizzato o spostato</translation>
@@ -4986,6 +4992,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5713158217420111469">Collegato a <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Stile di immissione spazi</translation>
 <translation id="5715711091495208045">Plug-in Broker: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Dovresti cambiarle subito</translation>
 <translation id="5719603411793408026">Motori di ricerca predefiniti</translation>
 <translation id="5719854774000914513">I siti possono chiedere di connettersi ai dispositivi HID</translation>
 <translation id="572155275267014074">Impostazioni di Android</translation>
@@ -6440,6 +6447,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7098447629416471489">Altri motori di ricerca salvati saranno visualizzati qui</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Rimuovi app}other{Rimuovi app}}</translation>
 <translation id="7099337801055912064">Impossibile caricare il file PPD. Dimensioni massime: 250 kB.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="7102687220333134671">Gli aggiornamenti automatici sono attivi</translation>
 <translation id="7102832101143475489">La richiesta è scaduta</translation>
 <translation id="710640343305609397">Apri impostazioni di rete</translation>
@@ -7385,6 +7393,7 @@ File di chiave: <ph name="KEY_FILE" />
 Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove versioni dell'estensione.</translation>
 <translation id="8002274832045662704">Configurazione avanzata stampante</translation>
 <translation id="8002670234429879764">La stampante <ph name="PRINTER_NAME" /> non è più disponibile</translation>
+<translation id="8004092996156083991">Ti informeremo se le tue password vengono compromesse</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8005600846065423578">Consenti sempre a <ph name="HOST" /> di leggere gli appunti</translation>
 <translation id="8006630792898017994">Spazio o Tab</translation>
@@ -7882,6 +7891,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8470513973197838199">Password salvate per il sito <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">In genere, i siti si connettono a dispositivi USB per funzionalità come la stampa di un documento o il salvataggio su un dispositivo di archiviazione</translation>
 <translation id="8471959340398751476">Gli sconti sono disattivati. Puoi attivarli nel menu Personalizza</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Le tue password sono univoche}=1{{COUNT} password riutilizzata}other{{COUNT} password riutilizzate}}</translation>
 <translation id="8472623782143987204">basato sull'hardware</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="8475313423285172237">Un altro programma sul computer ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chrome.</translation>
@@ -8360,6 +8370,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8940081510938872932">Troppe operazioni in corso al momento. Riprova più tardi.</translation>
 <translation id="8940381019874223173">Da Google Foto</translation>
 <translation id="8941173171815156065">Revoca l'autorizzazione "<ph name="PERMISSION" />"</translation>
+<translation id="894191600409472540">Crea password efficaci</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Consumerà più velocemente la batteria (attualmente con <ph name="BATTERY_PERCENTAGE" />% di carica)</translation>
 <translation id="8945274638472141382">Dimensioni delle icone</translation>
@@ -8583,6 +8594,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9140067245205650184">Stai utilizzando un flag di funzione non supportato: <ph name="BAD_FLAG" />. Stabilità e sicurezza ne risentiranno.</translation>
 <translation id="9142637293078737510">Alias immagine</translation>
 <translation id="9143298529634201539">Rimuovere il suggerimento?</translation>
+<translation id="9143922477019434797">Proteggi le tue password</translation>
 <translation id="9147392381910171771">&amp;Opzioni</translation>
 <translation id="9148058034647219655">Esci</translation>
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>

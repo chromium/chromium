@@ -225,6 +225,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2227179592712503583">Remove suggestion</translation>
 <translation id="225680501294068881">Scanning for devices...</translation>
 <translation id="2257486738914982088">Something went wrong while downloading <ph name="FILENAME" /></translation>
+<translation id="2258734398699965611">Suggested files</translation>
 <translation id="2268130516524549846">Bluetooth disabled</translation>
 <translation id="2268813581635650749">Sign out all</translation>
 <translation id="2269016722240250274">An application is using your microphone</translation>
@@ -900,6 +901,7 @@ Connect your device to power.</translation>
 <translation id="6099678161144790572">Edited in the past month</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> speech files downloaded</translation>
+<translation id="6116825164611323644">Camera access is off on this device</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirm download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">The Google Assistant is not available in a guest session.</translation>
@@ -1349,6 +1351,7 @@ New install</translation>
 <translation id="8734991477317290293">It may be attempting to steal your keystrokes</translation>
 <translation id="8735678380411481005">Keyboard backlight colour</translation>
 <translation id="8735953464173050365">Show keyboard settings. <ph name="KEYBOARD_NAME" /> is selected</translation>
+<translation id="8752416742247198423">Turn on camera access to allow apps and web pages with the camera permission to use the camera(s) connected to this device.</translation>
 <translation id="8755498163081687682">Verify your identity: <ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="875593634123171288">Show VPN settings</translation>
 <translation id="8759408218731716181">Can't set up multiple sign-in</translation>
@@ -1363,6 +1366,7 @@ New install</translation>
 <translation id="8819728065740986820">Adaptive charging is on</translation>
 <translation id="8825863694328519386">Swipe from the left to go back</translation>
 <translation id="8834539327799336565">Currently connected</translation>
+<translation id="8834657930627018205">Turn on camera access.</translation>
 <translation id="8841375032071747811">Back button</translation>
 <translation id="8843682306134542540">Toggle rotation lock. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

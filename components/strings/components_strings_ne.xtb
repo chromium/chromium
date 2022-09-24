@@ -34,7 +34,6 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं Chrome मा Dino Run गेम खेल्न चाहनुहुन्छ भने ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
 <translation id="1058479211578257048">कार्डहरू सुरक्षित गर्दै...</translation>
 <translation id="10614374240317010">कहिले पनि बचत नगर्नुहोस्</translation>
-<translation id="1062160989074299343">Prc10 (Envelope)</translation>
 <translation id="106701514854093668">डेस्कटप पृष्ठमञ्जूषाहरू</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> मा भएका पृष्ठहरूलाई कहिल्यै अनुवाद नगर्नुहोस्‌</translation>
 <translation id="1070853536588271387">हाइब्रिड तथा वैकल्पिक सवारी साधनहरू</translation>
@@ -137,7 +136,6 @@
 <translation id="1314509827145471431">दायाँ बाइन्ड</translation>
 <translation id="1318023360584041678">ट्याब समूहमा सेभ गरिएको छ</translation>
 <translation id="1319245136674974084">यो एपका हकमा फेरि नसोधियोस्</translation>
-<translation id="1320233736580025032">Prc1 (Envelope)</translation>
 <translation id="1322083935398004629">राजनीति</translation>
 <translation id="132301787627749051">क्लिपबोर्डको छवि खोज्नुहोस्</translation>
 <translation id="1323433172918577554">थप देखाउनुहोस्</translation>
@@ -238,7 +236,6 @@
 <translation id="1521159554480556801">फाइबर तथा वस्त्र कलाहरू</translation>
 <translation id="1521655867290435174">Google पाना</translation>
 <translation id="1527263332363067270">जडानको लागि प्रतिक्षा गर्दै...</translation>
-<translation id="1529521330346880926">10x15 (Envelope)</translation>
 <translation id="1529789484829130889">ट्रे ८</translation>
 <translation id="1530707389502320859">तपाईंले भर्खरै भ्रमण गर्न खोज्नुभएको साइट नक्कली हो जस्तो छ। आक्रमणकारीहरूले कहिलेकाहीँ URL मा ससाना, स्पष्ट नदेखिने परिवर्तनहरू गरी नक्कली साइट सिर्जना गर्न सक्छन्।</translation>
 <translation id="1531205177818805254">Exec</translation>
@@ -477,7 +474,6 @@
 <translation id="2166049586286450108">पूर्ण प्रशासक पहुँच</translation>
 <translation id="2166378884831602661">यो साइटले सुरक्षित जडान प्रदान गर्न सक्दैन</translation>
 <translation id="2168151236314517198">एड्मिनले तोक्नुभएको नीतिअनुसार यो सामग्री प्रिन्ट गर्ने सुविधा ब्लक गरिएको छ</translation>
-<translation id="2169984857010174799">Kaku2 (Envelope)</translation>
 <translation id="2181821976797666341">नीतिहरू</translation>
 <translation id="2183608646556468874">फोन नम्बर</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{१ ठेगाना}other{# ठेगानाहरू}}</translation>
@@ -522,10 +518,8 @@
 <translation id="2292556288342944218">तपाईंको इन्टरनेट पहुँचमाथि रोक लगाइएको छ</translation>
 <translation id="2293443924986248631">यो सुविधा सक्रिय हुँदा साइटहरूले वेबमा तपाईंलाई ट्र्याक गर्ने कुकीहरू प्रयोग गर्न सक्दैनन्। तर कतिपय साइटका सुविधाहरूले काम नगर्न सक्छन्।</translation>
 <translation id="2295290966866883927">तपाईंले खोल्ने वेबपृष्ठका URL हरू विश्लेषण गर्ने प्रयोजनका लागि Google Cloud मा वा तेस्रा पक्षकहाँ पठाइन्छन्। उदाहरणका लागि, असुरक्षित वेबसाइटहरू पत्ता लगाउन तिनलाई स्क्यान गरिन सक्छ।</translation>
-<translation id="2297722699537546652">B5 (Envelope)</translation>
 <translation id="2298855485018661510">'कुकीहरू व्यवस्थापन गर्नुहोस्' नामक बटन, Chrome का सेटिङमा गई कुकीसम्बन्धी आफ्ना प्राथमिकताहरू व्यवस्थापन गर्न Enter थिच्नुहोस्</translation>
 <translation id="2300306941146563769">अपलोड नगरिएको</translation>
-<translation id="2310021320168182093">Chou2 (Envelope)</translation>
 <translation id="2316159751672436664">ChromeOS का सेटिङमा गई आफ्ना एक्सेसिबिलिटी टुलहरू पर्सनलाइज गर्नुहोस्</translation>
 <translation id="2316887270356262533">१ एम.बि. भन्दा कम ठाउँ खाली गर्दछ। तपाईं अर्कोपटक आउँदा केही साइटहरू अझ ढिलोगरी लोड हुनसक्छन्।</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> लाई एक-पटके टेक्स्ट म्यासेज र पासवर्ड आवश्यक हुन्छ।</translation>
@@ -643,7 +637,6 @@
           <ph name="LIST_ITEM" />कुकी तथा साइट डेटा
           <ph name="LIST_ITEM" />फारामहरूमा भरिएको जानकारी
         <ph name="END_LIST" /></translation>
-<translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2625385379895617796">तपाईंको घडी धेरै छिटो छ</translation>
 <translation id="262745152991669301">USB डिभाइसमा कनेक्ट गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="2629325967560697240">Chrome को सबैभन्दा उच्च स्तरको सुरक्षा सुविधा प्रयोग गर्न <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />परिष्कृत सुरक्षा<ph name="END_ENHANCED_PROTECTION_LINK" /> अन गर्नुहोस्</translation>
@@ -715,7 +708,6 @@
 <translation id="2835170189407361413">फारम खालि गर्नुहोस्</translation>
 <translation id="2839032553903800133">सूचनाहरूलाई रोक लगाइयो</translation>
 <translation id="2839501879576190149">तपाईं जान लाग्नुभएको साइट नक्कली साइट हो</translation>
-<translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2854764410992194509">इन्टरनेट सेवा प्रदायकहरू (ISP)</translation>
 <translation id="2856444702002559011">आक्रमणकारीहरू <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> बाट तपाईंको जानकारी (उदाहरणका लागि, पासवर्ड, सन्देश वा क्रेडिट कार्डहरू) चोर्ने प्रयास गरिरहेका हुनसक्छन्। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">यो साइटले हस्तक्षेपकारी वा भ्रामक विज्ञापनहरू देखाउँछ।</translation>
@@ -780,7 +772,6 @@
 <translation id="301521992641321250">स्वतः रोक लगाइयो</translation>
 <translation id="3016780570757425217">तपाईँको स्थान जान्नुहोस्</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, सुझाव हटाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्।</translation>
-<translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">गलत नीति प्रकार</translation>
 <translation id="3029752078111257850">विश्व समाचार</translation>
 <translation id="3037177537145227281">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ</translation>
@@ -788,7 +779,6 @@
 <translation id="3041612393474885105">प्रमाणपत्र जानकारी</translation>
 <translation id="305162504811187366">Chrome को रिमोट डेस्कटपसम्बन्धी इतिहास (जस्तै, टाइमस्ट्याम्प, होस्ट र क्लाइन्ट सेसन ID)</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> को मूल्य <ph name="PRICE_DROP" /> घटेको छ</translation>
-<translation id="3060227939791841287">C9 (Envelope)</translation>
 <translation id="3061707000357573562">प्याचसम्बन्धी सेवा</translation>
 <translation id="306573536155379004">गेम सुरु भएको छ।</translation>
 <translation id="3068991664510324412">कम्प्युटर तथा भिडियो गेमहरू</translation>
@@ -941,7 +931,6 @@
 <translation id="3452404311384756672">अन्तराल तान्नुहोस्:</translation>
 <translation id="3453962258458347894">कति पटक पुन: प्रयास गरियो</translation>
 <translation id="3454555520521576458">आकार मिलाउन सकिने</translation>
-<translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> क्लिपबोर्डमा प्रतिलिपि गरिएको पाठ र छवि हेर्न चाहन्छ</translation>
 <translation id="3461824795358126837">हाइलाइटर</translation>
 <translation id="3462200631372590220">उन्नत लुकाउनुहोस्</translation>
@@ -983,7 +972,6 @@
 <translation id="3584299510153766161">फेदमा दुई प्वाल</translation>
 <translation id="3586931643579894722">विवरणहरू लुकाउनुहोस्</translation>
 <translation id="3587738293690942763">मध्य भाग</translation>
-<translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595645257662173296">यो कुरा सही छ भनी पुष्टि गर्ने के प्रमाण छ?</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{तपाईं जुनसुकै बेला आफ्नो समूह रिसेट गर्न सक्नुहुन्छ। नयाँ समूहमा सामेल हुन झन्डै एक दिन लाग्छ।}=1{तपाईं जुनसुकै बेला आफ्नो समूह रिसेट गर्न सक्नुहुन्छ। नयाँ समूहमा सामेल हुन झन्डै एक दिन लाग्छ।}other{तपाईं जुनसुकै बेला आफ्नो समूह रिसेट गर्न सक्नुहुन्छ। नयाँ समूहमा सामेल हुन झन्डै {NUM_DAYS} दिन लाग्छ।}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1007,7 +995,6 @@
 <translation id="3633738897356909127">'Chrome अपडेट गर्नुहोस्' नामक बटन, आफ्नो Chrome का सेटिङमा गई Chrome अपडेट गर्न Enter थिच्नुहोस्</translation>
 <translation id="3634530185120165534">ट्रे ५</translation>
 <translation id="3634567936866541746">तपाईंले भर्खरै कुनै असुरक्षित साइटमा आफ्नो पासवर्ड हाल्नुभएको छ। तपाईंका खाताहरूको सुरक्षार्थ Chrome तपाईंलाई तपाईंका सेभ गरिएका पासवर्डहरूको जाँच गर्न सिफारिस गर्छ।</translation>
-<translation id="3637033245385760976">Chrome मार्फत सूचना देखाउने सुविधा अन हुनु पर्छ। तपाईं <ph name="NOTIFICATION_SETTINGS" /> मा गई यो सुविधा अन गर्न सक्नुहुन्छ</translation>
 <translation id="3637662659967048211">Google खातामा सेभ गर्नुहोस्</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">एप:</translation>
@@ -1044,7 +1031,6 @@
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र DNS को कन्फिगरेसनलाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">यो त्रुटि उत्पन्न गराउन सक्ने एपहरूमा एन्टिभाइरस, फायरवाल र वेब-फिल्टर वा प्रोक्सी सफ्टवेयर पर्दछन्।</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Slides प्रयोग गरी तुरुन्तै नयाँ प्रेजेन्टेसन बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
-<translation id="373042150751172459">B4 (Envelope)</translation>
 <translation id="3733139489341305600">चालकविहीन सवारी साधनहरू</translation>
 <translation id="3736520371357197498">यदि तपाईं आफ्नो सुरक्षामा भएका जोखिमहरूलाई बुझ्नुहुन्छ भने, तपाईं खतरनाक कार्यक्रमहरू हटाइनु भन्दा पहिले तपाईं <ph name="BEGIN_LINK" />यो असुरक्षित साइट भ्रमण<ph name="END_LINK" /> गर्न सक्नुहुन्छ।</translation>
 <translation id="3738166223076830879">तपाईंका एड्मिन तपाईंको ब्राउजर व्यवस्थापन गर्नुहुन्छ।</translation>
@@ -1074,7 +1060,6 @@
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
 <translation id="3793574014653384240">हालसालै भएका क्र्यासहरूको सङ्ख्या र तिनको कारण</translation>
 <translation id="3795344968043407227">इन्डी तथा अल्टरनेटिभ सङ्गीत</translation>
-<translation id="3797522431967816232">Prc3 (Envelope)</translation>
 <translation id="3799805948399000906">मागिएको फन्ट</translation>
 <translation id="380329542618494757">नाम</translation>
 <translation id="3807270098669886186">फोन सेवा प्रदायकहरू</translation>
@@ -1148,7 +1133,6 @@
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4063924980214801036">आफ्ना कार्डहरू अझ चाँडो पुष्टि गर्न डिभाइस अनलक प्रयोग गर्नुहोस्</translation>
 <translation id="4067098466788473230">शैक्षिक अनुदान तथा छात्रवृत्तिहरू</translation>
-<translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">मान्य ठेगाना थप्नुहोस्</translation>
 <translation id="4072193657607981494">नीतिहरू लोड गरिँदै छन्</translation>
 <translation id="4072486802667267160">तपाईंको भुक्तानीको प्रक्रियालाई अघि बढाउँदा कुनै त्रुटि भयो, कृपया फेरि प्रयास गर्नुहोस्।</translation>
@@ -1208,7 +1192,6 @@
 <translation id="4213305257324635756">एनिमेटेड चल‍चित्रहरू</translation>
 <translation id="4213500579045346575">शारीरिक सुगठन</translation>
 <translation id="4214357935346142455">साइन इन स्क्रिनको प्रोफाइल</translation>
-<translation id="4215751373031079683">7x9 (Envelope)</translation>
 <translation id="4220128509585149162">दुर्घटनाहरू</translation>
 <translation id="422022731706691852"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> मा रहेका आक्रमणकारीहरूले तपाईंलाई तपाईंको ब्राउजर अनुभवलाई क्षति पुऱ्याउने (उदाहरणका लागि तपाईंको गृहपृष्ठ बदलेर वा तपाईंले हेर्नुहुने साइटहरूमा अतिरिक्त विज्ञापनहरू देखाएर) कार्यक्रमहरू स्थापना गर्न लगाएर झुक्याउने प्रयास गर्नसक्छन्। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;चरण १: पोर्टलमा साइन इन गर्नुहोस्‌&lt;/h4&gt;
@@ -1252,7 +1235,6 @@
 <translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
 <translation id="4300675098767811073">दायाँपट्टि एकभन्दा बढी प्वाल</translation>
 <translation id="4302514097724775343">प्ले गर्न dino मा ट्याप गर्नुहोस्</translation>
-<translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">तपाईंको फाइल हेर्न र प्रयोग गर्न सकिएन</translation>
 <translation id="4306529830550717874">ठेगाना सेभ गर्ने हो?</translation>
 <translation id="4306812610847412719">क्लिपबोर्ड</translation>
@@ -1285,7 +1267,6 @@
 <translation id="4358461427845829800">भुक्तानी विधिहरू व्यवस्थित गर्नुहोस्...</translation>
 <translation id="4359160567981085931">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chrome ले मद्दत गर्न सक्छ। आफ्नो पासवर्ड परिवर्तन गर्न र आफ्नो खाता जोखिममा हुन सक्छ भनेर Google लाई सूचित गर्न खाता सेभ गर्नुहोस् नामक विकल्पमा क्लिक गर्नुहोस्।</translation>
 <translation id="4363222835916186793">यो उत्पादनका हकमा अलर्ट पठाउने सुविधा अफ गरिएको छ</translation>
-<translation id="4367563149485757821">Number-12 (Envelope)</translation>
 <translation id="437040971055499437">सुरक्षासम्बन्धी घटना हुँदा</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">अपेक्षित <ph name="VALUE_TYPE" /> मूल्य।</translation>
@@ -1332,10 +1313,8 @@
 <translation id="4506599922270137252">प्रणालीको प्रशासकलाई सम्पर्क गर्नुहोस्</translation>
 <translation id="450710068430902550">प्रशासकसँग साझेदारी</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google अनुवादक प्रयोग गरी यो पृष्ठ अनुवाद गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
-<translation id="4510487217173779431">Chou4 (Envelope)</translation>
 <translation id="4514308731478712184">Journeys अफ गर्नुहोस्</translation>
 <translation id="4515275063822566619">कार्ड र ठेगानाहरू तपाईंको Chrome र Google खाता (<ph name="ACCOUNT_EMAIL" />) बाट प्राप्त भएका हुन्। तपाईं  <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" /> मा गई तिनीहरूलाई व्यवस्थित गर्न सक्नुहुन्छ।</translation>
-<translation id="4517607026994743406">Comm-10 (Envelope)</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> मिलिमिटर (<ph name="ORIENTATION" />)</translation>
 <translation id="4521916730539354575">बायाँ ट्रे</translation>
 <translation id="4522570452068850558">विवरणहरू</translation>
@@ -1352,7 +1331,6 @@
 <translation id="4566017918361049074">घरबाहिर गरिने क्रियाकलाप</translation>
 <translation id="4567686777917670400">तपाईंका एड्मिन टाढैबाट तपाईंको ब्राउजरको सेटअप बदल्न सक्छन्। यो डिभाइसमा गरिएका क्रियाकलाप Chromium बाहिरबाट पनि व्यवस्थापन गरिन सक्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">डेलिभरी</translation>
-<translation id="4579056131138995126">Personal (Envelope)</translation>
 <translation id="4582204425268416675">कार्ड हटाउनुहोस्</translation>
 <translation id="4587425331216688090">Chrome बाट ठेगाना हटाउने हो?</translation>
 <translation id="459089498662672729">एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="ORIGIN_NAME" /> बाट पाठ कपी गरी यो स्थानमा पेस्ट गर्नु हुँदैन</translation>
@@ -1361,7 +1339,6 @@
 <translation id="4597348597567598915">आकार ८</translation>
 <translation id="4598556348158889687">भण्डारणको व्यवस्थापन</translation>
 <translation id="4600084978141515058">शुद्ध शाकाहारी परिकार</translation>
-<translation id="4600854749408232102">C6/C5 (Envelope)</translation>
 <translation id="4602465984861132303">बलिङ</translation>
 <translation id="4606870351894164739">प्रभावशाली</translation>
 <translation id="4607603470419975064">"Chrome का सुझावहरू हेर्नुहोस्" बटन, Chrome का सुविधाहरूका बारेमा जान्न Enter थिच्नुहोस्</translation>
@@ -1391,7 +1368,6 @@
 <translation id="467809019005607715">Google स्लाइड</translation>
 <translation id="4682496302933121474">पेज अनुवाद गर्ने हो?</translation>
 <translation id="468314109939257734">आफ्नो भर्चुअल कार्ड नम्बर हेर्नुहोस्</translation>
-<translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4692623383562244444">खोज इन्धनहरू</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">सतह</translation>
@@ -1406,7 +1382,6 @@
 <translation id="4726672564094551039">नीतिहरू पुन: लोड गर्नुहोस्</translation>
 <translation id="4728558894243024398">प्लेटफर्म</translation>
 <translation id="4731638775147756694">तपाईंका एड्मिनले यो एपलाई रोक लगाउनुभएको छ</translation>
-<translation id="4731967714531604179">Prc2 (Envelope)</translation>
 <translation id="4733082559415072992"><ph name="URL" /> तपाईंको डिभाइसको स्थान प्रयोग गर्न चाहन्छ</translation>
 <translation id="4736491186715342415">सवारी साधनहरू</translation>
 <translation id="4736825316280949806">Chromium लाई पुनः सुरु गर्नुहोस्</translation>
@@ -1509,7 +1484,6 @@
 <translation id="4976702386844183910">पछिल्लो पटक खोलिएको मिति: <ph name="DATE" /></translation>
 <translation id="498323057460789381">योजना प्रमाणीकरणसम्बन्धी त्रुटि: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">माइक्रोफोन प्रयोग गर्ने हो?</translation>
-<translation id="4984339528288761049">Prc5 (Envelope)</translation>
 <translation id="4989163558385430922">सबै हेर्नुहोस्</translation>
 <translation id="4989542687859782284">उपलब्ध छैन</translation>
 <translation id="4989809363548539747">यो प्लगइनलाई समर्थन गरिँदैन</translation>
@@ -1584,7 +1558,6 @@
 <translation id="5146995429444047494"><ph name="ORIGIN" /> का सूचनाहरूलाई रोक लगाइएको छ</translation>
 <translation id="514704532284964975"><ph name="URL" /> ले तपाईंले आफ्नो फोनमार्फत ट्याप गर्ने NFC डिभाइसमा भएका जानकारी हेर्ने तथा परिवर्तन गर्ने अनुमति माग्दै छ</translation>
 <translation id="5148809049217731050">माथितिर फर्केको</translation>
-<translation id="515292512908731282">C4 (Envelope)</translation>
 <translation id="5153314898060540200">हार्ड रक तथा प्रोग्रेसिभ</translation>
 <translation id="5158275234811857234">आवरण</translation>
 <translation id="5159010409087891077">पृष्ठलाई नयाँ इन्कोग्निटो विन्डोमा खोल्नुहोस् (⇧⌘N)</translation>
@@ -1623,7 +1596,6 @@
 <translation id="5250209940322997802">"नेटवर्कमा कनेक्ट गर्नुहोस्‌"</translation>
 <translation id="52517543715119994">Chrome का सुविधाहरूका बारेमा जान्नुहोस्</translation>
 <translation id="5251803541071282808">क्लाउड</translation>
-<translation id="5252000469029418751">C7 (Envelope)</translation>
 <translation id="5254043433801397071">छाप्ने सामग्री अनुकूलन गर्नुहोस्</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">जे भए पनि खिच्नुहोस्</translation>
@@ -1705,7 +1677,6 @@
 <translation id="5470230812924696184">सिभिल इन्जिनियरिङ</translation>
 <translation id="5470861586879999274">सम्पादन &amp;पुन: गर्नुहोस्</translation>
 <translation id="5471337644440862957">हास्य चलचित्रहरू</translation>
-<translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">यो सामग्रीले तपाईंको डिभाइसमा तपाईंको जानकारी चोर्ने वा मेट्ने खतरनाक सफ्टवेयर स्थापना गर्ने प्रयास गर्न सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्‌<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">मान्य ठेगाना थप्नुहोस्</translation>
 <translation id="5485973315555778056">क्लाउड मेसिन</translation>
@@ -1727,7 +1698,6 @@
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं ChromeOS का सेटिङमा गई एक्सेसिबिलिटी टुलहरू पर्सनलाइज गर्न चाहनुहुन्छ भने ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
 <translation id="5528532273234423708">घरका स्वचालित डिभाइस</translation>
 <translation id="55293785478302737">किनारमा स्टिच</translation>
-<translation id="553484882784876924">Prc6 (Envelope)</translation>
 <translation id="5535133333442455806">'ब्राउजिङ डेटा हटाउनुहोस्' नामक बटन, Chrome का सेटिङमा गई आफ्नो ब्राउजिङ इतिहास, कुकी, क्यास तथा अन्य डेटा हटाउन Enter थिच्नुहोस्</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" खण्ड देखाइयोस्</translation>
 <translation id="5539243836947087108">राफ्ट</translation>
@@ -1778,7 +1748,6 @@
 <translation id="5653432653077411130">पानी आपूर्ति तथा शुद्ध पार्ने काम</translation>
 <translation id="5654927323611874862">अपलोड गरिएको क्र्यास रिपोर्टको ID:</translation>
 <translation id="5659593005791499971">इमेल</translation>
-<translation id="5663614846592581799">9x11 (Envelope)</translation>
 <translation id="5663955426505430495">यस डिभाइसका प्रशासकले अतिरिक्त कारबाहीका लागि विस्तारहरू स्थापना गरेका छन्। विस्तारहरूको तपाईंको केही डेटामाथि पहुँच छ।</translation>
 <translation id="5666606186680807225">समुद्री तट तथा टापुहरू</translation>
 <translation id="5675650730144413517">यो पृष्ठले काम गरिरहेको छैन</translation>
@@ -1798,7 +1767,6 @@
 <translation id="571510845185711675">पशु चिकित्सकहरू</translation>
 <translation id="5720705177508910913">हालको प्रयोगकर्ता</translation>
 <translation id="5723287205918986743">रक्षा उद्योग</translation>
-<translation id="5728056243719941842">C5 (Envelope)</translation>
 <translation id="5730040223043577876">तपाईंले आफ्नो पासवर्ड अन्य साइटहरूमा प्रयोग गर्नुभएका खण्डमा Chrome ले तपाईंको पासवर्ड रिसेट गर्न सिफारिस गर्दछ।</translation>
 <translation id="5736165827969430182">धातु तथा खानी</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{कार्डलाई आफ्नो Google खातामा सेभ गर्नुहोस्}other{कार्डहरूलाई आफ्नो Google खातामा सेभ गर्नुहोस्}}</translation>
@@ -1909,7 +1877,6 @@
 <translation id="6032524144326295339">मेलबक्स २</translation>
 <translation id="6032955021262906325">बायाँ बाइन्ड</translation>
 <translation id="6034000775414344507">हल्का खैरो</translation>
-<translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">एकर्डियन फोल्ड</translation>
 <translation id="6039846035001940113">समस्या जारी रहेको खण्डमा साइटको मालिकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
@@ -2039,7 +2006,6 @@
 <translation id="6401136357288658127">यो नीति चल्तीबाट हटाइएको छ। तपाईंले यसको साटो <ph name="NEW_POLICY" /> नीति प्रयोग गर्नु पर्छ।</translation>
 <translation id="6404511346730675251">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> मा जारी राख्ने हो?</translation>
-<translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> को म्याद सकिने मिति र CVC प्रविष्टि गर्नुहोस्</translation>
 <translation id="6415778972515849510">Chromium ले तपाईंलाई आफ्नो Google खाता सुरक्षित गर्न र पासवर्ड बदल्न मद्दत गर्न सक्छ।</translation>
 <translation id="6425092077175753609">वस्तु</translation>
@@ -2051,7 +2017,6 @@
 <translation id="6433797564277305076">अबदेखि डिभाइस अनलक प्रयोग गरेर आफ्ना कार्डहरू अझ चाँडो पुष्टि गर्नुहोस्</translation>
 <translation id="6440503408713884761">उपेक्षित</translation>
 <translation id="6443406338865242315">तपाईंले स्थापना गर्नुभएका विस्तार र प्लगइनहरू</translation>
-<translation id="6446163441502663861">Kahu (Envelope)</translation>
 <translation id="6446608382365791566">थप जानकारी थप्नुहोस्</translation>
 <translation id="6447842834002726250">कुकीहरू</translation>
 <translation id="6451458296329894277">फाराम पुन: प्रस्तुतीकरण पक्का गर्नुहोस्</translation>
@@ -2091,18 +2056,15 @@
 <translation id="6569060085658103619">तपाईं एउटा विस्तार सम्बन्धी पृष्ठ हेर्दै हुनुहुन्छ</translation>
 <translation id="6569366777234823130">नाट्य चलचित्रहरू</translation>
 <translation id="6573200754375280815">दायाँपट्टि दुई प्वाल</translation>
-<translation id="6578796323535178455">C2 (Envelope)</translation>
 <translation id="657902945730878902">चित्र कोर्ने तथा रङ भर्ने काम</translation>
 <translation id="6579630537141957243">MIDI डिभाइस कनेक्ट गर्ने हो?</translation>
 <translation id="6579990219486187401">हल्का गुलाबी</translation>
-<translation id="6583674473685352014">B6 (Envelope)</translation>
 <translation id="6587182488465657433">Chrome ले तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड डेटा चोरीको घटनामा खुलासा गरिएको पत्ता लगायो। हामी तपाईंलाई अहिले नै उक्त पासवर्ड बदलेर र त्यसपछि आफूले सुरक्षित गरेका पासवर्डहरू जाँच गरेर आफ्ना खाता सुरक्षित राख्न सिफारिस गर्छौँ।</translation>
 <translation id="6587923378399804057">तपाईंले प्रतिलिपि गर्नुभएको लिंक</translation>
 <translation id="6591833882275308647">तपाईंको <ph name="DEVICE_TYPE" /> व्यवस्थित छैन</translation>
 <translation id="6592952801936330159">'साइटसम्बन्धी सेटिङ मिलाउनुहोस्' नामक बटन, Chrome का सेटिङमा गई अनुमति तथा विभिन्न साइटहरूमा भण्डारण गरिएका डेटा व्यवस्थापन गर्न Enter थिच्नुहोस्</translation>
 <translation id="6596325263575161958">गुप्तीकरण विकल्पहरू</translation>
 <translation id="6599642189720630047">ट्र्याक गरिएका उत्पादनहरू</translation>
-<translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6611723696964473273">आर्थिक समाचार</translation>
 <translation id="6612010098632894193">अनलाइन भिडियो</translation>
 <translation id="6615297766614333076">स्ट्याकर २</translation>
@@ -2244,7 +2206,6 @@
 <translation id="6979440798594660689">म्युट गरियोस् (डिफल्ट)</translation>
 <translation id="6989763994942163495">उन्नत सेटिङ देखाउनुहोस्...</translation>
 <translation id="6992499368826755835">मोटरकारसम्बन्धी उद्योग</translation>
-<translation id="6993898126790112050">6x9 (Envelope)</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> भाषाका सामग्री सधैँ अनुवाद गर्नुहोस्</translation>
 <translation id="6999969238895751684">मनोरञ्जन उद्योग</translation>
 <translation id="7003335073762455340">तपाईं यो उत्पादन ट्र्याक गर्दै हुनुहुन्छ। यो पेज <ph name="LAST_BOOKMARKS_FOLDER" /> मा सेभ गरिएको छ।</translation>
@@ -2298,7 +2259,6 @@
 <translation id="7138472120740807366">डेलिभरीको विधि</translation>
 <translation id="7139892792842608322">मुख्य ट्रे</translation>
 <translation id="714064300541049402">सतह २ मा रहेको छविको X सिफ्ट</translation>
-<translation id="7152423860607593928">Number-14 (Envelope)</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">हल्का बैजनी</translation>
 <translation id="7156870133441232244">सर्भरको स्तरोन्नति गरेर TLS १.२ वा त्यसपछिको संस्करण पार्नु पर्छ।</translation>
@@ -2447,7 +2407,6 @@
 <translation id="7512685745044087310">यो नीतिको मान "ठिक" सेट गरिएका बेला यसलाई अनिवार्य रूपमा लागू गर्न सकिँदैन। त्यसकारण यसलाई परिवर्तन गरी सिफारिस गरिएको नीति बनाइएको छ।</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7518003948725431193">निम्न वेब ठेगानाको लागि कुनैपनि वेबपृष्ठ फेला परेन: <ph name="URL" /></translation>
-<translation id="7520302887438682816">C8 (Envelope)</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">"<ph name="SECTION" />" नामक खण्ड लुकाइएको छ</translation>
 <translation id="7523408071729642236">उत्पादन</translation>
@@ -2455,7 +2414,6 @@
 <translation id="7529884293139707752">होमस्कुलिङ</translation>
 <translation id="7535087603100972091">मान</translation>
 <translation id="7537536606612762813">अनिवार्य</translation>
-<translation id="7538364083937897561">A2 (Envelope)</translation>
 <translation id="7542403920425041731">तपाईंले पुष्टि गरेपछि तपाईंको कार्डका विवरणहरू यो साइटसँग आदान प्रदान गरिनेछन्।</translation>
 <translation id="7542995811387359312">स्वचालित क्रेडिट कार्ड भरणलाई अक्षम बनाइएको छ किनभने यो फारामले सुरक्षित जडान प्रयोग गर्दैन।</translation>
 <translation id="7548892272833184391">जडानसम्बन्धी त्रुटिहरू ठिक गर्नुहोस्</translation>
@@ -2530,7 +2488,6 @@
 <translation id="7687451951329798396">अन्य स्रोतहरूमा के भनिएको छ?</translation>
 <translation id="7693583928066320343">पृष्ठको क्रम प्राप्त भयो</translation>
 <translation id="7696089921647603491">क्लासिक रक तथा ओल्डिज</translation>
-<translation id="7697066736081121494">Prc8 (Envelope)</translation>
 <translation id="769721561045429135">यस बेला, तपाईंसँग यस यन्त्रमा मात्र प्रयोग गर्न मिल्ने कार्डहरू छन्। कार्डहरूको समीक्षा गर्न जारी राख्नुहोस् नामक बटनमा क्लिक गर्नुहोस्।</translation>
 <translation id="7698864304447945242">Google Play Services for AR अपडेट गर्ने हो?</translation>
 <translation id="7699293099605015246">अहिले लेखहरू उपलब्ध छैनन्</translation>
@@ -2561,7 +2518,6 @@
 <translation id="7763386264682878361">भुक्तानी म्यानिफेस्ट पार्सर</translation>
 <translation id="7764225426217299476">ठेगाना थप्नुहोस्</translation>
 <translation id="7766518757692125295">स्कर्ट</translation>
-<translation id="7770259615151589601">Designated-Long</translation>
 <translation id="7773005668374414287">उही क्रम तर माथितिर फर्काएर</translation>
 <translation id="7791011319128895129">अप्रकाशित</translation>
 <translation id="7791196057686275387">गाँठो</translation>
@@ -2578,7 +2534,6 @@
 <translation id="7815407501681723534"><ph name="SEARCH_RESULTS" /> <ph name="SEARCH_STRING" />' का <ph name="NUMBER_OF_RESULTS" /> वटा परिणामहरू भेटिए</translation>
 <translation id="7822320754433038727">शिकार तथा सुटिङ</translation>
 <translation id="782886543891417279">तपाईँले प्रयोग गरिरहनु भएको Wi-Fi (<ph name="WIFI_NAME" />) लाई तपाईँले यसको लगइन पृष्ठको भ्रमण आवश्यकता पर्न सक्छ।</translation>
-<translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{कुनै पनि होइन}=1{१ एप (<ph name="EXAMPLE_APP_1" />)}=2{२ एपहरू (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# एपहरू (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">साइट छाड्ने हो?</translation>
@@ -2593,7 +2548,6 @@
 <translation id="7887885240995164102">picture-in-picture मोडमा प्रविष्टि गर्नुहोस्‌</translation>
 <translation id="7888575728750733395">प्रिन्टिङ रेन्डर गर्ने प्रक्रियाको उद्देश्य</translation>
 <translation id="7894280532028510793">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'नेटवर्कका डाइगोन्स्टिक्स' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
-<translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7927971017714848357">प्लट तथा जग्गा</translation>
 <translation id="793209273132572360">ठेगाना बदल्ने हो?</translation>
 <translation id="7932579305932748336">कोट</translation>
@@ -2656,7 +2610,6 @@
 <translation id="8058009102480785916">खाद्यवस्तुको उत्पादन</translation>
 <translation id="8067872629359326442">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chromium ले मद्दत गर्न सक्छ। आफ्नो पासवर्ड परिवर्तन गर्न र आफ्नो खाता जोखिममा हुन सक्छ भनेर Google लाई सूचित गर्न खाता सेभ गर्नुहोस् नामक विकल्पमा क्लिक गर्नुहोस्।</translation>
 <translation id="8070439594494267500">एपको आइकन</translation>
-<translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075736640322370409">Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउनुहोस्</translation>
 <translation id="8075898834294118863">साइटसम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="8076492880354921740">ट्याबहरू</translation>
@@ -2700,13 +2653,11 @@
 <translation id="8201077131113104583">ID "<ph name="EXTENSION_ID" />" भएको विस्तारका लागि अवैध अद्यावधिक URL</translation>
 <translation id="8202097416529803614">अर्डरको सारांश</translation>
 <translation id="8202370299023114387">बेमेल</translation>
-<translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8210604850413485128">वेब होस्टिङ</translation>
 <translation id="8211406090763984747">जडान सुरक्षित छ</translation>
 <translation id="8217240300496046857">साइटहरूले इन्टरनेटको दुनियाँमा तपाईंका क्रियाकलाप ट्र्याक गर्ने कुकीहरू प्रयोग गर्न सक्दैनन्। तर केही साइटका सुविधाहरूले काम नगर्न सक्छन्।</translation>
 <translation id="8217748145574471584">मानव स्रोत</translation>
 <translation id="8218327578424803826">तोकिएको स्थान:</translation>
-<translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">यो कम्प्युटर सेटअप गर्ने व्यक्तिले यो साइटमाथि रोक लगाउने छनौट गर्नुभएको छ।</translation>
 <translation id="8228419419708659934">दुई पृष्ठमा देखाइने दृश्य</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2830,7 +2781,6 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />मा एउटा निजी जडान स्थापना गर्न सक्दैन किनकि तपाईँको यन्त्रको मिति र समय <ph name="DATE_AND_TIME" /> गलत छन्।</translation>
 <translation id="8564182942834072828">छुट्टा छुट्टै कागजातहरू/क्रमबद्ध नगरिएका प्रतिहरू</translation>
 <translation id="8564985650692024650">तपाईंले आफ्नो <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> को पासवर्ड अन्य साइटहरूमा पुनः प्रयोग गर्नुभएका खण्डमा Chromium ले तपाईंलाई उक्त पासवर्ड रिसेट गर्न सिफारिस गर्दछ।</translation>
-<translation id="8573969211731659953">मूल्य घट्दा अलर्ट पठाउने सुविधा अन छ। तपाईं <ph name="NOTIFICATION_SETTINGS" /> मा गई यो सेटिङ बदल्न सक्नुहुन्छ</translation>
 <translation id="8576310925653847813">होम थिएटर सिस्टम</translation>
 <translation id="8577348305244205642">भर्चुअल कार्ड उपलब्ध छैन</translation>
 <translation id="858637041960032120">फोन नम्बर थप्नुहोस्</translation>
@@ -3031,7 +2981,6 @@
 <translation id="9154194610265714752">अपडेट भयो</translation>
 <translation id="9155211586651734179">एट्याच गरिएका अडियोसम्बन्धी सहायक डिभाइसहरू</translation>
 <translation id="9157595877708044936">सेटिङ गर्दै...</translation>
-<translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">साइटहरूलाई तपाईंले भुक्तानी विधिहरू सुरक्षित गर्नुभए नभएको कुरा जाँच गर्न दिन्छ</translation>
 <translation id="9169664750068251925">सधैँ यस साइटमा ब्लक गर्नुहोस्</translation>

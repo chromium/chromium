@@ -4866,6 +4866,7 @@
       請透過應用程式 ID 來指定 Chrome 應用程式 (例如 pjkljhegncpnkpknbcohdijeoejaedia)；透過應用程式套件名稱來指定 Android 應用程式 (例如 com.google.android.gm)；透過 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 中使用的應用程式網址來指定網頁應用程式 (例如 https://google.com/maps)。
 
       如果不設定這項政策，使用者將可變更啟動器中的固定應用程式清單。</translation>
+<translation id="6184385589352532028">不要為第三方 ChromeOS 控制選項啟用 Desk API</translation>
 <translation id="6190367314942602985">回報使用者身分識別資訊</translation>
 <translation id="6191963383731098056">管理員可以透過這項政策設定 <ph name="PRODUCT_NAME" /> 主題的顏色。輸入的字串應為有效的十六進位顏色字串，格式為「#RRGGBB」。
 
@@ -6683,6 +6684,7 @@
       如果將這項政策設為 Disabled 或不設定，使用者將無法使用 <ph name="LACROS_NAME" />。
 
           如果將這項政策設為 Enabled，使用者可以使用 <ph name="LACROS_NAME" /> 瀏覽器。</translation>
+<translation id="8020222525161221827">為第三方 ChromeOS 控制選項啟用 Desk API</translation>
 <translation id="802147957407376460">將畫面旋轉 0 度</translation>
 <translation id="80243978433618492">不允許篩選任何網址參數。</translation>
 <translation id="8025620823136567878">國際鍵盤快速鍵會對應至鍵盤的按鍵位置，而非按鍵的字符。</translation>
@@ -7693,6 +7695,7 @@
 
       如果將這項政策設為停用，則已註冊的裝置不會記錄或回報音訊狀態。
       例外狀況：裝置搭載 M95 以下版本，且系統音量資訊是由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 所控制。</translation>
+<translation id="9071527533179676468">如果將這項政策設為啟用，第三方網頁應用程式將可使用 Desk API 控管 ChromeOS 桌面。如果未啟用或未設定這項政策，Desk API 將無法使用。</translation>
 <translation id="9072475476775217730">如果將這項政策設為停用，系統會允許以 <ph name="BLANK_PAGE_NAME" /> 為目標的彈出式視窗透過 JavaScript 存取要求開啟彈出式視窗的網頁。
 
       如果將這項政策設為啟用或不設定，除非錨定標記指定 <ph name="REL_OPENER_ATTRIBUTE" />，否則系統會將 <ph name="WINDOW_OPENER_PROPERTY" /> 屬性設為 <ph name="NULL_VALUE" />。

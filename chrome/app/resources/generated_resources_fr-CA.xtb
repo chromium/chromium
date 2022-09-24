@@ -1617,6 +1617,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2468178265280335214">Accélération du défilement sur le pavé tactile</translation>
 <translation id="2468205691404969808">Utilise des témoins pour mémoriser vos préférences, même si vous ne visitez pas ces pages</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470085922875120">Vous utilisez des mots de passe qui semblent difficiles à deviner</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> : 1 onglet}one{<ph name="GROUP_TITLE" /> : # onglet}other{<ph name="GROUP_TITLE" /> : # onglets}}</translation>
 <translation id="2469141124738294431">État de la MV</translation>
 <translation id="2469259292033957819">Vous n'avez aucune imprimante enregistrée.</translation>
@@ -1955,6 +1956,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2783321960289401138">Créer un raccourci...</translation>
 <translation id="2783829359200813069">Sélectionnez les types de chiffrement</translation>
 <translation id="2783952358106015700">Utiliser la clé de sécurité avec <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">Vérification de mot de passe</translation>
 <translation id="2785873697295365461">Descripteurs de fichier</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Conserver les données de navigation locales (favoris, mots de passe, historique, etc.)</translation>
@@ -2030,6 +2032,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2844169650293029770">Appareil USB-C (port avant-gauche)</translation>
 <translation id="2844809857160214557">Consultez et gérez les tâches d'impression</translation>
 <translation id="2845382757467349449">Toujours afficher la barre des favoris</translation>
+<translation id="284581348330507117">Créer des mots de passe uniques</translation>
 <translation id="284805635805850872">Supprimer le logiciel nuisible?</translation>
 <translation id="2849035674501872372">Obtenir des réponses rapides</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2181,6 +2184,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2985348301114641460">Envoyer une demande à votre administrateur pour installer « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="2987620471460279764">Texte partagé à partir d'un autre appareil</translation>
 <translation id="2988018669686457659">Processus de rendu de réserve</translation>
+<translation id="2988328607561082373">Vous ne réutilisez aucun mot de passe</translation>
 <translation id="2989123969927553766">Accélération du défilement de la souris</translation>
 <translation id="2989474696604907455">non connecté</translation>
 <translation id="2989786307324390836">Certificat unique binaire codé DER</translation>
@@ -2209,6 +2213,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3009178788565917040">Sortie</translation>
 <translation id="3009300415590184725">Voulez-vous vraiment annuler la configuration du service de données mobiles?</translation>
 <translation id="3009779501245596802">Bases de données indexées</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Vos mots de passe semblent forts}=1{{COUNT} mot de passe faible}one{{COUNT} mot de passe faible}other{{COUNT} mots de passe faibles}}</translation>
 <translation id="3010279545267083280">Mot de passe supprimé</translation>
 <translation id="3010389206479238935">Forcer l'ouverture dans</translation>
 <translation id="3011384993885886186">Gris chaud</translation>
@@ -4410,6 +4415,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5153234146675181447">Oublier le téléphone</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Paramètres avancés pour <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Aucun mot de passe enregistré.}=1{Mots de passe vérifiés pour {COUNT} site}one{Mots de passe vérifiés pour {COUNT} site et application}other{Mots de passe vérifiés pour {COUNT} sites et applications}}</translation>
 <translation id="5154702632169343078">Destinataire</translation>
 <translation id="5155327081870541046">Dans la barre d'adresse, entrez le raccourci pour le site que vous voulez rechercher comme « @favoris ». Ensuite, appuyez sur votre raccourci-clavier favori et entrez votre terme de recherche.</translation>
 <translation id="5156638757840305347">Le curseur est mis en évidence lorsqu'il apparaît ou se déplace</translation>
@@ -4990,6 +4996,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5713158217420111469">Connecté à <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Style d'entrée des espaces</translation>
 <translation id="5715711091495208045">Gestionnaire de plugiciels : <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Vous devriez les modifier maintenant</translation>
 <translation id="5719603411793408026">Moteurs de recherche par défaut</translation>
 <translation id="5719854774000914513">Les sites peuvent demander à se connecter à des appareils HID</translation>
 <translation id="572155275267014074">Paramètres Android</translation>
@@ -6447,6 +6454,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7098447629416471489">Les autres moteurs de recherche enregistrés s'afficheront ici</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Retirer l'application}one{Retirer l'application}other{Retirer les applications}}</translation>
 <translation id="7099337801055912064">Impossible de charger un PPD volumineux. La taille maximale est de 250 k.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="7102687220333134671">Les mises à jour automatiques sont activées</translation>
 <translation id="7102832101143475489">Le délai de traitement de la demande a expiré</translation>
 <translation id="710640343305609397">Ouvrir les paramètres réseau</translation>
@@ -7392,6 +7400,7 @@ Fichier de clé : <ph name="KEY_FILE" />
 Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la création de nouvelles versions de l'extension.</translation>
 <translation id="8002274832045662704">Configuration avancée d'imprimante</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> n'est plus accessible</translation>
+<translation id="8004092996156083991">Si vos mots de passe sont compromis, nous vous en aviserons.</translation>
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8005600846065423578">Toujours autoriser <ph name="HOST" /> à voir le presse-papiers</translation>
 <translation id="8006630792898017994">Espace ou tabulation</translation>
@@ -7888,6 +7897,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8470513973197838199">Mots de passe enregistrés pour <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Les sites se connectent généralement aux appareils USB pour proposer des fonctionnalités comme l'impression de document ou l'enregistrement sur un périphérique de stockage</translation>
 <translation id="8471959340398751476">Les rabais sont désactivés. Vous pouvez les activer dans le menu de personnalisation</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Vos mots de passe sont uniques}=1{{COUNT} mot de passe réutilisé}one{{COUNT} mot de passe réutilisé}other{{COUNT} mots de passe réutilisés}}</translation>
 <translation id="8472623782143987204">soutenue par du matériel</translation>
 <translation id="8473863474539038330">Adresses et plus</translation>
 <translation id="8475313423285172237">Un autre programme sur votre ordinateur a ajouté une extension qui risque de modifier le fonctionnement de Google Chrome.</translation>
@@ -8367,6 +8377,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8940081510938872932">Votre ordinateur traite actuellement trop de tâches en même temps. Veuillez réessayer plus tard.</translation>
 <translation id="8940381019874223173">À partir de Google Photos</translation>
 <translation id="8941173171815156065">Révoquer l'autorisation « <ph name="PERMISSION" /> »</translation>
+<translation id="894191600409472540">Créer des mots de passe forts</translation>
 <translation id="894360074127026135">Fonction d'optimisation internationale Netscape</translation>
 <translation id="8944099748578356325">Épuisera plus rapidement la pile (actuellement à <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8945274638472141382">Taille de l'icône</translation>
@@ -8590,6 +8601,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9140067245205650184">Vous utilisez un indicateur de fonctionnalité non pris en charge : <ph name="BAD_FLAG" />, ce qui va nuire à la stabilité et à la sécurité.</translation>
 <translation id="9142637293078737510">Alias d'image</translation>
 <translation id="9143298529634201539">Supprimer la suggestion?</translation>
+<translation id="9143922477019434797">Protéger vos mots de passe</translation>
 <translation id="9147392381910171771">&amp;Options</translation>
 <translation id="9148058034647219655">Quitter</translation>
 <translation id="9148126808321036104">Connectez-vous de nouveau</translation>
