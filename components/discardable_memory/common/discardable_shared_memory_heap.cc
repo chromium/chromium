@@ -22,8 +22,9 @@
 
 namespace discardable_memory {
 
-const base::Feature kReleaseDiscardableFreeListPages{
-    "ReleaseDiscardableFreeListPages", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kReleaseDiscardableFreeListPages,
+             "ReleaseDiscardableFreeListPages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 

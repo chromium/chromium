@@ -29,8 +29,9 @@
 namespace discardable_memory {
 namespace {
 
-const base::Feature kShorterPeriodicPurge{"ShorterPeriodicPurge",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kShorterPeriodicPurge,
+             "ShorterPeriodicPurge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Global atomic to generate unique discardable shared memory IDs.
 base::AtomicSequenceNumber g_next_discardable_shared_memory_id;
