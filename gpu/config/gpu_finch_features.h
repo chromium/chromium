@@ -14,77 +14,77 @@
 
 namespace features {
 
-GPU_EXPORT extern const base::Feature kUseGles2ForOopR;
+GPU_EXPORT BASE_DECLARE_FEATURE(kUseGles2ForOopR);
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 #if BUILDFLAG(IS_ANDROID)
-GPU_EXPORT extern const base::Feature kAndroidSurfaceControl;
-GPU_EXPORT extern const base::Feature kWebViewSurfaceControl;
-GPU_EXPORT extern const base::Feature kAImageReader;
-GPU_EXPORT extern const base::Feature kWebViewVulkan;
-GPU_EXPORT extern const base::Feature kLimitAImageReaderMaxSizeToOne;
-GPU_EXPORT extern const base::Feature kWebViewThreadSafeMediaDefault;
-GPU_EXPORT extern const base::Feature kIncreaseBufferCountForHighFrameRate;
+GPU_EXPORT BASE_DECLARE_FEATURE(kAndroidSurfaceControl);
+GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewSurfaceControl);
+GPU_EXPORT BASE_DECLARE_FEATURE(kAImageReader);
+GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewVulkan);
+GPU_EXPORT BASE_DECLARE_FEATURE(kLimitAImageReaderMaxSizeToOne);
+GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewThreadSafeMediaDefault);
+GPU_EXPORT BASE_DECLARE_FEATURE(kIncreaseBufferCountForHighFrameRate);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-GPU_EXPORT extern const base::Feature kDefaultEnableGpuRasterization;
+GPU_EXPORT BASE_DECLARE_FEATURE(kDefaultEnableGpuRasterization);
 
-GPU_EXPORT extern const base::Feature kCanvasOopRasterization;
+GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopRasterization);
 
-GPU_EXPORT extern const base::Feature kEnableMSAAOnNewIntelGPUs;
+GPU_EXPORT BASE_DECLARE_FEATURE(kEnableMSAAOnNewIntelGPUs);
 
-GPU_EXPORT extern const base::Feature kDefaultEnableANGLEValidation;
+GPU_EXPORT BASE_DECLARE_FEATURE(kDefaultEnableANGLEValidation);
 
-GPU_EXPORT extern const base::Feature kCanvasContextLostInBackground;
+GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasContextLostInBackground);
 
 #if BUILDFLAG(IS_WIN)
-GPU_EXPORT extern const base::Feature kGpuProcessHighPriorityWin;
+GPU_EXPORT BASE_DECLARE_FEATURE(kGpuProcessHighPriorityWin);
 
-GPU_EXPORT extern const base::Feature kDisableVideoOverlayIfMoving;
+GPU_EXPORT BASE_DECLARE_FEATURE(kDisableVideoOverlayIfMoving);
 #endif
 
 #if BUILDFLAG(IS_MAC)
-GPU_EXPORT extern const base::Feature kMetal;
+GPU_EXPORT BASE_DECLARE_FEATURE(kMetal);
 
 #if defined(ARCH_CPU_ARM64)
-GPU_EXPORT extern const base::Feature kDisableFlushWorkaroundForMacCrash;
+GPU_EXPORT BASE_DECLARE_FEATURE(kDisableFlushWorkaroundForMacCrash);
 #endif
 #endif
 
-GPU_EXPORT extern const base::Feature kSharedImageManager;
+GPU_EXPORT BASE_DECLARE_FEATURE(kSharedImageManager);
 
-GPU_EXPORT extern const base::Feature kVaapiJpegImageDecodeAcceleration;
+GPU_EXPORT BASE_DECLARE_FEATURE(kVaapiJpegImageDecodeAcceleration);
 
-GPU_EXPORT extern const base::Feature kVaapiWebPImageDecodeAcceleration;
+GPU_EXPORT BASE_DECLARE_FEATURE(kVaapiWebPImageDecodeAcceleration);
 
-GPU_EXPORT extern const base::Feature kVulkan;
+GPU_EXPORT BASE_DECLARE_FEATURE(kVulkan);
 
-GPU_EXPORT extern const base::Feature kSkiaDawn;
+GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaDawn);
 
-GPU_EXPORT extern const base::Feature kEnableGrShaderCacheForVulkan;
+GPU_EXPORT BASE_DECLARE_FEATURE(kEnableGrShaderCacheForVulkan);
 
-GPU_EXPORT extern const base::Feature kEnableWatchdogReportOnlyModeOnGpuInit;
+GPU_EXPORT BASE_DECLARE_FEATURE(kEnableWatchdogReportOnlyModeOnGpuInit);
 
-GPU_EXPORT extern const base::Feature kEnableVkPipelineCache;
+GPU_EXPORT BASE_DECLARE_FEATURE(kEnableVkPipelineCache);
 
-GPU_EXPORT extern const base::Feature kReduceOpsTaskSplitting;
+GPU_EXPORT BASE_DECLARE_FEATURE(kReduceOpsTaskSplitting);
 
-GPU_EXPORT extern const base::Feature kNoDiscardableMemoryForGpuDecodePath;
+GPU_EXPORT BASE_DECLARE_FEATURE(kNoDiscardableMemoryForGpuDecodePath);
 
-GPU_EXPORT extern const base::Feature kEnableDrDc;
+GPU_EXPORT BASE_DECLARE_FEATURE(kEnableDrDc);
 
-GPU_EXPORT extern const base::Feature kForceGpuMainThreadToNormalPriorityDrDc;
+GPU_EXPORT BASE_DECLARE_FEATURE(kForceGpuMainThreadToNormalPriorityDrDc);
 
 #if BUILDFLAG(IS_ANDROID)
 // This flag is use additionally with kEnableDrDc to enable the feature for
 // vulkan enabled android devices.
-GPU_EXPORT extern const base::Feature kEnableDrDcVulkan;
+GPU_EXPORT BASE_DECLARE_FEATURE(kEnableDrDcVulkan);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-GPU_EXPORT extern const base::Feature kWebGPUService;
+GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUService);
 
-GPU_EXPORT extern const base::Feature kIncreasedCmdBufferParseSlice;
+GPU_EXPORT BASE_DECLARE_FEATURE(kIncreasedCmdBufferParseSlice);
 
 GPU_EXPORT bool UseGles2ForOopR();
 GPU_EXPORT bool IsUsingVulkan();
