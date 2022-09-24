@@ -35,6 +35,7 @@ const char* const kDeprecatedTypesToAllow[] = {
 };
 const char* const kDeprecatedTypesToBlock[] = {
     "plugins",
+    "ppapi-broker",
 };
 
 const char* GetForcedValueForDeprecatedSetting(base::StringPiece type) {

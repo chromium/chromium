@@ -27,9 +27,10 @@ var settings = {
   'popups': 'allow',
   'location': 'block',
   'notifications': 'block',
-  'fullscreen': 'block',  // Should be ignored.
-  'mouselock': 'block',   // Should be ignored.
-  'plugins': 'block',     // Should be ignored.
+  'fullscreen': 'block',          // Should be ignored.
+  'mouselock': 'block',           // Should be ignored.
+  'plugins': 'block',             // Should be ignored.
+  'unsandboxedPlugins': 'block',  // Should be ignored.
   'microphone': 'block',
   'camera': 'block',
   'automaticDownloads': 'block'
@@ -43,8 +44,14 @@ var deprecatedSettingsExpectations = {
   // Due to deprecation, these should be "allow", regardless of the setting.
   'fullscreen': 'allow',
   'mouselock': 'allow',
-  'plugins': 'block'
+  // These should be "block", regardless of the setting.
+  'plugins': 'block',
+  'unsandboxedPlugins': 'block'
 };
+
+// List of deprecated APIs. It is expected to return 'block' to get(), and will
+// be ignored to set() and clear().
+var deprecatedExtenionApis = [ 'plugins', 'unsandboxedPlugins' ];
 
 Object.prototype.forEach = function(f) {
   var k;
@@ -121,8 +128,10 @@ chrome.test.runTests([
     }
     chrome.test.assertTrue(caught);
   },
-  function testPluginsApi_Set() {
-    cs['plugins'].set(
+
+  function testDeprecatedApi_SetIgnored() {
+    deprecatedExtenionApis.forEach(api => {
+      cs[api].set(
         {
           'primaryPattern': 'https://*.google.com:443/*',
           'secondaryPattern': '<all_urls>',
@@ -132,19 +141,24 @@ chrome.test.runTests([
           chrome.test.assertNoLastError();
           chrome.test.succeed();
         });
+    });
   },
-  function testPluginsApi_Get() {
-    cs['plugins'].get(
-        {'primaryUrl': 'https://drive.google.com:443/*'}, (value) => {
-          chrome.test.assertNoLastError();
-          chrome.test.assertEq({setting: 'block'}, value);
-          chrome.test.succeed();
-        });
+  function testDeprecatedApi_GetBlocked() {
+    deprecatedExtenionApis.forEach(api => {
+      cs[api].get(
+          {'primaryUrl': 'https://drive.google.com:443/*'}, (value) => {
+            chrome.test.assertNoLastError();
+            chrome.test.assertEq({setting: 'block'}, value);
+            chrome.test.succeed();
+          });
+    });
   },
-  function testPluginsApi_Clear() {
-    cs['plugins'].clear({}, () => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
+  function testDeprecatedApi_ClearIgnored() {
+    deprecatedExtenionApis.forEach(api => {
+      cs[api].clear({}, () => {
+        chrome.test.assertNoLastError();
+        chrome.test.succeed();
+      });
     });
   }
 ]);

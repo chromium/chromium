@@ -560,7 +560,6 @@ bool PageSpecificContentSettings::IsContentBlocked(
       content_type == ContentSettingsType::MIXEDSCRIPT ||
       content_type == ContentSettingsType::MEDIASTREAM_MIC ||
       content_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
-      content_type == ContentSettingsType::PPAPI_BROKER ||
       content_type == ContentSettingsType::MIDI_SYSEX ||
       content_type == ContentSettingsType::ADS ||
       content_type == ContentSettingsType::SOUND ||
@@ -585,7 +584,6 @@ bool PageSpecificContentSettings::IsContentAllowed(
   if (content_type != ContentSettingsType::COOKIES &&
       content_type != ContentSettingsType::MEDIASTREAM_MIC &&
       content_type != ContentSettingsType::MEDIASTREAM_CAMERA &&
-      content_type != ContentSettingsType::PPAPI_BROKER &&
       content_type != ContentSettingsType::MIDI_SYSEX &&
       content_type != ContentSettingsType::CLIPBOARD_READ_WRITE &&
       content_type != ContentSettingsType::SENSORS &&
@@ -903,14 +901,6 @@ void PageSpecificContentSettings::OnAudioBlocked() {
   OnContentBlocked(ContentSettingsType::SOUND);
 }
 
-void PageSpecificContentSettings::SetPepperBrokerAllowed(bool allowed) {
-  if (allowed) {
-    OnContentAllowed(ContentSettingsType::PPAPI_BROKER);
-  } else {
-    OnContentBlocked(ContentSettingsType::PPAPI_BROKER);
-  }
-}
-
 void PageSpecificContentSettings::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -957,7 +947,6 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     case ContentSettingsType::COOKIES:
     case ContentSettingsType::POPUPS:
     case ContentSettingsType::MIXEDSCRIPT:
-    case ContentSettingsType::PPAPI_BROKER:
     case ContentSettingsType::MIDI_SYSEX:
     case ContentSettingsType::ADS:
     case ContentSettingsType::SOUND:

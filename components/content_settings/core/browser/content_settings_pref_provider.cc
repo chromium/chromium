@@ -65,6 +65,8 @@ const char kObsoleteFontAccessExceptionsPref[] =
     "profile.content_settings.exceptions.font_access";
 const char kObsoleteInstalledWebAppMetadataExceptionsPref[] =
     "profile.content_settings.exceptions.installed_web_app_metadata";
+const char kObsoletePpapiBrokerExceptionsPref[] =
+    "profile.content_settings.exceptions.ppapi_broker";
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -111,6 +113,7 @@ void PrefProvider::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kObsoleteFontAccessExceptionsPref);
   registry->RegisterDictionaryPref(
       kObsoleteInstalledWebAppMetadataExceptionsPref);
+  registry->RegisterDictionaryPref(kObsoletePpapiBrokerExceptionsPref);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 }
@@ -330,6 +333,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoletePluginsDataExceptionsPref);
   prefs_->ClearPref(kObsoleteFileHandlingExceptionsPref);
   prefs_->ClearPref(kObsoleteInstalledWebAppMetadataExceptionsPref);
+  prefs_->ClearPref(kObsoletePpapiBrokerExceptionsPref);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 }

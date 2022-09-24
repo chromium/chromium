@@ -47,8 +47,6 @@ class PPAPITestBase : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
 
-  virtual void SetUpPPAPIBroker();
-
   virtual std::string BuildQuery(const std::string& base,
                                  const std::string& test_case) = 0;
 
@@ -141,7 +139,6 @@ class PPAPINaClTest : public PPAPITestBase {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override;
   // PPAPITestBase overrides.
-  void SetUpPPAPIBroker() override;
   void RunTest(const std::string& test_case) override;
   void RunTestViaHTTP(const std::string& test_case) override;
   void RunTestWithSSLServer(const std::string& test_case) override;
@@ -195,10 +192,6 @@ class PPAPINaClTestDisallowedSockets : public PPAPITestBase {
                          const std::string& test_case) override;
 };
 
-class PPAPIBrokerInfoBarTest : public OutOfProcessPPAPITest {
- public:
-  // PPAPITestBase override:
-  void SetUpPPAPIBroker() override;
-};
+class PPAPIBrokerInfoBarTest : public OutOfProcessPPAPITest {};
 
 #endif  // CHROME_TEST_PPAPI_PPAPI_TEST_H_

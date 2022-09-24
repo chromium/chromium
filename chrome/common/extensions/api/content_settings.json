@@ -227,7 +227,7 @@
       {
         "id": "PpapiBrokerContentSetting",
         "type": "string",
-        "enum": ["allow", "block", "ask"]
+        "enum": ["block"]
       },
       {
         "id": "MultipleAutomaticDownloadsContentSetting",
@@ -326,7 +326,7 @@
       },
       "unsandboxedPlugins": {
         "$ref": "ContentSetting",
-        "description": "Whether to allow sites to run plugins unsandboxed. One of <br><var>allow</var>: Allow sites to run plugins unsandboxed,<br><var>block</var>: Don't allow sites to run plugins unsandboxed,<br><var>ask</var>: Ask when a site wants to run a plugin unsandboxed. <br>Default is <var>ask</var>.<br>The primary URL is the URL of the top-level frame. The secondary URL is not used.",
+        "description": "<i>Deprecated.</i> Previously, controlled whether to allow sites to run plugins unsandboxed, however, with the Flash broker process removed in Chrome 88, this permission no longer has any effect. Value is always <var>block</var>. Calls to <code>set()</code> and <code>clear()</code> will be ignored.",
         "value": [
           "ppapi-broker",
           {"$ref":"PpapiBrokerContentSetting"}

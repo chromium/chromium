@@ -316,10 +316,6 @@ class PageSpecificContentSettings
     return blocked_local_shared_objects_;
   }
 
-  // Called to indicate whether access to the Pepper broker was allowed or
-  // blocked.
-  void SetPepperBrokerAllowed(bool allowed);
-
   void OnContentBlocked(ContentSettingsType type);
   void OnContentAllowed(ContentSettingsType type);
 

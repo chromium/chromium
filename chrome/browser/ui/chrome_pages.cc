@@ -193,8 +193,7 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
            {ContentSettingsType::MEDIASTREAM_MIC, "microphone"},
            {ContentSettingsType::MEDIASTREAM_CAMERA, "camera"},
            {ContentSettingsType::MIDI_SYSEX, "midiDevices"},
-           {ContentSettingsType::ADS, "ads"},
-           {ContentSettingsType::PPAPI_BROKER, "unsandboxedPlugins"}});
+           {ContentSettingsType::ADS, "ads"}});
   const auto* it = kSettingsPathOverrides.find(type);
 
   return base::StrCat({kContentSettingsSubPage, "/",

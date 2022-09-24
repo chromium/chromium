@@ -85,7 +85,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::MEDIASTREAM_MIC, "media-stream-mic"},
     {ContentSettingsType::MEDIASTREAM_CAMERA, "media-stream-camera"},
     {ContentSettingsType::PROTOCOL_HANDLERS, "register-protocol-handler"},
-    {ContentSettingsType::PPAPI_BROKER, "ppapi-broker"},
     {ContentSettingsType::AUTOMATIC_DOWNLOADS, "multiple-automatic-downloads"},
     {ContentSettingsType::MIDI_SYSEX, "midi-sysex"},
     {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, "protected-content"},
@@ -162,6 +161,9 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::NOTIFICATION_INTERACTIONS, nullptr},
     {ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, nullptr},
     {ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, nullptr},
+    // PPAPI_BROKER has been deprecated. The content setting is not used or
+    // called from UI, so we don't need a representation JS string.
+    {ContentSettingsType::DEPRECATED_PPAPI_BROKER, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==

@@ -236,19 +236,6 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::PERSISTENT,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
-  // TODO(crbug.com/1341356) Move this to deprecated settings since it's no
-  // longer used.
-  Register(ContentSettingsType::PPAPI_BROKER, "ppapi-broker",
-           CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
-           AllowlistedSchemes(kChromeUIScheme, kChromeDevToolsScheme),
-           ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
-                         CONTENT_SETTING_ASK),
-           WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP,
-           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::PERSISTENT,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
-
   Register(ContentSettingsType::AUTOMATIC_DOWNLOADS, "automatic-downloads",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::SYNCABLE,
            AllowlistedSchemes(kChromeUIScheme, kChromeDevToolsScheme,

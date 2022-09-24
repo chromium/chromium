@@ -220,7 +220,6 @@ class PermissionPromptBubbleViewBrowserTest
       case ContentSettingsType::NOTIFICATIONS:
       case ContentSettingsType::GEOLOCATION:
       case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:  // ChromeOS only.
-      case ContentSettingsType::PPAPI_BROKER:
       case ContentSettingsType::STORAGE_ACCESS:
         test_api_->AddSimpleRequest(
             source_frame,

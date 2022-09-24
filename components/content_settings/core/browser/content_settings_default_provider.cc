@@ -54,6 +54,8 @@ const char kObsoleteFontAccessDefaultPref[] =
     "profile.default_content_setting_values.font_access";
 const char kObsoleteInstalledWebAppMetadataDefaultPref[] =
     "profile.default_content_setting_values.installed_web_app_metadata";
+const char kObsoletePpapiBrokerDefaultPref[] =
+    "profile.default_content_setting_values.ppapi_broker";
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -137,6 +139,7 @@ void DefaultProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(kObsoleteFileHandlingDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoleteFontAccessDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoleteInstalledWebAppMetadataDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoletePpapiBrokerDefaultPref, 0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -423,6 +426,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoleteFileHandlingDefaultPref);
   prefs_->ClearPref(kObsoleteFontAccessDefaultPref);
   prefs_->ClearPref(kObsoleteInstalledWebAppMetadataDefaultPref);
+  prefs_->ClearPref(kObsoletePpapiBrokerDefaultPref);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
