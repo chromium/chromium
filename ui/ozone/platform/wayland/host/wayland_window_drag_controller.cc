@@ -392,8 +392,9 @@ void WaylandWindowDragController::OnDataSourceFinish(bool completed) {
   // Transition to |kDropped| state and determine the next action to take. If
   // drop happened while the move loop was running (i.e: kDetached), ask to quit
   // the loop, otherwise notify session end and reset state right away.
-  State state_when_dropped =
-      std::exchange(state_, completed ? State::kDropped : State::kCancelled);
+  State state_when_dropped = std::exchange(
+      state_, completed || !IsExtendedDragAvailable() ? State::kDropped
+                                                      : State::kCancelled);
   if (state_when_dropped == State::kDetached)
     QuitLoop();
   else
