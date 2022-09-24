@@ -392,7 +392,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1383861834909034572">Osatzen denean irekiko da</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1384849755549338773">Ikusi Google Translate erabiltzeko aukera beste hizkuntza batzuetan dauden webguneetan</translation>
-<translation id="138784436342154190">Abioko orri lehenetsia leheneratu nahi duzu?</translation>
+<translation id="138784436342154190">Abiarazte-orri lehenetsia leheneratu nahi duzu?</translation>
 <translation id="1388253969141979417">Mikrofonoa erabil dezakete</translation>
 <translation id="1388728792929436380">Eguneratzen bukatzean, <ph name="DEVICE_TYPE" /> gailua berrabiarazi egingo da.</translation>
 <translation id="1389601498324964367">Kuotaren arabera kudeatutako biltegiratzea</translation>
@@ -457,7 +457,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1431188203598586230">Azken software-eguneratzea</translation>
 <translation id="1432581352905426595">Kudeatu bilatzaileak</translation>
-<translation id="1434696352799406980">Abioko orria, fitxa berriaren orria, bilatzailea eta ainguratutako fitxak berrezarriko dira. Gainera, luzapen guztiak desgaituko dira eta aldi baterako datuak (adibidez, cookieak) garbituko dira. Laster-markak, historia eta gordetako pasahitzak ez dira garbituko.</translation>
+<translation id="1434696352799406980">Abiarazte-orria, fitxa berriaren orria, bilatzailea eta ainguratutako fitxak berrezarriko dira. Gainera, luzapen guztiak desgaituko dira eta aldi baterako datuak (adibidez, cookieak) garbituko dira. Laster-markak, historia eta gordetako pasahitzak ez dira garbituko.</translation>
 <translation id="1434886155212424586">Hasierako orria fitxa berriaren orria da</translation>
 <translation id="1436390408194692385">Balio-aldia: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Kendu egin da</translation>
@@ -2858,7 +2858,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3699920817649120894">Sinkronizazioa eta pertsonalizazioa desaktibatu nahi dituzu?</translation>
 <translation id="3700888195348409686"><ph name="PAGE_ORIGIN" /> webgunea aurkezten</translation>
 <translation id="3700993174159313525">Ez eman kameraren posizioaren jarraipena egiteko baimena webguneei</translation>
-<translation id="3702500414347826004">Abioko orriak aldatu dira <ph name="URL" /> gehitzeko.</translation>
+<translation id="3702500414347826004">Abiarazte-orriak aldatu dira <ph name="URL" /> gehitzeko.</translation>
 <translation id="3703699162703116302">Zerbitzu-eskaera freskatu da</translation>
 <translation id="370415077757856453">JavaScript blokeatuta dago</translation>
 <translation id="3704331259350077894">Ez du jada funtzionatzen</translation>
@@ -4109,7 +4109,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4899052647152077033">Koloreak alderantzikatzeko eginbidea</translation>
 <translation id="4899696330053002588">Iragarkiak ditu</translation>
 <translation id="489985760463306091">Software kaltegarria kentzen amaitzeko, berrabiarazi ordenagailua</translation>
-<translation id="4900392736118574277"><ph name="URL" /> ezarri da abioko orri gisa.</translation>
+<translation id="4900392736118574277"><ph name="URL" /> ezarri da abiarazte-orri gisa.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - gurutzatuta</translation>
 <translation id="4900652253009739885">Ezin da kendu "Hautatu" ekintzak esleituta daukan erabilerraztasun-etengailu bakarra. Sakatu edozein tekla <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Zabaldu berriki itxitakoak</translation>
@@ -6993,7 +6993,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> gailutik partekatutako testua</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Doitu ikuspegiaren mugak</translation>
-<translation id="7760004034676677601">Hau al da espero zenuen abioko orria?</translation>
+<translation id="7760004034676677601">Hau al da espero zenuen abiarazte-orria?</translation>
 <translation id="7762024824096060040">Ezin da erabili kontua</translation>
 <translation id="7764225426217299476">Gehitu helbidea</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> (domeinua: <ph name="DOWNLOAD_DOMAIN" />)</translation>
