@@ -11,11 +11,11 @@ namespace subresource_filter {
 
 // Enables the tagging of ad frames and resource requests by using the
 // subresource_filter component in dry-run mode.
-extern const base::Feature kAdTagging;
+BASE_DECLARE_FEATURE(kAdTagging);
 
 // Enables the artificial delaying of ads that are considered unsafe (e.g. http
 // or same-domain to the top-level).
-extern const base::Feature kDelayUnsafeAds;
+BASE_DECLARE_FEATURE(kDelayUnsafeAds);
 
 // Param which governs how much to delay non-secure (i.e. http) subresources for
 // DelayUnsafeAds.

@@ -14,7 +14,7 @@
 #include "content/public/browser/navigation_throttle.h"
 
 namespace features {
-extern const base::Feature kSendCnameAliasesToSubresourceFilterFromBrowser;
+BASE_DECLARE_FEATURE(kSendCnameAliasesToSubresourceFilterFromBrowser);
 }  // namespace features
 
 namespace content {

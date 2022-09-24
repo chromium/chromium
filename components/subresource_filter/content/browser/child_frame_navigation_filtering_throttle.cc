@@ -26,9 +26,9 @@ namespace features {
 
 // Enables or disables performing SubresourceFilter checks from the Browser
 // against any aliases for the requested URL found from DNS CNAME records.
-const base::Feature kSendCnameAliasesToSubresourceFilterFromBrowser{
-    "SendCnameAliasesToSubresourceFilterFromBrowser",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromBrowser,
+             "SendCnameAliasesToSubresourceFilterFromBrowser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 

@@ -183,13 +183,13 @@ scoped_refptr<ConfigurationList> GetAndSetActivateConfigurations(
 // Feature and variation parameter definitions -------------------------------
 
 // The primary toggle to enable/disable the Safe Browsing Subresource Filter.
-extern const base::Feature kSafeBrowsingSubresourceFilter;
+BASE_DECLARE_FEATURE(kSafeBrowsingSubresourceFilter);
 
 // Enables the blocking of ads on sites that are abusive.
-extern const base::Feature kFilterAdsOnAbusiveSites;
+BASE_DECLARE_FEATURE(kFilterAdsOnAbusiveSites);
 
 // Enables the blocking of ads on sites that have ads violations.
-extern const base::Feature kAdsInterventionsEnforced;
+BASE_DECLARE_FEATURE(kAdsInterventionsEnforced);
 
 // The maximum duration that an ads intervention is active for.
 // TODO(crbug.com/1131971): This currently is the default delay.
