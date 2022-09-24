@@ -10,7 +10,9 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/functional/overloaded.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,7 +34,9 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -50,25 +54,41 @@ namespace web_app {
 
 namespace {
 
+const char kInstallPagePath[] = "/.well-known/_generated_install_page.html";
+const char kInstallPageContent[] = R"(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+        <link rel="manifest" href="/manifest.webmanifest" />
+      </head>
+    </html>
+)";
+
 bool IsSupportedHttpMethod(const std::string& method) {
   return method == net::HttpRequestHeaders::kGetMethod ||
          method == net::HttpRequestHeaders::kHeadMethod;
 }
 
-void CompleteWithErrorCode(
+void CompleteWithGeneratedHtmlResponse(
     mojo::Remote<network::mojom::URLLoaderClient> loader_client,
-    int http_status_code) {
-  auto generated_response = web_package::mojom::BundleResponse::New();
-  generated_response->response_code = http_status_code;
-  // Setting the Content-Type header makes Chrome return a nicer error page
-  // that shows the actual error code (e.g. "HTTP ERROR 404") instead of just
-  // "ERR_INVALID_RESPONSE".
-  generated_response->response_headers["Content-Type"] =
-      "text/html;charset=utf-8";
-  std::string header_string =
-      web_package::CreateHeaderString(generated_response);
-  auto response_head =
-      web_package::CreateResourceResponseFromHeaderString(header_string);
+    net::HttpStatusCode http_status_code,
+    absl::optional<std::string> body) {
+  size_t content_length = body.has_value() ? body->size() : 0;
+  std::string headers = base::StringPrintf(
+      "HTTP/1.1 %d %s\n"
+      "Content-Type: text/html;charset=utf-8\n"
+      "Content-Length: %s\n\n",
+      static_cast<int>(http_status_code),
+      net::GetHttpReasonPhrase(http_status_code),
+      base::NumberToString(content_length).c_str());
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
+  response_head->headers->GetMimeTypeAndCharset(&response_head->mime_type,
+                                                &response_head->charset);
+  response_head->content_length = content_length;
 
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   mojo::ScopedDataPipeProducerHandle producer_handle;
@@ -79,16 +99,27 @@ void CompleteWithErrorCode(
         network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
     return;
   }
-  producer_handle.reset();  // The response is empty.
 
   loader_client->OnReceiveResponse(std::move(response_head),
-                                   std::move(consumer_handle), absl::nullopt);
+                                   std::move(consumer_handle),
+                                   /*cached_metadata=*/absl::nullopt);
+
+  if (body.has_value()) {
+    uint32_t write_size = body->size();
+    MojoResult write_result = producer_handle->WriteData(
+        body->c_str(), &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+    if (write_result != MOJO_RESULT_OK || write_size != body->size()) {
+      loader_client->OnComplete(
+          network::URLLoaderCompletionStatus(net::ERR_FAILED));
+    }
+  } else {
+    producer_handle.reset();
+  }
 
   network::URLLoaderCompletionStatus status(net::OK);
-  int64_t body_length = 0;
-  status.encoded_data_length = body_length + header_string.size();
-  status.encoded_body_length = body_length;
-  status.decoded_body_length = body_length;
+  status.encoded_data_length = headers.size() + content_length;
+  status.encoded_body_length = content_length;
+  status.decoded_body_length = content_length;
   loader_client->OnComplete(status);
 }
 
@@ -188,7 +219,9 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
         case IsolatedWebAppReaderRegistry::ReadResponseError::Type::
             kResponseNotFound:
           // Return a synthetic 404 response.
-          CompleteWithErrorCode(std::move(loader_client_), net::HTTP_NOT_FOUND);
+          CompleteWithGeneratedHtmlResponse(std::move(loader_client_),
+                                            net::HTTP_NOT_FOUND,
+                                            /*body=*/absl::nullopt);
           return;
       }
     }
@@ -323,9 +356,18 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
   }
 
   if (!IsSupportedHttpMethod(resource_request.method)) {
-    CompleteWithErrorCode(
+    CompleteWithGeneratedHtmlResponse(
         mojo::Remote<network::mojom::URLLoaderClient>(std::move(loader_client)),
-        net::HTTP_METHOD_NOT_ALLOWED);
+        net::HTTP_METHOD_NOT_ALLOWED, /*body=*/absl::nullopt);
+    return;
+  }
+
+  // TODO(crbug.com/1333966): Check that the app is being installed before
+  // returning the auto-generated installation page.
+  if (resource_request.url.path() == kInstallPagePath) {
+    CompleteWithGeneratedHtmlResponse(
+        mojo::Remote<network::mojom::URLLoaderClient>(std::move(loader_client)),
+        net::HTTP_OK, kInstallPageContent);
     return;
   }
 
@@ -352,9 +394,10 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
           },
           [&loader_client](const IsolationData::DevModeBundle& content) {
             // TODO: Implement dev mode bundles.
-            CompleteWithErrorCode(mojo::Remote<network::mojom::URLLoaderClient>(
-                                      std::move(loader_client)),
-                                  net::HTTP_NOT_FOUND);
+            CompleteWithGeneratedHtmlResponse(
+                mojo::Remote<network::mojom::URLLoaderClient>(
+                    std::move(loader_client)),
+                net::HTTP_NOT_FOUND, /*body=*/absl::nullopt);
           },
           [&](const IsolationData::DevModeProxy& content) {
             HandleDevModeProxy(*url_info, content, std::move(loader_receiver),

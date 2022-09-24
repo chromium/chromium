@@ -40,6 +40,7 @@ namespace web_app {
 namespace {
 
 using ::testing::Eq;
+using ::testing::HasSubstr;
 using ::testing::IsFalse;
 using ::testing::IsNull;
 using ::testing::IsTrue;
@@ -452,6 +453,41 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlKeepsOriginUrlPath) {
 
   EXPECT_THAT(url_handler().intercepted_url(),
               Eq(GURL("http://example.com/foo/bar.html")));
+}
+
+TEST_F(IsolatedWebAppURLLoaderFactoryTest, GeneratedInstallPageIsReturned) {
+  RegisterWebApp(CreateIsolatedWebApp(kAppStartUrl,
+                                      IsolationData{IsolationData::DevModeProxy{
+                                          .proxy_url = "http://example.com"}}));
+
+  CreateFactory();
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = GURL("isolated-app://" + kWebBundleId +
+                      "/.well-known/_generated_install_page.html");
+  int status = CreateLoaderAndRun(std::move(request));
+
+  EXPECT_THAT(status, IsNetError(net::OK));
+  EXPECT_THAT(url_handler().intercepted_url(), Eq(absl::nullopt));
+  ASSERT_THAT(ResponseInfo(), NotNull());
+  EXPECT_THAT(ResponseInfo()->headers->response_code(), Eq(200));
+  EXPECT_THAT(ResponseBody(), HasSubstr("/manifest.webmanifest"));
+}
+
+TEST_F(IsolatedWebAppURLLoaderFactoryTest,
+       GeneratedInstallPageIsNotReturnedForNonIwa) {
+  RegisterWebApp(CreateWebApp(kAppStartUrl));
+
+  CreateFactory();
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = GURL("isolated-app://" + kWebBundleId +
+                      "/.well-known/_generated_install_page.html");
+  int status = CreateLoaderAndRun(std::move(request));
+
+  EXPECT_THAT(status, IsNetError(net::ERR_FAILED));
+  EXPECT_THAT(url_handler().intercepted_url(), Eq(absl::nullopt));
+  EXPECT_THAT(ResponseInfo(), IsNull());
 }
 
 class IsolatedWebAppURLLoaderFactoryInstalledBundleTest
