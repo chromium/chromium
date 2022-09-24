@@ -52,8 +52,9 @@ HOST_EXTRA_PARAMS_ENV_VAR = "CHROME_REMOTE_DESKTOP_HOST_EXTRA_PARAMS"
 DEFAULT_SIZES_ENV_VAR = "CHROME_REMOTE_DESKTOP_DEFAULT_DESKTOP_SIZES"
 
 # By default, this script launches Xorg as the virtual X display, using the
-# dummy display driver and void input device. When this environment variable is
-# set, the script will instead launch Xvfb.
+# dummy display driver and void input device, unless Xorg+Dummy is deemed
+# unsupported. When this environment variable is set, the script will instead
+# launch Xvfb.
 USE_XVFB_ENV_VAR = "CHROME_REMOTE_DESKTOP_USE_XVFB"
 
 # The amount of video RAM the dummy driver should claim to have, which limits
@@ -984,9 +985,53 @@ class XDesktop(Desktop):
     self.server_supports_randr = False
     self.randr_add_sizes = False
     self.ssh_auth_sockname = None
+    self.use_xvfb = self.should_use_xvfb()
     global g_desktop
     assert(g_desktop is None)
     g_desktop = self
+
+  @staticmethod
+  def should_use_xvfb():
+    """Return whether XVFB should be used. This will be true if USE_XVFB_ENV_VAR
+    is set, or if installed dependencies can't support Xorg+Dummy. Note that
+    this method performs expensive IO so the output should be cached."""
+
+    if USE_XVFB_ENV_VAR in os.environ:
+      return True
+
+    # xserver-xorg-input-void is no longer available in Debian stable. If we
+    # don't see the driver then Xorg+Dummy will be broken, and we fallback to
+    # XVFB.
+    if not os.path.exists('/usr/lib/xorg/modules/input/void_drv.so'):
+      logging.info('xserver-xorg-input-void is not installed')
+      return True
+
+    # Check if xserver-xorg-video-dummy is up-to-date. Older versions don't
+    # support the DUMMY* outputs and can't be used.
+    # Unfortunately, dummy_drv.so doesn't seem to have any version info so we
+    # have to query the dpkg database.
+    try:
+      video_dummy_info = subprocess.check_output(
+          ['dpkg-query', '-s', 'xserver-xorg-video-dummy'])
+      matches = re.search(
+          br'^Version: (\S+)$', video_dummy_info, re.MULTILINE)
+      if not matches:
+        logging.error('Version line is not found')
+        return False
+      version = matches[1]
+      retcode = subprocess.call(
+          ['dpkg', '--compare-versions', version, 'ge', '1:0.4.0'])
+      if retcode != 0:
+        logging.info('xserver-xorg-video-dummy is not up-to-date')
+        return True
+    except subprocess.CalledProcessError:
+      logging.info('xserver-xorg-video-dummy is not installed')
+      return True
+    except Exception as e:
+      logging.warning(
+          'Failed to get xserver-xorg-video-dummy version: ' + str(e))
+
+    return False
 
   @staticmethod
   def get_unused_display_number():
@@ -1003,6 +1048,8 @@ class XDesktop(Desktop):
     # GTK can end up connecting to an active Wayland display instead of the
     # CRD X11 session.
     self.child_env["GDK_BACKEND"] = "x11"
+    if self.use_xvfb:
+      self.child_env[USE_XVFB_ENV_VAR] = "true"
 
   def launch_session(self, *args, **kwargs):
     logging.info("Launching X server and X session.")
@@ -1144,7 +1191,7 @@ class XDesktop(Desktop):
     if self.ssh_auth_sockname:
       self.child_env["SSH_AUTH_SOCK"] = self.ssh_auth_sockname
 
-    if USE_XVFB_ENV_VAR in os.environ:
+    if self.use_xvfb:
       self._launch_xvfb(display, x_auth_file, extra_x_args)
     else:
       self._launch_xorg(display, x_auth_file, extra_x_args)
@@ -1173,7 +1220,7 @@ class XDesktop(Desktop):
                 str(height), "0", "0", "0"]
         subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL)
-        output_name = "screen" if USE_XVFB_ENV_VAR in os.environ else "DUMMY0"
+        output_name = "screen" if self.use_xvfb else "DUMMY0"
         args = ["xrandr", "--addmode", output_name, label]
         subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL)
@@ -1194,7 +1241,7 @@ class XDesktop(Desktop):
     subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL)
 
-    if USE_XVFB_ENV_VAR in os.environ:
+    if self.use_xvfb:
       # Monitor for any automatic resolution changes from the desktop
       # environment. This is needed only for Xvfb sessions because Xvfb sets
       # the first mode to be the maximum supported resolution, and some
