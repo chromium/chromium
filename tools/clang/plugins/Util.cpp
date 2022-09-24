@@ -5,6 +5,7 @@
 #include "Util.h"
 
 #include "clang/AST/Decl.h"
+#include "clang/Basic/SourceManager.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/raw_ostream.h"
 
@@ -34,4 +35,19 @@ std::string GetNamespaceImpl(const clang::DeclContext* context,
 
 std::string GetNamespace(const clang::Decl* record) {
   return GetNamespaceImpl(record->getDeclContext(), std::string());
+}
+
+std::string GetFilename(clang::CompilerInstance& instance,
+                        clang::SourceLocation location) {
+  const clang::SourceManager& source_manager = instance.getSourceManager();
+  clang::SourceLocation spelling_location =
+      source_manager.getSpellingLoc(location);
+  clang::PresumedLoc ploc = source_manager.getPresumedLoc(spelling_location);
+  if (ploc.isInvalid()) {
+    // If we're in an invalid location, we're looking at things that aren't
+    // actually stated in the source.
+    return "";
+  }
+
+  return ploc.getFilename();
 }

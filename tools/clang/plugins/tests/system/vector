@@ -13,6 +13,8 @@ struct vector {
   vector(const vector&);
   vector(vector&&);
   ~vector();
+  vector& operator=(const vector&);
+  vector& operator=(vector&&);
 };
 
 }  // namespace std

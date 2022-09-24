@@ -69,10 +69,6 @@ class ChromeClassTester {
   // deliberately ignore) in HandleTagDeclDefinition().
   bool IsIgnoredType(const std::string& base_name);
 
-  // Attempts to determine the filename for the given SourceLocation.
-  // Returns false if the filename could not be determined.
-  bool GetFilename(clang::SourceLocation loc, std::string* filename);
-
   clang::CompilerInstance& instance_;
   clang::DiagnosticsEngine& diagnostic_;
 

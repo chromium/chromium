@@ -47,6 +47,8 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     if (args[i] == "check-base-classes") {
       // TODO(rsleevi): Remove this once http://crbug.com/123295 is fixed.
       options_.check_base_classes = true;
+    } else if (args[i] == "check-blink-data-member-type") {
+      options_.check_blink_data_member_type = true;
     } else if (args[i] == "check-ipc") {
       options_.check_ipc = true;
     } else if (args[i] == "check-layout-object-methods") {

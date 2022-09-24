@@ -71,8 +71,8 @@ ChromeClassTester::LocationType ChromeClassTester::ClassifyLocation(
   if (instance().getSourceManager().isInSystemHeader(loc))
     return LocationType::kThirdParty;
 
-  std::string filename;
-  if (!GetFilename(loc, &filename)) {
+  std::string filename = GetFilename(instance(), loc);
+  if (filename.empty()) {
     // If the filename cannot be determined, simply treat this as a banned
     // location, instead of going through the full lookup process.
     return LocationType::kThirdParty;
@@ -139,11 +139,10 @@ bool ChromeClassTester::InImplementationFile(SourceLocation record_location) {
   // If |record_location| is a macro, check the whole chain of expansions.
   const SourceManager& source_manager = instance_.getSourceManager();
   while (true) {
-    if (GetFilename(record_location, &filename)) {
-      if (ends_with(filename, ".cc") || ends_with(filename, ".cpp") ||
-          ends_with(filename, ".mm")) {
-        return true;
-      }
+    filename = GetFilename(instance(), record_location);
+    if (ends_with(filename, ".cc") || ends_with(filename, ".cpp") ||
+        ends_with(filename, ".mm")) {
+      return true;
     }
     if (!record_location.isMacroID()) {
       break;
@@ -203,21 +202,6 @@ void ChromeClassTester::BuildBannedLists() {
 
 bool ChromeClassTester::IsIgnoredType(const std::string& base_name) {
   return ignored_record_names_.find(base_name) != ignored_record_names_.end();
-}
-
-bool ChromeClassTester::GetFilename(SourceLocation loc,
-                                    std::string* filename) {
-  const SourceManager& source_manager = instance_.getSourceManager();
-  SourceLocation spelling_location = source_manager.getSpellingLoc(loc);
-  PresumedLoc ploc = source_manager.getPresumedLoc(spelling_location);
-  if (ploc.isInvalid()) {
-    // If we're in an invalid location, we're looking at things that aren't
-    // actually stated in the source.
-    return false;
-  }
-
-  *filename = ploc.getFilename();
-  return true;
 }
 
 DiagnosticsEngine::Level ChromeClassTester::getErrorLevel() {

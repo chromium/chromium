@@ -31,6 +31,7 @@
 #include "clang/Basic/SourceManager.h"
 #include "clang/Basic/SourceLocation.h"
 
+#include "BlinkDataMemberTypeChecker.h"
 #include "CheckIPCVisitor.h"
 #include "CheckLayoutObjectMethodsVisitor.h"
 #include "ChromeClassTester.h"
@@ -135,6 +136,7 @@ class FindBadConstructsConsumer
   unsigned diag_note_public_dtor_;
   unsigned diag_note_protected_non_virtual_dtor_;
 
+  std::unique_ptr<BlinkDataMemberTypeChecker> blink_data_member_type_checker_;
   std::unique_ptr<CheckIPCVisitor> ipc_visitor_;
   std::unique_ptr<CheckLayoutObjectMethodsVisitor> layout_visitor_;
 };

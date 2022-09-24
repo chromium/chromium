@@ -118,6 +118,10 @@ std::string GetAutoReplacementTypeAsString(QualType type,
 FindBadConstructsConsumer::FindBadConstructsConsumer(CompilerInstance& instance,
                                                      const Options& options)
     : ChromeClassTester(instance, options) {
+  if (options.check_blink_data_member_type) {
+    blink_data_member_type_checker_.reset(
+        new BlinkDataMemberTypeChecker(instance));
+  }
   if (options.check_ipc) {
     ipc_visitor_.reset(new CheckIPCVisitor(instance));
   }
@@ -297,6 +301,11 @@ void FindBadConstructsConsumer::CheckChromeClass(LocationType location_type,
   // modularized.
   if (location_type != LocationType::kBlink)
     CheckRefCountedDtors(record_location, record);
+
+  if (blink_data_member_type_checker_ &&
+      location_type == LocationType::kBlink) {
+    blink_data_member_type_checker_->CheckClass(record_location, record);
+  }
 
   CheckWeakPtrFactoryMembers(record_location, record);
 }

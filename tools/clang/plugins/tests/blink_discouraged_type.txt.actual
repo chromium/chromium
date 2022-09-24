@@ -1,0 +1,17 @@
+In file included from blink_discouraged_type.cpp:5:
+./third_party/blink/renderer/discouraged_type.h:24:20: warning: [blink-style] 'std::vector' is discouraged for data members in blink renderer. Use 'WTF::Vector' instead. If the usage is necessary, add ALLOW_DISCOURAGED_TYPE(reason) to the data member or the type alias to suppress this message.
+  std::vector<int> v1;
+                   ^
+./third_party/blink/renderer/discouraged_type.h:28:15: warning: [blink-style] 'std::vector' is discouraged for data members in blink renderer. Use 'WTF::Vector' instead. If the usage is necessary, add ALLOW_DISCOURAGED_TYPE(reason) to the data member or the type alias to suppress this message.
+  FloatVector v2;
+              ^
+./third_party/blink/renderer/discouraged_type.h:31:21: warning: [blink-style] 'std::vector' is discouraged for data members in blink renderer. Use 'WTF::Vector' instead. If the usage is necessary, add ALLOW_DISCOURAGED_TYPE(reason) to the data member or the type alias to suppress this message.
+  std::vector<char> v_array[4][4];
+                    ^
+./third_party/blink/renderer/discouraged_type.h:58:22: warning: [blink-style] 'std::vector' is discouraged for data members in blink renderer. Use 'WTF::Vector' instead. If the usage is necessary, add ALLOW_DISCOURAGED_TYPE(reason) to the data member or the type alias to suppress this message.
+    std::vector<int> v;
+                     ^
+./third_party/blink/renderer/discouraged_type.h:67:18: warning: [blink-style] 'std::vector' is discouraged for data members in blink renderer. Use 'WTF::Vector' instead. If the usage is necessary, add ALLOW_DISCOURAGED_TYPE(reason) to the data member or the type alias to suppress this message.
+  std::vector<T> v1;
+                 ^
+5 warnings generated.
