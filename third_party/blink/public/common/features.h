@@ -845,6 +845,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kProcessHtmlDataImmediatelySubsequentChunks;
 
+// If enabled, some paint property updates (e.g., transform changes) will be
+// applied directly instead of using the property tree builder.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFastPathPaintPropertyUpdates);
+
 }  // namespace features
 }  // namespace blink
 

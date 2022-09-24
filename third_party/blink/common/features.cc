@@ -1606,5 +1606,9 @@ const base::FeatureParam<bool> kProcessHtmlDataImmediatelyFirstChunk{
 const base::FeatureParam<bool> kProcessHtmlDataImmediatelySubsequentChunks{
     &kProcessHtmlDataImmediately, "rest", false};
 
+BASE_FEATURE(kFastPathPaintPropertyUpdates,
+             "FastPathPaintPropertyUpdates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

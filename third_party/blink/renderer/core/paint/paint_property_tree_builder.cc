@@ -4184,6 +4184,9 @@ PaintArtifactCompositorUpdateReason PACUpdateReasonForPaintPropertyChange(
 
 bool PaintPropertyTreeBuilder::ScheduleDeferredTransformNodeUpdate(
     LayoutObject& object) {
+  if (!base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates))
+    return false;
+
   if (CanDoDeferredTransformNodeUpdate(object)) {
     object.GetFrameView()->AddPendingTransformUpdate(object);
     return true;
