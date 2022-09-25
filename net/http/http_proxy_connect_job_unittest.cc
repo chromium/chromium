@@ -957,7 +957,7 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
           SpdySessionKey(HostPortPair(kHttpsProxyHost, 443),
                          ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
                          SpdySessionKey::IsProxySession::kTrue, SocketTag(),
-                         NetworkIsolationKey(), SecureDnsPolicy::kDisable),
+                         NetworkAnonymizationKey(), SecureDnsPolicy::kDisable),
           /* enable_ip_based_pooling = */ false,
           /* is_websocket = */ false, NetLogWithSource()));
   EXPECT_FALSE(
@@ -965,7 +965,7 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
           SpdySessionKey(HostPortPair(kHttpsProxyHost, 443),
                          ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
                          SpdySessionKey::IsProxySession::kTrue, SocketTag(),
-                         NetworkIsolationKey(), SecureDnsPolicy::kAllow),
+                         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow),
           /* enable_ip_based_pooling = */ false,
           /* is_websocket = */ false, NetLogWithSource()));
 }

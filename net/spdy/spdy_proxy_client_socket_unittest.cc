@@ -230,7 +230,7 @@ SpdyProxyClientSocketTest::SpdyProxyClientSocketTest()
                                  PRIVACY_MODE_DISABLED,
                                  SpdySessionKey::IsProxySession::kFalse,
                                  SocketTag(),
-                                 NetworkIsolationKey(),
+                                 NetworkAnonymizationKey(),
                                  SecureDnsPolicy::kAllow),
       ssl_(SYNCHRONOUS, OK) {
   session_deps_.net_log = NetLog::Get();

@@ -107,12 +107,12 @@ class NET_EXPORT NetworkAnonymizationKey {
       return NetworkIsolationKey();
     }
     if (!frame_site_) {
-      return NetworkIsolationKey(top_frame_site_.value(),
-                                 top_frame_site_.value(),
-                                 nonce_.value() ? &nonce_.value() : nullptr);
+      return NetworkIsolationKey(
+          top_frame_site_.value(), top_frame_site_.value(),
+          nonce_.has_value() ? &nonce_.value() : nullptr);
     }
     return NetworkIsolationKey(top_frame_site_.value(), frame_site_.value(),
-                               nonce_.value() ? &nonce_.value() : nullptr);
+                               nonce_.has_value() ? &nonce_.value() : nullptr);
   }
 
   // Creates a NetworkAnonymizationKey from a NetworkIsolationKey. This is
@@ -120,6 +120,11 @@ class NET_EXPORT NetworkAnonymizationKey {
   // NetworkAnonymizationKey.
   static NetworkAnonymizationKey CreateFromNetworkIsolationKey(
       const net::NetworkIsolationKey& network_isolation_key);
+
+  // Creates a transient non-empty NetworkIsolationKey by creating an opaque
+  // origin. This prevents the NetworkIsolationKey from sharing data with other
+  // NetworkIsolationKeys.
+  static NetworkAnonymizationKey CreateTransient();
 
   // Returns the string representation of the key.
   std::string ToDebugString() const;

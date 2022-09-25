@@ -274,6 +274,17 @@ TEST_P(NetworkAnonymizationKeyTest, IsEmpty) {
   EXPECT_FALSE(populated_key.IsEmpty());
 }
 
+TEST_P(NetworkAnonymizationKeyTest, CreateTransient) {
+  NetworkAnonymizationKey transient_key1 =
+      NetworkAnonymizationKey::CreateTransient();
+  NetworkAnonymizationKey transient_key2 =
+      NetworkAnonymizationKey::CreateTransient();
+
+  EXPECT_TRUE(transient_key1.IsTransient());
+  EXPECT_TRUE(transient_key2.IsTransient());
+  EXPECT_FALSE(transient_key1 == transient_key2);
+}
+
 TEST_P(NetworkAnonymizationKeyTest, IsTransient) {
   NetworkAnonymizationKey empty_key;
   NetworkAnonymizationKey populated_key(/*top_frame_site=*/kTestSiteA,
@@ -296,11 +307,15 @@ TEST_P(NetworkAnonymizationKeyTest, IsTransient) {
                                                /*is_cross_site=*/false,
                                                /*nonce=*/absl::nullopt);
 
+  NetworkAnonymizationKey from_create_transient =
+      NetworkAnonymizationKey::CreateTransient();
+
   EXPECT_TRUE(empty_key.IsTransient());
   EXPECT_FALSE(populated_key.IsTransient());
   EXPECT_TRUE(data_top_frame_key.IsTransient());
   EXPECT_TRUE(data_top_frame_key.IsTransient());
   EXPECT_TRUE(populated_key_with_nonce.IsTransient());
+  EXPECT_TRUE(from_create_transient.IsTransient());
 
   if (IsDoubleKeyNetworkAnonymizationKeyEnabled() || IsCrossSiteFlagEnabled()) {
     EXPECT_FALSE(data_frame_key.IsTransient());

@@ -168,13 +168,14 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
       quic_request_(session_->quic_stream_factory()),
       pushed_stream_id_(kNoPushedStreamFound),
       spdy_session_key_(
-          using_quic_ ? SpdySessionKey()
-                      : GetSpdySessionKey(proxy_info_.proxy_server(),
-                                          origin_url_,
-                                          request_info_.privacy_mode,
-                                          request_info_.socket_tag,
-                                          request_info_.network_isolation_key,
-                                          request_info_.secure_dns_policy)) {
+          using_quic_
+              ? SpdySessionKey()
+              : GetSpdySessionKey(proxy_info_.proxy_server(),
+                                  origin_url_,
+                                  request_info_.privacy_mode,
+                                  request_info_.socket_tag,
+                                  request_info_.network_anonymization_key,
+                                  request_info_.secure_dns_policy)) {
   // Websocket `destination` schemes should be converted to HTTP(S).
   DCHECK(base::EqualsCaseInsensitiveASCII(destination_.scheme(),
                                           url::kHttpScheme) ||
@@ -406,7 +407,7 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
     const GURL& origin_url,
     PrivacyMode privacy_mode,
     const SocketTag& socket_tag,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy) {
   // In the case that we're using an HTTPS proxy for an HTTP url, look for a
   // HTTP/2 proxy session *to* the proxy, instead of to the origin server.
@@ -414,11 +415,12 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
     return SpdySessionKey(proxy_server.host_port_pair(), ProxyServer::Direct(),
                           PRIVACY_MODE_DISABLED,
                           SpdySessionKey::IsProxySession::kTrue, socket_tag,
-                          network_isolation_key, secure_dns_policy);
+                          network_anonymization_key, secure_dns_policy);
   }
   return SpdySessionKey(HostPortPair::FromURL(origin_url), proxy_server,
                         privacy_mode, SpdySessionKey::IsProxySession::kFalse,
-                        socket_tag, network_isolation_key, secure_dns_policy);
+                        socket_tag, network_anonymization_key,
+                        secure_dns_policy);
 }
 
 bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {

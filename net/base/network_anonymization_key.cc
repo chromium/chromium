@@ -76,6 +76,12 @@ NetworkAnonymizationKey& NetworkAnonymizationKey::operator=(
 NetworkAnonymizationKey& NetworkAnonymizationKey::operator=(
     NetworkAnonymizationKey&& network_anonymization_key) = default;
 
+NetworkAnonymizationKey NetworkAnonymizationKey::CreateTransient() {
+  SchemefulSite site_with_opaque_origin;
+  return NetworkAnonymizationKey(site_with_opaque_origin,
+                                 site_with_opaque_origin);
+}
+
 std::string NetworkAnonymizationKey::ToDebugString() const {
   std::string str = GetSiteDebugString(top_frame_site_);
   str += " " + GetSiteDebugString(frame_site_);
