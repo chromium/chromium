@@ -120,6 +120,9 @@ class CORE_EXPORT ThreadableLoader final
 
   void SetDefersLoading(bool);
 
+  // Return the task runner this class uses for processing network data.
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
+
   void Trace(Visitor* visitor) const override;
 
  private:

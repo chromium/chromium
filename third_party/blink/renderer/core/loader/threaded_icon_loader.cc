@@ -180,7 +180,7 @@ void ThreadedIconLoader::DidFinishLoading(uint64_t resource_identifier) {
                              base::TimeTicks::Now() - start_time_);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      Thread::Current()->GetDeprecatedTaskRunner();
+      threadable_loader_->GetTaskRunner();
 
   if (response_mime_type_ == "image/svg+xml") {
     PostCrossThreadTask(

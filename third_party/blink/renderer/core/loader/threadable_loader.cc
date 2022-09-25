@@ -379,4 +379,8 @@ void ThreadableLoader::Trace(Visitor* visitor) const {
   RawResourceClient::Trace(visitor);
 }
 
+scoped_refptr<base::SingleThreadTaskRunner> ThreadableLoader::GetTaskRunner() {
+  return execution_context_->GetTaskRunner(TaskType::kNetworking);
+}
+
 }  // namespace blink
