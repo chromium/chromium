@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/850428): Move this and .h back to
-// ios/chrome/browser/consent_auditor.
-
-#import "ios/chrome/browser/sync/consent_auditor_factory.h"
+#import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
 
 #import <memory>
 #import <utility>
