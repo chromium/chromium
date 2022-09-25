@@ -11,12 +11,11 @@
 namespace media_session {
 namespace features {
 
+COMPONENT_EXPORT(MEDIA_SESSION_CPP) BASE_DECLARE_FEATURE(kMediaSessionService);
 COMPONENT_EXPORT(MEDIA_SESSION_CPP)
-extern const base::Feature kMediaSessionService;
+BASE_DECLARE_FEATURE(kAudioFocusEnforcement);
 COMPONENT_EXPORT(MEDIA_SESSION_CPP)
-extern const base::Feature kAudioFocusEnforcement;
-COMPONENT_EXPORT(MEDIA_SESSION_CPP)
-extern const base::Feature kAudioFocusSessionGrouping;
+BASE_DECLARE_FEATURE(kAudioFocusSessionGrouping);
 
 }  // namespace features
 }  // namespace media_session

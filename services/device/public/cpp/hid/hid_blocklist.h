@@ -14,7 +14,7 @@ namespace device {
 
 // Feature used to configure entries in the HID blocklist which can be deployed
 // using a server configuration.
-extern const base::Feature kWebHidBlocklist;
+BASE_DECLARE_FEATURE(kWebHidBlocklist);
 
 // Dynamic additions to the HID blocklist.
 extern const base::FeatureParam<std::string> kWebHidBlocklistAdditions;

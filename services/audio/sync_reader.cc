@@ -100,8 +100,9 @@ namespace audio {
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
-const base::Feature kDynamicAudioTimeout{"DynamicAudioTimeout",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDynamicAudioTimeout,
+             "DynamicAudioTimeout",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<double> kBufferDurationPercent{
     &kDynamicAudioTimeout, "buffer_duration_percent", 0.95};

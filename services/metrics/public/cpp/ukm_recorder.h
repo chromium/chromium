@@ -61,7 +61,7 @@ class SourceUrlRecorderWebContentsObserver;
 }  // namespace internal
 
 // This feature controls whether UkmService should be created.
-METRICS_EXPORT extern const base::Feature kUkmFeature;
+METRICS_EXPORT BASE_DECLARE_FEATURE(kUkmFeature);
 
 // Interface for recording UKM
 class METRICS_EXPORT UkmRecorder {

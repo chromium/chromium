@@ -13,9 +13,10 @@
 
 namespace image_annotation {
 
-// static
-const base::Feature ImageAnnotationService::kExperiment{
-    "ImageAnnotationServiceExperimental", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kImageAnnotationServiceExperimental,
+             "ImageAnnotationServiceExperimental",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<std::string>
     ImageAnnotationService::kPixelsServerUrl;
 constexpr base::FeatureParam<std::string>
