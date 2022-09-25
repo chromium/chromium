@@ -10,17 +10,17 @@
 
 namespace offline_pages {
 
-extern const base::Feature kOfflinePagesCTFeature;
-extern const base::Feature kOfflinePagesLivePageSharingFeature;
-extern const base::Feature kBackgroundLoaderForDownloadsFeature;
-extern const base::Feature kPrefetchingOfflinePagesFeature;
-extern const base::Feature kOfflinePagesCTV2Feature;
-extern const base::Feature kOfflinePagesDescriptivePendingStatusFeature;
-extern const base::Feature kOfflinePagesInDownloadHomeOpenInCctFeature;
-extern const base::Feature kOfflinePagesDescriptiveFailStatusFeature;
-extern const base::Feature kOfflineIndicatorFeature;
-extern const base::Feature kOnTheFlyMhtmlHashComputationFeature;
-extern const base::Feature kOfflinePagesNetworkStateLikelyUnknown;
+BASE_DECLARE_FEATURE(kOfflinePagesCTFeature);
+BASE_DECLARE_FEATURE(kOfflinePagesLivePageSharingFeature);
+BASE_DECLARE_FEATURE(kBackgroundLoaderForDownloadsFeature);
+BASE_DECLARE_FEATURE(kPrefetchingOfflinePagesFeature);
+BASE_DECLARE_FEATURE(kOfflinePagesCTV2Feature);
+BASE_DECLARE_FEATURE(kOfflinePagesDescriptivePendingStatusFeature);
+BASE_DECLARE_FEATURE(kOfflinePagesInDownloadHomeOpenInCctFeature);
+BASE_DECLARE_FEATURE(kOfflinePagesDescriptiveFailStatusFeature);
+BASE_DECLARE_FEATURE(kOfflineIndicatorFeature);
+BASE_DECLARE_FEATURE(kOnTheFlyMhtmlHashComputationFeature);
+BASE_DECLARE_FEATURE(kOfflinePagesNetworkStateLikelyUnknown);
 
 // The parameter name used to find the experiment tag for prefetching offline
 // pages.
