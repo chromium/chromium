@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">Ուշադրություն. այս ֆայլերը ժամանակավոր են և կարող են ավտոմատ ջնջվել՝ սկավառակի վրա տարածք ազատելու համար։</translation>
 <translation id="3029114385395636667">Միացրեք Google Docs Offline ընդլայնումը՝ անցանց ռեժիմում Փաստաթղթերը, Աղյուսակներն ու Սլայդները օգտագործելու համար։</translation>
 <translation id="303198083543495566">Աշխարհագրություն</translation>
+<translation id="3044404008258011032">Այս տարրերը վերականգնելու համար դրանք աղբարկղից քաշեք նոր պանակ։ Տարրերի սկզբնական պանակը (<ph name="PARENT_FOLDER_NAME" />) ջնջվել է։</translation>
 <translation id="3047197340186497470">չինարեն (դայի)</translation>
 <translation id="3067790092342515856">Windows-ի ֆայլեր</translation>
 <translation id="3083975830683400843">Chromebit սարքեր</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">Ակտիվացվում է…</translation>
 <translation id="4092890906744441904">իռլանդերեն</translation>
 <translation id="4124935795427217608">Միաեղջյուր</translation>
+<translation id="4131235941541910880">Ոչ պետքական ֆայլերը տեղափոխեք աղբարկղ</translation>
 <translation id="4159731583141908892">Տեղափոխվեց <ph name="FILE_NAME" /> տարր։</translation>
 <translation id="4176286497474237543">Դատարկել աղբարկղը</translation>
 <translation id="4186579485882418952">Միացնել անցանց ռեժիմը</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">Գերմանական</translation>
 <translation id="4867079195717347957">Սեղմեք՝ սյունակներն ըստ նվազման կարգի տեսակավորելու համար։</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> բայթ</translation>
+<translation id="4874569719830985133">Ընդմիշտ ջնջել</translation>
 <translation id="4880214202172289027">Ձայնի սահիչ</translation>
 <translation id="4881695831933465202">Բացել</translation>
+<translation id="4891091358278567964">Այս տարրերը վերականգնելու համար դրանք աղբարկղից քաշեք նոր պանակ։ Տարրերի սկզբնական պանակները ջնջվել են։</translation>
 <translation id="4900532980794411603">Հասանելի դարձնել Parallels Desktop-ին</translation>
 <translation id="4902546322522096650">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կապակցում</translation>
 <translation id="4906580650526544301">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, մանրամասներ</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />Ստեղծեք, կիսվեք և համագործակցեք<ph name="MARKUP_8" />
     ուրիշների հետ մեկ վայրում:<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Վերականգնված ֆայլեր Google Drive-ից</translation>
+<translation id="5278111733643988471">Այս տարրը վերականգնելու համար այն աղբարկղից քաշեք նոր պանակ։ Տարրի սկզբնական պանակը (<ph name="PARENT_FOLDER_NAME" />) ջնջվել է։</translation>
 <translation id="5286194356314741248">Որոնում</translation>
 <translation id="5288441970121584418">Բուրգեր</translation>
 <translation id="5305688511332277257">Տեղադրված չկա</translation>
@@ -504,6 +509,7 @@
 <translation id="535792325654997756">Կատուներով մարդ</translation>
 <translation id="5358764674931277">Կադրերի արագությունը</translation>
 <translation id="5363339716524495120">Ներածման լեզուն չինարենն է</translation>
+<translation id="5364067326287025678">Աղբարկղը դատարկ է</translation>
 <translation id="5368191757080475556">Կիսվեք պանակով Լինուքսի հետ</translation>
 <translation id="5402367795255837559">Բրայլի գրատիպ</translation>
 <translation id="5411472733320185105">Չօգտագործել պրոքսի-սերվերի կարգավորումները այս խնամորդների և տիրույթների համար՝</translation>
@@ -770,6 +776,7 @@
 <translation id="7711920809702896782">Տեղեկություններ պատկերի մասին</translation>
 <translation id="7724603315864178912">Կտրել</translation>
 <translation id="7732111077498238432">Ցանցը վերահսկվում է քաղաքականությամբ</translation>
+<translation id="7736003208887389532">Ընդմիշտ ջնջե՞լ այս ֆայլերը։</translation>
 <translation id="7748626145866214022">Գործողությունների գոտում առկա են լրացուցիչ ընտրանքներ: Սեղմեք Alt+A՝ գործողությունների գոտին նշելու համար:</translation>
 <translation id="7760449188139285140">չինարեն (Wubi)</translation>
 <translation id="7765158879357617694">Տեղափոխել</translation>
@@ -831,6 +838,7 @@
 <translation id="8249296373107784235">Ընդհատել</translation>
 <translation id="8250690786522693009">լատիներեն</translation>
 <translation id="8250920743982581267">Փաստաթղթեր</translation>
+<translation id="8255595130163158297">Բոլոր տարրերը կջնջվեն աղբարկղից, և դուք չեք կարողանա վերականգնել դրանք։</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="8261561378965667560">չինարեն (կառուցվածքային մուտքագրում)</translation>
 <translation id="8264024885325823677">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
@@ -909,6 +917,7 @@
 <translation id="8857149712089373752">նեպալերեն (հնչյունային ստեղնաշար)</translation>
 <translation id="8860454412039442620">Excel աղյուսակ</translation>
 <translation id="8866284467018526531">արաբերեն (տառադարձություն)</translation>
+<translation id="8873014196523807561">Այս տարրերը վերականգնելու համար քաշեք դրանք նոր պանակ։ Որոշ տարրերի սկզբնական պանակները ջնջվել են։</translation>
 <translation id="8874184842967597500">Կապ չկա</translation>
 <translation id="8900820606136623064">Հունգարական</translation>
 <translation id="8903931173357132290">Շրջանավարտ</translation>

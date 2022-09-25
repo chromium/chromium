@@ -1395,6 +1395,7 @@
 <translation id="4744514002166662487">Ստեղծել ներկայացում</translation>
 <translation id="4744603770635761495">Մշակվող ֆայլի ուղին</translation>
 <translation id="4749011317274908093">Դուք ինկոգնիտո ռեժիմում եք</translation>
+<translation id="4750671009706599284">այս հեռախոսը</translation>
 <translation id="4750917950439032686">Այս կայքի միջոցով ուղարկվող տեղեկությունները (օր.` գաղտնաբառերը կամ վարկային քարտի տվյալները) պաշտպանված են:</translation>
 <translation id="4751476147751820511">Շարժման և լուսավորության տվիչներ</translation>
 <translation id="4754461935447132332">Արգելված է չպաշտպանված կայքերում</translation>
@@ -2163,6 +2164,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome-ը պարզեցրել է այս էջը՝ այն ավելի ընթեռնելի դարձնելու համար։ Chrome-ը բեռնել է սկզբնական էջը ոչ ապահով կապի միջոցով։</translation>
 <translation id="6890443033788248019">Թույլատրե՞լ տեղորոշման օգտագործումը</translation>
+<translation id="6890531741535756070">Դուք ընտրել եք, որ կայքերում, որոնք օգտագործում են <ph name="DEVICE_LABEL" />, հաստատումը կատարվի <ph name="PROVIDER_ORIGIN" />-ի միջոցով։ Հնարավոր է՝ այս մատակարարը տեղեկություններ է պահել ձեր վճարման եղանակի մասին։ Դուք կարող եք այդ տեղեկությունների <ph name="BEGIN_LINK" />ջնջման հայտ ուղարկել<ph name="END_LINK" />։</translation>
 <translation id="6891596781022320156">Կանոնի մակարդակը չի աջակցվում:</translation>
 <translation id="6895143722905299846">Վիրտուալ համար՝</translation>
 <translation id="6895330447102777224">Ձեր քարտը հաստատված է</translation>
@@ -2523,6 +2525,7 @@
 <translation id="7764225426217299476">Ավելացնել հասցե</translation>
 <translation id="7766518757692125295">Կիսաշրջազգեստ</translation>
 <translation id="7773005668374414287">Նույն հերթականությամբ՝ երեսի կողմով վերև</translation>
+<translation id="7785790577395078482">այս պլանշետը</translation>
 <translation id="7791011319128895129">Չթողարկված</translation>
 <translation id="7791196057686275387">Սեղմում</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
