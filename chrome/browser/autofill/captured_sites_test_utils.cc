@@ -980,7 +980,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
   }
 
   DCHECK(parsed_json->is_dict());
-  base::Value::Dict recipe = std::move(parsed_json->GetDict());
+  base::Value::Dict recipe = std::move(*parsed_json).TakeDict();
   if (!InitializeBrowserToExecuteRecipe(recipe))
     return false;
 
@@ -1136,7 +1136,7 @@ bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
     }
 
     if (!SetupSavedAutofillProfile(
-            std::move(autofill_profile_container->GetList()))) {
+            std::move(*autofill_profile_container).TakeList())) {
       return false;
     }
   }
@@ -1150,7 +1150,7 @@ bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
       return false;
     }
 
-    if (!SetupSavedPasswords(std::move(saved_password_container->GetList()))) {
+    if (!SetupSavedPasswords(std::move(*saved_password_container).TakeList())) {
       return false;
     }
   }
@@ -2229,7 +2229,7 @@ bool TestRecipeReplayer::SetupSavedAutofillProfile(
       return false;
     }
 
-    const base::Value::Dict list_entry_dict = std::move(list_entry.GetDict());
+    const base::Value::Dict list_entry_dict = std::move(list_entry).TakeDict();
     absl::optional<std::string> type =
         FindPopulateString(list_entry_dict, "type", "profile field type");
     absl::optional<std::string> value =
