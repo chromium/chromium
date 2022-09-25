@@ -11,6 +11,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -51,6 +52,31 @@ class AppReadinessWaiter : public apps::AppRegistryCache::Observer {
 
   const std::string app_id_;
   const apps::Readiness readiness_;
+  base::RunLoop run_loop_;
+};
+
+// Waits for the web app's scope in the App Service app cache to match the
+// expected |scope|.
+class WebAppScopeWaiter : public apps::AppRegistryCache::Observer {
+ public:
+  WebAppScopeWaiter(Profile* profile, const std::string& app_id, GURL scope);
+  ~WebAppScopeWaiter() override;
+
+  // Waits for the web app's scope in the App Service app cache to match the
+  // expected scope. Returns immediately if the app already has the expected
+  // scope.
+  void Await();
+
+ private:
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+
+  bool ContainsExpectedIntentFilter(const apps::AppUpdate& update) const;
+
+  const std::string app_id_;
+  const GURL scope_;
   base::RunLoop run_loop_;
 };
 

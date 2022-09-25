@@ -860,6 +860,14 @@ void WebAppIntegrationTestDriver::AwaitManifestUpdate(Site site) {
     waiting_for_update_run_loop_->Run();
     waiting_for_update_run_loop_.reset();
   }
+
+  // Wait for the app's scope in the App Service app cache to be consistent with
+  // the app's scope in the web app database. Returns immediately if they are
+  // already consistent.
+  WebAppScopeWaiter(profile(), app_id,
+                    provider()->registrar().GetAppScope(app_id))
+      .Await();
+
   AfterStateChangeAction();
 }
 
