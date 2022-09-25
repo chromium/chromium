@@ -10,10 +10,10 @@
 namespace prerender {
 
 // Preconnects instead of prefetching from GWS.
-extern const base::Feature kGWSPrefetchHoldback;
+BASE_DECLARE_FEATURE(kGWSPrefetchHoldback);
 
 // Preconnects instead of prefetching from NavigationPredictor.
-extern const base::Feature kNavigationPredictorPrefetchHoldback;
+BASE_DECLARE_FEATURE(kNavigationPredictorPrefetchHoldback);
 
 }  // namespace prerender
 

@@ -8,10 +8,12 @@
 
 namespace prerender {
 
-const base::Feature kGWSPrefetchHoldback{"GWSPrefetchHoldback",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kGWSPrefetchHoldback,
+             "GWSPrefetchHoldback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kNavigationPredictorPrefetchHoldback{
-    "NavigationPredictorPrefetchHoldback", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNavigationPredictorPrefetchHoldback,
+             "NavigationPredictorPrefetchHoldback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace prerender
