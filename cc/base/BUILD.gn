@@ -73,9 +73,19 @@ if (is_android) {
     template = "android/java/src/org/chromium/cc/base/CcSwitches.java.tmpl"
   }
 
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":cc_base_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "features.cc" ]
+    template = "android/java/src/org/chromium/cc/base/CcFeatures.java.tmpl"
+  }
+
   android_library("cc_base_java") {
     # Right now, this only includes the Java switches. But if we need more Java
     # files, they should be added here as necessary.
-    srcjar_deps = [ ":java_switches_srcjar" ]
+    srcjar_deps = [
+      ":java_features_srcjar",
+      ":java_switches_srcjar",
+    ]
   }
 }

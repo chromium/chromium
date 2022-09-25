@@ -8,6 +8,7 @@ import org.chromium.base.BaseFeatures;
 import org.chromium.base.BaseSwitches;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.blink_scheduler.BlinkSchedulerFeatures;
+import org.chromium.cc.base.CcFeatures;
 import org.chromium.cc.base.CcSwitches;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -368,6 +369,12 @@ public final class ProductionSupportedFlagList {
                     "Enable to increase the cost of SendPendingAccessibilityEvents"),
             Flag.baseFeature(ContentFeatures.WEBVIEW_THROTTLE_BACKGROUND_BEGIN_FRAME,
                     "Enable to throttle begin frames when webview is not being drawn"),
+            Flag.baseFeature(BlinkFeatures.RUN_TEXT_INPUT_UPDATE_POST_LIFECYCLE,
+                    "Runs code to update IME state at the end of a lifecycle update "
+                            + "rather than the beginning."),
+            Flag.baseFeature(CcFeatures.NON_BLOCKING_COMMIT,
+                    "Don't block the renderer main thread unconditionally while waiting "
+                            + "for commit to finish on the compositor thread."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

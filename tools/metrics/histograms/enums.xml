@@ -14507,6 +14507,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-1703305710" label="CSS.getMediaQueries"/>
   <int value="-1702182004" label="HeapProfiler.startSampling"/>
   <int value="-1699153796" label="Debugger.setBlackboxedRanges"/>
+  <int value="-1691104224" label="RunTextInputUpdatePostLifecycle:disabled"/>
   <int value="-1688287057" label="Browser.getBrowserCommandLine"/>
   <int value="-1679779501" label="Profiler.getBestEffortCoverage"/>
   <int value="-1678649390" label="Overlay.highlightSourceOrder"/>
@@ -60469,6 +60470,7 @@ from previous Chrome versions.
   <int value="332391072" label="cs-contextual-cards-bar-integration"/>
   <int value="332722393" label="StartSurfaceDisabledFeedImprovement:enabled"/>
   <int value="332960119" label="PdfXfaSupport:disabled"/>
+  <int value="333014953" label="NonBlockingCommit:enabled"/>
   <int value="334330083" label="WebAuthenticationConditionalUI:disabled"/>
   <int value="334802038" label="OfflinePreviews:disabled"/>
   <int value="335976368" label="LoadCryptoTokenExtension:disabled"/>
