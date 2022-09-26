@@ -56,9 +56,8 @@ void BrowserFeaturePromoSnoozeService::RegisterProfilePrefs(
 }
 
 void BrowserFeaturePromoSnoozeService::Reset(const base::Feature& iph_feature) {
-  DictionaryPrefUpdate update(profile_->GetPrefs(), kIPHSnoozeDataPath);
-  auto* const pref_data = update.Get();
-  pref_data->RemovePath(iph_feature.name);
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), kIPHSnoozeDataPath);
+  update->RemoveByDottedPath(iph_feature.name);
 }
 
 absl::optional<user_education::FeaturePromoSnoozeService::SnoozeData>
@@ -114,19 +113,20 @@ void BrowserFeaturePromoSnoozeService::SaveSnoozeData(
     const user_education::FeaturePromoSnoozeService::SnoozeData& snooze_data) {
   std::string path_prefix = std::string(iph_feature.name) + ".";
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(), kIPHSnoozeDataPath);
-  auto* const pref_data = update.Get();
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), kIPHSnoozeDataPath);
+  auto& pref_data = update.Get();
 
-  pref_data->SetBoolPath(path_prefix + kIPHIsDismissedPath,
-                         snooze_data.is_dismissed);
-  pref_data->SetPath(path_prefix + kIPHLastShowTimePath,
-                     base::TimeToValue(snooze_data.last_show_time));
-  pref_data->SetPath(path_prefix + kIPHLastSnoozeTimePath,
-                     base::TimeToValue(snooze_data.last_snooze_time));
-  pref_data->SetPath(path_prefix + kIPHLastSnoozeDurationPath,
-                     base::TimeDeltaToValue(snooze_data.last_snooze_duration));
-  pref_data->SetIntPath(path_prefix + kIPHSnoozeCountPath,
-                        snooze_data.snooze_count);
-  pref_data->SetIntPath(path_prefix + kIPHShowCountPath,
-                        snooze_data.show_count);
+  pref_data.SetByDottedPath(path_prefix + kIPHIsDismissedPath,
+                            snooze_data.is_dismissed);
+  pref_data.SetByDottedPath(path_prefix + kIPHLastShowTimePath,
+                            base::TimeToValue(snooze_data.last_show_time));
+  pref_data.SetByDottedPath(path_prefix + kIPHLastSnoozeTimePath,
+                            base::TimeToValue(snooze_data.last_snooze_time));
+  pref_data.SetByDottedPath(
+      path_prefix + kIPHLastSnoozeDurationPath,
+      base::TimeDeltaToValue(snooze_data.last_snooze_duration));
+  pref_data.SetByDottedPath(path_prefix + kIPHSnoozeCountPath,
+                            snooze_data.snooze_count);
+  pref_data.SetByDottedPath(path_prefix + kIPHShowCountPath,
+                            snooze_data.show_count);
 }

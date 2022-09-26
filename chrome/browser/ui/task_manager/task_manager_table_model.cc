@@ -860,23 +860,21 @@ void TaskManagerTableModel::StoreColumnsSettings() {
   if (!local_state)
     return;
 
-  DictionaryPrefUpdate dict_update(local_state,
+  ScopedDictPrefUpdate dict_update(local_state,
                                    prefs::kTaskManagerColumnVisibility);
 
   for (const auto item : columns_settings_->GetDict()) {
-    dict_update->SetPath(item.first, item.second.Clone());
+    dict_update->SetByDottedPath(item.first, item.second.Clone());
   }
 
   // Store the current sort status to be restored again at startup.
   if (!table_view_delegate_->IsTableSorted()) {
-    dict_update->GetDict().Set(kSortColumnIdKey, "");
+    dict_update->Set(kSortColumnIdKey, "");
   } else {
     const auto& sort_descriptor = table_view_delegate_->GetSortDescriptor();
-    dict_update->GetDict().Set(
-        kSortColumnIdKey,
-        GetColumnIdAsString(sort_descriptor.sorted_column_id));
-    dict_update->GetDict().Set(kSortIsAscendingKey,
-                               sort_descriptor.is_ascending);
+    dict_update->Set(kSortColumnIdKey,
+                     GetColumnIdAsString(sort_descriptor.sorted_column_id));
+    dict_update->Set(kSortIsAscendingKey, sort_descriptor.is_ascending);
   }
 }
 

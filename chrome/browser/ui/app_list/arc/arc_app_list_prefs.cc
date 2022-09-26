@@ -130,10 +130,9 @@ class NotificationsEnabledDeferred {
   explicit NotificationsEnabledDeferred(PrefService* prefs) : prefs_(prefs) {}
 
   void Put(const std::string& app_id, bool enabled) {
-    DictionaryPrefUpdate update(
+    ScopedDictPrefUpdate update(
         prefs_, arc::prefs::kArcSetNotificationsEnabledDeferred);
-    base::Value* const dict = update.Get();
-    dict->GetDict().Set(app_id, base::Value(enabled));
+    update->Set(app_id, enabled);
   }
 
   bool Get(const std::string& app_id) {
@@ -143,10 +142,9 @@ class NotificationsEnabledDeferred {
   }
 
   void Remove(const std::string& app_id) {
-    DictionaryPrefUpdate update(
+    ScopedDictPrefUpdate update(
         prefs_, arc::prefs::kArcSetNotificationsEnabledDeferred);
-    base::Value* const dict = update.Get();
-    dict->GetDict().Remove(app_id);
+    update->Remove(app_id);
   }
 
  private:
@@ -1597,9 +1595,8 @@ void ArcAppListPrefs::RemoveApp(const std::string& app_id) {
   ScheduleAppFolderDeletion(app_id);
 
   // Remove from prefs.
-  DictionaryPrefUpdate update(prefs_, arc::prefs::kArcApps);
-  base::Value* apps = update.Get();
-  const bool removed = apps->GetDict().Remove(app_id);
+  ScopedDictPrefUpdate apps_update(prefs_, arc::prefs::kArcApps);
+  const bool removed = apps_update->Remove(app_id);
   DCHECK(removed);
 
   // |tracked_apps_| contains apps that are reported externally as available.
@@ -1703,10 +1700,7 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
 }
 
 void ArcAppListPrefs::RemovePackageFromPrefs(const std::string& package_name) {
-  DictionaryPrefUpdate(prefs_, arc::prefs::kArcPackages)
-      .Get()
-      ->GetDict()
-      .Remove(package_name);
+  ScopedDictPrefUpdate(prefs_, arc::prefs::kArcPackages)->Remove(package_name);
 }
 
 void ArcAppListPrefs::OnAppListRefreshed(

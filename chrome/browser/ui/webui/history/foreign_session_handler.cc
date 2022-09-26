@@ -315,10 +315,9 @@ base::Value::List ForeignSessionHandler::GetForeignSessions() {
     // Use a pref to keep track of sessions that were collapsed by the user.
     // To prevent the pref from accumulating stale sessions, clear it each time
     // and only add back sessions that are still current.
-    DictionaryPrefUpdate pref_update(Profile::FromWebUI(web_ui())->GetPrefs(),
+    ScopedDictPrefUpdate pref_update(Profile::FromWebUI(web_ui())->GetPrefs(),
                                      prefs::kNtpCollapsedForeignSessions);
-    base::Value::Dict& current_collapsed_sessions =
-        pref_update.Get()->GetDict();
+    base::Value::Dict& current_collapsed_sessions = pref_update.Get();
     base::Value::Dict collapsed_sessions = current_collapsed_sessions.Clone();
     current_collapsed_sessions.clear();
 
@@ -452,11 +451,11 @@ void ForeignSessionHandler::HandleSetForeignSessionCollapsed(
   // Store session tags for collapsed sessions in a preference so that the
   // collapsed state persists.
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  DictionaryPrefUpdate update(prefs, prefs::kNtpCollapsedForeignSessions);
+  ScopedDictPrefUpdate update(prefs, prefs::kNtpCollapsedForeignSessions);
   if (is_collapsed)
-    update.Get()->GetDict().Set(session_tag, true);
+    update->Set(session_tag, true);
   else
-    update.Get()->GetDict().Remove(session_tag);
+    update->Remove(session_tag);
 }
 
 }  // namespace browser_sync

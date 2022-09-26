@@ -165,8 +165,8 @@ sync_pb::AppListSpecifics::AppListItemType GetAppListItemType(
 
 void RemoveSyncItemFromLocalStorage(Profile* profile,
                                     const std::string& item_id) {
-  DictionaryPrefUpdate(profile->GetPrefs(), prefs::kAppListLocalState)
-      ->RemoveKey(item_id);
+  ScopedDictPrefUpdate(profile->GetPrefs(), prefs::kAppListLocalState)
+      ->Remove(item_id);
 }
 
 void UpdateSyncItemInLocalStorage(
@@ -176,43 +176,35 @@ void UpdateSyncItemInLocalStorage(
   if (sync_item->is_ephemeral)
     return;
 
-  DictionaryPrefUpdate pref_update(profile->GetPrefs(),
+  ScopedDictPrefUpdate pref_update(profile->GetPrefs(),
                                    prefs::kAppListLocalState);
-  base::Value* dict_item = pref_update->FindKeyOfType(
-      sync_item->item_id, base::Value::Type::DICTIONARY);
-  if (!dict_item) {
-    dict_item = pref_update->SetKey(sync_item->item_id,
-                                    base::Value(base::Value::Type::DICTIONARY));
-  }
-  base::Value::Dict& dict_item_dict = dict_item->GetDict();
-  dict_item_dict.Set(kNameKey, base::Value(sync_item->item_name));
-  dict_item_dict.Set(kParentIdKey, base::Value(sync_item->parent_id));
-  dict_item_dict.Set(kPositionKey,
-                     base::Value(sync_item->item_ordinal.IsValid()
-                                     ? sync_item->item_ordinal.ToInternalValue()
-                                     : std::string()));
-  dict_item_dict.Set(
-      kPinPositionKey,
-      base::Value(sync_item->item_pin_ordinal.IsValid()
-                      ? sync_item->item_pin_ordinal.ToInternalValue()
-                      : std::string()));
-  dict_item_dict.Set(kTypeKey,
-                     base::Value(static_cast<int>(sync_item->item_type)));
-  dict_item_dict.Set(kEmptyItemOrdinalFixable,
-                     base::Value(sync_item->item_ordinal.IsValid() ||
-                                 sync_item->empty_item_ordinal_fixable));
+  base::Value::Dict* dict_item = pref_update->EnsureDict(sync_item->item_id);
+  dict_item->Set(kNameKey, base::Value(sync_item->item_name));
+  dict_item->Set(kParentIdKey, base::Value(sync_item->parent_id));
+  dict_item->Set(kPositionKey,
+                 base::Value(sync_item->item_ordinal.IsValid()
+                                 ? sync_item->item_ordinal.ToInternalValue()
+                                 : std::string()));
+  dict_item->Set(kPinPositionKey,
+                 base::Value(sync_item->item_pin_ordinal.IsValid()
+                                 ? sync_item->item_pin_ordinal.ToInternalValue()
+                                 : std::string()));
+  dict_item->Set(kTypeKey, base::Value(static_cast<int>(sync_item->item_type)));
+  dict_item->Set(kEmptyItemOrdinalFixable,
+                 base::Value(sync_item->item_ordinal.IsValid() ||
+                             sync_item->empty_item_ordinal_fixable));
 
   if (ash::features::IsLauncherItemColorSyncEnabled()) {
     // Handle the item color.
     if (sync_item->item_color.IsValid()) {
-      dict_item_dict.Set(kBackgroundColorKey,
-                         base::Value(sync_pb::AppListSpecifics::ColorGroup_Name(
-                             sync_item->item_color.background_color())));
-      dict_item_dict.Set(kHueKey, base::Value(sync_item->item_color.hue()));
-    } else if (dict_item_dict.Find(kBackgroundColorKey)) {
-      dict_item_dict.Remove(kBackgroundColorKey);
-      DCHECK(dict_item_dict.Find(kHueKey));
-      dict_item_dict.Remove(kHueKey);
+      dict_item->Set(kBackgroundColorKey,
+                     base::Value(sync_pb::AppListSpecifics::ColorGroup_Name(
+                         sync_item->item_color.background_color())));
+      dict_item->Set(kHueKey, base::Value(sync_item->item_color.hue()));
+    } else if (dict_item->Find(kBackgroundColorKey)) {
+      dict_item->Remove(kBackgroundColorKey);
+      DCHECK(dict_item->Find(kHueKey));
+      dict_item->Remove(kHueKey);
     }
   }
 }
@@ -1174,9 +1166,9 @@ AppListSyncableService::MergeDataAndStartSyncing(
   HandleUpdateStarted();
 
   // Reset local state and recreate from sync info.
-  DictionaryPrefUpdate pref_update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate pref_update(profile_->GetPrefs(),
                                    prefs::kAppListLocalState);
-  pref_update->DictClear();
+  pref_update->clear();
 
   sync_processor_ = std::move(sync_processor);
   sync_error_handler_ = std::move(error_handler);

@@ -53,22 +53,22 @@ const int kMinWindowHeight = 17;
 }
 
 - (void)save:(NSNotification*)notification {
-  DictionaryPrefUpdate update(_prefService, _path);
-  base::Value* windowPrefs = update.Get();
+  ScopedDictPrefUpdate update(_prefService, _path);
+  base::Value::Dict& windowPrefs = update.Get();
   NSRect frame = [_window frame];
   if ([_window styleMask] & NSWindowStyleMaskResizable) {
     // Save the origin of the window.
-    windowPrefs->SetIntKey("left", NSMinX(frame));
-    windowPrefs->SetIntKey("right", NSMaxX(frame));
+    windowPrefs.Set("left", static_cast<int>(NSMinX(frame)));
+    windowPrefs.Set("right", static_cast<int>(NSMaxX(frame)));
     // windows's and linux's profiles have top < bottom due to having their
     // screen origin in the upper left, while cocoa's is in the lower left. To
     // keep the top < bottom invariant, store top in bottom and vice versa.
-    windowPrefs->SetIntKey("top", NSMinY(frame));
-    windowPrefs->SetIntKey("bottom", NSMaxY(frame));
+    windowPrefs.Set("top", static_cast<int>(NSMinY(frame)));
+    windowPrefs.Set("bottom", static_cast<int>(NSMaxY(frame)));
   } else {
     // Save the origin of the window.
-    windowPrefs->SetIntKey("x", frame.origin.x);
-    windowPrefs->SetIntKey("y", frame.origin.y);
+    windowPrefs.Set("x", static_cast<int>(frame.origin.x));
+    windowPrefs.Set("y", static_cast<int>(frame.origin.y));
   }
 }
 
@@ -87,12 +87,12 @@ const int kMinWindowHeight = 17;
     if (x2.value() - x1.value() < kMinWindowWidth ||
         y2.value() - y1.value() < kMinWindowHeight) {
       // Windows should never be very small.
-      DictionaryPrefUpdate update(_prefService, _path);
-      base::Value* mutableWindowPrefs = update.Get();
-      mutableWindowPrefs->RemoveKey("left");
-      mutableWindowPrefs->RemoveKey("right");
-      mutableWindowPrefs->RemoveKey("top");
-      mutableWindowPrefs->RemoveKey("bottom");
+      ScopedDictPrefUpdate update(_prefService, _path);
+      base::Value::Dict& mutableWindowPrefs = update.Get();
+      mutableWindowPrefs.Remove("left");
+      mutableWindowPrefs.Remove("right");
+      mutableWindowPrefs.Remove("top");
+      mutableWindowPrefs.Remove("bottom");
     } else {
       [_window
           setFrame:NSMakeRect(x1.value(), y1.value(), x2.value() - x1.value(),

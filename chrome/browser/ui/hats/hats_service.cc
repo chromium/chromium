@@ -493,14 +493,15 @@ void HatsService::RecordSurveyAsShown(std::string trigger_id) {
   UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
                             ShouldShowSurveyReasons::kYes);
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
-  base::Value* pref_data = update.Get();
-  pref_data->SetIntPath(GetMajorVersionPath(trigger),
-                        version_info::GetVersion().components()[0]);
-  pref_data->SetPath(GetLastSurveyStartedTime(trigger),
-                     base::TimeToValue(base::Time::Now()));
-  pref_data->SetPath(kAnyLastSurveyStartedTimePath,
-                     base::TimeToValue(base::Time::Now()));
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
+  base::Value::Dict& pref_data = update.Get();
+  pref_data.SetByDottedPath(
+      GetMajorVersionPath(trigger),
+      static_cast<int>(version_info::GetVersion().components()[0]));
+  pref_data.SetByDottedPath(GetLastSurveyStartedTime(trigger),
+                            base::TimeToValue(base::Time::Now()));
+  pref_data.SetByDottedPath(kAnyLastSurveyStartedTimePath,
+                            base::TimeToValue(base::Time::Now()));
 }
 
 void HatsService::HatsNextDialogClosed() {
@@ -510,79 +511,82 @@ void HatsService::HatsNextDialogClosed() {
 void HatsService::SetSurveyMetadataForTesting(
     const HatsService::SurveyMetadata& metadata) {
   const std::string& trigger = kHatsSurveyTriggerSettings;
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
-  base::Value* pref_data = update.Get();
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
+  base::Value::Dict& pref_data = update.Get();
   if (!metadata.last_major_version.has_value() &&
       !metadata.last_survey_started_time.has_value() &&
       !metadata.is_survey_full.has_value() &&
       !metadata.last_survey_check_time.has_value()) {
-    pref_data->RemovePath(trigger);
+    pref_data.RemoveByDottedPath(trigger);
   }
 
   if (metadata.last_major_version.has_value()) {
-    pref_data->SetIntPath(GetMajorVersionPath(trigger),
-                          *metadata.last_major_version);
+    pref_data.SetByDottedPath(GetMajorVersionPath(trigger),
+                              *metadata.last_major_version);
   } else {
-    pref_data->RemovePath(GetMajorVersionPath(trigger));
+    pref_data.RemoveByDottedPath(GetMajorVersionPath(trigger));
   }
 
   if (metadata.last_survey_started_time.has_value()) {
-    pref_data->SetPath(GetLastSurveyStartedTime(trigger),
-                       base::TimeToValue(*metadata.last_survey_started_time));
+    pref_data.SetByDottedPath(
+        GetLastSurveyStartedTime(trigger),
+        base::TimeToValue(*metadata.last_survey_started_time));
   } else {
-    pref_data->RemovePath(GetLastSurveyStartedTime(trigger));
+    pref_data.RemoveByDottedPath(GetLastSurveyStartedTime(trigger));
   }
 
   if (metadata.any_last_survey_started_time.has_value()) {
-    pref_data->SetPath(
+    pref_data.SetByDottedPath(
         kAnyLastSurveyStartedTimePath,
         base::TimeToValue(*metadata.any_last_survey_started_time));
   } else {
-    pref_data->RemovePath(kAnyLastSurveyStartedTimePath);
+    pref_data.RemoveByDottedPath(kAnyLastSurveyStartedTimePath);
   }
 
   if (metadata.is_survey_full.has_value()) {
-    pref_data->SetBoolPath(GetIsSurveyFull(trigger), *metadata.is_survey_full);
+    pref_data.SetByDottedPath(GetIsSurveyFull(trigger),
+                              *metadata.is_survey_full);
   } else {
-    pref_data->RemovePath(GetIsSurveyFull(trigger));
+    pref_data.RemoveByDottedPath(GetIsSurveyFull(trigger));
   }
 
   if (metadata.last_survey_check_time.has_value()) {
-    pref_data->SetPath(GetLastSurveyCheckTime(trigger),
-                       base::TimeToValue(*metadata.last_survey_check_time));
+    pref_data.SetByDottedPath(
+        GetLastSurveyCheckTime(trigger),
+        base::TimeToValue(*metadata.last_survey_check_time));
   } else {
-    pref_data->RemovePath(GetLastSurveyCheckTime(trigger));
+    pref_data.RemoveByDottedPath(GetLastSurveyCheckTime(trigger));
   }
 }
 
 void HatsService::GetSurveyMetadataForTesting(
     HatsService::SurveyMetadata* metadata) const {
   const std::string& trigger = kHatsSurveyTriggerSettings;
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
-  base::Value* pref_data = update.Get();
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
+  base::Value::Dict& pref_data = update.Get();
 
   absl::optional<int> last_major_version =
-      pref_data->FindIntPath(GetMajorVersionPath(trigger));
+      pref_data.FindIntByDottedPath(GetMajorVersionPath(trigger));
   if (last_major_version.has_value())
     metadata->last_major_version = last_major_version;
 
-  absl::optional<base::Time> last_survey_started_time =
-      base::ValueToTime(pref_data->FindPath(GetLastSurveyStartedTime(trigger)));
+  absl::optional<base::Time> last_survey_started_time = base::ValueToTime(
+      pref_data.FindByDottedPath(GetLastSurveyStartedTime(trigger)));
   if (last_survey_started_time.has_value())
     metadata->last_survey_started_time = last_survey_started_time;
 
-  absl::optional<base::Time> any_last_survey_started_time =
-      base::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
+  absl::optional<base::Time> any_last_survey_started_time = base::ValueToTime(
+      pref_data.FindByDottedPath(kAnyLastSurveyStartedTimePath));
   if (any_last_survey_started_time.has_value())
     metadata->any_last_survey_started_time = any_last_survey_started_time;
 
   absl::optional<bool> is_survey_full =
-      pref_data->FindBoolPath(GetIsSurveyFull(trigger));
+      pref_data.FindBoolByDottedPath(GetIsSurveyFull(trigger));
   if (is_survey_full.has_value())
     metadata->is_survey_full = is_survey_full;
 
-  absl::optional<base::Time> last_survey_check_time =
-      base::ValueToTime(pref_data->FindPath(GetLastSurveyCheckTime(trigger)));
+  absl::optional<base::Time> last_survey_check_time = base::ValueToTime(
+      pref_data.FindByDottedPath(GetLastSurveyCheckTime(trigger)));
   if (last_survey_check_time.has_value())
     metadata->last_survey_check_time = last_survey_check_time;
 }
@@ -837,9 +841,9 @@ void HatsService::CheckSurveyStatusAndMaybeShow(
 
   // As soon as the HaTS Next dialog is created it will attempt to contact
   // the HaTS servers to check for a survey.
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
-  update->SetPath(GetLastSurveyCheckTime(trigger),
-                  base::TimeToValue(base::Time::Now()));
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
+  update->SetByDottedPath(GetLastSurveyCheckTime(trigger),
+                          base::TimeToValue(base::Time::Now()));
 
   DCHECK(!hats_next_dialog_exists_);
   browser->window()->ShowHatsDialog(

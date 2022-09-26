@@ -174,12 +174,12 @@ TEST_F(WindowSizeAutosaverTest, DoesNotRestoreButClearsEmptyRect) {
   PrefService* pref = profile()->GetPrefs();
   ASSERT_TRUE(pref);
 
-  DictionaryPrefUpdate update(pref, path_);
-  base::Value* windowPref = update.Get();
-  windowPref->SetIntKey("left", 50);
-  windowPref->SetIntKey("right", 50);
-  windowPref->SetIntKey("top", 60);
-  windowPref->SetIntKey("bottom", 60);
+  ScopedDictPrefUpdate update(pref, path_);
+  base::Value::Dict& windowPref = update.Get();
+  windowPref.Set("left", 50);
+  windowPref.Set("right", 50);
+  windowPref.Set("top", 60);
+  windowPref.Set("bottom", 60);
 
   {
     // Window rect shouldn't change...
@@ -195,12 +195,12 @@ TEST_F(WindowSizeAutosaverTest, DoesNotRestoreButClearsEmptyRect) {
   }
 
   // ...and it should be gone from the profile, too.
-  EXPECT_FALSE(windowPref->FindIntKey("x").has_value());
-  EXPECT_FALSE(windowPref->FindIntKey("y").has_value());
-  ASSERT_FALSE(windowPref->FindIntKey("left").has_value());
-  ASSERT_FALSE(windowPref->FindIntKey("right").has_value());
-  ASSERT_FALSE(windowPref->FindIntKey("top").has_value());
-  ASSERT_FALSE(windowPref->FindIntKey("bottom").has_value());
+  EXPECT_FALSE(windowPref.FindInt("x").has_value());
+  EXPECT_FALSE(windowPref.FindInt("y").has_value());
+  ASSERT_FALSE(windowPref.FindInt("left").has_value());
+  ASSERT_FALSE(windowPref.FindInt("right").has_value());
+  ASSERT_FALSE(windowPref.FindInt("top").has_value());
+  ASSERT_FALSE(windowPref.FindInt("bottom").has_value());
 }
 
 }  // namespace

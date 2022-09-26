@@ -87,8 +87,8 @@ void ChromeZoomLevelPrefs::SetDefaultZoomLevelPref(double level) {
   if (blink::PageZoomValuesEqual(level, host_zoom_map_->GetDefaultZoomLevel()))
     return;
 
-  DictionaryPrefUpdate update(pref_service_, prefs::kPartitionDefaultZoomLevel);
-  update->SetDoubleKey(partition_key_, level);
+  ScopedDictPrefUpdate update(pref_service_, prefs::kPartitionDefaultZoomLevel);
+  update->Set(partition_key_, level);
   // For unregistered paths, OnDefaultZoomLevelChanged won't be called, so
   // set this manually.
   host_zoom_map_->SetDefaultZoomLevel(level);
@@ -120,11 +120,9 @@ void ChromeZoomLevelPrefs::OnZoomLevelChanged(
   if (change.mode != content::HostZoomMap::ZOOM_CHANGED_FOR_HOST)
     return;
   double level = change.zoom_level;
-  DictionaryPrefUpdate update(pref_service_,
+  ScopedDictPrefUpdate update(pref_service_,
                               prefs::kPartitionPerHostZoomLevels);
-  base::Value* host_zoom_update = update.Get();
-  DCHECK(host_zoom_update);
-  base::Value::Dict& host_zoom_dictionaries = host_zoom_update->GetDict();
+  base::Value::Dict& host_zoom_dictionaries = update.Get();
 
   bool modification_is_removal =
       blink::PageZoomValuesEqual(level, host_zoom_map_->GetDefaultZoomLevel());
@@ -200,13 +198,13 @@ void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
   // Sanitize prefs to remove entries that match the default zoom level and/or
   // have an empty host.
   {
-    DictionaryPrefUpdate update(pref_service_,
+    ScopedDictPrefUpdate update(pref_service_,
                                 prefs::kPartitionPerHostZoomLevels);
-    base::Value* host_zoom_dictionaries = update.Get();
-    base::Value* partition_dictionary =
-        host_zoom_dictionaries->FindDictKey(partition_key_);
+    base::Value::Dict& host_zoom_dictionaries = update.Get();
+    base::Value::Dict* partition_dictionary =
+        host_zoom_dictionaries.FindDict(partition_key_);
     for (const std::string& s : keys_to_remove)
-      partition_dictionary->RemoveKey(s);
+      partition_dictionary->Remove(s);
   }
 }
 
