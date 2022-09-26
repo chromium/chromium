@@ -47,9 +47,9 @@ extern const char kDefaultTranslateRankerModelURL[];
 
 // Features used to enable ranker query, enforcement and logging. Note that
 // enabling enforcement implies (forces) enabling queries.
-extern const base::Feature kTranslateRankerQuery;
-extern const base::Feature kTranslateRankerEnforcement;
-extern const base::Feature kTranslateRankerPreviousLanguageMatchesOverride;
+BASE_DECLARE_FEATURE(kTranslateRankerQuery);
+BASE_DECLARE_FEATURE(kTranslateRankerEnforcement);
+BASE_DECLARE_FEATURE(kTranslateRankerPreviousLanguageMatchesOverride);
 
 struct TranslateRankerFeatures {
   TranslateRankerFeatures();

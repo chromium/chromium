@@ -13,17 +13,17 @@ namespace translate {
 
 // Controls whether translation applies to sub frames as well as the
 // main frame.
-extern const base::Feature kTranslateSubFrames;
+BASE_DECLARE_FEATURE(kTranslateSubFrames);
 
 // Controls whether the TFLite-based language detection is enabled.
-extern const base::Feature kTFLiteLanguageDetectionEnabled;
+BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionEnabled);
 
 // Controls whether the TFLite-based language detection is computed, but ignored
 // and the CLD3 version is used instead.
-extern const base::Feature kTFLiteLanguageDetectionIgnoreEnabled;
+BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionIgnoreEnabled);
 
 // Controls whether the Partial Translate function is available.
-extern const base::Feature kDesktopPartialTranslate;
+BASE_DECLARE_FEATURE(kDesktopPartialTranslate);
 // The maximum number of characters allowed for a text selection in Partial
 // Translate. Longer selections will be truncated down to the first valid word
 // break respecting the threshold.
@@ -36,7 +36,7 @@ extern const base::FeatureParam<int> kDesktopPartialTranslateBubbleShowDelayMs;
 
 #if !BUILDFLAG(IS_WIN)
 // Controls whether mmap is used to load the language detection model.
-extern const base::Feature kMmapLanguageDetectionModel;
+BASE_DECLARE_FEATURE(kMmapLanguageDetectionModel);
 #endif
 
 // Isolated world sets following security-origin by default.
@@ -65,7 +65,7 @@ float GetTFLiteLanguageDetectionThreshold();
 
 // Feature flag used to control the auto-always and auto-never snackbar
 // parameters (i.e. threshold and maximum-number-of).
-extern const base::Feature kTranslateAutoSnackbars;
+BASE_DECLARE_FEATURE(kTranslateAutoSnackbars);
 
 // The number of times the user should consecutively translate for "Always
 // Translate" to automatically trigger.

@@ -122,8 +122,9 @@ void RecordCompactInfobarEvent(InfobarEvent event) {
 
 }  // namespace
 
-const base::Feature kTranslateMessageUI("TranslateMessageUI",
-                                        base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTranslateMessageUI,
+             "TranslateMessageUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 TranslateMessage::Bridge::~Bridge() = default;
 

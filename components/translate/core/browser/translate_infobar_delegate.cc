@@ -29,8 +29,9 @@
 
 namespace translate {
 
-const base::Feature kTranslateCompactUI{"TranslateCompactUI",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTranslateCompactUI,
+             "TranslateCompactUI",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const size_t TranslateInfoBarDelegate::kNoIndex = TranslateUIDelegate::kNoIndex;
 

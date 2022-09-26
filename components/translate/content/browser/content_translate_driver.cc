@@ -52,8 +52,9 @@ const int kMaxTranslateLoadCheckAttempts = 20;
 // Overrides the hrefTranslate logic to auto-translate when the navigation is
 // from any origin rather than only Google origins. Used for manual testing
 // where the test page may reside on a test domain.
-const base::Feature kAutoHrefTranslateAllOrigins{
-    "AutoHrefTranslateAllOrigins", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAutoHrefTranslateAllOrigins,
+             "AutoHrefTranslateAllOrigins",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

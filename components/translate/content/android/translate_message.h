@@ -27,7 +27,7 @@ namespace translate {
 class TranslateManager;
 class TranslateUIDelegate;
 
-extern const base::Feature kTranslateMessageUI;
+BASE_DECLARE_FEATURE(kTranslateMessageUI);
 
 class TranslateMessage {
  public:
