@@ -51,6 +51,16 @@ class BloomFilter {
   // The filter must be cleared before reuse.
   void Clear();
 
+  // Add every element from the other filter into this one, so that
+  // if this->MayContain(hash) || other.MayContain(hash) before the call,
+  // this->MayContain(hash) will be true after it.
+  void Merge(const BloomFilter<keyBits>& other);
+
+  friend bool operator==(const BloomFilter<keyBits>& a,
+                         const BloomFilter<keyBits>& b) {
+    return memcmp(a.bit_array_, b.bit_array_, a.kBitArrayMemorySize) == 0;
+  }
+
  private:
   using BitArrayUnit = unsigned;
   static constexpr size_t kMaxKeyBits = 16;
@@ -91,6 +101,13 @@ inline void BloomFilter<keyBits>::Add(unsigned hash) {
 template <unsigned keyBits>
 inline void BloomFilter<keyBits>::Clear() {
   memset(bit_array_, 0, kBitArrayMemorySize);
+}
+
+template <unsigned keyBits>
+inline void BloomFilter<keyBits>::Merge(const BloomFilter<keyBits>& other) {
+  for (size_t i = 0; i < kBitArraySize; ++i) {
+    bit_array_[i] |= other.bit_array_[i];
+  }
 }
 
 template <unsigned keyBits>

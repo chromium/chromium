@@ -4,14 +4,15 @@
 
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
-#include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -2817,6 +2818,28 @@ TEST_F(RuleFeatureSetTest, isPseudoContainingComplexInsideHas19) {
   {
     InvalidationLists invalidation_lists;
     CollectInvalidationSetsForClass(invalidation_lists, "d");
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+  }
+}
+
+TEST_F(RuleFeatureSetTest, BloomFilterForSelfInvalidation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{blink::features::kInvalidationSetClassBloomFilter},
+      /*disabled_features=*/{});
+  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures(".p"));
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "p");
+    EXPECT_TRUE(HasSelfInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "q");
     EXPECT_TRUE(HasNoInvalidation(invalidation_lists.descendants));
     EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
   }

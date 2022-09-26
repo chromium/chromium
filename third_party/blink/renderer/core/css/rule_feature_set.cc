@@ -34,15 +34,11 @@
 #include <bitset>
 #include "base/auto_reset.h"
 #include "base/memory/values_equivalent.h"
-#include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
-#include "third_party/blink/renderer/core/css/css_function_value.h"
-#include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
-#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
-#include "third_party/blink/renderer/core/css/rule_set.h"
-#include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
@@ -421,6 +417,8 @@ bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
   return metadata_ == other.metadata_ &&
          InvalidationSetMapsEqual<AtomicString>(
              class_invalidation_sets_, other.class_invalidation_sets_) &&
+         class_names_with_self_invalidation_ ==
+             other.class_names_with_self_invalidation_ &&
          InvalidationSetMapsEqual<AtomicString>(id_invalidation_sets_,
                                                 other.id_invalidation_sets_) &&
          InvalidationSetMapsEqual<AtomicString>(
@@ -592,8 +590,19 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
     const CSSSelector& selector,
     InvalidationType type,
     PositionType position) {
-  if (selector.Match() == CSSSelector::kClass)
+  if (selector.Match() == CSSSelector::kClass) {
+    if (type == InvalidationType::kInvalidateDescendants &&
+        position == kSubject &&
+        base::FeatureList::IsEnabled(
+            blink::features::kInvalidationSetClassBloomFilter)) {
+      // Do not insert self-invalidation sets for classes;
+      // see comment on class_invalidation_sets_.
+      class_names_with_self_invalidation_.Add(
+          selector.Value().Impl()->ExistingHash());
+      return nullptr;
+    }
     return &EnsureClassInvalidationSet(selector.Value(), type, position);
+  }
   if (selector.IsAttributeSelector()) {
     return &EnsureAttributeInvalidationSet(selector.Attribute().LocalName(),
                                            type, position);
@@ -1667,6 +1676,11 @@ void RuleFeatureSet::Merge(const RuleFeatureSet& other) {
   CHECK_NE(&other, this);
   for (const auto& entry : other.class_invalidation_sets_)
     MergeInvalidationSet(class_invalidation_sets_, entry.key, entry.value);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kInvalidationSetClassBloomFilter)) {
+    class_names_with_self_invalidation_.Merge(
+        other.class_names_with_self_invalidation_);
+  }
   for (const auto& entry : other.attribute_invalidation_sets_)
     MergeInvalidationSet(attribute_invalidation_sets_, entry.key, entry.value);
   for (const auto& entry : other.id_invalidation_sets_)
@@ -1704,6 +1718,7 @@ void RuleFeatureSet::Merge(const RuleFeatureSet& other) {
 void RuleFeatureSet::Clear() {
   metadata_.Clear();
   class_invalidation_sets_.clear();
+  class_names_with_self_invalidation_.Clear();
   attribute_invalidation_sets_.clear();
   id_invalidation_sets_.clear();
   pseudo_invalidation_sets_.clear();
@@ -1733,6 +1748,17 @@ void RuleFeatureSet::CollectInvalidationSetsForClass(
     InvalidationLists& invalidation_lists,
     Element& element,
     const AtomicString& class_name) const {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kInvalidationSetClassBloomFilter)) {
+    // Implicit self-invalidation sets for all classes (with Bloom filter
+    // rejection); see comment on class_invalidation_sets_.
+    if (class_names_with_self_invalidation_.MayContain(
+            class_name.Impl()->ExistingHash())) {
+      invalidation_lists.descendants.push_back(
+          InvalidationSet::SelfInvalidationSet());
+    }
+  }
+
   InvalidationSetMap::const_iterator it =
       class_invalidation_sets_.find(class_name);
   if (it == class_invalidation_sets_.end())

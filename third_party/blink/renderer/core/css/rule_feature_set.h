@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/bloom_filter.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -105,9 +106,13 @@ class CORE_EXPORT RuleFeatureSet {
   // CollectInvalidationSets* govern self-invalidation and descendant
   // invalidations, while CollectSiblingInvalidationSets* govern sibling
   // invalidations.
+
+  // Note that class invalidations will sometimes return self-invalidation
+  // even when it is not necessary; see comment on class_invalidation_sets_.
   void CollectInvalidationSetsForClass(InvalidationLists&,
                                        Element&,
                                        const AtomicString& class_name) const;
+
   void CollectInvalidationSetsForId(InvalidationLists&,
                                     Element&,
                                     const AtomicString& id) const;
@@ -723,7 +728,33 @@ class CORE_EXPORT RuleFeatureSet {
                             scoped_refptr<InvalidationSet>);
 
   FeatureMetadata metadata_;
+
+  // If the InvalidationSetClassBloomFilter experiment is active:
+  //
+  // Class invalidation has a special rule that is different from the other
+  // sets; we do not store self-invalidation entries directly, but as a Bloom
+  // filter (which can have false positives) keyed on the class name's
+  // AtomicString hash.
+  //
+  // The reason is that some pages have huge amounts of simple rules of the type
+  // “.foo { ...rules... }”, which would cause one such entry (consisting of the
+  // self-invalidation bit only) per class rule. Dropping them and making them
+  // implicit saves a lot of memory for such sites; the downside is that we can
+  // get false positives. (For our 2 kB Bloom filter with two hash functions
+  // and 16384 slots, we can store about 2000 such classes with a 95% rejection
+  // rate. For 10000 classes, the rejection rate drops to 50%.)
+  //
+  // In particular, if you have an element and set class="bar" and there is no
+  // rule for .bar, you may still get self-invalidation for the element. Worse,
+  // when inserting a new style sheet or inserting/deleting rules, _any_ element
+  // with class="" can get self-invalidated unless the Bloom filter stops it
+  // (which depends strongly on how many such classes there are). So this is a
+  // tradeoff. We could perhaps be more intelligent about not inserting into the
+  // Bloom filter if we had to insert sibling or descendant sets too, but this
+  // seems a bit narrow in practice.
   InvalidationSetMap class_invalidation_sets_;
+  WTF::BloomFilter<14> class_names_with_self_invalidation_;
+
   InvalidationSetMap attribute_invalidation_sets_;
   InvalidationSetMap id_invalidation_sets_;
   PseudoTypeInvalidationSetMap pseudo_invalidation_sets_;

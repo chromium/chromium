@@ -731,6 +731,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSubstringSetTreeForAttributeBuckets);
 // allocations of certain structures when parsing selectors.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCSSParserSelectorArena);
 
+// If enabled, style invalidation will use a Bloom filter for storing
+// CSS classes that need (only) self-invalidation, instead of having them
+// in the main hash map.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInvalidationSetClassBloomFilter);
+
 // Whether the pending beacon API is enabled or not.
 // https://github.com/WICG/unload-beacon/blob/main/README.md
 // - kPendingBeaconAPI = {true: {"requires_origin_trial": false}} to enable the
