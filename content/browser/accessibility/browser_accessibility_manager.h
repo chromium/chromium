@@ -200,9 +200,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // tree as the "true" root. This will keep track of the nested root node.
   BrowserAccessibility* GetPopupRoot() const;
 
-  // Get the AXTreeData for this frame.
-  const ui::AXTreeData& GetTreeData() const;
-
   // Called to notify the accessibility manager that its associated native
   // view got focused.
   virtual void OnWindowFocused();

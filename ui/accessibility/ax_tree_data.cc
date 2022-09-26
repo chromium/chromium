@@ -95,4 +95,9 @@ bool operator!=(const AXTreeData& lhs, const AXTreeData& rhs) {
   return !(lhs == rhs);
 }
 
+const AXTreeData& AXTreeDataUnknown() {
+  static const AXTreeData ax_tree_data_unknown;
+  return ax_tree_data_unknown;
+}
+
 }  // namespace ui

@@ -427,10 +427,6 @@ BrowserAccessibility* BrowserAccessibilityManager::GetPopupRoot() const {
   return nullptr;
 }
 
-const ui::AXTreeData& BrowserAccessibilityManager::GetTreeData() const {
-  return ax_tree()->data();
-}
-
 void BrowserAccessibilityManager::OnWindowFocused() {
   if (IsRootTree())
     FireFocusEventsIfNeeded();

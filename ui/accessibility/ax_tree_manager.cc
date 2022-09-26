@@ -108,6 +108,10 @@ AXTreeID AXTreeManager::GetTreeID() const {
   return ax_tree_ ? ax_tree_->data().tree_id : AXTreeIDUnknown();
 }
 
+const AXTreeData& AXTreeManager::GetTreeData() const {
+  return ax_tree_ ? ax_tree_->data() : AXTreeDataUnknown();
+}
+
 AXTreeID AXTreeManager::GetParentTreeID() const {
   return ax_tree_ ? ax_tree_->data().parent_tree_id : AXTreeIDUnknown();
 }

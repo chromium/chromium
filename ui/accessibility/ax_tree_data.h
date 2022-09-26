@@ -83,6 +83,8 @@ struct AX_BASE_EXPORT AXTreeData {
 AX_BASE_EXPORT bool operator==(const AXTreeData& lhs, const AXTreeData& rhs);
 AX_BASE_EXPORT bool operator!=(const AXTreeData& lhs, const AXTreeData& rhs);
 
+AX_BASE_EXPORT const AXTreeData& AXTreeDataUnknown();
+
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_AX_TREE_DATA_H_

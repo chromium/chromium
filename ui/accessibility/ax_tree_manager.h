@@ -63,6 +63,9 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // Returns the tree id of the tree managed by this AXTreeManager.
   AXTreeID GetTreeID() const;
 
+  // Returns the AXTreeData for the tree managed by this AXTreeManager.
+  const AXTreeData& GetTreeData() const;
+
   // Returns the tree id of the parent tree.
   // Returns AXTreeIDUnknown if this tree doesn't have a parent tree.
   virtual AXTreeID GetParentTreeID() const;
