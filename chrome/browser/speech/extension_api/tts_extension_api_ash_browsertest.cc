@@ -6,15 +6,16 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
-#include "base/location.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ash/crosapi/ash_requires_lacros_extension_apitest.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
-#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/test/browser_test.h"
+
+using crosapi::AshRequiresLacrosExtensionApiTest;
 
 namespace {
 
@@ -28,17 +29,14 @@ void GiveItSomeTime(base::TimeDelta delta) {
 }  // namespace
 
 namespace extensions {
-class AshTtsApiTest : public ExtensionApiTest,
+
+// Test tts and ttsEngine APIs with Lacros Tts support enabled, which
+// requires Lacros running to exercise crosapi calls.
+class AshTtsApiTest : public AshRequiresLacrosExtensionApiTest,
                       public content::VoicesChangedDelegate {
  public:
   void SetUpInProcessBrowserTestFixture() override {
-    ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-
-    if (!ash_starter_.HasLacrosArgument())
-      return;
-
-    // Prepare environment for loading Lacros for Lacros Only mode.
-    ASSERT_TRUE(ash_starter_.PrepareEnvironmentForLacros());
+    AshRequiresLacrosExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
     // Enable Lacros tts support feature, and disable the 1st party Ash
     // extension keeplist feature so that it will allow loading test extension
@@ -53,15 +51,6 @@ class AshTtsApiTest : public ExtensionApiTest,
         content::TtsController::GetInstance();
     TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
     tts_controller->SetTtsEngineDelegate(TtsExtensionEngine::GetInstance());
-  }
-
-  void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
-
-    if (!ash_starter_.HasLacrosArgument())
-      return;
-
-    ash_starter_.StartLacros(this);
   }
 
   void TearDownInProcessBrowserTestFixture() override {
@@ -80,6 +69,16 @@ class AshTtsApiTest : public ExtensionApiTest,
         return true;
     }
 
+    return false;
+  }
+
+  bool FoundVoiceInMojoVoices(
+      const std::string& voice_name,
+      const std::vector<crosapi::mojom::TtsVoicePtr>& mojo_voices) {
+    for (const auto& voice : mojo_voices) {
+      if (voice_name == voice->voice_name)
+        return true;
+    }
     return false;
   }
 
@@ -146,6 +145,22 @@ IN_PROC_BROWSER_TEST_F(AshTtsApiTest, RegisterEngine) {
   EXPECT_TRUE(HasVoiceWithName("Amy"));
   EXPECT_TRUE(HasVoiceWithName("Alex"));
   EXPECT_TRUE(HasVoiceWithName("Amanda"));
+
+  // Verify all the voices are loaded at Lacros side.
+  crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter waiter(
+      GetStandaloneBrowserTestController());
+
+  std::vector<crosapi::mojom::TtsVoicePtr> mojo_voices;
+  while (mojo_voices.size() == 0) {
+    waiter.GetTtsVoices(&mojo_voices);
+    if (mojo_voices.size() > 0)
+      break;
+    GiveItSomeTime(base::Milliseconds(100));
+  }
+
+  EXPECT_TRUE(FoundVoiceInMojoVoices("Amy", mojo_voices));
+  EXPECT_TRUE(FoundVoiceInMojoVoices("Alex", mojo_voices));
+  EXPECT_TRUE(FoundVoiceInMojoVoices("Amanda", mojo_voices));
 }
 
 }  // namespace extensions

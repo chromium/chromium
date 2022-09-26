@@ -181,4 +181,11 @@ bool ShouldEnableLacrosTtsSupport() {
 #endif
 }
 
+void GetAllVoicesForTesting(content::BrowserContext* browser_context,
+                            const GURL& source_url,
+                            std::vector<content::VoiceData>* out_voices) {
+  content::TtsController::GetInstance()->GetVoices(
+      ProfileManager::GetActiveUserProfile(), GURL(), out_voices);
+}
+
 }  // namespace tts_crosapi_util

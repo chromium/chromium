@@ -21,6 +21,15 @@ std::unique_ptr<content::TtsUtterance> FromMojo(
 
 bool ShouldEnableLacrosTtsSupport();
 
+// This function allows StandaloneBrowserTestController located in
+// chrome/browser/lacros to retrieve voice data via
+// content::TtsController::GetVoices(), which can not be called directly
+// from StandaloneBrowserTestController since chrome/browser/DEPS disallows
+// content/public/browser/tts_controller.h explicitly.
+void GetAllVoicesForTesting(content::BrowserContext* browser_context,
+                            const GURL& source_url,
+                            std::vector<content::VoiceData>* out_voices);
+
 }  // namespace tts_crosapi_util
 
 #endif  // CHROME_BROWSER_SPEECH_TTS_CROSAPI_UTIL_H_

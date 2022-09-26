@@ -360,6 +360,8 @@ source_set("test_support") {
   sources = [
     "ash_requires_lacros_browsertestbase.cc",
     "ash_requires_lacros_browsertestbase.h",
+    "ash_requires_lacros_extension_apitest.cc",
+    "ash_requires_lacros_extension_apitest.h",
     "fake_browser_manager.cc",
     "fake_browser_manager.h",
     "input_method_test_interface_ash.cc",

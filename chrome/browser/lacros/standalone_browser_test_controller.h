@@ -33,6 +33,8 @@ class StandaloneBrowserTestController
   void LoadVpnExtension(const std::string& extension_name,
                         LoadVpnExtensionCallback callback) override;
 
+  void GetTtsVoices(GetTtsVoicesCallback callback) override;
+
  private:
   void WebAppInstallationDone(InstallWebAppCallback callback,
                               const web_app::AppId& installed_app_id,

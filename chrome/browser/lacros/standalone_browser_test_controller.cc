@@ -7,6 +7,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -100,6 +101,19 @@ void StandaloneBrowserTestController::LoadVpnExtension(
   extension_registry->TriggerOnLoaded(extension.get());
 
   std::move(callback).Run(extension->id());
+}
+
+void StandaloneBrowserTestController::GetTtsVoices(
+    GetTtsVoicesCallback callback) {
+  std::vector<content::VoiceData> voices;
+  tts_crosapi_util::GetAllVoicesForTesting(  // IN-TEST
+      ProfileManager::GetActiveUserProfile(), GURL(), &voices);
+
+  std::vector<crosapi::mojom::TtsVoicePtr> mojo_voices;
+  for (const auto& voice : voices)
+    mojo_voices.push_back(tts_crosapi_util::ToMojo(voice));
+
+  std::move(callback).Run(std::move(mojo_voices));
 }
 
 void StandaloneBrowserTestController::WebAppInstallationDone(
