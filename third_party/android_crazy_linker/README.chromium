@@ -107,3 +107,6 @@ Local Modifications:
 - Remove unnecessary alignment check for size of area that is about to mmap(2).
 
 - Fix -Wshadow warning (error with -Werror) in struct RelroLibrary.
+
+- Updated the copyright headers to the latest style.
+
