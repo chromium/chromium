@@ -252,7 +252,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kKitKatSupported,
     &kLensCameraAssistedSearch,
     &kLensOnQuickActionSearchWidget,
-    &kMostRecentTabOnBackgroundCloseTab,
     &kNewInstanceFromDraggedLink,
     &kNewTabPageTilesTitleWrapAround,
     &kNewWindowAppMenu,
@@ -811,10 +810,6 @@ BASE_FEATURE(kSearchEnginePromoNewDevice,
 
 BASE_FEATURE(kSearchEnginePromoNewDeviceV2,
              "SearchEnginePromo.NewDeviceVer2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMostRecentTabOnBackgroundCloseTab,
-             "MostRecentTabOnBackgroundCloseTab",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewInstanceFromDraggedLink,

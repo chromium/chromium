@@ -420,8 +420,6 @@ public abstract class ChromeFeatureList {
     public static final String MESSAGES_FOR_ANDROID_SYNC_ERROR = "MessagesForAndroidSyncError";
     public static final String MODAL_PERMISSION_DIALOG_VIEW = "ModalPermissionDialogView";
     public static final String METRICS_SETTINGS_ANDROID = "MetricsSettingsAndroid";
-    public static final String MOST_RECENT_TAB_ON_BACKGROUND_CLOSE_TAB =
-            "MostRecentTabOnBackgroundCloseTab";
     public static final String NEW_INSTANCE_FROM_DRAGGED_LINK = "NewInstanceFromDraggedLink";
     public static final String NEW_TAB_PAGE_TILES_TITLE_WRAP_AROUND =
             "NewTabPageTilesTitleWrapAround";

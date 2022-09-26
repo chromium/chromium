@@ -108,7 +108,6 @@ BASE_DECLARE_FEATURE(kLanguagesPreference);
 BASE_DECLARE_FEATURE(kLensCameraAssistedSearch);
 BASE_DECLARE_FEATURE(kLensOnQuickActionSearchWidget);
 BASE_DECLARE_FEATURE(kLocationBarModelOptimizations);
-BASE_DECLARE_FEATURE(kMostRecentTabOnBackgroundCloseTab);
 BASE_DECLARE_FEATURE(kNewInstanceFromDraggedLink);
 BASE_DECLARE_FEATURE(kNewTabPageTilesTitleWrapAround);
 BASE_DECLARE_FEATURE(kNewWindowAppMenu);
