@@ -100,8 +100,6 @@ StyleRuleBase::LayerName ConsumeCascadeLayerName(CSSParserTokenRange& range) {
 StyleRule::RuleType RuleTypeForMutableDeclaration(
     MutableCSSPropertyValueSet* declaration) {
   switch (declaration->CssParserMode()) {
-    case kCSSViewportRuleMode:
-      return StyleRule::kViewport;
     case kCSSFontFaceRuleMode:
       return StyleRule::kFontFace;
     case kCSSKeyframeRuleMode:
@@ -642,8 +640,6 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
         return ConsumeMediaRule<UseArena>(stream);
       case CSSAtRuleID::kCSSAtRuleSupports:
         return ConsumeSupportsRule<UseArena>(stream);
-      case CSSAtRuleID::kCSSAtRuleViewport:
-        return ConsumeViewportRule(stream);
       case CSSAtRuleID::kCSSAtRuleFontFace:
         return ConsumeFontFaceRule(stream);
       case CSSAtRuleID::kCSSAtRuleFontPaletteValues:
@@ -917,37 +913,6 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
   return MakeGarbageCollected<StyleRuleSupports>(
       prelude_serialized, supported == CSSSupportsParser::Result::kSupported,
       rules);
-}
-
-StyleRuleViewport* CSSParserImpl::ConsumeViewportRule(
-    CSSParserTokenStream& stream) {
-  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  const CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
-  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
-  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream))
-    return nullptr;
-  CSSParserTokenStream::BlockGuard guard(stream);
-
-  // Allow @viewport rules from UA stylesheets only.
-  if (!IsUASheetBehavior(context_->Mode()))
-    return nullptr;
-
-  if (!prelude.AtEnd())
-    return nullptr;  // Parser error; @viewport prelude should be empty
-
-  if (observer_) {
-    observer_->StartRuleHeader(StyleRule::kViewport, prelude_offset_start);
-    observer_->EndRuleHeader(prelude_offset_end);
-    observer_->StartRuleBody(prelude_offset_end);
-    observer_->EndRuleBody(prelude_offset_end);
-  }
-
-  if (style_sheet_)
-    style_sheet_->SetHasViewportRule();
-
-  ConsumeDeclarationList(stream, StyleRule::kViewport);
-  return MakeGarbageCollected<StyleRuleViewport>(
-      CreateCSSPropertyValueSet(parsed_properties_, kCSSViewportRuleMode));
 }
 
 StyleRuleFontFace* CSSParserImpl::ConsumeFontFaceRule(

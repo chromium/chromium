@@ -95,23 +95,6 @@ TEST(CSSParserImplTest, AtSupportsOffsets) {
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 27u);
 }
 
-TEST(CSSParserImplTest, AtViewportOffsets) {
-  String sheet_text = "@viewport { }";
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kUASheetMode, SecureContextMode::kInsecureContext);
-  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
-  TestCSSParserObserver test_css_parser_observer;
-  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
-                                             test_css_parser_observer);
-  EXPECT_EQ(style_sheet->ChildRules().size(), 1u);
-  EXPECT_EQ(test_css_parser_observer.rule_type_,
-            StyleRule::RuleType::kViewport);
-  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 10u);
-  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 10u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 10u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 10u);
-}
-
 TEST(CSSParserImplTest, AtFontFaceOffsets) {
   String sheet_text = "@font-face { }";
   auto* context = MakeGarbageCollected<CSSParserContext>(

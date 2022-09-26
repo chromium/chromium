@@ -64,18 +64,6 @@
       name: "line-gap-override",
     },
     {
-      name: "max-width",
-    },
-    {
-      name: "max-zoom",
-    },
-    {
-      name: "min-width",
-    },
-    {
-      name: "min-zoom",
-    },
-    {
       name: "negative",
     },
     {

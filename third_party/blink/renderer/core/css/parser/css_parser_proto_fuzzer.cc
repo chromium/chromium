@@ -28,7 +28,6 @@ DEFINE_BINARY_PROTO_FUZZER(const Input& input) {
           {Input::kHTMLStandardMode, blink::kHTMLStandardMode},
           {Input::kHTMLQuirksMode, blink::kHTMLQuirksMode},
           {Input::kSVGAttributeMode, blink::kSVGAttributeMode},
-          {Input::kCSSViewportRuleMode, blink::kCSSViewportRuleMode},
           {Input::kCSSFontFaceRuleMode, blink::kCSSFontFaceRuleMode},
           {Input::kUASheetMode, blink::kUASheetMode}};
 

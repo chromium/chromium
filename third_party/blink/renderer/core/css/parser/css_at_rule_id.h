@@ -30,7 +30,6 @@ enum class CSSAtRuleID {
   kCSSAtRuleScrollTimeline,
   kCSSAtRuleSupports,
   kCSSAtRuleTry,
-  kCSSAtRuleViewport,
   kCSSAtRuleWebkitKeyframes,
 };
 

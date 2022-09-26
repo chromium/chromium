@@ -42,7 +42,6 @@ class StyleRulePositionFallback;
 class StyleRuleProperty;
 class StyleRuleSupports;
 class StyleRuleTry;
-class StyleRuleViewport;
 class StyleSheetContents;
 class Element;
 
@@ -181,7 +180,6 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleMedia* ConsumeMediaRule(CSSParserTokenStream&);
   template <bool UseArena>
   StyleRuleSupports* ConsumeSupportsRule(CSSParserTokenStream&);
-  StyleRuleViewport* ConsumeViewportRule(CSSParserTokenStream&);
   StyleRuleFontFace* ConsumeFontFaceRule(CSSParserTokenStream&);
   StyleRuleFontPaletteValues* ConsumeFontPaletteValuesRule(
       CSSParserTokenStream&);

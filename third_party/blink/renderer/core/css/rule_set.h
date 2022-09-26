@@ -511,7 +511,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddToRuleSet(const AtomicString& key, RuleMap&, const RuleData&);
   void AddToRuleSet(HeapVector<RuleData>&, const RuleData&);
   void AddPageRule(StyleRulePage*);
-  void AddViewportRule(StyleRuleViewport*);
   void AddFontFaceRule(StyleRuleFontFace*);
   void AddKeyframesRule(StyleRuleKeyframes*);
   void AddPropertyRule(StyleRuleProperty*);

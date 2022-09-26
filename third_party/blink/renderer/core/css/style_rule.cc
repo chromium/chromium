@@ -120,9 +120,6 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kNamespace:
       To<StyleRuleNamespace>(this)->TraceAfterDispatch(visitor);
       return;
-    case kViewport:
-      To<StyleRuleViewport>(this)->TraceAfterDispatch(visitor);
-      return;
     case kContainer:
       To<StyleRuleContainer>(this)->TraceAfterDispatch(visitor);
       return;
@@ -186,9 +183,6 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kNamespace:
       To<StyleRuleNamespace>(this)->~StyleRuleNamespace();
       return;
-    case kViewport:
-      To<StyleRuleViewport>(this)->~StyleRuleViewport();
-      return;
     case kContainer:
       To<StyleRuleContainer>(this)->~StyleRuleContainer();
       return;
@@ -229,8 +223,6 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return nullptr;
     case kKeyframes:
       return To<StyleRuleKeyframes>(this)->Copy();
-    case kViewport:
-      return To<StyleRuleViewport>(this)->Copy();
     case kLayerBlock:
       return To<StyleRuleLayerBlock>(this)->Copy();
     case kLayerStatement:
@@ -328,7 +320,6 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kTry:
     case kKeyframe:
     case kCharset:
-    case kViewport:
       NOTREACHED();
       return nullptr;
   }
@@ -678,24 +669,6 @@ void StyleRuleContainer::SetConditionText(
 void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(container_query_);
   StyleRuleCondition::TraceAfterDispatch(visitor);
-}
-
-StyleRuleViewport::StyleRuleViewport(CSSPropertyValueSet* properties)
-    : StyleRuleBase(kViewport), properties_(properties) {}
-
-StyleRuleViewport::StyleRuleViewport(const StyleRuleViewport& viewport_rule)
-    : StyleRuleBase(viewport_rule),
-      properties_(viewport_rule.properties_->MutableCopy()) {}
-
-MutableCSSPropertyValueSet& StyleRuleViewport::MutableProperties() {
-  if (!properties_->IsMutable())
-    properties_ = properties_->MutableCopy();
-  return *To<MutableCSSPropertyValueSet>(properties_.Get());
-}
-
-void StyleRuleViewport::TraceAfterDispatch(blink::Visitor* visitor) const {
-  visitor->Trace(properties_);
-  StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
 // Explicit instantiation of member functions visible from other compilation

@@ -119,9 +119,7 @@ static CSSValue* ParseSimpleLengthValue(CSSPropertyID property_id,
   DCHECK(!string.empty());
   bool accepts_negative_numbers = false;
 
-  // In @viewport, width and height are shorthands, not simple length values.
-  if (IsCSSViewportParsingEnabledForMode(css_parser_mode) ||
-      !IsSimpleLengthPropertyID(property_id, accepts_negative_numbers))
+  if (!IsSimpleLengthPropertyID(property_id, accepts_negative_numbers))
     return nullptr;
 
   double number;

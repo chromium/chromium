@@ -73,7 +73,6 @@ class CORE_EXPORT CSSPropertyParser {
                              bool important,
                              StyleRule::RuleType rule_type);
 
-  bool ParseViewportDescriptor(CSSPropertyID prop_id, bool important);
   bool ParseFontFaceDescriptor(CSSPropertyID);
 
  private:

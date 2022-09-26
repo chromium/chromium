@@ -171,8 +171,7 @@ StylePropertySerializer::CSSPropertyValueSetForSerializer::GetPropertyCSSValue(
 
 bool StylePropertySerializer::CSSPropertyValueSetForSerializer::
     IsDescriptorContext() const {
-  return property_set_->CssParserMode() == kCSSViewportRuleMode ||
-         property_set_->CssParserMode() == kCSSFontFaceRuleMode;
+  return property_set_->CssParserMode() == kCSSFontFaceRuleMode;
 }
 
 StylePropertySerializer::StylePropertySerializer(

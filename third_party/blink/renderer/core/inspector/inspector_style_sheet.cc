@@ -613,7 +613,6 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kImport:
       case StyleRule::kPage:
       case StyleRule::kFontFace:
-      case StyleRule::kViewport:
       case StyleRule::kKeyframe:
         result->push_back(data);
         break;

@@ -99,11 +99,7 @@ bool CSSPropertyParser::ParseValue(
   CSSPropertyParser parser(range, context, &parsed_properties);
   CSSPropertyID resolved_property = ResolveCSSPropertyID(unresolved_property);
   bool parse_success;
-  if (rule_type == StyleRule::kViewport) {
-    parse_success =
-        IsUASheetBehavior(context->Mode()) &&
-        parser.ParseViewportDescriptor(resolved_property, important);
-  } else if (rule_type == StyleRule::kFontFace) {
+  if (rule_type == StyleRule::kFontFace) {
     parse_success = parser.ParseFontFaceDescriptor(resolved_property);
   } else {
     parse_success =
@@ -327,47 +323,6 @@ bool CSSPropertyParser::ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
                                                    *parsed_properties_);
   }
   range_ = range_copy;
-  return true;
-}
-
-static CSSValue* ConsumeSingleViewportDescriptor(
-    CSSParserTokenRange& range,
-    CSSPropertyID prop_id,
-    const CSSParserContext& context) {
-  CSSValueID id = range.Peek().Id();
-  switch (prop_id) {
-    case CSSPropertyID::kMinWidth:
-    case CSSPropertyID::kMaxWidth:
-      if (id == CSSValueID::kAuto || id == CSSValueID::kInternalExtendToZoom)
-        return ConsumeIdent(range);
-      return css_parsing_utils::ConsumeLengthOrPercent(
-          range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-    case CSSPropertyID::kMinZoom:
-    case CSSPropertyID::kMaxZoom: {
-      if (id == CSSValueID::kAuto)
-        return ConsumeIdent(range);
-      CSSValue* parsed_value = css_parsing_utils::ConsumeNumber(
-          range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-      if (parsed_value)
-        return parsed_value;
-      return css_parsing_utils::ConsumePercent(
-          range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-    }
-    default:
-      return nullptr;
-  }
-}
-
-bool CSSPropertyParser::ParseViewportDescriptor(CSSPropertyID prop_id,
-                                                bool important) {
-  DCHECK(IsUASheetBehavior(context_->Mode()));
-
-  CSSValue* parsed_value =
-      ConsumeSingleViewportDescriptor(range_, prop_id, *context_);
-  if (!parsed_value || !range_.AtEnd())
-    return false;
-  AddProperty(prop_id, CSSPropertyID::kInvalid, *parsed_value, important,
-              IsImplicitProperty::kNotImplicit, *parsed_properties_);
   return true;
 }
 

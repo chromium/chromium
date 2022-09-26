@@ -3192,7 +3192,6 @@
     {
       name: "max-width",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      is_descriptor: true,
       interpolable: true,
       field_group: "box",
       field_template: "<length>",
@@ -3226,7 +3225,6 @@
     {
       name: "min-width",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      is_descriptor: true,
       interpolable: true,
       field_group: "box",
       field_template: "<length>",
@@ -6175,16 +6173,6 @@
     // Descriptor only names
     {
       name: "font-display",
-      is_descriptor: true,
-      is_property: false,
-    },
-    {
-      name: "max-zoom",
-      is_descriptor: true,
-      is_property: false,
-    },
-    {
-      name: "min-zoom",
       is_descriptor: true,
       is_property: false,
     },

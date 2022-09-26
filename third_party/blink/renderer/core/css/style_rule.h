@@ -63,7 +63,6 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kCounterStyle,
     kScope,
     kSupports,
-    kViewport,
     kPositionFallback,
     kTry,
   };
@@ -94,7 +93,6 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsStyleRule() const { return GetType() == kStyle; }
   bool IsScopeRule() const { return GetType() == kScope; }
   bool IsSupportsRule() const { return GetType() == kSupports; }
-  bool IsViewportRule() const { return GetType() == kViewport; }
   bool IsImportRule() const { return GetType() == kImport; }
   bool IsPositionFallbackRule() const { return GetType() == kPositionFallback; }
   bool IsTryRule() const { return GetType() == kTry; }
@@ -503,24 +501,6 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
   Member<ContainerQuery> container_query_;
 };
 
-class StyleRuleViewport : public StyleRuleBase {
- public:
-  explicit StyleRuleViewport(CSSPropertyValueSet*);
-  StyleRuleViewport(const StyleRuleViewport&);
-
-  const CSSPropertyValueSet& Properties() const { return *properties_; }
-  MutableCSSPropertyValueSet& MutableProperties();
-
-  StyleRuleViewport* Copy() const {
-    return MakeGarbageCollected<StyleRuleViewport>(*this);
-  }
-
-  void TraceAfterDispatch(blink::Visitor*) const;
-
- private:
-  Member<CSSPropertyValueSet> properties_;  // Cannot be null
-};
-
 // This should only be used within the CSS Parser
 class StyleRuleCharset : public StyleRuleBase {
  public:
@@ -606,13 +586,6 @@ template <>
 struct DowncastTraits<StyleRuleContainer> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsContainerRule();
-  }
-};
-
-template <>
-struct DowncastTraits<StyleRuleViewport> {
-  static bool AllowFrom(const StyleRuleBase& rule) {
-    return rule.IsViewportRule();
   }
 };
 
