@@ -268,19 +268,17 @@ void HoldingSpaceClientImpl::PinFiles(
     const std::vector<base::FilePath>& file_paths) {
   std::vector<storage::FileSystemURL> file_system_urls;
 
-  HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
   for (const base::FilePath& file_path : file_paths) {
     const GURL crack_url =
         holding_space_util::ResolveFileSystemUrl(profile_, file_path);
     const storage::FileSystemURL& file_system_url =
         file_manager::util::GetFileManagerFileSystemContext(profile_)
             ->CrackURLInFirstPartyContext(crack_url);
-    if (!service->ContainsPinnedFile(file_system_url))
-      file_system_urls.push_back(file_system_url);
+    file_system_urls.push_back(file_system_url);
   }
 
   if (!file_system_urls.empty())
-    service->AddPinnedFiles(file_system_urls);
+    GetHoldingSpaceKeyedService(profile_)->AddPinnedFiles(file_system_urls);
 }
 
 void HoldingSpaceClientImpl::PinItems(

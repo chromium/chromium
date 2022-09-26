@@ -142,10 +142,8 @@ void HoldingSpaceKeyedService::AddPinnedFiles(
   std::vector<std::unique_ptr<HoldingSpaceItem>> items;
   std::vector<const HoldingSpaceItem*> items_to_record;
   for (const storage::FileSystemURL& file_system_url : file_system_urls) {
-    if (holding_space_model_.ContainsItem(HoldingSpaceItem::Type::kPinnedFile,
-                                          file_system_url.path())) {
+    if (ContainsPinnedFile(file_system_url))
       continue;
-    }
 
     items.push_back(HoldingSpaceItem::CreateFileBackedItem(
         HoldingSpaceItem::Type::kPinnedFile, file_system_url.path(),
