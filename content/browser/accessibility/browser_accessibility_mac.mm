@@ -29,8 +29,8 @@ BrowserAccessibilityMac::BrowserAccessibilityMac(
 
 BrowserAccessibilityMac::~BrowserAccessibilityMac() {
   if (platform_node_) {
-    platform_node_->Destroy();  // `Destroy()` also deletes the object.
-    platform_node_ = nullptr;
+    // `Destroy()` also deletes the object.
+    platform_node_.ExtractAsDangling()->Destroy();
   }
 }
 

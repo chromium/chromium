@@ -60,7 +60,7 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   BrowserAccessibilityCocoa* CreateNativeWrapper();
 
   // Manager of the native cocoa node. We own this object.
-  raw_ptr<ui::AXPlatformNodeMac, DanglingUntriaged> platform_node_ = nullptr;
+  raw_ptr<ui::AXPlatformNodeMac> platform_node_ = nullptr;
 };
 
 }  // namespace content
