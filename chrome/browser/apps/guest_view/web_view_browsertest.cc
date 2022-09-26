@@ -1819,14 +1819,11 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_UpdateOpener) {
   // until the second <webview>'s guest is also created.
   GetGuestViewManager()->WaitForNumGuestsCreated(2);
 
-  std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
-      &guest_contents_list);
-  ASSERT_EQ(2u, guest_contents_list.size());
-  content::WebContents* guest1 = guest_contents_list[0];
-  content::WebContents* guest2 = guest_contents_list[1];
-  EXPECT_TRUE(content::WaitForLoadStop(guest1));
-  EXPECT_TRUE(content::WaitForLoadStop(guest2));
+  std::vector<content::RenderFrameHost*> guest_rfh_list;
+  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list);
+  ASSERT_EQ(2u, guest_rfh_list.size());
+  content::RenderFrameHost* guest1 = guest_rfh_list[0];
+  content::RenderFrameHost* guest2 = guest_rfh_list[1];
   ASSERT_NE(guest1, guest2);
 
   // Change first guest's window.name to "foo" and check that it does not
@@ -2730,14 +2727,11 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
              NEEDS_TEST_SERVER);
   GetGuestViewManager()->WaitForNumGuestsCreated(2);
 
-  std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
-      &guest_contents_list);
-  ASSERT_EQ(2u, guest_contents_list.size());
-  content::WebContents* guest1 = guest_contents_list[0];
-  content::WebContents* guest2 = guest_contents_list[1];
-  EXPECT_TRUE(content::WaitForLoadStop(guest1));
-  EXPECT_TRUE(content::WaitForLoadStop(guest2));
+  std::vector<content::RenderFrameHost*> guest_rfh_list;
+  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list);
+  ASSERT_EQ(2u, guest_rfh_list.size());
+  content::RenderFrameHost* guest1 = guest_rfh_list[0];
+  content::RenderFrameHost* guest2 = guest_rfh_list[1];
   ASSERT_NE(guest1, guest2);
 
   // COOP headers are only served over HTTPS. Instantiate an HTTPS server.
@@ -2752,10 +2746,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
                           "Cross-Origin-Opener-Policy: same-origin"));
 
   // We should not crash trying to load the COOP page.
-  EXPECT_TRUE(content::ExecJs(
-      guest2, content::JsReplace("location.href = $1", coop_url)));
-
-  EXPECT_TRUE(content::WaitForLoadStop(guest2));
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(guest2, coop_url));
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuInspectElement) {

@@ -609,15 +609,16 @@ function testNewWindowAndUpdateOpener() {
 
     var newwebview = document.createElement('webview');
     document.querySelector('#webview-tag-container').appendChild(newwebview);
+    newwebview.addEventListener('loadstop', () => {
+      // Exit after the opened window loads. The rest of the test is
+      // implemented on the C++ side.
+      embedder.test.succeed();
+    });
     try {
       e.window.attach(newwebview);
     } catch (e) {
       embedder.test.fail();
     }
-
-    // Exit after the first opened window is attached.  The rest of the test is
-    // implemented on the C++ side.
-    embedder.test.succeed();
   };
   webview.addEventListener('newwindow', onNewWindow);
 
