@@ -1932,9 +1932,6 @@ extern const char kBindingManagerConnectionLimitDescription[];
 extern const char kBindingManagerUseNotPerceptibleBindingName[];
 extern const char kBindingManagerUseNotPerceptibleBindingDescription[];
 
-extern const char kBulkTabRestoreAndroidName[];
-extern const char kBulkTabRestoreAndroidDescription[];
-
 extern const char kCCTBrandTransparencyName[];
 extern const char kCCTBrandTransparencyDescription[];
 

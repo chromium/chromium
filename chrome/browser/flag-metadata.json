@@ -819,11 +819,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "bulk-tab-restore-android",
-    "owners": ["ckitagawa", "fredmello"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "bypass-app-banner-engagement-checks",
     "owners": [ "dmurph" ],
     "expiry_milestone": 120

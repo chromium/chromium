@@ -9239,12 +9239,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSafetyCheckUnusedSitePermissions)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"bulk-tab-restore-android", flag_descriptions::kBulkTabRestoreAndroidName,
-     flag_descriptions::kBulkTabRestoreAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kBulkTabRestore)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"autofill-enable-upstream-save-card-offer-ui-experiment",
      flag_descriptions::kAutofillSaveCardUiExperimentName,
      flag_descriptions::kAutofillSaveCardUiExperimentDescription, kOsDesktop,

@@ -40,7 +40,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -137,7 +136,6 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.BULK_TAB_RESTORE})
     // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithTitle() throws Exception {
@@ -173,7 +171,6 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.BULK_TAB_RESTORE})
     // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithoutTitle() throws Exception {
@@ -210,7 +207,6 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.BULK_TAB_RESTORE})
     // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedBulkEvent() throws Exception {

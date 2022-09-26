@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionTab;
@@ -192,15 +191,8 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     }
 
     private void updateRecentlyClosedEntries() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BULK_TAB_RESTORE)) {
-            mRecentlyClosedEntries = mRecentlyClosedTabManager.getRecentlyClosedEntries(
-                    RECENTLY_CLOSED_MAX_ENTRY_COUNT);
-        } else {
-            mRecentlyClosedEntries =
-                    (List<RecentlyClosedEntry>) (List<? extends RecentlyClosedEntry>)
-                            mRecentlyClosedTabManager.getRecentlyClosedTabs(
-                                    RECENTLY_CLOSED_MAX_ENTRY_COUNT);
-        }
+        mRecentlyClosedEntries =
+                mRecentlyClosedTabManager.getRecentlyClosedEntries(RECENTLY_CLOSED_MAX_ENTRY_COUNT);
         for (RecentlyClosedEntry entry : mRecentlyClosedEntries) {
             if (entry instanceof RecentlyClosedTab
                     && !mTabSessionIdsRestored.containsKey(entry.getSessionId())) {

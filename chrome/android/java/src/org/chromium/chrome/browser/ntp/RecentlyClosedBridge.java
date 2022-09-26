@@ -32,14 +32,6 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @Nullable
     private Runnable mEntriesUpdatedRunnable;
 
-    // TODO(crbug/1307345): Remove in favor of generic entries.
-    @CalledByNative
-    private static void pushTab(List<RecentlyClosedTab> tabs, int id, long timestamp, String title,
-            GURL url, String groupId) {
-        RecentlyClosedTab tab = new RecentlyClosedTab(id, timestamp, title, url, groupId);
-        tabs.add(tab);
-    }
-
     private static void addTabs(List<RecentlyClosedTab> tabs, int[] tabIds, long[] tabTimestamps,
             String[] tabTitles, GURL[] tabUrls, String[] tabGroupIds) {
         assert tabIds.length == tabTimestamps.length;
@@ -133,14 +125,6 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     }
 
     @Override
-    public List<RecentlyClosedTab> getRecentlyClosedTabs(int maxTabCount) {
-        List<RecentlyClosedTab> tabs = new ArrayList<RecentlyClosedTab>();
-        boolean received = RecentlyClosedBridgeJni.get().getRecentlyClosedTabs(
-                mNativeBridge, tabs, maxTabCount);
-        return received ? tabs : null;
-    }
-
-    @Override
     public List<RecentlyClosedEntry> getRecentlyClosedEntries(int maxEntryCount) {
         List<RecentlyClosedEntry> entries = new ArrayList<RecentlyClosedEntry>();
         boolean received = RecentlyClosedBridgeJni.get().getRecentlyClosedEntries(
@@ -187,8 +171,6 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     public interface Natives {
         long init(RecentlyClosedBridge caller, Profile profile);
         void destroy(long nativeRecentlyClosedTabsBridge);
-        boolean getRecentlyClosedTabs(
-                long nativeRecentlyClosedTabsBridge, List<RecentlyClosedTab> tabs, int maxTabCount);
         boolean getRecentlyClosedEntries(long nativeRecentlyClosedTabsBridge,
                 List<RecentlyClosedEntry> entries, int maxEntryCount);
         boolean openRecentlyClosedTab(long nativeRecentlyClosedTabsBridge, TabModel tabModel,

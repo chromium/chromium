@@ -3423,11 +3423,6 @@ const char kBindingManagerUseNotPerceptibleBindingDescription[] =
     "When enabled, uses a not perceptible binding for background renderers "
     "used in the current session if able.";
 
-const char kBulkTabRestoreAndroidName[] = "Recent Tabs Bulk Restore";
-const char kBulkTabRestoreAndroidDescription[] =
-    "Enables restoration of bulk tab closures (e.g. close all tabs, close "
-    "a group, etc.) from Recent Tabs > Recently Closed.";
-
 const char kCCTBrandTransparencyName[] =
     "Chrome Custom Tabs Brand Transparency";
 const char kCCTBrandTransparencyDescription[] =

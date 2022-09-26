@@ -21,13 +21,6 @@ public interface RecentlyClosedTabManager {
     void setEntriesUpdatedRunnable(@Nullable Runnable runnable);
 
     /**
-     * @param maxTabCount The maximum number of recently closed tabs to return.
-     * @return A snapshot of the list of recently closed tabs, with up to maxTabCount elements.
-     */
-    List<RecentlyClosedTab> getRecentlyClosedTabs(int maxTabCount);
-
-    // TODO(crbug/1307345): Replace calls to getRecentlyClosedTabs() with this method.
-    /**
      * @param maxEntryCount The maximum number of recently closed entries to return.
      * @return A snapshot of the list of recently closed entries, with up to maxEntryCount elements.
      */

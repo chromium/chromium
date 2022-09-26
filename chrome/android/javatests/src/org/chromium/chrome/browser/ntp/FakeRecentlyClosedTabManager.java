@@ -29,15 +29,6 @@ public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
     }
 
     @Override
-    public List<RecentlyClosedTab> getRecentlyClosedTabs(int maxTabCount) {
-        List<RecentlyClosedTab> tabs = new ArrayList<>();
-        for (int i = 0; i < maxTabCount && i < mTabs.size(); i++) {
-            tabs.add((RecentlyClosedTab) mTabs.get(i));
-        }
-        return tabs;
-    }
-
-    @Override
     public List<RecentlyClosedEntry> getRecentlyClosedEntries(int maxEntryCount) {
         List<RecentlyClosedEntry> entries = new ArrayList<>();
         for (int i = 0; i < maxEntryCount && i < mTabs.size(); i++) {

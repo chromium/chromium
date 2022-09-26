@@ -25,10 +25,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -78,15 +75,6 @@ public class HistoricalTabModelObserverUnitTest {
 
     @Test
     public void testEmpty() {
-        enableBulkTabRestore(true);
-        mObserver.onFinishingMultipleTabClosure(new ArrayList<Tab>());
-
-        verifyNoMoreInteractions(mHistoricalTabSaver);
-    }
-
-    @Test
-    public void testEmpty_NoBulkRestore() {
-        enableBulkTabRestore(false);
         mObserver.onFinishingMultipleTabClosure(new ArrayList<Tab>());
 
         verifyNoMoreInteractions(mHistoricalTabSaver);
@@ -94,7 +82,6 @@ public class HistoricalTabModelObserverUnitTest {
 
     @Test
     public void testSingleTab() {
-        enableBulkTabRestore(true);
         MockTab mockTab = createMockTab(0);
 
         mObserver.onFinishingMultipleTabClosure(Collections.singletonList(mockTab));
@@ -104,7 +91,6 @@ public class HistoricalTabModelObserverUnitTest {
 
     @Test
     public void testMultipleTabs() {
-        enableBulkTabRestore(true);
         MockTab mockTab0 = createMockTab(0);
         MockTab mockTab1 = createMockTab(1);
         MockTab mockTab2 = createMockTab(2);
@@ -124,26 +110,7 @@ public class HistoricalTabModelObserverUnitTest {
     }
 
     @Test
-    public void testMultipleTabsInGroup_NoBulkRestore() {
-        enableBulkTabRestore(false);
-        MockTab mockTab0 = createMockTab(0);
-        MockTab mockTab1 = createMockTab(1);
-        MockTab mockTab2 = createMockTab(2);
-
-        final String title = "foo";
-        MockTab[] tabList = new MockTab[] {mockTab0, mockTab1, mockTab2};
-        final int groupId = createGroup(title, tabList);
-
-        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
-
-        verify(mHistoricalTabSaver, times(1)).createHistoricalTab(eq(mockTab0));
-        verify(mHistoricalTabSaver, times(1)).createHistoricalTab(eq(mockTab1));
-        verify(mHistoricalTabSaver, times(1)).createHistoricalTab(eq(mockTab2));
-    }
-
-    @Test
     public void testSingleGroup() {
-        enableBulkTabRestore(true);
         MockTab mockTab0 = createMockTab(0);
         MockTab mockTab1 = createMockTab(1);
         MockTab mockTab2 = createMockTab(2);
@@ -173,7 +140,6 @@ public class HistoricalTabModelObserverUnitTest {
 
     @Test
     public void testSingleTabInGroup() {
-        enableBulkTabRestore(true);
         MockTab mockTab0 = createMockTab(0);
         MockTab mockTab1 = createMockTab(1);
 
@@ -203,7 +169,6 @@ public class HistoricalTabModelObserverUnitTest {
 
     @Test
     public void testMultipleTabsAndGroups() {
-        enableBulkTabRestore(true);
         MockTab mockTab0 = createMockTab(0);
         MockTab mockTab1 = createMockTab(1);
         MockTab mockTab2 = createMockTab(2);
@@ -256,12 +221,6 @@ public class HistoricalTabModelObserverUnitTest {
         HistoricalEntry historicalTab4 = entries.get(3);
         Assert.assertEquals(1, historicalTab4.getTabs().size());
         Assert.assertEquals(mockTab4, historicalTab4.getTabs().get(0));
-    }
-
-    private void enableBulkTabRestore(boolean enable) {
-        TestValues features = new TestValues();
-        features.addFeatureFlagOverride(ChromeFeatureList.BULK_TAB_RESTORE, enable);
-        FeatureList.setTestValues(features);
     }
 
     private MockTab createMockTab(int id) {

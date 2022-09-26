@@ -75,10 +75,6 @@ class RecentlyClosedTabsBridge : public sessions::TabRestoreServiceObserver {
 
   void Destroy(JNIEnv* env);
 
-  jboolean GetRecentlyClosedTabs(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jtabs,
-      jint max_tab_count);
   jboolean GetRecentlyClosedEntries(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jentries,

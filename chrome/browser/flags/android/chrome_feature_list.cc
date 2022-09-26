@@ -178,7 +178,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAppMenuMobileSiteOption,
     &kAppToWebAttribution,
     &kBackgroundThreadPool,
-    &kBulkTabRestore,
     &kCastDeviceFilter,
     &kClearOmniboxFocusAfterNavigation,
     &kCloseTabSuggestions,
@@ -518,10 +517,6 @@ BASE_FEATURE(kAppToWebAttribution,
 BASE_FEATURE(kBackgroundThreadPool,
              "BackgroundThreadPool",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBulkTabRestore,
-             "BulkTabRestore",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kConditionalTabStripAndroid,
              "ConditionalTabStripAndroid",

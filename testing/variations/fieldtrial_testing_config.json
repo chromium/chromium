@@ -198,21 +198,6 @@
             ]
         }
     ],
-    "AndroidBulkTabRestore": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220518",
-                    "enable_features": [
-                        "BulkTabRestore"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidContextualSearchForceCaption": [
         {
             "platforms": [

@@ -30,7 +30,6 @@ BASE_DECLARE_FEATURE(kAppLaunchpad);
 BASE_DECLARE_FEATURE(kAppMenuMobileSiteOption);
 BASE_DECLARE_FEATURE(kAppToWebAttribution);
 BASE_DECLARE_FEATURE(kBackgroundThreadPool);
-BASE_DECLARE_FEATURE(kBulkTabRestore);
 BASE_DECLARE_FEATURE(kClearOmniboxFocusAfterNavigation);
 BASE_DECLARE_FEATURE(kCloseTabSuggestions);
 BASE_DECLARE_FEATURE(kCriticalPersistedTabData);

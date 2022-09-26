@@ -27,7 +27,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionWindow;
@@ -552,7 +551,6 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                             R.dimen.recent_tabs_foreign_session_group_item_height);
             RecentlyClosedEntry entry = getChild(childPosition);
             if (!(entry instanceof RecentlyClosedTab)) {
-                assert ChromeFeatureList.isEnabled(ChromeFeatureList.BULK_TAB_RESTORE);
                 int tabCount = 0;
                 if (entry instanceof RecentlyClosedGroup) {
                     RecentlyClosedGroup recentlyClosedGroup = (RecentlyClosedGroup) entry;
@@ -638,7 +636,6 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                         (RecentlyClosedTab) entry, WindowOpenDisposition.CURRENT_TAB);
                 return true;
             }
-            assert ChromeFeatureList.isEnabled(ChromeFeatureList.BULK_TAB_RESTORE);
             mRecentTabsManager.openRecentlyClosedEntry(entry);
             return true;
         }

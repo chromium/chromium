@@ -47,35 +47,6 @@ bool TabEntryWithIdExists(const sessions::TabRestoreService::Entries& entries,
   return false;
 }
 
-// Helpers for GetRecentlyClosedTabs:
-
-void JNI_RecentlyClosedBridge_AddTabToList(
-    JNIEnv* env,
-    const sessions::TabRestoreService::Tab& tab,
-    const JavaRef<jobject>& jtabs_list) {
-  const sessions::SerializedNavigationEntry& current_navigation =
-      tab.navigations.at(tab.current_navigation_index);
-  Java_RecentlyClosedBridge_pushTab(
-      env, jtabs_list, tab.id.id(), tab.timestamp.ToJavaTime(),
-      ConvertUTF16ToJavaString(env, current_navigation.title()),
-      url::GURLAndroid::FromNativeGURL(env, current_navigation.virtual_url()),
-      tab.group ? ConvertUTF8ToJavaString(env, tab.group->ToString())
-                : nullptr);
-}
-
-void JNI_RecentlyClosedBridge_AddTabsToList(
-    JNIEnv* env,
-    const sessions::TabRestoreService::Entries& entries,
-    const JavaRef<jobject>& jtabs_list,
-    int max_tab_count) {
-  int added_count = 0;
-  const auto end = TabIterator::end(entries);
-  for (auto it = TabIterator::begin(entries);
-       it != end && added_count < max_tab_count; ++it, ++added_count) {
-    JNI_RecentlyClosedBridge_AddTabToList(env, *it, jtabs_list);
-  }
-}
-
 // Helpers for GetRecentlyClosedEntries:
 
 void PrepareTabs(
@@ -345,19 +316,6 @@ void RecentlyClosedTabsBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jboolean RecentlyClosedTabsBridge::GetRecentlyClosedTabs(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jtabs_list,
-    jint max_tab_count) {
-  EnsureTabRestoreService();
-  if (!tab_restore_service_)
-    return false;
-
-  JNI_RecentlyClosedBridge_AddTabsToList(env, tab_restore_service_->entries(),
-                                         jtabs_list, max_tab_count);
-  return true;
-}
-
 jboolean RecentlyClosedTabsBridge::GetRecentlyClosedEntries(
     JNIEnv* env,
     const JavaParamRef<jobject>& jentries_list,
@@ -405,7 +363,6 @@ jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
     jint entry_session_id) {
   // This should only be called when in bulk restore mode otherwise per-tab
   // restore should always be used.
-  DCHECK(base::FeatureList::IsEnabled(chrome::android::kBulkTabRestore));
   if (!tab_restore_service_)
     return false;
 
@@ -440,31 +397,16 @@ jboolean RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(
 
   AndroidLiveTabContextRestoreWrapper restore_context(model);
   std::vector<sessions::LiveTab*> restored_tabs;
-  if (base::FeatureList::IsEnabled(chrome::android::kBulkTabRestore)) {
-    // Do not use OpenMostRecentEntry as it uses WindowOpenDisposition::UNKNOWN.
-    // WindowOpenDisposition::UNKNOWN looks for a desktop window to use (N/A on
-    // Android) this ends up replacing `restore_context` with the base
-    // AndroidLiveTabContext. `restore_context` is required to rebuild groups
-    // information. To avoid this just use the first entry in entries when
-    // restoring.
-    restored_tabs = tab_restore_service_->RestoreEntryById(
-        &restore_context, tab_restore_service_->entries().front()->id,
-        WindowOpenDisposition::NEW_BACKGROUND_TAB);
-    RestoreAndroidTabGroups(env, jtab_model, restore_context.GetTabGroups());
-  } else {
-    auto it = TabIterator::begin(tab_restore_service_->entries());
-    if (it == TabIterator::end(tab_restore_service_->entries())) {
-      return false;
-    }
-    // Storage of bulk entries may persist across flag flips. Fall back to
-    // restoring the most recent tab rather than the most recent entry even if a
-    // bulk entry is stored. TabRestoreService is well tested so it is "safe" to
-    // restore from a single Tab within a bulk entry even when the bulk storage
-    // is disabled.
-    restored_tabs = tab_restore_service_->RestoreEntryById(
-        &restore_context, it->id, WindowOpenDisposition::NEW_BACKGROUND_TAB);
-    // No groups to restore as single tab.
-  }
+  // Do not use OpenMostRecentEntry as it uses WindowOpenDisposition::UNKNOWN.
+  // WindowOpenDisposition::UNKNOWN looks for a desktop window to use (N/A on
+  // Android) this ends up replacing `restore_context` with the base
+  // AndroidLiveTabContext. `restore_context` is required to rebuild groups
+  // information. To avoid this just use the first entry in entries when
+  // restoring.
+  restored_tabs = tab_restore_service_->RestoreEntryById(
+      &restore_context, tab_restore_service_->entries().front()->id,
+      WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  RestoreAndroidTabGroups(env, jtab_model, restore_context.GetTabGroups());
   return !restored_tabs.empty();
 }
 
