@@ -66,6 +66,11 @@ class SessionProtoDB : public KeyedService, public SessionProtoStorage<T> {
   // Represents an entry in the database.
   using ContentEntry = typename leveldb_proto::ProtoDatabase<T>::KeyEntryVector;
 
+  // Initializes the database.
+  SessionProtoDB(leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
+                 const base::FilePath& database_dir,
+                 leveldb_proto::ProtoDbType proto_db_type);
+
   SessionProtoDB(const SessionProtoDB&) = delete;
   SessionProtoDB& operator=(const SessionProtoDB&) = delete;
   ~SessionProtoDB() override;
@@ -100,11 +105,6 @@ class SessionProtoDB : public KeyedService, public SessionProtoStorage<T> {
   friend class ::SessionProtoDBTest;
   template <typename U>
   friend class ::SessionProtoDBFactory;
-
-  // Initializes the database.
-  SessionProtoDB(leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
-                 const base::FilePath& database_dir,
-                 leveldb_proto::ProtoDbType proto_db_type);
 
   // Used for testing.
   SessionProtoDB(
@@ -155,6 +155,24 @@ class SessionProtoDB : public KeyedService, public SessionProtoStorage<T> {
 
   base::WeakPtrFactory<SessionProtoDB> weak_ptr_factory_{this};
 };
+
+template <typename T>
+SessionProtoDB<T>::SessionProtoDB(
+    leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
+    const base::FilePath& database_dir,
+    leveldb_proto::ProtoDbType proto_db_type)
+    : SessionProtoStorage<T>(),
+      database_status_(absl::nullopt),
+      storage_database_(proto_database_provider->GetDB<T>(
+          proto_db_type,
+          database_dir,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::USER_VISIBLE}))) {
+  static_assert(std::is_base_of<google::protobuf::MessageLite, T>::value,
+                "T must implement 'google::protobuf::MessageLite'");
+  storage_database_->Init(base::BindOnce(&SessionProtoDB::OnDatabaseInitialized,
+                                         weak_ptr_factory_.GetWeakPtr()));
+}
 
 template <typename T>
 SessionProtoDB<T>::~SessionProtoDB() = default;
@@ -335,24 +353,6 @@ void SessionProtoDB<T>::Destroy() const {
   // TODO(davidjm): Consider calling the factory's disassociate method here.
   //                This isn't strictly necessary since it will be called when
   //                the context is destroyed anyway.
-}
-
-template <typename T>
-SessionProtoDB<T>::SessionProtoDB(
-    leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
-    const base::FilePath& database_dir,
-    leveldb_proto::ProtoDbType proto_db_type)
-    : SessionProtoStorage<T>(),
-      database_status_(absl::nullopt),
-      storage_database_(proto_database_provider->GetDB<T>(
-          proto_db_type,
-          database_dir,
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskPriority::USER_VISIBLE}))) {
-  static_assert(std::is_base_of<google::protobuf::MessageLite, T>::value,
-                "T must implement 'google::protobuf::MessageLite'");
-  storage_database_->Init(base::BindOnce(&SessionProtoDB::OnDatabaseInitialized,
-                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 // Used for tests.

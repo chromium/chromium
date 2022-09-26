@@ -35,9 +35,12 @@ static_library("shopping_service") {
   ]
 
   deps = [
+    ":session_proto_db",
     "//base",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:shopping_service",
     "//components/keyed_service/ios",
+    "//components/leveldb_proto",
     "//components/prefs",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
@@ -50,16 +53,35 @@ static_library("shopping_service") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+static_library("session_proto_db") {
+  sources = [
+    "session_proto_db_factory.h",
+    "session_proto_db_factory.mm",
+  ]
+
+  deps = [
+    "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/keyed_service/ios:ios",
+    "//components/leveldb_proto:leveldb_proto",
+    "//components/session_proto_db:session_proto_db",
+    "//ios/web/public:public",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "price_alert_util_unittest.mm",
+    "session_proto_db_factory_unittest.mm",
     "shopping_persisted_data_tab_helper_unittest.mm",
   ]
   deps = [
     ":commerce",
     "//base/test:test_support",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/optimization_guide/core:core",
@@ -67,6 +89,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/unified_consent:unified_consent",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/commerce:session_proto_db",
     "//ios/chrome/browser/optimization_guide:optimization_guide",
     "//ios/chrome/browser/optimization_guide:unit_tests",
     "//ios/chrome/browser/prefs:pref_names",
