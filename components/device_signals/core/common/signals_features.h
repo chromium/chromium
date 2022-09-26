@@ -12,7 +12,7 @@ namespace enterprise_signals::features {
 
 // Feature flag for new private SecureConnect functions exposing additional
 // device signals.
-extern const base::Feature kNewEvSignalsEnabled;
+BASE_DECLARE_FEATURE(kNewEvSignalsEnabled);
 
 // Feature parameters that can be used to turn off individual functions.
 extern const base::FeatureParam<bool> kDisableFileSystemInfo;
@@ -21,7 +21,7 @@ extern const base::FeatureParam<bool> kDisableAntiVirus;
 extern const base::FeatureParam<bool> kDisableHotfix;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-extern const base::Feature kDeviceSignalsPromoAfterSigninIntercept;
+BASE_DECLARE_FEATURE(kDeviceSignalsPromoAfterSigninIntercept);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // Enum used to map a given function to its kill switch.
