@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/json/json_value_converter.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/metrics/call_stack_profile_params.h"
 
@@ -39,8 +40,15 @@ struct HeapProfilerParameters {
   // Mean time between snapshots.
   base::TimeDelta collection_interval;
 
+  // Invoked by JSONValueConverter to parse parameters from JSON.
   static void RegisterJSONConverter(
       base::JSONValueConverter<HeapProfilerParameters>* converter);
+
+  // Overwrites this object's fields with parameters parsed from `json_string`.
+  // Missing parameters will not be touched. If parsing fails, returns false and
+  // sets `is_supported` to false to ensure heap profiling doesn't run with
+  // invalid parameters.
+  bool UpdateFromJSON(base::StringPiece json_string);
 };
 
 // Returns a default set of parameters to use if not overridden for a

@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -166,6 +167,23 @@ void HeapProfilerParameters::RegisterJSONConverter(
       &HeapProfilerParameters::collection_interval, &ConvertCollectionInterval);
 }
 
+bool HeapProfilerParameters::UpdateFromJSON(base::StringPiece json_string) {
+  if (json_string.empty())
+    return true;
+
+  base::JSONValueConverter<HeapProfilerParameters> converter;
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS |
+                                              base::JSON_ALLOW_COMMENTS);
+  if (value && converter.Convert(*value, this))
+    return true;
+
+  // Error reading JSON params. Disable the heap sampler. This will be reported
+  // when HeapProfilerController logs HeapProfiling.InProcess.Enabled.
+  is_supported = false;
+  return false;
+}
+
 HeapProfilerParameters GetDefaultHeapProfilerParameters() {
   return {
       .is_supported = false,
@@ -197,42 +215,27 @@ HeapProfilerParameters GetHeapProfilerParametersForProcess(
 
   // Override with per-process parameters if any are set.
   using Process = metrics::CallStackProfileParams::Process;
-  std::string param_string;
   switch (process_type) {
     case Process::kBrowser:
-      param_string = kBrowserProcessParameters.Get();
+      params.UpdateFromJSON(kBrowserProcessParameters.Get());
       break;
     case Process::kRenderer:
-      param_string = kRendererProcessParameters.Get();
+      params.UpdateFromJSON(kRendererProcessParameters.Get());
       break;
     case Process::kGpu:
-      param_string = kGPUProcessParameters.Get();
+      params.UpdateFromJSON(kGPUProcessParameters.Get());
       break;
     case Process::kUtility:
-      param_string = kUtilityProcessParameters.Get();
+      params.UpdateFromJSON(kUtilityProcessParameters.Get());
       break;
     case Process::kNetworkService:
-      param_string = kNetworkProcessParameters.Get();
+      params.UpdateFromJSON(kNetworkProcessParameters.Get());
       break;
     case Process::kUnknown:
     default:
       // Do nothing. Profiler hasn't been tested in these process types.
       break;
   }
-  if (!param_string.empty()) {
-    // Overwrite the defaults with any parameters set in `param_string`. Missing
-    // parameters will not be touched.
-    base::JSONValueConverter<HeapProfilerParameters> converter;
-    absl::optional<base::Value> value =
-        base::JSONReader::Read(param_string, base::JSON_ALLOW_TRAILING_COMMAS);
-    if (!value || !converter.Convert(*value, &params)) {
-      // Error reading JSON params. Disable the heap sampler. This will be
-      // reported as HeapProfilerController logs
-      // HeapProfiling.InProcess.Enabled.
-      params.is_supported = false;
-    }
-  }
-
   return params;
 }
 

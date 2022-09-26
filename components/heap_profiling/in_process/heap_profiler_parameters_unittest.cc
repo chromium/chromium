@@ -4,38 +4,18 @@
 
 #include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 
-#include "base/json/json_reader.h"
-#include "base/json/json_value_converter.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "components/metrics/call_stack_profile_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace heap_profiling {
 
 namespace {
 
 using ::testing::AllOf;
-using ::testing::AssertionFailure;
-using ::testing::AssertionResult;
-using ::testing::AssertionSuccess;
 using ::testing::Field;
-
-AssertionResult ConvertJSONString(base::StringPiece json,
-                                  HeapProfilerParameters* result) {
-  absl::optional<base::Value> value =
-      base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!value)
-    return AssertionFailure() << "Failed to parse " << json;
-  base::JSONValueConverter<HeapProfilerParameters> converter;
-  if (!converter.Convert(*value, result))
-    return AssertionFailure() << "Failed to convert " << json;
-  return AssertionSuccess();
-}
 
 // Can't define operator== because gmock has a conflicting operator== in an
 // internal namespace.
@@ -57,7 +37,7 @@ auto MatchesParameters(const HeapProfilerParameters& expected) {
 TEST(HeapProfilerParametersTest, ParseEmptyParameters) {
   constexpr char kJSONParams[] = R"({})";
   HeapProfilerParameters params;
-  EXPECT_TRUE(ConvertJSONString(kJSONParams, &params));
+  EXPECT_TRUE(params.UpdateFromJSON(kJSONParams));
   EXPECT_THAT(params, MatchesParameters({}));
 }
 
@@ -65,16 +45,18 @@ TEST(HeapProfilerParametersTest, ParseParameters) {
   constexpr char kJSONParams[] = R"({
     "is-supported": true,
     "stable-probability": 0.1,
-    "nonstable-probability": 0.2,
+    // Comments should be allowed.
+    // Double parameters should convert from integers.
+    "nonstable-probability": 1,
     "sampling-rate-bytes": 1000,
     "collection-interval-minutes": 30,
   })";
   HeapProfilerParameters params;
-  EXPECT_TRUE(ConvertJSONString(kJSONParams, &params));
+  EXPECT_TRUE(params.UpdateFromJSON(kJSONParams));
   EXPECT_THAT(params, MatchesParameters({
                           .is_supported = true,
                           .stable_probability = 0.1,
-                          .nonstable_probability = 0.2,
+                          .nonstable_probability = 1.0,
                           .sampling_rate_bytes = 1000,
                           .collection_interval = base::Minutes(30),
                       }));
@@ -94,7 +76,7 @@ TEST(HeapProfilerParametersTest, ParsePartialParameters) {
       .sampling_rate_bytes = 1000,
       .collection_interval = base::Minutes(30),
   };
-  EXPECT_TRUE(ConvertJSONString(kJSONParams, &params));
+  EXPECT_TRUE(params.UpdateFromJSON(kJSONParams));
   EXPECT_THAT(params, MatchesParameters({
                           .is_supported = false,
                           .stable_probability = 0.5,
@@ -109,7 +91,8 @@ TEST(HeapProfilerParametersTest, ParseInvalidParameters) {
     "collection-interval-minutes": -1,
   })";
   HeapProfilerParameters params;
-  EXPECT_FALSE(ConvertJSONString(kJSONParams, &params));
+  EXPECT_FALSE(params.UpdateFromJSON(kJSONParams));
+  EXPECT_FALSE(params.is_supported);
 }
 
 TEST(HeapProfilerParametersTest, ApplyParameters) {
