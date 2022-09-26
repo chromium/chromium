@@ -10,16 +10,19 @@ namespace webapps {
 namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
-const base::Feature kAddToHomescreenMessaging{
-    "AddToHomescreenMessaging", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAddToHomescreenMessaging,
+             "AddToHomescreenMessaging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables the installable ambient badge infobar.
-const base::Feature kInstallableAmbientBadgeInfoBar{
-    "InstallableAmbientBadgeInfoBar", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kInstallableAmbientBadgeInfoBar,
+             "InstallableAmbientBadgeInfoBar",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the installable ambient badge message.
-const base::Feature kInstallableAmbientBadgeMessage{
-    "InstallableAmbientBadgeMessage", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kInstallableAmbientBadgeMessage,
+             "InstallableAmbientBadgeMessage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The capacity of cached domains which do not show message again if
 // users do not accept the message.
@@ -29,8 +32,9 @@ extern const base::FeatureParam<int>
         "installable_ambient_badge_message_throttle_domains_capacity", 100};
 
 // Enables PWA Unique IDs for WebAPKs.
-const base::Feature kWebApkUniqueId{"WebApkUniqueId",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kWebApkUniqueId,
+             "WebApkUniqueId",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When the user clicks "Create Shortcut" in the dot menu, the current page is
@@ -40,23 +44,25 @@ const base::Feature kWebApkUniqueId{"WebApkUniqueId",
 // For installing the parent app, the existing "Install Site" should be used
 // instead. With this feature, "Install Site" now also shows up for websites
 // without service worker, as long as they have a manifest.
-const base::Feature kCreateShortcutIgnoresManifest{
-    "CreateShortcutIgnoresManifest", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCreateShortcutIgnoresManifest,
+             "CreateShortcutIgnoresManifest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Skip the service worker install criteria check for installing. This affect
 // only the "installable" status but not "promotable".
-const base::Feature kSkipServiceWorkerCheckInstallOnly{
-  "SkipServiceWorkerCheckInstallOnly",
+BASE_FEATURE(kSkipServiceWorkerCheckInstallOnly,
+             "SkipServiceWorkerCheckInstallOnly",
 #if BUILDFLAG(IS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 // Enables showing a detailed install dialog for user installs.
-const base::Feature kDesktopPWAsDetailedInstallDialog{
-    "DesktopPWAsDetailedInstallDialog", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDesktopPWAsDetailedInstallDialog,
+             "DesktopPWAsDetailedInstallDialog",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool SkipInstallServiceWorkerCheck() {
   return base::FeatureList::IsEnabled(kSkipServiceWorkerCheckInstallOnly);
