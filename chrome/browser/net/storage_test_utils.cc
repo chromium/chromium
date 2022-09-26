@@ -31,8 +31,8 @@ constexpr char kRequestStorageAccess[] =
     "  () => { window.domAutomationController.send(false); },"
     ");";
 
-constexpr char kRequestStorageAccessForSite[] =
-    "document.requestStorageAccessForSite('%s').then("
+constexpr char kRequestStorageAccessForOrigin[] =
+    "document.requestStorageAccessForOrigin('%s').then("
     "  () => { window.domAutomationController.send(true); },"
     "  () => { window.domAutomationController.send(false); },"
     ");";
@@ -157,11 +157,11 @@ bool RequestStorageAccessForFrame(content::RenderFrameHost* frame) {
       .ExtractBool();
 }
 
-bool RequestStorageAccessForSite(content::RenderFrameHost* frame,
-                                 const std::string& site) {
+bool RequestStorageAccessForOrigin(content::RenderFrameHost* frame,
+                                   const std::string& origin) {
   return content::EvalJs(
              frame,
-             base::StringPrintf(kRequestStorageAccessForSite, site.c_str()),
+             base::StringPrintf(kRequestStorageAccessForOrigin, origin.c_str()),
              content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
       .ExtractBool();
 }

@@ -47,7 +47,7 @@ enum class RequestOutcome {
 
 enum class StorageAccessRequestType {
   kRequestStorageAccess,
-  kRequestStorageAccessForSite
+  kRequestStorageAccessForOrigin
 };
 
 class StorageAccessGrantPermissionContext

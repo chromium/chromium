@@ -77,14 +77,14 @@ StorageAccessRequestType GetStorageAccessRequestType(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
     content::RenderFrameHost* render_frame_host) {
-  // `requestStorageAccessForSite` can only be called from the main frame, and
+  // `requestStorageAccessForOrigin` can only be called from the main frame, and
   // standard `requestStorageAccess` calls pass the same origin for requesting
-  // and embedding in a top-level context. Any `requestStorageAccessForSite`
+  // and embedding in a top-level context. Any `requestStorageAccessForOrigin`
   // calls passing the same origin as the current page are automatically granted
   // upstream.
   if (render_frame_host->IsInPrimaryMainFrame() &&
       requesting_origin != embedding_origin) {
-    return StorageAccessRequestType::kRequestStorageAccessForSite;
+    return StorageAccessRequestType::kRequestStorageAccessForOrigin;
   }
   return StorageAccessRequestType::kRequestStorageAccess;
 }
@@ -189,7 +189,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
         // Service domains are not allowed to request storage access on behalf
         // of other domains, even in the same First-Party Set.
         if (request_type ==
-                StorageAccessRequestType::kRequestStorageAccessForSite &&
+                StorageAccessRequestType::kRequestStorageAccessForOrigin &&
             metadata.top_frame_entry()->site_type() ==
                 net::SiteType::kService) {
           NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,

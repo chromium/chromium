@@ -28,36 +28,36 @@ queryParams.forEach(function(param, index) {
   }
 });
 
-// TODO(crbug.com/1351540): when/if requestStorageAccessForSite is standardized,
+// TODO(crbug.com/1351540): when/if requestStorageAccessForOrigin is standardized,
 // upstream with the Storage Access API helpers file.
-function RunRequestStorageAccessForSiteInDetachedFrame(site) {
+function RunRequestStorageAccessForOriginInDetachedFrame(site) {
   let nestedFrame = document.createElement('iframe');
   document.body.append(nestedFrame);
   const inner_doc = nestedFrame.contentDocument;
   nestedFrame.remove();
-  return inner_doc.requestStorageAccessForSite(site);
+  return inner_doc.requestStorageAccessForOrigin(site);
 }
 
-function RunRequestStorageAccessForSiteViaDomParser(site) {
+function RunRequestStorageAccessForOriginViaDomParser(site) {
   let parser = new DOMParser();
   let doc = parser.parseFromString('<html></html>', 'text/html');
-  return doc.requestStorageAccessForSite(site);
+  return doc.requestStorageAccessForOrigin(site);
 }
 
 // Common tests to run in all frames.
 test(
     () => {
-      assert_not_equals(document.requestStorageAccessForSite, undefined);
+      assert_not_equals(document.requestStorageAccessForOrigin, undefined);
     },
     '[' + testPrefix +
-        '] document.requestStorageAccessForSite() should be supported on the document interface');
+        '] document.requestStorageAccessForOrigin() should be supported on the document interface');
 
 if (topLevelDocument) {
   promise_test(
       t => {
-        let promise = document.requestStorageAccessForSite('https://test.com');
+        let promise = document.requestStorageAccessForOrigin('https://test.com');
         let description =
-            'document.requestStorageAccessForSite() call without user gesture';
+            'document.requestStorageAccessForOrigin() call without user gesture';
         return promise
             .then(t.unreached_func('Should have rejected: ' + description))
             .catch(function(e) {
@@ -65,58 +65,58 @@ if (topLevelDocument) {
             });
       },
       '[' + testPrefix +
-          '] document.requestStorageAccessForSite() should be rejected by default with no user gesture');
+          '] document.requestStorageAccessForOrigin() should be rejected by default with no user gesture');
 
   promise_test(async t => {
     let promise =
-        RunRequestStorageAccessForSiteInDetachedFrame('https://foo.com');
+        RunRequestStorageAccessForOriginInDetachedFrame('https://foo.com');
     let description =
-        'document.requestStorageAccessForSite() call in a detached frame';
+        'document.requestStorageAccessForOrigin() call in a detached frame';
     return promise
         .then(t.unreached_func('Should have rejected: ' + description))
         .catch(function(e) {
           assert_equals(e.name, 'SecurityError', description);
         });
-  }, '[non-fully-active] document.requestStorageAccessForSite() should not resolve when run in a detached frame');
+  }, '[non-fully-active] document.requestStorageAccessForOrigin() should not resolve when run in a detached frame');
 
   promise_test(async t => {
-    let promise = RunRequestStorageAccessForSiteViaDomParser('https://foo.com');
+    let promise = RunRequestStorageAccessForOriginViaDomParser('https://foo.com');
     let description =
-        'document.requestStorageAccessForSite() in a detached DOMParser result';
+        'document.requestStorageAccessForOrigin() in a detached DOMParser result';
     return promise
         .then(t.unreached_func('Should have rejected: ' + description))
         .catch(function(e) {
           assert_equals(e.name, 'SecurityError', description);
         });
-  }, '[non-fully-active] document.requestStorageAccessForSite() should not resolve when run in a detached DOMParser document');
+  }, '[non-fully-active] document.requestStorageAccessForOrigin() should not resolve when run in a detached DOMParser document');
 
   // Create a test with a single-child same-origin iframe.
-  // This will validate that calls to requestStorageAccessForSite are rejected
+  // This will validate that calls to requestStorageAccessForOrigin are rejected
   // in non-top-level contexts.
   RunTestsInIFrame(
-      './resources/requestStorageAccessForSite-iframe.html?testCase=same-origin-frame&rootdocument=false');
+      './resources/requestStorageAccessForOrigin-iframe.html?testCase=same-origin-frame&rootdocument=false');
 
   promise_test(
       async t => {
         let access_promise = null;
         let testMethod = function() {
           access_promise =
-              document.requestStorageAccessForSite(document.location.origin);
+              document.requestStorageAccessForOrigin(document.location.origin);
         };
         await ClickButtonWithGesture(testMethod);
 
         return access_promise;
       },
       '[' + testPrefix +
-          '] document.requestStorageAccessForSite() should be resolved when called properly with a user gesture and the same site');
+          '] document.requestStorageAccessForOrigin() should be resolved when called properly with a user gesture and the same site');
 
   promise_test(
       async t => {
         let access_promise = null;
         let description =
-            'document.requestStorageAccessForSite() call with bogus URL';
+            'document.requestStorageAccessForOrigin() call with bogus URL';
         let testMethod = function() {
-          access_promise = document.requestStorageAccessForSite('bogus-url')
+          access_promise = document.requestStorageAccessForOrigin('bogus-url')
                                .then(t.unreached_func(
                                    'Should have rejected: ' + description))
                                .catch(function(e) {
@@ -129,16 +129,16 @@ if (topLevelDocument) {
         return access_promise;
       },
       '[' + testPrefix +
-          '] document.requestStorageAccessForSite() should be rejected when called with an invalid site');
+          '] document.requestStorageAccessForOrigin() should be rejected when called with an invalid site');
 
   promise_test(
       async t => {
         let access_promise = null;
         let description =
-            'document.requestStorageAccessForSite() call with data URL';
+            'document.requestStorageAccessForOrigin() call with data URL';
         let testMethod = function() {
           access_promise =
-              document.requestStorageAccessForSite('data:,Hello%2C%20World%21')
+              document.requestStorageAccessForOrigin('data:,Hello%2C%20World%21')
                   .then(
                       t.unreached_func('Should have rejected: ' + description))
                   .catch(function(e) {
@@ -151,17 +151,17 @@ if (topLevelDocument) {
         return access_promise;
       },
       '[' + testPrefix +
-          '] document.requestStorageAccessForSite() should be rejected when called with an opaque origin');
+          '] document.requestStorageAccessForOrigin() should be rejected when called with an opaque origin');
 
 } else {
   promise_test(
       async t => {
         let access_promise = null;
         let description =
-            'document.requestStorageAccessForSite() call in a non-top-level context';
+            'document.requestStorageAccessForOrigin() call in a non-top-level context';
         let testMethod = function() {
           access_promise =
-              document.requestStorageAccessForSite(document.location.origin)
+              document.requestStorageAccessForOrigin(document.location.origin)
                   .then(
                       t.unreached_func('Should have rejected: ' + description))
                   .catch(function(e) {
@@ -174,5 +174,5 @@ if (topLevelDocument) {
         return access_promise;
       },
       '[' + testPrefix +
-          '] document.requestStorageAccessForSite() should be rejected when called in an iframe');
+          '] document.requestStorageAccessForOrigin() should be rejected when called in an iframe');
 }

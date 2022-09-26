@@ -3650,7 +3650,7 @@ enum WebFeature {
   kReplacedElementPaintedWithLargeOverflow = 4329,
   kFlexboxAbsPosJustifyContent = 4330,
   kMultipleFetchHandlersInServiceWorker = 4331,
-  kStorageAccessAPI_requestStorageAccessForSite_Method = 4332,
+  kStorageAccessAPI_requestStorageAccessForOrigin_Method = 4332,
   kPrivateAggregationApiAll = 4333,
   kPrivateAggregationApiFledge = 4334,
   kPrivateAggregationApiSharedStorage = 4335,

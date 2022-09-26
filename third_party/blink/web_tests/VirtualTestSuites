@@ -693,10 +693,10 @@
     "args": [ "--enable-features=StorageAccessAPI" ]
   },
   {
-    "prefix": "storage-access-api-for-site-extension",
+    "prefix": "storage-access-api-for-origin-extension",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "wpt_internal/storage-access-api" ],
-    "args": [ "--enable-features=StorageAccessAPI,StorageAccessAPIForSiteExtension" ]
+    "args": [ "--enable-features=StorageAccessAPI,StorageAccessAPIForOriginExtension" ]
   },
   {
     "prefix": "web-bluetooth-new-permissions-backend",

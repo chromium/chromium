@@ -183,7 +183,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // Storage Access API
     [CallWith=ScriptState, NewObject, RuntimeEnabled=StorageAccessAPI, MeasureAs=StorageAccessAPI_HasStorageAccess_Method] Promise<boolean> hasStorageAccess();
     [CallWith=ScriptState, NewObject, RuntimeEnabled=StorageAccessAPI, MeasureAs=StorageAccessAPI_requestStorageAccess_Method] Promise<void> requestStorageAccess();
-    [CallWith=ScriptState, NewObject, RuntimeEnabled=StorageAccessAPIForSiteExtension, MeasureAs=StorageAccessAPI_requestStorageAccessForSite_Method] Promise<void> requestStorageAccessForSite(USVString site);
+    [CallWith=ScriptState, NewObject, RuntimeEnabled=StorageAccessAPIForOriginExtension, MeasureAs=StorageAccessAPI_requestStorageAccessForOrigin_Method] Promise<void> requestStorageAccessForOrigin(USVString origin);
 
     // Text fragment directive API
     // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability

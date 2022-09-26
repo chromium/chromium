@@ -51,9 +51,9 @@ url::Origin ExtractDomainOverride(const PermissionDescriptorPtr& descriptor) {
 
 bool IsDomainOverrideEnabled() {
   // This code path is currently available only when
-  // requestStorageAccessForSite is enabled.
+  // requestStorageAccessForOrigin is enabled.
   return base::FeatureList::IsEnabled(
-      blink::features::kStorageAccessAPIForSiteExtension);
+      blink::features::kStorageAccessAPIForOriginExtension);
 }
 
 }  // anonymous namespace

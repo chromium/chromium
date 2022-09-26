@@ -604,15 +604,15 @@ void ResolveInvalidConfigurations() {
   // Storage Access API ForSite cannot be enabled unless the larger Storage
   // Access API is also enabled.
   if (base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIForSiteExtension) &&
+          blink::features::kStorageAccessAPIForOriginExtension) &&
       !base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)) {
     LOG_IF(WARNING,
-           WebRuntimeFeatures::IsStorageAccessAPIForSiteExtensionEnabled())
-        << "requestStorageAccessForSite cannot be enabled in this "
+           WebRuntimeFeatures::IsStorageAccessAPIForOriginExtensionEnabled())
+        << "requestStorageAccessForOrigin cannot be enabled in this "
            "configuration. Use --"
         << switches::kEnableFeatures << "="
         << net::features::kStorageAccessAPI.name << " in addition.";
-    WebRuntimeFeatures::EnableStorageAccessAPIForSiteExtension(false);
+    WebRuntimeFeatures::EnableStorageAccessAPIForOriginExtension(false);
   }
 }
 

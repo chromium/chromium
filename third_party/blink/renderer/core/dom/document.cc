@@ -6058,15 +6058,17 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise Document::requestStorageAccessForSite(ScriptState* script_state,
-                                                    const AtomicString& site) {
+ScriptPromise Document::requestStorageAccessForOrigin(
+    ScriptState* script_state,
+    const AtomicString& origin) {
   if (!GetFrame()) {
     // Note that in detached frames, resolvers are not able to return a promise.
     return ScriptPromise::RejectWithDOMException(
-        script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kSecurityError,
-                          "requestStorageAccessForSite: Cannot be used unless "
-                          "the document is fully active."));
+        script_state,
+        MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSecurityError,
+            "requestStorageAccessForOrigin: Cannot be used unless "
+            "the document is fully active."));
   }
 
   ScriptPromiseResolver* resolver =
@@ -6082,7 +6084,7 @@ ScriptPromise Document::requestStorageAccessForSite(ScriptState* script_state,
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccessForSite: Must be handling a user gesture to "
+        "requestStorageAccessForOrigin: Must be handling a user gesture to "
         "use."));
 
     resolver->Reject();
@@ -6093,7 +6095,7 @@ ScriptPromise Document::requestStorageAccessForSite(ScriptState* script_state,
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccessForSite: Only supported in primary top-level "
+        "requestStorageAccessForOrigin: Only supported in primary top-level "
         "browsing contexts."));
     resolver->Reject();
     return promise;
@@ -6103,29 +6105,29 @@ ScriptPromise Document::requestStorageAccessForSite(ScriptState* script_state,
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccessForSite: Cannot be used by opaque origins."));
+        "requestStorageAccessForOrigin: Cannot be used by opaque origins."));
 
     resolver->Reject();
     return promise;
   }
 
-  KURL site_as_kurl{site};
-  if (!site_as_kurl.IsValid()) {
+  KURL origin_as_kurl{origin};
+  if (!origin_as_kurl.IsValid()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccessForSite: Invalid site parameter."));
+        "requestStorageAccessForOrigin: Invalid origin parameter."));
     resolver->Reject();
     return promise;
   }
 
   scoped_refptr<SecurityOrigin> supplied_origin =
-      SecurityOrigin::Create(site_as_kurl);
+      SecurityOrigin::Create(origin_as_kurl);
   if (supplied_origin->IsOpaque()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccessForSite: Invalid site parameter."));
+        "requestStorageAccessForOrigin: Invalid origin parameter."));
     resolver->Reject();
     return promise;
   }

@@ -2465,10 +2465,10 @@
       status: "test",
     },
     {
-      name: "StorageAccessAPIForSiteExtension",
+      name: "StorageAccessAPIForOriginExtension",
       public: true,
       status: "test",
-      base_feature: "StorageAccessAPIForSiteExtension",
+      base_feature: "StorageAccessAPIForOriginExtension",
     },
     {
       name: "StorageBuckets",
