@@ -270,11 +270,11 @@ class FormDataImporter : public PersonalDataManagerObserver {
                          const std::string& predicted_country_code);
 
   // Sets the `profile`'s PHONE_HOME_WHOLE_NUMBER to the `combined_phone`, if
-  // possible. Deduces the region based on `predicted_country_code`.
+  // possible. The phone number's region is deduced based on the profile's
+  // country or alternatively the app locale.
   // Returns false if the provided `combined_phone` is invalid.
   bool SetPhoneNumber(AutofillProfile& profile,
-                      PhoneNumber::PhoneCombineHelper& combined_phone,
-                      const std::string& predicted_country_code);
+                      PhoneNumber::PhoneCombineHelper& combined_phone);
 
   // Clears all setting-inaccessible values from `profile` if
   // `kAutofillRemoveInaccessibleProfileValues` is enabled.

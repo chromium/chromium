@@ -233,46 +233,20 @@ bool FormDataImporter::ComplementCountry(
 
 bool FormDataImporter::SetPhoneNumber(
     AutofillProfile& profile,
-    PhoneNumber::PhoneCombineHelper& combined_phone,
-    const std::string& predicted_country_code) {
-  if (combined_phone.IsEmpty()) {
+    PhoneNumber::PhoneCombineHelper& combined_phone) {
+  if (combined_phone.IsEmpty())
     return true;
-  }
-  const std::string predicted_country_code_without_variation =
-      GetPredictedCountryCode(profile, "", app_locale_, nullptr);
-  auto SetWithRegion = [&](const std::string& region) {
-    std::u16string constructed_number;
-    // `ParseNumber()` implicity accepts both a country code and a locale. This
-    // will be refactored with crbug.com/1296077. The parameter for
-    // `SetInfoWithVerificationStatus()` has to be consistent with
-    // `ParseNumber()`.
-    return combined_phone.ParseNumber(profile, region, &constructed_number) &&
-           profile.SetInfoWithVerificationStatus(
-               PHONE_HOME_WHOLE_NUMBER, constructed_number,
-               /*app_locale=*/region, VerificationStatus::kObserved);
-  };
-  // If `AutofillConsiderVariationCountryCodeForPhoneNumbers` is enabled,
-  // a consistent country code prediction for addresses and phone numbers is
-  // used. Otherwise the variation service state is not considered for phone
-  // numbers. This makes a difference, if the country code cannot be found
-  // in the `profile`.
-  // TODO(crbug.com/1295721): Cleanup when launched.
-  bool success_with_locale = SetWithRegion(app_locale_);
-  if (predicted_country_code == predicted_country_code_without_variation ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillConsiderVariationCountryCodeForPhoneNumbers))
-    return success_with_locale;
-  // AutofillConsiderVariationCountryCodeForPhoneNumbers is enabled and makes
-  // a difference for the region used. Parse the number with the new region and
-  // check if this actually changes the parsing outcome to measure the impact.
-  bool success_with_variation_code = SetWithRegion(predicted_country_code);
-  AutofillMetrics::LogPhoneNumberImportParsingResult(
-      success_with_variation_code, success_with_locale);
-  // Keep the current state, even if the parsing worked with the locale but not
-  // the variation country code. Because once
-  // `AutofillConsiderVariationCountryCodeForPhoneNumbers` is launched, only
-  // region = `predicted_country_code` will be used for parsing.
-  return success_with_variation_code;
+  std::u16string constructed_number;
+  // If the phone number only consists of a single component, the
+  // `PhoneCombineHelper` won't try to parse it. This happens during `SetInfo()`
+  // in this case.
+  bool parsed_successfully =
+      combined_phone.ParseNumber(profile, app_locale_, &constructed_number) &&
+      profile.SetInfoWithVerificationStatus(PHONE_HOME_WHOLE_NUMBER,
+                                            constructed_number, app_locale_,
+                                            VerificationStatus::kObserved);
+  AutofillMetrics::LogPhoneNumberImportParsingResult(parsed_successfully);
+  return parsed_successfully;
 }
 
 void FormDataImporter::RemoveInaccessibleProfileValues(
@@ -592,11 +566,22 @@ bool FormDataImporter::ImportAddressProfileForSection(
       GetPredictedCountryCode(candidate_profile, variation_country_code,
                               app_locale_, import_log_buffer);
 
-  if (!combined_phone.IsEmpty())
-    import_metadata.phone_import_status = PhoneImportStatus::kValid;
+  bool should_complement_country =
+      !has_invalid_country || import_metadata.did_ignore_invalid_country;
 
-  if (!SetPhoneNumber(candidate_profile, combined_phone,
-                      predicted_country_code)) {
+  // When setting a phone number, the region is deduced from the profile's
+  // country or the app locale. For the `variation_country_code` to take
+  // precedence over the app locale, country code complemention needs to happen
+  // before `SetPhoneNumber()`.
+  bool complement_country_early =
+      base::FeatureList::IsEnabled(features::kAutofillComplementCountryEarly);
+  if (complement_country_early) {
+    import_metadata.did_complement_country =
+        should_complement_country &&
+        ComplementCountry(candidate_profile, predicted_country_code);
+  }
+
+  if (!SetPhoneNumber(candidate_profile, combined_phone)) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillRemoveInvalidPhoneNumberOnImport)) {
       candidate_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
@@ -610,6 +595,8 @@ bool FormDataImporter::ImportAddressProfileForSection(
           << LogMessage::kImportAddressProfileFromFormFailed
           << "Invalid phone number." << CTag{};
     }
+  } else if (!combined_phone.IsEmpty()) {
+    import_metadata.phone_import_status = PhoneImportStatus::kValid;
   }
 
   // This is done prior to checking the validity of the profile, because multi-
@@ -632,19 +619,22 @@ bool FormDataImporter::ImportAddressProfileForSection(
     multistep_importer_.ProcessMultiStepImport(
         candidate_profile, import_metadata,
         url::Origin::Create(form.source_url()));
-    // The predicted country code has possibly changed, if |candidate_profile|
-    // was merged with a profile containing country information.
-    predicted_country_code =
-        GetPredictedCountryCode(candidate_profile, variation_country_code,
-                                app_locale_, /*import_log_buffer=*/nullptr);
+    // If `candidate_profile` was merged with a profile containing
+    // (non-complemented) country information, the country might have changed.
+    if (!complement_country_early) {
+      predicted_country_code =
+          GetPredictedCountryCode(candidate_profile, variation_country_code,
+                                  app_locale_, /*import_log_buffer=*/nullptr);
+    }
   }
 
-  // Only complement the country if no invalid country was entered in the form.
-  // For multi-step imports, |did_complement_country| might be set twice, but as
-  // the metric is only logged if it wasn't present before, this is fine.
-  import_metadata.did_complement_country =
-      (!has_invalid_country || import_metadata.did_ignore_invalid_country) &&
-      ComplementCountry(candidate_profile, predicted_country_code);
+  if (!complement_country_early) {
+    // For multi-step imports, this can set `did_complement_country` twice. But
+    // as the metric is only logged if it wasn't present before, this is fine.
+    import_metadata.did_complement_country =
+        should_complement_country &&
+        ComplementCountry(candidate_profile, predicted_country_code);
+  }
 
   // This relies on the profile's country code and must be done strictly after
   // `ComplementCountry()`.

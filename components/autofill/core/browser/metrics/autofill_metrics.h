@@ -772,18 +772,6 @@ class AutofillMetrics {
     kMaxValue = SECTION_UNION_IMPORT,
   };
 
-  // When parsing a nationally formatted phone number on profile import, a
-  // region has to be assumed. This enum represents if a phone number could be
-  // parsed by assuming the app locale and/or the variation country code as its
-  // region.
-  enum class PhoneNumberImportParsingResult {
-    CANNOT_PARSE = 0,
-    PARSED_WITH_APP_LOCALE = 1,
-    PARSED_WITH_VARIATION_COUNTRY_CODE = 2,
-    PARSED_WITH_BOTH = 3,
-    kMaxValue = PARSED_WITH_BOTH,
-  };
-
   // To record the source of the autofilled state field.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -1689,11 +1677,10 @@ class AutofillMetrics {
   // setting-inaccessible in the profile's country.
   static void LogRemovedSettingInaccessibleField(ServerFieldType field);
 
-  // Logs the outcome of parsing a phone number on profile import when assuming
-  // either the variation country code or the app locale as its region.
-  static void LogPhoneNumberImportParsingResult(
-      bool with_variation_country_code,
-      bool with_app_locale);
+  // Logs whether a phone number was parsed successfully on profile import.
+  // Contrary to the profile import requirement metrics, the parsing result is
+  // only emitted when a number is present.
+  static void LogPhoneNumberImportParsingResult(bool parsed_successfully);
 
   // Logs that local heuristics matched phone number fields using `grammar_id`.
   // `suffix_matched` indicates if the special case handling for phone number

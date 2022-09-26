@@ -3007,12 +3007,9 @@ void AutofillMetrics::LogRemovedSettingInaccessibleField(
 
 // static
 void AutofillMetrics::LogPhoneNumberImportParsingResult(
-    bool with_variation_country_code,
-    bool with_app_locale) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.PhoneNumberParsingResult",
-      static_cast<AutofillMetrics::PhoneNumberImportParsingResult>(
-          (with_variation_country_code << 1) | with_app_locale));
+    bool parsed_successfully) {
+  base::UmaHistogramBoolean("Autofill.ProfileImport.PhoneNumberParsed",
+                            parsed_successfully);
 }
 
 // static

@@ -55,7 +55,7 @@ class PhoneNumber : public FormGroup {
     // true if parsing was successful, false otherwise.
     bool ParseNumber(const AutofillProfile& profile,
                      const std::string& app_locale,
-                     std::u16string* value);
+                     std::u16string* value) const;
 
     // Returns true if both |phone_| and |whole_number_| are empty.
     bool IsEmpty() const;

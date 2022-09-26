@@ -20,6 +20,8 @@ using base::ASCIIToUTF16;
 
 namespace autofill {
 
+constexpr char kLocale[] = "en_US";
+
 struct MatchingTypesTestCase {
   std::u16string input;
   ServerFieldTypeSet expected_types;
@@ -41,13 +43,12 @@ void MatchingTypesTest(const std::u16string& number,
 
   AutofillProfile profile;
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, country);
-  // Irrelevant, because `profile` has country information.
-  const std::string locale = "en-US";
   PhoneNumber phone_number(&profile);
-  phone_number.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), number, locale);
+  // `kLocale` is irrelevant, because `profile` has country information.
+  phone_number.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), number, kLocale);
   for (const MatchingTypesTestCase& test : tests) {
     ServerFieldTypeSet matching_types;
-    phone_number.GetMatchingTypes(test.input, locale, &matching_types);
+    phone_number.GetMatchingTypes(test.input, kLocale, &matching_types);
     EXPECT_EQ(matching_types, test.expected_types);
   }
 }
@@ -116,10 +117,10 @@ TEST(PhoneNumberTest, Matcher_TrunkTypes_DE) {
 }
 
 // Verify that `PhoneNumber::SetInfo()` correctly formats the incoming number.
+// `kLocale` is irrelevant, as `profile` has a country.
 TEST(PhoneNumberTest, SetInfo) {
   AutofillProfile profile;
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
-  const char kLocale[] = "US";  // Irrelevant, as `profile` has a country.
 
   PhoneNumber phone(&profile);
   EXPECT_TRUE(phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER).empty());
@@ -172,7 +173,6 @@ TEST(PhoneNumberTest, InferCountryCallingCode) {
 
   AutofillProfile profile;
   PhoneNumber phone(&profile);
-  const char kLocale[] = "US";
 
   // No country information available and thus no calling code inferred.
   EXPECT_TRUE(
@@ -246,14 +246,14 @@ TEST(PhoneNumberTest, PhoneCombineHelper) {
   EXPECT_TRUE(number1.SetInfo(AutofillType(PHONE_HOME_CITY_CODE), u"650"));
   EXPECT_TRUE(number1.SetInfo(AutofillType(PHONE_HOME_NUMBER), u"2345678"));
   std::u16string parsed_phone;
-  EXPECT_TRUE(number1.ParseNumber(profile, "en-US", &parsed_phone));
+  EXPECT_TRUE(number1.ParseNumber(profile, kLocale, &parsed_phone));
   // International format as it has a country code.
   EXPECT_EQ(u"1 650-234-5678", parsed_phone);
 
   PhoneNumber::PhoneCombineHelper number3;
   EXPECT_TRUE(number3.SetInfo(AutofillType(PHONE_HOME_CITY_CODE), u"650"));
   EXPECT_TRUE(number3.SetInfo(AutofillType(PHONE_HOME_NUMBER), u"2345680"));
-  EXPECT_TRUE(number3.ParseNumber(profile, "en-US", &parsed_phone));
+  EXPECT_TRUE(number3.ParseNumber(profile, kLocale, &parsed_phone));
   // National format as it does not have a country code.
   EXPECT_EQ(u"(650) 234-5680", parsed_phone);
 
@@ -261,20 +261,20 @@ TEST(PhoneNumberTest, PhoneCombineHelper) {
   EXPECT_TRUE(number4.SetInfo(AutofillType(PHONE_HOME_CITY_CODE),
                               u"123"));  // Incorrect city code.
   EXPECT_TRUE(number4.SetInfo(AutofillType(PHONE_HOME_NUMBER), u"2345680"));
-  EXPECT_TRUE(number4.ParseNumber(profile, "en-US", &parsed_phone));
+  EXPECT_TRUE(number4.ParseNumber(profile, kLocale, &parsed_phone));
   EXPECT_EQ(u"1232345680", parsed_phone);
 
   PhoneNumber::PhoneCombineHelper number5;
   EXPECT_TRUE(
       number5.SetInfo(AutofillType(PHONE_HOME_CITY_AND_NUMBER), u"6502345681"));
-  EXPECT_TRUE(number5.ParseNumber(profile, "en-US", &parsed_phone));
+  EXPECT_TRUE(number5.ParseNumber(profile, kLocale, &parsed_phone));
   EXPECT_EQ(u"(650) 234-5681", parsed_phone);
 
   PhoneNumber::PhoneCombineHelper number6;
   EXPECT_TRUE(number6.SetInfo(AutofillType(PHONE_HOME_CITY_CODE), u"650"));
   EXPECT_TRUE(number6.SetInfo(AutofillType(PHONE_HOME_NUMBER_PREFIX), u"234"));
   EXPECT_TRUE(number6.SetInfo(AutofillType(PHONE_HOME_NUMBER_SUFFIX), u"5682"));
-  EXPECT_TRUE(number6.ParseNumber(profile, "en-US", &parsed_phone));
+  EXPECT_TRUE(number6.ParseNumber(profile, kLocale, &parsed_phone));
   EXPECT_EQ(u"(650) 234-5682", parsed_phone);
 
   // Ensure parsing is possible when falling back to detecting the country code
@@ -283,7 +283,7 @@ TEST(PhoneNumberTest, PhoneCombineHelper) {
   EXPECT_TRUE(number7.SetInfo(AutofillType(PHONE_HOME_CITY_CODE), u"650"));
   EXPECT_TRUE(number7.SetInfo(AutofillType(PHONE_HOME_NUMBER_PREFIX), u"234"));
   EXPECT_TRUE(number7.SetInfo(AutofillType(PHONE_HOME_NUMBER_SUFFIX), u"5682"));
-  EXPECT_TRUE(number7.ParseNumber(AutofillProfile(), "en-US", &parsed_phone));
+  EXPECT_TRUE(number7.ParseNumber(AutofillProfile(), kLocale, &parsed_phone));
   EXPECT_EQ(u"(650) 234-5682", parsed_phone);
 }
 
@@ -456,15 +456,16 @@ TEST(PhoneNumberTest, CountryCodeInMatchingTypes) {
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
   std::u16string de_phone(u"+49 0151 6679586");
   PhoneNumber phone_number_de(&profile);
+  constexpr char kLocaleDE[] = "de_DE";
   phone_number_de.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), de_phone,
-                          "DE");
+                          kLocaleDE);
 
   test_cases = {"49", "+49", "(+49) DE", "(0049) DE", "0049"};
   for (size_t i = 0; i < test_cases.size(); i++) {
     SCOPED_TRACE(testing::Message() << "i(DE) = " << i);
 
     ServerFieldTypeSet matching_types;
-    phone_number_de.GetMatchingTypes(ASCIIToUTF16(test_cases[i]), "DE",
+    phone_number_de.GetMatchingTypes(ASCIIToUTF16(test_cases[i]), kLocaleDE,
                                      &matching_types);
 
     EXPECT_THAT(matching_types, testing::ElementsAre(PHONE_HOME_COUNTRY_CODE));
@@ -479,7 +480,7 @@ TEST(PhoneNumberTest, CountryCodeNotInMatchingTypes) {
   // Set phone number so country_code == 1, city_code = 650, number = 2345678.
   std::u16string phone(u"1 [650] 234-5678");
   PhoneNumber phone_number(&profile);
-  phone_number.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), phone, "US");
+  phone_number.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), phone, kLocale);
 
   std::vector<const char*> test_cases = {
       "01", "+16502", "11", "211", "0001", "++1", "+1abc2", "001abc2", "01"};
@@ -488,7 +489,7 @@ TEST(PhoneNumberTest, CountryCodeNotInMatchingTypes) {
     SCOPED_TRACE(testing::Message() << "i = " << i);
 
     ServerFieldTypeSet matching_types;
-    phone_number.GetMatchingTypes(ASCIIToUTF16(test_cases[i]), "US",
+    phone_number.GetMatchingTypes(ASCIIToUTF16(test_cases[i]), kLocale,
                                   &matching_types);
 
     EXPECT_THAT(matching_types, testing::IsEmpty());

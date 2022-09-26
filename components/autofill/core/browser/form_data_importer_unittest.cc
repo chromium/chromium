@@ -65,6 +65,8 @@ namespace autofill {
 
 namespace {
 
+constexpr char kLocale[] = "en_US";
+
 // Define values for the default address profile.
 constexpr char kDefaultFullName[] = "Thomas Neo Anderson";
 constexpr char kDefaultFirstName[] = "Thomas";
@@ -219,17 +221,26 @@ TypeValuePairs GetDefaultProfileTypeValuePairs() {
   };
 }
 
+// Sets the value of `type` in `pairs` to `value`. If the `value` is empty, the
+// `type` is removed entirely.
+void SetValueForType(TypeValuePairs& pairs,
+                     ServerFieldType type,
+                     const std::string& value) {
+  auto it = base::ranges::find(pairs, type,
+                               [](const auto& pair) { return pair.first; });
+  DCHECK(it != pairs.end());
+  if (value.empty())
+    pairs.erase(it);
+  else
+    it->second = value;
+}
+
 // Wraps `GetDefaultProfileTypeValuePairs()` but replaces `kDefaultCountry` with
 // `country`. If `country` is empty, ADDRESS_HOME_COUNTRY is removed entirely.
 TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
     const std::string& country) {
-  constexpr int kCountryIndex = 8;
   auto pairs = GetDefaultProfileTypeValuePairs();
-  DCHECK_EQ(pairs[kCountryIndex].first, ADDRESS_HOME_COUNTRY);
-  if (country.empty())
-    pairs.erase(pairs.begin() + kCountryIndex);
-  else
-    pairs[kCountryIndex].second = country;
+  SetValueForType(pairs, ADDRESS_HOME_COUNTRY, country);
   return pairs;
 }
 
@@ -465,7 +476,8 @@ class FormDataImporterTestBase {
     if (personal_data_manager_) {
       personal_data_manager_->Shutdown();
     }
-    personal_data_manager_ = std::make_unique<PersonalDataManager>("en", "US");
+    personal_data_manager_ =
+        std::make_unique<PersonalDataManager>(kLocale, "US");
     personal_data_manager_->set_auto_accept_address_imports_for_testing(true);
     personal_data_manager_->Init(
         scoped_refptr<AutofillWebDataService>(autofill_database_service_),
@@ -484,10 +496,10 @@ class FormDataImporterTestBase {
 
     // Reconstruct the `form_data_importer_` with the new
     // `personal_data_manager_`.
-    form_data_importer_ =
-        std::make_unique<FormDataImporter>(autofill_client_.get(),
-                                           /*payments::PaymentsClient=*/nullptr,
-                                           personal_data_manager_.get(), "en");
+    form_data_importer_ = std::make_unique<FormDataImporter>(
+        autofill_client_.get(),
+        /*payments::PaymentsClient=*/nullptr, personal_data_manager_.get(),
+        kLocale);
     auto virtual_card_enrollment_manager =
         std::make_unique<MockVirtualCardEnrollmentManager>(
             nullptr, nullptr, autofill_client_.get());
@@ -708,16 +720,10 @@ class FormDataImporterTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class FormDataImporterTest
-    : public FormDataImporterTestBase,
-      public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class FormDataImporterTest : public FormDataImporterTestBase,
+                             public testing::Test,
+                             public testing::WithParamInterface<bool> {
   using ImportFormDataResult = FormDataImporter::ImportFormDataResult;
-
- protected:
-  bool ConsiderVariationCountryCodeForPhoneNumbers() {
-    return consider_variation_country_code_for_phone_numbers_;
-  }
 
  private:
   void SetUp() override {
@@ -728,9 +734,7 @@ class FormDataImporterTest
   void TearDown() override { TearDownHelper(); }
 
   void InitializeFeatures() {
-    support_for_apartment_numbers_ = std::get<0>(GetParam());
-    consider_variation_country_code_for_phone_numbers_ =
-        std::get<1>(GetParam());
+    support_for_apartment_numbers_ = GetParam();
 
     // Enable all those features by default.
     std::vector<base::Feature> enabled_features;
@@ -739,16 +743,10 @@ class FormDataImporterTest
     (support_for_apartment_numbers_ ? enabled_features : disabled_features)
         .push_back(features::kAutofillEnableSupportForApartmentNumbers);
 
-    (consider_variation_country_code_for_phone_numbers_ ? enabled_features
-                                                        : disabled_features)
-        .push_back(
-            features::kAutofillConsiderVariationCountryCodeForPhoneNumbers);
-
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool support_for_apartment_numbers_;
-  bool consider_variation_country_code_for_phone_numbers_;
 };
 
 TEST_P(FormDataImporterTest, ComplementCountry) {
@@ -784,6 +782,65 @@ TEST_P(FormDataImporterTest, ComplementCountry) {
   ImportWithCountry("", {kDefaultGermanProfile});
 }
 
+// Tests that by complementing the country before setting the phone number,
+// the variation country code is preferred over the app locale while parsing
+// nationally formatted phone numbers.
+TEST_P(FormDataImporterTest, ComplementCountryEarly) {
+  // This is a nationally formatted German phone number, which libphonenumber
+  // doesn't parse under the "US" region.
+  const char* kNationalNumber = "01578 7912345";
+  const char* kHistogramName = "Autofill.ProfileImport.PhoneNumberParsed";
+
+  AutofillProfile expected_profile =
+      ConstructDefaultProfileWithOverriddenCountry("DE");
+  // In Germany, state information is not imported.
+  expected_profile.ClearFields({ADDRESS_HOME_STATE});
+
+  // Create an address form with `kNationalNumber` and without a country field.
+  TypeValuePairs type_value_pairs =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("");
+  SetValueForType(type_value_pairs, PHONE_HOME_WHOLE_NUMBER, kNationalNumber);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+
+  // The complement country feature prefers the variation country code, so the
+  // imported country will have country = "DE" assigned.
+  autofill_client_->SetVariationConfigCountryCode("DE");
+
+  {
+    base::test::ScopedFeatureList complement_country_early_feature;
+    complement_country_early_feature.InitAndDisableFeature(
+        features::kAutofillComplementCountryEarly);
+
+    // Without the feature, the phone number parsing logic defaults to the
+    // "en_US" locale. Thus, parsing fails and the phone number is removed.
+    base::HistogramTester histogram_tester;
+    expected_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
+    ImportAddressProfilesAndVerifyExpectation(*form_structure,
+                                              {expected_profile});
+    EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+                testing::UnorderedElementsAre(base::Bucket(false, 1)));
+  }
+
+  {
+    base::test::ScopedFeatureList complement_country_early_feature;
+    complement_country_early_feature.InitAndEnableFeature(
+        features::kAutofillComplementCountryEarly);
+
+    // With the feature enabled, the country complemention happens first. Thus,
+    // at the time the number is parsed, we correctly apply the German rules.
+    base::HistogramTester histogram_tester;
+    // The `expected_profile` can successfully parse the number, as the
+    // profile's country is "DE".
+    EXPECT_TRUE(expected_profile.SetInfo(
+        PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16(kNationalNumber), kLocale));
+    ImportAddressProfilesAndVerifyExpectation(*form_structure,
+                                              {expected_profile});
+    EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+                testing::UnorderedElementsAre(base::Bucket(true, 1)));
+  }
+}
+
 // Tests how invalid countries in submitted forms are treated depending on
 // `kAutofillIgnoreInvalidCountryOnImport`.
 TEST_P(FormDataImporterTest, InvalidCountry) {
@@ -812,10 +869,8 @@ TEST_P(FormDataImporterTest, InvalidCountry) {
 TEST_P(FormDataImporterTest, InvalidPhoneNumber) {
   TypeValuePairs profile_with_invalid_phone_number =
       GetDefaultProfileTypeValuePairs();
-  const int phone_number_index = 3;
-  ASSERT_EQ(profile_with_invalid_phone_number[phone_number_index].first,
-            PHONE_HOME_WHOLE_NUMBER);
-  profile_with_invalid_phone_number[phone_number_index].second = "invalid";
+  SetValueForType(profile_with_invalid_phone_number, PHONE_HOME_WHOLE_NUMBER,
+                  "invalid");
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(
           profile_with_invalid_phone_number);
@@ -837,66 +892,11 @@ TEST_P(FormDataImporterTest, InvalidPhoneNumber) {
     remove_invalid_phone_number_feature.InitAndEnableFeature(
         features::kAutofillRemoveInvalidPhoneNumberOnImport);
 
-    profile_with_invalid_phone_number.erase(
-        profile_with_invalid_phone_number.begin() + phone_number_index);
-    ImportAddressProfilesAndVerifyExpectation(
-        *form_structure, {ConstructProfileFromTypeValuePairs(
-                             profile_with_invalid_phone_number)});
+    auto profile_without_number = ConstructDefaultProfile();
+    profile_without_number.ClearFields({PHONE_HOME_WHOLE_NUMBER});
+    ImportAddressProfilesAndVerifyExpectation(*form_structure,
+                                              {profile_without_number});
   }
-}
-
-TEST_P(FormDataImporterTest, PhoneNumberRegionMetrics) {
-  // This test is only applicable if the feature is enabled.
-  if (!ConsiderVariationCountryCodeForPhoneNumbers())
-    return;
-
-  auto ImportWithPhoneNumber =
-      [this](const std::string& number,
-             AutofillMetrics::PhoneNumberImportParsingResult expected_result) {
-        // Remove existing profiles, to prevent an update instead of an import.
-        personal_data_manager_->ClearAllLocalData();
-
-        // In order to test the phone number region deduction via the variation
-        // country code and app local, the form cannot contain a country field.
-        // Passing an empty country archives that.
-        TypeValuePairs profile_with_invalid_phone_number =
-            GetDefaultProfileTypeValuePairsWithOverriddenCountry("");
-        ASSERT_EQ(profile_with_invalid_phone_number[3].first,
-                  PHONE_HOME_WHOLE_NUMBER);
-        profile_with_invalid_phone_number[3].second = number;
-        std::unique_ptr<FormStructure> form_structure =
-            ConstructFormStructureFromTypeValuePairs(
-                profile_with_invalid_phone_number);
-
-        // An invalid phone number is removed on import.
-        base::HistogramTester histogram_tester;
-        ImportAddressProfiles(/*extraction_successful=*/true, *form_structure);
-        EXPECT_THAT(
-            histogram_tester.GetAllSamples(
-                "Autofill.ProfileImport.PhoneNumberParsingResult"),
-            testing::UnorderedElementsAre(base::Bucket(expected_result, 1)));
-      };
-
-  // `form_data_importer_` is initialized with app locale set to "en".
-  autofill_client_->SetVariationConfigCountryCode("DE");
-
-  ImportWithPhoneNumber(
-      "invalid", AutofillMetrics::PhoneNumberImportParsingResult::CANNOT_PARSE);
-
-  // The German phone number validation is very lenient and accepts all US
-  // numbers we could find. Thus no test for
-  // AutofillMetrics::PhoneNumberImportParsingResult::PARSED_WITH_APP_LOCALE.
-
-  // A German phone number only parses with the German variation country code.
-  ImportWithPhoneNumber("01578 7912345",
-                        AutofillMetrics::PhoneNumberImportParsingResult::
-                            PARSED_WITH_VARIATION_COUNTRY_CODE);
-
-  // For phone numbers in international format the region is ignored. So this
-  // Austrian phone number parses as both.
-  ImportWithPhoneNumber(
-      "+43 650 3847567",
-      AutofillMetrics::PhoneNumberImportParsingResult::PARSED_WITH_BOTH);
 }
 
 // ImportAddressProfiles tests.
@@ -4441,13 +4441,8 @@ TEST_P(FormDataImporterTest, FormAssociator) {
 }
 
 // Runs the suite with the feature `kAutofillEnableSupportForApartmentNumbers`
-// and `kAutofillConsiderVariationCountryCodeForPhoneNumbers` enabled and
-// disabled.
-// TODO(crbug.com/1295721): Remove
-// `kAutofillConsiderVariationCountryCodeForPhoneNumbers` when launched.
-INSTANTIATE_TEST_SUITE_P(,
-                         FormDataImporterTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+// enabled and disabled.
+INSTANTIATE_TEST_SUITE_P(, FormDataImporterTest, testing::Bool());
 
 class FormDataImporterNonParameterizedTest : public FormDataImporterTestBase,
                                              public testing::Test {

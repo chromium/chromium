@@ -371,7 +371,7 @@ bool PhoneNumber::PhoneCombineHelper::SetInfo(const AutofillType& type,
 bool PhoneNumber::PhoneCombineHelper::ParseNumber(
     const AutofillProfile& profile,
     const std::string& app_locale,
-    std::u16string* value) {
+    std::u16string* value) const {
   if (IsEmpty())
     return false;
 

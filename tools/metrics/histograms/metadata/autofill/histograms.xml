@@ -2822,13 +2822,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ProfileImport.PhoneNumberParsingResult"
-    enum="PhoneNumberImportParsingResult" expires_after="2023-02-12">
+<histogram name="Autofill.ProfileImport.PhoneNumberParsed" enum="Boolean"
+    expires_after="2023-02-12">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
-    Logs if a phone number was parsed successfully by assuming the app locale
-    and/or the variation country code as its region. Emitted on profile import.
+    Logs if a phone number was parsed successfully on profile import. Only
+    emitted when a number is present in the submitted form.
   </summary>
 </histogram>
 
