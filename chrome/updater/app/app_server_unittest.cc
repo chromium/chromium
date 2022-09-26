@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service.h"
@@ -78,6 +79,8 @@ class AppServerTestCase : public testing::Test {
 
 }  // namespace
 
+// TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux
+#if !BUILDFLAG(IS_LINUX)
 TEST_F(AppServerTestCase, SelfUninstall) {
   {
     scoped_refptr<GlobalPrefs> global_prefs =
@@ -243,5 +246,6 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
   EXPECT_TRUE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
+#endif  // !BUILDFLAG(IS_LINUX)
 
 }  // namespace updater

@@ -400,6 +400,8 @@ class DMPolicyValidationReportClientTest : public DMClientTest {
   scoped_refptr<DMValidationReportRequestCallbackHandler> callback_handler_;
 };
 
+// TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux
+#if !BUILDFLAG(IS_LINUX)
 TEST_F(DMRegisterClientTest, Success) {
   callback_handler_ =
       base::MakeRefCounted<DMRegisterRequestCallbackHandler>(true);
@@ -809,5 +811,6 @@ TEST_F(DMPolicyValidationReportClientTest, NoPayload) {
   PostRequest(PolicyValidationResult());
   run_loop.Run();
 }
+#endif  // !BUILDFLAG(IS_LINUX)
 
 }  // namespace updater

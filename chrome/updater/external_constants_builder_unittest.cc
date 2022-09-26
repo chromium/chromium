@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/external_constants_builder.h"
@@ -56,6 +57,8 @@ void ExternalConstantsBuilderTests::TearDown() {
   DeleteOverridesFile();
 }
 
+// TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux
+#if !BUILDFLAG(IS_LINUX)
 TEST_F(ExternalConstantsBuilderTests, TestOverridingNothing) {
   EXPECT_TRUE(ExternalConstantsBuilder().Overwrite());
 
@@ -296,5 +299,6 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   EXPECT_EQ(verifier2->InitialDelay(), 123.4);
   EXPECT_EQ(verifier2->ServerKeepAliveSeconds(), 3);
 }
+#endif  // !BUILDFLAG(IS_LINUX)
 
 }  // namespace updater

@@ -50,6 +50,8 @@
 #include "chrome/updater/win/win_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+// TODO(noahrose): Enable tests once updater is implemented for Linux
+#if !BUILDFLAG(IS_LINUX)
 namespace updater {
 namespace test {
 namespace {
@@ -928,3 +930,4 @@ TEST_F(IntegrationTest, DISABLED_LegacySilentOfflineInstall) {
 
 }  // namespace test
 }  // namespace updater
+#endif  // !BUILDFLAG(IS_LINUX)
