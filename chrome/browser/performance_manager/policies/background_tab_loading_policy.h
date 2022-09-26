@@ -85,7 +85,8 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   // Holds a handful of data about a tab which is used to prioritize it during
   // session restore.
   struct PageNodeToLoadData {
-    explicit PageNodeToLoadData(PageNode* page_node);
+    explicit PageNodeToLoadData(PageNode* page_node,
+                                bool has_notification_permission);
     PageNodeToLoadData(const PageNodeToLoadData&) = delete;
     ~PageNodeToLoadData();
     PageNodeToLoadData& operator=(const PageNodeToLoadData&) = delete;
@@ -94,12 +95,15 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
     raw_ptr<const PageNode> page_node;
 
     // A higher value here means the tab has higher priority for restoring.
-    float score = 0.0f;
+    absl::optional<float> score;
 
-    // Indicates whether or not the tab communicates with the user even when it
-    // is in the background (tab title changes, favicons, etc).
-    // It is initialized to nullopt and set asynchronously to the proper value.
-    absl::optional<bool> used_in_bg;
+    // Whether the tab has the notification permission.
+    const bool has_notification_permission;
+
+    // Whether the tab updates its title or favicon when backgrounded.
+    // Initialized to nullopt and set asynchronously with the proper value from
+    // the sites database.
+    absl::optional<bool> updates_title_or_favicon_in_bg;
   };
 
   // Comparator used to sort PageNodeToLoadData.

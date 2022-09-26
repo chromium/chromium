@@ -222,11 +222,9 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
       continue;
 
     // Put the page in the queue for loading.
-    page_nodes_to_load_.push_back(
-        std::make_unique<PageNodeToLoadData>(page_node));
-
-    if (page_node_and_permission.has_notification_permission)
-      page_nodes_to_load_.back()->used_in_bg = true;
+    page_nodes_to_load_.push_back(std::make_unique<PageNodeToLoadData>(
+        page_node, /* has_notification_permission=*/page_node_and_permission
+                       .has_notification_permission));
   }
 
   for (auto& page_node_to_load_data : page_nodes_to_load_) {
@@ -258,13 +256,18 @@ BackgroundTabLoadingPolicy* BackgroundTabLoadingPolicy::GetInstance() {
 }
 
 BackgroundTabLoadingPolicy::PageNodeToLoadData::PageNodeToLoadData(
-    PageNode* page_node)
-    : page_node(page_node) {}
+    PageNode* page_node,
+    bool has_notification_permission)
+    : page_node(page_node),
+      has_notification_permission(has_notification_permission) {}
+
 BackgroundTabLoadingPolicy::PageNodeToLoadData::~PageNodeToLoadData() = default;
 
 struct BackgroundTabLoadingPolicy::ScoredTabComparator {
   bool operator()(const std::unique_ptr<PageNodeToLoadData>& tab0,
                   const std::unique_ptr<PageNodeToLoadData>& tab1) {
+    DCHECK(tab0->score.has_value());
+    DCHECK(tab1->score.has_value());
     // Greater scores sort first.
     return tab0->score > tab1->score;
   }
@@ -336,18 +339,12 @@ void BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable(
 
   // A tab can't play audio until it has been visible at least once so
   // UsesAudioInBackground() is ignored.
-  if (!page_node_to_load_data->used_in_bg && reader) {
-    page_node_to_load_data->used_in_bg =
-        (reader->UpdatesFaviconInBackground() !=
-             SiteFeatureUsage::kSiteFeatureNotInUse ||
-         reader->UpdatesTitleInBackground() !=
-             SiteFeatureUsage::kSiteFeatureNotInUse);
-  }
+  page_node_to_load_data->updates_title_or_favicon_in_bg =
+      reader && (reader->UpdatesFaviconInBackground() !=
+                     SiteFeatureUsage::kSiteFeatureNotInUse ||
+                 reader->UpdatesTitleInBackground() !=
+                     SiteFeatureUsage::kSiteFeatureNotInUse);
 
-  // TODO(crbug.com/1071100): Set `used_in_bg` if the tab has the notification
-  // permission.
-
-  ++tabs_scored_;
   ScoreTab(page_node_to_load_data);
   DispatchNotifyAllTabsScoredIfNeeded();
 }
@@ -382,13 +379,14 @@ SiteDataReader* BackgroundTabLoadingPolicy::GetSiteDataReader(
 
 void BackgroundTabLoadingPolicy::ScoreTab(
     PageNodeToLoadData* page_node_to_load_data) {
-  DCHECK_EQ(page_node_to_load_data->score, 0.0f);
+  DCHECK(!page_node_to_load_data->score.has_value());
   float score = 0.0f;
 
   // Give higher priorities to tabs used in the background, and lowest
   // priority to internal tabs. Apps and pinned tabs are simply treated as
   // normal tabs.
-  if (page_node_to_load_data->used_in_bg == true) {
+  if (page_node_to_load_data->has_notification_permission ||
+      page_node_to_load_data->updates_title_or_favicon_in_bg.value()) {
     score = 2;
   } else if (!page_node_to_load_data->page_node->GetMainFrameUrl().SchemeIs(
                  content::kChromeUIScheme)) {
@@ -401,6 +399,7 @@ void BackgroundTabLoadingPolicy::ScoreTab(
       page_node_to_load_data->page_node->GetTimeSinceLastVisibilityChange()
           .InSecondsF());
 
+  ++tabs_scored_;
   page_node_to_load_data->score = score;
 }
 
@@ -466,6 +465,10 @@ void BackgroundTabLoadingPolicy::MaybeLoadSomeTabs() {
 }
 
 size_t BackgroundTabLoadingPolicy::GetMaxNewTabLoads() const {
+  // Can't load tabs until all tabs have been scored.
+  if (tabs_scored_ < page_nodes_to_load_.size())
+    return 0U;
+
   // This takes into account all tabs currently loading across the browser,
   // including ones that BackgroundTabLoadingPolicy isn't explicitly managing.
   // This ensures that BackgroundTabLoadingPolicy respects user interaction
@@ -488,6 +491,7 @@ size_t BackgroundTabLoadingPolicy::GetMaxNewTabLoads() const {
 
 void BackgroundTabLoadingPolicy::LoadNextTab() {
   DCHECK(!page_nodes_to_load_.empty());
+  DCHECK_EQ(tabs_scored_, page_nodes_to_load_.size());
 
   // Find the next PageNode to load.
   while (!page_nodes_to_load_.empty()) {
@@ -514,9 +518,10 @@ void BackgroundTabLoadingPolicy::ErasePageNodeToLoadData(
     const PageNode* page_node) {
   for (auto& page_node_to_load_data : page_nodes_to_load_) {
     if (page_node_to_load_data->page_node == page_node) {
-      if (page_node_to_load_data->used_in_bg.has_value()) {
+      if (page_node_to_load_data->score.has_value()) {
         // If the PageNode has already been scored, remove it from the
         // |tabs_scored_| count.
+        DCHECK_GT(tabs_scored_, 0U);
         --tabs_scored_;
         base::Erase(page_nodes_to_load_, page_node_to_load_data);
       } else {

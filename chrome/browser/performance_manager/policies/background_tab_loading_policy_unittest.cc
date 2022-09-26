@@ -355,6 +355,56 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_OldTab) {
   EXPECT_FALSE(policy()->ShouldLoad(raw_page_node));
 }
 
+// Regression test for https://crrev.com/c/3909768: Deleting a PageNode with the
+// notification permission before it starts loading but before it is scored
+// should not decrement the number of tabs scored.
+TEST_F(BackgroundTabLoadingPolicyTest, RemoveTabWithNotificationPermission) {
+  MockSiteDataReader site_data_reader_default(
+      /* updates_favicon_in_background=*/false,
+      /* updates_title_in_background=*/false,
+      /* uses_audio_in_background=*/false);
+  std::vector<PageNodeAndNotificationPermission> to_load;
+
+  // Tab without notification permission.
+  auto page_node_without_notification_permission =
+      CreateNode<performance_manager::PageNodeImpl>(
+          WebContentsProxy(), std::string(), GURL(), false, false,
+          base::TimeTicks::Now() - base::Days(1));
+  policy()->SetSiteDataReaderForPageNode(
+      page_node_without_notification_permission.get(),
+      &site_data_reader_default);
+  page_node_without_notification_permission->SetType(PageType::kTab);
+  to_load.emplace_back(
+      page_node_without_notification_permission.get()->GetWeakPtr(),
+      /* has_notification_permission=*/false);
+
+  // Tab with notification permission.
+  auto page_node_with_notification_permission =
+      CreateNode<performance_manager::PageNodeImpl>(
+          WebContentsProxy(), std::string(), GURL(), false, false,
+          base::TimeTicks::Now() - base::Days(1));
+  policy()->SetSiteDataReaderForPageNode(
+      page_node_with_notification_permission.get(), &site_data_reader_default);
+  page_node_with_notification_permission->SetType(PageType::kTab);
+  to_load.emplace_back(
+      page_node_with_notification_permission.get()->GetWeakPtr(),
+      /* has_notification_permission=*/true);
+
+  // Schedule load for restored tabs.
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+
+  // Delete the tab with the notification permission.
+  page_node_with_notification_permission.reset();
+
+  // The tab without the notification permission should be loaded by the policy
+  // (before https://crrev.com/c/3909768, the number of tabs scored would
+  // overflow and DCHECKs would fail).
+  EXPECT_CALL(*loader(),
+              LoadPageNode(page_node_without_notification_permission.get()));
+  task_env().RunUntilIdle();
+  testing::Mock::VerifyAndClear(loader());
+}
+
 TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
   // Use 1 loading slot so only one PageNode loads at a time.
   policy()->SetMaxSimultaneousLoadsForTesting(1);
