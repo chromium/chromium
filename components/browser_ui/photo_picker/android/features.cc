@@ -22,11 +22,13 @@ const base::Feature* kFeaturesExposedToJava[] = {
 
 }  // namespace
 
-const base::Feature kAndroidMediaPickerSupport{
-    "AndroidMediaPickerSupport", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAndroidMediaPickerSupport,
+             "AndroidMediaPickerSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPhotoPickerVideoSupport{"PhotoPickerVideoSupport",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPhotoPickerVideoSupport,
+             "PhotoPickerVideoSupport",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 static jlong JNI_PhotoPickerFeatures_GetFeature(JNIEnv* env, jint ordinal) {
   return reinterpret_cast<jlong>(kFeaturesExposedToJava[ordinal]);
