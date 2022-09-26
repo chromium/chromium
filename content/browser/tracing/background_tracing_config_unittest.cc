@@ -134,19 +134,6 @@ TEST_F(BackgroundTracingConfigTest, PreemptiveConfigFromInvalidString) {
       "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\", "
       "\"histogram_name\":\"foo\", \"histogram_lower_value\": 1,"
       "\"histogram_upper_value\": 1}]}"));
-  // `units` must be an int from the HistogramRule::Units enum.
-  EXPECT_FALSE(ReadFromJSONString(
-      "{\"mode\":\"preemptive\", \"category\": \"benchmark\","
-      "\"configs\": [{\"rule\": "
-      "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\", "
-      "\"histogram_name\":\"foo\", \"histogram_lower_value\": 1,"
-      "\"histogram_upper_value\": 2, \"histogram_units\": \"bar\"}]}"));
-  EXPECT_FALSE(ReadFromJSONString(
-      "{\"mode\":\"preemptive\", \"category\": \"benchmark\","
-      "\"configs\": [{\"rule\": "
-      "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\", "
-      "\"histogram_name\":\"foo\", \"histogram_lower_value\": 1,"
-      "\"histogram_upper_value\": 2, \"histogram_units\": 100}]}"));
 }
 
 TEST_F(BackgroundTracingConfigTest, ReactiveConfigFromInvalidString) {
@@ -288,8 +275,7 @@ TEST_F(BackgroundTracingConfigTest, PreemptiveConfigFromValidString) {
       "{\"mode\":\"PREEMPTIVE_TRACING_MODE\", \"category\": "
       "\"BENCHMARK_STARTUP\",\"configs\": [{\"rule\": "
       "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\", "
-      "\"histogram_name\":\"foo\", \"histogram_value\": 1, "
-      "\"histogram_units\": 0}]}");
+      "\"histogram_name\":\"foo\", \"histogram_value\": 1}]}");
   EXPECT_TRUE(config);
   EXPECT_EQ(config->tracing_mode(), BackgroundTracingConfig::PREEMPTIVE);
   EXPECT_EQ(config->category_preset(),
@@ -298,23 +284,6 @@ TEST_F(BackgroundTracingConfigTest, PreemptiveConfigFromValidString) {
   EXPECT_EQ(RuleToString(config->rules()[0]),
             "{\"histogram_lower_value\":1,\"histogram_name\":\"foo\","
             "\"histogram_repeat\":true,\"histogram_upper_value\":2147483647,"
-            "\"rule\":\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\"}");
-
-  config = ReadFromJSONString(
-      "{\"mode\":\"PREEMPTIVE_TRACING_MODE\", \"category\": "
-      "\"BENCHMARK_STARTUP\",\"configs\": [{\"rule\": "
-      "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\", "
-      "\"histogram_name\":\"foo\", \"histogram_value\": 1, "
-      "\"histogram_units\": 1}]}");
-  EXPECT_TRUE(config);
-  EXPECT_EQ(config->tracing_mode(), BackgroundTracingConfig::PREEMPTIVE);
-  EXPECT_EQ(config->category_preset(),
-            BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
-  EXPECT_EQ(config->rules().size(), 1u);
-  EXPECT_EQ(RuleToString(config->rules()[0]),
-            "{\"histogram_lower_value\":1,\"histogram_name\":\"foo\","
-            "\"histogram_repeat\":true,\"histogram_units\":1,"
-            "\"histogram_upper_value\":2147483647,"
             "\"rule\":\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\"}");
 
   config = ReadFromJSONString(
@@ -580,50 +549,6 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
         "\"histogram_upper_value\":2,\"rule\":\"MONITOR_AND_DUMP_WHEN_"
         "SPECIFIC_HISTOGRAM_AND_VALUE\",\"trigger_delay\":10}],\"mode\":"
         "\"PREEMPTIVE_TRACING_MODE\"}");
-  }
-
-  {
-    config = std::make_unique<BackgroundTracingConfigImpl>(
-        BackgroundTracingConfig::PREEMPTIVE);
-
-    base::Value::Dict second_dict;
-    second_dict.Set("rule",
-                    "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
-    second_dict.Set("histogram_name", "foo");
-    second_dict.Set("histogram_lower_value", 1);
-    second_dict.Set("histogram_upper_value", 2);
-    second_dict.Set("trigger_delay", 10);
-    config->AddPreemptiveRule(second_dict);
-
-    EXPECT_EQ(
-        ConfigToString(config.get()),
-        "{\"category\":\"BENCHMARK_STARTUP\",\"configs\":[{\"histogram_lower_"
-        "value\":1,\"histogram_name\":\"foo\",\"histogram_repeat\":true,"
-        "\"histogram_upper_value\":2,\"rule\":\"MONITOR_AND_DUMP_WHEN_"
-        "SPECIFIC_HISTOGRAM_AND_VALUE\",\"trigger_delay\":10}],\"mode\":"
-        "\"PREEMPTIVE_TRACING_MODE\"}");
-  }
-
-  {
-    config = std::make_unique<BackgroundTracingConfigImpl>(
-        BackgroundTracingConfig::PREEMPTIVE);
-
-    base::Value::Dict second_dict;
-    second_dict.Set("rule",
-                    "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
-    second_dict.Set("histogram_name", "foo");
-    second_dict.Set("histogram_lower_value", 1);
-    second_dict.Set("histogram_upper_value", 2);
-    second_dict.Set("histogram_units", 1);
-    config->AddPreemptiveRule(second_dict);
-
-    EXPECT_EQ(
-        ConfigToString(config.get()),
-        "{\"category\":\"BENCHMARK_STARTUP\",\"configs\":[{\"histogram_lower_"
-        "value\":1,\"histogram_name\":\"foo\",\"histogram_repeat\":true,"
-        "\"histogram_units\":1,\"histogram_upper_value\":2,"
-        "\"rule\":\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\"}],"
-        "\"mode\":\"PREEMPTIVE_TRACING_MODE\"}");
   }
 }
 
