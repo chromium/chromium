@@ -27,6 +27,8 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -555,6 +557,15 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         // Should be set at start of sign-out flow.
         assert mSignOutState != null;
 
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
+            // After sign-out, reset the Sync promo show count, so the user will see Sync promos
+            // again.
+            SharedPreferencesManager.getInstance().writeInt(
+                    ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                            SigninPreferencesManager.SyncPromoAccessPointId.NTP),
+                    0);
+        }
         SignOutCallback signOutCallback = mSignOutState.mSignOutCallback;
         mSignOutState = null;
 

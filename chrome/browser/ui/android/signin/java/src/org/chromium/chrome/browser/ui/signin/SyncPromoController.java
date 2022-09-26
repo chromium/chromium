@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
@@ -87,17 +88,6 @@ public class SyncPromoController {
     private static final int NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE = 30;
     private static final String SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS =
             "SyncAndroidNTPPromoMaxImpressions";
-
-    /** Suffix strings for promo shown count preference and histograms. */
-    @StringDef({AccessPointId.BOOKMARKS, AccessPointId.NTP, AccessPointId.RECENT_TABS,
-            AccessPointId.SETTINGS})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface AccessPointId {
-        String BOOKMARKS = "Bookmarks";
-        String NTP = "Ntp";
-        String RECENT_TABS = "RecentTabs"; // Only used for histograms
-        String SETTINGS = "Settings";
-    }
 
     /** Strings used for promo shown count histograms. */
     @StringDef({UserAction.CONTINUED, UserAction.DISMISSED, UserAction.SHOWN})
@@ -259,13 +249,15 @@ public class SyncPromoController {
         switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                        AccessPointId.BOOKMARKS);
+                        SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS);
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
                 // This preference may get reset while the other ones are never reset unless device
                 // data is wiped.
-                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(AccessPointId.NTP);
+                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                        SigninPreferencesManager.SyncPromoAccessPointId.NTP);
             case SigninAccessPoint.SETTINGS:
-                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(AccessPointId.SETTINGS);
+                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                        SigninPreferencesManager.SyncPromoAccessPointId.SETTINGS);
             default:
                 throw new IllegalArgumentException(
                         "Unexpected value for access point: " + accessPoint);
@@ -553,16 +545,16 @@ public class SyncPromoController {
         final String accessPoint;
         switch (mAccessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
-                accessPoint = AccessPointId.BOOKMARKS;
+                accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS;
                 break;
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
-                accessPoint = AccessPointId.NTP;
+                accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.NTP;
                 break;
             case SigninAccessPoint.RECENT_TABS:
-                accessPoint = AccessPointId.RECENT_TABS;
+                accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.RECENT_TABS;
                 break;
             case SigninAccessPoint.SETTINGS:
-                accessPoint = AccessPointId.SETTINGS;
+                accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.SETTINGS;
                 break;
             default:
                 throw new IllegalArgumentException(
