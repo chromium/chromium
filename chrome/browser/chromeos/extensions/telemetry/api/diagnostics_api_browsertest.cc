@@ -240,11 +240,19 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         );
         chrome.test.succeed();
       },
+      async function runDnsResolverPresentRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runDnsResolverPresentRoutine(),
+            'Error: API chrome.os.diagnostics.runDnsResolverPresentRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
       async function runGatewayCanBePingedRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runGatewayCanBePingedRoutine(),
             'Error: API chrome.os.diagnostics.runGatewayCanBePingedRoutine ' +
-            'failed. Not supported by ash browser'
+                'failed. Not supported by ash browser'
         );
         chrome.test.succeed();
       },
@@ -341,6 +349,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineEnum::kCpuStress,
         crosapi::mojom::DiagnosticsRoutineEnum::kDiskRead,
         crosapi::mojom::DiagnosticsRoutineEnum::kDnsResolution,
+        crosapi::mojom::DiagnosticsRoutineEnum::kDnsResolverPresent,
         crosapi::mojom::DiagnosticsRoutineEnum::kLanConnectivity,
         crosapi::mojom::DiagnosticsRoutineEnum::kMemory,
         crosapi::mojom::DiagnosticsRoutineEnum::kNvmeWearLevel,
@@ -371,6 +380,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "cpu_stress",
               "disk_read",
               "dns_resolution",
+              "dns_resolver_present",
               "lan_connectivity",
               "memory",
               "nvme_wear_level",
@@ -1052,6 +1062,46 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       async function runDnsResolutionRoutine() {
         const response =
           await chrome.os.diagnostics.runDnsResolutionRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunDnsResolverPresentRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response =
+        crosapi::mojom::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status =
+        crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunDiskReadRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::mojom::DiagnosticsRoutineEnum::kDnsResolverPresent);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runDiskReadRoutine() {
+        const response =
+          await chrome.os.diagnostics.runDnsResolverPresentRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }

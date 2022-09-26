@@ -25,6 +25,7 @@ namespace os.diagnostics {
     smartctl_check,
     lan_connectivity,
     signal_strength,
+    dns_resolver_present,
     gateway_can_be_pinged
   };
 
@@ -178,5 +179,8 @@ namespace os.diagnostics {
     [supportsPromises] static void runSignalStrengthRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runSmartctlCheckRoutine(RunRoutineCallback callback);
+
+    // Starts DnsResolverPresent routine.
+    [supportsPromises] static void runDnsResolverPresentRoutine(RunRoutineCallback callback);
   };
 };

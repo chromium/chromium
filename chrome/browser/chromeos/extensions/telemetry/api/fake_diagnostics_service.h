@@ -60,6 +60,8 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
       uint32_t length_seconds,
       uint32_t file_size_mb,
       RunDiskReadRoutineCallback callback) override;
+  void RunDnsResolverPresentRoutine(
+      RunDnsResolverPresentRoutineCallback callback) override;
   void RunPrimeSearchRoutine(uint32_t length_seconds,
                              RunPrimeSearchRoutineCallback callback) override;
   void RunBatteryDischargeRoutine(

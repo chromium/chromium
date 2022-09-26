@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-shared.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -103,6 +104,8 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kLanConnectivity;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolution:
       return crosapi::mojom::DiagnosticsRoutineEnum::kDnsResolution;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolverPresent:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kDnsResolverPresent;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kSignalStrength:
       return crosapi::mojom::DiagnosticsRoutineEnum::kSignalStrength;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kGatewayCanBePinged:

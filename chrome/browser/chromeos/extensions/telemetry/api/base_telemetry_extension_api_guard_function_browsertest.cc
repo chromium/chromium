@@ -271,6 +271,15 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runDnsResolverPresentRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runDnsResolverPresentRoutine(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runDnsResolverPresentRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runGatewayCanBePingedRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runGatewayCanBePingedRoutine(),

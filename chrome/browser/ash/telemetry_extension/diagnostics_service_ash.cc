@@ -243,6 +243,18 @@ void DiagnosticsServiceAsh::RunDiskReadRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsServiceAsh::RunDnsResolverPresentRoutine(
+    RunDnsResolverPresentRoutineCallback callback) {
+  GetService()->RunDnsResolverPresentRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::
+             RunDnsResolverPresentRoutineCallback callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 void DiagnosticsServiceAsh::RunPrimeSearchRoutine(
     uint32_t length_seconds,
     RunPrimeSearchRoutineCallback callback) {

@@ -95,6 +95,11 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_DNS_RESOLUTION);
   }
   {
+    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kDnsResolverPresent, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_DNS_RESOLVER_PRESENT);
+  }
+  {
     RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kMemory, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_MEMORY);
