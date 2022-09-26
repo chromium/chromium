@@ -276,3 +276,27 @@ TEST_F(PasswordChangeRunViewTest, ShowErrorScreen) {
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ERROR_SCREEN_DESCRIPTION));
 }
+
+TEST_F(PasswordChangeRunViewTest, SetTitle) {
+  view()->SetTitle(kTitle);
+
+  views::View* title_container = GetTitleContainer();
+  ASSERT_TRUE(title_container);
+  ASSERT_THAT(title_container->children(), SizeIs(1u));
+  EXPECT_EQ(static_cast<views::Label*>(title_container->children().front())
+                ->GetText(),
+            kTitle);
+}
+
+TEST_F(PasswordChangeRunViewTest, SetDescription) {
+  view()->SetDescription(kDescription);
+
+  views::View* body = GetBody();
+  ASSERT_TRUE(body);
+  ASSERT_THAT(body->children(), SizeIs(2u));
+  EXPECT_EQ(static_cast<views::Label*>(body->children()[1])->GetText(),
+            kDescription);
+
+  view()->SetDescription(std::u16string());
+  ASSERT_THAT(body->children(), IsEmpty());
+}

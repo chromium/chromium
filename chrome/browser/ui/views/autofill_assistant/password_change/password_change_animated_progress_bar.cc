@@ -30,7 +30,7 @@ void PasswordChangeAnimatedProgressBar::AnimationProgressed(
 }
 
 void PasswordChangeAnimatedProgressBar::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  views::ProgressBar::OnThemeChanged();
   SetBackgroundColor(GetColorProvider()->GetColor(ui::kColorIconDisabled));
 }
 
