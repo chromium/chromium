@@ -568,6 +568,9 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
   std::string ToString() const override;
   std::unique_ptr<Event> Clone() const override;
 
+  // Resets the last_click_event_ for unit tests.
+  static void ResetLastClickForTest();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(EventTest, DoubleClickRequiresUniqueTimestamp);
   FRIEND_TEST_ALL_PREFIXES(EventTest, SingleClickRightLeft);
@@ -575,9 +578,6 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
   // Returns the repeat count based on the previous mouse click, if it is
   // recent enough and within a small enough distance.
   static int GetRepeatCount(const MouseEvent& click_event);
-
-  // Resets the last_click_event_ for unit tests.
-  static void ResetLastClickForTest();
 
   // See description above getter for details.
   int changed_button_flags_;

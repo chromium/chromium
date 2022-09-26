@@ -55,6 +55,8 @@ class PointerEventsHandlerTest : public ::testing::Test {
         mouse_source_bindings_.AddBinding(mouse_source_.get()));
   }
 
+  ~PointerEventsHandlerTest() override { MouseEvent::ResetLastClickForTest(); }
+
   void RunLoopUntilIdle() { task_environment_.RunUntilIdle(); }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
