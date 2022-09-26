@@ -54,12 +54,8 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
   // invoked for references where IsRoot() returned false during young
   // generation garbage collections.
   void ResetRoot(const v8::TracedReference<v8::Value>& handle) final {
-    const uint16_t class_id = handle.WrapperClassId();
-    // Only consider handles that have not been treated as roots, see IsRoot().
-    if (class_id != WrapperTypeInfo::kNodeClassId &&
-        class_id != WrapperTypeInfo::kObjectClassId)
-      return;
-
+    DCHECK(handle.WrapperClassId() == WrapperTypeInfo::kNodeClassId ||
+           handle.WrapperClassId() == WrapperTypeInfo::kObjectClassId);
     // Clearing the wrapper below adjusts the DOM wrapper store which may
     // re-allocate its backing. NoGarbageCollectionScope is required to avoid
     // triggering a GC from such re-allocating calls as ResetRoot() is itself
