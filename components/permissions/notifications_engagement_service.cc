@@ -81,7 +81,7 @@ void NotificationsEngagementService::IncrementCounts(const GURL& url,
 
   base::Value::Dict engagement;
   if (engagement_as_value.is_dict())
-    engagement = std::move(engagement_as_value.GetDict());
+    engagement = std::move(engagement_as_value).TakeDict();
 
   std::string date = GetBucketLabelForLastMonday(base::Time::Now());
   if (date == std::string())
