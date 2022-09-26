@@ -18,8 +18,9 @@ using content::BrowserThread;
 
 namespace cast_channel {
 
-const base::Feature kLibcastSocketService{"LibcastSocketService",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLibcastSocketService,
+             "LibcastSocketService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
 CastSocketService* CastSocketService::GetInstance() {
