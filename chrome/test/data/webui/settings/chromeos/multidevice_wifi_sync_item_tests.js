@@ -11,71 +11,13 @@ import {assertFalse, assertTrue} from '../../chai_assert.js';
 
 import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.js';
 
-// Prefs used by settings-multidevice-wifi-sync-item if
-// SyncSettingsCategorization is disabled.
-function getPrefs() {
-  return {
-    wifiConfigurationsRegistered: true,
-    wifiConfigurationsSynced: true,
-  };
-}
-
-// Prefs used by settings-multidevice-wifi-sync-item if
-// SyncSettingsCategorization is enabled.
+// Prefs used by settings-multidevice-wifi-sync-item.
 function getOsPrefs() {
   return {
     osWifiConfigurationsRegistered: true,
     osWifiConfigurationsSynced: true,
   };
 }
-
-suite('Multidevice_WifiSyncItem_CategorizationDisabled', function() {
-  let wifiSyncItem;
-
-  setup(function() {
-    const browserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.setInstance(browserProxy);
-
-    PolymerTest.clearBody();
-    loadTimeData.overrideValues({
-      syncSettingsCategorizationEnabled: false,
-    });
-
-    wifiSyncItem =
-        document.createElement('settings-multidevice-wifi-sync-item');
-    document.body.appendChild(wifiSyncItem);
-    flush();
-  });
-
-  teardown(function() {
-    wifiSyncItem.remove();
-  });
-
-  test('Chrome Sync off', async () => {
-    const prefs = getPrefs();
-    prefs.wifiConfigurationsSynced = false;
-    webUIListenerCallback('sync-prefs-changed', prefs);
-    flush();
-
-    assertTrue(!!wifiSyncItem.shadowRoot.querySelector(
-        'settings-multidevice-wifi-sync-disabled-link'));
-
-    const toggle = wifiSyncItem.shadowRoot.querySelector('cr-toggle');
-    assertTrue(!!toggle);
-    assertTrue(toggle.disabled);
-    assertFalse(toggle.checked);
-  });
-
-  test('Chrome Sync on', async () => {
-    const prefs = getPrefs();
-    prefs.wifiConfigurationsSynced = true;
-    webUIListenerCallback('sync-prefs-changed', prefs);
-    flush();
-
-    assertFalse(!!wifiSyncItem.shadowRoot.querySelector(
-        'settings-multidevice-wifi-sync-disabled-link'));
-  });
-});
 
 class TestOsSyncBrowserProxy extends TestBrowserProxy {
   constructor() {
@@ -98,9 +40,6 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
     OsSyncBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
-    loadTimeData.overrideValues({
-      syncSettingsCategorizationEnabled: true,
-    });
 
     wifiSyncItem =
         document.createElement('settings-multidevice-wifi-sync-item');

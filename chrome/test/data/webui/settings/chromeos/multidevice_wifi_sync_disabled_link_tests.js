@@ -47,11 +47,6 @@ suite('Multidevice', function() {
     chromeSyncLink.click();
     flush();
 
-    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      assertEquals(Router.getInstance().getCurrentRoute(), routes.OS_SYNC);
-    } else {
-      assertEquals(
-          Router.getInstance().getCurrentRoute(), routes.SYNC_ADVANCED);
-    }
+    assertEquals(Router.getInstance().getCurrentRoute(), routes.OS_SYNC);
   });
 });
