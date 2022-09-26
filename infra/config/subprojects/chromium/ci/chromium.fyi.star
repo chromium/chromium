@@ -2331,6 +2331,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "win32|arm64",
     ),
+    cores = "8|16",
     cpu = cpu.X86,
     os = os.WINDOWS_DEFAULT,
     goma_backend = None,
