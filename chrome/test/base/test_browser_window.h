@@ -87,7 +87,7 @@ class TestBrowserWindow : public BrowserWindow {
   void BookmarkBarStateChanged(
       BookmarkBar::AnimateChangeType change_type) override {}
   void UpdateDevTools() override {}
-  void UpdateLoadingAnimations(bool should_animate) override {}
+  void UpdateLoadingAnimations(bool is_visible) override {}
   void SetStarredState(bool is_starred) override {}
   void SetTranslateIconToggled(bool is_lit) override {}
   void OnActiveTabChanged(content::WebContents* old_contents,

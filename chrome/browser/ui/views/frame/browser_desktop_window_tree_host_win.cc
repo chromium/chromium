@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/process/process_handle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_window_property_manager_win.h"
@@ -284,6 +286,16 @@ void BrowserDesktopWindowTreeHostWin::Show(ui::WindowShowState show_state,
       OnHostWorkspaceChanged();
   }
   DesktopWindowTreeHostWin::Show(show_state, restore_bounds);
+}
+
+void BrowserDesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(
+    bool restored) {
+  // This is necessary since OnWidgetVisibilityChanged() doesn't get called on
+  // Windows when the window is minimized or restored.
+  if (base::FeatureList::IsEnabled(
+          features::kStopLoadingAnimationForHiddenWindow)) {
+    browser_view_->UpdateLoadingAnimations(restored);
+  }
 }
 
 std::string BrowserDesktopWindowTreeHostWin::GetWorkspace() const {

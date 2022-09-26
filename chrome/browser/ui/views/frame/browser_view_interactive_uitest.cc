@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
@@ -17,6 +18,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/test/ax_event_counter.h"
 
@@ -290,3 +292,71 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, WindowActivatedAccessibleEvent) {
   ASSERT_EQ(2, ax_observer_.GetCount(ax::mojom::Event::kWindowActivated));
 }
 #endif
+
+// Class for BrowserView unit tests for the loading animation feature.
+// Creates a Browser with a |features_list| where
+// kStopLoadingAnimationForHiddenWindow is enabled before setting GPU thread.
+class BrowserViewTestWithStopLoadingAnimationForHiddenWindow
+    : public BrowserViewTest {
+ public:
+  BrowserViewTestWithStopLoadingAnimationForHiddenWindow() {
+    feature_list_.InitAndEnableFeature(
+        features::kStopLoadingAnimationForHiddenWindow);
+  }
+
+  BrowserViewTestWithStopLoadingAnimationForHiddenWindow(
+      const BrowserViewTestWithStopLoadingAnimationForHiddenWindow&) = delete;
+  BrowserViewTestWithStopLoadingAnimationForHiddenWindow& operator=(
+      const BrowserViewTestWithStopLoadingAnimationForHiddenWindow&) = delete;
+
+ protected:
+  BrowserView* browser_view() {
+    return BrowserView::GetBrowserViewForBrowser(browser());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
+                       LoadingAnimationChangeOnMinimizeAndRestore) {
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver navigation_watcher(
+      contents, 1, content::MessageLoopRunner::QuitMode::DEFERRED);
+
+  // Navigate without blocking.
+  const GURL test_url = ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title2.html")));
+  contents->GetController().LoadURL(test_url, content::Referrer(),
+                                    ui::PAGE_TRANSITION_LINK, std::string());
+  {
+    base::RunLoop run_loop;
+    browser_view()->SetLoadingAnimationStateChangeClosureForTesting(
+        run_loop.QuitClosure());
+
+    // Loading animation is not rendered when browser view is minimized.
+    browser_view()->Minimize();
+    run_loop.Run();
+  }
+
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
+  EXPECT_FALSE(browser_view()->IsLoadingAnimationRunningForTesting());
+
+  {
+    base::RunLoop run_loop;
+    browser_view()->SetLoadingAnimationStateChangeClosureForTesting(
+        run_loop.QuitClosure());
+
+    // Loading animation is rendered when browser view is restored.
+    browser_view()->Restore();
+    run_loop.Run();
+  }
+
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
+  EXPECT_TRUE(browser_view()->IsLoadingAnimationRunningForTesting());
+
+  // Now block for the navigation to complete.
+  navigation_watcher.Wait();
+  EXPECT_FALSE(browser()->tab_strip_model()->TabsAreLoading());
+}

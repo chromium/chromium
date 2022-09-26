@@ -215,6 +215,8 @@ int GetLocationPermissionsExperimentLabelPromptLimit();
 BASE_DECLARE_FEATURE(kWin10TabSearchCaptionButton);
 #endif
 
+extern const base::Feature kStopLoadingAnimationForHiddenWindow;
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

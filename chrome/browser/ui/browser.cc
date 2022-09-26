@@ -2852,7 +2852,7 @@ void Browser::TabDetachedAtImpl(content::WebContents* contents,
 
 void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
                                                  bool should_show_loading_ui) {
-  window_->UpdateLoadingAnimations(tab_strip_model_->TabsAreLoading());
+  window_->UpdateLoadingAnimations(/* is_visible=*/!window_->IsMinimized());
   window_->UpdateTitleBar();
 
   WebContents* selected_contents = tab_strip_model_->GetActiveWebContents();

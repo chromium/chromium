@@ -9,8 +9,10 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -24,6 +26,8 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/version_info/channel.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/scrollbar_size.h"
@@ -34,6 +38,26 @@
 #endif
 
 namespace {
+
+// Class for BrowserView unit tests for the loading animation feature.
+// Creates a Browser with a |features_list| where
+// kStopLoadingAnimationForHiddenWindow is enabled before setting GPU thread.
+class BrowserViewTestWithStopLoadingAnimationForHiddenWindow
+    : public TestWithBrowserView {
+ public:
+  BrowserViewTestWithStopLoadingAnimationForHiddenWindow() {
+    feature_list_.InitAndEnableFeature(
+        features::kStopLoadingAnimationForHiddenWindow);
+  }
+
+  BrowserViewTestWithStopLoadingAnimationForHiddenWindow(
+      const BrowserViewTestWithStopLoadingAnimationForHiddenWindow&) = delete;
+  BrowserViewTestWithStopLoadingAnimationForHiddenWindow& operator=(
+      const BrowserViewTestWithStopLoadingAnimationForHiddenWindow&) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Tab strip bounds depend on the window frame sizes.
 gfx::Point ExpectedTabStripRegionOrigin(BrowserView* browser_view) {
@@ -444,4 +468,28 @@ TEST_F(BrowserViewWindowTypeTest, TestWindowIsNotReturned) {
   // non-BrowserView BrowserWindow instance - in this case, a TestBrowserWindow.
   EXPECT_NE(nullptr, browser()->window());
   EXPECT_EQ(nullptr, BrowserView::GetBrowserViewForBrowser(browser()));
+}
+
+// Tests Feature to ensure that the loading animation is not rendered after the
+// window changes to hidden.
+TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
+       LoadingAnimationNotRenderedWhenWindowHidden) {
+  TabActivitySimulator tab_activity_simulator;
+  content::WebContents* web_contents =
+      tab_activity_simulator.AddWebContentsAndNavigate(
+          browser()->tab_strip_model(), GURL("about:blank"));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("about:blank"), web_contents);
+  navigation->SetKeepLoading(true);
+
+  browser_view()->frame()->Show();
+
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
+  EXPECT_TRUE(browser_view()->IsLoadingAnimationRunningForTesting());
+
+  browser_view()->frame()->Hide();
+
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
+  EXPECT_FALSE(browser_view()->IsLoadingAnimationRunningForTesting());
 }

@@ -244,10 +244,9 @@ class BrowserWindow : public ui::BaseWindow {
   // changed.
   virtual void UpdateDevTools() = 0;
 
-  // Update any loading animations running in the window. |should_animate| is
-  // true if there are tabs loading and the animations should continue, false
-  // if there are no active loads and the animations should end.
-  virtual void UpdateLoadingAnimations(bool should_animate) = 0;
+  // Update any loading animations running in the window. |is_visible| is true
+  // if the window is visible.
+  virtual void UpdateLoadingAnimations(bool is_visible) = 0;
 
   // Sets the starred state for the current tab.
   virtual void SetStarredState(bool is_starred) = 0;

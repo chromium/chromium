@@ -1450,9 +1450,24 @@ void BrowserView::UpdateDevTools() {
   Layout();
 }
 
-void BrowserView::UpdateLoadingAnimations(bool should_animate) {
+void BrowserView::UpdateLoadingAnimations(bool is_visible) {
+  bool should_animate = browser_->tab_strip_model()->TabsAreLoading();
+
+  if (base::FeatureList::IsEnabled(
+          features::kStopLoadingAnimationForHiddenWindow)) {
+    should_animate &= is_visible;
+  }
+
+  if (should_animate == loading_animation_timer_.IsRunning()) {
+    // Early return if the loading animation state doesn't change.
+    return;
+  }
+
+  if (!loading_animation_state_change_closure_.is_null()) {
+    std::move(loading_animation_state_change_closure_).Run();
+  }
+
   if (should_animate) {
-    if (!loading_animation_timer_.IsRunning()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       loading_animation_tracker_.emplace(
         GetWidget()->GetCompositor()->RequestNewThroughputTracker());
@@ -1463,17 +1478,23 @@ void BrowserView::UpdateLoadingAnimations(bool should_animate) {
       loading_animation_start_ = base::TimeTicks::Now();
       loading_animation_timer_.Start(FROM_HERE, base::Milliseconds(30), this,
                                      &BrowserView::LoadingAnimationCallback);
-    }
   } else {
-    if (loading_animation_timer_.IsRunning()) {
-      loading_animation_timer_.Stop();
+    loading_animation_timer_.Stop();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       loading_animation_tracker_->Stop();
 #endif
       // Loads are now complete, update the state if a task was scheduled.
       LoadingAnimationCallback();
-    }
   }
+}
+
+void BrowserView::SetLoadingAnimationStateChangeClosureForTesting(
+    base::OnceClosure closure) {
+  loading_animation_state_change_closure_ = std::move(closure);
+}
+
+bool BrowserView::IsLoadingAnimationRunningForTesting() const {
+  return loading_animation_timer_.IsRunning();
 }
 
 void BrowserView::SetStarredState(bool is_starred) {
@@ -2379,6 +2400,14 @@ void BrowserView::TryNotifyWindowBoundsChanged(const gfx::Rect& widget_bounds) {
 
   last_widget_bounds_ = widget_bounds;
   browser()->extension_window_controller()->NotifyWindowBoundsChanged();
+}
+
+void BrowserView::OnWidgetVisibilityChanged(views::Widget* widget,
+                                            bool visible) {
+  if (base::FeatureList::IsEnabled(
+          features::kStopLoadingAnimationForHiddenWindow)) {
+    UpdateLoadingAnimations(visible);
+  }
 }
 
 void BrowserView::TouchModeChanged() {
