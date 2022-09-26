@@ -65,8 +65,6 @@ class AttributionStorageDelegate {
 
   // These limits are designed solely to avoid excessive disk / memory usage.
   // In particular, they do not correspond with any privacy parameters.
-  // TODO(crbug.com/1082754): Consider replacing this functionality (and the
-  // data deletion logic) with the quota system.
   //
   // Returns the maximum number of sources that can be in storage at any
   // time for a source top-level origin.

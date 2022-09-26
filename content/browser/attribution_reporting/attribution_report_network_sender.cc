@@ -106,8 +106,6 @@ void AttributionReportNetworkSender::SendReport(
   // Retry once on network change. A network change during DNS resolution
   // results in a DNS error rather than a network change error, so retry in
   // those cases as well.
-  // TODO(http://crbug.com/1181106): Consider logging metrics for how often this
-  // retry succeeds/fails.
   int retry_mode = network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
                    network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED;
   simple_url_loader_ptr->SetRetryOptions(/*max_retries=*/1, retry_mode);
