@@ -18,6 +18,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
+#include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -1419,17 +1420,18 @@ void RenderThreadImpl::SetIsCrossOriginIsolated(bool value) {
   blink::SetIsCrossOriginIsolated(value);
 }
 
+extern "C" void V8RecordReplayBrowserEvent(const char* name, const char* payload);
+
 void RenderThreadImpl::RecordReplayBrowserEvent(
     const std::string& name,
     base::Value value) {
-  fprintf(stderr, "RecordReplayBrowserEvent %s\n", name.c_str());
-  // Forward this to the RecordReplay V8 instrumentation code.
-  base::DictionaryValue* dict = nullptr;
-  if (!value.GetAsDictionary(&dict)) {
+  if (!value.GetAsDictionary(nullptr)) {
     fprintf(stderr, "RecordReplayBrowserEvent not a dictionary\n");
     return;
   }
-  blink::RecordReplayDispatchBrowserEvent(name, dict);
+  std::string json;
+  base::JSONWriter::Write(value, &json);
+  V8RecordReplayBrowserEvent(name.c_str(), json.c_str());
 }
 
 bool RenderThreadImpl::GetRendererMemoryMetrics(
