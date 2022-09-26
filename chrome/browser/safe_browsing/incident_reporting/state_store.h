@@ -12,14 +12,10 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 class Profile;
-
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
 
 namespace safe_browsing {
 
@@ -76,17 +72,17 @@ class StateStore {
     // obtaining this view will cause a serialize-and-write operation to be
     // scheduled when the transaction terminates. Use the store's
     // |incidents_sent_| member directly to simply query the preference.
-    base::Value* GetPrefDict();
+    base::Value::Dict& GetPrefDict();
 
     // Replaces the contents of the underlying dictionary value.
-    void ReplacePrefDict(base::Value pref_dict);
+    void ReplacePrefDict(base::Value::Dict pref_dict);
 
     // The store corresponding to this transaction.
     raw_ptr<StateStore> store_;
 
     // A ScopedUserPrefUpdate through which changes to the incidents_sent
     // preference are made.
-    std::unique_ptr<DictionaryPrefUpdate> pref_update_;
+    std::unique_ptr<ScopedDictPrefUpdate> pref_update_;
   };
 
   explicit StateStore(Profile* profile);
@@ -109,7 +105,7 @@ class StateStore {
   raw_ptr<Profile> profile_;
 
   // A read-only view on the profile's incidents_sent preference.
-  const base::DictionaryValue* incidents_sent_;
+  const base::Value::Dict* incidents_sent_ = nullptr;
 
 #if DCHECK_IS_ON()
   // True when a Transaction instance is outstanding.

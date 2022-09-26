@@ -32,46 +32,41 @@ const uint8_t kTestData[] = {
 };
 
 // Returns a dict with some sample data in it.
-std::unique_ptr<base::DictionaryValue> CreateTestIncidentsSentPref() {
+base::Value::Dict CreateTestIncidentsSentPref() {
   static const char kData[] =
       "{"
       "\"2\":{\"spam\":\"1234\",\"blorf\":\"5\"},"
       "\"0\":{\"whaa\":\"0\",\"wha?\":\"9876\"}"
       "}";
-  return base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(base::test::ParseJson(kData)));
+  return base::test::ParseJsonDict(kData);
 }
 
 }  // namespace
 
 // Tests that DeserializeIncidentsSent handles an empty payload properly.
 TEST(PlatformStateStoreTest, DeserializeEmpty) {
-  std::unique_ptr<base::DictionaryValue> deserialized(
-      new base::DictionaryValue);
+  base::Value deserialized(base::Value::Type::DICT);
   PlatformStateStoreLoadResult load_result =
-      DeserializeIncidentsSent(std::string(), deserialized.get());
+      DeserializeIncidentsSent(std::string(), &deserialized);
   ASSERT_EQ(PlatformStateStoreLoadResult::SUCCESS, load_result);
-  ASSERT_TRUE(deserialized->DictEmpty());
+  ASSERT_TRUE(deserialized.GetDict().empty());
 }
 
 // Tests that serialize followed by deserialize doesn't lose data.
 TEST(PlatformStateStoreTest, RoundTrip) {
-  std::unique_ptr<base::DictionaryValue> incidents_sent =
-      CreateTestIncidentsSentPref();
-  ASSERT_TRUE(incidents_sent);
+  base::Value::Dict incidents_sent = CreateTestIncidentsSentPref();
   std::string data;
-  SerializeIncidentsSent(incidents_sent.get(), &data);
+  SerializeIncidentsSent(incidents_sent, &data);
 
   // Make sure the serialized data matches expectations to ensure compatibility.
   ASSERT_EQ(std::string(reinterpret_cast<const char*>(&kTestData[0]),
                         sizeof(kTestData)), data);
 
-  std::unique_ptr<base::DictionaryValue> deserialized(
-      new base::DictionaryValue);
+  base::Value deserialized(base::Value::Type::DICT);
   PlatformStateStoreLoadResult load_result =
-      DeserializeIncidentsSent(data, deserialized.get());
+      DeserializeIncidentsSent(data, &deserialized);
   ASSERT_EQ(PlatformStateStoreLoadResult::SUCCESS, load_result);
-  EXPECT_EQ(*incidents_sent, *deserialized);
+  EXPECT_EQ(incidents_sent, deserialized);
 }
 
 }  // namespace platform_state_store

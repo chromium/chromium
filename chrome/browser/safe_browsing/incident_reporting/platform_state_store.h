@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -25,11 +26,6 @@
 
 class Profile;
 
-namespace base {
-class DictionaryValue;
-class Value;
-}
-
 namespace safe_browsing {
 namespace platform_state_store {
 
@@ -40,7 +36,7 @@ absl::optional<base::Value> Load(Profile* profile);
 
 // Stores the state for |profile| in |incidents_sent| into platform-specific
 // storage if there is such for the current platform.
-void Store(Profile* profile, const base::DictionaryValue* incidents_sent);
+void Store(Profile* profile, const base::Value::Dict& incidents_sent);
 
 #if defined(USE_PLATFORM_STATE_STORE)
 
@@ -71,7 +67,7 @@ void WriteStoreData(Profile* profile, const std::string& data);
 
 // Serializes the |incidents_sent| preference into |data|, replacing its
 // contents. Exposed for testing.
-void SerializeIncidentsSent(const base::DictionaryValue* incidents_sent,
+void SerializeIncidentsSent(const base::Value::Dict& incidents_sent,
                             std::string* data);
 
 // Deserializes |data| into |value_dict|. Returns SUCCESS if |data| is empty or

@@ -41,10 +41,10 @@ using google::protobuf::RepeatedPtrField;
 // Copies the (key, digest) pairs from |keys_and_digests| (a dict of string
 // values) to the |key_digest_pairs| protobuf.
 void KeysAndDigestsToProtobuf(
-    const base::DictionaryValue& keys_and_digests,
+    const base::Value::Dict& keys_and_digests,
     RepeatedPtrField<StateStoreData::Incidents::KeyDigestMapFieldEntry>*
         key_digest_pairs) {
-  for (const auto item : keys_and_digests.GetDict()) {
+  for (const auto item : keys_and_digests) {
     uint32_t digest = 0;
     if (!item.second.is_string() ||
         !base::StringToUint(item.second.GetString(), &digest)) {
@@ -61,16 +61,16 @@ void KeysAndDigestsToProtobuf(
 // Copies the (type, dict) pairs from |incidents_sent| (a dict of dict values)
 // to the |typed_incidents| protobuf.
 void IncidentsSentToProtobuf(
-    const base::DictionaryValue& incidents_sent,
+    const base::Value::Dict& incidents_sent,
     RepeatedPtrField<StateStoreData::TypeIncidentsMapFieldEntry>*
         type_incidents_pairs) {
-  for (const auto item : incidents_sent.GetDict()) {
-    const base::DictionaryValue* keys_and_digests = nullptr;
-    if (!item.second.GetAsDictionary(&keys_and_digests)) {
+  for (const auto item : incidents_sent) {
+    const base::Value::Dict* keys_and_digests = item.second.GetIfDict();
+    if (!keys_and_digests) {
       NOTREACHED();
       continue;
     }
-    if (keys_and_digests->DictEmpty())
+    if (keys_and_digests->empty())
       continue;
     int incident_type = 0;
     if (!base::StringToInt(item.first, &incident_type)) {
@@ -154,7 +154,7 @@ absl::optional<base::Value> Load(Profile* profile) {
 #endif
 }
 
-void Store(Profile* profile, const base::DictionaryValue* incidents_sent) {
+void Store(Profile* profile, const base::Value::Dict& incidents_sent) {
 #if defined(USE_PLATFORM_STATE_STORE)
   std::string data;
   SerializeIncidentsSent(incidents_sent, &data);
@@ -164,11 +164,11 @@ void Store(Profile* profile, const base::DictionaryValue* incidents_sent) {
 
 #if defined(USE_PLATFORM_STATE_STORE)
 
-void SerializeIncidentsSent(const base::DictionaryValue* incidents_sent,
+void SerializeIncidentsSent(const base::Value::Dict& incidents_sent,
                             std::string* data) {
   StateStoreData store_data;
 
-  IncidentsSentToProtobuf(*incidents_sent,
+  IncidentsSentToProtobuf(incidents_sent,
                           store_data.mutable_type_to_incidents());
   store_data.SerializeToString(data);
 }
