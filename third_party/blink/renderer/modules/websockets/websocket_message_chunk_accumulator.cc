@@ -60,7 +60,7 @@ Vector<base::span<const char>> WebSocketMessageChunkAccumulator::GetView()
     return view;
   }
 
-  view.ReserveCapacity(segments_.size());
+  view.reserve(segments_.size());
   for (wtf_size_t i = 0; i < segments_.size() - 1; ++i) {
     view.push_back(base::make_span(segments_[i].get(), kSegmentSize));
   }
@@ -72,7 +72,7 @@ void WebSocketMessageChunkAccumulator::Clear() {
   num_pooled_segments_to_be_removed_ =
       std::min(num_pooled_segments_to_be_removed_, pool_.size());
   size_ = 0;
-  pool_.ReserveCapacity(pool_.size() + segments_.size());
+  pool_.reserve(pool_.size() + segments_.size());
   for (auto& segment : segments_) {
     pool_.push_back(std::move(segment));
   }

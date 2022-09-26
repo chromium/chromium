@@ -89,8 +89,8 @@ NGGridBlockTrackCollection::NGGridBlockTrackCollection(
   const wtf_size_t repeater_count = explicit_tracks_.RepeaterCount();
 
   // Add extra capacity for the extra lines needed for named grids.
-  start_lines_.ReserveCapacity(repeater_count + 1);
-  end_lines_.ReserveCapacity(repeater_count + 1);
+  start_lines_.reserve(repeater_count + 1);
+  end_lines_.reserve(repeater_count + 1);
 
   wtf_size_t current_repeater_start_line = start_offset_;
   for (wtf_size_t i = 0; i < repeater_count; ++i) {

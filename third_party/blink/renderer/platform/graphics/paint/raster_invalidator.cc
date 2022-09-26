@@ -343,7 +343,7 @@ void RasterInvalidator::Generate(
   current_paint_artifact_ = &new_chunks.GetPaintArtifact();
 
   Vector<PaintChunkInfo> new_chunks_info;
-  new_chunks_info.ReserveCapacity(new_chunks.size());
+  new_chunks_info.reserve(new_chunks.size());
 
   if (layer_bounds_was_empty || layer_bounds_.IsEmpty()) {
     // Fast path if either the old bounds or the new bounds is empty. We still

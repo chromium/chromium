@@ -120,8 +120,8 @@ void AXInlineTextBox::GetWordBoundaries(Vector<int>& word_starts,
 
   Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
   inline_text_box_->GetWordBoundaries(boundaries);
-  word_starts.ReserveCapacity(boundaries.size());
-  word_ends.ReserveCapacity(boundaries.size());
+  word_starts.reserve(boundaries.size());
+  word_ends.reserve(boundaries.size());
   for (const auto& boundary : boundaries) {
     word_starts.push_back(boundary.start_index);
     word_ends.push_back(boundary.end_index);

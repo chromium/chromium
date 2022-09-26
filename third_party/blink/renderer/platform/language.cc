@@ -88,7 +88,7 @@ void OverrideUserPreferredLanguagesForTesting(
     const Vector<AtomicString>& override) {
   Vector<AtomicString>& canonicalized = PreferredLanguagesOverride();
   canonicalized.resize(0);
-  canonicalized.ReserveCapacity(override.size());
+  canonicalized.reserve(override.size());
   for (const auto& lang : override)
     canonicalized.push_back(CanonicalizeLanguageIdentifier(lang));
   Locale::ResetDefaultLocale();

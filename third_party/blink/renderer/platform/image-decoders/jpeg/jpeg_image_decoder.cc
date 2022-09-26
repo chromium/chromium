@@ -692,7 +692,7 @@ class JPEGImageReader final {
             sizes.push_back(
                 SkISize::Make(info_.image_width, info_.image_height));
           } else {
-            sizes.ReserveCapacity(max_numerator);
+            sizes.reserve(max_numerator);
             for (int numerator = 1; numerator <= max_numerator; ++numerator) {
               info_.scale_num = numerator;
               jpeg_calc_output_dimensions(&info_);

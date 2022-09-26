@@ -135,9 +135,9 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
   DCHECK(stops_sorted_);
 
   ColorBuffer colors;
-  colors.ReserveCapacity(stops_.size());
+  colors.reserve(stops_.size());
   OffsetBuffer pos;
-  pos.ReserveCapacity(stops_.size());
+  pos.reserve(stops_.size());
 
   FillSkiaStops(colors, pos);
   DCHECK_GE(colors.size(), 2ul);

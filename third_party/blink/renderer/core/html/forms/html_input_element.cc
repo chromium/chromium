@@ -1807,7 +1807,7 @@ HTMLInputElement::FilteredDataListOptions() const {
   }
 
   HTMLDataListOptionsCollection* options = data_list->options();
-  filtered.ReserveCapacity(options->length());
+  filtered.reserve(options->length());
   editor_value = editor_value.FoldCase();
 
   TextBreakIterator* iter =

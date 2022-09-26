@@ -54,9 +54,9 @@ void PaintController::ReserveCapacity() {
       display_item_list_capacity =
           current_paint_artifact_->GetDisplayItemList().size();
     }
-    new_paint_artifact_->PaintChunks().ReserveCapacity(
+    new_paint_artifact_->PaintChunks().reserve(
         current_paint_artifact_->PaintChunks().size());
-    new_subsequences_.tree.ReserveCapacity(current_subsequences_.tree.size());
+    new_subsequences_.tree.reserve(current_subsequences_.tree.size());
     new_subsequences_.map.ReserveCapacityForSize(
         current_subsequences_.map.size());
   }

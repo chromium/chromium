@@ -80,9 +80,7 @@ class CORE_EXPORT NGInlineItemSegments {
   unsigned OffsetForSegment(const NGInlineItemSegment& segment) const;
   unsigned EndOffset() const { return segments_.back().EndOffset(); }
 
-  void ReserveCapacity(unsigned capacity) {
-    segments_.ReserveCapacity(capacity);
-  }
+  void ReserveCapacity(unsigned capacity) { segments_.reserve(capacity); }
 
   // Append a |NGInlineItemSegment| using one of its constructors.
   template <class... Args>

@@ -38,7 +38,7 @@ Vector<ImeTextSpan> ImeTextSpanVectorBuilder::Build(
     const WebVector<ui::ImeTextSpan>& ime_text_spans) {
   Vector<ImeTextSpan> result;
   wtf_size_t size = base::checked_cast<wtf_size_t>(ime_text_spans.size());
-  result.ReserveCapacity(size);
+  result.reserve(size);
   for (wtf_size_t i = 0; i < size; ++i)
     result.push_back(ime_text_spans[i]);
   return result;

@@ -50,7 +50,7 @@ namespace {
 template <typename Interface>
 Vector<Interface> IsolatedCopy(const Vector<Interface>& src) {
   Vector<Interface> result;
-  result.ReserveCapacity(src.size());
+  result.reserve(src.size());
   for (const auto& timestamp : src) {
     result.push_back(timestamp.IsolatedCopy());
   }

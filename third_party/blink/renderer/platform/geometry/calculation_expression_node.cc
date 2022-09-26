@@ -151,7 +151,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
     case CalculationOperator::kClamp: {
       DCHECK_EQ(children.size(), 3u);
       Vector<float> operand_pixels;
-      operand_pixels.ReserveCapacity(children.size());
+      operand_pixels.reserve(children.size());
       bool can_simplify = true;
       for (auto& child : children) {
         const auto* pixels_and_percent =
@@ -288,7 +288,7 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
     case CalculationOperator::kClamp: {
       DCHECK(children_.size());
       Vector<scoped_refptr<const CalculationExpressionNode>> cloned_operands;
-      cloned_operands.ReserveCapacity(children_.size());
+      cloned_operands.reserve(children_.size());
       for (const auto& child : children_)
         cloned_operands.push_back(child->Zoom(factor));
       return CreateSimplified(std::move(cloned_operands), operator_);

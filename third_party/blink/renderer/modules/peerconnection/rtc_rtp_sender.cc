@@ -297,7 +297,7 @@ ToRtpParameters(ExecutionContext* context,
                 const RTCRtpSendParameters* parameters) {
   Vector<webrtc::RtpEncodingParameters> encodings;
   if (parameters->hasEncodings()) {
-    encodings.ReserveCapacity(parameters->encodings().size());
+    encodings.reserve(parameters->encodings().size());
 
     for (const auto& encoding : parameters->encodings()) {
       encodings.push_back(ToRtpEncodingParameters(context, encoding));
@@ -478,7 +478,7 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
   parameters->setRtcp(rtcp);
 
   HeapVector<Member<RTCRtpEncodingParameters>> encodings;
-  encodings.ReserveCapacity(
+  encodings.reserve(
       base::checked_cast<wtf_size_t>(webrtc_parameters->encodings.size()));
   for (const auto& webrtc_encoding : webrtc_parameters->encodings) {
     RTCRtpEncodingParameters* encoding = RTCRtpEncodingParameters::Create();
@@ -510,7 +510,7 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
   parameters->setEncodings(encodings);
 
   HeapVector<Member<RTCRtpHeaderExtensionParameters>> headers;
-  headers.ReserveCapacity(base::checked_cast<wtf_size_t>(
+  headers.reserve(base::checked_cast<wtf_size_t>(
       webrtc_parameters->header_extensions.size()));
   for (const auto& webrtc_header : webrtc_parameters->header_extensions) {
     headers.push_back(ToRtpHeaderExtensionParameters(webrtc_header));
@@ -518,7 +518,7 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
   parameters->setHeaderExtensions(headers);
 
   HeapVector<Member<RTCRtpCodecParameters>> codecs;
-  codecs.ReserveCapacity(
+  codecs.reserve(
       base::checked_cast<wtf_size_t>(webrtc_parameters->codecs.size()));
   for (const auto& webrtc_codec : webrtc_parameters->codecs) {
     codecs.push_back(ToRtpCodecParameters(webrtc_codec));

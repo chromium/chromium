@@ -90,7 +90,7 @@ class IDBDatabaseGetAllResultSinkImpl
       return;
     }
 
-    values_.ReserveCapacity(values_.size() + values.size());
+    values_.reserve(values_.size() + values.size());
     for (auto& value : values)
       values_.emplace_back(std::move(value));
   }
@@ -104,7 +104,7 @@ class IDBDatabaseGetAllResultSinkImpl
       return;
     }
 
-    keys_.ReserveCapacity(keys_.size() + keys.size());
+    keys_.reserve(keys_.size() + keys.size());
     for (auto& key : keys)
       keys_.emplace_back(std::move(key));
   }

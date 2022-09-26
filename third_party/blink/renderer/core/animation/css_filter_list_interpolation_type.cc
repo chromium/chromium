@@ -258,7 +258,7 @@ void CSSFilterListInterpolationType::ApplyStandardPropertyValue(
   wtf_size_t length = interpolable_list.length();
 
   FilterOperations filter_operations;
-  filter_operations.Operations().ReserveCapacity(length);
+  filter_operations.Operations().reserve(length);
   for (wtf_size_t i = 0; i < length; i++) {
     filter_operations.Operations().push_back(
         To<InterpolableFilter>(interpolable_list.Get(i))

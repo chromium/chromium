@@ -56,7 +56,7 @@ class ImageFilterBuilderTest : public Test {
         MakeGarbageCollected<FEBlend>(reference_filter, BlendMode::kNormal);
     blend_effect->SetOperatingInterpolationSpace(kInterpolationSpaceSRGB);
     FilterEffectVector& blend_inputs = blend_effect->InputEffects();
-    blend_inputs.ReserveCapacity(2);
+    blend_inputs.reserve(2);
     blend_inputs.push_back(source_effect);
     blend_inputs.push_back(blur_effect);
 
@@ -64,7 +64,7 @@ class ImageFilterBuilderTest : public Test {
     auto* merge_effect = MakeGarbageCollected<FEMerge>(reference_filter);
     merge_effect->SetOperatingInterpolationSpace(kInterpolationSpaceLinear);
     FilterEffectVector& merge_inputs = merge_effect->InputEffects();
-    merge_inputs.ReserveCapacity(2);
+    merge_inputs.reserve(2);
     merge_inputs.push_back(blur_effect);
     merge_inputs.push_back(blend_effect);
     reference_filter->SetLastEffect(merge_effect);

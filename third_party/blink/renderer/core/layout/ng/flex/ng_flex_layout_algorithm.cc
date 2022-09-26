@@ -1094,7 +1094,7 @@ void NGFlexLayoutAlgorithm::PlaceFlexItems(
     main_axis_end_offset = BorderScrollbarPadding().inline_end;
   }
 
-  flex_line_outputs->ReserveCapacity(algorithm_.NumItems());
+  flex_line_outputs->reserve(algorithm_.NumItems());
 
   FlexLine* line;
   while ((

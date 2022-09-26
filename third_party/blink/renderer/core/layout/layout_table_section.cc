@@ -1018,7 +1018,7 @@ void LayoutTableSection::UpdateLayout() {
   // addChild may over-grow grid_ but we don't want to throw away the memory
   // too early as addChild can be called in a loop (e.g during parsing). Doing
   // it now ensures we have a stable-enough structure.
-  grid_.ShrinkToFit();
+  grid_.shrink_to_fit();
 
   LayoutState state(*this);
 
@@ -1769,7 +1769,7 @@ void LayoutTableSection::RecalcCells() {
     }
   }
 
-  grid_.ShrinkToFit();
+  grid_.shrink_to_fit();
   SetNeedsLayoutAndFullPaintInvalidation(layout_invalidation_reason::kUnknown);
 }
 

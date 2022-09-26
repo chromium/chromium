@@ -63,7 +63,7 @@ Vector<String> CollectAcceptTypes(const HTMLInputElement& input) {
   Vector<String> extensions = input.AcceptFileExtensions();
 
   Vector<String> accept_types;
-  accept_types.ReserveCapacity(mime_types.size() + extensions.size());
+  accept_types.reserve(mime_types.size() + extensions.size());
   accept_types.AppendVector(mime_types);
   accept_types.AppendVector(extensions);
   return accept_types;

@@ -118,7 +118,7 @@ void EventPath::CalculatePath() {
     }
   }
 
-  node_event_contexts_.ReserveCapacity(nodes_in_path.size());
+  node_event_contexts_.reserve(nodes_in_path.size());
   for (Node* node_in_path : nodes_in_path) {
     DCHECK(node_in_path);
     node_event_contexts_.push_back(NodeEventContext(

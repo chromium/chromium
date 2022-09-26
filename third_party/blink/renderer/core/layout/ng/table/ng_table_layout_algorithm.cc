@@ -315,15 +315,15 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
       style.BorderCollapse() == EBorderCollapse::kCollapse;
   data->column_locations = column_locations;
 
-  data->sections.ReserveCapacity(sections.size());
+  data->sections.reserve(sections.size());
   for (const auto& section : sections)
     data->sections.emplace_back(section.start_row, section.row_count);
-  data->rows.ReserveCapacity(rows.size());
+  data->rows.reserve(rows.size());
   for (const auto& row : rows) {
     data->rows.emplace_back(row.block_size, row.start_cell_index,
                             row.cell_count, row.baseline, row.is_collapsed);
   }
-  data->cells.ReserveCapacity(cell_block_constraints.size());
+  data->cells.reserve(cell_block_constraints.size());
   // Traversing from section is necessary to limit cell's rowspan to the
   // section. The cell does not know what section it is in.
   for (const auto& section : sections) {

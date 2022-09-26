@@ -167,7 +167,7 @@ ScriptPromise USB::requestDevice(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
   Vector<UsbDeviceFilterPtr> filters;
   if (options->hasFilters()) {
-    filters.ReserveCapacity(options->filters().size());
+    filters.reserve(options->filters().size());
     for (const auto& filter : options->filters()) {
       UsbDeviceFilterPtr converted_filter =
           ConvertDeviceFilter(filter, resolver);

@@ -42,7 +42,7 @@ CSSPositionFallbackRule::~CSSPositionFallbackRule() = default;
 
 void CSSPositionFallbackRule::CreateChildRuleWrappers() {
   child_rule_cssom_wrappers_.clear();
-  child_rule_cssom_wrappers_.ReserveCapacity(
+  child_rule_cssom_wrappers_.reserve(
       position_fallback_rule_->TryRules().size());
   for (StyleRuleTry* try_rule : position_fallback_rule_->TryRules()) {
     child_rule_cssom_wrappers_.push_back(

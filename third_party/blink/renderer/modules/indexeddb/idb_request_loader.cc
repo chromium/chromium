@@ -80,7 +80,7 @@ void IDBRequestLoader::StartNextValue() {
   if (!exection_context)
     return;
 
-  wrapped_data_.ReserveCapacity(unwrapper.WrapperBlobSize());
+  wrapped_data_.reserve(unwrapper.WrapperBlobSize());
 #if DCHECK_IS_ON()
   DCHECK(!file_reader_loading_);
   file_reader_loading_ = true;

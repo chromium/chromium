@@ -393,7 +393,7 @@ NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::OutOfFlowDataFromBuilder(
   if (!builder->oof_positioned_descendants_.empty()) {
     if (!oof_data)
       oof_data = MakeGarbageCollected<OutOfFlowData>();
-    oof_data->oof_positioned_descendants.ReserveCapacity(
+    oof_data->oof_positioned_descendants.reserve(
         builder->oof_positioned_descendants_.size());
     for (const auto& descendant : builder->oof_positioned_descendants_) {
       NGInlineContainer<PhysicalOffset> inline_container(

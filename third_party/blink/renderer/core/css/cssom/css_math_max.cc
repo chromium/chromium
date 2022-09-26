@@ -73,7 +73,7 @@ void CSSMathMax::BuildCSSText(Nested, ParenLess, StringBuilder& result) const {
 
 CSSMathExpressionNode* CSSMathMax::ToCalcExpressionNode() const {
   CSSMathExpressionOperation::Operands operands;
-  operands.ReserveCapacity(NumericValues().size());
+  operands.reserve(NumericValues().size());
   for (const auto& value : NumericValues()) {
     CSSMathExpressionNode* operand = value->ToCalcExpressionNode();
     if (!operand) {

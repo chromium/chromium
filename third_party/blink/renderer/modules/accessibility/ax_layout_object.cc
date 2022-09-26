@@ -1742,8 +1742,8 @@ void AXLayoutObject::GetWordBoundaries(Vector<int>& word_starts,
 
   Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
   AbstractInlineTextBox::GetWordBoundariesForText(boundaries, text_alternative);
-  word_starts.ReserveCapacity(boundaries.size());
-  word_ends.ReserveCapacity(boundaries.size());
+  word_starts.reserve(boundaries.size());
+  word_ends.reserve(boundaries.size());
   for (const auto& boundary : boundaries) {
     word_starts.push_back(boundary.start_index);
     word_ends.push_back(boundary.end_index);

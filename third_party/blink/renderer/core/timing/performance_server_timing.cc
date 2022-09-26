@@ -40,7 +40,7 @@ PerformanceServerTiming::ParseServerTimingFromHeaderValueToMojo(
   std::unique_ptr<ServerTimingHeaderVector> headers =
       ParseServerTimingHeader(value);
   Vector<mojom::blink::ServerTimingInfoPtr> result;
-  result.ReserveCapacity(headers->size());
+  result.reserve(headers->size());
   for (const auto& header : *headers) {
     result.emplace_back(mojom::blink::ServerTimingInfo::New(
         header->Name(), header->Duration(), header->Description()));
@@ -54,7 +54,7 @@ PerformanceServerTiming::ParseServerTiming(const ResourceTimingInfo& info) {
   const ResourceResponse& response = info.FinalResponse();
   std::unique_ptr<ServerTimingHeaderVector> headers = ParseServerTimingHeader(
       response.HttpHeaderField(http_names::kServerTiming));
-  result.ReserveCapacity(headers->size());
+  result.reserve(headers->size());
   for (const auto& header : *headers) {
     result.push_back(MakeGarbageCollected<PerformanceServerTiming>(
         header->Name(), header->Duration(), header->Description()));

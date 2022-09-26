@@ -1790,7 +1790,7 @@ void InspectorNetworkAgent::DidReceiveWebSocketMessage(
     size += span.size();
   }
   Vector<char> flatten;
-  flatten.ReserveCapacity(base::checked_cast<wtf_size_t>(size));
+  flatten.reserve(base::checked_cast<wtf_size_t>(size));
   for (const auto& span : data) {
     flatten.Append(span.data(), base::checked_cast<wtf_size_t>(span.size()));
   }

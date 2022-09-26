@@ -379,7 +379,7 @@ void SlotAssignment::CollectSlots() {
   DCHECK(needs_collect_slots_);
   slots_.clear();
 
-  slots_.ReserveCapacity(slot_count_);
+  slots_.reserve(slot_count_);
   for (HTMLSlotElement& slot :
        Traversal<HTMLSlotElement>::DescendantsOf(*owner_)) {
     slots_.push_back(&slot);

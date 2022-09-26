@@ -175,7 +175,7 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
 
     bool explicit_opsz_configured = false;
     if (variation_settings && variation_settings->size() < UINT16_MAX) {
-      variation.ReserveCapacity(variation_settings->size() + variation.size());
+      variation.reserve(variation_settings->size() + variation.size());
       for (const auto& setting : *variation_settings) {
         if (setting.Tag() == kOpszTag)
           explicit_opsz_configured = true;

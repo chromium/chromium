@@ -247,7 +247,7 @@ void ExternalPopupMenu::DidAcceptIndices(const Vector<int32_t>& indices) {
   } else {
     Vector<int> list_indices;
     wtf_size_t list_count = base::checked_cast<wtf_size_t>(indices.size());
-    list_indices.ReserveCapacity(list_count);
+    list_indices.reserve(list_count);
     for (wtf_size_t i = 0; i < list_count; ++i)
       list_indices.push_back(ToPopupMenuItemIndex(indices[i], *owner_element));
     owner_element->SelectMultipleOptionsByPopup(list_indices);

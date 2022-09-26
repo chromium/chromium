@@ -152,7 +152,7 @@ const CSSValue* CSSSyntaxDefinition::Parse(CSSParserTokenRange range,
 
 CSSSyntaxDefinition CSSSyntaxDefinition::IsolatedCopy() const {
   Vector<CSSSyntaxComponent> syntax_components_copy;
-  syntax_components_copy.ReserveCapacity(syntax_components_.size());
+  syntax_components_copy.reserve(syntax_components_.size());
   for (const auto& syntax_component : syntax_components_) {
     syntax_components_copy.push_back(CSSSyntaxComponent(
         syntax_component.GetType(), syntax_component.GetString(),

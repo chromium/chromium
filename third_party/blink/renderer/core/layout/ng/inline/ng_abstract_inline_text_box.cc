@@ -235,7 +235,7 @@ void NGAbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
       shape_result_view->CreateShapeResult();
   Vector<CharacterRange> ranges;
   shape_result->IndividualCharacterRanges(&ranges);
-  widths.ReserveCapacity(ranges.size());
+  widths.reserve(ranges.size());
   widths.resize(0);
   for (const auto& range : ranges)
     widths.push_back(range.Width());

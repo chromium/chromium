@@ -73,7 +73,7 @@ struct Unicode16BitEscapeSequence {
     // the run without additional checks.
     wtf_size_t number_of_sequences = run_length / kSequenceSize;
     StringBuilder builder;
-    builder.ReserveCapacity(number_of_sequences);
+    builder.reserve(number_of_sequences);
     while (number_of_sequences--) {
       UChar code_unit =
           (ToASCIIHexValue(run[2]) << 12) | (ToASCIIHexValue(run[3]) << 8) |

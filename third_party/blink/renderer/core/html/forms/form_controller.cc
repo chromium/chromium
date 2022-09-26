@@ -105,7 +105,7 @@ FormControlState FormControlState::Deserialize(
   if (index + value_size > state_vector.size())
     return FormControlState(kTypeFailure);
   FormControlState state;
-  state.values_.ReserveCapacity(value_size);
+  state.values_.reserve(value_size);
   for (unsigned i = 0; i < value_size; ++i)
     state.Append(state_vector[index++]);
   return state;

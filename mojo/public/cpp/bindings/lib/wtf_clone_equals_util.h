@@ -19,7 +19,7 @@ template <typename T>
 struct CloneTraits<WTF::Vector<T>> {
   static WTF::Vector<T> Clone(const WTF::Vector<T>& input) {
     WTF::Vector<T> result;
-    result.ReserveCapacity(input.size());
+    result.reserve(input.size());
     for (const auto& element : input)
       result.push_back(mojo::Clone(element));
 

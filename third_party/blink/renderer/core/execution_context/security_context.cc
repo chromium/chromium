@@ -48,7 +48,7 @@ WTF::Vector<unsigned> SecurityContext::SerializeInsecureNavigationSet(
   // The set is serialized as a sorted array. Sorting it makes it easy to know
   // if two serialized sets are equal.
   WTF::Vector<unsigned> serialized;
-  serialized.ReserveCapacity(set.size());
+  serialized.reserve(set.size());
   for (unsigned host : set)
     serialized.emplace_back(host);
   std::sort(serialized.begin(), serialized.end());

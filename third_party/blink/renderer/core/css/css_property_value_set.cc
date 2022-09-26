@@ -511,7 +511,7 @@ MutableCSSPropertyValueSet::SetResult
 MutableCSSPropertyValueSet::AddParsedProperties(
     const HeapVector<CSSPropertyValue, 64>& properties) {
   SetResult changed = kUnchanged;
-  property_vector_.ReserveCapacity(property_vector_.size() + properties.size());
+  property_vector_.reserve(property_vector_.size() + properties.size());
   for (unsigned i = 0; i < properties.size(); ++i)
     changed = std::max(changed, SetProperty(properties[i]));
   return changed;

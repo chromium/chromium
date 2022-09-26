@@ -55,7 +55,7 @@ class SVGPathByteStream {
   void ReserveInitialCapacity(wtf_size_t size) {
     data_.ReserveInitialCapacity(size);
   }
-  void ShrinkToFit() { data_.ShrinkToFit(); }
+  void ShrinkToFit() { data_.shrink_to_fit(); }
   bool IsEmpty() const { return data_.empty(); }
   unsigned size() const { return data_.size(); }
 

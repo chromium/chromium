@@ -318,7 +318,7 @@ bool WEBPImageDecoder::UpdateDemuxer() {
   if (IsAllDataReceived() && !consolidated_data_) {
     consolidated_data_ = data_->GetAsSkData();
   } else {
-    buffer_.ReserveCapacity(base::checked_cast<wtf_size_t>(data_->size()));
+    buffer_.reserve(base::checked_cast<wtf_size_t>(data_->size()));
     while (buffer_.size() < data_->size()) {
       const char* segment;
       const size_t bytes = data_->GetSomeData(segment, buffer_.size());

@@ -736,7 +736,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
     case CSSMathOperator::kMin:
     case CSSMathOperator::kMax: {
       Vector<scoped_refptr<const CalculationExpressionNode>> operands;
-      operands.ReserveCapacity(operands_.size());
+      operands.reserve(operands_.size());
       for (const CSSMathExpressionNode* operand : operands_)
         operands.push_back(operand->ToCalculationExpression(length_resolver));
       auto expression_operator = operator_ == CSSMathOperator::kMin
@@ -747,7 +747,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
     }
     case CSSMathOperator::kClamp: {
       Vector<scoped_refptr<const CalculationExpressionNode>> operands;
-      operands.ReserveCapacity(operands_.size());
+      operands.reserve(operands_.size());
       for (const CSSMathExpressionNode* operand : operands_)
         operands.push_back(operand->ToCalculationExpression(length_resolver));
       return CalculationExpressionOperationNode::CreateSimplified(
@@ -762,7 +762,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
 double CSSMathExpressionOperation::DoubleValue() const {
   DCHECK(HasDoubleValue(ResolvedUnitType())) << CustomCSSText();
   Vector<double> double_values;
-  double_values.ReserveCapacity(operands_.size());
+  double_values.reserve(operands_.size());
   for (const CSSMathExpressionNode* operand : operands_)
     double_values.push_back(operand->DoubleValue());
   return Evaluate(double_values);
@@ -780,7 +780,7 @@ absl::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit()
     return absl::nullopt;
 
   Vector<double> double_values;
-  double_values.ReserveCapacity(operands_.size());
+  double_values.reserve(operands_.size());
   for (const CSSMathExpressionNode* operand : operands_) {
     absl::optional<double> maybe_value = operand->ComputeValueInCanonicalUnit();
     if (!maybe_value)
@@ -794,7 +794,7 @@ double CSSMathExpressionOperation::ComputeLengthPx(
     const CSSLengthResolver& length_resolver) const {
   DCHECK_EQ(kCalcLength, Category());
   Vector<double> double_values;
-  double_values.ReserveCapacity(operands_.size());
+  double_values.reserve(operands_.size());
   for (const CSSMathExpressionNode* operand : operands_) {
     if (operand->Category() == kCalcLength) {
       double_values.push_back(operand->ComputeLengthPx(length_resolver));

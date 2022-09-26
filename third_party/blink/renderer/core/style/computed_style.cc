@@ -2305,7 +2305,7 @@ void ComputedStyle::AddAppliedTextDecoration(
   // for a single element (if it has both a simple underline and another
   // decoration), and so this will cause two allocations instead of one,
   // but that is an edge case we're willing to live with.
-  list->data.ShrinkToFit();
+  list->data.shrink_to_fit();
 }
 
 void ComputedStyle::OverrideTextDecorationColors(Color override_color) {

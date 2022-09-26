@@ -70,7 +70,7 @@ HeapVector<Member<EventTarget>>& TreeScopeEventContext::EnsureEventPath(
 
   event_path_ = MakeGarbageCollected<HeapVector<Member<EventTarget>>>();
   LocalDOMWindow* window = path.GetWindowEventContext().Window();
-  event_path_->ReserveCapacity(path.size() + (window ? 1 : 0));
+  event_path_->reserve(path.size() + (window ? 1 : 0));
 
   for (auto& context : path.NodeEventContexts()) {
     if (context.GetTreeScopeEventContext().IsUnclosedTreeOf(*this))

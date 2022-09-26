@@ -88,7 +88,7 @@ void CSSMathClamp::BuildCSSText(Nested,
 
 CSSMathExpressionNode* CSSMathClamp::ToCalcExpressionNode() const {
   CSSMathExpressionOperation::Operands operands;
-  operands.ReserveCapacity(3u);
+  operands.reserve(3u);
   for (const auto& value : {lower_, value_, upper_}) {
     CSSMathExpressionNode* operand = value->ToCalcExpressionNode();
     if (!operand) {

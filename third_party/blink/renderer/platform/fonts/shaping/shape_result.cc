@@ -411,7 +411,7 @@ ShapeResult::ShapeResult(const ShapeResult& other)
       direction_(other.direction_),
       has_vertical_offsets_(other.has_vertical_offsets_),
       is_applied_spacing_(other.is_applied_spacing_) {
-  runs_.ReserveCapacity(other.runs_.size());
+  runs_.reserve(other.runs_.size());
   for (const auto& run : other.runs_)
     runs_.push_back(run->Create(*run.get()));
 }

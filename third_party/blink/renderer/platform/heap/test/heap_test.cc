@@ -248,7 +248,7 @@ class HeapTestResurrectingPreFinalizer
     GlobalStorage() {
       // Reserve storage upfront to avoid allocations during pre-finalizer
       // insertion.
-      vector_member.ReserveCapacity(32);
+      vector_member.reserve(32);
       hash_set_member.ReserveCapacityForSize(32);
       hash_set_weak_member.ReserveCapacityForSize(32);
     }
@@ -833,20 +833,20 @@ TEST_F(HeapTest, HeapVectorShrinkCapacity) {
   ClearOutOldGarbage();
   HeapVector<Member<IntWrapper>> vector1;
   HeapVector<Member<IntWrapper>> vector2;
-  vector1.ReserveCapacity(96);
+  vector1.reserve(96);
   EXPECT_LE(96u, vector1.capacity());
   vector1.Grow(vector1.capacity());
 
   // Assumes none was allocated just after a vector backing of vector1.
   vector1.Shrink(56);
-  vector1.ShrinkToFit();
+  vector1.shrink_to_fit();
   EXPECT_GT(96u, vector1.capacity());
 
-  vector2.ReserveCapacity(20);
+  vector2.reserve(20);
   // Assumes another vector backing was allocated just after the vector
   // backing of vector1.
   vector1.Shrink(10);
-  vector1.ShrinkToFit();
+  vector1.shrink_to_fit();
   EXPECT_GT(56u, vector1.capacity());
 
   vector1.Grow(192);
@@ -857,13 +857,13 @@ TEST_F(HeapTest, HeapVectorShrinkInlineCapacity) {
   ClearOutOldGarbage();
   const size_t kInlineCapacity = 64;
   HeapVector<Member<IntWrapper>, kInlineCapacity> vector1;
-  vector1.ReserveCapacity(128);
+  vector1.reserve(128);
   EXPECT_LE(128u, vector1.capacity());
   vector1.Grow(vector1.capacity());
 
   // Shrink the external buffer.
   vector1.Shrink(90);
-  vector1.ShrinkToFit();
+  vector1.shrink_to_fit();
   EXPECT_GT(128u, vector1.capacity());
 
 // TODO(sof): if the ASan support for 'contiguous containers' is enabled,
@@ -873,12 +873,12 @@ TEST_F(HeapTest, HeapVectorShrinkInlineCapacity) {
 #if !defined(ANNOTATE_CONTIGUOUS_CONTAINER)
   // Shrinking switches the buffer from the external one to the inline one.
   vector1.Shrink(kInlineCapacity - 1);
-  vector1.ShrinkToFit();
+  vector1.shrink_to_fit();
   EXPECT_EQ(kInlineCapacity, vector1.capacity());
 
   // Try to shrink the inline buffer.
   vector1.Shrink(1);
-  vector1.ShrinkToFit();
+  vector1.shrink_to_fit();
   EXPECT_EQ(kInlineCapacity, vector1.capacity());
 #endif
 }
@@ -918,7 +918,7 @@ TEST_F(HeapTest, HeapVectorOnStackLargeObjectPageSized) {
   Container vector;
   wtf_size_t size = (kLargeObjectSizeThreshold + sizeof(Container::ValueType)) /
                     sizeof(Container::ValueType);
-  vector.ReserveCapacity(size);
+  vector.reserve(size);
   for (unsigned i = 0; i < size; ++i)
     vector.push_back(MakeGarbageCollected<IntWrapper>(i));
   ConservativelyCollectGarbage();
@@ -2983,11 +2983,11 @@ TEST_F(HeapTest, HeapVectorPartObjects) {
     vector2.push_back(PartObjectWithRef(i));
   }
 
-  vector1.ReserveCapacity(150);
+  vector1.reserve(150);
   EXPECT_LE(150u, vector1.capacity());
   EXPECT_EQ(10u, vector1.size());
 
-  vector2.ReserveCapacity(100);
+  vector2.reserve(100);
   EXPECT_LE(100u, vector2.capacity());
   EXPECT_EQ(10u, vector2.size());
 
@@ -3264,12 +3264,12 @@ TEST_F(HeapTest, ContainerAnnotationOnTinyBacking) {
   // =1, and capacity = 1.
   HeapVector<uint32_t> vector;
   DCHECK_EQ(0u, vector.capacity());
-  vector.ReserveCapacity(1);
+  vector.reserve(1);
   DCHECK_LE(1u, vector.capacity());
   // The following push_back() should not crash, even with container
   // annotations. The critical path expands the backing without allocating a new
   // one.
-  vector.ReserveCapacity(2);
+  vector.reserve(2);
 }
 
 }  // namespace blink

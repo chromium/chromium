@@ -671,7 +671,7 @@ void PaintArtifactCompositor::Update(
 
   wtf_size_t old_size = pending_layers_.size();
   OldPendingLayerMatcher old_pending_layer_matcher(std::move(pending_layers_));
-  pending_layers_.ReserveCapacity(old_size);
+  pending_layers_.reserve(old_size);
 
   // Make compositing decisions, storing the result in |pending_layers_|.
   CollectPendingLayers(artifact);

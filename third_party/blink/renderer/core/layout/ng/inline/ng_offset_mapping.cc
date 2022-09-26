@@ -347,7 +347,7 @@ NGOffsetMapping::UnitVector NGOffsetMapping::GetMappingUnitsForDOMRange(
                        });
 
   UnitVector result;
-  result.ReserveCapacity(static_cast<unsigned>(result_end - result_begin));
+  result.reserve(base::checked_cast<wtf_size_t>(result_end - result_begin));
   for (const auto& unit : base::make_span(result_begin, result_end)) {
     // If the unit isn't fully within the range, create a new unit that's
     // within the range.

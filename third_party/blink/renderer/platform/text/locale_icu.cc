@@ -190,7 +190,7 @@ std::unique_ptr<Vector<String>> LocaleICU::CreateLabelVector(
     return std::unique_ptr<Vector<String>>();
 
   std::unique_ptr<Vector<String>> labels = std::make_unique<Vector<String>>();
-  labels->ReserveCapacity(size);
+  labels->reserve(size);
   bool is_stand_alone_month = (type == UDAT_STANDALONE_MONTHS) ||
                               (type == UDAT_STANDALONE_SHORT_MONTHS);
   for (int32_t i = 0; i < size; ++i) {
@@ -225,7 +225,7 @@ std::unique_ptr<Vector<String>> LocaleICU::CreateLabelVector(
 
 static std::unique_ptr<Vector<String>> CreateFallbackWeekDayShortLabels() {
   std::unique_ptr<Vector<String>> labels = std::make_unique<Vector<String>>();
-  labels->ReserveCapacity(7);
+  labels->reserve(7);
   labels->push_back("Sun");
   labels->push_back("Mon");
   labels->push_back("Tue");
@@ -257,7 +257,7 @@ void LocaleICU::InitializeCalendar() {
 
 static std::unique_ptr<Vector<String>> CreateFallbackMonthLabels() {
   std::unique_ptr<Vector<String>> labels = std::make_unique<Vector<String>>();
-  labels->ReserveCapacity(std::size(WTF::kMonthFullName));
+  labels->reserve(std::size(WTF::kMonthFullName));
   for (unsigned i = 0; i < std::size(WTF::kMonthFullName); ++i)
     labels->push_back(WTF::kMonthFullName[i]);
   return labels;
@@ -294,7 +294,7 @@ bool LocaleICU::IsRTL() {
 
 static std::unique_ptr<Vector<String>> CreateFallbackAMPMLabels() {
   std::unique_ptr<Vector<String>> labels = std::make_unique<Vector<String>>();
-  labels->ReserveCapacity(2);
+  labels->reserve(2);
   labels->push_back("AM");
   labels->push_back("PM");
   return labels;
@@ -414,7 +414,7 @@ const Vector<String>& LocaleICU::ShortMonthLabels() {
       return short_month_labels_;
     }
   }
-  short_month_labels_.ReserveCapacity(std::size(WTF::kMonthName));
+  short_month_labels_.reserve(std::size(WTF::kMonthName));
   for (unsigned i = 0; i < std::size(WTF::kMonthName); ++i)
     short_month_labels_.push_back(WTF::kMonthName[i]);
   return short_month_labels_;

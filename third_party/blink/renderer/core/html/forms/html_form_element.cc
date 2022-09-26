@@ -866,7 +866,7 @@ bool HTMLFormElement::CheckInvalidControlsAndCollectUnhandled(
   // ListedElement::checkValidity() might change listed_elements.
   const ListedElement::List& listed_elements = ListedElements();
   HeapVector<Member<ListedElement>> elements;
-  elements.ReserveCapacity(listed_elements.size());
+  elements.reserve(listed_elements.size());
   for (ListedElement* element : listed_elements)
     elements.push_back(element);
   int invalid_controls_count = 0;

@@ -1153,13 +1153,13 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
   }
 
   HeapVector<Member<RTCIceServer>> ice_servers;
-  ice_servers.ReserveCapacity(
+  ice_servers.reserve(
       base::checked_cast<wtf_size_t>(webrtc_configuration.servers.size()));
   for (const auto& webrtc_server : webrtc_configuration.servers) {
     auto* ice_server = RTCIceServer::Create();
 
     Vector<String> url_vector;
-    url_vector.ReserveCapacity(
+    url_vector.reserve(
         base::checked_cast<wtf_size_t>(webrtc_server.urls.size()));
     for (const auto& url : webrtc_server.urls) {
       url_vector.emplace_back(url.c_str());
@@ -1176,7 +1176,7 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
 
   if (!webrtc_configuration.certificates.empty()) {
     HeapVector<blink::Member<RTCCertificate>> certificates;
-    certificates.ReserveCapacity(base::checked_cast<wtf_size_t>(
+    certificates.reserve(base::checked_cast<wtf_size_t>(
         webrtc_configuration.certificates.size()));
     for (const auto& webrtc_certificate : webrtc_configuration.certificates) {
       certificates.emplace_back(

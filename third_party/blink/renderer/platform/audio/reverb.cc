@@ -117,7 +117,7 @@ void Reverb::Initialize(AudioBus* impulse_response_buffer,
   // The reverb can handle a mono impulse response and still do stereo
   // processing.
   unsigned num_convolvers = std::max(number_of_response_channels_, 2u);
-  convolvers_.ReserveCapacity(num_convolvers);
+  convolvers_.reserve(num_convolvers);
 
   int convolver_render_phase = 0;
   for (unsigned i = 0; i < num_convolvers; ++i) {

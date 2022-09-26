@@ -55,7 +55,7 @@ scoped_refptr<PictureSnapshot> PictureSnapshot::Load(
     const Vector<scoped_refptr<TilePictureStream>>& tiles) {
   DCHECK(!tiles.empty());
   Vector<sk_sp<SkPicture>> pictures;
-  pictures.ReserveCapacity(tiles.size());
+  pictures.reserve(tiles.size());
   gfx::RectF union_rect;
   for (const auto& tile_stream : tiles) {
     sk_sp<SkPicture> picture = std::move(tile_stream->picture);

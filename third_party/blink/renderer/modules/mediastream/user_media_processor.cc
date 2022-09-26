@@ -1491,7 +1491,7 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
 
   MediaStreamSource::Capabilities capabilities;
   capabilities.echo_cancellation = {true, false};
-  capabilities.echo_cancellation_type.ReserveCapacity(3);
+  capabilities.echo_cancellation_type.reserve(3);
   capabilities.echo_cancellation_type.emplace_back(
       String::FromUTF8(kEchoCancellationTypeBrowser));
   capabilities.echo_cancellation_type.emplace_back(

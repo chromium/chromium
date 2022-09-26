@@ -314,7 +314,7 @@ struct CORE_EXPORT GridItems {
     item_data.ReserveInitialCapacity(initial_capacity);
   }
   void ReserveCapacity(wtf_size_t new_capacity) {
-    item_data.ReserveCapacity(new_capacity);
+    item_data.reserve(new_capacity);
   }
 
   // Grid items are rearranged in order-modified document order since

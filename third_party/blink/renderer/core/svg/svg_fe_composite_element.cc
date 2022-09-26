@@ -140,7 +140,7 @@ FilterEffect* SVGFECompositeElement::Build(SVGFilterBuilder* filter_builder,
       k2_->CurrentValue()->Value(), k3_->CurrentValue()->Value(),
       k4_->CurrentValue()->Value());
   FilterEffectVector& input_effects = effect->InputEffects();
-  input_effects.ReserveCapacity(2);
+  input_effects.reserve(2);
   input_effects.push_back(input1);
   input_effects.push_back(input2);
   return effect;

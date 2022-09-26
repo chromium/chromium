@@ -516,7 +516,7 @@ NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
                 !builder->multicols_with_pending_oofs_.empty());
   NGFragmentedOutOfFlowData* fragmented_data =
       MakeGarbageCollected<NGFragmentedOutOfFlowData>();
-  fragmented_data->oof_positioned_fragmentainer_descendants.ReserveCapacity(
+  fragmented_data->oof_positioned_fragmentainer_descendants.reserve(
       builder->oof_positioned_fragmentainer_descendants_.size());
   const PhysicalSize& size = Size();
   WritingDirectionMode writing_direction = builder->GetWritingDirection();

@@ -144,16 +144,16 @@ void StringBuilder::ReserveCapacity(unsigned new_capacity) {
     return;
   }
   if (is_8bit_)
-    buffer8_.ReserveCapacity(new_capacity);
+    buffer8_.reserve(new_capacity);
   else
-    buffer16_.ReserveCapacity(new_capacity);
+    buffer16_.reserve(new_capacity);
 }
 
 void StringBuilder::Reserve16BitCapacity(unsigned new_capacity) {
   if (is_8bit_ || !HasBuffer())
     CreateBuffer16(new_capacity);
   else
-    buffer16_.ReserveCapacity(new_capacity);
+    buffer16_.reserve(new_capacity);
 }
 
 void StringBuilder::Resize(unsigned new_size) {

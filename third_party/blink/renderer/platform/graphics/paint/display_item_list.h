@@ -33,7 +33,7 @@ class PLATFORM_EXPORT DisplayItemList {
   DisplayItemList& operator=(DisplayItemList&&) = delete;
 
   void ReserveCapacity(wtf_size_t initial_capacity) {
-    items_.ReserveCapacity(initial_capacity);
+    items_.reserve(initial_capacity);
   }
 
   // This private section is before the public APIs because some inline public

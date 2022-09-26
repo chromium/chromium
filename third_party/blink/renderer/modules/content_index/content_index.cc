@@ -316,7 +316,7 @@ void ContentIndex::DidGetDescriptions(
     mojom::blink::ContentIndexError error,
     Vector<mojom::blink::ContentDescriptionPtr> descriptions) {
   HeapVector<Member<ContentDescription>> blink_descriptions;
-  blink_descriptions.ReserveCapacity(descriptions.size());
+  blink_descriptions.reserve(descriptions.size());
   for (const auto& description : descriptions)
     blink_descriptions.push_back(description.To<blink::ContentDescription*>());
 

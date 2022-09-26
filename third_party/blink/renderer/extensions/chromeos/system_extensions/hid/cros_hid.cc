@@ -76,7 +76,7 @@ ScriptPromise CrosHID::accessDevice(ScriptState* script_state,
   if (cros_hid) {
     Vector<mojom::blink::HidDeviceFilterPtr> mojo_filters;
     if (options->hasFilters()) {
-      mojo_filters.ReserveCapacity(options->filters().size());
+      mojo_filters.reserve(options->filters().size());
       for (const auto& filter : options->filters()) {
         absl::optional<String> error_message =
             HID::CheckDeviceFilterValidity(*filter);

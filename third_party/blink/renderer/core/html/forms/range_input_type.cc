@@ -360,7 +360,7 @@ void RangeInputType::UpdateTickMarkValues() {
   if (!data_list)
     return;
   HTMLDataListOptionsCollection* options = data_list->options();
-  tick_mark_values_.ReserveCapacity(options->length());
+  tick_mark_values_.reserve(options->length());
   for (unsigned i = 0; i < options->length(); ++i) {
     HTMLOptionElement* option_element = options->Item(i);
     String option_value = option_element->value();
@@ -370,7 +370,7 @@ void RangeInputType::UpdateTickMarkValues() {
       continue;
     tick_mark_values_.push_back(ParseToNumber(option_value, Decimal::Nan()));
   }
-  tick_mark_values_.ShrinkToFit();
+  tick_mark_values_.shrink_to_fit();
   std::sort(tick_mark_values_.begin(), tick_mark_values_.end(), DecimalCompare);
 }
 

@@ -59,7 +59,7 @@ class OnPurgeMemoryListener : public GarbageCollected<OnPurgeMemoryListener>,
 Vector<ParkableStringImpl*> EnumerateStrings(
     const ParkableStringManager::StringMap& strings) {
   WTF::Vector<ParkableStringImpl*> all_strings;
-  all_strings.ReserveCapacity(strings.size());
+  all_strings.reserve(strings.size());
 
   for (const auto& kv : strings)
     all_strings.push_back(kv.value);

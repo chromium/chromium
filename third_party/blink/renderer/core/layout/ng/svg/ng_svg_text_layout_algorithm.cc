@@ -94,13 +94,13 @@ bool NGSvgTextLayoutAlgorithm::Setup(wtf_size_t approximate_count) {
   if (approximate_count == 0)
     return false;
   // ==> We don't fill |result| here. We do it in the step 2.
-  result_.ReserveCapacity(approximate_count);
+  result_.reserve(approximate_count);
 
   // 1.4. Let CSS_positions be an array of length count whose entries will be
   // filled with the x and y positions of the corresponding typographic
   // character in root. The array entries are initialized to (0, 0).
   // ==> We don't fill |CSS_positions| here. We do it in the step 2.
-  css_positions_.ReserveCapacity(approximate_count);
+  css_positions_.reserve(approximate_count);
   return true;
 }
 
@@ -111,7 +111,7 @@ void NGSvgTextLayoutAlgorithm::SetFlags(
   // This function collects information per an "addressable" character in DOM
   // order. So we need to access NGFragmentItems in the logical order.
   Vector<wtf_size_t> sorted_item_indexes;
-  sorted_item_indexes.ReserveCapacity(items.size());
+  sorted_item_indexes.reserve(items.size());
   for (wtf_size_t i = 0; i < items.size(); ++i) {
     if (items[i]->Type() == NGFragmentItem::kText)
       sorted_item_indexes.push_back(i);
@@ -325,7 +325,7 @@ void NGSvgTextLayoutAlgorithm::ResolveTextLength(
     // 2.4.6. For each index k in the range [i,j]:
     //  ==> This loop should run in visual order.
     Vector<wtf_size_t> visual_indexes;
-    visual_indexes.ReserveCapacity(j_plus_1 - i);
+    visual_indexes.reserve(j_plus_1 - i);
     for (wtf_size_t k = i; k < j_plus_1; ++k)
       visual_indexes.push_back(k);
     if (inline_node_.IsBidiEnabled()) {

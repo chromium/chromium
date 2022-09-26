@@ -120,7 +120,7 @@ base::scoped_nsobject<NSDateFormatter> LocaleMac::ShortDateFormatter() {
 const Vector<String>& LocaleMac::MonthLabels() {
   if (!month_labels_.empty())
     return month_labels_;
-  month_labels_.ReserveCapacity(12);
+  month_labels_.reserve(12);
   NSArray* array = [ShortDateFormatter() monthSymbols];
   if ([array count] == 12) {
     for (unsigned i = 0; i < 12; ++i)
@@ -135,7 +135,7 @@ const Vector<String>& LocaleMac::MonthLabels() {
 const Vector<String>& LocaleMac::WeekDayShortLabels() {
   if (!week_day_short_labels_.empty())
     return week_day_short_labels_;
-  week_day_short_labels_.ReserveCapacity(7);
+  week_day_short_labels_.reserve(7);
   NSArray* array = [ShortDateFormatter() veryShortWeekdaySymbols];
   if ([array count] == 7) {
     for (unsigned i = 0; i < 7; ++i)
@@ -248,7 +248,7 @@ String LocaleMac::DateTimeFormatWithoutSeconds() {
 const Vector<String>& LocaleMac::ShortMonthLabels() {
   if (!short_month_labels_.empty())
     return short_month_labels_;
-  short_month_labels_.ReserveCapacity(12);
+  short_month_labels_.reserve(12);
   NSArray* array = [ShortDateFormatter() shortMonthSymbols];
   if ([array count] == 12) {
     for (unsigned i = 0; i < 12; ++i)
@@ -265,7 +265,7 @@ const Vector<String>& LocaleMac::StandAloneMonthLabels() {
     return stand_alone_month_labels_;
   NSArray* array = [ShortDateFormatter() standaloneMonthSymbols];
   if ([array count] == 12) {
-    stand_alone_month_labels_.ReserveCapacity(12);
+    stand_alone_month_labels_.reserve(12);
     for (unsigned i = 0; i < 12; ++i)
       stand_alone_month_labels_.push_back(array[i]);
     return stand_alone_month_labels_;
@@ -279,7 +279,7 @@ const Vector<String>& LocaleMac::ShortStandAloneMonthLabels() {
     return short_stand_alone_month_labels_;
   NSArray* array = [ShortDateFormatter() shortStandaloneMonthSymbols];
   if ([array count] == 12) {
-    short_stand_alone_month_labels_.ReserveCapacity(12);
+    short_stand_alone_month_labels_.reserve(12);
     for (unsigned i = 0; i < 12; ++i)
       short_stand_alone_month_labels_.push_back(array[i]);
     return short_stand_alone_month_labels_;
@@ -291,7 +291,7 @@ const Vector<String>& LocaleMac::ShortStandAloneMonthLabels() {
 const Vector<String>& LocaleMac::TimeAMPMLabels() {
   if (!time_ampm_labels_.empty())
     return time_ampm_labels_;
-  time_ampm_labels_.ReserveCapacity(2);
+  time_ampm_labels_.reserve(2);
   base::scoped_nsobject<NSDateFormatter> formatter(ShortTimeFormatter());
   time_ampm_labels_.push_back([formatter AMSymbol]);
   time_ampm_labels_.push_back([formatter PMSymbol]);

@@ -86,7 +86,7 @@ void ContentIndexIconLoader::Start(
   auto image_resources = ToImageResource(execution_context, description->icons);
 
   auto icons = std::make_unique<Vector<SkBitmap>>();
-  icons->ReserveCapacity(icon_sizes.size());
+  icons->reserve(icon_sizes.size());
   Vector<SkBitmap>* icons_ptr = icons.get();
   auto barrier_closure = base::BarrierClosure(
       icon_sizes.size(),

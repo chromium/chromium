@@ -194,7 +194,7 @@ URLPatternComponentResult* MakeURLPatternComponentResult(
   // TODO(crbug.com/1293259): Use webidl `(USVString or undefined)` when
   //                          available in the webidl compiler.
   HeapVector<std::pair<String, ScriptValue>> v8_group_values;
-  v8_group_values.ReserveCapacity(group_values.size());
+  v8_group_values.reserve(group_values.size());
   for (const auto& pair : group_values) {
     v8::Local<v8::Value> v8_value;
     if (pair.second.IsNull()) {

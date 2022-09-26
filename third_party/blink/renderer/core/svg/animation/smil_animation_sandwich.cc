@@ -74,7 +74,7 @@ void SMILAnimationSandwich::UpdateActiveAnimationStack(
 
   const bool was_active = !active_.empty();
   active_.Shrink(0);
-  active_.ReserveCapacity(sandwich_.size());
+  active_.reserve(sandwich_.size());
   // Build the contributing/active sandwich.
   for (auto& animation : sandwich_) {
     if (!animation->IsContributing(presentation_time))

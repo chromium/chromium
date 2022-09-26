@@ -160,7 +160,7 @@ AudioBuffer::AudioBuffer(unsigned number_of_channels,
                          float sample_rate,
                          InitializationPolicy policy)
     : sample_rate_(sample_rate), length_(number_of_frames) {
-  channels_.ReserveCapacity(number_of_channels);
+  channels_.reserve(number_of_channels);
 
   for (unsigned i = 0; i < number_of_channels; ++i) {
     DOMFloat32Array* channel_data_array =
@@ -179,7 +179,7 @@ AudioBuffer::AudioBuffer(AudioBus* bus)
     : sample_rate_(bus->SampleRate()), length_(bus->length()) {
   // Copy audio data from the bus to the Float32Arrays we manage.
   unsigned number_of_channels = bus->NumberOfChannels();
-  channels_.ReserveCapacity(number_of_channels);
+  channels_.reserve(number_of_channels);
   for (unsigned i = 0; i < number_of_channels; ++i) {
     DOMFloat32Array* channel_data_array =
         CreateFloat32ArrayOrNull(length_, kDontInitialize);

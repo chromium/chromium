@@ -93,7 +93,7 @@ void QuotedPrintableEncode(const char* input,
                            bool is_header,
                            Vector<char>& out) {
   out.clear();
-  out.ReserveCapacity(input_length);
+  out.reserve(input_length);
   if (is_header)
     out.Append(kRFC2047EncodingPrefix, kRFC2047EncodingPrefixLength);
   size_t current_line_length = 0;

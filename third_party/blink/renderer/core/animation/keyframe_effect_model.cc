@@ -235,7 +235,7 @@ Vector<double> KeyframeEffectModelBase::GetComputedOffsets(
   // this function that std::numeric_limits::quiet_NaN() represents null.
   double last_offset = 0;
   Vector<double> result;
-  result.ReserveCapacity(keyframes.size());
+  result.reserve(keyframes.size());
 
   for (const auto& keyframe : keyframes) {
     absl::optional<double> offset = keyframe->Offset();

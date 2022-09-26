@@ -53,7 +53,7 @@ class NodeSet final : public GarbageCollected<NodeSet> {
   }
   HeapVector<Member<Node>>::const_iterator end() const { return nodes_.end(); }
   void ReserveCapacity(wtf_size_t new_capacity) {
-    nodes_.ReserveCapacity(new_capacity);
+    nodes_.reserve(new_capacity);
   }
   void clear() { nodes_.clear(); }
   void Swap(NodeSet& other) {

@@ -652,7 +652,7 @@ void RuleMap::Compact() {
     return;
   }
 
-  backing.ShrinkToFit();
+  backing.shrink_to_fit();
 
   // Order by (bucket_number, order_in_bucket) by way of a simple
   // in-place counting sort (which is O(n), because our highest bucket
@@ -842,25 +842,25 @@ void RuleSet::CompactRules() {
   CreateSubstringMatchers(attr_rules_, attr_substring_matchers_);
   tag_rules_.Compact();
   ua_shadow_pseudo_element_rules_.Compact();
-  link_pseudo_class_rules_.ShrinkToFit();
-  cue_pseudo_rules_.ShrinkToFit();
-  focus_pseudo_class_rules_.ShrinkToFit();
-  selector_fragment_anchor_rules_.ShrinkToFit();
-  focus_visible_pseudo_class_rules_.ShrinkToFit();
-  spatial_navigation_interest_class_rules_.ShrinkToFit();
-  universal_rules_.ShrinkToFit();
-  shadow_host_rules_.ShrinkToFit();
-  part_pseudo_rules_.ShrinkToFit();
-  slotted_pseudo_element_rules_.ShrinkToFit();
-  visited_dependent_rules_.ShrinkToFit();
-  page_rules_.ShrinkToFit();
-  font_face_rules_.ShrinkToFit();
-  font_palette_values_rules_.ShrinkToFit();
-  keyframes_rules_.ShrinkToFit();
-  property_rules_.ShrinkToFit();
-  counter_style_rules_.ShrinkToFit();
-  position_fallback_rules_.ShrinkToFit();
-  layer_intervals_.ShrinkToFit();
+  link_pseudo_class_rules_.shrink_to_fit();
+  cue_pseudo_rules_.shrink_to_fit();
+  focus_pseudo_class_rules_.shrink_to_fit();
+  selector_fragment_anchor_rules_.shrink_to_fit();
+  focus_visible_pseudo_class_rules_.shrink_to_fit();
+  spatial_navigation_interest_class_rules_.shrink_to_fit();
+  universal_rules_.shrink_to_fit();
+  shadow_host_rules_.shrink_to_fit();
+  part_pseudo_rules_.shrink_to_fit();
+  slotted_pseudo_element_rules_.shrink_to_fit();
+  visited_dependent_rules_.shrink_to_fit();
+  page_rules_.shrink_to_fit();
+  font_face_rules_.shrink_to_fit();
+  font_palette_values_rules_.shrink_to_fit();
+  keyframes_rules_.shrink_to_fit();
+  property_rules_.shrink_to_fit();
+  counter_style_rules_.shrink_to_fit();
+  position_fallback_rules_.shrink_to_fit();
+  layer_intervals_.shrink_to_fit();
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
   AssertRuleListsSorted();

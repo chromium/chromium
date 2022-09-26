@@ -133,7 +133,7 @@ MediaStream::MediaStream(ExecutionContext* context,
   descriptor_->SetClient(this);
 
   uint32_t number_of_audio_tracks = descriptor_->NumberOfAudioComponents();
-  audio_tracks_.ReserveCapacity(number_of_audio_tracks);
+  audio_tracks_.reserve(number_of_audio_tracks);
   for (uint32_t i = 0; i < number_of_audio_tracks; i++) {
     auto* new_track = MakeGarbageCollected<MediaStreamTrackImpl>(
         context, descriptor_->AudioComponent(i));
@@ -146,7 +146,7 @@ MediaStream::MediaStream(ExecutionContext* context,
   }
 
   uint32_t number_of_video_tracks = descriptor_->NumberOfVideoComponents();
-  video_tracks_.ReserveCapacity(number_of_video_tracks);
+  video_tracks_.reserve(number_of_video_tracks);
   for (uint32_t i = 0; i < number_of_video_tracks; i++) {
     MediaStreamTrack* const new_track = MediaStreamTrackImpl::Create(
         context, descriptor_->VideoComponent(i),
@@ -192,13 +192,13 @@ MediaStream::MediaStream(ExecutionContext* context,
           &MediaStream::ScheduledEventTimerFired) {
   descriptor_->SetClient(this);
 
-  audio_tracks_.ReserveCapacity(audio_tracks.size());
+  audio_tracks_.reserve(audio_tracks.size());
   for (MediaStreamTrack* audio_track : audio_tracks) {
     DCHECK_EQ("audio", audio_track->kind());
     audio_track->RegisterMediaStream(this);
     audio_tracks_.push_back(audio_track);
   }
-  video_tracks_.ReserveCapacity(video_tracks.size());
+  video_tracks_.reserve(video_tracks.size());
   for (MediaStreamTrack* video_track : video_tracks) {
     DCHECK_EQ("video", video_track->kind());
     video_track->RegisterMediaStream(this);

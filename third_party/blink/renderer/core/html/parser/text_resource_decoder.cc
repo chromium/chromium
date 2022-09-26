@@ -139,7 +139,7 @@ void TextResourceDecoder::AddToBuffer(const char* data,
                                       wtf_size_t data_length) {
   // Explicitly reserve capacity in the Vector to avoid triggering the growth
   // heuristic (== no excess capacity).
-  buffer_.ReserveCapacity(buffer_.size() + data_length);
+  buffer_.reserve(buffer_.size() + data_length);
   buffer_.Append(data, data_length);
 }
 

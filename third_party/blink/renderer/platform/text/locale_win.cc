@@ -151,12 +151,12 @@ void LocaleWin::EnsureShortMonthLabels() {
       LOCALE_SABBREVMONTHNAME9,  LOCALE_SABBREVMONTHNAME10,
       LOCALE_SABBREVMONTHNAME11, LOCALE_SABBREVMONTHNAME12,
   };
-  short_month_labels_.ReserveCapacity(std::size(kTypes));
+  short_month_labels_.reserve(std::size(kTypes));
   for (unsigned i = 0; i < std::size(kTypes); ++i) {
     short_month_labels_.push_back(GetLocaleInfoString(kTypes[i]));
     if (short_month_labels_.back().empty()) {
       short_month_labels_.Shrink(0);
-      short_month_labels_.ReserveCapacity(std::size(WTF::kMonthName));
+      short_month_labels_.reserve(std::size(WTF::kMonthName));
       for (unsigned m = 0; m < std::size(WTF::kMonthName); ++m)
         short_month_labels_.push_back(WTF::kMonthName[m]);
       return;
@@ -277,12 +277,12 @@ void LocaleWin::EnsureMonthLabels() {
       LOCALE_SMONTHNAME7,  LOCALE_SMONTHNAME8,  LOCALE_SMONTHNAME9,
       LOCALE_SMONTHNAME10, LOCALE_SMONTHNAME11, LOCALE_SMONTHNAME12,
   };
-  month_labels_.ReserveCapacity(std::size(kTypes));
+  month_labels_.reserve(std::size(kTypes));
   for (unsigned i = 0; i < std::size(kTypes); ++i) {
     month_labels_.push_back(GetLocaleInfoString(kTypes[i]));
     if (month_labels_.back().empty()) {
       month_labels_.Shrink(0);
-      month_labels_.ReserveCapacity(std::size(WTF::kMonthFullName));
+      month_labels_.reserve(std::size(WTF::kMonthFullName));
       for (unsigned m = 0; m < std::size(WTF::kMonthFullName); ++m)
         month_labels_.push_back(WTF::kMonthFullName[m]);
       return;
@@ -298,12 +298,12 @@ void LocaleWin::EnsureWeekDayShortLabels() {
                             LOCALE_SSHORTESTDAYNAME2, LOCALE_SSHORTESTDAYNAME3,
                             LOCALE_SSHORTESTDAYNAME4, LOCALE_SSHORTESTDAYNAME5,
                             LOCALE_SSHORTESTDAYNAME6};
-  week_day_short_labels_.ReserveCapacity(std::size(kTypes));
+  week_day_short_labels_.reserve(std::size(kTypes));
   for (unsigned i = 0; i < std::size(kTypes); ++i) {
     week_day_short_labels_.push_back(GetLocaleInfoString(kTypes[i]));
     if (week_day_short_labels_.back().empty()) {
       week_day_short_labels_.Shrink(0);
-      week_day_short_labels_.ReserveCapacity(std::size(WTF::kWeekdayName));
+      week_day_short_labels_.reserve(std::size(WTF::kWeekdayName));
       for (unsigned w = 0; w < std::size(WTF::kWeekdayName); ++w) {
         // weekdayName starts with Monday.
         week_day_short_labels_.push_back(WTF::kWeekdayName[(w + 6) % 7]);

@@ -251,7 +251,7 @@ void MutationObserver::EnqueueSlotChange(HTMLSlotElement& slot) {
 // static
 void MutationObserver::CleanSlotChangeList(Document& document) {
   SlotChangeList kept;
-  kept.ReserveCapacity(ActiveSlotChangeList().size());
+  kept.reserve(ActiveSlotChangeList().size());
   for (auto& slot : ActiveSlotChangeList()) {
     if (slot->GetDocument() != document)
       kept.push_back(slot);

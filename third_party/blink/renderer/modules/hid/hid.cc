@@ -186,7 +186,7 @@ ScriptPromise HID::requestDevice(ScriptState* script_state,
 
   Vector<mojom::blink::HidDeviceFilterPtr> mojo_filters;
   if (options->hasFilters()) {
-    mojo_filters.ReserveCapacity(options->filters().size());
+    mojo_filters.reserve(options->filters().size());
     for (const auto& filter : options->filters()) {
       String error_message = CheckDeviceFilterValidity(*filter);
       if (error_message) {
@@ -205,7 +205,7 @@ ScriptPromise HID::requestDevice(ScriptState* script_state,
           "'exclusionFilters', if present, must contain at least one filter.");
       return ScriptPromise();
     }
-    mojo_exclusion_filters.ReserveCapacity(options->exclusionFilters().size());
+    mojo_exclusion_filters.reserve(options->exclusionFilters().size());
     for (const auto& exclusion_filter : options->exclusionFilters()) {
       String error_message = CheckDeviceFilterValidity(*exclusion_filter);
       if (error_message) {

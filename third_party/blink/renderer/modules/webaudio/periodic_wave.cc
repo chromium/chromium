@@ -416,7 +416,7 @@ void PeriodicWaveImpl::CreateBandLimitedTables(const float* real_data,
 
   number_of_components = std::min(number_of_components, half_size);
 
-  band_limited_tables_.ReserveCapacity(NumberOfRanges());
+  band_limited_tables_.reserve(NumberOfRanges());
 
   FFTFrame frame(fft_size);
   for (unsigned range_index = 0; range_index < NumberOfRanges();

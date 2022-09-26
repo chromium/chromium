@@ -164,7 +164,7 @@ const HeapVector<Member<Element>>& TreeOrderedMap::GetAllElementsById(
   DCHECK(entry->count);
 
   if (entry->ordered_list.empty()) {
-    entry->ordered_list.ReserveCapacity(entry->count);
+    entry->ordered_list.reserve(entry->count);
     for (Element* element =
              entry->element ? entry->element.Get()
                             : ElementTraversal::FirstWithin(scope.RootNode());

@@ -386,7 +386,7 @@ BackgroundFetchManager::CreateFetchAPIRequestVector(
         return {};
       }
 
-      fetch_api_requests.ReserveCapacity(request_vector.size());
+      fetch_api_requests.reserve(request_vector.size());
       for (const auto& request_info : request_vector) {
         Request* request = nullptr;
         switch (request_info->GetContentType()) {

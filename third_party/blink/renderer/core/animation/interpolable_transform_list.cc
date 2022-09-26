@@ -21,7 +21,7 @@ InterpolableTransformList::ConvertCSSValue(const CSSValue& css_value,
 void InterpolableTransformList::PreConcat(
     const InterpolableTransformList& underlying) {
   Vector<scoped_refptr<TransformOperation>> result;
-  result.ReserveCapacity(underlying.operations_.size() + operations_.size());
+  result.reserve(underlying.operations_.size() + operations_.size());
   result.AppendVector(underlying.operations_.Operations());
   result.AppendVector(operations_.Operations());
   operations_.Operations() = result;

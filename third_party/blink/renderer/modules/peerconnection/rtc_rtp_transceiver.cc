@@ -256,7 +256,7 @@ void RTCRtpTransceiver::setCodecPreferences(
     const HeapVector<Member<RTCRtpCodecCapability>>& codecs,
     ExceptionState& exception_state) {
   Vector<webrtc::RtpCodecCapability> codec_preferences;
-  codec_preferences.ReserveCapacity(codecs.size());
+  codec_preferences.reserve(codecs.size());
   for (const auto& codec : codecs) {
     codec_preferences.emplace_back();
     auto& webrtc_codec = codec_preferences.back();

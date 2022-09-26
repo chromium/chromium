@@ -9,7 +9,7 @@
 namespace blink {
 
 void SelectorStatisticsCollector::ReserveCapacity(wtf_size_t size) {
-  per_rule_statistics_.ReserveCapacity(size);
+  per_rule_statistics_.reserve(size);
 }
 
 void SelectorStatisticsCollector::BeginCollectionForRule(const RuleData* rule) {

@@ -286,7 +286,7 @@ scoped_refptr<ShapeResult> ShapeResultView::CreateShapeResult() const {
   ShapeResult* new_result =
       new ShapeResult(primary_font_, start_index_ + char_index_offset_,
                       num_characters_, Direction());
-  new_result->runs_.ReserveCapacity(num_parts_);
+  new_result->runs_.reserve(num_parts_);
   for (const auto& part : RunsOrParts()) {
     auto new_run = ShapeResult::RunInfo::Create(
         part.run_->font_data_.get(), part.run_->direction_,

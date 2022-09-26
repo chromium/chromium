@@ -54,7 +54,7 @@ MojoResult MojoHandle::writeMessage(
     const V8BufferSource* buffer,
     const HeapVector<Member<MojoHandle>>& handles) {
   Vector<mojo::ScopedHandle, kHandleVectorInlineCapacity> scoped_handles;
-  scoped_handles.ReserveCapacity(handles.size());
+  scoped_handles.reserve(handles.size());
   bool has_invalid_handles = false;
   for (auto& handle : handles) {
     if (!handle->handle_.is_valid())

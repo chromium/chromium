@@ -193,7 +193,7 @@ V8FunctionExecutor::V8FunctionExecutor(v8::Isolate* isolate,
                                        int argc,
                                        v8::Local<v8::Value> argv[])
     : function_(isolate, function), receiver_(isolate, receiver) {
-  args_.ReserveCapacity(base::checked_cast<wtf_size_t>(argc));
+  args_.reserve(base::checked_cast<wtf_size_t>(argc));
   for (int i = 0; i < argc; ++i)
     args_.push_back(TraceWrapperV8Reference<v8::Value>(isolate, argv[i]));
 }
@@ -205,7 +205,7 @@ Vector<v8::Local<v8::Value>> V8FunctionExecutor::Execute(
   v8::Local<v8::Value> single_result;
 
   Vector<v8::Local<v8::Value>> args;
-  args.ReserveCapacity(args_.size());
+  args.reserve(args_.size());
   for (wtf_size_t i = 0; i < args_.size(); ++i)
     args.push_back(args_[i].Get(isolate));
 

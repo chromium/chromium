@@ -138,8 +138,7 @@ void EditContext::DispatchTextFormatEvent(
   // fire textformateupdate event.
   DCHECK(has_composition_);
   HeapVector<Member<TextFormat>> text_formats;
-  text_formats.ReserveCapacity(
-      static_cast<WTF::wtf_size_t>(ime_text_spans.size()));
+  text_formats.reserve(base::checked_cast<wtf_size_t>(ime_text_spans.size()));
 
   for (const auto& ime_text_span : ime_text_spans) {
     const auto range_start = base::checked_cast<wtf_size_t>(

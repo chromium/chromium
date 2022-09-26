@@ -3853,7 +3853,7 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
   if (changed_bounds_ids_.empty())
     return;
   Vector<mojom::blink::LocationChangesPtr> changes;
-  changes.ReserveCapacity(changed_bounds_ids_.size());
+  changes.reserve(changed_bounds_ids_.size());
   for (AXID changed_bounds_id : changed_bounds_ids_) {
     if (AXObject* obj = ObjectFromAXID(changed_bounds_id)) {
       // Only update locations that are already known.

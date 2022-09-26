@@ -1090,7 +1090,7 @@ void USBDevice::AsyncIsochronousTransferIn(
 
   DOMArrayBuffer* buffer = DOMArrayBuffer::Create(data.data(), data.size());
   HeapVector<Member<USBIsochronousInTransferPacket>> packets;
-  packets.ReserveCapacity(mojo_packets.size());
+  packets.reserve(mojo_packets.size());
   uint32_t byte_offset = 0;
   for (const auto& packet : mojo_packets) {
     if (CheckFatalTransferStatus(resolver, packet->status))
@@ -1115,7 +1115,7 @@ void USBDevice::AsyncIsochronousTransferOut(
   MarkRequestComplete(resolver);
 
   HeapVector<Member<USBIsochronousOutTransferPacket>> packets;
-  packets.ReserveCapacity(mojo_packets.size());
+  packets.reserve(mojo_packets.size());
   for (const auto& packet : mojo_packets) {
     if (CheckFatalTransferStatus(resolver, packet->status))
       return;

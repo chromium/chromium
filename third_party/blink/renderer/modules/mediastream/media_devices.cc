@@ -386,8 +386,7 @@ void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
     config_ptr->all_origins_permitted = true;
   } else {
     config_ptr->all_origins_permitted = false;
-    config_ptr->permitted_origins.ReserveCapacity(
-        config->permittedOrigins().size());
+    config_ptr->permitted_origins.reserve(config->permittedOrigins().size());
     for (const auto& permitted_origin : config->permittedOrigins()) {
       if (permitted_origin == "*") {
         exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,

@@ -985,7 +985,7 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
 
   NGInlineNode node(editor.GetLayoutBlockFlow());
   NGInlineNodeData* data = node.MutableData();
-  data->items.ReserveCapacity(previous_data->items.size());
+  data->items.reserve(previous_data->items.size());
   NGInlineItemsBuilder builder(editor.GetLayoutBlockFlow(), &data->items);
   // TODO(yosin): We should reuse before/after |layout_text| during collecting
   // inline items.
@@ -1043,7 +1043,7 @@ void NGInlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
   // |builder| not construct items and text content.
   HeapVector<NGInlineItem> items;
   ClearCollectionScope<HeapVector<NGInlineItem>> clear_scope(&items);
-  items.ReserveCapacity(EstimateInlineItemsCount(*layout_block_flow));
+  items.reserve(EstimateInlineItemsCount(*layout_block_flow));
   NGInlineItemsBuilderForOffsetMapping builder(layout_block_flow, &items,
                                                chunk_offsets);
   builder.GetOffsetMappingBuilder().ReserveCapacity(
@@ -1125,7 +1125,7 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
       chunk_offsets = FindSvgTextChunks(*block, *data);
   }
 
-  data->items.ReserveCapacity(EstimateInlineItemsCount(*block));
+  data->items.reserve(EstimateInlineItemsCount(*block));
   NGInlineItemsBuilder builder(block, &data->items, chunk_offsets);
   CollectInlinesInternal(&builder, previous_data);
   if (block->IsNGSVGText() && !data->svg_node_data_) {
@@ -1148,7 +1148,7 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
   // be different from final ones.
   HeapVector<NGInlineItem> items;
   ClearCollectionScope<HeapVector<NGInlineItem>> clear_scope(&items);
-  items.ReserveCapacity(EstimateInlineItemsCount(block));
+  items.reserve(EstimateInlineItemsCount(block));
   NGInlineItemsBuilderForOffsetMapping items_builder(&block, &items);
   NGOffsetMappingBuilder& mapping_builder =
       items_builder.GetOffsetMappingBuilder();

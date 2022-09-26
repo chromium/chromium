@@ -157,7 +157,7 @@ ScriptPromise Permissions::requestAll(
   ScriptPromise promise = resolver->Promise();
 
   Vector<PermissionDescriptorPtr> internal_permissions_copy;
-  internal_permissions_copy.ReserveCapacity(internal_permissions.size());
+  internal_permissions_copy.reserve(internal_permissions.size());
   for (const auto& descriptor : internal_permissions)
     internal_permissions_copy.push_back(descriptor->Clone());
 

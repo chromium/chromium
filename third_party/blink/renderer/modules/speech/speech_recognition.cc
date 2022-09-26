@@ -106,8 +106,7 @@ void SpeechRecognition::ResultRetrieved(
   // Add the new results to the previous final results.
   HeapVector<Member<SpeechRecognitionResult>> aggregated_results =
       std::move(final_results_);
-  aggregated_results.ReserveCapacity(aggregated_results.size() +
-                                     results.size());
+  aggregated_results.reserve(aggregated_results.size() + results.size());
 
   for (const auto& result : results) {
     HeapVector<Member<SpeechRecognitionAlternative>> alternatives;

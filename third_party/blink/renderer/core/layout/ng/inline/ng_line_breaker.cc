@@ -1016,7 +1016,7 @@ void NGLineBreaker::SplitTextIntoSegments(const NGInlineItem& item,
   }
 
   Vector<unsigned> index_list;
-  index_list.ReserveCapacity(shape.NumGlyphs());
+  index_list.reserve(shape.NumGlyphs());
   shape.ForEachGlyph(0, CollectCharIndex, &index_list);
   if (shape.IsRtl())
     index_list.Reverse();

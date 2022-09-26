@@ -211,7 +211,7 @@ TextFragmentAnchor::TextFragmentAnchor(
       AnnotationAgentContainerImpl::From(*frame_->GetDocument());
   DCHECK(annotation_container);
 
-  directive_annotation_pairs_.ReserveCapacity(text_directives.size());
+  directive_annotation_pairs_.reserve(text_directives.size());
   for (Member<TextDirective>& directive : text_directives) {
     auto* selector =
         MakeGarbageCollected<TextAnnotationSelector>(directive->GetSelector());

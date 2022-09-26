@@ -695,7 +695,7 @@ void TextFinder::UpdateFindMatchRects() {
   // Remove any invalid matches from the cache.
   if (dead_matches) {
     HeapVector<FindMatch> filtered_matches;
-    filtered_matches.ReserveCapacity(find_matches_cache_.size() - dead_matches);
+    filtered_matches.reserve(find_matches_cache_.size() - dead_matches);
 
     for (const FindMatch& match : find_matches_cache_) {
       if (!match.rect_.IsEmpty())
@@ -720,7 +720,7 @@ Vector<gfx::RectF> TextFinder::FindMatchRects() {
   UpdateFindMatchRects();
 
   Vector<gfx::RectF> match_rects;
-  match_rects.ReserveCapacity(match_rects.size() + find_matches_cache_.size());
+  match_rects.reserve(match_rects.size() + find_matches_cache_.size());
   for (const FindMatch& match : find_matches_cache_) {
     DCHECK(!match.rect_.IsEmpty());
     match_rects.push_back(match.rect_);
