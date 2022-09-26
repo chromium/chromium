@@ -6,17 +6,16 @@
 
 #include <stdint.h>
 
-#include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/api/task_queue/task_queue_factory.h"
+#include "third_party/webrtc/api/task_queue/task_queue_test.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 #include "third_party/webrtc_overrides/test/metronome_like_task_queue_test.h"
 
@@ -195,6 +194,29 @@ INSTANTIATE_TEST_SUITE_P(
     ThreadWrapper,
     MetronomeLikeTaskQueueTest,
     ::testing::Values(std::make_unique<ThreadWrapperProvider>));
+
+class ThreadWrapperTaskQueueFactory : public TaskQueueFactory {
+ public:
+  std::unique_ptr<TaskQueueBase, TaskQueueDeleter> CreateTaskQueue(
+      absl::string_view name,
+      Priority priority) const override {
+    std::unique_ptr<rtc::Thread> thread = rtc::Thread::Create();
+    thread->Start();
+    return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
+        thread.release());
+  }
+};
+
+std::unique_ptr<TaskQueueFactory> CreateTaskQueueFactory(
+    const webrtc::FieldTrialsView*) {
+  return std::make_unique<ThreadWrapperTaskQueueFactory>();
+}
+
+// Instantiate suite to run all tests defined in
+// //third_party/webrtc/api/task_queue:task_queue_test.
+INSTANTIATE_TEST_SUITE_P(ThreadWrapper,
+                         TaskQueueTest,
+                         ::testing::Values(CreateTaskQueueFactory));
 
 }  // namespace
 
