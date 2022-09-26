@@ -1630,6 +1630,9 @@ void HTMLDocumentParser::FlushPendingPreloads() {
   if (IsDetached() || !preloader_)
     return;
 
+  // Batch the preload requests across multiple chunks
+  FetchBatchScope fetch_batch(this);
+
   // Do this in a loop in case more preloads are added in the background.
   while (HasPendingPreloads()) {
     Vector<std::unique_ptr<PendingPreloadData>> preload_data;
