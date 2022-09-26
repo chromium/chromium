@@ -39,7 +39,7 @@ bool CloudDeviceDescription::InitFromString(const std::string& json) {
 bool CloudDeviceDescription::InitFromValue(base::Value ticket) {
   if (!ticket.is_dict())
     return false;
-  root_ = std::move(ticket.GetDict());
+  root_ = std::move(ticket).TakeDict();
   return IsValidTicket(root_);
 }
 
