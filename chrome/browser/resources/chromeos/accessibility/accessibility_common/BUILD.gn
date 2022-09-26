@@ -39,7 +39,6 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/input_controller.js",
     "dictation/locale_info.js",
     "dictation/macros/delete_prev_sent_macro.js",
-    "dictation/macros/hidden_macro_manager.js",
     "dictation/macros/input_text_view_macro.js",
     "dictation/macros/list_commands_macro.js",
     "dictation/macros/macro.js",
@@ -211,7 +210,6 @@ js_library("dictation_ui_controller") {
 js_library("dictation_macros") {
   sources = [
     "dictation/macros/delete_prev_sent_macro.js",
-    "dictation/macros/hidden_macro_manager.js",
     "dictation/macros/input_text_view_macro.js",
     "dictation/macros/list_commands_macro.js",
     "dictation/macros/macro.js",
