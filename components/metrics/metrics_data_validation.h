@@ -17,12 +17,12 @@ namespace metrics {
 
 // Only used for testing.
 namespace internal {
-extern const base::Feature kPseudoMetricsEffectFeature;
+BASE_DECLARE_FEATURE(kPseudoMetricsEffectFeature);
 }  // namespace internal
 
 // Used to assess the reliability of field trial data by sending artificial
 // non-uniform data drawn from a log normal distribution.
-extern const base::Feature kNonUniformityValidationFeature;
+BASE_DECLARE_FEATURE(kNonUniformityValidationFeature);
 
 // The parameters for the log normal distribution. They refer to the default
 // mean, the delta that would be applied to the default mean (the actual mean

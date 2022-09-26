@@ -12,8 +12,9 @@
 namespace metrics {
 namespace {
 
-const base::Feature kExpiredHistogramLogicFeature{
-    "ExpiredHistogramLogic", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kExpiredHistogramLogicFeature,
+             "ExpiredHistogramLogic",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kAllowlistParam{
     &kExpiredHistogramLogicFeature, "allowlist", ""};

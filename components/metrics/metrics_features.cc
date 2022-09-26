@@ -5,7 +5,7 @@
 #include "components/metrics/metrics_features.h"
 
 namespace metrics::features {
-const base::Feature kConsolidateMetricsServiceInitialLogLogic = {
-    "ConsolidateMetricsServiceInitialLogLogic",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kConsolidateMetricsServiceInitialLogLogic,
+             "ConsolidateMetricsServiceInitialLogLogic",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace metrics::features

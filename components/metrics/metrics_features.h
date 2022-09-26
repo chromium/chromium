@@ -10,7 +10,7 @@
 namespace metrics::features {
 // Determines whether the initial log should use the same logic as subsequent
 // logs when building it.
-extern const base::Feature kConsolidateMetricsServiceInitialLogLogic;
+BASE_DECLARE_FEATURE(kConsolidateMetricsServiceInitialLogLogic);
 }  // namespace metrics::features
 
 #endif  // COMPONENTS_METRICS_METRICS_FEATURES_H_
