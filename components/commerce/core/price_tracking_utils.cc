@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/shopping_service.h"
@@ -97,10 +99,17 @@ void SetPriceTrackingStateForBookmark(ShoppingService* service,
   std::unique_ptr<std::vector<CommerceSubscription>> subs =
       std::make_unique<std::vector<CommerceSubscription>>();
 
+  absl::optional<UserSeenOffer> user_seen_offer = absl::nullopt;
+  if (enabled) {
+    user_seen_offer.emplace(base::NumberToString(specifics->offer_id()),
+                            specifics->current_price().amount_micros(),
+                            specifics->country_code());
+  }
   CommerceSubscription sub(
       SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
       base::NumberToString(specifics->product_cluster_id()),
-      ManagementType::kUserManaged);
+      ManagementType::kUserManaged, kUnknownSubscriptionTimestamp,
+      std::move(user_seen_offer));
 
   subs->push_back(std::move(sub));
 
