@@ -14,9 +14,21 @@
   }
 
   #illustartion {
-    /* TODO(crbug.com/1350947): Add a color for dark theme */
+    align-items: center;
     background-color: var(--google-grey-50);
+    display: flex;
     height: 120px;
+    justify-content: center;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #illustartion {
+      background-color: #1F1F1F;
+    }
+  }
+
+  #bannerImage {
+    height: 96px;
   }
 
   #spinner {
@@ -56,7 +68,15 @@
 </style>
 <h2 class="page-title">$i18n{checkupTitle}</h2>
 <div id="checkupContent" class="card">
-  <div id="illustartion" role="presentation"></div>
+  <div id="illustartion" role="presentation">
+    <picture>
+      <source class="banner"
+          srcset="./images/[[getBannerImageFileName_(status_)]]_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img id="bannerImage" class="banner" alt=""
+          src="./images/[[getBannerImageFileName_(status_)]].svg">
+    </picture>
+  </div>
   <div class="hr" id="checkupStatus" check-successful$="[[isCheckSuccessful_]]">
     <paper-spinner-lite id="spinner" active hidden="[[!isCheckRunning_]]">
     </paper-spinner-lite>

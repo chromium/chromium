@@ -165,6 +165,18 @@ export class CheckupSectionElement extends PolymerElement {
     PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
         PasswordCheckInteraction.START_CHECK_MANUALLY);
   }
+
+  private getBannerImageFileName_(): string {
+    if (this.computeIsCheckRunning_()) {
+      return 'checkup_result_banner_running';
+    }
+    if (this.computeIsCheckSuccessful_()) {
+      // TODO(crbug.com/1350947): Show either OK state or Compromised state
+      // depnding on presence of issues.
+      return 'checkup_result_banner_compromised';
+    }
+    return 'checkup_result_banner_error';
+  }
 }
 
 declare global {
