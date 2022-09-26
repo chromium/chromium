@@ -37,6 +37,8 @@ LensSidePanelCoordinator::LensSidePanelCoordinator(Browser* browser)
   auto* profile = GetBrowserView()->GetProfile();
   template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile);
 
+  current_default_search_provider_ =
+      template_url_service_->GetDefaultSearchProvider();
   if (template_url_service_ != nullptr)
     template_url_service_->AddObserver(this);
 }
@@ -71,9 +73,16 @@ void LensSidePanelCoordinator::OnSidePanelDidClose() {
 }
 
 void LensSidePanelCoordinator::OnTemplateURLServiceChanged() {
-  // When search engine changes, remove lens from the side panel to avoid
-  // a potentially mismatched state between the combo box label and lens side
-  // panel content.
+  // When the default search engine changes, remove lens from the side panel to
+  // avoid a potentially mismatched state between the combo box label and lens
+  // side panel content.
+  const TemplateURL* default_search_provider =
+      template_url_service_->GetDefaultSearchProvider();
+
+  if (default_search_provider == current_default_search_provider_)
+    return;
+
+  current_default_search_provider_ = default_search_provider;
   DeregisterLensFromSidePanel();
   base::RecordAction(base::UserMetricsAction(
       "LensUnifiedSidePanel.RemoveLensEntry_SearchEngineChanged"));
