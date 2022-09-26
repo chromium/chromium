@@ -83,7 +83,7 @@ class NET_EXPORT PublicSets {
   // including any manual set entries). Returns early if any of the iterations
   // returns false. Returns false if iteration was incomplete; true if all
   // iterations returned true. No guarantees are made re: iteration order.
-  // Aliases are not included.
+  // Aliases are included.
   bool ForEachPublicSetEntry(
       base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
           f) const;

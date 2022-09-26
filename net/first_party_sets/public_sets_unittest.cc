@@ -410,7 +410,7 @@ TEST_F(PopulatedPublicSetsTest, ForEachPublicSetEntry_FullIteration) {
         ++count;
         return true;
       }));
-  EXPECT_EQ(count, 6);
+  EXPECT_EQ(count, 7);
 }
 
 TEST_F(PopulatedPublicSetsTest, ForEachPublicSetEntry_EarlyReturn) {

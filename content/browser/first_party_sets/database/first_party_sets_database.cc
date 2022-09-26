@@ -320,7 +320,6 @@ net::PublicSets FirstPartySetsDatabase::GetPublicSets(
   if (!statement.Succeeded())
     return {};
 
-  // TODO(crbug.com/1363628): query aliases.
   // TODO(crbug.com/1363707): query & apply manual set.
   return net::PublicSets(entries, /*aliases=*/{});
 }

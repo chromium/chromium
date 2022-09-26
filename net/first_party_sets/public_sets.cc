@@ -316,6 +316,12 @@ bool PublicSets::ForEachPublicSetEntry(
     if (!f(site, entry))
       return false;
   }
+  for (const auto& [alias, canonical] : aliases_) {
+    auto it = entries_.find(canonical);
+    DCHECK(it != entries_.end());
+    if (!f(alias, it->second))
+      return false;
+  }
   return true;
 }
 
