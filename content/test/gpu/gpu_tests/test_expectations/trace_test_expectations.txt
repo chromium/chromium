@@ -198,13 +198,6 @@ crbug.com/1278028 [ android android-nexus-5x ] TraceTest_Video_MP4_FourColors_Ro
 crbug.com/1278028 [ android android-nexus-5x ] TraceTest_Video_VP9 [ RetryOnFailure ]
 crbug.com/1278028 [ android android-nexus-5x ] TraceTest_Video_VP9_DXVA [ RetryOnFailure ]
 
-# Flaking on Linux FYI Release (AMD RX 5500 XT)
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_ReflectedDiv [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_WebGL* [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_Video_* [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_Canvas2DTabSwitch [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_RepeatedWebGLTo2D [ RetryOnFailure ]
-
 # WebGL's accelerated canvas capture is currently only supported on Win, Mac, ChromeOS.
 crbug.com/1345777 [ android ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas* [ Skip ]
 crbug.com/1201009 [ linux ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
@@ -214,9 +207,6 @@ crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCa
 
 # Timeout on Nexus 5
 crbug.com/1353189 [ android android-nexus-5 ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLAlphaCanvas* [ Failure ]
-
-# Timeout on Linux FYI Release (AMD RX 5500 XT)
-crbug.com/1353189 [ linux release amd-0x7340 ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGL* [ Failure ]
 
 # WebGL's accelerated canvas capture is failing on ChromeOS
 crbug.com/1353813 [ chromeos ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]

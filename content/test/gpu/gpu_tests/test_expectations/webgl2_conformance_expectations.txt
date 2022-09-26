@@ -175,10 +175,6 @@ crbug.com/735483 conformance2/rendering/texture-switch-performance.html [ Skip ]
 # switch to GTX 1660s.
 crbug.com/1236820 [ linux nvidia ] conformance2/glsl3/reciprocal-sqrt-of-sum-of-squares-crash.html [ Skip ]
 
-# Caused kernel panics on drivers from around November 2020, can likely be
-# re-enabled once newer drivers are obtained.
-crbug.com/1147232 [ linux amd-0x7340 no-passthrough ] conformance/textures/misc/texture-size-limit.html [ Skip ]
-
 # Can occasionally kill machines. Appears to be tied to kernel version, so can
 # be removed once upgraded to kernel 5.4.0-77 or later.
 crbug.com/1255288 [ linux intel ] conformance/textures/misc/texture-size-limit.html [ Skip ]
@@ -740,11 +736,7 @@ crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/function
 
 # Linux AMD RX 5500 XT
 crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
-crbug.com/1152588 [ linux amd-0x7340 ] conformance2/rendering/multisampling-fragment-evaluation.html [ Failure ]
-crbug.com/1283514 [ linux amd-0x7340 angle-opengl ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
-crbug.com/1283514 [ linux amd-0x7340 angle-opengl ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
-crbug.com/1311007 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/fborender/shared_depth_stencil.html [ Failure ]
-crbug.com/1300683 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/fborender/recreate_depth_stencil.html [ RetryOnFailure ]
+crbug.com/1152588 [ linux amd-0x7340 angle-opengl passthrough ] conformance2/rendering/multisampling-fragment-evaluation.html [ Failure ]
 
 ####################
 # Android failures #

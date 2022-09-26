@@ -247,11 +247,6 @@ crbug.com/1145858 [ fuchsia ] conformance/extensions/ext-disjoint-timer-query.ht
 crbug.com/1280692 [ fuchsia fuchsia-board-astro ] conformance/context/context-creation-and-destruction.html [ Skip ]
 crbug.com/1280692 [ fuchsia fuchsia-board-sherlock ] conformance/context/context-creation-and-destruction.html [ Skip ]
 
-# Linux AMD RX 5500 XT
-# Caused kernel panics on drivers from around November 2020, can likely be
-# re-enabled once newer drivers are obtained.
-crbug.com/1147232 [ linux amd-0x7340 no-passthrough ] conformance/textures/misc/texture-size-limit.html [ Skip ]
-
 # Linux Intel
 # Can occasionally kill machines. Appears to be tied to kernel version, so can
 # be removed once upgraded to kernel 5.4.0-77 or later.
