@@ -31,10 +31,14 @@ struct Mailbox;
 class GPU_GLES2_EXPORT GLTextureImageBackingFactory
     : public GLCommonImageBackingFactory {
  public:
+  // The `for_cpu_upload_usage` parameter controls if this factory accepts
+  // `SHARED_IMAGE_USAGE_CPU_UPLOAD`. It is strict, if true the usage must
+  // include CPU upload and if false it must not.
   GLTextureImageBackingFactory(const GpuPreferences& gpu_preferences,
                                const GpuDriverBugWorkarounds& workarounds,
                                const gles2::FeatureInfo* feature_info,
-                               gl::ProgressReporter* progress_reporter);
+                               gl::ProgressReporter* progress_reporter,
+                               bool for_cpu_upload_usage);
   ~GLTextureImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation.
@@ -97,6 +101,8 @@ class GPU_GLES2_EXPORT GLTextureImageBackingFactory
       SkAlphaType alpha_type,
       uint32_t usage,
       base::span<const uint8_t> pixel_data);
+
+  const bool for_cpu_upload_usage_;
 };
 
 }  // namespace gpu

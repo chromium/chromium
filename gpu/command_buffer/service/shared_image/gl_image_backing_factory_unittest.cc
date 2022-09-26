@@ -108,10 +108,7 @@ class GLImageBackingFactoryTestBase
     preferences.use_passthrough_cmd_decoder = use_passthrough();
     backing_factory_ = std::make_unique<GLImageBackingFactory>(
         preferences, workarounds, context_state_->feature_info(), factory,
-        &progress_reporter_, /*for_shared_memory_gmbs=*/false);
-    backing_factory_shmem_ = std::make_unique<GLImageBackingFactory>(
-        preferences, workarounds, context_state_->feature_info(), factory,
-        &progress_reporter_, /*for_shared_memory_gmbs=*/true);
+        &progress_reporter_);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
     shared_image_representation_factory_ =
@@ -141,7 +138,6 @@ class GLImageBackingFactoryTestBase
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<GLImageBackingFactory> backing_factory_;
-  std::unique_ptr<GLImageBackingFactory> backing_factory_shmem_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
@@ -703,44 +699,6 @@ TEST_P(GLImageBackingFactoryWithGMBTest, GpuMemoryBufferImportNative) {
   else
     EXPECT_TRUE(stub_image->bound());
   EXPECT_GT(stub_image->update_counter(), update_counter);
-}
-
-TEST_P(GLImageBackingFactoryWithGMBTest, GpuMemoryBufferImportSharedMemory) {
-  auto mailbox = Mailbox::GenerateForSharedImage();
-  gfx::Size size(256, 256);
-  gfx::BufferFormat format = viz::BufferFormat(get_format());
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
-
-  size_t shm_size = 0u;
-  ASSERT_TRUE(gfx::BufferSizeForBufferFormatChecked(size, format, &shm_size));
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::SHARED_MEMORY_BUFFER;
-  handle.region = base::UnsafeSharedMemoryRegion::Create(shm_size);
-  ASSERT_TRUE(handle.region.IsValid());
-  handle.offset = 0;
-  handle.stride = static_cast<uint32_t>(
-      gfx::RowSizeForBufferFormat(size.width(), format, 0));
-
-  auto backing = backing_factory_shmem_->CreateSharedImage(
-      mailbox, kClientId, std::move(handle), format, gfx::BufferPlane::DEFAULT,
-      kNullSurfaceHandle, size, color_space, surface_origin, alpha_type, usage);
-  if (!can_create_scanout_or_gmb_shared_image(get_format())) {
-    EXPECT_FALSE(backing);
-    return;
-  }
-  ASSERT_TRUE(backing);
-
-  std::unique_ptr<SharedImageRepresentationFactoryRef> ref =
-      shared_image_manager_->Register(std::move(backing),
-                                      memory_type_tracker_.get());
-  scoped_refptr<gl::GLImage> image = GetImageFromMailbox(mailbox);
-  ASSERT_EQ(image->GetType(), gl::GLImage::Type::MEMORY);
-  auto* shm_image = static_cast<gl::GLImageSharedMemory*>(image.get());
-  EXPECT_EQ(size, shm_image->GetSize());
-  EXPECT_EQ(format, shm_image->format());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
