@@ -130,7 +130,7 @@ class DownloadInterstitialMediator {
             case State.SUCCESSFUL:
                 mModel.set(TITLE_TEXT,
                         mContextSupplier.get().getResources().getQuantityString(
-                                R.plurals.download_message_multiple_download_complete, 1));
+                                R.plurals.download_message_multiple_download_complete, 1, 1));
                 mModel.set(PRIMARY_BUTTON_TEXT,
                         mContextSupplier.get().getString(R.string.open_downloaded_label));
                 mModel.set(PRIMARY_BUTTON_CALLBACK, mModel.get(ListProperties.CALLBACK_OPEN));
