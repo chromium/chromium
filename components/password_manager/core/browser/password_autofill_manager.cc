@@ -709,8 +709,10 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
   WebAuthnCredentialsDelegate* delegate =
       password_client_->GetWebAuthnCredentialsDelegateForDriver(
           password_manager_driver_);
-  if (show_webauthn_credentials && delegate &&
-      delegate->IsWebAuthnAutofillEnabled()) {
+  bool should_show_webauthn_suggestions = show_webauthn_credentials &&
+                                          delegate &&
+                                          delegate->IsWebAuthnAutofillEnabled();
+  if (should_show_webauthn_suggestions) {
     absl::optional<std::vector<autofill::Suggestion>> webauthn_suggestions =
         delegate->GetWebAuthnSuggestions();
     if (webauthn_suggestions.has_value()) {
@@ -723,7 +725,11 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
   }
 
   if (!fill_data_ && !show_account_storage_optin &&
-      !show_account_storage_resignin && suggestions.empty()) {
+      !show_account_storage_resignin &&
+#if !BUILDFLAG(IS_ANDROID)
+      !should_show_webauthn_suggestions &&
+#endif  // !BUILDFLAG(IS_ANDROID)
+      suggestions.empty()) {
     // Probably the credential was deleted in the mean time.
     return suggestions;
   }
@@ -737,8 +743,7 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
 
 #if !BUILDFLAG(IS_ANDROID)
   // Add "Sign in with another device" button.
-  if (show_webauthn_credentials && delegate &&
-      delegate->IsWebAuthnAutofillEnabled()) {
+  if (should_show_webauthn_suggestions) {
     suggestions.push_back(CreateWebAuthnEntry());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

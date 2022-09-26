@@ -2097,10 +2097,58 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
                   autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
 
   // Check that the button shows the correct text.
-  const std::u16string kSignInWithAnotherDeviceText =
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DEVICE_PASSKEY);
   EXPECT_EQ(open_args.suggestions[1].main_text.value,
-            kSignInWithAnotherDeviceText);
+            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DEVICE_PASSKEY));
+}
+
+// Regression test for crbug.com/1362742.
+TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithoutPasswordData) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // InitializePasswordAutofillManager sets fill data, delete it to simulate
+  // having no data.
+  password_autofill_manager_->DeleteFillData();
+
+  // Enable WebAuthn autofill.
+  absl::optional<std::vector<autofill::Suggestion>> webauthn_credentials;
+  EXPECT_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
+      .WillRepeatedly(Return(&webauthn_credentials_delegate));
+  EXPECT_CALL(webauthn_credentials_delegate, GetWebAuthnSuggestions)
+      .WillOnce(ReturnRef(webauthn_credentials));
+
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillPopup)
+      .WillOnce(testing::SaveArg<0>(&open_args));
+  gfx::RectF element_bounds;
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      base::i18n::RIGHT_TO_LEFT, /*typed_username=*/std::u16string(),
+      autofill::ShowPasswordSuggestionsOptions::ACCEPTS_WEBAUTHN_CREDENTIALS,
+      element_bounds);
+  ASSERT_THAT(
+      open_args.suggestions,
+      SuggestionVectorIdsAre(ElementsAre(
+          autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE)));
+
+  // Check that the button shows the correct text.
+  EXPECT_EQ(open_args.suggestions[0].main_text.value,
+            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DEVICE_PASSKEY));
+}
+
+TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // Enable WebAuthn autofill.
+  absl::optional<std::vector<autofill::Suggestion>> webauthn_credentials;
+  EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
+      .WillRepeatedly(Return(&webauthn_credentials_delegate));
 
   // Check that selecting the button reports back to the client.
   EXPECT_CALL(webauthn_credentials_delegate, LaunchWebAuthnFlow());
@@ -2108,7 +2156,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
       autofill_client,
       HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
   password_autofill_manager_->DidAcceptSuggestion(
-      kSignInWithAnotherDeviceText,
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DEVICE_PASSKEY),
       autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE,
       /*payload=*/autofill::Suggestion::BackendId(), /*position=*/1);
 }
