@@ -76,7 +76,6 @@ class RestrictedMGSPolicyProviderLacrosBrowserTest
   void SetInitParams(crosapi::mojom::SessionType session_type,
                      crosapi::mojom::DeviceSettings_OptionalBool restricted) {
     auto params = crosapi::mojom::BrowserInitParams::New();
-    params = crosapi::mojom::BrowserInitParams::New();
     params->session_type = session_type;
     params->device_settings = crosapi::mojom::DeviceSettings::New();
     params->device_settings->device_restricted_managed_guest_session_enabled =
