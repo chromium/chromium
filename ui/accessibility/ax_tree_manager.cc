@@ -177,6 +177,17 @@ void AXTreeManager::OnTreeDataChanged(AXTree* tree,
   GetMap().AddTreeManager(ax_tree_id_, this);
 }
 
+void AXTreeManager::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
+  DCHECK(node);
+  if (node == GetLastFocusedNode())
+    SetLastFocusedNode(nullptr);
+
+  // We fire these here, immediately, to ensure we can send platform
+  // notifications prior to the actual destruction of the object.
+  if (node->GetRole() == ax::mojom::Role::kMenu)
+    FireGeneratedEvent(AXEventGenerator::Event::MENU_POPUP_END, node);
+}
+
 void AXTreeManager::RemoveFromMap() {
   GetMap().RemoveTreeManager(ax_tree_id_);
 }

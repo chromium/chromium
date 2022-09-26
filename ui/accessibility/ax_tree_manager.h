@@ -94,7 +94,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   void OnTreeDataChanged(AXTree* tree,
                          const AXTreeData& old_data,
                          const AXTreeData& new_data) override;
-  void OnNodeWillBeDeleted(AXTree* tree, AXNode* node) override {}
+  void OnNodeWillBeDeleted(AXTree* tree, AXNode* node) override;
   void OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) override {}
   void OnNodeCreated(AXTree* tree, AXNode* node) override {}
   void OnNodeDeleted(AXTree* tree, int32_t node_id) override {}
