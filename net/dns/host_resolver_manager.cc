@@ -1936,12 +1936,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         timeout_min = https_svcb_options_.insecure_extra_time_min;
       }
 
-      if (timeout_max.is_zero() && extra_time_percent == 0 &&
-          timeout_min.is_zero()) {
-        timeout_max = https_svcb_options_.extra_time_absolute;
-        extra_time_percent = https_svcb_options_.extra_time_percent;
-      }
-
       // Skip timeout for secure requests if the timeout would be a fatal
       // failure.
       if (secure_ && features::kUseDnsHttpsSvcbEnforceSecureResponse.Get()) {

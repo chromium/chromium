@@ -52,8 +52,6 @@ const char kUseDnsHttpsSvcbSecureExtraTimeMax[] = "secure_extra_time_max";
 const char kUseDnsHttpsSvcbSecureExtraTimePercent[] =
     "secure_extra_time_percent";
 const char kUseDnsHttpsSvcbSecureExtraTimeMin[] = "secure_extra_time_min";
-const char kUseDnsHttpsSvcbExtraTimeAbsolute[] = "extra_time_absolute";
-const char kUseDnsHttpsSvcbExtraTimePercent[] = "extra_time_percent";
 
 class FailingRequestImpl : public HostResolver::ResolveHostRequest,
                            public HostResolver::ProbeRequest {
@@ -156,10 +154,6 @@ HostResolver::HttpsSvcbOptions HostResolver::HttpsSvcbOptions::FromDict(
   GetTimeDeltaFromDictString(dict, kUseDnsHttpsSvcbSecureExtraTimeMin,
                              &options.secure_extra_time_min);
 
-  GetTimeDeltaFromDictString(dict, kUseDnsHttpsSvcbExtraTimeAbsolute,
-                             &options.extra_time_absolute);
-  options.extra_time_percent = dict.FindInt(kUseDnsHttpsSvcbExtraTimePercent)
-                                   .value_or(options.extra_time_percent);
   return options;
 }
 
@@ -180,9 +174,6 @@ HostResolver::HttpsSvcbOptions HostResolver::HttpsSvcbOptions::FromFeatures() {
       features::kUseDnsHttpsSvcbSecureExtraTimePercent.Get();
   options.secure_extra_time_min =
       features::kUseDnsHttpsSvcbSecureExtraTimeMin.Get();
-  options.extra_time_absolute =
-      features::kUseDnsHttpsSvcbExtraTimeAbsolute.Get();
-  options.extra_time_percent = features::kUseDnsHttpsSvcbExtraTimePercent.Get();
   return options;
 }
 

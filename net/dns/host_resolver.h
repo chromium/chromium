@@ -193,8 +193,6 @@ class NET_EXPORT HostResolver {
     base::TimeDelta secure_extra_time_max;
     int secure_extra_time_percent = 0;
     base::TimeDelta secure_extra_time_min;
-    base::TimeDelta extra_time_absolute;
-    int extra_time_percent = 0;
   };
 
   // Parameter-grouping struct for additional optional parameters for creation

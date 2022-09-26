@@ -152,16 +152,6 @@ NET_EXPORT extern const base::FeatureParam<int>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kUseDnsHttpsSvcbSecureExtraTimeMin;
 
-// Deprecated in favor of `kUseDnsHttpsSvcbInsecureExtraTime...` and
-// `kUseDnsHttpsSvcbSecureExtraTime...` params. Ignored for insecure DnsTasks if
-// any `kUseDnsHttpsSvcbInsecureExtraTime...` params are non-zero, and ignored
-// for secure DnsTasks if any `kUseDnsHttpsSvcbSecureExtraTime...` params are
-// non-zero.
-NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kUseDnsHttpsSvcbExtraTimeAbsolute;
-NET_EXPORT extern const base::FeatureParam<int>
-    kUseDnsHttpsSvcbExtraTimePercent;
-
 // Update protocol using ALPN information in HTTPS DNS records.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseDnsHttpsSvcbAlpn);
 

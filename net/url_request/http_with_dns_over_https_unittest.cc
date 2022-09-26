@@ -373,9 +373,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, HttpsUpgrade) {
        // Disable timeouts.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
   ResetContext();
 
   GURL https_url = https_server_.GetURL(kHostname, "/test");
@@ -424,9 +422,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, HttpsMetadata) {
        // Disable timeouts.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
   ResetContext();
 
   GURL main_url = https_server_.GetURL(kHostname, "/test");
@@ -487,9 +483,7 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHello) {
                                   {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
                                   {"UseDnsHttpsSvcbSecureExtraTimePercent",
                                    "0"},
-                                  {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-                                  {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-                                  {"UseDnsHttpsSvcbExtraTimePercent", "0"}}},
+                                  {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}}},
                                 {features::kEncryptedClientHello, {}}},
           /*disabled_features=*/{});
     } else {
@@ -499,9 +493,7 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHello) {
                                   {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
                                   {"UseDnsHttpsSvcbSecureExtraTimePercent",
                                    "0"},
-                                  {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-                                  {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-                                  {"UseDnsHttpsSvcbExtraTimePercent", "0"}}}},
+                                  {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}}}},
           /*disabled_features=*/{features::kEncryptedClientHello});
     }
 
@@ -545,9 +537,7 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloStaleKey) {
                              {// Disable timeouts.
                               {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
                               {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-                              {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-                              {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-                              {"UseDnsHttpsSvcbExtraTimePercent", "0"}}}},
+                              {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}}}},
       /*disabled_features=*/{});
   ResetContext();
 
@@ -632,9 +622,7 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallback) {
                              {// Disable timeouts.
                               {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
                               {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-                              {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-                              {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-                              {"UseDnsHttpsSvcbExtraTimePercent", "0"}}}},
+                              {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}}}},
       /*disabled_features=*/{});
   ResetContext();
 
@@ -709,9 +697,7 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallbackTLS12) {
                              {// Disable timeouts.
                               {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
                               {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-                              {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-                              {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-                              {"UseDnsHttpsSvcbExtraTimePercent", "0"}}}},
+                              {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}}}},
       /*disabled_features=*/{});
   ResetContext();
 

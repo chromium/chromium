@@ -41,9 +41,7 @@ class DohHttpsProtocolUpgradeBrowserTest : public content::ContentBrowserTest {
          {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
          {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
          {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-         {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-         {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-         {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+         {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
   }
 
  protected:

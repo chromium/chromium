@@ -100,12 +100,6 @@ const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbSecureExtraTimeMin{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimeMin",
     base::Milliseconds(5)};
 
-const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbExtraTimeAbsolute{
-    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbExtraTimeAbsolute", base::TimeDelta()};
-
-const base::FeatureParam<int> kUseDnsHttpsSvcbExtraTimePercent{
-    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbExtraTimePercent", 0};
-
 BASE_FEATURE(kUseDnsHttpsSvcbAlpn,
              "UseDnsHttpsSvcbAlpn",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -333,10 +333,6 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
             https_svcb_options.secure_extra_time_percent);
   EXPECT_EQ(net::features::kUseDnsHttpsSvcbSecureExtraTimeMin.Get(),
             https_svcb_options.secure_extra_time_min);
-  EXPECT_EQ(net::features::kUseDnsHttpsSvcbExtraTimeAbsolute.Get(),
-            https_svcb_options.extra_time_absolute);
-  EXPECT_EQ(net::features::kUseDnsHttpsSvcbExtraTimePercent.Get(),
-            https_svcb_options.extra_time_percent);
   EXPECT_EQ(base::FeatureList::IsEnabled(net::features::kUseDnsHttpsSvcbAlpn),
             params->use_dns_https_svcb_alpn);
 
@@ -1786,8 +1782,6 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
           "\"secure_extra_time_max\":\"4ms\","
           "\"secure_extra_time_percent\":5,"
           "\"secure_extra_time_min\":\"6ms\","
-          "\"extra_time_absolute\":\"7ms\","
-          "\"extra_time_percent\":8,"
           "\"use_alpn\":true"
           "}}",
           // MockCertVerifier to use for testing purposes.
@@ -1818,8 +1812,6 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
   EXPECT_EQ(base::Milliseconds(4), https_svcb_options.secure_extra_time_max);
   EXPECT_EQ(5, https_svcb_options.secure_extra_time_percent);
   EXPECT_EQ(base::Milliseconds(6), https_svcb_options.secure_extra_time_min);
-  EXPECT_EQ(base::Milliseconds(7), https_svcb_options.extra_time_absolute);
-  EXPECT_EQ(8, https_svcb_options.extra_time_percent);
 
   const net::HttpNetworkSessionParams* params =
       context->GetNetworkSessionParams();

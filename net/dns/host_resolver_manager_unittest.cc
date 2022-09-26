@@ -5572,9 +5572,7 @@ TEST_F(HostResolverManagerDnsTest, Ipv6UnreachableOnlyDisablesAAAAQuery) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -10713,9 +10711,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithNonstandardPort) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {BuildTestHttpsServiceRecord(
@@ -10778,9 +10774,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {BuildTestHttpsServiceRecord(
@@ -10839,9 +10833,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithAlpnAndEch) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {BuildTestHttpsServiceRecord(
@@ -10903,9 +10895,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithNonMatchingPort) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -10959,9 +10949,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithMatchingPort) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11021,9 +11009,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithoutAddresses) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11094,9 +11080,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQueriedInAddressQueryButNoResults) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11151,9 +11135,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11204,9 +11186,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
@@ -11259,9 +11239,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11312,9 +11290,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11366,9 +11342,7 @@ TEST_F(
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   // Delay HTTPS result to ensure it comes after A failure.
@@ -11428,9 +11402,7 @@ TEST_F(
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   // Delay HTTPS result to ensure it is cancelled after AAAA failure.
@@ -11499,9 +11471,7 @@ TEST_F(HostResolverManagerDnsTest, TimeoutHttpsInAddressRequestIsFatal) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11551,9 +11521,7 @@ TEST_F(HostResolverManagerDnsTest, ServfailHttpsInAddressRequestIsFatal) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11613,9 +11581,7 @@ TEST_F(HostResolverManagerDnsTest, UnparsableHttpsInAddressRequestIsFatal) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11667,9 +11633,7 @@ TEST_F(HostResolverManagerDnsTest, RefusedHttpsInAddressRequestIsIgnored) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11723,9 +11687,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryForWssScheme) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11783,9 +11745,7 @@ TEST_F(HostResolverManagerDnsTest, NoHttpsInAddressQueryWithoutScheme) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11833,9 +11793,7 @@ TEST_F(HostResolverManagerDnsTest, NoHttpsInAddressQueryForNonHttpScheme) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11886,9 +11844,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11945,9 +11901,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11999,9 +11953,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12054,9 +12006,7 @@ TEST_F(
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {BuildTestHttpsServiceRecord(
@@ -12116,9 +12066,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12169,9 +12117,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInSecureModeAddressQuery) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12222,9 +12168,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInSecureModeAddressQueryForHttpScheme) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12275,9 +12219,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInInsecureAddressQuery) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12335,9 +12277,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInInsecureAddressQueryForHttpScheme) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12385,9 +12325,7 @@ TEST_F(HostResolverManagerDnsTest, FailedHttpsInInsecureAddressRequestIgnored) {
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -12435,9 +12373,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -12485,9 +12421,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -12540,9 +12474,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -12592,9 +12524,7 @@ TEST_F(HostResolverManagerDnsTest,
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12642,8 +12572,6 @@ TEST_F(HostResolverManagerDnsTest,
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12711,9 +12639,7 @@ TEST_F(HostResolverManagerDnsTest,
        // Set a Secure absolute timeout of 10 minutes via the "min" param.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "10m"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "10m"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12778,9 +12704,7 @@ TEST_F(HostResolverManagerDnsTest,
        // Set a Secure absolute timeout of 10 minutes via the "max" param.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "10m"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12845,9 +12769,7 @@ TEST_F(HostResolverManagerDnsTest,
        // Set a Secure relative timeout of 10%.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "10"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12920,9 +12842,7 @@ TEST_F(HostResolverManagerDnsTest,
        // Set a Secure max timeout of 30s and a relative timeout of 100%.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "30s"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "100"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "10s"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "10s"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12997,9 +12917,7 @@ TEST_F(HostResolverManagerDnsTest,
        // Set a Secure max timeout of 20 minutes and a relative timeout of 10%.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "20m"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "10"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "1s"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "1s"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13072,9 +12990,7 @@ TEST_F(HostResolverManagerDnsTest,
        // Set a Secure min timeout of 1 minute and a relative timeout of 10%.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "20m"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "10"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "1m"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "1m"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13141,8 +13057,6 @@ TEST_F(HostResolverManagerDnsTest,
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
        // Set an Insecure absolute timeout of 10 minutes via the "min" param.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
@@ -13205,8 +13119,6 @@ TEST_F(HostResolverManagerDnsTest,
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
        // Set an Insecure absolute timeout of 10 minutes via the "max" param.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "10m"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
@@ -13269,8 +13181,6 @@ TEST_F(HostResolverManagerDnsTest,
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
        // Set an Insecure relative timeout of 10%.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "10"},
@@ -13333,203 +13243,6 @@ TEST_F(HostResolverManagerDnsTest,
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithLegacyTimeouts) {
-  const char kName[] = "name.test";
-
-  // Set an absolute timeout of 30s and a relative timeout of 100%.
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbExtraTimeAbsolute", "30s"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "100"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
-
-  MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestHttpsServiceRecord(kName, /*priority=*/1, /*service_name=*/".",
-                                  /*params=*/{})};
-  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
-                         kName, dns_protocol::kTypeHttps, records)),
-                     /*delay=*/true);
-  rules.emplace_back(
-      kName, dns_protocol::kTypeA, /*secure=*/true,
-      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
-      /*delay=*/true);
-  rules.emplace_back(
-      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
-      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
-      /*delay=*/true);
-
-  CreateResolver();
-  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
-  DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
-  resolver_->SetDnsConfigOverrides(overrides);
-
-  ResolveHostResponseHelper response(resolver_->CreateRequest(
-      url::SchemeHostPort(url::kHttpsScheme, kName, 443), NetworkIsolationKey(),
-      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
-      resolve_context_->host_cache()));
-  RunUntilIdle();
-  EXPECT_FALSE(response.complete());
-
-  // Complete final address transaction after 4 minutes total.
-  FastForwardBy(base::Minutes(2));
-  ASSERT_TRUE(
-      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
-  FastForwardBy(base::Minutes(2));
-  ASSERT_TRUE(
-      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
-  RunUntilIdle();
-  EXPECT_FALSE(response.complete());
-
-  // Wait until 1 second before expected timeout (from the absolute timeout).
-  FastForwardBy(base::Seconds(29));
-  RunUntilIdle();
-  EXPECT_FALSE(response.complete());
-
-  // Exceed expected timeout.
-  FastForwardBy(base::Seconds(2));
-
-  EXPECT_THAT(response.result_error(), IsOk());
-  EXPECT_TRUE(response.request()->GetAddressResults());
-  EXPECT_THAT(response.request()->GetEndpointResults(),
-              testing::Pointee(testing::ElementsAre(
-                  ExpectEndpointResult(testing::SizeIs(2)))));
-  EXPECT_FALSE(response.request()->GetTextResults());
-  EXPECT_FALSE(response.request()->GetHostnameResults());
-  // No experimental results if transaction did not complete.
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
-}
-
-TEST_F(HostResolverManagerDnsTest,
-       HttpsInSecureAddressQueryWithTimeoutOverridingLegacyTimeouts) {
-  const char kName[] = "name.test";
-
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb,
-      {// Set long legacy timeouts, and a single short 1m timeout using the new
-       // params.
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "30m"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "500"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "1m"}});
-
-  MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestHttpsServiceRecord(kName, /*priority=*/1, /*service_name=*/".",
-                                  /*params=*/{})};
-  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
-                         kName, dns_protocol::kTypeHttps, records)),
-                     /*delay=*/true);
-  rules.emplace_back(
-      kName, dns_protocol::kTypeA, /*secure=*/true,
-      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
-      /*delay=*/false);
-  rules.emplace_back(
-      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
-      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
-      /*delay=*/false);
-
-  CreateResolver();
-  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
-  DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = SecureDnsMode::kSecure;
-  resolver_->SetDnsConfigOverrides(overrides);
-
-  ResolveHostResponseHelper response(resolver_->CreateRequest(
-      url::SchemeHostPort(url::kHttpsScheme, kName, 443), NetworkIsolationKey(),
-      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
-      resolve_context_->host_cache()));
-  RunUntilIdle();
-  EXPECT_FALSE(response.complete());
-
-  // Exceed expected timeout.
-  FastForwardBy(base::Minutes(1) + base::Seconds(1));
-
-  EXPECT_THAT(response.result_error(), IsOk());
-  EXPECT_TRUE(response.request()->GetAddressResults());
-  EXPECT_THAT(response.request()->GetEndpointResults(),
-              testing::Pointee(testing::ElementsAre(
-                  ExpectEndpointResult(testing::SizeIs(2)))));
-  EXPECT_FALSE(response.request()->GetTextResults());
-  EXPECT_FALSE(response.request()->GetHostnameResults());
-  // No experimental results if transaction did not complete.
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
-}
-
-TEST_F(HostResolverManagerDnsTest,
-       HttpsInInsecureAddressQueryWithTimeoutOverridingLegacyTimeouts) {
-  const char kName[] = "name.test";
-
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Set long legacy timeouts, and a single short 1m timeout using the new
-       // params.
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "30m"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "500"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "1m"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
-
-  MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestHttpsServiceRecord(kName, /*priority=*/1, /*service_name=*/".",
-                                  /*params=*/{})};
-  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/false,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
-                         kName, dns_protocol::kTypeHttps, records)),
-                     /*delay=*/true);
-  rules.emplace_back(
-      kName, dns_protocol::kTypeA, /*secure=*/false,
-      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
-      /*delay=*/false);
-  rules.emplace_back(
-      kName, dns_protocol::kTypeAAAA, /*secure=*/false,
-      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
-      /*delay=*/false);
-
-  CreateResolver();
-  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
-
-  ResolveHostResponseHelper response(resolver_->CreateRequest(
-      url::SchemeHostPort(url::kHttpsScheme, kName, 443), NetworkIsolationKey(),
-      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
-      resolve_context_->host_cache()));
-  RunUntilIdle();
-  EXPECT_FALSE(response.complete());
-
-  // Exceed expected timeout.
-  FastForwardBy(base::Minutes(1) + base::Seconds(1));
-
-  EXPECT_THAT(response.result_error(), IsOk());
-  EXPECT_TRUE(response.request()->GetAddressResults());
-  EXPECT_THAT(response.request()->GetEndpointResults(),
-              testing::Pointee(testing::ElementsAre(
-                  ExpectEndpointResult(testing::SizeIs(2)))));
-  EXPECT_FALSE(response.request()->GetTextResults());
-  EXPECT_FALSE(response.request()->GetHostnameResults());
-  // No experimental results if transaction did not complete.
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
-}
-
 // Test that HTTPS timeouts are not used when fatal for the request.
 TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryWaitsWithoutTimeoutIfFatal) {
@@ -13540,8 +13253,6 @@ TEST_F(HostResolverManagerDnsTest,
       features::kUseDnsHttpsSvcb,
       {// Set timeouts but also enforce secure responses.
        {"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -13615,8 +13326,6 @@ TEST_F(HostResolverManagerDnsTest,
       {{"UseDnsHttpsSvcbEnableInsecure", "true"},
        // Set timeouts but also enforce secure responses.
        {"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
-       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "20m"},
@@ -15530,9 +15239,7 @@ class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
          {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
          {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
          {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-         {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-         {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
-         {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+         {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
     HostResolverManagerDnsTest::SetUp();
 
