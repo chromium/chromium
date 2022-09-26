@@ -23,6 +23,12 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kBlockRepeatedNotificationPermissionPrompts;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::Feature kConfirmationChip;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::Feature kChipLocationBarIconOverride;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kNotificationInteractionHistory;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)

@@ -24,6 +24,12 @@ const base::Feature kBlockRepeatedNotificationPermissionPrompts{
     "BlockRepeatedNotificationPermissionPrompts",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kConfirmationChip{"ConfirmationChip",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kChipLocationBarIconOverride{
+    "ChipLocationIconOverride", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kNotificationInteractionHistory{
     "NotificationInteractionHistory", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -40,6 +46,7 @@ const base::Feature kPermissionChip{"PermissionChip",
 const base::Feature kPermissionQuietChip{"PermissionQuietChip",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 #else
+
 // Enables a less prominent permission prompt that uses a chip in the location
 // bar. Requires chrome://flags/#quiet-notification-prompts to be enabled.
 const base::Feature kPermissionQuietChip{"PermissionQuietChip",

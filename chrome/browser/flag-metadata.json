@@ -933,6 +933,14 @@
     "expiry_milestone": 93
   },
   {
+    "name": "chip-location-bar-icon-override",
+    "owners": [
+      "fjacky",
+      "elklm"
+    ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "chrome-labs",
     "owners": ["elainechien", "robliao"],
     "expiry_milestone": 112
@@ -1051,6 +1059,14 @@
     "name": "compositor-threaded-scrollbar-scrolling",
     "owners": [ "arakeri@microsoft.com" ],
     "expiry_milestone": 90
+  },
+  {
+    "name": "confirmation-chip",
+    "owners": [
+      "fjacky",
+      "elklm"
+    ],
+    "expiry_milestone": 115
   },
   {
     "name": "consolidated-site-storage-controls",

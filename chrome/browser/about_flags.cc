@@ -7616,6 +7616,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          features::kEnableMachineLearningModelLoaderWebPlatformApi)},
 
+    {"confirmation-chip", flag_descriptions::kConfirmationChipName,
+     flag_descriptions::kConfirmationChipNameDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(permissions::features::kConfirmationChip)},
+
+    {"chip-location-bar-icon-override",
+     flag_descriptions::kChipLocationBarIconOverrideName,
+     flag_descriptions::kChipLocationBarIconOverrideDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(permissions::features::kChipLocationBarIconOverride)},
+
     {"enable-translate-sub-frames",
      flag_descriptions::kEnableTranslateSubFramesName,
      flag_descriptions::kEnableTranslateSubFramesDescription, kOsAll,

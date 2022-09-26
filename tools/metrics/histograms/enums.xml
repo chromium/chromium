@@ -57466,6 +57466,7 @@ from previous Chrome versions.
   <int value="-1485461805" label="EnterpriseReportingInBrowser:enabled"/>
   <int value="-1484619809" label="MessagesForAndroidSafetyTip:enabled"/>
   <int value="-1484372060" label="BlockMigratedDefaultChromeAppSync:enabled"/>
+  <int value="-1483720693" label="ChipLocationIconOverride:enabled"/>
   <int value="-1482730792" label="stop-in-background:enabled"/>
   <int value="-1482685863" label="enable-request-tablet-site"/>
   <int value="-1481990501" label="Windows10CustomTitlebar:disabled"/>
@@ -61881,6 +61882,7 @@ from previous Chrome versions.
   <int value="1196834473" label="disable-smart-virtual-keyboard"/>
   <int value="1198839129" label="OfflinePagesLivePageSharing:enabled"/>
   <int value="1200407724" label="WebUITabStripContextMenuAfterTap:disabled"/>
+  <int value="1200946197" label="ConfirmationChip:disabled"/>
   <int value="1201008500"
       label="EnableAmbientAuthenticationInIncognito:enabled"/>
   <int value="1203084856"
@@ -62411,6 +62413,7 @@ from previous Chrome versions.
   <int value="1518946321" label="DisableProcessReuse:disabled"/>
   <int value="1519067750" label="ActionableContentSettings:disabled"/>
   <int value="1520181151" label="PrintServerScaling:disabled"/>
+  <int value="1520754417" label="ConfirmationChip:enabled"/>
   <int value="1524178643" label="AppServiceExternalProtocol:enabled"/>
   <int value="1526489044" label="NtpRealboxMatchSearchboxTheme:disabled"/>
   <int value="1526718531"
@@ -62595,6 +62598,7 @@ from previous Chrome versions.
   <int value="1646498561" label="OfflineBookmarks:disabled"/>
   <int value="1649121568" label="DynamicTcmallocTuning:disabled"/>
   <int value="1649624189" label="PhoneHubFeatureSetupErrorHandling:disabled"/>
+  <int value="1650453540" label="ChipLocationIconOverride:disabled"/>
   <int value="1651030066" label="WebAppEnableProtocolHandlers:enabled"/>
   <int value="1651141490" label="SaveEditedPDFForm:enabled"/>
   <int value="1652798696"

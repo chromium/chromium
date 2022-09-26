@@ -2319,6 +2319,19 @@ const char kPermissionChipDescription[] =
     "Enables an experimental permission prompt that uses a chip in the location"
     " bar.";
 
+const char kChipLocationBarIconOverrideName[] =
+    "Chip Location Bar Icon Override Experiment.";
+const char kChipLocationBarIconOverrideDescription[] =
+    "Enables an experimental location bar icon override while a chip is shown "
+    "in the location bar. Takes effect when #permission-chip or "
+    "#confirmation-chip are active.";
+
+const char kConfirmationChipName[] = "Confirmation Chip Experiment";
+const char kConfirmationChipNameDescription[] =
+    "Enables an experimental confirmation chip in the location bar after a "
+    "permission prompt shown with the chip UI has been decided by the user. "
+    "Requires #permission-chip to be enabled.";
+
 const char kPermissionChipGestureSensitiveName[] =
     "Gesture-sensitive Permissions Chip";
 const char kPermissionChipGestureSensitiveDescription[] =
