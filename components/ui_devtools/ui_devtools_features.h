@@ -13,7 +13,7 @@ namespace ui_devtools {
 // Enables UI debugging tools to send synthetic events.
 // This is used by the telemetry benchmarking tools only.
 COMPONENT_EXPORT(UI_DEVTOOLS_FEATURES)
-extern const base::Feature kUIDebugToolsEnableSyntheticEvents;
+BASE_DECLARE_FEATURE(kUIDebugToolsEnableSyntheticEvents);
 
 }  // namespace ui_devtools
 

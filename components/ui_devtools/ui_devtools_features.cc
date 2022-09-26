@@ -6,8 +6,8 @@
 
 namespace ui_devtools {
 
-const base::Feature kUIDebugToolsEnableSyntheticEvents{
-    "ui-debug-tools-enable-synthetic-events",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUIDebugToolsEnableSyntheticEvents,
+             "ui-debug-tools-enable-synthetic-events",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace ui_devtools
