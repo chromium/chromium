@@ -7,9 +7,11 @@
 #include <map>
 #include <memory>
 
-#include "base/check.h"
-#include "base/logging.h"
+#include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -22,7 +24,8 @@
 
 namespace blink {
 
-class WebRtcTaskQueue : public webrtc::TaskQueueBase {
+class WebRtcTaskQueue : public base::RefCountedThreadSafe<WebRtcTaskQueue>,
+                        public webrtc::TaskQueueBase {
  public:
   explicit WebRtcTaskQueue(base::TaskTraits traits);
 
@@ -35,80 +38,104 @@ class WebRtcTaskQueue : public webrtc::TaskQueueBase {
                                     webrtc::TimeDelta delay) override;
 
  private:
+  friend class base::RefCountedThreadSafe<WebRtcTaskQueue>;
+  ~WebRtcTaskQueue() override = default;
+
   // Runs a single PostTask-task.
-  static void MaybeRunTask(WebRtcTaskQueue* task_queue,
-                           scoped_refptr<base::RefCountedData<bool>> is_active,
-                           absl::AnyInvocable<void() &&> task);
   void RunTask(absl::AnyInvocable<void() &&> task);
   // Runs all ready PostDelayedTask-tasks that have been scheduled to run at
   // |scheduled_time_now|.
-  static void MaybeRunCoalescedTasks(
-      WebRtcTaskQueue* task_queue,
-      scoped_refptr<base::RefCountedData<bool>> is_active,
-      base::TimeTicks scheduled_time_now);
+  void MaybeRunCoalescedTasks(base::TimeTicks scheduled_time_now);
+  // Runs a specific high precision task.
+  void RunHighPrecisionTask(int id);
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  // Value of |is_active_| is checked and set on |task_runner_|.
-  const scoped_refptr<base::RefCountedData<bool>> is_active_;
+
+  // Kept during task execution to guarantee Delete semantics. Only contended
+  // in case both Delete and a task runs concurrently. All tasks run and get
+  // destroyed serially.
+  base::Lock alive_lock_;
+  // Turns to false in Delete.
+  bool alive_ GUARDED_BY(alive_lock_) = true;
+
   // Low precision tasks are coalesced onto metronome ticks and stored in
   // |coalesced_tasks_| until they are ready to run.
   CoalescedTasks coalesced_tasks_;
+
+  // Protects the high precision delayed tasks. A separate lock is needed to
+  // avoid deadlock in the case where dispatched tasks (holding alive_lock_)
+  // call PostDelayedHighPrecisionTask.
+  //
+  // We technically don't need to track the tasks to satisfy lambdas being
+  // deleted on the task queue, but the lambdas would be destroyed long after
+  // Delete has run, if we didn't.
+  base::Lock high_precision_lock_ ACQUIRED_AFTER(alive_lock_);
+  // Next high precision task ID to store in `high_precision_tasks_`.
+  int next_high_precision_task_id_ GUARDED_BY(high_precision_lock_) = 0;
+  // High precision tasks to execute in the future.
+  base::flat_map<int, absl::AnyInvocable<void() &&>> high_precision_tasks_
+      GUARDED_BY(high_precision_lock_);
 };
 
 WebRtcTaskQueue::WebRtcTaskQueue(base::TaskTraits traits)
     : task_runner_(
-          base::ThreadPool::CreateSequencedTaskRunner(std::move(traits))),
-      is_active_(new base::RefCountedData<bool>(true)) {}
-
-void Deactivate(scoped_refptr<base::RefCountedData<bool>> is_active,
-                CoalescedTasks* coalesced_tasks,
-                base::WaitableEvent* event) {
-  is_active->data = false;
-  coalesced_tasks->Clear();
-  event->Signal();
+          base::ThreadPool::CreateSequencedTaskRunner(std::move(traits))) {
+  // This reference is eventually released by Delete being called.
+  AddRef();
 }
 
 void WebRtcTaskQueue::Delete() {
-  // Ensure there are no in-flight PostTask-tasks when deleting.
-  base::WaitableEvent event;
-  task_runner_->PostTask(FROM_HERE, base::BindOnce(&Deactivate, is_active_,
-                                                   &coalesced_tasks_, &event));
-  event.Wait();
-  delete this;
-}
+  {
+    base::AutoLock lock(alive_lock_);
+    DCHECK(alive_);
+    alive_ = false;
 
-void WebRtcTaskQueue::PostTask(absl::AnyInvocable<void() &&> task) {
-  // Delete() ensures there are no in-flight tasks at destruction, so passing an
-  // unretained pointer to |this| is safe.
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&WebRtcTaskQueue::RunTask,
-                                base::Unretained(this), std::move(task)));
-}
+    base::flat_map<int, absl::AnyInvocable<void() &&>> high_precision_tasks;
+    {
+      base::AutoLock high_precision_lock(high_precision_lock_);
+      high_precision_tasks_.swap(high_precision_tasks);
+    }
+    // Pretend to be the current task queue and clear the other tasks. This
+    // works because we're always deleting or running tasks under the
+    // `alive_lock_`, which we keep here.
+    CurrentTaskQueueSetter setter(this);
+    coalesced_tasks_.Clear();
+    high_precision_tasks.clear();
+#if DCHECK_IS_ON()
+    DCHECK(coalesced_tasks_.Empty());
+    base::AutoLock high_precision_lock(high_precision_lock_);
+    DCHECK(high_precision_tasks_.empty());
+#endif
+  }
 
-// static
-void WebRtcTaskQueue::MaybeRunTask(
-    WebRtcTaskQueue* task_queue,
-    scoped_refptr<base::RefCountedData<bool>> is_active,
-    absl::AnyInvocable<void() &&> task) {
-  if (!is_active->data)
-    return;
-  task_queue->RunTask(std::move(task));
+  // Finally drop the first reference we took when creating the task queue. We
+  // are deleted when all closures posted to the task runner has run, or right
+  // here in Release().
+  Release();
 }
 
 void WebRtcTaskQueue::RunTask(absl::AnyInvocable<void() &&> task) {
   CurrentTaskQueueSetter set_current(this);
-  std::move(task)();
+  base::AutoLock lock(alive_lock_);
+  if (alive_)
+    std::move(task)();
+  // Ensure task is destroyed before `set_current` goes out of scope.
+  task = nullptr;
 }
 
-// static
+void WebRtcTaskQueue::PostTask(absl::AnyInvocable<void() &&> task) {
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&WebRtcTaskQueue::RunTask,
+                                base::RetainedRef(this), std::move(task)));
+}
+
 void WebRtcTaskQueue::MaybeRunCoalescedTasks(
-    WebRtcTaskQueue* task_queue,
-    scoped_refptr<base::RefCountedData<bool>> is_active,
     base::TimeTicks scheduled_time_now) {
-  if (!is_active->data)
-    return;
-  CurrentTaskQueueSetter set_current(task_queue);
-  task_queue->coalesced_tasks_.RunScheduledTasks(scheduled_time_now);
+  base::AutoLock lock(alive_lock_);
+  if (alive_) {
+    CurrentTaskQueueSetter set_current(this);
+    coalesced_tasks_.RunScheduledTasks(scheduled_time_now);
+  }
 }
 
 void WebRtcTaskQueue::PostDelayedTask(absl::AnyInvocable<void() &&> task,
@@ -117,17 +144,34 @@ void WebRtcTaskQueue::PostDelayedTask(absl::AnyInvocable<void() &&> task,
       base::TimeTicks::Now() + base::Microseconds(delay.us());
   base::TimeTicks snapped_target_time =
       MetronomeSource::TimeSnappedToNextTick(target_time);
-  // Queue to run the delayed task at |snapped_target_time|. If the snapped time
-  // has not been scheduled before, schedule it with PostDelayedTaskAt().
+  // The posted task might outlive |this|, but access to |this| is guarded by
+  // the ref-counted |is_active_| flag.
   if (coalesced_tasks_.QueueDelayedTask(target_time, std::move(task),
                                         snapped_target_time)) {
-    // The posted task might outlive |this|, but access to |this| is guarded by
-    // the ref-counted |is_active_| flag.
     task_runner_->PostDelayedTaskAt(
         base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
         base::BindOnce(&WebRtcTaskQueue::MaybeRunCoalescedTasks,
-                       base::Unretained(this), is_active_, snapped_target_time),
+                       base::RetainedRef(this), snapped_target_time),
         snapped_target_time, base::subtle::DelayPolicy::kPrecise);
+  }
+}
+
+void WebRtcTaskQueue::RunHighPrecisionTask(int id) {
+  absl::AnyInvocable<void() &&> task;
+  base::AutoLock lock(alive_lock_);
+  if (alive_) {
+    base::AutoLock high_precision_lock(high_precision_lock_);
+    const auto it = high_precision_tasks_.find(id);
+    DCHECK(it != high_precision_tasks_.end());
+    if (it != high_precision_tasks_.end()) {
+      task = std::move(it->second);
+      high_precision_tasks_.erase(it);
+    }
+  }
+  if (task) {
+    CurrentTaskQueueSetter set_current(this);
+    std::move(task)();
+    task = nullptr;
   }
 }
 
@@ -136,12 +180,16 @@ void WebRtcTaskQueue::PostDelayedHighPrecisionTask(
     webrtc::TimeDelta delay) {
   base::TimeTicks target_time =
       base::TimeTicks::Now() + base::Microseconds(delay.us());
-  // The posted task might outlive |this|, but access to |this| is guarded by
-  // the ref-counted |is_active_| flag.
+  int id;
+  {
+    base::AutoLock high_precision_lock(high_precision_lock_);
+    id = next_high_precision_task_id_++;
+    high_precision_tasks_.emplace(id, std::move(task));
+  }
   task_runner_->PostDelayedTaskAt(
       base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
-      base::BindOnce(&WebRtcTaskQueue::MaybeRunTask, base::Unretained(this),
-                     is_active_, std::move(task)),
+      base::BindOnce(&WebRtcTaskQueue::RunHighPrecisionTask,
+                     base::RetainedRef(this), id),
       target_time, base::subtle::DelayPolicy::kPrecise);
 }
 
@@ -172,12 +220,17 @@ base::TaskTraits TaskQueuePriority2Traits(
   }
 }
 
+std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
+CreateTaskQueueHelper(webrtc::TaskQueueFactory::Priority priority) {
+  return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
+      new WebRtcTaskQueue(TaskQueuePriority2Traits(priority)));
+}
+
 class WebrtcTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
   CreateTaskQueue(absl::string_view name, Priority priority) const override {
-    return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
-        new WebRtcTaskQueue(TaskQueuePriority2Traits(priority)));
+    return CreateTaskQueueHelper(priority);
   }
 };
 
@@ -192,6 +245,5 @@ std::unique_ptr<webrtc::TaskQueueFactory> CreateWebRtcTaskQueueFactory() {
 
 std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
 CreateWebRtcTaskQueue(webrtc::TaskQueueFactory::Priority priority) {
-  return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
-      new blink::WebRtcTaskQueue(blink::TaskQueuePriority2Traits(priority)));
+  return blink::CreateTaskQueueHelper(priority);
 }

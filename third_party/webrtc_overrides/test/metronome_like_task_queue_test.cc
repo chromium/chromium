@@ -11,7 +11,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/any_invocable.h"
-#include "third_party/webrtc/api/task_queue/task_queue_factory.h"
 
 namespace blink {
 
@@ -96,6 +95,28 @@ TEST_P(MetronomeLikeTaskQueueTest,
   EXPECT_FALSE(callback.was_called());
   task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(callback.was_called());
+}
+
+TEST_P(MetronomeLikeTaskQueueTest, MixedPrecisionDelayedTasksRunAsExpected) {
+  auto* task_queue = provider_->TaskQueue();
+  MockCallback callback;
+
+  // Setup 3 callbacks:
+  // 1) Low precision, should execute on the first metronome tick.
+  // 2) High precision, should execute between first and second metronome tick.
+  // 3) Low precision, should execute on the second metronome tick.
+  const base::TimeDelta tick_duration = provider_->MetronomeTick();
+  const webrtc::TimeDelta webrtc_tick_duration = ToWebrtc(tick_duration);
+  task_queue->PostDelayedTask(callback.ToTask(), webrtc_tick_duration / 2);
+  task_queue->PostDelayedHighPrecisionTask(callback.ToTask(),
+                                           3 * webrtc_tick_duration / 2);
+  task_queue->PostDelayedTask(callback.ToTask(), 3 * webrtc_tick_duration / 2);
+  task_environment_.FastForwardBy(tick_duration);
+  EXPECT_EQ(callback.callback_count(), 1u);
+  task_environment_.FastForwardBy(tick_duration / 2 + base::Microseconds(1));
+  EXPECT_EQ(callback.callback_count(), 2u);
+  task_environment_.FastForwardBy(tick_duration / 2 + base::Microseconds(1));
+  EXPECT_EQ(callback.callback_count(), 3u);
 }
 
 TEST_P(MetronomeLikeTaskQueueTest, DelayedTasksRunInOrder) {
