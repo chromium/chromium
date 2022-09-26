@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 """File for testing flash_device.py."""
 
-import argparse
 import os
 import unittest
 import unittest.mock as mock
@@ -54,10 +53,9 @@ class FlashDeviceTest(unittest.TestCase):
     def test_flash_system_info_match(self) -> None:
         """Test no flash when |os_check| is 'check' and system info matches."""
 
-        self._ffx_mock.return_value = argparse.Namespace(
-            stdout='[{"title": "Build", "child": '
-            '[{"value": "%s"}, {"value": "%s"}]}]' %
-            (_TEST_VERSION, _TEST_PRODUCT))
+        self._ffx_mock.return_value.stdout = \
+            '[{"title": "Build", "child": [{"value": "%s"}, ' \
+            '{"value": "%s"}]}]' % (_TEST_VERSION, _TEST_PRODUCT)
         flash_device.flash(_TEST_IMAGE_DIR, 'check', None)
         self.assertEqual(self._ffx_mock.call_count, 1)
         self.assertEqual(self._sdk_hash_mock.call_count, 1)
@@ -66,9 +64,9 @@ class FlashDeviceTest(unittest.TestCase):
         """Test flash when |os_check| is 'check' and system info does not
         match."""
 
-        self._ffx_mock.return_value = argparse.Namespace(
-            stdout='[{"title": "Build", "child": '
-            '[{"value": "wrong.version"}, {"value": "wrong_product"}]}]')
+        self._ffx_mock.return_value.stdout = \
+            '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
+            '{"value": "wrong_product"}]}]'
         flash_device.flash(_TEST_IMAGE_DIR, 'check', None)
         self.assertEqual(self._ffx_mock.call_count, 3)
 
@@ -76,8 +74,7 @@ class FlashDeviceTest(unittest.TestCase):
         """Test flash when |os_check| is 'check' and system info was not
         retrieved."""
 
-        self._ffx_mock.return_value = argparse.Namespace(
-            stdout='[{"title": "badtitle"}]')
+        self._ffx_mock.return_value.stdout = '[{"title": "badtitle"}]'
         flash_device.flash(_TEST_IMAGE_DIR, 'check', None)
         self.assertEqual(self._ffx_mock.call_count, 3)
 

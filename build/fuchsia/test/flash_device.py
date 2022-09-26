@@ -24,13 +24,15 @@ def _get_system_info(target: Optional[str]) -> Tuple[str, str]:
         Tuple of strings, containing (product, version number).
     """
 
-    info_json = json.loads(
-        run_ffx_command(('target', 'show', '--json'),
-                        target_id=target,
-                        capture_output=True).stdout.strip())
-    for info in info_json:
-        if info['title'] == 'Build':
-            return (info['child'][1]['value'], info['child'][0]['value'])
+    info_cmd = run_ffx_command(('target', 'show', '--json'),
+                               target_id=target,
+                               capture_output=True,
+                               check=False)
+    if info_cmd.returncode == 0:
+        info_json = json.loads(info_cmd.stdout.strip())
+        for info in info_json:
+            if info['title'] == 'Build':
+                return (info['child'][1]['value'], info['child'][0]['value'])
 
     # If the information was not retrieved, return empty strings to indicate
     # unknown system info.
