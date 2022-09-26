@@ -630,10 +630,25 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [model addSectionWithIdentifier:sectionID];
   [model setHeader:[self headerForSectionIndex:sectionID]
       forSectionWithIdentifier:sectionID];
+  __weak __typeof(self) weakSelf = self;
   for (TableViewItem<ReadingListListItem>* item in items) {
     item.type = ItemTypeItem;
     [model addItem:item toSectionWithIdentifier:sectionID];
-    [self.dataSource fetchFaviconForItem:item];
+
+    // This function is currently reloading the model.
+    // It has been observed that the item just added is not fully available,
+    // the model containing the item but the item count of the section not
+    // being updated correctly.
+    // Updating the favicon can lead to synchronous update of the item if the
+    // icon is already available. To avoid causing a crash, update the trigger
+    // the favicon asynchronously.
+    // TODO(crbug.com/1368111): check the fix actually prevents crashing.
+    __weak __typeof(item) weakItem = item;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (weakSelf && weakItem) {
+        [weakSelf.dataSource fetchFaviconForItem:weakItem];
+      }
+    });
   }
 }
 
