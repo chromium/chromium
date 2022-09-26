@@ -103,6 +103,12 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   absl::optional<network::CrossOriginOpenerPolicy> cross_origin_opener_policy(
       const std::string& id) override;
 
+  // This is used to enable compatibility shims, including disabling some
+  // features that are incompatible with older clients.
+  bool HasSessionsWithoutTabTargetSupport() const;
+
+  void SetFrameTreeNode(FrameTreeNode* frame_tree_node);
+
   RenderFrameHostImpl* GetFrameHostForTesting() { return frame_host_; }
 
  private:
@@ -139,7 +145,6 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
 
   void DestroyOnRenderFrameGone();
   void UpdateFrameHost(RenderFrameHostImpl* frame_host);
-  void SetFrameTreeNode(FrameTreeNode* frame_tree_node);
   void ChangeFrameHostAndObservedProcess(RenderFrameHostImpl* frame_host);
   void UpdateFrameAlive();
 

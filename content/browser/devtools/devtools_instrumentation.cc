@@ -277,6 +277,13 @@ BuildFederatedAuthRequestIssue(
   return issue;
 }
 
+void UpdateChildFrameTrees(FrameTreeNode* ftn) {
+  if (auto* agent_host = WebContentsDevToolsAgentHost::GetFor(
+          WebContentsImpl::FromFrameTreeNode(ftn))) {
+    agent_host->UpdateChildFrameTrees();
+  }
+}
+
 }  // namespace
 
 void OnResetNavigationRequest(NavigationRequest* navigation_request) {
@@ -318,6 +325,29 @@ void BackForwardCacheNotUsed(
                    nav_request, result, tree_result);
 }
 
+void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node) {
+  auto* host = static_cast<RenderFrameDevToolsAgentHost*>(
+      RenderFrameDevToolsAgentHost::GetFor(&old_node));
+  if (!host || host->HasSessionsWithoutTabTargetSupport())
+    return;
+  // The new node may have a previous host associated, disconnect it first.
+  scoped_refptr<RenderFrameDevToolsAgentHost> previous_host =
+      static_cast<RenderFrameDevToolsAgentHost*>(
+          RenderFrameDevToolsAgentHost::GetFor(&new_node));
+  previous_host->SetFrameTreeNode(nullptr);
+  // TODO(dsv, caseq): revise this! We may rather have frame token per RFDTAH,
+  // which will remove the need for this hack.
+  new_node.set_devtools_frame_token(old_node.devtools_frame_token());
+  host->SetFrameTreeNode(&new_node);
+}
+
+void WillInitiatePrerender(FrameTree& frame_tree) {
+  DCHECK_EQ(FrameTree::Type::kPrerender, frame_tree.type());
+  auto* wc = WebContentsImpl::FromFrameTreeNode(frame_tree.root());
+  if (auto* host = WebContentsDevToolsAgentHost::GetFor(wc))
+    host->WillInitiatePrerender(frame_tree.root());
+}
+
 void DidActivatePrerender(const NavigationRequest& nav_request) {
   FrameTreeNode* ftn = nav_request.frame_tree_node();
   WebContentsImpl* web_contents = WebContentsImpl::FromFrameTreeNode(ftn);
@@ -327,6 +357,7 @@ void DidActivatePrerender(const NavigationRequest& nav_request) {
   web_contents->set_last_navigation_was_prerender_activation_for_devtools();
   DispatchToAgents(ftn, &protocol::PageHandler::DidActivatePrerender,
                    nav_request);
+  UpdateChildFrameTrees(ftn);
 }
 
 void DidCancelPrerender(const GURL& prerendering_url,
@@ -560,20 +591,31 @@ std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
   FrameTreeNode* frame_tree_node =
       NavigationRequest::From(navigation_handle)->frame_tree_node();
   FrameTreeNode* parent = FrameTreeNode::From(frame_tree_node->parent());
+
+  std::vector<std::unique_ptr<NavigationThrottle>> result;
+
   if (!parent) {
     FrameTreeNode* outer_delegate_node =
         frame_tree_node->render_manager()->GetOuterDelegateNode();
     if (outer_delegate_node &&
         (WebContentsImpl::FromFrameTreeNode(frame_tree_node)->IsPortal() ||
          frame_tree_node->IsFencedFrameRoot())) {
-      parent = frame_tree_node->render_manager()
-                   ->GetOuterDelegateNode()
-                   ->parent()
-                   ->frame_tree_node();
+      parent = outer_delegate_node->parent()->frame_tree_node();
+    } else if (frame_tree_node->GetFrameType() ==
+                   FrameType::kPrerenderMainFrame &&
+               !frame_tree_node->current_frame_host()
+                    ->has_committed_any_navigation()) {
+      if (auto* agent_host = WebContentsDevToolsAgentHost::GetFor(
+              WebContentsImpl::FromFrameTreeNode(frame_tree_node))) {
+        // For prerender, perform auto-attach to tab target at the point of
+        // initial navigation.
+        agent_host->auto_attacher()->AppendNavigationThrottles(
+            navigation_handle, &result);
+        return result;
+      }
     }
   }
 
-  std::vector<std::unique_ptr<NavigationThrottle>> result;
   if (parent) {
     if (auto* agent_host = RenderFrameDevToolsAgentHost::GetFor(parent)) {
       agent_host->auto_attacher()->AppendNavigationThrottles(navigation_handle,
@@ -669,18 +711,16 @@ void ApplyNetworkRequestOverrides(
   bool disable_cache = false;
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
-  // Prerendered pages do not have DevTools attached but it's important for
-  // developers that they get the UA override of the visible DevTools for
-  // testing mobile sites. Use the DevTools agent of the primary main frame of
-  // the WebContents.
-  // TODO(https://crbug.com/1221419): The real fix may be to make a separate
-  // target for the prerendered page.
+  // Prerendered pages will only have have DevTools attached if the client opted
+  // into supporting the tab target. For legacy clients, we will apply relevant
+  // network override from the associated main frame target.
   if (frame_tree_node->frame_tree()->is_prerendering()) {
-    DCHECK(!agent_host);
-    agent_host = RenderFrameDevToolsAgentHost::GetFor(
-        WebContentsImpl::FromFrameTreeNode(frame_tree_node)
-            ->GetPrimaryMainFrame()
-            ->frame_tree_node());
+    if (!agent_host) {
+      agent_host = RenderFrameDevToolsAgentHost::GetFor(
+          WebContentsImpl::FromFrameTreeNode(frame_tree_node)
+              ->GetPrimaryMainFrame()
+              ->frame_tree_node());
+    }
   }
   if (!agent_host)
     return;
@@ -1064,11 +1104,7 @@ void UpdatePortals(RenderFrameHostImpl* render_frame_host_impl) {
               render_frame_host_impl->frame_tree_node()))) {
     agent_host->UpdatePortals();
   }
-  if (auto* agent_host = WebContentsDevToolsAgentHost::GetFor(
-          WebContentsImpl::FromFrameTreeNode(
-              render_frame_host_impl->frame_tree_node()))) {
-    agent_host->PortalUpdated();
-  }
+  UpdateChildFrameTrees(render_frame_host_impl->frame_tree_node());
 }
 }  // namespace
 

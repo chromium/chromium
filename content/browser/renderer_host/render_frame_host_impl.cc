@@ -14220,6 +14220,8 @@ bool RenderFrameHostImpl::DocumentUsedWebOTP() {
 }
 
 void RenderFrameHostImpl::SetFrameTreeNode(FrameTreeNode& frame_tree_node) {
+  devtools_instrumentation::WillSwapFrameTreeNode(*frame_tree_node_,
+                                                  frame_tree_node);
   frame_tree_node_ = &frame_tree_node;
   SetFrameTree(*frame_tree_node_->frame_tree());
   // Setting the FrameTreeNode is only done for FrameTree/FrameTreeNode swaps

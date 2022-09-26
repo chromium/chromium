@@ -140,9 +140,10 @@ scoped_refptr<DevToolsAgentHost> RenderFrameDevToolsAgentHost::GetOrCreateFor(
     FrameTreeNode* frame_tree_node) {
   frame_tree_node = GetFrameTreeNodeAncestor(frame_tree_node);
   RenderFrameDevToolsAgentHost* result = FindAgentHost(frame_tree_node);
-  if (!result)
+  if (!result) {
     result = new RenderFrameDevToolsAgentHost(
         frame_tree_node, frame_tree_node->current_frame_host());
+  }
   return result;
 }
 
@@ -252,7 +253,8 @@ RenderFrameDevToolsAgentHost::RenderFrameDevToolsAgentHost(
   SetFrameTreeNode(frame_tree_node);
   ChangeFrameHostAndObservedProcess(frame_host);
   render_frame_alive_ = frame_host_ && frame_host_->IsRenderFrameLive();
-  if (frame_tree_node->GetFrameType() != FrameType::kPrimaryMainFrame) {
+  if (frame_tree_node->GetFrameType() != FrameType::kPrimaryMainFrame &&
+      frame_tree_node->GetFrameType() != FrameType::kPrerenderMainFrame) {
     render_frame_crashed_ = !render_frame_alive_;
   } else {
     WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
@@ -895,6 +897,15 @@ RenderFrameDevToolsAgentHost::cross_origin_opener_policy(
   }
   RenderFrameHostImpl* rfhi = frame_tree_node->current_frame_host();
   return rfhi->cross_origin_opener_policy();
+}
+
+bool RenderFrameDevToolsAgentHost::HasSessionsWithoutTabTargetSupport() const {
+  const std::vector<DevToolsSession*>& sessions =
+      DevToolsAgentHostImpl::sessions();
+
+  return std::any_of(sessions.begin(), sessions.end(), [](DevToolsSession* s) {
+    return s->session_mode() == DevToolsSession::Mode::kDoesNotSupportTabTarget;
+  });
 }
 
 }  // namespace content

@@ -184,8 +184,10 @@ void BackForwardCacheNotUsed(
     const BackForwardCacheCanStoreDocumentResult* result,
     const BackForwardCacheCanStoreTreeResult* tree_result);
 
-void DidActivatePrerender(const NavigationRequest& nav_request);
+void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node);
 
+void WillInitiatePrerender(FrameTree& frame_tree);
+void DidActivatePrerender(const NavigationRequest& nav_request);
 // This function reports cancellation status to DevTools with the
 // `disallowed_api_method`, which is used to give users more information about
 // the cancellation details if the prerendering uses disallowed API method, and

@@ -16,6 +16,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "build/build_config.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
@@ -299,9 +300,13 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
     }
   }
 
-  DCHECK(prerender_host_by_frame_tree_node_id_.contains(frame_tree_node_id));
-  if (!prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
-           ->StartPrerendering()) {
+  auto prerender_host_it =
+      prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
+  DCHECK(prerender_host_it != prerender_host_by_frame_tree_node_id_.end());
+  PrerenderHost& prerender_host = *prerender_host_it->second;
+  devtools_instrumentation::WillInitiatePrerender(
+      prerender_host.GetPrerenderFrameTree());
+  if (!prerender_host.StartPrerendering()) {
     CancelHost(frame_tree_node_id, PrerenderHost::FinalStatus::kStartFailed);
     return RenderFrameHost::kNoFrameTreeNodeId;
   }

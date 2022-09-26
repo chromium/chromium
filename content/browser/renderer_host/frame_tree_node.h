@@ -145,6 +145,12 @@ class CONTENT_EXPORT FrameTreeNode {
     return devtools_frame_token_;
   }
 
+  // This may only change when an RFH changes host frame tree nodes
+  // during prerender activation.
+  // TODO(caseq,dsv): see if we can get rid of it.
+  void set_devtools_frame_token(const base::UnguessableToken& token) {
+    devtools_frame_token_ = token;
+  }
   size_t child_count() const { return current_frame_host()->child_count(); }
 
   RenderFrameHostImpl* parent() const { return parent_; }
@@ -721,7 +727,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // |devtools_frame_token_| is only defined by the browser process and is never
   // sent back from the renderer in the control calls. It should be never used
   // to look up the FrameTreeNode instance.
-  const base::UnguessableToken devtools_frame_token_;
+  base::UnguessableToken devtools_frame_token_;
 
   // Tracks the scrolling and margin properties for this frame.  These
   // properties affect the child renderer but are stored on its parent's

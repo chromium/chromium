@@ -13,6 +13,7 @@
 
 namespace content {
 
+class FrameTreeNode;
 class Portal;
 
 class CONTENT_EXPORT WebContentsDevToolsAgentHost
@@ -31,11 +32,14 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
 
   static void AddAllAgentHosts(DevToolsAgentHost::List* result);
 
+  // DevToolsAgentHostImpl overrides.
+  protocol::TargetAutoAttacher* auto_attacher() override;
+
   // Instrumentation methods
   void PortalActivated(const Portal& portal);
-  // TODO(caseq): replace with PortalAttached / PortalDetached with a
-  // specific portal instead?
-  void PortalUpdated();
+  void WillInitiatePrerender(FrameTreeNode* ftn);
+  // TODO(caseq): do we need more specific signals here?
+  void UpdateChildFrameTrees();
 
  private:
   class AutoAttacher;
@@ -71,7 +75,6 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   // DevToolsAgentHostImpl overrides.
   DevToolsSession::Mode GetSessionMode() override;
   bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
-  protocol::TargetAutoAttacher* auto_attacher() override;
 
   // WebContentsObserver overrides.
   void WebContentsDestroyed() override;

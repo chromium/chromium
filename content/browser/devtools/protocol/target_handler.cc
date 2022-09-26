@@ -24,13 +24,14 @@
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/devtools/web_contents_devtools_agent_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "content/public/browser/web_contents.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -706,39 +707,44 @@ std::unique_ptr<NavigationThrottle> TargetHandler::CreateThrottleForNavigation(
       NavigationRequest::From(navigation_handle)->frame_tree_node();
   DCHECK(access_mode_ != AccessMode::kBrowser ||
          !auto_attach_related_targets_.empty() || !frame_tree_node->parent());
-  if (frame_tree_node->IsMainFrame() &&
-      (access_mode_ == AccessMode::kBrowser ||
-       frame_tree_node->IsFencedFrameRoot())) {
-    DCHECK(auto_attacher == auto_attacher_);
-    DevToolsAgentHost* host =
-        RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
-    // For new pages create Throttle only if the session is still paused.
-    if (!host)
-      return nullptr;
-    auto it = auto_attached_sessions_.find(host);
-    if (it == auto_attached_sessions_.end())
-      return nullptr;
-    if (!it->second->IsWaitingForDebuggerOnStart())
-      return nullptr;
-    // The target already exists and we attached to it, resume message
-    // sending without waiting for the navigation to commit.
-    it->second->ResumeSendingMessagesToAgent();
-
-    // window.open() navigations are throttled on the renderer side and the main
-    // request will not be sent until runIfWaitingForDebugger is received from
-    // the client, so there is no need to throttle the navigation in the
-    // browser.
-    //
-    // New window navigations (such as ctrl+click) should be throttled before
-    // the main request is sent to apply user agent and other overrides.
-    FrameTreeNode* opener = frame_tree_node->opener();
-    if (opener)
-      return nullptr;
-    return std::make_unique<RequestThrottle>(weak_factory_.GetWeakPtr(),
-                                             navigation_handle, host);
+  // All child frames start navigating with their parent settings applied and
+  // are only throttled at response where we know if they require a new host.
+  // Note that fenced frames start as remote frames right away and get a RFDTAH
+  // of their own, so they require a RequestThrottle rather than a Response one.
+  if (!frame_tree_node->IsMainFrame()) {
+    return std::make_unique<ResponseThrottle>(weak_factory_.GetWeakPtr(),
+                                              auto_attacher, navigation_handle);
   }
-  return std::make_unique<ResponseThrottle>(weak_factory_.GetWeakPtr(),
-                                            auto_attacher, navigation_handle);
+  // If we got here for main frame, it must be either browser or tab target.
+  DCHECK(auto_attacher == auto_attacher_);
+  DevToolsAgentHost* host =
+      RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
+  // For new pages create Throttle only if the session is still paused.
+  if (!host)
+    return nullptr;
+  auto it = auto_attached_sessions_.find(host);
+  if (it == auto_attached_sessions_.end())
+    return nullptr;
+  if (!it->second->IsWaitingForDebuggerOnStart())
+    return nullptr;
+  // RFDTAHs created during auto-attach had no renderer allocated originally,
+  // and hence have messages paused, but with navigation we're supposed to
+  // have a line host, so we can send messages to renderer now.
+  DCHECK(frame_tree_node->current_frame_host()->IsRenderFrameLive());
+  it->second->ResumeSendingMessagesToAgent();
+
+  // window.open() navigations are throttled on the renderer side and the main
+  // request will not be sent until runIfWaitingForDebugger is received from
+  // the client, so there is no need to throttle the navigation in the
+  // browser.
+  //
+  // New window navigations (such as ctrl+click) should be throttled before
+  // the main request is sent to apply user agent and other overrides.
+  FrameTreeNode* opener = frame_tree_node->opener();
+  if (opener)
+    return nullptr;
+  return std::make_unique<RequestThrottle>(weak_factory_.GetWeakPtr(),
+                                           navigation_handle, host);
 }
 
 void TargetHandler::ClearThrottles() {

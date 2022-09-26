@@ -9,6 +9,7 @@
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/portal/portal.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 
 namespace content {
@@ -51,9 +52,16 @@ class WebContentsDevToolsAgentHost::AutoAttacher
       UpdateAssociatedPages();
   }
 
-  void PortalUpdated() {
+  void UpdateChildFrameTrees() {
     if (auto_attach())
       UpdateAssociatedPages();
+  }
+
+  void WillInitiatePrerender(FrameTreeNode* ftn) {
+    if (!auto_attach())
+      return;
+    auto host = RenderFrameDevToolsAgentHost::GetOrCreateFor(ftn);
+    DispatchAutoAttach(host.get(), wait_for_debugger_on_start());
   }
 
  private:
@@ -78,14 +86,13 @@ class WebContentsDevToolsAgentHost::AutoAttacher
             wc->GetPrimaryFrameTree().root()));
       }
       web_contents_->ForEachRenderFrameHost(
-          [&hosts](RenderFrameHost* rfh) { AddFrameAndPortals(hosts, rfh); });
+          [&hosts](RenderFrameHost* rfh) { AddFrame(hosts, rfh); });
     }
     DispatchSetAttachedTargetsOfType(hosts, DevToolsAgentHost::kTypePage);
   }
 
-  static void AddFrameAndPortals(
-      base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,
-      RenderFrameHost* rfh) {
+  static void AddFrame(base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,
+                       RenderFrameHost* rfh) {
     RenderFrameHostImpl* rfhi = static_cast<RenderFrameHostImpl*>(rfh);
     // We do not expose cached hosts as separate targets for now.
     if (rfhi->IsInBackForwardCache())
@@ -153,13 +160,18 @@ void WebContentsDevToolsAgentHost::PortalActivated(const Portal& portal) {
     g_agent_host_instances.Get()[new_wc] = this;
     Observe(portal.GetPortalContents());
   }
-  if (auto_attacher_)
-    auto_attacher_->PortalActivated(portal);
+  DCHECK(auto_attacher_);
+  auto_attacher_->PortalActivated(portal);
 }
 
-void WebContentsDevToolsAgentHost::PortalUpdated() {
-  if (auto_attacher_)
-    auto_attacher_->PortalUpdated();
+void WebContentsDevToolsAgentHost::WillInitiatePrerender(FrameTreeNode* ftn) {
+  DCHECK(auto_attacher_);
+  auto_attacher_->WillInitiatePrerender(ftn);
+}
+
+void WebContentsDevToolsAgentHost::UpdateChildFrameTrees() {
+  DCHECK(auto_attacher_);
+  auto_attacher_->UpdateChildFrameTrees();
 }
 
 WebContentsDevToolsAgentHost::~WebContentsDevToolsAgentHost() {
