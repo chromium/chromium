@@ -242,11 +242,11 @@ void CompositorGpuThread::Init() {
   if (enable_watchdog_) {
     watchdog_thread_ = gpu::GpuWatchdogThread::Create(
         gpu_preferences.watchdog_starts_backgrounded, "GpuWatchdog_Compositor");
-  }
 
-  if (!watchdog_thread_)
-    return;
-  watchdog_thread_->OnInitComplete();
+    if (!watchdog_thread_)
+      return;
+    watchdog_thread_->OnInitComplete();
+  }
 
   // Making sure to create the |memory_pressure_listener_| on
   // CompositorGpuThread since this callback will be called on the thread it was
