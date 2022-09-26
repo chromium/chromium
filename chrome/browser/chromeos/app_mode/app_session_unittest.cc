@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -25,6 +26,7 @@
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
@@ -38,6 +40,8 @@ namespace {
 using ::chromeos::FakePowerManagerClient;
 
 constexpr char kTestAppId[] = "aaaabbbbaaaabbbbaaaabbbbaaaabbbb";
+constexpr char kTestWebAppName1[] = "test_web_app_name1";
+constexpr char kTestWebAppName2[] = "test_web_app_name2";
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 constexpr char16_t kPepperPluginName1[] = u"pepper_plugin_name1";
@@ -72,16 +76,35 @@ class AppSessionTest : public testing::Test {
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
+  std::unique_ptr<Browser> CreateWebAppBrowser(
+      const std::string& web_app_name) {
+    return CreateBrowserWithTestWindowForParams(
+        Browser::CreateParams::CreateForApp(
+            /*app_name=*/kTestWebAppName1, /*trusted_source=*/true,
+            /*window_bounds=*/gfx::Rect(), /*profile=*/&profile_,
+            /*user_gesture=*/true));
+  }
+
   std::unique_ptr<Browser> CreateBrowserWithTestWindow() {
     return CreateBrowserWithTestWindowForParams(
         Browser::CreateParams(&profile_, true));
   }
 
+  std::unique_ptr<Browser> CreateBrowserForApp(
+      const std::string& web_app_name) {
+    return CreateBrowserWithTestWindowForParams(
+        Browser::CreateParams::CreateForAppPopup(
+            /*app_name=*/web_app_name, /*trusted_source=*/true,
+            /*window_bounds=*/gfx::Rect(), /*profile=*/&profile_,
+            /*user_gesture=*/true));
+  }
+
   // Simulate starting a web kiosk session.
-  void StartWebKioskSession() {
+  void StartWebKioskSession(
+      const std::string& web_app_name = kTestWebAppName1) {
     // Create the main kiosk browser window, which is normally auto-created when
     // a web kiosk session starts.
-    web_kiosk_main_browser_ = CreateBrowserWithTestWindow();
+    web_kiosk_main_browser_ = CreateWebAppBrowser(web_app_name);
 
     app_session_ = AppSession::CreateForTesting(
         base::DoNothing(), local_state(), {crash_path().value()});
@@ -97,17 +120,31 @@ class AppSessionTest : public testing::Test {
     app_session_->Init(&profile_, kTestAppId);
   }
 
-  // Simulate opening a new browser window, and ensure it is automatically
-  // closed.
-  void OpenNewBrowserAndEnsureItIsClosed() {
-    auto new_browser = CreateBrowserWithTestWindow();
+  // Waits until |app_session_| handles creation of |new_browser_window| and
+  // returns whether |new_browser_window| was asked to close. In this case we
+  // will also ensure that |new_browser_window| was automatically closed.
+  bool ShouldBrowserBeClosedByAppSessionBrowserHander(
+      BrowserWindow* new_browser_window) {
+    bool already_closed = false;
+    static_cast<TestBrowserWindow*>(new_browser_window)
+        ->SetCloseCallback(base::BindLambdaForTesting(
+            [&already_closed]() { already_closed = true; }));
 
-    // Ensure it is closed.
-    base::RunLoop loop;
-    static_cast<TestBrowserWindow*>(new_browser->window())
-        ->SetCloseCallback(
-            base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
-    loop.Run();
+    // Wait until the browser is handled by |app_session_|.
+    base::RunLoop handler_loop;
+    bool result = false;
+    app_session_->SetOnHandleBrowserCallbackForTesting(
+        base::BindLambdaForTesting([&handler_loop, &result](bool is_closing) {
+          result = is_closing;
+          handler_loop.Quit();
+        }));
+    handler_loop.Run();
+
+    if (result) {
+      EXPECT_TRUE(already_closed);
+    }
+
+    return result;
   }
 
   void CloseMainBrowser() {
@@ -118,6 +155,10 @@ class AppSessionTest : public testing::Test {
   bool IsSessionShuttingDown() const {
     return app_session_->is_shutting_down();
   }
+
+  void ResetAppSession() { app_session_.reset(); }
+
+  PrefService* GetPrefs() { return profile_.GetPrefs(); }
 
   base::FilePath crash_path() const { return temp_dir_.GetPath(); }
 
@@ -154,7 +195,9 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
                                  KioskSessionState::kWebStarted, 1);
   histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
 
-  OpenNewBrowserAndEnsureItIsClosed();
+  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateBrowserWithTestWindow()->window()));
+
   // The main browser window still exists, the kiosk session should not
   // shutdown.
   EXPECT_FALSE(IsSessionShuttingDown());
@@ -190,13 +233,12 @@ TEST_F(AppSessionTest, ChromeAppKioskSessionState) {
 }
 
 TEST_F(AppSessionTest, ChromeAppKioskTracksBrowserCreation) {
-  auto app_session =
-      std::make_unique<AppSession>(base::DoNothing(), local_state());
-  app_session->Init(profile(), kTestAppId);
+  StartChromeAppKioskSession();
 
-  OpenNewBrowserAndEnsureItIsClosed();
+  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateBrowserWithTestWindow()->window()));
   // Closing the browser should not shutdown the ChromeApp kiosk session.
-  EXPECT_FALSE(app_session->is_shutting_down());
+  EXPECT_FALSE(IsSessionShuttingDown());
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kOther, 1);
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
@@ -208,7 +250,7 @@ TEST_F(AppSessionTest, ChromeAppKioskTracksBrowserCreation) {
   EXPECT_EQ(1, sessions_list->size());
 
   // Emulate exiting kiosk session.
-  app_session.reset();
+  ResetAppSession();
 
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kStopped, 1);
@@ -296,6 +338,80 @@ TEST_F(AppSessionTestMockTime, PeriodicMetrics) {
   for (const char* metric : kPeriodicMetrics) {
     histogram()->ExpectTotalCount(metric, 1);
   }
+}
+
+TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKiosk) {
+  StartWebKioskSession(kTestWebAppName1);
+
+  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateBrowserForApp(kTestWebAppName1)->window()));
+}
+
+TEST_F(AppSessionTest, OpenSecondBrowserInWebKioskIfAllowed) {
+  GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  StartWebKioskSession(kTestWebAppName1);
+
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateBrowserForApp(kTestWebAppName1)->window()));
+}
+
+TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKioskWithEmptyWebAppName) {
+  GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  StartWebKioskSession();
+
+  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateBrowserWithTestWindow()->window()));
+}
+
+TEST_F(AppSessionTest,
+       DoNotOpenSecondBrowserInWebKioskWithDifferentWebAppName) {
+  GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  StartWebKioskSession(kTestWebAppName1);
+
+  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateBrowserForApp(kTestWebAppName2)->window()));
+}
+
+TEST_F(AppSessionTest, DoNotOpenSecondBrowserInChromeAppKiosk) {
+  // This flag allows opening new windows only for the web kiosk session. For
+  // chrome app kiosk we still should block all new browsers.
+  GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  StartChromeAppKioskSession();
+
+  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateBrowserForApp(kTestWebAppName2)->window()));
+}
+
+TEST_F(AppSessionTest, DoNotExitWebKioskSessionWhenSecondBrowserIsOpened) {
+  GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  StartWebKioskSession();
+
+  auto second_browser = CreateBrowserForApp(kTestWebAppName1);
+  EXPECT_FALSE(
+      ShouldBrowserBeClosedByAppSessionBrowserHander(second_browser->window()));
+
+  CloseMainBrowser();
+  EXPECT_FALSE(IsSessionShuttingDown());
+
+  second_browser.reset();
+  // Exit kioks session when the last browser is closed.
+  EXPECT_TRUE(IsSessionShuttingDown());
+}
+
+TEST_F(AppSessionTest, InitialBrowserShouldBeHandledAsRegularBrowser) {
+  GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  StartWebKioskSession();
+
+  auto second_browser = CreateBrowserForApp(kTestWebAppName1);
+  EXPECT_FALSE(
+      ShouldBrowserBeClosedByAppSessionBrowserHander(second_browser->window()));
+
+  second_browser.reset();
+  EXPECT_FALSE(IsSessionShuttingDown());
+
+  CloseMainBrowser();
+  // Exit kioks session when the last browser is closed.
+  EXPECT_TRUE(IsSessionShuttingDown());
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)

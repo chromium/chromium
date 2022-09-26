@@ -8,8 +8,11 @@
 #include "ash/public/cpp/shelf_test_api.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
+#include "chrome/browser/ash/login/app_mode/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
@@ -100,6 +103,13 @@ class WebKioskTest : public OobeBaseTest {
         WebKioskAppManager::Get()->GetAppByAccountId(account_id())->app_id());
   }
 
+  void InitializeRegularOnlineKiosk() {
+    SetOnline(true);
+    PrepareAppLaunch();
+    LaunchApp();
+    KioskSessionInitializedWaiter().Wait();
+  }
+
   void SetBlockAppLaunch(bool block) {
     if (block)
       block_app_launch_override_ =
@@ -166,10 +176,7 @@ class WebKioskTest : public OobeBaseTest {
 
 // Runs the kiosk app when the network is always present.
 IN_PROC_BROWSER_TEST_F(WebKioskTest, RegularFlowOnline) {
-  SetOnline(true);
-  PrepareAppLaunch();
-  LaunchApp();
-  KioskSessionInitializedWaiter().Wait();
+  InitializeRegularOnlineKiosk();
 }
 
 // Runs the kiosk app when the network is not present in the beginning, but
@@ -255,10 +262,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest,
 
 // The shelf should be forcedly hidden in the web kiosk session.
 IN_PROC_BROWSER_TEST_F(WebKioskTest, HiddenShelf) {
-  SetOnline(true);
-  PrepareAppLaunch();
-  LaunchApp();
-  KioskSessionInitializedWaiter().Wait();
+  InitializeRegularOnlineKiosk();
 
   // The shelf should be hidden at the beginning.
   EXPECT_FALSE(ShelfTestApi().IsVisible());
@@ -281,28 +285,70 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, HiddenShelf) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskTest, KeyboardConfigPolicy) {
-  SetOnline(true);
-  PrepareAppLaunch();
-  LaunchApp();
-  KioskSessionInitializedWaiter().Wait();
-
+  InitializeRegularOnlineKiosk();
   ExpectKeyboardConfig();
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskTest, OpenA11ySettings) {
-  SetOnline(true);
-  PrepareAppLaunch();
-  LaunchApp();
-  KioskSessionInitializedWaiter().Wait();
+  InitializeRegularOnlineKiosk();
 
-  auto* settings_manager = chrome::SettingsWindowManager::GetInstance();
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  Browser* settings_browser =
+      OpenA11ySettingsBrowser(WebKioskAppManager::Get()->app_session());
 
-  settings_manager->ShowOSSettings(
-      profile, chromeos::settings::mojom::kManageAccessibilitySubpagePath);
+  // Make sure the settings browser was opened.
+  ASSERT_NE(settings_browser, nullptr);
+}
 
-  Browser* settings_browser = settings_manager->FindBrowserForProfile(profile);
-  ASSERT_TRUE(settings_browser);
+// If only the a11y settings window remains open, it should be automatically
+// closed in the web kiosk session.
+IN_PROC_BROWSER_TEST_F(WebKioskTest, CloseSettingWindowIfOnlyOpen) {
+  InitializeRegularOnlineKiosk();
+  // The initial browser should exist in the web kiosk session.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1);
+  Browser* initial_browser = BrowserList::GetInstance()->get(0);
+
+  AppSessionAsh* app_session = WebKioskAppManager::Get()->app_session();
+
+  Browser* settings_browser = OpenA11ySettingsBrowser(app_session);
+  // Make sure the settings browser was opened.
+  ASSERT_NE(settings_browser, nullptr);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2);
+
+  // Close the initial browser.
+  initial_browser->window()->Close();
+  // Ensure |settings_browser| is closed too.
+  TestBrowserClosedWaiter settings_browser_closed_waiter{settings_browser};
+  settings_browser_closed_waiter.WaitUntilClosed();
+
+  // No browsers are opened in the web kiosk session, so it should be
+  // terminated.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 0);
+  EXPECT_TRUE(app_session->is_shutting_down());
+}
+
+// Closing the a11y settings window should not exit the web app kiosk
+// session if another browser is opened.
+IN_PROC_BROWSER_TEST_F(WebKioskTest, NotExitIfCloseSettingsWindow) {
+  InitializeRegularOnlineKiosk();
+  // The initial browser should exist in the web kiosk session.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1);
+
+  AppSessionAsh* app_session = WebKioskAppManager::Get()->app_session();
+
+  Browser* settings_browser = OpenA11ySettingsBrowser(app_session);
+  // Make sure the settings browser was opened.
+  ASSERT_NE(settings_browser, nullptr);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2);
+
+  // Close |settings_browser| and ensure it is closed.
+  settings_browser->window()->Close();
+  TestBrowserClosedWaiter settings_browser_closed_waiter{settings_browser};
+  settings_browser_closed_waiter.WaitUntilClosed();
+
+  // The initial browsers should still be opened and so the kiosk session should
+  // not be terminated.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1);
+  EXPECT_FALSE(app_session->is_shutting_down());
 }
 
 }  // namespace

@@ -27,22 +27,23 @@ enum class KioskBrowserWindowType {
 };
 
 // This class monitors for the addition and removal of new browser windows
-// during the kiosk session. On construction it gets a main browser handle
-// stored as |browser_|.
+// during the kiosk session. On construction for web kiosk sessions, it gets a
+// wab app name stored as |web_app_name_|.
+//
 //
 // If a new browser window is opened, this gets closed immediately, unless it's
-// an allowed Settings window.
+// an allowed Settings window or |CanOpenNewBrowserWindow| method returns true.
 //
-// If the main browser window |browser_| of the session gets closed, the session
-// gets ended.
+// If the last browser window gets closed, the session gets ended.
 //
 // It also manages showing required settings pages in a consistent browser.
 class AppSessionBrowserWindowHandler : public BrowserListObserver {
  public:
   AppSessionBrowserWindowHandler(
       Profile* profile,
-      Browser* browser,
-      base::RepeatingClosure on_browser_window_added_callback,
+      absl::optional<std::string> web_app_name,
+      base::RepeatingCallback<void(bool is_closing)>
+          on_browser_window_added_callback,
       base::RepeatingClosure on_last_browser_window_closed_callback);
   AppSessionBrowserWindowHandler(const AppSessionBrowserWindowHandler&) =
       delete;
@@ -60,9 +61,22 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
+  // Returns true if open by web application and allowed by policy.
+  bool IsNewBrowserWindowAllowed(Browser* browser) const;
+
+  // Returns true in case of the initial browser window existed for web kiosks.
+  bool ShouldExitKioskWhenLastBrowserRemoved() const;
+
+  // Checks that there is no app browser and only |settings_browser_| remains
+  // open.
+  bool IsOnlySettingsBrowserRemainOpen() const;
+
   const raw_ptr<Profile> profile_;
-  const raw_ptr<Browser> browser_;
-  base::RepeatingClosure on_browser_window_added_callback_;
+  // |web_app_name_| is set only when we have the initial browser in the web
+  // kiosk session.
+  absl::optional<std::string> web_app_name_;
+  base::RepeatingCallback<void(bool is_closing)>
+      on_browser_window_added_callback_;
   base::RepeatingClosure on_last_browser_window_closed_callback_;
 
   // Browser in which settings are shown, restricted by

@@ -50,7 +50,7 @@ void AppSessionAsh::InitForWebKiosk(Browser* browser) {
 
 void AppSessionAsh::InitForWebKioskWithLacros(Profile* profile) {
   SetProfile(profile);
-  CreateBrowserWindowHandler(nullptr);
+  CreateBrowserWindowHandler(absl::nullopt);
   StartFloatingAccessibilityMenu();
 }
 

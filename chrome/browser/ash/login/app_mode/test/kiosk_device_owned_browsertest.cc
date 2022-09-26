@@ -11,10 +11,13 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_test_api.h"
 #include "base/barrier_closure.h"
+#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
+#include "chrome/browser/ash/login/app_mode/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
@@ -27,6 +30,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -71,6 +75,19 @@ constexpr char kSettingsPage1[] = "chrome://os-settings/manageAccessibility";
 constexpr char kSettingsPage2[] =
     "chrome-extension://mndnfokpggljbaajbnioimlmbfngpief/chromevox/options/"
     "options.html";
+
+NavigateParams OpenBrowserWithUrl(
+    const std::string& url,
+    WindowOpenDisposition window_type = WindowOpenDisposition::CURRENT_TAB) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+
+  NavigateParams params(profile, GURL(url), ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  params.disposition = window_type;
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  Navigate(&params);
+
+  return params;
+}
 
 // Helper class to replace settings urls for KioskSettingsNavigationThrottle.
 class ScopedSettingsPages {
@@ -432,26 +449,21 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, GetVolumeList) {
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, OpenA11ySettings) {
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  WaitForAppLaunchWithOptions(true /* check_launch_data */,
-                              false /* terminate_app */,
-                              true /* keep_app_open */);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                              /*terminate_app=*/false,
+                              /*keep_app_open=*/true);
 
-  auto* settings_manager = chrome::SettingsWindowManager::GetInstance();
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-
-  settings_manager->ShowOSSettings(
-      profile, chromeos::settings::mojom::kManageAccessibilitySubpagePath);
-
-  Browser* settings_browser = settings_manager->FindBrowserForProfile(profile);
+  Browser* settings_browser =
+      OpenA11ySettingsBrowser(KioskAppManager::Get()->app_session());
   ASSERT_TRUE(settings_browser);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  WaitForAppLaunchWithOptions(true /* check_launch_data */,
-                              false /* terminate_app */,
-                              true /* keep_app_open */);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                              /*terminate_app=*/false,
+                              /*keep_app_open=*/true);
 
   // At this moment, app session should be initialized.
   std::vector<chromeos::KioskSettingsNavigationThrottle::SettingsPage>
@@ -474,22 +486,10 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
   ASSERT_TRUE(app_session);
   ASSERT_FALSE(app_session->GetSettingsBrowserForTesting());
 
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-
-  {
-    // Open browser with url page1.
-    NavigateParams params(profile, page1, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    params.disposition = WindowOpenDisposition::NEW_POPUP;
-    params.window_action = NavigateParams::SHOW_WINDOW;
-    Navigate(&params);
-    // Wait for browser to be handled.
-    base::RunLoop waiter;
-    app_session->SetOnHandleBrowserCallbackForTesting(waiter.QuitClosure());
-    waiter.Run();
-  }
+  OpenBrowserWithUrl(page1.spec(), WindowOpenDisposition::NEW_POPUP);
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session));
 
   Browser* settings_browser = app_session->GetSettingsBrowserForTesting();
-
   ASSERT_TRUE(settings_browser);
 
   content::WebContents* web_contents =
@@ -498,21 +498,14 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
   NavigateToURLBlockUntilNavigationsComplete(web_contents, page1_sub, 1);
   EXPECT_EQ(web_contents->GetLastCommittedURL(), page1_sub);
 
-  {
-    // Open another browser with url page2.
-    // Also, expect navigation inside of the old window to page2.
-    content::TestNavigationObserver settings_navigation_observer(web_contents,
-                                                                 1);
-    NavigateParams params(profile, page2, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    params.disposition = WindowOpenDisposition::NEW_POPUP;
-    Navigate(&params);
-    // Wait for browser to be handled.
-    base::RunLoop waiter;
-    app_session->SetOnHandleBrowserCallbackForTesting(waiter.QuitClosure());
-    waiter.Run();
-    // Also wait for navigaiton to finish.
-    settings_navigation_observer.Wait();
-  }
+  // Open another browser with url page2.
+  // Also, expect navigation inside of the old window to page2.
+  content::TestNavigationObserver settings_navigation_observer(web_contents, 1);
+  OpenBrowserWithUrl(page2.spec(), WindowOpenDisposition::NEW_POPUP);
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session));
+  // Also wait for navigaiton to finish.
+  settings_navigation_observer.Wait();
+
   // The settings browser should not have changed.
   ASSERT_EQ(settings_browser, app_session->GetSettingsBrowserForTesting());
   EXPECT_EQ(web_contents->GetLastCommittedURL(), page2);
@@ -533,23 +526,17 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
   CloseBrowserSynchronously(settings_browser);
   EXPECT_FALSE(app_session->GetSettingsBrowserForTesting());
 
-  {
-    // Open another browser with url page2, but now of type TYPE_NORMAL.
-    // This should create a new browser of app type, and close the non-app one.
-    NavigateParams params(profile, page2, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    Navigate(&params);
+  // Open another browser with url page2, but now of the default type.
+  // This should create a new browser of app type, and close the non-app one.
+  NavigateParams params = OpenBrowserWithUrl(page2.spec());
+  // Wait for two browser handlings -- for non-app and app browser.
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session));
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session));
 
-    // Wait for two browser handlings -- for non-app and app browser.
-    base::RunLoop waiter;
-    app_session->SetOnHandleBrowserCallbackForTesting(
-        base::BarrierClosure(2, waiter.QuitClosure()));
-    waiter.Run();
-
-    // One browser should be created.
-    settings_browser = app_session->GetSettingsBrowserForTesting();
-    ASSERT_TRUE(settings_browser);
-    EXPECT_FALSE(params.browser == settings_browser);
-  }
+  // One browser should be created.
+  settings_browser = app_session->GetSettingsBrowserForTesting();
+  ASSERT_TRUE(settings_browser);
+  EXPECT_FALSE(params.browser == settings_browser);
 }
 
 // This test covers b/245088137: after opening the settings browser and moving
@@ -557,28 +544,17 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowShouldBeActive) {
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  WaitForAppLaunchWithOptions(true /* check_launch_data */,
-                              false /* terminate_app */,
-                              true /* keep_app_open */);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                              /*terminate_app=*/false,
+                              /*keep_app_open=*/true);
   AppSessionAsh* app_session = KioskAppManager::Get()->app_session();
 
   // App session should be initialized.
   ASSERT_TRUE(app_session);
   ASSERT_FALSE(app_session->GetSettingsBrowserForTesting());
 
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  {
-    // Open the settings browser.
-    NavigateParams params(profile, GURL(kSettingsPage1),
-                          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    params.disposition = WindowOpenDisposition::NEW_POPUP;
-    params.window_action = NavigateParams::SHOW_WINDOW;
-    Navigate(&params);
-    // Wait for browser to be handled.
-    base::RunLoop waiter;
-    app_session->SetOnHandleBrowserCallbackForTesting(waiter.QuitClosure());
-    waiter.Run();
-  }
+  OpenBrowserWithUrl(kSettingsPage1, WindowOpenDisposition::NEW_POPUP);
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session));
 
   Browser* settings_browser = app_session->GetSettingsBrowserForTesting();
 
@@ -593,28 +569,72 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowShouldBeActive) {
   content::WebContents* web_contents =
       settings_browser->tab_strip_model()->GetActiveWebContents();
 
-  {
-    // Open another settings browser.
-    // Also, expect navigation inside of the old window to kSettingsPage2.
-    content::TestNavigationObserver settings_navigation_observer(web_contents,
-                                                                 1);
-    NavigateParams params(profile, GURL(kSettingsPage2),
-                          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    params.disposition = WindowOpenDisposition::NEW_POPUP;
-    Navigate(&params);
-    // Wait for browser to be handled.
-    base::RunLoop waiter;
-    app_session->SetOnHandleBrowserCallbackForTesting(waiter.QuitClosure());
-    waiter.Run();
-    // Also wait for navigaiton to finish.
-    settings_navigation_observer.Wait();
-  }
+  // Open another settings browser.
+  // Also, expect navigation inside of the old window to kSettingsPage2.
+  content::TestNavigationObserver settings_navigation_observer(web_contents, 1);
+  OpenBrowserWithUrl(kSettingsPage2, WindowOpenDisposition::NEW_POPUP);
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session));
+  // Also wait for navigaiton to finish.
+  settings_navigation_observer.Wait();
+
   // The settings browser should not have changed.
   ASSERT_EQ(settings_browser, app_session->GetSettingsBrowserForTesting());
   EXPECT_EQ(web_contents->GetLastCommittedURL(), GURL(kSettingsPage2));
 
   // The settings browser should be focused again.
   EXPECT_TRUE(settings_browser->window()->IsActive());
+}
+
+// If only the a11y settings window remains open, it should not be automatically
+// closed in the chrome app kiosk session.
+IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowRemainsOpen) {
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                              /*terminate_app=*/false,
+                              /*keep_app_open=*/true);
+  AppSessionAsh* app_session = KioskAppManager::Get()->app_session();
+  // App session should be initialized.
+  ASSERT_NE(app_session, nullptr);
+
+  OpenA11ySettingsBrowser(app_session);
+  Browser* settings_browser = app_session->GetSettingsBrowserForTesting();
+  ASSERT_NE(settings_browser, nullptr);
+
+  // Only the settings browser is opened.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1);
+  EXPECT_FALSE(app_session->is_shutting_down());
+}
+
+// Closing the a11y settings window should not exit the chrome app kiosk
+// session.
+IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, CloseSettingsWindow) {
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                              /*terminate_app=*/false,
+                              /*keep_app_open=*/true);
+  AppSessionAsh* app_session = KioskAppManager::Get()->app_session();
+  // App session should be initialized.
+  ASSERT_NE(app_session, nullptr);
+
+  OpenA11ySettingsBrowser(app_session);
+  Browser* settings_browser = app_session->GetSettingsBrowserForTesting();
+  ASSERT_NE(settings_browser, nullptr);
+  ASSERT_NE(settings_browser->window(), nullptr);
+
+  // Only the settings browser is opened.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1);
+  EXPECT_FALSE(app_session->is_shutting_down());
+
+  settings_browser->window()->Close();
+  // Ensure |settings_browser| is closed.
+  TestBrowserClosedWaiter browser_closed_waiter{settings_browser};
+  browser_closed_waiter.WaitUntilClosed();
+
+  // No browsers are opened in the chrome app kiosk session.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 0);
+  EXPECT_FALSE(app_session->is_shutting_down());
 }
 
 // Verifies that an enterprise device does not auto-launch kiosk mode when cros
@@ -648,9 +668,9 @@ IN_PROC_BROWSER_TEST_F(
   test::SpeechMonitor speech_monitor;
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  WaitForAppLaunchWithOptions(true /* check_launch_data */,
-                              false /* terminate_app */,
-                              true /* keep_app_open */);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                              /*terminate_app=*/false,
+                              /*keep_app_open=*/true);
 
   Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
 
@@ -719,9 +739,9 @@ IN_PROC_BROWSER_TEST_F(
   test::SpeechMonitor speech_monitor;
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  WaitForAppLaunchWithOptions(true /* check_launch_data */,
-                              false /* terminate_app */,
-                              true /* keep_app_open */);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                              /*terminate_app=*/false,
+                              /*keep_app_open=*/true);
 
   Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
 

@@ -230,7 +230,7 @@ void AppSession::Init(Profile* profile, const std::string& app_id) {
   SetProfile(profile);
   app_window_handler_ = std::make_unique<AppWindowHandler>(this);
   app_window_handler_->Init(profile, app_id);
-  CreateBrowserWindowHandler(nullptr);
+  CreateBrowserWindowHandler(absl::nullopt);
 #if BUILDFLAG(ENABLE_PLUGINS)
   plugin_handler_ = std::make_unique<KioskSessionPluginHandler>(
       plugin_handler_delegate_.get());
@@ -240,7 +240,7 @@ void AppSession::Init(Profile* profile, const std::string& app_id) {
 
 void AppSession::InitForWebKiosk(Browser* browser) {
   SetProfile(browser->profile());
-  CreateBrowserWindowHandler(browser);
+  CreateBrowserWindowHandler(browser->app_name());
   metrics_service_->RecordKioskSessionWebStarted();
 }
 
@@ -249,8 +249,8 @@ void AppSession::SetAttemptUserExitForTesting(base::OnceClosure closure) {
 }
 
 void AppSession::SetOnHandleBrowserCallbackForTesting(
-    base::RepeatingClosure closure) {
-  on_handle_browser_callback_ = std::move(closure);
+    base::RepeatingCallback<void(bool is_closing)> callback) {
+  on_handle_browser_callback_ = std::move(callback);
 }
 
 KioskSessionPluginHandlerDelegate*
@@ -275,18 +275,19 @@ void AppSession::SetProfile(Profile* profile) {
   profile_ = profile;
 }
 
-void AppSession::CreateBrowserWindowHandler(Browser* browser) {
+void AppSession::CreateBrowserWindowHandler(
+    absl::optional<std::string> web_app_name) {
   browser_window_handler_ = std::make_unique<AppSessionBrowserWindowHandler>(
-      profile_, browser,
+      profile_, web_app_name,
       base::BindRepeating(&AppSession::OnHandledNewBrowserWindow,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&AppSession::OnLastAppWindowClosed,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AppSession::OnHandledNewBrowserWindow() {
+void AppSession::OnHandledNewBrowserWindow(bool is_closing) {
   if (on_handle_browser_callback_)
-    on_handle_browser_callback_.Run();
+    on_handle_browser_callback_.Run(is_closing);
 }
 
 void AppSession::OnAppWindowAdded(AppWindow* app_window) {
