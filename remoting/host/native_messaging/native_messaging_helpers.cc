@@ -32,7 +32,7 @@ bool ParseNativeMessageJson(const std::string& message,
     message_type = *message_type_value;
   }
 
-  parsed_message = std::move(message_value.GetDict());
+  parsed_message = std::move(message_value).TakeDict();
 
   return true;
 }

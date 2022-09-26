@@ -81,7 +81,7 @@ TEST_F(PairingRegistryDelegateWinTest, SaveAndLoad) {
   base::Value::List pairings = delegate->LoadAll();
   ASSERT_TRUE(pairings[0].is_dict());
   EXPECT_EQ(PairingRegistry::Pairing::CreateFromValue(
-                std::move(pairings[0].GetDict())),
+                std::move(pairings[0]).TakeDict()),
             pairing2);
 
   // Delete the rest and verify.

@@ -371,7 +371,7 @@ It2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
       return absl::nullopt;
     }
 
-    base::Value::Dict result = std::move(message->GetDict());
+    base::Value::Dict result = std::move(*message).TakeDict();
     // If this is a debug message log, ignore it, otherwise return it.
     const std::string* type = result.FindString(kMessageType);
     if (!type || *type != LogMessageHandler::kDebugMessageTypeName) {

@@ -84,7 +84,7 @@ bool ReadConfig(const base::FilePath& filename, base::Value::Dict& config_out) {
     return false;
   }
 
-  config_out = std::move(value->GetDict());
+  config_out = std::move(*value).TakeDict();
   return true;
 }
 

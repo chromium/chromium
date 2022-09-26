@@ -70,7 +70,7 @@ absl::optional<base::Value::Dict> ReadValue(const base::win::RegKey& key,
     return absl::nullopt;
   }
 
-  return std::move(value->GetDict());
+  return std::move(*value).TakeDict();
 }
 
 // Serializes |value| into a JSON string and writes it as value |value_name|
