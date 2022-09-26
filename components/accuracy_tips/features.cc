@@ -30,8 +30,9 @@ extern const base::FeatureParam<int> kNumIgnorePrompts{
 extern const base::FeatureParam<int> kMaxSiteEngagementScore{
     &safe_browsing::kAccuracyTipsFeature, "MaxSiteEngagementScore", -1};
 
-const base::Feature kAccuracyTipsSurveyFeature{
-    "AccuracyTipsSurvey", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAccuracyTipsSurveyFeature,
+             "AccuracyTipsSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kMinTimeToShowSurvey{
     &kAccuracyTipsSurveyFeature, "MinTimeToShowSurvey", base::Minutes(10)};
