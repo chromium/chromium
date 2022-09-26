@@ -72,7 +72,7 @@ base::Value::Dict TestSnippetJsonValue() {
       kJsonStr, base::JSON_PARSE_RFC);
   CHECK(json_parsed.has_value())
       << "error_message: " << json_parsed.error().message;
-  return std::move(json_parsed->GetDict());
+  return std::move(*json_parsed).TakeDict();
 }
 
 TEST(RemoteSuggestionTest, FromContentSuggestionsDictionary) {
