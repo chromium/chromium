@@ -13,6 +13,7 @@ source_set("price_notifications") {
   deps = [
     ":constants",
     ":price_notifications_ui",
+    "resources:line_downtrend",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

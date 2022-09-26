@@ -58,6 +58,14 @@ imageset("settings_accounts_add_account") {
   ]
 }
 
+imageset("settings_bell") {
+  sources = [
+    "settings_bell.imageset/Contents.json",
+    "settings_bell.imageset/settings_bell@2x.png",
+    "settings_bell.imageset/settings_bell@3x.png",
+  ]
+}
+
 imageset("settings_error") {
   sources = [
     "settings_error.imageset/Contents.json",

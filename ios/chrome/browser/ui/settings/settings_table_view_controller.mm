@@ -140,6 +140,7 @@ NSString* const kSettingsLanguageSettingsImageName =
 NSString* const kSettingsContentSettingsImageName =
     @"settings_content_settings";
 NSString* const kSettingsBandwidthImageName = @"settings_bandwidth";
+NSString* const kSettingsBellImageName = @"settings_bell";
 NSString* const kSettingsAboutChromeImageName = @"settings_about_chrome";
 NSString* const kSettingsDebugImageName = @"settings_debug";
 NSString* const kSettingsArticleSuggestionsImageName =
@@ -1071,7 +1072,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return [self detailItemWithType:SettingsItemTypePriceNotifications
                              text:title
                        detailText:nil
-                    iconImageName:kSettingsPrivacyImageName
+                    iconImageName:kSettingsBellImageName
           accessibilityIdentifier:kSettingsPriceNotificationsId];
 }
 

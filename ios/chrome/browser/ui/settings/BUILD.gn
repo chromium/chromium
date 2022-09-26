@@ -74,6 +74,7 @@ source_set("settings") {
     "resources:settings_addresses",
     "resources:settings_article_suggestions",
     "resources:settings_bandwidth",
+    "resources:settings_bell",
     "resources:settings_catalog_example_text",
     "resources:settings_content_settings",
     "resources:settings_debug",
