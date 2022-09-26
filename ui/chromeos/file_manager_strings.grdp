@@ -1191,11 +1191,17 @@
   <message name="IDS_FILE_BROWSER_DRIVE_WELCOME_DISMISS" desc="In the Welcome to Google Drive banner, a text on the button to dismiss the banner.">
     Dismiss
   </message>
-  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TITLE" desc="In the Holding Space welcome banner, title of banner.">
-    Create a shortcut for your files
+  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_DISMISS" desc="In the Holding Space welcome banner, text on the button to dismiss the banner.">
+    Got it
   </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT" desc="In the Holding Space welcome banner, text of the welcome message.">
-    Right-click a file, and select "Pin to shelf" for quick access to your files in shelf.
+    Right-click a file, and select "<ph name="PIN_COMMAND">$1<ex>Pin to Quick Files</ex></ph>" for quick access to your files in shelf.
+  </message>
+  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT_IN_TABLET_MODE_HTML" desc="In the Holding Space welcome banner, text of the welcome message in tablet mode.">
+    Touch &amp; hold a file and tap <ph name="ICON">&lt;span class='icon'&gt;&lt;/span&gt;</ph>, and select "<ph name="PIN_COMMAND">$1<ex>Pin to Quick Files</ex></ph>" for quick access to your files in shelf.
+  </message>
+  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TITLE" desc="In the Holding Space welcome banner, title of banner.">
+    Create a shortcut for your files
   </message>
   <message name="IDS_FILE_BROWSER_PHOTOS_WELCOME_TITLE" desc="In the Google Photos welcome banner, title of banner.">
     Easily access Google Photos
@@ -1204,12 +1210,6 @@
     Choose from your recent photos.
   </message>
   <message name="IDS_FILE_BROWSER_PHOTOS_WELCOME_DISMISS" desc="In the Google Photos welcome banner, a text on the button to dismiss the banner.">
-    Got it
-  </message>
-  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT_IN_TABLET_MODE_HTML" desc="In the Holding Space welcome banner, text of the welcome message in tablet mode.">
-    Touch &amp; hold a file and tap <ph name="ICON">&lt;span class='icon'&gt;&lt;/span&gt;</ph>, and select "Pin to shelf" for quick access to your files in shelf.
-  </message>
-  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_DISMISS" desc="In the Holding Space welcome banner, text on the button to dismiss the banner.">
     Got it
   </message>
   <message name="IDS_FILE_BROWSER_NO_TASK_FOR_FILE" desc="Message shown when user tries to open file, which we can't handle.">
