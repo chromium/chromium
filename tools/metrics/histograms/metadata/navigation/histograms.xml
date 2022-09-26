@@ -473,6 +473,16 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.AnonymousIframeIsSandboxed" enum="Boolean"
+    expires_after="M110">
+  <owner>arthursonzogni@chromium.org</owner>
+  <owner>chrome-security-owp-team@google.com</owner>
+  <summary>
+    Record whether iframe with the anonymous attribute contains sandboxed
+    document or not.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.BackForward.CacheFlags" enum="NavigationCacheEnum"
     expires_after="M85">
   <owner>clamy@chromium.org</owner>

@@ -187,6 +187,20 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
         .Record(ukm::UkmRecorder::Get());
   }
 
+  // Record whether <iframe> with the anonymous attribute contains sandboxed
+  // document or not. Please note:
+  // - This is recorded once for every new document in the iframe.
+  // - It excludes nested document that are anonymous only by inheritance.
+  // - It would have been better to take a snapshot of the frame.anonymous
+  //   attribute at the beginning of the navigation, as opposed to when the
+  //   new document has been created, because it might have changed. Still, it
+  //   is good enough, a priori.
+  if (rfh->frame_tree_node()->anonymous()) {
+    base::UmaHistogramBoolean(
+        "Navigation.AnonymousIframeIsSandboxed",
+        rfh->active_sandbox_flags() != network::mojom::WebSandboxFlags::kNone);
+  }
+
   // Webview tag guests do not follow regular process model decisions. They
   // always stay in their original SiteInstance, regardless of COOP. Assumption
   // made below about COOP:same-origin and unsafe-none never being in the same

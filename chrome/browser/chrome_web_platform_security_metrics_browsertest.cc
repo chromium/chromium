@@ -94,27 +94,27 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
   // Fetch the Blink.UseCounter.Features histogram in every renderer process
   // until reaching, but not exceeding, |expected_count|.
   void CheckCounter(WebFeature feature, int expected_count) {
-    CheckFeatureBucketCount("Blink.UseCounter.Features", feature,
-                            expected_count);
+    CheckHistogramCount("Blink.UseCounter.Features", feature, expected_count);
   }
 
   // Fetch the Blink.UseCounter.MainFrame.Features histogram in every renderer
   // process until reaching, but not exceeding, |expected_count|.
   void CheckCounterMainFrame(WebFeature feature, int expected_count) {
-    CheckFeatureBucketCount("Blink.UseCounter.MainFrame.Features", feature,
-                            expected_count);
+    CheckHistogramCount("Blink.UseCounter.MainFrame.Features", feature,
+                        expected_count);
   }
 
-  // Fetch the |histogram|'s |feature| in every renderer process until reaching,
+  // Fetch the |histogram|'s |bucket| in every renderer process until reaching,
   // but not exceeding, |expected_count|.
-  void CheckFeatureBucketCount(base::StringPiece histogram,
-                               WebFeature feature,
-                               int expected_count) {
+  template <typename T>
+  void CheckHistogramCount(base::StringPiece histogram,
+                           T bucket,
+                           int expected_count) {
     while (true) {
       content::FetchHistogramsFromChildProcesses();
       metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-      int count = histogram_.GetBucketCount(histogram, feature);
+      int count = histogram_.GetBucketCount(histogram, bucket);
       CHECK_LE(count, expected_count);
       if (count == expected_count)
         return;
@@ -1840,6 +1840,48 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     });
   )"));
   CheckCounter(WebFeature::kAnonymousIframe, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       AnonymousIframeIsSandboxedControl) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    new Promise(resolve => {
+      let iframe = document.createElement("iframe");
+      iframe.src = location.href;
+      iframe.onload = resolve;
+      document.body.appendChild(iframe);
+    });
+  )"));
+  CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", false, 0);
+  CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", true, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       AnonymousIframeIsSandboxed) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    const createIframe = sandbox => {
+      let iframe = document.createElement("iframe");
+      iframe.src = location.href;
+      iframe.anonymous = true;
+      if (sandbox)
+        iframe.sandbox = "";
+      document.body.appendChild(iframe);
+      return new Promise(resolve => iframe.onload = resolve);
+    };
+    Promise.all([
+      createIframe(false),
+      createIframe(false),
+      createIframe(false),
+      createIframe(true),
+      createIframe(true),
+    ]);
+  )"));
+  CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", false, 3);
+  CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", true, 2);
 }
 
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
