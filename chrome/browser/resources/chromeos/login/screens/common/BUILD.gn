@@ -15,7 +15,6 @@ group("polymer3_elements") {
   public_deps = [
     ":app_launch_splash_module",
     ":assistant_optin_module",
-    ":consolidated_consent_module",
     ":device_disabled_module",
     ":family_link_notice_module",
     ":gaia_signin_module",
@@ -51,7 +50,7 @@ js_type_check("closure_compile_local") {
 
     #":assistant_optin.m",
     ":autolaunch",
-    ":consolidated_consent.m",
+    ":consolidated_consent",
     ":device_disabled.m",
     ":enable_kiosk",
     ":error_message",
@@ -169,8 +168,8 @@ js_library("autolaunch") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("consolidated_consent.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/consolidated_consent.m.js" ]
+js_library("consolidated_consent") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/consolidated_consent.js" ]
   deps = [
     "../..:display_manager.m",
     "../../components:display_manager_types.m",
@@ -189,7 +188,7 @@ js_library("consolidated_consent.m") {
     "../../components/dialogs:oobe_modal_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":consolidated_consent_module" ]
+  extra_deps = [ ":web_components" ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
     "$externs_path/webview_tag.js",
@@ -685,15 +684,6 @@ polymer_modulizer("assistant_optin") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("consolidated_consent") {
-  js_file = "consolidated_consent.js"
-  html_file = "consolidated_consent.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("device_disabled") {
   js_file = "device_disabled.js"
   html_file = "device_disabled.html"
@@ -826,6 +816,7 @@ html_to_js("web_components") {
     "app_downloading.js",
     "arc_terms_of_service.js",
     "autolaunch.js",
+    "consolidated_consent.js",
     "enable_kiosk.js",
     "error_message.js",
     "fingerprint_setup.js",
