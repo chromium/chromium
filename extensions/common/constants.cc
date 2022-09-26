@@ -235,6 +235,13 @@ const char* const kHangoutsExtensionIds[6] = {
 const char kPolicyBlockedScripting[] =
     "This page cannot be scripted due to an ExtensionsSettings policy.";
 
+const char kIncognitoErrorMessage[] =
+    "You do not have permission to access incognito preferences.";
+
+const char kIncognitoSessionOnlyErrorMessage[] =
+    "You cannot set a preference with scope 'incognito_session_only' when no "
+    "incognito window is open.";
+
 const int kContentVerificationDefaultBlockSize = 4096;
 
 const char kCryptotokenExtensionId[] = "kmendfapggjehodndflmmgagdbamhnfd";

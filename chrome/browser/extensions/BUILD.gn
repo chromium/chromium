@@ -287,8 +287,6 @@ static_library("extensions") {
     "api/permissions/permissions_api_helpers.h",
     "api/preference/preference_api.cc",
     "api/preference/preference_api.h",
-    "api/preference/preference_api_constants.cc",
-    "api/preference/preference_api_constants.h",
     "api/preference/preference_helpers.cc",
     "api/preference/preference_helpers.h",
     "api/processes/processes_api.cc",

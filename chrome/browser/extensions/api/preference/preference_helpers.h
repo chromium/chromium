@@ -28,16 +28,6 @@ class ListValue;
 namespace extensions {
 namespace preference_helpers {
 
-constexpr char kNotControllable[] = "not_controllable";
-constexpr char kControlledByOtherExtensions[] =
-    "controlled_by_other_extensions";
-constexpr char kControllableByThisExtension[] =
-    "controllable_by_this_extension";
-constexpr char kControlledByThisExtension[] = "controlled_by_this_extension";
-
-bool StringToScope(const std::string& s,
-                   extensions::ExtensionPrefsScope* scope);
-
 // Returns a string constant (defined in the API) indicating the level of
 // control this extension has over the specified preference.
 const char* GetLevelOfControl(

@@ -25,12 +25,14 @@ namespace preference_helpers {
 
 namespace {
 
-const char kIncognitoPersistent[] = "incognito_persistent";
-const char kIncognitoSessionOnly[] = "incognito_session_only";
-const char kRegular[] = "regular";
-const char kRegularOnly[] = "regular_only";
+constexpr char kNotControllable[] = "not_controllable";
+constexpr char kControlledByOtherExtensions[] =
+    "controlled_by_other_extensions";
+constexpr char kControllableByThisExtension[] =
+    "controllable_by_this_extension";
+constexpr char kControlledByThisExtension[] = "controlled_by_this_extension";
 
-const char kLevelOfControlKey[] = "levelOfControl";
+constexpr char kLevelOfControlKey[] = "levelOfControl";
 
 }  // namespace
 
@@ -39,21 +41,6 @@ using LevelOfControlGetter =
                                         const std::string& extension_id,
                                         const std::string& browser_pref,
                                         bool incognito)>;
-
-bool StringToScope(const std::string& s,
-                   ExtensionPrefsScope* scope) {
-  if (s == kRegular)
-    *scope = kExtensionPrefsScopeRegular;
-  else if (s == kRegularOnly)
-    *scope = kExtensionPrefsScopeRegularOnly;
-  else if (s == kIncognitoPersistent)
-    *scope = kExtensionPrefsScopeIncognitoPersistent;
-  else if (s == kIncognitoSessionOnly)
-    *scope = kExtensionPrefsScopeIncognitoSessionOnly;
-  else
-    return false;
-  return true;
-}
 
 PrefService* GetProfilePrefService(Profile* profile, bool incognito) {
   if (incognito) {
@@ -191,8 +178,8 @@ const char* GetLevelOfControlWithAshControlState(
       return extensions::preference_helpers::GetLevelOfControl(
           profile, extension_id, browser_pref, incognito);
   }
-}  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#endif
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void DispatchEventToExtensions(Profile* profile,
                                events::HistogramValue histogram_value,

@@ -377,6 +377,13 @@ EXTENSIONS_EXPORT extern const char* const kHangoutsExtensionIds[6];
 // Error message when enterprise policy blocks scripting of webpage.
 EXTENSIONS_EXPORT extern const char kPolicyBlockedScripting[];
 
+// Error message when access to incognito preferences is denied.
+EXTENSIONS_EXPORT extern const char kIncognitoErrorMessage[];
+
+// Error message when setting a pref with "incognito_session_only"
+// scope is denied.
+EXTENSIONS_EXPORT extern const char kIncognitoSessionOnlyErrorMessage[];
+
 // The default block size for hashing used in content verification.
 EXTENSIONS_EXPORT extern const int kContentVerificationDefaultBlockSize;
 
