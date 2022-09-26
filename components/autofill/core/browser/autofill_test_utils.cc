@@ -126,6 +126,12 @@ FormData WithoutValues(FormData form) {
   return form;
 }
 
+FormData AsAutofilled(FormData form, bool is_autofilled) {
+  for (FormFieldData& field : form.fields)
+    field.is_autofilled = is_autofilled;
+  return form;
+}
+
 void SetFormGroupValues(FormGroup& form_group,
                         const std::vector<FormGroupValue>& values) {
   for (const auto& value : values) {

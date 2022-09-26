@@ -440,8 +440,10 @@ TEST_F(AutofillMetricsTest, NumberOfAutofilledFieldsAtSubmission) {
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
 
   // Simulate user changing the second field of the form.
-  ChangeTextField(form, form.fields[1]);
-  form.fields[1].is_autofilled = false;
+  // TODO(crbug.com/1368096): Fix the metric to work independent of the final
+  // value.
+  SimulateUserChangedTextFieldWithoutActuallyChangingTheValue(form,
+                                                              form.fields[1]);
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);
@@ -517,8 +519,10 @@ TEST_F(AutofillMetricsTest,
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
 
   // Simulate user changing the second and forth field of the form.
-  ChangeTextField(form, form.fields[1]);
-  form.fields[1].is_autofilled = false;
+  // TODO(crbug.com/1368096): Fix the metric to work independent of the final
+  // value.
+  SimulateUserChangedTextFieldWithoutActuallyChangingTheValue(form,
+                                                              form.fields[1]);
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);
@@ -2307,14 +2311,14 @@ TEST_F(AutofillMetricsTest, TimingMetrics) {
 // Test that we log quality metrics appropriately when an upload is triggered
 // but no submission event is sent.
 TEST_F(AutofillMetricsTest, QualityMetrics_NoSubmission) {
-  FormData form = CreateForm(
-      {CreateField("Autofilled", "autofilled", "Elvis Aaron Presley", "text"),
-       CreateField("Autofill Failed", "autofillfailed", "buddy@gmail.com",
-                   "text"),
-       CreateField("Empty", "empty", "", "text"),
-       CreateField("Unknown", "unknown", "garbage", "text"),
-       CreateField("Select", "select", "USA", "select-one"),
-       CreateField("Phone", "phone", "2345678901", "tel")});
+  FormData form =
+      CreateForm({CreateField("Autofilled", "autofilled", "Elvis", "text"),
+                  CreateField("Autofill Failed", "autofillfailed",
+                              "buddy@gmail.com", "text"),
+                  CreateField("Empty", "empty", "", "text"),
+                  CreateField("Unknown", "unknown", "garbage", "text"),
+                  CreateField("Select", "select", "USA", "select-one"),
+                  CreateField("Phone", "phone", "2345678901", "tel")});
   form.fields.front().is_autofilled = true;
   form.fields.back().is_autofilled = true;
 
@@ -2327,9 +2331,8 @@ TEST_F(AutofillMetricsTest, QualityMetrics_NoSubmission) {
       EMAIL_ADDRESS, NO_SERVER_DATA, PHONE_HOME_CITY_AND_NUMBER};
 
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
-  ChangeTextField(form, form.fields[0]);
-  autofill_manager().SetSeenFormPredictions(form.global_id(), heuristic_types,
-                                            server_types);
+  // Changes the name field to match the full name.
+  SimulateUserChangedTextFieldTo(form, form.fields[0], u"Elvis Aaron Presley");
 
   // Trigger a form upload and metrics by Resetting the manager.
   base::HistogramTester histogram_tester;
@@ -2643,7 +2646,7 @@ TEST_F(AutofillMetricsTest, TypeOfEditedAutofilledFieldsUkmLogging) {
 
   base::HistogramTester histogram_tester;
   // Simulate text input in the first and second fields.
-  ChangeTextField(form, form.fields[0]);
+  SimulateUserChangedTextField(form, form.fields[0]);
 
   SubmitForm(form);
   ExpectedUkmMetricsRecord name_field_ukm_record{
@@ -2678,8 +2681,12 @@ TEST_F(AutofillMetricsTest, TypeOfEditedAutofilledFieldsUmaLogging) {
 
   base::HistogramTester histogram_tester;
   // Simulate text input in the first and second fields.
-  ChangeTextField(form, form.fields[0]);
-  ChangeTextField(form, form.fields[1]);
+  // TODO(crbug.com/1368096): Fix the metric to work independent of the final
+  // value.
+  SimulateUserChangedTextFieldWithoutActuallyChangingTheValue(form,
+                                                              form.fields[0]);
+  SimulateUserChangedTextFieldWithoutActuallyChangingTheValue(form,
+                                                              form.fields[1]);
 
   SubmitForm(form);
 
@@ -2733,8 +2740,8 @@ TEST_F(AutofillMetricsTest, NumberOfEditedAutofilledFields) {
 
   base::HistogramTester histogram_tester;
   // Simulate text input in the first and second fields.
-  ChangeTextField(form, form.fields[0]);
-  ChangeTextField(form, form.fields[1]);
+  SimulateUserChangedTextField(form, form.fields[0]);
+  SimulateUserChangedTextField(form, form.fields[1]);
 
   SubmitForm(form);
 
@@ -2764,7 +2771,7 @@ TEST_F(AutofillMetricsTest, NumberOfEditedAutofilledFields_NoSubmission) {
 
   base::HistogramTester histogram_tester;
   // Simulate text input in the first field.
-  ChangeTextField(form, form.fields[0]);
+  SimulateUserChangedTextField(form, form.fields[0]);
 
   // We expect metrics to be logged when the manager is reset.
   autofill_manager().Reset();
@@ -7663,7 +7670,7 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
   {
     SCOPED_TRACE("Initial typing");
     base::HistogramTester histogram_tester;
-    ChangeTextField(form, form.fields.front());
+    SimulateUserChangedTextField(form, form.fields.front());
     histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
                                         AutofillMetrics::USER_DID_TYPE, 1);
     histogram_tester.ExpectUniqueSample("Autofill.UserHappiness.CreditCard",
@@ -7747,9 +7754,9 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
         mojom::RendererFormDataAction::kFill, 0, form, form.fields.front(),
         autofill_manager().suggestion_generator()->MakeFrontendId(
             Suggestion::BackendId(guid), Suggestion::BackendId()));
-    ChangeTextField(form, form.fields.front());
+    SimulateUserChangedTextField(form, form.fields.front());
     // Simulate a second keystroke; make sure we don't log the metric twice.
-    ChangeTextField(form, form.fields.front());
+    SimulateUserChangedTextField(form, form.fields.front());
     histogram_tester.ExpectBucketCount(
         "Autofill.UserHappiness",
         AutofillMetrics::USER_DID_EDIT_AUTOFILLED_FIELD, 1);
@@ -7779,7 +7786,7 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
   {
     SCOPED_TRACE("Edit another autofilled field");
     base::HistogramTester histogram_tester;
-    ChangeTextField(form, form.fields[1]);
+    SimulateUserChangedTextField(form, form.fields[1]);
     histogram_tester.ExpectUniqueSample(
         "Autofill.UserHappiness",
         AutofillMetrics::USER_DID_EDIT_AUTOFILLED_FIELD, 1);
@@ -7796,8 +7803,8 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
                               CreateField("Email", "email", "", "text"),
                               CreateField("Phone", "phone", "", "text")});
 
-  // Expect a notification when the form is first seen.
   {
+    SCOPED_TRACE("Expect a notification when the form is first seen.");
     base::HistogramTester histogram_tester;
     SeeForm(form);
     histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
@@ -7806,18 +7813,18 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
                                         AutofillMetrics::FORMS_LOADED, 1);
   }
 
-  // Simulate typing.
   {
+    SCOPED_TRACE("Simulate typing.");
     base::HistogramTester histogram_tester;
-    ChangeTextField(form, form.fields.front());
+    SimulateUserChangedTextFieldTo(form, form.fields.front(), u"new value");
     histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
                                         AutofillMetrics::USER_DID_TYPE, 1);
     histogram_tester.ExpectUniqueSample("Autofill.UserHappiness.Address",
                                         AutofillMetrics::USER_DID_TYPE, 1);
   }
 
-  // Simulate suggestions shown twice with separate popups.
   {
+    SCOPED_TRACE("Simulate suggestions shown twice with separate popups.");
     base::HistogramTester histogram_tester;
     autofill_manager().DidShowSuggestions(true, form, form.fields.back());
     autofill_manager().DidShowSuggestions(true, form, form.fields.back());
@@ -7834,9 +7841,10 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
 
   autofill_manager().Reset();
   SeeForm(form);
-  // Simulate suggestions shown twice for a single edit (i.e. multiple
-  // keystrokes in a single field).
   {
+    SCOPED_TRACE(
+        "Simulate suggestions shown twice for a single edit "
+        "(i.e. multiple keystrokes in a single field).");
     base::HistogramTester histogram_tester;
     autofill_manager().DidShowSuggestions(true, form, form.fields.back());
     autofill_manager().DidShowSuggestions(false, form, form.fields.back());
@@ -7851,8 +7859,8 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
                                        1);
   }
 
-  // Simulate suggestions shown for a different field.
   {
+    SCOPED_TRACE("Simulate suggestions shown for a different field.");
     base::HistogramTester histogram_tester;
     autofill_manager().DidShowSuggestions(true, form, form.fields[1]);
     histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
@@ -7861,8 +7869,8 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
                                         AutofillMetrics::SUGGESTIONS_SHOWN, 1);
   }
 
-  // Simulate invoking autofill.
   {
+    SCOPED_TRACE("Simulate invoking autofill.");
     base::HistogramTester histogram_tester;
     FillAutofillFormData(form);
     histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
@@ -7876,17 +7884,18 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
                                        1);
   }
 
-  // Simulate editing an autofilled field.
   {
+    SCOPED_TRACE("Simulate editing an autofilled field.");
     base::HistogramTester histogram_tester;
     std::string guid(kTestGuid);
     autofill_manager().FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, 0, form, form.fields.front(),
         autofill_manager().suggestion_generator()->MakeFrontendId(
             Suggestion::BackendId(), Suggestion::BackendId(guid)));
-    ChangeTextField(form, form.fields.front());
+    SimulateUserChangedTextFieldTo(form, form.fields.front(), u"to some value");
     // Simulate a second keystroke; make sure we don't log the metric twice.
-    ChangeTextField(form, form.fields.front());
+    SimulateUserChangedTextFieldTo(form, form.fields.front(),
+                                   u"to some other value");
     histogram_tester.ExpectBucketCount(
         "Autofill.UserHappiness",
         AutofillMetrics::USER_DID_EDIT_AUTOFILLED_FIELD, 1);
@@ -7901,8 +7910,8 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
         AutofillMetrics::USER_DID_EDIT_AUTOFILLED_FIELD_ONCE, 1);
   }
 
-  // Simulate invoking autofill again.
   {
+    SCOPED_TRACE("Simulate invoking autofill again.");
     base::HistogramTester histogram_tester;
     FillAutofillFormData(form);
     histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
@@ -7911,10 +7920,10 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
                                         AutofillMetrics::USER_DID_AUTOFILL, 1);
   }
 
-  // Simulate editing another autofilled field.
   {
+    SCOPED_TRACE("Simulate editing another autofilled field.");
     base::HistogramTester histogram_tester;
-    ChangeTextField(form, form.fields[1]);
+    SimulateUserChangedTextFieldTo(form, form.fields[1], u"some value");
     histogram_tester.ExpectUniqueSample(
         "Autofill.UserHappiness",
         AutofillMetrics::USER_DID_EDIT_AUTOFILLED_FIELD, 1);
@@ -8011,7 +8020,7 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
          HtmlFieldType::kUnspecified},
         {UkmTextFieldDidChangeType::kHtmlFieldModeName, HtmlFieldMode::kNone},
         {UkmTextFieldDidChangeType::kIsAutofilledName, true},
-        {UkmTextFieldDidChangeType::kIsEmptyName, true},
+        {UkmTextFieldDidChangeType::kIsEmptyName, false},
         {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
         {UkmTextFieldDidChangeType::kFieldSignatureName,
          Collapse(CalculateFieldSignatureForField(form.fields[0])).value()},
@@ -8040,22 +8049,21 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);
 
-  FormData form = CreateForm({CreateField("Name", "name", "", "text"),
-                              CreateField("Email", "email", "", "text"),
-                              CreateField("Phone", "phone", "", "text")});
+  FormData empty_form = CreateForm({CreateField("Name", "name", "", "text"),
+                                    CreateField("Email", "email", "", "text"),
+                                    CreateField("Phone", "phone", "", "text")});
+
+  FormData filled_form = empty_form;
+  filled_form.fields[0].value = u"Elvis Aaron Presley";
+  filled_form.fields[1].value = u"theking@gmail.com";
+  filled_form.fields[2].value = u"12345678901";
 
   // Fill additional form.
-  FormData second_form = form;
+  FormData second_form = empty_form;
   second_form.host_frame = test::MakeLocalFrameToken();
   second_form.unique_renderer_id = test::MakeFormRendererId();
   second_form.fields.push_back(
       CreateField("Second Phone", "second_phone", "", "text"));
-
-  // Fill the field values for form submission.
-  FormData submitted_form = form;
-  form.fields[0].value = u"Elvis Aaron Presley";
-  form.fields[1].value = u"theking@gmail.com";
-  form.fields[2].value = u"12345678901";
 
   // Fill the field values for form submission.
   second_form.fields[0].value = u"Elvis Aaron Presley";
@@ -8066,15 +8074,15 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
   // Expect only form load metrics to be logged if the form is submitted without
   // user interaction.
   {
-    SCOPED_TRACE("Test 1");
+    SCOPED_TRACE("Test 1 - no interaction, fields are prefilled");
     base::HistogramTester histogram_tester;
-    SeeForm(test::WithoutValues(form));
+    SeeForm(empty_form);
     base::TimeTicks parse_time = autofill_manager()
                                      .form_structures()
                                      .begin()
                                      ->second->form_parsed_timestamp();
     test_clock.SetNowTicks(parse_time + base::Microseconds(17));
-    SubmitForm(form);
+    SubmitForm(filled_form);
 
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromLoad.WithAutofill", 0);
@@ -8090,17 +8098,20 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
 
   // Expect metric to be logged if the user manually edited a form field.
   {
-    SCOPED_TRACE("Test 2");
+    SCOPED_TRACE("Test 2 - all fields are filled by the user");
     base::HistogramTester histogram_tester;
-    SeeForm(test::WithoutValues(form));
+    SeeForm(empty_form);
     base::TimeTicks parse_time = autofill_manager()
                                      .form_structures()
                                      .begin()
                                      ->second->form_parsed_timestamp();
-    ChangeTextField(form, form.fields.front(),
-                    parse_time + base::Microseconds(3));
+
+    FormData user_filled_form = filled_form;
+    SimulateUserChangedTextField(user_filled_form,
+                                 user_filled_form.fields.front(),
+                                 parse_time + base::Microseconds(3));
     test_clock.SetNowTicks(parse_time + base::Microseconds(17));
-    SubmitForm(form);
+    SubmitForm(filled_form);
 
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromLoad.WithAutofill", 0);
@@ -8116,18 +8127,19 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
   }
 
   // Expect metric to be logged if the user autofilled the form.
-  form.fields[0].is_autofilled = true;
   {
-    SCOPED_TRACE("Test 3");
+    SCOPED_TRACE("Test 3 - all fields are autofilled");
     base::HistogramTester histogram_tester;
-    SeeForm(test::WithoutValues(form));
+    SeeForm(empty_form);
     base::TimeTicks parse_time = autofill_manager()
                                      .form_structures()
                                      .begin()
                                      ->second->form_parsed_timestamp();
-    FillAutofillFormData(form, parse_time + base::Microseconds(5));
+
+    FormData autofilled_form = test::AsAutofilled(filled_form);
+    FillAutofillFormData(autofilled_form, parse_time + base::Microseconds(5));
     test_clock.SetNowTicks(parse_time + base::Microseconds(17));
-    SubmitForm(form);
+    SubmitForm(autofilled_form);
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.FillDuration.FromLoad.WithAutofill", 16, 1);
@@ -8146,20 +8158,25 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
   // and autofilled others.  Messages can arrive out of order, so make sure they
   // take precedence appropriately.
   {
-    SCOPED_TRACE("Test 4");
+    SCOPED_TRACE(
+        "Test 4 - mixed case: some fields are autofille, some fields are "
+        "edited.");
     base::HistogramTester histogram_tester;
 
-    SeeForm(test::WithoutValues(form));
+    SeeForm(empty_form);
     base::TimeTicks parse_time = autofill_manager()
                                      .form_structures()
                                      .begin()
                                      ->second->form_parsed_timestamp();
-    FillAutofillFormData(form, parse_time + base::Microseconds(5));
 
-    ChangeTextField(form, form.fields.front(),
-                    parse_time + base::Microseconds(3));
+    FormData mixed_filled_form = test::AsAutofilled(filled_form);
+    FillAutofillFormData(mixed_filled_form, parse_time + base::Microseconds(5));
+    SimulateUserChangedTextField(mixed_filled_form,
+                                 mixed_filled_form.fields.front(),
+                                 parse_time + base::Microseconds(3));
+
     test_clock.SetNowTicks(parse_time + base::Microseconds(17));
-    SubmitForm(form);
+    SubmitForm(mixed_filled_form);
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.FillDuration.FromLoad.WithAutofill", 16, 1);
@@ -8177,19 +8194,24 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
   // Make sure that loading another form doesn't affect metrics from the first
   // form.
   {
-    SCOPED_TRACE("Test 5");
+    SCOPED_TRACE("Test 5 - load a second form before submitting the first");
     base::HistogramTester histogram_tester;
-    SeeForm(test::WithoutValues(form));
+    SeeForm(empty_form);
     base::TimeTicks parse_time = autofill_manager()
                                      .form_structures()
                                      .begin()
                                      ->second->form_parsed_timestamp();
+
     SeeForm(test::WithoutValues(second_form));
-    FillAutofillFormData(form, parse_time + base::Microseconds(5));
-    ChangeTextField(form, form.fields.front(),
-                    parse_time + base::Microseconds(3));
+
+    FormData mixed_filled_form = test::AsAutofilled(filled_form);
+    FillAutofillFormData(mixed_filled_form, parse_time + base::Microseconds(5));
+    SimulateUserChangedTextField(mixed_filled_form,
+                                 mixed_filled_form.fields.front(),
+                                 parse_time + base::Microseconds(3));
+
     test_clock.SetNowTicks(parse_time + base::Microseconds(17));
-    SubmitForm(form);
+    SubmitForm(mixed_filled_form);
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.FillDuration.FromLoad.WithAutofill", 16, 1);
@@ -8207,15 +8229,16 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
   // Make sure that submitting a form that was loaded later will report the
   // later loading time.
   {
-    SCOPED_TRACE("Test 6");
+    SCOPED_TRACE("Test 6 - submit the second seen form first");
     base::HistogramTester histogram_tester;
-    SeeForm(test::WithoutValues(form));
+    SeeForm(test::WithoutValues(empty_form));
     SeeForm(test::WithoutValues(second_form));
     base::TimeTicks parse_time{};
     for (const auto& kv : autofill_manager().form_structures()) {
       if (kv.second->form_parsed_timestamp() > parse_time)
         parse_time = kv.second->form_parsed_timestamp();
     }
+
     test_clock.SetNowTicks(parse_time + base::Microseconds(17));
     SubmitForm(second_form);
 
@@ -9525,8 +9548,8 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
                                      .begin()
                                      ->second->form_parsed_timestamp();
     FillAutofillFormData(form, parse_time + base::Microseconds(5));
-    ChangeTextField(form, form.fields.front(),
-                    parse_time + base::Microseconds(3));
+    SimulateUserChangedTextField(form, form.fields.front(),
+                                 parse_time + base::Microseconds(3));
     test_clock.SetNowTicks(parse_time + base::Microseconds(17));
     SubmitForm(form);
 
@@ -9888,7 +9911,7 @@ TEST_F(AutofillMetricsFunnelTest, AblationState) {
   autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
 
   // Don't simulate a suggestion but simulate the user typing.
-  ChangeTextField(form, form.fields[0]);
+  SimulateUserChangedTextField(form, form.fields[0]);
 
   SubmitForm(form);
 
@@ -9982,8 +10005,8 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogNoProfile) {
   SeeForm(form_);
   autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
 
-  ChangeTextField(form_, form_.fields[0]);
-  ChangeTextField(form_, form_.fields[1]);
+  SimulateUserChangedTextField(form_, form_.fields[0]);
+  SimulateUserChangedTextField(form_, form_.fields[1]);
   SubmitForm(form_);
 
   ResetDriverToCommitMetrics();
@@ -10015,8 +10038,8 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
   autofill_manager().DidShowSuggestions(
       /*has_autofill_suggestions=*/true, form_, form_.fields[0]);
 
-  ChangeTextField(form_, form_.fields[0]);
-  ChangeTextField(form_, form_.fields[1]);
+  SimulateUserChangedTextField(form_, form_.fields[0]);
+  SimulateUserChangedTextField(form_, form_.fields[1]);
   SubmitForm(form_);
 
   ResetDriverToCommitMetrics();
@@ -10054,7 +10077,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledData) {
           Suggestion::BackendId(), Suggestion::BackendId(kTestGuid)));
 
   // Simulate user fixing the address.
-  ChangeTextField(form_, form_.fields[1]);
+  SimulateUserChangedTextField(form_, form_.fields[1]);
   SubmitForm(form_);
 
   ResetDriverToCommitMetrics();
@@ -10094,7 +10117,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledDataButDoesNotSubmit) {
           Suggestion::BackendId(), Suggestion::BackendId(kTestGuid)));
 
   // Simulate user fixing the address.
-  ChangeTextField(form_, form_.fields[1]);
+  SimulateUserChangedTextField(form_, form_.fields[1]);
 
   // Don't submit form.
 
@@ -10279,13 +10302,11 @@ TEST_F(AutofillMetricsTest,
 
   // Case #1: Change submitted value to expected autofilled value for the field.
   // The histogram should emit true for this.
-  form.fields[1].value = u"Memphis";
-  ChangeTextField(form, form.fields[1]);
+  SimulateUserChangedTextFieldTo(form, form.fields[1], u"Memphis");
 
   // Case #2: Change submitted value such that it different than expected
   // autofilled value for the field. The histogram should emit false for this.
-  form.fields[3].value = u"00001";
-  ChangeTextField(form, form.fields[3]);
+  SimulateUserChangedTextFieldTo(form, form.fields[3], u"00001");
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);
@@ -10309,8 +10330,8 @@ TEST_F(AutofillMetricsTest, FormInteractionsAreCounted) {
 
   // WHEN
   // Simulate manual text field change.
-  const auto field = form.fields[0];
-  ChangeTextField(form, field);
+  auto field = form.fields[0];
+  SimulateUserChangedTextField(form, field);
   // Simulate Autocomplete filling twice.
   autofill_manager().OnSingleFieldSuggestionSelected(
       u"", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
@@ -10777,7 +10798,7 @@ TEST_P(AutofillMetricsTestForLaxLocalHeuristics, TestHistogramReporting) {
                 Suggestion::BackendId(), Suggestion::BackendId(kTestGuid)));
 
   if (GetParam().change_form_after_filling)
-    ChangeTextField(form, form.fields[0]);
+    SimulateUserChangedTextField(form, form.fields[0]);
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);

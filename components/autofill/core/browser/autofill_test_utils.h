@@ -129,6 +129,9 @@ inline FieldGlobalId MakeFieldGlobalId(
 // Returns a copy of `form` with cleared values.
 FormData WithoutValues(FormData form);
 
+// Returns a copy of `form` with `is_autofilled` set as specified.
+FormData AsAutofilled(FormData form, bool is_autofilled = true);
+
 // Helper function to set values and verification statuses to a form group.
 void SetFormGroupValues(FormGroup& form_group,
                         const std::vector<FormGroupValue>& values);

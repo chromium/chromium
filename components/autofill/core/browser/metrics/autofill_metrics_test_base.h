@@ -86,9 +86,37 @@ class AutofillMetricsBaseTest : public testing::Test {
 
   void ResetDriverToCommitMetrics() { autofill_driver_.reset(); }
 
-  void ChangeTextField(const FormData& form,
-                       const FormFieldData& field,
-                       base::TimeTicks timestamp = {}) {
+  // Convenience wrapper for `EmulateUserChangedTextFieldTo` that appends
+  // '_changed' to the fields value.
+  void SimulateUserChangedTextField(const FormData& form,
+                                    FormFieldData& field,
+                                    base::TimeTicks timestamp = {}) {
+    SimulateUserChangedTextFieldTo(form, field, field.value + u"_changed",
+                                   timestamp);
+  }
+
+  // Emulates that the user manually changed a field by resetting the
+  // `is_autofilled` field attribute, settings the field's value to `new_value`
+  // and notifying the `AutofillManager` of the change that is emulated to have
+  // happened at `timestamp`.
+  void SimulateUserChangedTextFieldTo(const FormData& form,
+                                      FormFieldData& field,
+                                      const std::u16string& new_value,
+                                      base::TimeTicks timestamp = {}) {
+    // Assert that the field is actually set to a different value.
+    ASSERT_NE(field.value, new_value);
+    field.is_autofilled = false;
+    field.value = new_value;
+    autofill_manager().OnTextFieldDidChange(form, field, gfx::RectF(),
+                                            timestamp);
+  }
+
+  // TODO(crbug.com/1368096): Remove this method once the metrics are fixed.
+  void SimulateUserChangedTextFieldWithoutActuallyChangingTheValue(
+      const FormData& form,
+      FormFieldData& field,
+      base::TimeTicks timestamp = {}) {
+    field.is_autofilled = false;
     autofill_manager().OnTextFieldDidChange(form, field, gfx::RectF(),
                                             timestamp);
   }
