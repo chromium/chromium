@@ -96,6 +96,13 @@ export class ShoppingListElement extends PolymerElement {
 
     this.open_ = !this.open_;
     window.localStorage[LOCAL_STORAGE_EXPAND_STATUS_KEY] = this.open_;
+    if (this.open_) {
+      chrome.metricsPrivate.recordUserAction(
+          'Commerce.PriceTracking.SidePanel.TrackedProductsExpanded');
+    } else {
+      chrome.metricsPrivate.recordUserAction(
+          'Commerce.PriceTracking.SidePanel.TrackedProductsCollapsed');
+    }
   }
 
   private onProductAuxClick_(
@@ -107,6 +114,8 @@ export class ShoppingListElement extends PolymerElement {
 
     event.preventDefault();
     event.stopPropagation();
+    chrome.metricsPrivate.recordUserAction(
+        'Commerce.PriceTracking.SidePanel.ClickedTrackedProduct');
     this.bookmarksApi_.openBookmark(
         event.model.item.bookmarkId!.toString(), 0, {
           middleButton: true,
@@ -122,6 +131,8 @@ export class ShoppingListElement extends PolymerElement {
                               DomRepeatEvent<BookmarkProductInfo, MouseEvent>) {
     event.preventDefault();
     event.stopPropagation();
+    chrome.metricsPrivate.recordUserAction(
+        'Commerce.PriceTracking.SidePanel.ClickedTrackedProduct');
     this.bookmarksApi_.openBookmark(
         event.model.item.bookmarkId!.toString(), 0, {
           middleButton: false,
@@ -151,9 +162,13 @@ export class ShoppingListElement extends PolymerElement {
       const index = this.untrackedItems_.indexOf(event.model.item);
       this.splice('untrackedItems_', index, 1);
       this.shoppingListApi_.trackPriceForBookmark(bookmarkId);
+      chrome.metricsPrivate.recordUserAction(
+          'Commerce.PriceTracking.SidePanel.Track.BellButton');
     } else {
       this.push('untrackedItems_', event.model.item);
       this.shoppingListApi_.untrackPriceForBookmark(bookmarkId);
+      chrome.metricsPrivate.recordUserAction(
+          'Commerce.PriceTracking.SidePanel.Untrack.BellButton');
     }
   }
 

@@ -126,6 +126,10 @@ export class BookmarksListElement extends PolymerElement {
 
     this.shoppingListApi_.getAllPriceTrackedBookmarkProductInfo().then(res => {
       this.productInfos_ = res.productInfos;
+      if (this.productInfos_.length > 0) {
+        chrome.metricsPrivate.recordUserAction(
+            'Commerce.PriceTracking.SidePanel.TrackedProductsShown');
+      }
     });
   }
 

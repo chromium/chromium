@@ -14,6 +14,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {fakeMetricsPrivate, MetricsTracker} from '../metrics_test_support.js';
+
 import {TestShoppingListApiProxy} from './commerce/test_shopping_list_api_proxy.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
@@ -21,6 +23,7 @@ suite('SidePanelBookmarksListTest', () => {
   let bookmarksList: BookmarksListElement;
   let bookmarksApi: TestBookmarksApiProxy;
   let shoppingListApi: TestShoppingListApiProxy;
+  let metrics: MetricsTracker;
 
   const folders: chrome.bookmarks.BookmarkTreeNode[] = [
     {
@@ -95,6 +98,8 @@ suite('SidePanelBookmarksListTest', () => {
   setup(async () => {
     window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY] = undefined;
     document.body.innerHTML = '';
+
+    metrics = fakeMetricsPrivate();
 
     bookmarksApi = new TestBookmarksApiProxy();
     bookmarksApi.setFolders(JSON.parse(JSON.stringify(folders)));
@@ -269,11 +274,17 @@ suite('SidePanelBookmarksListTest', () => {
 
   test('ShoppingListVisibility', () => {
     checkShoppingListVisibility(bookmarksList, true);
+    assertEquals(
+        1,
+        metrics.count('Commerce.PriceTracking.SidePanel.TrackedProductsShown'));
 
     shoppingListApi.setProducts([]);
     const bookmarksListNoShopping = document.createElement('bookmarks-list');
     document.body.appendChild(bookmarksListNoShopping);
 
     checkShoppingListVisibility(bookmarksListNoShopping, false);
+    assertEquals(
+        1,
+        metrics.count('Commerce.PriceTracking.SidePanel.TrackedProductsShown'));
   });
 });

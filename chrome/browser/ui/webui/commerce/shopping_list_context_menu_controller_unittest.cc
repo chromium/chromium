@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/webui/commerce/shopping_list_context_menu_controller.h"
@@ -59,6 +60,7 @@ class ShoppingListContextMenuControllerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  base::UserActionTester user_action_tester_;
 
  private:
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
@@ -104,11 +106,19 @@ TEST_F(ShoppingListContextMenuControllerTest, ExecuteMenuCommand) {
       IDC_BOOKMARK_BAR_UNTRACK_PRICE_FOR_SHOPPING_BOOKMARK));
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(IsBookmarkPriceTracked(bookmark_model(), bookmark_node()));
+  ASSERT_EQ(0, user_action_tester_.GetActionCount(
+                   "Commerce.PriceTracking.SidePanel.Track.ContextMenu"));
+  ASSERT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.PriceTracking.SidePanel.Untrack.ContextMenu"));
 
   ASSERT_TRUE(controller()->ExecuteCommand(
       IDC_BOOKMARK_BAR_TRACK_PRICE_FOR_SHOPPING_BOOKMARK));
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(IsBookmarkPriceTracked(bookmark_model(), bookmark_node()));
+  ASSERT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.PriceTracking.SidePanel.Track.ContextMenu"));
+  ASSERT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.PriceTracking.SidePanel.Untrack.ContextMenu"));
 
   // Ignore commands that are not price tracking-related.
   ASSERT_FALSE(controller()->ExecuteCommand(IDC_BOOKMARK_BAR_OPEN_ALL));
