@@ -22,29 +22,16 @@
 
 namespace {
 
-std::u16string GetSettingStateString(ContentSetting setting,
-                                     bool is_fully_partitioned) {
+std::u16string GetSettingStateString(ContentSetting setting) {
   // TODO(crbug.com/1344787): Return actual strings.
   switch (setting) {
-    case CONTENT_SETTING_ALLOW: {
-      return is_fully_partitioned ? u"Only using partitioned storage"
-                                  : u"Allowed";
-    }
-    case CONTENT_SETTING_BLOCK: {
-      // Partitioned cookies don't need a special call out because they are
-      // blocked with the rest of the cookies.
+    case CONTENT_SETTING_ALLOW:
+      return u"Allowed";
+    case CONTENT_SETTING_BLOCK:
       return u"Blocked";
-    }
-    case CONTENT_SETTING_SESSION_ONLY: {
-      return is_fully_partitioned
-                 ? u"Only using partitioned storage. Clear on close"
-                 : u"Clear on close";
-    }
-    case CONTENT_SETTING_DEFAULT:
-    case CONTENT_SETTING_ASK:
-    case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
-    case CONTENT_SETTING_NUM_SETTINGS:
-      // Not supported settings for cookies.
+    case CONTENT_SETTING_SESSION_ONLY:
+      return u"Clear on close";
+    default:
       NOTREACHED();
       return u"";
   }
@@ -83,14 +70,12 @@ std::unique_ptr<views::TableLayout> SetupTableLayout() {
 SiteDataRowView::SiteDataRowView(
     const url::Origin& origin,
     ContentSetting setting,
-    bool is_fully_partitioned,
     FaviconCache* favicon_cache,
     base::RepeatingCallback<void(const url::Origin&)> delete_callback,
     base::RepeatingCallback<void(const url::Origin&, ContentSetting)>
         create_exception_callback)
     : origin_(origin),
       setting_(setting),
-      is_fully_partitioned_(is_fully_partitioned),
       delete_callback_(std::move(delete_callback)),
       create_exception_callback_(std::move(create_exception_callback)) {
   const int icon_size = 16;
@@ -114,20 +99,19 @@ SiteDataRowView::SiteDataRowView(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // TODO(crbug.com/1344787): Use actual strings.
-  menu_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
+  auto* menu = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&SiteDataRowView::OnMenuIconClicked,
                           base::Unretained(this)),
       kBrowserToolsIcon, icon_size));
-  menu_button_->SetAccessibleName(u"Open context menu");
+  menu->SetAccessibleName(u"Open context menu");
 
   layout->AddRows(1, views::TableLayout::kFixedSize);
   AddChildView(std::make_unique<views::View>());
   state_label_ = AddChildView(std::make_unique<views::Label>(
-      GetSettingStateString(setting_, is_fully_partitioned_),
-      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+      GetSettingStateString(setting_), views::style::CONTEXT_LABEL,
+      views::style::STYLE_SECONDARY));
   state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  state_label_->SetVisible(is_fully_partitioned_ ||
-                           setting_ != CONTENT_SETTING_ALLOW);
+  state_label_->SetVisible(setting_ != CONTENT_SETTING_ALLOW);
 }
 
 SiteDataRowView::~SiteDataRowView() = default;
@@ -167,21 +151,13 @@ void SiteDataRowView::OnMenuIconClicked() {
                             base::Unretained(this)));
   }
 
-  dialog_model_ =
+  auto dialog_model =
       std::make_unique<ui::DialogModelMenuModelAdapter>(builder.Build());
-  menu_runner_ = std::make_unique<views::MenuRunner>(
-      dialog_model_.get(), views::MenuRunner::HAS_MNEMONICS,
-      base::BindRepeating(&SiteDataRowView::OnMenuClosed,
-                          base::Unretained(this)));
-  menu_runner_->RunMenuAt(GetWidget(), nullptr,
-                          menu_button_->GetAnchorBoundsInScreen(),
-                          views::MenuAnchorPosition::kTopRight,
-                          ui::MenuSourceType::MENU_SOURCE_MOUSE);
-}
-
-void SiteDataRowView::OnMenuClosed() {
-  menu_runner_.reset();
-  dialog_model_.reset();
+  auto menu_runner = std::make_unique<views::MenuRunner>(
+      dialog_model.get(), views::MenuRunner::CONTEXT_MENU);
+  menu_runner->RunMenuAt(GetWidget(), nullptr, GetBoundsInScreen(),
+                         views::MenuAnchorPosition::kTopLeft,
+                         ui::MenuSourceType::MENU_SOURCE_MOUSE);
 }
 
 void SiteDataRowView::OnDeleteMenuItemClicked(int event_flags) {
@@ -211,9 +187,6 @@ void SiteDataRowView::SetContentSettingException(ContentSetting setting) {
   create_exception_callback_.Run(origin_, setting);
 
   setting_ = setting;
-  // After creating an explicit exception for the site, don't show the state as
-  // partitioned because the exception applies to all cookies.
-  is_fully_partitioned_ = false;
   state_label_->SetVisible(true);
-  state_label_->SetText(GetSettingStateString(setting_, is_fully_partitioned_));
+  state_label_->SetText(GetSettingStateString(setting_));
 }
