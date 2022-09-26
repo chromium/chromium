@@ -9,7 +9,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -18,6 +17,7 @@
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/safe_strerror.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -488,11 +488,9 @@ MidiManagerAlsa::MidiPortStateBase::iterator
 MidiManagerAlsa::MidiPortStateBase::FindConnected(
     const MidiManagerAlsa::MidiPort& port) {
   // Exact match required for connected ports.
-  auto it = std::find_if(ports_.begin(), ports_.end(),
-                         [&port](std::unique_ptr<MidiPort>& p) {
-                           return p->MatchConnected(port);
-                         });
-  return it;
+  return base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+    return p->MatchConnected(port);
+  });
 }
 
 MidiManagerAlsa::MidiPortStateBase::iterator
@@ -515,10 +513,10 @@ MidiManagerAlsa::MidiPortStateBase::FindDisconnected(
     // Pass 1. Match on path, id, midi_device, port_id.
     // This is the best possible match for hardware card-based clients.
     // This will also match the empty id correctly for devices without an id.
-    auto it = std::find_if(ports_.begin(), ports_.end(),
-                           [&port](std::unique_ptr<MidiPort>& p) {
-                             return p->MatchCardPass1(port);
-                           });
+    auto it =
+        base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+          return p->MatchCardPass1(port);
+        });
     if (it != ports_.end())
       return it;
 
@@ -527,10 +525,9 @@ MidiManagerAlsa::MidiPortStateBase::FindDisconnected(
       // This will give us a high-confidence match when a user moves a device to
       // another USB/Firewire/Thunderbolt/etc port, but only works if the device
       // has a hardware id.
-      it = std::find_if(ports_.begin(), ports_.end(),
-                        [&port](std::unique_ptr<MidiPort>& p) {
-                          return p->MatchCardPass2(port);
-                        });
+      it = base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+        return p->MatchCardPass2(port);
+      });
       if (it != ports_.end())
         return it;
     }
@@ -538,20 +535,19 @@ MidiManagerAlsa::MidiPortStateBase::FindDisconnected(
     // Else, we have a non-card-based client.
     // Pass 1. Match on client_id, port_id, client_name, port_name.
     // This will give us a reasonably good match.
-    auto it = std::find_if(ports_.begin(), ports_.end(),
-                           [&port](std::unique_ptr<MidiPort>& p) {
-                             return p->MatchNoCardPass1(port);
-                           });
+    auto it =
+        base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+          return p->MatchNoCardPass1(port);
+        });
     if (it != ports_.end())
       return it;
 
     // Pass 2. Match on port_id, client_name, port_name.
     // This is weaker but similar to pass 2 in the hardware card-based clients
     // match.
-    it = std::find_if(ports_.begin(), ports_.end(),
-                      [&port](std::unique_ptr<MidiPort>& p) {
-                        return p->MatchNoCardPass2(port);
-                      });
+    it = base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+      return p->MatchNoCardPass2(port);
+    });
     if (it != ports_.end())
       return it;
   }

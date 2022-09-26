@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/memory/free_deleter.h"
 #include "base/process/memory.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -58,9 +59,8 @@ uint8_t* FrameBufferPool::GetFrameBuffer(size_t min_size, void** fb_priv) {
   }
 
   // Check if a free frame buffer exists.
-  auto it = std::find_if(
-      frame_buffers_.begin(), frame_buffers_.end(),
-      [](const std::unique_ptr<FrameBuffer>& fb) { return !IsUsed(fb.get()); });
+  auto it = base::ranges::find_if_not(frame_buffers_, &IsUsed,
+                                      &std::unique_ptr<FrameBuffer>::get);
 
   // If not, create one.
   if (it == frame_buffers_.end())

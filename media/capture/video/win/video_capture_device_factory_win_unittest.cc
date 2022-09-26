@@ -16,6 +16,7 @@
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
@@ -74,10 +75,10 @@ using iterator = std::vector<VideoCaptureDeviceInfo>::const_iterator;
 iterator FindDeviceInRange(iterator begin,
                            iterator end,
                            const std::string& device_id) {
-  return std::find_if(begin, end,
-                      [device_id](const VideoCaptureDeviceInfo& device_info) {
-                        return device_id == device_info.descriptor.device_id;
-                      });
+  return base::ranges::find(begin, end, device_id,
+                            [](const VideoCaptureDeviceInfo& device_info) {
+                              return device_info.descriptor.device_id;
+                            });
 }
 
 template <class Interface>

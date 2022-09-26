@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scheduler.h"
@@ -234,10 +235,9 @@ void AudioManagerFuchsia::OnDeviceRemoved(uint64_t device_token) {
 bool AudioManagerFuchsia::HasAudioDevice(bool is_input) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
-  return std::find_if(audio_devices_.begin(), audio_devices_.end(),
-                      [is_input](const auto& device) {
-                        return device.second.is_input == is_input;
-                      }) != audio_devices_.end();
+  return base::Contains(audio_devices_, is_input, [](const auto& device) {
+    return device.second.is_input;
+  });
 }
 
 void AudioManagerFuchsia::GetAudioDevices(AudioDeviceNames* device_names,

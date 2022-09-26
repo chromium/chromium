@@ -11,7 +11,6 @@
 #include <mmreg.h>
 #include <mmsystem.h>
 
-#include <algorithm>
 #include <limits>
 #include <map>
 #include <memory>
@@ -22,8 +21,10 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -848,14 +849,15 @@ void MidiManagerWin::UpdateDeviceListOnTaskRunner() {
 }
 
 template <typename T>
-void MidiManagerWin::ReflectActiveDeviceList(MidiManagerWin* manager,
-                                             std::vector<T>* known_ports,
-                                             std::vector<T>* active_ports) {
+void MidiManagerWin::ReflectActiveDeviceList(
+    MidiManagerWin* manager,
+    std::vector<std::unique_ptr<T>>* known_ports,
+    std::vector<std::unique_ptr<T>>* active_ports) {
   // Update existing port states.
   for (const auto& port : *known_ports) {
-    const auto& it = std::find_if(
-        active_ports->begin(), active_ports->end(),
-        [&port](const auto& candidate) { return *candidate == *port; });
+    const auto& it = base::ranges::find(
+        *active_ports, *port,
+        [](const auto& candidate) -> T& { return *candidate; });
     if (it == active_ports->end()) {
       if (port->Disconnect())
         port->NotifyPortStateSet(this);
@@ -868,10 +870,9 @@ void MidiManagerWin::ReflectActiveDeviceList(MidiManagerWin* manager,
 
   // Find new ports from active ports and append them to known ports.
   for (auto& port : *active_ports) {
-    if (std::find_if(known_ports->begin(), known_ports->end(),
-                     [&port](const auto& candidate) {
-                       return *candidate == *port;
-                     }) == known_ports->end()) {
+    if (!base::Contains(*known_ports, *port, [](const auto& candidate) -> T& {
+          return *candidate;
+        })) {
       size_t index = known_ports->size();
       port->set_index(index);
       known_ports->push_back(std::move(port));

@@ -4,9 +4,8 @@
 
 #include "media/midi/usb_midi_descriptor_parser.h"
 
-#include <algorithm>
-
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 
 namespace midi {
@@ -46,18 +45,6 @@ enum JackType {
 
 const uint8_t kAudioInterfaceClass = 1;
 const uint8_t kAudioMidiInterfaceSubclass = 3;
-
-class JackMatcher {
- public:
-  explicit JackMatcher(uint8_t id) : id_(id) {}
-
-  bool operator() (const UsbMidiJack& jack) const {
-    return jack.jack_id == id_;
-  }
-
- private:
-  uint8_t id_;
-};
 
 bool DecodeBcd(uint8_t byte, int* decoded) {
   // Write decoded decimal value from |byte| into |decoded|. If either nibble in
@@ -269,8 +256,8 @@ bool UsbMidiDescriptorParser::ParseCSEndpoint(const uint8_t* data,
 
   for (size_t i = 0; i < num_jacks; ++i) {
     uint8_t jack = data[kSizeForEmptyJacks + i];
-    auto it = std::find_if(incomplete_jacks_.begin(), incomplete_jacks_.end(),
-                           JackMatcher(jack));
+    auto it =
+        base::ranges::find(incomplete_jacks_, jack, &UsbMidiJack::jack_id);
     if (it == incomplete_jacks_.end()) {
       DVLOG(1) << "A non-existing MIDI jack is associated.";
       return false;

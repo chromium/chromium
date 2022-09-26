@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
@@ -116,11 +117,10 @@ VideoCaptureErrorOrDevice VideoCaptureSystemImpl::CreateDevice(
 const VideoCaptureDeviceInfo* VideoCaptureSystemImpl::LookupDeviceInfoFromId(
     const std::string& device_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  auto iter =
-      std::find_if(devices_info_cache_.begin(), devices_info_cache_.end(),
-                   [&device_id](const VideoCaptureDeviceInfo& device_info) {
-                     return device_info.descriptor.device_id == device_id;
-                   });
+  auto iter = base::ranges::find(devices_info_cache_, device_id,
+                                 [](const VideoCaptureDeviceInfo& device_info) {
+                                   return device_info.descriptor.device_id;
+                                 });
   if (iter == devices_info_cache_.end())
     return nullptr;
   return &(*iter);

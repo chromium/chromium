@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <map>
 #include <utility>
 
@@ -16,6 +15,7 @@
 #include "base/environment.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/nix/xdg_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
@@ -294,8 +294,8 @@ std::string AudioManagerChromeOS::GetAssociatedOutputDeviceID(
     return "";
 
   // Now search for an output device with the same device name.
-  auto output_device_it = std::find_if(
-      devices.begin(), devices.end(), [device_name](const AudioDevice& device) {
+  auto output_device_it =
+      base::ranges::find_if(devices, [device_name](const AudioDevice& device) {
         return !device.is_input && device.device_name == device_name;
       });
   return output_device_it == devices.end()

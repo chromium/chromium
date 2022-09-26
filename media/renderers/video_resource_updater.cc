@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <string>
 
 #include "base/atomic_sequence_num.h"
@@ -18,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -1311,12 +1311,8 @@ void VideoResourceUpdater::ReturnTexture(scoped_refptr<VideoFrame> video_frame,
 void VideoResourceUpdater::RecycleResource(uint32_t plane_resource_id,
                                            const gpu::SyncToken& sync_token,
                                            bool lost_resource) {
-  auto matches_id_fn =
-      [plane_resource_id](const std::unique_ptr<PlaneResource>& resource) {
-        return resource->plane_resource_id() == plane_resource_id;
-      };
-  auto resource_it =
-      std::find_if(all_resources_.begin(), all_resources_.end(), matches_id_fn);
+  auto resource_it = base::ranges::find(all_resources_, plane_resource_id,
+                                        &PlaneResource::plane_resource_id);
   if (resource_it == all_resources_.end())
     return;
 

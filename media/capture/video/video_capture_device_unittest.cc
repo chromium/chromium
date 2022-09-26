@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -436,10 +437,8 @@ class VideoCaptureDeviceTest
   bool IsCaptureSizeSupported(const VideoCaptureDeviceInfo& device_info,
                               const gfx::Size& size) {
     auto& supported_formats = device_info.supported_formats;
-    const auto it = std::find_if(
-        supported_formats.begin(), supported_formats.end(),
-        [&size](VideoCaptureFormat const& f) { return f.frame_size == size; });
-    if (it == supported_formats.end()) {
+    if (!base::Contains(supported_formats, size,
+                        &VideoCaptureFormat::frame_size)) {
       DVLOG(1) << "Size " << size.ToString() << " is not supported.";
       return false;
     }

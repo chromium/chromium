@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -633,11 +634,8 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
   if (IsDestroyPending())
     return;
 
-  const auto iter =
-      std::find_if(output_buffer_map_.begin(), output_buffer_map_.end(),
-                   [picture_buffer_id](const OutputRecord& output_record) {
-                     return output_record.picture_id == picture_buffer_id;
-                   });
+  const auto iter = base::ranges::find(output_buffer_map_, picture_buffer_id,
+                                       &OutputRecord::picture_id);
   if (iter == output_buffer_map_.end()) {
     // It's possible that we've already posted a DismissPictureBuffer for this
     // picture, but it has not yet executed when this ImportBufferForPicture was

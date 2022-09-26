@@ -14,6 +14,7 @@
 #include "base/environment.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -450,11 +451,8 @@ class AudioManagerTest : public ::testing::Test {
   // Helper method for (USE_CRAS) which returns |group_id| from |device_id|.
   std::string getGroupID(const AudioDeviceDescriptions& device_descriptions,
                          const std::string device_id) {
-    AudioDeviceDescriptions::const_iterator it =
-        std::find_if(device_descriptions.begin(), device_descriptions.end(),
-                     [&device_id](const auto& audio_device_desc) {
-                       return audio_device_desc.unique_id == device_id;
-                     });
+    AudioDeviceDescriptions::const_iterator it = base::ranges::find(
+        device_descriptions, device_id, &AudioDeviceDescription::unique_id);
 
     EXPECT_NE(it, device_descriptions.end());
     return it->group_id;

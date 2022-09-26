@@ -4,13 +4,14 @@
 
 #include "media/mojo/services/watch_time_recorder.h"
 
-#include <algorithm>
 #include <cmath>
 
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "media/base/limits.h"
 #include "media/base/video_codecs.h"
@@ -113,8 +114,7 @@ void WatchTimeRecorder::FinalizeWatchTime(
   // needed by for UKM and MTBR recording below.
   for (auto& kv : watch_time_info_) {
     if (!should_finalize_everything &&
-        std::find(keys_to_finalize.begin(), keys_to_finalize.end(), kv.first) ==
-            keys_to_finalize.end()) {
+        !base::Contains(keys_to_finalize, kv.first)) {
       continue;
     }
 
@@ -126,11 +126,8 @@ void WatchTimeRecorder::FinalizeWatchTime(
       if (kv.second >= kMinimumElapsedWatchTime) {
         RecordWatchTimeInternal(key_str, kv.second);
       } else if (kv.second.is_positive()) {
-        auto it = std::find_if(extended_metrics_keys_.begin(),
-                               extended_metrics_keys_.end(),
-                               [kv](const ExtendedMetricsKeyMap& map) {
-                                 return map.watch_time_key == kv.first;
-                               });
+        auto it = base::ranges::find(extended_metrics_keys_, kv.first,
+                                     &ExtendedMetricsKeyMap::watch_time_key);
         if (it != extended_metrics_keys_.end())
           RecordDiscardedWatchTime(it->discard_key, kv.second);
       }

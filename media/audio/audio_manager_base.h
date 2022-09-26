@@ -184,8 +184,6 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
   struct DispatcherParams;
   typedef std::vector<std::unique_ptr<DispatcherParams>> AudioOutputDispatchers;
 
-  class CompareByParams;
-
   // AudioManager:
   void InitializeDebugRecording() final;
 

@@ -21,6 +21,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -258,10 +259,10 @@ std::string GetDeviceModelId(const std::string& device_id) {
 
 bool DevicesInfoContainsDeviceId(const DevicesInfo& devices_info,
                                  const std::string& device_id) {
-  return std::find_if(devices_info.begin(), devices_info.end(),
-                      [device_id](const VideoCaptureDeviceInfo& device_info) {
-                        return device_id == device_info.descriptor.device_id;
-                      }) != devices_info.end();
+  return base::Contains(devices_info, device_id,
+                        [](const VideoCaptureDeviceInfo& device_info) {
+                          return device_info.descriptor.device_id;
+                        });
 }
 
 // Returns a non DirectShow descriptor DevicesInfo with the provided name and
@@ -269,8 +270,8 @@ bool DevicesInfoContainsDeviceId(const DevicesInfo& devices_info,
 DevicesInfo::const_iterator FindNonDirectShowDeviceInfoByNameAndModel(
     const DevicesInfo& devices_info,
     const std::string& name_and_model) {
-  return std::find_if(
-      devices_info.begin(), devices_info.end(),
+  return base::ranges::find_if(
+      devices_info,
       [name_and_model](const VideoCaptureDeviceInfo& device_info) {
         return device_info.descriptor.capture_api !=
                    VideoCaptureApi::WIN_DIRECT_SHOW &&

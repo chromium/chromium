@@ -10,12 +10,12 @@
 #include <OpenGL/gl.h>
 #include <stddef.h>
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
@@ -741,10 +741,8 @@ bool VTVideoDecodeAccelerator::Initialize(const Config& config,
 
   static const base::NoDestructor<VideoDecodeAccelerator::SupportedProfiles>
       kActualSupportedProfiles(GetSupportedProfiles(workarounds_));
-  if (std::find_if(kActualSupportedProfiles->begin(),
-                   kActualSupportedProfiles->end(), [config](const auto& p) {
-                     return p.profile == config.profile;
-                   }) == kActualSupportedProfiles->end()) {
+  if (!base::Contains(*kActualSupportedProfiles, config.profile,
+                      &VideoDecodeAccelerator::SupportedProfile::profile)) {
     DVLOG(2) << "Unsupported profile";
     return false;
   }

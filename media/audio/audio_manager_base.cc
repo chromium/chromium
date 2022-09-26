@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -96,26 +97,6 @@ struct AudioManagerBase::DispatcherParams {
   const AudioParameters output_params;
   const std::string output_device_id;
   std::unique_ptr<AudioOutputDispatcher> dispatcher;
-};
-
-class AudioManagerBase::CompareByParams {
- public:
-  explicit CompareByParams(const DispatcherParams* dispatcher)
-      : dispatcher_(dispatcher) {}
-  bool operator()(
-      const std::unique_ptr<DispatcherParams>& dispatcher_in) const {
-    // We will reuse the existing dispatcher when:
-    // 1) Unified IO is not used, input_params and output_params of the
-    //    existing dispatcher are the same as the requested dispatcher.
-    // 2) Unified IO is used, input_params and output_params of the existing
-    //    dispatcher are the same as the request dispatcher.
-    return (dispatcher_->input_params.Equals(dispatcher_in->input_params) &&
-            dispatcher_->output_params.Equals(dispatcher_in->output_params) &&
-            dispatcher_->output_device_id == dispatcher_in->output_device_id);
-  }
-
- private:
-  raw_ptr<const DispatcherParams> dispatcher_;
 };
 
 AudioManagerBase::AudioManagerBase(std::unique_ptr<AudioThread> audio_thread,
@@ -424,12 +405,21 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
     NOTREACHED();
   }
 
-  std::unique_ptr<DispatcherParams> dispatcher_params =
-      std::make_unique<DispatcherParams>(params, output_params,
-                                         output_device_id);
+  auto dispatcher_params = std::make_unique<DispatcherParams>(
+      params, output_params, output_device_id);
 
-  auto it = std::find_if(output_dispatchers_.begin(), output_dispatchers_.end(),
-                         CompareByParams(dispatcher_params.get()));
+  auto it = base::ranges::find_if(
+      output_dispatchers_,
+      [&](const std::unique_ptr<DispatcherParams>& dispatcher) {
+        // We will reuse the existing dispatcher when:
+        // 1) Unified IO is not used, input_params and output_params of the
+        //    existing dispatcher are the same as the requested dispatcher.
+        // 2) Unified IO is used, input_params and output_params of the existing
+        //    dispatcher are the same as the request dispatcher.
+        return params.Equals(dispatcher->input_params) &&
+               output_params.Equals(dispatcher->output_params) &&
+               output_device_id == dispatcher->output_device_id;
+      });
   if (it != output_dispatchers_.end())
     return (*it)->dispatcher->CreateStreamProxy();
 

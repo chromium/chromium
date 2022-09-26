@@ -4,11 +4,11 @@
 
 #include "media/gpu/test/video_encoder/video_encoder_test_environment.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -131,9 +131,8 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     return nullptr;
   }
 
-  const auto* it = std::find_if(
-      std::begin(kCodecParamToProfile), std::end(kCodecParamToProfile),
-      [codec](const auto& cp) { return cp.codec == codec; });
+  const auto* it = base::ranges::find(kCodecParamToProfile, codec,
+                                      &CodecParamToProfile::codec);
   if (it == std::end(kCodecParamToProfile)) {
     LOG(ERROR) << "Unknown codec: " << codec;
     return nullptr;

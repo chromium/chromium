@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video_capture_types.h"
 
@@ -28,11 +29,8 @@ void FakeDeviceProvider::GetDeviceIds(
 }
 
 std::string FakeDeviceProvider::GetDeviceModelId(const std::string& device_id) {
-  auto iter =
-      std::find_if(descriptors_.begin(), descriptors_.end(),
-                   [&device_id](const VideoCaptureDeviceDescriptor& val) {
-                     return val.device_id == device_id;
-                   });
+  auto iter = base::ranges::find(descriptors_, device_id,
+                                 &VideoCaptureDeviceDescriptor::device_id);
   if (iter == descriptors_.end())
     CHECK(false) << "Unknown device_id " << device_id;
 
@@ -41,11 +39,8 @@ std::string FakeDeviceProvider::GetDeviceModelId(const std::string& device_id) {
 
 std::string FakeDeviceProvider::GetDeviceDisplayName(
     const std::string& device_id) {
-  auto iter =
-      std::find_if(descriptors_.begin(), descriptors_.end(),
-                   [&device_id](const VideoCaptureDeviceDescriptor& val) {
-                     return val.device_id == device_id;
-                   });
+  auto iter = base::ranges::find(descriptors_, device_id,
+                                 &VideoCaptureDeviceDescriptor::device_id);
   if (iter == descriptors_.end())
     CHECK(false) << "Unknown device_id " << device_id;
 

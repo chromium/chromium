@@ -12,6 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -391,11 +392,9 @@ void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(
   GetPhotoStateCallback* const cb =
       reinterpret_cast<GetPhotoStateCallback*>(callback_id);
   // Search for the pointer |cb| in the list of |take_photo_callbacks_|.
-  const auto reference_it = std::find_if(
-      get_photo_state_callbacks_.begin(), get_photo_state_callbacks_.end(),
-      [cb](const std::unique_ptr<GetPhotoStateCallback>& callback) {
-        return callback.get() == cb;
-      });
+  const auto reference_it =
+      base::ranges::find(get_photo_state_callbacks_, cb,
+                         &std::unique_ptr<GetPhotoStateCallback>::get);
   if (reference_it == get_photo_state_callbacks_.end()) {
     NOTREACHED() << "|callback_id| not found.";
     return;
@@ -557,11 +556,8 @@ void VideoCaptureDeviceAndroid::OnPhotoTaken(
   TakePhotoCallback* const cb =
       reinterpret_cast<TakePhotoCallback*>(callback_id);
   // Search for the pointer |cb| in the list of |take_photo_callbacks_|.
-  const auto reference_it =
-      std::find_if(take_photo_callbacks_.begin(), take_photo_callbacks_.end(),
-                   [cb](const std::unique_ptr<TakePhotoCallback>& callback) {
-                     return callback.get() == cb;
-                   });
+  const auto reference_it = base::ranges::find(
+      take_photo_callbacks_, cb, &std::unique_ptr<TakePhotoCallback>::get);
   if (reference_it == take_photo_callbacks_.end()) {
     NOTREACHED() << "|callback_id| not found.";
     return;

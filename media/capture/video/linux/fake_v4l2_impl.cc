@@ -8,10 +8,12 @@
 #include <sys/mman.h>
 #include <sys/time.h>
 #include <unistd.h>
+
 #include <queue>
 
 #include "base/bind.h"
 #include "base/bits.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -88,10 +90,7 @@ class FakeV4L2Impl::OpenedDevice {
 
   FakeV4L2Buffer* LookupBufferFromOffset(off_t offset) {
     auto buffer_iter =
-        std::find_if(device_buffers_.begin(), device_buffers_.end(),
-                     [offset](const FakeV4L2Buffer& buffer) {
-                       return buffer.offset == offset;
-                     });
+        base::ranges::find(device_buffers_, offset, &FakeV4L2Buffer::offset);
     if (buffer_iter == device_buffers_.end())
       return nullptr;
     return &(*buffer_iter);
