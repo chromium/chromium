@@ -1185,8 +1185,6 @@ void InspectorNetworkAgent::SetDevToolsIds(
                                                       request.InspectorId()));
 }
 
-extern "C" size_t V8RecordReplayNewBookmark();
-
 void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
                                            ResourceRequest& request,
                                            ResourceLoaderOptions& options,
@@ -1245,8 +1243,7 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
   // Capture the record replay bookmark for the network request here,
   // where the devtools stack id is taken.
   if (recordreplay::IsRecordingOrReplaying()) {
-    uint64_t bookmark = V8RecordReplayNewBookmark();
-    request.SetRecordReplayBookmark(bookmark);
+    request.SetRecordReplayBookmark(recordreplay::NewBookmark());
   }
 
   if (!accepted_encodings_.IsEmpty()) {
