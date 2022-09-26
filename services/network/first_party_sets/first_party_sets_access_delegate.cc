@@ -45,6 +45,22 @@ void FirstPartySetsAccessDelegate::NotifyReady(
   InvokePendingQueries();
 }
 
+// TODO(crbug.com/1366846): Add metrics to track whether this is called from
+// dynamic policy updates before NotifyReady.
+void FirstPartySetsAccessDelegate::SetEnabled(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!enabled) {
+    pending_queries_ = nullptr;
+  } else if (!enabled_ && receiver_.is_bound() && manager_->is_enabled() &&
+             !pending_queries_) {
+    // Re-initialize `pending_queries_` if `enabled_` was false and prevented
+    // `pending_queries_` from being initialized upon construction.
+    pending_queries_ =
+        std::make_unique<base::circular_deque<base::OnceClosure>>();
+  }
+  enabled_ = enabled;
+}
+
 absl::optional<net::FirstPartySetMetadata>
 FirstPartySetsAccessDelegate::ComputeMetadata(
     const net::SchemefulSite& site,

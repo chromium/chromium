@@ -323,4 +323,225 @@ TEST_F(SyncFirstPartySetsAccessDelegateTest, FindEntries) {
       }));
 }
 
+// Verifies the behaviors of the delegate when First-Party Sets are initially
+// enabled but disabled later on.
+// Queries should only be deferred if they arrive when the delegate is enabled
+// and NotifyReady hasn't been called yet.
+class FirstPartySetsAccessDelegateSetToDisabledTest
+    : public FirstPartySetsAccessDelegateTest {
+ public:
+  FirstPartySetsAccessDelegateSetToDisabledTest()
+      : FirstPartySetsAccessDelegateTest(true) {}
+};
+
+TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
+       DisabledThenReady_ComputeMetadata) {
+  net::FirstPartySetMetadata empty_metadata(net::SamePartyContext(),
+                                            /*frame_entry=*/nullptr,
+                                            /*top_frame_entry=*/nullptr);
+
+  EXPECT_FALSE(delegate().ComputeMetadata(
+      kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
+      base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })));
+
+  delegate().SetEnabled(false);
+
+  // All queries received when the delegate is disabled receive empty responses.
+  EXPECT_THAT(delegate().ComputeMetadata(
+                  kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
+                  base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
+              Optional(std::ref(empty_metadata)));
+  delegate().NotifyReady(mojom::FirstPartySetsReadyEvent::New());
+  EXPECT_THAT(delegate().ComputeMetadata(
+                  kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
+                  base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
+              Optional(std::ref(empty_metadata)));
+}
+
+TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
+       DisabledThenReady_FindEntries) {
+  EXPECT_FALSE(delegate().FindEntries(
+      {kSet1Member1},
+      base::BindOnce(
+          [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })));
+
+  delegate().SetEnabled(false);
+
+  // All queries received when the delegate is disabled receive empty responses.
+  EXPECT_THAT(
+      delegate().FindEntries(
+          {kSet1Member1},
+          base::BindOnce(
+              [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })),
+      Optional(IsEmpty()));
+  delegate().NotifyReady(mojom::FirstPartySetsReadyEvent::New());
+  EXPECT_THAT(
+      delegate().FindEntries(
+          {kSet1Member1},
+          base::BindOnce(
+              [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })),
+      Optional(IsEmpty()));
+}
+
+TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
+       ReadyThenDisabled_ComputeMetadata) {
+  base::test::TestFuture<net::FirstPartySetMetadata> future;
+  EXPECT_FALSE(delegate().ComputeMetadata(kSet1Member1, &kSet1Member1,
+                                          {kSet1Member1, kSet1Owner},
+                                          future.GetCallback()));
+
+  delegate_remote()->NotifyReady(mojom::FirstPartySetsReadyEvent::New());
+
+  net::FirstPartySetEntry entry(kSet1Owner, net::SiteType::kAssociated, 0);
+  EXPECT_EQ(future.Get(),
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                       &entry, &entry));
+  EXPECT_TRUE(delegate().ComputeMetadata(
+      kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
+      base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })));
+
+  delegate().SetEnabled(false);
+  net::FirstPartySetMetadata empty_metadata(net::SamePartyContext(),
+                                            /*frame_entry=*/nullptr,
+                                            /*top_frame_entry=*/nullptr);
+  EXPECT_THAT(delegate().ComputeMetadata(
+                  kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
+                  base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
+              Optional(std::ref(empty_metadata)));
+}
+
+TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
+       ReadyThenDisabled_FindEntries) {
+  base::test::TestFuture<FirstPartySetsAccessDelegate::EntriesResult> future;
+
+  EXPECT_FALSE(delegate().FindEntries({kSet1Member1}, future.GetCallback()));
+  delegate_remote()->NotifyReady(mojom::FirstPartySetsReadyEvent::New());
+  EXPECT_THAT(
+      future.Get(),
+      FirstPartySetsAccessDelegate::EntriesResult(
+          {{kSet1Member1, net::FirstPartySetEntry(
+                              kSet1Owner, net::SiteType::kAssociated, 0)}}));
+  EXPECT_TRUE(delegate().FindEntries(
+      {kSet1Member1},
+      base::BindOnce(
+          [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })));
+
+  delegate().SetEnabled(false);
+  EXPECT_THAT(
+      delegate().FindEntries(
+          {kSet1Member1},
+          base::BindOnce(
+              [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })),
+      Optional(IsEmpty()));
+}
+
+// Verifies the behaviors of the delegate when First-Party Sets are initially
+// disabled but enabled later on.
+// Queries should only be deferred if they arrive when the delegate is enabled
+// and NotifyReady hasn't been called yet.
+class FirstPartySetsAccessDelegateSetToEnabledTest
+    : public FirstPartySetsAccessDelegateTest {
+ public:
+  FirstPartySetsAccessDelegateSetToEnabledTest()
+      : FirstPartySetsAccessDelegateTest(false) {}
+};
+
+// This scenario might not be reproducible in production code but it's worth
+// testing nonetheless. We may add metrics to observe how often this case
+// occurs.
+TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
+       EnabledThenReady_ComputeMetadata) {
+  net::FirstPartySetMetadata empty_metadata(net::SamePartyContext(),
+                                            /*frame_entry=*/nullptr,
+                                            /*top_frame_entry=*/nullptr);
+  EXPECT_THAT(delegate().ComputeMetadata(
+                  kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
+                  base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
+              Optional(std::ref(empty_metadata)));
+
+  delegate().SetEnabled(true);
+
+  base::test::TestFuture<net::FirstPartySetMetadata> future;
+  net::FirstPartySetEntry primary_entry(kSet2Owner, net::SiteType::kPrimary,
+                                        absl::nullopt);
+  net::FirstPartySetEntry associated_entry(kSet2Owner,
+                                           net::SiteType::kAssociated, 0);
+  EXPECT_FALSE(delegate().ComputeMetadata(
+      kSet2Owner, &kSet1Member1, {kSet1Member1}, future.GetCallback()));
+  delegate_remote()->NotifyReady(
+      CreateFirstPartySetsReadyEvent(net::FirstPartySetsContextConfig(
+          {{kSet1Member1,
+            {net::FirstPartySetEntry(kSet2Owner, net::SiteType::kAssociated,
+                                     0)}}})));
+  EXPECT_EQ(future.Get(),
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                       &primary_entry, &associated_entry));
+  EXPECT_TRUE(delegate().ComputeMetadata(
+      kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
+      base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })));
+}
+
+TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
+       EnabledThenReady_FindEntries) {
+  EXPECT_EQ(delegate().FindEntries(
+                {kSet1Member1},
+                base::BindOnce([](FirstPartySetsAccessDelegate::EntriesResult) {
+                  FAIL();
+                })),
+            FirstPartySetsAccessDelegate::EntriesResult());
+
+  delegate().SetEnabled(true);
+
+  base::test::TestFuture<FirstPartySetsAccessDelegate::EntriesResult> future;
+  EXPECT_FALSE(delegate().FindEntries({kSet1Member1}, future.GetCallback()));
+  delegate_remote()->NotifyReady(
+      CreateFirstPartySetsReadyEvent(net::FirstPartySetsContextConfig(
+          {{kSet1Member1,
+            {net::FirstPartySetEntry(kSet2Owner, net::SiteType::kAssociated,
+                                     0)}}})));
+  EXPECT_EQ(
+      future.Get(),
+      FirstPartySetsAccessDelegate::EntriesResult(
+          {{kSet1Member1, net::FirstPartySetEntry(
+                              kSet2Owner, net::SiteType::kAssociated, 0)}}));
+  EXPECT_TRUE(delegate().FindEntries(
+      {kSet1Member1},
+      base::BindOnce(
+          [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })));
+}
+
+TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
+       ReadyThenEnabled_ComputeMetadata) {
+  net::FirstPartySetMetadata empty_metadata(net::SamePartyContext(),
+                                            /*frame_entry=*/nullptr,
+                                            /*top_frame_entry=*/nullptr);
+  EXPECT_THAT(delegate().ComputeMetadata(
+                  kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
+                  base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
+              Optional(std::ref(empty_metadata)));
+  delegate().NotifyReady(mojom::FirstPartySetsReadyEvent::New());
+  delegate().SetEnabled(true);
+
+  EXPECT_FALSE(delegate().ComputeMetadata(
+      kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
+      base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })));
+}
+
+TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
+       ReadyThenEnabled_FindEntries) {
+  EXPECT_EQ(delegate().FindEntries(
+                {kSet1Member1},
+                base::BindOnce([](FirstPartySetsAccessDelegate::EntriesResult) {
+                  FAIL();
+                })),
+            FirstPartySetsAccessDelegate::EntriesResult());
+  delegate().NotifyReady(mojom::FirstPartySetsReadyEvent::New());
+  delegate().SetEnabled(true);
+
+  EXPECT_FALSE(delegate().FindEntries(
+      {kSet1Member1},
+      base::BindOnce(
+          [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })));
+}
+
 }  // namespace network

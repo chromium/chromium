@@ -49,6 +49,7 @@ class FirstPartySetsAccessDelegate
 
   // mojom::FirstPartySetsAccessDelegate
   void NotifyReady(mojom::FirstPartySetsReadyEventPtr ready_event) override;
+  void SetEnabled(bool enabled) override;
 
   bool is_enabled() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -114,8 +115,8 @@ class FirstPartySetsAccessDelegate
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The queue of queries that are waiting for the instance to be initialized.
-  // This is only set if we haven't been notified that we're ready to answer
-  // queries.
+  // This is only non-null if this delegate is enabled, the First-Party Sets
+  // manager is enabled, and the receiver is valid.
   std::unique_ptr<base::circular_deque<base::OnceClosure>> pending_queries_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

@@ -9,17 +9,22 @@ import "services/network/public/mojom/schemeful_site.mojom";
 
 // Lives in the network service and controlled by the browser process to
 // access First-Party Sets for each network context.
-//
-// TODO(shuuran): Expose APIs to enable browser process query the FPS info
-// and change whether the FPS is enabled during runtime.
 interface FirstPartySetsAccessDelegate {
   // Signals to the receiver that the given network context has completed
   // its initialization related to First-Party Sets, and the delegate
   // should begin answering queries.
   //
-  // Exactly one call is expected; subsequent calls with the same receiver
-  // have no effect.
+  // This method is expected to be called at least once upon the completion of
+  // First-Party Sets initialization, and is expected to be called after each
+  // time `SetEnabled` is used to enable the delegate.
   NotifyReady(FirstPartySetsReadyEvent ready_event);
+
+  // Signals to the receiver that the browser_context that this network context
+  // is associated with has changed the state of the First-Party Sets enabled
+  // setting (either by user action or enterprise update).
+  //
+  // There is no limit on when or how often this method is called.
+  SetEnabled(bool enabled);
 };
 
 struct FirstPartySetsAccessDelegateParams {
