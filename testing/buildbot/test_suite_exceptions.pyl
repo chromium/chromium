@@ -4127,6 +4127,7 @@
         },
       },
       'android-pie-arm64-rel': {
+        'ci_only': True, # crbug/1368281
         'swarming': {
           'shards': 9,
         },

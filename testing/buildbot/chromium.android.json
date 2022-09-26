@@ -42663,6 +42663,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "merge": {
           "args": [
             "--bucket",
