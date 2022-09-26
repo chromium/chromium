@@ -1872,8 +1872,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
       if (clip_path_bounding_box_) {
         clip_path_bounding_box_->Offset(
             gfx::Vector2dF(context_.current.paint_offset));
-        if (absl::optional<Path> path =
-                ClipPathClipper::PathBasedClip(object_)) {
+        if (absl::optional<Path> path = ClipPathClipper::PathBasedClip(
+                object_, context_.current.is_in_block_fragmentation)) {
           path->Translate(gfx::Vector2dF(context_.current.paint_offset));
           ClipPaintPropertyNode::State state(
               context_.current.transform, *clip_path_bounding_box_,

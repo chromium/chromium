@@ -75,11 +75,20 @@ static bool HasCompositeClipPathAnimation(const LayoutObject& layout_object) {
       layout_object.GetFrame()->GetClipPathPaintImageGenerator();
   // TODO(crbug.com/686074): The generator may be null in tests.
   // Fix and remove this test-only branch.
-  if (generator) {
-    const Element* element = To<Element>(layout_object.GetNode());
-    return generator->GetAnimationIfCompositable(element);
+  if (!generator) {
+    return false;
   }
-  return false;
+
+  const Element* element = To<Element>(layout_object.GetNode());
+  const Animation* animation = generator->GetAnimationIfCompositable(element);
+
+  if (!animation) {
+    return false;
+  }
+  // TODO(crbug.com/1248622): Cache this function to avoid this heavy check,
+  // See also: work done for bgcolor animations on crbug.com/1301961
+  return animation->CheckCanStartAnimationOnCompositor(nullptr) ==
+         CompositorAnimations::kNoFailure;
 }
 
 static void PaintWorkletBasedClip(GraphicsContext& context,
@@ -309,12 +318,19 @@ bool ClipPathClipper::ShouldUseMaskBasedClip(const LayoutObject& object) {
 }
 
 absl::optional<Path> ClipPathClipper::PathBasedClip(
-    const LayoutObject& clip_path_owner) {
+    const LayoutObject& clip_path_owner,
+    const bool is_in_block_fragmentation) {
   // TODO(crbug.com/1248622): Currently HasCompositeClipPathAnimation is called
   // multiple times, which is not efficient. Cache
   // HasCompositeClipPathAnimation value as part of fragment_data, similarly to
   // FragmentData::ClipPathPath().
-  if (HasCompositeClipPathAnimation(clip_path_owner))
+
+  // If not all the fragments of this layout object have been populated yet, it
+  // will be impossible to tell if a composited clip path animation is possible
+  // or not based only on the layout object. Exclude the possibility if we're
+  // fragmented.
+  if (!is_in_block_fragmentation &&
+      HasCompositeClipPathAnimation(clip_path_owner))
     return absl::nullopt;
 
   return PathBasedClipInternal(clip_path_owner,

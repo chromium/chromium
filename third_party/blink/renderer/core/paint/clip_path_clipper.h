@@ -45,7 +45,8 @@ class CORE_EXPORT ClipPathClipper {
   // clip-path, it could be one of the SVG clip path in the chain.
   // Returns the path if the clip-path can use path-based clip.
   static absl::optional<Path> PathBasedClip(
-      const LayoutObject& clip_path_owner);
+      const LayoutObject& clip_path_owner,
+      const bool is_in_block_fragmentation);
 };
 
 }  // namespace blink
