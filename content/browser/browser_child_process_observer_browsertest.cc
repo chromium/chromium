@@ -34,7 +34,6 @@ enum class Notification {
   kCrashed,
   kKilled,
   kLaunchFailed,
-  kExitedNormally,
 };
 
 // Nicer test output.
@@ -54,9 +53,6 @@ std::ostream& operator<<(std::ostream& os, Notification notification) {
       break;
     case Notification::kLaunchFailed:
       os << "LaunchFailed";
-      break;
-    case Notification::kExitedNormally:
-      os << "ExitedNormally";
       break;
   }
   return os;
@@ -113,11 +109,6 @@ class BrowserChildProcessNotificationObserver
       const ChildProcessData& data,
       const ChildProcessTerminationInfo& info) override {
     OnNotification(data, Notification::kLaunchFailed);
-  }
-  void BrowserChildProcessExitedNormally(
-      const ChildProcessData& data,
-      const ChildProcessTerminationInfo& info) override {
-    OnNotification(data, Notification::kExitedNormally);
   }
 
   void OnNotification(const ChildProcessData& data, Notification notification) {
@@ -331,22 +322,21 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
     waiter.Wait();
   }
 
-  Notification kExitNotification =
+  const Notification kExpectedNotifications[] = {
+    Notification::kLaunchedAndConnected,
 #if BUILDFLAG(IS_ANDROID)
-      // TODO(pmonette): On Android, this currently causes a killed
-      // notification. Consider fixing.
-      Notification::kKilled;
-#else
-      Notification::kExitedNormally;
-#endif  // BUILDFLAG(IS_ANDROID)
+    // TODO(pmonette): On Android, this currently causes a killed notification.
+    // Consider fixing.
+    Notification::kKilled,
+#endif
+    Notification::kDisconnected
+  };
 
   // The host should be deleted now.
   EXPECT_FALSE(host);
   EXPECT_FALSE(IsHostAlive(child_id));
   EXPECT_THAT(observer.notifications(),
-              testing::ElementsAreArray({Notification::kLaunchedAndConnected,
-                                         kExitNotification,
-                                         Notification::kDisconnected}));
+              testing::ElementsAreArray(kExpectedNotifications));
 }
 
 // Tests that launching and then deleting the host results in a normal
@@ -376,7 +366,6 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
   EXPECT_FALSE(IsHostAlive(child_id));
   EXPECT_THAT(observer.notifications(),
               testing::ElementsAreArray({Notification::kLaunchedAndConnected,
-                                         Notification::kExitedNormally,
                                          Notification::kDisconnected}));
 }
 
@@ -410,22 +399,21 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
     waiter.Wait();
   }
 
-  Notification kExitNotification =
+  const Notification kExpectedNotifications[] = {
+    Notification::kLaunchedAndConnected,
 #if BUILDFLAG(IS_ANDROID)
-      // On Android, kKilled is always sent in the case of a crash.
-      Notification::kKilled;
-#else
-      Notification::kExitedNormally;
-#endif  // BUILDFLAG(IS_ANDROID)
+    // TODO(pmonette): On Android, this currently causes a killed notification.
+    // Consider fixing.
+    Notification::kKilled,
+#endif
+    Notification::kDisconnected
+  };
 
   // The host should be deleted now.
   EXPECT_FALSE(host);
   EXPECT_FALSE(IsHostAlive(child_id));
-  EXPECT_THAT(observer.notifications(), testing::ElementsAreArray({
-                                            Notification::kLaunchedAndConnected,
-                                            kExitNotification,
-                                            Notification::kDisconnected,
-                                        }));
+  EXPECT_THAT(observer.notifications(),
+              testing::ElementsAreArray(kExpectedNotifications));
 }
 
 // Tests that launching and then causing a crash the host results in a crashed

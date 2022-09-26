@@ -187,7 +187,6 @@ BrowserChildProcessHostImpl::BrowserChildProcessHostImpl(
 
 BrowserChildProcessHostImpl::~BrowserChildProcessHostImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   g_child_process_list.Get().remove(this);
 
   // Skip sending the disconnected notification if the connected notification
@@ -196,13 +195,6 @@ BrowserChildProcessHostImpl::~BrowserChildProcessHostImpl() {
   // behavior to know when the utility service was shut down.
   if (!launched_and_connected_ && !in_process_)
     return;
-
-  if (launched_and_connected_ && !exited_abnormally_) {
-    for (auto& observer : g_browser_child_process_observers.Get()) {
-      observer.BrowserChildProcessExitedNormally(data_,
-                                                 GetTerminationInfo(false));
-    }
-  }
 
   for (auto& observer : g_browser_child_process_observers.Get())
     observer.BrowserChildProcessHostDisconnected(data_);
@@ -272,10 +264,9 @@ void BrowserChildProcessHostImpl::SetProcess(base::Process process) {
 
   // Only NaClProcessHost uses SetProcess(), and it always involve a legacy IPC
   // channel. The channel is never connected at the time of the call, so
-  // NotifyProcessLaunchedAndConnected() never has to be invoked here.
+  // NotifyProcessLaunchedAndConnected() never has to be invoked.
   DCHECK(has_legacy_ipc_channel_ && !is_channel_connected_);
 
-  DCHECK(!process.is_current());
   data_.SetProcess(std::move(process));
 }
 
@@ -465,12 +456,11 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
   // early exit watcher so GetTerminationStatus can close the process handle.
   early_exit_watcher_.StopWatching();
 #endif
-
-  if (child_process_.get() || IsProcessLaunched()) {
+  const base::Process& process = data_.GetProcess();
+  if (child_process_.get() || (process.IsValid() && !process.is_current())) {
     ChildProcessTerminationInfo info =
         GetTerminationInfo(true /* known_dead */);
 #if BUILDFLAG(IS_ANDROID)
-    exited_abnormally_ = true;
     // Do not treat clean_exit, ie when child process exited due to quitting
     // its main loop, as a crash.
     if (!info.clean_exit) {
@@ -481,7 +471,6 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
     switch (info.status) {
       case base::TERMINATION_STATUS_PROCESS_CRASHED:
       case base::TERMINATION_STATUS_ABNORMAL_TERMINATION: {
-        exited_abnormally_ = true;
         delegate_->OnProcessCrashed(info.exit_code);
         for (auto& observer : g_browser_child_process_observers.Get())
           observer.BrowserChildProcessCrashed(data_, info);
@@ -494,7 +483,6 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
       case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
       case base::TERMINATION_STATUS_PROCESS_WAS_KILLED: {
-        exited_abnormally_ = true;
         delegate_->OnProcessCrashed(info.exit_code);
         NotifyProcessKilled(data_, info);
         // Report that this child process was killed.
@@ -665,7 +653,6 @@ void BrowserChildProcessHostImpl::OnProcessLaunched() {
   early_exit_watcher_.StartWatchingOnce(process.Handle(), this);
 #endif
 
-  DCHECK(!process.is_current());
   data_.SetProcess(process.Duplicate());
   delegate_->OnProcessLaunched();
 
