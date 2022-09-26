@@ -176,7 +176,6 @@ constexpr char kProductLogoPath[] = "product-logo.png";
 // launched.
 constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
 constexpr char kTestAPIJsMPath[] = "test_api/test_api.m.js";
-constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
 
 // Components
 constexpr char kOobeCustomVarsCssJsM[] =
@@ -315,8 +314,6 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   AddDebuggerResources(source);
   AddTestAPIResources(source);
 
-  source->AddResourcePath(kWebviewSamlInjectedJSPath,
-                          IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS);
   source->AddResourcePath(kKeyboardUtilsJSPath, IDR_KEYBOARD_UTILS_JS);
   source->AddResourcePath(kKeyboardUtilsForInjectionModulePath,
                           IDR_KEYBOARD_UTILS_FOR_INJECTION_M_JS);

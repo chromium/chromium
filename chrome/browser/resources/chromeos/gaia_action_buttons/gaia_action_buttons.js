@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Authenticator} from '../gaia_auth_host/authenticator.m.js';
+import {Authenticator} from '../gaia_auth_host/authenticator.js';
 
 /**
  * @typedef {{

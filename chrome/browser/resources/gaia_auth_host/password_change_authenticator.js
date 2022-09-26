@@ -2,34 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="saml_handler.js">
-// Note: webview_event_manager.js is already included by saml_handler.js.
-
-// clang-format off
-// #import {assert} from 'chrome://resources/js/assert.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
-// #import {$, appendParam} from 'chrome://resources/js/util.m.js';
-
-// #import {SamlHandler} from './saml_handler.m.js';
-// #import {WebviewEventManager} from './webview_event_manager.m.js';
-// clang-format on
-
-
 /**
  * @fileoverview Support password change on with SAML provider.
  */
 
-cr.define('cr.samlPasswordChange', function() {
-  /* #ignore */ 'use strict';
+import {assert} from 'chrome://resources/js/assert.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+import {$, appendParam} from 'chrome://resources/js/util.m.js';
+
+import {SamlHandler} from './saml_handler.js';
+import {WebviewEventManager} from './webview_event_manager.js';
 
   /** @const */
-  const oktaInjectedScriptName = 'oktaInjected';
+  export const oktaInjectedScriptName = 'oktaInjected';
 
   /**
    * "SAML password change extension" which helps detect password change
    *  @type {string}
    */
-  const extensionId = 'mkmjngkgbjeljoblnahkagdlcdeiiped';
+  export const extensionId = 'mkmjngkgbjeljoblnahkagdlcdeiiped';
 
   /**
    * The script to inject into Okta user settings page.
@@ -45,7 +36,7 @@ cr.define('cr.samlPasswordChange', function() {
    *   new_passwords: Array<string>,
    * }}
    */
-  /* #export */ let PasswordChangeEventData;
+  export let PasswordChangeEventData;
 
   /**
    * @param {string} extensionId The ID of the extension to send the message to.
@@ -68,7 +59,7 @@ cr.define('cr.samlPasswordChange', function() {
    * Should match the enum in SAML password change extension
    * @enum {number}
    */
-  const PasswordChangePageProvider = {
+  export const PasswordChangePageProvider = {
     UNKNOWN: 0,
     ADFS: 1,
     AZURE: 2,
@@ -119,7 +110,7 @@ cr.define('cr.samlPasswordChange', function() {
    * @param {URL?} redirectUrl Where the response redirected the browser.
    * @return {boolean} True if we detect that a password change was successful.
    */
-  /* #export */ function detectPasswordChangeSuccess(postUrl, redirectUrl) {
+  export function detectPasswordChangeSuccess(postUrl, redirectUrl) {
     if (!postUrl || !redirectUrl) {
       return false;
     }
@@ -159,7 +150,7 @@ cr.define('cr.samlPasswordChange', function() {
   /**
    * Initializes the authenticator component.
    */
-  /* #export */ class PasswordChangeAuthenticator extends cr.EventTarget {
+  export class PasswordChangeAuthenticator extends EventTarget {
     /**
      * @param {!WebView|string} webview The webview element or its ID to host
      *     IdP web pages.
@@ -216,7 +207,9 @@ cr.define('cr.samlPasswordChange', function() {
       assert(this.webview_);
 
       this.samlHandler_ =
-          new cr.login.SamlHandler(this.webview_, true /* startsOnSamlPage */);
+          new SamlHandler(
+            /** @type {!WebView} */ (this.webview_),
+            true /* startsOnSamlPage */);
       this.webviewEventManager_.addEventListener(
           this.samlHandler_, 'authPageLoaded',
           this.onAuthPageLoaded_.bind(this));
@@ -426,10 +419,3 @@ cr.define('cr.samlPasswordChange', function() {
       }
     }
   }
-
-  // #cr_define_end
-  return {
-    PasswordChangeAuthenticator: PasswordChangeAuthenticator,
-    detectPasswordChangeSuccess: detectPasswordChangeSuccess,
-  };
-});

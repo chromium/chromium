@@ -123,7 +123,7 @@ js_library("inline_login_app") {
   sources = [ "$target_gen_dir/$preprocess_folder/inline_login_app.js" ]
   deps = [
     ":inline_login_browser_proxy",
-    "//chrome/browser/resources/gaia_auth_host:authenticator.m",
+    "//chrome/browser/resources/gaia_auth_host:authenticator",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:i18n_behavior",
@@ -172,7 +172,7 @@ js_library("inline_login_browser_proxy") {
   sources =
       [ "$target_gen_dir/$preprocess_folder/inline_login_browser_proxy.js" ]
   deps = [
-    "//chrome/browser/resources/gaia_auth_host:authenticator.m",
+    "//chrome/browser/resources/gaia_auth_host:authenticator",
     "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]

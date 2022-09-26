@@ -134,9 +134,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
                              test::GetTestFilesRequestFilter());
   }
 
-  static constexpr webui::ResourcePath kResources[] = {
-    {"webview_saml_injected.js", IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  static constexpr webui::ResourcePath kResources[] = {
     {"account_manager_shared_css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
     {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
     // Resources for the server-based edu coexistence flow.
@@ -165,9 +164,9 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"account_manager_welcome_2x.png", IDR_ACCOUNT_MANAGER_WELCOME_2X_PNG},
     {"googleg.svg", IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG},
 #endif
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
   source->AddResourcePaths(kResources);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"accessibleCloseButtonLabel", IDS_SIGNIN_ACCESSIBLE_CLOSE_BUTTON},

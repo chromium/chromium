@@ -101,9 +101,6 @@ PasswordChangeUI::PasswordChangeUI(content::WebUI* web_ui)
       base::make_span(kPasswordChangeResources, kPasswordChangeResourcesSize));
   source->SetDefaultResource(IDR_PASSWORD_CHANGE_PASSWORD_CHANGE_APP_HTML);
 
-  source->AddResourcePath("webview_saml_injected.js",
-                          IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS);
-
   // Add Gaia Authenticator resources
   source->AddResourcePaths(
       base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize));

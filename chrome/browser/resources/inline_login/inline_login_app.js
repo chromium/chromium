@@ -25,7 +25,7 @@ import {getAccountAdditionOptionsFromJSON} from './arc_account_picker/arc_util.j
 import {WelcomePageAppElement} from './welcome_page_app.js';
 // </if>
 
-import {AuthCompletedCredentials, Authenticator, AuthParams} from './gaia_auth_host/authenticator.m.js';
+import {AuthCompletedCredentials, Authenticator, AuthParams} from './gaia_auth_host/authenticator.js';
 import {getTemplate} from './inline_login_app.html.js';
 import {InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
 

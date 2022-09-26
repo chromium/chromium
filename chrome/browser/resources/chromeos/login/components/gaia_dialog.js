@@ -202,8 +202,9 @@ class GaiaDialog extends GaiaDialogBase {
      * @private
      */
     this.clickPrimaryActionButtonForTesting_ = false;
+
     /**
-     * @type {!cr.login.Authenticator|undefined}
+     * @type {!Authenticator|undefined}
      * @private
      */
     this.authenticator_ = undefined;

@@ -7,13 +7,12 @@
  * Provides WebviewEventManager which can register and keep track of listeners
  * on EventTargets and WebRequests, and unregister all listeners later.
  */
-'use strict';
 
 /**
  * Creates a new WebviewEventManager.
  * @constructor
  */
-/* #export */ function WebviewEventManager() {
+export function WebviewEventManager() {
   this.unbindWebviewCleanupFunctions_ = [];
 }
 

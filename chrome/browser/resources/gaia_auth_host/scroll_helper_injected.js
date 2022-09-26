@@ -12,7 +12,7 @@
  *  could be seen if the user would scroll up/down.
  */
 
-/* #export */ const WebviewScrollShadowsHelper = (function() {
+export const WebviewScrollShadowsHelper = (function() {
   function WebviewScrollShadowsHelper() {}
 
   WebviewScrollShadowsHelper.prototype = {
@@ -46,6 +46,6 @@
   return WebviewScrollShadowsHelper;
 })();
 
-const WebviewScrollShadowsHelperConstructor = function() {
+export const WebviewScrollShadowsHelperConstructor = function() {
   return new WebviewScrollShadowsHelper();
 };

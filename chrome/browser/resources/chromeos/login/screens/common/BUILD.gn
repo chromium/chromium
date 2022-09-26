@@ -41,7 +41,10 @@ group("closure_compile") {
 
 js_type_check("closure_compile_local") {
   is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
+  closure_flags = default_closure_args + mojom_js_args + [
+    "js_module_root=" + rebase_path("//chrome/browser/resources/gaia_auth_host/", root_build_dir),
+    "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
+  ]
   deps = [
     ":adb_sideloading",
     ":app_downloading",
@@ -270,6 +273,7 @@ js_library("gesture_navigation") {
 js_library("gaia_signin.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gaia_signin.m.js" ]
   deps = [
+    "../../../../gaia_auth_host:authenticator",
     "../..:display_manager.m",
     "../../components:gaia_dialog.m",
     "../../components:notification_card.m",

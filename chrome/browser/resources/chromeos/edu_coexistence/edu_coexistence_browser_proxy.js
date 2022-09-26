@@ -4,7 +4,7 @@
 
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-import {AuthCompletedCredentials} from '../../gaia_auth_host/authenticator.m.js';
+import {AuthCompletedCredentials} from '../../gaia_auth_host/authenticator.js';
 
 /** TODO(yilkal): Improve the naming of methods in the proxy. */
 

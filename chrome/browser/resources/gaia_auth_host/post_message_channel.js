@@ -7,15 +7,10 @@
  * Provides a HTML5 postMessage channel to the injected JS to talk back
  * to Authenticator.
  */
-'use strict';
 
-// <include src="channel.js">
+import {Channel} from './channel.js';
 
-// clang-format off
-// #import {Channel} from './channel.m.js';
-// clang-format on
-
-/* #export */ const PostMessageChannel = (function() {
+export const PostMessageChannel = (function() {
   /**
    * Allowed origins of the hosting page.
    * @type {Array<string>}
@@ -139,7 +134,7 @@
      * Creates a port and register it in |channels_|.
      * @param {number} channelId
      * @param {string} channelName
-     * @param {DOMWindow=} opt_targetWindow
+     * @param {Object=} opt_targetWindow
      * @param {string=} opt_targetOrigin
      */
     createPort(channelId, channelName, opt_targetWindow, opt_targetOrigin) {
@@ -166,7 +161,7 @@
      * Creates a forwarding porxy port.
      * @param {number} channelId
      * @param {string} channelName
-     * @param {!DOMWindow} targetWindow
+     * @param {!Object} targetWindow
      * @param {!string} targetOrigin
      */
     createProxyPort(channelId, channelName, targetWindow, targetOrigin) {
@@ -297,7 +292,7 @@
   PostMessagePort.prototype = {
     /**
      * Sets the target window and origin.
-     * @param {DOMWindow} targetWindow
+     * @param {Object} targetWindow
      * @param {string} targetOrigin
      */
     setTarget(targetWindow, targetOrigin) {
@@ -347,7 +342,7 @@
 
   /**
    * Initialize webview content window for postMessage channel.
-   * @param {DOMWindow} webViewContentWindow Content window of the webview.
+   * @param {Object} webViewContentWindow Content window of the webview.
    */
   PostMessageChannel.init = function(webViewContentWindow) {
     webViewContentWindow.postMessage({type: CHANNEL_INIT_MESSAGE}, '*');

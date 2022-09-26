@@ -2,12 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {appendParam} from 'chrome://resources/js/util.m.js';
-// clang-format on
-
-cr.define('samlUsernameAutofill', function() {
-  /* #ignore */ 'use strict';
+import {appendParam} from 'chrome://resources/js/util.m.js';
 
   /**
    * Try to autofill email on login page for supported identity providers
@@ -19,7 +14,7 @@ cr.define('samlUsernameAutofill', function() {
    * @return {?string} Modified url which can autofill the username field, or
    *     null.
    */
-  /* #export */ function maybeAutofillUsername(
+  export function maybeAutofillUsername(
       url, urlParameterNameToAutofillUsername, email) {
     if (!urlParameterNameToAutofillUsername ||
         urlParameterNameToAutofillUsername.length === 0) {
@@ -40,8 +35,3 @@ cr.define('samlUsernameAutofill', function() {
     url = appendParam(url, urlParameterNameToAutofillUsername, email);
     return url;
   }
-
-  // #cr_define_end
-  // Public functions:
-  return {maybeAutofillUsername: maybeAutofillUsername};
-});

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {readPasswordAttributes} from 'chrome://webui-test/gaia_auth_host/saml_password_attributes.m.js';
+import {readPasswordAttributes} from 'chrome://webui-test/gaia_auth_host/saml_password_attributes.js';
 
 let xmlTestData;
 let xmlTestDataWithAttributesRemoved;

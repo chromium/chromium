@@ -2,20 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="saml_timestamps.js">
-
-// clang-format off;
-// #import {decodeTimestamp} from './saml_timestamps.m.js';
-// clang-format on
+import {decodeTimestamp} from './saml_timestamps.js';
 
 /**
  * @fileoverview A utility for extracting password information from SAML
  * authorization response. This requires that the SAML IDP administrator
  * has correctly configured their domain to issue these attributes.
  */
-
-cr.define('samlPasswordAttributes', function() {
-  /* #ignore */ 'use strict';
 
   /** @const @private {number} The shortest XML string that could be useful. */
   const MIN_SANE_XML_LENGTH = 100;
@@ -67,7 +60,7 @@ cr.define('samlPasswordAttributes', function() {
    * could be extracted, formatted as strings. Some or all of the strings can
    * be empty if some or all of the attributes could not be extracted.
    */
-  /* #export */ function readPasswordAttributes(xmlStr) {
+  export function readPasswordAttributes(xmlStr) {
     // Don't throw any exception that could cause login to fail - extracting
     // these attributes can fail, but login should not be interrupted.
     try {
@@ -102,7 +95,7 @@ cr.define('samlPasswordAttributes', function() {
 
   /**
    * Extracts a string from the given XML DOM, using the given query selector.
-   * @param {!XMLDocument} xmlDom The XML DOM.
+   * @param {!Object} xmlDom The XML DOM.
    * @param {string} querySelectorStr The query selector to find the string.
    * @return {string} The extracted string (empty if failed to extract).
    */
@@ -113,8 +106,8 @@ cr.define('samlPasswordAttributes', function() {
 
   /**
    * Extracts a timestamp from the given XML DOM, using the given query selector
-   * to find it and using {@code samlTimestamps.decodeTimestamp} to decode it.
-   * @param {!XMLDocument} xmlDom The XML DOM.
+   * to find it and using {@code decodeTimestamp} to decode it.
+   * @param {!Object} xmlDom The XML DOM.
    * @param {string} querySelectorStr The query selector to find the timestamp.
    * @return {string} The timestamp as number of ms since 1970, formatted as a
    * string (or an empty string if the timestamp could not be extracted).
@@ -125,7 +118,7 @@ cr.define('samlPasswordAttributes', function() {
       return '';
     }
 
-    const timestamp = samlTimestamps.decodeTimestamp(valueText);
+    const timestamp = decodeTimestamp(valueText);
     return timestamp ? String(timestamp.valueOf()) : '';
   }
 
@@ -139,7 +132,7 @@ cr.define('samlPasswordAttributes', function() {
    * saml_password_attributes.cc must also be changed.
    * @export @final
    */
-  /* #export */ class PasswordAttributes {
+  export class PasswordAttributes {
     constructor(modifiedTime, expirationTime, passwordChangeUrl) {
       /** @type {string} Password last-modified timestamp. */
       this.modifiedTime = modifiedTime;
@@ -156,10 +149,3 @@ cr.define('samlPasswordAttributes', function() {
 
   /** An immutable and empty PasswordAttributes struct. */
   PasswordAttributes.EMPTY = new PasswordAttributes('', '', '');
-
-  // #cr_define_end
-  return {
-    readPasswordAttributes: readPasswordAttributes,
-    PasswordAttributes: PasswordAttributes,
-  };
-});

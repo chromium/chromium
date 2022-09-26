@@ -74,7 +74,6 @@ js_type_check("closure_compile") {
 js_library("inline_login_test") {
   deps = [
     ":inline_login_test_util",
-    "..:chai_assert",
     "..:test_util",
     "//chrome/browser/resources/inline_login:inline_login_app",
     "//ui/webui/resources/js:assert",
@@ -87,7 +86,6 @@ if (is_chromeos_ash) {
   js_library("inline_login_welcome_page_test") {
     deps = [
       ":inline_login_test_util",
-      "..:chai_assert",
       "..:test_util",
       "//chrome/browser/resources/inline_login:inline_login_app",
       "//ui/webui/resources/js:assert",
@@ -99,7 +97,6 @@ if (is_chromeos_ash) {
   js_library("inline_login_signin_blocked_by_policy_page_test") {
     deps = [
       ":inline_login_test_util",
-      "..:chai_assert",
       "..:test_util",
       "//chrome/browser/resources/inline_login:inline_login_app",
       "//ui/webui/resources/js:assert",
@@ -111,7 +108,6 @@ if (is_chromeos_ash) {
   js_library("arc_account_picker_page_test") {
     deps = [
       ":inline_login_test_util",
-      "..:chai_assert",
       "..:test_util",
       "../chromeos/arc_account_picker:test_util",
       "//chrome/browser/resources/inline_login:inline_login_app",
@@ -126,9 +122,14 @@ js_library("inline_login_test_util") {
   sources = [ "$target_gen_dir/inline_login_test_util.js" ]
   deps = [
     "..:test_browser_proxy",
-    "//chrome/browser/resources/gaia_auth_host:authenticator.m",
+    "//chrome/browser/resources/gaia_auth_host:authenticator",
     "//chrome/browser/resources/inline_login:inline_login_browser_proxy",
     "//ui/webui/resources/js/cr:event_target",
   ]
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/resources/chromeos/arc_account_picker:arc_util",
+    ]
+  }
   extra_deps = [ ":preprocess" ]
 }

@@ -4,7 +4,7 @@
 
 import {PostMessageAPIServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
 
-import {AuthCompletedCredentials, Authenticator, AuthParams} from '../../gaia_auth_host/authenticator.m.js';
+import {AuthCompletedCredentials, Authenticator, AuthParams} from '../../gaia_auth_host/authenticator.js';
 
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 

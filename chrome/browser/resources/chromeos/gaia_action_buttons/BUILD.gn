@@ -53,7 +53,7 @@ js_type_check("closure_compile") {
 
 js_library("gaia_action_buttons") {
   deps = [
-    "//chrome/browser/resources/gaia_auth_host:authenticator.m",
+    "//chrome/browser/resources/gaia_auth_host:authenticator",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list =

@@ -11,7 +11,7 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {WebUIListenerBehavior} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AuthParams} from '../../gaia_auth_host/authenticator.m.js';
+import {AuthParams} from '../../gaia_auth_host/authenticator.js';
 
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 import {EduCoexistenceController, EduCoexistenceParams} from './edu_coexistence_controller.js';

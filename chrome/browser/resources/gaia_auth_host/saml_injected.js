@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Channel} from './channel.js';
+import {WebviewScrollShadowsHelper, WebviewScrollShadowsHelperConstructor} from './scroll_helper_injected.js';
+import {PostMessageChannel} from './post_message_channel.js';
+
 /**
  * @fileoverview
  * Script to be injected into SAML provider pages, serving three main purposes:
@@ -29,7 +33,7 @@ APICallForwarder.prototype = {
 
   /**
    * Initialize the API call forwarder.
-   * @param {!Object} channel Channel to which API calls should be forwarded.
+   * @param {!Channel} channel Channel to which API calls should be forwarded.
    */
   init(channel) {
     this.channel_ = channel;

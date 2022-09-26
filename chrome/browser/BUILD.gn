@@ -7992,7 +7992,6 @@ grit("resources") {
 
   if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
     deps += [
-      "//chrome/browser/resources/gaia_auth_host:modulize",
       "//chrome/browser/resources/inline_login:components",
       "//services/resource_coordinator/public/mojom:mojom_js",
     ]

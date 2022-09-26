@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {decodeTimestamp} from 'chrome://webui-test/gaia_auth_host/saml_timestamps.m.js';
+import {decodeTimestamp} from 'chrome://webui-test/gaia_auth_host/saml_timestamps.js';
 
 const ROUNDTRIP_DATA = [
   '1980-01-01',

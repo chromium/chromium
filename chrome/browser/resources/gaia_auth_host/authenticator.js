@@ -2,19 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="saml_handler.js">
-// Note: webview_event_manager.js is already included by saml_handler.js.
-
-// clang-format off
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js'
-// #import {assert} from 'chrome://resources/js/assert.js';
-// #import {$, appendParam} from 'chrome://resources/js/util.m.js';
-// #import {sendWithPromise, getPropertyDescriptor} from 'chrome://resources/js/cr.m.js';
-
-// #import {SamlHandler, OnHeadersReceivedDetails} from './saml_handler.m.js';
-// #import {WebviewEventManager} from './webview_event_manager.m.js';
-// #import {PasswordAttributes} from './saml_password_attributes.m.js';
-// clang-format on
+import {$, appendParam} from 'chrome://resources/js/util.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+import {PasswordAttributes} from './saml_password_attributes.js';
+import {SamlHandler, OnHeadersReceivedDetails} from './saml_handler.js';
+import {sendWithPromise, getPropertyDescriptor} from 'chrome://resources/js/cr.m.js';
+import {WebviewEventManager} from './webview_event_manager.js';
 
 /**
  * @fileoverview An UI component to authenticate to Chrome. The component hosts
@@ -25,9 +19,6 @@
  * See go/cros-auth-design for details on Google API.
  */
 
-cr.define('cr.login', function() {
-  /* #ignore */ 'use strict';
-
   /**
    * Individual sync trusted vault key.
    * @typedef {{
@@ -35,7 +26,7 @@ cr.define('cr.login', function() {
    *   version: number,
    * }}
    */
-  /* #export */ let SyncTrustedVaultKey;
+  export let SyncTrustedVaultKey;
 
   /**
    * Individual sync trusted recovery method.
@@ -44,7 +35,7 @@ cr.define('cr.login', function() {
    *   type: number,
    * }}
    */
-  /* #export */ let SyncTrustedRecoveryMethod;
+  export let SyncTrustedRecoveryMethod;
 
   /**
    * Sync trusted vault encryption keys optionally passed with 'authCompleted'
@@ -55,7 +46,7 @@ cr.define('cr.login', function() {
    *   trustedRecoveryMethods: Array<SyncTrustedRecoveryMethod>
    * }}
    */
-  /* #export */ let SyncTrustedVaultKeys;
+  export let SyncTrustedVaultKeys;
 
   /**
    * Credentials passed with 'authCompleted' message.
@@ -76,7 +67,7 @@ cr.define('cr.login', function() {
    *   isAvailableInArc: (boolean|undefined),
    * }}
    */
-  /* #export */ let AuthCompletedCredentials;
+  export let AuthCompletedCredentials;
 
   /**
    * Parameters for the authorization flow.
@@ -107,7 +98,7 @@ cr.define('cr.login', function() {
    *   urlParameterToAutofillSAMLUsername: string
    * }}
    */
-  /* #export */ let AuthParams;
+  export let AuthParams;
 
   // TODO(rogerta): should use gaia URL from GaiaUrls::gaia_url() instead
   // of hardcoding the prod URL here.  As is, this does not work with staging
@@ -132,27 +123,34 @@ cr.define('cr.login', function() {
   /**
    * The source URL parameter for the constrained signin flow.
    */
-  /* #export */ const CONSTRAINED_FLOW_SOURCE = 'chrome';
+  export const CONSTRAINED_FLOW_SOURCE = 'chrome';
 
   /**
    * Enum for the authorization mode, must match AuthMode defined in
    * chrome/browser/ui/webui/inline_login_ui.cc.
    * @enum {number}
    */
-  /* #export */ const AuthMode = {DEFAULT: 0, OFFLINE: 1, DESKTOP: 2};
+  export const AuthMode = {
+    DEFAULT: 0,
+    OFFLINE: 1,
+    DESKTOP: 2,
+  };
 
   /**
    * Enum for the authorization type.
    * @enum {number}
    */
-  /* #export */ const AuthFlow = {DEFAULT: 0, SAML: 1};
+  export const AuthFlow = {
+    DEFAULT: 0,
+    SAML: 1,
+  };
 
   /**
    * Supported Authenticator params.
    * @type {!Array<string>}
    * @const
    */
-  /* #export */ const SUPPORTED_PARAMS = [
+  export const SUPPORTED_PARAMS = [
     'gaiaId',        // Obfuscated GAIA ID to skip the email prompt page
                      // during the re-auth flow.
     'gaiaUrl',       // Gaia url to use.
@@ -378,7 +376,7 @@ cr.define('cr.login', function() {
   /**
    * Initializes the authenticator component.
    */
-  /* #export */ class Authenticator extends cr.EventTarget {
+  export class Authenticator extends EventTarget {
     /**
      * @param {!WebView|string} webview The webview element or its ID to host
      *     IdP web pages.
@@ -410,7 +408,7 @@ cr.define('cr.login', function() {
       this.dontResizeNonEmbeddedPages = false;
 
       /**
-       * @type {!cr.login.SamlHandler|undefined}
+       * @type {!SamlHandler|undefined}
        * @private
        */
       this.samlHandler_ = undefined;
@@ -524,7 +522,7 @@ cr.define('cr.login', function() {
       assert(!this.samlHandler_);
 
       this.samlHandler_ =
-          new cr.login.SamlHandler(this.webview_, false /* startsOnSamlPage */);
+          new SamlHandler(this.webview_, false /* startsOnSamlPage */);
       this.webviewEventManager_.addEventListener(
           this.samlHandler_, 'insecureContentBlocked',
           e => this.onInsecureContentBlocked_(e));
@@ -936,7 +934,7 @@ cr.define('cr.login', function() {
           // If the "choose what to sync" checkbox was clicked, then the
           // continue URL will contain a source=3 field.
           assert(header.value !== undefined);
-          const location = decodeURIComponent(header.value);
+          const location = decodeURIComponent(/** @type {string} */ (header.value));
           this.chooseWhatToSync_ = !!location.match(/(\?|&)source=3($|&)/);
         }
       }
@@ -1271,8 +1269,8 @@ cr.define('cr.login', function() {
      * @private
      */
     onChallengeMachineKeyRequired_(e) {
-      cr.sendWithPromise(
-            'samlChallengeMachineKey', e.detail.url, e.detail.challenge)
+      sendWithPromise(
+          'samlChallengeMachineKey', e.detail.url, e.detail.challenge)
           .then(e.detail.callback);
     }
 
@@ -1455,12 +1453,8 @@ cr.define('cr.login', function() {
   // used by the Custom Elements that use the Authenticator to listen
   // for changes.
   Object.defineProperties(Authenticator.prototype, {
-    'authFlow': cr.getPropertyDescriptor('authFlow'),
-    'authDomain': cr.getPropertyDescriptor('authDomain'),
-    'videoEnabled': cr.getPropertyDescriptor('videoEnabled'),
+    'authFlow': getPropertyDescriptor('authFlow'),
+    'authDomain': getPropertyDescriptor('authDomain'),
+    'videoEnabled': getPropertyDescriptor('videoEnabled'),
   });
   // ---------------------  SPECIAL PROPERTIES ----------------------
-
-  // #cr_define_end
-  return {Authenticator: Authenticator};
-});

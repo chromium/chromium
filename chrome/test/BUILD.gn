@@ -1547,7 +1547,6 @@ if (!is_android) {
     # Runtime dependencies
     data_deps = [
       "//chrome:browser_tests_pak",
-      "//chrome/browser/resources/gaia_auth_host:modulize_runtime_data",
       "//chrome/browser/resources/media/mei_preload:component",
       "//chrome/test/data:web_ui_test_mojom_js_module",
       "//components/policy/proto",

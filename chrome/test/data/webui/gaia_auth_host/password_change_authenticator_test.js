@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {detectPasswordChangeSuccess} from 'chrome://webui-test/gaia_auth_host/password_change_authenticator.m.js';
+import {detectPasswordChangeSuccess} from 'chrome://webui-test/gaia_auth_host/password_change_authenticator.js';
 
 const EXAMPLE_ADFS_ENDPOINT = 'https://example.com/adfs/portal/updatepassword/';
 

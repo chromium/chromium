@@ -2,26 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="post_message_channel.js">
-// <include src="webview_event_manager.js">
-// <include src="saml_password_attributes.js">
-// <include src="saml_username_autofill.js">
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
-// clang-format off
-// #import {Channel} from './channel.m.js';
-// #import {PostMessageChannel} from './post_message_channel.m.js';
-// #import {WebviewEventManager} from './webview_event_manager.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js'
-// #import {PasswordAttributes, readPasswordAttributes} from './saml_password_attributes.m.js';
-// #import {maybeAutofillUsername} from './saml_username_autofill.m.js' ;
-// clang-format on
+import {Channel} from './channel.js';
+import {PostMessageChannel} from './post_message_channel.js';
+import {PasswordAttributes, readPasswordAttributes} from './saml_password_attributes.js';
+import {maybeAutofillUsername} from './saml_username_autofill.js';
+import {WebviewEventManager} from './webview_event_manager.js';
 
 /**
  * @fileoverview Saml support for webview based auth.
  */
-
-cr.define('cr.login', function() {
-  /* #ignore */ 'use strict';
 
   /**
    * The lowest version of the credentials passing API supported.
@@ -68,7 +59,7 @@ cr.define('cr.login', function() {
    * The script to inject into webview and its sub frames.
    * @type {string}
    */
-  const injectedJs = 'webview_saml_injected.js';
+  const injectedJs = 'gaia_auth_host/saml_injected.rollup.js';
 
   /**
    * @typedef {{
@@ -98,7 +89,7 @@ cr.define('cr.login', function() {
    * }}
    * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onBeforeRequest#details
    */
-  /* #export */ let OnBeforeRequestDetails;
+  export let OnBeforeRequestDetails;
 
   /**
    * Details of the request.
@@ -109,7 +100,7 @@ cr.define('cr.login', function() {
    * }}
    * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#details
    */
-  /* #export */ let OnHeadersReceivedDetails;
+  export let OnHeadersReceivedDetails;
 
   /**
    * Creates a new URL by striping all query parameters.
@@ -124,7 +115,7 @@ cr.define('cr.login', function() {
    * A handler to provide saml support for the given webview that hosts the
    * auth IdP pages.
    */
-  /* #export */ class SamlHandler extends cr.EventTarget {
+  export class SamlHandler extends EventTarget {
     /**
      * @param {!WebView} webview
      * @param {boolean} startsOnSamlPage - whether initial URL is already SAML
@@ -269,8 +260,7 @@ cr.define('cr.login', function() {
        * any. (Doesn't contain the password itself).
        * @private {!PasswordAttributes}
        */
-      this.passwordAttributes_ =
-          samlPasswordAttributes.PasswordAttributes.EMPTY;
+      this.passwordAttributes_ = PasswordAttributes.EMPTY;
 
       /**
        * User's email.
@@ -462,8 +452,7 @@ cr.define('cr.login', function() {
       this.apiTokenStore_ = {};
       this.confirmToken_ = null;
       this.lastApiPasswordBytes_ = null;
-      this.passwordAttributes_ =
-          samlPasswordAttributes.PasswordAttributes.EMPTY;
+      this.passwordAttributes_ = PasswordAttributes.EMPTY;
       this.x509certificate = null;
 
       this.email = null;
@@ -611,8 +600,7 @@ cr.define('cr.login', function() {
 
       this.setX509certificate_(samlResponse);
 
-      this.passwordAttributes_ =
-          samlPasswordAttributes.readPasswordAttributes(samlResponse);
+      this.passwordAttributes_ = readPasswordAttributes(samlResponse);
     }
 
     /**
@@ -628,7 +616,7 @@ cr.define('cr.login', function() {
       if (!this.isSamlPage_ && !this.pendingIsSamlPage_) {
         return {};
       }
-      const urlToAutofillUsername = samlUsernameAutofill.maybeAutofillUsername(
+      const urlToAutofillUsername = maybeAutofillUsername(
           details.url, this.urlParameterToAutofillSAMLUsername, this.email);
       if (urlToAutofillUsername) {
         return {redirectUrl: urlToAutofillUsername};
@@ -940,7 +928,3 @@ cr.define('cr.login', function() {
       return this.isSamlPage_;
     }
   }
-
-  // #cr_define_end
-  return {SamlHandler: SamlHandler};
-});
