@@ -55,10 +55,10 @@
 <oobe-adaptive-dialog>
   <iron-icon slot="icon" icon="oobe-32:connect-devices">
   </iron-icon>
-  <h1 slot="title">
+  <h1 slot="title" aria-live="polite">
     [[i18nDynamic(locale, 'hidDetectionInvitation')]]
   </h1>
-  <div slot="subtitle">
+  <div slot="subtitle" aria-live="polite">
     [[getPrerequisitesText_(locale, touchscreenDetected_)]]
   </div>
   <div slot="content" class="landscape-header-aligned">
