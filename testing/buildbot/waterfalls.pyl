@@ -5949,7 +5949,6 @@
           'dimension_sets': [
             {
               'cpu': 'arm-64',
-              'pool': 'chromium.updater.mac',
               'os': 'Mac-11',
             }
           ]
@@ -5963,7 +5962,6 @@
           'dimension_sets': [
             {
               'cpu': 'arm-64',
-              'pool': 'chromium.updater.mac',
               'os': 'Mac-11',
             }
           ]
@@ -5980,7 +5978,6 @@
           'dimension_sets': [
             {
               'cpu': 'x86-64',
-              'pool': 'chromium.updater.mac',
               'os': 'Mac-10.13',
             }
           ]
@@ -5994,7 +5991,6 @@
           'dimension_sets': [
             {
               'cpu': 'x86-64',
-              'pool': 'chromium.updater.mac',
               'os': 'Mac-10.13',
             }
           ]
@@ -6008,7 +6004,6 @@
           'dimension_sets': [
             {
               'cpu': 'x86-64',
-              'pool': 'chromium.updater.mac',
               'os': 'Mac-10.14',
             }
           ]
@@ -6022,7 +6017,6 @@
           'dimension_sets': [
             {
               'cpu': 'x86-64',
-              'pool': 'chromium.updater.mac',
               'os': 'Mac-10.14',
             }
           ]
@@ -6036,7 +6030,6 @@
           'dimension_sets': [
             {
               'cpu': 'x86-64',
-              'pool': 'chromium.updater.mac',
               'os': 'Mac-10.15',
             }
           ]
@@ -6050,7 +6043,6 @@
           'dimension_sets': [
             {
               'cpu': 'x86-64',
-              'pool': 'chromium.updater.mac',
               'os': 'Mac-10.15',
             }
           ]
@@ -6064,7 +6056,6 @@
           'dimension_sets': [
             {
               'cpu': 'x86-64',
-              'pool': 'chromium.updater.mac',
               'os': 'Mac-11',
             }
           ]
@@ -6078,7 +6069,6 @@
           'dimension_sets': [
             {
               'cpu': 'x86-64',
-              'pool': 'chromium.updater.mac',
               'os': 'Mac-11',
             }
           ]
