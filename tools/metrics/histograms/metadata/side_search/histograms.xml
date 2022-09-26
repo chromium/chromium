@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.LoadCompletedTime" units="ms"
-    expires_after="2022-09-29">
+    expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.LoadDocumentTime" units="ms"
-    expires_after="2022-09-29">
+    expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -160,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.PageActionIcon.LabelVisibleWhenToggled"
-    enum="SideSearchPageActionLabelVisibility" expires_after="2022-09-29">
+    enum="SideSearchPageActionLabelVisibility" expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.SidePanel.TimeShownOpenedVia{OpenAction}"
-    units="ms" expires_after="2022-09-29">
+    units="ms" expires_after="2023-02-12">
   <owner>tluk@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <summary>
@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.TimeSinceSidePanelAvailableToFirstOpen" units="ms"
-    expires_after="2022-09-29">
+    expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.TimesReturnedBackToSRP" units="navigations"
-    expires_after="2022-09-29">
+    expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
