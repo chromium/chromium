@@ -98,10 +98,6 @@ TreeScope::TreeScope(Document& document,
 
 TreeScope::~TreeScope() = default;
 
-void TreeScope::ResetTreeScope() {
-  selection_ = nullptr;
-}
-
 bool TreeScope::IsInclusiveAncestorTreeScopeOf(const TreeScope& scope) const {
   for (const TreeScope* current = &scope; current;
        current = current->ParentTreeScope()) {

@@ -163,7 +163,6 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
                      V8ObservableArrayCSSStyleSheet::DeleteAlgorithmCallback);
   virtual ~TreeScope();
 
-  void ResetTreeScope();
   void SetDocument(Document& document) { document_ = &document; }
   void SetParentTreeScope(TreeScope&);
 
