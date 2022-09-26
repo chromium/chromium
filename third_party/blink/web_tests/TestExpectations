@@ -7156,3 +7156,4 @@ crbug.com/1166098 [ Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/sn
 crbug.com/1367599 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-redirect-with-same-origin-allow-popups.https.html [ Failure Pass ]
 crbug.com/1367876 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-coop-navigated-opener.https.html [ Failure Pass ]
 crbug.com/1367514 http/tests/images/document-policy-oversized-images-resize.php [ Failure Pass ]
+crbug.com/1367067 [ Linux ] external/wpt/preload/preload-dynamic-csp.html [ Skip ]
