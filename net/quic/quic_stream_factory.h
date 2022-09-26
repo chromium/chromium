@@ -57,8 +57,11 @@ class Value;
 namespace quic {
 class QuicAlarmFactory;
 class QuicClock;
-class QuicRandom;
 }  // namespace quic
+
+namespace quiche {
+class QuicRandom;
+}  // namespace quiche
 
 namespace net {
 
