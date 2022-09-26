@@ -162,7 +162,7 @@
       other {Actions taken with data flagged as confidential (# actions since login). <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chrome/a/?p=chromeos_datacontrols"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>}}
     </message>
     <message name="IDS_MANAGEMENT_REPORT_LOGIN_LOGOUT" desc="Message stating that administrators can see device Login and Logout events.">
-      Device login/logout history, including timestamps and failed attempts
+      Device access actions such as logins (including failed login reasons), logouts, locks, and unlocks
     </message>
     <message name="IDS_MANAGEMENT_REPORT_CRD_SESSIONS" desc="Message stating that administrators can see Chrome Remote Desktop events.">
       Chrome Remote Desktop history, including timestamps, hosts and client session ids
