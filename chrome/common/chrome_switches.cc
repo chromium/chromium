@@ -780,6 +780,11 @@ const char kPrefetchArgumentBrowserBackground[] = "/prefetch:5";
 // See kHideIcons.
 const char kShowIcons[] = "show-icons";
 
+// When rendezvousing with an existing process, used to pass the path of the
+// shortcut that launched the new Chrome process. This is used to record launch
+// metrics.
+const char kSourceShortcut[] = "source-shortcut";
+
 // Runs un-installation steps that were done by chrome first-run.
 const char kUninstall[] = "uninstall";
 

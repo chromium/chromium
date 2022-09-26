@@ -5,6 +5,7 @@
 #include "chrome/browser/win/chrome_process_finder.h"
 
 #include <shellapi.h>
+#include <windows.h>
 #include <string>
 
 #include "base/check.h"
@@ -13,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/base_tracing.h"
@@ -49,20 +51,27 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
     return NOTIFY_FAILED;
   }
 
-  // Send the command line to the remote chrome window.
-  // Format is "START\0<<<current directory>>>\0<<<commandline>>>".
-  std::wstring to_send(L"START\0", 6);  // want the NULL in the string.
   base::FilePath cur_dir;
   if (!base::GetCurrentDirectory(&cur_dir)) {
     TRACE_EVENT_INSTANT(
         "startup", "AttemptToNotifyRunningChrome:GetCurrentDirectory failed");
     return NOTIFY_FAILED;
   }
-  to_send.append(cur_dir.value());
-  to_send.append(L"\0", 1);  // Null separator.
-  to_send.append(
-      base::CommandLine::ForCurrentProcess()->GetCommandLineString());
-  to_send.append(L"\0", 1);  // Null separator.
+  base::CommandLine new_command_line(*base::CommandLine::ForCurrentProcess());
+  // If this process was launched from a shortcut, add the shortcut path to
+  // the command line, so the process we rendezvous with can record the
+  // launch mode correctly.
+  STARTUPINFOW si = {sizeof(si)};
+  ::GetStartupInfoW(&si);
+  if (si.dwFlags & STARTF_TITLEISLINKNAME)
+    new_command_line.AppendSwitchNative(switches::kSourceShortcut, si.lpTitle);
+
+  // Send the command line to the remote chrome window.
+  // Format is "START\0<<<current directory>>>\0<<<commandline>>>".
+  std::wstring to_send = base::StrCat(
+      {base::WStringPiece{L"START\0", 6}, cur_dir.value(),
+       base::WStringPiece{L"\0", 1}, new_command_line.GetCommandLineString(),
+       base::WStringPiece{L"\0", 1}});
 
   // Allow the current running browser window to make itself the foreground
   // window (otherwise it will just flash in the taskbar).
