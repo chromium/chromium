@@ -35,6 +35,11 @@ GFX_EXPORT std::tuple<float, float, float> XYZD50tosRGBLinear(float r,
 // Method exposed for blink::color conversions.
 GFX_EXPORT SkColor4f LabToSkColor4f(float l, float a, float b, float alpha);
 
+GFX_EXPORT SkColor4f SRGBLinearToSkColor4f(float r,
+                                           float g,
+                                           float b,
+                                           float alpha);
+
 }  // namespace gfx
 
 #endif  // UI_GFX_COLOR_CONVERSIONS_H_

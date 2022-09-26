@@ -395,6 +395,8 @@ SkColor4f Color::toSkColor4f() const {
       switch (color_function_space_) {
         case ColorFunctionSpace::kSRGB:
           return SkColor4f{param0_, param1_, param2_, alpha_};
+        case ColorFunctionSpace::kSRGBLinear:
+          return gfx::SRGBLinearToSkColor4f(param0_, param1_, param2_, alpha_);
         default:
           NOTIMPLEMENTED();
           return SkColor4f{0.f, 0.f, 0.f, 0.f};

@@ -145,4 +145,38 @@ TEST(ColorConversions, LabTosRGB) {
   }
 }
 
+TEST(ColorConversions, SRGBLinearToSkColor4f) {
+  // Color conversions obtained from
+  // https://www.nixsensor.com/free-color-converter/
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}},  // white
+      {{0.f, 0.21586050011389923f, 0.f},
+       {0.f, 0.5019607843137255f, 0.f}},  // green
+      {{0.21586050011389923f, 0.f, 0.21586050011389923f},
+       {0.5019607843137255f, 0.f, 0.5019607843137255f}},  // purple
+      {{1.f, 0.5271151257058131f, 0.5972017883637634f},
+       {1.f, 0.7529411764705882f, 0.796078431372549f}},  // pink
+      {{0.37626212299090644f, 0.02315336617811041f, 0.02315336617811041f},
+       {0.6470588235294118f, 0.16470588235294117f,
+        0.16470588235294117f}}};  // brown
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_r, input_g, input_b] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    SkColor4f color = SRGBLinearToSkColor4f(input_r, input_g, input_b, 1.0f);
+    EXPECT_NEAR(color.fR, expected_r, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fG, expected_g, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fB, expected_b, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+  }
+}
 }  // namespace gfx
