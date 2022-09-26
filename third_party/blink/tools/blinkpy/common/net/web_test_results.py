@@ -221,27 +221,18 @@ class WebTestResults:
     def didnt_run_as_expected_results(self):
         return self._filter_tests(lambda r: not r.did_run_as_expected())
 
-    # Returns non flaky failing results
     def failed_unexpected_resultdb(self):
-        results = []
-        prev = None
-        flaky = False
+        result_dict = {}
+        passed_test_id = set()
         for result in self._results:
-            if not prev:
-                prev = result
-            elif result[u'testId'] != prev[u'testId']:
-                if not flaky:
-                    results.append(prev)
-                prev = result
-                flaky = False
-            elif result[u'status'] != prev[u'status']:
-                flaky = True
-        if not flaky:
-            results.append(prev)
-        failed_results = []
-        for result in results:
-            if result[u'status'] == u"FAIL":
-                failed_results.append(result)
+            if result['status'] == 'FAIL':
+                result_dict[result['testId']] = result
+            elif result['status'] == 'PASS':
+                passed_test_id.add(result['testId'])
+        failed_results = [
+            result for result in result_dict.values()
+            if result['testId'] not in passed_test_id
+        ]
         return failed_results
 
     def fail_result_exists_resultdb(self, test):

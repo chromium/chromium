@@ -310,8 +310,8 @@ class WebTestResultsTest(unittest.TestCase):
                         'os': 'Ubuntu-18.04'
                     }
                 },
-                'resultId': '3',
-                'name': 'tests/example/flaky.html/results/3',
+                'resultId': '4',
+                'name': 'tests/example/flaky.html/results/4',
                 'testId':
                 'ninja://:blink_web_tests/example/unexpected_fail.html'
             }, failed_results[0])
