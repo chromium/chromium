@@ -305,6 +305,13 @@ bool IsEligibleForDelay(const Resource& resource,
   if (resource.IsLinkPreload())
     return false;
 
+  // Most LCP elements are provided by the main frame, and delaying subframe's
+  // resources seems not to improve LCP.
+  static const bool main_frame_only =
+      features::kDelayAsyncScriptExecutionMainFrameOnlyParam.Get();
+  if (main_frame_only && !element_document.IsInOutermostMainFrame())
+    return false;
+
   static const base::TimeDelta feature_limit =
       features::kDelayAsyncScriptExecutionFeatureLimitParam.Get();
   if (!feature_limit.is_zero() &&

@@ -232,6 +232,13 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
   if (!IsA<HTMLDocument>(element_document))
     return false;
 
+  // Most LCP elements are provided by the main frame, and delaying subframe's
+  // resources seems not to improve LCP.
+  static const bool main_frame_only =
+      features::kLowPriorityAsyncScriptExecutionMainFrameOnlyParam.Get();
+  if (main_frame_only && !element_document->IsInOutermostMainFrame())
+    return false;
+
   static const base::TimeDelta feature_limit =
       features::kLowPriorityAsyncScriptExecutionFeatureLimitParam.Get();
   if (!feature_limit.is_zero() &&

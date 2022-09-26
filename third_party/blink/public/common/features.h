@@ -670,6 +670,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelayAsyncScriptUrls);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kDelayAsyncScriptAllowList;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kDelayAsyncScriptExecutionMainFrameOnlyParam;
 
 // If enabled, async scripts will be run on a lower priority task queue.
 // See https://crbug.com/1348467.
@@ -685,6 +687,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // kLowPriorityAsyncScriptExecution will be applied only for cross site scripts.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam;
+// kLowPriorityAsyncScriptExecution will be applied only for main frame's
+// scripts.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionMainFrameOnlyParam;
 
 // If enabled, DOMContentLoaded will be fired after all async scripts are
 // executed.
