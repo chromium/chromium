@@ -5,6 +5,7 @@
 #include "services/network/cookie_manager.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
@@ -18,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/spin_wait.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
@@ -83,7 +85,7 @@ class SynchronousCookieManager {
   // Caller must guarantee that |*cookie_service| outlives the
   // SynchronousCookieManager.
   explicit SynchronousCookieManager(mojom::CookieManager* cookie_service)
-      : cookie_service_(cookie_service), callback_counter_(0) {}
+      : cookie_service_(cookie_service) {}
 
   SynchronousCookieManager(const SynchronousCookieManager&) = delete;
   SynchronousCookieManager& operator=(const SynchronousCookieManager&) = delete;
@@ -91,34 +93,19 @@ class SynchronousCookieManager {
   ~SynchronousCookieManager() = default;
 
   std::vector<net::CanonicalCookie> GetAllCookies() {
-    base::RunLoop run_loop;
-    std::vector<net::CanonicalCookie> cookies_out;
-    cookie_service_->GetAllCookies(base::BindLambdaForTesting(
-        [&run_loop,
-         &cookies_out](const std::vector<net::CanonicalCookie>& cookies) {
-          cookies_out = cookies;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return cookies_out;
+    base::test::TestFuture<const std::vector<net::CanonicalCookie>&> future;
+    cookie_service_->GetAllCookies(future.GetCallback());
+    return future.Take();
   }
 
   std::vector<net::CanonicalCookie> GetAllCookiesWithAccessSemantics(
       std::vector<net::CookieAccessSemantics>* access_semantics_list_out) {
-    base::RunLoop run_loop;
-    std::vector<net::CanonicalCookie> cookies_out;
-    cookie_service_->GetAllCookiesWithAccessSemantics(
-        base::BindLambdaForTesting(
-            [&run_loop, &cookies_out, access_semantics_list_out](
-                const std::vector<net::CanonicalCookie>& cookies,
-                const std::vector<net::CookieAccessSemantics>&
-                    access_semantics_list) {
-              cookies_out = cookies;
-              *access_semantics_list_out = access_semantics_list;
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return cookies_out;
+    base::test::TestFuture<const std::vector<net::CanonicalCookie>&,
+                           const std::vector<net::CookieAccessSemantics>&>
+        future;
+    cookie_service_->GetAllCookiesWithAccessSemantics(future.GetCallback());
+    *access_semantics_list_out = std::get<1>(future.Get());
+    return std::get<0>(future.Get());
   }
 
   std::vector<net::CanonicalCookie> GetCookieList(
@@ -126,19 +113,12 @@ class SynchronousCookieManager {
       net::CookieOptions options,
       const net::CookiePartitionKeyCollection&
           cookie_partition_key_collection) {
-    base::RunLoop run_loop;
-    std::vector<net::CanonicalCookie> cookies_out;
+    base::test::TestFuture<const net::CookieAccessResultList&,
+                           const net::CookieAccessResultList&>
+        future;
     cookie_service_->GetCookieList(
-        url, options, cookie_partition_key_collection,
-        base::BindLambdaForTesting(
-            [&run_loop, &cookies_out](
-                const net::CookieAccessResultList& cookies,
-                const net::CookieAccessResultList& excluded_cookies) {
-              cookies_out = net::cookie_util::StripAccessResults(cookies);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return cookies_out;
+        url, options, cookie_partition_key_collection, future.GetCallback());
+    return net::cookie_util::StripAccessResults(std::get<0>(future.Take()));
   }
 
   // TODO(crbug.com/1225444): CookieManager should be able to see which cookies
@@ -147,68 +127,46 @@ class SynchronousCookieManager {
   net::CookieAccessResultList GetExcludedCookieList(
       const GURL& url,
       net::CookieOptions options) {
-    base::RunLoop run_loop;
-    net::CookieAccessResultList cookies_out;
-    cookie_service_->GetCookieList(
-        url, options, net::CookiePartitionKeyCollection::Todo(),
-        base::BindLambdaForTesting(
-            [&run_loop, &cookies_out](
-                const net::CookieAccessResultList& cookies,
-                const net::CookieAccessResultList& excluded_cookies) {
-              cookies_out = excluded_cookies;
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return cookies_out;
+    base::test::TestFuture<const net::CookieAccessResultList&,
+                           const net::CookieAccessResultList&>
+        future;
+    cookie_service_->GetCookieList(url, options,
+                                   net::CookiePartitionKeyCollection::Todo(),
+                                   future.GetCallback());
+    return std::get<1>(future.Take());
   }
 
   bool SetCanonicalCookie(const net::CanonicalCookie& cookie,
                           std::string source_scheme,
                           bool modify_http_only) {
-    base::RunLoop run_loop;
-    net::CookieInclusionStatus result_out(
-        net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
     net::CookieOptions options;
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
     if (modify_http_only)
       options.set_include_httponly();
+    base::test::TestFuture<net::CookieAccessResult> future;
     cookie_service_->SetCanonicalCookie(
         cookie, net::cookie_util::SimulatedCookieSource(cookie, source_scheme),
-        options,
-        base::BindLambdaForTesting(
-            [&run_loop, &result_out](net::CookieAccessResult result) {
-              result_out = result.status;
-              run_loop.Quit();
-            }));
+        options, future.GetCallback());
 
-    run_loop.Run();
-    return result_out.IsInclude();
+    return future.Take().status.IsInclude();
   }
 
   net::CookieAccessResult SetCanonicalCookieWithAccessResult(
       const net::CanonicalCookie& cookie,
       std::string source_scheme,
       bool modify_http_only) {
-    base::RunLoop run_loop;
     net::CookieOptions options;
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
     if (modify_http_only)
       options.set_include_httponly();
-    auto result_out = net::CookieAccessResult(net::CookieInclusionStatus(
-        net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR));
+    base::test::TestFuture<net::CookieAccessResult> future;
     cookie_service_->SetCanonicalCookie(
         cookie, net::cookie_util::SimulatedCookieSource(cookie, source_scheme),
-        options,
-        base::BindLambdaForTesting(
-            [&run_loop, &result_out](net::CookieAccessResult result) {
-              result_out = result;
-              run_loop.Quit();
-            }));
+        options, future.GetCallback());
 
-    run_loop.Run();
-    return result_out;
+    return future.Take();
   }
 
   // TODO(chlily): Clean up these Set*() methods to all use proper source_url.
@@ -216,7 +174,6 @@ class SynchronousCookieManager {
       const net::CanonicalCookie& cookie,
       const GURL& source_url,
       bool modify_http_only) {
-    base::RunLoop run_loop;
     net::CookieOptions options;
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
@@ -224,61 +181,30 @@ class SynchronousCookieManager {
       options.set_include_httponly();
     net::CookieInclusionStatus result_out(
         net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
-    cookie_service_->SetCanonicalCookie(
-        cookie, source_url, options,
-        base::BindLambdaForTesting(
-            [&run_loop, &result_out](net::CookieAccessResult result) {
-              result_out = result.status;
-              run_loop.Quit();
-            }));
+    base::test::TestFuture<net::CookieAccessResult> future;
+    cookie_service_->SetCanonicalCookie(cookie, source_url, options,
+                                        future.GetCallback());
 
-    run_loop.Run();
-    return result_out;
+    return future.Take().status;
   }
 
   bool DeleteCanonicalCookie(const net::CanonicalCookie& cookie) {
-    base::RunLoop run_loop;
-    bool result_out;
-    cookie_service_->DeleteCanonicalCookie(
-        cookie,
-        base::BindLambdaForTesting([&run_loop, &result_out](bool result) {
-          result_out = result;
-          run_loop.Quit();
-        }));
-
-    run_loop.Run();
-    return result_out;
+    base::test::TestFuture<bool> future;
+    cookie_service_->DeleteCanonicalCookie(cookie, future.GetCallback());
+    return future.Get();
   }
 
   uint32_t DeleteCookies(mojom::CookieDeletionFilter filter) {
-    base::RunLoop run_loop;
-    uint32_t result_out = 0u;
-    mojom::CookieDeletionFilterPtr filter_ptr =
-        mojom::CookieDeletionFilter::New(filter);
-
-    cookie_service_->DeleteCookies(
-        std::move(filter_ptr),
-        base::BindLambdaForTesting([&run_loop, &result_out](uint32_t result) {
-          result_out = result;
-          run_loop.Quit();
-        }));
-
-    run_loop.Run();
-    return result_out;
+    base::test::TestFuture<uint32_t> future;
+    cookie_service_->DeleteCookies(mojom::CookieDeletionFilter::New(filter),
+                                   future.GetCallback());
+    return future.Get();
   }
 
   uint32_t DeleteSessionOnlyCookies() {
-    base::RunLoop run_loop;
-    uint32_t result_out = 0u;
-
-    cookie_service_->DeleteSessionOnlyCookies(
-        base::BindLambdaForTesting([&run_loop, &result_out](uint32_t result) {
-          result_out = result;
-          run_loop.Quit();
-        }));
-
-    run_loop.Run();
-    return result_out;
+    base::test::TestFuture<uint32_t> future;
+    cookie_service_->DeleteSessionOnlyCookies(future.GetCallback());
+    return future.Get();
   }
 
   void FlushCookieStore() {
@@ -307,7 +233,7 @@ class SynchronousCookieManager {
   // is purely async.
  private:
   raw_ptr<mojom::CookieManager> cookie_service_;
-  uint32_t callback_counter_;
+  uint32_t callback_counter_ = 0;
 };
 
 class CookieManagerTest : public testing::Test {
@@ -352,9 +278,9 @@ class CookieManagerTest : public testing::Test {
     std::string result = "Cookies in store:\n";
     std::vector<net::CanonicalCookie> cookies =
         service_wrapper()->GetAllCookies();
-    for (int i = 0; i < static_cast<int>(cookies.size()); ++i) {
+    for (const auto& cookie : cookies) {
       result += "\t";
-      result += cookies[i].DebugString();
+      result += cookie.DebugString();
       result += "\n";
     }
     return result;
@@ -2056,8 +1982,9 @@ TEST_F(CookieManagerTest, DeleteDetails_Consumer) {
   };
   mojom::CookieDeletionFilter test_filter;
   test_filter.including_domains = std::vector<std::string>();
-  for (int i = 0; i < static_cast<int>(std::size(filter_domains)); ++i)
-    test_filter.including_domains->push_back(filter_domains[i]);
+  test_filter.including_domains->insert(test_filter.including_domains->end(),
+                                        std::begin(filter_domains),
+                                        std::end(filter_domains));
 
   struct TestCase {
     std::string domain;
@@ -2474,7 +2401,7 @@ TEST_F(CookieManagerTest, DeleteByAll) {
 // Receives and records notifications from the mojom::CookieManager.
 class CookieChangeListener : public mojom::CookieChangeListener {
  public:
-  CookieChangeListener(
+  explicit CookieChangeListener(
       mojo::PendingReceiver<mojom::CookieChangeListener> receiver)
       : run_loop_(nullptr), receiver_(this, std::move(receiver)) {}
 
@@ -2808,7 +2735,7 @@ class FlushableCookieManagerTest : public CookieManagerTest {
 
   void SetUp() override { InitializeCookieService(store_, nullptr); }
 
-  ~FlushableCookieManagerTest() override {}
+  ~FlushableCookieManagerTest() override = default;
 
   net::FlushablePersistentStore* store() { return store_.get(); }
 
@@ -2908,7 +2835,7 @@ TEST_F(FlushableCookieManagerTest, DeletionFilterToInfo) {
 // again.
 class SessionCleanupCookieManagerTest : public CookieManagerTest {
  public:
-  ~SessionCleanupCookieManagerTest() override {}
+  ~SessionCleanupCookieManagerTest() override = default;
 
  protected:
   void SetUp() override {

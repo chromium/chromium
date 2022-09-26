@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -61,16 +62,10 @@ net::FirstPartySetMetadata ComputeFirstPartySetMetadataSync(
     const url::Origin& origin,
     const net::CookieStore* cookie_store,
     const net::IsolationInfo& isolation_info) {
-  base::RunLoop run_loop;
-  net::FirstPartySetMetadata first_party_set_metadata;
+  base::test::TestFuture<net::FirstPartySetMetadata> future;
   RestrictedCookieManager::ComputeFirstPartySetMetadata(
-      origin, cookie_store, isolation_info,
-      base::BindLambdaForTesting([&](net::FirstPartySetMetadata metadata) {
-        first_party_set_metadata = std::move(metadata);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  return first_party_set_metadata;
+      origin, cookie_store, isolation_info, future.GetCallback());
+  return future.Take();
 }
 
 }  // namespace
@@ -168,19 +163,12 @@ class RestrictedCookieManagerSync {
       const url::Origin& top_frame_origin,
       mojom::CookieManagerGetOptionsPtr options,
       bool partitioned_cookies_runtime_feature_enabled) {
-    base::RunLoop run_loop;
-    std::vector<net::CanonicalCookie> result;
+    base::test::TestFuture<const std::vector<net::CookieWithAccessResult>&>
+        future;
     cookie_service_->GetAllForUrl(
         url, site_for_cookies, top_frame_origin, std::move(options),
-        partitioned_cookies_runtime_feature_enabled,
-        base::BindLambdaForTesting(
-            [&run_loop, &result](const std::vector<net::CookieWithAccessResult>&
-                                     backend_result) {
-              result = net::cookie_util::StripAccessResults(backend_result);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return result;
+        partitioned_cookies_runtime_feature_enabled, future.GetCallback());
+    return net::cookie_util::StripAccessResults(future.Take());
   }
 
   bool SetCanonicalCookie(const net::CanonicalCookie& cookie,
@@ -189,20 +177,14 @@ class RestrictedCookieManagerSync {
                           const url::Origin& top_frame_origin,
                           absl::optional<net::CookieInclusionStatus>
                               cookie_inclusion_status = absl::nullopt) {
-    base::RunLoop run_loop;
-    bool result = false;
-    net::CookieInclusionStatus status;
-    if (cookie_inclusion_status.has_value()) {
-      status = cookie_inclusion_status.value();
-    }
-    cookie_service_->SetCanonicalCookie(
-        cookie, url, site_for_cookies, top_frame_origin, status,
-        base::BindLambdaForTesting([&run_loop, &result](bool backend_result) {
-          result = backend_result;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return result;
+    net::CookieInclusionStatus status = cookie_inclusion_status.has_value()
+                                            ? cookie_inclusion_status.value()
+                                            : net::CookieInclusionStatus();
+    base::test::TestFuture<bool> future;
+    cookie_service_->SetCanonicalCookie(cookie, url, site_for_cookies,
+                                        top_frame_origin, status,
+                                        future.GetCallback());
+    return future.Get();
   }
 
   void SetCookieFromString(const GURL& url,
@@ -210,15 +192,11 @@ class RestrictedCookieManagerSync {
                            const url::Origin& top_frame_origin,
                            const std::string& cookie,
                            bool partitioned_cookies_runtime_feature_enabled) {
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool, bool> future;
     cookie_service_->SetCookieFromString(
         url, site_for_cookies, top_frame_origin, cookie,
-        partitioned_cookies_runtime_feature_enabled,
-        base::BindLambdaForTesting(
-            [&run_loop](bool site_for_cookies_ok, bool top_frame_origin_ok) {
-              run_loop.Quit();
-            }));
-    run_loop.Run();
+        partitioned_cookies_runtime_feature_enabled, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
   }
 
   void AddChangeListener(
