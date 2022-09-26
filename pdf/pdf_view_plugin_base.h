@@ -19,7 +19,6 @@
 #include "pdf/accessibility_structs.h"
 #include "pdf/paint_manager.h"
 #include "pdf/pdf_engine.h"
-#include "pdf/pdfium/pdfium_form_filler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -78,11 +77,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   PdfViewPluginBase();
   ~PdfViewPluginBase() override;
 
-  // Creates a new `PDFiumEngine`.
-  virtual std::unique_ptr<PDFiumEngine> CreateEngine(
-      PDFEngine::Client* client,
-      PDFiumFormFiller::ScriptOption script_option) = 0;
-
   virtual const PDFiumEngine* engine() const = 0;
   virtual PDFiumEngine* engine() = 0;
 
@@ -129,11 +123,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // renderer.
   virtual void SetAccessibilityViewportInfo(
       AccessibilityViewportInfo viewport_info) = 0;
-
-  // Prints the pages specified by `page_numbers` using the parameters passed to
-  // `PrintBegin()` Returns a vector of bytes containing the printed output. An
-  // empty returned value indicates failure.
-  std::vector<uint8_t> PrintPages(const std::vector<int>& page_numbers);
 
   // Disables browser commands because of restrictions on how the data is to be
   // used (i.e. can't copy/print). `content_restrictions` should have its bits

@@ -278,12 +278,6 @@ PdfViewWebPlugin::PdfViewWebPlugin(
 
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 
-std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::CreateEngine(
-    PDFEngine::Client* client,
-    PDFiumFormFiller::ScriptOption script_option) {
-  return client_->CreateEngine(client, script_option);
-}
-
 // TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
 const PDFiumEngine* PdfViewWebPlugin::engine() const {
   return engine_.get();
@@ -349,7 +343,7 @@ bool PdfViewWebPlugin::InitializeCommon() {
   full_frame_ = params->full_frame;
   background_color_ = params->background_color;
 
-  engine_ = CreateEngine(this, params->script_option);
+  engine_ = client_->CreateEngine(this, params->script_option);
   DCHECK(engine_);
 
   SendSetSmoothScrolling();
@@ -2171,7 +2165,8 @@ void PdfViewWebPlugin::HandleResetPrintPreviewModeMessage(
 
   // TODO(crbug.com/1237952): Figure out a more consistent way to preserve
   // engine settings across a Print Preview reset.
-  engine_ = CreateEngine(this, PDFiumFormFiller::ScriptOption::kNoJavaScript);
+  engine_ = client_->CreateEngine(
+      this, PDFiumFormFiller::ScriptOption::kNoJavaScript);
   engine_->ZoomUpdated(zoom() * device_scale_);
   engine_->PageOffsetUpdated(available_area().OffsetFromOrigin());
   engine_->PluginSizeUpdated(available_area().size());
@@ -2224,8 +2219,8 @@ void PdfViewWebPlugin::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                                       int32_t result) {
   DCHECK_EQ(result, kSuccess);
   preview_client_ = std::make_unique<PreviewModeClient>(this);
-  preview_engine_ = CreateEngine(preview_client_.get(),
-                                 PDFiumFormFiller::ScriptOption::kNoJavaScript);
+  preview_engine_ = client_->CreateEngine(
+      preview_client_.get(), PDFiumFormFiller::ScriptOption::kNoJavaScript);
   preview_engine_->PluginSizeUpdated({});
   preview_engine_->HandleDocumentLoad(std::move(loader), url_);
 }

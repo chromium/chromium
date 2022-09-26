@@ -378,9 +378,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
  protected:
   // PdfViewPluginBase:
-  std::unique_ptr<PDFiumEngine> CreateEngine(
-      PDFEngine::Client* client,
-      PDFiumFormFiller::ScriptOption script_option) override;
   const PDFiumEngine* engine() const override;
   PDFiumEngine* engine() override;
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
