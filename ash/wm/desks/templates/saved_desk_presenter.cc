@@ -376,8 +376,7 @@ void SavedDeskPresenter::UpdateDesksTemplatesUI() {
     should_show_templates_ui_ =
         !in_tablet_mode && (is_showing_library || has_saved_desks);
 
-    if (DesksBarView* desks_bar_view =
-            const_cast<DesksBarView*>(overview_grid->desks_bar_view())) {
+    if (DesksBarView* desks_bar_view = overview_grid->desks_bar_view()) {
       desks_bar_view->UpdateDesksTemplatesButtonVisibility();
       desks_bar_view->UpdateButtonsForDesksTemplatesGrid();
       overview_grid->UpdateSaveDeskButtons();
@@ -600,9 +599,9 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
     return;
   }
 
-  DesksBarView* desks_bar_view = const_cast<DesksBarView*>(
-      overview_session_->GetGridWithRootWindow(root_window)->desks_bar_view());
-  desks_bar_view->NudgeDeskName(desk_index);
+  overview_session_->GetGridWithRootWindow(root_window)
+      ->desks_bar_view()
+      ->NudgeDeskName(desk_index);
 
   if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
     // Passing nullopt as type since this indicates that we don't want to record

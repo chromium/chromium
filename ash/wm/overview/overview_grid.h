@@ -425,6 +425,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   const views::Widget* desks_widget() const { return desks_widget_.get(); }
 
   const DesksBarView* desks_bar_view() const { return desks_bar_view_; }
+  DesksBarView* desks_bar_view() { return desks_bar_view_; }
 
   const gfx::Rect bounds() const { return bounds_; }
 
