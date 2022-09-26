@@ -9,6 +9,7 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
@@ -334,42 +335,25 @@ using chrome_test_util::WindowWithNumber;
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           ConfirmClearBrowsingDataButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kActivityOverlayViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
+  WaitForActivityOverlayToDisappear();
 }
 
 // Tests that a user in the `ConsentLevel::kSignin` state will be signed out
 // after clearing their browsing history if `kEnableCbdSignOut` feature is
 // enabled.
-// TODO(crbug.com/1363372): Flaky on iOS simulator.
 - (void)testUserSignedInWhenClearingBrowsingData {
-#if TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_DISABLED(
-      @"testUserSignedInWhenClearingBrowsingData is flaky on iPhone");
-#else
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-#endif
 }
 
 // Tests that a user in the `ConsentLevel::kSignin` state will be signed out
 // after clearing their browsing history if `kEnableCbdSignOut` feature is
 // disabled.
-// TODO(crbug.com/1363372): Flaky on iOS simulator.
 - (void)testUserSignedOutWhenClearingBrowsingData {
-#if TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_DISABLED(
-      @"testUserSignedOutWhenClearingBrowsingData is flaky on iPhone");
-#else
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedOut];
-#endif
 }
 
 @end
