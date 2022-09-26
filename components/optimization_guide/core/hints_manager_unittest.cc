@@ -1251,43 +1251,6 @@ TEST_F(HintsManagerTest, CanApplyOptimizationHasPageHintButNoMatchingOptType) {
             optimization_type_decision);
 }
 
-TEST_F(HintsManagerTest,
-       CanApplyOptimizationAndPopulatesPerformanceHintsMetadata) {
-  hints_manager()->RegisterOptimizationTypes({proto::PERFORMANCE_HINTS});
-  proto::Configuration config;
-  proto::Hint* hint = config.add_hints();
-  hint->set_key("somedomain.org");
-  hint->set_key_representation(proto::HOST);
-  hint->set_version("someversion");
-  proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->set_page_pattern("/news/");
-  proto::Optimization* opt = page_hint->add_allowlisted_optimizations();
-  opt->set_optimization_type(proto::PERFORMANCE_HINTS);
-  proto::PerformanceHint* performance_hint =
-      opt->mutable_performance_hints_metadata()->add_performance_hints();
-  performance_hint->set_wildcard_pattern("somedomain.org");
-  performance_hint->set_performance_class(proto::PERFORMANCE_SLOW);
-
-  ProcessHints(config, "1.0.0.0");
-
-  base::RunLoop run_loop;
-  auto navigation_data =
-      CreateTestNavigationData(url_with_hints(), {proto::PERFORMANCE_HINTS});
-  CallOnNavigationStartOrRedirect(navigation_data.get(),
-                                  run_loop.QuitClosure());
-  run_loop.Run();
-
-  OptimizationMetadata optimization_metadata;
-  OptimizationTypeDecision optimization_type_decision =
-      hints_manager()->CanApplyOptimization(navigation_data->navigation_url(),
-                                            proto::PERFORMANCE_HINTS,
-                                            &optimization_metadata);
-  // Make sure performance hints metadata is populated.
-  EXPECT_TRUE(optimization_metadata.performance_hints_metadata().has_value());
-  EXPECT_EQ(OptimizationTypeDecision::kAllowedByHint,
-            optimization_type_decision);
-}
-
 TEST_F(HintsManagerTest, CanApplyOptimizationAndPopulatesPublicImageMetadata) {
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
   proto::Configuration config;

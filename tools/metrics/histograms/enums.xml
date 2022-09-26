@@ -78116,16 +78116,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Source had a hint for the URL"/>
 </enum>
 
-<enum name="PerformanceHintsPerformanceClass">
-<!-- This must be kept in sync with UmaPerformanceClass in
-     //chrome/browser/performance_hints/performance_hints_observer.cc. -->
-
-  <int value="0" label="Performance class unknown"/>
-  <int value="1" label="Performance class slow"/>
-  <int value="2" label="Performance class fast"/>
-  <int value="3" label="Performance class normal"/>
-</enum>
-
 <enum name="PerformanceMeasureParameterType">
   <obsolete>
     Deprecated as of June 2019.

@@ -109,7 +109,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="chrome/browser/image_fetcher/android/java/src"/>
     <classpathentry kind="src" path="chrome/browser/notifications/chime/android/java/src"/>
     <classpathentry kind="src" path="chrome/browser/optimization_guide/android/java/src"/>
-    <classpathentry kind="src" path="chrome/browser/performance_hints/android/java/src"/>
     <classpathentry kind="src" path="chrome/browser/preferences/android/java/src"/>
     <classpathentry kind="src" path="chrome/browser/privacy/java/src"/>
     <classpathentry kind="src" path="chrome/browser/privacy/settings/java/src"/>

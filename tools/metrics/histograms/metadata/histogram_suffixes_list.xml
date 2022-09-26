@@ -7188,21 +7188,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PasswordManager.FillingAssistance"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PerformanceHintsSource" separator=".">
-  <suffix name="FastHostHint" label="From the fast host bloom filter."/>
-  <suffix name="LinkHint" label="From the link hints of the current page."/>
-  <suffix name="PageHint"
-      label="From the OptimizationGuide metadata of the given URL."/>
-  <affected-histogram name="PerformanceHints.Observer.SourceLookupStatus"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PerformanceHintsURLRewritten" separator=".">
-  <suffix name="Rewritten"
-      label="The URL matched one of the rewrite patterns and was extracted
-             before lookups"/>
-  <affected-histogram name="PerformanceHints.Observer.HintForURLResult"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PermissionRequestGesture" separator=".">
   <suffix name="Gesture" label="With user gesture"/>
   <suffix name="NoGesture" label="Without user gesture"/>
