@@ -6114,7 +6114,7 @@
   {
     "name" : "side-panel-improved-clobbering",
     "owners": [ "chrome-cros@google.com", "tluk" ],
-    "expiry_milestone" : 107
+    "expiry_milestone" : 110
   },
   {
     "name" : "side-panel-journeys",
@@ -6129,12 +6129,12 @@
   {
     "name" : "side-search",
     "owners": [ "chrome-cros@google.com", "tluk" ],
-    "expiry_milestone" : 107
+    "expiry_milestone" : 110
   },
   {
     "name" : "side-search-dse-support",
     "owners": [ "chrome-cros@google.com", "tluk" ],
-    "expiry_milestone" : 107
+    "expiry_milestone" : 110
   },
   {
     "name": "signin-intercept-bubble-v2",
