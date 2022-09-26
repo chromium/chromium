@@ -591,7 +591,7 @@ public class ToolbarTablet
     }
 
     @Override
-    void destroy() {
+    public void destroy() {
         super.destroy();
         if (mButtonVisibilityAnimators != null) {
             mButtonVisibilityAnimators.removeAllListeners();

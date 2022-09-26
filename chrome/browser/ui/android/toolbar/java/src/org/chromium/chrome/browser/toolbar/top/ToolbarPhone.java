@@ -332,7 +332,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     @Override
-    void destroy() {
+    public void destroy() {
         cancelAnimations();
         Handler handler = getHandler();
         if (handler != null) {
@@ -542,6 +542,13 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        // In case the call came from the handler after we destroyed the dependencies, skip the work
+        // that could touch the already destroyed objects.
+        if (mDestroyChecker.isDestroyed()) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            return;
+        }
+
         if (!mDisableLocationBarRelayout) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
