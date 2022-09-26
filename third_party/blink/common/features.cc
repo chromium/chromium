@@ -1428,5 +1428,8 @@ const base::Feature kWebRtcMetronome{"WebRtcMetronome",
 const base::Feature kSyncAccessHandleAllSyncSurface{
     "SyncAccessHandleAllSyncSurface", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kFastPathPaintPropertyUpdates{
+    "FastPathPaintPropertyUpdates", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

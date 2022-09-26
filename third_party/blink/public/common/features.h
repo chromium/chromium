@@ -838,6 +838,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebRtcMetronome;
 // If enabled, all of FileSystemAccessSyncAccessHandle methods are synchronous.
 BLINK_COMMON_EXPORT extern const base::Feature kSyncAccessHandleAllSyncSurface;
 
+// If enabled, some paint property updates (e.g., transform changes) will be
+// applied directly instead of using the property tree builder.
+BLINK_COMMON_EXPORT extern const base::Feature kFastPathPaintPropertyUpdates;
+
 }  // namespace features
 }  // namespace blink
 
