@@ -15,13 +15,13 @@ namespace content_settings {
 #if BUILDFLAG(IS_IOS)
 // Feature to enable a better cookie controls ui.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-extern const base::Feature kImprovedCookieControls;
+BASE_DECLARE_FEATURE(kImprovedCookieControls);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables auto dark feature in theme settings.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-extern const base::Feature kDarkenWebsitesCheckboxInThemesSetting;
+BASE_DECLARE_FEATURE(kDarkenWebsitesCheckboxInThemesSetting);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<bool> kDarkenWebsitesCheckboxOptOut;
 #endif
