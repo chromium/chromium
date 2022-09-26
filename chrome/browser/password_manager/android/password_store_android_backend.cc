@@ -21,6 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
@@ -241,8 +242,7 @@ void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
     return;
   }
 
-  if (prefs->GetBoolean(
-          prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
+  if (password_manager_upm_eviction::IsCurrentUserEvicted(prefs)) {
     base::UmaHistogramEnumeration(
         kUPMActiveHistogram,
         UnifiedPasswordManagerActiveStatus::kInactiveUnenrolledDueToErrors);
@@ -326,8 +326,7 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
 }
 
 bool IsUnenrolledFromUPM(const PrefService* prefs) {
-  return prefs->GetBoolean(
-      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+  return password_manager_upm_eviction::IsCurrentUserEvicted(prefs);
 }
 
 bool ShouldRecordUptimeOnApiError(AndroidBackendAPIErrorCode api_error_code) {
@@ -808,29 +807,13 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
     }
     if (password_manager::IsUnrecoverableBackendError(api_error_code)) {
-      if (!prefs_->GetBoolean(
-              prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
+      if (!password_manager_upm_eviction::IsCurrentUserEvicted(prefs_)) {
         if (base::FeatureList::IsEnabled(
                 password_manager::features::kShowUPMErrorNotification)) {
           bridge_->ShowErrorNotification();
         }
-        base::UmaHistogramBoolean(
-            "PasswordManager.UnenrolledFromUPMDueToErrors", true);
-        prefs_->SetBoolean(
-            prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, true);
-        prefs_->SetInteger(
-            prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode,
-            api_error);
-        LOG(ERROR) << "Unenrolled from UPM due to error with code: "
-                   << api_error;
+        password_manager_upm_eviction::EvictCurrentUser(api_error, prefs_);
       }
-
-      // Reset migration prefs so when the user can join the experiment again,
-      // non-syncable data and settings can be migrated to GMS Core.
-      prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
-                         0);
-      prefs_->SetDouble(prefs::kTimeOfLastMigrationAttempt, 0.0);
-      prefs_->SetBoolean(prefs::kSettingsMigratedToUPM, false);
     }
 
     // TODO(crbug.com/1349276): Remove this after analyzing metrics
