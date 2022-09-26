@@ -638,6 +638,9 @@
       'ios-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-simulator-full-configs': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest_reclient',
+      # TODO (crbug.com/1298112): Remove once ios-simulator moves to srcless
+      # orchestrator
+      'ios-simulator-orchestrator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'mac-arm64-on-arm64-rel': 'mac_arm64_release_bot',
       'mac-arm64-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
       'mac-arm64-rel (reclient shadow)': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
