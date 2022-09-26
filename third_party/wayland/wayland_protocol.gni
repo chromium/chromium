@@ -57,6 +57,7 @@ template("wayland_protocol") {
         "--cmd",
         "./" + rebase_path(system_wayland_scanner_path, root_build_dir),
       ]
+      sources += [ system_wayland_scanner_path ]
     } else {
       wayland_scanner_label =
           "//third_party/wayland:wayland_scanner($host_toolchain)"
@@ -67,6 +68,7 @@ template("wayland_protocol") {
         "--cmd",
         "./" + rebase_path(wayland_scanner_path, root_build_dir),
       ]
+      sources += [ wayland_scanner_path ]
     }
   }
 
