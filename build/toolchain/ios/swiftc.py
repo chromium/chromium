@@ -101,6 +101,12 @@ def compile_module(module, sources, settings, extras, tmpdir):
     output_file_map_file.flush()
 
   extra_args = []
+  if settings.file_compilation_dir:
+    extra_args.extend([
+        '-file-compilation-dir',
+        settings.file_compilation_dir,
+    ])
+
   if settings.bridge_header:
     extra_args.extend([
         '-import-objc-header',
@@ -299,6 +305,10 @@ def main(args):
                       action='store',
                       dest='swift_toolchain_path',
                       help='path to the root of the Swift toolchain')
+  parser.add_argument('-file-compilation-dir',
+                      default='',
+                      action='store',
+                      help='compilation directory to embed in the debug info')
   parser.add_argument('-enable-cxx-interop',
                       dest='enable_cxx_interop',
                       action='store_true',
