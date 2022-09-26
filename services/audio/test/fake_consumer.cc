@@ -140,7 +140,7 @@ void FakeConsumer::SaveToFile(const base::FilePath& path) const {
     memcpy(bus->channel(i), recorded_channel_data_[i].data(),
            sizeof(float) * recorded_channel_data_[i].size());
   }
-  writer->Write(std::move(bus));
+  writer->Write(*bus);
 }
 
 }  // namespace audio
