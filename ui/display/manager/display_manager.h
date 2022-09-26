@@ -17,27 +17,24 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/cancelable_callback.h"
 #include "base/check_op.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_observer.h"
+#include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/manager/touch_device_manager.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/unified_desktop_utils.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/cancelable_callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/display/manager/display_configurator.h"
-#include "ui/display/manager/touch_device_manager.h"
-#endif
 
 namespace gfx {
 class Insets;
@@ -59,10 +56,7 @@ class DisplayManagerTestApi;
 // DisplayManager maintains the current display configurations,
 // and notifies observers when configuration changes.
 class DISPLAY_MANAGER_EXPORT DisplayManager
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    : public DisplayConfigurator::SoftwareMirroringController
-#endif
-{
+    : public DisplayConfigurator::SoftwareMirroringController {
  public:
   class DISPLAY_MANAGER_EXPORT Delegate {
    public:
@@ -108,15 +102,11 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   };
 
   explicit DisplayManager(std::unique_ptr<Screen> screen);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
   DisplayManager(const DisplayManager&) = delete;
   DisplayManager& operator=(const DisplayManager&) = delete;
 
   ~DisplayManager() override;
-#else
-  ~DisplayManager();
-#endif
 
   DisplayLayoutStore* layout_store() { return layout_store_.get(); }
 
@@ -139,13 +129,11 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // Returns the display id of the first display in the outupt list.
   int64_t first_display_id() const { return first_display_id_; }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   TouchDeviceManager* touch_device_manager() const {
     return touch_device_manager_.get();
   }
 
   DisplayConfigurator* configurator() { return display_configurator_.get(); }
-#endif
 
   const UnifiedDesktopLayoutMatrix& current_unified_desktop_matrix() const {
     return current_unified_desktop_matrix_;
@@ -446,7 +434,6 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
       ManagedDisplayInfo::ManagedDisplayModeList display_modes = {});
   void ToggleDisplayScaleFactor();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void InitConfigurator(std::unique_ptr<NativeDisplayDelegate> delegate);
   void ForceInitialConfigureWithObservers(
       display::DisplayChangeObserver* display_change_observer,
@@ -466,7 +453,6 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
       absl::optional<ui::TouchscreenDevice> touchdevice);
   void UpdateZoomFactor(int64_t display_id, float zoom_factor);
   bool HasUnassociatedDisplay() const;
-#endif
 
   // Sets/gets default multi display mode.
   void SetDefaultMultiDisplayModeForCurrentDisplays(MultiDisplayMode mode);
@@ -715,7 +701,6 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // OnWillProcessDisplayChanges() and OnDidProcessDisplayChanges().
   int notify_depth_ = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<display::DisplayConfigurator> display_configurator_;
 
   std::unique_ptr<TouchDeviceManager> touch_device_manager_;
@@ -726,7 +711,6 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // Temporary changes may include things like the user trying out different
   // zoom levels before making the final decision.
   base::CancelableOnceClosure on_display_zoom_modify_timeout_;
-#endif
 
   base::WeakPtrFactory<DisplayManager> weak_ptr_factory_{this};
 };
