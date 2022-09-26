@@ -399,6 +399,7 @@ public abstract class ChromeFeatureList {
     public static final String LEAK_DETECTION_UNAUTHENTICATED = "LeakDetectionUnauthenticated";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LIGHTWEIGHT_REACTIONS = "LightweightReactions";
+    public static final String LOCAL_WEB_APPROVALS = "LocalWebApprovals";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MARK_HTTP_AS = "MarkHttpAs";
@@ -617,6 +618,7 @@ public abstract class ChromeFeatureList {
     public static final String WEB_FEED_AWARENESS = "WebFeedAwareness";
     public static final String WEB_FEED_ONBOARDING = "WebFeedOnboarding";
     public static final String WEB_FEED_SORT = "WebFeedSort";
+    public static final String WEB_FILTER_INTERSTITIAL_REFRESH = "WebFilterInterstitialRefresh";
     public static final String WEBNOTES_DYNAMIC_TEMPLATES = "WebNotesDynamicTemplates";
     public static final String WEBNOTES_STYLIZE = "WebNotesStylize";
     public static final String WEB_APK_INSTALL_COMPLETE_NOTIFICATION =

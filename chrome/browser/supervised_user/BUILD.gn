@@ -25,6 +25,10 @@ static_library("test_support") {
     "//chrome/common:constants",
     "//components/prefs",
   ]
+  if (is_android) {
+    sources += [ "android/supervised_user_settings_service_bridge.cc" ]
+    deps += [ ":test_support_jni_headers" ]
+  }
 }
 
 if (is_android) {
@@ -95,5 +99,41 @@ if (is_android) {
 
   generate_jni("jni_headers") {
     sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApproval.java" ]
+  }
+
+  generate_jni("test_support_jni_headers") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/test/SupervisedUserSettingsBridge.java" ]
+  }
+
+  android_library("test_support_java") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/test/SupervisedUserSettingsBridge.java" ]
+    deps = [
+      ":test_support_jni_headers",
+      "//base:jni_java",
+      "//build/android:build_java",
+      "//chrome/android:chrome_java",
+      "//chrome/browser/profiles/android:java",
+      "//content/public/test/android:content_java_test_support",
+    ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  }
+
+  android_library("javatests") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/test/WebsiteParentApprovalTest.java" ]
+    deps = [
+      ":test_support_java",
+      "//base:base_java_test_support",
+      "//chrome/android:chrome_java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/test/android:chrome_java_integration_test_support",
+      "//content/public/test/android:content_java_test_support",
+      "//net/android:net_java_test_support",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/junit:junit",
+    ]
   }
 }

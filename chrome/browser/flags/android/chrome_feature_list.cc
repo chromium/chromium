@@ -23,6 +23,7 @@
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/share/share_features.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/video_tutorials/switches.h"
 #include "chrome/common/chrome_features.h"
@@ -404,6 +405,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &share::kPersistShareHubOnAppSwitch,
     &share::kScreenshotsForAndroidV2,
     &share::kUpcomingSharingFeatures,
+    &supervised_users::kLocalWebApprovals,
+    &supervised_users::kWebFilterInterstitialRefresh,
     &switches::kAllowSyncOffForChildAccounts,
     &switches::kCreateSigninCheckerBeforeSyncConsentFragment,
     &switches::kEnableCbdSignOut,
