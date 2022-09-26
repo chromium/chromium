@@ -693,11 +693,11 @@ void DragWindowFromShelfController::ScaleDownWindowAfterDrag() {
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
 
   (new WindowScaleAnimation(
-       window_, WindowScaleAnimation::WindowScaleType::kScaleDownToShelf,
+       WindowScaleAnimation::WindowScaleType::kScaleDownToShelf,
        base::BindOnce(
            &DragWindowFromShelfController::OnWindowScaledDownAfterDrag,
            weak_ptr_factory_.GetWeakPtr())))
-      ->Start();
+      ->Start(window_);
 }
 
 void DragWindowFromShelfController::OnWindowScaledDownAfterDrag() {
@@ -712,12 +712,12 @@ void DragWindowFromShelfController::OnWindowScaledDownAfterDrag() {
 
 void DragWindowFromShelfController::ScaleUpToRestoreWindowAfterDrag() {
   (new WindowScaleAnimation(
-       window_, WindowScaleAnimation::WindowScaleType::kScaleUpToRestore,
+       WindowScaleAnimation::WindowScaleType::kScaleUpToRestore,
        base::BindOnce(
            &DragWindowFromShelfController::OnWindowRestoredToOrignalBounds,
            weak_ptr_factory_.GetWeakPtr(),
            /*should_end_overview=*/!started_in_overview_)))
-      ->Start();
+      ->Start(window_);
 }
 
 void DragWindowFromShelfController::OnWindowRestoredToOrignalBounds(

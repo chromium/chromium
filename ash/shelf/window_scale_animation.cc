@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -100,8 +101,8 @@ class WindowScaleAnimation::AnimationObserver
  public:
   AnimationObserver(aura::Window* window,
                     WindowScaleAnimation* window_scale_animation)
-      : window_scale_animation_(window_scale_animation) {
-    window_observation_.Observe(window);
+      : window_(window), window_scale_animation_(window_scale_animation) {
+    window_observation_.Observe(window_);
   }
 
   AnimationObserver(const AnimationObserver&) = delete;
@@ -111,6 +112,8 @@ class WindowScaleAnimation::AnimationObserver
     // `OnImplicitAnimationsCompleted()` from being called.
     StopObservingImplicitAnimations();
   }
+
+  aura::Window* window() { return window_; }
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override {
@@ -125,32 +128,33 @@ class WindowScaleAnimation::AnimationObserver
   }
 
  private:
+  // Pointers to the window and the parent scale animation. Guaranteed to
+  // outlive `this`.
+  aura::Window* const window_;
+
   WindowScaleAnimation* const window_scale_animation_;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
 };
 
-WindowScaleAnimation::WindowScaleAnimation(aura::Window* window,
-                                           WindowScaleType scale_type,
+WindowScaleAnimation::WindowScaleAnimation(WindowScaleType scale_type,
                                            base::OnceClosure opt_callback)
-    : window_(window),
-      opt_callback_(std::move(opt_callback)),
-      scale_type_(scale_type) {}
+    : opt_callback_(std::move(opt_callback)), scale_type_(scale_type) {}
 
 WindowScaleAnimation::~WindowScaleAnimation() {
   if (!opt_callback_.is_null())
     std::move(opt_callback_).Run();
 }
 
-void WindowScaleAnimation::Start() {
+void WindowScaleAnimation::Start(aura::Window* window) {
   // In the destructor of `ScopedLayerAnimationSettings`, it will activate all
   // of its observers. What we want is to activate the observer for each
   // transient child window after the for loop is done, otherwise `this` can be
   // early released via `WindowScaleAnimation::DestroyWindowAnimationObserver`.
   // Hence creating this vector outside of the for loop.
   std::vector<std::unique_ptr<ui::ScopedLayerAnimationSettings>> all_settings;
-  for (auto* transient_window : GetTransientTreeIterator(window_)) {
+  for (auto* transient_window : GetTransientTreeIterator(window)) {
     window_animation_observers_.push_back(
         std::make_unique<AnimationObserver>(transient_window, this));
     WindowBackdrop::Get(transient_window)->DisableBackdrop();
@@ -183,19 +187,22 @@ WindowScaleAnimation::EnableScopedFastAnimationForTransientChildForTest() {
 
 void WindowScaleAnimation::DestroyWindowAnimationObserver(
     WindowScaleAnimation::AnimationObserver* animation_observer) {
+  // `animation_observer` will get deleted on the next line.
+  auto* window = animation_observer->window();
+
   base::EraseIf(window_animation_observers_,
-                [animation_observer](const auto& observer) {
-                  return observer.get() == animation_observer;
-                });
+                base::MatchesUniquePtr(animation_observer));
+
   if (window_animation_observers_.empty()) {
     // Do the scale transform for the entire transient tree.
-    OnScaleWindowsOnAnimationsCompleted();
-    // self-destructed when all windows' transform animation is done.
+    OnScaleWindowsOnAnimationsCompleted(window);
+    // self-destructed when all windows' transform animation is done.
     delete this;
   }
 }
 
-void WindowScaleAnimation::OnScaleWindowsOnAnimationsCompleted() {
+void WindowScaleAnimation::OnScaleWindowsOnAnimationsCompleted(
+    aura::Window* window) {
   // Scale-down or scale-up window(s) with the windows' descending order
   // in the transient tree. We need to use this fixed order to ensure the
   // transient child window will be visible after returning back from home
@@ -205,16 +212,19 @@ void WindowScaleAnimation::OnScaleWindowsOnAnimationsCompleted() {
   // details.
   const bool is_scaling_down =
       scale_type_ == WindowScaleAnimation::WindowScaleType::kScaleDownToShelf;
-  for (auto* window : GetTransientTreeIterator(window_)) {
+  for (auto* transient_window : GetTransientTreeIterator(window)) {
+    if (transient_window->is_destroying())
+      continue;
+
     if (is_scaling_down) {
-      // Minimize the dragged window after transform animation iscompleted.
-      window_util::MinimizeAndHideWithoutAnimation({window});
+      // Minimize the dragged window after transform animation is completed.
+      window_util::MinimizeAndHideWithoutAnimation({transient_window});
       // Reset its transform to identity transform and its original backdrop
       // mode.
-      window->layer()->SetTransform(gfx::Transform());
-      window->layer()->SetOpacity(1.f);
+      transient_window->layer()->SetTransform(gfx::Transform());
+      transient_window->layer()->SetOpacity(1.f);
     }
-    WindowBackdrop::Get(window)->RestoreBackdrop();
+    WindowBackdrop::Get(transient_window)->RestoreBackdrop();
   }
 }
 
