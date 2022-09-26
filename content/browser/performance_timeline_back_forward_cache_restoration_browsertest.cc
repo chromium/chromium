@@ -157,8 +157,8 @@ IN_PROC_BROWSER_TEST_F(
   auto result = std::move(GetBackForwardCacheRestorationEntriesByObserver()
                               .ExtractList()
                               .GetList());
-  CheckEntry(std::move(result[0].GetList()), num_of_loops);
-  CheckEntry(std::move(result[1].GetList()), num_of_loops);
+  CheckEntry(std::move(result[0]).TakeList(), num_of_loops);
+  CheckEntry(std::move(result[1]).TakeList(), num_of_loops);
 
   // Size of back forward restoration buffer is smaller than the number of back
   // forward restoration instances expected by 2. Therefore the
