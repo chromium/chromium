@@ -43,8 +43,6 @@ class PublisherHost {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetArcIsRegistered();
 
-  void FlushMojoCallsForTesting();
-
   void ReInitializeCrostiniForTesting(AppServiceProxy* proxy);
 
   void RegisterPublishersForTesting();

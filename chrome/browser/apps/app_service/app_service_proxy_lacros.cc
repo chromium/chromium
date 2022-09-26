@@ -386,10 +386,6 @@ void AppServiceProxyLacros::OpenNativeSettings(const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 
-void AppServiceProxyLacros::FlushMojoCallsForTesting() {
-  crosapi_receiver_.FlushForTesting();
-}
-
 apps::IconLoader* AppServiceProxyLacros::OverrideInnerIconLoaderForTesting(
     apps::IconLoader* icon_loader) {
   apps::IconLoader* old =

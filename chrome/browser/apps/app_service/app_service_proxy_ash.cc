@@ -332,16 +332,6 @@ base::WeakPtr<AppServiceProxyAsh> AppServiceProxyAsh::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void AppServiceProxyAsh::FlushMojoCallsForTesting() {
-  app_service_mojom_impl_->FlushMojoCallsForTesting();
-
-  if (publisher_host_) {
-    publisher_host_->FlushMojoCallsForTesting();
-  }
-
-  receivers_.FlushForTesting();
-}
-
 void AppServiceProxyAsh::ReInitializeCrostiniForTesting() {
   if (publisher_host_) {
     publisher_host_->ReInitializeCrostiniForTesting(this);  // IN-TEST

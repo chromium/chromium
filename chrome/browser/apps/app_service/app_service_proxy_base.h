@@ -273,8 +273,6 @@ class AppServiceProxyBase : public KeyedService,
   // Opens native settings for the app with |app_id|.
   void OpenNativeSettings(const std::string& app_id);
 
-  virtual void FlushMojoCallsForTesting() = 0;
-
   apps::IconLoader* OverrideInnerIconLoaderForTesting(
       apps::IconLoader* icon_loader);
 

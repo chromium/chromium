@@ -42,7 +42,6 @@ class AppServiceProxy : public AppServiceProxyBase {
   void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  gfx::NativeWindow parent_window) override;
-  void FlushMojoCallsForTesting() override;
 
   // Used for setting Run on OS Login modes.
   void SetRunOnOsLoginMode(const std::string& app_id,

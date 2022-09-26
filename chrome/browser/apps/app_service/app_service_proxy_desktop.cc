@@ -58,14 +58,6 @@ void AppServiceProxy::Uninstall(const std::string& app_id,
   }
 }
 
-void AppServiceProxy::FlushMojoCallsForTesting() {
-  app_service_mojom_impl_->FlushMojoCallsForTesting();
-  receivers_.FlushForTesting();
-  web_app::WebAppProvider::GetForTest(profile())
-      ->command_manager()
-      .AwaitAllCommandsCompleteForTesting();
-}
-
 void AppServiceProxy::SetRunOnOsLoginMode(
     const std::string& app_id,
     apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {

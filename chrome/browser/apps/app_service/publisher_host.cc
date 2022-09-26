@@ -48,29 +48,6 @@ void PublisherHost::SetArcIsRegistered() {
   chrome_apps_->ObserveArc();
 }
 
-void PublisherHost::FlushMojoCallsForTesting() {
-  if (built_in_chrome_os_apps_) {
-    built_in_chrome_os_apps_->FlushMojoCallsForTesting();
-  }
-  crostini_apps_->FlushMojoCallsForTesting();
-  chrome_apps_->FlushMojoCallsForTesting();
-  if (extension_apps_) {
-    chrome_apps_->FlushMojoCallsForTesting();
-  }
-  if (plugin_vm_apps_) {
-    plugin_vm_apps_->FlushMojoCallsForTesting();
-  }
-  if (standalone_browser_apps_) {
-    standalone_browser_apps_->FlushMojoCallsForTesting();
-  }
-  if (web_apps_) {
-    web_apps_->FlushMojoCallsForTesting();
-  }
-  if (borealis_apps_) {
-    borealis_apps_->FlushMojoCallsForTesting();
-  }
-}
-
 void PublisherHost::ReInitializeCrostiniForTesting(AppServiceProxy* proxy) {
   DCHECK(proxy);
   crostini_apps_->Initialize();
