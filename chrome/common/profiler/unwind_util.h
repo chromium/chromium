@@ -26,4 +26,7 @@ bool AreUnwindPrerequisitesAvailable();
 
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory();
 
+base::StackSamplingProfiler::UnwindersFactory
+CreateLibunwindstackUnwinderFactory();
+
 #endif  // CHROME_COMMON_PROFILER_UNWIND_UTIL_H_

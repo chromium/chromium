@@ -143,7 +143,7 @@ bool NativeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
 
 UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
                                               uintptr_t stack_top,
-                                              std::vector<Frame>* stack) const {
+                                              std::vector<Frame>* stack) {
   auto regs = CreateFromRegisterContext(thread_context);
   DCHECK(regs);
   unwindstack::ArchEnum arch = regs->Arch();

@@ -50,4 +50,13 @@ public class StackUnwinderModuleProvider {
     public static long getCreateNativeUnwinderFunction() {
         return StackUnwinderModule.getImpl().getCreateNativeUnwinderFunction();
     }
+
+    /**
+     * Returns the pointer to the CreateLibunwindstackUnwinder native function within the module,
+     * encoded as a long. Can be called only if the module is installed.
+     */
+    @CalledByNative
+    public static long getCreateLibunwindstackUnwinderFunction() {
+        return StackUnwinderModule.getImpl().getCreateLibunwindstackUnwinderFunction();
+    }
 }

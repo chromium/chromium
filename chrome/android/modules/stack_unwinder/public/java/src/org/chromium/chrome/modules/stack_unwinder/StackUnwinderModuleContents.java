@@ -23,4 +23,10 @@ public interface StackUnwinderModuleContents {
      * a long.
      */
     long getCreateNativeUnwinderFunction();
+
+    /**
+     * Returns the pointer to the CreateLibunwindstackUnwinder native function within the module,
+     * encoded as a long.
+     */
+    long getCreateLibunwindstackUnwinderFunction();
 }

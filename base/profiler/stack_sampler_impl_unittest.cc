@@ -118,7 +118,7 @@ class TestUnwinder : public Unwinder {
 
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         std::vector<Frame>* stack) const override {
+                         std::vector<Frame>* stack) override {
     auto* bottom = reinterpret_cast<uintptr_t*>(
         RegisterContextStackPointer(thread_context));
     *stack_copy_ =
@@ -141,7 +141,7 @@ class CallRecordingUnwinder : public Unwinder {
 
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         std::vector<Frame>* stack) const override {
+                         std::vector<Frame>* stack) override {
     return UnwindResult::kUnrecognizedFrame;
   }
 
@@ -221,7 +221,7 @@ class FakeTestUnwinder : public Unwinder {
 
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         std::vector<Frame>* stack) const override {
+                         std::vector<Frame>* stack) override {
     CHECK_LT(current_unwind_, results_.size());
     const Result& current_result = results_[current_unwind_];
     ++current_unwind_;

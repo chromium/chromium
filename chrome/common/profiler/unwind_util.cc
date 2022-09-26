@@ -146,6 +146,14 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
   return unwinders;
 }
 
+std::vector<std::unique_ptr<base::Unwinder>> CreateLibunwindstackUnwinders(
+    stack_unwinder::Module* const stack_unwinder_module) {
+  DCHECK_NE(getpid(), gettid());
+  std::vector<std::unique_ptr<base::Unwinder>> unwinders;
+  unwinders.push_back(stack_unwinder_module->CreateLibunwindstackUnwinder());
+  return unwinders;
+}
+
 // Checks whether unwinder assets -- such as call frame information needed for
 // unwinders to work -- are available in the current context. Unwinder assets
 // are only embedded into certain builds of Chrome.
@@ -180,14 +188,33 @@ bool AreUnwindPrerequisitesAvailable() {
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
 }
 
+#if ANDROID_ARM32_UNWINDING_SUPPORTED
+stack_unwinder::Module* GetOrLoadModule() {
+  DCHECK(AreUnwindPrerequisitesAvailable());
+  static base::NoDestructor<std::unique_ptr<stack_unwinder::Module>>
+      stack_unwinder_module(stack_unwinder::Module::Load());
+  return stack_unwinder_module.get()->get();
+}
+#endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
+
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
   if (!AreUnwindPrerequisitesAvailable()) {
     return base::StackSamplingProfiler::UnwindersFactory();
   }
 #if ANDROID_ARM32_UNWINDING_SUPPORTED
-  static base::NoDestructor<std::unique_ptr<stack_unwinder::Module>>
-      stack_unwinder_module(stack_unwinder::Module::Load());
-  return base::BindOnce(CreateCoreUnwinders, stack_unwinder_module->get());
+  return base::BindOnce(CreateCoreUnwinders, GetOrLoadModule());
+#else   // ANDROID_ARM32_UNWINDING_SUPPORTED
+  return base::StackSamplingProfiler::UnwindersFactory();
+#endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
+}
+
+base::StackSamplingProfiler::UnwindersFactory
+CreateLibunwindstackUnwinderFactory() {
+  if (!AreUnwindPrerequisitesAvailable()) {
+    return base::StackSamplingProfiler::UnwindersFactory();
+  }
+#if ANDROID_ARM32_UNWINDING_SUPPORTED
+  return base::BindOnce(CreateLibunwindstackUnwinders, GetOrLoadModule());
 #else   // ANDROID_ARM32_UNWINDING_SUPPORTED
   return base::StackSamplingProfiler::UnwindersFactory();
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED

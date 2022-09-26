@@ -19,6 +19,8 @@ class MemoryRegionsMap;
 using CreateMemoryRegionsMapFunction = std::unique_ptr<MemoryRegionsMap> (*)();
 using CreateNativeUnwinderFunction =
     std::unique_ptr<base::Unwinder> (*)(MemoryRegionsMap*, uintptr_t);
+using CreateLibunwindstackUnwinderFunction =
+    std::unique_ptr<base::Unwinder> (*)();
 
 }  // namespace stack_unwinder
 

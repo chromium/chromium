@@ -40,8 +40,14 @@ std::unique_ptr<Module> Module::Load() {
           Java_StackUnwinderModuleProvider_getCreateNativeUnwinderFunction(
               env));
 
-  return base::WrapUnique(
-      new Module(create_memory_regions_map, create_native_unwinder));
+  CreateLibunwindstackUnwinderFunction create_libunwindstack_unwinder =
+      reinterpret_cast<CreateLibunwindstackUnwinderFunction>(
+          Java_StackUnwinderModuleProvider_getCreateLibunwindstackUnwinderFunction(
+              env));
+
+  return base::WrapUnique(new Module(create_memory_regions_map,
+                                     create_native_unwinder,
+                                     create_libunwindstack_unwinder));
 }
 
 std::unique_ptr<MemoryRegionsMap> Module::CreateMemoryRegionsMap() {
@@ -55,12 +61,20 @@ std::unique_ptr<base::Unwinder> Module::CreateNativeUnwinder(
                                  exclude_module_with_base_address);
 }
 
-Module::Module(CreateMemoryRegionsMapFunction create_memory_regions_map,
-               CreateNativeUnwinderFunction create_native_unwinder)
+std::unique_ptr<base::Unwinder> Module::CreateLibunwindstackUnwinder() {
+  return create_libunwindstack_unwinder_();
+}
+
+Module::Module(
+    CreateMemoryRegionsMapFunction create_memory_regions_map,
+    CreateNativeUnwinderFunction create_native_unwinder,
+    CreateLibunwindstackUnwinderFunction create_libunwindstack_unwinder)
     : create_memory_regions_map_(create_memory_regions_map),
-      create_native_unwinder_(create_native_unwinder) {
+      create_native_unwinder_(create_native_unwinder),
+      create_libunwindstack_unwinder_(create_libunwindstack_unwinder) {
   DCHECK(create_memory_regions_map);
   DCHECK(create_native_unwinder);
+  DCHECK(create_libunwindstack_unwinder);
 }
 
 }  // namespace stack_unwinder

@@ -38,12 +38,21 @@ class Module {
       MemoryRegionsMap* memory_regions_map,
       uintptr_t exclude_module_with_base_address);
 
+  // Creates an unwinder that will use libunwindstack::Unwinder exclusively, it
+  // does not do partial unwinds instead either succeeding or failing the whole
+  // stack. Should generally be used by itself rather then as part of a list of
+  // base::Unwinders. Internally it manages its own MemoryRegionsMap and thus
+  // doesn't take them in the constructor.
+  std::unique_ptr<base::Unwinder> CreateLibunwindstackUnwinder();
+
  private:
   Module(CreateMemoryRegionsMapFunction create_memory_regions_map,
-         CreateNativeUnwinderFunction create_native_unwinder);
+         CreateNativeUnwinderFunction create_native_unwinder,
+         CreateLibunwindstackUnwinderFunction create_libunwindstack_unwinder);
 
   const CreateMemoryRegionsMapFunction create_memory_regions_map_;
   const CreateNativeUnwinderFunction create_native_unwinder_;
+  const CreateLibunwindstackUnwinderFunction create_libunwindstack_unwinder_;
 };
 
 }  // namespace stack_unwinder

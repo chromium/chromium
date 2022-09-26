@@ -30,9 +30,19 @@ public class StackUnwinderModuleContentsImpl implements StackUnwinderModuleConte
         return StackUnwinderModuleContentsImplJni.get().getCreateNativeUnwinderFunction();
     }
 
+    /**
+     * Returns the pointer to the CreateLibunwindstackUnwinder native function within the module,
+     * encoded as a long.
+     */
+    @Override
+    public long getCreateLibunwindstackUnwinderFunction() {
+        return StackUnwinderModuleContentsImplJni.get().getCreateLibunwindstackUnwinderFunction();
+    }
+
     @NativeMethods
     interface Natives {
         long getCreateMemoryRegionsMapFunction();
         long getCreateNativeUnwinderFunction();
+        long getCreateLibunwindstackUnwinderFunction();
     }
 }

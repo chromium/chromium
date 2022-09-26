@@ -2921,6 +2921,8 @@ if (is_android) {
       "//chrome/android/modules/stack_unwinder/internal:*",
     ]
     sources = [
+      "profiler/libunwindstack_unwinder_android.cc",
+      "profiler/libunwindstack_unwinder_android.h",
       "profiler/native_unwinder_android.cc",
       "profiler/native_unwinder_android.h",
     ]
@@ -3654,7 +3656,10 @@ test("base_unittests") {
     }
     if (!exclude_unwind_tables &&
         (current_cpu == "arm" || current_cpu == "arm64")) {
-      sources += [ "profiler/native_unwinder_android_unittest.cc" ]
+      sources += [
+        "profiler/libunwindstack_unwinder_android_unittest.cc",
+        "profiler/native_unwinder_android_unittest.cc",
+      ]
       deps += [
         ":base_profiler_test_support_java",
         ":base_profiler_test_support_jni_headers",

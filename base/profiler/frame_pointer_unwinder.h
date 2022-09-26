@@ -36,7 +36,7 @@ API_AVAILABLE(ios(12))
   bool CanUnwindFrom(const Frame& current_frame) const override;
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         std::vector<Frame>* stack) const override;
+                         std::vector<Frame>* stack) override;
 };
 
 }  // namespace base

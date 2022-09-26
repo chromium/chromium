@@ -22,8 +22,8 @@ bool NativeUnwinderWin::CanUnwindFrom(const Frame& current_frame) const {
 // returns false.
 UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
                                           uintptr_t stack_top,
-                                          std::vector<Frame>* stack) const {
-  // We expect the frame correponding to the |thread_context| register state to
+                                          std::vector<Frame>* stack) {
+  // We expect the frame corresponding to the |thread_context| register state to
   // exist within |stack|.
   DCHECK_GT(stack->size(), 0u);
 

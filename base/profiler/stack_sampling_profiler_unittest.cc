@@ -483,7 +483,7 @@ class TestAuxUnwinder : public Unwinder {
 
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         std::vector<Frame>* stack) const override {
+                         std::vector<Frame>* stack) override {
     stack->push_back(frame_to_report_);
     return UnwindResult::kAborted;
   }

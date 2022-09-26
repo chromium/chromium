@@ -6,6 +6,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/profiler/libunwindstack_unwinder_android.h"
 #include "base/profiler/native_unwinder_android.h"
 #include "chrome/android/features/stack_unwinder/public/function_types.h"
 #include "chrome/android/features/stack_unwinder/public/memory_regions_map.h"
@@ -57,6 +58,16 @@ static_assert(std::is_same<stack_unwinder::CreateNativeUnwinderFunction,
               "CreateNativeUnwinderFunction typedef must match the declared "
               "function type");
 
+std::unique_ptr<base::Unwinder> CreateLibunwindstackUnwinder() {
+  return std::make_unique<base::LibunwindstackUnwinderAndroid>();
+}
+
+static_assert(
+    std::is_same<stack_unwinder::CreateLibunwindstackUnwinderFunction,
+                 decltype(&CreateLibunwindstackUnwinder)>::value,
+    "CreateLibunwindstackUnwinderFunction typedef must match the declared "
+    "function type");
+
 static jlong
 JNI_StackUnwinderModuleContentsImpl_GetCreateMemoryRegionsMapFunction(
     JNIEnv* env) {
@@ -67,4 +78,10 @@ static jlong
 JNI_StackUnwinderModuleContentsImpl_GetCreateNativeUnwinderFunction(
     JNIEnv* env) {
   return reinterpret_cast<jlong>(&CreateNativeUnwinder);
+}
+
+static jlong
+JNI_StackUnwinderModuleContentsImpl_GetCreateLibunwindstackUnwinderFunction(
+    JNIEnv* env) {
+  return reinterpret_cast<jlong>(&CreateLibunwindstackUnwinder);
 }

@@ -27,7 +27,7 @@ bool ChromeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
 
 UnwindResult ChromeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
                                               uintptr_t stack_top,
-                                              std::vector<Frame>* stack) const {
+                                              std::vector<Frame>* stack) {
   DCHECK(CanUnwindFrom(stack->back()));
   do {
     const ModuleCache::Module* module = stack->back().module;

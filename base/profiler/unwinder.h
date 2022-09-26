@@ -75,7 +75,7 @@ class BASE_EXPORT Unwinder {
   // is greater than the previous value and less than |stack_top|.
   virtual UnwindResult TryUnwind(RegisterContext* thread_context,
                                  uintptr_t stack_top,
-                                 std::vector<Frame>* stack) const = 0;
+                                 std::vector<Frame>* stack) = 0;
 
   Unwinder(const Unwinder&) = delete;
   Unwinder& operator=(const Unwinder&) = delete;

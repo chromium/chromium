@@ -17,7 +17,7 @@ class COMPONENT_EXPORT(TRACING_CPP) UnwinderArm64 : public base::Unwinder {
 
   base::UnwindResult TryUnwind(base::RegisterContext* thread_context,
                                uintptr_t stack_top,
-                               std::vector<base::Frame>* stack) const override;
+                               std::vector<base::Frame>* stack) override;
 };
 
 }  // namespace tracing
