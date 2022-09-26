@@ -75875,6 +75875,11 @@ Called by update_net_trust_anchors.py.-->
       label="Translate button in target language selection view clicked"/>
 </enum>
 
+<enum name="PartialTranslateTranslationStatus">
+  <int value="0" label="Partial Translate success"/>
+  <int value="1" label="Partial Translate error"/>
+</enum>
+
 <enum name="PartnerBookmark.FaviconFetchResult">
   <int value="0" label="SUCCESS">
     Success - favicon found in local cache or fetched from server.
