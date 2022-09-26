@@ -16,7 +16,7 @@ the differentiation can be done programmatically.
 MAGIC_SUBSTITUTION_PREFIX = '$$MAGIC_SUBSTITUTION_'
 
 
-def ChromeOSTelemetryRemote(test_config, _=None, __=None):
+def ChromeOSTelemetryRemote(test_config, _, tester_config):
   """Substitutes the correct CrOS remote Telemetry arguments.
 
   VMs use a hard-coded remote address and port, while physical hardware use
@@ -25,7 +25,13 @@ def ChromeOSTelemetryRemote(test_config, _=None, __=None):
   Args:
     test_config: A dict containing a configuration for a specific test on a
         specific builder.
+    tester_config: A dict containing the configuration for the builder
+        that |test_config| is for.
   """
+  if _IsSkylabBot(tester_config):
+    # Skylab bots will automatically add the --remote argument with the correct
+    # hostname.
+    return []
   if _GetChromeOSBoardName(test_config) == 'amd64-generic':
     return [
         '--remote=127.0.0.1',
@@ -38,9 +44,12 @@ def ChromeOSTelemetryRemote(test_config, _=None, __=None):
   ]
 
 
-def ChromeOSGtestFilterFile(test_config, _=None, __=None):
+def ChromeOSGtestFilterFile(test_config, _, tester_config):
   """Substitutes the correct CrOS filter file for gtests."""
-  board = _GetChromeOSBoardName(test_config)
+  if _IsSkylabBot(tester_config):
+    board = test_config['cros_board']
+  else:
+    board = _GetChromeOSBoardName(test_config)
   test_name = test_config['name']
   filter_file = 'chromeos.%s.%s.filter' % (board, test_name)
   return [
@@ -76,7 +85,13 @@ def _GetChromeOSBoardName(test_config):
   return dimensions[0].get('device_type', 'amd64-generic')
 
 
-def GPUExpectedDeviceId(test_config, _=None, __=None):
+def _IsSkylabBot(tester_config):
+  """Helper function to determine if a bot is a Skylab ChromeOS bot."""
+  return (tester_config.get('browser_config') == 'cros-chrome'
+          and not tester_config.get('use_swarming', True))
+
+
+def GPUExpectedDeviceId(test_config, _, tester_config):
   """Substitutes the correct expected GPU(s) for certain GPU tests.
 
   Most configurations only need one expected GPU, but heterogeneous pools (e.g.
@@ -85,9 +100,11 @@ def GPUExpectedDeviceId(test_config, _=None, __=None):
   Args:
     test_config: A dict containing a configuration for a specific test on a
         specific builder.
+    tester_config: A dict containing the configuration for the builder
+        that |test_config| is for.
   """
   dimensions = test_config.get('swarming', {}).get('dimension_sets', [])
-  assert dimensions
+  assert dimensions or _IsSkylabBot(tester_config)
   gpus = []
   for d in dimensions:
     # Split up multiple GPU/driver combinations if the swarming OR operator is

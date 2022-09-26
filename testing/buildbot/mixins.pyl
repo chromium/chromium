@@ -348,6 +348,11 @@
       },
     },
   },
+  'chromeos-kevin-skylab': {
+    'cros_board': 'kevin',
+    'cros_img': 'kevin-public/R105-14988.0.0',
+    'bucket': 'chromiumos-image-archive',
+  },
   'chromeos-octopus': {
     'swarming': {
       'dimensions': {
