@@ -76,7 +76,6 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_CUSTOMIZE_AVATAR_BUTTON_LABEL},
       {"profileCustomizationAvatarSelectionTitle",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_TEXT},
-      {"profileCustomizationAvatarSelectionConfirmButtonLabel", IDS_OK},
       {"profileCustomizationAvatarSelectionBackButtonLabel",
        IDS_PROFILE_CUSTOMIZATION_AVATAR_SELECTION_BACK_BUTTON_LABEL},
 
