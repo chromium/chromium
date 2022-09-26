@@ -71,7 +71,6 @@ source_set("sync") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/invalidation",
     "//ios/chrome/browser/passwords:store_factory",
-    "//ios/chrome/browser/policy",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",

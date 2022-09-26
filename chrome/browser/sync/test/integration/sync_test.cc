@@ -705,11 +705,6 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
                                                    password_, signin_type);
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
   InitializeConfigurationRefresher(index);
-
-  // Since the SyncService waits for all policies to load before launching the
-  // sync engine, this must be called to avoid actually waiting and potentially
-  // causing a timeout.
-  GetSyncService(index)->TriggerPoliciesLoadedForTest();
 }
 
 void SyncTest::DisableNotificationsForClient(int index) {

@@ -175,17 +175,13 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
   // shouldn't be instantiated.
   DCHECK(IsSyncAllowedByFlag());
 
-  bool should_wait_for_policies =
-      base::FeatureList::IsEnabled(kSyncRequiresPoliciesLoaded);
-
   startup_controller_ = std::make_unique<StartupController>(
       base::BindRepeating(&SyncServiceImpl::GetPreferredDataTypes,
                           base::Unretained(this)),
       base::BindRepeating(&SyncServiceImpl::IsEngineAllowedToRun,
                           base::Unretained(this)),
       base::BindRepeating(&SyncServiceImpl::StartUpSlowEngineComponents,
-                          base::Unretained(this)),
-      should_wait_for_policies ? init_params.policy_service.get() : nullptr);
+                          base::Unretained(this)));
 
   sync_stopped_reporter_ = std::make_unique<SyncStoppedReporter>(
       sync_service_url_, MakeUserAgentForSync(channel_), url_loader_factory_,
@@ -272,7 +268,6 @@ void SyncServiceImpl::Initialize() {
 }
 
 void SyncServiceImpl::StartSyncingWithServer() {
-  DCHECK(startup_controller_->ArePoliciesReady());
   if (engine_)
     engine_->StartSyncingWithServer();
   if (IsLocalSyncEnabled()) {
@@ -304,13 +299,6 @@ void SyncServiceImpl::GetThrottledDataTypesForTest(
   }
 
   engine_->GetThrottledDataTypesForTest(std::move(cb));
-}
-
-void SyncServiceImpl::TriggerPoliciesLoadedForTest() {
-  if (!startup_controller_->ArePoliciesReady()) {
-    startup_controller_->OnFirstPoliciesLoaded(
-        policy::PolicyDomain::POLICY_DOMAIN_CHROME);
-  }
 }
 
 bool SyncServiceImpl::IsDataTypeControllerRunningForTest(ModelType type) const {

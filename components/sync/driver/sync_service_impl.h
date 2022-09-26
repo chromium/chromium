@@ -18,7 +18,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/policy/core/common/policy_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_prefs.h"
@@ -93,7 +92,6 @@ class SyncServiceImpl : public SyncService,
         nullptr;
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
-    raw_ptr<policy::PolicyService> policy_service = nullptr;
     bool is_regular_profile_for_uma = false;
   };
 
@@ -232,10 +230,6 @@ class SyncServiceImpl : public SyncService,
 
   void GetThrottledDataTypesForTest(
       base::OnceCallback<void(ModelTypeSet)> cb) const;
-
-  // Simulates that all policies just got loaded. This does nothing if the
-  // policies were already loaded.
-  void TriggerPoliciesLoadedForTest();
 
   bool IsDataTypeControllerRunningForTest(ModelType type) const;
 

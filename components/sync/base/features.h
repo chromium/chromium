@@ -77,13 +77,6 @@ inline constexpr base::Feature kSyncAutofillWalletUsageData{
 inline constexpr base::Feature kSyncExtensionTypesThrottling{
     "SyncExtensionTypesThrottling", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Sync requires policies to be loaded before starting.
-inline constexpr base::Feature kSyncRequiresPoliciesLoaded{
-    "SyncRequiresPoliciesLoaded", base::FEATURE_DISABLED_BY_DEFAULT};
-// Max time to delay the sync startup while waiting for policies to load.
-inline constexpr base::FeatureParam<base::TimeDelta> kSyncPolicyLoadTimeout{
-    &kSyncRequiresPoliciesLoaded, "SyncPolicyLoadTimeout", base::Seconds(10)};
-
 inline constexpr base::Feature kSyncResetPollIntervalOnStart{
     "SyncResetPollIntervalOnStart", base::FEATURE_DISABLED_BY_DEFAULT};
 

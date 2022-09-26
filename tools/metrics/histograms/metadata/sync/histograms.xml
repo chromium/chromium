@@ -1148,6 +1148,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.Startup.PolicyLoadStartupDelay" units="ms"
     expires_after="2022-10-17">
+  <obsolete>
+    Expired in M108.
+  </obsolete>
   <owner>ydago@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1162,6 +1165,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.Startup.PolicyLoadTimeout2" enum="BooleanTimedOut"
     expires_after="2022-10-17">
+  <obsolete>
+    Expired in M108.
+  </obsolete>
   <owner>ydago@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
