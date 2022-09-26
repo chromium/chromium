@@ -77,10 +77,6 @@ class CSSDefaultStyleSheets final
     return default_media_controls_style_.Get();
   }
 
-  StyleSheetContents* EnsureMobileViewportStyleSheet();
-  StyleSheetContents* EnsureTelevisionViewportStyleSheet();
-  StyleSheetContents* EnsureXHTMLMobileProfileStyleSheet();
-
   StyleSheetContents* DefaultStyleSheet() { return default_style_sheet_.Get(); }
   StyleSheetContents* QuirksStyleSheet() { return quirks_style_sheet_.Get(); }
   StyleSheetContents* PopupStyleSheet() { return popup_style_sheet_.Get(); }
@@ -145,9 +141,6 @@ class CSSDefaultStyleSheets final
   Member<RuleSet> default_media_controls_style_;
 
   Member<StyleSheetContents> default_style_sheet_;
-  Member<StyleSheetContents> mobile_viewport_style_sheet_;
-  Member<StyleSheetContents> television_viewport_style_sheet_;
-  Member<StyleSheetContents> xhtml_mobile_profile_style_sheet_;
   Member<StyleSheetContents> quirks_style_sheet_;
   Member<StyleSheetContents> svg_style_sheet_;
   Member<StyleSheetContents> mathml_style_sheet_;

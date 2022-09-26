@@ -149,9 +149,6 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
 
 void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   // Clear the optional style sheets.
-  mobile_viewport_style_sheet_.Clear();
-  television_viewport_style_sheet_.Clear();
-  xhtml_mobile_profile_style_sheet_.Clear();
   svg_style_sheet_.Clear();
   mathml_style_sheet_.Clear();
   media_controls_style_sheet_.Clear();
@@ -199,32 +196,6 @@ RuleSet* CSSDefaultStyleSheets::DefaultViewSourceStyle() {
     default_view_source_style_->AddRulesFromSheet(stylesheet, ScreenEval());
   }
   return default_view_source_style_;
-}
-
-StyleSheetContents*
-CSSDefaultStyleSheets::EnsureXHTMLMobileProfileStyleSheet() {
-  if (!xhtml_mobile_profile_style_sheet_) {
-    xhtml_mobile_profile_style_sheet_ =
-        ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_XHTMLMP_CSS));
-  }
-  return xhtml_mobile_profile_style_sheet_;
-}
-
-StyleSheetContents* CSSDefaultStyleSheets::EnsureMobileViewportStyleSheet() {
-  if (!mobile_viewport_style_sheet_) {
-    mobile_viewport_style_sheet_ = ParseUASheet(
-        UncompressResourceAsASCIIString(IDR_UASTYLE_VIEWPORT_ANDROID_CSS));
-  }
-  return mobile_viewport_style_sheet_;
-}
-
-StyleSheetContents*
-CSSDefaultStyleSheets::EnsureTelevisionViewportStyleSheet() {
-  if (!television_viewport_style_sheet_) {
-    television_viewport_style_sheet_ = ParseUASheet(
-        UncompressResourceAsASCIIString(IDR_UASTYLE_VIEWPORT_TELEVISION_CSS));
-  }
-  return television_viewport_style_sheet_;
 }
 
 static void AddTextTrackCSSProperties(StringBuilder* builder,
@@ -451,9 +422,6 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(default_media_controls_style_);
   visitor->Trace(default_style_sheet_);
   visitor->Trace(default_pseudo_element_style_);
-  visitor->Trace(mobile_viewport_style_sheet_);
-  visitor->Trace(television_viewport_style_sheet_);
-  visitor->Trace(xhtml_mobile_profile_style_sheet_);
   visitor->Trace(quirks_style_sheet_);
   visitor->Trace(svg_style_sheet_);
   visitor->Trace(mathml_style_sheet_);

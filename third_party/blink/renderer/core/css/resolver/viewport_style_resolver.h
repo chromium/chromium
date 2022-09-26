@@ -30,48 +30,34 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_VIEWPORT_STYLE_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_VIEWPORT_STYLE_RESOLVER_H_
 
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
-#include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
-class ComputedStyle;
 class Document;
-class DocumentStyleSheetCollection;
-class MutableCSSPropertyValueSet;
-class StyleRuleViewport;
 
 class CORE_EXPORT ViewportStyleResolver final
     : public GarbageCollected<ViewportStyleResolver> {
  public:
   explicit ViewportStyleResolver(Document&);
 
-  void InitialStyleChanged();
   void SetNeedsUpdate();
   bool NeedsUpdate() const { return needs_update_; }
-  void UpdateViewport(DocumentStyleSheetCollection&);
-
-  void CollectViewportRulesFromAuthorSheet(const CSSStyleSheet&);
+  void UpdateViewport();
 
   void Trace(Visitor*) const;
 
  private:
   void Reset();
   void Resolve();
-
-  void CollectViewportRulesFromUASheets();
-  void CollectViewportRules(const HeapVector<Member<StyleRuleBase>>&);
-  void AddViewportRule(StyleRuleViewport&);
-
-  float ViewportArgumentValue(CSSPropertyID) const;
-  Length ViewportLengthValue(CSSPropertyID);
+  float Zoom() const;
+  ViewportDescription ResolveViewportDescription(mojom::blink::ViewportStyle);
 
   Member<Document> document_;
-  Member<MutableCSSPropertyValueSet> property_set_;
-  scoped_refptr<ComputedStyle> initial_style_;
   bool needs_update_ = true;
 };
 

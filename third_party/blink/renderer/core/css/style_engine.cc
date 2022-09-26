@@ -556,7 +556,7 @@ void StyleEngine::UpdateCounterStyles() {
 
 void StyleEngine::UpdateViewport() {
   if (viewport_resolver_)
-    viewport_resolver_->UpdateViewport(GetDocumentStyleSheetCollection());
+    viewport_resolver_->UpdateViewport();
 }
 
 bool StyleEngine::NeedsActiveStyleUpdate() const {
@@ -1915,9 +1915,6 @@ bool StyleEngine::HasRulesForId(const AtomicString& id) const {
 }
 
 void StyleEngine::InitialStyleChanged() {
-  if (viewport_resolver_)
-    viewport_resolver_->InitialStyleChanged();
-
   MarkViewportStyleDirty();
   // We need to update the viewport style immediately because media queries
   // evaluated in MediaQueryAffectingValueChanged() below may rely on the
@@ -1929,6 +1926,9 @@ void StyleEngine::InitialStyleChanged() {
 }
 
 void StyleEngine::ViewportRulesChanged() {
+  // TODO(crbug.com/1365873): Change the name of this invalidation path:
+  // @viewport rules are no longer relevant.
+
   if (viewport_resolver_)
     viewport_resolver_->SetNeedsUpdate();
 
