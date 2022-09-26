@@ -361,13 +361,15 @@ class CALayerOverlayProcessorInternal {
 
 // Control using the CoreAnimation renderer, which is the path that replaces
 // all quads with CALayers.
-base::Feature kCARenderer{"CoreAnimationRenderer",
-                          base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCARenderer,
+             "CoreAnimationRenderer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Control using the CoreAnimation renderer, which is the path that replaces
 // all quads with CALayers.
-base::Feature kHDRUnderlays{"CoreAnimationHDRUnderlays",
-                            base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kHDRUnderlays,
+             "CoreAnimationHDRUnderlays",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
