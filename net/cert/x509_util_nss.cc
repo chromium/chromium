@@ -7,9 +7,11 @@
 #include <cert.h>  // Must be included before certdb.h
 #include <certdb.h>
 #include <cryptohi.h>
+#include <dlfcn.h>
 #include <nss.h>
 #include <pk11pub.h>
 #include <prerror.h>
+#include <seccomon.h>
 #include <secder.h>
 #include <sechash.h>
 #include <secmod.h>
@@ -434,6 +436,20 @@ SHA256HashValue CalculateFingerprint256(CERTCertificate* cert) {
   DCHECK_EQ(SECSuccess, rv);
 
   return sha256;
+}
+
+SECStatus GetCertIsPerm(const CERTCertificate* cert, PRBool* isperm) {
+  // TODO(https://crbug.com/1365414): When the minimum NSS version is raised to
+  // 3.31 or higher, replace this with calling CERT_GetCertIsPerm directly.
+  using GetCertIsPermFunction = SECStatus (*)(const CERTCertificate*, PRBool*);
+  static GetCertIsPermFunction get_cert_is_perm =
+      reinterpret_cast<GetCertIsPermFunction>(
+          dlsym(RTLD_DEFAULT, "CERT_GetCertIsPerm"));
+  if (get_cert_is_perm) {
+    return get_cert_is_perm(cert, isperm);
+  }
+  *isperm = cert->isperm;
+  return SECSuccess;
 }
 
 }  // namespace net::x509_util

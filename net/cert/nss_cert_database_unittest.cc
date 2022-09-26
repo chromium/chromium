@@ -7,6 +7,7 @@
 #include <cert.h>
 #include <certdb.h>
 #include <pk11pub.h>
+#include <seccomon.h>
 
 #include <algorithm>
 #include <memory>
@@ -58,6 +59,12 @@ std::string GetSubjectCN(CERTCertificate* cert) {
   std::string s = cn;
   PORT_Free(cn);
   return s;
+}
+
+bool GetCertIsPerm(const CERTCertificate* cert) {
+  PRBool is_perm;
+  CHECK_EQ(x509_util::GetCertIsPerm(cert, &is_perm), SECSuccess);
+  return is_perm != PR_FALSE;
 }
 
 }  // namespace
@@ -287,7 +294,7 @@ TEST_F(CertDatabaseNSSTest, ImportCACert_SSLTrust) {
       GetTestCertsDirectory(), "root_ca_cert.pem",
       X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs.size());
-  EXPECT_FALSE(certs[0]->isperm);
+  EXPECT_FALSE(GetCertIsPerm(certs[0].get()));
 
   // Import it.
   NSSCertDatabase::ImportCertFailureList failed;
@@ -316,7 +323,7 @@ TEST_F(CertDatabaseNSSTest, ImportCACert_EmailTrust) {
       GetTestCertsDirectory(), "root_ca_cert.pem",
       X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs.size());
-  EXPECT_FALSE(certs[0]->isperm);
+  EXPECT_FALSE(GetCertIsPerm(certs[0].get()));
 
   // Import it.
   NSSCertDatabase::ImportCertFailureList failed;
@@ -345,7 +352,7 @@ TEST_F(CertDatabaseNSSTest, ImportCACert_ObjSignTrust) {
       GetTestCertsDirectory(), "root_ca_cert.pem",
       X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs.size());
-  EXPECT_FALSE(certs[0]->isperm);
+  EXPECT_FALSE(GetCertIsPerm(certs[0].get()));
 
   // Import it.
   NSSCertDatabase::ImportCertFailureList failed;
@@ -373,7 +380,7 @@ TEST_F(CertDatabaseNSSTest, ImportCA_NotCACert) {
   ScopedCERTCertificateList certs = CreateCERTCertificateListFromFile(
       GetTestCertsDirectory(), "ok_cert.pem", X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs.size());
-  EXPECT_FALSE(certs[0]->isperm);
+  EXPECT_FALSE(GetCertIsPerm(certs[0].get()));
 
   // Import it.
   NSSCertDatabase::ImportCertFailureList failed;

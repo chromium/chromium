@@ -1228,18 +1228,20 @@ void RemoveCertificateWithDB(std::unique_ptr<RemoveCertificateState> state,
                              net::NSSCertDatabase* cert_db) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
+  PRBool certificate_found;
   net::ScopedCERTCertificate nss_cert =
       net::x509_util::CreateCERTCertificateFromX509Certificate(
           state->certificate_.get());
-  if (!nss_cert) {
+  if (!nss_cert || net::x509_util::GetCertIsPerm(
+                       nss_cert.get(), &certificate_found) != SECSuccess) {
     state->OnError(FROM_HERE, Status::kNetErrorCertificateInvalid);
     return;
   }
 
-  bool certificate_found = nss_cert->isperm;
   cert_db->DeleteCertAndKeyAsync(
-      std::move(nss_cert), base::BindOnce(&DidRemoveCertificate,
-                                          std::move(state), certificate_found));
+      std::move(nss_cert),
+      base::BindOnce(&DidRemoveCertificate, std::move(state),
+                     certificate_found != PR_FALSE));
 }
 
 // Does the actual key pair removal on a worker thread. Used by
