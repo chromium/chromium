@@ -76,6 +76,13 @@ ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
 
 ExecutionContext::~ExecutionContext() {
   DCHECK(is_context_destroyed_);
+
+  // Leak the policy container if we are being destroyed at a non-deterministic
+  // point while recording/replaying, as this releases mojo resources which must
+  // happen at specific points.
+  if (recordreplay::AreEventsDisallowed()) {
+    policy_container_.release();
+  }
 }
 
 // static
