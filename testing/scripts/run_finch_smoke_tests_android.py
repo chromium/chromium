@@ -103,9 +103,8 @@ def _merge_results_dicts(dict_to_merge, test_results_dict):
                              test_results_dict.setdefault(key, {}))
 
 
-# pylint: disable=super-with-arguments
+# pylint: disable=super-with-arguments, abstract-method
 class FinchTestCase(wpt_common.BaseWptScriptAdapter):
-
 
   def __init__(self, device):
     super(FinchTestCase, self).__init__()
@@ -204,6 +203,9 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     super(FinchTestCase, self).parse_args(args)
     if (not self.options.finch_seed_path or
         not os.path.exists(self.options.finch_seed_path)):
+      logger.warning('Could not find the finch seed passed '
+                     'as the argument for --finch-seed-path. '
+                     'Running tests on the default finch seed')
       self.options.finch_seed_path = self.default_finch_seed_path
 
   def __enter__(self):
@@ -397,7 +399,7 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
             self.test_specific_browser_args)
 
   def run_tests(self, test_run_variation, all_test_results_dict,
-                extra_browser_args=None):
+                extra_browser_args=None, check_seed_loaded=False):
     """Run browser test on test device
 
     Args:
@@ -405,9 +407,10 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
       all_test_results_dict: Main results dictionary containing
         results for all test variations.
       extra_browser_args: Extra browser arguments.
+      check_seed_loaded: Check if the finch seed was loaded.
 
     Returns:
-      True if browser did not crash or False if the browser crashed.
+      The return code of all tests.
     """
     isolate_root_dir = os.path.dirname(
         self.options.isolated_script_test_output)
@@ -438,20 +441,28 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     shutil.move(os.path.join(isolate_root_dir, logcat_filename),
                 final_logcat_path)
 
+    seed_loaded_result_dict = {'num_failures_by_type': {}, 'tests': {}}
+    if check_seed_loaded:
+      # Check in the logcat if the seed was loaded
+      ret |= self._finch_seed_loaded(final_logcat_path, seed_loaded_result_dict)
+
     with open(self.wpt_output, 'r') as test_harness_results:
       test_harness_results_dict = json.load(test_harness_results)
-      all_test_results_dict['tests'][test_run_variation] = (
-          test_harness_results_dict['tests'])
-      _merge_results_dicts(pixel_tests_results_dict['tests'],
-                           all_test_results_dict['tests'][test_run_variation])
-
       for test_results_dict in (test_harness_results_dict,
-                                pixel_tests_results_dict):
+                                pixel_tests_results_dict,
+                                seed_loaded_result_dict):
+        _merge_results_dicts(
+            test_results_dict['tests'],
+            all_test_results_dict['tests'].setdefault(test_run_variation, {}))
+
         for result, count in test_results_dict['num_failures_by_type'].items():
           all_test_results_dict['num_failures_by_type'].setdefault(result, 0)
           all_test_results_dict['num_failures_by_type'][result] += count
 
     return ret
+
+  def _finch_seed_loaded(self, logcat_path, results_dict):
+    raise NotImplementedError
 
   def _run_pixel_tests(self):
     """Run pixel tests on device
@@ -643,6 +654,68 @@ class WebViewFinchTestCase(FinchTestCase):
     return super(WebViewFinchTestCase, self).pixel_tests + [
         'external/wpt/svg/pservers/reftests/radialgradient-basic-002.svg',
     ]
+
+  def _finch_seed_loaded(self, logcat_path, results_dict):
+    """Checks the logcat if the seed was loaded
+
+    Args:
+      logcat_path: Path to the logcat.
+      results_dict: Dictionary containing test results
+
+    Returns:
+      0 if the seed was loaded and experiments were loaded for finch seeds
+      other than the default seed. Otherwise it returns 1.
+    """
+    with open(logcat_path, 'r') as logcat:
+      logcat_content = logcat.read()
+
+    seed_loaded = 'cr_VariationsUtils: Loaded seed with age' in logcat_content
+    logcat_relpath = os.path.relpath(logcat_path,
+                                     os.path.dirname(self.wpt_output))
+    seed_loaded_results_dict = (
+        results_dict['tests'].setdefault(
+            'check_seed_loaded',
+            {'expected': 'PASS',
+             'artifacts': {'logcat_path': [logcat_relpath]}}))
+
+    if seed_loaded:
+      logger.info('The finch seed was loaded by WebView')
+      seed_loaded_results_dict['actual'] = 'PASS'
+    else:
+      logger.error('The finch seed was not loaded by WebView')
+      seed_loaded_results_dict['actual'] = 'FAIL'
+      seed_loaded_results_dict['num_failures_by_type']['FAIL'] = 1
+
+    # If the value for the --finch-seed-path argument does not exist, then
+    # a default seed is consumed. The default seed may be too old to have it's
+    # experiments loaded.
+    if self.default_finch_seed_path != self.options.finch_seed_path:
+      # Check for a field trial that is guaranteed to be activated by
+      # the finch seed.
+      experiments_loaded = ('Active field trial '
+                            '"UMA-Uniformity-Trial-100-Percent" '
+                            'in group "group_01"') in logcat_content
+      field_trials_loaded_results_dict = (
+          results_dict['tests'].setdefault(
+              'check_field_trials_loaded',
+              {'expected': 'PASS',
+               'artifacts': {'logcat_path': [logcat_relpath]}}))
+
+      if experiments_loaded:
+        logger.info('Experiments were loaded from the finch seed by WebView')
+        field_trials_loaded_results_dict['actual'] = 'PASS'
+      else:
+        logger.error('Experiments were not loaded from '
+                     'the finch seed by WebView')
+        field_trials_loaded_results_dict['actual'] = 'FAIL'
+        seed_loaded_results_dict['num_failures_by_type'].setdefault('FAIL', 0)
+        seed_loaded_results_dict['num_failures_by_type']['FAIL'] += 1
+
+      return 0 if seed_loaded and experiments_loaded else 1
+
+    logger.warning('The default seed is being tested, '
+                   'skipping checks for active field trials')
+    return 0 if seed_loaded else 1
 
   @classmethod
   def finch_seed_download_args(cls):
@@ -864,7 +937,7 @@ def main(args):
     # their adb binary.
     platform_tools_path = os.path.dirname(devil_env.config.FetchPath('adb'))
     os.environ['PATH'] = os.pathsep.join([platform_tools_path] +
-                                          os.environ['PATH'].split(os.pathsep))
+                                         os.environ['PATH'].split(os.pathsep))
 
     test_results_dict = OrderedDict({'version': 3, 'interrupted': False,
                                      'num_failures_by_type': {}, 'tests': {}})
@@ -872,18 +945,25 @@ def main(args):
     if test_case.product_name() == 'webview':
       ret = test_case.run_tests('without_finch_seed', test_results_dict)
       test_case.install_seed()
-      ret |= test_case.run_tests('with_finch_seed', test_results_dict)
+      ret |= test_case.run_tests('with_finch_seed', test_results_dict,
+                                 check_seed_loaded=True)
       # WebView needs several restarts to fetch and load a new finch seed
       # TODO(b/187185389): Figure out why the first restart is needed
-      ret |= test_case.run_tests('extra_restart', test_results_dict,
-                                 test_case.finch_seed_download_args())
+      ret |= test_case.run_tests(
+          'extra_restart', test_results_dict,
+          extra_browser_args=test_case.finch_seed_download_args(),
+          check_seed_loaded=True)
       # Restart webview+shell to fetch new seed to variations_seed_new
-      ret |= test_case.run_tests('fetch_new_seed_restart', test_results_dict,
-                                 test_case.finch_seed_download_args())
+      ret |= test_case.run_tests(
+          'fetch_new_seed_restart', test_results_dict,
+          extra_browser_args=test_case.finch_seed_download_args(),
+          check_seed_loaded=True)
       # Restart webview+shell to copy from
       # variations_seed_new to variations_seed
-      ret |= test_case.run_tests('load_new_seed_restart', test_results_dict,
-                                 test_case.finch_seed_download_args())
+      ret |= test_case.run_tests(
+          'load_new_seed_restart', test_results_dict,
+          extra_browser_args=test_case.finch_seed_download_args(),
+          check_seed_loaded=True)
     else:
       test_case.install_seed()
       ret = test_case.run_tests('with_finch_seed', test_results_dict)
