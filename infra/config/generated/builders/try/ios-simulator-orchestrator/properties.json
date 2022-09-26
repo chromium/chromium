@@ -1,4 +1,8 @@
 {
+  "$build/chromium_orchestrator": {
+    "compilator": "ios-simulator-compilator",
+    "compilator_watcher_git_revision": "7809a690bbd935bcb3b4d922e24cabe168aaabc8"
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -39,31 +43,19 @@
           "builder": "ios-simulator",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "ios-simulator",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "ios-simulator-inverse-fieldtrials-fyi",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "ios-simulator-orchestrator",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "ios-simulator-rts",
-          "group": "tryserver.chromium.mac"
-        }
       ]
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
-    "metrics_project": "chromium-reclient-metrics"
+  "$build/code_coverage": {
+    "coverage_exclude_sources": "ios_test_files_and_test_utils",
+    "coverage_test_types": [
+      "overall",
+      "unit"
+    ],
+    "use_clang_coverage": true
+  },
+  "$build/flakiness": {
+    "check_for_flakiness": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -72,11 +64,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.mac",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium",
-    "ios"
-  ],
-  "xcode_build_version": "14a309"
+  "builder_group": "tryserver.chromium.mac",
+  "recipe": "chromium/orchestrator"
 }
