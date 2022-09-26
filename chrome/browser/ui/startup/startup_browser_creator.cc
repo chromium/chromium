@@ -520,8 +520,8 @@ bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
           apps::OpenExtensionAppShortcutWindow(profile, url);
       if (web_contents) {
         web_app::startup::FinalizeWebAppLaunch(
-            LaunchMode::kAsWebAppInWindowByUrl, command_line, is_first_run,
-            chrome::FindBrowserWithWebContents(web_contents),
+            web_app::startup::OpenMode::kInWindowByUrl, command_line,
+            is_first_run, chrome::FindBrowserWithWebContents(web_contents),
             apps::LaunchContainer::kLaunchContainerWindow);
         return true;
       }
@@ -544,10 +544,11 @@ bool MaybeLaunchExtensionApp(const base::CommandLine& command_line,
   if (!extension)
     return false;
 
-  LaunchAppWithCallback(profile, app_id, command_line, cur_dir,
-                        base::BindOnce(&web_app::startup::FinalizeWebAppLaunch,
-                                       LaunchMode::kAsWebAppInWindowByAppId,
-                                       command_line, is_first_run));
+  LaunchAppWithCallback(
+      profile, app_id, command_line, cur_dir,
+      base::BindOnce(&web_app::startup::FinalizeWebAppLaunch,
+                     web_app::startup::OpenMode::kInWindowByAppId, command_line,
+                     is_first_run));
   return true;
 }
 

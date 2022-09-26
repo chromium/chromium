@@ -102231,6 +102231,27 @@ others/histograms.xml -->
   <int value="6" label="Success"/>
 </enum>
 
+<enum name="WebAppOpenMode">
+  <int value="0" label="kInWindowOther">
+    Launched installed web app in standalone window by any method other than
+    command line or a platform shortcut.
+  </int>
+  <int value="1" label="kInTab">
+    Launched as an installed web application in a browser tab
+  </int>
+  <int value="2" label="kUnknown">
+    The requested web application was not installed
+  </int>
+  <int value="3" label="kInWindowByUrl">
+    Launched installed web app in standalone window from command line, using
+    --app flag.
+  </int>
+  <int value="4" label="kInWindowByAppId">
+    Launched installed web app in standalone window from command line, using
+    --app-id flag.
+  </int>
+</enum>
+
 <enum name="WebAppOriginAssociationFetchResult">
   <summary>Result of web app origin association file fetch.</summary>
   <int value="0" label="FetchSucceed"/>
