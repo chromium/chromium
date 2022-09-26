@@ -80,8 +80,7 @@ void CSSFontSelector::DispatchInvalidationCallbacks(
     FontInvalidationReason reason) {
   font_face_cache_->IncrementVersion();
 
-  HeapVector<Member<FontSelectorClient>> clients;
-  CopyToVector(clients_, clients);
+  HeapVector<Member<FontSelectorClient>> clients(clients_);
   for (auto& client : clients) {
     if (client) {
       client->FontsNeedUpdate(this, reason);

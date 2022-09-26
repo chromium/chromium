@@ -856,8 +856,8 @@ void Page::InvalidatePaint() {
 }
 
 void Page::NotifyPluginsChanged() const {
-  HeapVector<Member<PluginsChangedObserver>, 32> observers;
-  CopyToVector(plugins_changed_observers_, observers);
+  HeapVector<Member<PluginsChangedObserver>, 32> observers(
+      plugins_changed_observers_);
   for (PluginsChangedObserver* observer : observers)
     observer->PluginsChanged();
 }

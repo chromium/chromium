@@ -2949,8 +2949,8 @@ void LocalFrame::RegisterVirtualKeyboardOverlayChangedObserver(
 
 void LocalFrame::NotifyVirtualKeyboardOverlayRectObservers(
     const gfx::Rect& rect) const {
-  HeapVector<Member<VirtualKeyboardOverlayChangedObserver>, 32> observers;
-  CopyToVector(virtual_keyboard_overlay_changed_observers_, observers);
+  HeapVector<Member<VirtualKeyboardOverlayChangedObserver>, 32> observers(
+      virtual_keyboard_overlay_changed_observers_);
   for (VirtualKeyboardOverlayChangedObserver* observer : observers)
     observer->VirtualKeyboardOverlayChanged(rect);
 }

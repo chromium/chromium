@@ -1254,8 +1254,8 @@ void SVGElement::RebuildAllIncomingReferences() {
       SvgRareData()->IncomingReferences();
 
   // Iterate on a snapshot as |incoming_references| may be altered inside loop.
-  HeapVector<Member<SVGElement>> incoming_references_snapshot;
-  CopyToVector(incoming_references, incoming_references_snapshot);
+  HeapVector<Member<SVGElement>> incoming_references_snapshot(
+      incoming_references);
 
   // Force rebuilding the |source_element| so it knows about this change.
   const SvgAttributeChangedParams params(

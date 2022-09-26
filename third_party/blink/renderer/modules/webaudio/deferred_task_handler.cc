@@ -170,8 +170,7 @@ void DeferredTaskHandler::UpdateAutomaticPullNodes() {
   if (automatic_pull_handlers_need_updating_) {
     base::AutoTryLock try_locker(automatic_pull_handlers_lock_);
     if (try_locker.is_acquired()) {
-      CopyToVector(automatic_pull_handlers_,
-                   rendering_automatic_pull_handlers_);
+      rendering_automatic_pull_handlers_.assign(automatic_pull_handlers_);
       automatic_pull_handlers_need_updating_ = false;
     }
   }

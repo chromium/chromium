@@ -137,8 +137,8 @@ void PressureObserverManager::OnUpdate(
 
   // New observers may be created and added. Take a snapshot so as
   // to safely iterate.
-  HeapVector<Member<blink::PressureObserver>> observers;
-  CopyToVector(registered_observers_[source_index], observers);
+  HeapVector<Member<blink::PressureObserver>> observers(
+      registered_observers_[source_index]);
   for (const auto& observer : observers) {
     // TODO(crbug.com/1342184): Consider other sources.
     // For now, "cpu" is the only source.

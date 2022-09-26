@@ -191,8 +191,7 @@ Vector<device::mojom::blink::EntityTypeForHitTest> GetEntityTypesForHitTest(
   DVLOG(2) << __func__ << ": result_set.size()=" << result_set.size();
   DCHECK(!result_set.empty());
 
-  Vector<device::mojom::blink::EntityTypeForHitTest> result;
-  CopyToVector(result_set, result);
+  Vector<device::mojom::blink::EntityTypeForHitTest> result(result_set);
 
   DVLOG(2) << __func__ << ": result.size()=" << result.size();
   return result;

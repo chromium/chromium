@@ -235,8 +235,7 @@ void TableSectionPainter::PaintObject(const PaintInfo& paint_info,
     // This path paints section with a reasonable number of overflowing cells.
     // This is the "partial paint path" for overflowing cells referred in
     // LayoutTableSection::ComputeOverflowFromDescendants().
-    HeapVector<Member<const LayoutTableCell>> cells;
-    CopyToVector(visually_overflowing_cells, cells);
+    HeapVector<Member<const LayoutTableCell>> cells(visually_overflowing_cells);
 
     HeapHashSet<Member<const LayoutTableCell>> spanning_cells;
     for (unsigned r = dirtied_rows.Start(); r < dirtied_rows.End(); r++) {

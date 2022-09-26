@@ -3639,9 +3639,7 @@ void LocalFrameView::ServiceScriptedAnimations(base::TimeTicks start_time) {
       // Iterate over a copy, since ScrollableAreas may deregister
       // themselves during the iteration.
       HeapVector<Member<PaintLayerScrollableArea>>
-          animating_scrollable_areas_copy;
-      CopyToVector(*animating_scrollable_areas,
-                   animating_scrollable_areas_copy);
+          animating_scrollable_areas_copy(*animating_scrollable_areas);
       for (PaintLayerScrollableArea* scrollable_area :
            animating_scrollable_areas_copy) {
         scrollable_area->ServiceScrollAnimations(

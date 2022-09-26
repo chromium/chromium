@@ -400,8 +400,7 @@ void MediaStreamTrackImpl::setReadyState(
 
     // Observers may dispatch events which create and add new Observers;
     // take a snapshot so as to safely iterate.
-    HeapVector<Member<MediaStreamTrack::Observer>> observers;
-    CopyToVector(observers_, observers);
+    HeapVector<Member<MediaStreamTrack::Observer>> observers(observers_);
     for (auto observer : observers)
       observer->TrackChangedState();
   }

@@ -2365,12 +2365,11 @@ StaticNodeList* Internals::nodesFromRect(
   if (allow_child_frame_content)
     hit_type |= HitTestRequest::kAllowChildFrameContent;
 
-  HeapVector<Member<Node>> matches;
   HitTestRequest request(hit_type);
   HitTestLocation location(rect);
   HitTestResult result(request, location);
   frame->ContentLayoutObject()->HitTest(location, result);
-  CopyToVector(result.ListBasedTestResult(), matches);
+  HeapVector<Member<Node>> matches(result.ListBasedTestResult());
 
   return StaticNodeList::Adopt(matches);
 }

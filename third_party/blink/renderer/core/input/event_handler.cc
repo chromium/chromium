@@ -1723,8 +1723,7 @@ bool EventHandler::BestClickableNodeForHitTestResult(
   gfx::Rect touch_rect =
       frame_->View()->ConvertToRootFrame(location.ToEnclosingRect());
 
-  HeapVector<Member<Node>, 11> nodes;
-  CopyToVector(result.ListBasedTestResult(), nodes);
+  HeapVector<Member<Node>, 11> nodes(result.ListBasedTestResult());
 
   // FIXME: the explicit Vector conversion copies into a temporary and is
   // wasteful.
@@ -1743,8 +1742,7 @@ bool EventHandler::BestContextMenuNodeForHitTestResult(
       frame_->View()->ConvertToRootFrame(ToRoundedPoint(location.Point()));
   gfx::Rect touch_rect =
       frame_->View()->ConvertToRootFrame(location.ToEnclosingRect());
-  HeapVector<Member<Node>, 11> nodes;
-  CopyToVector(result.ListBasedTestResult(), nodes);
+  HeapVector<Member<Node>, 11> nodes(result.ListBasedTestResult());
 
   // FIXME: the explicit Vector conversion copies into a temporary and is
   // wasteful.

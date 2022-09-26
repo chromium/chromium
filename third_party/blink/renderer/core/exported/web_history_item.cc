@@ -257,8 +257,7 @@ WebVector<WebString> WebHistoryItem::GetReferencedFilePaths() const {
   for (wtf_size_t i = 0; i < referenced_file_paths.size(); ++i)
     file_paths.insert(referenced_file_paths[i]);
 
-  Vector<String> results;
-  CopyToVector(file_paths, results);
+  Vector<String> results(file_paths);
   return results;
 }
 

@@ -1109,6 +1109,20 @@ class Vector
   template <wtf_size_t otherCapacity>
   Vector& operator=(const Vector<T, otherCapacity, Allocator>&);
 
+  // Creates a vector with items copied from a collection. |Collection| must
+  // have size(), begin() and end() methods.
+  template <typename Collection,
+            // This prevents this constructor from being chosen for e.g.
+            // Vector(3).
+            typename =
+                typename std::enable_if<std::is_class<Collection>::value>::type>
+  explicit Vector(const Collection& collection) : Vector() {
+    assign(collection);
+  }
+  // Replaces the vector with items copied from a collection.
+  template <typename Collection>
+  void assign(const Collection&);
+
   // Moving.
   Vector(Vector&&);
   Vector& operator=(Vector&&);
@@ -1571,6 +1585,25 @@ operator=(const Vector<T, otherCapacity, Allocator>& other) {
   size_ = other.size();
 
   return *this;
+}
+
+template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename Collection>
+void Vector<T, inlineCapacity, Allocator>::assign(const Collection& other) {
+  static_assert(
+      !std::is_same<Vector<T, inlineCapacity, Allocator>, Collection>::value,
+      "This method is for copying from a collection of a different type.");
+
+  {
+    // Disallow GC across resize allocation, see crbug.com/568173.
+    GCForbiddenScope scope;
+    resize(base::checked_cast<wtf_size_t>(other.size()));
+  }
+
+  auto src = other.begin();
+  auto src_end = other.end();
+  for (wtf_size_t i = 0; src != src_end; ++src, ++i)
+    at(i) = *src;
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>

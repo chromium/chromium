@@ -341,8 +341,7 @@ class ContentCaptureTest
       HashSet<Persistent<Node>> sent;
       for (int i = 0; i < 4; ++i) {
         Vector<Persistent<Node>> a_diff_b;
-        Vector<Persistent<Node>> b;
-        CopyToVector(sent, b);
+        Vector<Persistent<Node>> b(sent);
         FindNodeVectorsDiff(nodes[i], b, a_diff_b);
         ToNodeTexts(a_diff_b, scrolling_expected_captured_nodes_[i]);
         sent.clear();

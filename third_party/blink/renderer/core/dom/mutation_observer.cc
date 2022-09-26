@@ -328,8 +328,7 @@ void MutationObserver::DeliverMutations() {
   // These steps are defined in DOM Standard's "notify mutation observers".
   // https://dom.spec.whatwg.org/#notify-mutation-observers
   DCHECK(IsMainThread());
-  MutationObserverVector observers;
-  CopyToVector(ActiveMutationObservers(), observers);
+  MutationObserverVector observers(ActiveMutationObservers());
   ActiveMutationObservers().clear();
   SlotChangeList slots;
   slots.swap(ActiveSlotChangeList());

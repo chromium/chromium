@@ -490,8 +490,7 @@ void StyleSheetContents::CheckLoaded() {
   // When a sheet is loaded it is moved from the set of loading clients
   // to the set of completed clients. We therefore need the copy in order to
   // not modify the set while iterating it.
-  HeapVector<Member<CSSStyleSheet>> loading_clients;
-  CopyToVector(loading_clients_, loading_clients);
+  HeapVector<Member<CSSStyleSheet>> loading_clients(loading_clients_);
 
   for (unsigned i = 0; i < loading_clients.size(); ++i) {
     if (loading_clients[i]->LoadCompleted())
@@ -529,8 +528,7 @@ void StyleSheetContents::SetToPendingState() {
   // to the loading state which modifies the set of completed clients. We
   // therefore need the copy in order to not modify the set of completed clients
   // while iterating it.
-  HeapVector<Member<CSSStyleSheet>> completed_clients;
-  CopyToVector(root->completed_clients_, completed_clients);
+  HeapVector<Member<CSSStyleSheet>> completed_clients(completed_clients_);
   for (unsigned i = 0; i < completed_clients.size(); ++i)
     completed_clients[i]->SetToPendingState();
 }

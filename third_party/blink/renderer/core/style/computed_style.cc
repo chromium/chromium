@@ -2049,7 +2049,7 @@ const Vector<AtomicString>& ComputedStyle::GetVariableNames() const {
     inherited_variables->CollectNames(names);
   if (auto* non_inherited_variables = NonInheritedVariables())
     non_inherited_variables->CollectNames(names);
-  CopyToVector(names, cache);
+  cache.assign(names);
 
   return cache;
 }

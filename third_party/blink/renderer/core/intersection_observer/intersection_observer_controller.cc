@@ -70,10 +70,10 @@ bool IntersectionObserverController::ComputeIntersections(
   TRACE_EVENT0("blink,devtools.timeline",
                "IntersectionObserverController::"
                "computeIntersections");
-  HeapVector<Member<IntersectionObserver>> observers_to_process;
-  CopyToVector(tracked_explicit_root_observers_, observers_to_process);
-  HeapVector<Member<IntersectionObservation>> observations_to_process;
-  CopyToVector(tracked_implicit_root_observations_, observations_to_process);
+  HeapVector<Member<IntersectionObserver>> observers_to_process(
+      tracked_explicit_root_observers_);
+  HeapVector<Member<IntersectionObservation>> observations_to_process(
+      tracked_implicit_root_observations_);
   int64_t internal_observation_count = 0;
   int64_t javascript_observation_count = 0;
   {

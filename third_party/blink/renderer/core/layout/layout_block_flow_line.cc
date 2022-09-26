@@ -640,7 +640,7 @@ static inline void SetLogicalWidthForTextRun(
                                    GlyphOverflow()))
             .stored_value;
     DCHECK(it->value.first.empty());
-    CopyToVector(fallback_fonts, it->value.first);
+    it->value.first.assign(fallback_fonts);
     run->box_->Parent()->ClearDescendantsHaveSameLineHeightAndBaseline();
   }
   if (!glyph_overflow.IsApproximatelyZero()) {

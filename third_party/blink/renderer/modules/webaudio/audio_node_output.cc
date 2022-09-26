@@ -158,8 +158,7 @@ void AudioNodeOutput::DisconnectAllInputs() {
   GetDeferredTaskHandler().AssertGraphOwner();
 
   // Disconnect changes inputs_, so we can't iterate directly over the hash set.
-  Vector<AudioNodeInput*, 4> inputs;
-  CopyToVector(inputs_, inputs);
+  Vector<AudioNodeInput*, 4> inputs(inputs_);
   for (AudioNodeInput* input : inputs) {
     AudioNodeWiring::Disconnect(*this, *input);
   }
@@ -170,8 +169,7 @@ void AudioNodeOutput::DisconnectAllParams() {
   GetDeferredTaskHandler().AssertGraphOwner();
 
   // Disconnect changes params_, so we can't iterate directly over the hash set.
-  Vector<AudioParamHandler*, 4> params;
-  CopyToVector(params_, params);
+  Vector<AudioParamHandler*, 4> params(params_);
   for (AudioParamHandler* param : params) {
     AudioNodeWiring::Disconnect(*this, *param);
   }

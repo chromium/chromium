@@ -20,58 +20,67 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
                          public Vector<T, inlineCapacity, HeapAllocator> {
   DISALLOW_NEW();
 
+  using BaseVector = Vector<T, inlineCapacity, HeapAllocator>;
+
  public:
   HeapVector() = default;
 
-  explicit HeapVector(wtf_size_t size)
-      : Vector<T, inlineCapacity, HeapAllocator>(size) {
-    CheckType();
-  }
+  explicit HeapVector(wtf_size_t size) : BaseVector(size) { CheckType(); }
 
-  HeapVector(wtf_size_t size, const T& val)
-      : Vector<T, inlineCapacity, HeapAllocator>(size, val) {
+  HeapVector(wtf_size_t size, const T& val) : BaseVector(size, val) {
     CheckType();
   }
 
   template <wtf_size_t otherCapacity>
   HeapVector(const HeapVector<T, otherCapacity>& other)  // NOLINT
-      : Vector<T, inlineCapacity, HeapAllocator>(other) {
+      : BaseVector(other) {
     CheckType();
   }
 
   HeapVector(const HeapVector& other)
-      : Vector<T, inlineCapacity, HeapAllocator>(other) {
+      : BaseVector(static_cast<const BaseVector&>(other)) {
+    CheckType();
+  }
+
+  template <typename Collection,
+            typename =
+                typename std::enable_if<std::is_class<Collection>::value>::type>
+  explicit HeapVector(const Collection& other) : BaseVector(other) {
     CheckType();
   }
 
   HeapVector& operator=(const HeapVector& other) {
+    BaseVector::operator=(other);
+    return *this;
+  }
+
+  template <typename Collection>
+  HeapVector& operator=(const Collection& other) {
     Vector<T, inlineCapacity, HeapAllocator>::operator=(other);
     return *this;
   }
 
   HeapVector(HeapVector&& other) noexcept
-      : Vector<T, inlineCapacity, HeapAllocator>(std::move(other)) {
+      : BaseVector(static_cast<BaseVector&&>(std::move(other))) {
     CheckType();
   }
 
   HeapVector& operator=(HeapVector&& other) noexcept {
-    Vector<T, inlineCapacity, HeapAllocator>::operator=(std::move(other));
+    BaseVector::operator=(std::move(other));
     return *this;
   }
 
   HeapVector(std::initializer_list<T> elements)
-      : Vector<T, inlineCapacity, HeapAllocator>(std::move(elements)) {
+      : BaseVector(std::move(elements)) {
     CheckType();
   }
 
   HeapVector& operator=(std::initializer_list<T> elements) {
-    Vector<T, inlineCapacity, HeapAllocator>::operator=(std::move(elements));
+    BaseVector::operator=(std::move(elements));
     return *this;
   }
 
-  void Trace(Visitor* visitor) const {
-    Vector<T, inlineCapacity, HeapAllocator>::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const { BaseVector::Trace(visitor); }
 
  private:
   template <typename U>

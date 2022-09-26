@@ -58,8 +58,7 @@ ScopedPagePauser::~ScopedPagePauser() {
 void ScopedPagePauser::SetPaused(bool paused) {
   // Make a copy of the collection. Undeferring loads can cause script to run,
   // which would mutate ordinaryPages() in the middle of iteration.
-  HeapVector<Member<Page>> pages;
-  CopyToVector(Page::OrdinaryPages(), pages);
+  HeapVector<Member<Page>> pages(Page::OrdinaryPages());
 
   for (const auto& page : pages)
     page->SetPaused(paused);

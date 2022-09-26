@@ -142,7 +142,7 @@ void PendingBeaconDispatcher::ScheduleDispatchBeacons() {
   // | 500ms | 201ms | 101ms | 100ms | 99ms | 1ms | 0ms |
   // |---------------------------------------------------
   //
-  CopyToVector(pending_beacons_, background_timeout_descending_beacons_);
+  background_timeout_descending_beacons_.assign(pending_beacons_);
   std::sort(background_timeout_descending_beacons_.begin(),
             background_timeout_descending_beacons_.end(),
             ReverseBeaconTimeoutSorter());

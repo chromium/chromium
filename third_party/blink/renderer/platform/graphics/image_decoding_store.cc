@@ -318,8 +318,7 @@ void ImageDecodingStore::RemoveCacheIndexedByGeneratorInternal(
     return;
 
   // Get all cache identifiers associated with generator.
-  Vector<typename U::KeyType> cache_identifier_list;
-  CopyToVector(iter->value, cache_identifier_list);
+  Vector<typename U::KeyType> cache_identifier_list(iter->value);
 
   // For each cache identifier find the corresponding CacheEntry and remove it.
   for (wtf_size_t i = 0; i < cache_identifier_list.size(); ++i) {

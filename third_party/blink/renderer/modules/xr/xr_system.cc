@@ -807,8 +807,8 @@ device::mojom::blink::XRSessionOptionsPtr XRSystem::XRSessionOptionsFromQuery(
       device::mojom::blink::XRSessionOptions::New();
   session_options->mode = query.mode();
 
-  CopyToVector(query.RequiredFeatures(), session_options->required_features);
-  CopyToVector(query.OptionalFeatures(), session_options->optional_features);
+  session_options->required_features.assign(query.RequiredFeatures());
+  session_options->optional_features.assign(query.OptionalFeatures());
 
   session_options->tracked_images.resize(query.TrackedImages().size());
   for (unsigned i = 0; i < query.TrackedImages().size(); ++i) {

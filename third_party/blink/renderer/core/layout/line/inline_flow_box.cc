@@ -1232,7 +1232,7 @@ static void ComputeGlyphOverflow(
                                          GlyphOverflow()))
             .stored_value;
     DCHECK(it->value.first.empty());
-    CopyToVector(fallback_fonts, it->value.first);
+    it->value.first.assign(fallback_fonts);
   }
   if (!glyph_overflow.IsApproximatelyZero()) {
     GlyphOverflowAndFallbackFontsMap::ValueType* it =

@@ -485,9 +485,9 @@ int64_t IntersectionObserver::ComputeIntersections(
       IntersectionGeometry::GetRootLayoutObjectForTarget(root(), nullptr,
                                                          false),
       RootMargin());
-  HeapVector<Member<IntersectionObservation>> observations_to_process;
   // TODO(szager): Is this copy necessary?
-  CopyToVector(observations_, observations_to_process);
+  HeapVector<Member<IntersectionObservation>> observations_to_process(
+      observations_);
   int64_t result = 0;
   for (auto& observation : observations_to_process) {
     result +=

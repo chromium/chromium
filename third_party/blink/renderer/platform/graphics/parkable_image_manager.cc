@@ -250,8 +250,7 @@ void ParkableImageManager::MaybeParkImages() {
   // directly, to avoid deadlock when we need to park synchronously (i.e. if we
   // have already written to disk and don't need to post a background task), as
   // synchronous parking calls |ParkableImageManager::OnWrittenToDisk()|;
-  WTF::Vector<ParkableImageImpl*> unparked_images;
-  CopyToVector(unparked_images_, unparked_images);
+  WTF::Vector<ParkableImageImpl*> unparked_images(unparked_images_);
 
   // We unlock here so that we can avoid a deadlock, since if the data for the
   // image is already written to disk, we can discard our copy of the data

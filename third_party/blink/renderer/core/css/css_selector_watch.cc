@@ -78,10 +78,8 @@ void CSSSelectorWatch::CallbackSelectorChangeTimerFired(TimerBase*) {
     return;
   }
   if (GetSupplementable()->GetFrame()) {
-    Vector<String> added_selectors;
-    Vector<String> removed_selectors;
-    CopyToVector(added_selectors_, added_selectors);
-    CopyToVector(removed_selectors_, removed_selectors);
+    Vector<String> added_selectors(added_selectors_);
+    Vector<String> removed_selectors(removed_selectors_);
     GetSupplementable()->GetFrame()->Client()->SelectorMatchChanged(
         added_selectors, removed_selectors);
   }
