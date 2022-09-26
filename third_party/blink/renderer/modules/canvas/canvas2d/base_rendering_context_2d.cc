@@ -834,7 +834,7 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
   }
 
   AffineTransform new_transform = GetState().GetTransform();
-  new_transform.Rotate(Rad2deg(angle_in_radians));
+  new_transform.RotateRadians(angle_in_radians);
   if (GetState().GetTransform() == new_transform)
     return;
 
