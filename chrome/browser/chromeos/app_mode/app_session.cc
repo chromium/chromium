@@ -406,7 +406,7 @@ class AppSession::BrowserWindowHandler : public BrowserListObserver {
     } else {
       LOG(WARNING) << "Browser opened in kiosk session"
                    << ", url=" << url_string;
-      browser->window()->Close();
+      // browser->window()->Close();
     }
     // Call the callback to notify tests that browser was handled.
     if (app_session_->on_handle_browser_callback_)

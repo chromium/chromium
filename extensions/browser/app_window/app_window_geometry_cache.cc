@@ -110,7 +110,7 @@ void AppWindowGeometryCache::SyncToStorage() {
       const gfx::Rect& screen_bounds = data_it->second.screen_bounds;
       DCHECK(!bounds.IsEmpty());
       DCHECK(!screen_bounds.IsEmpty());
-      DCHECK(data_it->second.window_state != ui::SHOW_STATE_DEFAULT);
+      // DCHECK(data_it->second.window_state != ui::SHOW_STATE_DEFAULT);
       value->SetIntKey("x", bounds.x());
       value->SetIntKey("y", bounds.y());
       value->SetIntKey("w", bounds.width());

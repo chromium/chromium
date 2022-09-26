@@ -297,6 +297,10 @@ const size_t kRepeatableActionsLength = std::size(kRepeatableActions);
 
 const AcceleratorAction kActionsAllowedInAppModeOrPinnedMode[] = {
     BRIGHTNESS_DOWN,
+    NEW_WINDOW,
+    CYCLE_FORWARD_MRU,
+    TOGGLE_FULLSCREEN,
+    OPEN_FEEDBACK_PAGE,
     BRIGHTNESS_UP,
     DEBUG_DUMP_CALENDAR_MODEL,
     DEBUG_KEYBOARD_BACKLIGHT_TOGGLE,
