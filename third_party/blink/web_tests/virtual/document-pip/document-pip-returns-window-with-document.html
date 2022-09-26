@@ -13,24 +13,20 @@ async_test((t) => {
   focusWithUserGesture(window);
   navigator.documentPictureInPicture.requestWindow().then(t.step_func_done(
       (pipSession) => {
-    assert_true(!!pipSession.document,
-        'DocumentPictureInPictureSession should contain a document');
     assert_true(!!pipSession.window,
         'DocumentPictureInPictureSession should contain a window');
-    assert_true(pipSession.window.document === pipSession.document,
-        'DocumentPictureInPictureSession window should contain its document');
     assert_true(navigator.documentPictureInPicture.session === pipSession,
         'DocumentPictureInPicture.session should match the current session');
 
     // We should be able to move an element to that document.
     assert_true(document.body.contains(div),
         'The original document should start with the div');
-    assert_false(pipSession.document.body.contains(div),
+    assert_false(pipSession.window.document.body.contains(div),
         'The PiP document should not start with the div');
-    pipSession.document.body.append(div);
+    pipSession.window.document.body.append(div);
     assert_false(document.body.contains(div),
         'The div should have moved away from the original document');
-    assert_true(pipSession.document.body.contains(div),
+    assert_true(pipSession.window.document.body.contains(div),
         'The div should have moved to the PiP document');
   }));
 });

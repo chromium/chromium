@@ -845,7 +845,8 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
       OpenDocumentPictureInPictureSession(v8_scope, GetDocument(),
                                           CopyStyleSheetOptions::kNo);
   ASSERT_NE(nullptr, pictureInPictureSession);
-  Document* pictureInPictureDocument = pictureInPictureSession->document();
+  Document* pictureInPictureDocument =
+      pictureInPictureSession->window()->document();
   ASSERT_NE(nullptr, pictureInPictureDocument);
 
   // The Picture in Picture window's base URL should match the opener.
@@ -857,7 +858,7 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
             "rgba(0, 0, 0, 0)");
 
-  auto* document = pictureInPictureSession->document();
+  auto* document = pictureInPictureSession->window()->document();
   ASSERT_TRUE(document);
 
   // Verify that move* and resize* don't call through to the chrome client.
@@ -895,7 +896,8 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   DocumentPictureInPictureSession* pictureInPictureSession =
       OpenDocumentPictureInPictureSession(v8_scope, GetDocument(),
                                           CopyStyleSheetOptions::kYes);
-  Document* pictureInPictureDocument = pictureInPictureSession->document();
+  Document* pictureInPictureDocument =
+      pictureInPictureSession->window()->document();
 
   // CSS for a blue background should have been copied from the opener.
   EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
@@ -917,7 +919,8 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   DocumentPictureInPictureSession* pictureInPictureSession =
       OpenDocumentPictureInPictureSession(v8_scope, GetDocument(),
                                           CopyStyleSheetOptions::kYes);
-  Document* pictureInPictureDocument = pictureInPictureSession->document();
+  Document* pictureInPictureDocument =
+      pictureInPictureSession->window()->document();
   EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
             "rgba(0, 0, 0, 0)");
 }

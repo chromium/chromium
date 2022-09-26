@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/document_picture_in_picture/document_picture_in_picture_session.h"
 #include "third_party/blink/renderer/modules/document_picture_in_picture/picture_in_picture_controller_impl.h"
-#include "third_party/blink/renderer/modules/document_picture_in_picture/window_picture_in_picture.h"
 
 namespace blink {
 
@@ -56,8 +55,26 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
   // TODO(crbug.com/1360443): When this call is inlined here, be sure to
   // replace `PictureInPictureWindowOptions` with a new
   // `DocumentPictureInPictureOptions` type.
-  return WindowPictureInPicture::requestPictureInPictureWindow(
-      script_state, *dom_window, options, exception_state);
+  // TODO(https://crbug.com/1253970): Check if PiP is allowed (e.g. user
+  // gesture, permissions, etc).
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto promise = resolver->Promise();
+
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
+                                      "Document not attached");
+    return promise;
+  }
+
+  // |dom_window->document()| should always exist after document construction.
+  auto* document = dom_window->document();
+  DCHECK(document);
+
+  PictureInPictureControllerImpl::From(*document)
+      .CreateDocumentPictureInPictureWindow(script_state, *dom_window, options,
+                                            resolver, exception_state);
+
+  return promise;
 }
 
 DocumentPictureInPictureSession* DocumentPictureInPicture::session(

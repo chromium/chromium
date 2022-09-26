@@ -2,18 +2,18 @@
 var pipSession;
 async function createDocumentPipWindow() {
     pipSession = await navigator.documentPictureInPicture.requestWindow();
-    pipSession.document.write("Hello, world.<a name='top'>top</a>");
+    pipSession.window.document.write("Hello, world.<a name='top'>top</a>");
     return true;
 }
 
 function navigateInDocumentPipWindow(url) {
-    pipSession.document.location.href = url;
+    pipSession.window.document.location.href = url;
     return true;
 }
 
 function addScriptToPictureInPictureWindow() {
-    pipSession.document.write("<script>document.testvalue = 123;<\/script>");
-    return pipSession.document.testvalue == 123;
+    pipSession.window.document.write("<script>document.testvalue = 123;<\/script>");
+    return pipSession.window.document.testvalue == 123;
 }
 
 </script>

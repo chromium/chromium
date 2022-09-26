@@ -9,6 +9,5 @@
     RuntimeEnabled=DocumentPictureInPictureAPI
 ]
 interface DocumentPictureInPictureSession {
-  [SameObject] readonly attribute Document? document;
   [SameObject] readonly attribute Window? window;
 };
