@@ -393,7 +393,7 @@ void WebAppInstallManager::OnReadErrorLog(Result result,
     return;
 
   ErrorLog early_error_log = std::move(*error_log_);
-  *error_log_ = std::move(error_log.GetList());
+  *error_log_ = std::move(error_log).TakeList();
 
   // Appends the `early_error_log` at the end.
   error_log_->reserve(error_log_->size() + early_error_log.size());

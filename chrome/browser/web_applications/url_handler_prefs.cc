@@ -373,7 +373,7 @@ void RemoveEntries(base::Value::Dict& pref_value,
                    const base::FilePath& profile_path) {
   std::vector<std::string> origins_to_remove;
   for (auto origin_value : pref_value) {
-    base::Value::List handlers = std::move(origin_value.second.GetList());
+    base::Value::List handlers = std::move(origin_value.second).TakeList();
     handlers.EraseIf([&app_id, &profile_path](const base::Value& handler) {
       return IsHandlerForApp(app_id, profile_path,
                              /*match_app_id=*/!app_id.empty(), handler);
@@ -750,7 +750,7 @@ void UpdateWebApp(PrefService* local_state,
   for (auto origin_value : pref_value) {
     const std::string& origin_str = origin_value.first;
     base::Value::List curent_handlers =
-        std::move(origin_value.second.GetList());
+        std::move(origin_value.second).TakeList();
 
     // Remove any existing handler values that were written previously for the
     // same app_id and profile but are no longer found in 'new_url_handlers'.
