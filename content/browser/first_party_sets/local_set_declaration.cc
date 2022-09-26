@@ -6,7 +6,6 @@
 
 #include <sstream>
 #include <string>
-#include <utility>
 
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -19,9 +18,8 @@ namespace content {
 
 namespace {
 
-absl::optional<
-    std::pair<FirstPartySetParser::SingleSet, FirstPartySetParser::Aliases>>
-CanonicalizeSet(const std::string& use_first_party_set_flag_value) {
+absl::optional<FirstPartySetParser::SingleSet> CanonicalizeSet(
+    const std::string& use_first_party_set_flag_value) {
   std::istringstream stream(use_first_party_set_flag_value);
 
   FirstPartySetParser::SetsAndAliases parsed =
@@ -47,8 +45,14 @@ CanonicalizeSet(const std::string& use_first_party_set_flag_value) {
     return absl::nullopt;
   }
 
-  return absl::make_optional(
-      std::make_pair(std::move(entries), std::move(aliases)));
+  for (const auto& [alias, canonical] : aliases) {
+    auto it = entries.find(canonical);
+    DCHECK(it != entries.end());
+    bool inserted = entries.emplace(alias, it->second).second;
+    DCHECK(inserted);
+  }
+
+  return absl::make_optional(std::move(entries));
 }
 
 }  // namespace
@@ -61,8 +65,7 @@ LocalSetDeclaration::LocalSetDeclaration(
     : LocalSetDeclaration(CanonicalizeSet(use_first_party_set_flag_value)) {}
 
 LocalSetDeclaration::LocalSetDeclaration(
-    absl::optional<std::pair<FirstPartySetParser::SingleSet,
-                             FirstPartySetParser::Aliases>> parsed_set)
+    absl::optional<FirstPartySetParser::SingleSet> parsed_set)
     : parsed_set_(std::move(parsed_set)) {}
 
 LocalSetDeclaration::~LocalSetDeclaration() = default;
@@ -77,14 +80,9 @@ LocalSetDeclaration& LocalSetDeclaration::operator=(LocalSetDeclaration&&) =
 
 const FirstPartySetParser::SingleSet& LocalSetDeclaration::GetSet() const {
   DCHECK(!empty());
-  const FirstPartySetParser::SingleSet& set = parsed_set_.value().first;
+  const FirstPartySetParser::SingleSet& set = parsed_set_.value();
   DCHECK(!set.empty());
   return set;
-}
-
-const FirstPartySetParser::Aliases& LocalSetDeclaration::GetAliases() const {
-  DCHECK(!empty());
-  return parsed_set_.value().second;
 }
 
 }  // namespace content

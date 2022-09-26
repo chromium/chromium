@@ -50,13 +50,6 @@ class NET_EXPORT FirstPartySetsContextConfig {
   absl::optional<absl::optional<FirstPartySetEntry>> FindOverride(
       const SchemefulSite& site) const;
 
-  // Modifies this config such that `aliases` are taken into account.
-  //
-  // This method requires that no override exists in this config for any key in
-  // `aliases`; and that an override exists in this config for every value in
-  // `aliases`.
-  void IngestAliases(base::flat_map<SchemefulSite, SchemefulSite> aliases);
-
   // Returns whether an override can be found for the given site in this
   // context.
   bool Contains(const SchemefulSite& site) const;

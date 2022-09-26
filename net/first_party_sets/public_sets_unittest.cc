@@ -193,14 +193,11 @@ TEST_F(PublicSetsTest, Empty_NonemptyEntries) {
 
 TEST_F(PublicSetsTest, Empty_NonemptyManualSet) {
   PublicSets public_sets;
-  public_sets.ApplyManuallySpecifiedSet(
-      {
-          {kPrimary,
-           FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
-          {kAssociated4,
-           FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
-      },
-      {});
+  public_sets.ApplyManuallySpecifiedSet({
+      {kPrimary,
+       FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+      {kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+  });
   EXPECT_FALSE(public_sets.empty());
 }
 
@@ -239,14 +236,11 @@ TEST_F(PopulatedPublicSetsTest,
        ApplyManuallySpecifiedSet_DeduplicatesPrimaryPrimary) {
   // kPrimary overlaps as primary of both sets, so the existing set should be
   // wiped out.
-  public_sets().ApplyManuallySpecifiedSet(
-      {
-          {kPrimary,
-           FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
-          {kAssociated4,
-           FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
-      },
-      {});
+  public_sets().ApplyManuallySpecifiedSet({
+      {kPrimary,
+       FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+      {kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+  });
 
   EXPECT_THAT(
       public_sets().FindEntries(
@@ -270,13 +264,11 @@ TEST_F(PopulatedPublicSetsTest,
        ApplyManuallySpecifiedSet_DeduplicatesPrimaryNonprimary) {
   // kPrimary overlaps as a primary of the public set and non-primary of the CLI
   // set, so the existing set should be wiped out.
-  public_sets().ApplyManuallySpecifiedSet(
-      {
-          {kPrimary3,
-           FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
-          {kPrimary, FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
-      },
-      {});
+  public_sets().ApplyManuallySpecifiedSet({
+      {kPrimary3,
+       FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
+      {kPrimary, FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
+  });
 
   EXPECT_THAT(
       public_sets().FindEntries(
@@ -302,14 +294,12 @@ TEST_F(PopulatedPublicSetsTest,
   // kAssociated1 overlaps as a non-primary of the public set and primary of the
   // CLI set, so the CLI set should steal it and wipe out its alias, but
   // otherwise leave the set intact.
-  public_sets().ApplyManuallySpecifiedSet(
-      {
-          {kAssociated1,
-           FirstPartySetEntry(kAssociated1, SiteType::kPrimary, absl::nullopt)},
-          {kAssociated4,
-           FirstPartySetEntry(kAssociated1, SiteType::kAssociated, 0)},
-      },
-      {});
+  public_sets().ApplyManuallySpecifiedSet({
+      {kAssociated1,
+       FirstPartySetEntry(kAssociated1, SiteType::kPrimary, absl::nullopt)},
+      {kAssociated4,
+       FirstPartySetEntry(kAssociated1, SiteType::kAssociated, 0)},
+  });
 
   EXPECT_THAT(
       public_sets().FindEntries(
@@ -341,14 +331,11 @@ TEST_F(PopulatedPublicSetsTest,
        ApplyManuallySpecifiedSet_DeduplicatesNonprimaryNonprimary) {
   // kAssociated1 overlaps as a non-primary of the public set and non-primary of
   // the CLI set, so the CLI set should steal it and wipe out its alias.
-  public_sets().ApplyManuallySpecifiedSet(
-      {
-          {kPrimary3,
-           FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
-          {kAssociated1,
-           FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
-      },
-      {});
+  public_sets().ApplyManuallySpecifiedSet({
+      {kPrimary3,
+       FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
+      {kAssociated1, FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
+  });
 
   EXPECT_THAT(
       public_sets().FindEntries(
@@ -379,14 +366,11 @@ TEST_F(PopulatedPublicSetsTest,
        ApplyManuallySpecifiedSet_PrunesInducedSingletons) {
   // Steal kAssociated3, so that kPrimary2 becomes a singleton, and verify that
   // kPrimary2 is no longer considered in a set.
-  public_sets().ApplyManuallySpecifiedSet(
-      {
-          {kPrimary3,
-           FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
-          {kAssociated3,
-           FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
-      },
-      {});
+  public_sets().ApplyManuallySpecifiedSet({
+      {kPrimary3,
+       FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
+      {kAssociated3, FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
+  });
 
   EXPECT_THAT(public_sets().FindEntries({kPrimary2}, /*config=*/nullptr),
               IsEmpty());
@@ -396,14 +380,13 @@ TEST_F(PopulatedPublicSetsTest, ApplyManuallySpecifiedSet_RespectsManualAlias) {
   // Both the public sets and the locally-defined set define an alias for
   // kAssociated1, but both define a different set for that site too.  Only the
   // locally-defined alias should be observable.
-  public_sets().ApplyManuallySpecifiedSet(
-      {
-          {kPrimary3,
-           FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
-          {kAssociated1,
-           FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
-      },
-      {{kAssociated1Cctld2, kAssociated1}});
+  public_sets().ApplyManuallySpecifiedSet({
+      {kPrimary3,
+       FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
+      {kAssociated1, FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
+      {kAssociated1Cctld2,
+       FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
+  });
 
   EXPECT_THAT(
       public_sets().FindEntries(

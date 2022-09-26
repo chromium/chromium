@@ -114,9 +114,7 @@ void FirstPartySetsLoader::MaybeFinishLoading() {
     return;
   }
   if (!manually_specified_set_->empty()) {
-    public_sets_->ApplyManuallySpecifiedSet(
-        manually_specified_set_->GetSet(),
-        manually_specified_set_->GetAliases());
+    public_sets_->ApplyManuallySpecifiedSet(manually_specified_set_->GetSet());
   }
   std::move(on_load_complete_).Run(std::move(public_sets_).value());
 }

@@ -49,17 +49,6 @@ TEST(FirstPartySetsContextConfigTest, FindOverride_modification) {
       Optional(Optional(entry)));
 }
 
-TEST(FirstPartySetsContextConfigTest, IngestAliases) {
-  SchemefulSite example(GURL("https://example.test"));
-  SchemefulSite example_cctld(GURL("https://example.cctld"));
-  FirstPartySetEntry entry(example, SiteType::kPrimary, absl::nullopt);
-
-  FirstPartySetsContextConfig config({{example, entry}});
-  config.IngestAliases({{example_cctld, example}});
-
-  EXPECT_THAT(config.FindOverride(example_cctld), Optional(Optional(entry)));
-}
-
 TEST(FirstPartySetsContextConfigTest, Contains) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite decoy(GURL("https://decoy.test"));

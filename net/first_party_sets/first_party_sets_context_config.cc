@@ -35,17 +35,6 @@ FirstPartySetsContextConfig::FindOverride(const SchemefulSite& site) const {
   return absl::nullopt;
 }
 
-void FirstPartySetsContextConfig::IngestAliases(
-    base::flat_map<SchemefulSite, SchemefulSite> aliases) {
-  for (const auto& [alias, canonical] : aliases) {
-    absl::optional<absl::optional<FirstPartySetEntry>> result =
-        FindOverride(canonical);
-    DCHECK(result.has_value());
-    bool inserted = customizations_.emplace(alias, result.value()).second;
-    DCHECK(inserted);
-  }
-}
-
 bool FirstPartySetsContextConfig::Contains(const SchemefulSite& site) const {
   return FindOverride(site).has_value();
 }
