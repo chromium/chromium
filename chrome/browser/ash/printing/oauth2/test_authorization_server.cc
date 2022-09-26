@@ -143,7 +143,7 @@ std::string FakeAuthorizationServer::ReceivePOSTWithJSON(
   auto content = base::JSONReader::Read(payload);
   out_params.clear();
   if (content && content->is_dict()) {
-    out_params = std::move(content->GetDict());
+    out_params = std::move(content).value().TakeDict();
   } else {
     msg += base::StrCat(
         {"Cannot parse the payload: \"", payload.substr(0, 256), "\""});

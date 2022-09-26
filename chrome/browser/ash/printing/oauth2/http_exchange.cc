@@ -222,7 +222,7 @@ void HttpExchange::OnURLLoaderCompleted(
     std::move(callback).Run(StatusCode::kInvalidResponse);
     return;
   }
-  content_ = std::move(parsed->GetDict());
+  content_ = std::move(parsed).value().TakeDict();
 
   // Exits if success.
   if (http_status == success_http_status) {
