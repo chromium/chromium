@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -130,6 +128,46 @@ std::unique_ptr<CookiesTreeModel> CreateCookiesTreeModel(
   return std::make_unique<CookiesTreeModel>(std::move(container), nullptr);
 }
 
+PageSpecificSiteDataDialogAction GetDeleteActionForNodeType(
+    CookieTreeNode::DetailedInfo::NodeType node_type) {
+  switch (node_type) {
+    // User deleted data at site level.
+    case CookieTreeNode::DetailedInfo::TYPE_HOST:
+      return PageSpecificSiteDataDialogAction::kSiteDeleted;
+    // User deleted a single cookie.
+    case CookieTreeNode::DetailedInfo::TYPE_COOKIE:
+      return PageSpecificSiteDataDialogAction::kSingleCookieDeleted;
+    // User deleted cookies folder.
+    case CookieTreeNode::DetailedInfo::TYPE_COOKIES:
+      return PageSpecificSiteDataDialogAction::kCookiesFolderDeleted;
+    // User deleted other folders.
+    case CookieTreeNode::DetailedInfo::TYPE_DATABASES:
+    case CookieTreeNode::DetailedInfo::TYPE_DATABASE:
+    case CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES:
+    case CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE:
+    case CookieTreeNode::DetailedInfo::TYPE_SESSION_STORAGES:
+    case CookieTreeNode::DetailedInfo::TYPE_SESSION_STORAGE:
+    case CookieTreeNode::DetailedInfo::TYPE_INDEXED_DBS:
+    case CookieTreeNode::DetailedInfo::TYPE_INDEXED_DB:
+    case CookieTreeNode::DetailedInfo::TYPE_FILE_SYSTEMS:
+    case CookieTreeNode::DetailedInfo::TYPE_FILE_SYSTEM:
+    case CookieTreeNode::DetailedInfo::TYPE_QUOTA:
+    case CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKERS:
+    case CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKER:
+    case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKERS:
+    case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKER:
+    case CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGES:
+    case CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE:
+      return PageSpecificSiteDataDialogAction::kFolderDeleted;
+    case CookieTreeNode::DetailedInfo::TYPE_NONE:
+    case CookieTreeNode::DetailedInfo::TYPE_ROOT:
+      NOTREACHED()
+          << "This node type is not visible to the user in UI. Node Type: "
+          << node_type;
+      return PageSpecificSiteDataDialogAction::kMaxValue;
+  }
+}
+
 }  // namespace
 
 // This DrawingProvider allows TreeModelNodes to be annotated with auxiliary
@@ -138,7 +176,7 @@ std::unique_ptr<CookiesTreeModel> CreateCookiesTreeModel(
 // drawn on the trailing end of their row.
 class CookiesTreeViewDrawingProvider : public views::TreeViewDrawingProvider {
  public:
-  CookiesTreeViewDrawingProvider() {}
+  CookiesTreeViewDrawingProvider() = default;
   ~CookiesTreeViewDrawingProvider() override {}
 
   void AnnotateNode(ui::TreeModelNode* node, const std::u16string& text);
@@ -373,7 +411,8 @@ CollectedCookiesViews::CollectedCookiesViews(content::WebContents* web_contents)
 
   EnableControls();
   ShowCookieInfo();
-  RecordDialogAction(CookiesInUseDialogAction::kDialogOpened);
+  RecordPageSpecificSiteDataDialogAction(
+      PageSpecificSiteDataDialogAction::kDialogOpened);
 }
 
 void CollectedCookiesViews::OnDialogClosed() {
@@ -608,26 +647,8 @@ void CollectedCookiesViews::AddContentException(views::TreeView* tree_view,
   infobar_->SetLabelText(setting, host_node->GetTitle());
   status_changed_ = true;
 
-  CookiesInUseDialogAction user_action;
-  switch (setting) {
-    case ContentSetting::CONTENT_SETTING_BLOCK:
-      user_action = CookiesInUseDialogAction::kSiteBlocked;
-      break;
-    case ContentSetting::CONTENT_SETTING_ALLOW:
-      user_action = CookiesInUseDialogAction::kSiteAllowed;
-      break;
-    case ContentSetting::CONTENT_SETTING_SESSION_ONLY:
-      user_action = CookiesInUseDialogAction::kSiteClearedOnExit;
-      break;
-    case ContentSetting::CONTENT_SETTING_DEFAULT:
-    case ContentSetting::CONTENT_SETTING_ASK:
-    case ContentSetting::CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
-    case ContentSetting::CONTENT_SETTING_NUM_SETTINGS:
-      NOTREACHED() << "Unknown ContentSetting value: " << setting;
-      return;
-  }
-
-  RecordDialogAction(user_action);
+  RecordPageSpecificSiteDataDialogAction(
+      GetDialogActionForContentSetting(setting));
 
   CookiesTreeViewDrawingProvider* provider =
       (tree_view == allowed_cookies_tree_)
@@ -643,73 +664,9 @@ void CollectedCookiesViews::DeleteSelectedCookieNode() {
       static_cast<CookieTreeNode*>(allowed_cookies_tree_->GetSelectedNode());
   CookieTreeNode::DetailedInfo::NodeType node_type =
       cookie_node->GetDetailedInfo().node_type;
-  CookiesInUseDialogAction user_action;
-  switch (node_type) {
-    // User deleted data at site level.
-    case CookieTreeNode::DetailedInfo::TYPE_HOST:
-      user_action = CookiesInUseDialogAction::kSiteDeleted;
-      break;
-    // User deleted a single cookie.
-    case CookieTreeNode::DetailedInfo::TYPE_COOKIE:
-      user_action = CookiesInUseDialogAction::kSingleCookieDeleted;
-      break;
-    // User deleted cookies folder.
-    case CookieTreeNode::DetailedInfo::TYPE_COOKIES:
-      user_action = CookiesInUseDialogAction::kCookiesFolderDeleted;
-      break;
-    // User deleted other folders.
-    case CookieTreeNode::DetailedInfo::TYPE_DATABASES:
-    case CookieTreeNode::DetailedInfo::TYPE_DATABASE:
-    case CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES:
-    case CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE:
-    case CookieTreeNode::DetailedInfo::TYPE_SESSION_STORAGES:
-    case CookieTreeNode::DetailedInfo::TYPE_SESSION_STORAGE:
-    case CookieTreeNode::DetailedInfo::TYPE_INDEXED_DBS:
-    case CookieTreeNode::DetailedInfo::TYPE_INDEXED_DB:
-    case CookieTreeNode::DetailedInfo::TYPE_FILE_SYSTEMS:
-    case CookieTreeNode::DetailedInfo::TYPE_FILE_SYSTEM:
-    case CookieTreeNode::DetailedInfo::TYPE_QUOTA:
-    case CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKERS:
-    case CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKER:
-    case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKERS:
-    case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKER:
-    case CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGES:
-    case CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE:
-      user_action = CookiesInUseDialogAction::kFolderDeleted;
-      break;
-    case CookieTreeNode::DetailedInfo::TYPE_NONE:
-    case CookieTreeNode::DetailedInfo::TYPE_ROOT:
-      NOTREACHED()
-          << "This node type is not visible to the user in UI. Node Type: "
-          << node_type;
-      return;
-  }
 
   allowed_cookies_tree_model_->DeleteCookieNode(cookie_node);
-  RecordDialogAction(user_action);
-}
-
-void CollectedCookiesViews::RecordDialogAction(
-    CookiesInUseDialogAction action) {
-  switch (action) {
-    case CookiesInUseDialogAction::kSiteDeleted:
-    case CookiesInUseDialogAction::kSingleCookieDeleted:
-    case CookiesInUseDialogAction::kCookiesFolderDeleted:
-    case CookiesInUseDialogAction::kFolderDeleted:
-      base::RecordAction(
-          base::UserMetricsAction("CookiesInUseDialog.RemoveButtonClicked"));
-      break;
-    case CookiesInUseDialogAction::kDialogOpened:
-      base::RecordAction(base::UserMetricsAction("CookiesInUseDialog.Opened"));
-      break;
-    case CookiesInUseDialogAction::kSiteBlocked:
-    case CookiesInUseDialogAction::kSiteAllowed:
-    case CookiesInUseDialogAction::kSiteClearedOnExit:
-      // No user actions for these metrics.
-      break;
-  }
-
-  base::UmaHistogramEnumeration("Privacy.CookiesInUseDialog.Action", action);
+  RecordPageSpecificSiteDataDialogAction(GetDeleteActionForNodeType(node_type));
 }
 
 BEGIN_METADATA(CollectedCookiesViews, views::DialogDelegateView)

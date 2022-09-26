@@ -5,12 +5,56 @@
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/views/collected_cookies_views.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 #include "components/page_info/core/features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/widget/widget.h"
+
+void RecordPageSpecificSiteDataDialogAction(
+    PageSpecificSiteDataDialogAction action) {
+  switch (action) {
+    case PageSpecificSiteDataDialogAction::kSiteDeleted:
+    case PageSpecificSiteDataDialogAction::kSingleCookieDeleted:
+    case PageSpecificSiteDataDialogAction::kCookiesFolderDeleted:
+    case PageSpecificSiteDataDialogAction::kFolderDeleted:
+      base::RecordAction(
+          base::UserMetricsAction("CookiesInUseDialog.RemoveButtonClicked"));
+      break;
+    case PageSpecificSiteDataDialogAction::kDialogOpened:
+      base::RecordAction(base::UserMetricsAction("CookiesInUseDialog.Opened"));
+      break;
+    case PageSpecificSiteDataDialogAction::kSiteBlocked:
+    case PageSpecificSiteDataDialogAction::kSiteAllowed:
+    case PageSpecificSiteDataDialogAction::kSiteClearedOnExit:
+      // No user actions for these metrics.
+      break;
+  }
+
+  base::UmaHistogramEnumeration("Privacy.CookiesInUseDialog.Action", action);
+}
+
+PageSpecificSiteDataDialogAction GetDialogActionForContentSetting(
+    ContentSetting setting) {
+  switch (setting) {
+    case ContentSetting::CONTENT_SETTING_BLOCK:
+      return PageSpecificSiteDataDialogAction::kSiteBlocked;
+    case ContentSetting::CONTENT_SETTING_ALLOW:
+      return PageSpecificSiteDataDialogAction::kSiteAllowed;
+    case ContentSetting::CONTENT_SETTING_SESSION_ONLY:
+      return PageSpecificSiteDataDialogAction::kSiteClearedOnExit;
+    case ContentSetting::CONTENT_SETTING_DEFAULT:
+    case ContentSetting::CONTENT_SETTING_ASK:
+    case ContentSetting::CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
+    case ContentSetting::CONTENT_SETTING_NUM_SETTINGS:
+      NOTREACHED() << "Unknown ContentSetting value: " << setting;
+      return PageSpecificSiteDataDialogAction::kMaxValue;
+  }
+}
 
 // static
 views::View* PageSpecificSiteDataDialogController::GetDialogView(

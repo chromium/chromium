@@ -253,9 +253,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest, OpenDialog) {
   histograms.ExpectTotalCount(kCookiesDialogHistogramName, 1);
   histograms.ExpectBucketCount(
       kCookiesDialogHistogramName,
-      static_cast<int>(
-          CollectedCookiesViews::CookiesInUseDialogAction::kDialogOpened),
-      1);
+      static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
   EXPECT_EQ(1, user_actions.GetActionCount(open_action));
 }
 
@@ -288,9 +286,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest, MAYBE_DeleteFolder) {
   ClickButton(CollectedCookiesViews::kRemoveButtonId);
   histograms.ExpectBucketCount(
       kCookiesDialogHistogramName,
-      static_cast<int>(
-          CollectedCookiesViews::CookiesInUseDialogAction::kFolderDeleted),
-      1);
+      static_cast<int>(PageSpecificSiteDataDialogAction::kFolderDeleted), 1);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -318,9 +314,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest, MAYBE_RemoveButton) {
   ClickButton(CollectedCookiesViews::kRemoveButtonId);
   histograms.ExpectBucketCount(
       kCookiesDialogHistogramName,
-      static_cast<int>(
-          CollectedCookiesViews::CookiesInUseDialogAction::kSiteDeleted),
-      1);
+      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteDeleted), 1);
   EXPECT_EQ(1, user_actions.GetActionCount(remove_action));
 }
 
@@ -345,9 +339,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest, MAYBE_BlockAllowSite) {
   ClickButton(CollectedCookiesViews::kBlockButtonId);
   histograms.ExpectBucketCount(
       kCookiesDialogHistogramName,
-      static_cast<int>(
-          CollectedCookiesViews::CookiesInUseDialogAction::kSiteBlocked),
-      1);
+      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteBlocked), 1);
   // Close Cookies in use Dialog.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   PageSpecificSiteDataDialogController::GetDialogViewForTesting(web_contents)
@@ -368,9 +360,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest, MAYBE_BlockAllowSite) {
   ClickButton(CollectedCookiesViews::kAllowButtonId);
   histograms.ExpectBucketCount(
       kCookiesDialogHistogramName,
-      static_cast<int>(
-          CollectedCookiesViews::CookiesInUseDialogAction::kSiteAllowed),
-      1);
+      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteAllowed), 1);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -392,9 +382,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest,
   ClickButton(CollectedCookiesViews::kBlockButtonId);
   histograms.ExpectBucketCount(
       kCookiesDialogHistogramName,
-      static_cast<int>(
-          CollectedCookiesViews::CookiesInUseDialogAction::kSiteBlocked),
-      1);
+      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteBlocked), 1);
   // Close Cookies in use Dialog.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   PageSpecificSiteDataDialogController::GetDialogViewForTesting(web_contents)
@@ -414,7 +402,6 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest,
   ClickButton(CollectedCookiesViews::kClearOnExitButtonId);
   histograms.ExpectBucketCount(
       kCookiesDialogHistogramName,
-      static_cast<int>(
-          CollectedCookiesViews::CookiesInUseDialogAction::kSiteClearedOnExit),
+      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteClearedOnExit),
       1);
 }

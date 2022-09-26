@@ -5,6 +5,8 @@
 #include <stddef.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
@@ -22,6 +24,12 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
+
+namespace {
+
+const char kCookiesDialogHistogramName[] = "Privacy.CookiesInUseDialog.Action";
+
+}  // namespace
 
 class PageSpecificSiteDataDialogBrowserTest
     : public InProcessBrowserTest,
@@ -110,7 +118,16 @@ class PageSpecificSiteDataDialogBrowserTest
 // different scenarious.
 
 IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, CloseDialog) {
-  // Test closing dialog.
+  // Test opening and closing dialog.
+
+  base::HistogramTester histograms;
+  base::UserActionTester user_actions;
+  const std::string open_action = "CookiesInUseDialog.Opened";
+
+  // The histogram should start empty and no actions recorded.
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+  EXPECT_EQ(0, user_actions.GetActionCount(open_action));
+
   auto* dialog = OpenDialog();
   EXPECT_FALSE(dialog->IsClosed());
 
@@ -118,6 +135,12 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, CloseDialog) {
   EXPECT_TRUE(dialog->IsClosed());
 
   EXPECT_EQ(0u, infobar_count());
+
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 1);
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
+  EXPECT_EQ(1, user_actions.GetActionCount(open_action));
 }
 
 IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
@@ -193,9 +216,21 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
     return;
   }
 
+  base::HistogramTester histograms;
+  base::UserActionTester user_actions;
+  const std::string remove_action = "CookiesInUseDialog.RemoveButtonClicked";
+
+  // The histogram should start empty and no actions recorded.
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+  EXPECT_EQ(0, user_actions.GetActionCount(remove_action));
+
   auto* dialog = OpenDialog();
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(dialog);
+
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
 
   auto* view =
       GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
@@ -203,7 +238,15 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
   EXPECT_TRUE(row_view->GetVisible());
   ClickDeleteMenuItem(row_view);
   EXPECT_FALSE(row_view->GetVisible());
-  // TODO(crbug.com/1344787): Check the histograms value.
+
+  dialog->Close();
+  EXPECT_EQ(1u, infobar_count());
+
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 2);
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteDeleted), 1);
+  EXPECT_EQ(1, user_actions.GetActionCount(remove_action));
 }
 
 IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
@@ -211,9 +254,17 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
     return;
   }
 
+  base::HistogramTester histograms;
+  // The histogram should start empty and no actions recorded.
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+
   auto* dialog = OpenDialog();
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(dialog);
+
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
 
   auto* view =
       GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
@@ -221,12 +272,17 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
   // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
   // returns true. It's not actually visible because it has size 0.
   ClickBlockMenuItem(row_view);
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteBlocked), 1);
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Blocked");
   // TODO(crbug.com/1344787): Check the histograms value.
 
   dialog->Close();
   EXPECT_EQ(1u, infobar_count());
+
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 2);
 }
 
 IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
@@ -234,9 +290,17 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
     return;
   }
 
+  base::HistogramTester histograms;
+  // The histogram should start empty and no actions recorded.
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+
   auto* dialog = OpenDialog();
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(dialog);
+
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
 
   auto* view =
       GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
@@ -246,14 +310,25 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
   // TODO(crbug.com/1344787): Setup a site with blocked cookies to start with
   // blocked state here.
   ClickBlockMenuItem(row_view);
+
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteBlocked), 1);
+
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Blocked");
   ClickAllowMenuItem(row_view);
+
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteAllowed), 1);
+
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Allowed");
-  // TODO(crbug.com/1344787): Check the histograms value.
 
   dialog->Close();
   EXPECT_EQ(1u, infobar_count());
+
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 3);
 }
 
 IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
@@ -262,9 +337,17 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
     return;
   }
 
+  base::HistogramTester histograms;
+  // The histogram should start empty and no actions recorded.
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+
   auto* dialog = OpenDialog();
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(dialog);
+
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
 
   auto* view =
       GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
@@ -272,12 +355,17 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
   // returns true. It's not actually visible because it has size 0.
   ClickClearOnExitMenuItem(row_view);
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteClearedOnExit),
+      1);
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Clear on close");
-  // TODO(crbug.com/1344787): Check the histograms value.
 
   dialog->Close();
   EXPECT_EQ(1u, infobar_count());
+
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 2);
 }
 
 // Run tests with kPageSpecificSiteDataDialog flag enabled and disabled.

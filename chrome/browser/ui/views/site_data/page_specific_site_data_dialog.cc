@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -139,6 +140,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS));
     cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
+
+    RecordPageSpecificSiteDataDialogAction(
+        PageSpecificSiteDataDialogAction::kDialogOpened);
   }
 
   void OnDialogExplicitlyClosed() {
@@ -192,16 +196,16 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   FaviconCache* favicon_cache() { return favicon_cache_.get(); }
 
   void DeleteStoredObjects(const url::Origin& origin) {
-    // TODO(crbug.com/1344787): Record metrics.
     status_changed_ = true;
     DCHECK(DeleteMatchingHostNodeFromModel(allowed_cookies_tree_model_.get(),
                                            origin))
         << "The node with a matching origin should be found and deleted in the "
            "allowed model.";
+    RecordPageSpecificSiteDataDialogAction(
+        PageSpecificSiteDataDialogAction::kSiteDeleted);
   }
 
   void SetContentException(const url::Origin& origin, ContentSetting setting) {
-    // TODO(crbug.com/1344787): Record metrics.
     status_changed_ = true;
     DCHECK(setting == CONTENT_SETTING_ALLOW ||
            setting == CONTENT_SETTING_BLOCK ||
@@ -211,6 +215,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
       cookie_settings_->ResetCookieSetting(url);
       cookie_settings_->SetCookieSetting(url, setting);
     }
+    RecordPageSpecificSiteDataDialogAction(
+        GetDialogActionForContentSetting(setting));
   }
 
  private:
