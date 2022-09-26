@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 
+#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -28,7 +28,11 @@ void EnableUPMFeatureWithTestParams(
     base::test::ScopedFeatureList* feature_list) {
   feature_list->InitAndEnableFeatureWithParameters(
       password_manager::features::kUnifiedPasswordManagerAndroid,
-      {{password_manager::features::kGmsApiErrorListVersion.name,
+      {// INTERNAL_ERROR=8, BACKEND_GENERIC=11009
+       {password_manager::features::kIgnoredGmsApiErrors.name, "8,11009"},
+       // DEVELOPER_ERROR=10, INVALID_DATA=11011
+       {password_manager::features::kRetriableGmsApiErrors.name, "10,11011"},
+       {password_manager::features::kGmsApiErrorListVersion.name,
         base::NumberToString(kTestErrorListVersion)}});
 }
 
@@ -211,4 +215,46 @@ TEST_F(PasswordManagerEvictionUtilTest,
 
   EXPECT_FALSE(
       password_manager_upm_eviction::ShouldInvalidateEviction(pref_service()));
+}
+
+TEST_F(PasswordManagerEvictionUtilTest, ShouldNotIgnoreByDefault) {
+  feature_list()->InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerAndroid);
+
+  EXPECT_FALSE(password_manager_upm_eviction::ShouldIgnoreOnApiError(
+      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError)));
+}
+
+TEST_F(PasswordManagerEvictionUtilTest, ShouldNotRetryByDefault) {
+  feature_list()->InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerAndroid);
+
+  EXPECT_FALSE(password_manager_upm_eviction::ShouldRetryOnApiError(
+      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError)));
+}
+
+TEST_F(PasswordManagerEvictionUtilTest, ShouldIgnoreOnlyListedError) {
+  EnableUPMFeatureWithTestParams(feature_list());
+
+  EXPECT_TRUE(password_manager_upm_eviction::ShouldIgnoreOnApiError(
+      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError)));
+  EXPECT_TRUE(password_manager_upm_eviction::ShouldIgnoreOnApiError(
+      static_cast<int>(AndroidBackendAPIErrorCode::kBackendGeneric)));
+  EXPECT_FALSE(password_manager_upm_eviction::ShouldIgnoreOnApiError(
+      static_cast<int>(AndroidBackendAPIErrorCode::kDeveloperError)));
+  EXPECT_FALSE(password_manager_upm_eviction::ShouldIgnoreOnApiError(
+      static_cast<int>(AndroidBackendAPIErrorCode::kUnexpectedError)));
+}
+
+TEST_F(PasswordManagerEvictionUtilTest, ShouldRetryOnlyListedError) {
+  EnableUPMFeatureWithTestParams(feature_list());
+
+  EXPECT_TRUE(password_manager_upm_eviction::ShouldRetryOnApiError(
+      static_cast<int>(AndroidBackendAPIErrorCode::kDeveloperError)));
+  EXPECT_TRUE(password_manager_upm_eviction::ShouldRetryOnApiError(
+      static_cast<int>(AndroidBackendAPIErrorCode::kInvalidData)));
+  EXPECT_FALSE(password_manager_upm_eviction::ShouldRetryOnApiError(
+      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError)));
+  EXPECT_FALSE(password_manager_upm_eviction::ShouldRetryOnApiError(
+      static_cast<int>(AndroidBackendAPIErrorCode::kUnexpectedError)));
 }
