@@ -368,7 +368,7 @@ void MediaDialogView::ToggleLiveCaption(bool enabled) {
   if (!speech::SodaInstaller::GetInstance()->IsSodaDownloading(
           speech::GetLanguageCode(
               prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs())))) {
-    live_caption_title_->SetText(GetLiveCaptionTitle(profile_->GetPrefs()));
+    SetLiveCaptionTitle(GetLiveCaptionTitle(profile_->GetPrefs()));
   }
 
   live_caption_button_->SetIsOn(enabled);
@@ -378,7 +378,7 @@ void MediaDialogView::OnSodaInstalled(speech::LanguageCode language_code) {
   if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_->GetPrefs()))
     return;
   speech::SodaInstaller::GetInstance()->RemoveObserver(this);
-  live_caption_title_->SetText(GetLiveCaptionTitle(profile_->GetPrefs()));
+  SetLiveCaptionTitle(GetLiveCaptionTitle(profile_->GetPrefs()));
 }
 
 void MediaDialogView::OnSodaInstallError(
@@ -406,7 +406,7 @@ void MediaDialogView::OnSodaInstallError(
     }
   }
 
-  live_caption_title_->SetText(error_message);
+  SetLiveCaptionTitle(error_message);
 }
 
 void MediaDialogView::OnSodaProgress(speech::LanguageCode language_code,
@@ -418,8 +418,13 @@ void MediaDialogView::OnSodaProgress(speech::LanguageCode language_code,
       language_code != speech::LanguageCode::kNone) {
     return;
   }
-  live_caption_title_->SetText(l10n_util::GetStringFUTF16Int(
+  SetLiveCaptionTitle(l10n_util::GetStringFUTF16Int(
       IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS, progress));
+}
+
+void MediaDialogView::SetLiveCaptionTitle(const std::u16string& new_text) {
+  live_caption_title_->SetText(new_text);
+  UpdateBubbleSize();
 }
 
 std::unique_ptr<global_media_controls::MediaItemUIView>

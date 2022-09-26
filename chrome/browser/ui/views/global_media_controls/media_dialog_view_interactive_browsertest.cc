@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -546,6 +547,12 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   }
 
+  void OnSodaInstallError(speech::LanguageCode language_code,
+                          speech::SodaInstaller::ErrorCode error_code) {
+    speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+        language_code, error_code);
+  }
+
   void OnSodaLanguagePackInstalled() {
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
         speech::LanguageCode::kEnUs);
@@ -963,6 +970,21 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
   EXPECT_EQ("Live Caption",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+
+  OnSodaInstallError(speech::LanguageCode::kNone,
+                     speech::SodaInstaller::ErrorCode::kNeedsReboot);
+  EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR_REBOOT_REQUIRED),
+      GetLiveCaptionTitleLabel()->GetText());
+
+  OnSodaInstallError(speech::LanguageCode::kNone,
+                     speech::SodaInstaller::ErrorCode::kUnspecifiedError);
+  EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR),
+            GetLiveCaptionTitleLabel()->GetText());
 }
 
 #if BUILDFLAG(IS_MAC)
