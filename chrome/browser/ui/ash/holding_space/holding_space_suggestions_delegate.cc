@@ -18,6 +18,8 @@ HoldingSpaceItem::Type GetItemTypeFromSuggestionType(
   switch (suggestion_type) {
     case app_list::FileSuggestionType::kDriveFile:
       return HoldingSpaceItem::Type::kDriveSuggestion;
+    case app_list::FileSuggestionType::kLocalFile:
+      return HoldingSpaceItem::Type::kLocalSuggestion;
   }
 }
 

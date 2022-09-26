@@ -26,7 +26,9 @@ enum class DriveSuggestValidationStatus {
 // The types of the file suggestion data.
 enum class FileSuggestionType {
   // The drive file suggestion.
-  kDriveFile
+  kDriveFile,
+  // The local file suggestion.
+  kLocalFile,
 };
 
 // The data of an individual file suggested by `FileSuggestKeyedService`.

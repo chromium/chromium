@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/app_list/search/files/drive_file_suggestion_provider.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
+#include "chrome/browser/ui/app_list/search/files/local_file_suggestion_provider.h"
 
 namespace app_list {
 
@@ -16,6 +17,12 @@ using SuggestResults = std::vector<FileSuggestData>;
 FileSuggestKeyedService::FileSuggestKeyedService(Profile* profile) {
   drive_file_suggestion_provider_ =
       std::make_unique<DriveFileSuggestionProvider>(
+          profile, base::BindRepeating(
+                       &FileSuggestKeyedService::OnSuggestionProviderUpdated,
+                       weak_factory_.GetWeakPtr()));
+
+  local_file_suggestion_provider_ =
+      std::make_unique<LocalFileSuggestionProvider>(
           profile, base::BindRepeating(
                        &FileSuggestKeyedService::OnSuggestionProviderUpdated,
                        weak_factory_.GetWeakPtr()));
@@ -36,6 +43,9 @@ void FileSuggestKeyedService::GetSuggestFileData(
   switch (type) {
     case FileSuggestionType::kDriveFile:
       drive_file_suggestion_provider_->GetSuggestFileData(std::move(callback));
+      return;
+    case FileSuggestionType::kLocalFile:
+      local_file_suggestion_provider_->GetSuggestFileData(std::move(callback));
       return;
   }
   NOTREACHED();

@@ -19,6 +19,7 @@ class Profile;
 
 namespace app_list {
 class DriveFileSuggestionProvider;
+class LocalFileSuggestionProvider;
 struct FileSuggestData;
 enum class FileSuggestionType;
 class ZeroStateDriveProvider;
@@ -77,6 +78,9 @@ class FileSuggestKeyedService : public KeyedService {
 
   // The provider of drive file suggestions.
   std::unique_ptr<DriveFileSuggestionProvider> drive_file_suggestion_provider_;
+
+  // The provider of local file suggestions.
+  std::unique_ptr<LocalFileSuggestionProvider> local_file_suggestion_provider_;
 
   base::ObserverList<Observer> observers_;
 
