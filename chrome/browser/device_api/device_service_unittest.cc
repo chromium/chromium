@@ -59,17 +59,16 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   void InstallTrustedApp() {
-    ListPrefUpdate update(profile()->GetPrefs(),
-                          prefs::kWebAppInstallForceList);
-    base::Value app_policy(base::Value::Type::DICTIONARY);
-    app_policy.SetStringKey(web_app::kUrlKey, kDefaultAppInstallUrl);
+    ScopedListPrefUpdate update(profile()->GetPrefs(),
+                                prefs::kWebAppInstallForceList);
+    base::Value::Dict app_policy;
+    app_policy.Set(web_app::kUrlKey, kDefaultAppInstallUrl);
     update->Append(std::move(app_policy));
   }
 
   void RemoveTrustedApp() {
-    ListPrefUpdate update(profile()->GetPrefs(),
-                          prefs::kWebAppInstallForceList);
-    update->ClearList();
+    profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                   base::Value::List());
   }
 
   void SetAllowedOrigin() {
@@ -81,9 +80,8 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   void RemoveAllowedOrigin() {
-    ListPrefUpdate update(profile()->GetPrefs(),
-                          prefs::kDeviceAttributesAllowedForOrigins);
-    update->ClearList();
+    profile()->GetPrefs()->SetList(prefs::kDeviceAttributesAllowedForOrigins,
+                                   base::Value::List());
   }
 
   void TryCreatingService(const GURL& url) {
