@@ -24,7 +24,7 @@ COMPONENT_EXPORT(OMNIBOX_HTTP_HEADERS)
 extern const char kOmniboxOnDeviceSuggestionsHeader[];
 
 COMPONENT_EXPORT(OMNIBOX_HTTP_HEADERS)
-extern const base::Feature kReportOmniboxOnDeviceSuggestionsHeader;
+BASE_DECLARE_FEATURE(kReportOmniboxOnDeviceSuggestionsHeader);
 
 // Returns the value to set for the header. Returns an empty string if the
 // provider is not explicitly enabled nor disabled via a field trial, i.e. the

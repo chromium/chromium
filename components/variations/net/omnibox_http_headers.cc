@@ -20,8 +20,9 @@ const char kOmniboxOnDeviceSuggestionsHeader[] =
 
 // Whether to enable reporting the header. Included as a quick escape hatch in
 // case of crashes.
-const base::Feature kReportOmniboxOnDeviceSuggestionsHeader{
-    "ReportOmniboxOnDeviceSuggestionsHeader", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kReportOmniboxOnDeviceSuggestionsHeader,
+             "ReportOmniboxOnDeviceSuggestionsHeader",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::string GetHeaderValue() {
   const std::string group =

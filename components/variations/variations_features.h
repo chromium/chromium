@@ -16,7 +16,7 @@ namespace internal {
 // transmitted in all contexts. See IsFirstPartyContext() in
 // variations_http_headers.cc for more details.
 COMPONENT_EXPORT(VARIATIONS_FEATURES)
-extern const base::Feature kRestrictGoogleWebVisibility;
+BASE_DECLARE_FEATURE(kRestrictGoogleWebVisibility);
 
 }  // namespace internal
 }  // namespace variations

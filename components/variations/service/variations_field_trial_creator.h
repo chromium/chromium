@@ -271,7 +271,7 @@ class VariationsFieldTrialCreator {
 
 // A testing feature that forces a crash during field trial creation
 // on developer and test builds.
-extern const base::Feature kForceFieldTrialSetupCrashForTesting;
+BASE_DECLARE_FEATURE(kForceFieldTrialSetupCrashForTesting);
 
 }  // namespace variations
 

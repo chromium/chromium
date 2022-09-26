@@ -978,8 +978,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrialConfig_ValidSeed) {
   EXPECT_EQ("1", params["x"]);
 
   // Verify that the |UnitTestEnabled| feature is active.
-  const base::Feature kFeature1{"UnitTestEnabled",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature1, "UnitTestEnabled",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
   EXPECT_TRUE(base::FeatureList::IsEnabled(kFeature1));
 
   ResetVariations();
@@ -1035,11 +1035,11 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrialConfig_ForceFieldTrials) {
 
   // Verify that the |UnitTestEnabled| and |UnitTestEnabled2| features are
   // active.
-  const base::Feature kFeature1{"UnitTestEnabled",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature1, "UnitTestEnabled",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
   EXPECT_TRUE(base::FeatureList::IsEnabled(kFeature1));
-  const base::Feature kFeature2{"UnitTest2Enabled",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature2, "UnitTest2Enabled",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
   EXPECT_TRUE(base::FeatureList::IsEnabled(kFeature2));
 
   ResetVariations();
@@ -1082,8 +1082,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrialConfig_ForceFieldTrialsOverride) {
 
   // Verify that the |UnitTestEnabled| feature from the testing config is not
   // active.
-  const base::Feature kFeature1{"UnitTestEnabled",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature1, "UnitTestEnabled",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
   EXPECT_FALSE(base::FeatureList::IsEnabled(kFeature1));
 
   ResetVariations();
@@ -1128,8 +1128,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrialConfig_ForceFieldTrialParams) {
   EXPECT_EQ("2", params["y"]);
 
   // Verify that the |UnitTestEnabled| feature is still active.
-  const base::Feature kFeature1{"UnitTestEnabled",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature1, "UnitTestEnabled",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
   EXPECT_TRUE(base::FeatureList::IsEnabled(kFeature1));
 
   ResetVariations();
@@ -1178,8 +1178,8 @@ TEST_P(FieldTrialCreatorTestWithFeatures,
 
   // Verify that the |UnitTestEnabled| feature is enabled or disabled depending
   // on whether we passed it in |--enable-features| or |--disable-features|.
-  const base::Feature kFeature1{"UnitTestEnabled",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature1, "UnitTestEnabled",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
   EXPECT_EQ(GetParam() == ::switches::kEnableFeatures,
             base::FeatureList::IsEnabled(kFeature1));
 

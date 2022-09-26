@@ -26,8 +26,7 @@ class FieldTrialsProviderTest;
 class SyntheticTrialRegistryTest;
 
 namespace internal {
-COMPONENT_EXPORT(VARIATIONS)
-extern const base::Feature kExternalExperimentAllowlist;
+COMPONENT_EXPORT(VARIATIONS) BASE_DECLARE_FEATURE(kExternalExperimentAllowlist);
 }  // namespace internal
 
 class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {

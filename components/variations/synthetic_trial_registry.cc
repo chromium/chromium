@@ -16,8 +16,9 @@
 namespace variations {
 namespace internal {
 
-const base::Feature kExternalExperimentAllowlist{
-    "ExternalExperimentAllowlist", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kExternalExperimentAllowlist,
+             "ExternalExperimentAllowlist",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace internal
 

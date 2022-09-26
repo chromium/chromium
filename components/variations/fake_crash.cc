@@ -15,8 +15,9 @@ namespace {
 // This feature causes a crash report to be created after startup (without
 // actually crashing). This is used for verifying safety measures that help
 // catch features that cause real crashes.
-const base::Feature kVariationsFakeCrashAfterStartup{
-    "VariationsFakeCrashAfterStartup", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVariationsFakeCrashAfterStartup,
+             "VariationsFakeCrashAfterStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 namespace variations {

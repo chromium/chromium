@@ -196,8 +196,9 @@ void MaybeExtendVariationsSafeMode(
 
 }  // namespace
 
-const base::Feature kForceFieldTrialSetupCrashForTesting{
-    "ForceFieldTrialSetupCrashForTesting", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kForceFieldTrialSetupCrashForTesting,
+             "ForceFieldTrialSetupCrashForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 VariationsFieldTrialCreator::VariationsFieldTrialCreator(
     VariationsServiceClient* client,
