@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.supervised_user.website_approval;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -18,19 +19,30 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 class WebsiteApprovalMediator {
     private final WebsiteApprovalCoordinator.CompletionCallback mCompletionCallback;
+    private final BottomSheetController mBottomSheetController;
+    private final WebsiteApprovalSheetContent mSheetContent;
     private final PropertyModel mModel;
 
-    WebsiteApprovalMediator(
-            WebsiteApprovalCoordinator.CompletionCallback completionCallback, PropertyModel model) {
+    WebsiteApprovalMediator(WebsiteApprovalCoordinator.CompletionCallback completionCallback,
+            BottomSheetController bottomSheetController, WebsiteApprovalSheetContent sheetContent,
+            PropertyModel model) {
         mCompletionCallback = completionCallback;
+        mBottomSheetController = bottomSheetController;
+        mSheetContent = sheetContent;
         mModel = model;
     }
 
     void show() {
-        mModel.set(WebsiteApprovalProperties.ON_CLICK_APPROVE,
-                v -> mCompletionCallback.onWebsiteApproved());
-        mModel.set(WebsiteApprovalProperties.ON_CLICK_DENY,
-                v -> mCompletionCallback.onWebsiteDenied());
+        mModel.set(WebsiteApprovalProperties.ON_CLICK_APPROVE, v -> {
+            mBottomSheetController.hideContent(mSheetContent, true,
+                    BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+            mCompletionCallback.onWebsiteApproved();
+        });
+        mModel.set(WebsiteApprovalProperties.ON_CLICK_DENY, v -> {
+            mBottomSheetController.hideContent(mSheetContent, true,
+                    BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+            mCompletionCallback.onWebsiteDenied();
+        });
 
         // Set the child name.  We use the given name if there is one for this account, otherwise we
         // use the full account email address.
@@ -51,5 +63,8 @@ class WebsiteApprovalMediator {
             childNameProperty = childAccountInfo.getGivenName();
         }
         mModel.set(WebsiteApprovalProperties.CHILD_NAME, childNameProperty);
+
+        // Now show the actual content.
+        mBottomSheetController.requestShowContent(mSheetContent, true);
     }
 }

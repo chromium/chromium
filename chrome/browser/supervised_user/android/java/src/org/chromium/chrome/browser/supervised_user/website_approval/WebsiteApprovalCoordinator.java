@@ -19,8 +19,6 @@ import org.chromium.url.GURL;
  */
 public class WebsiteApprovalCoordinator {
     private final WebsiteApprovalMediator mMediator;
-    private final BottomSheetController mBottomSheetController;
-    private final WebsiteApprovalSheetContent mSheetContent;
 
     /**
      * Callback to notify completion of the flow.
@@ -51,17 +49,19 @@ public class WebsiteApprovalCoordinator {
                                       .with(WebsiteApprovalProperties.FAVICON, favicon)
                                       .build();
 
-        mBottomSheetController = BottomSheetControllerProvider.from(windowAndroid);
-        mSheetContent = new WebsiteApprovalSheetContent(windowAndroid.getContext().get());
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        WebsiteApprovalSheetContent sheetContent =
+                new WebsiteApprovalSheetContent(windowAndroid.getContext().get());
 
-        PropertyModelChangeProcessor.create(model, mSheetContent, WebsiteApprovalViewBinder::bind);
+        PropertyModelChangeProcessor.create(model, sheetContent, WebsiteApprovalViewBinder::bind);
 
-        mMediator = new WebsiteApprovalMediator(completionCallback, model);
+        mMediator = new WebsiteApprovalMediator(
+                completionCallback, bottomSheetController, sheetContent, model);
     }
 
     /** Displays the UI to request parent approval in a new bottom sheet. */
     public void show() {
         mMediator.show();
-        mBottomSheetController.requestShowContent(mSheetContent, true);
     }
 }
