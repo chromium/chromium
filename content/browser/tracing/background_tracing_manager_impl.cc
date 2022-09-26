@@ -352,7 +352,7 @@ BackgroundTracingManagerImpl::GetBackgroundTracingConfig(
   if (!value->is_dict())
     return nullptr;
 
-  return BackgroundTracingConfig::FromDict(std::move(value->GetDict()));
+  return BackgroundTracingConfig::FromDict(std::move(*value).TakeDict());
 }
 
 void BackgroundTracingManagerImpl::OnHistogramTrigger(

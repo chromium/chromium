@@ -48,7 +48,7 @@ std::unique_ptr<BackgroundTracingConfigImpl> ReadFromJSONString(
 
   std::unique_ptr<BackgroundTracingConfigImpl> config(
       static_cast<BackgroundTracingConfigImpl*>(
-          BackgroundTracingConfig::FromDict(std::move(json_value->GetDict()))
+          BackgroundTracingConfig::FromDict(std::move(*json_value).TakeDict())
               .release()));
   return config;
 }
