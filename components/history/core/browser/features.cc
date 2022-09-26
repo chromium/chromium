@@ -10,8 +10,9 @@ namespace history {
 
 // If enabled, the most repeated queries from the user browsing history are
 // shown in the Most Visited tiles.
-const base::Feature kOrganicRepeatableQueries{
-    "OrganicRepeatableQueries", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOrganicRepeatableQueries,
+             "OrganicRepeatableQueries",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The maximum number of repeatable queries to show in the Most Visited tiles.
 // The default behavior is having no limit, i.e., the number of the tiles.
