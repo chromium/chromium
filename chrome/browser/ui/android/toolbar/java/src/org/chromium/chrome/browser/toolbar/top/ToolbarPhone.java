@@ -334,6 +334,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     @Override
     void destroy() {
         cancelAnimations();
+        Handler handler = getHandler();
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
+
         super.destroy();
     }
 
@@ -2157,12 +2162,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // TODO(tedchoc): Move away from updating based on the search engine change and instead
         //                add the toolbar as a listener to the NewTabPage and udpate only when
         //                it notifies the listeners that it has changed its state.
-        post(new Runnable() {
-            @Override
-            public void run() {
-                updateVisualsForLocationBarState();
-                updateNtpAnimationState();
-            }
+        Handler handler = getHandler();
+        if (handler == null) return;
+        handler.post(() -> {
+            updateVisualsForLocationBarState();
+            updateNtpAnimationState();
         });
     }
 
