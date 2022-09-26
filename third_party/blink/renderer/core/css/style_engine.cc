@@ -1190,8 +1190,15 @@ void StyleEngine::ScheduleRuleSetInvalidationsForElement(
   if (element.HasClass())
     class_names = &element.ClassNames();
 
-  InvalidationLists invalidation_lists;
+  HeapVector<Member<RuleSet>> rule_sets_vector;
   for (const auto& rule_set : rule_sets) {
+    rule_sets_vector.push_back(rule_set);
+  }
+  std::sort(rule_sets_vector.begin(), rule_sets_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<RuleSet>>());
+
+  InvalidationLists invalidation_lists;
+  for (const auto& rule_set : rule_sets_vector) {
     if (!id.IsNull()) {
       rule_set->Features().CollectInvalidationSetsForId(invalidation_lists,
                                                         element, id);
@@ -1215,8 +1222,15 @@ void StyleEngine::ScheduleRuleSetInvalidationsForElement(
 void StyleEngine::ScheduleTypeRuleSetInvalidations(
     ContainerNode& node,
     const HeapHashSet<Member<RuleSet>>& rule_sets) {
-  InvalidationLists invalidation_lists;
+  HeapVector<Member<RuleSet>> rule_sets_vector;
   for (const auto& rule_set : rule_sets) {
+    rule_sets_vector.push_back(rule_set);
+  }
+  std::sort(rule_sets_vector.begin(), rule_sets_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<RuleSet>>());
+
+  InvalidationLists invalidation_lists;
+  for (const auto& rule_set : rule_sets_vector) {
     rule_set->Features().CollectTypeRuleInvalidationSet(invalidation_lists,
                                                         node);
   }
