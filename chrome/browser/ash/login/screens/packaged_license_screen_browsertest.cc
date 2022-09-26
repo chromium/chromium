@@ -41,11 +41,11 @@ class PackagedLicenseScreenTest : public OobeBaseTest {
   }
 
   void SetUpLicense(bool value) {
-    DictionaryPrefUpdate dict(local_state(), prefs::kServerBackedDeviceState);
+    ScopedDictPrefUpdate dict(local_state(), prefs::kServerBackedDeviceState);
     if (value) {
-      dict.Get()->SetBoolKey(policy::kDeviceStatePackagedLicense, true);
+      dict->Set(policy::kDeviceStatePackagedLicense, true);
     } else {
-      dict.Get()->RemoveKey(policy::kDeviceStatePackagedLicense);
+      dict->Remove(policy::kDeviceStatePackagedLicense);
     }
   }
 

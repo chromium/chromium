@@ -227,24 +227,24 @@ void SupervisedUserManagerImpl::SetUserStringValue(const std::string& user_id,
                                                    const char* key,
                                                    const std::string& value) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate update(local_state, key);
-  update->SetStringKey(user_id, value);
+  ScopedDictPrefUpdate update(local_state, key);
+  update->Set(user_id, value);
 }
 
 void SupervisedUserManagerImpl::SetUserIntegerValue(const std::string& user_id,
                                                     const char* key,
                                                     const int value) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate update(local_state, key);
-  update->SetIntKey(user_id, value);
+  ScopedDictPrefUpdate update(local_state, key);
+  update->Set(user_id, value);
 }
 
 void SupervisedUserManagerImpl::SetUserBooleanValue(const std::string& user_id,
                                                     const char* key,
                                                     const bool value) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate update(local_state, key);
-  update->SetBoolKey(user_id, value);
+  ScopedDictPrefUpdate update(local_state, key);
+  update->Set(user_id, value);
 }
 
 void SupervisedUserManagerImpl::RemoveNonCryptohomeData(
@@ -267,8 +267,8 @@ void SupervisedUserManagerImpl::RemoveNonCryptohomeData(
 void SupervisedUserManagerImpl::CleanPref(const std::string& user_id,
                                           const char* key) {
   PrefService* prefs = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(prefs, key);
-  dict_update->RemoveKey(user_id);
+  ScopedDictPrefUpdate dict_update(prefs, key);
+  dict_update->Remove(user_id);
 }
 
 bool SupervisedUserManagerImpl::CheckForFirstRun(const std::string& user_id) {

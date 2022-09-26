@@ -197,8 +197,8 @@ void EasyUnlockTpmKeyManager::ResetLocalStateForUser(
   if (!local_state)
     return;
 
-  DictionaryPrefUpdate update(local_state, prefs::kEasyUnlockLocalStateTpmKeys);
-  update->RemoveKey(account_id.GetUserEmail());
+  ScopedDictPrefUpdate update(local_state, prefs::kEasyUnlockLocalStateTpmKeys);
+  update->Remove(account_id.GetUserEmail());
 }
 
 EasyUnlockTpmKeyManager::EasyUnlockTpmKeyManager(
@@ -302,9 +302,9 @@ void EasyUnlockTpmKeyManager::SetKeyInLocalState(const AccountId& account_id,
 
   std::string encoded;
   base::Base64Encode(value, &encoded);
-  DictionaryPrefUpdate update(local_state_,
+  ScopedDictPrefUpdate update(local_state_,
                               prefs::kEasyUnlockLocalStateTpmKeys);
-  update->SetStringKey(account_id.GetUserEmail(), encoded);
+  update->Set(account_id.GetUserEmail(), encoded);
 }
 
 void EasyUnlockTpmKeyManager::OnUserTPMInitialized(

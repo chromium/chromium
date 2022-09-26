@@ -236,10 +236,10 @@ class KioskAutoLaunchViewsTest : public OobeBaseTest,
   void SetUpLocalState() override {
     // Simulate auto login request from the previous session.
     PrefService* prefs = g_browser_process->local_state();
-    DictionaryPrefUpdate dict_update(prefs,
+    ScopedDictPrefUpdate dict_update(prefs,
                                      KioskAppManager::kKioskDictionaryName);
     // The AutoLoginState is taken from KioskAppManager::AutoLoginState.
-    dict_update->SetIntKey(
+    dict_update->Set(
         KioskAppManager::kKeyAutoLoginState,
         static_cast<int>(KioskAppManager::AutoLoginState::kRequested));
   }

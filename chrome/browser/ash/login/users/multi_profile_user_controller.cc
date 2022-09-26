@@ -161,9 +161,9 @@ void MultiProfileUserController::StartObserving(Profile* user_profile) {
 
 void MultiProfileUserController::RemoveCachedValues(
     const std::string& user_email) {
-  DictionaryPrefUpdate update(local_state_,
+  ScopedDictPrefUpdate update(local_state_,
                               prefs::kCachedMultiProfileUserBehavior);
-  update->RemoveKey(user_email);
+  update->Remove(user_email);
 }
 
 std::string MultiProfileUserController::GetCachedValue(
@@ -180,9 +180,9 @@ std::string MultiProfileUserController::GetCachedValue(
 
 void MultiProfileUserController::SetCachedValue(const std::string& user_email,
                                                 const std::string& behavior) {
-  DictionaryPrefUpdate update(local_state_,
+  ScopedDictPrefUpdate update(local_state_,
                               prefs::kCachedMultiProfileUserBehavior);
-  update->SetKey(user_email, base::Value(SanitizeBehaviorValue(behavior)));
+  update->Set(user_email, SanitizeBehaviorValue(behavior));
 }
 
 void MultiProfileUserController::CheckSessionUsers() {
@@ -208,9 +208,9 @@ void MultiProfileUserController::OnUserPrefChanged(Profile* user_profile) {
           ->IsDefaultValue()) {
     // Migration code to clear cached default behavior.
     // TODO(xiyuan): Remove this after M35.
-    DictionaryPrefUpdate update(local_state_,
+    ScopedDictPrefUpdate update(local_state_,
                                 prefs::kCachedMultiProfileUserBehavior);
-    update->RemoveKey(user_email);
+    update->Remove(user_email);
   } else {
     const std::string behavior =
         prefs->GetString(prefs::kMultiProfileUserBehavior);

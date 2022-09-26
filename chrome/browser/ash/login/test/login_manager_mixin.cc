@@ -134,15 +134,15 @@ void LoginManagerMixin::SetUpLocalState() {
     if (!base::Contains(users_pref.Get(), email_value))
       users_pref->Append(std::move(email_value));
 
-    DictionaryPrefUpdate user_type_update(g_browser_process->local_state(),
+    ScopedDictPrefUpdate user_type_update(g_browser_process->local_state(),
                                           "UserType");
-    user_type_update->SetIntKey(user.account_id.GetAccountIdKey(),
-                                static_cast<int>(user.user_type));
+    user_type_update->Set(user.account_id.GetAccountIdKey(),
+                          static_cast<int>(user.user_type));
 
-    DictionaryPrefUpdate user_token_update(g_browser_process->local_state(),
+    ScopedDictPrefUpdate user_token_update(g_browser_process->local_state(),
                                            "OAuthTokenStatus");
-    user_token_update->SetIntKey(user.account_id.GetUserEmail(),
-                                 static_cast<int>(user.token_status));
+    user_token_update->Set(user.account_id.GetUserEmail(),
+                           static_cast<int>(user.token_status));
 
     user_manager::KnownUser known_user(g_browser_process->local_state());
     known_user.UpdateId(user.account_id);

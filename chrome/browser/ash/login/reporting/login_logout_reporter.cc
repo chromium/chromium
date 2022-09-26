@@ -206,10 +206,10 @@ void LoginLogoutReporter::OnKioskLoginFailure() {
     return;
   }
 
-  DictionaryPrefUpdate dict_update(GetLocalState(),
+  ScopedDictPrefUpdate dict_update(GetLocalState(),
                                    kLoginLogoutReporterDictionary);
-  dict_update->GetDict().Set(kKioskLoginFailureTimestamp,
-                             static_cast<int>(clock_->Now().ToTimeT()));
+  dict_update->Set(kKioskLoginFailureTimestamp,
+                   static_cast<int>(clock_->Now().ToTimeT()));
 }
 
 void LoginLogoutReporter::MaybeReportKioskLoginFailure() {
@@ -248,9 +248,9 @@ void LoginLogoutReporter::MaybeReportKioskLoginFailure() {
     if (!GetLocalState()) {
       return;
     }
-    DictionaryPrefUpdate dict_update(GetLocalState(),
+    ScopedDictPrefUpdate dict_update(GetLocalState(),
                                      kLoginLogoutReporterDictionary);
-    dict_update->RemoveKey(kKioskLoginFailureTimestamp);
+    dict_update->Remove(kKioskLoginFailureTimestamp);
   });
 
   // Enqueue callback should run on the UI thread (current thread) to access

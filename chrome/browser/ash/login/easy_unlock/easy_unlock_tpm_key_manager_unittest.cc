@@ -338,9 +338,9 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
                                      const std::string& value) {
     std::string encoded;
     base::Base64Encode(value, &encoded);
-    DictionaryPrefUpdate update(g_browser_process->local_state(),
+    ScopedDictPrefUpdate update(g_browser_process->local_state(),
                                 prefs::kEasyUnlockLocalStateTpmKeys);
-    update->SetStringKey(account_id.GetUserEmail(), encoded);
+    update->Set(account_id.GetUserEmail(), encoded);
   }
 
  protected:

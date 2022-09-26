@@ -923,10 +923,9 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeData(
   // TODO(tbarzic): Forward data removal request to HammerDeviceHandler,
   // instead of removing the prefs value here.
   if (GetLocalState()->FindPreference(prefs::kDetachableBaseDevices)) {
-    DictionaryPrefUpdate update(GetLocalState(), prefs::kDetachableBaseDevices);
-    update->RemoveKey(account_id.HasAccountIdKey()
-                          ? account_id.GetAccountIdKey()
-                          : account_id.GetUserEmail());
+    ScopedDictPrefUpdate update(GetLocalState(), prefs::kDetachableBaseDevices);
+    update->Remove(account_id.HasAccountIdKey() ? account_id.GetAccountIdKey()
+                                                : account_id.GetUserEmail());
   }
 
   supervised_user_manager_->RemoveNonCryptohomeData(account_id.GetUserEmail());

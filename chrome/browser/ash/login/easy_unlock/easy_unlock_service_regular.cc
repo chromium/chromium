@@ -273,12 +273,12 @@ void EasyUnlockServiceRegular::SetStoredRemoteDevices(
   JSONStringValueSerializer serializer(&remote_devices_json);
   serializer.Serialize(devices);
 
-  DictionaryPrefUpdate pairing_update(profile()->GetPrefs(),
+  ScopedDictPrefUpdate pairing_update(profile()->GetPrefs(),
                                       prefs::kEasyUnlockPairing);
   if (devices.GetListDeprecated().empty())
-    pairing_update->RemoveKey(kKeyDevices);
+    pairing_update->Remove(kKeyDevices);
   else
-    pairing_update->SetKey(kKeyDevices, devices.Clone());
+    pairing_update->Set(kKeyDevices, devices.Clone());
 
   CheckCryptohomeKeysAndMaybeHardlock();
 }
