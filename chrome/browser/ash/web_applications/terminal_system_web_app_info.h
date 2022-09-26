@@ -33,6 +33,7 @@ class TerminalSystemAppDelegate : public ash::SystemWebAppDelegate {
                                         int command_id) const override;
   // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
   bool ShouldPinTab(GURL url) const override;
+  bool UseSystemThemeColor() const override;
 };
 
 // Returns a WebAppInstallInfo used to install the app.

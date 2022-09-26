@@ -127,3 +127,7 @@ bool TerminalSystemAppDelegate::ShouldPinTab(GURL url) const {
   return url == GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
                                    guest_os::kTerminalHomePath}));
 }
+
+bool TerminalSystemAppDelegate::UseSystemThemeColor() const {
+  return false;
+}

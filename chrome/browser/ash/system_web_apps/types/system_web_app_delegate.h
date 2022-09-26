@@ -192,6 +192,13 @@ class SystemWebAppDelegate {
   // as opposed to resolving background color from web contents.
   virtual bool PreferManifestBackgroundColor() const;
 
+  // Whether theme color should be inferred from ChromeOS system theme. If
+  // true, theme_color is the first available from:
+  //   1. System theme color (if kJelly is on).
+  //   2. Manifest color (if defined).
+  //   3. Default color.
+  virtual bool UseSystemThemeColor() const;
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns whether theme changes should be animated.
   virtual bool ShouldAnimateThemeChanges() const;
