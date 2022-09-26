@@ -120,8 +120,5 @@
     {
       name: "unicode-range",
     },
-    {
-      name: "width",
-    },
   ],
 }

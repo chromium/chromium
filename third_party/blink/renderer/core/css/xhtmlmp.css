@@ -30,7 +30,8 @@
 /* Default styles for XHTML Mobile Profile documents where they differ from html.css */
 
 @viewport {
-    width: auto;
+    min-width: auto;
+    max-width: auto;
     /* Ideally these should be removed. Currently here to avoid test result regressions. */
     min-zoom: 0.25;
     max-zoom: 5;

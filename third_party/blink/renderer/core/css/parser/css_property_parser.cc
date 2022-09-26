@@ -354,54 +354,21 @@ static CSSValue* ConsumeSingleViewportDescriptor(
           range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
     }
     default:
-      NOTREACHED();
-      break;
+      return nullptr;
   }
-
-  NOTREACHED();
-  return nullptr;
 }
 
 bool CSSPropertyParser::ParseViewportDescriptor(CSSPropertyID prop_id,
                                                 bool important) {
   DCHECK(IsUASheetBehavior(context_->Mode()));
 
-  switch (prop_id) {
-    case CSSPropertyID::kWidth: {
-      CSSValue* min_width = ConsumeSingleViewportDescriptor(
-          range_, CSSPropertyID::kMinWidth, *context_);
-      if (!min_width)
-        return false;
-      CSSValue* max_width = min_width;
-      if (!range_.AtEnd()) {
-        max_width = ConsumeSingleViewportDescriptor(
-            range_, CSSPropertyID::kMaxWidth, *context_);
-      }
-      if (!max_width || !range_.AtEnd())
-        return false;
-      AddProperty(CSSPropertyID::kMinWidth, CSSPropertyID::kInvalid, *min_width,
-                  important, IsImplicitProperty::kNotImplicit,
-                  *parsed_properties_);
-      AddProperty(CSSPropertyID::kMaxWidth, CSSPropertyID::kInvalid, *max_width,
-                  important, IsImplicitProperty::kNotImplicit,
-                  *parsed_properties_);
-      return true;
-    }
-    case CSSPropertyID::kMinWidth:
-    case CSSPropertyID::kMaxWidth:
-    case CSSPropertyID::kMinZoom:
-    case CSSPropertyID::kMaxZoom: {
-      CSSValue* parsed_value =
-          ConsumeSingleViewportDescriptor(range_, prop_id, *context_);
-      if (!parsed_value || !range_.AtEnd())
-        return false;
-      AddProperty(prop_id, CSSPropertyID::kInvalid, *parsed_value, important,
-                  IsImplicitProperty::kNotImplicit, *parsed_properties_);
-      return true;
-    }
-    default:
-      return false;
-  }
+  CSSValue* parsed_value =
+      ConsumeSingleViewportDescriptor(range_, prop_id, *context_);
+  if (!parsed_value || !range_.AtEnd())
+    return false;
+  AddProperty(prop_id, CSSPropertyID::kInvalid, *parsed_value, important,
+              IsImplicitProperty::kNotImplicit, *parsed_properties_);
+  return true;
 }
 
 bool CSSPropertyParser::ParseFontFaceDescriptor(
