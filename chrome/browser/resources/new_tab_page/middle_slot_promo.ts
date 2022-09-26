@@ -158,7 +158,7 @@ export class MiddleSlotPromoElement extends PolymerElement {
 
   static get properties() {
     return {
-      middleSlotPromoId_: {
+      shownMiddleSlotPromoId_: {
         type: String,
         reflectToAttribute: true,
       },
@@ -171,7 +171,8 @@ export class MiddleSlotPromoElement extends PolymerElement {
   }
 
   private eventTracker_: EventTracker = new EventTracker();
-  private middleSlotPromoId_: string;
+  private shownMiddleSlotPromoId_: string;
+  private blocklistedMiddleSlotPromoId_: string;
   private promo_: Promo;
 
   private setPromoListenerId_: number|null = null;
@@ -204,10 +205,8 @@ export class MiddleSlotPromoElement extends PolymerElement {
         if (promoContainer) {
           promoContainer.remove();
         }
-        const promoId = promo.id;
-        if (loadTimeData.getBoolean('middleSlotPromoDismissalEnabled') &&
-            promoId) {
-          this.middleSlotPromoId_ = promoId;
+        if (loadTimeData.getBoolean('middleSlotPromoDismissalEnabled')) {
+          this.shownMiddleSlotPromoId_ = promo.id ?? '';
         }
         const renderedPromoContainer = promo.container;
         assert(renderedPromoContainer);
@@ -233,7 +232,8 @@ export class MiddleSlotPromoElement extends PolymerElement {
     assert(this.$.promoAndDismissContainer);
     this.$.promoAndDismissContainer.hidden = true;
     NewTabPageProxy.getInstance().handler.blocklistPromo(
-        this.middleSlotPromoId_);
+        this.shownMiddleSlotPromoId_);
+    this.blocklistedMiddleSlotPromoId_ = this.shownMiddleSlotPromoId_;
     this.$.dismissPromoButtonToast.show();
     recordPromoDismissAction(PromoDismissAction.DISMISS);
   }
@@ -241,7 +241,7 @@ export class MiddleSlotPromoElement extends PolymerElement {
   private onUndoDismissPromoButtonClick_() {
     assert(this.$.promoAndDismissContainer);
     NewTabPageProxy.getInstance().handler.undoBlocklistPromo(
-        this.middleSlotPromoId_);
+        this.blocklistedMiddleSlotPromoId_);
     this.$.promoAndDismissContainer.hidden = false;
     this.$.dismissPromoButtonToast.hide();
     recordPromoDismissAction(PromoDismissAction.RESTORE);
