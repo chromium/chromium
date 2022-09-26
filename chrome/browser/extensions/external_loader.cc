@@ -42,6 +42,11 @@ void ExternalLoader::LoadFinished(
     owner_->SetPrefs(std::move(prefs));
 }
 
+void ExternalLoader::LoadFinishedWithDict(base::Value::Dict prefs) {
+  LoadFinished(base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(base::Value(std::move(prefs)))));
+}
+
 void ExternalLoader::OnUpdated(
     std::unique_ptr<base::DictionaryValue> updated_prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

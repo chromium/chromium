@@ -48,7 +48,5 @@ DeviceLocalAccountExtensionInstallerLacros::Get() {
 
 void DeviceLocalAccountExtensionInstallerLacros::
     SetForceInstallExtensionsFromCache(base::Value::Dict dict) {
-  auto val = std::make_unique<base::Value>(std::move(dict));
-  extension_loader_->OnExtensionListsUpdated(
-      base::DictionaryValue::From(std::move(val)).get());
+  extension_loader_->OnExtensionListsUpdated(std::move(dict));
 }

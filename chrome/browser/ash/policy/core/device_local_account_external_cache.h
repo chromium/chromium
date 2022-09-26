@@ -41,7 +41,7 @@ class DeviceLocalAccountExternalCache : public ExternalCacheDelegate {
   void UpdateExtensionsList(base::Value::Dict dict);
 
   // ExternalCacheDelegate:
-  void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override;
+  void OnExtensionListsUpdated(const base::Value::Dict& prefs) override;
 
   scoped_refptr<extensions::ExternalLoader> GetExtensionLoader();
 

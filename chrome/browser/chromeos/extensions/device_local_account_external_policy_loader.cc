@@ -21,16 +21,21 @@ void DeviceLocalAccountExternalPolicyLoader::StartLoading() {
   // Through OnExtensionListsUpdated(), |prefs_| might have already loaded but
   // not consumed because we didn't have an owner then. Pass |prefs_| in that
   // case.
-  if (prefs_)
-    LoadFinished(std::move(prefs_));
+  if (prefs_) {
+    LoadFinishedWithDict(std::move(prefs_).value());
+    prefs_.reset();
+  }
 }
 
 void DeviceLocalAccountExternalPolicyLoader::OnExtensionListsUpdated(
-    const base::DictionaryValue* prefs) {
-  prefs_ = prefs->CreateDeepCopy();
-  // Only call LoadFinished() when there is an owner to consume |prefs_|.
-  if (has_owner())
-    LoadFinished(std::move(prefs_));
+    const base::Value::Dict& prefs) {
+  if (has_owner()) {
+    LoadFinishedWithDict(prefs.Clone());
+    prefs_.reset();
+    return;
+  }
+
+  prefs_ = prefs.Clone();
 }
 
 }  // namespace chromeos

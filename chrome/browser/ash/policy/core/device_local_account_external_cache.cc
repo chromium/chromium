@@ -47,9 +47,7 @@ void DeviceLocalAccountExternalCache::StartCache(
 void DeviceLocalAccountExternalCache::UpdateExtensionsList(
     base::Value::Dict dict) {
   if (external_cache_) {
-    auto val = std::make_unique<base::Value>(std::move(dict));
-    external_cache_->UpdateExtensionsList(
-        base::DictionaryValue::From(std::move(val)));
+    external_cache_->UpdateExtensionsListWithDict(std::move(dict));
   }
 }
 
@@ -61,8 +59,8 @@ void DeviceLocalAccountExternalCache::StopCache(base::OnceClosure callback) {
     std::move(callback).Run();
   }
 
-  base::DictionaryValue empty_prefs;
-  loader_->OnExtensionListsUpdated(&empty_prefs);
+  base::Value::Dict empty_prefs;
+  loader_->OnExtensionListsUpdated(empty_prefs);
 }
 
 bool DeviceLocalAccountExternalCache::IsCacheRunning() const {
@@ -70,13 +68,12 @@ bool DeviceLocalAccountExternalCache::IsCacheRunning() const {
 }
 
 void DeviceLocalAccountExternalCache::OnExtensionListsUpdated(
-    const base::DictionaryValue* prefs) {
+    const base::Value::Dict& prefs) {
   if (crosapi::CrosapiManager::IsInitialized()) {
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
         ->device_local_account_extension_service()
-        ->SetForceInstallExtensionsFromCache(user_id_,
-                                             prefs->GetDict().Clone());
+        ->SetForceInstallExtensionsFromCache(user_id_, prefs.Clone());
   } else {
     CHECK_IS_TEST();
   }

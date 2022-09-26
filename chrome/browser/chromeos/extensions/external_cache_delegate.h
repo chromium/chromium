@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTERNAL_CACHE_DELEGATE_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTERNAL_CACHE_DELEGATE_H_
 
+#include "base/values.h"
 #include "extensions/common/extension_id.h"
 
 namespace base {
@@ -17,8 +18,13 @@ class ExternalCacheDelegate {
  public:
   virtual ~ExternalCacheDelegate() = default;
 
+  // Legacy function until the migration (https://crbug.com/1366865) is done.
+  // At most one of the two functions could be overridden in the child classes.
+  // Prefer the one with the base::Value::Dict
   // Caller owns |prefs|.
   virtual void OnExtensionListsUpdated(const base::DictionaryValue* prefs);
+  // Caller owns |prefs|.
+  virtual void OnExtensionListsUpdated(const base::Value::Dict& prefs);
 
   // Called after extension with |id| is loaded in cache.
   virtual void OnExtensionLoadedInCache(const extensions::ExtensionId& id);

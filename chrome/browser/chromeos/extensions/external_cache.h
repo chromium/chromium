@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/values.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -56,6 +57,8 @@ class ExternalCache {
   // checks for these.
   virtual void UpdateExtensionsList(
       std::unique_ptr<base::DictionaryValue> prefs) = 0;
+  // Helper function until the migration (https://crbug.com/1366865) is done.
+  void UpdateExtensionsListWithDict(base::Value::Dict prefs);
 
   // If a user of one of the ExternalCache's extensions detects that
   // the extension is damaged then this method can be used to remove it from
