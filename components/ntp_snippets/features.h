@@ -30,20 +30,20 @@ extern const base::Feature* const kAllFeatures[];
 ////////////////////////////////////////////////////////////////////////////////
 // Independent features. Treat as normal
 
-extern const base::Feature kArticleSuggestionsFeature;
+BASE_DECLARE_FEATURE(kArticleSuggestionsFeature);
 
 // Feature for simple experimental comparison and validation of changes since
 // M58: enabling this brings back the M58 Stable fetching schedule (which is
 // suitable for Holdback groups).
 // TODO(jkrcal): Remove when the comparison is done (probably after M62).
-extern const base::Feature kRemoteSuggestionsEmulateM58FetchingSchedule;
+BASE_DECLARE_FEATURE(kRemoteSuggestionsEmulateM58FetchingSchedule);
 
 std::unique_ptr<CategoryRanker> BuildSelectedCategoryRanker(
     PrefService* pref_service,
     base::Clock* clock);
 
 // Enables and configures notifications for content suggestions on Android.
-extern const base::Feature kNotificationsFeature;
+BASE_DECLARE_FEATURE(kNotificationsFeature);
 
 // An integer. The priority of the notification, ranging from -2 (PRIORITY_MIN)
 // to 2 (PRIORITY_MAX). Vibrates and makes sound if >= 0.
@@ -77,10 +77,10 @@ constexpr int kNotificationsIgnoredDefaultLimit = 3;
 
 // Whether to keep some prefetched content suggestions even when new suggestions
 // have been fetched.
-extern const base::Feature kKeepPrefetchedContentSuggestions;
+BASE_DECLARE_FEATURE(kKeepPrefetchedContentSuggestions);
 
 // Whether this version of the client supports responses without an image.
-extern const base::Feature kOptionalImagesEnabledFeature;
+BASE_DECLARE_FEATURE(kOptionalImagesEnabledFeature);
 
 // Return all the features as a vector.
 std::vector<const base::Feature*> GetAllFeatures();
