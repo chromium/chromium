@@ -287,7 +287,8 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
 
     # initializing test plugin service
     self.test_plugin_service = None
-    enabled_plugins = init_plugins_from_args(self.udid, self.out_dir, **kwargs)
+    enabled_plugins = init_plugins_from_args(
+        self.udid, os.path.join(self.out_dir, self.udid), **kwargs)
     if (len(enabled_plugins) > 0):
       LOGGER.info('Number of enabled plugins are greater than 0, initiating' +
                   'test plugin service... Enabled plugins are %s' %

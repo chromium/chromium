@@ -293,6 +293,11 @@ source_set("chrome_egtest_bundle_main+eg2") {
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
+
+    # Adding this config to exempt from the style check:
+    # "cannot use 'try' with exceptions disabled". This cannot be fixed because
+    # it's part of the gRPC library.
+    "//build/config/compiler:exceptions",
   ]
   testonly = true
 
@@ -302,9 +307,34 @@ source_set("chrome_egtest_bundle_main+eg2") {
   ]
 
   deps = [
+    ":chrome_egtest_plugin_client",
     "//base",
     "//base:i18n",
+    "//third_party/grpc:grpc++",
     "//ui/base",
+  ]
+}
+
+source_set("chrome_egtest_plugin_client") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+
+    # Adding this config to exempt from the style check:
+    # "cannot use 'try' with exceptions disabled". This cannot be fixed because
+    # it's part of the gRPC library.
+    "//build/config/compiler:exceptions",
+  ]
+  testonly = true
+
+  sources = [
+    "chrome_egtest_plugin_client.h",
+    "chrome_egtest_plugin_client.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/testing/plugin:test_plugin_service",
+    "//third_party/grpc:grpc++",
   ]
 }
 

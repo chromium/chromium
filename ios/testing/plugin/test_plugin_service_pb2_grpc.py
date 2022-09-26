@@ -27,7 +27,7 @@ class TestPluginServiceStub(object):
         self.TestCaseDidFail = channel.unary_unary(
                 '/ios_test_plugin.TestPluginService/TestCaseDidFail',
                 request_serializer=test__plugin__service__pb2.TestCaseDidFailRequest.SerializeToString,
-                response_deserializer=test__plugin__service__pb2.TestCaseDidFailRequest.FromString,
+                response_deserializer=test__plugin__service__pb2.TestCaseDidFailResponse.FromString,
                 )
         self.ListEnabledPlugins = channel.unary_unary(
                 '/ios_test_plugin.TestPluginService/ListEnabledPlugins',
@@ -83,7 +83,7 @@ def add_TestPluginServiceServicer_to_server(servicer, server):
             'TestCaseDidFail': grpc.unary_unary_rpc_method_handler(
                     servicer.TestCaseDidFail,
                     request_deserializer=test__plugin__service__pb2.TestCaseDidFailRequest.FromString,
-                    response_serializer=test__plugin__service__pb2.TestCaseDidFailRequest.SerializeToString,
+                    response_serializer=test__plugin__service__pb2.TestCaseDidFailResponse.SerializeToString,
             ),
             'ListEnabledPlugins': grpc.unary_unary_rpc_method_handler(
                     servicer.ListEnabledPlugins,
@@ -147,7 +147,7 @@ class TestPluginService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/ios_test_plugin.TestPluginService/TestCaseDidFail',
             test__plugin__service__pb2.TestCaseDidFailRequest.SerializeToString,
-            test__plugin__service__pb2.TestCaseDidFailRequest.FromString,
+            test__plugin__service__pb2.TestCaseDidFailResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

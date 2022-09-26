@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19test_plugin_service.proto\x12\x0fios_test_plugin\"Q\n\x18TestCaseWillStartRequest\x12\x35\n\x0etest_case_info\x18\x01 \x01(\x0b\x32\x1d.ios_test_plugin.TestCaseInfo\"\x1b\n\x19TestCaseWillStartResponse\"Q\n\x18TestCaseDidFinishRequest\x12\x35\n\x0etest_case_info\x18\x01 \x01(\x0b\x32\x1d.ios_test_plugin.TestCaseInfo\"\x1b\n\x19TestCaseDidFinishResponse\"O\n\x16TestCaseDidFailRequest\x12\x35\n\x0etest_case_info\x18\x01 \x01(\x0b\x32\x1d.ios_test_plugin.TestCaseInfo\"\x19\n\x17TestCaseDidFailResponse\"\x1b\n\x19ListEnabledPluginsRequest\"5\n\x1aListEnabledPluginsResponse\x12\x17\n\x0f\x65nabled_plugins\x18\x01 \x03(\t\"\x1c\n\x0cTestCaseInfo\x12\x0c\n\x04name\x18\x01 \x01(\t2\xc7\x03\n\x11TestPluginService\x12l\n\x11TestCaseWillStart\x12).ios_test_plugin.TestCaseWillStartRequest\x1a*.ios_test_plugin.TestCaseWillStartResponse\"\x00\x12l\n\x11TestCaseDidFinish\x12).ios_test_plugin.TestCaseDidFinishRequest\x1a*.ios_test_plugin.TestCaseDidFinishResponse\"\x00\x12\x65\n\x0fTestCaseDidFail\x12\'.ios_test_plugin.TestCaseDidFailRequest\x1a\'.ios_test_plugin.TestCaseDidFailRequest\"\x00\x12o\n\x12ListEnabledPlugins\x12*.ios_test_plugin.ListEnabledPluginsRequest\x1a+.ios_test_plugin.ListEnabledPluginsResponse\"\x00\x42\x02H\x03\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19test_plugin_service.proto\x12\x0fios_test_plugin\"Q\n\x18TestCaseWillStartRequest\x12\x35\n\x0etest_case_info\x18\x01 \x01(\x0b\x32\x1d.ios_test_plugin.TestCaseInfo\"\x1b\n\x19TestCaseWillStartResponse\"Q\n\x18TestCaseDidFinishRequest\x12\x35\n\x0etest_case_info\x18\x01 \x01(\x0b\x32\x1d.ios_test_plugin.TestCaseInfo\"\x1b\n\x19TestCaseDidFinishResponse\"O\n\x16TestCaseDidFailRequest\x12\x35\n\x0etest_case_info\x18\x01 \x01(\x0b\x32\x1d.ios_test_plugin.TestCaseInfo\"\x19\n\x17TestCaseDidFailResponse\"\x1b\n\x19ListEnabledPluginsRequest\"5\n\x1aListEnabledPluginsResponse\x12\x17\n\x0f\x65nabled_plugins\x18\x01 \x03(\t\"\x1c\n\x0cTestCaseInfo\x12\x0c\n\x04name\x18\x01 \x01(\t2\xc8\x03\n\x11TestPluginService\x12l\n\x11TestCaseWillStart\x12).ios_test_plugin.TestCaseWillStartRequest\x1a*.ios_test_plugin.TestCaseWillStartResponse\"\x00\x12l\n\x11TestCaseDidFinish\x12).ios_test_plugin.TestCaseDidFinishRequest\x1a*.ios_test_plugin.TestCaseDidFinishResponse\"\x00\x12\x66\n\x0fTestCaseDidFail\x12\'.ios_test_plugin.TestCaseDidFailRequest\x1a(.ios_test_plugin.TestCaseDidFailResponse\"\x00\x12o\n\x12ListEnabledPlugins\x12*.ios_test_plugin.ListEnabledPluginsRequest\x1a+.ios_test_plugin.ListEnabledPluginsResponse\"\x00\x42\x02H\x03\x62\x06proto3')
 
 
 
@@ -114,5 +114,5 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _TESTCASEINFO._serialized_start=462
   _TESTCASEINFO._serialized_end=490
   _TESTPLUGINSERVICE._serialized_start=493
-  _TESTPLUGINSERVICE._serialized_end=948
+  _TESTPLUGINSERVICE._serialized_end=949
 # @@protoc_insertion_point(module_scope)

@@ -18,8 +18,8 @@ service TestPluginService {
       returns (TestCaseDidFinishResponse) {};
 
   // API to signal the plugin service that a test case failed unexpectedly
-  rpc TestCaseDidFail(TestCaseDidFailRequest) returns (TestCaseDidFailRequest) {
-  };
+  rpc TestCaseDidFail(TestCaseDidFailRequest)
+      returns (TestCaseDidFailResponse) {};
 
   // API to check on what plugins are enabled for the current test run
   rpc ListEnabledPlugins(ListEnabledPluginsRequest)

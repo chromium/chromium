@@ -13,14 +13,23 @@
 #import "base/command_line.h"
 #import "base/i18n/icu_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/test/earl_grey/chrome_egtest_plugin_client.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
+
+#import <grpc/grpc.h>
+#import <grpcpp/grpcpp.h>
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+using chrome_egtest_plugin::TestPluginClient;
+using grpc::Channel;
+
 namespace {
+
+const grpc::string gRPCHost = "localhost:32279";
 
 // Contains startup code for a Chrome EG2 test module. Performs startup tasks
 // when constructed and shutdown tasks when destroyed. Callers should create an
@@ -70,7 +79,6 @@ class TestMain {
  private:
   base::AtExitManager exit_manager_;
 };
-
 }
 
 @class XCTSourceCodeSymbolInfo;
@@ -86,6 +94,7 @@ class TestMain {
 
 @interface ChromeEGTestBundleMain () <XCTestObservation> {
   std::unique_ptr<TestMain> _testMain;
+  std::unique_ptr<TestPluginClient> _testPluginClient;
 }
 @end
 
@@ -95,6 +104,26 @@ class TestMain {
   if ((self = [super init])) {
     [[XCTestObservationCenter sharedTestObservationCenter]
         addTestObserver:self];
+  }
+
+  // initializing test plugin client iff test plugin server is running on the
+  // host and at least one plugin is enabled for this test run
+  _testPluginClient = std::make_unique<TestPluginClient>(
+      grpc::CreateChannel(gRPCHost, grpc::InsecureChannelCredentials()));
+  NSLog(@"Checking whether any test plugins are enabled...");
+  std::vector<std::string> enabledPlugins =
+      _testPluginClient->ListEnabledPlugins();
+
+  // we will not use the test plugin feature if test runner server side is not
+  // running (e.g. tests are run locally), or no plugins are enabled for this
+  // test run.
+  if (enabledPlugins.size() == 0) {
+    NSLog(@"iOS test runner is not running, or no test plugins are enabled. "
+          @"Test plugins feature will not be used.");
+  } else {
+    _testPluginClient->set_is_service_enabled(true);
+    NSLog(@"At least one test plugin is enabled. Test plugins features will be "
+          @"used throughout tests executions");
   }
   return self;
 }
@@ -152,6 +181,31 @@ class TestMain {
       removeTestObserver:self];
 
   _testMain.reset();
+}
+
+- (void)testCaseWillStart:(XCTestCase*)testCase {
+  if (_testPluginClient->is_service_enabled()) {
+    NSLog(@"calling testCaseWillStart to test plugin server");
+    std::string testName = base::SysNSStringToUTF8(testCase.name);
+    _testPluginClient->TestCaseWillStart(testName);
+  }
+}
+
+// this is called when test case failed unexpectedly
+- (void)testCase:(XCTestCase*)testCase didRecordIssue:(XCTIssue*)issue {
+  if (_testPluginClient->is_service_enabled()) {
+    NSLog(@"calling testCaseDidFail to test plugin server");
+    std::string testName = base::SysNSStringToUTF8(testCase.name);
+    _testPluginClient->TestCaseDidFail(testName);
+  }
+}
+
+- (void)testCaseDidFinish:(XCTestCase*)testCase {
+  if (_testPluginClient->is_service_enabled()) {
+    NSLog(@"calling testCaseDidFinish to test plugin server");
+    std::string testName = base::SysNSStringToUTF8(testCase.name);
+    _testPluginClient->TestCaseDidFinish(testName);
+  }
 }
 
 @end

@@ -46,4 +46,5 @@ compatible. Then follow the below instructions to re-generate the code in both P
         `python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. test_plugin_service.proto`
 
 ### C++ Instruction
-*Work in progress...*
+
+No work needs to be done. C++ files are dynamically generated during runtime using the grpc_library template in BUILD.gn.
