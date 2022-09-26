@@ -533,12 +533,8 @@ void BindMimeHandlerService(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<extensions::mime_handler::MimeHandlerService>
         receiver) {
-  auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
-  if (!web_contents)
-    return;
-
   auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromWebContents(web_contents);
+      extensions::MimeHandlerViewGuest::FromRenderFrameHost(frame_host);
   if (!guest_view)
     return;
   extensions::MimeHandlerServiceImpl::Create(guest_view->GetStreamWeakPtr(),
@@ -549,12 +545,8 @@ void BindBeforeUnloadControl(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<extensions::mime_handler::BeforeUnloadControl>
         receiver) {
-  auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
-  if (!web_contents)
-    return;
-
   auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromWebContents(web_contents);
+      extensions::MimeHandlerViewGuest::FromRenderFrameHost(frame_host);
   if (!guest_view)
     return;
   guest_view->FuseBeforeUnloadControl(std::move(receiver));
