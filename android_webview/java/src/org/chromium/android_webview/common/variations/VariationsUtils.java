@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
  * Utilities for manipulating variations seeds, used by both WebView and WebView's services.
  */
 public class VariationsUtils {
+    // Changes to the tag below must be accompanied with changes to WebView
+    // finch smoke tests since they look for this tag in the logcat.
     private static final String TAG = "VariationsUtils";
 
     private static final String SEED_FILE_NAME = "variations_seed";

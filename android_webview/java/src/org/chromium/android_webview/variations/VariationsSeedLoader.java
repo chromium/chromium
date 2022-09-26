@@ -371,6 +371,8 @@ public class VariationsSeedLoader {
                 long seedDate = mRunnable.getLoadedSeedDate();
                 if (gotSeed && seedDate > 0) {
                     long seedAge = TimeUnit.MILLISECONDS.toSeconds(new Date().getTime() - seedDate);
+                    // Changes to the log message below must be accompanied with changes to WebView
+                    // finch smoke tests since they look for this message in the logcat.
                     VariationsUtils.debugLog("Loaded seed with age " + seedAge + "s");
                 }
                 return gotSeed;
