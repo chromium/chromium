@@ -414,6 +414,13 @@
       "--logs-dir=${ISOLATED_OUTDIR}",
     ],
   },
+  "chrome_all_tast_tests_with_lacros": {
+    "label": "//chromeos:chrome_all_tast_tests_with_lacros",
+    "type": "generated_script",
+    "args": [
+      "--logs-dir=${ISOLATED_OUTDIR}",
+    ],
+  },
   "chrome_app_unittests": {
     "label": "//chrome/test:chrome_app_unittests",
     "type": "console_test_launcher",

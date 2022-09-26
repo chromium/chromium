@@ -28,7 +28,7 @@
           'chromiumos_preflight',
         ],
         'test_suites': {
-          'gtest_tests': 'chromeos_browser_integration_tests',
+          'gtest_tests': 'chromeos_device_no_gtests',
         },
         'swarming': {
           'dimension_sets': [
@@ -57,7 +57,7 @@
           'chromiumos_preflight',
         ],
         'test_suites': {
-          'gtest_tests': 'chromeos_browser_integration_tests',
+          'gtest_tests': 'chromeos_device_no_gtests',
         },
         'mixins': [
           'chromeos-betty',
@@ -98,7 +98,7 @@
           'chromiumos_preflight',
         ],
         'test_suites': {
-          'gtest_tests': 'chromeos_device_gtests',
+          'gtest_tests': 'chromeos_device_gtests_with_lacros',
         },
         'swarming': {
           'dimension_sets': [
@@ -174,7 +174,7 @@
           'chromeos-reven',
         ],
         'test_suites': {
-          'gtest_tests': 'chromeos_browser_integration_tests',
+          'gtest_tests': 'chromeos_device_no_gtests',
         },
       },
       'chromeos-trogdor64-chrome-skylab': {

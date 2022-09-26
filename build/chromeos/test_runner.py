@@ -267,12 +267,7 @@ class TastTest(RemoteTest):
     self._attr_expr = args.attr_expr
     self._should_strip = args.strip_chrome
     self._deploy_lacros = args.deploy_lacros
-
-    if self._deploy_lacros and self._should_strip:
-      raise TestFormatError(
-          '--strip-chrome is only applicable to ash-chrome because '
-          'lacros-chrome deployment uses --nostrip by default, so it cannot '
-          'be specificed with --deploy-lacros.')
+    self._deploy_chrome = args.deploy_chrome
 
     if not self._logs_dir:
       # The host-side Tast bin returns 0 when tests fail, so we need to capture
@@ -307,10 +302,15 @@ class TastTest(RemoteTest):
         ]
 
     # Lacros deployment mounts itself by default.
-    self._test_cmd.extend([
-        '--deploy-lacros', '--lacros-launcher-script',
-        LACROS_LAUNCHER_SCRIPT_PATH
-    ] if self._deploy_lacros else ['--deploy', '--mount'])
+    if self._deploy_lacros:
+      self._test_cmd.extend([
+          '--deploy-lacros', '--lacros-launcher-script',
+          LACROS_LAUNCHER_SCRIPT_PATH
+      ])
+      if self._deploy_chrome:
+        self._test_cmd.extend(['--deploy', '--mount'])
+    else:
+      self._test_cmd.extend(['--deploy', '--mount'])
     self._test_cmd += [
         '--build-dir',
         os.path.relpath(self._path_to_outdir, CHROMIUM_SRC_PATH)
@@ -722,12 +722,17 @@ def host_cmd(args, cmd_args):
           '--deploy-lacros', '--lacros-launcher-script',
           LACROS_LAUNCHER_SCRIPT_PATH
       ])
+      if args.deploy_chrome:
+        # Mounting ash-chrome gives it enough disk space to not need stripping
+        # most of the time.
+        cros_run_test_cmd.extend(['--deploy', '--mount'])
     else:
       # Mounting ash-chrome gives it enough disk space to not need stripping
       # most of the time.
       cros_run_test_cmd.extend(['--deploy', '--mount'])
-      if not args.strip_chrome:
-        cros_run_test_cmd.append('--nostrip')
+
+    if not args.strip_chrome:
+      cros_run_test_cmd.append('--nostrip')
 
     cros_run_test_cmd += [
         '--build-dir',
@@ -769,6 +774,13 @@ def add_common_args(*parsers):
     parser.add_argument('--verbose', '-v', action='store_true')
     parser.add_argument(
         '--board', type=str, required=True, help='Type of CrOS device.')
+    parser.add_argument(
+        '--deploy-chrome',
+        action='store_true',
+        help='Will deploy a locally built ash-chrome binary to the device '
+        'before running the host-cmd.')
+    parser.add_argument(
+        '--deploy-lacros', action='store_true', help='Deploy a lacros-chrome.')
     parser.add_argument(
         '--cros-cache',
         type=str,
@@ -842,18 +854,10 @@ def main():
       'will be 127.0.0.1:9222.')
   host_cmd_parser.set_defaults(func=host_cmd)
   host_cmd_parser.add_argument(
-      '--deploy-chrome',
-      action='store_true',
-      help='Will deploy a locally built ash-chrome binary to the device before '
-      'running the host-cmd.')
-  host_cmd_parser.add_argument(
-      '--deploy-lacros',
-      action='store_true',
-      help='Deploy a lacros-chrome instead of ash-chrome.')
-  host_cmd_parser.add_argument(
       '--strip-chrome',
       action='store_true',
-      help='Strips symbols from ash-chrome before deploying to the device.')
+      help='Strips symbols from ash-chrome or lacros-chrome before deploying '
+      ' to the device.')
 
   gtest_parser = subparsers.add_parser(
       'gtest', help='Runs a device-side gtest.')
@@ -917,10 +921,6 @@ def main():
       '--strip-chrome',
       action='store_true',
       help='Strips symbols from ash-chrome before deploying to the device.')
-  tast_test_parser.add_argument(
-      '--deploy-lacros',
-      action='store_true',
-      help='Deploy a lacros-chrome instead of ash-chrome.')
   tast_test_parser.add_argument(
       '--tast-var',
       action='append',

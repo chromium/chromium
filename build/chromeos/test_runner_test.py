@@ -293,12 +293,12 @@ class GTestTest(TestRunnerTest):
 class HostCmdTests(TestRunnerTest):
 
   @parameterized.expand([
-      [True, True],
-      [False, True],
-      [True, False],
-      [False, False],
+      [True, False, True],
+      [False, True, True],
+      [True, True, False],
+      [False, True, False],
   ])
-  def test_host_cmd(self, is_lacros, strip_chrome):
+  def test_host_cmd(self, is_lacros, is_ash, strip_chrome):
     args = [
         'script_name',
         'host-cmd',
@@ -309,10 +309,10 @@ class HostCmdTests(TestRunnerTest):
     ]
     if is_lacros:
       args += ['--deploy-lacros']
-    else:
+    if is_ash:
       args += ['--deploy-chrome']
-      if strip_chrome:
-        args += ['--strip-chrome']
+    if strip_chrome:
+      args += ['--strip-chrome']
     args += [
         '--',
         'fake_cmd',
@@ -341,10 +341,10 @@ class HostCmdTests(TestRunnerTest):
             '--lacros-launcher-script',
             test_runner.LACROS_LAUNCHER_SCRIPT_PATH,
         ]
-      else:
+      if is_ash:
         expected_cmd += ['--mount', '--deploy']
-        if not strip_chrome:
-          expected_cmd += ['--nostrip']
+      if not strip_chrome:
+        expected_cmd += ['--nostrip']
 
       expected_cmd += [
           '--',

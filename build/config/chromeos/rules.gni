@@ -285,9 +285,6 @@ template("generate_runner_script") {
   if (!defined(strip_chrome)) {
     strip_chrome = false
   }
-  assert(!(deploy_chrome && deploy_lacros),
-         "deploy_chrome and deploy_lacros are exclusive.")
-
   is_tast = defined(tast_attr_expr) || defined(tast_tests)
   assert(!(is_tast && defined(test_exe)),
          "Tast tests are invoked from binaries shipped with the VM image. " +
@@ -457,7 +454,7 @@ template("generate_runner_script") {
       executable_args += [ "--deploy-lacros" ]
     }
 
-    if (deploy_chrome && !defined(test_exe) && !is_tast) {
+    if (deploy_chrome && !defined(test_exe)) {
       executable_args += [ "--deploy-chrome" ]
     }
 
@@ -504,6 +501,10 @@ template("generate_runner_script") {
 template("tast_test") {
   forward_variables_from(invoker, "*")
 
+  if (!defined(deploy_lacros_chrome)) {
+    deploy_lacros_chrome = false
+  }
+
   # Default the expression to match any chrome-related test.
   if (!defined(tast_attr_expr) && !defined(tast_tests)) {
     # The following expression filters out all non-critical tests. See the link
@@ -541,6 +542,7 @@ template("tast_test") {
     generated_script = "$root_build_dir/bin/run_${target_name}"
     runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
     deploy_chrome = true
+    deploy_lacros = deploy_lacros_chrome
     data_deps = [
       "//:chromiumos_preflight",  # Builds the browser.
       "//chromeos:cros_chrome_deploy",  # Adds additional browser run-time deps.
@@ -554,6 +556,12 @@ template("tast_test") {
     ]
 
     data = [ "//components/crash/content/tools/generate_breakpad_symbols.py" ]
+    if (deploy_lacros_chrome) {
+      data += [
+        # A script needed to launch Lacros in Lacros Tast tests.
+        "//build/lacros/mojo_connection_lacros_launcher.py",
+      ]
+    }
   }
 }
 

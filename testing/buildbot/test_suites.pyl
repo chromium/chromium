@@ -637,6 +637,36 @@
       },
     },
 
+    'chromeos_browser_all_tast_tests': {
+      'chrome_all_tast_tests': {
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/923426#c27
+          # Tast test doesn't always output. See crbug.com/1306300
+          'io_timeout': 3600,
+          'shards': 10,
+        },
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+    },
+
+    # TODO(crbug.com/1306345): Merge this back to
+    # 'chromeos_browser_all_tast_tests'.
+    'chromeos_browser_all_tast_tests_with_lacros': {
+      'chrome_all_tast_tests_with_lacros': {
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/923426#c27
+          # Tast test doesn't always output. See crbug.com/1306300
+          'io_timeout': 3600,
+          'shards': 10,
+        },
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+    },
+
     'chromeos_browser_finch_tests': {
       'chrome_variations_tast_tests': {
         'swarming': {
@@ -650,17 +680,6 @@
     },
 
     'chromeos_browser_integration_tests': {
-      'chrome_all_tast_tests': {
-        'swarming': {
-          'idempotent': False,  # https://crbug.com/923426#c27
-          # Tast test doesn't always output. See crbug.com/1306300
-          'io_timeout': 3600,
-          'shards': 10,
-        },
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
       'disk_usage_tast_test': {
         "args": [
           # Stripping gives more accurate disk usage data.
@@ -5449,11 +5468,24 @@
     ],
 
     'chromeos_device_gtests': [
+      'chromeos_browser_all_tast_tests',
       'chromeos_browser_integration_tests',
       'chromeos_device_only_gtests',
     ],
 
+    'chromeos_device_gtests_with_lacros': [
+      'chromeos_browser_all_tast_tests_with_lacros',
+      'chromeos_browser_integration_tests',
+      'chromeos_device_only_gtests',
+    ],
+
+    'chromeos_device_no_gtests': [
+      'chromeos_browser_all_tast_tests',
+      'chromeos_browser_integration_tests',
+    ],
+
     'chromeos_vm_gtests': [
+      'chromeos_browser_all_tast_tests',
       'chromeos_browser_finch_tests',
       'chromeos_browser_integration_tests',
       'chromeos_system_friendly_gtests',
