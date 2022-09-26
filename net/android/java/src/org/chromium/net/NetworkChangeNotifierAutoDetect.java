@@ -472,6 +472,24 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                                    // be TYPE_VPN. In the case of a VPN, getAllNetworks() will have
                                    // returned just this VPN if it applies.
                                    || networkInfo.getType() == TYPE_VPN)) {
+                    // Android 10+ devices occasionally return multiple networks
+                    // of the same type that are stuck in the CONNECTING state.
+                    // Now that Java asserts are enabled, ignore these zombie
+                    // networks here to avoid hitting the assert below. crbug.com/1361170
+                    if (defaultNetwork != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        // If `network` is CONNECTING, ignore it.
+                        if (networkInfo.getDetailedState()
+                                == NetworkInfo.DetailedState.CONNECTING) {
+                            continue;
+                        }
+                        // If `defaultNetwork` is CONNECTING, ignore it.
+                        NetworkInfo prevDefaultNetworkInfo = getRawNetworkInfo(defaultNetwork);
+                        if (prevDefaultNetworkInfo != null
+                                && prevDefaultNetworkInfo.getDetailedState()
+                                        == NetworkInfo.DetailedState.CONNECTING) {
+                            defaultNetwork = null;
+                        }
+                    }
                     // There should not be multiple connected networks of the
                     // same type. At least as of Android Marshmallow this is
                     // not supported. If this becomes supported this assertion
