@@ -10,7 +10,6 @@ mmenke@chromium.org
 morlovich@chromium.org
 reillyg@chromium.org
 toyoshim@chromium.org
-yhirano@chromium.org
 
 # Files and features related to component:Internals>Sandbox>SiteIsolation:
 per-file cross_origin_read_blocking*=creis@chromium.org
