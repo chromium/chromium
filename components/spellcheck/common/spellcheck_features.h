@@ -16,7 +16,7 @@ namespace spellcheck {
 bool UseBrowserSpellChecker();
 
 #if BUILDFLAG(IS_WIN)
-extern const base::Feature kWinUseBrowserSpellChecker;
+BASE_DECLARE_FEATURE(kWinUseBrowserSpellChecker);
 
 // If the kWinDelaySpellcheckServiceInit feature flag is enabled, don't
 // initialize the spellcheck dictionaries when the SpellcheckService is
@@ -36,13 +36,13 @@ extern const base::Feature kWinUseBrowserSpellChecker;
 //     chrome
 //    --enable-features=WinUseBrowserSpellChecker,WinDelaySpellcheckServiceInit
 //    --disable-sync-types="Dictionary"
-extern const base::Feature kWinDelaySpellcheckServiceInit;
+BASE_DECLARE_FEATURE(kWinDelaySpellcheckServiceInit);
 
 // When set, do not perform the expensive operation of retrieving suggestions
 // for all misspelled words while performing a text check. Instead retrieve
 // suggestions on demand when the context menu is brought up with a misspelled
 // word selected.
-extern const base::Feature kWinRetrieveSuggestionsOnlyOnDemand;
+BASE_DECLARE_FEATURE(kWinRetrieveSuggestionsOnlyOnDemand);
 
 bool WindowsVersionSupportsSpellchecker();
 #endif  // BUILDFLAG(IS_WIN)
