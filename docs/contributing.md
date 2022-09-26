@@ -330,16 +330,19 @@ general rules of thumb can be helpful in navigating how to structure changes:
   product in the Chromium repositories that depends on that line of code or else
   the line of code should be removed.
 
-  Completely new additions to the project (e.g., support for a new OS or
-  architecture, or a new top-level directory for a new sub-project) must be
-  approved by chrome-eng-review@google.com. For long-term maintenance reasons,
-  we will accept only things that are used by the Chromium project and things
-  whose benefit to Chromium outweighs any cost increase in maintaining
-  Chromium's supported architectures / platforms (e.g. adding one ifdef branch
-  for an unsupported architecture / platform has negligible cost and is likely
-  fine, but introducing new abstractions in the code has a high cost and would
-  need to provide Chromium with corresponding benefit). See the
-  [new port policy](new_port_policy.md) for further guidance.
+  When you are adding support for a new OS, a new architecture, a new port or
+  a new top-level directory, please send an email to
+  chrome-eng-review@google.com and get approval. For long-term maintenance
+  reasons, we will accept only things that are used by the Chromium project
+  (including Chromium-supported projects like V8 and Skia) and things whose
+  benefit to Chromium outweighs any cost increase in maintaining Chromium's
+  supported architectures / platforms (e.g. adding one ifdef branch for an
+  unsupported architecture / platform has negligible cost and is likely fine,
+  but introducing new abstractions or changes to higher level directories has
+  a high cost and would need to provide Chromium with corresponding benefit).
+  Note that an unsupported architecture / platform will not have bots on
+  Google-managed waterfalls (even FYI bots) or maintained by Chromium
+  developers. Please use existing ifdef branches as much as possible.
 
 - **Code should only be moved to a central location (e.g., //base) when
   multiple consumers would benefit.** We should resist the temptation to
