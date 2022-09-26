@@ -40,6 +40,14 @@ void SetWindowBounds(struct wl_client* client,
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
+void SetOrigin(struct wl_client* client,
+               struct wl_resource* resource,
+               int32_t x,
+               int32_t y,
+               struct wl_resource* output) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 void SetRestoreInfo(struct wl_client* client,
                     struct wl_resource* resource,
                     int32_t restore_session_id,
@@ -103,6 +111,7 @@ const struct zaura_toplevel_interface kTestZAuraToplevelImpl = {
     &SetFloat,
     &UnSetFloat,
     &SetZOrder,
+    &SetOrigin,
 };
 
 }  // namespace wl

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="40">
+  <interface name="zaura_shell" version="41">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -684,7 +684,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_toplevel" version="40">
+  <interface name="zaura_toplevel" version="41">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -902,6 +902,27 @@
       <entry name="floating_ui_element" value="2" summary="used to show non-window style UIs that are shown above floating windows"/>
       <entry name="security_surface" value="3" summary="cannot be interfered with or covered up"/>
     </enum>
+
+    <!-- version 41 additions -->
+    <request name="set_origin" since="41">
+      <description summary="set window position in DPs">
+         Request a new location for the surface in device-independent pixels
+         (DPs), relative to the top-left corner of the given output.
+
+         A null output means whichever output currently contains the surface.
+
+         These parameters are just a request and the compositor may ignore
+         them, adjust them due to rules imposed by the window manager, or
+         preserve them for future operations. For example, the compositor will
+         not allow a position outside of the output; or the compositor may just
+         store it if the toplevel surface is in maximized state, and may use it
+         upon unmaximize.
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="output" type="object" interface="wl_output" allow-null="true"
+           summary="output to contain the surface"/>
+    </request>
   </interface>
 
   <interface name="zaura_popup" version="38">

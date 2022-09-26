@@ -1149,6 +1149,15 @@ void aura_toplevel_set_window_bounds(wl_client* client,
   GetUserDataAs<AuraToplevel>(resource)->SetWindowBounds(x, y, width, height);
 }
 
+void aura_toplevel_set_origin(wl_client* client,
+                              wl_resource* resource,
+                              int32_t x,
+                              int32_t y,
+                              wl_resource* output) {
+  // TODO(b/247452928): Implement aura_toplevel.set_origin.
+  NOTIMPLEMENTED();
+}
+
 void aura_toplevel_set_restore_info(wl_client* client,
                                     wl_resource* resource,
                                     int32_t restore_session_id,
@@ -1245,6 +1254,7 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_float,
     aura_toplevel_unset_float,
     aura_toplevel_set_z_order,
+    aura_toplevel_set_origin,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,
