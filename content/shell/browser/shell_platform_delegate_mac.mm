@@ -27,9 +27,10 @@
 // tear-down process. Is responsible for deleting itself when done.
 @interface ContentShellWindowDelegate : NSObject <NSWindowDelegate> {
  @private
-  raw_ptr<content::Shell, DanglingUntriaged> _shell;
+  raw_ptr<content::Shell> _shell;
 }
 - (id)initWithShell:(content::Shell*)shell;
+- (content::Shell*)shell;
 @end
 
 @implementation ContentShellWindowDelegate
@@ -39,6 +40,12 @@
     _shell = shell;
   }
   return self;
+}
+
+// Called by CrShellWindow so that it doesn't need to hold
+// raw_ptr<content::Shell>.
+- (content::Shell*)shell {
+  return _shell;
 }
 
 // Called when the window is about to close. Perform the self-destruction
@@ -51,7 +58,7 @@
   // Don't leave a dangling pointer if the window lives beyond
   // this method. See crbug.com/719830.
   [window setDelegate:nil];
-  delete _shell;
+  _shell.ClearAndDelete();
   [self release];
 
   return YES;
@@ -67,22 +74,19 @@
 
 @end
 
-@interface CrShellWindow : UnderlayOpenGLHostingWindow {
- @private
-  raw_ptr<content::Shell, DanglingUntriaged> _shell;
-}
-- (void)setShell:(content::Shell*)shell;
+@interface CrShellWindow : UnderlayOpenGLHostingWindow
 - (void)showDevTools:(id)sender;
 @end
 
 @implementation CrShellWindow
 
-- (void)setShell:(content::Shell*)shell {
-  _shell = shell;
-}
-
 - (void)showDevTools:(id)sender {
-  _shell->ShowDevTools();
+  // This is prefered as holding a raw_ptr<content::Shell> because the delegate
+  // is responsible for destroying the shell on `windowShouldClose` event which
+  // would lead the raw_ptr to dangle.
+  ContentShellWindowDelegate* delegate =
+      base::mac::ObjCCastStrict<ContentShellWindowDelegate>(self.delegate);
+  delegate.shell->ShowDevTools();
 }
 
 @end
@@ -159,7 +163,6 @@ void ShellPlatformDelegate::CreatePlatformWindow(
                                        styleMask:style_mask
                                          backing:NSBackingStoreBuffered
                                            defer:NO];
-  [window setShell:shell];
   [window setTitle:kWindowTitle];
   NSView* content = [window contentView];
 
