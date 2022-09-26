@@ -125,42 +125,48 @@ void SetExperimentIds(const base::Value::List& list) {
 
 // Allows applications to access media capture devices (webcams/microphones)
 // through getUserMedia API.
-const base::Feature kAllowUserMediaAccess{"allow_user_media_access",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAllowUserMediaAccess,
+             "allow_user_media_access",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the use of QUIC in Cast-specific NetworkContexts. See
 // chromecast/browser/cast_network_contexts.cc for usage.
-const base::Feature kEnableQuic{"enable_quic",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableQuic, "enable_quic", base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables triple-buffer 720p graphics (overriding default graphics buffer
 // settings for a platform).
-const base::Feature kTripleBuffer720{"enable_triple_buffer_720",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTripleBuffer720,
+             "enable_triple_buffer_720",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables single-buffered graphics (overriding default graphics buffer
 // settings and takes precedence over triple-buffer feature).
-const base::Feature kSingleBuffer{"enable_single_buffer",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSingleBuffer,
+             "enable_single_buffer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Disable idle sockets closing on memory pressure. See
 // chromecast/browser/cast_network_contexts.cc for usage.
-const base::Feature kDisableIdleSocketsCloseOnMemoryPressure{
-    "disable_idle_sockets_close_on_memory_pressure",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDisableIdleSocketsCloseOnMemoryPressure,
+             "disable_idle_sockets_close_on_memory_pressure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableGeneralAudienceBrowsing{
-    "enable_general_audience_browsing", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableGeneralAudienceBrowsing,
+             "enable_general_audience_browsing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableSideGesturePassThrough{
-    "enable_side_gesture_pass_through", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableSideGesturePassThrough,
+             "enable_side_gesture_pass_through",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Uses AudioManagerAndroid, instead of CastAudioManagerAndroid. This will
 // disable lots of Cast features, so it should only be used for development and
 // testing.
-const base::Feature kEnableChromeAudioManagerAndroid{
-    "enable_chrome_audio_manager_android", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableChromeAudioManagerAndroid,
+             "enable_chrome_audio_manager_android",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables CastAudioOutputDevice for audio output on Android. When disabled,
 // CastAudioManagerAndroid will be used.
-const base::Feature kEnableCastAudioOutputDevice{
-    "enable_cast_audio_output_device", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableCastAudioOutputDevice,
+             "enable_cast_audio_output_device",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // End Chromecast Feature definitions.
 const base::Feature* kFeatures[] = {
