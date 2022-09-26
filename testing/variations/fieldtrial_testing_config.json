@@ -11640,6 +11640,24 @@
             ]
         }
     ],
+    "WebRtcThreadsUseResourceEfficientType": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebRtcThreadsUseResourceEfficientType"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebUIBrandingUpdate": [
         {
             "platforms": [
