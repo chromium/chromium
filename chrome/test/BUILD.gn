@@ -8684,6 +8684,7 @@ test("unit_tests") {
       "//components/media_message_center",
       "//components/media_router/browser:test_support",
       "//components/media_router/common:test_support",
+      "//components/omnibox/browser:vector_icons",
       "//components/user_education/views",
       "//components/user_education/views:test_support",
       "//components/user_notes/model:unit_tests",

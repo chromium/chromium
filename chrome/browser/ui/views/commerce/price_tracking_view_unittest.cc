@@ -14,6 +14,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -24,7 +25,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-const char kTestURL[] = "http://www.google.com";
+const char kTestURL[] = "about:blank";
 }  // namespace
 
 class PriceTrackingViewTest : public BrowserWithTestWindowTest {
@@ -70,7 +71,7 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
                                   std::u16string());
 
     commerce::AddProductBookmark(bookmark_model, u"title", GURL(kTestURL), 0,
-                                 true);
+                                 false);
   }
 
   raw_ptr<PriceTrackingView> CreateViewAndShow(bool is_price_track_enabled) {
@@ -142,7 +143,7 @@ TEST_F(PriceTrackingViewTest, InitialPriceTrackDisabled) {
 TEST_F(PriceTrackingViewTest, ToggleSuccessed) {
   SetUpDependencies();
 
-  const bool initial_enabled = true;
+  const bool initial_enabled = false;
   CreateViewAndShow(initial_enabled);
   VerifyToggleState(initial_enabled);
   VerifyBodyMessage(
@@ -150,7 +151,7 @@ TEST_F(PriceTrackingViewTest, ToggleSuccessed) {
 
   static_cast<commerce::MockShoppingService*>(
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile()))
-      ->SetUnsubscribeCallbackValue(true);
+      ->SetSubscribeCallbackValue(true);
 
   ClickToggle();
   VerifyToggleState(!initial_enabled);
@@ -161,7 +162,7 @@ TEST_F(PriceTrackingViewTest, ToggleSuccessed) {
 TEST_F(PriceTrackingViewTest, ToggleFailed) {
   SetUpDependencies();
 
-  const bool initial_enabled = true;
+  const bool initial_enabled = false;
   CreateViewAndShow(initial_enabled);
   VerifyToggleState(initial_enabled);
   VerifyBodyMessage(
@@ -169,7 +170,7 @@ TEST_F(PriceTrackingViewTest, ToggleFailed) {
 
   static_cast<commerce::MockShoppingService*>(
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile()))
-      ->SetUnsubscribeCallbackValue(false);
+      ->SetSubscribeCallbackValue(false);
 
   ClickToggle();
   VerifyToggleState(initial_enabled);

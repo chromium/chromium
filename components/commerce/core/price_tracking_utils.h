@@ -27,6 +27,10 @@ class ShoppingService;
 bool IsBookmarkPriceTracked(bookmarks::BookmarkModel* model,
                             const bookmarks::BookmarkNode* node);
 
+// Return whether the |node| is a product bookmark.
+bool IsProductBookmark(bookmarks::BookmarkModel* model,
+                       const bookmarks::BookmarkNode* node);
+
 // Set the state of price tracking for all bookmarks with the cluster ID of the
 // provided bookmark. A subscription update will attempted on the backend and,
 // if successful, all bookmarks with the same cluster ID will be updated.

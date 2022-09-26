@@ -67,6 +67,13 @@ bool IsBookmarkPriceTracked(bookmarks::BookmarkModel* model,
          meta->shopping_specifics().is_price_tracked();
 }
 
+bool IsProductBookmark(bookmarks::BookmarkModel* model,
+                       const bookmarks::BookmarkNode* node) {
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      power_bookmarks::GetNodePowerBookmarkMeta(model, node);
+  return meta && meta->has_shopping_specifics();
+}
+
 void SetPriceTrackingStateForBookmark(ShoppingService* service,
                                       bookmarks::BookmarkModel* model,
                                       const bookmarks::BookmarkNode* node,
