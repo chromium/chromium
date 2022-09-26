@@ -112,6 +112,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
 
   bool DidPumpTokenizerForTesting() const { return did_pump_tokenizer_; }
 
+  HTMLTokenProducer* TokenProducerForTesting() { return token_producer_.get(); }
+
   unsigned GetChunkCountForTesting() const;
 
   TextPosition GetTextPosition() const final;

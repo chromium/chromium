@@ -491,6 +491,12 @@ HTMLDocumentParser::HTMLDocumentParser(HTMLDocument& document,
   script_runner_ =
       HTMLParserScriptRunner::Create(ReentryPermit(), &document, this);
 
+  if (can_use_background_token_producer && document.IsInitialEmptyDocument()) {
+    // Empty docs generally have no data, so that using a background tokenizer
+    // for them is overkill. Eempty docs may be written to (via
+    // document.write()), but this disables the background tokenizer too.
+    can_use_background_token_producer = false;
+  }
   CreateTokenProducer(can_use_background_token_producer);
 
   // Allow declarative shadow DOM for the document parser, if not explicitly
