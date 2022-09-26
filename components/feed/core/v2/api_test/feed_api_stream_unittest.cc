@@ -3088,13 +3088,26 @@ TEST_F(FeedApiTest, SignOutWhileSurfaceIsOpen) {
 
 TEST_F(FeedApiTest, FollowedFromWebPageMenuCount) {
   // Arrange.
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("dogs")});
   TestWebFeedSurface surface(stream_.get());
+
   // Act.
   stream_->IncrementFollowedFromWebPageMenuCount();
+  // Wait for the surface to load and a network request to be sent.
+  WaitForIdleTaskQueue();
+
   // Assert.
   EXPECT_EQ(1, stream_->GetMetadata().followed_from_web_page_menu_count());
   EXPECT_EQ(1, stream_->GetRequestMetadata(kWebFeedStream, false)
                    .followed_from_web_page_menu_count);
+
+  // We should report exactly 1 case of followed from the menu in the feed
+  // request.
+  ASSERT_EQ(1, network_.query_request_sent->feed_request()
+                   .feed_query()
+                   .chrome_fulfillment_info()
+                   .chrome_feature_usage()
+                   .times_followed_from_web_page_menu());
 }
 
 TEST_F(FeedApiTest, InfoCardTrackingActions) {

@@ -14,4 +14,9 @@ message ChromeFulfillmentInfo {
   optional bool notice_card_acknowledged = 1;
   repeated string acknowledged_notice_key = 2;
   repeated InfoCardTrackingState info_card_tracking_state = 3;
+  optional ChromeFeatureUsage chrome_feature_usage = 4;
+}
+
+message ChromeFeatureUsage {
+  optional int32 times_followed_from_web_page_menu = 1;
 }
