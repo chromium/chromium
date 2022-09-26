@@ -1626,7 +1626,6 @@ crbug.com/1347984 fragmentation/table-row-dimensions.html [ Failure ]
 crbug.com/660611 fast/multicol/flexbox/doubly-nested-with-zero-width-flexbox-and-forced-break-crash.html [ Skip ]
 
 ### Tests failing with LayoutNGTableFragmentation enabled:
-crbug.com/1078927 external/wpt/css/CSS2/floats-clear/clearance-containing-fragmented-float-crash.html [ Crash Failure ]
 crbug.com/1295905 [ Mac11-arm64 ] external/wpt/css/css-break/table/sections-and-captions-mixed-order.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-multicol/table/balance-table-with-border-spacing.html [ Failure ]
 crbug.com/1078927 fast/multicol/table-row-height-increase.html [ Failure ]
