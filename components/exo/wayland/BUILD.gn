@@ -260,6 +260,12 @@ source_set("unit_tests") {
   sources = [
     "clients/security_delegate_binding_test.cc",
     "server_unittest.cc",
+    "test/client_util.cc",
+    "test/client_util.h",
+    "test/resource_key.h",
+    "test/server_util.cc",
+    "test/server_util.h",
+    "test/test_client.cc",
     "test/test_client.h",
     "test/test_wayland_client_thread.cc",
     "test/test_wayland_client_thread.h",

@@ -117,6 +117,8 @@ DEFAULT_DELETER(zxdg_output_manager_v1, zxdg_output_manager_v1_destroy)
 DEFAULT_DELETER(weston_test, weston_test_destroy)
 DEFAULT_DELETER(zwp_idle_inhibit_manager_v1,
                 zwp_idle_inhibit_manager_v1_destroy)
+DEFAULT_DELETER(zcr_remote_surface_v1, zcr_remote_surface_v1_destroy)
+DEFAULT_DELETER(zcr_remote_surface_v2, zcr_remote_surface_v2_destroy)
 
 #if defined(USE_GBM)
 DEFAULT_DELETER(gbm_bo, gbm_bo_destroy)

@@ -135,6 +135,8 @@ DEFAULT_DELETER_FDECL(zxdg_toplevel_v6)
 DEFAULT_DELETER_FDECL(zxdg_output_manager_v1)
 DEFAULT_DELETER_FDECL(weston_test)
 DEFAULT_DELETER_FDECL(zwp_idle_inhibit_manager_v1)
+DEFAULT_DELETER_FDECL(zcr_remote_surface_v1)
+DEFAULT_DELETER_FDECL(zcr_remote_surface_v2)
 
 #if defined(USE_GBM)
 DEFAULT_DELETER_FDECL(gbm_bo)

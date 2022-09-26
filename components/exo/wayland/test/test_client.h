@@ -1,9 +1,11 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_EXO_WAYLAND_TEST_TEST_CLIENT_H_
 #define COMPONENTS_EXO_WAYLAND_TEST_TEST_CLIENT_H_
+
+#include <memory>
 
 #include "base/threading/thread_checker.h"
 #include "components/exo/wayland/clients/client_base.h"
@@ -18,9 +20,9 @@ namespace exo::wayland::test {
 // but used exclusively and destructed on the client thread.
 class TestClient : public clients::ClientBase {
  public:
-  TestClient() { DETACH_FROM_THREAD(thread_checker_); }
+  TestClient();
 
-  ~TestClient() override = default;
+  ~TestClient() override;
 
   TestClient(const TestClient&) = delete;
   TestClient& operator=(const TestClient&) = delete;
@@ -77,8 +79,30 @@ class TestClient : public clients::ClientBase {
     return globals().cr_remote_shell_v2.get();
   }
 
+  class CustomData {
+   public:
+    CustomData() = default;
+    virtual ~CustomData() = default;
+
+    CustomData(const CustomData&) = delete;
+    CustomData& operator=(const CustomData&) = delete;
+  };
+
+  void set_data(std::unique_ptr<CustomData> data) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    data_ = std::move(data);
+  }
+
+  template <class DataType>
+  DataType* GetDataAs() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return static_cast<DataType*>(data_.get());
+  }
+
  protected:
   THREAD_CHECKER(thread_checker_);
+
+  std::unique_ptr<CustomData> data_;
 };
 
 }  // namespace exo::wayland::test
