@@ -474,6 +474,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::MojoBinderPolicyMap& policy_map) override;
   void RegisterBrowserInterfaceBindersForServiceWorker(
       content::BrowserContext* browser_context,
+      const content::ServiceWorkerVersionBaseInfo& service_worker_version_info,
       mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>*
           map) override;
   void RegisterAssociatedInterfaceBindersForRenderFrameHost(

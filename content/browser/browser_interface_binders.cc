@@ -1416,10 +1416,13 @@ void PopulateBinderMapWithContext(
   BrowserContext* browser_context =
       host->version()->context()->wrapper()->browser_context();
 
+  const auto service_worker_version_info = host->version()->GetInfo();
+
   // Give the embedder a chance to register binders.
   GetContentClient()
       ->browser()
-      ->RegisterBrowserInterfaceBindersForServiceWorker(browser_context, map);
+      ->RegisterBrowserInterfaceBindersForServiceWorker(
+          browser_context, service_worker_version_info, map);
 }
 
 void PopulateBinderMap(ServiceWorkerHost* host, mojo::BinderMap* map) {

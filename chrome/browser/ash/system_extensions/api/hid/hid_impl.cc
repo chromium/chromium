@@ -8,6 +8,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "content/public/browser/device_service.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/hid/hid_service.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
 
@@ -28,9 +29,17 @@ void OnConnectResponse(
 
 }  // namespace
 
-HIDImpl::HIDImpl() {}
+// static
+void HIDImpl::Bind(Profile* profile,
+                   const content::ServiceWorkerVersionBaseInfo& info,
+                   mojo::PendingReceiver<blink::mojom::CrosHID> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<ash::HIDImpl>(),
+                              std::move(receiver));
+}
 
-HIDImpl::~HIDImpl() {}
+HIDImpl::HIDImpl() = default;
+
+HIDImpl::~HIDImpl() = default;
 
 void HIDImpl::AccessDevices(
     std::vector<blink::mojom::HidDeviceFilterPtr> filters,

@@ -64,7 +64,6 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/hid/cros_hid.mojom.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
 #if defined(ARCH_CPU_X86_64)
@@ -191,6 +190,78 @@ void BindBadgeServiceForServiceWorker(
       render_process_host, info, std::move(receiver));
 }
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Helper method to perform some checks before binding a System Extension
+// interface.
+template <typename Interface>
+base::RepeatingCallback<void(const content::ServiceWorkerVersionBaseInfo&,
+                             mojo::PendingReceiver<Interface>)>
+SystemExtensionServiceWorkerBinder(
+    void (*method)(Profile*,
+                   const content::ServiceWorkerVersionBaseInfo&,
+                   mojo::PendingReceiver<Interface>)) {
+  return base::BindRepeating(
+      [](void (*method)(Profile*, const content::ServiceWorkerVersionBaseInfo&,
+                        mojo::PendingReceiver<Interface>),
+         const content::ServiceWorkerVersionBaseInfo& info,
+         mojo::PendingReceiver<Interface> receiver) {
+        DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+        const auto& origin = info.storage_key.origin();
+        CHECK(ash::SystemExtension::IsSystemExtensionOrigin(origin));
+
+        content::RenderProcessHost* render_process_host =
+            content::RenderProcessHost::FromID(info.process_id);
+        if (!render_process_host)
+          return;
+
+        CHECK(content::ChildProcessSecurityPolicy::GetInstance()
+                  ->CanAccessDataForOrigin(info.process_id,
+                                           info.storage_key.origin()));
+
+        auto* profile = Profile::FromBrowserContext(
+            render_process_host->GetBrowserContext());
+        if (!profile)
+          return;
+
+        (*method)(profile, info, std::move(receiver));
+      },
+      method);
+}
+
+void RegisterSystemExtensionServiceWorkerBinders(
+    Profile* profile,
+    const content::ServiceWorkerVersionBaseInfo& version_info,
+    mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>*
+        map) {
+  if (!ash::IsSystemExtensionsEnabled(profile))
+    return;
+
+  if (!ash::SystemExtension::IsSystemExtensionOrigin(
+          version_info.storage_key.origin())) {
+    return;
+  }
+
+  auto& registry = ash::SystemExtensionsProvider::Get(profile).registry();
+  auto* system_extension = registry.GetByUrl(version_info.scope);
+  if (!system_extension)
+    return;
+
+  // Only register interfaces corresponding to the System Extension type.
+  switch (system_extension->type) {
+    case ash::SystemExtensionType::kWindowManagement:
+      map->Add<blink::mojom::CrosWindowManagementFactory>(
+          SystemExtensionServiceWorkerBinder(
+              &ash::CrosWindowManagementContext::BindFactory));
+      return;
+    case ash::SystemExtensionType::kPeripheralPrototype:
+      map->Add<blink::mojom::CrosHID>(
+          SystemExtensionServiceWorkerBinder(&ash::HIDImpl::Bind));
+      return;
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -346,6 +417,8 @@ void ChromeContentBrowserClient::RegisterWebUIInterfaceBrokers(
 void ChromeContentBrowserClient::
     RegisterBrowserInterfaceBindersForServiceWorker(
         content::BrowserContext* browser_context,
+        const content::ServiceWorkerVersionBaseInfo&
+            service_worker_version_info,
         mojo::BinderMapWithContext<
             const content::ServiceWorkerVersionBaseInfo&>* map) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -354,66 +427,9 @@ void ChromeContentBrowserClient::
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1253318): Only add this mapping if the System Extension type
-  // is Window Manager.
   auto* profile = Profile::FromBrowserContext(browser_context);
-  if (ash::IsSystemExtensionsEnabled(profile)) {
-    map->Add<blink::mojom::CrosWindowManagementFactory>(base::BindRepeating(
-        [](const content::ServiceWorkerVersionBaseInfo& info,
-           mojo::PendingReceiver<blink::mojom::CrosWindowManagementFactory>
-               receiver) {
-          DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-          if (!ash::SystemExtension::IsSystemExtensionOrigin(
-                  info.storage_key.origin())) {
-            return;
-          }
-
-          content::RenderProcessHost* render_process_host =
-              content::RenderProcessHost::FromID(info.process_id);
-          if (!render_process_host)
-            return;
-
-          auto* profile = Profile::FromBrowserContext(
-              render_process_host->GetBrowserContext());
-          if (!profile)
-            return;
-
-          // TODO(crbug.com/1253318): Once system extensions are site-isolated,
-          // ensure that the render_process_host is origin-locked via
-          // ChildProcessSecurityPolicy::CanAccessDataForOrigin().
-
-          ash::CrosWindowManagementContext::BindFactory(profile, info,
-                                                        std::move(receiver));
-        }));
-  }
-
-  // TODO(b/210738172): Only add this mapping if the System Extension type
-  // is HID.
-  if (ash::IsSystemExtensionsEnabled(profile)) {
-    map->Add<blink::mojom::CrosHID>(base::BindRepeating(
-        [](const content::ServiceWorkerVersionBaseInfo& info,
-           mojo::PendingReceiver<blink::mojom::CrosHID> receiver) {
-          DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-          if (!ash::SystemExtension::IsSystemExtensionOrigin(
-                  info.storage_key.origin())) {
-            return;
-          }
-
-          content::RenderProcessHost* render_process_host =
-              content::RenderProcessHost::FromID(info.process_id);
-          if (!render_process_host)
-            return;
-
-          // TODO(crbug.com/1253318): Once system extensions are site-isolated,
-          // ensure that the render_process_host is origin-locked via
-          // ChildProcessSecurityPolicy::CanAccessDataForOrigin().
-
-          mojo::MakeSelfOwnedReceiver(std::make_unique<ash::HIDImpl>(),
-                                      std::move(receiver));
-        }));
-  }
+  RegisterSystemExtensionServiceWorkerBinders(profile,
+                                              service_worker_version_info, map);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

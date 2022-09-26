@@ -19,12 +19,22 @@
 #include "third_party/blink/public/mojom/chromeos/system_extensions/hid/cros_hid.mojom.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
 
+class Profile;
+
+namespace content {
+struct ServiceWorkerVersionBaseInfo;
+}
+
 namespace ash {
 
 class HIDImpl : public blink::mojom::CrosHID,
                 public device::mojom::HidManagerClient,
                 public device::mojom::HidConnectionWatcher {
  public:
+  static void Bind(Profile* profile,
+                   const content::ServiceWorkerVersionBaseInfo& info,
+                   mojo::PendingReceiver<blink::mojom::CrosHID> receiver);
+
   HIDImpl();
   ~HIDImpl() override;
 
