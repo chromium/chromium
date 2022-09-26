@@ -38,14 +38,12 @@ Status ExecuteAlertCommand(const AlertCommand& alert_command,
   if (status.IsError() && status.code() != kUnexpectedAlertOpen)
     return status;
 
-  return alert_command.Run(
-      session, web_view,
-      base::Value::AsDictionaryValue(base::Value(params.Clone())), value);
+  return alert_command.Run(session, web_view, params, value);
 }
 
 Status ExecuteGetAlert(Session* session,
                        WebView* web_view,
-                       const base::DictionaryValue& params,
+                       const base::Value::Dict& params,
                        std::unique_ptr<base::Value>* value) {
   *value = std::make_unique<base::Value>(
       web_view->GetJavaScriptDialogManager()->IsDialogOpen());
@@ -54,7 +52,7 @@ Status ExecuteGetAlert(Session* session,
 
 Status ExecuteGetAlertText(Session* session,
                            WebView* web_view,
-                           const base::DictionaryValue& params,
+                           const base::Value::Dict& params,
                            std::unique_ptr<base::Value>* value) {
   std::string message;
   Status status =
@@ -67,10 +65,10 @@ Status ExecuteGetAlertText(Session* session,
 
 Status ExecuteSetAlertText(Session* session,
                            WebView* web_view,
-                           const base::DictionaryValue& params,
+                           const base::Value::Dict& params,
                            std::unique_ptr<base::Value>* value) {
-  std::string text;
-  if (!params.GetString("text", &text))
+  const std::string* text = params.FindString("text");
+  if (!text)
     return Status(kInvalidArgument, "missing or invalid 'text'");
 
   JavaScriptDialogManager* dialog_manager =
@@ -85,7 +83,7 @@ Status ExecuteSetAlertText(Session* session,
     return status;
 
   if (type == "prompt")
-    session->prompt_text = std::make_unique<std::string>(text);
+    session->prompt_text = std::make_unique<std::string>(*text);
   else if (type == "alert" || type == "confirm")
     return Status(kElementNotInteractable,
                   "User dialog does not have a text box input field.");
@@ -97,7 +95,7 @@ Status ExecuteSetAlertText(Session* session,
 
 Status ExecuteAcceptAlert(Session* session,
                           WebView* web_view,
-                          const base::DictionaryValue& params,
+                          const base::Value::Dict& params,
                           std::unique_ptr<base::Value>* value) {
   Status status = web_view->GetJavaScriptDialogManager()
       ->HandleDialog(true, session->prompt_text.get());
@@ -107,7 +105,7 @@ Status ExecuteAcceptAlert(Session* session,
 
 Status ExecuteDismissAlert(Session* session,
                            WebView* web_view,
-                           const base::DictionaryValue& params,
+                           const base::Value::Dict& params,
                            std::unique_ptr<base::Value>* value) {
   Status status = web_view->GetJavaScriptDialogManager()
       ->HandleDialog(false, session->prompt_text.get());

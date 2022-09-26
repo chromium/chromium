@@ -16,7 +16,7 @@ class WebView;
 
 typedef base::RepeatingCallback<Status(Session* session,
                                        WebView* web_view,
-                                       const base::DictionaryValue&,
+                                       const base::Value::Dict&,
                                        std::unique_ptr<base::Value>*)>
     AlertCommand;
 
@@ -29,31 +29,31 @@ Status ExecuteAlertCommand(const AlertCommand& alert_command,
 // Returns whether an alert is open.
 Status ExecuteGetAlert(Session* session,
                        WebView* web_view,
-                       const base::DictionaryValue& params,
+                       const base::Value::Dict& params,
                        std::unique_ptr<base::Value>* value);
 
 // Returns the text of the open alert.
 Status ExecuteGetAlertText(Session* session,
                            WebView* web_view,
-                           const base::DictionaryValue& params,
+                           const base::Value::Dict& params,
                            std::unique_ptr<base::Value>* value);
 
 // Sets the value of the alert prompt.
 Status ExecuteSetAlertText(Session* session,
                            WebView* web_view,
-                           const base::DictionaryValue& params,
+                           const base::Value::Dict& params,
                            std::unique_ptr<base::Value>* value);
 
 // Accepts the open alert.
 Status ExecuteAcceptAlert(Session* session,
                           WebView* web_view,
-                          const base::DictionaryValue& params,
+                          const base::Value::Dict& params,
                           std::unique_ptr<base::Value>* value);
 
 // Dismisses the open alert.
 Status ExecuteDismissAlert(Session* session,
                            WebView* web_view,
-                           const base::DictionaryValue& params,
+                           const base::Value::Dict& params,
                            std::unique_ptr<base::Value>* value);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_ALERT_COMMANDS_H_
