@@ -41,14 +41,13 @@ promise_test(async t => {
   // 2. The opener opens a window.
   send(opener_token, `
     openee = window.open('${escapeComma(openee_url)}');
-    send("${this_window_token}", "ACK 1");
   `);
 
   // 3. Ensure the openee loads.
   send(openee_token, `
-    send("${this_window_token}", "ACK 1");
+    send("${this_window_token}", "ACK");
   `);
-  assert_equals("ACK 1", await receive(this_window_token));
+  assert_equals("ACK", await receive(this_window_token));
 
   // 4. The opener navigates.
   send(opener_token, `
