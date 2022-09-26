@@ -31,8 +31,7 @@ class BadgeManager;
 }  // namespace badging
 namespace ukm {
 
-const base::Feature kUkmAppLogging{"UkmAppLogging",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUkmAppLogging, "UkmAppLogging", base::FEATURE_ENABLED_BY_DEFAULT);
 
 class AppSourceUrlRecorder {
  private:

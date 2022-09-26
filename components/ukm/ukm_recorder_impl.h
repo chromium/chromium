@@ -41,8 +41,7 @@ class UkmSource;
 class UkmTestHelper;
 class UkmUtilsForTest;
 
-COMPONENT_EXPORT(UKM_RECORDER)
-extern const base::Feature kUkmSamplingRateFeature;
+COMPONENT_EXPORT(UKM_RECORDER) BASE_DECLARE_FEATURE(kUkmSamplingRateFeature);
 
 namespace debug {
 class UkmDebugDataExtractor;

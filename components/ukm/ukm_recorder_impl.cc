@@ -37,8 +37,9 @@
 
 namespace ukm {
 
-const base::Feature kUkmSamplingRateFeature{"UkmSamplingRate",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUkmSamplingRateFeature,
+             "UkmSamplingRate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
