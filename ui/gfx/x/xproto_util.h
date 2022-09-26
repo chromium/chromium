@@ -62,7 +62,8 @@ bool GetArrayProperty(Window window,
   DCHECK_EQ(response->format / CHAR_BIT * response->value_len,
             response->value->size());
   value->resize(response->value_len);
-  memcpy(value->data(), response->value->data(), response->value->size());
+  if (response->value_len > 0)
+    memcpy(value->data(), response->value->data(), response->value->size());
   if (out_type)
     *out_type = response->type;
   return true;
@@ -90,7 +91,8 @@ Future<void> SetArrayProperty(Window window,
                               Connection* connection = Connection::Get()) {
   static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "");
   std::vector<uint8_t> data(sizeof(T) * values.size());
-  memcpy(data.data(), values.data(), sizeof(T) * values.size());
+  if (values.size() > 0)
+    memcpy(data.data(), values.data(), sizeof(T) * values.size());
   return connection->ChangeProperty(
       ChangePropertyRequest{.window = static_cast<Window>(window),
                             .property = name,
