@@ -706,7 +706,7 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
   if (result.has_value() && result->is_dict()) {
     // TODO(apaseltiner): Report a DevTools/internals issue if parsing fails.
     source = ParseSourceRegistration(
-        std::move(result->GetDict()), /*source_time=*/base::Time::Now(),
+        std::move(*result).TakeDict(), /*source_time=*/base::Time::Now(),
         std::move(reporting_origin), registrations.source_origin,
         AttributionSourceType::kNavigation);
   }
