@@ -60,7 +60,8 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 @interface CardUnmaskPromptViewController () <
     ExpirationDateEditItemDelegate,
     TableViewLinkHeaderFooterItemDelegate,
-    TableViewTextEditItemDelegate> {
+    TableViewTextEditItemDelegate,
+    UITextFieldDelegate> {
   // Button displayed on the right side of the navigation bar.
   // Tapping it sends the data in the prompt for verification.
   UIBarButtonItem* _confirmButton;
@@ -553,6 +554,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   if (rowItemType == ItemTypeCVCInput) {
     TableViewTextEditCell* rowCell =
         base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+    rowCell.textField.delegate = self;
     // Hide the icon from Voice Over.
     rowCell.identifyingIconButton.isAccessibilityElement = NO;
   }
@@ -575,6 +577,15 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 - (void)expirationDateEditItemDidChange:(ExpirationDateEditItem*)item {
   // Handle expiration date selections.
   [self updateConfirmButtonState];
+}
+
+#pragma mark - UITextFieldDelegate
+
+// CVC input is limited to 4 characters since CVCs are never longer than that.
+- (BOOL)textField:(UITextField*)textField
+    shouldChangeCharactersInRange:(NSRange)range
+                replacementString:(NSString*)string {
+  return (textField.text.length + string.length - range.length) <= 4;
 }
 
 @end

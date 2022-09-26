@@ -455,3 +455,30 @@ TEST_F(CardUnmaskPromptViewControllerTest,
   ASSERT_TRUE(CVC_cell);
   EXPECT_FALSE(CVC_cell.identifyingIconButton.isAccessibilityElement);
 }
+
+// Verifies that the textField in the CVC input cell does not accept more than 4
+// digits.
+TEST_F(CardUnmaskPromptViewControllerTest,
+       TestCVCTextFieldRejectsTooLongCVCValues) {
+  auto* CVC_field = GetCVCInputCell().textField;
+  ASSERT_TRUE(CVC_field);
+  ASSERT_EQ(CVC_field.text.length, 0LU);
+
+  auto* delegate = CVC_field.delegate;
+  NSRange start_range = NSMakeRange(0, 0);
+
+  NSString* short_CVC = @"1";
+  EXPECT_TRUE([delegate textField:CVC_field
+      shouldChangeCharactersInRange:start_range
+                  replacementString:short_CVC]);
+
+  NSString* valid_CVC = @"123";
+  EXPECT_TRUE([delegate textField:CVC_field
+      shouldChangeCharactersInRange:start_range
+                  replacementString:valid_CVC]);
+
+  NSString* too_long_CVC = @"12345";
+  EXPECT_FALSE([delegate textField:CVC_field
+      shouldChangeCharactersInRange:start_range
+                  replacementString:too_long_CVC]);
+}
