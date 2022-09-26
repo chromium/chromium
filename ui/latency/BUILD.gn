@@ -6,7 +6,6 @@ import("//testing/test.gni")
 
 source_set("latency") {
   sources = [
-    "latency_histogram_macros.h",
     "latency_info.cc",
     "latency_info.h",
     "latency_tracker.cc",

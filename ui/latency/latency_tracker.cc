@@ -5,17 +5,16 @@
 #include "ui/latency/latency_tracker.h"
 
 #include <algorithm>
-#include "base/metrics/histogram_functions.h"
+#include <cstdint>
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/rand_util.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_id_helper.h"
-#include "base/trace_event/typed_macros.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
-#include "ui/latency/latency_histogram_macros.h"
 
 // Impose some restrictions for tests etc, but also be lenient since some of the
 // data come from untrusted sources.
@@ -24,28 +23,85 @@
   if (!(x))                          \
     return;
 
+// Event latency that is mostly under 5 seconds. We should only use 100 buckets
+// when needed.
+#define UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(name, latency) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, latency.InMicroseconds(), 1,              \
+                              base::Seconds(5).InMicroseconds(), 100);
+
+#define UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(     \
+    suffix, scroll_type, input_modality, latency)                         \
+  STATIC_HISTOGRAM_POINTER_GROUP(                                         \
+      GetHistogramName(suffix, scroll_type, input_modality),              \
+      GetHistogramIndex(scroll_type, input_modality), kMaxHistogramIndex, \
+      Add(latency.InMicroseconds()),                                      \
+      base::Histogram::FactoryGet(                                        \
+          GetHistogramName(suffix, scroll_type, input_modality), 1,       \
+          base::Seconds(5).InMicroseconds(), 100,                         \
+          base::HistogramBase::kUmaTargetedHistogramFlag));
+
+// Event latency that is mostly under 100ms. We should only use 100 buckets
+// when needed. This drops reports on clients with low-resolution clocks.
+#define UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_MICROSECONDS(name, latency) \
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(                             \
+      name, latency, base::Microseconds(1), base::Milliseconds(100), 100);
+
+// Deprecated, use UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_MICROSECONDS instead.
+// Event latency that is mostly under 1 second. We should only use 100 buckets
+// when needed.
+#define UMA_HISTOGRAM_INPUT_LATENCY_HIGH_RESOLUTION_MICROSECONDS(name,    \
+                                                                 latency) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, latency.InMicroseconds(), 1,          \
+                              base::Seconds(1).InMicroseconds(), 100);
+
+// Event latency that is mostly under 1 second. We should only use 100 buckets
+// when needed. This drops reports on clients with low-resolution clocks.
+#define UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_1_SECOND_MAX_MICROSECONDS(name,    \
+                                                                     latency) \
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(                                    \
+      name, latency, base::Microseconds(1), base::Seconds(1), 100);
+
+// Long touch/wheel scroll latency component that is mostly under 200ms.
+#define UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2(name, latency)            \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, latency.InMicroseconds(),         \
+                              base::Milliseconds(1).InMicroseconds(), \
+                              base::Milliseconds(200).InMicroseconds(), 50);
+
+#define UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2_GROUP(suffix, scroll_type,     \
+                                                  input_modality, latency) \
+  STATIC_HISTOGRAM_POINTER_GROUP(                                          \
+      GetHistogramName(suffix, scroll_type, input_modality),               \
+      GetHistogramIndex(scroll_type, input_modality), kMaxHistogramIndex,  \
+      Add(latency.InMicroseconds()),                                       \
+      base::Histogram::FactoryGet(                                         \
+          GetHistogramName(suffix, scroll_type, input_modality),           \
+          base::Milliseconds(1).InMicroseconds(),                          \
+          base::Milliseconds(200).InMicroseconds(), 50,                    \
+          base::HistogramBase::kUmaTargetedHistogramFlag));
+
+// Short touch/wheel scroll latency component that is mostly under 50ms.
+#define UMA_HISTOGRAM_SCROLL_LATENCY_SHORT_2_GROUP(suffix, scroll_type,     \
+                                                   input_modality, latency) \
+  STATIC_HISTOGRAM_POINTER_GROUP(                                           \
+      GetHistogramName(suffix, scroll_type, input_modality),                \
+      GetHistogramIndex(scroll_type, input_modality), kMaxHistogramIndex,   \
+      Add(latency.InMicroseconds()),                                        \
+      base::Histogram::FactoryGet(                                          \
+          GetHistogramName(suffix, scroll_type, input_modality), 1,         \
+          base::Milliseconds(50).InMicroseconds(), 50,                      \
+          base::HistogramBase::kUmaTargetedHistogramFlag));
+
 namespace ui {
 namespace {
 
-std::string LatencySourceEventTypeToInputModalityString(
-    ui::SourceEventType type) {
-  switch (type) {
-    case ui::SourceEventType::WHEEL:
-      return "Wheel";
-    case ui::SourceEventType::MOUSE:
-      return "Mouse";
-    case ui::SourceEventType::TOUCH:
-    case ui::SourceEventType::INERTIAL:
-      return "Touch";
-    case ui::SourceEventType::KEY_PRESS:
-      return "KeyPress";
-    case ui::SourceEventType::TOUCHPAD:
-      return "Touchpad";
-    case ui::SourceEventType::SCROLLBAR:
-      return "Scrollbar";
-    default:
-      return "";
+base::TimeDelta ComputeLatency(base::TimeTicks start, base::TimeTicks end) {
+  DCHECK(!start.is_null());
+  DCHECK(!end.is_null());
+  base::TimeDelta latency = end - start;
+  if (latency.is_negative()) {
+    return base::Milliseconds(0);
   }
+  return latency;
 }
 
 bool IsInertialScroll(const LatencyInfo& latency) {
@@ -72,6 +128,64 @@ void EmitScrollUpdateTime(base::TimeDelta dur, bool janky) {
 }
 
 }  // namespace
+
+// static
+base::StringPiece LatencyTracker::ToString(ScrollInputModality modality) {
+  switch (modality) {
+    case ScrollInputModality::kWheel:
+      return "Wheel";
+    case ScrollInputModality::kTouch:
+      return "Touch";
+    case ScrollInputModality::kScrollbar:
+      return "Scrollbar";
+  }
+}
+
+// static
+base::StringPiece LatencyTracker::ToString(ScrollType type) {
+  switch (type) {
+    case ScrollType::kBegin:
+      return "ScrollBegin";
+    case ScrollType::kUpdate:
+      return "ScrollUpdate";
+    case ScrollType::kInertial:
+      return "ScrollInertial";
+  }
+}
+
+// static
+int LatencyTracker::GetHistogramIndex(ScrollType scroll_type,
+                                      ScrollInputModality input_modality) {
+  return static_cast<int>(scroll_type) +
+         (static_cast<int>(ScrollType::kLastValue) + 1) *
+             static_cast<int>(input_modality);
+}
+
+// static
+std::string LatencyTracker::GetHistogramName(
+    base::StringPiece suffix,
+    ScrollType scroll_type,
+    ScrollInputModality input_modality) {
+  return base::StrCat({"Event.Latency.", ToString(scroll_type), ".",
+                       ToString(input_modality), ".", suffix});
+}
+
+// static
+LatencyTracker::ScrollInputModality LatencyTracker::ToScrollInputModality(
+    ui::SourceEventType type) {
+  switch (type) {
+    case ui::SourceEventType::WHEEL:
+      return ScrollInputModality::kWheel;
+    case ui::SourceEventType::TOUCH:
+    case ui::SourceEventType::INERTIAL:
+      return ScrollInputModality::kTouch;
+    case ui::SourceEventType::SCROLLBAR:
+      return ScrollInputModality::kScrollbar;
+    default:
+      NOTREACHED();
+  }
+  return ScrollInputModality::kLastValue;
+}
 
 LatencyTracker::LatencyTracker() = default;
 LatencyTracker::~LatencyTracker() = default;
@@ -126,9 +240,9 @@ void LatencyTracker::ReportUkmScrollLatency(
     base::TimeTicks time_to_handled_timestamp,
     bool is_main_thread,
     const ukm::SourceId ukm_source_id) {
-  CONFIRM_EVENT_TIMES_EXIST(start_timestamp,
-                            time_to_scroll_update_swap_begin_timestamp)
-  CONFIRM_EVENT_TIMES_EXIST(start_timestamp, time_to_handled_timestamp)
+  DCHECK(!start_timestamp.is_null());
+  DCHECK(!time_to_scroll_update_swap_begin_timestamp.is_null());
+  DCHECK(!time_to_handled_timestamp.is_null());
 
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   if (ukm_source_id == ukm::kInvalidSourceId || !ukm_recorder)
@@ -185,7 +299,8 @@ void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
                                       base::TimeTicks gpu_swap_end_timestamp,
                                       const ui::LatencyInfo& latency,
                                       bool first_frame) {
-  CONFIRM_EVENT_TIMES_EXIST(original_timestamp, gpu_swap_end_timestamp);
+  DCHECK(!original_timestamp.is_null());
+  DCHECK(!gpu_swap_end_timestamp.is_null());
   base::TimeDelta dur = gpu_swap_end_timestamp - original_timestamp;
 
   if (first_frame) {
@@ -275,106 +390,120 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
   DCHECK_AND_RETURN_ON_FAIL(!latency.coalesced());
 
   base::TimeTicks original_timestamp;
-  std::string scroll_name = "Uninitialized";
-
-  const std::string input_modality =
-      LatencySourceEventTypeToInputModalityString(latency.source_event_type());
 
   if (latency.FindLatency(
           ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
           &original_timestamp)) {
-    DCHECK(input_modality == "Wheel" || input_modality == "Touch" ||
-           input_modality == "Scrollbar");
     ReportJankyFrame(original_timestamp, gpu_swap_end_timestamp, latency, true);
 
+    ScrollInputModality input_modality =
+        ToScrollInputModality(latency.source_event_type());
     // For inertial scrolling we don't separate the first event from the rest of
     // them.
-    scroll_name = IsInertialScroll(latency) ? "ScrollInertial" : "ScrollBegin";
+    ScrollType scroll_type =
+        IsInertialScroll(latency) ? ScrollType::kInertial : ScrollType::kBegin;
 
     // This UMA metric tracks the performance of overall scrolling as a high
     // level metric.
     UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(
         "Event.Latency.ScrollBegin.TimeToScrollUpdateSwapBegin2",
-        original_timestamp, gpu_swap_begin_timestamp);
+        ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
 
     // This UMA metric tracks the time between the final frame swap for the
     // first scroll event in a sequence and the original timestamp of that
     // scroll event's underlying touch/wheel event.
-    std::string metric_name =
-        base::StrCat({"Event.Latency.", scroll_name, ".", input_modality,
-                      ".TimeToScrollUpdateSwapBegin4"});
-    UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(
-        metric_name, original_timestamp, gpu_swap_begin_timestamp);
+    UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(
+        "TimeToScrollUpdateSwapBegin4", scroll_type, input_modality,
+        ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
 
     // Report the latency metric separately for the scrolls that caused the
     // top-controls to scroll and the ones that didn't.
-    if (top_controls_visible_height_changed)
-      base::StrAppend(&metric_name, {".TopControlsMoved"});
-    else
-      base::StrAppend(&metric_name, {".NoTopControlsMoved"});
-    UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(
-        metric_name, original_timestamp, gpu_swap_begin_timestamp);
+    if (top_controls_visible_height_changed) {
+      UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(
+          "TimeToScrollUpdateSwapBegin4.TopControlsMoved", scroll_type,
+          input_modality,
+          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
+    } else {
+      UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(
+          "TimeToScrollUpdateSwapBegin4.NoTopControlsMoved", scroll_type,
+          input_modality,
+          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
+    }
+
+    EmitLatencyHistograms(gpu_swap_begin_timestamp, gpu_swap_end_timestamp,
+                          original_timestamp, latency, scroll_type,
+                          input_modality);
 
   } else if (latency.FindLatency(
                  ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT,
                  &original_timestamp)) {
-    DCHECK(input_modality == "Wheel" || input_modality == "Touch" ||
-           input_modality == "Scrollbar");
     ReportJankyFrame(original_timestamp, gpu_swap_end_timestamp, latency,
                      false);
 
+    ScrollInputModality input_modality =
+        ToScrollInputModality(latency.source_event_type());
     // For inertial scrolling we don't separate the first event from the rest of
     // them.
-    scroll_name = IsInertialScroll(latency) ? "ScrollInertial" : "ScrollUpdate";
+    ScrollType scroll_type =
+        IsInertialScroll(latency) ? ScrollType::kInertial : ScrollType::kUpdate;
 
     // This UMA metric tracks the performance of overall scrolling as a high
     // level metric.
     UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(
         "Event.Latency.ScrollUpdate.TimeToScrollUpdateSwapBegin2",
-        original_timestamp, gpu_swap_begin_timestamp);
+        ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
 
     // This UMA metric tracks the time from when the original touch/wheel event
     // is created to when the scroll gesture results in final frame swap.
     // First scroll events are excluded from this metric.
-    std::string metric_name =
-        base::StrCat({"Event.Latency.", scroll_name, ".", input_modality,
-                      ".TimeToScrollUpdateSwapBegin4"});
-    UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(
-        metric_name, original_timestamp, gpu_swap_begin_timestamp);
+    UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(
+        "TimeToScrollUpdateSwapBegin4", scroll_type, input_modality,
+        ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
 
     // Also report the latency metric separately for the scrolls that caused the
     // top-controls to scroll and the ones that didn't.
-    if (top_controls_visible_height_changed)
-      base::StrAppend(&metric_name, {".TopControlsMoved"});
-    else
-      base::StrAppend(&metric_name, {".NoTopControlsMoved"});
-    UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(
-        metric_name, original_timestamp, gpu_swap_begin_timestamp);
+    if (top_controls_visible_height_changed) {
+      UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(
+          "TimeToScrollUpdateSwapBegin4.TopControlsMoved", scroll_type,
+          input_modality,
+          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
+    } else {
+      UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(
+          "TimeToScrollUpdateSwapBegin4.NoTopControlsMoved", scroll_type,
+          input_modality,
+          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
+    }
+
+    EmitLatencyHistograms(gpu_swap_begin_timestamp, gpu_swap_end_timestamp,
+                          original_timestamp, latency, scroll_type,
+                          input_modality);
 
   } else if (latency.FindLatency(ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT,
                                  &original_timestamp)) {
     if (latency.source_event_type() == SourceEventType::KEY_PRESS) {
       UMA_HISTOGRAM_INPUT_LATENCY_HIGH_RESOLUTION_MICROSECONDS(
-          "Event.Latency.EndToEnd.KeyPress", original_timestamp,
-          gpu_swap_begin_timestamp);
+          "Event.Latency.EndToEnd.KeyPress",
+          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
     } else if (latency.source_event_type() == SourceEventType::MOUSE) {
       UMA_HISTOGRAM_INPUT_LATENCY_HIGH_RESOLUTION_MICROSECONDS(
-          "Event.Latency.EndToEnd.Mouse", original_timestamp,
-          gpu_swap_begin_timestamp);
+          "Event.Latency.EndToEnd.Mouse",
+          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
     } else if (latency.source_event_type() == SourceEventType::TOUCHPAD) {
       UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_1_SECOND_MAX_MICROSECONDS(
-          "Event.Latency.EndToEnd.TouchpadPinch2", original_timestamp,
-          gpu_swap_begin_timestamp);
+          "Event.Latency.EndToEnd.TouchpadPinch2",
+          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
     }
-    return;
-  } else {
-    // No original component found.
-    return;
   }
+}
 
-  // Record scroll latency metrics.
-  DCHECK(scroll_name == "ScrollBegin" || scroll_name == "ScrollUpdate" ||
-         (IsInertialScroll(latency) && scroll_name == "ScrollInertial"));
+void LatencyTracker::EmitLatencyHistograms(
+    base::TimeTicks gpu_swap_begin_timestamp,
+    base::TimeTicks gpu_swap_end_timestamp,
+    base::TimeTicks original_timestamp,
+    const ui::LatencyInfo& latency,
+    ScrollType scroll_type,
+    ScrollInputModality input_modality) {
+  DCHECK(!IsInertialScroll(latency) || scroll_type == ScrollType::kInertial);
 
   base::TimeTicks rendering_scheduled_timestamp;
   bool rendering_scheduled_on_main = latency.FindLatency(
@@ -388,16 +517,17 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
   }
 
   // Inertial and scrollbar scrolls are excluded from Ukm metrics.
-  if ((input_modality == "Touch" && !IsInertialScroll(latency)) ||
-      input_modality == "Wheel") {
+  if ((input_modality == ScrollInputModality::kTouch &&
+       !IsInertialScroll(latency)) ||
+      input_modality == ScrollInputModality::kWheel) {
     InputMetricEvent input_metric_event;
-    if (scroll_name == "ScrollBegin") {
-      input_metric_event = input_modality == "Touch"
+    if (scroll_type == ScrollType::kBegin) {
+      input_metric_event = input_modality == ScrollInputModality::kTouch
                                ? InputMetricEvent::SCROLL_BEGIN_TOUCH
                                : InputMetricEvent::SCROLL_BEGIN_WHEEL;
     } else {
-      DCHECK_EQ(scroll_name, "ScrollUpdate");
-      input_metric_event = input_modality == "Touch"
+      DCHECK_EQ(scroll_type, ScrollType::kUpdate);
+      input_metric_event = input_modality == ScrollInputModality::kTouch
                                ? InputMetricEvent::SCROLL_UPDATE_TOUCH
                                : InputMetricEvent::SCROLL_UPDATE_WHEEL;
     }
@@ -407,12 +537,15 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
         latency.ukm_source_id());
   }
 
-  const std::string thread_name = rendering_scheduled_on_main ? "Main" : "Impl";
-
-  UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2(
-      "Event.Latency." + scroll_name + "." + input_modality +
-          ".TimeToHandled2_" + thread_name,
-      original_timestamp, rendering_scheduled_timestamp);
+  if (rendering_scheduled_on_main) {
+    UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2_GROUP(
+        "TimeToHandled2_Main", scroll_type, input_modality,
+        ComputeLatency(original_timestamp, rendering_scheduled_timestamp));
+  } else {
+    UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2_GROUP(
+        "TimeToHandled2_Impl", scroll_type, input_modality,
+        ComputeLatency(original_timestamp, rendering_scheduled_timestamp));
+  }
 
   base::TimeTicks renderer_swap_timestamp;
   bool found_renderer_swap_component =
@@ -430,25 +563,33 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
   // surrounding the renderer swap. We could assign the total time to one or the
   // other of them, but that would likely skew statistics.
   if (found_renderer_swap_component) {
-    UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2(
-        "Event.Latency." + scroll_name + "." + input_modality +
-            ".HandledToRendererSwap2_" + thread_name,
-        rendering_scheduled_timestamp, renderer_swap_timestamp);
+    if (rendering_scheduled_on_main) {
+      UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2_GROUP(
+          "HandledToRendererSwap2_Main", scroll_type, input_modality,
+          ComputeLatency(rendering_scheduled_timestamp,
+                         renderer_swap_timestamp));
 
-    UMA_HISTOGRAM_SCROLL_LATENCY_SHORT_2(
-        "Event.Latency." + scroll_name + "." + input_modality +
-            ".RendererSwapToBrowserNotified2",
-        renderer_swap_timestamp, browser_received_swap_timestamp);
+    } else {
+      UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2_GROUP(
+          "HandledToRendererSwap2_Impl", scroll_type, input_modality,
+          ComputeLatency(rendering_scheduled_timestamp,
+                         renderer_swap_timestamp));
+    }
+
+    UMA_HISTOGRAM_SCROLL_LATENCY_SHORT_2_GROUP(
+        "RendererSwapToBrowserNotified2", scroll_type, input_modality,
+        ComputeLatency(renderer_swap_timestamp,
+                       browser_received_swap_timestamp));
   }
 
-  UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2(
-      "Event.Latency." + scroll_name + "." + input_modality +
-          ".BrowserNotifiedToBeforeGpuSwap2",
-      browser_received_swap_timestamp, gpu_swap_begin_timestamp);
+  UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2_GROUP(
+      "BrowserNotifiedToBeforeGpuSwap2", scroll_type, input_modality,
+      ComputeLatency(browser_received_swap_timestamp,
+                     gpu_swap_begin_timestamp));
 
-  UMA_HISTOGRAM_SCROLL_LATENCY_SHORT_2(
-      "Event.Latency." + scroll_name + "." + input_modality + ".GpuSwap2",
-      gpu_swap_begin_timestamp, gpu_swap_end_timestamp);
+  UMA_HISTOGRAM_SCROLL_LATENCY_SHORT_2_GROUP(
+      "GpuSwap2", scroll_type, input_modality,
+      ComputeLatency(gpu_swap_begin_timestamp, gpu_swap_end_timestamp));
 }
 
 }  // namespace ui

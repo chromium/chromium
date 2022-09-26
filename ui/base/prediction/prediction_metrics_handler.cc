@@ -1,18 +1,44 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "ui/base/prediction/prediction_metrics_handler.h"
 
-#include "base/metrics/histogram_functions.h"
+#include <utility>
+
+#include "base/cpu_reduction_experiment.h"
+#include "base/metrics/histogram.h"
 #include "base/strings/strcat.h"
 
 namespace ui {
+namespace {
+base::HistogramBase* GetHistogram(base::StringPiece name,
+                                  base::StringPiece suffix) {
+  return base::Histogram::FactoryGet(
+      base::StrCat({name, ".", suffix}), 1, 1000, 50,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+}
+}  // namespace
 
 PredictionMetricsHandler::PredictionMetricsHandler(std::string histogram_name)
-    : histogram_name_(std::move(histogram_name)) {}
+    : histogram_name_(std::move(histogram_name)),
+      over_prediction_histogram_(
+          *GetHistogram(histogram_name_, "OverPrediction")),
+      under_prediction_histogram_(
+          *GetHistogram(histogram_name_, "UnderPrediction")),
+      prediction_score_histogram_(
+          *GetHistogram(histogram_name_, "PredictionScore")),
+      frame_over_prediction_histogram_(
+          *GetHistogram(histogram_name_, "FrameOverPrediction")),
+      frame_under_prediction_histogram_(
+          *GetHistogram(histogram_name_, "FrameUnderPrediction")),
+      frame_prediction_score_histogram_(
+          *GetHistogram(histogram_name_, "FramePredictionScore")),
+      prediction_jitter_histogram_(
+          *GetHistogram(histogram_name_, "PredictionJitter")),
+      visual_jitter_histogram_(*GetHistogram(histogram_name_, "VisualJitter")) {
+}
+
 PredictionMetricsHandler::~PredictionMetricsHandler() = default;
 
 void PredictionMetricsHandler::AddRealEvent(const gfx::PointF& pos,
@@ -168,36 +194,26 @@ void PredictionMetricsHandler::ComputeMetrics() {
 
   double score = ComputeOverUnderPredictionMetric();
   if (score >= 0) {
-    base::UmaHistogramCounts1000(
-        base::StrCat({histogram_name_, ".OverPrediction"}), score);
+    over_prediction_histogram_.Add(score);
   } else {
-    base::UmaHistogramCounts1000(
-        base::StrCat({histogram_name_, ".UnderPrediction"}), -score);
+    under_prediction_histogram_.Add(-score);
   }
-  base::UmaHistogramCounts1000(
-      base::StrCat({histogram_name_, ".PredictionScore"}), std::abs(score));
+  prediction_score_histogram_.Add(std::abs(score));
 
   double frame_score = ComputeFrameOverUnderPredictionMetric();
   if (frame_score >= 0) {
-    base::UmaHistogramCounts1000(
-        base::StrCat({histogram_name_, ".FrameOverPrediction"}), frame_score);
+    frame_over_prediction_histogram_.Add(frame_score);
   } else {
-    base::UmaHistogramCounts1000(
-        base::StrCat({histogram_name_, ".FrameUnderPrediction"}), -frame_score);
+    frame_under_prediction_histogram_.Add(-frame_score);
   }
-  base::UmaHistogramCounts1000(
-      base::StrCat({histogram_name_, ".FramePredictionScore"}),
-      std::abs(frame_score));
+  frame_prediction_score_histogram_.Add(std::abs(frame_score));
 
   // Need |last_predicted_| to compute Jitter metrics.
   if (!last_predicted_.has_value())
     return;
 
-  base::UmaHistogramCounts1000(
-      base::StrCat({histogram_name_, ".PredictionJitter"}),
-      ComputePredictionJitterMetric());
-  base::UmaHistogramCounts1000(base::StrCat({histogram_name_, ".VisualJitter"}),
-                               ComputeVisualJitterMetric());
+  prediction_jitter_histogram_.Add(ComputePredictionJitterMetric());
+  visual_jitter_histogram_.Add(ComputeVisualJitterMetric());
 }
 
 double PredictionMetricsHandler::ComputeOverUnderPredictionMetric() const {
