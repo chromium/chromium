@@ -180,8 +180,9 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile,
     visit_mojom->debug_info["score"] = base::NumberToString(visit.score);
     visit_mojom->debug_info["visit_time"] =
         base::TimeToISO8601(visit.annotated_visit.visit_row.visit_time);
-    visit_mojom->debug_info["visit_duration"] = base::NumberToString(
-        annotated_visit.visit_row.visit_duration.InSecondsF());
+    visit_mojom->debug_info["foreground_duration"] =
+        base::NumberToString(annotated_visit.context_annotations
+                                 .total_foreground_duration.InSecondsF());
   }
 
   return visit_mojom;
