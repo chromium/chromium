@@ -19,7 +19,7 @@ import java.lang.annotation.RetentionPolicy;
  * arbitrarily and consistently pick one reason. The reason is used to report metrics and should
  * still be a useful tool for understanding captures.
  */
-class CaptureReadinessResult {
+public class CaptureReadinessResult {
     /**
      * Reasons to allow toolbar captures. Treat this list as append only and keep it in sync with
      * TopToolbarAllowCaptureReason in enums.xml, as well as the proto in chrome_track_event.proto.
@@ -50,7 +50,7 @@ class CaptureReadinessResult {
             TopToolbarBlockCaptureReason.BROWSER_CONTROLS_LOCKED,
             TopToolbarBlockCaptureReason.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
-    @interface TopToolbarBlockCaptureReason {
+    public @interface TopToolbarBlockCaptureReason {
         int UNKNOWN = 0;
         int TOOLBAR_OR_RESULT_NULL = 1;
         int VIEW_NOT_DIRTY = 2;

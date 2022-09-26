@@ -923,6 +923,8 @@ message AndroidToolbar {
     DIFF_LOCATION_BAR_WIDTH = 10;
     DIFF_URL_TEXT = 11;
     DIFF_HOME_BUTTON_COLOR = 12;
+    TITLE_TEXT = 13;
+    CCT_ANIMATION = 14;
   }
 
   optional BlockCaptureReason block_capture_reason = 1;
