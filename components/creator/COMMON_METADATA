@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser>Sharing"
+}
+team_email: "chrome-with-friends@google.com"
