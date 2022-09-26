@@ -52,8 +52,9 @@
 
 #pragma mark - Initializers
 
-- (id)initWithPromosManager:(PromosManager*)promosManager
-      authenticationService:(AuthenticationService*)authenticationService {
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager
+                authenticationService:
+                    (AuthenticationService*)authenticationService {
   DCHECK(authenticationService);
 
   self = [super init];
@@ -123,9 +124,12 @@
   return _featureEnabled && _hasAccountInfo && _promosManager;
 }
 
-// Register the promo with the PromosManager, if the conditions are met.
+// Register the promo with the PromosManager, if the conditions are met,
+// otherwise deregister the promo.
 - (void)maybeRegisterPromo {
   if (!self.shouldRegisterPromo) {
+    if (_promosManager)
+      [self deregisterPromo];
     return;
   }
 
@@ -140,6 +144,14 @@
   _authenticationService->ResetReauthPromptForSignInAndSync();
 
   _promosManager->RegisterPromoForSingleDisplay(self.promoForEnabledFeature);
+}
+
+- (void)deregisterPromo {
+  DCHECK(_promosManager);
+  _promosManager->DeregisterPromo(
+      promos_manager::Promo::PostRestoreSignInFullscreen);
+  _promosManager->DeregisterPromo(
+      promos_manager::Promo::PostRestoreSignInAlert);
 }
 
 @end

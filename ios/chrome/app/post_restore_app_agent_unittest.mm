@@ -153,3 +153,25 @@ TEST_F(PostRestoreAppAgentTest, registerPromoDisablesReauthPrompt) {
   MockAppStateChange(InitStageFinal);
   EXPECT_FALSE(auth_service_->ShouldReauthPromptForSignInAndSync());
 }
+
+TEST_F(PostRestoreAppAgentTest, deregisterPromoFullscreen) {
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::PostRestoreSignInFullscreen);
+  EXPECT_EQ(CountSingleDisplayActivePromos(), 1);
+
+  EnableFeatureVariationAlert();
+  ClearPreRestoreIdentity();
+  MockAppStateChange(InitStageFinal);
+  EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
+}
+
+TEST_F(PostRestoreAppAgentTest, deregisterPromoAlert) {
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::PostRestoreSignInAlert);
+  EXPECT_EQ(CountSingleDisplayActivePromos(), 1);
+
+  EnableFeatureVariationAlert();
+  ClearPreRestoreIdentity();
+  MockAppStateChange(InitStageFinal);
+  EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
+}
