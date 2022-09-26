@@ -109,6 +109,10 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal);
 // Enables reporting of remote hosts contacted by extensions in telemetry.
 BASE_DECLARE_FEATURE(kExtensionTelemetryReportContactedHosts);
 
+// Enables collection of potential password theft data and uploads
+// telemetry reports to SB servers.
+extern const base::Feature kExtensionTelemetryPotentialPasswordTheft;
+
 // Determines the tag to pass to Omaha to get a file type policy.
 BASE_DECLARE_FEATURE(kFileTypePoliciesTag);
 

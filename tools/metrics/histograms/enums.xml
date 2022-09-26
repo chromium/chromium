@@ -87229,6 +87229,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="SBExtensionTelemetrySignalsSignalType">
   <int value="0" label="TabsExecuteScript"/>
   <int value="1" label="RemoteHostsContacted"/>
+  <int value="2" label="PasswordReuse"/>
+  <int value="3" label="PotentialPasswordTheft"/>
 </enum>
 
 <enum name="SBFileTypeUpdateResult">

@@ -23,6 +23,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_persister.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/potential_password_theft_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal_processor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -189,12 +190,37 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
 
   if (enabled_) {
     // Create signal processors.
+    // Map the processors to the signals they eventually generate.
     signal_processors_.emplace(
         ExtensionSignalType::kTabsExecuteScript,
         std::make_unique<TabsExecuteScriptSignalProcessor>());
     signal_processors_.emplace(
         ExtensionSignalType::kRemoteHostContacted,
         std::make_unique<RemoteHostContactedSignalProcessor>());
+    signal_processors_.emplace(
+        ExtensionSignalType::kPotentialPasswordTheft,
+        std::make_unique<PotentialPasswordTheftSignalProcessor>());
+
+    // Create subscriber lists for each telemetry signal type.
+    // Map the signal processors to the signals that they consume.
+    std::vector<ExtensionSignalProcessor*> subscribers_for_tabs_execute_script =
+        {signal_processors_[ExtensionSignalType::kTabsExecuteScript].get()};
+    std::vector<ExtensionSignalProcessor*>
+        subscribers_for_remote_host_contacted = {
+            signal_processors_[ExtensionSignalType::kRemoteHostContacted].get(),
+            signal_processors_[ExtensionSignalType::kPotentialPasswordTheft]
+                .get()};
+    std::vector<ExtensionSignalProcessor*> subscribers_for_password_reuse = {
+        signal_processors_[ExtensionSignalType::kPotentialPasswordTheft].get()};
+
+    signal_subscribers_.emplace(ExtensionSignalType::kTabsExecuteScript,
+                                std::move(subscribers_for_tabs_execute_script));
+    signal_subscribers_.emplace(
+        ExtensionSignalType::kRemoteHostContacted,
+        std::move(subscribers_for_remote_host_contacted));
+    signal_subscribers_.emplace(ExtensionSignalType::kPasswordReuse,
+                                std::move(subscribers_for_password_reuse));
+
     if (current_reporting_interval_.is_positive()) {
       int max_files_supported =
           ExtensionTelemetryPersister::MaxFilesSupported();
@@ -240,6 +266,8 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     timer_.Stop();
     // Clear all data stored by the service.
     extension_store_.clear();
+    // Destruct signal subscribers.
+    signal_subscribers_.clear();
     // Destruct signal processors.
     signal_processors_.clear();
     // Delete persisted files.
@@ -277,7 +305,6 @@ void ExtensionTelemetryService::AddSignal(
   RecordSignalType(signal_type);
 
   DCHECK(base::Contains(signal_processors_, signal_type));
-  ExtensionSignalProcessor& processor = *signal_processors_[signal_type];
 
   if (extension_store_.find(signal->extension_id()) == extension_store_.end()) {
     // This is the first signal triggered by this extension since the last
@@ -295,11 +322,11 @@ void ExtensionTelemetryService::AddSignal(
     extension_store_.emplace(signal->extension_id(),
                              GetExtensionInfoForReport(*extension));
   }
-
-  // Pass the signal as reference instead of relinquishing ownership to the
-  // signal processor. This change paves the way for passing the signal
-  // information to multiple signal processors in a future CL.
-  processor.ProcessSignal(*signal);
+  for (auto* processor : signal_subscribers_[signal_type]) {
+    // Pass the signal as reference instead of relinquishing ownership to the
+    // signal processor.
+    processor->ProcessSignal(*signal);
+  }
 }
 
 void ExtensionTelemetryService::CreateAndUploadReport() {

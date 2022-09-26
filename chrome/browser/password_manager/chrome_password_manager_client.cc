@@ -37,6 +37,9 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/password_reuse_signal.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -88,6 +91,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/content_record_password_state.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -95,6 +99,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/url_formatter/url_formatter.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
@@ -187,6 +192,8 @@ using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordManagerSetting;
 using password_manager::metrics_util::PasswordType;
 using sessions::SerializedNavigationEntry;
+using PasswordReuseEvent =
+    safe_browsing::LoginReputationClientRequest::PasswordReuseEvent;
 
 // Shorten the name to spare line breaks. The code provides enough context
 // already.
@@ -196,6 +203,7 @@ namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
 static const char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
+constexpr char kExtensionScheme[] = "chrome-extension";
 #endif
 
 const syncer::SyncService* GetSyncServiceForProfile(Profile* profile) {
@@ -233,6 +241,28 @@ void HideSavePasswordInfobar(content::WebContents* web_contents) {
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+// Retrieves and formats the saved passwords domains from signon_realms.
+std::vector<std::string> GetMatchingDomains(
+    const std::vector<password_manager::MatchingReusedCredential>&
+        matching_reused_credentials) {
+  base::flat_set<std::string> matching_domains;
+  for (const auto& credential : matching_reused_credentials) {
+    // TODO(zackhan): Avoid converting signon_realm to URL, ideally use
+    // PasswordForm::url.
+    std::string domain = base::UTF16ToUTF8(url_formatter::FormatUrl(
+        GURL(credential.signon_realm),
+        url_formatter::kFormatUrlOmitDefaults |
+            url_formatter::kFormatUrlOmitHTTPS |
+            url_formatter::kFormatUrlOmitTrivialSubdomains |
+            url_formatter::kFormatUrlTrimAfterHost,
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+    matching_domains.insert(std::move(domain));
+  }
+  return std::move(matching_domains).extract();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -961,7 +991,34 @@ void ChromePasswordManagerClient::CheckProtectedPasswordEntry(
       password_type, matching_reused_credentials, password_field_exists);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1351484): Hook this to the extension service in the next CL.
+  // If the webpage is not an extension page, do nothing.
+  if (!GURL(domain).SchemeIs(kExtensionScheme)) {
+    return;
+  }
+  content::BrowserContext* browser_context =
+      web_contents()->GetBrowserContext();
+  auto* telemetry_service =
+      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  if (!telemetry_service || !telemetry_service->enabled() ||
+      !base::FeatureList::IsEnabled(
+          safe_browsing::kExtensionTelemetryPotentialPasswordTheft)) {
+    return;
+  }
+  // TODO(zackhan@): Create the struct directly without calling the construct
+  // method. And remove ConstructPasswordReuseInfo method to simplify the code.
+  safe_browsing::PasswordReuseInfo password_reuse_info =
+      pps->ConstructPasswordReuseInfo(
+          reused_password_hash, username, password_type,
+          GetMatchingDomains(matching_reused_credentials));
+
+  // Extract the host part of an extension domain, which will be the extension
+  // ID.
+  std::string host = GURL(domain).host();
+  auto password_reuse_signal =
+      std::make_unique<safe_browsing::PasswordReuseSignal>(host,
+                                                           password_reuse_info);
+  telemetry_service->AddSignal(std::move(password_reuse_signal));
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

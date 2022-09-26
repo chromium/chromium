@@ -170,6 +170,11 @@ class ExtensionTelemetryService : public KeyedService {
                      std::unique_ptr<ExtensionSignalProcessor>>;
   SignalProcessors signal_processors_;
 
+  using SignalSubscribers =
+      base::flat_map<ExtensionSignalType,
+                     std::vector<ExtensionSignalProcessor*>>;
+  SignalSubscribers signal_subscribers_;
+
   friend class ExtensionTelemetryServiceTest;
   friend class ExtensionTelemetryServiceBrowserTest;
 
