@@ -116,6 +116,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // check is enabled.
   virtual bool CanCheckSafeBrowsingDb() const = 0;
 
+  // Returns whether safe browsing high confidence allowlist can be checked when
+  // real time URL check is enabled. This should only be used when
+  // CanCheckSafeBrowsingDb() returns true.
+  virtual bool CanCheckSafeBrowsingHighConfidenceAllowlist() const = 0;
+
   // Checks if a sample ping can be sent to Safe Browsing.
   virtual bool CanSendRTSampleRequest() const = 0;
 

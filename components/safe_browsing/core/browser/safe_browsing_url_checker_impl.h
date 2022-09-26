@@ -106,6 +106,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       bool real_time_lookup_enabled,
       bool can_rt_check_subresource_url,
       bool can_check_db,
+      bool can_check_high_confidence_allowlist,
       GURL last_committed_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
@@ -341,6 +342,11 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // enterprise real time URL lookup is enabled and safe browsing is disabled
   // for this profile.
   bool can_check_db_;
+
+  // Whether the high confidence allowlist can be checked. It is set to false
+  // when enterprise real time URL lookup and allowlist bypass is also
+  // enabled (SafeBrowsingRealTimeUrlLookupForEnterpriseAllowlistBypass).
+  bool can_check_high_confidence_allowlist_ = true;
 
   // The last committed URL when the checker is constructed. It is used to
   // obtain page load token when the URL being checked is not a mainframe URL.
