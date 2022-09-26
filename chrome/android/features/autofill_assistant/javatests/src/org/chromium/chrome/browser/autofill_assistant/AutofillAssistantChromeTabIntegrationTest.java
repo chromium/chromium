@@ -54,21 +54,25 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TellProto;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Tests autofill assistant in a normal Chrome tab.
+ * Tests Autofill Assistant in a normal Chrome tab.
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -95,6 +99,14 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Arrays.asList(scripts));
         startAutofillAssistant(mTestRule.getActivity(), testService, getURL(pageToLoad));
+    }
+
+    /** Sets the value of @param preference to @param value. */
+    private void setBooleanPref(String preference, boolean value) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(preference, value);
+        });
     }
 
     @Before
@@ -583,7 +595,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void newTabButtonHidesAndRecoversOnboarding() {
         // Onboarding has not been accepted.
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntil(
@@ -609,7 +621,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @MediumTest
     public void interactingWithLocationBarHidesOnboarding() {
         // Onboarding has not been accepted.
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntil(

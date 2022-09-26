@@ -36,6 +36,7 @@ android_library("java") {
     "//components/policy/android:policy_java",
     "//components/signin/public/android:java",
     "//components/url_formatter/android:url_formatter_java",
+    "//components/user_prefs/android:java",
     "//components/version_info/android:version_constants_java",
     "//content/public/android:content_java",
     "//mojo/public/java:bindings_java",
@@ -212,7 +213,7 @@ android_library("public_java") {
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantMetrics.java",
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantModuleEntry.java",
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantModuleEntryProvider.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantPreferencesUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantPreferenceManager.java",
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantPublicTags.java",
     "public/java/src/org/chromium/components/autofill_assistant/Starter.java",
     "public/java/src/org/chromium/components/autofill_assistant/TriggerContext.java",
@@ -507,4 +508,19 @@ if (!incremental_install) {
       "//net/android:net_test_support_apk__create",
     ]
   }
+}
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [ "public/junit/src/org/chromium/components/autofill_assistant/AutofillAssistantPreferenceManagerTest.java" ]
+
+  deps = [
+    ":public_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//components/prefs/android:java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+  ]
 }

@@ -1956,16 +1956,30 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 09/2022.
 #if BUILDFLAG(IS_ANDROID)
-  if (absl::optional<bool> shared_pref =
-          android::shared_preferences::GetAndClearBoolean(
-              autofill_assistant::prefs::
-                  kDeprecatedAutofillAssistantTriggerScriptsIsFirstTimeUser);
-      shared_pref) {
-    profile_prefs->SetBoolean(
-        autofill_assistant::prefs::
-            kAutofillAssistantTriggerScriptsIsFirstTimeUser,
-        shared_pref.value());
-  }
+  auto migrate_shared_pref = [profile_prefs](const std::string& source,
+                                             const std::string& target) {
+    if (absl::optional<bool> shared_pref =
+            android::shared_preferences::GetAndClearBoolean(source);
+        shared_pref) {
+      profile_prefs->SetBoolean(target, shared_pref.value());
+    }
+  };
+
+  migrate_shared_pref(
+      autofill_assistant::prefs::kDeprecatedAutofillAssistantConsent,
+      autofill_assistant::prefs::kAutofillAssistantConsent);
+  migrate_shared_pref(
+      autofill_assistant::prefs::kDeprecatedAutofillAssistantEnabled,
+      autofill_assistant::prefs::kAutofillAssistantEnabled);
+  migrate_shared_pref(
+      autofill_assistant::prefs::
+          kDeprecatedAutofillAssistantTriggerScriptsEnabled,
+      autofill_assistant::prefs::kAutofillAssistantTriggerScriptsEnabled);
+  migrate_shared_pref(
+      autofill_assistant::prefs::
+          kDeprecatedAutofillAssistantTriggerScriptsIsFirstTimeUser,
+      autofill_assistant::prefs::
+          kAutofillAssistantTriggerScriptsIsFirstTimeUser);
 #endif
 
   // Added 09/2022.

@@ -20,10 +20,11 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.autofill_assistant.AssistantInfoPageUtil;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
+import org.chromium.components.autofill_assistant.AutofillAssistantPreferenceManager;
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -149,14 +150,16 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     }
 
     void onUserAction(@AssistantOnboardingResult Integer result, Callback<Integer> callback) {
+        AutofillAssistantPreferenceManager prefManager =
+                new AutofillAssistantPreferenceManager(UserPrefs.get(mBrowserContext));
         switch (result) {
             case AssistantOnboardingResult.DISMISSED:
                 break;
             case AssistantOnboardingResult.REJECTED:
-                AutofillAssistantPreferencesUtil.setInitialPreferences(false);
+                prefManager.setOnboardingAccepted(false);
                 break;
             case AssistantOnboardingResult.ACCEPTED:
-                AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+                prefManager.setOnboardingAccepted(true);
                 break;
         }
         callback.onResult(result);

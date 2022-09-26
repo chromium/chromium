@@ -16,6 +16,7 @@ import org.chromium.components.autofill_assistant.onboarding.AssistantOnboarding
 import org.chromium.components.autofill_assistant.onboarding.BaseOnboardingCoordinator;
 import org.chromium.components.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.components.autofill_assistant.overlay.AssistantOverlayCoordinator;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -31,6 +32,8 @@ public class AutofillAssistantActionHandlerImpl implements AutofillAssistantActi
     private final OnboardingCoordinatorFactory mOnboardingCoordinatorFactory;
     private final AssistantStaticDependencies mStaticDependencies;
     private final Supplier<WebContents> mWebContentsSupplier;
+    // Encapsulates access to {@link PrefService} pref keys for Autofill Assistant.
+    private final AutofillAssistantPreferenceManager mPreferenceManager;
 
     public AutofillAssistantActionHandlerImpl(
             OnboardingCoordinatorFactory onboardingCoordinatorFactory,
@@ -39,12 +42,14 @@ public class AutofillAssistantActionHandlerImpl implements AutofillAssistantActi
         mOnboardingCoordinatorFactory = onboardingCoordinatorFactory;
         mWebContentsSupplier = webContentsSupplier;
         mStaticDependencies = staticDependencies;
+        mPreferenceManager = new AutofillAssistantPreferenceManager(
+                UserPrefs.get(mStaticDependencies.getBrowserContext()));
     }
 
     @Override
     public void fetchWebsiteActions(
             String userName, String experimentIds, Bundle arguments, Callback<Boolean> callback) {
-        if (!AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted()) {
+        if (!mPreferenceManager.getOnboardingConsent()) {
             callback.onResult(false);
             return;
         }
@@ -59,7 +64,10 @@ public class AutofillAssistantActionHandlerImpl implements AutofillAssistantActi
 
     @Override
     public boolean hasRunFirstCheck() {
-        if (!AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted()) return false;
+        if (!mPreferenceManager.getOnboardingConsent()) {
+            return false;
+        }
+
         AutofillAssistantClient client = getOrCreateClient();
         if (client == null) return false;
         return client.hasRunFirstCheck();
@@ -102,7 +110,7 @@ public class AutofillAssistantActionHandlerImpl implements AutofillAssistantActi
                     name, experimentIds, argumentMap, overlayCoordinator));
         };
 
-        if (!AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted()) {
+        if (!mPreferenceManager.getOnboardingConsent()) {
             BaseOnboardingCoordinator coordinator =
                     mOnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(
                             experimentIds, argumentMap);

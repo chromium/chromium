@@ -4,7 +4,9 @@
 
 #include "components/autofill_assistant/browser/preference_manager.h"
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/public/prefs.h"
 #include "components/prefs/pref_service.h"
 
@@ -23,6 +25,34 @@ bool PreferenceManager::GetIsFirstTimeTriggerScriptUser() const {
 void PreferenceManager::SetIsFirstTimeTriggerScriptUser(bool first_time_user) {
   pref_service_->SetBoolean(
       prefs::kAutofillAssistantTriggerScriptsIsFirstTimeUser, first_time_user);
+}
+
+bool PreferenceManager::IsProactiveHelpOn() const {
+  if (!pref_service_->GetBoolean(prefs::kAutofillAssistantEnabled) ||
+      !pref_service_->GetBoolean(
+          prefs::kAutofillAssistantTriggerScriptsEnabled)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+      features::kAutofillAssistantProactiveHelp);
+}
+
+void PreferenceManager::SetProactiveHelpSettingEnabled(bool enabled) {
+  pref_service_->SetBoolean(prefs::kAutofillAssistantTriggerScriptsEnabled,
+                            enabled);
+}
+
+bool PreferenceManager::GetOnboardingAccepted() const {
+  return pref_service_->GetBoolean(prefs::kAutofillAssistantEnabled) &&
+         pref_service_->GetBoolean(prefs::kAutofillAssistantConsent);
+}
+
+void PreferenceManager::SetOnboardingAccepted(bool accepted) {
+  if (accepted) {
+    pref_service_->SetBoolean(prefs::kAutofillAssistantEnabled, true);
+  }
+
+  pref_service_->SetBoolean(prefs::kAutofillAssistantConsent, accepted);
 }
 
 }  // namespace autofill_assistant

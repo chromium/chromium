@@ -14,9 +14,24 @@ TEST(PrefsTest, RegisterProfilePrefs) {
 
   prefs::RegisterProfilePrefs(pref_service.registry());
 
-  EXPECT_TRUE(pref_service.FindPreference(prefs::kAutofillAssistantEnabled));
   EXPECT_TRUE(pref_service.FindPreference(prefs::kAutofillAssistantConsent));
+  EXPECT_TRUE(pref_service.FindPreference(prefs::kAutofillAssistantEnabled));
   EXPECT_TRUE(pref_service.FindPreference(
+      prefs::kAutofillAssistantTriggerScriptsEnabled));
+  EXPECT_TRUE(pref_service.FindPreference(
+      prefs::kAutofillAssistantTriggerScriptsIsFirstTimeUser));
+}
+
+TEST(PrefsTest, RegisterProfilePrefsSetCorrectDefaultValues) {
+  TestingPrefServiceSimple pref_service;
+
+  prefs::RegisterProfilePrefs(pref_service.registry());
+
+  EXPECT_FALSE(pref_service.GetBoolean(prefs::kAutofillAssistantConsent));
+  EXPECT_TRUE(pref_service.GetBoolean(prefs::kAutofillAssistantEnabled));
+  EXPECT_TRUE(
+      pref_service.GetBoolean(prefs::kAutofillAssistantTriggerScriptsEnabled));
+  EXPECT_TRUE(pref_service.GetBoolean(
       prefs::kAutofillAssistantTriggerScriptsIsFirstTimeUser));
 }
 

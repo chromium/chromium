@@ -171,13 +171,11 @@ void StarterDelegateAndroid::SetIsFirstTimeUser(bool first_time_user) {
 }
 
 bool StarterDelegateAndroid::GetOnboardingAccepted() const {
-  return Java_Starter_getOnboardingAccepted(
-      base::android::AttachCurrentThread());
+  return GetPreferenceManager().GetOnboardingAccepted();
 }
 
 void StarterDelegateAndroid::SetOnboardingAccepted(bool accepted) {
-  Java_Starter_setOnboardingAccepted(base::android::AttachCurrentThread(),
-                                     accepted);
+  GetPreferenceManager().SetOnboardingAccepted(accepted);
 }
 
 void StarterDelegateAndroid::ShowOnboarding(
@@ -187,9 +185,16 @@ void StarterDelegateAndroid::ShowOnboarding(
   CreateJavaDependenciesIfNecessary();
   if (onboarding_finished_callback_) {
     DCHECK(false) << "onboarding requested while already being shown";
-    std::move(callback).Run(false, OnboardingResult::DISMISSED);
+    std::move(callback).Run(/*shown=*/false, OnboardingResult::DISMISSED);
     return;
   }
+
+  // Return early if onboarding has already been accepted.
+  if (GetOnboardingAccepted()) {
+    std::move(callback).Run(/*shown=*/false, OnboardingResult::ACCEPTED);
+    return;
+  }
+
   onboarding_finished_callback_ = std::move(callback);
 
   std::vector<std::string> keys;
@@ -233,13 +238,11 @@ void StarterDelegateAndroid::OnOnboardingFinished(
 }
 
 bool StarterDelegateAndroid::GetProactiveHelpSettingEnabled() const {
-  return Java_Starter_getProactiveHelpSettingEnabled(
-      base::android::AttachCurrentThread());
+  return GetPreferenceManager().IsProactiveHelpOn();
 }
 
 void StarterDelegateAndroid::SetProactiveHelpSettingEnabled(bool enabled) {
-  Java_Starter_setProactiveHelpSettingEnabled(
-      base::android::AttachCurrentThread(), enabled);
+  GetPreferenceManager().SetProactiveHelpSettingEnabled(enabled);
 }
 
 bool StarterDelegateAndroid::GetIsLoggedIn() {

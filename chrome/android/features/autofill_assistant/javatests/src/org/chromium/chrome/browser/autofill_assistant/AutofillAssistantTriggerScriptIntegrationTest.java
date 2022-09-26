@@ -20,6 +20,8 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.createDefaultTriggerScriptUI;
@@ -68,7 +70,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
@@ -141,8 +142,17 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         return result.get();
     }
 
+    /** Sets the value of @param preference to @param value. */
+    private void setBooleanPref(String preference, boolean value) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(preference, value);
+        });
+    }
+
     @Before
     public void setUp() {
+        // Prefs are already cleared properly by the {@link AutofillAssistantTestRule}.
         // Enable MSBB.
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -181,14 +191,12 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         .addTriggerScripts(returningUserTriggerScript)
                         .build();
 
-        Assert.assertTrue(
-                getBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_IS_FIRST_TIME_USER));
+        assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_IS_FIRST_TIME_USER));
         setupTriggerScripts(triggerScripts);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("First time user"), isCompletelyDisplayed());
-        Assert.assertFalse(
-                getBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_IS_FIRST_TIME_USER));
+        assertFalse(getBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_IS_FIRST_TIME_USER));
 
         onView(withText("Not now")).perform(click());
         waitUntilViewMatchesCondition(withText("Returning user"), isCompletelyDisplayed());
@@ -211,7 +219,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         setupTriggerScripts(triggerScripts);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
-        Assert.assertTrue(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
+        assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED));
         waitUntilViewMatchesCondition(
                 withContentDescription(R.string.autofill_assistant_overflow_options),
                 isCompletelyDisplayed());
@@ -223,7 +231,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 .perform(click());
         waitUntilViewAssertionTrue(
                 withText("Hello world"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertFalse(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
+        assertFalse(getBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED));
     }
 
     @Test
@@ -287,8 +295,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                                 .addTriggerScripts(triggerScript)
                                                                 .build();
         setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        AutofillAssistantPreferencesUtil.setOnboardingAcceptedPreference(false);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
@@ -315,7 +322,8 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         onView(withText("Loading regular script")).check(matches(isDisplayed()));
         onView(withId(R.id.step_progress_bar)).check(matches(isDisplayed()));
-        Assert.assertFalse(AutofillAssistantPreferencesUtil.getShowOnboarding());
+        assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT));
+        assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_ENABLED));
     }
 
     @Test
@@ -336,8 +344,6 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                                 .addTriggerScripts(triggerScript)
                                                                 .build();
         setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        AutofillAssistantPreferencesUtil.setOnboardingAcceptedPreference(true);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
@@ -379,14 +385,13 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                                 .addTriggerScripts(triggerScript)
                                                                 .build();
         setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        AutofillAssistantPreferencesUtil.setOnboardingAcceptedPreference(false);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
 
         // Simulate the user accepting the onboarding in a different tab.
-        AutofillAssistantPreferencesUtil.setOnboardingAcceptedPreference(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -461,7 +466,6 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         .build();
 
         setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
@@ -540,8 +544,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                                 .addTriggerScripts(triggerScript)
                                                                 .build();
         setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        AutofillAssistantPreferencesUtil.setOnboardingAcceptedPreference(false);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
@@ -576,7 +579,8 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         onView(withId(R.id.button_init_ok)).perform(click());
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         onView(withText("Loading regular script")).check(matches(isDisplayed()));
-        Assert.assertFalse(AutofillAssistantPreferencesUtil.getShowOnboarding());
+        assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT));
+        assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_ENABLED));
     }
 
     @Test
@@ -601,8 +605,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                                 .addTriggerScripts(triggerScript)
                                                                 .build();
         setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        AutofillAssistantPreferencesUtil.setOnboardingAcceptedPreference(false);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
@@ -627,7 +630,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         // Cancel onboarding.
         onView(withId(R.id.button_init_not_ok)).perform(click());
         waitUntilViewAssertionTrue(withText("Continue"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertTrue(AutofillAssistantPreferencesUtil.getShowOnboarding());
+        assertFalse(getBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT));
     }
 
     @Test

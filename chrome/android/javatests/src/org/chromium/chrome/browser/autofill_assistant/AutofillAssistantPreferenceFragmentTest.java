@@ -12,33 +12,89 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests for AutofillAssistantPreferenceFragment.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutofillAssistantPreferenceFragmentTest {
-    private final SettingsActivityTestRule<AutofillAssistantPreferenceFragment>
+    private final SharedPreferencesManager mSharedPreferencesManager =
+            SharedPreferencesManager.getInstance();
+
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
+    public final SettingsActivityTestRule<AutofillAssistantPreferenceFragment>
             mSettingsActivityTestRule =
                     new SettingsActivityTestRule<>(AutofillAssistantPreferenceFragment.class);
 
-    private final SharedPreferencesManager mSharedPreferencesManager =
-            SharedPreferencesManager.getInstance();
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
+
+    @Before
+    public void setUp() {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Ensure that no state was leaked from another test.
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_CONSENT);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_ENABLED);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED);
+        });
+    }
+
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Ensure that no state leaks into another test.
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_CONSENT);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_ENABLED);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED);
+        });
+    }
+
+    /** Returns the value of @param preference. Must be called on the UI thread. */
+    private boolean getBooleanPref(String preference) {
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return prefService.getBoolean(preference);
+    }
+
+    /** Simulates accepted Autofill Assistant onboarding by setting the relevant prefs. */
+    private void acceptAssistantOnboarding() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
+            prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED, true);
+        });
+    }
 
     /**
      * Test: if the onboarding was never shown or it was shown and not accepted, the AA chrome
@@ -52,8 +108,7 @@ public class AutofillAssistantPreferenceFragmentTest {
     @Feature({"Sync"})
     @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_NAME)
     public void testAutofillAssistantNoPreferenceIfOnboardingNeverShown() {
-        final AutofillAssistantPreferenceFragment prefs =
-                startAutofillAssistantPreferenceFragment();
+        final AutofillAssistantPreferenceFragment prefs = startPreferenceFragment();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertFalse(prefs.findPreference(
                                      AutofillAssistantPreferenceFragment.PREF_AUTOFILL_ASSISTANT)
@@ -72,9 +127,8 @@ public class AutofillAssistantPreferenceFragmentTest {
     @Feature({"Sync"})
     @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_NAME)
     public void testAutofillAssistantPreferenceShownIfOnboardingShown() {
-        setAutofillAssistantSwitchValue(true);
-        final AutofillAssistantPreferenceFragment prefs =
-                startAutofillAssistantPreferenceFragment();
+        acceptAssistantOnboarding();
+        final AutofillAssistantPreferenceFragment prefs = startPreferenceFragment();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue(prefs.findPreference(
                                     AutofillAssistantPreferenceFragment.PREF_AUTOFILL_ASSISTANT)
@@ -90,9 +144,8 @@ public class AutofillAssistantPreferenceFragmentTest {
     @Feature({"Sync"})
     @DisableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_NAME)
     public void testAutofillAssistantNoPreferenceIfFeatureDisabled() {
-        setAutofillAssistantSwitchValue(true);
-        final AutofillAssistantPreferenceFragment prefs =
-                startAutofillAssistantPreferenceFragment();
+        acceptAssistantOnboarding();
+        final AutofillAssistantPreferenceFragment prefs = startPreferenceFragment();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertFalse(prefs.findPreference(
                                      AutofillAssistantPreferenceFragment.PREF_AUTOFILL_ASSISTANT)
@@ -108,9 +161,8 @@ public class AutofillAssistantPreferenceFragmentTest {
     @Feature({"Sync"})
     @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_NAME)
     public void testAutofillAssistantSwitchOn() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { setAutofillAssistantSwitchValue(true); });
-        final AutofillAssistantPreferenceFragment prefs =
-                startAutofillAssistantPreferenceFragment();
+        acceptAssistantOnboarding();
+        final AutofillAssistantPreferenceFragment prefs = startPreferenceFragment();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeSwitchPreference autofillAssistantSwitch =
@@ -119,9 +171,9 @@ public class AutofillAssistantPreferenceFragmentTest {
             assertTrue(autofillAssistantSwitch.isChecked());
 
             autofillAssistantSwitch.performClick();
-            assertFalse(AutofillAssistantPreferencesUtil.getAssistantEnabledPreference(true));
+            assertFalse(getBooleanPref(Pref.AUTOFILL_ASSISTANT_ENABLED));
             autofillAssistantSwitch.performClick();
-            assertTrue(AutofillAssistantPreferencesUtil.getAssistantEnabledPreference(false));
+            assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_ENABLED));
         });
     }
 
@@ -133,8 +185,8 @@ public class AutofillAssistantPreferenceFragmentTest {
     @DisableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB_NAME)
     public void
     testProactiveHelpDisabledIfMsbbDisabled() {
-        final AutofillAssistantPreferenceFragment prefs =
-                startAutofillAssistantPreferenceFragment();
+        acceptAssistantOnboarding();
+        final AutofillAssistantPreferenceFragment prefs = startPreferenceFragment();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeSwitchPreference proactiveHelpSwitch =
@@ -158,8 +210,7 @@ public class AutofillAssistantPreferenceFragmentTest {
             AssistantFeatures.AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB_NAME})
     public void
     testProactiveHelpNotLinkedToMsbbIfLinkDisabled() {
-        final AutofillAssistantPreferenceFragment prefs =
-                startAutofillAssistantPreferenceFragment();
+        final AutofillAssistantPreferenceFragment prefs = startPreferenceFragment();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeSwitchPreference proactiveHelpSwitch =
@@ -183,9 +234,8 @@ public class AutofillAssistantPreferenceFragmentTest {
     @DisableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB_NAME)
     public void
     testProactiveHelpDisabledIfAutofillAssistantDisabled() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { setAutofillAssistantSwitchValue(true); });
-        final AutofillAssistantPreferenceFragment prefs =
-                startAutofillAssistantPreferenceFragment();
+        acceptAssistantOnboarding();
+        final AutofillAssistantPreferenceFragment prefs = startPreferenceFragment();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeSwitchPreference proactiveHelpSwitch =
@@ -213,8 +263,7 @@ public class AutofillAssistantPreferenceFragmentTest {
     @Feature({"Sync"})
     @DisableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     public void testProactiveHelpInvisibleIfProactiveHelpDisabled() {
-        final AutofillAssistantPreferenceFragment prefs =
-                startAutofillAssistantPreferenceFragment();
+        final AutofillAssistantPreferenceFragment prefs = startPreferenceFragment();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeSwitchPreference proactiveHelpSwitch =
@@ -232,8 +281,7 @@ public class AutofillAssistantPreferenceFragmentTest {
             AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME})
     public void
     testWebAssistanceInvisibleIfAutofillAssistantCompletelyDisabled() {
-        final AutofillAssistantPreferenceFragment prefs =
-                startAutofillAssistantPreferenceFragment();
+        final AutofillAssistantPreferenceFragment prefs = startPreferenceFragment();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PreferenceCategory webAssistanceCateogory = prefs.findPreference(
@@ -247,8 +295,7 @@ public class AutofillAssistantPreferenceFragmentTest {
     @Feature({"AssistantVoiceSearch"})
     @EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
     public void testEnhancedVoiceSearch_Enabled() {
-        final AutofillAssistantPreferenceFragment prefs =
-                startAutofillAssistantPreferenceFragment();
+        final AutofillAssistantPreferenceFragment prefs = startPreferenceFragment();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PreferenceCategory assistantVoiceSearchCategory = prefs.findPreference(
@@ -258,7 +305,7 @@ public class AutofillAssistantPreferenceFragmentTest {
             ChromeSwitchPreference assistantVoiceSearchEnabledSwitch =
                     (ChromeSwitchPreference) prefs.findPreference(
                             AutofillAssistantPreferenceFragment
-                                    .PREF_ASSISTANT_VOICE_SEARCH_ENABLED_SWTICH);
+                                    .PREF_ASSISTANT_VOICE_SEARCH_ENABLED_SWITCH);
             assertTrue(assistantVoiceSearchEnabledSwitch.isVisible());
             assistantVoiceSearchEnabledSwitch.performClick();
             assertTrue(mSharedPreferencesManager.readBoolean(
@@ -273,8 +320,7 @@ public class AutofillAssistantPreferenceFragmentTest {
             ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH})
     public void
     testEnhancedVoiceSearch_DisabledForNonPersonalizedSearch() {
-        final AutofillAssistantPreferenceFragment prefs =
-                startAutofillAssistantPreferenceFragment();
+        final AutofillAssistantPreferenceFragment prefs = startPreferenceFragment();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PreferenceCategory assistantVoiceSearchCategory = prefs.findPreference(
@@ -284,7 +330,7 @@ public class AutofillAssistantPreferenceFragmentTest {
             ChromeSwitchPreference assistantVoiceSearchEnabledSwitch =
                     (ChromeSwitchPreference) prefs.findPreference(
                             AutofillAssistantPreferenceFragment
-                                    .PREF_ASSISTANT_VOICE_SEARCH_ENABLED_SWTICH);
+                                    .PREF_ASSISTANT_VOICE_SEARCH_ENABLED_SWITCH);
             assertFalse(assistantVoiceSearchEnabledSwitch.isVisible());
         });
     }
@@ -294,8 +340,7 @@ public class AutofillAssistantPreferenceFragmentTest {
     @Feature({"AssistantVoiceSearch"})
     @DisableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
     public void testEnhancedVoiceSearch_Disabled() {
-        final AutofillAssistantPreferenceFragment prefs =
-                startAutofillAssistantPreferenceFragment();
+        final AutofillAssistantPreferenceFragment prefs = startPreferenceFragment();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PreferenceCategory assistantVoiceSearchCategory = prefs.findPreference(
@@ -305,21 +350,13 @@ public class AutofillAssistantPreferenceFragmentTest {
             ChromeSwitchPreference assistantVoiceSearchEnabledSwitch =
                     (ChromeSwitchPreference) prefs.findPreference(
                             AutofillAssistantPreferenceFragment
-                                    .PREF_ASSISTANT_VOICE_SEARCH_ENABLED_SWTICH);
+                                    .PREF_ASSISTANT_VOICE_SEARCH_ENABLED_SWITCH);
             assertFalse(assistantVoiceSearchEnabledSwitch.isVisible());
         });
     }
 
-    private void setAutofillAssistantSwitchValue(boolean newValue) {
-        AutofillAssistantPreferencesUtil.setAssistantEnabledPreference(newValue);
-    }
-
-    private AutofillAssistantPreferenceFragment startAutofillAssistantPreferenceFragment() {
+    private AutofillAssistantPreferenceFragment startPreferenceFragment() {
         mSettingsActivityTestRule.startSettingsActivity();
         return mSettingsActivityTestRule.getFragment();
-    }
-
-    public boolean isAutofillAssistantSwitchOn() {
-        return AutofillAssistantPreferencesUtil.getAssistantEnabledPreference(false);
     }
 }

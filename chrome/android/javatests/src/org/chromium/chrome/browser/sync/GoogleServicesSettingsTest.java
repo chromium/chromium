@@ -39,8 +39,8 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -81,10 +81,13 @@ public class GoogleServicesSettingsTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                   .setBoolean(Pref.SIGNIN_ALLOWED, true));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.clearPref(Pref.SIGNIN_ALLOWED);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_CONSENT);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_ENABLED);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED);
+        });
     }
 
     @Test
@@ -191,7 +194,7 @@ public class GoogleServicesSettingsTest {
             ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH})
     public void
     testAutofillAssistantPreferenceShownIfOnboardingShown() {
-        setAutofillAssistantSwitchValue(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> setAutofillAssistantSwitchValue(true));
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertNotNull(googleServicesSettings.findPreference(
@@ -210,7 +213,7 @@ public class GoogleServicesSettingsTest {
             ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH})
     public void
     testAutofillAssistantNoPreferenceIfFeatureDisabled() {
-        setAutofillAssistantSwitchValue(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> setAutofillAssistantSwitchValue(true));
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertNull(googleServicesSettings.findPreference(
@@ -239,9 +242,11 @@ public class GoogleServicesSettingsTest {
             Assert.assertTrue(autofillAssistantSwitch.isChecked());
 
             autofillAssistantSwitch.performClick();
-            Assert.assertFalse(googleServicesSettings.isAutofillAssistantSwitchOn());
+            Assert.assertFalse(UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                       .getBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED));
             autofillAssistantSwitch.performClick();
-            Assert.assertTrue(googleServicesSettings.isAutofillAssistantSwitchOn());
+            Assert.assertTrue(UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                      .getBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED));
         });
     }
 
@@ -422,8 +427,13 @@ public class GoogleServicesSettingsTest {
         });
     }
 
+    /**
+     * Sets the pref for whether Autofill Assistant is enabled. Needs to be run
+     * on the UI thread.
+     */
     private void setAutofillAssistantSwitchValue(boolean newValue) {
-        AutofillAssistantPreferencesUtil.setAssistantEnabledPreference(newValue);
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED, newValue);
     }
 
     private GoogleServicesSettings startGoogleServicesSettings() {

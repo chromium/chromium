@@ -31,6 +31,7 @@ import android.os.Bundle;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,6 +44,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
@@ -61,23 +63,27 @@ import org.chromium.chrome.browser.directactions.DirectActionHandler;
 import org.chromium.chrome.browser.directactions.FakeDirectActionReporter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill_assistant.AssistantDependencies;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
 import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntry;
 import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.autofill_assistant.R;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Tests autofill-assistant direct actions.
+ * Tests Autofill Assistant direct actions.
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class DirectActionsIntegrationTest {
     public DirectActionsIntegrationTest() {}
@@ -116,16 +122,36 @@ public class DirectActionsIntegrationTest {
         });
     }
 
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_CONSENT);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_ENABLED);
+        });
+    }
+
+    /** Sets the value of @param preference to @param value. */
+    private void setBooleanPref(String preference, boolean value) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(preference, value);
+        });
+    }
+
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
             AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
     public void
     testOnboardingAndStart() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
-        mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
-        Assert.assertThat(mDirectActionReporter.getDirectActions(),
-                containsInAnyOrder("onboarding", "onboarding_and_start"));
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("onboarding", "onboarding_and_start"));
+        });
 
         ArrayList<ActionProto> list = new ArrayList<>();
         // Tapping touch_area_one will make it disappear.
@@ -166,10 +192,12 @@ public class DirectActionsIntegrationTest {
             AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
     public void
     testOnboardingAndStartShowsErrorMessageIfRequested() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
-        mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
-        Assert.assertThat(mDirectActionReporter.getDirectActions(),
-                containsInAnyOrder("onboarding", "onboarding_and_start"));
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("onboarding", "onboarding_and_start"));
+        });
 
         // No scripts available.
         AutofillAssistantTestService testService =
@@ -201,10 +229,13 @@ public class DirectActionsIntegrationTest {
             AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
     public void
     testOnboardingTwice() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
-        mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
-        Assert.assertThat(mDirectActionReporter.getDirectActions(),
-                containsInAnyOrder("onboarding", "onboarding_and_start"));
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("onboarding", "onboarding_and_start"));
+        });
 
         ArrayList<ActionProto> list = new ArrayList<>();
         // Tapping touch_area_one will make it disappear.
@@ -256,7 +287,7 @@ public class DirectActionsIntegrationTest {
     @DisabledTest(message = "https://crbug.com/1272997")
     public void
     testStatusMessageResetsBetweenRuns() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()

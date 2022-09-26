@@ -21,11 +21,12 @@ import org.chromium.chrome.browser.autofill_assistant.proto.GetTriggerScriptsRes
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -53,8 +54,9 @@ public class InCctTriggeringFromNonGsaTest {
     }
 
     private void enableMsbb() {
-        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                    .setBoolean(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED, true);
             UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                     Profile.getLastUsedRegularProfile(), true);
 

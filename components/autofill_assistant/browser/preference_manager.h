@@ -21,6 +21,21 @@ class PreferenceManager {
   bool GetIsFirstTimeTriggerScriptUser() const;
   void SetIsFirstTimeTriggerScriptUser(bool first_time_user);
 
+  // Returns whether proactive help is enabled. For that, the proactive help
+  // feature must be enabled, and the preferences for both Autofill Assistant
+  // in general and proactive help (i.e. trigger scripts) in particular must be
+  // `true`.
+  bool IsProactiveHelpOn() const;
+  // Sets the pref for proactive help.
+  void SetProactiveHelpSettingEnabled(bool enabled);
+
+  // Returns whether onboarding has previously been accepted and Autofill
+  // Assistant is enabled.
+  bool GetOnboardingAccepted() const;
+  // Stores the consent state locally and, if `accepted`, also enables Autofill
+  // Assistant.
+  void SetOnboardingAccepted(bool accepted);
+
  private:
   // The `PrefService` from which to read and write prefs.
   const raw_ptr<PrefService> pref_service_;

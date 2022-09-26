@@ -42,6 +42,7 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,6 +53,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -59,10 +61,11 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill_assistant.AssistantBottomSheetContent;
 import org.chromium.components.autofill_assistant.AssistantStaticDependencies;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.autofill_assistant.onboarding.AssistantOnboardingResult;
 import org.chromium.components.autofill_assistant.onboarding.BaseOnboardingCoordinator;
@@ -72,6 +75,8 @@ import org.chromium.components.autofill_assistant.overlay.AssistantOverlayModel;
 import org.chromium.components.autofill_assistant.overlay.AssistantOverlayState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -85,6 +90,7 @@ import java.util.Map;
  * Tests {@link BottomSheetOnboardingCoordinator}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class BottomSheetOnboardingCoordinatorTest {
     private static final int SPLIT_ONBOARDING_EXPERIMENT_VARIANT_A = 4702489;
@@ -128,6 +134,23 @@ public class BottomSheetOnboardingCoordinatorTest {
                 staticDependencies.getAccessibilityUtil(), staticDependencies.createInfoPageUtil());
     }
 
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_CONSENT);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_ENABLED);
+        });
+    }
+
+    /** Sets the value of @param preference to @param value. */
+    private void setBooleanPref(String preference, boolean value) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(preference, value);
+        });
+    }
+
     private BaseOnboardingCoordinator createCoordinator() {
         return createCoordinator("", new HashMap<>());
     }
@@ -155,7 +178,7 @@ public class BottomSheetOnboardingCoordinatorTest {
 
     private void testOnboarding(@IdRes int buttonToClick,
             @AssistantOnboardingResult int expectedResult) throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT,
                 expectedResult != AssistantOnboardingResult.ACCEPTED);
 
         BaseOnboardingCoordinator coordinator = createCoordinator();
@@ -167,8 +190,12 @@ public class BottomSheetOnboardingCoordinatorTest {
 
         verify(mCallback).onResult(expectedResult);
         assertFalse(TestThreadUtils.runOnUiThreadBlocking(coordinator::isInProgress));
-        assertEquals(expectedResult == AssistantOnboardingResult.ACCEPTED,
-                AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            assertEquals(expectedResult == AssistantOnboardingResult.ACCEPTED,
+                    prefService.getBoolean(Pref.AUTOFILL_ASSISTANT_CONSENT));
+        });
     }
 
     @Test
@@ -226,7 +253,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     @Test
     @MediumTest
     public void testShowDifferentInformationalText() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         HashMap<String, String> parameters = new HashMap();
         parameters.put("INTENT", "RENT_CAR");
@@ -246,7 +273,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     @Test
     @MediumTest
     public void testShowExperimentalInformationalText() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         HashMap<String, String> parameters = new HashMap();
         parameters.put("INTENT", "BUY_MOVIE_TICKET");
@@ -266,7 +293,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     @Test
     @MediumTest
     public void testShowStandardInformationalText() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         BaseOnboardingCoordinator coordinator = createCoordinator();
         showOnboardingAndWait(coordinator, mCallback);
@@ -283,7 +310,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     @Test
     @MediumTest
     public void testUseOfOutsideStrings() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put("ONBOARDING_FETCH_TIMEOUT_MS", "0");
@@ -331,7 +358,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     @Test
     @MediumTest
     public void testUseOfOutsideStringsRejectsTermsWithoutLink() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put("ONBOARDING_FETCH_TIMEOUT_MS", "0");
@@ -353,7 +380,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     @Test
     @MediumTest
     public void testUseOfOutsideStringsRejectsNonGoogleSudomainLink() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put("ONBOARDING_FETCH_TIMEOUT_MS", "0");
@@ -392,7 +419,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     @Test
     @MediumTest
     public void testIgnoreShowingUiAfterCancellation() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         BaseOnboardingCoordinator coordinator = createCoordinator();
         showOnboardingAndWait(coordinator, mCallback);
@@ -415,7 +442,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     @Test
     @MediumTest
     public void testSplitBottomSheetOnboardingVariantA() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         HashMap<String, String> parameters = new HashMap<>();
 
@@ -501,7 +528,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     @Test
     @MediumTest
     public void testSplitBottomSheetOnboardingVariantAFallbackStrings() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         HashMap<String, String> parameters = new HashMap<>();
         BaseOnboardingCoordinator coordinator = createCoordinator(
@@ -547,7 +574,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     @Test
     @MediumTest
     public void testSplitBottomSheetOnboardingVariantB() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         HashMap<String, String> parameters = new HashMap<>();
         BaseOnboardingCoordinator coordinator = createCoordinator(
@@ -637,7 +664,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     @Test
     @MediumTest
     public void testSplitBottomSheetOnboardingVariantBFallbackStrings() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         HashMap<String, String> parameters = new HashMap<>();
         BaseOnboardingCoordinator coordinator = createCoordinator(

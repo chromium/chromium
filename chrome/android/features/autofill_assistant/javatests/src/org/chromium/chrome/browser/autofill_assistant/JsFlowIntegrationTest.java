@@ -31,12 +31,14 @@ import android.util.Base64;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTestService.ScriptsReturnMode;
@@ -61,9 +63,13 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TellProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.autofill_assistant.R;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,6 +79,7 @@ import java.util.List;
  * Tests JS flows.
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class JsFlowIntegrationTest {
     private static final String HTML_DIRECTORY = "/components/test/data/autofill_assistant/html/";
@@ -105,11 +112,24 @@ public class JsFlowIntegrationTest {
 
     @Before
     public void setUp() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
         mTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         getTargetWebsiteUrl(TEST_PAGE)));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
+            prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED, true);
+        });
+    }
+
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_CONSENT);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_ENABLED);
+        });
     }
 
     private byte[] getActionBytes(ActionProto action) {

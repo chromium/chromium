@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -235,7 +234,7 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
             UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                     Profile.getLastUsedRegularProfile(), (boolean) newValue);
         } else if (PREF_AUTOFILL_ASSISTANT.equals(key)) {
-            setAutofillAssistantSwitchValue((boolean) newValue);
+            mPrefService.setBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED, (boolean) newValue);
         } else if (PREF_PRICE_TRACKING_ANNOTATIONS.equals(key)) {
             PriceTrackingUtilities.setTrackPricesOnTabsEnabled((boolean) newValue);
         }
@@ -256,7 +255,7 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
                         Profile.getLastUsedRegularProfile()));
 
         if (mAutofillAssistant != null) {
-            mAutofillAssistant.setChecked(isAutofillAssistantSwitchOn());
+            mAutofillAssistant.setChecked(mPrefService.getBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED));
         }
         if (mContextualSearch != null) {
             boolean isContextualSearchEnabled =
@@ -293,11 +292,11 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
 
     /**
      *  This checks whether Autofill Assistant is enabled and was shown at least once (only then
-     *  will the AA switch be assigned a value).
+     *  will the Autofill Assistant switch be assigned a value).
      */
     private boolean shouldShowAutofillAssistantPreference() {
         return AssistantFeatures.AUTOFILL_ASSISTANT.isEnabled()
-                && AutofillAssistantPreferencesUtil.containsAssistantEnabledPreference();
+                && !mPrefService.isDefaultValuePreference(Pref.AUTOFILL_ASSISTANT_ENABLED);
     }
 
     /**
@@ -307,15 +306,6 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
         return ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
                 && !ChromeFeatureList.isEnabled(
                         ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
-    }
-
-    public boolean isAutofillAssistantSwitchOn() {
-        return AutofillAssistantPreferencesUtil.getAssistantEnabledPreference(
-                /* defaultValue= */ false);
-    }
-
-    public void setAutofillAssistantSwitchValue(boolean newValue) {
-        AutofillAssistantPreferencesUtil.setAssistantEnabledPreference(newValue);
     }
 
     // SignOutDialogListener implementation:

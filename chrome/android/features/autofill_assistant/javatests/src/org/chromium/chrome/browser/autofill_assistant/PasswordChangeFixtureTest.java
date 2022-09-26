@@ -45,8 +45,11 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordChangeLauncher;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -84,7 +87,6 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
 
     @Before
     public void setUp() throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
         mParameters = PasswordChangeFixtureParameters.loadFromCommandLine();
 
         AutofillAssistantTestEndpointService testService =
@@ -97,6 +99,12 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         mParameters.getDomainUrl().getSpec()));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
+            prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED, true);
+        });
 
         /**
          * PasswordStoreBridge requests credentials from the password store on initialization. The

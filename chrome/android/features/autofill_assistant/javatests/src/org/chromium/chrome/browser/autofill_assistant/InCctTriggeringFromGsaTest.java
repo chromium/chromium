@@ -34,11 +34,13 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -61,6 +63,12 @@ public class InCctTriggeringFromGsaTest {
         return mTestRule.getTestServer().getURL(HTML_DIRECTORY + testPage);
     }
 
+    /** Helper function for setting a pref that must be called on the UI thread. */
+    private void setBooleanPref(String preference, boolean value) {
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        prefService.setBoolean(preference, value);
+    }
+
     @Before
     public void setUp() {
         mTestRule.startCustomTabActivityWithIntent(
@@ -69,9 +77,9 @@ public class InCctTriggeringFromGsaTest {
                                 getTargetWebsiteUrl(TEST_PAGE_UNSUPPORTED))
                         .putExtra(Browser.EXTRA_APPLICATION_ID, IntentHandler.PACKAGE_GSA));
 
-        // Enable MSBB.
-        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Enable trigger scripts and MSBB.
+            setBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED, true);
             UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                     Profile.getLastUsedRegularProfile(), true);
 
@@ -134,13 +142,12 @@ public class InCctTriggeringFromGsaTest {
                 withText("TriggerScript"), isDisplayed(), 2 * DEFAULT_MAX_TIME_TO_POLL);
 
         // Disabling the proactive help setting should stop the trigger script.
-        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(false);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> AutofillAssistantTabHelper
-                                   .get(TabModelUtils.getCurrentTab(
-                                           mTestRule.getActivity().getCurrentTabModel()))
-                                   .forceSettingsChangeNotificationForTesting());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            setBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED, false);
+            AutofillAssistantTabHelper
+                    .get(TabModelUtils.getCurrentTab(mTestRule.getActivity().getCurrentTabModel()))
+                    .forceSettingsChangeNotificationForTesting();
+        });
         waitUntilViewAssertionTrue(
                 withText("TriggerScript"), doesNotExist(), DEFAULT_POLLING_INTERVAL);
 
@@ -148,13 +155,12 @@ public class InCctTriggeringFromGsaTest {
         // still on a supported URL.
         testServiceRequestSender.setNextResponse(
                 /* httpStatus = */ 200, createDefaultTriggerScriptResponse("TriggerScript"));
-        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> AutofillAssistantTabHelper
-                                   .get(TabModelUtils.getCurrentTab(
-                                           mTestRule.getActivity().getCurrentTabModel()))
-                                   .forceSettingsChangeNotificationForTesting());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            setBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED, true);
+            AutofillAssistantTabHelper
+                    .get(TabModelUtils.getCurrentTab(mTestRule.getActivity().getCurrentTabModel()))
+                    .forceSettingsChangeNotificationForTesting();
+        });
         waitUntilViewMatchesCondition(withText("TriggerScript"), isDisplayed());
     }
     /**

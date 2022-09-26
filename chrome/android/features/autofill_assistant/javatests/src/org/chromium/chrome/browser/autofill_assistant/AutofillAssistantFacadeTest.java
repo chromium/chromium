@@ -22,7 +22,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
 
 /**
@@ -56,29 +55,6 @@ public class AutofillAssistantFacadeTest {
 
         intent.putExtra(EXTRAS_PREFIX + "ENABLED", true);
         Assert.assertTrue(AutofillAssistantFacade.isAutofillAssistantEnabled(intent));
-    }
-
-    /**
-     * Tests that the preconditions for triggering proactive help work correctly.
-     */
-    @Test
-    @MediumTest
-    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
-    public void proactiveHelpConditions() {
-        Assert.assertTrue(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
-
-        AutofillAssistantPreferencesUtil.setAssistantEnabledPreference(false);
-
-        Assert.assertFalse(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
-
-        AutofillAssistantPreferencesUtil.setAssistantEnabledPreference(true);
-        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(false);
-
-        Assert.assertFalse(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
-
-        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(true);
-
-        Assert.assertTrue(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
     }
 
     /**

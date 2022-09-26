@@ -19,13 +19,16 @@ import org.chromium.chrome.browser.directactions.DirectActionHandler;
 import org.chromium.chrome.browser.directactions.DirectActionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionReporter.Definition;
 import org.chromium.chrome.browser.directactions.DirectActionReporter.Type;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.autofill_assistant.AutofillAssistantActionHandler;
 import org.chromium.components.autofill_assistant.AutofillAssistantDirectAction;
 import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntry;
 import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
-import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -68,13 +71,19 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
         mModuleEntryProvider = moduleEntryProvider;
     }
 
+    private PrefService getPrefs() {
+        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+    }
+
     @Override
     public void reportAvailableDirectActions(DirectActionReporter reporter) {
-        if (!AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()) {
+        ThreadUtils.assertOnUiThread();
+
+        if (!getPrefs().getBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED)) {
             return;
         }
 
-        if (!AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted()) {
+        if (!getPrefs().getBoolean(Pref.AUTOFILL_ASSISTANT_CONSENT)) {
             reporter.addDirectAction(ONBOARDING_ACTION)
                     .withParameter(ACTION_NAME, Type.STRING, /* required= */ false)
                     .withParameter(EXPERIMENT_IDS, Type.STRING, /* required= */ false)
@@ -88,7 +97,6 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
             return;
         }
 
-        ThreadUtils.assertOnUiThread();
         if (mDelegate == null || (mDelegate != null && !mDelegate.hasRunFirstCheck())) {
             reporter.addDirectAction(FETCH_WEBSITE_ACTIONS)
                     .withParameter(USER_NAME, Type.STRING, /* required= */ false)
@@ -121,7 +129,7 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
     public boolean performDirectAction(
             String actionId, Bundle arguments, Callback<Bundle> callback) {
         if (actionId.equals(FETCH_WEBSITE_ACTIONS)
-                && AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted()) {
+                && getPrefs().getBoolean(Pref.AUTOFILL_ASSISTANT_CONSENT)) {
             fetchWebsiteActions(arguments, callback);
             return true;
         }
@@ -149,12 +157,8 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
             bundleCallback.onResult(bundle);
         };
 
-        if (!AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()) {
-            successCallback.onResult(false);
-            return;
-        }
-
-        if (!AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted()) {
+        if (!getPrefs().getBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED)
+                || !getPrefs().getBoolean(Pref.AUTOFILL_ASSISTANT_CONSENT)) {
             successCallback.onResult(false);
             return;
         }
@@ -181,7 +185,7 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
             bundleCallback.onResult(bundle);
         };
 
-        if (!AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()) {
+        if (!getPrefs().getBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED)) {
             booleanCallback.onResult(false);
             return;
         }
