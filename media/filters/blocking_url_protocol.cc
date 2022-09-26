@@ -16,7 +16,8 @@ namespace media {
 
 BlockingUrlProtocol::BlockingUrlProtocol(DataSource* data_source,
                                          const base::RepeatingClosure& error_cb)
-    : data_source_(data_source),
+    : data_source_lock_("BlockingUrlProtocol.data_source_lock_"),
+      data_source_(data_source),
       error_cb_(error_cb),
       is_streaming_(data_source_->IsStreaming()),
       aborted_(base::WaitableEvent::ResetPolicy::MANUAL,
