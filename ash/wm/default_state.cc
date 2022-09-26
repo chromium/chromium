@@ -664,6 +664,11 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
              IsMaximizedOrFullscreenOrPinnedWindowStateType(
                  previous_state_type)) {
     window_state->SetBoundsDirectCrossFade(bounds_in_parent);
+  } else if (window_state->IsFloated() &&
+             previous_state_type == WindowStateType::kFloated) {
+    // This can happen during the tablet -> clamshell transition. Use cross fade
+    // animation for better performance.
+    window_state->SetBoundsDirectCrossFade(bounds_in_parent);
   } else if (window_state->is_dragged()) {
     // SetBoundsDirectAnimated does not work when the window gets reparented.
     // TODO(oshima): Consider fixing it and re-enable the animation.

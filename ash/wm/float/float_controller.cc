@@ -88,6 +88,9 @@ void ShowFloatedWindow(aura::Window* floated_window) {
 
 }  // namespace
 
+// -----------------------------------------------------------------------------
+// ScopedWindowTucker:
+
 // Scoped class which makes modifications while a window is tucked. It owns a
 // handle widget which is used to untuck the window.
 class FloatController::ScopedWindowTucker {
@@ -466,8 +469,6 @@ void FloatController::OnTabletModeStarting() {
   for (auto& [window, info] : floated_window_info_map_) {
     if (!chromeos::wm::CanFloatWindow(window))
       windows_need_reset.push_back(window);
-    else
-      UpdateWindowBoundsForTablet(window);
   }
   for (auto* window : windows_need_reset)
     ResetFloatedWindow(window);
@@ -502,8 +503,14 @@ void FloatController::OnDeskActivationChanged(const Desk* activated,
 void FloatController::OnDisplayMetricsChanged(const display::Display& display,
                                               uint32_t metrics) {
   // TODO(sammiequon): Make this work for clamshell mode too.
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+  // The work area can change while entering or exiting tablet mode. The float
+  // window changes related with those changes are handled in
+  // `OnTabletModeStarting`, `OnTabletModeEnding` or attaching/detaching window
+  // states.
+  if (chromeos::TabletState::Get()->state() !=
+      display::TabletState::kInTabletMode) {
     return;
+  }
 
   if ((display::DisplayObserver::DISPLAY_METRIC_WORK_AREA & metrics) == 0)
     return;

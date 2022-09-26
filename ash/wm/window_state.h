@@ -434,8 +434,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   friend class ClientControlledState;
   friend class DefaultState;
   friend class LockWindowState;
-  friend class TabletModeWindowState;
   friend class ScopedBoundsChangeAnimation;
+  friend class TabletModeWindowState;
   friend class WorkspaceWindowResizerTest;
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest, CrossFadeToBounds);
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest, CrossFadeHistograms);

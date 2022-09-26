@@ -169,10 +169,26 @@ bool IsTabDraggingSourceWindow(aura::Window* window) {
          window;
 }
 
-// True if |window| is the top window in BuildWindowForCycleList.
-bool IsTopWindow(aura::Window* window) {
+// True if `window` is floated. If `window` is not floated, it is animated if:
+//   - It is the top window in the MRU list.
+//   - It the top window in the MRU list is a floated window, and `window` is
+//     the second top window in the MRU list.
+bool ShouldAnimateWindowForTransition(aura::Window* window) {
   DCHECK(window);
-  return window == window_util::GetTopWindow();
+
+  if (WindowState::Get(window)->IsFloated())
+    return true;
+
+  MruWindowTracker::WindowList window_list =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  auto* first_mru_window = window_list.empty() ? nullptr : window_list.front();
+  if (first_mru_window && WindowState::Get(first_mru_window)->IsFloated()) {
+    auto* second_mru_window =
+        window_list.size() < 2u ? nullptr : window_list[1];
+    return window == second_mru_window;
+  }
+
+  return window == first_mru_window;
 }
 
 bool IsSnapped(WindowStateType state) {
@@ -219,7 +235,7 @@ TabletModeWindowState::TabletModeWindowState(aura::Window* window,
                               : state->GetMaximizedOrCenteredWindowType();
   // TODO(oshima|sammiequon): consider SplitView scenario.
   WindowState::ScopedBoundsChangeAnimation bounds_animation(
-      window, entering_tablet_mode && !IsTopWindow(window)
+      window, entering_tablet_mode && !ShouldAnimateWindowForTransition(window)
                   ? WindowState::BoundsChangeAnimationType::kAnimateZero
                   : WindowState::BoundsChangeAnimationType::kAnimate);
   old_window_bounds_in_screen_ = window->GetBoundsInScreen();
@@ -263,11 +279,11 @@ void TabletModeWindowState::LeaveTabletMode(WindowState* window_state,
   // immediately.
   WindowState::BoundsChangeAnimationType animation_type =
       was_in_overview || window_state->IsSnapped() ||
-              IsTopWindow(window_state->window())
+              ShouldAnimateWindowForTransition(window_state->window())
           ? WindowState::BoundsChangeAnimationType::kAnimate
           : WindowState::BoundsChangeAnimationType::kNone;
   if (old_state_->GetType() == window_state->GetStateType() &&
-      !window_state->IsNormalStateType()) {
+      !window_state->IsNormalStateType() && !window_state->IsFloated()) {
     animation_type = WindowState::BoundsChangeAnimationType::kNone;
   }
 
@@ -447,7 +463,6 @@ void TabletModeWindowState::AttachState(WindowState* window_state,
       current_state_type_ != WindowStateType::kMinimized &&
       current_state_type_ != WindowStateType::kFullscreen &&
       current_state_type_ != WindowStateType::kPinned &&
-      current_state_type_ != WindowStateType::kFloated &&
       current_state_type_ != WindowStateType::kTrustedPinned) {
     UpdateWindow(window_state, state_type_on_attach_,
                  animate_bounds_on_attach_);
