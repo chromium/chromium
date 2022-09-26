@@ -13,6 +13,14 @@ namespace internal {
 InterfacePtrStateBase::InterfacePtrStateBase() = default;
 
 InterfacePtrStateBase::~InterfacePtrStateBase() {
+  // Let the mojo resources leak if this is being destroyed at a non-deterministic
+  // point. Mojo resources must be destroyed deterministically.
+  if (recordreplay::AreEventsDisallowed()) {
+    endpoint_client_.release();
+    (void)router_.release();
+    return;
+  }
+
   endpoint_client_.reset();
   if (router_)
     router_->CloseMessagePipe();
