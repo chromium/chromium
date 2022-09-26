@@ -598,6 +598,8 @@ TEST_F(AuthPerformerWithAuthFactorsTest, AuthenticateWithPasswordCorrectLabel) {
             EXPECT_EQ(request.auth_factor_label(), "legacy-0");
             EXPECT_TRUE(request.has_auth_input());
             EXPECT_TRUE(request.auth_input().has_password_input());
+            EXPECT_FALSE(
+                request.auth_input().password_input().secret().empty());
             ReplyAsSuccess(std::move(callback));
           });
   base::test::TestFuture<std::unique_ptr<UserContext>,
@@ -630,6 +632,42 @@ TEST_F(AuthPerformerWithAuthFactorsTest, AuthenticateWithPasswordBadLabel) {
   ASSERT_TRUE(result.Get<1>().has_value());
   ASSERT_EQ(result.Get<1>().value().get_cryptohome_code(),
             user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
+}
+
+TEST_F(AuthPerformerWithAuthFactorsTest, AuthenticateWithPinSuccess) {
+  SetupUserWithLegacyPasswordFactor(context_.get());
+  // Simulate the already started auth session.
+  context_->SetAuthSessionId("123");
+
+  // Add a pin factor to session auth factors.
+  cryptohome::AuthFactorRef pin_factor_ref(cryptohome::AuthFactorType::kPin,
+                                           cryptohome::KeyLabel("pin"));
+  cryptohome::AuthFactor pin_factor(
+      std::move(pin_factor_ref), cryptohome::AuthFactorCommonMetadata(),
+      cryptohome::PinStatus{.auth_locked = false});
+  context_->SetSessionAuthFactors(SessionAuthFactors({std::move(pin_factor)}));
+
+  AuthPerformer performer(&mock_client_);
+
+  EXPECT_CALL(mock_client_, AuthenticateAuthFactor(_, _))
+      .WillOnce(
+          [](const ::user_data_auth::AuthenticateAuthFactorRequest& request,
+             UserDataAuthClient::AuthenticateAuthFactorCallback callback) {
+            EXPECT_EQ(request.auth_factor_label(), "pin");
+            EXPECT_TRUE(request.has_auth_input());
+            EXPECT_TRUE(request.auth_input().has_pin_input());
+            EXPECT_FALSE(request.auth_input().pin_input().secret().empty());
+            ReplyAsSuccess(std::move(callback));
+          });
+  base::test::TestFuture<std::unique_ptr<UserContext>,
+                         absl::optional<AuthenticationError>>
+      result;
+
+  performer.AuthenticateWithPin("1234", "pin-salt", std::move(context_),
+                                result.GetCallback());
+  // Check for no error
+  ASSERT_TRUE(result.Get<0>());
+  ASSERT_FALSE(result.Get<1>().has_value());
 }
 
 }  // namespace

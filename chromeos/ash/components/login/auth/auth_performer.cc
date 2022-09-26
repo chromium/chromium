@@ -333,6 +333,8 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
   }
 
   key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, pin_salt);
+  context->SetKey(std::move(key));
+  context->SetIsUsingPin(true);
   AuthenticateUsingKnowledgeKey(std::move(context), std::move(callback));
 }
 
