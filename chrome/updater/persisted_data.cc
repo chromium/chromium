@@ -142,8 +142,8 @@ bool PersistedData::RemoveApp(const std::string& id) {
   if (!pref_service_)
     return false;
 
-  DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
-  base::Value::Dict* apps = update->GetDict().FindDict("apps");
+  ScopedDictPrefUpdate update(pref_service_, kPersistedDataPreference);
+  base::Value::Dict* apps = update->FindDict("apps");
 
   return apps ? apps->Remove(id) : false;
 }
@@ -193,15 +193,11 @@ std::string PersistedData::GetString(const std::string& id,
   return *value;
 }
 
-base::Value* PersistedData::GetOrCreateAppKey(const std::string& id,
-                                              base::Value* root) {
+base::Value::Dict* PersistedData::GetOrCreateAppKey(const std::string& id,
+                                                    base::Value::Dict& root) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value* apps = root->GetDict().Find("apps");
-  if (!apps || !apps->is_dict())
-    apps = root->GetDict().Set("apps", base::Value::Dict());
-  base::Value* app = apps->GetDict().Find(id);
-  if (!app || !app->is_dict())
-    app = apps->GetDict().Set(id, base::Value::Dict());
+  base::Value::Dict* apps = root.EnsureDict("apps");
+  base::Value::Dict* app = apps->EnsureDict(id);
   return app;
 }
 
@@ -211,8 +207,8 @@ void PersistedData::SetString(const std::string& id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_)
     return;
-  DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
-  GetOrCreateAppKey(id, update.Get())->GetDict().Set(key, value);
+  ScopedDictPrefUpdate update(pref_service_, kPersistedDataPreference);
+  GetOrCreateAppKey(id, update.Get())->Set(key, value);
 }
 
 bool PersistedData::GetHadApps() const {

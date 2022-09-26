@@ -126,7 +126,8 @@ class PersistedData {
   const base::Value* GetAppKey(const std::string& id) const;
 
   // Returns an existing or newly created app key under a root pref.
-  base::Value* GetOrCreateAppKey(const std::string& id, base::Value* root);
+  base::Value::Dict* GetOrCreateAppKey(const std::string& id,
+                                       base::Value::Dict& root);
 
   // Returns fallback if the key does not exist.
   int GetInt(const std::string& id, const std::string& key, int fallback) const;
