@@ -106,31 +106,6 @@ void PdfViewPluginBase::DocumentLoadFailed() {
   paint_manager_.InvalidateRect(gfx::Rect(plugin_rect().size()));
 }
 
-void PdfViewPluginBase::DocumentLoadProgress(uint32_t available,
-                                             uint32_t doc_size) {
-  double progress = 0.0;
-  if (doc_size > 0) {
-    progress = 100.0 * static_cast<double>(available) / doc_size;
-  } else {
-    // Use heuristics when the document size is unknown.
-    // Progress logarithmically from 0 to 100M.
-    static const double kFactor = std::log(100'000'000.0) / 100.0;
-    if (available > 0)
-      progress =
-          std::min(std::log(static_cast<double>(available)) / kFactor, 100.0);
-  }
-
-  // DocumentLoadComplete() will send the 100% load progress.
-  if (progress >= 100)
-    return;
-
-  // Avoid sending too many progress messages over PostMessage.
-  if (progress <= last_progress_sent_ + 1)
-    return;
-
-  SendLoadingProgress(progress);
-}
-
 void PdfViewPluginBase::SelectionChanged(const gfx::Rect& left,
                                          const gfx::Rect& right) {
   gfx::PointF left_point(left.x() + available_area_.x(), left.y());
@@ -145,16 +120,6 @@ void PdfViewPluginBase::SelectionChanged(const gfx::Rect& left,
 
   if (accessibility_state_ == AccessibilityState::kLoaded)
     PrepareAndSetAccessibilityViewportInfo();
-}
-
-void PdfViewPluginBase::SendLoadingProgress(double percentage) {
-  DCHECK(percentage == -1 || (percentage >= 0 && percentage <= 100));
-  last_progress_sent_ = percentage;
-
-  base::Value::Dict message;
-  message.Set("type", "loadProgress");
-  message.Set("progress", percentage);
-  SendMessage(std::move(message));
 }
 
 int PdfViewPluginBase::GetContentRestrictions() const {

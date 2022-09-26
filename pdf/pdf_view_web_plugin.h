@@ -119,7 +119,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     virtual blink::WebURL CompleteURL(
         const blink::WebString& partial_url) const = 0;
 
-    // Enqueues a "message" event carrying `message` to the plugin embedder.
+    // Enqueues a "message" event carrying `message` to the embedder.
+    // Messages are guaranteed to be received in the order that they are sent.
+    // This method is non-blocking.
     virtual void PostMessage(base::Value::Dict message) {}
 
     // Invalidates the entire web plugin container and schedules a paint of the
@@ -321,6 +323,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                                const char16_t* term,
                                                bool case_sensitive) override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
+  void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
   void FormFieldFocusChange(PDFEngine::FocusFieldType type) override;
   bool IsPrintPreview() const override;
   SkColor GetBackgroundColor() const override;
@@ -383,7 +386,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
   void OnPrintPreviewLoaded() override;
   void OnDocumentLoadComplete() override;
-  void SendMessage(base::Value::Dict message) override;
+  void SendLoadingProgress(double percentage) override;
   void SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) override;
   void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,
                                 std::vector<AccessibilityTextRunInfo> text_runs,
@@ -687,6 +690,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // request so that it can start the throbber. It will be notified again once
   // the document finishes loading.
   bool did_call_start_loading_ = false;
+
+  // The last document load progress value sent to the web page.
+  double last_progress_sent_ = 0.0;
 
   // Used for submitting forms.
   std::unique_ptr<UrlLoader> form_loader_;
