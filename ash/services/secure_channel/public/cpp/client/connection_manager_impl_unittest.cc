@@ -36,7 +36,7 @@ const char kConnectionResultMetricName[] = "PhoneHub.Connection.Result";
 const char kConnectionFailureReasonMetricName[] =
     "PhoneHub.Connection.Result.FailureReason";
 const char kConnectionDurationMetricName[] = "PhoneHub.Connection.Duration";
-const char kConnectionLatencyMetricName[] = "PhoneHub.Connectivity.Latency";
+const char kConnectionLatencyMetricName[] = "PhoneHub.Connection.Latency";
 
 constexpr base::TimeDelta kFakeConnectionLatencyTime(base::Seconds(3u));
 constexpr base::TimeDelta kFakeConnectionDurationTime(base::Seconds(10u));
@@ -79,7 +79,7 @@ class TestMetricsRecorder : public NearbyMetricsRecorder {
     base::UmaHistogramEnumeration(kConnectionFailureReasonMetricName, reason);
   }
   void RecordConnectionLatency(const base::TimeDelta latency) override {
-    base::UmaHistogramTimes(kConnectionLatencyMetricName, latency);
+    base::UmaHistogramMediumTimes(kConnectionLatencyMetricName, latency);
   }
   void RecordConnectionDuration(const base::TimeDelta duration) override {
     base::UmaHistogramLongTimes100(kConnectionDurationMetricName, duration);

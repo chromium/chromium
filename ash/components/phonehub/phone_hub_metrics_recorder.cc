@@ -23,7 +23,7 @@ void PhoneHubMetricsRecorder::RecordConnectionFailureReason(
 
 void PhoneHubMetricsRecorder::RecordConnectionLatency(
     const base::TimeDelta latency) {
-  base::UmaHistogramTimes("PhoneHub.Connectivity.Latency", latency);
+  base::UmaHistogramMediumTimes("PhoneHub.Connection.Latency", latency);
 }
 
 void PhoneHubMetricsRecorder::RecordConnectionDuration(

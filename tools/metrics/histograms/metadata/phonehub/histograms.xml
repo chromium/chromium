@@ -208,6 +208,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PhoneHub.Connection.Latency" units="ms"
+    expires_after="2023-02-01">
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The duration of time the phone is in the connecting state and becomes
+    connected. Emitted when the phone connects to the Chromebook.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.Connection.Result" enum="BooleanSuccess"
     expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
@@ -235,6 +245,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PhoneHub.Connectivity.Latency" units="ms"
     expires_after="2023-02-01">
+  <obsolete>
+    This metric is being deprecated for PhoneHub.Connection.Latency in order to
+    capture latencies over 10 seconds. Deprecated 09/2022.
+  </obsolete>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
