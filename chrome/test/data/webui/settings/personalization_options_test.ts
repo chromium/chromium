@@ -337,58 +337,10 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
     testElement.remove();
   });
 
-  // <if expr="chromeos_ash">
-  test('Spellcheck controls without SyncSettingsCategorization', function() {
-    loadTimeData.overrideValues({syncSettingsCategorizationEnabled: false});
-
-    testElement.prefs = {
-      profile: {password_manager_leak_detection: {value: true}},
-      safebrowsing:
-          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      spellcheck: {dictionaries: {value: ['en-US']}},
-    };
-    flush();
-    const shadowRoot = testElement.shadowRoot!;
-    assertFalse(
-        shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.hidden);
-    assertTrue(
-        shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
-
-    testElement.prefs = {
-      profile: {password_manager_leak_detection: {value: true}},
-      safebrowsing:
-          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      spellcheck: {dictionaries: {value: []}},
-    };
-    flush();
-    assertTrue(
-        shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.hidden);
-    assertTrue(
-        shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
-
-    testElement.prefs = {
-      profile: {password_manager_leak_detection: {value: true}},
-      safebrowsing:
-          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      browser: {enable_spellchecking: {value: false}},
-      spellcheck: {
-        dictionaries: {value: ['en-US']},
-        use_spelling_service: {value: false},
-      },
-    };
-    flush();
-    shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.click();
-    assertTrue(testElement.prefs.spellcheck.use_spelling_service.value);
-    assertTrue(
-        shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
-  });
-  // </if>
-
   test('Spellcheck toggle', function() {
     // <if expr="chromeos_ash">
     // On ChromeOS spellcheck toggle is shown in OS settings only.
     loadTimeData.overrideValues({
-      syncSettingsCategorizationEnabled: true,
       isOSSettings: true,
     });
     // </if>
@@ -437,7 +389,6 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
   // <if expr="chromeos_ash">
   test('Spellcheck link', function() {
     loadTimeData.overrideValues({
-      syncSettingsCategorizationEnabled: true,
       isOSSettings: false,
     });
     testElement.prefs = {
