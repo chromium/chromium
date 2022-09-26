@@ -24,7 +24,6 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
-import six
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
@@ -126,23 +125,13 @@ class TestCopierTest(LoggingTestCase):
         self.assertEqual(len(copier.import_list), 1)
         # The order of copy_list depends on the implementation of
         # filesystem.walk, so don't check the order
-        if six.PY3:
-            self.assertCountEqual(copier.import_list[0]['copy_list'],
-                                  [{
-                                      'src': '/blink/w3c/dir1/ref-file.html',
-                                      'dest': 'ref-file.html'
-                                  }, {
-                                      'src': '/blink/w3c/dir1/my-ref-test.html',
-                                      'dest': 'my-ref-test.html'
-                                  }])
-        else:
-            self.assertItemsEqual(copier.import_list[0]['copy_list'],
-                                  [{
-                                      'src': '/blink/w3c/dir1/ref-file.html',
-                                      'dest': 'ref-file.html'
-                                  }, {
-                                      'src': '/blink/w3c/dir1/my-ref-test.html',
-                                      'dest': 'my-ref-test.html'
-                                  }])
+        self.assertCountEqual(copier.import_list[0]['copy_list'],
+                              [{
+                                  'src': '/blink/w3c/dir1/ref-file.html',
+                                  'dest': 'ref-file.html'
+                              }, {
+                                  'src': '/blink/w3c/dir1/my-ref-test.html',
+                                  'dest': 'my-ref-test.html'
+                              }])
         self.assertEqual(copier.import_list[0]['dirname'],
                          '/blink/w3c/dir1')

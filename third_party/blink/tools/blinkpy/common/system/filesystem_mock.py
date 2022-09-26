@@ -208,8 +208,9 @@ class MockFileSystem(object):
     def isdir(self, path):
         return self.normpath(path) in self.dirs
 
-    def _slow_but_correct_join(self, *comps):
-        return re.sub(re.escape(os.path.sep), self.sep, os.path.join(*comps))
+    def _slow_but_correct_join(self, comp, *comps):
+        return re.sub(re.escape(os.path.sep), self.sep,
+                      os.path.join(comp, *comps))
 
     def join(self, *comps):
         # The real `os.path.join` accepts both strings and bytes:

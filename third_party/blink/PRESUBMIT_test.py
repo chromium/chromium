@@ -35,7 +35,10 @@ class Capture(object):
 
 class PresubmitTest(unittest.TestCase):
     @mock.patch('subprocess.Popen')
-    def testCheckChangeOnUploadWithBlinkAndChromiumFiles(self, _):
+    @mock.patch('PRESUBMIT_test_mocks.MockInputApi.RunTests', create=True)
+    @mock.patch('PRESUBMIT_test_mocks.MockCannedChecks.GetPylint', create=True)
+    def testCheckChangeOnUploadWithBlinkAndChromiumFiles(
+            self, _, _run_tests, _get_pylint):
         """This verifies that CheckChangeOnUpload will only call
         check_blink_style.py on non-test files.
         """
@@ -43,23 +46,37 @@ class PresubmitTest(unittest.TestCase):
         diff_file_chromium_h = ['another diff']
         diff_file_test_expectations = ['more diff']
         mock_input_api = MockInputApi()
+        mock_python_file = MockAffectedFile('file_blink.py', ['lint me'])
         mock_input_api.files = [
             MockAffectedFile('file_blink.h', diff_file_blink_h),
             MockAffectedFile('file_chromium.h', diff_file_chromium_h),
             MockAffectedFile(
                 mock_input_api.os_path.join('web_tests', 'TestExpectations'),
-                diff_file_test_expectations)
+                diff_file_test_expectations),
+            mock_python_file,
         ]
-        # Access to a protected member _CheckStyle
-        # pylint: disable=W0212
-        PRESUBMIT._CheckStyle(mock_input_api, MockOutputApi())
+        mock_input_api.presubmit_local_path = mock_input_api.os_path.join(
+            'path', 'to', 'third_party', 'blink')
+        with mock.patch.object(mock_python_file,
+                               'AbsoluteLocalPath',
+                               return_value=mock_input_api.os_path.join(
+                                   'path', 'to', 'third_party', 'blink',
+                                   'file_blink.py')):
+            # Access to a protected member _CheckStyle
+            # pylint: disable=W0212
+            PRESUBMIT._CheckStyle(mock_input_api, MockOutputApi())
+            mock_input_api.canned_checks.GetPylint.assert_called_once_with(
+                mock.ANY,
+                mock.ANY,
+                files_to_check=['file_blink.py'],
+                pylintrc=mock_input_api.os_path.join('tools', 'blinkpy',
+                                                     'pylintrc'))
+
         capture = Capture()
         # pylint: disable=E1101
         subprocess.Popen.assert_called_with(capture, stderr=-1)
-        self.assertEqual(5, len(capture.value))
-        self.assertEqual(
-            mock_input_api.os_path.join('..', '..', 'file_blink.h'),
-            capture.value[3])
+        self.assertEqual(6, len(capture.value))
+        self.assertEqual('file_blink.h', capture.value[3])
 
     @mock.patch('subprocess.Popen')
     def testCheckChangeOnUploadWithEmptyAffectedFileList(self, _):
@@ -98,9 +115,7 @@ class PresubmitTest(unittest.TestCase):
         # Access to a protected member _FilterPaths
         # pylint: disable=W0212
         filtered = PRESUBMIT._FilterPaths(mock_input_api)
-        self.assertEqual([
-            mock_input_api.os_path.join('..', '..', 'file_chromium1.h'),
-        ], filtered)
+        self.assertEqual(['file_chromium1.h'], filtered)
 
     def testCheckPublicHeaderWithBlinkMojo(self):
         """This verifies that _CheckForWrongMojomIncludes detects -blink mojo

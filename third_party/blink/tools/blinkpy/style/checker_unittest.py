@@ -51,7 +51,6 @@ from blinkpy.style.checker import StyleProcessor
 from blinkpy.style.checker import StyleProcessorConfiguration
 from blinkpy.style.checkers.cpp import CppChecker
 from blinkpy.style.checkers.jsonchecker import JSONChecker
-from blinkpy.style.checkers.python import PythonChecker
 from blinkpy.style.checkers.text import TextChecker
 from blinkpy.style.checkers.xml import XMLChecker
 from blinkpy.style.error_handlers import DefaultStyleErrorHandler
@@ -204,11 +203,6 @@ class GlobalVariablesTest(unittest.TestCase):
         assert_check("random_path.cpp", "build/include")
         assert_check("random_path.cpp", "readability/naming")
 
-        # Third-party Python code: blinkpy/third_party
-        path = "tools/blinkpy/third_party/mock.py"
-        assert_no_check(path, "build/include")
-        assert_check(path, "whitespace/carriage_return")
-
     def test_max_reports_per_category(self):
         """Check that _MAX_REPORTS_PER_CATEGORY is valid."""
         all_categories = self._all_categories()
@@ -322,10 +316,6 @@ class CheckerDispatcherDispatchTest(unittest.TestCase):
         """Assert that the dispatched checker is a JSONChecker."""
         self.assert_checker(file_path, JSONChecker)
 
-    def assert_checker_python(self, file_path):
-        """Assert that the dispatched checker is a PythonChecker."""
-        self.assert_checker(file_path, PythonChecker)
-
     def assert_checker_text(self, file_path):
         """Assert that the dispatched checker is a TextChecker."""
         self.assert_checker(file_path, TextChecker)
@@ -384,26 +374,6 @@ class CheckerDispatcherDispatchTest(unittest.TestCase):
         self.assert_checker_json(file_path)
         checker = self.dispatch(file_path)
         self.assertEqual(checker._handle_style_error,
-                         self.mock_handle_style_error)
-
-    def test_python_paths(self):
-        """Test paths that should be checked as Python."""
-        paths = [
-            "foo.py",
-            "Tools/Scripts/modules/text_style.py",
-        ]
-
-        for path in paths:
-            self.assert_checker_python(path)
-
-        # Check checker attributes on a typical input.
-        file_base = "foo"
-        file_extension = "css"
-        file_path = file_base + "." + file_extension
-        self.assert_checker_text(file_path)
-        checker = self.dispatch(file_path)
-        self.assertEqual(checker.file_path, file_path)
-        self.assertEqual(checker.handle_style_error,
                          self.mock_handle_style_error)
 
     def test_text_paths(self):

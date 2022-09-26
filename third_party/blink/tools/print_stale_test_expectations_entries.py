@@ -38,6 +38,7 @@ import sys
 from six.moves import urllib
 
 from blinkpy.common.host import Host
+# pylint: disable=no-name-in-module
 from blinkpy.web_tests.models.test_expectations import TestExpectationParser
 
 # FIXME: Make this a direct request to Monorail.
@@ -130,7 +131,7 @@ class StaleTestPrinter(object):
         # In case there's an error in the request, don't make the same request again.
         bug_number = bug_link.strip(CRBUG_PREFIX)
         url = GOOGLE_CODE_URL % bug_number
-        response = urllib.urlopen(url)
+        response = urllib.request.urlopen(url)
         parsed = json.loads(response.read())
         parsed_time = datetime.datetime.strptime(
             parsed['updated'].split(".")[0] + "UTC", "%Y-%m-%dT%H:%M:%S%Z")

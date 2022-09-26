@@ -83,7 +83,7 @@ def decode_results(results, include_expected=False):
     failures = {}
     flakes = {}
     passes = {}
-    for (test, result) in tests.iteritems():
+    for (test, result) in tests.items():
         if include_expected or result.get('is_unexpected'):
             actual_results = result['actual'].split()
             expected_results = result['expected'].split()

@@ -34,6 +34,7 @@ from blinkpy.common.host import Host
 from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.web_tests.layout_package import json_results_generator
 from blinkpy.tool.commands.abstract_local_server_command import AbstractLocalServerCommand
+# pylint: disable=no-name-in-module
 from blinkpy.tool.servers.rebaseline_server import get_test_baselines, RebaselineHTTPServer, STATE_NEEDS_REBASELINE
 
 

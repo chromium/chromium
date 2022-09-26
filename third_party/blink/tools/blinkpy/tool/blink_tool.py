@@ -98,7 +98,8 @@ class BlinkTool(Host):
 
         command = self.command_by_name(command_name) or self.help_command
         if not command:
-            option_parser.error('%s is not a recognized command', command_name)
+            option_parser.error('%s is not a recognized command' %
+                                command_name)
 
         command.set_option_parser(option_parser)
         (options, args) = command.parse_args(args)
