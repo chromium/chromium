@@ -22,7 +22,7 @@ class ClustererTest : public ::testing::Test {
 
   std::vector<history::Cluster> CreateInitialClustersFromVisits(
       std::vector<history::ClusterVisit> visits) {
-    return clusterer_->CreateInitialClustersFromVisits(&visits);
+    return clusterer_->CreateInitialClustersFromVisits(std::move(visits));
   }
 
  private:

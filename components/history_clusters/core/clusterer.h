@@ -19,7 +19,7 @@ class Clusterer {
 
   // Groups |visits| into clusters.
   std::vector<history::Cluster> CreateInitialClustersFromVisits(
-      std::vector<history::ClusterVisit>* visits);
+      std::vector<history::ClusterVisit> visits);
 };
 
 }  // namespace history_clusters

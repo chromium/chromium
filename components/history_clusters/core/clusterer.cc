@@ -26,18 +26,15 @@ bool ShouldAddVisitToCluster(const history::ClusterVisit& visit,
     // visit, only add the visit to the cluster if the last search visit was
     // also a search visit with the same terms. Also break the cluster if there
     // was not already a search visit already.
-    absl::optional<history::ClusterVisit> last_search_visit;
     for (const auto& existing_visit : base::Reversed(cluster.visits)) {
       if (!existing_visit.annotated_visit.content_annotations.search_terms
                .empty()) {
-        last_search_visit = existing_visit;
-        break;
+        return existing_visit.annotated_visit.content_annotations
+                   .search_terms ==
+               visit.annotated_visit.content_annotations.search_terms;
       }
     }
-    return last_search_visit &&
-           visit.annotated_visit.content_annotations.search_terms ==
-               last_search_visit->annotated_visit.content_annotations
-                   .search_terms;
+    return false;
   }
   return true;
 }
@@ -48,9 +45,9 @@ Clusterer::Clusterer() = default;
 Clusterer::~Clusterer() = default;
 
 std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
-    std::vector<history::ClusterVisit>* visits) {
+    std::vector<history::ClusterVisit> visits) {
   // Sort visits by visit time.
-  std::sort(visits->begin(), visits->end(),
+  std::sort(visits.begin(), visits.end(),
             [](const history::ClusterVisit& a, const history::ClusterVisit& b) {
               return a.annotated_visit.visit_row < b.annotated_visit.visit_row;
             });
@@ -58,7 +55,7 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
   base::flat_map<std::string, size_t> url_to_cluster_map;
   base::flat_map<history::VisitID, size_t> visit_id_to_cluster_map;
   std::vector<history::Cluster> clusters;
-  for (const auto& visit : *visits) {
+  for (auto& visit : visits) {
     const auto& visit_url = visit.normalized_url;
     absl::optional<size_t> cluster_idx;
     std::vector<history::VisitID> previous_visit_ids_to_check;
@@ -93,12 +90,11 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
     // based on the characteristics of the in progress cluster and the current
     // visit we are processing.
     if (cluster_idx) {
-      auto in_progress_cluster = clusters[*cluster_idx];
+      auto& in_progress_cluster = clusters[*cluster_idx];
       if (!ShouldAddVisitToCluster(visit, in_progress_cluster)) {
         // Erase all visits in the cluster from the maps since we no longer
         // want to consider anything in the cluster as a referrer.
-        auto finalized_cluster = clusters[*cluster_idx];
-        for (const auto& finalized_visit : finalized_cluster.visits) {
+        for (const auto& finalized_visit : in_progress_cluster.visits) {
           visit_id_to_cluster_map.erase(
               finalized_visit.annotated_visit.visit_row.visit_id);
           url_to_cluster_map.erase(visit_url.possibly_invalid_spec());
@@ -110,23 +106,24 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
       }
     }
 
-    // By default, the current visit will be assigned a max score of 1.0 until
-    // otherwise scored during finalization.
-    history::ClusterVisit default_scored_visit = visit;
-    default_scored_visit.score = 1.0;
-    if (cluster_idx) {
-      clusters[*cluster_idx].visits.push_back(default_scored_visit);
-    } else {
-      // Add to new cluster.
+    if (!cluster_idx) {
+      // Create a new cluster.
       cluster_idx = clusters.size();
 
       history::Cluster new_cluster;
-      new_cluster.visits = {default_scored_visit};
       clusters.push_back(std::move(new_cluster));
     }
+
+    // Add to mapping.
     visit_id_to_cluster_map[visit.annotated_visit.visit_row.visit_id] =
         *cluster_idx;
     url_to_cluster_map[visit_url.possibly_invalid_spec()] = *cluster_idx;
+
+    // By default, the current visit will be assigned a max score of 1.0 until
+    // otherwise scored during finalization.
+    visit.score = 1.0;
+    // Add to its cluster.
+    clusters[*cluster_idx].visits.push_back(std::move(visit));
   }
 
   return clusters;
