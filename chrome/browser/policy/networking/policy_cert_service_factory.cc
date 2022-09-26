@@ -116,9 +116,9 @@ bool PolicyCertServiceFactory::MigrateLocalStatePrefIntoProfilePref(
 // static
 bool PolicyCertServiceFactory::ClearUsedPolicyCertificates(
     const std::string& user_email) {
-  ListPrefUpdate update(g_browser_process->local_state(),
-                        prefs::kUsedPolicyCertificates);
-  return (update->GetList().EraseValue(base::Value(user_email)) > 0);
+  ScopedListPrefUpdate update(g_browser_process->local_state(),
+                              prefs::kUsedPolicyCertificates);
+  return (update->EraseValue(base::Value(user_email)) > 0);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
