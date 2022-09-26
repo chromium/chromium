@@ -117,7 +117,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         }
 
         mMessageShownTime = MessagesMetrics.now();
-        return mMessageBanner.show();
+        return mMessageBanner.show(fromIndex, endIndex);
     }
 
     /**

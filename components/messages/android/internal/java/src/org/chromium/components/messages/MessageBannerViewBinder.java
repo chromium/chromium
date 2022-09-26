@@ -14,6 +14,7 @@ import static org.chromium.components.messages.MessageBannerProperties.ICON_RESO
 import static org.chromium.components.messages.MessageBannerProperties.ICON_ROUNDED_CORNER_RADIUS_PX;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_TINT_COLOR;
 import static org.chromium.components.messages.MessageBannerProperties.LARGE_ICON;
+import static org.chromium.components.messages.MessageBannerProperties.MARGIN_TOP;
 import static org.chromium.components.messages.MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK;
 import static org.chromium.components.messages.MessageBannerProperties.ON_TOUCH_RUNNABLE;
 import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER;
@@ -107,6 +108,8 @@ public class MessageBannerViewBinder {
             view.setTranslationY(model.get(TRANSLATION_Y));
         } else if (propertyKey == ELEVATION) {
             view.setElevation(model.get(ELEVATION));
+        } else if (propertyKey == MARGIN_TOP) {
+            view.setMarginTop(model.get(MARGIN_TOP));
         }
     }
 }

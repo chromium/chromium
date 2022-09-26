@@ -8,6 +8,7 @@ found in the LICENSE file.
 <resources>
 
     <dimen name="message_banner_height">72dp</dimen>
+    <dimen name="message_peeking_layer_height">8dp</dimen>
     <dimen name="message_banner_radius">12dp</dimen>
     <dimen name="message_banner_vertical_padding">12dp</dimen>
     <dimen name="message_banner_elevation">6dp</dimen>

@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MockedInTests;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
+import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -89,17 +90,25 @@ class MessageBannerCoordinator {
 
     /**
      * Shows the message banner.
+     * @param fromIndex The initial position.
+     * @param endIndex The target position the message is moving to.
      * @return The animator which shows the message view.
      */
-    Animator show() {
-        return mMediator.show(() -> {
-            setOnTouchRunnable(mTimer::resetTimer);
-            announceForAccessibility();
-            setOnTitleChanged(() -> {
-                mTimer.resetTimer();
+    Animator show(@Position int fromIndex, @Position int endIndex) {
+        return mMediator.show(fromIndex, endIndex, () -> {
+            if (endIndex != Position.FRONT) {
+                setOnTouchRunnable(null);
+                setOnTitleChanged(null);
+                mTimer.cancelTimer();
+            } else {
+                setOnTouchRunnable(mTimer::resetTimer);
                 announceForAccessibility();
-            });
-            mTimer.startTimer(mAutodismissDurationMs.get(), mOnTimeUp);
+                setOnTitleChanged(() -> {
+                    mTimer.resetTimer();
+                    announceForAccessibility();
+                });
+                mTimer.startTimer(mAutodismissDurationMs.get(), mOnTimeUp);
+            }
         });
     }
 

@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -252,6 +253,12 @@ public class MessageBannerView extends BoundedLinearLayout {
             mSecondaryButton.addPopupListener(mPopupMenuShownListener);
         }
         mSecondaryButton.showMenu();
+    }
+
+    void setMarginTop(int val) {
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getLayoutParams();
+        params.topMargin = val;
+        setLayoutParams(params);
     }
 
     private ListMenuButtonDelegate buildDelegateForSingleMenuItem() {

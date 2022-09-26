@@ -117,6 +117,8 @@ public class MessageBannerProperties {
     // Following properties should only be accessed by the message banner component.
     static final WritableFloatPropertyKey TRANSLATION_X = new WritableFloatPropertyKey();
     static final WritableFloatPropertyKey TRANSLATION_Y = new WritableFloatPropertyKey();
+
+    static final WritableIntPropertyKey MARGIN_TOP = new WritableIntPropertyKey();
     static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
     static final WritableObjectPropertyKey<Runnable> ON_TOUCH_RUNNABLE =
             new WritableObjectPropertyKey<>();
@@ -137,5 +139,5 @@ public class MessageBannerProperties {
             ON_SECONDARY_BUTTON_CLICK, SECONDARY_ICON_CONTENT_DESCRIPTION, DISMISSAL_DURATION,
             TRANSLATION_X, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION,
             ON_SECONDARY_ACTION, ON_DISMISSED, ON_STARTED_SHOWING, SECONDARY_MENU_BUTTON_DELEGATE,
-            SECONDARY_MENU_MAX_SIZE, PRIMARY_WIDGET_APPEARANCE, ELEVATION};
+            SECONDARY_MENU_MAX_SIZE, PRIMARY_WIDGET_APPEARANCE, ELEVATION, MARGIN_TOP};
 }
