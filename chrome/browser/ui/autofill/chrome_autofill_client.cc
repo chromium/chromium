@@ -68,6 +68,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/public/prefs.h"
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -703,7 +704,9 @@ void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
 
 bool ChromeAutofillClient::IsFastCheckoutSupported() {
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(::features::kFastCheckout)) {
+  if (!base::FeatureList::IsEnabled(::features::kFastCheckout) ||
+      !base::FeatureList::IsEnabled(
+          autofill_assistant::features::kAutofillAssistant)) {
     return false;
   }
 
@@ -718,11 +721,16 @@ bool ChromeAutofillClient::IsFastCheckoutSupported() {
     return false;
   }
 
-  // TODO(crbug.com/1334642): Check that the assistant settings flag is on.
+  // Require that the assistant settings flag is on for users with consent. If
+  // a user supports consentless flows, then there is no Assistant UI at any
+  // point in time and turning it off should not affect FC.
+  if (!::features::kFastCheckoutConsentlessExecutionParam.Get() &&
+      !GetPrefs()->GetBoolean(
+          autofill_assistant::prefs::kAutofillAssistantEnabled)) {
+    return false;
+  }
 
-  return base::FeatureList::IsEnabled(
-      autofill_assistant::features::kAutofillAssistant);
-
+  return true;
 #else
   return false;
 #endif
