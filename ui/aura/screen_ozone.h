@@ -57,6 +57,9 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   std::string GetCurrentWorkspace() override;
   base::Value::List GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info) override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  display::TabletState GetTabletState() const override;
+#endif
 
   // Returns the NativeWindow associated with the AcceleratedWidget.
   virtual gfx::NativeWindow GetNativeWindowFromAcceleratedWidget(

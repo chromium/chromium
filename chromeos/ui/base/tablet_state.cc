@@ -9,6 +9,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/display/screen.h"
 #endif
 
 namespace chromeos {
@@ -23,6 +24,12 @@ TabletState* TabletState::Get() {
 
 TabletState::TabletState() {
   DCHECK_EQ(nullptr, g_instance);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Initialize `state_` with the stored state in display::Screen.
+  // This is required since OnDisplayTabletStateChanged() is not called for
+  // tablet mode change triggered before TabletState is initialized.
+  state_ = display::Screen::GetScreen()->GetTabletState();
+#endif
   g_instance = this;
 }
 
