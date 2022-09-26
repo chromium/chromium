@@ -29,4 +29,3 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogFactory {
 }  // namespace ui
 
 #endif  // UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_FACTORY_H_
-

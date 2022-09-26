@@ -78,6 +78,7 @@ std::unique_ptr<BaseShellDialogImpl::RunState> BaseShellDialogImpl::BeginRun(
   return run_state;
 }
 
+// static
 void BaseShellDialogImpl::EndRun(std::unique_ptr<RunState> run_state) {
   if (run_state->owner) {
     DCHECK(IsRunningDialogForOwner(run_state->owner));
@@ -87,7 +88,8 @@ void BaseShellDialogImpl::EndRun(std::unique_ptr<RunState> run_state) {
   }
 }
 
-bool BaseShellDialogImpl::IsRunningDialogForOwner(HWND owner) const {
+// static
+bool BaseShellDialogImpl::IsRunningDialogForOwner(HWND owner) {
   return (owner && GetOwners().find(owner) != GetOwners().end());
 }
 

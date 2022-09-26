@@ -5,6 +5,7 @@
 #include "chrome/test/ppapi/ppapi_test_select_file_dialog_factory.h"
 
 #include "base/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -58,8 +59,8 @@ class PPAPITestSelectFileDialog : public ui::SelectFileDialog {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &PPAPITestSelectFileDialog::RespondToFileSelectionRequest, this,
-            params));
+            &PPAPITestSelectFileDialog::RespondToFileSelectionRequest,
+            base::AsWeakPtr(this), params));
   }
   bool HasMultipleFileTypeChoicesImpl() override { return false; }
 

@@ -76,7 +76,7 @@ class ImportDataHandler : public SettingsPageUIHandler,
   bool import_did_succeed_{false};
   bool importer_list_loaded_{false};
 
-  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
 };
 
 }  // namespace settings

@@ -35,6 +35,7 @@
 #include "base/json/json_value_converter.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
@@ -161,9 +162,10 @@ class SelectFileDialogExtensionTestFactory
   ui::SelectFileDialog* Create(
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) override {
-    last_select_ =
+    std::unique_ptr<SelectFileDialogExtension> dialog =
         SelectFileDialogExtension::Create(listener, std::move(policy));
-    return last_select_.get();
+    last_select_ = base::AsWeakPtr(dialog.get());
+    return dialog.release();
   }
 
   content::RenderFrameHost* GetFrameHost() {
@@ -171,7 +173,7 @@ class SelectFileDialogExtensionTestFactory
   }
 
  private:
-  scoped_refptr<SelectFileDialogExtension> last_select_;
+  base::WeakPtr<SelectFileDialogExtension> last_select_;
 };
 
 namespace file_manager {

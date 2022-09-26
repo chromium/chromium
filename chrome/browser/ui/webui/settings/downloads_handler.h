@@ -81,7 +81,7 @@ class DownloadsHandler : public SettingsPageUIHandler,
 
   PrefChangeRegistrar pref_registrar_;
 
-  scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
+  std::unique_ptr<ui::SelectFileDialog> select_folder_dialog_;
 
   base::WeakPtrFactory<DownloadsHandler> weak_factory_{this};
 };

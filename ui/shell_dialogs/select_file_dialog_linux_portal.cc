@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -170,6 +171,7 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
     void* params) {
+  CheckCalledOnValidSequence();
   auto info = base::MakeRefCounted<DialogInfo>();
   info->type = type;
   info->main_task_runner = base::SequencedTaskRunnerHandle::Get();
@@ -200,7 +202,7 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
                 &SelectFileDialogLinuxPortal::SelectFileImplWithParentHandle,
                 // Note that we can't move any of the parameters, as the
                 // fallback case below requires them to all still be available.
-                this, info, title, default_path, filter_set,
+                base::AsWeakPtr(this), info, title, default_path, filter_set,
                 default_extension))) {
       // Return early to skip the fallback below.
       return;
@@ -428,7 +430,7 @@ void SelectFileDialogLinuxPortal::SelectFileImplWithParentHandle(
   dbus_thread_linux::GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectFileDialogLinuxPortal::SelectFileImplOnBusThread,
-                     this, std::move(info), std::move(title),
+                     base::AsWeakPtr(this), std::move(info), std::move(title),
                      std::move(default_path), std::move(filter_set),
                      std::move(default_extension), std::move(parent_handle)));
 }
@@ -505,8 +507,8 @@ void SelectFileDialogLinuxPortal::SelectFileImplOnBusThread(
       bus->GetObjectProxy(kXdgPortalService, portal_path);
   portal->CallMethodWithErrorResponse(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&SelectFileDialogLinuxPortal::OnCallResponse, this,
-                     base::Unretained(bus), info));
+      base::BindOnce(&SelectFileDialogLinuxPortal::OnCallResponse,
+                     base::AsWeakPtr(this), base::Unretained(bus), info));
 }
 
 void SelectFileDialogLinuxPortal::AppendOptions(
@@ -623,9 +625,9 @@ void SelectFileDialogLinuxPortal::ConnectToHandle(
   info->response_handle->ConnectToSignal(
       kXdgPortalRequestInterfaceName, kXdgPortalResponseSignal,
       base::BindRepeating(&SelectFileDialogLinuxPortal::OnResponseSignalEmitted,
-                          this, info),
+                          base::AsWeakPtr(this), info),
       base::BindOnce(&SelectFileDialogLinuxPortal::OnResponseSignalConnected,
-                     this, info));
+                     base::AsWeakPtr(this), info));
 }
 
 void SelectFileDialogLinuxPortal::CompleteOpen(
@@ -636,15 +638,16 @@ void SelectFileDialogLinuxPortal::CompleteOpen(
   info->main_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectFileDialogLinuxPortal::CompleteOpenOnMainThread,
-                     this, info, std::move(paths), std::move(current_filter)));
+                     base::AsWeakPtr(this), info, std::move(paths),
+                     std::move(current_filter)));
 }
 
 void SelectFileDialogLinuxPortal::CancelOpen(scoped_refptr<DialogInfo> info) {
   info->response_handle->Detach();
   info->main_task_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(&SelectFileDialogLinuxPortal::CancelOpenOnMainThread, this,
-                     info));
+      base::BindOnce(&SelectFileDialogLinuxPortal::CancelOpenOnMainThread,
+                     base::AsWeakPtr(this), info));
 }
 
 void SelectFileDialogLinuxPortal::CompleteOpenOnMainThread(

@@ -60,7 +60,7 @@ class FileSelectorImpl final : public FileSelector,
   void SendResponse(bool success, const base::FilePath& selected_path);
 
   // Dialog shown by selector.
-  scoped_refptr<ui::SelectFileDialog> dialog_;
+  std::unique_ptr<ui::SelectFileDialog> dialog_;
 
   // Callback to receive results.
   OnSelectedCallback callback_;

@@ -234,7 +234,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   base::Value::List get_user_media_requests_;
 
   // For managing select file dialog.
-  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
   enum class SelectionType {
     kRtcEventLogs,
     kAudioDebugRecordings

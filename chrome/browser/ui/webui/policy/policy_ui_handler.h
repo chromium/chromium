@@ -110,7 +110,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 
   void WritePoliciesToJSONFile(const base::FilePath& path);
 
-  scoped_refptr<ui::SelectFileDialog> export_policies_select_file_dialog_;
+  std::unique_ptr<ui::SelectFileDialog> export_policies_select_file_dialog_;
 
   // Providers that supply status dictionaries for user and device policy,
   // respectively. These are created on initialization time as appropriate for

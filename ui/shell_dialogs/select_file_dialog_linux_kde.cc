@@ -10,6 +10,9 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/nix/mime_util_xdg.h"
 #include "base/nix/xdg_util.h"
 #include "base/process/launch.h"
@@ -97,6 +100,9 @@ class SelectFileDialogLinuxKde : public SelectFileDialogLinux {
     int exit_code;
   };
 
+  using RefCountedKDialogOutputParams =
+      base::RefCountedData<KDialogOutputParams>;
+
   // Get the filters from |file_types_| and concatenate them into
   // |filter_string|.
   std::string GetMimeTypeFilterString();
@@ -111,8 +117,8 @@ class SelectFileDialogLinuxKde : public SelectFileDialogLinux {
                              base::CommandLine* command_line);
 
   // Call KDialog on the FILE thread and return the results.
-  std::unique_ptr<KDialogOutputParams> CallKDialogOutput(
-      const KDialogParams& params);
+  void CallKDialogOutput(const KDialogParams& params,
+                         scoped_refptr<RefCountedKDialogOutputParams>);
 
   // Notifies the listener that a single file was chosen.
   void FileSelected(const base::FilePath& path, void* params);
@@ -149,22 +155,23 @@ class SelectFileDialogLinuxKde : public SelectFileDialogLinux {
 
   // Common function for OnSelectSingleFileDialogResponse and
   // OnSelectSingleFolderDialogResponse.
-  void SelectSingleFileHelper(void* params,
-                              bool allow_folder,
-                              std::unique_ptr<KDialogOutputParams> results);
+  void SelectSingleFileHelper(
+      void* params,
+      bool allow_folder,
+      scoped_refptr<RefCountedKDialogOutputParams> results);
 
   void OnSelectSingleFileDialogResponse(
       gfx::AcceleratedWidget parent,
       void* params,
-      std::unique_ptr<KDialogOutputParams> results);
+      scoped_refptr<RefCountedKDialogOutputParams> results);
   void OnSelectMultiFileDialogResponse(
       gfx::AcceleratedWidget parent,
       void* params,
-      std::unique_ptr<KDialogOutputParams> results);
+      scoped_refptr<RefCountedKDialogOutputParams> results);
   void OnSelectSingleFolderDialogResponse(
       gfx::AcceleratedWidget parent,
       void* params,
-      std::unique_ptr<KDialogOutputParams> results);
+      scoped_refptr<RefCountedKDialogOutputParams> results);
 
   // Should be either DESKTOP_ENVIRONMENT_KDE3, KDE4, or KDE5.
   base::nix::DesktopEnvironment desktop_;
@@ -375,8 +382,9 @@ std::string SelectFileDialogLinuxKde::GetMimeTypeFilterString() {
   return base::JoinString(filters, "|");
 }
 
-std::unique_ptr<SelectFileDialogLinuxKde::KDialogOutputParams>
-SelectFileDialogLinuxKde::CallKDialogOutput(const KDialogParams& params) {
+void SelectFileDialogLinuxKde::CallKDialogOutput(
+    const KDialogParams& params,
+    scoped_refptr<RefCountedKDialogOutputParams> results) {
   DCHECK(pipe_task_runner_->RunsTasksInCurrentSequence());
   base::CommandLine::StringVector cmd_vector;
   cmd_vector.push_back(kKdialogBinary);
@@ -385,13 +393,11 @@ SelectFileDialogLinuxKde::CallKDialogOutput(const KDialogParams& params) {
                         params.parent, params.file_operation,
                         params.multiple_selection, &command_line);
 
-  auto results = std::make_unique<KDialogOutputParams>();
-  // Get output from KDialog
-  base::GetAppOutputWithExitCode(command_line, &results->output,
-                                 &results->exit_code);
-  if (!results->output.empty())
-    results->output.erase(results->output.size() - 1);
-  return results;
+  //  Get output from KDialog
+  base::GetAppOutputWithExitCode(command_line, &results->data.output,
+                                 &results->data.exit_code);
+  if (!results->data.output.empty())
+    results->data.output.erase(results->data.output.size() - 1);
 }
 
 void SelectFileDialogLinuxKde::GetKDialogCommandLine(
@@ -472,17 +478,20 @@ void SelectFileDialogLinuxKde::CreateSelectFolderDialog(
   int title_message_id = (type == SELECT_UPLOAD_FOLDER)
                              ? IDS_SELECT_UPLOAD_FOLDER_DIALOG_TITLE
                              : IDS_SELECT_FOLDER_DIALOG_TITLE;
-  pipe_task_runner_->PostTaskAndReplyWithResult(
+  scoped_refptr<RefCountedKDialogOutputParams> results =
+      base::MakeRefCounted<RefCountedKDialogOutputParams>();
+  pipe_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(
-          &SelectFileDialogLinuxKde::CallKDialogOutput, this,
+          &SelectFileDialogLinuxKde::CallKDialogOutput, base::AsWeakPtr(this),
           KDialogParams(
               "--getexistingdirectory", GetTitle(title, title_message_id),
               default_path.empty() ? *last_opened_path() : default_path, parent,
-              false, false)),
+              false, false),
+          results),
       base::BindOnce(
-          &SelectFileDialogLinuxKde::OnSelectSingleFolderDialogResponse, this,
-          parent, params));
+          &SelectFileDialogLinuxKde::OnSelectSingleFolderDialogResponse,
+          base::AsWeakPtr(this), parent, params, results));
 }
 
 void SelectFileDialogLinuxKde::CreateFileOpenDialog(
@@ -490,17 +499,20 @@ void SelectFileDialogLinuxKde::CreateFileOpenDialog(
     const base::FilePath& default_path,
     gfx::AcceleratedWidget parent,
     void* params) {
-  pipe_task_runner_->PostTaskAndReplyWithResult(
+  scoped_refptr<RefCountedKDialogOutputParams> results =
+      base::MakeRefCounted<RefCountedKDialogOutputParams>();
+  pipe_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(
-          &SelectFileDialogLinuxKde::CallKDialogOutput, this,
+          &SelectFileDialogLinuxKde::CallKDialogOutput, base::AsWeakPtr(this),
           KDialogParams(
               "--getopenfilename", GetTitle(title, IDS_OPEN_FILE_DIALOG_TITLE),
               default_path.empty() ? *last_opened_path() : default_path, parent,
-              true, false)),
+              true, false),
+          results),
       base::BindOnce(
-          &SelectFileDialogLinuxKde::OnSelectSingleFileDialogResponse, this,
-          parent, params));
+          &SelectFileDialogLinuxKde::OnSelectSingleFileDialogResponse,
+          base::AsWeakPtr(this), parent, params, results));
 }
 
 void SelectFileDialogLinuxKde::CreateMultiFileOpenDialog(
@@ -508,16 +520,19 @@ void SelectFileDialogLinuxKde::CreateMultiFileOpenDialog(
     const base::FilePath& default_path,
     gfx::AcceleratedWidget parent,
     void* params) {
-  pipe_task_runner_->PostTaskAndReplyWithResult(
+  scoped_refptr<RefCountedKDialogOutputParams> results =
+      base::MakeRefCounted<RefCountedKDialogOutputParams>();
+  pipe_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(
-          &SelectFileDialogLinuxKde::CallKDialogOutput, this,
+          &SelectFileDialogLinuxKde::CallKDialogOutput, base::AsWeakPtr(this),
           KDialogParams(
               "--getopenfilename", GetTitle(title, IDS_OPEN_FILES_DIALOG_TITLE),
               default_path.empty() ? *last_opened_path() : default_path, parent,
-              true, true)),
+              true, true),
+          results),
       base::BindOnce(&SelectFileDialogLinuxKde::OnSelectMultiFileDialogResponse,
-                     this, parent, params));
+                     base::AsWeakPtr(this), parent, params, results));
 }
 
 void SelectFileDialogLinuxKde::CreateSaveAsDialog(
@@ -525,30 +540,33 @@ void SelectFileDialogLinuxKde::CreateSaveAsDialog(
     const base::FilePath& default_path,
     gfx::AcceleratedWidget parent,
     void* params) {
-  pipe_task_runner_->PostTaskAndReplyWithResult(
+  scoped_refptr<RefCountedKDialogOutputParams> results =
+      base::MakeRefCounted<RefCountedKDialogOutputParams>();
+  pipe_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(
-          &SelectFileDialogLinuxKde::CallKDialogOutput, this,
+          &SelectFileDialogLinuxKde::CallKDialogOutput, base::AsWeakPtr(this),
           KDialogParams(
               "--getsavefilename", GetTitle(title, IDS_SAVE_AS_DIALOG_TITLE),
               default_path.empty() ? *last_saved_path() : default_path, parent,
-              true, false)),
+              true, false),
+          results),
       base::BindOnce(
-          &SelectFileDialogLinuxKde::OnSelectSingleFileDialogResponse, this,
-          parent, params));
+          &SelectFileDialogLinuxKde::OnSelectSingleFileDialogResponse,
+          base::AsWeakPtr(this), parent, params, results));
 }
 
 void SelectFileDialogLinuxKde::SelectSingleFileHelper(
     void* params,
     bool allow_folder,
-    std::unique_ptr<KDialogOutputParams> results) {
-  VLOG(1) << "[kdialog] SingleFileResponse: " << results->output;
-  if (results->exit_code || results->output.empty()) {
+    scoped_refptr<RefCountedKDialogOutputParams> results) {
+  VLOG(1) << "[kdialog] SingleFileResponse: " << results->data.output;
+  if (results->data.exit_code || results->data.output.empty()) {
     FileNotSelected(params);
     return;
   }
 
-  base::FilePath path(results->output);
+  base::FilePath path(results->data.output);
   if (allow_folder) {
     FileSelected(path, params);
     return;
@@ -563,7 +581,7 @@ void SelectFileDialogLinuxKde::SelectSingleFileHelper(
 void SelectFileDialogLinuxKde::OnSelectSingleFileDialogResponse(
     gfx::AcceleratedWidget parent,
     void* params,
-    std::unique_ptr<KDialogOutputParams> results) {
+    scoped_refptr<RefCountedKDialogOutputParams> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   parents_.erase(parent);
   SelectSingleFileHelper(params, false, std::move(results));
@@ -572,7 +590,7 @@ void SelectFileDialogLinuxKde::OnSelectSingleFileDialogResponse(
 void SelectFileDialogLinuxKde::OnSelectSingleFolderDialogResponse(
     gfx::AcceleratedWidget parent,
     void* params,
-    std::unique_ptr<KDialogOutputParams> results) {
+    scoped_refptr<RefCountedKDialogOutputParams> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   parents_.erase(parent);
   SelectSingleFileHelper(params, true, std::move(results));
@@ -581,20 +599,20 @@ void SelectFileDialogLinuxKde::OnSelectSingleFolderDialogResponse(
 void SelectFileDialogLinuxKde::OnSelectMultiFileDialogResponse(
     gfx::AcceleratedWidget parent,
     void* params,
-    std::unique_ptr<KDialogOutputParams> results) {
+    scoped_refptr<RefCountedKDialogOutputParams> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "[kdialog] MultiFileResponse: " << results->output;
+  VLOG(1) << "[kdialog] MultiFileResponse: " << results->data.output;
 
   parents_.erase(parent);
 
-  if (results->exit_code || results->output.empty()) {
+  if (results->data.exit_code || results->data.output.empty()) {
     FileNotSelected(params);
     return;
   }
 
   std::vector<base::FilePath> filenames_fp;
   for (const base::StringPiece& line :
-       base::SplitStringPiece(results->output, "\n", base::KEEP_WHITESPACE,
+       base::SplitStringPiece(results->data.output, "\n", base::KEEP_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
     base::FilePath path(line);
     if (CallDirectoryExistsOnUIThread(path))

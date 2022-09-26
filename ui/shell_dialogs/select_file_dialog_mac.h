@@ -39,6 +39,8 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
   bool IsRunning(gfx::NativeWindow parent_window) const override;
   void ListenerDestroyed() override;
 
+  ~SelectFileDialogImpl() override;
+
  protected:
   // SelectFileDialog implementation.
   // |params| is user data we pass back via the Listener interface.
@@ -73,8 +75,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
     mojo::Remote<remote_cocoa::mojom::SelectFileDialog> select_file_dialog;
   };
 
-  ~SelectFileDialogImpl() override;
-
   // Callback made when a panel is closed.
   void FileWasSelected(DialogData* dialog_data,
                        bool is_multi,
@@ -93,10 +93,10 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
   // only.
   base::RepeatingClosure dialog_closed_callback_for_testing_;
 
+  // TODO(lucmult): Remove this weak_factory_.
   base::WeakPtrFactory<SelectFileDialogImpl> weak_factory_;
 };
 
 }  // namespace ui
 
 #endif  //  UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_MAC_H_
-

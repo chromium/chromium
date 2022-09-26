@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/ptr_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -26,7 +28,7 @@ class SelectFileDialogExtensionTest : public ::testing::Test {
   SelectFileDialogExtensionTest& operator=(
       const SelectFileDialogExtensionTest&) = delete;
 
-  static SelectFileDialogExtension* CreateDialog(
+  static std::unique_ptr<SelectFileDialogExtension> CreateDialog(
       ui::SelectFileDialog::Listener* listener) {
     SelectFileDialogExtension* dialog =
         new SelectFileDialogExtension(listener, nullptr);
@@ -34,7 +36,7 @@ class SelectFileDialogExtensionTest : public ::testing::Test {
     EXPECT_FALSE(SelectFileDialogExtension::PendingExists(kDefaultRoutingID));
     dialog->AddPending(kDefaultRoutingID);
     EXPECT_TRUE(SelectFileDialogExtension::PendingExists(kDefaultRoutingID));
-    return dialog;
+    return base::WrapUnique(dialog);
   }
 };
 
@@ -87,13 +89,13 @@ class SelfDeletingClient : public ui::SelectFileDialog::Listener {
   }
 
  private:
-  scoped_refptr<SelectFileDialogExtension> dialog_;
+  std::unique_ptr<SelectFileDialogExtension> dialog_;
 };
 
 TEST_F(SelectFileDialogExtensionTest, FileSelected) {
   const int kFileIndex = 5;
   auto listener = std::make_unique<TestListener>();
-  scoped_refptr<SelectFileDialogExtension> dialog =
+  std::unique_ptr<SelectFileDialogExtension> dialog =
       CreateDialog(listener.get());
   // Simulate selecting a file.
   ui::SelectedFileInfo info;
@@ -107,7 +109,7 @@ TEST_F(SelectFileDialogExtensionTest, FileSelected) {
 
 TEST_F(SelectFileDialogExtensionTest, FileSelectionCanceled) {
   auto listener = std::make_unique<TestListener>();
-  scoped_refptr<SelectFileDialogExtension> dialog =
+  std::unique_ptr<SelectFileDialogExtension> dialog =
       CreateDialog(listener.get());
   // Simulate cancelling the dialog.
   SelectFileDialogExtension::OnFileSelectionCanceled(kDefaultRoutingID);

@@ -2291,7 +2291,7 @@ void Browser::FileSelectedWithExtraInfo(const ui::SelectedFileInfo& file_info,
   // Transfer the ownership of select file dialog so that the ref count is
   // released after the function returns. This is needed because the passed-in
   // data such as |file_info| and |params| could be owned by the dialog.
-  scoped_refptr<ui::SelectFileDialog> dialog = std::move(select_file_dialog_);
+  std::unique_ptr<ui::SelectFileDialog> dialog = std::move(select_file_dialog_);
 
   profile_->set_last_selected_directory(file_info.file_path.DirName());
 

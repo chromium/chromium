@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include "base/memory/raw_ptr.h"
 
 #import "ui/shell_dialogs/select_file_dialog_mac.h"
@@ -136,14 +137,14 @@ class SelectFileDialogMacTest : public ::testing::Test,
   }
 
   void ResetDialog() {
-    dialog_ = new SelectFileDialogImpl(this, nullptr);
+    dialog_ = std::make_unique<SelectFileDialogImpl>(this, nullptr);
 
     // Spin the run loop to get any pending Mojo IPC sent.
     base::RunLoop().RunUntilIdle();
   }
 
  private:
-  scoped_refptr<SelectFileDialogImpl> dialog_;
+  std::unique_ptr<SelectFileDialogImpl> dialog_;
 
   std::vector<base::scoped_nsobject<NSWindow>> parent_windows_;
 };

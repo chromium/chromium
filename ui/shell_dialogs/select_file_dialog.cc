@@ -10,6 +10,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -62,12 +64,14 @@ void SelectFileDialog::SetFactory(ui::SelectFileDialogFactory* factory) {
 }
 
 // static
-scoped_refptr<SelectFileDialog> SelectFileDialog::Create(
+std::unique_ptr<SelectFileDialog> SelectFileDialog::Create(
     Listener* listener,
-    std::unique_ptr<ui::SelectFilePolicy> policy) {
-  if (dialog_factory_)
-    return dialog_factory_->Create(listener, std::move(policy));
-  return CreateSelectFileDialog(listener, std::move(policy));
+    std::unique_ptr<SelectFilePolicy> policy) {
+  if (dialog_factory_) {
+    return base::WrapUnique(
+        dialog_factory_->Create(listener, std::move(policy)));
+  }
+  return base::WrapUnique(CreateSelectFileDialog(listener, std::move(policy)));
 }
 
 base::FilePath SelectFileDialog::GetShortenedFilePath(
@@ -103,6 +107,7 @@ void SelectFileDialog::SelectFile(
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
     void* params) {
+  CheckCalledOnValidSequence();
   DCHECK(listener_);
 
   if (select_file_policy_.get() &&
@@ -113,8 +118,8 @@ void SelectFileDialog::SelectFile(
     // Post a task rather than calling FileSelectionCanceled directly to ensure
     // that the listener is called asynchronously.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SelectFileDialog::CancelFileSelection, this, params));
+        FROM_HERE, base::BindOnce(&SelectFileDialog::CancelFileSelection,
+                                  AsWeakPtr(), params));
     return;
   }
 
@@ -135,9 +140,12 @@ SelectFileDialog::SelectFileDialog(Listener* listener,
   DCHECK(listener_);
 }
 
-SelectFileDialog::~SelectFileDialog() {}
+SelectFileDialog::~SelectFileDialog() {
+  CheckCalledOnValidSequence();
+}
 
 void SelectFileDialog::CancelFileSelection(void* params) {
+  CheckCalledOnValidSequence();
   if (listener_)
     listener_->FileSelectionCanceled(params);
 }

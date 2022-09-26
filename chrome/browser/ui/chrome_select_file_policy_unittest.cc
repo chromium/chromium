@@ -68,7 +68,7 @@ class FileSelectionUser : public ui::SelectFileDialog::Listener {
   }
 
  private:
-  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
 
   bool file_selection_initialisation_in_progress;
 };

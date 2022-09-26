@@ -107,6 +107,7 @@ bool SelectFileDialogImpl::IsRunning(gfx::NativeWindow) const {
 }
 
 void SelectFileDialogImpl::ListenerDestroyed() {
+  CheckCalledOnValidSequence();
   listener_ = nullptr;
 }
 
@@ -119,6 +120,7 @@ void SelectFileDialogImpl::SelectFileImpl(
     const std::string& default_extension,
     gfx::NativeWindow owning_window,
     void* params) {
+  CheckCalledOnValidSequence();
   JNIEnv* env = base::android::AttachCurrentThread();
 
   // The first element in the pair is a list of accepted types, the second
@@ -148,6 +150,7 @@ SelectFileDialogImpl::SelectFileDialogImpl(
     std::unique_ptr<SelectFilePolicy> policy)
     : SelectFileDialog(listener, std::move(policy)) {
   JNIEnv* env = base::android::AttachCurrentThread();
+  // TODO(crbug.com/1365766): The `intptr_t` to `this` might get stale.
   java_object_.Reset(
       Java_SelectFileDialog_create(env, reinterpret_cast<intptr_t>(this)));
 }
