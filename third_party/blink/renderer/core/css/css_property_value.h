@@ -74,6 +74,11 @@ class CORE_EXPORT CSSPropertyValue {
                   implicit),
         value_(value, decltype(value_)::AtomicInitializerTag{}) {}
 
+  CSSPropertyValue(const CSSPropertyValue& other)
+      : metadata_(other.metadata_),
+        value_(other.value_, decltype(value_)::AtomicInitializerTag{}) {}
+  CSSPropertyValue& operator=(const CSSPropertyValue& other) = default;
+
   // FIXME: Remove this.
   CSSPropertyValue(CSSPropertyValueMetadata metadata, const CSSValue& value)
       : metadata_(metadata),
