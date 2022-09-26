@@ -1925,10 +1925,7 @@ void StyleEngine::InitialStyleChanged() {
       StyleChangeReasonForTracing::Create(style_change_reason::kSettings));
 }
 
-void StyleEngine::ViewportRulesChanged() {
-  // TODO(crbug.com/1365873): Change the name of this invalidation path:
-  // @viewport rules are no longer relevant.
-
+void StyleEngine::ViewportStyleSettingChanged() {
   if (viewport_resolver_)
     viewport_resolver_->SetNeedsUpdate();
 

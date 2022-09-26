@@ -726,7 +726,7 @@
     {
       name: "viewportStyle",
       initial: "mojom::blink::ViewportStyle::kDefault",
-      invalidate: ["ViewportRule"],
+      invalidate: ["ViewportStyle"],
       type: "mojom::blink::ViewportStyle",
     },
 

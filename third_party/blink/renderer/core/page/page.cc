@@ -722,12 +722,12 @@ void Page::SettingsChanged(ChangeType change_type) {
           ->AXObjectCacheOwner()
           .ClearAXObjectCache();
       break;
-    case ChangeType::kViewportRule: {
+    case ChangeType::kViewportStyle: {
       auto* main_local_frame = DynamicTo<LocalFrame>(MainFrame());
       if (!main_local_frame)
         break;
       if (Document* doc = main_local_frame->GetDocument())
-        doc->GetStyleEngine().ViewportRulesChanged();
+        doc->GetStyleEngine().ViewportStyleSettingChanged();
       break;
     }
     case ChangeType::kTextTrackKindUserPreference:

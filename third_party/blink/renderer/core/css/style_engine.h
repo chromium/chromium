@@ -220,7 +220,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   mojom::blink::ColorScheme GetOwnerColorScheme() const {
     return owner_color_scheme_;
   }
-  void ViewportRulesChanged();
+  void ViewportStyleSettingChanged();
 
   void InjectSheet(const StyleSheetKey&,
                    StyleSheetContents*,
