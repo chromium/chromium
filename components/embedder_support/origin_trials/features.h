@@ -11,12 +11,12 @@ namespace embedder_support {
 
 // Sample field trial feature for testing alternative usage restriction in
 // origin trial third party tokens.
-extern const base::Feature kOriginTrialsSampleAPIThirdPartyAlternativeUsage;
+BASE_DECLARE_FEATURE(kOriginTrialsSampleAPIThirdPartyAlternativeUsage);
 
 // Field trial feature for controlling usage restriction of the
 // Conversion Measurement API's origin trial tokens. When disabled, the API
 // cannot be enabled by tokens using the user subset usage restriction.
-extern const base::Feature kConversionMeasurementAPIAlternativeUsage;
+BASE_DECLARE_FEATURE(kConversionMeasurementAPIAlternativeUsage);
 
 }  // namespace embedder_support
 
