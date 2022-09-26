@@ -652,7 +652,11 @@ const base::Feature kEnableCheckForNewFollowContent{
 - (void)ntpDidChangeVisibility:(BOOL)visible {
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     if (visible && self.started) {
-      [self.contentSuggestionsCoordinator configureStartSurfaceIfNeeded];
+      if (NewTabPageTabHelper::FromWebState(self.webState)
+              ->ShouldShowStartSurface()) {
+        self.headerController.isStartShowing = YES;
+        [self.contentSuggestionsCoordinator configureStartSurfaceIfNeeded];
+      }
       if ([self isFollowingFeedAvailable]) {
         self.ntpViewController.shouldScrollIntoFeed = self.shouldScrollIntoFeed;
         self.shouldScrollIntoFeed = NO;

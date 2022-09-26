@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
@@ -420,7 +422,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if ([self.delegate ignoreLoadRequests])
     return;
   base::RecordAction(base::UserMetricsAction("MobileFakeViewNTPTapped"));
-  [self.delegate fakeboxTapped];
+  [self logOmniboxAction];
   [self focusFakebox];
 }
 
@@ -428,8 +430,18 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if ([self.delegate ignoreLoadRequests])
     return;
   base::RecordAction(base::UserMetricsAction("MobileFakeboxNTPTapped"));
-  [self.delegate fakeboxTapped];
+  [self logOmniboxAction];
   [self focusFakebox];
+}
+
+- (void)logOmniboxAction {
+  if (self.isStartShowing) {
+    UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnStartSurface",
+                              IOSContentSuggestionsActionType::kFakebox);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnNTP",
+                              IOSContentSuggestionsActionType::kFakebox);
+  }
 }
 
 - (void)focusFakebox {

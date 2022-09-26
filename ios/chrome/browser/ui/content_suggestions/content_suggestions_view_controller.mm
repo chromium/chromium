@@ -398,10 +398,12 @@ CGFloat ModuleVerticalSpacing() {
 
 - (void)showReturnToRecentTabTileWithConfig:
     (ContentSuggestionsReturnToRecentTabItem*)config {
-  if (self.returnToRecentTabTile &&
-      IsContentSuggestionsUIModuleRefreshEnabled()) {
+  if (self.returnToRecentTabTile) {
     [self.returnToRecentTabTile removeFromSuperview];
-    [self.returnToRecentTabContainer removeFromSuperview];
+
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      [self.returnToRecentTabContainer removeFromSuperview];
+    }
   }
 
   self.returnToRecentTabTile = [[ContentSuggestionsReturnToRecentTabView alloc]
