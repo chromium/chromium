@@ -15,6 +15,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
@@ -117,6 +118,33 @@ IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest, Basic) {
   EXPECT_EQ(1, *test_ukm_recorder().GetEntryMetric(ukm_entries[0],
                                                    Entry::kIsMainFrameName));
   EXPECT_NE(source->id(), ukm_entries[0]->source_id);
+}
+
+IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest,
+                       WindowOpenLogsOpenerSource) {
+  EXPECT_TRUE(content::NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  const ukm::UkmSource* old_src = test_ukm_recorder().GetSourceForSourceId(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+  EXPECT_NE(nullptr, old_src);
+
+  // Open a new tab via window.open
+  content::ShellAddedObserver shell_observer;
+  GURL new_url = embedded_test_server()->GetURL("/title2.html");
+  content::TestNavigationObserver nav_observer(new_url);
+  nav_observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(content::ExecJs(
+      shell(), content::JsReplace("window.open($1)", new_url.path())));
+  nav_observer.Wait();
+  content::Shell* new_window = shell_observer.GetShell();
+  content::WebContents* new_contents = new_window->web_contents();
+
+  const ukm::UkmSource* new_src = test_ukm_recorder().GetSourceForSourceId(
+      new_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
+
+  EXPECT_NE(nullptr, new_src);
+  EXPECT_EQ(new_src->navigation_data().opener_source_id, old_src->id());
 }
 
 // Test correctness of sources and DocumentCreated entries when a navigation

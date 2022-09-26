@@ -240,11 +240,12 @@ void SourceUrlRecorderWebContentsObserver::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  auto* new_recorder =
-      SourceUrlRecorderWebContentsObserver::FromWebContents(new_contents);
-  if (!new_recorder)
-    return;
-  new_recorder->opener_source_id_ = GetLastCommittedSourceId();
+  // Ensure that a source recorder exists at this point, since it is possible
+  // that this is called before tab helpers are added in //chrome, especially on
+  // Android. See crbug.com/1024952 for more details.
+  InitializeSourceUrlRecorderForWebContents(new_contents);
+  SourceUrlRecorderWebContentsObserver::FromWebContents(new_contents)
+      ->opener_source_id_ = GetLastCommittedSourceId();
 }
 
 void SourceUrlRecorderWebContentsObserver::WebContentsDestroyed() {

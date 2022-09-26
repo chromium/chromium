@@ -14,6 +14,7 @@ class WebContents;
 namespace ukm {
 
 // Initializes recording of UKM source URLs for the given WebContents.
+// Note: this method is idempotent.
 void InitializeSourceUrlRecorderForWebContents(
     content::WebContents* web_contents);
 
