@@ -12,13 +12,10 @@
  * [android-pixel2-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2-perf): Android OPM1.171019.021.
  * [android-pixel2-perf-calibration](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2-perf-calibration): Android OPM1.171019.021.
  * [android-pixel2-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2-perf-pgo): Android OPM1.171019.021.
- * [android-pixel2_weblayer-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2_weblayer-perf): Android OPM1.171019.021.
  * [android-pixel2_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2_webview-perf): Android OPM1.171019.021.
  * [android-pixel2_webview-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2_webview-perf-pgo): Android OPM1.171019.021.
  * [android-pixel4-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4-perf): Android R.
  * [android-pixel4-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4-perf-pgo): Android R.
- * [android-pixel4_weblayer-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_weblayer-perf): Android R.
- * [android-pixel4_weblayer-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_weblayer-perf-pgo): Android R.
  * [android-pixel4_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf): Android R.
  * [android-pixel4a_power-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4a_power-perf): Android QD4A.200102.001.A1.
  * [android-pixel4a_power-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4a_power-perf-pgo): Android QD4A.200102.001.A1.

@@ -517,7 +517,6 @@ BUILDERS = {
             'push_apps_to_background_apk',
             'system_webview_apk',
             'system_webview_shell_apk',
-            'telemetry_weblayer_apks',
         ],
         'tests': [
             {
@@ -605,7 +604,6 @@ BUILDERS = {
             'push_apps_to_background_apk',
             'system_webview_apk',
             'system_webview_shell_apk',
-            'telemetry_weblayer_apks',
         ],
         'dimension': {
             'cpu': 'x86',
@@ -795,19 +793,6 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
-    'android-pixel2_weblayer-perf': {
-        'tests': [{
-            'isolate': 'performance_weblayer_test_suite',
-        }],
-        'platform': 'android-weblayer',
-        'dimension': {
-            'pool': 'chrome.tests.perf-weblayer',
-            'os': 'Android',
-            'device_type': 'walleye',
-            'device_os': 'OPM1.171019.021',
-            'device_os_flavor': 'google',
-        },
-    },
     'android-pixel2-perf': {
         'tests': [{
             'isolate':
@@ -845,32 +830,6 @@ BUILDERS = {
         'platform': 'android-webview-trichrome-google-bundle',
         'dimension': {
             'pool': 'chrome.tests.perf-webview',
-            'os': 'Android',
-            'device_type': 'flame',
-            'device_os': 'RP1A.201105.002',
-            'device_os_flavor': 'google',
-        },
-    },
-    'android-pixel4_weblayer-perf': {
-        'tests': [{
-            'isolate': 'performance_weblayer_test_suite',
-        }],
-        'platform': 'android-weblayer-trichrome-google-bundle',
-        'dimension': {
-            'pool': 'chrome.tests.perf-weblayer',
-            'os': 'Android',
-            'device_type': 'flame',
-            'device_os': 'RP1A.201105.002',
-            'device_os_flavor': 'google',
-        },
-    },
-    'android-pixel4_weblayer-perf-pgo': {
-        'tests': [{
-            'isolate': 'performance_weblayer_test_suite',
-        }],
-        'platform': 'android-weblayer-trichrome-google-bundle',
-        'dimension': {
-            'pool': 'chrome.tests.perf-weblayer',
             'os': 'Android',
             'device_type': 'flame',
             'device_os': 'RP1A.201105.002',
@@ -1661,7 +1620,6 @@ PERFORMANCE_TEST_SUITES = [
     'performance_test_suite_eve',
     'performance_test_suite_octopus',
     'performance_webview_test_suite',
-    'performance_weblayer_test_suite',
     'performance_web_engine_test_suite',
 ]
 for suffix in android_browser_types.TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES:
