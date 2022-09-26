@@ -1149,9 +1149,7 @@ void Preferences::OnIsSyncingChanged() {
 void Preferences::ForceNaturalScrollDefault() {
   DVLOG(1) << "ForceNaturalScrollDefault";
   // Natural scroll is a priority pref.
-  bool is_syncing = features::IsSyncSettingsCategorizationEnabled()
-                        ? prefs_->AreOsPriorityPrefsSyncing()
-                        : prefs_->IsPrioritySyncing();
+  bool is_syncing = prefs_->AreOsPriorityPrefsSyncing();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kNaturalScrollDefault) &&
       is_syncing && !prefs_->GetUserPrefValue(prefs::kNaturalScroll)) {
