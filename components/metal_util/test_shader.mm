@@ -24,8 +24,9 @@ namespace metal {
 
 namespace {
 
-base::Feature kMetalTestShaders{"MetalTestShaders",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMetalTestShaders,
+             "MetalTestShaders",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char* kTestShaderSource =
     ""
