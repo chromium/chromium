@@ -30,7 +30,7 @@ DeviceActiveUseCase::DeviceActiveUseCase(
     const std::string& use_case_pref_key,
     psm_rlwe::RlweUseCase psm_use_case,
     PrefService* local_state,
-    std::unique_ptr<PsmDelegate> psm_delegate)
+    std::unique_ptr<PsmDelegateInterface> psm_delegate)
     : psm_device_active_secret_(psm_device_active_secret),
       chrome_passed_device_params_(chrome_passed_device_params),
       use_case_pref_key_(use_case_pref_key),
@@ -82,6 +82,7 @@ bool DeviceActiveUseCase::SetWindowIdentifier(
 
   // Check if |psm_id_| is generated.
   if (!psm_id_.has_value()) {
+    LOG(ERROR) << "PSM ID has no value.";
     return false;
   }
 
@@ -90,6 +91,7 @@ bool DeviceActiveUseCase::SetWindowIdentifier(
       psm_delegate_->CreatePsmClient(GetPsmUseCase(), psm_rlwe_ids);
 
   if (!status_or_client.ok()) {
+    LOG(ERROR) << "Failed to initialize PSM client.";
     return false;
   }
 

@@ -36,9 +36,10 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
 // Create a delegate which can be used to create fakes in unit tests.
 // Fake via. delegate is required for creating deterministic unit tests.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) PsmDelegate {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
+    PsmDelegateInterface {
  public:
-  virtual ~PsmDelegate() = default;
+  virtual ~PsmDelegateInterface() = default;
   virtual rlwe::StatusOr<
       std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>>
   CreatePsmClient(private_membership::rlwe::RlweUseCase use_case,
@@ -56,7 +57,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
       const std::string& use_case_pref_key,
       private_membership::rlwe::RlweUseCase psm_use_case,
       PrefService* local_state,
-      std::unique_ptr<PsmDelegate> psm_delegate);
+      std::unique_ptr<PsmDelegateInterface> psm_delegate);
   DeviceActiveUseCase(const DeviceActiveUseCase&) = delete;
   DeviceActiveUseCase& operator=(const DeviceActiveUseCase&) = delete;
   virtual ~DeviceActiveUseCase();
@@ -179,7 +180,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   PrefService* const local_state_;
 
   // Abstract class used to generate the |psm_rlwe_client_|.
-  std::unique_ptr<PsmDelegate> psm_delegate_;
+  std::unique_ptr<PsmDelegateInterface> psm_delegate_;
 
   // Singleton lives throughout class lifetime.
   chromeos::system::StatisticsProvider* const statistics_provider_;

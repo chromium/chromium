@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/device_activity/daily_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "chromeos/ash/components/device_activity/device_activity_controller.h"
+#include "chromeos/ash/components/device_activity/fake_psm_delegate.h"
 #include "chromeos/ash/components/device_activity/first_active_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
@@ -132,42 +133,13 @@ base::TimeDelta TimeUntilNewUTCMonth() {
   return new_ts - current_ts;
 }
 
-class FakePsmDelegate : public PsmDelegate {
- public:
-  FakePsmDelegate(const std::string& ec_cipher_key,
-                  const std::string& seed,
-                  const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids)
-      : ec_cipher_key_(ec_cipher_key),
-        seed_(seed),
-        plaintext_ids_(plaintext_ids) {}
-  FakePsmDelegate(const FakePsmDelegate&) = delete;
-  FakePsmDelegate& operator=(const FakePsmDelegate&) = delete;
-  ~FakePsmDelegate() override = default;
-
-  // PsmDelegate:
-  rlwe::StatusOr<
-      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>>
-  CreatePsmClient(private_membership::rlwe::RlweUseCase use_case,
-                  const std::vector<private_membership::rlwe::RlwePlaintextId>&
-                      plaintext_ids) override {
-    return psm_rlwe::PrivateMembershipRlweClient::CreateForTesting(
-        use_case, plaintext_ids_, ec_cipher_key_, seed_);
-  }
-
- private:
-  // Used by the PSM client to generate deterministic request/response protos.
-  std::string ec_cipher_key_;
-  std::string seed_;
-  std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids_;
-};
-
 class FakeDailyUseCaseImpl : public DailyUseCaseImpl {
  public:
   FakeDailyUseCaseImpl(
       const std::string& psm_device_active_secret,
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
       PrefService* local_state,
-      std::unique_ptr<PsmDelegate> psm_delegate)
+      std::unique_ptr<PsmDelegateInterface> psm_delegate)
       : DailyUseCaseImpl(psm_device_active_secret,
                          chrome_passed_device_params,
                          local_state,
@@ -183,7 +155,7 @@ class FakeMonthlyUseCaseImpl : public MonthlyUseCaseImpl {
       const std::string& psm_device_active_secret,
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
       PrefService* local_state,
-      std::unique_ptr<PsmDelegate> psm_delegate)
+      std::unique_ptr<PsmDelegateInterface> psm_delegate)
       : MonthlyUseCaseImpl(psm_device_active_secret,
                            chrome_passed_device_params,
                            local_state,
@@ -199,7 +171,7 @@ class FakeFirstActiveUseCaseImpl : public FirstActiveUseCaseImpl {
       const std::string& psm_device_active_secret,
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
       PrefService* local_state,
-      std::unique_ptr<PsmDelegate> psm_delegate)
+      std::unique_ptr<PsmDelegateInterface> psm_delegate)
       : FirstActiveUseCaseImpl(psm_device_active_secret,
                                chrome_passed_device_params,
                                local_state,

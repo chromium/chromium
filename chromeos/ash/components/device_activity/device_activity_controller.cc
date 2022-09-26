@@ -69,14 +69,14 @@ void RecordPsmDeviceActiveSecretIsSet(bool is_set) {
                             is_set);
 }
 
-class PsmDelegateImpl : public PsmDelegate {
+class PsmDelegateImpl : public PsmDelegateInterface {
  public:
   PsmDelegateImpl() = default;
   PsmDelegateImpl(const PsmDelegateImpl&) = delete;
   PsmDelegateImpl& operator=(const PsmDelegateImpl&) = delete;
   ~PsmDelegateImpl() override = default;
 
-  // PsmDelegate:
+  // PsmDelegateInterface:
   rlwe::StatusOr<std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient>>
   CreatePsmClient(
       psm_rlwe::RlweUseCase use_case,
