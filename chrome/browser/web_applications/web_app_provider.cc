@@ -334,8 +334,11 @@ void WebAppProvider::StartSyncBridge() {
 void WebAppProvider::OnSyncBridgeReady() {
   DCHECK(!on_registry_ready_.is_signaled());
 
-  ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(profile_->GetPrefs(),
-                                                          sync_bridge_.get());
+  if (base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
+        profile_->GetPrefs(), sync_bridge_.get());
+  }
   DoMigrateProfilePrefs(profile_);
 
   registrar_->Start();
