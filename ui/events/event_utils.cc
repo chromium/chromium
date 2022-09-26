@@ -132,6 +132,21 @@ void ComputeEventLatencyOS(const PlatformEvent& native_event) {
 void ComputeEventLatencyOS(EventType type,
                            base::TimeTicks time_stamp,
                            base::TimeTicks current_time) {
+  static constexpr char kKeyPressedEventName[] =
+      "Event.Latency.OS2.KEY_PRESSED";
+  static constexpr char kMousePressedEventName[] =
+      "Event.Latency.OS2.MOUSE_PRESSED";
+  static constexpr char kMouseWheelEventName[] =
+      "Event.Latency.OS2.MOUSE_WHEEL";
+  static constexpr char kTouchCancelledEventName[] =
+      "Event.Latency.OS2.TOUCH_CANCELLED";
+  static constexpr char kTouchMovedEventName[] =
+      "Event.Latency.OS2.TOUCH_MOVED";
+  static constexpr char kTouchPressedEventName[] =
+      "Event.Latency.OS2.TOUCH_PRESSED";
+  static constexpr char kTouchReleasedEventName[] =
+      "Event.Latency.OS2.TOUCH_RELEASED";
+
   base::TimeDelta delta = current_time - time_stamp;
 
   switch (type) {
@@ -140,41 +155,34 @@ void ComputeEventLatencyOS(EventType type,
     case ET_SCROLL:
 #endif
     case ET_MOUSEWHEEL:
-      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.MOUSE_WHEEL", delta);
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kMouseWheelEventName, delta);
       // Do not record traces for wheel events to avoid spam.
       return;
     case ET_TOUCH_MOVED:
-      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_MOVED", delta);
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kTouchMovedEventName, delta);
       // Do not record traces for move events to avoid spam.
       return;
     case ET_TOUCH_PRESSED:
-      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_PRESSED",
-                                        delta);
-      RecordEventLatencyTrace("InputEventLatency.TOUCH_PRESSED", time_stamp,
-                              current_time);
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kTouchPressedEventName, delta);
+      RecordEventLatencyTrace(kTouchPressedEventName, time_stamp, current_time);
       return;
     case ET_TOUCH_RELEASED:
-      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_RELEASED",
-                                        delta);
-      RecordEventLatencyTrace("InputEventLatency.TOUCH_RELEASED", time_stamp,
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kTouchReleasedEventName, delta);
+      RecordEventLatencyTrace(kTouchReleasedEventName, time_stamp,
                               current_time);
       return;
     case ET_TOUCH_CANCELLED:
-      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_CANCELLED",
-                                        delta);
-      RecordEventLatencyTrace("InputEventLatency.TOUCH_CANCELLED", time_stamp,
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kTouchCancelledEventName, delta);
+      RecordEventLatencyTrace(kTouchCancelledEventName, time_stamp,
                               current_time);
       return;
     case ET_KEY_PRESSED:
-      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.KEY_PRESSED", delta);
-      RecordEventLatencyTrace("InputEventLatency.KEY_PRESSED", time_stamp,
-                              current_time);
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kKeyPressedEventName, delta);
+      RecordEventLatencyTrace(kKeyPressedEventName, time_stamp, current_time);
       return;
     case ET_MOUSE_PRESSED:
-      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.MOUSE_PRESSED",
-                                        delta);
-      RecordEventLatencyTrace("InputEventLatency.MOUSE_PRESSED", time_stamp,
-                              current_time);
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kMousePressedEventName, delta);
+      RecordEventLatencyTrace(kMousePressedEventName, time_stamp, current_time);
       return;
     default:
       return;
