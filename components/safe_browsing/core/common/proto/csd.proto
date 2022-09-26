@@ -1787,10 +1787,18 @@ message ExtensionTelemetryReportRequest {
 
     message RemoteHostContactedInfo {
       message RemoteHostInfo {
+        enum ProtocolType {
+          UNSPECIFIED = 0;
+          HTTP_HTTPS = 1;
+          WEBSOCKET = 2;
+        }
         // Sanitized url (hostname only) of the contacted remote host.
         optional string url = 1;
-        // Number of times this host has been contacted by the extension.
+        // Number of times this host has been contacted by the extension
+        // using the `connection_protocol`.
         optional uint32 contact_count = 2;
+        // Protocol used to make the connection.
+        optional ProtocolType connection_protocol = 3;
       }
       repeated RemoteHostInfo remote_host = 1;
     }
