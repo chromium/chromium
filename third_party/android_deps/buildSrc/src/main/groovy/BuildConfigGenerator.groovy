@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -101,7 +101,7 @@ class BuildConfigGenerator extends DefaultTask {
     static final String AUTOROLLED_REPO_PATH = 'third_party/android_deps_autorolled'
 
     static final String COPYRIGHT_HEADER = '''\
-        # Copyright 2021 The Chromium Authors. All rights reserved.
+        # Copyright 2021 The Chromium Authors
         # Use of this source code is governed by a BSD-style license that can be
         # found in the LICENSE file.
     '''.stripIndent()
@@ -211,7 +211,7 @@ class BuildConfigGenerator extends DefaultTask {
         // NOTE: Keep the copyright year 2018 until this generated code is updated, avoiding annual churn of all
         //       cipd.yaml files.
         return """\
-            # Copyright 2018 The Chromium Authors. All rights reserved.
+            # Copyright 2018 The Chromium Authors
             # Use of this source code is governed by a BSD-style license that can be
             # found in the LICENSE file.
 
