@@ -712,6 +712,44 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report.WaitForReport();
 }
 
+// Regression test for crbug.com/1366513.
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       AttributionSrcInSandboxedIframe_NoCrash) {
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://a.test",
+      /*source_event_id=*/"5", /*source_type=*/"event",
+      /*trigger_data=*/"1", https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL page_url = https_server()->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_source_url = https_server()->GetURL(
+      "a.test",
+      "/attribution_reporting/"
+      "register_source_headers_trigger_same_origin.html");
+
+  GURL register_trigger_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/register_trigger_headers.html");
+
+  // Setting the frame's sandbox attribute causes its origin to be opaque.
+  ASSERT_TRUE(
+      ExecJs(shell(), JsReplace(R"(
+    let frame = document.getElementById('test_iframe');
+    frame.setAttribute('sandbox', '');
+
+    frame.setAttribute('srcdoc', `
+      <img attributionsrc=$1>
+      <img attributionsrc=$2>
+    `);
+  )",
+                                register_source_url, register_trigger_url)));
+
+  expected_report.WaitForReport();
+}
+
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        ImpressionOnNoOpenerNavigation_ReportSent) {
   ExpectedReportWaiter expected_report(
