@@ -6,13 +6,16 @@
 
 namespace ash::cfm::features {
 
-const base::Feature kCloudLogger{"MeetDevicesCloudLogger",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCloudLogger,
+             "MeetDevicesCloudLogger",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kMojoServices{"MeetDevicesMojoServices",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kMojoServices,
+             "MeetDevicesMojoServices",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kXuControls{"MeetDevicesXuControls",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kXuControls,
+             "MeetDevicesXuControls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace ash::cfm::features

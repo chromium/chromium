@@ -44,8 +44,9 @@ namespace chromeos {
 namespace system {
 
 namespace {
-const base::Feature kCoreScheduling{"CoreSchedulingEnabled",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCoreScheduling,
+             "CoreSchedulingEnabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }
 
 void EnableCoreSchedulingIfAvailable() {

@@ -58,8 +58,9 @@ constexpr static bool kIsOrderfileEnabled = true;
 constexpr static bool kIsOrderfileEnabled = false;
 #endif
 
-const base::Feature kCrOSHugepageRemapAndLockZygote{
-    "CrOSHugepageRemapAndLockInZygote", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSHugepageRemapAndLockZygote,
+             "CrOSHugepageRemapAndLockInZygote",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const int kHpageShift = 21;
 const int kHpageSize = (1 << kHpageShift);

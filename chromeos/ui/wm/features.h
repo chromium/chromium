@@ -10,11 +10,9 @@
 
 namespace chromeos::wm::features {
 
-COMPONENT_EXPORT(CHROMEOS_UI_WM)
-extern const base::Feature kFloatWindow;
+COMPONENT_EXPORT(CHROMEOS_UI_WM) BASE_DECLARE_FEATURE(kFloatWindow);
 
-COMPONENT_EXPORT(CHROMEOS_UI_WM)
-extern const base::Feature kPartialSplit;
+COMPONENT_EXPORT(CHROMEOS_UI_WM) BASE_DECLARE_FEATURE(kPartialSplit);
 
 // Checks if the float feature is enabled. On ash, this checks the feature flag.
 // On lacros, this checks the lacros service.

@@ -37,7 +37,7 @@ void OnRatioSet(bool success) {
 
 }  // namespace
 
-const base::Feature kKstaled{"KstaledSwap", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kKstaled, "KstaledSwap", base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kKstaledRatio = {&kKstaled, "KstaledRatio", 1};
 

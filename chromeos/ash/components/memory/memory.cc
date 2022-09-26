@@ -21,8 +21,9 @@
 
 namespace ash {
 
-const base::Feature kCrOSLockMainProgramText{"CrOSLockMainProgramText",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSLockMainProgramText,
+             "CrOSLockMainProgramText",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // The maximum number of bytes that the browser will attempt to lock.
 const base::FeatureParam<int> kCrOSLockMainProgramTextMaxSize{
     &kCrOSLockMainProgramText, "CrOSLockMainProgramTextMaxSize", -1};

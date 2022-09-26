@@ -26,7 +26,7 @@ namespace chromeos {
 
 // A feature which controls remapping the zygotes hot text section as hugepages
 // and locking.
-extern const base::Feature kCrOSHugepageRemapAndLockZygote;
+BASE_DECLARE_FEATURE(kCrOSHugepageRemapAndLockZygote);
 
 // This function will scan ELF segments and attempt to do two things:
 // - Reload some of .text into hugepages

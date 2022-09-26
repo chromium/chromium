@@ -36,8 +36,9 @@ namespace mojom = ::chromeos::libassistant::mojom;
     return;                                                                 \
   }
 
-constexpr base::Feature kChromeOSAssistantDogfood{
-    "ChromeOSAssistantDogfood", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kChromeOSAssistantDogfood,
+             "ChromeOSAssistantDogfood",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr char kServersideDogfoodExperimentId[] = "20347368";
 constexpr char kServersideOpenAppExperimentId[] = "39651593";

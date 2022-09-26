@@ -13,24 +13,24 @@ namespace ash {
 
 // Controls the ChromeOS /proc/sys/vm/min_filelist_kb swap tunable, if the
 // feature is enabled it will use the value (in MB) from the feature param.
-extern const base::Feature kCrOSTuneMinFilelist;
+BASE_DECLARE_FEATURE(kCrOSTuneMinFilelist);
 extern const base::FeatureParam<int> kCrOSTuneMinFilelistMb;
 
 // Controls the ChromeOS /sys/kernel/mm/chromeos-low_mem/ram_vs_swap_weight
 // tunable. The number is a zero or positive number which represents how well
 // zram based swap is compressed in physical ram.
-extern const base::Feature kCrOSTuneRamVsSwapWeight;
+BASE_DECLARE_FEATURE(kCrOSTuneRamVsSwapWeight);
 extern const base::FeatureParam<int> kCrOSRamVsSwapWeight;
 
 // Controls the ChromeOS /proc/sys/vm/extra_free_kbytes tunable. The number is a
 // zero or positive number which represents how much additional memory the
 // kernel will keep around. Raising this number has the affect of causing
 // swapping earlier.
-extern const base::Feature kCrOSTuneExtraFree;
+BASE_DECLARE_FEATURE(kCrOSTuneExtraFree);
 extern const base::FeatureParam<int> kCrOSExtraFreeMb;
 
 // This feature and params control the zram writeback behavior.
-extern const base::Feature kCrOSEnableZramWriteback;
+COMPONENT_EXPORT(ASH_MEMORY) BASE_DECLARE_FEATURE(kCrOSEnableZramWriteback);
 
 // Controls the period in which the controller will check to see if we can write
 // back. It does not guarantee a writeback will actually happen.

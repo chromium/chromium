@@ -26,7 +26,7 @@ namespace ash {
 COMPONENT_EXPORT(ASH_MEMORY) bool MlockMapping(void* addr, size_t length);
 
 // A feature which controls the locking the main program text.
-extern const base::Feature kCrOSLockMainProgramText;
+BASE_DECLARE_FEATURE(kCrOSLockMainProgramText);
 
 // The maximum number of bytes that the browser will attempt to lock, -1 will
 // disable the max size and is the default option.

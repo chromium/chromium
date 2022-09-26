@@ -13,26 +13,30 @@
 
 namespace ash {
 
-const base::Feature kCrOSTuneMinFilelist{"CrOSTuneMinFilelist",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSTuneMinFilelist,
+             "CrOSTuneMinFilelist",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kCrOSMinFilelistMb{&kCrOSTuneMinFilelist,
                                                  "CrOSMinFilelistMb", -1};
 
-const base::Feature kCrOSTuneRamVsSwapWeight{"CrOSTuneRamVsSwapWeight",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSTuneRamVsSwapWeight,
+             "CrOSTuneRamVsSwapWeight",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kCrOSRamVsSwapWeight{&kCrOSTuneRamVsSwapWeight,
                                                    "CrOSRamVsSwapWeight", -1};
 
-const base::Feature kCrOSTuneExtraFree{"CrOSTuneExtraFree",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSTuneExtraFree,
+             "CrOSTuneExtraFree",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kCrOSExtraFreeMb{&kCrOSTuneExtraFree,
                                                "CrOSExtraFreeMb", -1};
 
-const base::Feature kCrOSMemoryPressureSignalStudy{
-    "ChromeOSMemoryPressureSignalStudy", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSMemoryPressureSignalStudy,
+             "ChromeOSMemoryPressureSignalStudy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int>
     kCrOSMemoryPressureSignalStudyCriticalThresholdPrecentageBps{
@@ -42,9 +46,9 @@ const base::FeatureParam<int>
     kCrOSMemoryPressureSignalStudyModerateThresholdPrecentageBps{
         &kCrOSMemoryPressureSignalStudy, "moderate_threshold_percentage", 4000};
 
-COMPONENT_EXPORT(ASH_MEMORY)
-const base::Feature kCrOSEnableZramWriteback{"ChromeOSZramWriteback",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSEnableZramWriteback,
+             "ChromeOSZramWriteback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kCrOSWritebackPeriodicTimeSec{
     &kCrOSEnableZramWriteback, "ZramWritebackPeriodicTimeSec",
     base::Seconds(10).InSeconds()};

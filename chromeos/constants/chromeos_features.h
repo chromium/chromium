@@ -20,20 +20,19 @@ namespace features {
 // being rolled out via Finch, add a comment in the .cc file.
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kBluetoothPhoneFilter;
+BASE_DECLARE_FEATURE(kBluetoothPhoneFilter);
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kCloudGamingDevice);
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kDarkLightMode);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kCloudGamingDevice;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kDarkLightMode;
+BASE_DECLARE_FEATURE(kDisableIdleSocketsCloseOnMemoryPressure);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kDisableIdleSocketsCloseOnMemoryPressure;
+BASE_DECLARE_FEATURE(kDisableOfficeEditingComponentApp);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kDisableOfficeEditingComponentApp;
+BASE_DECLARE_FEATURE(kDisableQuickAnswersV2Translation);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kDisableQuickAnswersV2Translation;
+BASE_DECLARE_FEATURE(kQuickAnswersV2SettingsSubToggle);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kQuickAnswersV2SettingsSubToggle;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kQuickAnswersForMoreLocales;
+BASE_DECLARE_FEATURE(kQuickAnswersForMoreLocales);
 
 // Keep alphabetized.
 

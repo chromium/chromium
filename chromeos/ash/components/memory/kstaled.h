@@ -12,7 +12,7 @@
 namespace ash {
 
 // The Kstaled experimental feature.
-extern const base::Feature kKstaled;
+BASE_DECLARE_FEATURE(kKstaled);
 
 // The ratio parameter used for kstaled.
 extern const base::FeatureParam<int> kKstaledRatio;

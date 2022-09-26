@@ -16,17 +16,14 @@ namespace ash::cfm::features {
 // Chrome Encrypted Reporting Pipeline API.
 // Note: Functionality depends on Feature {MeetDevicesMojoServices}
 // Note: Enqueue functionality depends on Feature {EncryptedReportingPipeline}
-COMPONENT_EXPORT(CFM_FEATURES)
-extern const base::Feature kCloudLogger;
+COMPONENT_EXPORT(CFM_FEATURES) BASE_DECLARE_FEATURE(kCloudLogger);
 
 // Enables or disables the ability to bind mojo connections through chrome for
 // CfM specific mojom based system services.
-COMPONENT_EXPORT(CFM_FEATURES)
-extern const base::Feature kMojoServices;
+COMPONENT_EXPORT(CFM_FEATURES) BASE_DECLARE_FEATURE(kMojoServices);
 
 // Enables or disables the ability to use Meet XU controls.
-COMPONENT_EXPORT(CFM_FEATURES)
-extern const base::Feature kXuControls;
+COMPONENT_EXPORT(CFM_FEATURES) BASE_DECLARE_FEATURE(kXuControls);
 
 }  // namespace ash::cfm::features
 

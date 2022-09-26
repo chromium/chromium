@@ -13,49 +13,49 @@ namespace ash::assistant::features {
 
 // Enable Assistant Feedback UI.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kAssistantAudioEraser;
+BASE_DECLARE_FEATURE(kAssistantAudioEraser);
 
 // Enables Assistant app support.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kAssistantAppSupport;
+BASE_DECLARE_FEATURE(kAssistantAppSupport);
 
 // Enables Assistant routines.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kAssistantRoutines;
+BASE_DECLARE_FEATURE(kAssistantRoutines);
 
 // Enables server-driven wait scheduling. This allows the server to inject
 // pauses into the interaction response to give the user time to digest one leg
 // of a routine before proceeding to the next, for example, or to provide
 // comedic timing for jokes.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kAssistantWaitScheduling;
+BASE_DECLARE_FEATURE(kAssistantWaitScheduling);
 
 // Enables DSP for hotword detection.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kEnableDspHotword;
+BASE_DECLARE_FEATURE(kEnableDspHotword);
 
 // Enables stereo audio input.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kEnableStereoAudioInput;
+BASE_DECLARE_FEATURE(kEnableStereoAudioInput);
 
 // Enables power management features i.e. Wake locks and wake up alarms.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kEnablePowerManager;
+BASE_DECLARE_FEATURE(kEnablePowerManager);
 
 // Uses the LibAssistant beta backend instead of the release channel.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kEnableLibAssistantBetaBackend;
+BASE_DECLARE_FEATURE(kEnableLibAssistantBetaBackend);
 
 // Enables the sandbox of LibAssistant service.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kEnableLibAssistantSandbox;
+BASE_DECLARE_FEATURE(kEnableLibAssistantSandbox);
 
 // Enables the LibAssistantV2 APIs and related features.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kEnableLibAssistantV2;
+BASE_DECLARE_FEATURE(kEnableLibAssistantV2);
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kEnableLibAssistantDlc;
+BASE_DECLARE_FEATURE(kEnableLibAssistantDlc);
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsAppSupportEnabled();
 
