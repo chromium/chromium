@@ -513,11 +513,10 @@ TEST(CSSPropertyParserTest, OverflowSecondValueOverlayCount) {
 }
 
 TEST(CSSPropertyParserTest, DropViewportDescriptor) {
-  EXPECT_FALSE(IsValidPropertyValueForStyleRule(CSSPropertyID::kOrientation,
-                                                "portrait"));
+  EXPECT_FALSE(IsValidPropertyValueForStyleRule(CSSPropertyID::kMinZoom, "1"));
   EXPECT_FALSE(
-      IsValidPropertyValueForStyleRule(CSSPropertyID::kOrientation, "inherit"));
-  EXPECT_FALSE(IsValidPropertyValueForStyleRule(CSSPropertyID::kOrientation,
+      IsValidPropertyValueForStyleRule(CSSPropertyID::kMinZoom, "inherit"));
+  EXPECT_FALSE(IsValidPropertyValueForStyleRule(CSSPropertyID::kMinZoom,
                                                 "var(--dummy)"));
 }
 

@@ -52,9 +52,6 @@
       name: "font-weight",
     },
     {
-      name: "height",
-    },
-    {
       name: "inherits"
     },
     {
@@ -67,16 +64,10 @@
       name: "line-gap-override",
     },
     {
-      name: "max-height",
-    },
-    {
       name: "max-width",
     },
     {
       name: "max-zoom",
-    },
-    {
-      name: "min-height",
     },
     {
       name: "min-width",
@@ -86,9 +77,6 @@
     },
     {
       name: "negative",
-    },
-    {
-      name: "orientation",
     },
     {
       name: "override-colors",
@@ -133,13 +121,7 @@
       name: "unicode-range",
     },
     {
-      name: "user-zoom",
-    },
-    {
       name: "width",
-    },
-    {
-      name: "zoom",
     },
   ],
 }

@@ -53,16 +53,6 @@
 
 namespace blink {
 
-namespace {
-
-bool HasViewportFitProperty(const CSSPropertyValueSet* property_set) {
-  DCHECK(property_set);
-  return RuntimeEnabledFeatures::DisplayCutoutAPIEnabled() &&
-         property_set->HasProperty(CSSPropertyID::kViewportFit);
-}
-
-}  // namespace
-
 ViewportStyleResolver::ViewportStyleResolver(Document& document)
     : document_(document) {
   DCHECK(document.GetFrame());
@@ -142,29 +132,18 @@ void ViewportStyleResolver::Resolve() {
 
   ViewportDescription description(ViewportDescription::kUserAgentStyleSheet);
 
-  description.user_zoom = ViewportArgumentValue(CSSPropertyID::kUserZoom);
-  description.zoom = ViewportArgumentValue(CSSPropertyID::kZoom);
   description.min_zoom = ViewportArgumentValue(CSSPropertyID::kMinZoom);
   description.max_zoom = ViewportArgumentValue(CSSPropertyID::kMaxZoom);
   description.min_width = ViewportLengthValue(CSSPropertyID::kMinWidth);
   description.max_width = ViewportLengthValue(CSSPropertyID::kMaxWidth);
-  description.min_height = ViewportLengthValue(CSSPropertyID::kMinHeight);
-  description.max_height = ViewportLengthValue(CSSPropertyID::kMaxHeight);
-  description.orientation = ViewportArgumentValue(CSSPropertyID::kOrientation);
-  if (HasViewportFitProperty(property_set_))
-    description.SetViewportFit(ViewportFitValue());
 
   document_->GetViewportData().SetViewportDescription(description);
 }
 
 float ViewportStyleResolver::ViewportArgumentValue(CSSPropertyID id) const {
-  float default_value = ViewportDescription::kValueAuto;
+  DCHECK(id == CSSPropertyID::kMinZoom || id == CSSPropertyID::kMaxZoom);
 
-  // UserZoom default value is CSSValueID::kZoom, which maps to true, meaning
-  // that yes, it is user scalable. When the value is set to CSSValueID::kFixed,
-  // we return false.
-  if (id == CSSPropertyID::kUserZoom)
-    default_value = 1;
+  float default_value = ViewportDescription::kValueAuto;
 
   const CSSValue* value = property_set_->GetPropertyCSSValue(id);
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
@@ -221,8 +200,7 @@ float ViewportStyleResolver::ViewportArgumentValue(CSSPropertyID id) const {
 }
 
 Length ViewportStyleResolver::ViewportLengthValue(CSSPropertyID id) {
-  DCHECK(id == CSSPropertyID::kMaxHeight || id == CSSPropertyID::kMinHeight ||
-         id == CSSPropertyID::kMaxWidth || id == CSSPropertyID::kMinWidth);
+  DCHECK(id == CSSPropertyID::kMinWidth || id == CSSPropertyID::kMaxWidth);
 
   const CSSValue* value = property_set_->GetPropertyCSSValue(id);
   if (!value || !(value->IsPrimitiveValue() || value->IsIdentifierValue()))
@@ -257,25 +235,6 @@ Length ViewportStyleResolver::ViewportLengthValue(CSSPropertyID id) {
     result = Length::Fixed(scaled_value);
   }
   return result;
-}
-
-mojom::ViewportFit ViewportStyleResolver::ViewportFitValue() const {
-  const CSSValue* value =
-      property_set_->GetPropertyCSSValue(CSSPropertyID::kViewportFit);
-  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    switch (identifier_value->GetValueID()) {
-      case CSSValueID::kCover:
-        return mojom::ViewportFit::kCover;
-      case CSSValueID::kContain:
-        return mojom::ViewportFit::kContain;
-      case CSSValueID::kAuto:
-      default:
-        return mojom::ViewportFit::kAuto;
-    }
-  }
-
-  NOTREACHED();
-  return mojom::ViewportFit::kAuto;
 }
 
 void ViewportStyleResolver::InitialStyleChanged() {
