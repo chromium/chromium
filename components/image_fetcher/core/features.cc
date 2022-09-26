@@ -9,8 +9,9 @@ namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables batching decoding of related images in a single process.
-const base::Feature kBatchImageDecoding{"BatchImageDecoding",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBatchImageDecoding,
+             "BatchImageDecoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace features

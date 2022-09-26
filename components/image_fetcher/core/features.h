@@ -12,7 +12,7 @@ namespace image_fetcher {
 namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
-extern const base::Feature kBatchImageDecoding;
+BASE_DECLARE_FEATURE(kBatchImageDecoding);
 #endif
 
 }  // namespace features
