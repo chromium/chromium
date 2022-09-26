@@ -62,6 +62,7 @@ class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
   };
 
   // Object used to restore texture bindings.
+  // TODO(crbug.com/1367187): Fold into gl::ScopedRestoreTexture.
   class ScopedRestoreTexture {
    public:
     ScopedRestoreTexture(gl::GLApi* api, GLenum target);

@@ -24,6 +24,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image_shared_memory.h"
+#include "ui/gl/scoped_restore_texture.h"
 #include "ui/gl/trace_util.h"
 
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
@@ -112,7 +113,7 @@ scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(
     unsigned plane_index = 0u,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr) {
   gl::GLApi* const api = gl::g_current_gl_context;
-  ScopedRestoreTexture scoped_restore(api, texture_target);
+  gl::ScopedRestoreTexture scoped_restore(api, texture_target);
 
   GLuint service_id = 0;
   api->glGenTexturesFn(1, &service_id);
@@ -170,24 +171,6 @@ void CopyPlane(const uint8_t* source_memory,
 }
 
 }  // namespace
-
-ScopedRestoreTexture::ScopedRestoreTexture(gl::GLApi* api, GLenum target)
-    : api_(api), target_(target) {
-  DCHECK(target == GL_TEXTURE_2D || target == GL_TEXTURE_EXTERNAL_OES);
-  GLint binding = 0;
-  api->glGetIntegervFn(target == GL_TEXTURE_2D
-                           ? GL_TEXTURE_BINDING_2D
-                           : GL_TEXTURE_BINDING_EXTERNAL_OES,
-                       &binding);
-  // The bound texture could be already deleted by another context, and the
-  // texture ID |binding| could be reused and points to a different texture.
-  if (api->glIsTextureFn(binding))
-    prev_binding_ = binding;
-}
-
-ScopedRestoreTexture::~ScopedRestoreTexture() {
-  api_->glBindTextureFn(target_, prev_binding_);
-}
 
 // static
 std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
@@ -710,7 +693,7 @@ bool D3DImageBacking::PresentSwapChain() {
   gl::GLApi* const api = gl::g_current_gl_context;
 
   DCHECK_EQ(gl_texture_->target(), static_cast<unsigned>(GL_TEXTURE_2D));
-  ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
+  gl::ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
 
   api->glBindTextureFn(GL_TEXTURE_2D, gl_texture_->service_id());
   DCHECK(GetGLImage());

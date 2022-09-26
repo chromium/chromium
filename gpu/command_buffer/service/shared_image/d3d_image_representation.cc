@@ -8,6 +8,7 @@
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
+#include "ui/gl/scoped_restore_texture.h"
 
 namespace gpu {
 
@@ -38,7 +39,7 @@ bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
     if (image) {
       // First ensure that |target| is bound to |texture|.
       gl::GLApi* const api = gl::g_current_gl_context;
-      ScopedRestoreTexture scoped_restore(api, target);
+      gl::ScopedRestoreTexture scoped_restore(api, target);
       api->glBindTextureFn(target, texture->service_id());
 
       // Now bind the GLImage to |texture| via |target|.

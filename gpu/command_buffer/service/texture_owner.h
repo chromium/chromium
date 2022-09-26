@@ -133,6 +133,7 @@ class GPU_GLES2_EXPORT TextureOwner
   friend class base::DeleteHelper<TextureOwner>;
 
   // Used to restore texture binding to GL_TEXTURE_EXTERNAL_OES target.
+  // TODO(crbug.com/1367187): Fold into gl::ScopedRestoreTexture.
   class ScopedRestoreTextureBinding {
    public:
     ScopedRestoreTextureBinding() {
