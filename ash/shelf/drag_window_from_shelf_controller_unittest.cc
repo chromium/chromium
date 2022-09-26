@@ -1408,6 +1408,35 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_FALSE(transient_child_win2->IsVisible());
 }
 
+// Tests that destroying a trasient child that is being dragged from the shelf
+// does not result in a crash. Regression test for https://crbug.com/1200596.
+TEST_F(DragWindowFromShelfControllerTest, DestroyTransientWhileAnimating) {
+  const gfx::Rect shelf_bounds =
+      Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
+
+  // The crash occurred while destroying an animating window.
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // The transient child needs to also be an app window.
+  auto window = CreateAppWindow();
+  auto child = CreateAppWindow();
+  wm::AddTransientChild(window.get(), child.get());
+
+  // Drag the child barely above the shelf so that it returns to its original
+  // position on release. The drag can go anywhere as long as the window moves
+  // and the release is close to the top of the shelf.
+  StartDrag(child.get(), shelf_bounds.right_center());
+  Drag(gfx::Point(100, 100), 1.f, 1.f);
+  EndDrag(gfx::Point(shelf_bounds.width() / 2, shelf_bounds.y() - 10),
+          /*velocity_y=*/absl::nullopt);
+  ASSERT_TRUE(window->layer()->GetAnimator()->is_animating());
+  ASSERT_TRUE(child->layer()->GetAnimator()->is_animating());
+
+  // Destroy the transient child during animation. There should be no crash.
+  child.reset();
+}
+
 // Tests that destroying a dragged window in split view will not cause crash.
 TEST_F(DragWindowFromShelfControllerTest,
        DestroyWindowDuringDraggingInSplitView) {

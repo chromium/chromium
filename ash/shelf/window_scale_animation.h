@@ -31,8 +31,7 @@ class ASH_EXPORT WindowScaleAnimation {
     kScaleUpToRestore,
   };
 
-  WindowScaleAnimation(aura::Window* window,
-                       WindowScaleType scale_type,
+  WindowScaleAnimation(WindowScaleType scale_type,
                        base::OnceClosure opt_callback);
 
   WindowScaleAnimation(const WindowScaleAnimation&) = delete;
@@ -41,8 +40,8 @@ class ASH_EXPORT WindowScaleAnimation {
   ~WindowScaleAnimation();
 
   // Starts animating and creating animation observers for all window(s) in the
-  // transient tree of `window_` in a descending order,
-  void Start();
+  // transient tree of `window` in a descending order,
+  void Start(aura::Window* window);
 
   // For tests only:
   static base::AutoReset<bool>
@@ -54,14 +53,15 @@ class ASH_EXPORT WindowScaleAnimation {
   void DestroyWindowAnimationObserver(
       WindowScaleAnimation::AnimationObserver* animation_observer);
 
-  void OnScaleWindowsOnAnimationsCompleted();
+  // `window` is the last window in the transient tree to complete its
+  // animation.
+  void OnScaleWindowsOnAnimationsCompleted(aura::Window* window);
 
-  aura::Window* window_;
   base::OnceClosure opt_callback_;
 
   const WindowScaleType scale_type_;
 
-  // Each window in the transient tree has its own |WindowAnimationObserver|.
+  // Each window in the transient tree has its own `WindowAnimationObserver`.
   std::vector<std::unique_ptr<AnimationObserver>> window_animation_observers_;
 };
 
