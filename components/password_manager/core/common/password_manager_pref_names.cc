@@ -40,6 +40,8 @@ const char kUnenrolledFromGoogleMobileServicesDueToErrors[] =
     "unenrolled_from_google_mobile_services_due_to_errors";
 const char kUnenrolledFromGoogleMobileServicesAfterApiErrorCode[] =
     "unenrolled_from_google_mobile_services_after_api_error_code";
+const char kUnenrolledFromGoogleMobileServicesWithErrorListVersion[] =
+    "unenrolled_from_google_mobile_services_with_error_list_version";
 
 const char kUPMErrorUIShownTimestamp[] = "profile.upm_error_ui_shown_timestamp";
 #endif

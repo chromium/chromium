@@ -98,6 +98,12 @@ extern const char kUnenrolledFromGoogleMobileServicesDueToErrors[];
 // |kUnenrolledFromGoogleMobileServicesDueToErrors| is true.
 extern const char kUnenrolledFromGoogleMobileServicesAfterApiErrorCode[];
 
+// Integer value indicating the version of the ignored/retriable error list
+// during the last unenrollment from the UPM experience. User will not be
+// re-enrolled if this value is set and is not less than the in the current
+// error list version.
+extern const char kUnenrolledFromGoogleMobileServicesWithErrorListVersion[];
+
 // Timestamp at which the last UPM error message was shown to the user in
 // milliseconds since UNIX epoch (used in Java).
 // This is needed to ensure that the UI is prompted only once per given

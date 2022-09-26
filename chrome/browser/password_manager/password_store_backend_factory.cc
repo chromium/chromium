@@ -7,6 +7,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_store_built_in_backend.h"
@@ -34,6 +35,11 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
   if (PasswordStoreAndroidBackendBridge::CanCreateBackend() &&
       base::FeatureList::IsEnabled(
           password_manager::features::kUnifiedPasswordManagerAndroid)) {
+    // Re-enrollment happens before the initial migration and any possible
+    // backend interactions allowing to perform proper initialization.
+    if (password_manager_upm_eviction::ShouldInvalidateEviction(prefs))
+      password_manager_upm_eviction::ReenrollCurrentUser(prefs);
+
     base::UmaHistogramBoolean(
         "PasswordManager.PasswordStore.WasEnrolledInUPMWhenBackendWasCreated",
         !prefs->GetBoolean(password_manager::prefs::
