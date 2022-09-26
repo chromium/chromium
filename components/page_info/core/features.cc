@@ -12,13 +12,16 @@
 namespace page_info {
 
 #if BUILDFLAG(IS_ANDROID)
-const base::Feature kPageInfoHistory{"PageInfoHistory",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kPageInfoStoreInfo{"PageInfoStoreInfo",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPageInfoHistory,
+             "PageInfoHistory",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPageInfoStoreInfo,
+             "PageInfoStoreInfo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPageInfoDiscoverability{"PageInfoDiscoverability",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPageInfoDiscoverability,
+             "PageInfoDiscoverability",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale) {
@@ -29,33 +32,40 @@ extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale) {
   }
 }
 
-const base::Feature kPageInfoAboutThisSiteEn{"PageInfoAboutThisSiteEn",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kPageInfoAboutThisSiteNonEn{
-    "PageInfoAboutThisSiteNonEn", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPageInfoAboutThisSiteEn,
+             "PageInfoAboutThisSiteEn",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPageInfoAboutThisSiteNonEn,
+             "PageInfoAboutThisSiteNonEn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSiteEn,
                                                   "ShowSampleContent", false};
 
-const base::Feature kPageInfoAboutThisSiteMoreInfo{
-    "PageInfoAboutThisSiteMoreInfo", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPageInfoAboutThisSiteMoreInfo,
+             "PageInfoAboutThisSiteMoreInfo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPageInfoAboutThisSiteDescriptionPlaceholder{
-    "PageInfoAboutThisSiteDescriptionPlaceholder",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPageInfoAboutThisSiteDescriptionPlaceholder,
+             "PageInfoAboutThisSiteDescriptionPlaceholder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
-const base::Feature kPageInfoHistoryDesktop{"PageInfoHistoryDesktop",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPageInfoHistoryDesktop,
+             "PageInfoHistoryDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPageInfoHideSiteSettings{
-    "PageInfoHideSiteSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPageInfoHideSiteSettings,
+             "PageInfoHideSiteSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPageInfoCookiesSubpage{"PageInfoCookiesSubpage",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPageInfoCookiesSubpage,
+             "PageInfoCookiesSubpage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPageSpecificSiteDataDialog{
-    "PageSpecificSiteDataDialog", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPageSpecificSiteDataDialog,
+             "PageSpecificSiteDataDialog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif
 
