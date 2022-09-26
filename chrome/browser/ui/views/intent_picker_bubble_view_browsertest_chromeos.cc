@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 
 #include <memory>
@@ -1168,7 +1169,10 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 //
 // TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
 // TODO(https://crbug.com/1367375): Fix timeouts under ASAN.
-#if defined(MEMORY_SANITIZER) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+// TODO(crbug.com/1367375): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) ||                            \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
+    defined(MEMORY_SANITIZER)
 #define MAYBE_RememberOpenPWA DISABLED_RememberOpenPWA
 #else
 #define MAYBE_RememberOpenPWA RememberOpenPWA
@@ -1257,7 +1261,10 @@ class IntentPickerBubbleViewPrerenderingBrowserTestChromeOS
 //
 // TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
 // TODO(https://crbug.com/1367375): Fix timeouts under ASAN.
-#if defined(MEMORY_SANITIZER) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+// TODO(crbug.com/1367375): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) ||                            \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
+    defined(MEMORY_SANITIZER)
 #define MAYBE_AppLaunchURLCancelsPrerendering \
   DISABLED_AppLaunchURLCancelsPrerendering
 #else
