@@ -355,9 +355,11 @@ const FeatureEntry::Choice kOverlayStrategiesChoices[] = {
 const FeatureEntry::Choice kTouchTextSelectionStrategyChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kTouchSelectionStrategyCharacter,
-     blink::switches::kTouchTextSelectionStrategy, "character"},
+     blink::switches::kTouchTextSelectionStrategy,
+     blink::switches::kTouchTextSelectionStrategy_Character},
     {flag_descriptions::kTouchSelectionStrategyDirection,
-     blink::switches::kTouchTextSelectionStrategy, "direction"}};
+     blink::switches::kTouchTextSelectionStrategy,
+     blink::switches::kTouchTextSelectionStrategy_Direction}};
 
 #if BUILDFLAG(IS_WIN)
 const FeatureEntry::Choice kUseAngleChoicesWindows[] = {

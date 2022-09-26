@@ -41,7 +41,8 @@ void SetContentCommandLineFlags(bool single_process) {
       base::android::SDK_VERSION_MARSHMALLOW) {
     parsed_command_line->AppendSwitch(switches::kEnableLongpressDragSelection);
     parsed_command_line->AppendSwitchASCII(
-        blink::switches::kTouchTextSelectionStrategy, "direction");
+        blink::switches::kTouchTextSelectionStrategy,
+        blink::switches::kTouchTextSelectionStrategy_Direction);
   }
 
   // On legacy low-memory devices the behavior has not been studied with regard

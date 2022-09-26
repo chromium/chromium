@@ -129,6 +129,8 @@ const char kShowPaintRects[] = "show-paint-rects";
 // handles are dragged. Should be "character" or "direction". If not specified,
 // the platform default is used.
 const char kTouchTextSelectionStrategy[] = "touch-selection-strategy";
+const char kTouchTextSelectionStrategy_Character[] = "character";
+const char kTouchTextSelectionStrategy_Direction[] = "direction";
 
 // Used to communicate managed policy for the SetTimeoutWithoutClamp feature.
 // This feature is typically controlled by base::Feature (see

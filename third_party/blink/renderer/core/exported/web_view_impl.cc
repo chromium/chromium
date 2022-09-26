@@ -348,7 +348,7 @@ void ApplyCommandLineToSettings(WebSettings* settings) {
 
   WebSettings::SelectionStrategyType selection_strategy;
   if (command_line.GetSwitchValueASCII(switches::kTouchTextSelectionStrategy) ==
-      "direction")
+      switches::kTouchTextSelectionStrategy_Direction)
     selection_strategy = WebSettings::SelectionStrategyType::kDirection;
   else
     selection_strategy = WebSettings::SelectionStrategyType::kCharacter;
