@@ -130,7 +130,7 @@ class ONCCertificateImporterImplTest : public testing::Test {
                 certificate::GetCertType(private_list_[0].get()));
     }
 
-    const base::Value& certificate = onc_certificates_.GetListDeprecated()[0];
+    const base::Value& certificate = onc_certificates_.GetList()[0];
     const std::string* guid_value =
         certificate.FindStringKey(::onc::certificate::kGUID);
     *guid = *guid_value;
@@ -185,7 +185,7 @@ TEST_F(ONCCertificateImporterImplTest, MultipleCertificates) {
   AddCertificatesFromFile("managed_toplevel2.onc", ImportType::kAllCertificates,
                           true /* expected_parse_success */,
                           true /* expected_import_success */);
-  EXPECT_EQ(onc_certificates_.GetListDeprecated().size(), public_list_.size());
+  EXPECT_EQ(onc_certificates_.GetList().size(), public_list_.size());
   EXPECT_TRUE(private_list_.empty());
   EXPECT_EQ(2ul, public_list_.size());
 }
@@ -205,7 +205,7 @@ TEST_F(ONCCertificateImporterImplTest, MultipleCertificatesWithFailures) {
   AddCertificatesFromFile(
       "toplevel_partially_invalid.onc", ImportType::kAllCertificates,
       false /* expected_parse_success */, true /* expected_import_success */);
-  EXPECT_EQ(3ul, onc_certificates_.GetListDeprecated().size());
+  EXPECT_EQ(3ul, onc_certificates_.GetList().size());
   EXPECT_EQ(1ul, private_list_.size());
   EXPECT_TRUE(public_list_.empty());
 }

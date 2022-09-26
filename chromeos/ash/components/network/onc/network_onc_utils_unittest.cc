@@ -30,11 +30,11 @@ TEST(ONCUtils, ProxySettingsToProxyConfig) {
   base::Value additional_tests =
       test_utils::ReadTestJson("proxy_config_from_onc.json");
   ASSERT_TRUE(additional_tests.is_list());
-  for (const base::Value& value : additional_tests.GetListDeprecated())
+  for (const base::Value& value : additional_tests.GetList())
     list_of_tests.Append(value.Clone());
 
   int index = 0;
-  for (const base::Value& test_case : list_of_tests.GetListDeprecated()) {
+  for (const base::Value& test_case : list_of_tests.GetList()) {
     SCOPED_TRACE("Test case #" + base::NumberToString(index++));
 
     ASSERT_TRUE(test_case.is_dict());
@@ -58,7 +58,7 @@ TEST(ONCUtils, ProxyConfigToOncProxySettings) {
   ASSERT_TRUE(list_of_tests.is_list());
 
   int index = 0;
-  for (const base::Value& test_case : list_of_tests.GetListDeprecated()) {
+  for (const base::Value& test_case : list_of_tests.GetList()) {
     SCOPED_TRACE("Test case #" + base::NumberToString(index++));
 
     const base::Value* shill_proxy_config = test_case.FindKey("ProxyConfig");

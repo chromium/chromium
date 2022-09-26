@@ -999,7 +999,7 @@ ManagedNetworkConfigurationHandlerImpl::GetBlockedHexSSIDs() const {
     return std::vector<std::string>();
 
   std::vector<std::string> blocked_hex_ssids;
-  for (const base::Value& entry : blocked_value->GetListDeprecated())
+  for (const base::Value& entry : blocked_value->GetList())
     blocked_hex_ssids.push_back(entry.GetString());
   return blocked_hex_ssids;
 }
@@ -1129,7 +1129,7 @@ void ManagedNetworkConfigurationHandlerImpl::GetDeviceStateProperties(
     for (const auto iter : device_state->ip_configs())
       ip_configs.Append(iter.second.Clone());
   }
-  if (!ip_configs.GetListDeprecated().empty()) {
+  if (!ip_configs.GetList().empty()) {
     properties->SetKey(shill::kIPConfigsProperty, std::move(ip_configs));
   }
 }

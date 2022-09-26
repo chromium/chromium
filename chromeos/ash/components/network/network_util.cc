@@ -137,7 +137,7 @@ std::string FormattedMacAddress(const std::string& shill_mac_address) {
   return result;
 }
 
-bool ParseCellularScanResults(const base::Value::ConstListView list,
+bool ParseCellularScanResults(const base::Value::List& list,
                               std::vector<CellularScanResult>* scan_results) {
   scan_results->clear();
   scan_results->reserve(list.size());
@@ -173,7 +173,7 @@ bool ParseCellularScanResults(const base::Value::ConstListView list,
 }
 
 bool ParseCellularSIMSlotInfo(
-    const base::Value::ConstListView list,
+    const base::Value::List& list,
     std::vector<CellularSIMSlotInfo>* sim_slot_infos) {
   sim_slot_infos->clear();
   sim_slot_infos->reserve(list.size());

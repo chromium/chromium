@@ -694,13 +694,13 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
     }
     const base::Value* name_servers =
         static_ipconfig->FindListKey(shill::kNameServersProperty);
-    if (name_servers && !name_servers->GetListDeprecated().empty()) {
+    if (name_servers && !name_servers->GetList().empty()) {
       onc_object_.SetKey(
           ::onc::network_config::kNameServersConfigType,
           base::Value(::onc::network_config::kIPConfigTypeStatic));
     }
     if ((ip_address && !ip_address->empty()) ||
-        (name_servers && !name_servers->GetListDeprecated().empty())) {
+        (name_servers && !name_servers->GetList().empty())) {
       TranslateAndAddNestedObject(::onc::network_config::kStaticIPConfig,
                                   *static_ipconfig);
     }
@@ -824,8 +824,7 @@ void ShillToONCTranslator::TranslateEap() {
   if (subject_alternative_name_match) {
     base::Value deserialized_dicts(base::Value::Type::LIST);
     std::string error_msg;
-    for (const base::Value& san :
-         subject_alternative_name_match->GetListDeprecated()) {
+    for (const base::Value& san : subject_alternative_name_match->GetList()) {
       JSONStringValueDeserializer deserializer(san.GetString());
       auto deserialized_dict =
           deserializer.Deserialize(/*error_code=*/nullptr, &error_msg);
@@ -899,7 +898,7 @@ void ShillToONCTranslator::TranslateAndAddListOfObjects(
   }
   DCHECK(field_signature->value_signature->onc_array_entry_signature);
   base::Value result(base::Value::Type::LIST);
-  for (const auto& it : list.GetListDeprecated()) {
+  for (const auto& it : list.GetList()) {
     if (!it.is_dict())
       continue;
     ShillToONCTranslator nested_translator(
@@ -914,7 +913,7 @@ void ShillToONCTranslator::TranslateAndAddListOfObjects(
   }
   // If there are no entries in the list, there is no need to expose this
   // field.
-  if (result.GetListDeprecated().empty())
+  if (result.GetList().empty())
     return;
   onc_object_.SetKey(onc_field_name, std::move(result));
 }

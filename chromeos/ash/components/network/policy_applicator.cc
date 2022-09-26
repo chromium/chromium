@@ -141,7 +141,7 @@ void PolicyApplicator::GetProfilePropertiesCallback(
     return;
   }
 
-  for (const auto& it : entries->GetListDeprecated()) {
+  for (const auto& it : entries->GetList()) {
     if (!it.is_string())
       continue;
 

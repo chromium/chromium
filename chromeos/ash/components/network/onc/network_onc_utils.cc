@@ -134,7 +134,7 @@ void AppendProxyServerForScheme(const base::Value& onc_manual,
 net::ProxyBypassRules ConvertOncExcludeDomainsToBypassRules(
     const base::Value& onc_exclude_domains) {
   net::ProxyBypassRules rules;
-  for (const base::Value& value : onc_exclude_domains.GetListDeprecated()) {
+  for (const base::Value& value : onc_exclude_domains.GetList()) {
     if (!value.is_string()) {
       LOG(ERROR) << "Badly formatted ONC exclude domains";
       continue;
@@ -201,7 +201,7 @@ void SetProxyForScheme(const net::ProxyConfig::ProxyRules& proxy_rules,
 // nullptr if no such NetworkConfiguration is found.
 const base::Value* GetNetworkConfigByGUID(const base::Value& network_configs,
                                           const std::string& guid) {
-  for (const auto& network : network_configs.GetListDeprecated()) {
+  for (const auto& network : network_configs.GetList()) {
     DCHECK(network.is_dict());
 
     std::string current_guid = GetString(network, ::onc::network_config::kGUID);
@@ -216,7 +216,7 @@ const base::Value* GetNetworkConfigByGUID(const base::Value& network_configs,
 const base::Value* GetNetworkConfigForEthernetWithoutEAP(
     const base::Value& network_configs) {
   VLOG(2) << "Search for ethernet policy without EAP.";
-  for (const auto& network : network_configs.GetListDeprecated()) {
+  for (const auto& network : network_configs.GetList()) {
     DCHECK(network.is_dict());
 
     std::string type = GetString(network, ::onc::network_config::kType);
@@ -470,7 +470,7 @@ base::Value ConvertProxyConfigToOncProxySettings(
         base::Value exclude_domains(base::Value::Type::LIST);
         for (const auto& rule : bypass_rules.rules())
           exclude_domains.Append(rule->ToString());
-        if (!exclude_domains.GetListDeprecated().empty()) {
+        if (!exclude_domains.GetList().empty()) {
           proxy_settings.SetKey(::onc::proxy::kExcludeDomains,
                                 std::move(exclude_domains));
         }
@@ -513,7 +513,7 @@ int ImportNetworksForUser(const user_manager::User* user,
 
   bool ethernet_not_found = false;
   int networks_created = 0;
-  for (const auto& network : expanded_networks.GetListDeprecated()) {
+  for (const auto& network : expanded_networks.GetList()) {
     // Remove irrelevant fields.
     onc::Normalizer normalizer(true /* remove recommended fields */);
     base::Value normalized_network = normalizer.NormalizeObject(
@@ -642,7 +642,7 @@ bool HasUserPasswordSubsitutionVariable(
 }
 
 bool HasUserPasswordSubsitutionVariable(const base::Value* network_configs) {
-  for (auto& network : network_configs->GetListDeprecated()) {
+  for (const auto& network : network_configs->GetList()) {
     DCHECK(network.is_dict());
     bool result = HasUserPasswordSubsitutionVariable(
         chromeos::onc::kNetworkConfigurationSignature, &network);

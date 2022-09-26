@@ -120,7 +120,7 @@ void GeolocationHandler::HandlePropertyChanged(const std::string& key,
   bool cellular_was_enabled = cellular_enabled_;
   cellular_enabled_ = false;
   wifi_enabled_ = false;
-  for (const auto& entry : value.GetListDeprecated()) {
+  for (const auto& entry : value.GetList()) {
     const std::string* technology = entry.GetIfString();
     if (technology && *technology == shill::kTypeWifi) {
       wifi_enabled_ = true;
@@ -176,7 +176,7 @@ void GeolocationHandler::GeolocationCallback(
     }
 
     // List[Dictionary<key, value_str>]
-    for (const auto& entry : entry_list->GetListDeprecated()) {
+    for (const auto& entry : entry_list->GetList()) {
       if (!entry.is_dict()) {
         LOG(WARNING) << "Geolocation list value not a Dictionary";
         continue;

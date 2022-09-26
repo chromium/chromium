@@ -58,7 +58,7 @@ bool DeviceState::PropertyChanged(const std::string& key,
     if (!value.is_list())
       return false;
     CellularScanResults parsed_results;
-    if (!network_util::ParseCellularScanResults(value.GetListDeprecated(),
+    if (!network_util::ParseCellularScanResults(value.GetList(),
                                                 &parsed_results))
       return false;
     scan_results_.swap(parsed_results);
@@ -67,7 +67,7 @@ bool DeviceState::PropertyChanged(const std::string& key,
     if (!value.is_list())
       return false;
     CellularSIMSlotInfos parsed_results;
-    if (!network_util::ParseCellularSIMSlotInfo(value.GetListDeprecated(),
+    if (!network_util::ParseCellularSIMSlotInfo(value.GetList(),
                                                 &parsed_results)) {
       return false;
     }

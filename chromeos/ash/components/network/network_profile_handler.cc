@@ -24,9 +24,8 @@ namespace ash {
 
 namespace {
 
-bool ConvertListValueToStringVector(
-    const base::Value::ConstListView string_list,
-    std::vector<std::string>* result) {
+bool ConvertListValueToStringVector(const base::Value::List& string_list,
+                                    std::vector<std::string>* result) {
   for (const base::Value& i : string_list) {
     const std::string* str = i.GetIfString();
     if (!str)
@@ -96,8 +95,8 @@ void NetworkProfileHandler::OnPropertyChanged(const std::string& name,
   DCHECK(value.is_list());
 
   std::vector<std::string> new_profile_paths;
-  bool result = ConvertListValueToStringVector(value.GetListDeprecated(),
-                                               &new_profile_paths);
+  bool result =
+      ConvertListValueToStringVector(value.GetList(), &new_profile_paths);
   DCHECK(result);
 
   VLOG(2) << "Profiles: " << profiles_.size();

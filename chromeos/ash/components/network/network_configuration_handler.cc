@@ -662,13 +662,13 @@ void NetworkConfigurationHandler::ClearPropertiesSuccessCallback(
     base::OnceClosure callback,
     const base::ListValue& result) {
   const std::string kClearPropertiesFailedError("Error.ClearPropertiesFailed");
-  DCHECK(names.size() == result.GetListDeprecated().size())
+  DCHECK(names.size() == result.GetList().size())
       << "Incorrect result size from ClearProperties.";
 
-  for (size_t i = 0; i < result.GetListDeprecated().size(); ++i) {
+  for (size_t i = 0; i < result.GetList().size(); ++i) {
     bool success = false;
-    if (result.GetListDeprecated()[i].is_bool())
-      success = result.GetListDeprecated()[i].GetBool();
+    if (result.GetList()[i].is_bool())
+      success = result.GetList()[i].GetBool();
     if (!success) {
       // If a property was cleared that has never been set, the clear will fail.
       // We do not track which properties have been set, so just log the error.
