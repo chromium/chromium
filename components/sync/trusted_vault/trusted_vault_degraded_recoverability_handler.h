@@ -19,12 +19,6 @@ class LocalTrustedVaultDegradedRecoverabilityState;
 }  // namespace sync_pb
 
 namespace syncer {
-// Exposed only for testing.
-constexpr base::TimeDelta kLongDegradedRecoverabilityRefreshPeriod =
-    base::Days(7);
-constexpr base::TimeDelta kShortDegradedRecoverabilityRefreshPeriod =
-    base::Hours(1);
-
 // Refreshs the degraded recoverability state by scheduling the requests based
 // on the current state, heuristics and last refresh time.
 class TrustedVaultDegradedRecoverabilityHandler {
@@ -66,6 +60,8 @@ class TrustedVaultDegradedRecoverabilityHandler {
   void OnRecoverabilityIsDegradedDownloaded(
       TrustedVaultRecoverabilityStatus status);
 
+  base::TimeDelta long_degraded_recoverability_refresh_period_;
+  base::TimeDelta short_degraded_recoverability_refresh_period_;
   const raw_ptr<TrustedVaultConnection> connection_;
   const raw_ptr<Delegate> delegate_;
   CoreAccountInfo account_info_;

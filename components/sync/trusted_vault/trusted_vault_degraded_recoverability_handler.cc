@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
@@ -52,8 +53,12 @@ TrustedVaultDegradedRecoverabilityHandler::
             degraded_recoverability_state)
     : connection_(connection),
       delegate_(delegate),
-      account_info_(account_info),
-      current_refresh_period_(kLongDegradedRecoverabilityRefreshPeriod) {
+      account_info_(account_info) {
+  long_degraded_recoverability_refresh_period_ =
+      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
+  short_degraded_recoverability_refresh_period_ =
+      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
+  current_refresh_period_ = long_degraded_recoverability_refresh_period_;
   // TODO(crbug.com/1247990): Handle the nullopt value after introducing it.
   is_recoverability_degraded_ =
       degraded_recoverability_state.is_recoverability_degraded();
@@ -76,12 +81,12 @@ void TrustedVaultDegradedRecoverabilityHandler::
 }
 
 void TrustedVaultDegradedRecoverabilityHandler::StartLongIntervalRefreshing() {
-  current_refresh_period_ = kLongDegradedRecoverabilityRefreshPeriod;
+  current_refresh_period_ = long_degraded_recoverability_refresh_period_;
   Start();
 }
 
 void TrustedVaultDegradedRecoverabilityHandler::StartShortIntervalRefreshing() {
-  current_refresh_period_ = kShortDegradedRecoverabilityRefreshPeriod;
+  current_refresh_period_ = short_degraded_recoverability_refresh_period_;
   Start();
 }
 

@@ -113,6 +113,16 @@ inline constexpr base::Feature
     kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling{
         "SyncTrustedVaultDegradedRecoverabilityHandler",
         base::FEATURE_DISABLED_BY_DEFAULT};
+inline constexpr base::FeatureParam<base::TimeDelta>
+    kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling{
+        &kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling,
+        "kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling",
+        base::Days(7)};
+inline constexpr base::FeatureParam<base::TimeDelta>
+    kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling{
+        &kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling,
+        "kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling",
+        base::Hours(1)};
 
 #if BUILDFLAG(IS_IOS)
 // Whether RPC is enabled.
