@@ -11,11 +11,6 @@
 #include "base/android/build_info.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-#include <vulkan/vulkan_core.h>
-#include "third_party/angle/src/gpu_info_util/SystemInfo.h"  // nogncheck
-#endif
-
 namespace gl {
 
 const char kGLImplementationDesktopName[] = "desktop";
@@ -289,27 +284,6 @@ bool IsDefaultANGLEVulkan() {
       base::android::SDK_VERSION_Q)
     return false;
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_LINUX)
-  angle::SystemInfo system_info;
-  if (!angle::GetSystemInfoVulkan(&system_info))
-    return false;
-
-  if (static_cast<size_t>(system_info.activeGPUIndex) >=
-      system_info.gpus.size()) {
-    return false;
-  }
-
-  const auto& active_gpu = system_info.gpus[system_info.activeGPUIndex];
-
-  // Vulkan 1.1 is required.
-  if (active_gpu.driverApiVersion < VK_VERSION_1_1)
-    return false;
-
-  // AMDVLK driver is buggy, so disable Vulkan with AMDVLK for now.
-  // crbug.com/1340081
-  if (active_gpu.driverId == VK_DRIVER_ID_AMD_OPEN_SOURCE)
-    return false;
-#endif
   return base::FeatureList::IsEnabled(kDefaultANGLEVulkan);
 }
 
