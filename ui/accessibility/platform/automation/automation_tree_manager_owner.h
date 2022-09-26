@@ -9,6 +9,7 @@
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/automation/automation_ax_tree_wrapper.h"
+#include "v8/include/v8-isolate.h"
 
 // TODO(crbug.com/1357889): Remove this after migrating test logic to
 // ui/accessibility.
@@ -30,8 +31,7 @@ class AX_EXPORT AutomationTreeManagerOwner {
   // Virtual methods for sending data to the hosting bindings system.
   // TODO(crbug.com/1357889): Create implementations of these through
   // creating V8 values, and a virtual method to take V8 values and
-  // dispatch them. V8 logic should go in a separate class owned by
-  // this one.
+  // dispatch them. V8 logic should go in AutomationV8Bindings.
   //
 
   // Sends an event to automation in V8 that the nodes with IDs |ids|
@@ -52,6 +52,9 @@ class AX_EXPORT AutomationTreeManagerOwner {
       const AXEvent& event,
       absl::optional<AXEventGenerator::Event> generated_event_type =
           absl::optional<AXEventGenerator::Event>()) = 0;
+
+  virtual void TreeEventListenersChanged(
+      ui::AutomationAXTreeWrapper* tree_wrapper) = 0;
 
   // Gets the hosting node in a parent tree.
   AXNode* GetHostInParentTree(
@@ -84,16 +87,6 @@ class AX_EXPORT AutomationTreeManagerOwner {
 
   void SendAccessibilityFocusedLocationChange(const gfx::Point& mouse_location);
 
- protected:
-  friend class extensions::AutomationInternalCustomBindingsTest;
-
-  // Given an initial AutomationAXTreeWrapper, return the
-  // AutomationAXTreeWrapper and node of the focused node within this tree
-  // or a focused descendant tree.
-  bool GetFocusInternal(AutomationAXTreeWrapper* top_tree,
-                        AutomationAXTreeWrapper** out_tree,
-                        AXNode** out_node);
-
   // Adjust the bounding box of a node from local to global coordinates,
   // walking up the parent hierarchy to offset by frame offsets and
   // scroll offsets.
@@ -122,6 +115,23 @@ class AX_EXPORT AutomationTreeManagerOwner {
       AXNode* node,
       bool start_boundary);
 
+  const AXTreeID& accessibility_focused_tree_id() const {
+    return accessibility_focused_tree_id_;
+  }
+  void SetAccessibilityFocusedTreeID(AXTreeID tree_id) {
+    accessibility_focused_tree_id_ = tree_id;
+  }
+
+ protected:
+  friend class extensions::AutomationInternalCustomBindingsTest;
+
+  // Given an initial AutomationAXTreeWrapper, return the
+  // AutomationAXTreeWrapper and node of the focused node within this tree
+  // or a focused descendant tree.
+  bool GetFocusInternal(AutomationAXTreeWrapper* top_tree,
+                        AutomationAXTreeWrapper** out_tree,
+                        AXNode** out_node);
+
   void CacheAutomationTreeWrapperForTreeID(
       const AXTreeID& tree_id,
       AutomationAXTreeWrapper* tree_wrapper);
@@ -137,14 +147,6 @@ class AX_EXPORT AutomationTreeManagerOwner {
   void SetDesktopTreeId(AXTreeID tree_id) { desktop_tree_id_ = tree_id; }
 
   const AXTreeID& desktop_tree_id() { return desktop_tree_id_; }
-
-  void SetAccessibilityFocusedTreeID(AXTreeID tree_id) {
-    accessibility_focused_tree_id_ = tree_id;
-  }
-
-  const AXTreeID& accessibility_focused_tree_id() const {
-    return accessibility_focused_tree_id_;
-  }
 
  private:
   std::map<AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>

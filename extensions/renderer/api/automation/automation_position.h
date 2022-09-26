@@ -20,6 +20,7 @@ namespace extensions {
 // For new additions, consider whether it should be public to the
 // chrome.automation extension api. If so, please update
 // extensions/common/api/automation.idl.
+// TODO(crbug.com/1357889): Move into ui/accessibility/platform/automation/.
 class AutomationPosition final : public gin::Wrappable<AutomationPosition> {
  public:
   AutomationPosition(const ui::AXNode& node, int offset, bool is_upstream);

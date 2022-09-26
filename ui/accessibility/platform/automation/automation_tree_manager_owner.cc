@@ -8,6 +8,7 @@
 #include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_text_utils.h"
+#include "ui/accessibility/platform/automation/automation_api_util.h"
 #include "ui/accessibility/platform/automation/automation_ax_tree_wrapper.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 

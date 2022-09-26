@@ -102,9 +102,16 @@ source_set("platform") {
       "automation/automation_ax_tree_wrapper.h",
       "automation/automation_tree_manager_owner.cc",
       "automation/automation_tree_manager_owner.h",
+      "automation/automation_v8_bindings.cc",
+      "automation/automation_v8_bindings.h",
+      "automation/automation_v8_router.h",
     ]
 
-    public_deps += [ "//components/crash/core/common:crash_key" ]
+    deps = [
+      "//base:i18n",
+      "//components/crash/core/common:crash_key",
+      "//gin",
+    ]
   }
 
   if (is_fuchsia) {
