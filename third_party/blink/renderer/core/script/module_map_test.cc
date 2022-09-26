@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetcher.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader_client.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -139,7 +141,7 @@ class ModuleMapTestModulator final : public DummyModulator {
   }
 
   base::SingleThreadTaskRunner* TaskRunner() override {
-    return Thread::Current()->GetDeprecatedTaskRunner().get();
+    return task_runner_.get();
   }
 
   struct TestRequest final : public GarbageCollected<TestRequest> {
@@ -160,11 +162,14 @@ class ModuleMapTestModulator final : public DummyModulator {
   HeapVector<Member<TestRequest>> test_requests_;
 
   Member<ScriptState> script_state_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Member<TestModuleRecordResolver> resolver_;
 };
 
 ModuleMapTestModulator::ModuleMapTestModulator(ScriptState* script_state)
     : script_state_(script_state),
+      task_runner_(ExecutionContext::From(script_state_)
+                       ->GetTaskRunner(TaskType::kNetworking)),
       resolver_(MakeGarbageCollected<TestModuleRecordResolver>()) {}
 
 void ModuleMapTestModulator::Trace(Visitor* visitor) const {
@@ -211,10 +216,6 @@ void ModuleMapTest::TearDown() {
 }
 
 TEST_F(ModuleMapTest, sequentialRequests) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
-  platform->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
-
   KURL url(NullURL(), "https://example.com/foo.js");
 
   // First request
@@ -227,7 +228,7 @@ TEST_F(ModuleMapTest, sequentialRequests) {
   Modulator()->ResolveFetches();
   EXPECT_FALSE(client->WasNotifyFinished())
       << "fetchSingleModuleScript shouldn't complete synchronously";
-  platform->RunUntilIdle();
+  test::RunPendingTasks();
 
   EXPECT_EQ(Modulator()
                 ->GetTestModuleRecordResolver()
@@ -246,7 +247,7 @@ TEST_F(ModuleMapTest, sequentialRequests) {
   Modulator()->ResolveFetches();
   EXPECT_FALSE(client2->WasNotifyFinished())
       << "fetchSingleModuleScript shouldn't complete synchronously";
-  platform->RunUntilIdle();
+  test::RunPendingTasks();
 
   EXPECT_EQ(Modulator()
                 ->GetTestModuleRecordResolver()
@@ -258,10 +259,6 @@ TEST_F(ModuleMapTest, sequentialRequests) {
 }
 
 TEST_F(ModuleMapTest, concurrentRequestsShouldJoin) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
-  platform->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
-
   KURL url(NullURL(), "https://example.com/foo.js");
 
   // First request
@@ -285,7 +282,7 @@ TEST_F(ModuleMapTest, concurrentRequestsShouldJoin) {
       << "fetchSingleModuleScript shouldn't complete synchronously";
   EXPECT_FALSE(client2->WasNotifyFinished())
       << "fetchSingleModuleScript shouldn't complete synchronously";
-  platform->RunUntilIdle();
+  test::RunPendingTasks();
 
   EXPECT_EQ(Modulator()
                 ->GetTestModuleRecordResolver()
