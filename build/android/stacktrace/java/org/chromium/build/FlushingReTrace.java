@@ -4,7 +4,7 @@
 
 package org.chromium.build;
 
-import com.android.tools.r8.retrace.ProguardMapProducer;
+import com.android.tools.r8.DiagnosticsHandler;
 import com.android.tools.r8.retrace.ProguardMappingSupplier;
 import com.android.tools.r8.retrace.Retrace;
 import com.android.tools.r8.retrace.RetraceCommand;
@@ -13,7 +13,6 @@ import com.android.tools.r8.retrace.StackTraceSupplier;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
@@ -101,18 +100,19 @@ public class FlushingReTrace {
         }
 
         try {
+            ProguardMappingSupplier mappingSupplier =
+                    ProguardMappingSupplier.builder()
+                            .setProguardMapProducer(() -> new FileInputStream(args[0]))
+                            .build();
+            // Force earger parsing of .mapping file (~10 second operation). It otherwise would
+            // not happen until the first line of input is received.
+            // https://crbug.com/1351023
+            mappingSupplier.createRetracer(new DiagnosticsHandler() {});
+
             // This whole command was given to us by the R8 team in b/234758957.
             RetraceCommand retraceCommand =
                     RetraceCommand.builder()
-                            .setMappingSupplier(
-                                    ProguardMappingSupplier.builder()
-                                            .setProguardMapProducer(new ProguardMapProducer() {
-                                                @Override
-                                                public InputStream get() throws IOException {
-                                                    return new FileInputStream(args[0]);
-                                                }
-                                            })
-                                            .build())
+                            .setMappingSupplier(mappingSupplier)
                             .setRetracedStackTraceConsumer(
                                     retraced -> retraced.forEach(System.out::println))
                             .setRegularExpression(LINE_PARSE_REGEX)
