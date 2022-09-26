@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/mac/keystone_glue.h"
@@ -29,7 +30,8 @@ void CheckProcessExit(base::Process process, base::OnceClosure callback) {
   } else {
     base::ThreadPool::PostDelayedTask(
         FROM_HERE,
-        {base::TaskPriority::BEST_EFFORT, base::WithBaseSyncPrimitives(),
+        {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+         base::WithBaseSyncPrimitives(),
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&CheckProcessExit, std::move(process),
                        std::move(callback)),

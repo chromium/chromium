@@ -5,6 +5,7 @@
 #include "chrome/browser/updater/scheduler.h"
 
 #include "base/bind.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 
@@ -16,7 +17,8 @@ void RunAndReschedule() {
   DoPeriodicTasks(base::BindOnce([]() {
     base::ThreadPool::PostDelayedTask(
         FROM_HERE,
-        {base::TaskPriority::BEST_EFFORT, base::WithBaseSyncPrimitives(),
+        {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+         base::WithBaseSyncPrimitives(),
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&RunAndReschedule), base::Hours(5));
   }));
@@ -27,7 +29,8 @@ void RunAndReschedule() {
 void SchedulePeriodicTasks() {
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT, base::WithBaseSyncPrimitives(),
+      {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+       base::WithBaseSyncPrimitives(),
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&RunAndReschedule), base::Minutes(5));
 }
