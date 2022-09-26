@@ -205,6 +205,8 @@ void BackgroundTabLoadingPolicy::OnBeforePageNodeRemoved(
 void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
     std::vector<BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission>
         page_node_and_permission_vector) {
+  const size_t page_nodes_to_load_initial_size = page_nodes_to_load_.size();
+
   for (auto page_node_and_permission : page_node_and_permission_vector) {
     PageNode* page_node = page_node_and_permission.page_node.get();
     if (!page_node)
@@ -227,8 +229,14 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
                        .has_notification_permission));
   }
 
-  for (auto& page_node_to_load_data : page_nodes_to_load_) {
-    SetUsedInBackgroundAsync(page_node_to_load_data.get());
+  // Asynchronously determine whether pages added to `page_nodes_to_load_` are
+  // used in background. Do this after all pages have been added to
+  // `page_nodes_to_load_`, otherwise the policy may start loading pages without
+  // knowing about all the tabs that must be loaded (see
+  // `OnUsedInBackgroundAvailable()`).
+  for (size_t i = page_nodes_to_load_initial_size;
+       i < page_nodes_to_load_.size(); ++i) {
+    SetUsedInBackgroundAsync(page_nodes_to_load_[i].get());
   }
 }
 
