@@ -1423,7 +1423,7 @@ const base::Feature kThrottleIntersectionObserverUMA{
     "ThrottleIntersectionObserverUMA", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kWebRtcMetronome{"WebRtcMetronome",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSyncAccessHandleAllSyncSurface{
     "SyncAccessHandleAllSyncSurface", base::FEATURE_DISABLED_BY_DEFAULT};
