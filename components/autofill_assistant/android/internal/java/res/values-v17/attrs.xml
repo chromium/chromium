@@ -29,6 +29,7 @@ found in the LICENSE file.
         <attr name="iconHeight" format="reference|dimension"/>
         <attr name="primaryTextAppearance" format="reference"/>
         <attr name="secondaryTextAppearance" format="reference"/>
+        <attr name="buttonTextColor" format="reference"/>
         <attr name="rippleColor"/>
         <attr name="chipBorderWidth" format="reference"/>
         <attr name="verticalInset"/>
