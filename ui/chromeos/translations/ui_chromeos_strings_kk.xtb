@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">Абайлаңыз: бұл файлдар уақытша және дискідегі орынды босату үшін автоматты түрде жойылуы мүмкін.</translation>
 <translation id="3029114385395636667">Docs, Sheets және Slides қызметтерін офлайн пайдалану үшін Офлайн Google Docs кеңейтімін қосыңыз.</translation>
 <translation id="303198083543495566">География</translation>
+<translation id="3044404008258011032">Бұл элементтерді қалпына келтіру үшін оларды себеттен жаңа қалтаға сүйреңіз. Элементтерге арналған "<ph name="PARENT_FOLDER_NAME" />" деп аталатын бастапқы қалта жойылған.</translation>
 <translation id="3047197340186497470">Қытай (даи)</translation>
 <translation id="3067790092342515856">Windows файлдары</translation>
 <translation id="3083975830683400843">Chromebit құрылғылары</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">Іске қосылуда...</translation>
 <translation id="4092890906744441904">Ирланд</translation>
 <translation id="4124935795427217608">Пырақ</translation>
+<translation id="4131235941541910880">Қажетсіз элементтерді себетке жіберіңіз.</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> жылжытылды.</translation>
 <translation id="4176286497474237543">Себетті қазір босату</translation>
 <translation id="4186579485882418952">Офлайн режимде қолдану мүмкіндігін қосу</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">неміс</translation>
 <translation id="4867079195717347957">Бағанды кему ретімен сұрыптау үшін басыңыз.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> байт</translation>
+<translation id="4874569719830985133">Біржола жою</translation>
 <translation id="4880214202172289027">Дыбыс деңгейі ысырмасы</translation>
 <translation id="4881695831933465202">Ашу</translation>
+<translation id="4891091358278567964">Бұл элементтерді қалпына келтіру үшін оларды себеттен жаңа қалтаға сүйреңіз. Элементтерге арналған бастапқы қалталар жойылған.</translation>
 <translation id="4900532980794411603">Parallels Desktop арқылы бөлісу</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, қосылу</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші <ph name="SIGNAL_STRENGTH" />%, телефон батареясы: <ph name="BATTERY_STATUS" />%, мәліметтер</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />Файлдарыңыздың барлығын бір жерден бөлісіңіз, жасаңыз және<ph name="MARKUP_8" />
     басқалармен бірлесіп жұмыс істеңіз.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive жүйесінен қалпына келтірілген файлдар</translation>
+<translation id="5278111733643988471">Бұл элементті қалпына келтіру үшін оны себеттен жаңа қалтаға сүйреңіз. Элементке арналған "<ph name="PARENT_FOLDER_NAME" />" деп аталатын бастапқы қалта жойылған.</translation>
 <translation id="5286194356314741248">Ізделуде</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5305688511332277257">Ешбірі орнатылмаған</translation>
@@ -504,6 +509,7 @@
 <translation id="535792325654997756">Мысықтары бар адам</translation>
 <translation id="5358764674931277">Кадр жиілігі</translation>
 <translation id="5363339716524495120">Енгізу тілі – қытай</translation>
+<translation id="5364067326287025678">Себетте ешнәрсе жоқ</translation>
 <translation id="5368191757080475556">Қалтаны Linux жүйесімен бөлісу</translation>
 <translation id="5402367795255837559">Брайль</translation>
 <translation id="5411472733320185105">Мына хосттар мен домендер үшін прокси параметрлерін пайдаланбау:</translation>
@@ -770,6 +776,7 @@
 <translation id="7711920809702896782">Сурет ақпараты</translation>
 <translation id="7724603315864178912">Қиып алу</translation>
 <translation id="7732111077498238432">Желі саясатпен бақыланады</translation>
+<translation id="7736003208887389532">Бұл файлдар біржола жойылсын ба?</translation>
 <translation id="7748626145866214022">Әрекеттер жолағында басқа да опциялар бар. Оны ерекшелеу үшін Alt + A пернелерін басыңыз.</translation>
 <translation id="7760449188139285140">Қытай (Wubi)</translation>
 <translation id="7765158879357617694">Жылжыту</translation>
@@ -831,6 +838,7 @@
 <translation id="8249296373107784235">Доғару</translation>
 <translation id="8250690786522693009">Латын</translation>
 <translation id="8250920743982581267">Құжаттар</translation>
+<translation id="8255595130163158297">Себеттегі барлық элемент жойылады және олар қалпына келтірілмейді.</translation>
 <translation id="8261506727792406068">Жою</translation>
 <translation id="8261561378965667560">Қытай (құрылымдық енгізу)</translation>
 <translation id="8264024885325823677">Бұл параметрді әкімшіңіз басқарады.</translation>
@@ -859,7 +867,6 @@
 <translation id="8456681095658380701">Жарамсыз атау</translation>
 <translation id="8457767749626250697">SIM картаңыз құлыптаулы.</translation>
 <translation id="8459404855768962328">Егер бұл элементті көшірсеңіз, ол "<ph name="DESTINATION_NAME" />" ортақ қалтасын көре алатын кез келген адаммен бөлісіледі.</translation>
-<translation id="8461467696380332069">Сөредегі файлдарға жылдам кіру үшін файлды тінтуірдің оң жақ түймесімен басып, "Сөреге бекіту" тармағын таңдаңыз.</translation>
 <translation id="8461914792118322307">Прокси</translation>
 <translation id="8463494891489624050">Вьетнам (VIQR)</translation>
 <translation id="8475647382427415476">Google Drive дәл қазір "<ph name="FILENAME" />" синхрондай алмады. Google Drive кейін қайта тырысып көреді.</translation>
@@ -896,7 +903,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> таңдалды.</translation>
 <translation id="872537912056138402">хорват</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, қосылу</translation>
-<translation id="8750438273876807512">Сөредегі файлдарға жылдам кіру үшін файлды басып тұрып, <ph name="ICON" /> белгішесін басыңыз да, "Сөреге бекіту" тармағын таңдаңыз.</translation>
 <translation id="8787254343425541995">Ортақ желілерге арналған проксилерге рұқсат беру</translation>
 <translation id="8790981080411996443">Өсімдік суарып жатқан адам</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
@@ -909,6 +915,7 @@
 <translation id="8857149712089373752">Непал (фонетикалық пернетақтамен)</translation>
 <translation id="8860454412039442620">Excel электрондық кестесі</translation>
 <translation id="8866284467018526531">Arabic (транслитерация)</translation>
+<translation id="8873014196523807561">Бұл элементтерді қалпына келтіру үшін оларды жаңа қалтаға сүйреңіз. Кейбір элементтерге арналған бастапқы қалталар жойылған.</translation>
 <translation id="8874184842967597500">Қосылмаған</translation>
 <translation id="8900820606136623064">мадьяр</translation>
 <translation id="8903931173357132290">Түлек</translation>

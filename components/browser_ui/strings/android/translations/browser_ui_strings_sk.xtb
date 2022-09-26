@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1005794457625275818">Súbory cookie sú povolené pre niekoľko webov (<ph name="FPS_MEMBERS_COUNT" />) v skupine <ph name="FPS_OWNER" /> vrátane <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Otvoriť online</translation>
 <translation id="1044891598689252897">Weby budú fungovať normálne</translation>
 <translation id="1124090076051167250">Týmto vymažete <ph name="DATASIZE" /> dát a súbory cookie uložené webmi alebo aplikáciami na ploche.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Áno</translation>
 <translation id="1446450296470737166">Povoliť úplné ovlád. zar. MIDI</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1633720957382884102">Súvisiace weby</translation>
 <translation id="1644574205037202324">História</translation>
 <translation id="1647582022260550163">Naozaj chcete resetovať povolenia a vymazať súbory cookie a dáta webu?</translation>
 <translation id="1660204651932907780">Povoliť webom prehrávať zvuk (odporúčané)</translation>

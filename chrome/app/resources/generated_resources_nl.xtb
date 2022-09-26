@@ -1618,6 +1618,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2468178265280335214">Scrollversnelling touchpad</translation>
 <translation id="2468205691404969808">Maakt gebruik van cookies om je voorkeuren te onthouden, zelfs als je deze pagina's niet bezoekt</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470085922875120">Je gebruikt wachtwoorden die moeilijk te raden zijn</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 tabblad}other{<ph name="GROUP_TITLE" /> - # tabbladen}}</translation>
 <translation id="2469141124738294431">VM-status</translation>
 <translation id="2469259292033957819">Je hebt geen opgeslagen printers.</translation>
@@ -1956,6 +1957,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2783321960289401138">Snelle link maken…</translation>
 <translation id="2783829359200813069">Versleutelingstypen selecteren</translation>
 <translation id="2783952358106015700">Je beveiligingssleutel gebruiken met <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">Wachtwoordcheck</translation>
 <translation id="2785873697295365461">Bestandsdescriptors</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Lokale browsegegevens behouden (bookmarks, wachtwoorden, geschiedenis, enzovoort)</translation>
@@ -2031,6 +2033,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2844169650293029770">USB-C-apparaat (poort links aan de voorkant)</translation>
 <translation id="2844809857160214557">Afdruktaken bekijken en beheren</translation>
 <translation id="2845382757467349449">Bookmarkbalk altijd bekijken</translation>
+<translation id="284581348330507117">Maak unieke wachtwoorden</translation>
 <translation id="284805635805850872">Schadelijke software verwijderen?</translation>
 <translation id="2849035674501872372">Omhoog kijken</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2182,6 +2185,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2985348301114641460">Een verzoek naar je beheerder sturen om '<ph name="EXTENSION_NAME" />' te installeren?</translation>
 <translation id="2987620471460279764">Gedeelde tekst van ander apparaat</translation>
 <translation id="2988018669686457659">Extra weergaveprogramma</translation>
+<translation id="2988328607561082373">Je hergebruikt geen wachtwoorden</translation>
 <translation id="2989123969927553766">Scrollversnelling muis</translation>
 <translation id="2989474696604907455">niet aangesloten</translation>
 <translation id="2989786307324390836">DER Encoded Binary, één certificaat</translation>
@@ -2210,6 +2214,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3009178788565917040">Uitgang</translation>
 <translation id="3009300415590184725">Weet je zeker dat je het instellen van een mobiele dataservice wilt annuleren?</translation>
 <translation id="3009779501245596802">Geïndexeerde databases</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Je wachtwoorden lijken sterk}=1{{COUNT} zwak wachtwoord}other{{COUNT} zwakke wachtwoorden}}</translation>
 <translation id="3010279545267083280">Wachtwoord verwijderd</translation>
 <translation id="3010389206479238935">Gedwongen openen in</translation>
 <translation id="3011384993885886186">Warmgrijs</translation>
@@ -3245,7 +3250,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
     <ph name="BEGIN_PARAGRAPH3" />Als je deze functie uitzet, kan je apparaat nog steeds de informatie sturen die nodig is voor essentiële services zoals systeemupdates en beveiliging.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3987544746655539083">Toegang tot je locatie blijven blokkeren voor deze site</translation>
 <translation id="3987938432087324095">Sorry, dat heb ik niet verstaan.</translation>
-<translation id="3987993985790029246">Link kop.</translation>
+<translation id="3987993985790029246">Link kopiëren</translation>
 <translation id="3988996860813292272">Tijdzone selecteren</translation>
 <translation id="399179161741278232">Geïmporteerd</translation>
 <translation id="3993887353483242788">Synchroniseer je <ph name="DEVICE_TYPE" /> zodat je voorkeuren beschikbaar zijn op elk apparaat als je inlogt met je Google-account. Voorkeuren omvatten onder andere apps, instellingen, wifi-wachtwoorden, talen, achtergrond en sneltoetsen.</translation>
@@ -4414,6 +4419,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5153234146675181447">Telefoon vergeten</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Geavanceerde instellingen voor <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Geen opgeslagen wachtwoorden.}=1{Wachtwoorden gecheckt voor {COUNT} site}other{Wachtwoorden gecheckt voor {COUNT} sites en apps}}</translation>
 <translation id="5154702632169343078">Onderwerp</translation>
 <translation id="5155327081870541046">Geef in de adresbalk de snelkoppeling op voor de website die je wilt doorzoeken, zoals '@bookmarks'. Druk op de gewenste sneltoets en geef de zoekterm op.</translation>
 <translation id="5156638757840305347">De cursor wordt gemarkeerd als deze verschijnt of beweegt.</translation>
@@ -4994,6 +5000,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5713158217420111469">Verbonden met <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Stijl van spatie-invoer</translation>
 <translation id="5715711091495208045">Plug-inbroker: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Je moet ze nu wijzigen</translation>
 <translation id="5719603411793408026">Standaardzoekmachines</translation>
 <translation id="5719854774000914513">Sites kunnen vragen of ze verbinding mogen maken met HID-apparaten</translation>
 <translation id="572155275267014074">Android-instellingen</translation>
@@ -6449,6 +6456,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7098447629416471489">Andere opgeslagen zoekmachines zie je hier</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{App verwijderen}other{Apps verwijderen}}</translation>
 <translation id="7099337801055912064">Grote PPD kan niet worden geladen. Maximum grootte is 250 KB.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Geen gehackte wachtwoorden}=1{{COUNT} gehackt wachtwoord}other{{COUNT} gehackte wachtwoorden}}</translation>
 <translation id="7102687220333134671">Automatische updates staan aan</translation>
 <translation id="7102832101143475489">Er is een time-out voor het verzoek opgetreden</translation>
 <translation id="710640343305609397">Netwerkinstellingen openen</translation>
@@ -7391,6 +7399,7 @@ Sleutelbestand: <ph name="KEY_FILE" />
 Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nieuwe versies van je extensie te maken.</translation>
 <translation id="8002274832045662704">Geavanceerde printerconfiguratie</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> is niet meer beschikbaar</translation>
+<translation id="8004092996156083991">Als je wachtwoorden zijn gehackt, laten we je dat weten.</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> altijd toestaan om het klembord te bekijken</translation>
 <translation id="8006630792898017994">Spatiebalk of Tab</translation>
@@ -7890,6 +7899,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8470513973197838199">Opgeslagen wachtwoorden voor <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sites maken meestal verbinding met USB-apparaten voor functies zoals het afdrukken van een document of opslaan naar een opslagapparaat</translation>
 <translation id="8471959340398751476">Kortingen staan uit. Je kunt ze aanzetten via het menu Aanpassen.</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Je wachtwoorden zijn uniek}=1{{COUNT} hergebruikt wachtwoord}other{{COUNT} hergebruikte wachtwoorden}}</translation>
 <translation id="8472623782143987204">hardware-ondersteund</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>
 <translation id="8475313423285172237">Een ander programma op je computer heeft een extensie toegevoegd die de manier waarop Chrome werkt kan wijzigen.</translation>
@@ -8370,6 +8380,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8940081510938872932">Je computer voert op dit moment te veel acties tegelijk uit. Probeer het later opnieuw.</translation>
 <translation id="8940381019874223173">Uit je Google Foto's</translation>
 <translation id="8941173171815156065">Het recht '<ph name="PERMISSION" />' intrekken</translation>
+<translation id="894191600409472540">Maak sterke wachtwoorden</translation>
 <translation id="894360074127026135">Internationale Netscape-step-up</translation>
 <translation id="8944099748578356325">De batterij sneller gebruiken (momenteel <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Icoonformaat</translation>
@@ -8593,6 +8604,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9140067245205650184">Je gebruikt een niet-ondersteunde functiemarkering: <ph name="BAD_FLAG" />. De stabiliteit en beveiliging zullen hieronder lijden.</translation>
 <translation id="9142637293078737510">Afbeeldingsalias</translation>
 <translation id="9143298529634201539">Suggestie verwijderen?</translation>
+<translation id="9143922477019434797">Bescherm je wachtwoorden</translation>
 <translation id="9147392381910171771">&amp;Opties</translation>
 <translation id="9148058034647219655">Sluiten</translation>
 <translation id="9148126808321036104">Opnieuw inloggen</translation>

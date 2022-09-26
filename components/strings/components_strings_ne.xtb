@@ -1259,6 +1259,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> सँगको कनेक्सन सुरक्षित छैन</translation>
 <translation id="4349365535725594680">गोप्य सामग्री सेयर गर्न सकिँदैन</translation>
+<translation id="4349810866125026513">जे भए पनि अपलोड गर्नुहोस्</translation>
 <translation id="4350629523305688469">मल्टिफङ्सन ट्रे</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> वरपरका ब्लुटुथ यन्त्रहरू खोज्न स्क्यान गर्न चाहन्छ। निम्न यन्त्रहरू फेला परेका छन्:</translation>
 <translation id="4351175281479794167">पुष्टि कोड हाल्नुहोस्</translation>
@@ -1392,6 +1393,7 @@
 <translation id="4744514002166662487">प्रेजेन्टेसन बनाउनुहोस्</translation>
 <translation id="4744603770635761495">कार्यान्वयनयोग्य मार्ग</translation>
 <translation id="4749011317274908093">तपाईं इन्कोग्निटो मोडमा जानुभएको छ</translation>
+<translation id="4750671009706599284">यो फोन</translation>
 <translation id="4750917950439032686">यस साइटमा तपाईँको जानकारी (उदाहरणका लागि पासवर्ड वा क्रेडिट कार्डको नम्बर) पठाउँदा त्यो निजी रहन्छ।</translation>
 <translation id="4751476147751820511">गति वा प्रकाशसम्बन्धी सेन्सरहरू</translation>
 <translation id="4754461935447132332">असुरक्षित साइटका हकमा अनुमति दिइँदैन</translation>
@@ -1981,6 +1983,7 @@
 <translation id="6337133576188860026"><ph name="SIZE" /> भन्दा कम ठाउँ खाली गर्दछ। तपाईं अर्कोपटक आउँदा केही साइटहरू अझ ढिलोगरी लोड हुनसक्छन्।</translation>
 <translation id="6337534724793800597">नामद्वारा नीतिहरू फिल्टर गर्छ</translation>
 <translation id="6340739886198108203">एड्मिनले तोकेका नीतिअनुसार स्क्रिनमा गोप्य सामग्री देखिएका बेला स्क्रिनसट लिन वा स्क्रिन रेकर्ड गर्न सिफारिस गरिँदैन:</translation>
+<translation id="6341434961864773665">{0,plural, =1{एड्मिनले तोकेको नीतिअनुसार यो फाइल <ph name="DESTINATION_NAME" /> मा अपलोड गर्न सिफारिस गरिँदैन}other{एड्मिनले तोकेको नीतिअनुसार यी फाइलहरू <ph name="DESTINATION_NAME" /> मा अपलोड गर्न सिफारिस गरिँदैन}}</translation>
 <translation id="6348220984832452017">प्रयोग गर्न मिल्ने संस्करणहरू</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> स्थापना गर्नुहोस्</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{कुनै पनि होइन}=1{<ph name="DOMAIN_LIST" /> को १ पासवर्ड (सिंक गरिएको छ)}=2{<ph name="DOMAIN_LIST" /> का २ पासवर्डहरू (सिंक गरिएका छन्)}other{<ph name="DOMAIN_LIST" /> का # पासवर्डहरू (सिंक गरिएका छन्)}}</translation>
@@ -2159,6 +2162,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome ले यो पृष्ठ पढ्न अझ सजिलो बनाउन यसलाई सरलीकृत गर्‍यो। Chrome ले एउटा असुरक्षित इन्टरनेटमार्फत मूल पृष्ठ पुनः प्राप्त गर्‍यो।</translation>
 <translation id="6890443033788248019">लोकेसन प्रयोग गर्ने अनुमति दिने हो?</translation>
+<translation id="6890531741535756070">तपाईंले <ph name="PROVIDER_ORIGIN" /> प्रयोग गर्ने वेबसाइटहरूमा <ph name="DEVICE_LABEL" /> मार्फत पुष्टि गर्ने विकल्प छनौट गर्नुभएको थियो। यो प्रदायकले तपाईंको भुक्तानी विधिसम्बन्धी जानकारी भण्डारण गरेको हुन सक्छ, तपाईं सो जानकारी <ph name="BEGIN_LINK" />मेटाइदिन अनुरोध गर्न<ph name="END_LINK" /> सक्नुहुन्छ।</translation>
 <translation id="6891596781022320156">नीति तह समर्थित छैन।</translation>
 <translation id="6895143722905299846">भर्चुअल कार्ड नम्बर:</translation>
 <translation id="6895330447102777224">तपाईंको कार्डको पुष्टि भयो</translation>
@@ -2519,6 +2523,7 @@
 <translation id="7764225426217299476">ठेगाना थप्नुहोस्</translation>
 <translation id="7766518757692125295">स्कर्ट</translation>
 <translation id="7773005668374414287">उही क्रम तर माथितिर फर्काएर</translation>
+<translation id="7785790577395078482">यो ट्याब्लेट</translation>
 <translation id="7791011319128895129">अप्रकाशित</translation>
 <translation id="7791196057686275387">गाँठो</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
@@ -2613,6 +2618,7 @@
 <translation id="8075736640322370409">Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउनुहोस्</translation>
 <translation id="8075898834294118863">साइटसम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="8076492880354921740">ट्याबहरू</translation>
+<translation id="8078006011486731853">{0,plural, =1{गोप्य फाइल अपलोड गर्ने हो?}other{गोप्य फाइलहरू अपलोड गर्ने हो?}}</translation>
 <translation id="8078141288243656252">घुमाइएका बेला एनोटेसन गर्न मिल्दैन</translation>
 <translation id="8079031581361219619">साइट पुनः लोड गर्ने हो?</translation>
 <translation id="8081087320434522107">सेडान कारहरू</translation>

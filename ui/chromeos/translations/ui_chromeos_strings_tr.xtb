@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">Dikkat: Bu dosyalar geçici olup diskte yer açmak için otomatik olarak silinebilir.</translation>
 <translation id="3029114385395636667">Dokümanlar, E-Tablolar ve Slaytlar'ı çevrimdışı kullanılabilir hale getirmek için Google Dokümanlar Offline özelliğini etkinleştirin.</translation>
 <translation id="303198083543495566">Coğrafya</translation>
+<translation id="3044404008258011032">Bu öğeleri geri yüklemek için çöp kutusu dışındaki yeni bir klasöre sürükleyin. Bu öğelerin bulunduğu orijinal klasör ("<ph name="PARENT_FOLDER_NAME" />") silindi.</translation>
 <translation id="3047197340186497470">Çince Dayi</translation>
 <translation id="3067790092342515856">Windows dosyaları</translation>
 <translation id="3083975830683400843">Chromebit'ler</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">Etkinleştiriliyor...</translation>
 <translation id="4092890906744441904">İrlandaca</translation>
 <translation id="4124935795427217608">Tek boynuzlu at</translation>
+<translation id="4131235941541910880">İhtiyacınız olmayan öğeleri Çöp Kutusu'na taşıyın</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> öğe taşındı.</translation>
 <translation id="4176286497474237543">Çöp kutusunu şimdi boşalt</translation>
 <translation id="4186579485882418952">Offline'ı etkinleştir</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">Almanca</translation>
 <translation id="4867079195717347957">Sütunu azalan düzende sıralamak için tıklayın.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bayt</translation>
+<translation id="4874569719830985133">Tamamıyla sil</translation>
 <translation id="4880214202172289027">Ses kaydırma çubuğu</translation>
 <translation id="4881695831933465202">Aç</translation>
+<translation id="4891091358278567964">Bu öğeleri geri yüklemek için çöp kutusu dışındaki yeni bir klasöre sürükleyin. Bu öğelerin bulunduğu orijinal klasörler silindi.</translation>
 <translation id="4900532980794411603">Parallels Desktop ile paylaş</translation>
 <translation id="4902546322522096650">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Bağlan</translation>
 <translation id="4906580650526544301">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, %<ph name="BATTERY_STATUS" /> Telefon Pili, Ayrıntılar</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />Tek bir yerden dosya oluşturun, başkalarıyla paylaşın ve<ph name="MARKUP_8" />
     ortak çalışın.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Dosyalar Google Drive'dan geri yüklendi</translation>
+<translation id="5278111733643988471">Bu öğeyi geri yüklemek için çöp kutusu dışındaki yeni bir klasöre sürükleyin. Bu öğenin bulunduğu orijinal klasör ("<ph name="PARENT_FOLDER_NAME" />") silindi.</translation>
 <translation id="5286194356314741248">Taranıyor</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -505,6 +510,7 @@
 <translation id="535792325654997756">Kediler ve insan</translation>
 <translation id="5358764674931277">Kare hızı</translation>
 <translation id="5363339716524495120">Giriş dili Çince</translation>
+<translation id="5364067326287025678">Çöp kutusu boş</translation>
 <translation id="5368191757080475556">Linux ile klasör paylaşma</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Aşağıdaki ana makine ve alanlar için proxy ayarlarını kullanmayın:</translation>
@@ -771,6 +777,7 @@
 <translation id="7711920809702896782">Resim bilgileri</translation>
 <translation id="7724603315864178912">Kes</translation>
 <translation id="7732111077498238432">Ağ, politika ile denetleniyor</translation>
+<translation id="7736003208887389532">Bu dosyalar kalıcı olarak silinsin mi?</translation>
 <translation id="7748626145866214022">İşlem çubuğunda daha fazla seçenek var. İşlem çubuğuna odaklanmak için Alt + A tuşlarına basın.</translation>
 <translation id="7760449188139285140">Çince Wubi</translation>
 <translation id="7765158879357617694">Taşı</translation>
@@ -832,6 +839,7 @@
 <translation id="8249296373107784235">İptal Et</translation>
 <translation id="8250690786522693009">Latince</translation>
 <translation id="8250920743982581267">Dokümanlar</translation>
+<translation id="8255595130163158297">Çöp kutusundaki tüm öğeler silinir ve geri yüklenemez.</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8261561378965667560">Çince Dizi</translation>
 <translation id="8264024885325823677">Bu ayar, yöneticiniz tarafından yönetilir.</translation>
@@ -860,7 +868,6 @@
 <translation id="8456681095658380701">Geçersiz ad</translation>
 <translation id="8457767749626250697">SIM'iniz kilitli</translation>
 <translation id="8459404855768962328">Bu öğe, "<ph name="DESTINATION_NAME" />" adlı paylaşılan klasöre kopyalanırsa bu klasörü görebilen herkesle paylaşılır.</translation>
-<translation id="8461467696380332069">Raftaki dosyalarınıza hızlı erişim için dosyayı sağ tıklayıp "Rafa sabitle"yi seçin.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamca VIQR</translation>
 <translation id="8475647382427415476">Google Drive, "<ph name="FILENAME" />" dosyasını şu anda senkronize edemedi. Google Drive senkronize etme işlemini daha sonra tekrar deneyecek.</translation>
@@ -897,7 +904,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> seçildi.</translation>
 <translation id="872537912056138402">Hırvatça</translation>
 <translation id="8743164338060742337">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından Yönetiliyor, Bağlan</translation>
-<translation id="8750438273876807512">Bir dosyaya dokunup basılı tutun ve <ph name="ICON" /> simgesine dokunun. Ardından "Rafa sabitle"yi seçerek raftaki dosyalarınıza hızlıca erişebilirsiniz.</translation>
 <translation id="8787254343425541995">Paylaşılan ağlar için proxy'lere izin ver</translation>
 <translation id="8790981080411996443">Bitkileri sulayan bir kişi</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
@@ -910,6 +916,7 @@
 <translation id="8857149712089373752">Nepali Fonetik klavye</translation>
 <translation id="8860454412039442620">Excel e-tablosu</translation>
 <translation id="8866284467018526531">Arapça Harf Çevirisi</translation>
+<translation id="8873014196523807561">Bu öğeleri geri yüklemek için yeni bir klasöre sürükleyin. Bu öğelerden bazılarının bulunduğu orijinal klasörler silindi.</translation>
 <translation id="8874184842967597500">Bağlı değil</translation>
 <translation id="8900820606136623064">Macarca</translation>
 <translation id="8903931173357132290">Mezun</translation>

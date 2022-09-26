@@ -878,7 +878,6 @@
 <translation id="8456681095658380701">Nieprawidłowa nazwa</translation>
 <translation id="8457767749626250697">Karta SIM jest zablokowana</translation>
 <translation id="8459404855768962328">Skopiowanie tego elementu spowoduje jego udostępnienie wszystkim osobom, które mogą widzieć udostępniony folder „<ph name="DESTINATION_NAME" />”.</translation>
-<translation id="8461467696380332069">Kliknij plik prawym przyciskiem i wybierz „Przypnij do półki”, by mieć szybki dostęp do swoich plików na półce.</translation>
 <translation id="8461914792118322307">Serwer proxy</translation>
 <translation id="8463494891489624050">Wietnamski VIQR</translation>
 <translation id="8475647382427415476">Dysk Google nie mógł zsynchronizować pliku „<ph name="FILENAME" />”. Spróbujemy ponownie później.</translation>
@@ -915,7 +914,6 @@
 <translation id="8719721339511222681">Zaznaczono element <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Chorwacki</translation>
 <translation id="8743164338060742337">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, połącz</translation>
-<translation id="8750438273876807512">Naciśnij i przytrzymaj plik, a następnie kliknij <ph name="ICON" /> i wybierz „Przypnij do półki”, by mieć szybki dostęp do swoich plików na półce.</translation>
 <translation id="8787254343425541995">Zezwalaj na serwery proxy w sieciach współdzielonych</translation>
 <translation id="8790981080411996443">Osoba podlewająca rośliny</translation>
 <translation id="8798099450830957504">Domyślny</translation>

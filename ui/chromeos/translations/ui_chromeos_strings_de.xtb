@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> wird kopiert...</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1190144681599273207">Zum Abrufen dieser Datei werden etwa <ph name="FILE_SIZE" /> mobile Daten benötigt.</translation>
+<translation id="1194390763418645112">Dateizugriff von <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Weiter</translation>
 <translation id="1209796539517632982">Automatische Wahl des Nameservers</translation>
 <translation id="1210831758834677569">Lao</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome-Geräte</translation>
 <translation id="1572585716423026576">Als Hintergrund festlegen</translation>
 <translation id="1576937952766665062">Bengalisch (Transliteration)</translation>
+<translation id="1577977504532381335">Administratorrichtlinie ansehen</translation>
 <translation id="158849752021629804">Heimnetzwerk erforderlich</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Bildauflösung</translation>
 <translation id="1972984168337863910">Erweiterte Dateiinformationen maximieren</translation>
 <translation id="1995337122023280937">Zum Dateispeicherort</translation>
+<translation id="1999709132469742660">Dateizugriff über alle URLs</translation>
 <translation id="2001796770603320721">In Drive verwalten</translation>
 <translation id="2009067268969781306">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Person mit Kaffee</translation>
 <translation id="2251368349685848079">Aus Papierkorb wiederherstellen</translation>
 <translation id="2282155092769082568">URL für Autokonfiguration:</translation>
+<translation id="2284767815536050991">Wechselmedium</translation>
 <translation id="2288278176040912387">Plattenspieler</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> Dateien werden geöffnet.</translation>
 <translation id="2303301624314357662">Datei "<ph name="FILE_NAME" />" wird geöffnet.</translation>
@@ -341,6 +345,7 @@
 <translation id="4057991113334098539">Wird aktiviert...</translation>
 <translation id="4092890906744441904">Irisch</translation>
 <translation id="4124935795427217608">Einhorn</translation>
+<translation id="4157569377477607576">Gemäß der Administratorrichtlinie wird Folgendes nicht empfohlen:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verschoben.</translation>
 <translation id="4176286497474237543">Papierkorb jetzt leeren</translation>
 <translation id="4186579485882418952">Offline-Modus aktivieren</translation>
@@ -502,6 +507,7 @@
 <translation id="5323213332664049067">Lateinamerikanisch</translation>
 <translation id="5330145655348521461">Diese Dateien wurden auf einem anderen Desktop geöffnet. Wechsle zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um sie anzusehen.</translation>
 <translation id="5330512191124428349">Informationen ansehen</translation>
+<translation id="5337538975554986899">Dateizugriff über alle URLs außer <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Person mit Katzen</translation>
 <translation id="5358764674931277">Framerate</translation>
 <translation id="5363339716524495120">Eingabesprache ist Chinesisch</translation>
@@ -526,6 +532,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-Bild</translation>
 <translation id="5534520101572674276">Größe wird berechnet.</translation>
 <translation id="554153475311314364">Griechisch (Transliteration)</translation>
+<translation id="5580591966435005537">virtuelle Maschine</translation>
 <translation id="5583640892426849032">Rücktaste</translation>
 <translation id="5583664733673201137">Punktbreite ist „Voll“</translation>
 <translation id="5602622065581044566">Bulgarisch mit phonetischer Tastatur</translation>
@@ -586,6 +593,7 @@
 <translation id="61118516107968648">CSV-Text</translation>
 <translation id="6129953537138746214">Leertaste</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> wird verschoben...</translation>
+<translation id="6133877453787250710">Der Administrator überwacht Folgendes:</translation>
 <translation id="613750717151263950">Japanisch mit US-Tastatur</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nicht verbunden</translation>
 <translation id="6146563240635539929">Videos</translation>
@@ -606,6 +614,7 @@
 <translation id="6287852322318138013">App zum Öffnen der Datei auswählen</translation>
 <translation id="6295542640242147836">SIM-Karte sperren</translation>
 <translation id="6296410173147755564">Ungültiger PUK</translation>
+<translation id="6308243004861726558">Diese Datei ist vertraulich und unterliegt der Administratorrichtlinie. Es gelten die folgenden Einschränkungen für Dateizugriff und -übertragung.</translation>
 <translation id="6312403991423642364">Unbekannter Netzwerkfehler</translation>
 <translation id="6317608858038767920">Benutzerdefinierter Nameserver <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-Archiv</translation>
@@ -834,6 +843,7 @@
 <translation id="8250920743982581267">Dokumente</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8261561378965667560">Chinesisch (Array)</translation>
+<translation id="8262872909443689080">Administratorrichtlinie</translation>
 <translation id="8264024885325823677">Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="8269755669432358899">Erweiterte Dateiinformationen minimieren</translation>
 <translation id="8280151743281770066">Armenisch – phonetisch</translation>
@@ -860,7 +870,6 @@
 <translation id="8456681095658380701">Ungültiger Name</translation>
 <translation id="8457767749626250697">Deine SIM-Karte ist gesperrt</translation>
 <translation id="8459404855768962328">Wenn du dieses Element kopierst, wird es für alle Personen freigegeben, die den freigegebenen Ordner „<ph name="DESTINATION_NAME" />“ sehen können.</translation>
-<translation id="8461467696380332069">Klicke mit der rechten Maustaste auf eine Datei und wähle „An Ablage anpinnen“ aus, um über die Ablage schnell auf deine Dateien zugreifen zu können.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamesisch (VIQR)</translation>
 <translation id="8475647382427415476">"<ph name="FILENAME" />" konnte nicht in Google Drive synchronisiert werden. Google Drive versucht es später erneut.</translation>
@@ -897,7 +906,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> wurde ausgewählt.</translation>
 <translation id="872537912056138402">Kroatisch</translation>
 <translation id="8743164338060742337">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Verbinden</translation>
-<translation id="8750438273876807512">Berühre und halte eine Datei, tippe auf <ph name="ICON" /> und wähle „An Ablage anpinnen“ aus, um über die Ablage schnell auf deine Dateien zugreifen zu können.</translation>
 <translation id="8787254343425541995">Proxys für freigegebene Netzwerke zulassen</translation>
 <translation id="8790981080411996443">Person beim Blumengießen</translation>
 <translation id="8798099450830957504">Standard</translation>
@@ -931,6 +939,7 @@
 <translation id="9100610230175265781">Passphrase erforderlich</translation>
 <translation id="9110990317705400362">Wir arbeiten stets daran, das Surfen für dich sicherer zu machen. Früher konntest du von jeder beliebigen Website aufgefordert werden, deinem Browser eine Erweiterung hinzuzufügen. In neueren Versionen von Google Chrome musst du Chrome ausdrücklich mitteilen, dass du diese Erweiterungen installieren möchtest, indem du sie über die Seite „Erweiterungen“ hinzufügst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Entsperren</translation>
+<translation id="9116909380156770361">Dateiübertragung an: <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">Mitglieder von "<ph name="DESTINATION_NAME" />" erhalten Zugriff auf diese Dateien.</translation>
 <translation id="9131598836763251128">Eine oder mehrere Dateien auswählen</translation>
@@ -952,6 +961,7 @@
 <translation id="943972244133411984">Geändert von</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="947144732524271678">Du hast <ph name="ENTRY_COUNT" /> Einträge von <ph name="FROM_ENTRY_NAME" /> bis <ph name="TO_ENTRY_NAME" /> ausgewählt.</translation>
+<translation id="954194396377670556">Gemäß der Administratorrichtlinie wird Folgendes blockiert:</translation>
 <translation id="965477715979482472">Englisch (Südafrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Eine Datei mit dem Namen "<ph name="FILE_NAME" />" existiert bereits. Möchtest du sie ersetzen?</translation>

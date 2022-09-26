@@ -225,6 +225,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2227179592712503583">Odstrániť návrh</translation>
 <translation id="225680501294068881">Hľadajú sa zariadenia...</translation>
 <translation id="2257486738914982088">Pri sťahovaní súboru <ph name="FILENAME" /> sa vyskytol problém</translation>
+<translation id="2258734398699965611">Navrhované súbory</translation>
 <translation id="2268130516524549846">Rozhranie Bluetooth je deaktivované</translation>
 <translation id="2268813581635650749">Odhlásiť všetkých</translation>
 <translation id="2269016722240250274">Nejaká aplikácia používa váš mikrofón</translation>
@@ -900,6 +901,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6099678161144790572">Upravené za posledný mesiac</translation>
 <translation id="6103838137565245112">systém</translation>
 <translation id="6114505516289286752">Súbory s balíkmi reči <ph name="LANGUAGE" /> boli stiahnuté</translation>
+<translation id="6116825164611323644">Prístup ku kamere je v tomto zariadení vypnutý</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Potvrďte stiahnutie súboru <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistent Google nie je k dispozícii v relácii hosťa.</translation>
@@ -1126,6 +1128,7 @@ Nová inštalácia</translation>
 <translation id="746232733191930409">Režim nahrávania obrazovky</translation>
 <translation id="7466449121337984263">Dotknite sa senzora</translation>
 <translation id="7477793887173910789">Ovládajte svoju hudbu, videá a ďalší obsah</translation>
+<translation id="7490360161041035804">Dôležité súbory vrátane súborov z Disku Google si môžete pripnúť. Ak chcete položku pripnúť, umiestnite na ňu kurzor alebo otvorte Súbory a na príslušnú položku kliknite pravým tlačidlom.</translation>
 <translation id="7497767806359279797">Vybrať jazyk a klávesnicu</translation>
 <translation id="7508690557411636492">Otvorené v poslednom mesiaci</translation>
 <translation id="7509246181739783082">Overenie totožnosti</translation>
@@ -1222,6 +1225,7 @@ Nová inštalácia</translation>
 <translation id="7982789257301363584">Sieť</translation>
 <translation id="7984197416080286869">Príliš veľa pokusov o nasnímanie odtlačku prsta</translation>
 <translation id="798779949890829624">Toto nastavenie spravuje váš správca.</translation>
+<translation id="799296642788192631">Dôležité súbory si môžete pripnúť. Ak chcete položku pripnúť, umiestnite na ňu kurzor alebo otvorte Súbory a na príslušnú položku kliknite pravým tlačidlom.</translation>
 <translation id="7994370417837006925">Viacnásobné prihlásenie</translation>
 <translation id="7995804128062002838">Obrazovku sa nepodarilo nasnímať</translation>
 <translation id="8000066093800657092">Žiadna sieť</translation>
@@ -1349,6 +1353,7 @@ Nová inštalácia</translation>
 <translation id="8734991477317290293">Je možné, že sa pokúša ukradnúť vaše stlačenia klávesov</translation>
 <translation id="8735678380411481005">Farba podsvietenia klávesnice</translation>
 <translation id="8735953464173050365">Zobraziť nastavenia klávesnice. Vybraná klávesnica: <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8752416742247198423">Zapnite prístup ku kamere a povoľte tak aplikáciám a webovým stránkam s príslušným povolením používať kamery pripojené k tomuto zariadeniu.</translation>
 <translation id="8755498163081687682">Overte svoju totožnosť: <ph name="ORIGIN_NAME" /> chce potvrdiť, že ste to vy</translation>
 <translation id="875593634123171288">Zobraziť nastavenia VPN</translation>
 <translation id="8759408218731716181">Nie je možné nastaviť viacnásobné prihlásenie</translation>
@@ -1363,6 +1368,7 @@ Nová inštalácia</translation>
 <translation id="8819728065740986820">Je zapnuté adaptívne nabíjanie.</translation>
 <translation id="8825863694328519386">Vrátite sa potiahnutím zľava</translation>
 <translation id="8834539327799336565">Aktuálne pripojené</translation>
+<translation id="8834657930627018205">Zapnúť prístup ku kamere</translation>
 <translation id="8841375032071747811">Tlačidlo Späť</translation>
 <translation id="8843682306134542540">Prepnúť uzamknutie otočenia. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Hľadať+Esc</translation>

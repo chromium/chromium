@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Se copiază <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1190144681599273207">Preluarea acestui fișier va utiliza aproximativ <ph name="FILE_SIZE" /> din datele mobile.</translation>
+<translation id="1194390763418645112">accesul la fișiere pentru <ph name="RESTRICTED_DESTINATIONS" />.</translation>
 <translation id="1201402288615127009">Înainte</translation>
 <translation id="1209796539517632982">Servere de nume automate</translation>
 <translation id="1210831758834677569">Laoțiană</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Dispozitivele Chrome</translation>
 <translation id="1572585716423026576">Setează ca imagine de fundal</translation>
 <translation id="1576937952766665062">Bengaleză, transliterație</translation>
+<translation id="1577977504532381335">Consultă politica implementată de administratori</translation>
 <translation id="158849752021629804">Este necesară rețeaua de domiciliu</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Cameră</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Rezoluția imaginii</translation>
 <translation id="1972984168337863910">Extinde panourile cu feedback privind fișierele</translation>
 <translation id="1995337122023280937">Accesează locația fișierului</translation>
+<translation id="1999709132469742660">accesul la fișiere prin intermediul tuturor adreselor URL,</translation>
 <translation id="2001796770603320721">Gestionează în Drive</translation>
 <translation id="2009067268969781306">Formatarea unității va șterge toate datele stocate pe unitate. Această acțiune nu poate fi anulată.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Persoană cu o ceașcă de cafea</translation>
 <translation id="2251368349685848079">Restabilește din coșul de gunoi</translation>
 <translation id="2282155092769082568">Adresa URL de autoconfigurare:</translation>
+<translation id="2284767815536050991">stocarea amovibilă</translation>
 <translation id="2288278176040912387">Picup</translation>
 <translation id="2291538123825441971">Se deschid <ph name="NUMBER_OF_FILES" /> fișiere.</translation>
 <translation id="2303301624314357662">Se deschide <ph name="FILE_NAME" />.</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">Irlandeză</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Mută elementele de care nu ai nevoie în coșul de gunoi</translation>
+<translation id="4157569377477607576">Politica implementată de administrator nu recomandă:</translation>
 <translation id="4159731583141908892">Mutate: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Golește coșul de gunoi acum</translation>
 <translation id="4186579485882418952">Activează funcția offline</translation>
@@ -507,6 +512,7 @@
 <translation id="5323213332664049067">America Latină</translation>
 <translation id="5330145655348521461">Aceste fișiere au fost deschise pe alt desktop. Pentru a le vedea, treceți la <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Obține informații</translation>
+<translation id="5337538975554986899">accesul la fișiere prin intermediul tuturor adreselor URL, cu excepția <ph name="NON_RESTRICTED_DESTINATIONS" />,</translation>
 <translation id="535792325654997756">Persoană cu pisici</translation>
 <translation id="5358764674931277">Rata de cadre</translation>
 <translation id="5363339716524495120">Limba de introducere a textului este chineza</translation>
@@ -532,6 +538,7 @@
 <translation id="5533102081734025921">Imagine <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Se calculează dimensiunea</translation>
 <translation id="554153475311314364">Greacă, transliterație</translation>
+<translation id="5580591966435005537">mașina virtuală</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Lățimea pentru punctuație este completă</translation>
 <translation id="5602622065581044566">Tastatură bulgară fonetică</translation>
@@ -592,6 +599,7 @@
 <translation id="61118516107968648">Text CSV</translation>
 <translation id="6129953537138746214">Spațiu</translation>
 <translation id="6133173853026656527">Se mută <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Administratorul monitorizează:</translation>
 <translation id="613750717151263950">Japoneză cu tastatură S.U.A.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nicio rețea</translation>
 <translation id="6146563240635539929">Videoclipuri</translation>
@@ -612,6 +620,7 @@
 <translation id="6287852322318138013">Selectați o aplicație pentru deschiderea acestui fișier</translation>
 <translation id="6295542640242147836">Blochează cardul SIM</translation>
 <translation id="6296410173147755564">PUK nevalid</translation>
+<translation id="6308243004861726558">Fișierul este confidențial și se supune politicii implementată de administrator. Se aplică următoarele acțiuni pentru accesarea și transferul fișierelor.</translation>
 <translation id="6312403991423642364">Eroare de rețea necunoscută</translation>
 <translation id="6317608858038767920">Server de nume personalizat <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Arhivă <ph name="ARCHIVE_TYPE" /></translation>
@@ -842,6 +851,7 @@
 <translation id="8255595130163158297">Toate elementele din coșul de gunoi vor fi șterse și nu le vei putea restabili.</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="8261561378965667560">Chineză Array</translation>
+<translation id="8262872909443689080">Politica implementată de administrator</translation>
 <translation id="8264024885325823677">Această setare este gestionată de administrator.</translation>
 <translation id="8269755669432358899">Restrânge panourile cu feedback privind fișierele</translation>
 <translation id="8280151743281770066">Armeană fonetică</translation>
@@ -868,7 +878,6 @@
 <translation id="8456681095658380701">Nume nevalid</translation>
 <translation id="8457767749626250697">Cardul SIM este blocat</translation>
 <translation id="8459404855768962328">În cazul în care copiezi elementul, acesta va putea fi accesat de toată lumea care vede dosarul comun <ph name="DESTINATION_NAME" />.</translation>
-<translation id="8461467696380332069">Dă clic dreapta pe un fișier și selectează „Fixați pe raft” pentru acces rapid la fișierele din raft.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnameză VIQR</translation>
 <translation id="8475647382427415476">Momentan, Google Drive nu a putut sincroniza „<ph name="FILENAME" />”. Google Drive va încerca din nou mai târziu.</translation>
@@ -905,7 +914,6 @@
 <translation id="8719721339511222681">S-a selectat <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croată</translation>
 <translation id="8743164338060742337">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, gestionată de administratorul tău, conectează-te</translation>
-<translation id="8750438273876807512">Atinge lung un fișier și atinge <ph name="ICON" />, apoi selectează „Fixează pe raft” pentru acces rapid la fișierele din raft.</translation>
 <translation id="8787254343425541995">Permiteți proxy-uri pentru rețelele utilizate în comun</translation>
 <translation id="8790981080411996443">Persoană care udă plante</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
@@ -940,6 +948,7 @@
 <translation id="9100610230175265781">Este necesară o expresie de acces</translation>
 <translation id="9110990317705400362">Google caută mereu modalități de a face navigarea mai sigură. Înainte, orice site îți putea solicita să adaugi o extensie în browser. În ultimele versiuni Google Chrome, trebuie să indici explicit că dorești să instalezi aceste extensii, adăugându-le în pagina Extensii. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Deblochează</translation>
+<translation id="9116909380156770361">transferul fișierelor către <ph name="RESTRICTED_COMPONENTS" />,</translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">Membrii „<ph name="DESTINATION_NAME" />” vor obține acces la aceste articole.</translation>
 <translation id="9131598836763251128">Selectează un fișier sau mai multe</translation>
@@ -961,6 +970,7 @@
 <translation id="943972244133411984">Modificat de</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
 <translation id="947144732524271678">S-au selectat o serie de <ph name="ENTRY_COUNT" /> intrări, de la <ph name="FROM_ENTRY_NAME" /> la <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Politica implementată de administrator împiedică:</translation>
 <translation id="965477715979482472">Engleză (Africa de Sud)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Fișierul cu numele „<ph name="FILE_NAME" />” există deja. Vrei să îl înlocuiești?</translation>

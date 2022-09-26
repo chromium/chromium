@@ -228,6 +228,7 @@
 <translation id="3016566519832145558">Attenzione: questi file sono temporanei e potrebbero essere eliminati automaticamente per liberare spazio su disco.</translation>
 <translation id="3029114385395636667">Attiva Documenti Google offline per rendere disponibili offline documenti, fogli e presentazioni.</translation>
 <translation id="303198083543495566">Regione</translation>
+<translation id="3044404008258011032">Per ripristinare questi elementi, trascinali in una nuova cartella fuori dal cestino. La cartella originale "<ph name="PARENT_FOLDER_NAME" />" di questi elementi è stata eliminata.</translation>
 <translation id="3047197340186497470">Cinese Dayi</translation>
 <translation id="3067790092342515856">File di Windows</translation>
 <translation id="3083975830683400843">I Chromebit</translation>
@@ -345,6 +346,7 @@
 <translation id="4057991113334098539">In fase di attivazione...</translation>
 <translation id="4092890906744441904">Irlandese</translation>
 <translation id="4124935795427217608">Unicorno</translation>
+<translation id="4131235941541910880">Sposta nel cestino gli elementi che non ti servono</translation>
 <translation id="4157569377477607576">Il criterio dell'amministratore sconsiglia:</translation>
 <translation id="4159731583141908892">Elemento <ph name="FILE_NAME" /> spostato.</translation>
 <translation id="4176286497474237543">Svuota il cestino adesso</translation>
@@ -440,8 +442,10 @@
 <translation id="485316830061041779">Tedesco</translation>
 <translation id="4867079195717347957">Fai clic per ordinare la colonna in ordine decrescente.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
+<translation id="4874569719830985133">Elimina definitivamente</translation>
 <translation id="4880214202172289027">Dispositivo volume</translation>
 <translation id="4881695831933465202">Apri</translation>
+<translation id="4891091358278567964">Per ripristinare questi elementi, trascinali in una nuova cartella fuori dal cestino. Le cartelle originali di questi elementi sono state eliminate.</translation>
 <translation id="4900532980794411603">Condividi con Parallels Desktop</translation>
 <translation id="4902546322522096650">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, connetti</translation>
 <translation id="4906580650526544301">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, dettagli</translation>
@@ -497,6 +501,7 @@
     Qualsiasi cosa accada al tuo dispositivo, i tuoi file rimangono memorizzati al sicuro in Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Condividi, crea e collabora<ph name="MARKUP_8" /> a file con altre persone, il tutto in un'unica posizione.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">File recuperati da Google Drive</translation>
+<translation id="5278111733643988471">Per ripristinare questo elemento, trascinalo in una nuova cartella fuori dal cestino. La cartella originale "<ph name="PARENT_FOLDER_NAME" />" di questo elemento è stata eliminata.</translation>
 <translation id="5286194356314741248">Ricerca</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -510,6 +515,7 @@
 <translation id="535792325654997756">Persona con gatti</translation>
 <translation id="5358764674931277">Frequenza fotogrammi</translation>
 <translation id="5363339716524495120">La lingua di inserimento è il cinese</translation>
+<translation id="5364067326287025678">Il cestino è vuoto</translation>
 <translation id="5368191757080475556">Condividi cartella con Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Non utilizzare le impostazioni proxy per i seguenti host e domini:</translation>
@@ -779,6 +785,7 @@
 <translation id="7711920809702896782">Info immagine</translation>
 <translation id="7724603315864178912">Taglia</translation>
 <translation id="7732111077498238432">La rete è gestita tramite norme</translation>
+<translation id="7736003208887389532">Vuoi eliminare definitivamente questi file?</translation>
 <translation id="7748626145866214022">Nella barra delle azioni sono disponibili altre opzioni. Premi ALT + A per impostare lo stato attivo sulla barra.</translation>
 <translation id="7760449188139285140">Cinese Wubi</translation>
 <translation id="7765158879357617694">Sposta</translation>
@@ -840,6 +847,7 @@
 <translation id="8249296373107784235">Interrompi</translation>
 <translation id="8250690786522693009">Latino</translation>
 <translation id="8250920743982581267">Documenti</translation>
+<translation id="8255595130163158297">Tutti gli elementi nel cestino verranno eliminati e non potrai ripristinarli.</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8261561378965667560">Cinese Array</translation>
 <translation id="8262872909443689080">Criterio dell'amministratore</translation>
@@ -869,7 +877,6 @@
 <translation id="8456681095658380701">Nome non valido</translation>
 <translation id="8457767749626250697">La SIM è bloccata</translation>
 <translation id="8459404855768962328">Se lo copi, questo elemento verrà condiviso con chiunque abbia accesso alla cartella condivisa "<ph name="DESTINATION_NAME" />".</translation>
-<translation id="8461467696380332069">Fai clic con il pulsante destro del mouse su un file e seleziona "Blocca sulla barra delle app" per accedervi rapidamente dalla barra delle app.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamita VIQR</translation>
 <translation id="8475647382427415476">Al momento non è possibile sincronizzare il file "<ph name="FILENAME" />" con Google Drive. Google Drive riproverà più tardi.</translation>
@@ -906,7 +913,6 @@
 <translation id="8719721339511222681">È stato selezionato l'elemento <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croato</translation>
 <translation id="8743164338060742337">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, gestita dall'amministratore, connetti</translation>
-<translation id="8750438273876807512">Tocca e tieni premuto un file, tocca <ph name="ICON" /> e seleziona "Blocca sulla barra delle app" per accedervi rapidamente dalla barra delle app.</translation>
 <translation id="8787254343425541995">Consenti proxy per reti condivise</translation>
 <translation id="8790981080411996443">Persona che annaffia le piante</translation>
 <translation id="8798099450830957504">Predefinito</translation>
@@ -919,6 +925,7 @@
 <translation id="8857149712089373752">Nepalese con tastiera fonetica</translation>
 <translation id="8860454412039442620">Foglio di calcolo Excel</translation>
 <translation id="8866284467018526531">Traslitterazione arabo</translation>
+<translation id="8873014196523807561">Per ripristinare questi elementi, trascinali in una nuova cartella. Le cartelle originali di alcuni di questi elementi sono state eliminate.</translation>
 <translation id="8874184842967597500">Non connesso</translation>
 <translation id="8900820606136623064">Ungherese</translation>
 <translation id="8903931173357132290">Persona laureata</translation>

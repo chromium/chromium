@@ -424,6 +424,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4536418791685807335">Spróbuj zalogować się jeszcze raz.</translation>
 <translation id="4540780316273593836">Coś poszło nie tak</translation>
 <translation id="457386861538956877">Więcej</translation>
+<translation id="4588014171431912783">Ustawienia synchronizacji zostaną przywrócone na podstawie ostatniej kopii zapasowej. <ph name="BEGIN_LINK" />Zobacz, co możesz synchronizować<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Klawiatura</translation>
 <translation id="4606247758155004938">Przeglądarką zarządza Twoja organizacja.</translation>
 <translation id="461440297010471931">Wyszukiwanie z Google</translation>
@@ -703,6 +704,7 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="661266467055912436">Zwiększa bezpieczeństwo Twoje i pozostałych użytkowników internetu.</translation>
 <translation id="6620279676667515405">Anuluj</translation>
 <translation id="6624219055418309072">Blokuj w trybie incognito</translation>
+<translation id="6625830436658400045">Ustawienia synchronizacji zostaną przywrócone na podstawie ostatniej kopii zapasowej. W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować.</translation>
 <translation id="6628106477656132239">Nieprawidłowa data ważności</translation>
 <translation id="6634432609054530164">Twoja organizacja wyłączyła tryb incognito</translation>
 <translation id="6638511529934826365">Powiększ tekst…</translation>

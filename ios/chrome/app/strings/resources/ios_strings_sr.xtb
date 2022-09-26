@@ -424,6 +424,7 @@
 <translation id="4536418791685807335">Пробајте поново да се пријавите.</translation>
 <translation id="4540780316273593836">Нешто није у реду</translation>
 <translation id="457386861538956877">Још...</translation>
+<translation id="4588014171431912783">Подешавања синхронизације ће се вратити основу последње резервне копије. <ph name="BEGIN_LINK" />Погледајте шта можете да синхронизујете<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Тастатура</translation>
 <translation id="4606247758155004938">Организација управља прегледачем.</translation>
 <translation id="461440297010471931">Претражујете помоћу Google-а</translation>
@@ -703,6 +704,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="661266467055912436">Побољшава безбедност за вас и друге на вебу.</translation>
 <translation id="6620279676667515405">Откажи</translation>
 <translation id="6624219055418309072">Блокирај у режиму без архивирања</translation>
+<translation id="6625830436658400045">Подешавања синхронизације ће се вратити основу последње резервне копије. Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
 <translation id="6628106477656132239">Неважећи датум истека</translation>
 <translation id="6634432609054530164">Организација је искључила режим без архивирања</translation>
 <translation id="6638511529934826365">Зумирај текст…</translation>

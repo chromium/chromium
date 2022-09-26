@@ -225,6 +225,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2227179592712503583">Alisin ang suhestyon</translation>
 <translation id="225680501294068881">Nag-i-scan para sa mga device...</translation>
 <translation id="2257486738914982088">Nagkaproblema habang dina-download ang <ph name="FILENAME" /></translation>
+<translation id="2258734398699965611">Mga iminumungkahing file</translation>
 <translation id="2268130516524549846">Hindi pinagana ang Bluetooth</translation>
 <translation id="2268813581635650749">I-sign out ang lahat</translation>
 <translation id="2269016722240250274">May application na gumagamit ng iyong mikropono</translation>
@@ -900,6 +901,7 @@ Isaksak ang iyong device.</translation>
 <translation id="6099678161144790572">Na-edit sa nakalipas na buwan</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Na-download na ang mga <ph name="LANGUAGE" /> na speech file</translation>
+<translation id="6116825164611323644">Naka-off ang access sa camera sa device na ito</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Kumpirmahin ang pag-download ng <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Hindi available ang Google Assistant sa session ng bisita.</translation>
@@ -1349,6 +1351,7 @@ Kaka-install lang</translation>
 <translation id="8734991477317290293">Maaaring sinusubukan nitong nakawin ang iyong mga keystroke</translation>
 <translation id="8735678380411481005">Kulay ng backlight ng keyboard</translation>
 <translation id="8735953464173050365">Ipakita ang mga setting ng keyboard. Napili ang <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8752416742247198423">I-on ang access sa camera para payagan ang mga app at webpage na may pahintulot sa camera na gamitin ang (mga) camera na nakakonekta sa device na ito.</translation>
 <translation id="8755498163081687682">I-verify ang pagkakakilanlan mo: Gustong kumpirmahin ng <ph name="ORIGIN_NAME" /> na ikaw ito</translation>
 <translation id="875593634123171288">Ipakita ang mga setting ng VPN</translation>
 <translation id="8759408218731716181">Hindi maaaring mag-set up ng multiple na pag-sign in</translation>
@@ -1363,6 +1366,7 @@ Kaka-install lang</translation>
 <translation id="8819728065740986820">Naka-on ang adaptive na pag-charge</translation>
 <translation id="8825863694328519386">Mag-swipe mula sa kaliwa para bumalik</translation>
 <translation id="8834539327799336565">Kasalukuyang nakakonekta</translation>
+<translation id="8834657930627018205">I-on ang access sa camera.</translation>
 <translation id="8841375032071747811">Button na Bumalik</translation>
 <translation id="8843682306134542540">I-toggle ang lock ng pag-rotate. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

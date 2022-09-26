@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">Awas: Fail ini bersifat sementara dan mungkin dipadamkan secara automatik untuk mengosongkan ruang cakera.</translation>
 <translation id="3029114385395636667">Dayakan Dokumen Google Luar Talian untuk menjadikan Dokumen, Helaian dan Slaid tersedia di luar talian.</translation>
 <translation id="303198083543495566">Geografi</translation>
+<translation id="3044404008258011032">Untuk memulihkan item ini, seret item ke folder baharu di luar sampah. Folder asal "<ph name="PARENT_FOLDER_NAME" />" untuk item ini telah dipadamkan.</translation>
 <translation id="3047197340186497470">Dayi Cina</translation>
 <translation id="3067790092342515856">Fail Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">Mengaktifkan...</translation>
 <translation id="4092890906744441904">Ireland</translation>
 <translation id="4124935795427217608">Unikorn</translation>
+<translation id="4131235941541910880">Alihkan item yang tidak diperlukan ke sampah</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> dialihkan.</translation>
 <translation id="4176286497474237543">Kosongkan sampah sekarang</translation>
 <translation id="4186579485882418952">Dayakan Luar Talian</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">Bahasa Jerman</translation>
 <translation id="4867079195717347957">Klik untuk mengisih lajur dalam tertib menurun.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bait</translation>
+<translation id="4874569719830985133">Padam selamanya</translation>
 <translation id="4880214202172289027">Peluncur kelantangan</translation>
 <translation id="4881695831933465202">Buka</translation>
+<translation id="4891091358278567964">Untuk memulihkan item ini, seret item ke folder baharu di luar sampah. Folder asal untuk item ini telah dipadamkan.</translation>
 <translation id="4900532980794411603">Kongsi dengan Parallels Desktop</translation>
 <translation id="4902546322522096650">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Sambung</translation>
 <translation id="4906580650526544301">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Bateri Telefon <ph name="BATTERY_STATUS" />%, Butiran</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />Kongsi, buat dan bekerjasama<ph name="MARKUP_8" />
     pada fail dengan orang lain, semuanya pada satu tempat.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Fail yang diperoleh semula dari Google Drive</translation>
+<translation id="5278111733643988471">Untuk memulihkan item ini, seret item ke folder baharu di luar sampah. Folder asal "<ph name="PARENT_FOLDER_NAME" />" untuk item ini telah dipadamkan.</translation>
 <translation id="5286194356314741248">Mengimbas</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -505,6 +510,7 @@
 <translation id="535792325654997756">Orang dengan kucing</translation>
 <translation id="5358764674931277">Kadar bingkai</translation>
 <translation id="5363339716524495120">Bahasa input ialah bahasa Cina</translation>
+<translation id="5364067326287025678">Tong sampah kosong</translation>
 <translation id="5368191757080475556">Kongsi folder dengan Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Jangan gunakan tetapan proksi untuk hos dan domain ini:</translation>
@@ -771,6 +777,7 @@
 <translation id="7711920809702896782">Maklumat imej</translation>
 <translation id="7724603315864178912">Potong</translation>
 <translation id="7732111077498238432">Rangkaian dikawal oleh dasar</translation>
+<translation id="7736003208887389532">Padamkan fail ini secara kekal?</translation>
 <translation id="7748626145866214022">Lagi pilihan tersedia pada bar tindakan. Tekan Alt + A untuk memfokuskan bar tindakan.</translation>
 <translation id="7760449188139285140">Wubi Cina</translation>
 <translation id="7765158879357617694">Alih</translation>
@@ -832,6 +839,7 @@
 <translation id="8249296373107784235">Henti paksa</translation>
 <translation id="8250690786522693009">Bahasa Latin</translation>
 <translation id="8250920743982581267">Dokumen</translation>
+<translation id="8255595130163158297">Semua item dalam sampah akan dipadamkan dan anda tidak akan dapat memulihkan item itu.</translation>
 <translation id="8261506727792406068">Padam</translation>
 <translation id="8261561378965667560">Tatasusunan Cina</translation>
 <translation id="8264024885325823677">Tetapan ini diurus oleh pentadbir anda.</translation>
@@ -860,7 +868,6 @@
 <translation id="8456681095658380701">Nama tidak sah</translation>
 <translation id="8457767749626250697">SIM anda dikunci</translation>
 <translation id="8459404855768962328">Tindakan menyalin item ini akan mengongsikan item ini dengan semua orang yang dapat melihat folder kongsi '<ph name="DESTINATION_NAME" />'.</translation>
-<translation id="8461467696380332069">Klik kanan fail dan pilih "Semat pada Rak" untuk mendapatkan akses pantas kepada fail dalam rak.</translation>
 <translation id="8461914792118322307">Proksi</translation>
 <translation id="8463494891489624050">VIQR Vietnam</translation>
 <translation id="8475647382427415476">Google Drive tidak dapat menyegerakkan "<ph name="FILENAME" />" pada masa ini. Google Drive akan mencuba lagi nanti.</translation>
@@ -897,7 +904,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> dipilih.</translation>
 <translation id="872537912056138402">Bahasa Croatia</translation>
 <translation id="8743164338060742337">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Diurus oleh Pentadbir anda, Sambung</translation>
-<translation id="8750438273876807512">Sentuh &amp; tahan fail dan ketik <ph name="ICON" /> dan pilih "Semat pada rak" untuk mendapatkan akses pantas kepada fail dalam rak.</translation>
 <translation id="8787254343425541995">Benarkan proksi untuk rangkaian yang dikongsi</translation>
 <translation id="8790981080411996443">Orang sedang menyiram tanaman</translation>
 <translation id="8798099450830957504">Lalai</translation>
@@ -910,6 +916,7 @@
 <translation id="8857149712089373752">Nepal dengan papan kekunci Fonetik</translation>
 <translation id="8860454412039442620">Hamparan Excel</translation>
 <translation id="8866284467018526531">Alih Huruf Arab</translation>
+<translation id="8873014196523807561">Untuk memulihkan item ini, seret item ke folder baharu. Folder asal untuk beberapa item ini telah dipadamkan.</translation>
 <translation id="8874184842967597500">Tidak bersambung</translation>
 <translation id="8900820606136623064">Bahasa Hungary</translation>
 <translation id="8903931173357132290">Graduan</translation>

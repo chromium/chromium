@@ -424,6 +424,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4536418791685807335">Qaytadan kirib ko‘ring.</translation>
 <translation id="4540780316273593836">Nimadir xato ketdi</translation>
 <translation id="457386861538956877">Yana...</translation>
+<translation id="4588014171431912783">Sinxronizatsiya sozlamalari oxirgi zaxiraviy fayl asosida tiklanadi. <ph name="BEGIN_LINK" />Nimalarni sinxronlash mumkin<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Klaviatura</translation>
 <translation id="4606247758155004938">Brauzeringiz tashkilotingiz boshqaruvida.</translation>
 <translation id="461440297010471931">Google orqali qidiruv</translation>
@@ -703,6 +704,7 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="661266467055912436">Siz va yaqinlaringizni internetdan yaxshiroq himoyalaydi.</translation>
 <translation id="6620279676667515405">Bekor qilish</translation>
 <translation id="6624219055418309072">Inkognito rejimida bloklash</translation>
+<translation id="6625830436658400045">Sinxronizatsiya sozlamalari oxirgi zaxiraviy fayl asosida tiklanadi. Nimani sinxronlashni istalgan vaqtda <ph name="BEGIN_LINK" />sozlamalar<ph name="END_LINK" /> orqali tanlash mumkin.</translation>
 <translation id="6628106477656132239">Amal qilish muddati xato kiritildi</translation>
 <translation id="6634432609054530164">Inkognito rejimi tashkilotingiz tomonidan faolsizlantirildi</translation>
 <translation id="6638511529934826365">Matn masshtabi…</translation>

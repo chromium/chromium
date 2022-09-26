@@ -539,6 +539,7 @@
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> 已加密。请让它的所有者进行解密。</translation>
 <translation id="151501797353681931">从 Safari 中导入</translation>
 <translation id="1515163294334130951">启动</translation>
+<translation id="1517467582299994451">若要使用代码进行投放，请开启 Chrome 浏览器同步设置</translation>
 <translation id="1521442365706402292">管理证书</translation>
 <translation id="1521774566618522728">今天曾有活动</translation>
 <translation id="152234381334907219">一律不保存</translation>
@@ -776,6 +777,7 @@
 <translation id="1723824996674794290">打开新的窗口(&amp;N)</translation>
 <translation id="1724801751621173132">输入法</translation>
 <translation id="1725562816265788801">标签页滚动</translation>
+<translation id="1726503915437308071">斜体</translation>
 <translation id="1729533290416704613">它还能够控制您通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">滚动至最后一个标签页</translation>
@@ -1609,6 +1611,7 @@
 <translation id="2468178265280335214">触控板滚屏加速</translation>
 <translation id="2468205691404969808">使用 Cookie 记住您的偏好设置（即使您不访问这些网页）</translation>
 <translation id="2468402215065996499">拓麻歌子</translation>
+<translation id="2468470085922875120">您使用的密码不易猜中</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 个标签页}other{<ph name="GROUP_TITLE" /> - # 个标签页}}</translation>
 <translation id="2469141124738294431">虚拟机状态</translation>
 <translation id="2469259292033957819">您没有已保存的打印机。</translation>
@@ -1772,6 +1775,7 @@
 <translation id="2627424346328942291">无法分享</translation>
 <translation id="2628770867680720336">要启用 ADB 调试，您必须将此 Chromebook 恢复出厂设置。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">开发 Android 应用</translation>
+<translation id="2629437048544561682">清除画布</translation>
 <translation id="2631498379019108537">在任务栏中显示输入法选项</translation>
 <translation id="2633212996805280240">要删除“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" />无法完成安装，但是会通过其磁盘映像继续运行。</translation>
@@ -1945,6 +1949,7 @@
 <translation id="2783321960289401138">创建快捷方式…</translation>
 <translation id="2783829359200813069">选择加密类型</translation>
 <translation id="2783952358106015700">使用您的安全密钥在 <ph name="APP_NAME" /> 上进行身份验证</translation>
+<translation id="2785267875302712148">密码安全检查</translation>
 <translation id="2785873697295365461">文件描述符数量</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">保留本地浏览数据（书签、密码、历史记录等等）</translation>
@@ -2020,6 +2025,7 @@
 <translation id="2844169650293029770">USB-C 设备（左侧前端端口）</translation>
 <translation id="2844809857160214557">查看和管理打印任务</translation>
 <translation id="2845382757467349449">总是显示书签栏</translation>
+<translation id="284581348330507117">创建互不重复的密码</translation>
 <translation id="284805635805850872">要移除有害软件吗？</translation>
 <translation id="2849035674501872372">查找</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2171,6 +2177,7 @@
 <translation id="2985348301114641460">向您的管理员发送“<ph name="EXTENSION_NAME" />”安装请求？</translation>
 <translation id="2987620471460279764">从其他设备分享的文字</translation>
 <translation id="2988018669686457659">备用渲染程序</translation>
+<translation id="2988328607561082373">您未重复使用任何密码</translation>
 <translation id="2989123969927553766">鼠标滚屏加速</translation>
 <translation id="2989474696604907455">未连接</translation>
 <translation id="2989786307324390836">DER 编码二进制，单一证书</translation>
@@ -2199,6 +2206,7 @@
 <translation id="3009178788565917040">输出</translation>
 <translation id="3009300415590184725">确定要取消移动数据服务安装过程吗？</translation>
 <translation id="3009779501245596802">索引型数据库</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{您的密码看似安全系数较高}=1{有 {COUNT} 个安全系数低的密码}other{有 {COUNT} 个安全系数低的密码}}</translation>
 <translation id="3010279545267083280">密码已删除</translation>
 <translation id="3010389206479238935">会被强制在…中打开</translation>
 <translation id="3011384993885886186">暖灰色</translation>
@@ -2405,6 +2413,7 @@
 <translation id="3225319735946384299">代码签名</translation>
 <translation id="3226487301970807183">显示/隐藏靠左对齐的侧边栏</translation>
 <translation id="3227137524299004712">麦克风</translation>
+<translation id="3232558119926886907">右对齐</translation>
 <translation id="3232754137068452469">网络应用</translation>
 <translation id="3233271424239923319">备份 Linux 应用和文件</translation>
 <translation id="3234251228180563751">用户名长度超过了 1,000 个字符</translation>
@@ -2449,6 +2458,7 @@
 <translation id="3275778809241512831">您的内部安全密钥目前不安全。请从所有使用了此密钥的服务中将其移除。要想解决该问题，请重置此安全密钥。</translation>
 <translation id="3275778913554317645">在窗口中打开</translation>
 <translation id="3277214528693754078">使用文本光标（光标浏览模式）进行导航</translation>
+<translation id="3277594800340743211">大阴影</translation>
 <translation id="3278001907972365362">您需要注意自己的 Google 帐号</translation>
 <translation id="3279092821516760512">附近的所选联系人可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
 <translation id="3279230909244266691">此过程可能需要几分钟的时间。正在启动虚拟机。</translation>
@@ -3901,6 +3911,7 @@
 <translation id="4651484272688821107">无法加载包含演示模式资源的在线组件。</translation>
 <translation id="4651921906638302153">无法使用此帐号登录</translation>
 <translation id="4652935475563630866">重新启动 Parallels Desktop 后，对摄像头设置做出的更改才能生效。请重新启动 Parallels Desktop 以继续。</translation>
+<translation id="4653116291358041820">小阴影</translation>
 <translation id="4653405415038586100">配置 Linux 时出错</translation>
 <translation id="465406513924180949">系统会显示购物车，方便您回来购买网购时留在购物车中的商品。
         <ph name="BREAK" />
@@ -4136,6 +4147,7 @@
 <translation id="4878718769565915065">未能向此安全密钥添加指纹</translation>
 <translation id="4879491255372875719">自动（默认）</translation>
 <translation id="4880827082731008257">搜索历史记录</translation>
+<translation id="4881062916686771679">此文件包含可能会使您的个人帐号或社交网络帐号（包括 <ph name="USER_EMAIL" />）遭到入侵的恶意软件</translation>
 <translation id="4881685975363383806">下次不再提醒我</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="488211015466188466">关注网站</translation>
@@ -4235,6 +4247,7 @@
 <translation id="4972737347717125191">网站可以请求使用虚拟实境设备和数据</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{将这个网站静音}other{将这些网站静音}}</translation>
 <translation id="497403230787583386">已完成安全检查。即将打印您的文档。</translation>
+<translation id="4975543297921324897">等宽字体</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">确认访问</translation>
 <translation id="4980805016576257426">此扩展程序包含恶意软件。</translation>
@@ -4397,6 +4410,7 @@
 <translation id="5153234146675181447">移除手机</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" />高级设置</translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{尚未保存任何密码。}=1{已为 {COUNT} 个网站检查了密码}other{已为 {COUNT} 个网站和应用检查了密码}}</translation>
 <translation id="5154702632169343078">主题背景</translation>
 <translation id="5155327081870541046">在地址栏中，输入与您要用作搜索范围的网站对应的快捷字词，例如“@bookmarks”。然后，按您的首选键盘快捷键，并输入搜索字词。</translation>
 <translation id="5156638757840305347">光标在出现或移动时突出显示</translation>
@@ -4637,6 +4651,7 @@
 <translation id="5390743329570580756">为何发送</translation>
 <translation id="5392192690789334093">允许发送通知</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{链接}other{# 个链接}}</translation>
+<translation id="5395498824851198390">默认字体</translation>
 <translation id="5396325212236512832">使用存储的凭据自动登录网站和应用。如果关闭了该功能，在您每次登录网站或应用之前，系统都会要求您确认。</translation>
 <translation id="5397378439569041789">注册自助服务终端或数字标牌设备</translation>
 <translation id="5397794290049113714">您</translation>
@@ -4909,6 +4924,7 @@
 <translation id="5639549361331209298">重新加载此网页，按下可查看更多选项</translation>
 <translation id="5640133431808313291">管理安全密钥</translation>
 <translation id="5641608986289282154">开始使用 <ph name="DEVICE_OS" /></translation>
+<translation id="5641648607875312660">屏幕截图编辑器</translation>
 <translation id="5642508497713047">CRL 签名人</translation>
 <translation id="5643321261065707929">按流量计费的网络</translation>
 <translation id="5643620609347735571">清除并继续</translation>
@@ -4975,6 +4991,7 @@
 <translation id="5713158217420111469">已连接到“<ph name="DEVICE" />”</translation>
 <translation id="5713960379473463904">空格输入样式</translation>
 <translation id="5715711091495208045">插件代理程序：<ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">您应立即更改这些密码</translation>
 <translation id="5719603411793408026">默认搜索引擎</translation>
 <translation id="5719854774000914513">网站可以请求连接到 HID 设备</translation>
 <translation id="572155275267014074">Android 设置</translation>
@@ -5102,6 +5119,7 @@
 <translation id="5842497610951477805">蓝牙开关</translation>
 <translation id="5844574845205796324">建议新内容以供探索</translation>
 <translation id="5846200638699387931">相关语法错误：<ph name="ERROR_LINE" /></translation>
+<translation id="5846455742152785308">没有阴影</translation>
 <translation id="5846504156837627898">管理网站权限</translation>
 <translation id="5846807460505171493">安装更新和应用。继续操作即表示您同意：此设备也可自动下载和安装来自 Google、您的运营商和设备制造商的更新和应用（此过程可能会使用移动数据网络）。部分应用可能会提供应用内购商品。</translation>
 <translation id="5849212445710944278">此前已添加</translation>
@@ -5465,6 +5483,7 @@
 <translation id="6185132558746749656">设备位置</translation>
 <translation id="6190953336330058278">Phone Hub 应用</translation>
 <translation id="6195005504600220730">读取您的浏览器、操作系统和设备的相关信息</translation>
+<translation id="6195155925303302899">居中对齐</translation>
 <translation id="6195693561221576702">无法在此设备上设置离线演示模式。</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6196854373336333322">“<ph name="EXTENSION_NAME" />”扩展程序控制了您的代理设置，也就是说，它可以更改、中断或窃听您在网上执行的任何操作。如果您不确定出现这种变化的原因，那么这种变化可能并不是您所希望的。</translation>
@@ -6140,6 +6159,7 @@
 <translation id="6828860976882136098">未能按您的要求为所有用户设置自动更新（执行预定流程时出错：<ph name="ERROR_NUMBER" />）</translation>
 <translation id="682971198310367122">Google 隐私权政策</translation>
 <translation id="6831043979455480757">翻译</translation>
+<translation id="6832218595502288407">左对齐</translation>
 <translation id="6833479554815567477">此标签页已从“<ph name="GROUP_NAME" />”组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">改用智能且安全的浏览器</translation>
 <translation id="6833996806551876956">隐私沙盒试用</translation>
@@ -6429,6 +6449,7 @@
 <translation id="7098447629416471489">其他已保存的搜索引擎将显示在这里</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{移除应用}other{移除应用}}</translation>
 <translation id="7099337801055912064">无法加载过大的 PPD。大小上限为 250 KB。</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{没有任何已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
 <translation id="7102687220333134671">已开启自动更新功能</translation>
 <translation id="7102832101143475489">此请求已超时</translation>
 <translation id="710640343305609397">打开网络设置</translation>
@@ -7373,6 +7394,7 @@
 请妥善保存您的密钥文件。您还需要使用该文件创建新版扩展程序。</translation>
 <translation id="8002274832045662704">高级打印机配置</translation>
 <translation id="8002670234429879764">“<ph name="PRINTER_NAME" />”已断开连接</translation>
+<translation id="8004092996156083991">如果您的密码已泄露，我们会通知您。</translation>
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8005600846065423578">始终允许 <ph name="HOST" /> 查看剪贴板</translation>
 <translation id="8006630792898017994">空格键或 Tab 键</translation>
@@ -7551,6 +7573,7 @@
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">Chrome 正在通过 <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> 开发新技术，以便既能保护开放网络又能使您免受跨网站跟踪。</translation>
 <translation id="8161293209665121583">使用阅读器模式显示网页</translation>
+<translation id="8161604891089629425">轮廓字体</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{将标签页移至新窗口}other{将标签页移至新窗口}}</translation>
 <translation id="8165997195302308593">Crostini 端口转发</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 个电话号码}other{# 个电话号码}}</translation>
@@ -7776,6 +7799,7 @@
 <translation id="8379991678458444070">只需为此标签页添加书签，便可在需要时快速返回到此处</translation>
 <translation id="8380266723152870797">窗口名称</translation>
 <translation id="8380941800586852976">危险</translation>
+<translation id="8382677870544805359">您必须将此设备恢复出厂设置才能使用企业功能。</translation>
 <translation id="8382715499079447151">窥探保护功能</translation>
 <translation id="8382913212082956454">复制电子邮件地址(&amp;E)</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />请尝试执行以下问题排查步骤：
@@ -7870,6 +7894,7 @@
 <translation id="8470513973197838199">已保存用于登录 <ph name="ORIGIN" /> 的密码</translation>
 <translation id="8471525937465764768">网站通常会连接到 USB 设备以实现某些功能（例如打印文档或保存到存储设备）</translation>
 <translation id="8471959340398751476">折扣信息查找功能已关闭。您可在“自定义”菜单中开启此功能</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{您的每个密码都互不重复}=1{有 {COUNT} 个重复使用的密码}other{有 {COUNT} 个重复使用的密码}}</translation>
 <translation id="8472623782143987204">硬件支持</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="8475313423285172237">您计算机上的其他程序添加了一个扩展程序，该扩展程序可能会改变 Chrome 的工作方式。</translation>
@@ -7980,6 +8005,7 @@
 <translation id="8596540852772265699">自定义文件</translation>
 <translation id="8597845839771543242">属性格式：</translation>
 <translation id="8599681327221583254">有一项或多项政策未正确配置。请与您的管理员联系</translation>
+<translation id="8599864823732014237">跳过企业注册？</translation>
 <translation id="8601206103050338563">TLS WWW 客户端身份验证</translation>
 <translation id="8601611099293226919">使用 Google 智能镜头搜索您的屏幕上的内容</translation>
 <translation id="8602851771975208551">您计算机上的其他程序添加了一个应用，该应用可能会改变 Chrome 的工作方式。</translation>
@@ -8348,6 +8374,7 @@
 <translation id="8940081510938872932">计算机当前处理的内容过多。请稍后重试。</translation>
 <translation id="8940381019874223173">来自您的 Google 相册</translation>
 <translation id="8941173171815156065">撤消“<ph name="PERMISSION" />”权限</translation>
+<translation id="894191600409472540">创建安全系数高的密码</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">这样会更快消耗电量（目前电量：<ph name="BATTERY_PERCENTAGE" />%）</translation>
 <translation id="8945274638472141382">图标大小</translation>
@@ -8571,6 +8598,7 @@
 <translation id="9140067245205650184">您使用的是不受支持的功能标记：<ph name="BAD_FLAG" />。稳定性和安全性会有所下降。</translation>
 <translation id="9142637293078737510">映像别名</translation>
 <translation id="9143298529634201539">要移除推荐内容吗？</translation>
+<translation id="9143922477019434797">保护您的密码</translation>
 <translation id="9147392381910171771">选项(&amp;O)</translation>
 <translation id="9148058034647219655">退出</translation>
 <translation id="9148126808321036104">重新登录</translation>

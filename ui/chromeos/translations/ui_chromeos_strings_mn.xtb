@@ -875,7 +875,6 @@
 <translation id="8456681095658380701">Хүчин төгөлдөр бус нэр</translation>
 <translation id="8457767749626250697">Таны SIM-г түгжсэн</translation>
 <translation id="8459404855768962328">Энэ зүйлийг хуулснаар үүнийг '<ph name="DESTINATION_NAME" />' хуваалцсан фолдерыг харах боломжтой бүх хүнтэй хуваалцана.</translation>
-<translation id="8461467696380332069">Тавиур дахь файлууддаа шуурхай хандахын тулд файл дээр хулганын баруун талыг товшиж, "Тавиурт бэхлэх"-ийг сонгоно уу.</translation>
 <translation id="8461914792118322307">Прокси</translation>
 <translation id="8463494891489624050">Вьетнам VIQR</translation>
 <translation id="8475647382427415476">Google Drive нь "<ph name="FILENAME" />"-г синк хийх боломжгүй байна. Google Drive дараа дахин оролдох болно.</translation>
@@ -912,7 +911,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> сонгогдсон.</translation>
 <translation id="872537912056138402">Хорват</translation>
 <translation id="8743164338060742337">Сүлжээ <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, холбогдох</translation>
-<translation id="8750438273876807512">Тавиур дахь файлууддаа шуурхай хандахын тулд файлыг удаан дарж, <ph name="ICON" />-г товшоод, "Тавиурт бэхлэх"-ийг сонгоно уу.</translation>
 <translation id="8787254343425541995">Нэгдсэн сүлжээнүүдэд проксиг зөвшөөрөх</translation>
 <translation id="8790981080411996443">Ургамал усалж буй хүн</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>

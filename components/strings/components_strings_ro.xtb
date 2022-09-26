@@ -1262,6 +1262,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Conexiunea la <ph name="SITE" /> nu este securizată</translation>
 <translation id="4349365535725594680">Nu poți permite accesul la conținut confidențial</translation>
+<translation id="4349810866125026513">Încarcă oricum</translation>
 <translation id="4350629523305688469">Tava multifuncțională</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vrea să caute dispozitive Bluetooth în apropiere. Următoarele dispozitive au fost găsite:</translation>
 <translation id="4351175281479794167">Introdu codul de verificare</translation>
@@ -1985,6 +1986,7 @@
 <translation id="6337133576188860026">Eliberează mai puțin de <ph name="SIZE" />. Este posibil ca unele site-uri să se încarce mai lent la următoarea accesare.</translation>
 <translation id="6337534724793800597">Filtrați politicile după nume</translation>
 <translation id="6340739886198108203">Politica implementată de administrator nu recomandă să faci capturi de ecran sau înregistrări atunci când este vizibil conținut confidențial:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Politica implementată de administrator nu recomandă să încarci acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să încarci aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să încarci aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Variante active</translation>
 <translation id="6349101878882523185">Instalează <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Niciuna}=1{O parolă (pentru <ph name="DOMAIN_LIST" />, sincronizată)}=2{2 parole (pentru <ph name="DOMAIN_LIST" />, sincronizate)}few{# parole (pentru <ph name="DOMAIN_LIST" />, sincronizate)}other{# de parole (pentru <ph name="DOMAIN_LIST" />, sincronizate)}}</translation>
@@ -2619,6 +2621,7 @@ Detalii suplimentare:
 <translation id="8075736640322370409">Creează rapid o Foaie de calcul Google</translation>
 <translation id="8075898834294118863">Butonul Gestionează setările pentru site-uri</translation>
 <translation id="8076492880354921740">File</translation>
+<translation id="8078006011486731853">{0,plural, =1{Încarci un fișier confidențial?}few{Încarci fișiere confidențiale?}other{Încarci fișiere confidențiale?}}</translation>
 <translation id="8078141288243656252">Nu se poate adnota când este rotit</translation>
 <translation id="8079031581361219619">Reîncarci site-ul?</translation>
 <translation id="8081087320434522107">Berline</translation>

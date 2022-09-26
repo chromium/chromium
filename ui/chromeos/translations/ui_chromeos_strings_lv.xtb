@@ -228,6 +228,7 @@
 <translation id="3016566519832145558">Uzmanību! Šie ir pagaidu faili, kas var tikt automātiski izdzēsti, lai atbrīvotu vietu diskā.</translation>
 <translation id="3029114385395636667">Iespējojiet paplašinājumu Google dokumenti bezsaistē, lai Dokumentu, Izklājlapu un Prezentāciju faili būtu pieejami bezsaistē.</translation>
 <translation id="303198083543495566">Ģeogrāfiskie dati</translation>
+<translation id="3044404008258011032">Lai atjaunotu šos vienumus, velciet tos uz jaunu mapi ārpus atkritnes. Šo vienumu sākotnējā mape “<ph name="PARENT_FOLDER_NAME" />” ir izdzēsta.</translation>
 <translation id="3047197340186497470">Ķīniešu, Dayi</translation>
 <translation id="3067790092342515856">Windows faili</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -345,6 +346,7 @@
 <translation id="4057991113334098539">Notiek aktivizācija...</translation>
 <translation id="4092890906744441904">Īru</translation>
 <translation id="4124935795427217608">Vienradzis</translation>
+<translation id="4131235941541910880">Varat pārvietot nevajadzīgus vienumus uz atkritni</translation>
 <translation id="4157569377477607576">Administratora politika nosaka, ka nav ieteicams:</translation>
 <translation id="4159731583141908892">Pārvietots vienums: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Iztukšot atkritni tūlīt</translation>
@@ -440,8 +442,10 @@
 <translation id="485316830061041779">Vācu valoda</translation>
 <translation id="4867079195717347957">Noklikšķiniet, lai kārtotu slejas dilstošā secībā.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> baiti</translation>
+<translation id="4874569719830985133">Neatgriezeniski dzēst</translation>
 <translation id="4880214202172289027">Skaļuma slīdnis</translation>
 <translation id="4881695831933465202">Atvērt</translation>
+<translation id="4891091358278567964">Lai atjaunotu šos vienumus, velciet tos uz jaunu mapi ārpus atkritnes. Šo vienumu sākotnējās mapes ir izdzēstas.</translation>
 <translation id="4900532980794411603">Kopīgot ar Parallels Desktop</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />, tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, savienojums</translation>
 <translation id="4906580650526544301">Tīkls numur <ph name="NETWORK_INDEX" />, tīklu kopskaits: <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signāla stiprums procentos: <ph name="SIGNAL_STRENGTH" />, tālruņa akumulatora statuss procentos: <ph name="BATTERY_STATUS" />, informācija</translation>
@@ -498,6 +502,7 @@
     <ph name="MARKUP_7" />Koplietojiet un veidojiet failus vienuviet, kā arī sadarbojieties,<ph name="MARKUP_8" />
     izmantojot failus kopā ar citiem lietotājiem.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">No Google diska atkoptie faili</translation>
+<translation id="5278111733643988471">Lai atjaunotu šo vienumu, velciet to uz jaunu mapi ārpus atkritnes. Šī vienuma sākotnējā mape “<ph name="PARENT_FOLDER_NAME" />” ir izdzēsta.</translation>
 <translation id="5286194356314741248">Notiek skenēšana</translation>
 <translation id="5288441970121584418">Burgers</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -511,6 +516,7 @@
 <translation id="535792325654997756">Persona ar kaķiem</translation>
 <translation id="5358764674931277">Kadri sekundē</translation>
 <translation id="5363339716524495120">Ievades valoda ir ķīniešu valoda.</translation>
+<translation id="5364067326287025678">Atkritne ir tukša</translation>
 <translation id="5368191757080475556">Mapes kopīgošana ar Linux</translation>
 <translation id="5402367795255837559">Braila raksts</translation>
 <translation id="5411472733320185105">Neizmantojiet starpniekservera iestatījumus šādiem resursdatoriem un domēniem:</translation>
@@ -780,6 +786,7 @@
 <translation id="7711920809702896782">Attēla informācija</translation>
 <translation id="7724603315864178912">Izgriezt</translation>
 <translation id="7732111077498238432">Tīklu pārvalda politika</translation>
+<translation id="7736003208887389532">Vai vēlaties neatgriezeniski izdzēst šos failus?</translation>
 <translation id="7748626145866214022">Vairāk pieejamu opciju darbību joslā. Lai izceltu darbību joslu, nospiediet taustiņu kombināciju Alt+A.</translation>
 <translation id="7760449188139285140">Ķīniešu, Wubi</translation>
 <translation id="7765158879357617694">Pārvietot</translation>
@@ -841,6 +848,7 @@
 <translation id="8249296373107784235">Priekšlaikus pārtraukt</translation>
 <translation id="8250690786522693009">latīņu</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
+<translation id="8255595130163158297">Visi atkritnē esošie vienumi tiks izdzēsti, un jūs nevarēsiet tos atjaunot.</translation>
 <translation id="8261506727792406068">Dzēst</translation>
 <translation id="8261561378965667560">Ķīniešu, masīva ievades metode</translation>
 <translation id="8262872909443689080">Administratora politika</translation>
@@ -870,7 +878,6 @@
 <translation id="8456681095658380701">Nederīgs nosaukums</translation>
 <translation id="8457767749626250697">Jūsu SIM karte ir bloķēta</translation>
 <translation id="8459404855768962328">Kopējot šo failu, tas tiks kopīgots ar ikvienu, kas var skatīt kopīgoto mapi “<ph name="DESTINATION_NAME" />”.</translation>
-<translation id="8461467696380332069">Lai varētu ātri piekļūt failiem plauktā, ar labo peles pogu noklikšķiniet uz faila un atlasiet Piespraust plauktam.</translation>
 <translation id="8461914792118322307">Starpniekserveris</translation>
 <translation id="8463494891489624050">Vjetnamiešu, VIQR</translation>
 <translation id="8475647382427415476">Google diskā pašlaik nevar sinhronizēt failu “<ph name="FILENAME" />”. Google diskā vēlāk tiks veikts atkārtots mēģinājums.</translation>
@@ -907,7 +914,6 @@
 <translation id="8719721339511222681">Atlasīts vienums “<ph name="ENTRY_NAME" />”.</translation>
 <translation id="872537912056138402">Horvātu valoda</translation>
 <translation id="8743164338060742337">Tīkls numur <ph name="NETWORK_INDEX" />, tīklu kopskaits: <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signāla stiprums procentos: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators, savienojums</translation>
-<translation id="8750438273876807512">Lai varētu ātri piekļūt failiem plauktā, pieskarieties failam un turiet to, pieskarieties ikonai <ph name="ICON" /> un atlasiet Piespraust plauktam.</translation>
 <translation id="8787254343425541995">Ļaut starpniekserveru izmantošanu koplietotajiem tīkliem</translation>
 <translation id="8790981080411996443">Persona laista puķes</translation>
 <translation id="8798099450830957504">Noklusējums</translation>
@@ -920,6 +926,7 @@
 <translation id="8857149712089373752">Nepāliešu, ar fonētisko tastatūru</translation>
 <translation id="8860454412039442620">Excel izklājlapa</translation>
 <translation id="8866284467018526531">Arābu, transliterācija</translation>
+<translation id="8873014196523807561">Lai atjaunotu šos vienumus, velciet tos uz jaunu mapi. Dažiem no šiem vienumiem ir izdzēstas sākotnējās mapes.</translation>
 <translation id="8874184842967597500">Savienojums nav izveidots</translation>
 <translation id="8900820606136623064">Ungāru</translation>
 <translation id="8903931173357132290">Absolvents</translation>

@@ -859,7 +859,6 @@
 <translation id="8456681095658380701">Izenak ez du balio</translation>
 <translation id="8457767749626250697">SIM txartela blokeatuta dago</translation>
 <translation id="8459404855768962328">Elementu hau kopiatuz gero, "<ph name="DESTINATION_NAME" />" karpeta partekatua ikus dezakeen edonorekin partekatuko da.</translation>
-<translation id="8461467696380332069">Egin klik eskuineko botoiarekin fitxategi batean eta hautatu "Ainguratu apalean"; horrela, apalean dauden fitxategietarako sarbide bizkorra izango duzu.</translation>
 <translation id="8461914792118322307">Proxya</translation>
 <translation id="8463494891489624050">Vietnamdarra (VIQR)</translation>
 <translation id="8475647382427415476">Google Drive-k ezin izan du sinkronizatu "<ph name="FILENAME" />". Berriro saiatuko da geroago.</translation>
@@ -896,7 +895,6 @@
 <translation id="8719721339511222681">Hautatu da <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Kroaziarra</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" />. <ph name="NETWORK_PROVIDER_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua. Konektatu.</translation>
-<translation id="8750438273876807512">Eduki sakatuta fitxategi bat eta sakatu <ph name="ICON" />. Gero, hautatu "Ainguratu apalean"; horrela, apalean dauden fitxategietarako sarbide bizkorra izango duzu.</translation>
 <translation id="8787254343425541995">Baimendu proxyak sare partekatuetan</translation>
 <translation id="8790981080411996443">Landareak ureztatzen ari den pertsona</translation>
 <translation id="8798099450830957504">Lehenetsia</translation>

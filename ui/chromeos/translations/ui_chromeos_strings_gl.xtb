@@ -859,7 +859,6 @@
 <translation id="8456681095658380701">Nome non válido</translation>
 <translation id="8457767749626250697">A túa SIM está bloqueada</translation>
 <translation id="8459404855768962328">Ao copiar este elemento, compartirase con todas as persoas que poidan ver o cartafol compartido <ph name="DESTINATION_NAME" />.</translation>
-<translation id="8461467696380332069">Para acceder de forma rápida aos teus ficheiros no estante, fai clic co botón dereito nun ficheiro e selecciona Fixar no estante.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamita (VIQR)</translation>
 <translation id="8475647382427415476">Google Drive non puido sincronizar <ph name="FILENAME" /> neste momento. Google Drive tentarao de novo máis tarde.</translation>
@@ -896,7 +895,6 @@
 <translation id="8719721339511222681">Seleccionouse <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>
 <translation id="8743164338060742337">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, conectar</translation>
-<translation id="8750438273876807512">Para poder acceder rapidamente aos ficheiros dun estante, mantén premido un ficheiro, toca <ph name="ICON" /> e selecciona Fixar no estante.</translation>
 <translation id="8787254343425541995">Permitir servidores proxy para redes compartidas</translation>
 <translation id="8790981080411996443">Persoa regando plantas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>

@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Копирование файла "<ph name="FILE_NAME" />"…</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1190144681599273207">При загрузке этого файла по мобильному каналу передачи данных будет использовано около <ph name="FILE_SIZE" /> трафика.</translation>
+<translation id="1194390763418645112">Доступ к файлу через <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Далее</translation>
 <translation id="1209796539517632982">Автоматические серверы имен</translation>
 <translation id="1210831758834677569">Лаосский</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Устройства Chrome</translation>
 <translation id="1572585716423026576">Установить как обои</translation>
 <translation id="1576937952766665062">Бенгальский, транслитерация</translation>
+<translation id="1577977504532381335">Посмотреть правила администратора</translation>
 <translation id="158849752021629804">Необходима домашняя сеть</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Разрешение изображения</translation>
 <translation id="1972984168337863910">Развернуть панель с информацией о файлах</translation>
 <translation id="1995337122023280937">Перейти к местоположению файла</translation>
+<translation id="1999709132469742660">Доступ к файлу через все URL</translation>
 <translation id="2001796770603320721">Открыть на Google Диске</translation>
 <translation id="2009067268969781306">При форматировании диска все хранящиеся на нем данные будут удалены. Это действие нельзя отменить.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Человек с чашкой кофе</translation>
 <translation id="2251368349685848079">Восстановить из корзины</translation>
 <translation id="2282155092769082568">URL автоматической настройки:</translation>
+<translation id="2284767815536050991">съемный накопитель</translation>
 <translation id="2288278176040912387">Патефон</translation>
 <translation id="2291538123825441971">Открываются файлы (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Открывается файл <ph name="FILE_NAME" />.</translation>
@@ -224,6 +228,7 @@
 <translation id="3016566519832145558">Внимание! Это временные файлы. Они могут быть автоматически удалены, чтобы освободить место на диске.</translation>
 <translation id="3029114385395636667">Чтобы работать с документами, таблицами и презентациями Google, когда вы не в Сети, включите расширение "Google Документы офлайн".</translation>
 <translation id="303198083543495566">Место съемки</translation>
+<translation id="3044404008258011032">Чтобы восстановить эти объекты, перетащите их из корзины в новую папку. Папка "<ph name="PARENT_FOLDER_NAME" />", в которой они находились ранее, была удалена.</translation>
 <translation id="3047197340186497470">Китайский, даи</translation>
 <translation id="3067790092342515856">Файлы Windows</translation>
 <translation id="3083975830683400843">Устройства Chromebit</translation>
@@ -341,6 +346,8 @@
 <translation id="4057991113334098539">Активация...</translation>
 <translation id="4092890906744441904">Ирландский</translation>
 <translation id="4124935795427217608">Единорог</translation>
+<translation id="4131235941541910880">Перемещайте ненужные объекты в корзину.</translation>
+<translation id="4157569377477607576">Не рекомендуется администратором:</translation>
 <translation id="4159731583141908892">Перемещено: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Очистить корзину</translation>
 <translation id="4186579485882418952">Включить офлайн-режим</translation>
@@ -435,8 +442,10 @@
 <translation id="485316830061041779">Немецкий</translation>
 <translation id="4867079195717347957">Нажмите, чтобы отсортировать значения в столбце по убыванию.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> Б</translation>
+<translation id="4874569719830985133">Удалить навсегда</translation>
 <translation id="4880214202172289027">Ползунок громкости</translation>
 <translation id="4881695831933465202">Открыть</translation>
+<translation id="4891091358278567964">Чтобы восстановить эти объекты, перетащите их из корзины в новую папку. Папки, в которых эти объекты находились ранее, были удалены.</translation>
 <translation id="4900532980794411603">Предоставить доступ Parallels Desktop</translation>
 <translation id="4902546322522096650">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подключение</translation>
 <translation id="4906580650526544301">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="PHONE_NAME" />", оператор – <ph name="PROVIDER_NAME" />, статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подробная информация</translation>
@@ -493,6 +502,7 @@
     <ph name="MARKUP_7" />Вы можете создавать файлы, предоставлять к ним общий доступ и работать над ними<ph name="MARKUP_8" />
     вместе с коллегами в одном удобном сервисе.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Восстановленные файлы с Google Диска</translation>
+<translation id="5278111733643988471">Чтобы восстановить этот объект, перетащите его из корзины в новую папку. Папка "<ph name="PARENT_FOLDER_NAME" />", в которой он находился ранее, была удалена.</translation>
 <translation id="5286194356314741248">Сканирование...</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -502,9 +512,11 @@
 <translation id="5323213332664049067">Латинская Америка</translation>
 <translation id="5330145655348521461">Эти файлы открыты на другом рабочем столе. Чтобы увидеть их, переключитесь на профиль пользователя <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Сведения о файле</translation>
+<translation id="5337538975554986899">Доступ к файлу через все URL, кроме <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Человек с кошками</translation>
 <translation id="5358764674931277">Частота кадров</translation>
 <translation id="5363339716524495120">Язык ввода – китайский</translation>
+<translation id="5364067326287025678">Ничего нет</translation>
 <translation id="5368191757080475556">Предоставление доступа к папке для Linux</translation>
 <translation id="5402367795255837559">Шрифт Брайля</translation>
 <translation id="5411472733320185105">Не использовать прокси-сервер для подключения к следующим хостам и доменам:</translation>
@@ -526,6 +538,7 @@
 <translation id="5533102081734025921">Изображение <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Подсчет размера…</translation>
 <translation id="554153475311314364">Греческий, транслитерация</translation>
+<translation id="5580591966435005537">виртуальная машина</translation>
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
 <translation id="5583664733673201137">Ширина знаков пунктуации – полная</translation>
 <translation id="5602622065581044566">Болгарский, фонетическая раскладка</translation>
@@ -586,6 +599,7 @@
 <translation id="61118516107968648">Текстовый файл формата CSV</translation>
 <translation id="6129953537138746214">Пробел</translation>
 <translation id="6133173853026656527">Перемещение файла "<ph name="FILE_NAME" />"…</translation>
+<translation id="6133877453787250710">Отслеживается администратором:</translation>
 <translation id="613750717151263950">Японский, американская раскладка</translation>
 <translation id="6138894911715675297">Сеть <ph name="NETWORK_TYPE" />, нет доступа</translation>
 <translation id="6146563240635539929">Видео</translation>
@@ -606,6 +620,7 @@
 <translation id="6287852322318138013">Выберите программу, в которой необходимо открыть этот файл</translation>
 <translation id="6295542640242147836">Блокировка SIM-карты</translation>
 <translation id="6296410173147755564">Недействительный PUK-код.</translation>
+<translation id="6308243004861726558">Это конфиденциальный файл, на который распространяются правила администратора. К файлу применимы указанные ниже действия.</translation>
 <translation id="6312403991423642364">Неизвестная ошибка сети</translation>
 <translation id="6317608858038767920">Пользовательский DNS-сервер <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Архив <ph name="ARCHIVE_TYPE" /></translation>
@@ -771,6 +786,7 @@
 <translation id="7711920809702896782">Информация об изображении</translation>
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7732111077498238432">В этой сети установлены правила</translation>
+<translation id="7736003208887389532">Удалить эти файлы навсегда?</translation>
 <translation id="7748626145866214022">Больше возможностей доступно на панели действий. Чтобы перейти на нее, нажмите клавиши Alt + A.</translation>
 <translation id="7760449188139285140">Китайский, Wubi</translation>
 <translation id="7765158879357617694">Переместить</translation>
@@ -832,8 +848,10 @@
 <translation id="8249296373107784235">Отмена</translation>
 <translation id="8250690786522693009">Латиница</translation>
 <translation id="8250920743982581267">Документы</translation>
+<translation id="8255595130163158297">Все объекты в корзине будут удалены без возможности восстановления.</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8261561378965667560">Китайский, структурный ввод</translation>
+<translation id="8262872909443689080">Правила администратора</translation>
 <translation id="8264024885325823677">Этим параметром управляет администратор.</translation>
 <translation id="8269755669432358899">Свернуть панель с информацией о файлах</translation>
 <translation id="8280151743281770066">Армянская (фонетическая)</translation>
@@ -860,7 +878,6 @@
 <translation id="8456681095658380701">Недопустимое название</translation>
 <translation id="8457767749626250697">SIM-карта заблокирована</translation>
 <translation id="8459404855768962328">Если вы скопируете этот объект, то его увидят все пользователи, у которых есть доступ к общей папке "<ph name="DESTINATION_NAME" />".</translation>
-<translation id="8461467696380332069">Нажмите на файл правой кнопкой мыши и выберите "Закрепить на панели запуска".</translation>
 <translation id="8461914792118322307">Настройки прокси-сервера</translation>
 <translation id="8463494891489624050">Вьетнамский, раскладка VIQR</translation>
 <translation id="8475647382427415476">Не удалось синхронизировать <ph name="FILENAME" /> с Google Диском. Система повторит попытку позже.</translation>
@@ -897,7 +914,6 @@
 <translation id="8719721339511222681">Выбран объект "<ph name="ENTRY_NAME" />".</translation>
 <translation id="872537912056138402">Хорватский</translation>
 <translation id="8743164338060742337">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", оператор – <ph name="NETWORK_PROVIDER_NAME" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подключиться</translation>
-<translation id="8750438273876807512">Нажмите и удерживайте файл, затем нажмите на значок <ph name="ICON" /> и выберите "Закрепить на панели запуска".</translation>
 <translation id="8787254343425541995">Использовать прокси-серверы для общих сетей</translation>
 <translation id="8790981080411996443">Человек поливает цветы</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
@@ -910,6 +926,7 @@
 <translation id="8857149712089373752">Непальский, фонетическая раскладка</translation>
 <translation id="8860454412039442620">Электронные таблицы Excel</translation>
 <translation id="8866284467018526531">Арабский, транслитерация</translation>
+<translation id="8873014196523807561">Чтобы восстановить эти объекты, перетащите их в новую папку. Папки, в которых находились некоторые из этих объектов ранее, были удалены.</translation>
 <translation id="8874184842967597500">Не подключено</translation>
 <translation id="8900820606136623064">Венгерский</translation>
 <translation id="8903931173357132290">Выпускник</translation>
@@ -931,6 +948,7 @@
 <translation id="9100610230175265781">Необходима кодовая фраза</translation>
 <translation id="9110990317705400362">Мы постоянно работаем над тем, чтобы сделать наш браузер ещё более защищенным. Раньше любой сайт мог предложить вам установить расширение, что было небезопасно. В последних версиях Google Chrome добавить расширения можно только на странице "Расширения". <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>
+<translation id="9116909380156770361">Перенос файла на компонент "<ph name="RESTRICTED_COMPONENTS" />"</translation>
 <translation id="912419004897138677">Кодек</translation>
 <translation id="9130775360844693113">Пользователи общего диска "<ph name="DESTINATION_NAME" />" получат доступ к этим объектам.</translation>
 <translation id="9131598836763251128">Выберите файлы</translation>
@@ -952,6 +970,7 @@
 <translation id="943972244133411984">Кем изменено</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="947144732524271678">Выбраны объекты от "<ph name="FROM_ENTRY_NAME" />" до "<ph name="TO_ENTRY_NAME" />" (всего <ph name="ENTRY_COUNT" />).</translation>
+<translation id="954194396377670556">Заблокировано администратором:</translation>
 <translation id="965477715979482472">Английский (ЮАР)</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Файл "<ph name="FILE_NAME" />" уже существует. Заменить его?</translation>

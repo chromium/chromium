@@ -142,6 +142,11 @@
       确定在零售模式设备的登录屏幕上显示屏幕保护程序之前的闲置时间。
 
       应以毫秒为单位指定此政策的值。</translation>
+<translation id="1143257335984030879">此政策用于控制购物清单功能的可用性。
+      如果此政策已启用，系统会向用户呈现用于跟踪当前页面上显示的商品价格的界面。跟踪的商品会显示在书签侧边栏中。
+      如果此政策已启用或未设置，用户将可以使用购物清单功能。
+      如果此政策已停用，购物清单功能将无法使用。
+      </translation>
 <translation id="1144540226829648811">指定该设备应锁定到的发布版本。
 
       仅当 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> 设为 False 时，设置 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 才会产生影响。</translation>
@@ -435,6 +440,11 @@
       基于扩展程序的打印机也称为打印提供程序目的地，包括 <ph name="PRODUCT_NAME" /> 扩展程序名下的所有目的地。
 
       本地打印机也称为本机打印目的地，包括可供本地计算机使用的目的地以及共享的网络打印机。</translation>
+<translation id="1456449214426764016">非标准 API window.webkitStorageInfo 已被弃用，我们计划将其移除。
+      此政策用于重新启用该 API。
+      如果此政策已启用，window.webkitStorageInfo API 将可使用。
+      如果此政策已停用或未设置，window.webkitStorageInfo API 将无法使用。
+      </translation>
 <translation id="1456822151187621582">Windows（<ph name="PRODUCT_OS_NAME" />客户端）：</translation>
 <translation id="1464848559468748897">控制<ph name="PRODUCT_OS_NAME" />设备上多个人资料会话中的用户行为。
 
@@ -3153,6 +3163,7 @@
 
       如需了解详情，请参阅 https://developer.chrome.com/blog/immutable-document-domain/。
       </translation>
+<translation id="416817811987180750">用户将可以使用购物清单功能。</translation>
 <translation id="4169692397912242417">在登录屏幕上启用语音反馈无障碍功能。
 
           如果此政策设为 true，语音反馈在登录屏幕上将始终处于启用状态。
@@ -3837,6 +3848,7 @@
 
       如果此政策已停用或未设置，自助服务终端 Web 应用只能使用主浏览器窗口，无法打开一个新窗口。对任何用于打开新窗口的 JavaScript 函数的调用都会被忽略。</translation>
 <translation id="4980635395568992380">数据类型：</translation>
+<translation id="4981831669478419057">用户将无法使用购物清单功能。</translation>
 <translation id="4983201894483989687">允许运行过期的插件</translation>
 <translation id="4986560318567565414">控制用于从替代浏览器切换至 Chrome 的路径。</translation>
 <translation id="4987813583395474995">如果此政策已启用，已弃用的 U2F Security Key API 仍可供使用，但对于 U2F API 请求，系统不会显示弃用提醒。
@@ -4895,6 +4907,7 @@
       请按 ID（例如 pjkljhegncpnkpknbcohdijeoejaedia）指定 Chrome 应用，按应用包名称（例如 com.google.android.gm）指定 Android 应用，按 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 中使用的网址（例如 https://google.com/maps）指定 Web 应用。
 
       如果您不设置此政策，用户便可以更改启动器中的固定应用列表。</translation>
+<translation id="6184385589352532028">禁止第三方使用 Desk API 控制 ChromeOS</translation>
 <translation id="6190367314942602985">报告用户标识信息</translation>
 <translation id="6191963383731098056">此政策让管理员能够配置 <ph name="PRODUCT_NAME" /> 主题的颜色。输入的字符串应是有效的十六进制颜色字符串（采用“#RRGGBB”格式）。
 
@@ -6635,6 +6648,7 @@
       如果此政策设为 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />，浏览器将会恢复上一个会话并打开一个单独的窗口，以显示通过 <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> 设置的网址。请注意，用户可以选择让这些网址保持打开状态，它们也会在未来的会话中恢复。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于移动设备管理 (MDM) 下的实例或通过 MCX 加入某个网域的实例。</translation>
+<translation id="7919665519909231619">允许启用购物清单功能</translation>
 <translation id="7922358664346625612">使 Chrome 中仅剩的那个标签页保持打开状态。</translation>
 <translation id="7924321157669251966">使用电池供电时的屏幕亮度百分比</translation>
 <translation id="7925224837072026018">通过设置此政策，您可以授权扩展程序或 Android 应用使用企业密钥。在受管理的帐号中使用 chrome.enterprise.platformKeys API 生成的密钥会被指定为仅供企业使用。用户无法授权/取消授权扩展程序或 Android 应用使用此类密钥。
@@ -6724,6 +6738,7 @@
       如果此政策已停用或未设置，用户将无法使用 <ph name="LACROS_NAME" />。
 
       如果此政策已启用，用户便能够使用 <ph name="LACROS_NAME" /> 浏览器。</translation>
+<translation id="8020222525161221827">允许第三方使用 Desk API 控制 ChromeOS</translation>
 <translation id="802147957407376460">将屏幕旋转 0 度</translation>
 <translation id="80243978433618492">禁止对网址参数进行任何过滤操作。</translation>
 <translation id="8025620823136567878">国际键盘快捷键映射到键盘中的按键位置（而非按键的字形）。</translation>
@@ -7044,6 +7059,12 @@
       应以毫秒为单位指定此政策的值。</translation>
 <translation id="8330437518362176921">下载和更新自助服务终端 Chrome 应用时仅使用政策提供的更新网址</translation>
 <translation id="8331479227794770304">启用粘滞键</translation>
+<translation id="8336469459912731404">如果此政策已启用，<ph name="PRODUCT_NAME" /> 将会使用内置的证书验证程序来验证服务器证书，并将 Chrome 根存储区作为公共信任来源。
+      如果此政策已停用，<ph name="PRODUCT_NAME" /> 将会使用系统证书验证程序和系统根证书。
+      如果此政策未设置，则既可能会使用 Chrome 根存储区，也可能会使用系统提供的根目录。
+
+      按照我们的计划，此政策将会从 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 上的 <ph name="PRODUCT_NAME" /> 111 版中移除，该版本将不再支持使用平台提供的证书验证程序和根目录。
+      </translation>
 <translation id="8337114537412769126">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> 来指定在借助 POST 搜索建议时应使用的参数。所指定的内容由一系列以英文逗号分隔的名称-值对组成。如果值为模板参数（例如<ph name="SEARCH_TERM_MARKER" />），系统会将其替换成真实的搜索字词数据。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />，系统将使用 GET 方法发送建议搜索请求。</translation>
@@ -7741,6 +7762,7 @@
 
       如果此政策已停用，已注册的设备将不会记录或报告音频状态。
       例外情况：对于 M95 及更低版本，系统音量信息由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 控制。</translation>
+<translation id="9071527533179676468">如果此政策已启用，第三方 Web 应用便能使用 Desk API 控制 ChromeOS 桌面。如果此政策未设置或已停用，则无法使用 Desk API。</translation>
 <translation id="9072475476775217730">如果此政策已停用，定位到“<ph name="BLANK_PAGE_NAME" />”页面的弹出式窗口将能够（通过 JavaScript）访问请求打开弹出式窗口的页面。
 
       如果此政策已启用或未设置，<ph name="WINDOW_OPENER_PROPERTY" /> 属性会设为 <ph name="NULL_VALUE" />，除非锚标记指定了 <ph name="REL_OPENER_ATTRIBUTE" />。

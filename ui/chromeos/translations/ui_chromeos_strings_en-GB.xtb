@@ -878,7 +878,6 @@
 <translation id="8456681095658380701">Invalid name</translation>
 <translation id="8457767749626250697">Your SIM is locked</translation>
 <translation id="8459404855768962328">Copying this item will share it with everyone who can see the shared folder '<ph name="DESTINATION_NAME" />'.</translation>
-<translation id="8461467696380332069">Right-click a file, and select 'Pin to shelf' for quick access to your files in shelf.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamese VIQR</translation>
 <translation id="8475647382427415476">Google Drive was unable to sync "<ph name="FILENAME" />" right now. Google Drive will try again later.</translation>
@@ -915,7 +914,6 @@
 <translation id="8719721339511222681">Selected <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croatian</translation>
 <translation id="8743164338060742337">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, connect</translation>
-<translation id="8750438273876807512">Touch &amp; hold a file and tap <ph name="ICON" />, and select 'Pin to shelf' for quick access to your files in shelf.</translation>
 <translation id="8787254343425541995">Allow proxies for shared networks</translation>
 <translation id="8790981080411996443">Person watering plants</translation>
 <translation id="8798099450830957504">Default</translation>

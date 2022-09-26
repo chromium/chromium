@@ -878,7 +878,6 @@
 <translation id="8456681095658380701">Nome inválido</translation>
 <translation id="8457767749626250697">O SIM está bloqueado</translation>
 <translation id="8459404855768962328">Se copiar este item, partilha-o com todas as pessoas que conseguem ver a pasta partilhada "<ph name="DESTINATION_NAME" />".</translation>
-<translation id="8461467696380332069">Clique com o botão direito do rato num ficheiro e selecione "Fixar na prateleira" para um acesso rápido aos seus ficheiros na prateleira.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">VIQR vietnamita</translation>
 <translation id="8475647382427415476">O Google Drive não conseguiu sincronizar "<ph name="FILENAME" />" de momento e vai tentar novamente mais tarde.</translation>
@@ -915,7 +914,6 @@
 <translation id="8719721339511222681">Selecionou <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>
 <translation id="8743164338060742337">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, gerida pelo administrador, ligar</translation>
-<translation id="8750438273876807512">Toque sem soltar num ficheiro e, sem seguida, em <ph name="ICON" />. Selecione "Fixar na prateleira" para um acesso rápido aos seus ficheiros na prateleira.</translation>
 <translation id="8787254343425541995">Permitir proxies para redes partilhadas</translation>
 <translation id="8790981080411996443">Pessoa a regar plantas</translation>
 <translation id="8798099450830957504">Predefinição</translation>

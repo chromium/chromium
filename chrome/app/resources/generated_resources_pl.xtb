@@ -1622,6 +1622,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2480868415629598489">Modyfikowanie danych, które kopiujesz i wklejasz</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2482895651873876648">Karta została przeniesiona do grupy <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2484909293434545162">Jeśli witryna używa plików cookie, pojawią się one tutaj</translation>
 <translation id="2484959914739448251">Aby wyczyścić dane przeglądania ze wszystkich swoich zsynchronizowanych urządzeń i z konta Google, <ph name="BEGIN_LINK" />wpisz hasło<ph name="END_LINK" />.</translation>
 <translation id="2485394160472549611">Polecane dla Ciebie</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
@@ -8714,6 +8715,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="964286338916298286">Twój administrator IT wyłączył możliwość korzystania z bonusów Chrome na tym urządzeniu.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikacja}few{Aplikacje}many{Aplikacje}other{Aplikacje}}</translation>
 <translation id="964790508619473209">Rozmieszczanie ekranów</translation>
+<translation id="965175368833098333">Funkcja oszczędzania pamięci pozwala zwolnić pamięć używaną przez nieaktywne karty. Dzięki temu zyskujesz zasoby komputera na potrzeby innych zadań.</translation>
 <translation id="965211523698323809">Wysyłanie i odbieranie SMS-ów na urządzeniu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Zgłoś problem z Google Cast</translation>
 <translation id="967398046773905967">Nie zezwalaj żadnym stronom na dostęp do urządzeń HID</translation>

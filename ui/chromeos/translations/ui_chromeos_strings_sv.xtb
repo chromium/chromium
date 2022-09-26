@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> kopieras ...</translation>
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1190144681599273207">Att hämta den här filen kräver ungefär <ph name="FILE_SIZE" /> mobildata.</translation>
+<translation id="1194390763418645112">Filåtkomst för <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1209796539517632982">Automatiska namnservrar</translation>
 <translation id="1210831758834677569">laotiska</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome-enheter</translation>
 <translation id="1572585716423026576">Använd som bakgrund</translation>
 <translation id="1576937952766665062">bengali, translitterering</translation>
+<translation id="1577977504532381335">Granska administratörspolicy</translation>
 <translation id="158849752021629804">Behöver hemnätverk</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Bildupplösning</translation>
 <translation id="1972984168337863910">Utöka panel med information om filåtgärder</translation>
 <translation id="1995337122023280937">Gå till filens plats</translation>
+<translation id="1999709132469742660">Filåtkomst för alla webbadresser</translation>
 <translation id="2001796770603320721">Hantera i Drive</translation>
 <translation id="2009067268969781306">Om du formaterar en enhet raderas all data som lagras på den. Det går inte att ångra åtgärden.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Person med en kopp kaffe</translation>
 <translation id="2251368349685848079">Återställ från papperskorgen</translation>
 <translation id="2282155092769082568">Webbadress för automatisk konfiguration:</translation>
+<translation id="2284767815536050991">externt lagringsutrymme</translation>
 <translation id="2288278176040912387">Skivspelare</translation>
 <translation id="2291538123825441971">Öppnar <ph name="NUMBER_OF_FILES" /> filer.</translation>
 <translation id="2303301624314357662">Öppnar filen <ph name="FILE_NAME" /></translation>
@@ -341,6 +345,7 @@
 <translation id="4057991113334098539">Aktiverar...</translation>
 <translation id="4092890906744441904">iriska</translation>
 <translation id="4124935795427217608">Enhörning</translation>
+<translation id="4157569377477607576">Enligt administratörspolicyn rekommenderas inte följande:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> har flyttats.</translation>
 <translation id="4176286497474237543">Töm papperskorgen nu</translation>
 <translation id="4186579485882418952">Aktivera offline</translation>
@@ -502,6 +507,7 @@
 <translation id="5323213332664049067">Latinamerikanskt</translation>
 <translation id="5330145655348521461">Filerna öppnades på ett annat skrivbord. Byt till <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om du vill visa dem.</translation>
 <translation id="5330512191124428349">Mer information</translation>
+<translation id="5337538975554986899">Filåtkomst för alla webbadresser utom <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Person med katter</translation>
 <translation id="5358764674931277">Bildfrekvens</translation>
 <translation id="5363339716524495120">Inmatningsspråket är kinesiska</translation>
@@ -526,6 +532,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-bild</translation>
 <translation id="5534520101572674276">Storleken beräknas</translation>
 <translation id="554153475311314364">grekiska, translitterering</translation>
+<translation id="5580591966435005537">virtuell maskin</translation>
 <translation id="5583640892426849032">Backsteg</translation>
 <translation id="5583664733673201137">Punktbredden är full</translation>
 <translation id="5602622065581044566">bulgariskt fonetiskt tangentbord</translation>
@@ -586,6 +593,7 @@
 <translation id="61118516107968648">CSV-text</translation>
 <translation id="6129953537138746214">Blanksteg</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> flyttas ...</translation>
+<translation id="6133877453787250710">Administratören övervakar följande:</translation>
 <translation id="613750717151263950">japanska med amerikanskt tangentbord</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, inget nätverk</translation>
 <translation id="6146563240635539929">Videor</translation>
@@ -606,6 +614,7 @@
 <translation id="6287852322318138013">Välj en app om du vill öppna filen</translation>
 <translation id="6295542640242147836">Lås SIM</translation>
 <translation id="6296410173147755564">Ogiltig PUK-kod</translation>
+<translation id="6308243004861726558">Den här filen är konfidentiell och omfattas av en administratörspolicy. Följande filåtkomst och överföringsåtgärder gäller.</translation>
 <translation id="6312403991423642364">Okänt nätverksfel</translation>
 <translation id="6317608858038767920">Anpassad namnserver <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arkiv</translation>
@@ -834,6 +843,7 @@
 <translation id="8250920743982581267">Dokument</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8261561378965667560">kinesiska (array)</translation>
+<translation id="8262872909443689080">Administratörspolicy</translation>
 <translation id="8264024885325823677">Den här inställningen hanteras av administratören.</translation>
 <translation id="8269755669432358899">Komprimera panel med information om filåtgärder</translation>
 <translation id="8280151743281770066">Armeniska (fonetiskt)</translation>
@@ -860,7 +870,6 @@
 <translation id="8456681095658380701">Ogiltigt namn</translation>
 <translation id="8457767749626250697">SIM-kortet är låst</translation>
 <translation id="8459404855768962328">Om du kopierar det här objektet delas det med alla som har åtkomst till den delade mappen <ph name="DESTINATION_NAME" />.</translation>
-<translation id="8461467696380332069">Högerklicka på en fil som du vill ha snabbt tillgänglig i hyllan och välj Fäst på hyllan.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">vietnamesiska (VIQR)</translation>
 <translation id="8475647382427415476">Det gick inte att synkronisera <ph name="FILENAME" /> med Google Drive just nu. Ett nytt försök görs senare.</translation>
@@ -897,7 +906,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> har markerats.</translation>
 <translation id="872537912056138402">kroatiska</translation>
 <translation id="8743164338060742337">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, anslut</translation>
-<translation id="8750438273876807512">Om du snabbt vill kunna komma åt dina filer i hyllan trycker du länge på en fil och trycker på <ph name="ICON" />. Välj sedan Fäst på hyllan.</translation>
 <translation id="8787254343425541995">Tillåt proxyservrar för delade nätverk</translation>
 <translation id="8790981080411996443">Person som vattnar blommor</translation>
 <translation id="8798099450830957504">Standard</translation>
@@ -931,6 +939,7 @@
 <translation id="9100610230175265781">Lösenfras krävs</translation>
 <translation id="9110990317705400362">Vi strävar hela tiden efter att göra det säkrare för dig att surfa. Tidigare kunde du uppmanas att lägga till ett tillägg i webbläsaren på vilken webbplats som helst. I de senaste versionerna av Google Chrome måste du uttryckligen tala om för Chrome att du vill installera dessa tillägg genom att lägga till dem via sidan Tillägg. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Lås upp</translation>
+<translation id="9116909380156770361">Filöverföring till <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Kodek</translation>
 <translation id="9130775360844693113">De som använder <ph name="DESTINATION_NAME" /> får åtkomst till dessa objekt.</translation>
 <translation id="9131598836763251128">Välj en eller flera filer</translation>
@@ -952,6 +961,7 @@
 <translation id="943972244133411984">Ändrades av</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> poster har markerats från och med <ph name="FROM_ENTRY_NAME" /> till och med <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Administratörspolicyn förhindrar följande:</translation>
 <translation id="965477715979482472">engelska (Sydafrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Vill du ersätta den?</translation>

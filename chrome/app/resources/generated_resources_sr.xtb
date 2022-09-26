@@ -1634,6 +1634,7 @@
 <translation id="2480868415629598489">Мењање података које прекопирате</translation>
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="2482895651873876648">Картица је премештена у групу <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2484909293434545162">Ако сајт користи колачиће, они ће се приказивати овде</translation>
 <translation id="2484959914739448251">Да бисте обрисали податке прегледања са свих синхронизованих уређаја и са Google налога, <ph name="BEGIN_LINK" />унесите приступну фразу<ph name="END_LINK" />.</translation>
 <translation id="2485394160472549611">Најбољи избор за вас</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
@@ -8731,6 +8732,7 @@
 <translation id="964286338916298286">ИТ администратор је онемогућио Chrome забавне стварчице за уређај.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Апликација}one{Апликације}few{Апликације}other{Апликације}}</translation>
 <translation id="964790508619473209">Распоред на екрану</translation>
+<translation id="965175368833098333">Уштеда меморије може да врати меморију са неактивних картица. Тиме се ослобађају ресурси рачунара за друге задатке.</translation>
 <translation id="965211523698323809">Шаљите и примајте SMS-ове са уређаја <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Пријавите проблем са Google Cast-ом</translation>
 <translation id="967398046773905967">Не дозвољавај сајтовима да приступају уређајима са интерфејсом</translation>

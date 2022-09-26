@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" />-ის გადაწერა…</translation>
 <translation id="1178581264944972037">პაუზა</translation>
 <translation id="1190144681599273207">ამ ფაილის მიღებისას გამოყენებული იქნება მობილური მონაცემების დაახლოებით <ph name="FILE_SIZE" />.</translation>
+<translation id="1194390763418645112">ფაილებზე წვდომა <ph name="RESTRICTED_DESTINATIONS" />-ის მიერ</translation>
 <translation id="1201402288615127009">შემდეგი</translation>
 <translation id="1209796539517632982">ავტომატური სახელის სერვერები</translation>
 <translation id="1210831758834677569">ლაოსური</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome მოწყობილობები</translation>
 <translation id="1572585716423026576">ფონად დაყენება</translation>
 <translation id="1576937952766665062">ბენგალური ტრანსლიტერაცია</translation>
+<translation id="1577977504532381335">ადმინისტრატორის წესების შემოწმება</translation>
 <translation id="158849752021629804">საჭიროა სახლის ქსელი</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> პბაიტი</translation>
 <translation id="1620510694547887537">კამერა</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">სურათის გარჩევადობა</translation>
 <translation id="1972984168337863910">ფაილების გამოხმაურების არეების გაფართოება</translation>
 <translation id="1995337122023280937">ფაილის მდებარეობაზე გადასვლა</translation>
+<translation id="1999709132469742660">ფაილებზე წვდომა ყველა URL-ის მიერ</translation>
 <translation id="2001796770603320721">Google Drive-ში მართვა</translation>
 <translation id="2009067268969781306">დისკის დაფორმატება წაშლის მასში შენახულ ყველა მონაცემს. ამ ქმედებას ვერ გააუქმებთ.</translation>
 <translation id="2025955442973426285">ტიგრინია</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">პიროვნება ყავით</translation>
 <translation id="2251368349685848079">წაშლილებიდან აღდგენა</translation>
 <translation id="2282155092769082568">ავტოკონფიგურაციის URL:</translation>
+<translation id="2284767815536050991">ამოღებადი მეხსიერება</translation>
 <translation id="2288278176040912387">ფლეიერი</translation>
 <translation id="2291538123825441971">მიმდინარეობს <ph name="NUMBER_OF_FILES" /> ფაილის გახსნა.</translation>
 <translation id="2303301624314357662">იხსნება <ph name="FILE_NAME" /> ფაილი.</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">ირლანდიური</translation>
 <translation id="4124935795427217608">ზღაპრული მარტორქა</translation>
 <translation id="4131235941541910880">გადაიტანეთ არასაჭირო ერთეულები წაშლილებში</translation>
+<translation id="4157569377477607576">ადმინისტრატორის წესების მიხედვით რეკომენდებული არ არის:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> გადატანილია.</translation>
 <translation id="4176286497474237543">წაშლილების ახლავე გასუფთავება</translation>
 <translation id="4186579485882418952">ხაზგარეშე რეჟიმის ჩართვა</translation>
@@ -506,6 +511,7 @@
 <translation id="5323213332664049067">ლათინური ამერიკა</translation>
 <translation id="5330145655348521461">ეს ფაილი გახსნილია სხვადასხვა სამუშაო მაგიდაზე. მის სანახავად გადადით <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)-ზე.</translation>
 <translation id="5330512191124428349">ინფორმაციის მიღება</translation>
+<translation id="5337538975554986899">ფაილებზე წვდომა ყველა URL-ის მიერ, გარდა შემდეგისა: <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">პიროვნება კატებით</translation>
 <translation id="5358764674931277">კადრების სიხშირე</translation>
 <translation id="5363339716524495120">შეყვანის ენაა ჩინური</translation>
@@ -531,6 +537,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> სურათი</translation>
 <translation id="5534520101572674276">ზომის გამოთვლა</translation>
 <translation id="554153475311314364">ბერძნული ტრანსლიტერაცია</translation>
+<translation id="5580591966435005537">ვირტუალური მოწყობილობა</translation>
 <translation id="5583640892426849032">უკუშლა</translation>
 <translation id="5583664733673201137">პუნქტუაციის სიგანე სავსეა</translation>
 <translation id="5602622065581044566">ბულგარული ფონეტიკური კლავიატურით</translation>
@@ -591,6 +598,7 @@
 <translation id="61118516107968648">CSV ტექსტი</translation>
 <translation id="6129953537138746214">ინტერვალი</translation>
 <translation id="6133173853026656527">მიმდინარეობს გადაადგილება <ph name="FILE_NAME" />…</translation>
+<translation id="6133877453787250710">ადმინისტრატორის მიერ კონტროლდება:</translation>
 <translation id="613750717151263950">იაპონური აშშ-ის კლავიატურით</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ქსელი არ არის</translation>
 <translation id="6146563240635539929">ვიდეოები</translation>
@@ -611,6 +619,7 @@
 <translation id="6287852322318138013">აირჩიეთ პროგრამა ამ ფაილის გასახსნელად</translation>
 <translation id="6295542640242147836">SIM ბარათის ჩაკეტვა</translation>
 <translation id="6296410173147755564">PUK-კოდი არასწორია</translation>
+<translation id="6308243004861726558">ეს ფაილი კონფიდენციალურია და ექვემდებარე ადმინისტრატორის მიერ დადგენილ წესებს. ფაილებზე წვდომასთან და მათ გადაცემასთან დაკავშირებით მოქმედებს ქვემორე წესები.</translation>
 <translation id="6312403991423642364">ქსელის უცნობი შეცდომა</translation>
 <translation id="6317608858038767920">სახელების მორგებული სერვერი <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> არქივი</translation>
@@ -841,6 +850,7 @@
 <translation id="8255595130163158297">წაშლილებში არსებული ყველა ერთეული წაიშლება და მათ აღდგენას ვეღარ მოახერხებთ.</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="8261561378965667560">ჩინური Array</translation>
+<translation id="8262872909443689080">ადმინისტრატორის წესები</translation>
 <translation id="8264024885325823677">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
 <translation id="8269755669432358899">ფაილების გამოხმაურების არეების ჩაკეცვა</translation>
 <translation id="8280151743281770066">სომხური ფონეტიკური</translation>
@@ -867,7 +877,6 @@
 <translation id="8456681095658380701">არასწორი სახელი</translation>
 <translation id="8457767749626250697">თქვენი SIM-ბარათი ჩაკეტილია</translation>
 <translation id="8459404855768962328">ამ ერთეულის კოპირების შემთხვევაში ის გაზიარდება ყველასთან, ვისაც შეუძლია საზიარო საქაღალდის „<ph name="DESTINATION_NAME" />“ ნახვა.</translation>
-<translation id="8461467696380332069">თაროდან თქვენს ფაილებზე სწრაფი წვდომა რომ იქონიოთ, მარჯვენა ღილაკით დააწკაპუნეთ ფაილზე და აირჩიეთ „თაროზე ჩამაგრება“.</translation>
 <translation id="8461914792118322307">პროქსი</translation>
 <translation id="8463494891489624050">ვიეტნამური VIQR</translation>
 <translation id="8475647382427415476">Google Drive-მა ამჟამად ვერ დაასინქრონა „<ph name="FILENAME" />“. Google Drive ცდის მოგვიანებით.</translation>
@@ -904,7 +913,6 @@
 <translation id="8719721339511222681">არჩეულია <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">ხორვატიული</translation>
 <translation id="8743164338060742337">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, მართავს თქვენი ადმინისტრატორი, დაკავშირება</translation>
-<translation id="8750438273876807512">თაროდან თქვენს ფაილებზე სწრაფი წვდომა რომ იქონიოთ, ხანგრძლივად შეეხეთ ფაილს, შემდეგ კი შეხებით აირჩიეთ <ph name="ICON" /> და „თაროზე ჩამაგრება“.</translation>
 <translation id="8787254343425541995">პროქსების გამოყენება გაზიარებული ქსელებისთვის</translation>
 <translation id="8790981080411996443">პიროვნება, რომელიც რწყავს ყვავილებს</translation>
 <translation id="8798099450830957504">ნაგულისხმევი</translation>
@@ -939,6 +947,7 @@
 <translation id="9100610230175265781">აუცილებელია კოდური ფრაზის მითითება</translation>
 <translation id="9110990317705400362">ჩვენ მუდამ ვზრუნავთ იმაზე, თუ როგორ გავზარდოთ ჩვენი ბრაუზერის უსაფრთხოება. ადრე ნებისმიერ საიტს შეეძლო თქვენთვის ბრაუზერში გაფართოების დამატების შემოთავაზება. Google Chrome-ის უახლეს ვერსიებში პირდაპირ უნდა მიუთითოთ Chrome-ს, რომ გსურთ გაფართოების დაინსტალირება, გაფართოების გევრდზე მისი დამატების გზით. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">განბლოკვა</translation>
+<translation id="9116909380156770361">ფაილების გადაცემა <ph name="RESTRICTED_COMPONENTS" />-ზე</translation>
 <translation id="912419004897138677">კოდეკი</translation>
 <translation id="9130775360844693113">„<ph name="DESTINATION_NAME" />“-ის წევრები მიიღებენ წვდომას ამ ერთეულებზე.</translation>
 <translation id="9131598836763251128">აირჩიეთ ერთი ან რამდენიმე ფაილი</translation>
@@ -960,6 +969,7 @@
 <translation id="943972244133411984">შემცვლელი</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
 <translation id="947144732524271678">არჩეულია <ph name="ENTRY_COUNT" /> ჩანაწერის დიაპაზონი „<ph name="FROM_ENTRY_NAME" />“-დან „<ph name="TO_ENTRY_NAME" />“-მდე.</translation>
+<translation id="954194396377670556">ადმინისტრატორის წესების მიხედვით იზღუდება.</translation>
 <translation id="965477715979482472">ინგლისური (სამხრეთ აფრიკის რესპუბლიკა)</translation>
 <translation id="981121421437150478">ოფლაინი</translation>
 <translation id="988685240266037636">ფაილი სახელად „<ph name="FILE_NAME" />“ უკვე არსებობს. გსურთ მისი ჩანაცვლება?</translation>

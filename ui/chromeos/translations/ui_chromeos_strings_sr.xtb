@@ -878,7 +878,6 @@
 <translation id="8456681095658380701">Неважеће име</translation>
 <translation id="8457767749626250697">SIM је закључан</translation>
 <translation id="8459404855768962328">Копирањем ове ставке делите је са свима који могу да виде дељени фолдер <ph name="DESTINATION_NAME" />.</translation>
-<translation id="8461467696380332069">Кликните десним тастером на фајл и изаберите „Закачи на полицу“ ради брзог приступа фајловима на полици.</translation>
 <translation id="8461914792118322307">Прокси</translation>
 <translation id="8463494891489624050">вијетнамски VIQR</translation>
 <translation id="8475647382427415476">Google диск тренутно није успео да синхронизује „<ph name="FILENAME" />“. Google диск ће покушати поново касније.</translation>
@@ -915,7 +914,6 @@
 <translation id="8719721339511222681">Изабрали сте ставку <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">хрватски</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, управља администратор, повежите</translation>
-<translation id="8750438273876807512">Додирните и задржите фајл и додирните <ph name="ICON" />, па изаберите „Закачи на полицу“ ради брзог приступа фајловима на полици.</translation>
 <translation id="8787254343425541995">Дозволи проксије за дељене мреже</translation>
 <translation id="8790981080411996443">Особа залива биљке</translation>
 <translation id="8798099450830957504">Подразумевано</translation>

@@ -1637,6 +1637,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2480868415629598489">Nusxalab joylanadigan ma’lumotlarni tahrirlash</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
 <translation id="2482895651873876648">Varaq <ph name="GROUP_NAME" /> guruhiga olindi – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2484909293434545162">Bu yerda cookie fayllaridan foydalanuvchi saytlar chiqadi</translation>
 <translation id="2484959914739448251">Brauzer tarixini Google hisobingizga sinxronlangan barcha qurilmalardan tozalash uchun <ph name="BEGIN_LINK" />kodli iborani kiriting<ph name="END_LINK" />.</translation>
 <translation id="2485394160472549611">Siz uchun saralanganlar</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
@@ -8728,6 +8729,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="964286338916298286">IT administratoringiz qurilmangiz uchun Chrome bonuslarini failsizlantirgan.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Ilova}other{Ilovalar}}</translation>
 <translation id="964790508619473209">Ekran joylashuv tartibi</translation>
+<translation id="965175368833098333">Xotirani tejash rejimi nofaol varaqlardan xotira oladi. Bu kompyuter resurslarini boshqa vazifalar uchun boʻshatadi.</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> orqali SMS yuborish va qabul qilish. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast muammosi haqida xabar berish</translation>
 <translation id="967398046773905967">Saytlarga HID qurilmalardan foydalanishni taqiqlash</translation>

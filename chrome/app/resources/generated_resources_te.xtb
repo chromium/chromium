@@ -1632,6 +1632,7 @@
 <translation id="2468178265280335214">టచ్‌ప్యాడ్ స్క్రోల్ యాక్సిలరేషన్‌</translation>
 <translation id="2468205691404969808">మీ ప్రాధాన్యతలను గుర్తుంచుకోవడానికి కుక్కీలను ఉపయోగిస్తుంది, మీరు ఆ పేజీలను సందర్శించకపోయినా కూడా అది అమలవుతుంది</translation>
 <translation id="2468402215065996499">టమగోచి</translation>
+<translation id="2468470085922875120">మీరు ఊహించడానికి కష్టంగా కనిపించే పాస్‌వర్డ్‌లను ఉపయోగిస్తున్నారు</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ట్యాబ్}other{<ph name="GROUP_TITLE" /> - # ట్యాబ్‌లు}}</translation>
 <translation id="2469141124738294431">వర్చువల్ మెషీన్ స్టేటస్</translation>
 <translation id="2469259292033957819">మీ వద్ద సేవ్ చేసిన ప్రింటర్‌లు ఏవీ లేవు.</translation>
@@ -1970,6 +1971,7 @@
 <translation id="2783321960289401138">షార్ట్‌కట్‌ను క్రియేట్ చేయండి...</translation>
 <translation id="2783829359200813069">ఎన్‌క్రిప్షన్ రకాలను ఎంచుకోండి</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />తో మీ భద్రతా కీని ఉపయోగించండి</translation>
+<translation id="2785267875302712148">పాస్‌వర్డ్ చెకప్</translation>
 <translation id="2785873697295365461">ఫైల్ వివరణలు</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">లోకల్ బ్రౌజింగ్ డేటా (బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, హిస్టరీ, మొదలైనవి)ను స్టోర్ చేయండి</translation>
@@ -2045,6 +2047,7 @@
 <translation id="2844169650293029770">USB-C పరికరం (ఎడమవైపు ముందు పోర్ట్)</translation>
 <translation id="2844809857160214557">ప్రింట్ టాస్క్‌లను చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="2845382757467349449">ఎల్లప్పుడూ బుక్‌మార్క్‌ల బార్‌ను చూపు</translation>
+<translation id="284581348330507117">భిన్నమైన పాస్‌వర్డ్‌లను క్రియేట్ చేయండి</translation>
 <translation id="284805635805850872">హానికరమైన సాఫ్ట్‌వేర్‌ని తీసివేయాలా?</translation>
 <translation id="2849035674501872372">వెతకండి</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2196,6 +2199,7 @@
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />"ను ఇన్‌స్టాల్ చేయడానికి మీ అడ్మినిస్ట్రేటర్‌కు రిక్వెస్ట్‌ పంపాలా?</translation>
 <translation id="2987620471460279764">ఇతర పరికరం నుండి షేర్ చేయబడిన వచనం</translation>
 <translation id="2988018669686457659">స్పేర్ రెండరర్</translation>
+<translation id="2988328607561082373">మీరు ఏ పాస్‌వర్డ్‌లను మళ్లీ ఉపయోగించడం లేదు</translation>
 <translation id="2989123969927553766">మౌస్ స్క్రోల్ యాక్సిలరేషన్</translation>
 <translation id="2989474696604907455">జోడించబడలేదు</translation>
 <translation id="2989786307324390836">DER-ఎన్‌కోడ్ చేసిన బైనరీ, ఒక సర్టిఫికెట్</translation>
@@ -2224,6 +2228,7 @@
 <translation id="3009178788565917040">అవుట్‌పుట్</translation>
 <translation id="3009300415590184725">మొబైల్ డేటా సేవ సెటప్ ప్రాసెస్‌ను మీరు ఖచ్చితంగా రద్దు చేయాలనుకుంటున్నారా?</translation>
 <translation id="3009779501245596802">సూచికలోని డేటాబేస్‌లు</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{మీ పాస్‌వర్డ్‌లు శక్తివంతమైనవిగా కనిపిస్తున్నాయి}=1{{COUNT} బలహీనమైన పాస్‌వర్డ్}other{{COUNT} బలహీనమైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="3010279545267083280">పాస్‌వర్డ్ తొలగించబడింది</translation>
 <translation id="3010389206479238935">ఈ బ్రౌజర్‌లో ఫోర్స్ ఓపెన్ చేయండి</translation>
 <translation id="3011384993885886186">ముదురు బూడిద రంగు</translation>
@@ -4431,6 +4436,7 @@
 <translation id="5153234146675181447">ఫోన్‌ని మర్చిపో</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> కోసం అధునాతన సెట్టింగ్‌లు</translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{సేవ్ చేసిన పాస్‌వర్డ్‌లు ఏవీ లేవు.}=1{{COUNT} సైట్‌కు సంబంధించిన పాస్‌వర్డ్‌లు చెక్ చేయబడ్డాయి}other{{COUNT} సైట్‌లు, యాప్‌లకు సంబంధించిన పాస్‌వర్డ్‌లు చెక్ చేయబడ్డాయి}}</translation>
 <translation id="5154702632169343078">విషయం</translation>
 <translation id="5155327081870541046">అడ్రస్ బార్‌లో, మీరు సెర్చ్ చేయాలనుకుంటున్న సైట్‌ షార్ట్‌కట్‌ను ఎంటర్ చేయండి, ఉదాహరణకు "@bookmarks". అప్పుడు, మీ ప్రాధాన్య కీబోర్డ్ షార్ట్‌కట్‌ను నొక్కి, ఆపై మీ సెర్చ్ క్వెరీని ఎంటర్ చేయండి.</translation>
 <translation id="5156638757840305347">అది కనిపించినప్పుడు లేదా కదలికలో ఉన్నప్పుడు కర్సర్ హైలైట్ అవుతుంది</translation>
@@ -5013,6 +5019,7 @@
 <translation id="5713158217420111469"><ph name="DEVICE" />కు కనెక్ట్ చేయబడింది</translation>
 <translation id="5713960379473463904">స్పేస్ ఇన్‌పుట్ స్టయిల్</translation>
 <translation id="5715711091495208045">ప్లగ్ఇన్‌ బ్రోకర్: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">మీరు ఇప్పుడు వీటిని మార్చాలి</translation>
 <translation id="5719603411793408026">ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌లు</translation>
 <translation id="5719854774000914513">MIDI పరికరాలకు కనెక్ట్ చేయడానికి సైట్‌లు అడగగలవు</translation>
 <translation id="572155275267014074">Android సెట్టింగ్‌లు</translation>
@@ -6471,6 +6478,7 @@
 <translation id="7098447629416471489">సేవ్ చేసిన ఇతర సెర్చ్ ఇంజిన్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{యాప్‌ను తీసివేయండి}other{యాప్‌లను తీసివేయండి}}</translation>
 <translation id="7099337801055912064">పెద్ద PPDని లోడ్ చేయడం సాధ్యం కాదు. గరిష్ట పరిమాణం 250 kB.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ లేవు}=1{{COUNT} చోరీకి గురైన పాస్‌వర్డ్}other{{COUNT} చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="7102687220333134671">ఆటోమేటిక్‌ అప్‌డేట్‌లు ఆన్ చేయబడ్డాయి</translation>
 <translation id="7102832101143475489">రిక్వెస్ట్‌ సమయం ముగిసింది</translation>
 <translation id="710640343305609397">నెట్‌వర్క్ సెట్టింగ్‌లను తెరవండి</translation>
@@ -7412,6 +7420,7 @@
 ఎక్స్‌టెన్షన్‌: <ph name="EXTENSION_FILE" />కీ ఫైల్: <ph name="KEY_FILE" />మీ కీ ఫైల్‌ను ఒక సురక్షితమైన స్థలంలో ఉంచండి. మీ ఎక్స్‌టెన్షన్‌ యొక్క కొత్త వెర్షన్‌ను క్రియేట్ చేయడానికి మీకు ఇది అవసరం అవుతుంది.</translation>
 <translation id="8002274832045662704">అధునాతన ప్రింటర్ కాన్ఫిగరేషన్</translation>
 <translation id="8002670234429879764">ఇకపై <ph name="PRINTER_NAME" /> అందుబాటులో ఉండదు</translation>
+<translation id="8004092996156083991">మీ పాస్‌వర్డ్‌లు చోరీకి గురైనట్లయితే, మేము మీకు తెలియజేస్తాము.</translation>
 <translation id="8004582292198964060">బ్రౌజర్</translation>
 <translation id="8005600846065423578">క్లిప్‌బోర్డ్‌ను చూడటానికి ఎల్లప్పుడూ <ph name="HOST" />ని అనుమతించండి</translation>
 <translation id="8006630792898017994">Space లేదా Tab</translation>
@@ -7911,6 +7920,7 @@
 <translation id="8470513973197838199"><ph name="ORIGIN" /> కోసం సేవ్ చేసిన పాస్‌వర్డ్‌లు</translation>
 <translation id="8471525937465764768">డాక్యుమెంట్‌ను ప్రింట్ చేయడం లేదా స్టోరేజ్ పరికరానికి సేవ్ చేయడం వంటి ఫీచర్‌ల కోసం సాధారణంగా సైట్‌లు USB పరికరాలకు కనెక్ట్ అవుతాయి</translation>
 <translation id="8471959340398751476">డిస్కౌంట్‌లు ఆఫ్ చేయబడ్డాయి. అనుకూలంగా మార్చే మెనూలో మీరు వాటిని ఆన్ చేయవచ్చు</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{మీ పాస్‌వర్డ్‌లు భిన్నంగా ఉన్నాయి}=1{{COUNT} వేరే చోట వాడిన పాస్‌వర్డ్}other{{COUNT} వేరే చోట వాడిన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="8472623782143987204">హార్డ్‌వేర్ మద్దతు గలది</translation>
 <translation id="8473863474539038330">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
 <translation id="8475313423285172237">మీ కంప్యూటర్‌లోని మరో ప్రోగ్రామ్ జోడించిన ఎక్స్‌టెన్షన్ కారణంగా Chrome పని చేసే విధానం మారవచ్చు.</translation>
@@ -8390,6 +8400,7 @@
 <translation id="8940081510938872932">ప్రస్తుతం మీ కంప్యూటర్ అనేక చర్యలను అమలు చేస్తోంది. తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="8940381019874223173">మీ Google Photos నుండి</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' అనుమతిని ఉపసంహరించు</translation>
+<translation id="894191600409472540">శక్తివంతమైన పాస్‌వర్డ్‌లను క్రియేట్ చేయండి</translation>
 <translation id="894360074127026135">Netscape అంతర్జాతీయ స్టెప్‌-అప్</translation>
 <translation id="8944099748578356325">బ్యాటరీని మరింత వేగంగా ఉపయోగిస్తుంది (ప్రస్తుతం <ph name="BATTERY_PERCENTAGE" />% ఉంది)</translation>
 <translation id="8945274638472141382">చిహ్నం పరిమాణం</translation>
@@ -8613,6 +8624,7 @@
 <translation id="9140067245205650184">మీరు మద్దతు లేని ఫీచర్ ఫ్లాగ్‌ను ఉపయోగిస్తున్నారు: <ph name="BAD_FLAG" />. స్థిరత్వం మరియు భద్రతలలో ఇబ్బందులు ఏర్పడతాయి.</translation>
 <translation id="9142637293078737510">ఇమేజ్ మారుపేరు</translation>
 <translation id="9143298529634201539">సూచనను తీసివేయాలా?</translation>
+<translation id="9143922477019434797">మీ పాస్‌వర్డ్‌లను సంరక్షించండి</translation>
 <translation id="9147392381910171771">&amp;ఐచ్ఛికాలు</translation>
 <translation id="9148058034647219655">నిష్క్రమించండి</translation>
 <translation id="9148126808321036104">మళ్ళీ సైన్ ఇన్ చేయండి</translation>

@@ -1620,6 +1620,7 @@
 <translation id="2468178265280335214">ٹچ پیڈ کے اسکرول کا ایکسیلریشن</translation>
 <translation id="2468205691404969808">چاہے آپ وہ صفحات ملاحظہ نہ کریں، تب بھی آپ کی ترجیحات یاد رکھنے کے لیے کوکیز استعمال کرتا ہے</translation>
 <translation id="2468402215065996499">تاما گوچی</translation>
+<translation id="2468470085922875120">آپ ایسے پاس ورڈ استعمال کر رہے ہیں جن کا اندازہ لگانا مشکل ہے</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ٹیب}other{<ph name="GROUP_TITLE" /> - # ٹیبز}}</translation>
 <translation id="2469141124738294431">‏VM کا اسٹیٹس</translation>
 <translation id="2469259292033957819">آپ کے پاس محفوظ کردہ کوئی پرنٹر نہیں ہے۔</translation>
@@ -1958,6 +1959,7 @@
 <translation id="2783321960289401138">شارٹ کٹ بنائیں…</translation>
 <translation id="2783829359200813069">مرموزکاری کی اقسام منتخب کریں</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> کے ساتھ اپنی سیکیورٹی کلید کو استعمال کریں</translation>
+<translation id="2785267875302712148">پاس ورڈ چیک اپ</translation>
 <translation id="2785873697295365461">فائل ڈسکرپٹرز</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">مقامی براؤزنگ ڈیٹا (بُک مارکس، پاس ورڈز، سرگزشت وغیرہ) رکھیں</translation>
@@ -2033,6 +2035,7 @@
 <translation id="2844169650293029770">‏USB-C آلہ (بائیں طرف کا اگلا پورٹ)</translation>
 <translation id="2844809857160214557">پرنٹ جابز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="2845382757467349449">ہمیشہ بُک مارکس بار دکھائیں</translation>
+<translation id="284581348330507117">منفرد پاس ورڈز تخلیق کریں</translation>
 <translation id="284805635805850872">نقصان دہ سافٹ ویئر کو ہٹائیں؟</translation>
 <translation id="2849035674501872372">اوپر دیکھیں</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2184,6 +2187,7 @@
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" انسٹال کرنے کے لیے آپ کے منتظم کو درخواست بھیجیں؟</translation>
 <translation id="2987620471460279764">دوسرے آلے سے اشتراک کردہ متن</translation>
 <translation id="2988018669686457659">اسپیئر رینڈرر</translation>
+<translation id="2988328607561082373">آپ کوئی پاس ورڈ دوبارہ استعمال نہیں کر رہے ہیں</translation>
 <translation id="2989123969927553766">ماؤس کے اسکرول کا ایکسیلریشن</translation>
 <translation id="2989474696604907455">منسلک نہیں ہے</translation>
 <translation id="2989786307324390836">‏DER ان کوڈ کردہ بائنری، واحد سرٹیفیکیٹ</translation>
@@ -2212,6 +2216,7 @@
 <translation id="3009178788565917040">آؤٹ پٹ</translation>
 <translation id="3009300415590184725">کیا آپ واقعی موبائل ڈیٹا سروس سیٹ اپ کارروائی کو منسوخ کرنا چاہتے ہیں؟</translation>
 <translation id="3009779501245596802">انڈیکس کردہ ڈیٹا بیسز</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{آپ کے پاس ورڈ مضبوط لگ رہا ہے}=1{{COUNT} کمزور پاس ورڈ}other{{COUNT} کمزور پاس ورڈز}}</translation>
 <translation id="3010279545267083280">پاس ورڈ کو حذف کر دیا گیا</translation>
 <translation id="3010389206479238935">اسے زبردستی کھولیں</translation>
 <translation id="3011384993885886186">گرم خاکستری</translation>
@@ -4418,6 +4423,7 @@
 <translation id="5153234146675181447">فون کو بھول جائیں</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> کیلئے جدید ترین ترتیبات</translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{کوئی محفوظ کردہ پاس ورڈز نہیں۔}=1{{COUNT} سائٹ کے لیے چیک کردہ پاس ورڈز}other{{COUNT} سائٹس اور ایپس کے لیے چیک کردہ پاس ورڈز}}</translation>
 <translation id="5154702632169343078">موضوع</translation>
 <translation id="5155327081870541046">‏ایڈریس بار میں، اس سائٹ کا شارٹ کٹ درج کریں جسے آپ تلاش کرنا چاہتے ہیں، جیسے "bookmarks@"۔ پھر، اپنا پسندیدہ کی بورڈ شارٹ کٹ دبائیں، اور اپنی تلاش کی اصطلاح درج کریں۔</translation>
 <translation id="5156638757840305347">کرسر کے ظاہر ہونے یا منتقل ہونے پر اسے نمایاں کیا جاتا ہے</translation>
@@ -4999,6 +5005,7 @@
 <translation id="5713158217420111469"><ph name="DEVICE" /> سے منسلک ہے</translation>
 <translation id="5713960379473463904">اسپیس ان پٹ کی طرز</translation>
 <translation id="5715711091495208045">پلگ ان بروکر: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">آپ کو اب اسے تبدیل کرنا چاہیے</translation>
 <translation id="5719603411793408026">ڈیفالٹ سرچ انجنز</translation>
 <translation id="5719854774000914513">‏سائٹس HID آلات سے منسلک ہونے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="572155275267014074">‏Android کی ترتیبات</translation>
@@ -6457,6 +6464,7 @@
 <translation id="7098447629416471489">محفوظ کردہ دیگر سرچ انجن یہاں ظاہر ہوں گے</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ایپ ہٹائیں}other{ایپس ہٹائیں}}</translation>
 <translation id="7099337801055912064">‏بڑے PPD کو لوڈ نہیں کر سکتا۔ زیادہ سے زیادہ سائز ‎250 kB‎ ہے۔</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{کوئی متاثرہ پاس ورڈ نہیں}=1{{COUNT} متاثرہ پاس ورڈ}other{{COUNT} متاثرہ پاس ورڈز}}</translation>
 <translation id="7102687220333134671">خود کار اپ ڈیٹس آن ہیں</translation>
 <translation id="7102832101143475489">درخواست کا وقت ختم ہو گیا</translation>
 <translation id="710640343305609397">نیٹ ورک کی ترتیبات کھولیں</translation>
@@ -7401,6 +7409,7 @@
 اپنی کلیدی فائل محفوظ جگہ رکھیں۔ اپنے ایکسٹینشن کے نئے ورژنز بنانے کیلئے آپ کو اس کی ضرورت ہوگی۔</translation>
 <translation id="8002274832045662704">پرنٹر کی جدید ترین کنفیگریشن</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> مزید دستیاب نہیں ہے</translation>
+<translation id="8004092996156083991">اگر آپ کے پاس ورڈز متاثرہ ہیں تو ہم آپ کو بتائیں گے۔</translation>
 <translation id="8004582292198964060">براؤزر</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> کو کلپ بورڈ دیکھنے کی ہمیشہ اجازت دیں</translation>
 <translation id="8006630792898017994">اسپیس یا ٹیب</translation>
@@ -7899,6 +7908,7 @@
 <translation id="8470513973197838199"><ph name="ORIGIN" /> کے لیے محفوظ کردہ پاسورڈز</translation>
 <translation id="8471525937465764768">‏سائٹس عام طور دستاویز پرنٹ کرنے یا اسٹوریج آلہ پر محفوظ کرنے جیسی خصوصیات کے لیے USB آلات سے منسلک ہوتی ہیں</translation>
 <translation id="8471959340398751476">رعایتوں کی سہولیات آف ہیں۔ آپ انہیں حسب ضرورت مینو میں آن کر سکتے ہیں</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{آپ کے پاس ورڈز منفرد ہیں}=1{دوبارہ استعمال کردہ {COUNT} پاس ورڈ}other{دوبارہ استعمال کردہ {COUNT} پاس ورڈز}}</translation>
 <translation id="8472623782143987204">ہارڈ ویئر کے ذریعے تعاون یافتہ</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
 <translation id="8475313423285172237">‏آپ کے کمپیوٹر پر موجود ایک دوسرے پروگرام نے ایک ایکسٹینشن شامل کیا جو Chrome کے کام کرنے کا طریقہ تبدیل کر سکتی ہے۔</translation>
@@ -8378,6 +8388,7 @@
 <translation id="8940081510938872932">آپ کا کمپیوٹر اس وقت کافی ساری چیزیں کر رہا ہے۔  بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="8940381019874223173">‏آپ کی Google تصاویر سے</translation>
 <translation id="8941173171815156065">اجازت '<ph name="PERMISSION" />' کو کالعدم کریں</translation>
+<translation id="894191600409472540">مضبوط پاس ورڈز تخلیق کریں</translation>
 <translation id="894360074127026135">‏Netscape انٹرنیشنل سٹیپ اپ</translation>
 <translation id="8944099748578356325">مزید تیزی سے بیٹری کا استعمال کریں (فی الحال %<ph name="BATTERY_PERCENTAGE" />)</translation>
 <translation id="8945274638472141382">آئیکن کا سائز</translation>
@@ -8601,6 +8612,7 @@
 <translation id="9140067245205650184">آپ خصوصیت کا ایک غیر تعاون یافتہ پرچم استعمال کر رہے ہیں: <ph name="BAD_FLAG" />۔ استحکام اور سیکیورٹی متاثر ہوگی۔</translation>
 <translation id="9142637293078737510">تصویر کا عرفی نام</translation>
 <translation id="9143298529634201539">تجویز ہٹائیں؟</translation>
+<translation id="9143922477019434797">اپنے پاس ورڈز کی حفاظت کریں</translation>
 <translation id="9147392381910171771">&amp;اختیارات</translation>
 <translation id="9148058034647219655">خارج ہوں</translation>
 <translation id="9148126808321036104">دوبارہ سائن ان کریں</translation>

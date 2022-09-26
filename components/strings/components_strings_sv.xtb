@@ -1262,6 +1262,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Anslutningen till <ph name="SITE" /> är inte säker</translation>
 <translation id="4349365535725594680">Det går inte att dela konfidentiellt innehåll</translation>
+<translation id="4349810866125026513">Ladda upp ändå</translation>
 <translation id="4350629523305688469">Flerfunktionsfack</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vill söka efter Bluetooth-enheter i närheten. Följande enheter har hittats:</translation>
 <translation id="4351175281479794167">Ange verifieringskod</translation>
@@ -1984,6 +1985,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6337133576188860026">Frigör mindre än <ph name="SIZE" />. Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
 <translation id="6337534724793800597">Filtrera princip efter namn</translation>
 <translation id="6340739886198108203">Enligt administratörspolicyn är det inte rekommenderat att ta skärmbilder eller göra inspelningar när konfidentiellt innehåll är synligt:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Enligt administratörspolicyn är det inte rekommenderat att ladda upp den här filen till <ph name="DESTINATION_NAME" />}other{Enligt administratörspolicyn är det inte rekommenderat att ladda upp dessa filer till <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Aktiva variationer</translation>
 <translation id="6349101878882523185">Installera <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Inga}=1{1 lösenord (för <ph name="DOMAIN_LIST" />, synkroniseras)}=2{2 lösenord (för <ph name="DOMAIN_LIST" />, synkroniseras)}other{# lösenord (för <ph name="DOMAIN_LIST" />, synkroniseras)}}</translation>
@@ -2616,6 +2618,7 @@ Mer information.
 <translation id="8075736640322370409">Skapa ett nytt Google-kalkylark snabbt</translation>
 <translation id="8075898834294118863">Hantera webbplatsinställningar</translation>
 <translation id="8076492880354921740">Flikar</translation>
+<translation id="8078006011486731853">{0,plural, =1{Vill du ladda upp en konfidentiell fil?}other{Vill du ladda upp konfidentiella filer?}}</translation>
 <translation id="8078141288243656252">Det går inte att annotera när dokumentet har roterats</translation>
 <translation id="8079031581361219619">Vill du läsa in webbplatsen igen?</translation>
 <translation id="8081087320434522107">Sedanbilar</translation>

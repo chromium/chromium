@@ -143,6 +143,11 @@
       Consente di stabilire il periodo di tempo che deve trascorrere prima della visualizzazione del salvaschermo nella schermata di accesso dei dispositivi in modalità retail.
 
       Il valore della norma deve essere specificato in millisecondi.</translation>
+<translation id="1143257335984030879">Questo criterio consente di stabilire la disponibilità della funzionalità della lista della spesa.
+      Se viene attivato, agli utenti verrà presentata una UI per monitorare il prezzo del prodotto visualizzato nella pagina corrente. Il prodotto monitorato verrà mostrato nel riquadro laterale dei preferiti.
+      Se questo criterio viene impostato su Enabled o se non viene configurato, la funzionalità della lista della spesa sarà a disposizione degli utenti.
+      Se questo criterio viene impostato su Disabled, la funzionalità della lista della spesa non sarà disponibile.
+      </translation>
 <translation id="1144540226829648811">Consente di specificare il canale di rilascio su cui deve essere bloccato questo dispositivo.
 
       L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto solo se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> è impostato su False.</translation>
@@ -442,6 +447,11 @@
       Le stampanti estensione sono note anche come destinazioni dei provider di stampa e includono le eventuali destinazioni appartenenti a un'estensione di <ph name="PRODUCT_NAME" />.
 
       Le stampanti locali sono note anche come destinazioni di stampa native e includono le destinazioni disponibili per le stampanti di macchine locali e quelle di rete condivise.</translation>
+<translation id="1456449214426764016">L'API non standard window.webkitStorageInfo è deprecata e verrà rimossa.
+      Questo criterio consente di riattivare l'API.
+      Se questo criterio viene impostato su Enabled, l'API window.webkitStorageInfo sarà disponibile.
+      Se questo criterio viene impostato su Disabled o se non viene configurato, l'API window.webkitStorageInfo non sarà disponibile.
+      </translation>
 <translation id="1456822151187621582">Windows (client <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Consente di controllare il comportamento degli utenti in una sessione multiprofilo su dispositivi <ph name="PRODUCT_OS_NAME" />.
 
@@ -3186,6 +3196,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Per maggiori informazioni, visita la pagina https://developer.chrome.com/blog/immutable-document-domain/.
       </translation>
+<translation id="416817811987180750">La funzionalità della lista della spesa sarà a disposizione degli utenti.</translation>
 <translation id="4169692397912242417">Consente di attivare la funzione di accessibilità della lettura vocale nella schermata di accesso.
 
           Se questo criterio è impostato su true, la funzione di lettura vocale sarà sempre attivata nella schermata di accesso.
@@ -3877,6 +3888,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, un'app web kiosk può usare solo la finestra principale del browser e non può aprire una nuova finestra. Le chiamate a qualsiasi funzione JavaScript per l'apertura di una nuova finestra verranno ignorate.</translation>
 <translation id="4980635395568992380">Tipo di dati:</translation>
+<translation id="4981831669478419057">La funzionalità della lista della spesa non sarà a disposizione degli utenti.</translation>
 <translation id="4983201894483989687">Consenti esecuzione dei plug-in obsoleti</translation>
 <translation id="4986560318567565414">Percorso a Chrome per cambiare il browser alternativo.</translation>
 <translation id="4987813583395474995">Se viene impostato su Attivato, l'API U2F Security Key deprecata può essere usata e il promemoria sul ritiro mostrato per le richieste API U2F viene soppresso.
@@ -6684,6 +6696,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se questo criterio viene impostato su <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, il browser ripristinerà la sessione precedente e aprirà una finestra separata per mostrare gli URL impostati nel criterio <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Tieni presente che gli utenti possono decidere di tenere aperti questi URL, che verranno ripristinati nella sessione futura.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+<translation id="7919665519909231619">Consenti l'attivazione della funzionalità della lista della spesa</translation>
 <translation id="7922358664346625612">Mantieni l'ultima scheda aperta in Chrome.</translation>
 <translation id="7924321157669251966">La percentuale di luminosità dello schermo quando viene usata la batteria.</translation>
 <translation id="7925224837072026018">La configurazione del criterio consente alle estensioni o alle app per Android di accedere alle chiavi aziendali. Le chiavi sono destinate unicamente all'utilizzo aziendale se vengono generate tramite l'API chrome.enterprise.platformKeys su un account gestito. Gli utenti non possono consentire o revocare l'accesso delle estensioni o delle app per Android alle chiavi aziendali.
@@ -7098,6 +7111,12 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Il valore della norma deve essere specificato in millisecondi.</translation>
 <translation id="8330437518362176921">Utilizza solo l'URL di aggiornamento fornito dal criterio durante il download e l'aggiornamento delle app di Chrome Kiosk</translation>
 <translation id="8331479227794770304">Attiva tasti permanenti</translation>
+<translation id="8336469459912731404">Se questo criterio viene impostato su Enabled, <ph name="PRODUCT_NAME" /> eseguirà la verifica dei certificati dei server mediante lo strumento di verifica dei certificati integrato con Chrome Root Store usato come fonte di attendibilità pubblica.
+      Se questo criterio viene impostato su Disabled, <ph name="PRODUCT_NAME" /> userà lo strumento di verifica dei certificati di sistema e i certificati radice di sistema.
+      Se questo criterio non viene configurato, potrebbero essere utilizzati Chrome Root Store o i certificati radice forniti dal sistema.
+
+      È prevista la rimozione di questo criterio in <ph name="PRODUCT_NAME" /> per <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" /> versione 111, in concomitanza con la rimozione del supporto per l'utilizzo dello strumento di verifica dei certificati e dei certificati radice forniti dalla piattaforma.
+      </translation>
 <translation id="8337114537412769126">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca di suggerimenti con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio <ph name="SEARCH_TERM_MARKER" />, viene sostituito con i dati dei termini di ricerca reali.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> non viene configurato, le richieste di ricerca di suggerimenti vengono inviate utilizzando il metodo Get.</translation>

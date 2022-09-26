@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">ಎಚ್ಚರಿಕೆ: ಈ ಫೈಲ್‌ಗಳು ತಾತ್ಕಾಲಿಕವಾಗಿರುತ್ತವೆ ಹಾಗೂ ಡಿಸ್ಕ್ ಸ್ಥಳವನ್ನು ಮುಕ್ತಗೊಳಿಸಲು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅವುಗಳನ್ನು ಅಳಿಸಬಹುದು.</translation>
 <translation id="3029114385395636667">Docs, Sheets ಮತ್ತು Slides ಅನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿರುವ ಹಾಗೆ ಮಾಡಲು Google Docs ಆಫ್‌ಲೈನ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>
 <translation id="303198083543495566">ಭೂಗೋಳಶಾಸ್ತ್ರ</translation>
+<translation id="3044404008258011032">ಈ ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು, ಅದನ್ನು ಅನುಪಯುಕ್ತದ ಹೊರಗಿನ ಹೊಸ ಫೋಲ್ಡರ್‌ಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ. ಈ ಐಟಂಗಳಿಗಾಗಿ ಮೂಲ ಫೋಲ್ಡರ್ "<ph name="PARENT_FOLDER_NAME" />" ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="3047197340186497470">ಚೈನೀಸ್ ದಾಯಿ</translation>
 <translation id="3067790092342515856">Windows ಫೈಲ್‌ಗಳು</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4092890906744441904">ಐರಿಷ್</translation>
 <translation id="4124935795427217608">ಯುನಿಕಾರ್ನ್</translation>
+<translation id="4131235941541910880">ನಿಮಗೆ ಬೇಡದ ಐಟಂಗಳನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ಐಟಂಗಳನ್ನು ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="4176286497474237543">ಅನುಪಯುಕ್ತವನ್ನು ಖಾಲಿ ಮಾಡಿ</translation>
 <translation id="4186579485882418952">ಆಫ್‌ಲೈನ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">ಜರ್ಮನ್</translation>
 <translation id="4867079195717347957">ಕಾಲಮ್ ಅನ್ನು ಕೆಳಗಿನಿಂದ ಮೇಲಕ್ಕೆ ಕ್ರಮದಲ್ಲಿ ವಿಂಗಡಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ಬೈಟ್‌ಗಳು</translation>
+<translation id="4874569719830985133">ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಿ</translation>
 <translation id="4880214202172289027">ಧ್ವನಿಮಟ್ಟ ಸ್ಲೈಡರ್</translation>
 <translation id="4881695831933465202">ತೆರೆ</translation>
+<translation id="4891091358278567964">ಈ ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು, ಅದನ್ನು ಅನುಪಯುಕ್ತದ ಹೊರಗಿನ ಹೊಸ ಫೋಲ್ಡರ್‌ಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ. ಈ ಐಟಂಗಳಿಗಾಗಿ ಮೂಲ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="4900532980794411603">Parallels Desktop ಮೂಲಕ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಕನೆಕ್ಟ್</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" />%, ವಿವರಗಳು</translation>
@@ -495,6 +499,7 @@
     
         ಹಂಚಿ, ರಚಿಸಿ ಮತ್ತು ಸಹಯೋಗಿಸಿ.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ಡ್ರೈವ್‌ನಿಂದ ಮರುಪಡೆಯಲಾದ ಫೈಲ್‌ಗಳು</translation>
+<translation id="5278111733643988471">ಈ ಐಟಂ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲು, ಅದನ್ನು ಅನುಪಯುಕ್ತದ ಹೊರಗಿನ ಹೊಸ ಫೋಲ್ಡರ್‌ಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ. ಈ ಐಟಂಗಾಗಿ ಮೂಲ ಫೋಲ್ಡರ್ "<ph name="PARENT_FOLDER_NAME" />" ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="5286194356314741248">ಸ್ಕ್ಯಾನಿಂಗ್</translation>
 <translation id="5288441970121584418">ಬರ್ಗರ್</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -507,6 +512,7 @@
 <translation id="535792325654997756">ಬೆಕ್ಕುಗಳ ಜೊತೆಯಲ್ಲಿರುವ ವ್ಯಕ್ತಿ</translation>
 <translation id="5358764674931277">ಫ್ರೇಮ್‌ ರೇಟ್</translation>
 <translation id="5363339716524495120">ಇನ್‌ಪುಟ್ ಭಾಷೆ ಚೈನೀಸ್ ಆಗಿದೆ</translation>
+<translation id="5364067326287025678">ಅನುಪಯುಕ್ತದಲ್ಲೇನು ಇಲ್ಲ</translation>
 <translation id="5368191757080475556">Linux ಮೂಲಕ ಫೋಲ್ಡರ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="5402367795255837559">ಬ್ರೈಲಿ</translation>
 <translation id="5411472733320185105">ಈ ಹೋಸ್ಟ್‌ಗಳಿಗೆ ಮತ್ತು ಡೊಮೇನ್‌ಗಳಿಗೆ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಉಪಯೋಗಿಸಬೇಡಿ:</translation>
@@ -771,6 +777,7 @@
 <translation id="7711920809702896782">ಚಿತ್ರ ಮಾಹಿತಿ</translation>
 <translation id="7724603315864178912">ಕತ್ತರಿಸು</translation>
 <translation id="7732111077498238432">ನೆಟ್‌ವರ್ಕ್‌ ನೀತಿಯ ನಿಯಂತ್ರಣದಲ್ಲಿದೆ</translation>
+<translation id="7736003208887389532">ಈ ಫೈಲ್‌ಗಳನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="7748626145866214022">ಕ್ರಿಯೆಯ ಬಾರ್‌ನಲ್ಲಿ ಹೆಚ್ಚಿನ ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ. ಕ್ರಿಯೆಯ ಬಾರ್ ಅನ್ನು ಫೋಕಸ್ ಮಾಡಲು Alt + A ಒತ್ತಿರಿ.</translation>
 <translation id="7760449188139285140">ಚೈನೀಸ್ ವುಬಿ</translation>
 <translation id="7765158879357617694">ಸರಿಸು</translation>
@@ -832,6 +839,7 @@
 <translation id="8249296373107784235">ನಿಷ್ಫಲಗೊಳಿಸು</translation>
 <translation id="8250690786522693009">ಲ್ಯಾಟಿನ್</translation>
 <translation id="8250920743982581267">ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು</translation>
+<translation id="8255595130163158297">ಅನುಪಯುಕ್ತದಲ್ಲಿರುವ ಎಲ್ಲಾ ಐಟಂಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ಅವುಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="8261506727792406068">ಅಳಿಸಿ</translation>
 <translation id="8261561378965667560">ಚೈನೀಸ್ ಅರೇ</translation>
 <translation id="8264024885325823677">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
@@ -860,7 +868,6 @@
 <translation id="8456681095658380701">ಅಮಾನ್ಯವಾದ ಹೆಸರು</translation>
 <translation id="8457767749626250697">ನಿಮ್ಮ SIM ಲಾಕ್ ಆಗಿದೆ</translation>
 <translation id="8459404855768962328">ಈ ಐಟಂ ಅನ್ನು ನಕಲಿಸುವುದರಿಂದ ಹಂಚಿಕೊಂಡ ಫೋಲ್ಡರ್ '<ph name="DESTINATION_NAME" />' ಅನ್ನು ನೋಡುವ ಪ್ರತಿಯೊಬ್ಬರ ಜೊತೆಗೂ ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ.</translation>
-<translation id="8461467696380332069">ಶೆಲ್ಫ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಫೈಲ್‌ಗಳಿಗೆ ತ್ವರಿತ ಪ್ರವೇಶವನ್ನು ಪಡೆಯಲು, ಫೈಲ್ ಮೇಲೆ ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ ಮತ್ತು "ಶೆಲ್ಫ್‌ಗೆ ಪಿನ್ ಮಾಡಿ" ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="8461914792118322307">ಪ್ರಾಕ್ಸಿ</translation>
 <translation id="8463494891489624050">ವಿಯೆಟ್ನಾಮೀಸ್ VIQR</translation>
 <translation id="8475647382427415476">Google ಡ್ರೈವ್‌ಗೆ ಇದೀಗ "<ph name="FILENAME" />" ಅನ್ನು ಸಿಂಕ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ. Google ಡ್ರೈವ್ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸುತ್ತದೆ.</translation>
@@ -897,7 +904,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="872537912056138402">ಕ್ರೋಯೇಶಿಯನ್</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್,<ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ, ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
-<translation id="8750438273876807512">ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ನಿಮ್ಮ ಫೈಲ್‌ಗಳಿಗೆ ತ್ವರಿತ ಪ್ರವೇಶವನ್ನು ಪಡೆಯಲು, ಫೈಲ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹೋಲ್ಡ್‌ ಮಾಡಿ ಹಾಗೂ <ph name="ICON" /> ಟ್ಯಾಪ್ ಮಾಡಿ ಮತ್ತು "ಶೆಲ್ಫ್‌ಗೆ ಪಿನ್ ಮಾಡಿ" ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="8787254343425541995">ಹಂಚಿತ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗಾಗಿ ಪ್ರಾಕ್ಸಿಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="8790981080411996443">ಗಿಡಗಳಿಗೆ ನೀರುಣಿಸುತ್ತಿರುವ ವ್ಯಕ್ತಿ</translation>
 <translation id="8798099450830957504">ಡಿಫಾಲ್ಟ್</translation>
@@ -910,6 +916,7 @@
 <translation id="8857149712089373752">ಫೋನೆಟಿಕ್ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ನೇಪಾಳಿ</translation>
 <translation id="8860454412039442620">Excel ಸ್ಪ್ರೆಡ್‌ಶೀಟ್</translation>
 <translation id="8866284467018526531">ಅರೇಬಿಕ್ ಲಿಪ್ಯಂತರ</translation>
+<translation id="8873014196523807561">ಈ ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು, ಅದನ್ನು ಹೊಸ ಫೋಲ್ಡರ್‌ಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ. ಈ ಕೆಲವು ಐಟಂಗಳಿಗಾಗಿ ಮೂಲ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="8874184842967597500">ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
 <translation id="8900820606136623064">ಹಂಗೇರಿಯನ್</translation>
 <translation id="8903931173357132290">ಪದವೀಧರ</translation>

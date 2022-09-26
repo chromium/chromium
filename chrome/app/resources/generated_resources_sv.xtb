@@ -1631,6 +1631,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2468178265280335214">Scrollningsacceleration för styrplattan</translation>
 <translation id="2468205691404969808">Kommer ihåg med hjälp av cookies vad du brukar välja även om du inte besöker sidorna i fråga</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470085922875120">Du använder lösenord som verkar svåra att lista ut</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 flik}other{<ph name="GROUP_TITLE" /> – # flikar}}</translation>
 <translation id="2469141124738294431">Status för virtuell maskin</translation>
 <translation id="2469259292033957819">Du har inga sparade skrivare.</translation>
@@ -1968,6 +1969,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2783321960289401138">Skapa genväg ...</translation>
 <translation id="2783829359200813069">Välj krypteringstyper</translation>
 <translation id="2783952358106015700">Använd säkerhetsnyckeln med <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">Lösenordskontroll</translation>
 <translation id="2785873697295365461">Filbeskrivningar</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Behåll lokal webbinformation (t.ex. bokmärken, lösenord, historik)</translation>
@@ -2043,6 +2045,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2844169650293029770">USB-C-enhet (främre porten på vänster sida)</translation>
 <translation id="2844809857160214557">Visa och hantera utskriftsjobb</translation>
 <translation id="2845382757467349449">Visa alltid bokmärkesfältet</translation>
+<translation id="284581348330507117">Skapa unika lösenord</translation>
 <translation id="284805635805850872">Vill du ta bort den skadliga programvaran?</translation>
 <translation id="2849035674501872372">Slå upp</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2194,6 +2197,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2985348301114641460">Vill du skicka en begäran om att installera <ph name="EXTENSION_NAME" /> till administratören?</translation>
 <translation id="2987620471460279764">Text delad från annan enhet</translation>
 <translation id="2988018669686457659">Renderare i reserv</translation>
+<translation id="2988328607561082373">Du återanvänder inga lösenord</translation>
 <translation id="2989123969927553766">Scrollningsacceleration för musen</translation>
 <translation id="2989474696604907455">inte ansluten</translation>
 <translation id="2989786307324390836">DER-kodat binärt enstaka certifikat</translation>
@@ -2222,6 +2226,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3009178788565917040">Utgång</translation>
 <translation id="3009300415590184725">Är du säker på att du vill avbryta konfigurationen av den mobila datatjänsten?</translation>
 <translation id="3009779501245596802">Indexerade databaser</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Lösenorden ser starka ut}=1{{COUNT} svagt lösenord}other{{COUNT} svaga lösenord}}</translation>
 <translation id="3010279545267083280">Lösenordet har tagits bort</translation>
 <translation id="3010389206479238935">Tvinga att öppna i</translation>
 <translation id="3011384993885886186">Varmt grå</translation>
@@ -4424,6 +4429,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5153234146675181447">Glöm mobil</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Avancerade inställningar för <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Inga sparade lösenord.}=1{Lösenord för {COUNT} webbplats har kontrollerats}other{Lösenord för {COUNT} webbplatser och appar har kontrollerats}}</translation>
 <translation id="5154702632169343078">Ämne</translation>
 <translation id="5155327081870541046">Skriv genvägen till webbplatsen du vill söka på i adressfältet, till exempel @bookmarks. Tryck sedan på önskat kortkommando och ange söktermen.</translation>
 <translation id="5156638757840305347">Markören markeras när den visas eller flyttas</translation>
@@ -5004,6 +5010,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5713158217420111469">Ansluten till <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Inmatningsformat för blanksteg</translation>
 <translation id="5715711091495208045">Agent för pluginprogram: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Du bör ändra dessa nu</translation>
 <translation id="5719603411793408026">Standardsökmotorer</translation>
 <translation id="5719854774000914513">Webbplatser får begära tillstånd att ansluta till HID-enheter</translation>
 <translation id="572155275267014074">Android-inställningar</translation>
@@ -6459,6 +6466,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7098447629416471489">Andra sparade sökmotorer visas här</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Ta bort appen}other{Ta bort appar}}</translation>
 <translation id="7099337801055912064">PPD-filen var för stor att läsa in. Storleksgränsen är 250 kB.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Inga utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="7102687220333134671">Automatiska uppdateringar har aktiverats</translation>
 <translation id="7102832101143475489">Begäran tog för lång tid</translation>
 <translation id="710640343305609397">Öppna nätverksinställningar</translation>
@@ -7404,6 +7412,7 @@ Nyckelfil: <ph name="KEY_FILE" />
 Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versioner av ditt tillägg.</translation>
 <translation id="8002274832045662704">Avancerad skrivarkonfiguration</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> är inte längre tillgänglig</translation>
+<translation id="8004092996156083991">Vi meddelar dig om dina lösenord är utsatta.</translation>
 <translation id="8004582292198964060">Webbläsare</translation>
 <translation id="8005600846065423578">Ge alltid <ph name="HOST" /> tillgång till Urklipp</translation>
 <translation id="8006630792898017994">Blanksteg eller tabb</translation>
@@ -7901,6 +7910,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8470513973197838199">Sparade lösenord för <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Åtkomst till USB-enheter brukar kunna behövas för funktioner som att skriva ut dokument eller spara filer på en lagringsenhet</translation>
 <translation id="8471959340398751476">Rabatter har inaktiverats. Du kan inaktivera dem i menyn Anpassa</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Lösenorden är unika}=1{{COUNT} återanvänt lösenord}other{{COUNT} återanvända lösenord}}</translation>
 <translation id="8472623782143987204">maskinvarustödd</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>
 <translation id="8475313423285172237">Ett annat program i datorn har lagt till ett tillägg som kan ändra hur Chrome fungerar.</translation>
@@ -8379,6 +8389,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8940081510938872932">Datorn har för mycket att göra just nu. Försök igen senare.</translation>
 <translation id="8940381019874223173">Från Google Foto</translation>
 <translation id="8941173171815156065">Återkalla behörigheten <ph name="PERMISSION" /></translation>
+<translation id="894191600409472540">Skapa starka lösenord</translation>
 <translation id="894360074127026135">Netscapes internationella uppgradering</translation>
 <translation id="8944099748578356325">Batteriet förbrukas snabbare (för närvarande <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8945274638472141382">Ikonstorlek</translation>
@@ -8602,6 +8613,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9140067245205650184">Du använder en funktionsflagga som inte stöds: <ph name="BAD_FLAG" />. Detta påverkar stabilitet och säkerhet negativt.</translation>
 <translation id="9142637293078737510">Alias för bild</translation>
 <translation id="9143298529634201539">Vill du ta bort förslaget?</translation>
+<translation id="9143922477019434797">Skydda dina lösenord</translation>
 <translation id="9147392381910171771">&amp;Alternativ</translation>
 <translation id="9148058034647219655">Avsluta</translation>
 <translation id="9148126808321036104">Logga in igen</translation>

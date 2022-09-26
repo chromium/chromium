@@ -1262,6 +1262,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">اتصال به <ph name="SITE" /> امن نیست</translation>
 <translation id="4349365535725594680">هم‌رسانی محتوای محرمانه ممکن نیست</translation>
+<translation id="4349810866125026513">به‌هرحال بارگذاری شود</translation>
 <translation id="4350629523305688469">سینی چندمنظوره</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> می‌خواهد دستگاه‌های «بلوتوث» اطراف را جستجو کند. دستگاه‌های زیر پیدا شدند:</translation>
 <translation id="4351175281479794167">کد درستی‌سنجی را وارد کنید</translation>
@@ -1395,6 +1396,7 @@
 <translation id="4744514002166662487">ایجاد ارائه</translation>
 <translation id="4744603770635761495">مسیر قابل اجرا</translation>
 <translation id="4749011317274908093">به «حالت ناشناس» رفته‌اید</translation>
+<translation id="4750671009706599284">این تلفن</translation>
 <translation id="4750917950439032686">اطلاعات شما (به‌عنوان مثال، گذرواژه‌ها یا شماره‌ کارت‌های اعتباری) وقتی به این سایت ارسال می‌شوند، خصوصی هستند.</translation>
 <translation id="4751476147751820511">حسگرهای نوری یا حرکتی</translation>
 <translation id="4754461935447132332">برای سایت‌های ناامن مجاز نیست</translation>
@@ -1984,6 +1986,7 @@
 <translation id="6337133576188860026">کمتر از <ph name="SIZE" /> از فضا را آزاد می‌کند. ممکن است برخی از سایت‌ها در بازدیدهای بعدی کندتر بارگیری شوند.</translation>
 <translation id="6337534724793800597">فیلتر کردن خط‌مشی‌ها براساس نام</translation>
 <translation id="6340739886198108203">خط‌مشی سرپرست توصیه می‌کند وقتی محتوای محرمانه قابل‌مشاهده است نماگرفت نگیرید یا ضبط نکنید:</translation>
+<translation id="6341434961864773665">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگذاری کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگذاری کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را در <ph name="DESTINATION_NAME" /> بارگذاری کنید}}</translation>
 <translation id="6348220984832452017">گونه‌های فعال</translation>
 <translation id="6349101878882523185">نصب <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{هیچ‌کدام}=1{۱ گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}=2{۲ گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}one{# گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}other{# گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}}</translation>
@@ -2162,6 +2165,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">‏Chrome این صفحه را ساده کرده است تا خواندن آن آسان‌تر باشد Chrome صفحه اصلی را ازطریق اتصالی غیرایمن بازیابی کرد.</translation>
 <translation id="6890443033788248019">مکان مجاز شود؟</translation>
+<translation id="6890531741535756070">قبلاً انتخاب کرده‌اید در وب‌سایت‌هایی که از <ph name="PROVIDER_ORIGIN" /> استفاده می‌کنند درستی‌سنجی با <ph name="DEVICE_LABEL" /> انجام شود. این ارائه‌دهنده ممکن است اطلاعات روش پرداختتان را ذخیره کرده باشد که می‌توانید <ph name="BEGIN_LINK" />درخواست حذف آن را بدهید<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">سطح خط‌مشی پشتیبانی نمی‌شود.</translation>
 <translation id="6895143722905299846">شماره مجازی:</translation>
 <translation id="6895330447102777224">کارتتان تأیید شد</translation>
@@ -2522,6 +2526,7 @@
 <translation id="7764225426217299476">افزودن آدرس</translation>
 <translation id="7766518757692125295">«اسکیرت»</translation>
 <translation id="7773005668374414287">ترتیب یکسان، روبه‌بالا</translation>
+<translation id="7785790577395078482">این رایانه لوحی</translation>
 <translation id="7791011319128895129">منتشرنشده</translation>
 <translation id="7791196057686275387">بسته</translation>
 <translation id="7791543448312431591">افزودن</translation>
@@ -2616,6 +2621,7 @@
 <translation id="8075736640322370409">‏ایجاد سریع «کاربرگ‌نگار Google» جدید</translation>
 <translation id="8075898834294118863">مدیریت تنظیمات سایت</translation>
 <translation id="8076492880354921740">برگه‌ها</translation>
+<translation id="8078006011486731853">{0,plural, =1{فایل محرمانه بارگذاری شود؟}one{فایل محرمانه بارگذاری شود؟}other{فایل‌های محرمانه بارگذاری شود؟}}</translation>
 <translation id="8078141288243656252">در حالت چرخش نمی‌توان حاشیه‌نویسی کرد</translation>
 <translation id="8079031581361219619">سایت بار کردن مجدد شود؟</translation>
 <translation id="8081087320434522107">سدان</translation>

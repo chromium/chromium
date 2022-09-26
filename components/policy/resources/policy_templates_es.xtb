@@ -4989,6 +4989,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Debes especificar las aplicaciones de Chrome mediante su ID (por ejemplo, pjkljhegncpnkpknbcohdijeoejaedia), las aplicaciones Android mediante su nombre de paquete (por ejemplo, com.google.android.gm) y las aplicaciones web mediante la URL usada en <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (por ejemplo, https://google.com/maps).
 
       Si no se configura esta política, el usuario podrá cambiar la lista de aplicaciones fijadas en el menú de aplicaciones.</translation>
+<translation id="6184385589352532028">No habilitar Desk API para el control de Chrome OS por terceros</translation>
 <translation id="6190367314942602985">Proporcionar información de identificación de usuarios</translation>
 <translation id="6191963383731098056">Esta política permite a los administradores configurar el color del tema de <ph name="PRODUCT_NAME" />. La cadena de entrada debe ser un color hexadecimal válido que coincida con el formato "#RRGGBB".
 
@@ -6844,6 +6845,7 @@ De forma predeterminada, una extensión o aplicación Android no puede utilizar 
       Si esta política se inhabilita o no se establece, el usuario no podrá usar <ph name="LACROS_NAME" />.
 
       Si esta política se habilita, el usuario podrá usar el navegador <ph name="LACROS_NAME" />.</translation>
+<translation id="8020222525161221827">Habilitar la Desk API para el control de Chrome OS por terceros</translation>
 <translation id="802147957407376460">Girar la pantalla 0 grados</translation>
 <translation id="80243978433618492">No permitir ningún filtro de parámetros de URL</translation>
 <translation id="8025620823136567878">Las combinaciones de teclas internacionales se asignan a la ubicación de las teclas en el teclado en lugar del glifo de la tecla.</translation>
@@ -7879,6 +7881,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 
       Si se inhabilita la política, los dispositivos registrados no informarán ni registrarán el estado de audio.
       Excepción: <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> controla la información del nivel de volumen del sistema en M95 y versiones anteriores.</translation>
+<translation id="9071527533179676468">Si se habilita esta política, las aplicaciones web de terceros podrán usar la Desk API para controlar los escritorios de ChromeOS. Si esta política no se establece o se inhabilita, la Desk API no estará disponible.</translation>
 <translation id="9072475476775217730">Si se inhabilita esta política, las ventanas emergentes dirigidas a <ph name="BLANK_PAGE_NAME" /> podrán acceder (mediante JavaScript) a la página que haya solicitado abrir la ventana emergente.
 
       Si se habilita esta política o no se establece, a la propiedad <ph name="WINDOW_OPENER_PROPERTY" /> se le asignará el valor <ph name="NULL_VALUE" />, a menos que el ancla tenga el atributo <ph name="REL_OPENER_ATTRIBUTE" />.

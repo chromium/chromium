@@ -861,7 +861,6 @@
 <translation id="8456681095658380701">שם לא חוקי</translation>
 <translation id="8457767749626250697">‏כרטיס ה-SIM שלך נעול</translation>
 <translation id="8459404855768962328">לאחר העתקת הפריט הזה, הוא ישותף עם כל מי שיכול לראות את התיקייה המשותפת '<ph name="DESTINATION_NAME" />'.</translation>
-<translation id="8461467696380332069">כדי לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ימנית על הקובץ ולבחור באפשרות "הצמדה למדף".</translation>
 <translation id="8461914792118322307">‏שרת proxy</translation>
 <translation id="8463494891489624050">‏מקלדת וייטנאמית VIQR</translation>
 <translation id="8475647382427415476">‏ל-Google Drive אין כרגע אפשרות לסנכרן את "<ph name="FILENAME" />". מערכת Google Drive תנסה זאת שוב מאוחר יותר.</translation>
@@ -898,7 +897,6 @@
 <translation id="8719721339511222681">בחרת את <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">קרואטית</translation>
 <translation id="8743164338060742337">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ עוצמת האות של ‎<ph name="NETWORK_PROVIDER_NAME" />‎%<ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך, התחברות</translation>
-<translation id="8750438273876807512">כד לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ארוכה על הקובץ, להקיש על <ph name="ICON" /> ולבחור באפשרות "הצמדה למדף"</translation>
 <translation id="8787254343425541995">‏אפשר שרתי proxy עבור רשתות משותפות</translation>
 <translation id="8790981080411996443">אדם משקה עציצים</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>

@@ -23,6 +23,7 @@
 <translation id="117624967391683467">جارٍ نسخ <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1190144681599273207">سيؤدي جلب هذا الملف إلى استخدام حوالي <ph name="FILE_SIZE" /> من بيانات الجوال.</translation>
+<translation id="1194390763418645112">الوصول إلى الملفات من خلال <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1209796539517632982">خوادم الأسماء التلقائية</translation>
 <translation id="1210831758834677569">اللاوية</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">‏أجهزة Chrome</translation>
 <translation id="1572585716423026576">تحديد كخلفية</translation>
 <translation id="1576937952766665062">تحويل صوتي إلى اللغة البنغالية</translation>
+<translation id="1577977504532381335">مراجعة سياسة المشرف</translation>
 <translation id="158849752021629804">يلزم توفر الشبكة الرئيسية</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> بيتابايت</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">دقة الصورة</translation>
 <translation id="1972984168337863910">توسيع لوحات تعليقات الملفات</translation>
 <translation id="1995337122023280937">الانتقال إلى موقع الملف</translation>
+<translation id="1999709132469742660">‏الوصول إلى الملفات من خلال جميع عناوين URL</translation>
 <translation id="2001796770603320721">‏الإدارة في Drive</translation>
 <translation id="2009067268969781306">سيؤدي تنسيق محرك أقراص إلى حذف جميع البيانات المخزّنة عليه. لا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="2025955442973426285">التغرينية</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">شخص يحمل كوب قهوة</translation>
 <translation id="2251368349685848079">الاستعادة من المهملات</translation>
 <translation id="2282155092769082568">‏عنوان URL للإعداد التلقائي:</translation>
+<translation id="2284767815536050991">وحدة تخزين قابلة للإزالة</translation>
 <translation id="2288278176040912387">مشغّل أقراص مسجلة</translation>
 <translation id="2291538123825441971">جارٍ فتح <ph name="NUMBER_OF_FILES" /> من الملفات.</translation>
 <translation id="2303301624314357662">جارٍ فتح ملف <ph name="FILE_NAME" />.</translation>
@@ -341,6 +345,7 @@
 <translation id="4057991113334098539">تفعيل...</translation>
 <translation id="4092890906744441904">الأيرلندية</translation>
 <translation id="4124935795427217608">أحادي القرن</translation>
+<translation id="4157569377477607576">لا تنصح سياسة المشرف بما يلي:</translation>
 <translation id="4159731583141908892">تم نقل <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">إفراغ المهملات الآن</translation>
 <translation id="4186579485882418952">‏تفعيل "مستندات Google بلا إنترنت"</translation>
@@ -502,6 +507,7 @@
 <translation id="5323213332664049067">أمريكا اللاتينية</translation>
 <translation id="5330145655348521461">تم فتح هذه الملفات على جهاز سطح مكتب آخر. يمكنك الانتقال إلى <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) للاطلاع عليها.</translation>
 <translation id="5330512191124428349">الحصول على معلومات</translation>
+<translation id="5337538975554986899">‏الوصول إلى الملفات من خلال جميع عناوين URL باستثناء <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">شخص مع قطط</translation>
 <translation id="5358764674931277">عدد اللقطات في الثانية</translation>
 <translation id="5363339716524495120">لغة الإدخال هي الصينية</translation>
@@ -526,6 +532,7 @@
 <translation id="5533102081734025921">صورة <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">جارٍ حساب الحجم</translation>
 <translation id="554153475311314364">تحويل صوتي إلى اللغة اليونانية</translation>
+<translation id="5580591966435005537">جهاز افتراضي</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">عرض علامات الترقيم هو عرض بالكامل</translation>
 <translation id="5602622065581044566">البلغارية باستخدام لوحة المفاتيح الصوتية</translation>
@@ -586,6 +593,7 @@
 <translation id="61118516107968648">‏ملف نصي بتنسيق CSV</translation>
 <translation id="6129953537138746214">مسافة</translation>
 <translation id="6133173853026656527">جارٍ نقل <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">يراقب المشرف ما يلي:</translation>
 <translation id="613750717151263950">اليابانية باستخدام لوحة مفاتيح الولايات المتحدة</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />، ما من شبكة</translation>
 <translation id="6146563240635539929">فيديوهات</translation>
@@ -606,6 +614,7 @@
 <translation id="6287852322318138013">حدد تطبيقًا لفتح هذا الملف من خلاله</translation>
 <translation id="6295542640242147836">‏قفل شريحة SIM</translation>
 <translation id="6296410173147755564">‏رمز PUK غير صالح.</translation>
+<translation id="6308243004861726558">هذا الملف سرّي ويخضع لسياسة المشرف. يتم تطبيق الإجراءات التالية للوصول إلى الملف ونقله.</translation>
 <translation id="6312403991423642364">خطأ غير معروف</translation>
 <translation id="6317608858038767920">خادم أسماء مخصّص <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">أرشيف <ph name="ARCHIVE_TYPE" /></translation>
@@ -834,6 +843,7 @@
 <translation id="8250920743982581267">المستندات</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8261561378965667560">‏الصينية باستخدام لوحة مفاتيح Array</translation>
+<translation id="8262872909443689080">سياسة المشرف</translation>
 <translation id="8264024885325823677">يتولى مشرفك إدارة هذا الإعداد.</translation>
 <translation id="8269755669432358899">تصغير لوحات التعليقات على الملفات</translation>
 <translation id="8280151743281770066">أرمينية صوتية</translation>
@@ -860,7 +870,6 @@
 <translation id="8456681095658380701">اسم غير صالح</translation>
 <translation id="8457767749626250697">‏شريحة SIM مقفلة</translation>
 <translation id="8459404855768962328">يؤدي نسخ هذا الملف إلى مشاركته مع جميع المستخدمين الذين يمكنهم الاطّلاع على المجلد المشترك "<ph name="DESTINATION_NAME" />".</translation>
-<translation id="8461467696380332069">يُرجى النقر بزر الماوس الأيمن على ملف واختيار "تثبيت في الرف" للوصول السريع إلى الملفات في الرف.</translation>
 <translation id="8461914792118322307">الخادم الوكيل</translation>
 <translation id="8463494891489624050">‏الفيتنامية باستخدام لوحة مفاتيح VIQR</translation>
 <translation id="8475647382427415476">‏تعذر على Google Drive مزامنة "<ph name="FILENAME" />" في الوقت الحالي. وسيعيد Google Drive المحاولة لاحقًا.</translation>
@@ -897,7 +906,6 @@
 <translation id="8719721339511222681">تم اختيار <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">الكرواتية</translation>
 <translation id="8743164338060742337">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يدير المشرف هذه الشبكة، الاتصال</translation>
-<translation id="8750438273876807512">يمكنك النقر مع الاستمرار على أحد الملفات ثم النقر على الرمز <ph name="ICON" /> واختيار "تثبيت في الرف" للوصول السريع إلى الملفات في الرف.</translation>
 <translation id="8787254343425541995">السماح بالخوادم الوكيلة للشبكات المشتركة</translation>
 <translation id="8790981080411996443">شخص يروي نباتات</translation>
 <translation id="8798099450830957504">التلقائي</translation>
@@ -931,6 +939,7 @@
 <translation id="9100610230175265781">عبارة المرور مطلوبة</translation>
 <translation id="9110990317705400362">‏نحن نبحث باستمرار عن طرق من شأنها زيادة أمان تجربة تصفحك. في السابق، كان من الممكن لأي موقع إلكتروني أن يطالبك بتثبيت إضافة في متصفحك. أما في أحدث إصدارات Google Chrome، فيجب أن تبلغ Chrome صراحة أنك تريد تثبيت هذه الإضافات عن طريق إضافتها عبر صفحة الإضافات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">فتح القفل</translation>
+<translation id="9116909380156770361">نقْل الملف إلى <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">برنامج ترميز</translation>
 <translation id="9130775360844693113">سيحصل أعضاء '<ph name="DESTINATION_NAME" />' على إمكانية الوصول إلى هذه العناصر.</translation>
 <translation id="9131598836763251128">اختيار ملف واحد أو أكثر</translation>
@@ -952,6 +961,7 @@
 <translation id="943972244133411984">تم التعديل بواسطة</translation>
 <translation id="945522503751344254">إرسال تعليقات</translation>
 <translation id="947144732524271678">تم اختيار مجموعة من <ph name="ENTRY_COUNT" /> إدخال من <ph name="FROM_ENTRY_NAME" /> إلى <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">تمنع سياسة المشرف ما يلي:</translation>
 <translation id="965477715979482472">الإنجليزية (جنوب أفريقيا)</translation>
 <translation id="981121421437150478">بلا اتصال</translation>
 <translation id="988685240266037636">يتوفَّر ملف باسم "<ph name="FILE_NAME" />" مسبقًا. هل تريد استبداله؟</translation>

@@ -878,7 +878,6 @@
 <translation id="8456681095658380701">Pogrešno ime</translation>
 <translation id="8457767749626250697">SIM je zaključan</translation>
 <translation id="8459404855768962328">Ako kopirate tu stavku, podijelit ćete je sa svima koji mogu vidjeti dijeljenu mapu <ph name="DESTINATION_NAME" />.</translation>
-<translation id="8461467696380332069">Desnom tipkom kliknite datoteku i odaberite "Prikvači na policu" za brzi pristup datotekama na polici.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">vijetnamski VIQR</translation>
 <translation id="8475647382427415476">Google disk trenutačno nije mogao sinkronizirati datoteku "<ph name="FILENAME" />" i pokušat će ponovo kasnije.</translation>
@@ -915,7 +914,6 @@
 <translation id="8719721339511222681">Odabrana je stavka <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Hrvatski</translation>
 <translation id="8743164338060742337">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, povežite</translation>
-<translation id="8750438273876807512">Dodirnite i držite datoteku te dodirnite <ph name="ICON" /> i odaberite opcioju Prikvači na policu za brzi pristup datotekama na polici.</translation>
 <translation id="8787254343425541995">Dopusti proxyje za dijeljene mreže</translation>
 <translation id="8790981080411996443">Osoba zalijeva biljke</translation>
 <translation id="8798099450830957504">Zadano</translation>

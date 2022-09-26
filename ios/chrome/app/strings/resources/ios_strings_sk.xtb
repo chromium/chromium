@@ -424,6 +424,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4536418791685807335">Skúste sa znova prihlásiť.</translation>
 <translation id="4540780316273593836">Vyskytol sa problém</translation>
 <translation id="457386861538956877">Viac...</translation>
+<translation id="4588014171431912783">Nastavenia synchronizácie budú obnovené na základe poslednej zálohy. <ph name="BEGIN_LINK" />Čo môžete synchronizovať<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Klávesnica</translation>
 <translation id="4606247758155004938">Prehliadač spravuje vaša organizácia.</translation>
 <translation id="461440297010471931">Vyhľadávate pomocou Googlu</translation>
@@ -703,6 +704,7 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="661266467055912436">Zvyšuje zabezpečenie na internete pre vás aj ostatných.</translation>
 <translation id="6620279676667515405">Zrušiť</translation>
 <translation id="6624219055418309072">Blokovať v režime inkognito</translation>
+<translation id="6625830436658400045">Nastavenia synchronizácie budú obnovené na základe poslednej zálohy. Položky, ktoré chcete synchronizovať, môžete kedykoľvek vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="6628106477656132239">Neplatný dátum vypršania platnosti</translation>
 <translation id="6634432609054530164">Vaša organizácia vypla režim inkognito</translation>
 <translation id="6638511529934826365">Textová lupa…</translation>

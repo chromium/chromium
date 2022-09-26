@@ -225,6 +225,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2227179592712503583">Ukloni predlog</translation>
 <translation id="225680501294068881">Skeniranje uređaja...</translation>
 <translation id="2257486738914982088">Došlo je do problema pri preuzimanju fajla <ph name="FILENAME" /></translation>
+<translation id="2258734398699965611">Predloženi fajlovi</translation>
 <translation id="2268130516524549846">Bluetooth je onemogućen</translation>
 <translation id="2268813581635650749">Odjavi sve</translation>
 <translation id="2269016722240250274">Aplikacija koristi mikrofon</translation>
@@ -901,6 +902,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="6099678161144790572">Izmenjeno proteklog meseca</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Preuzeti su fajlovi sa govorom na jeziku <ph name="LANGUAGE" /></translation>
+<translation id="6116825164611323644">Pristup kameri je isključen na ovom uređaju</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Potvrdite preuzimanje fajla <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google pomoćnik nije dostupan u sesiji gosta.</translation>
@@ -1350,6 +1352,7 @@ Novo instaliranje</translation>
 <translation id="8734991477317290293">Možda pokušava da ukrade vašu kombinaciju tastera</translation>
 <translation id="8735678380411481005">Boja pozadinskog osvetljenja tastature</translation>
 <translation id="8735953464173050365">Pregledajte podešavanja tastature. Izabrana je <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8752416742247198423">Uključite pristup kameri da biste dozvolili aplikacijama i veb-stranicama sa dozvolom za kameru da koriste kamere povezane sa ovim uređajem.</translation>
 <translation id="8755498163081687682">Verifikujte identitet: <ph name="ORIGIN_NAME" /> želi da potvrdi da ste to vi</translation>
 <translation id="875593634123171288">Pregledajte podešavanja VPN-a</translation>
 <translation id="8759408218731716181">Nije moguće podesiti višestruko prijavljivanje</translation>
@@ -1364,6 +1367,7 @@ Novo instaliranje</translation>
 <translation id="8819728065740986820">Adaptivno punjenje je uključeno</translation>
 <translation id="8825863694328519386">Prevucite sa leve strane da biste se vratili</translation>
 <translation id="8834539327799336565">Trenutno povezani</translation>
+<translation id="8834657930627018205">Uključi pristup kameri.</translation>
 <translation id="8841375032071747811">Dugme Nazad</translation>
 <translation id="8843682306134542540">Uključite/isključite zaključavanje rotacije. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

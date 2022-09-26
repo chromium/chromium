@@ -228,6 +228,7 @@
 <translation id="3016566519832145558">注意：這些是暫存檔案，系統可能會自動將其刪除，以釋出磁碟空間。</translation>
 <translation id="3029114385395636667">啟用 Google 文件離線版，即可離線使用文件、試算表和簡報。</translation>
 <translation id="303198083543495566">地理位置</translation>
+<translation id="3044404008258011032">如要還原這些項目，請將項目從垃圾桶中拖曳到新資料夾，因為這些項目所屬的資料夾「<ph name="PARENT_FOLDER_NAME" />」已經刪除。</translation>
 <translation id="3047197340186497470">中文 (大易)</translation>
 <translation id="3067790092342515856">Windows 檔案</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -345,6 +346,7 @@
 <translation id="4057991113334098539">啟用中...</translation>
 <translation id="4092890906744441904">愛爾蘭文</translation>
 <translation id="4124935795427217608">獨角獸</translation>
+<translation id="4131235941541910880">你可以將不需要的項目移到垃圾桶</translation>
 <translation id="4157569377477607576">根據管理員政策，建議你不要：</translation>
 <translation id="4159731583141908892">已移動 <ph name="FILE_NAME" />。</translation>
 <translation id="4176286497474237543">立即清空垃圾桶</translation>
@@ -440,8 +442,10 @@
 <translation id="485316830061041779">德文</translation>
 <translation id="4867079195717347957">按一下即可依遞減順序排列資料欄。</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> 位元組</translation>
+<translation id="4874569719830985133">永久刪除</translation>
 <translation id="4880214202172289027">音量滑桿</translation>
 <translation id="4881695831933465202">開啟</translation>
+<translation id="4891091358278567964">如要還原這些項目，請將項目從垃圾桶中拖曳到新資料夾，因為這些項目所屬的資料夾已經刪除。</translation>
 <translation id="4900532980794411603">與 Parallels Desktop 共用</translation>
 <translation id="4902546322522096650">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，連線</translation>
 <translation id="4906580650526544301">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="PHONE_NAME" />，<ph name="PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，手機電量 <ph name="BATTERY_STATUS" />%，詳細資料</translation>
@@ -498,6 +502,7 @@
     <ph name="MARKUP_7" />檔案集中存放，<ph name="MARKUP_8" />
     方便共用、建立檔案並與他人協同合作。<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">從 Google 雲端硬碟還原檔案</translation>
+<translation id="5278111733643988471">如要還原這個項目，請將該項目從垃圾桶中拖曳到新資料夾，因為這個項目所屬的資料夾「<ph name="PARENT_FOLDER_NAME" />」已經刪除。</translation>
 <translation id="5286194356314741248">掃描中</translation>
 <translation id="5288441970121584418">漢堡</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -511,6 +516,7 @@
 <translation id="535792325654997756">人與貓</translation>
 <translation id="5358764674931277">影格速率</translation>
 <translation id="5363339716524495120">輸入語言為中文</translation>
+<translation id="5364067326287025678">垃圾桶中沒有任何項目</translation>
 <translation id="5368191757080475556">與 Linux 共用資料夾</translation>
 <translation id="5402367795255837559">點字</translation>
 <translation id="5411472733320185105">不要對以下主機和網域使用 Proxy 設定：</translation>
@@ -780,6 +786,7 @@
 <translation id="7711920809702896782">圖片資訊</translation>
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7732111077498238432">網路受到政策控制</translation>
+<translation id="7736003208887389532">要永久刪除這些檔案嗎？</translation>
 <translation id="7748626145866214022">動作列中有更多可用的選項。按下 Alt+A 即可將焦點移到動作列。</translation>
 <translation id="7760449188139285140">中文 (五筆)</translation>
 <translation id="7765158879357617694">移動</translation>
@@ -841,6 +848,7 @@
 <translation id="8249296373107784235">取消</translation>
 <translation id="8250690786522693009">拉丁文</translation>
 <translation id="8250920743982581267">文件</translation>
+<translation id="8255595130163158297">垃圾桶中的所有項目在刪除後即無法復原。</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8261561378965667560">中文 (行列)</translation>
 <translation id="8262872909443689080">管理員政策</translation>
@@ -870,7 +878,6 @@
 <translation id="8456681095658380701">名稱無效</translation>
 <translation id="8457767749626250697">SIM 卡已鎖定</translation>
 <translation id="8459404855768962328">這個項目複製到「<ph name="DESTINATION_NAME" />」共用資料夾後，就會與所有看得到該資料夾的使用者共用。</translation>
-<translation id="8461467696380332069">在檔案上按一下滑鼠右鍵，然後選取 [固定至檔案櫃]，即可在檔案櫃中快速存取檔案。</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">越南文 (VIQR)</translation>
 <translation id="8475647382427415476">Google 雲端硬碟目前無法同步處理「<ph name="FILENAME" />」，將於稍後再試。</translation>
@@ -907,7 +914,6 @@
 <translation id="8719721339511222681">已選取「<ph name="ENTRY_NAME" />」。</translation>
 <translation id="872537912056138402">克羅埃西亞文</translation>
 <translation id="8743164338060742337">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，由系統管理員管理，連線</translation>
-<translation id="8750438273876807512">按住檔案並輕觸 <ph name="ICON" /> 圖示，然後選取 [固定至檔案櫃]，即可在檔案櫃中快速存取檔案。</translation>
 <translation id="8787254343425541995">允許共用網路使用 Proxy</translation>
 <translation id="8790981080411996443">澆水的人</translation>
 <translation id="8798099450830957504">預設</translation>
@@ -920,6 +926,7 @@
 <translation id="8857149712089373752">尼泊爾文搭配拼音鍵盤</translation>
 <translation id="8860454412039442620">Excel 試算表</translation>
 <translation id="8866284467018526531">阿拉伯文 (音譯)</translation>
+<translation id="8873014196523807561">如要還原這些項目，請將項目拖曳到新資料夾，因為部分項目所屬的資料夾已經刪除。</translation>
 <translation id="8874184842967597500">未連線</translation>
 <translation id="8900820606136623064">匈牙利文</translation>
 <translation id="8903931173357132290">畢業生</translation>

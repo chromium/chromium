@@ -868,7 +868,6 @@
 <translation id="8456681095658380701">Kehtetu nimi</translation>
 <translation id="8457767749626250697">Teie SIM on lukustatud</translation>
 <translation id="8459404855768962328">Selle üksuse kopeerimisel jagatakse seda kõigiga, kes jagatud kausta „<ph name="DESTINATION_NAME" />“ näevad.</translation>
-<translation id="8461467696380332069">Paremklõpsake failil ja tehke valik „Kinnita riiulile”, et riiulil olevatele failidele kiirelt juurde pääseda.</translation>
 <translation id="8461914792118322307">Puhverserver</translation>
 <translation id="8463494891489624050">vietnami, VIQR</translation>
 <translation id="8475647382427415476">Google Drive ei saanud praegu sünkroonida faili „<ph name="FILENAME" />”. Google Drive proovib hiljem uuesti.</translation>
@@ -905,7 +904,6 @@
 <translation id="8719721339511222681">Valiti <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">horvaatia keel</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, ühenda</translation>
-<translation id="8750438273876807512">Puudutage pikalt faili, puudutage ikooni <ph name="ICON" /> ja tehke valik „Kinnita riiulile”, et riiulil olevatele failidele kiirelt juurde pääseda.</translation>
 <translation id="8787254343425541995">Lubage puhverserverid jagatud võrkudes</translation>
 <translation id="8790981080411996443">Taimi kastev inimene</translation>
 <translation id="8798099450830957504">Vaikimisi</translation>

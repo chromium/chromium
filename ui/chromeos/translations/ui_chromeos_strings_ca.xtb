@@ -860,7 +860,6 @@
 <translation id="8456681095658380701">El nom no és vàlid</translation>
 <translation id="8457767749626250697">La SIM està bloquejada</translation>
 <translation id="8459404855768962328">En copiar aquest element, es compartirà amb tothom que pugui veure la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
-<translation id="8461467696380332069">Fes clic amb el botó dret sobre un fitxer i selecciona Fixa al prestatge per accedir ràpidament als fitxers d'un prestatge.</translation>
 <translation id="8461914792118322307">Servidor intermediari</translation>
 <translation id="8463494891489624050">Vietnamita (VIQR)</translation>
 <translation id="8475647382427415476">En aquest moment, Google Drive no ha pogut sincronitzar "<ph name="FILENAME" />". Ho tornarà a provar més tard.</translation>
@@ -897,7 +896,6 @@
 <translation id="8719721339511222681">S'ha seleccionat <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croat</translation>
 <translation id="8743164338060742337">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal del proveïdor <ph name="NETWORK_PROVIDER_NAME" />, gestionada per l'administrador, connecta</translation>
-<translation id="8750438273876807512">Mantén premut un fitxer i toca <ph name="ICON" />. A continuació, selecciona Fixa al prestatge per accedir ràpidament als fitxers d'un prestatge.</translation>
 <translation id="8787254343425541995">Permet servidors intermediaris per a xarxes compartides</translation>
 <translation id="8790981080411996443">Persona regant les plantes</translation>
 <translation id="8798099450830957504">Predeterminat</translation>

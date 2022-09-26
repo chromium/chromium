@@ -1394,6 +1394,7 @@
 <translation id="4744514002166662487">Презентация жасау</translation>
 <translation id="4744603770635761495">Орындалатын жол</translation>
 <translation id="4749011317274908093">Инкогнито режиміне өттіңіз</translation>
+<translation id="4750671009706599284">осы телефон</translation>
 <translation id="4750917950439032686">Бұл сайтқа жіберілетін жеке ақпаратыңыз (мысалы, құпия сөздер не несиелік карта нөмірлері) құпия сақталады.</translation>
 <translation id="4751476147751820511">Қозғалыс не жарық датчиктері</translation>
 <translation id="4754461935447132332">Қауіпсіз емес сайттар үшін рұқсат етілмеген.</translation>
@@ -2161,6 +2162,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome бұл режимде беттің оқылуын жеңілдетті. Chrome браузерінде бастапқы бет қорғалмаған байланыс арқылы алынды.</translation>
 <translation id="6890443033788248019">Локацияны пайдалануға рұқсат берілсін бе?</translation>
+<translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> пайдаланатын веб-сайттарда <ph name="DEVICE_LABEL" /> арқылы растау нұсқасын таңдадыңыз. Бұл провайдерде төлеу әдісіңіз туралы сақталған ақпарат болуы мүмкін, оны <ph name="BEGIN_LINK" />жоюды сұрауыңызға болады<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Саясат деңгейіне қолдау көрсетілмеген.</translation>
 <translation id="6895143722905299846">Виртуалдық нөмір:</translation>
 <translation id="6895330447102777224">Картаңыз расталды</translation>
@@ -2521,6 +2523,7 @@
 <translation id="7764225426217299476">Мекенжай қосу</translation>
 <translation id="7766518757692125295">Шеті</translation>
 <translation id="7773005668374414287">Бірдей ретпен беткі жағында</translation>
+<translation id="7785790577395078482">осы планшет</translation>
 <translation id="7791011319128895129">Шығарылмаған</translation>
 <translation id="7791196057686275387">Қабаттау</translation>
 <translation id="7791543448312431591">Қосу</translation>

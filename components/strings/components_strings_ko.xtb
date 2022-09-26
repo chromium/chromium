@@ -1262,6 +1262,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" />에 대한 연결이 안전하지 않음</translation>
 <translation id="4349365535725594680">기밀 콘텐츠를 공유할 수 없음</translation>
+<translation id="4349810866125026513">무시하고 업로드</translation>
 <translation id="4350629523305688469">다기능 트레이</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" />에서 주변 블루투스 기기를 검색하려고 합니다. 다음 기기가 발견되었습니다.</translation>
 <translation id="4351175281479794167">인증 코드 입력</translation>
@@ -1395,6 +1396,7 @@
 <translation id="4744514002166662487">프레젠테이션 만들기</translation>
 <translation id="4744603770635761495">실행 가능 경로</translation>
 <translation id="4749011317274908093">시크릿 모드로 전환됨</translation>
+<translation id="4750671009706599284">이 휴대전화</translation>
 <translation id="4750917950439032686">비밀번호나 신용카드 번호 등의 정보는 비공개 상태로 이 사이트에 전송됩니다.</translation>
 <translation id="4751476147751820511">모션 또는 조도 센서</translation>
 <translation id="4754461935447132332">안전하지 않은 사이트에서 허용되지 않음</translation>
@@ -1984,6 +1986,7 @@
 <translation id="6337133576188860026"><ph name="SIZE" /> 미만의 저장용량을 확보합니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
 <translation id="6337534724793800597">이름별로 정책 필터링</translation>
 <translation id="6340739886198108203">관리자 정책에 따라 기밀 콘텐츠가 화면에 표시되어 있을 때 스크린샷을 찍거나 녹화하지 않는 것이 좋습니다.</translation>
+<translation id="6341434961864773665">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 업로드하지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 업로드하지 않는 것이 좋습니다.}}</translation>
 <translation id="6348220984832452017">활성 버전</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{없음}=1{비밀번호 1개(도메인: <ph name="DOMAIN_LIST" />, 동기화됨)}=2{비밀번호 2개(도메인: <ph name="DOMAIN_LIST" />, 동기화됨)}other{비밀번호 #개(도메인: <ph name="DOMAIN_LIST" />, 동기화됨)}}</translation>
@@ -2162,6 +2165,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome에서 페이지를 읽기 쉽도록 간소화했습니다. Chrome에서 안전하지 않은 연결을 통해 원본 페이지를 가져왔습니다.</translation>
 <translation id="6890443033788248019">위치 정보 액세스 권한을 허용하시겠습니까?</translation>
+<translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" />을(를) 사용하는 웹사이트에서 <ph name="DEVICE_LABEL" />(으)로 인증하도록 선택했습니다. 제공업체에서 내 결제 수단 정보를 저장했을 가능성이 있으며 이 경우 <ph name="BEGIN_LINK" />삭제를 요청<ph name="END_LINK" />할 수 있습니다.</translation>
 <translation id="6891596781022320156">정책 수준이 지원되지 않습니다.</translation>
 <translation id="6895143722905299846">가상 번호:</translation>
 <translation id="6895330447102777224">카드가 확인되었습니다.</translation>
@@ -2521,6 +2525,7 @@
 <translation id="7764225426217299476">주소 추가</translation>
 <translation id="7766518757692125295">스커트</translation>
 <translation id="7773005668374414287">같은 순서로 인쇄면이 위를 향하게</translation>
+<translation id="7785790577395078482">이 태블릿</translation>
 <translation id="7791011319128895129">미공개</translation>
 <translation id="7791196057686275387">베일</translation>
 <translation id="7791543448312431591">추가</translation>
@@ -2615,6 +2620,7 @@
 <translation id="8075736640322370409">빠르게 새 Google 시트 만들기</translation>
 <translation id="8075898834294118863">사이트 설정 관리</translation>
 <translation id="8076492880354921740">탭</translation>
+<translation id="8078006011486731853">{0,plural, =1{기밀 파일을 업로드하시겠습니까?}other{기밀 파일을 업로드하시겠습니까?}}</translation>
 <translation id="8078141288243656252">회전 시 주석을 달 수 없습니다.</translation>
 <translation id="8079031581361219619">사이트를 새로고침하시겠습니까?</translation>
 <translation id="8081087320434522107">세단</translation>

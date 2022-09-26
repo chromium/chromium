@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Kopierer <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1190144681599273207">Hvis du henter denne fil, bruger du ca. <ph name="FILE_SIZE" /> mobildata.</translation>
+<translation id="1194390763418645112">Filadgang for <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1209796539517632982">Automatiske navneservere</translation>
 <translation id="1210831758834677569">Laotisk</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome-enheder</translation>
 <translation id="1572585716423026576">Angiv som baggrund</translation>
 <translation id="1576937952766665062">Bangla translitteration</translation>
+<translation id="1577977504532381335">Gennemgå administratorpolitikken</translation>
 <translation id="158849752021629804">Hjemmenetværk mangler</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Billedopløsning</translation>
 <translation id="1972984168337863910">Udvid paneler med feedback til filer</translation>
 <translation id="1995337122023280937">Gå til filplacering</translation>
+<translation id="1999709132469742660">Filadgang for alle webadresser</translation>
 <translation id="2001796770603320721">Administrer i Drev</translation>
 <translation id="2009067268969781306">Formatering af et drev sletter alle de data, der er gemt på det. Denne handling kan ikke fortrydes.</translation>
 <translation id="2025955442973426285">Tigrinsk</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Person med kaffe</translation>
 <translation id="2251368349685848079">Gendan fra papirkurven</translation>
 <translation id="2282155092769082568">Webadresse til automatisk konfiguration:</translation>
+<translation id="2284767815536050991">flytbart lager</translation>
 <translation id="2288278176040912387">Pladespiller</translation>
 <translation id="2291538123825441971">Åbner <ph name="NUMBER_OF_FILES" /> filer.</translation>
 <translation id="2303301624314357662">Åbner filen <ph name="FILE_NAME" />.</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">Irsk</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
 <translation id="4131235941541910880">Flyt overflødige elementer til papirkurven</translation>
+<translation id="4157569377477607576">Administratorpolitikken fraråder:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> blev flyttet.</translation>
 <translation id="4176286497474237543">Tøm papirkurven nu</translation>
 <translation id="4186579485882418952">Aktivér offlinetilstand</translation>
@@ -507,6 +512,7 @@
 <translation id="5323213332664049067">Latinamerikansk</translation>
 <translation id="5330145655348521461">Disse filer blev åbnet på en anden computer. Skift til <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) for at se dem.</translation>
 <translation id="5330512191124428349">Hent oplysninger</translation>
+<translation id="5337538975554986899">Filadgang for alle webadresser undtagen <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Person med katte</translation>
 <translation id="5358764674931277">Billedfrekvens</translation>
 <translation id="5363339716524495120">Inputsproget er kinesisk</translation>
@@ -532,6 +538,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-billede</translation>
 <translation id="5534520101572674276">Beregner størrelse</translation>
 <translation id="554153475311314364">Græsk translitteration</translation>
+<translation id="5580591966435005537">virtuel maskine</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Tegnsætningsbredden er Fuld</translation>
 <translation id="5602622065581044566">Bulgarsk med fonetisk tastatur</translation>
@@ -592,6 +599,7 @@
 <translation id="61118516107968648">CSV-tekst</translation>
 <translation id="6129953537138746214">Mellemrum</translation>
 <translation id="6133173853026656527">Flytter <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Administratoren overvåger:</translation>
 <translation id="613750717151263950">Japansk med amerikansk tastatur</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, intet netværk</translation>
 <translation id="6146563240635539929">Videoer</translation>
@@ -612,6 +620,7 @@
 <translation id="6287852322318138013">Vælg en app, der skal åbne denne fil</translation>
 <translation id="6295542640242147836">Lås SIM-kort</translation>
 <translation id="6296410173147755564">PUK-koden er ugyldig</translation>
+<translation id="6308243004861726558">Denne fil er fortrolig og underlagt administratorpolitikken. Følgende filadgangs- og overførselshandlinger er gældende.</translation>
 <translation id="6312403991423642364">Ukendt netværksfejl</translation>
 <translation id="6317608858038767920">Tilpasset navneserver <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arkiv</translation>
@@ -842,6 +851,7 @@
 <translation id="8255595130163158297">Alle elementer i papirkurven slettes, og du kan ikke gendanne dem.</translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8261561378965667560">Kinesisk array</translation>
+<translation id="8262872909443689080">Administratorpolitik</translation>
 <translation id="8264024885325823677">Denne indstilling administreres af din administrator.</translation>
 <translation id="8269755669432358899">Skjul paneler med feedback til filer</translation>
 <translation id="8280151743281770066">Armensk (fonetisk)</translation>
@@ -868,7 +878,6 @@
 <translation id="8456681095658380701">Ugyldigt navn</translation>
 <translation id="8457767749626250697">Dit SIM-kort er låst</translation>
 <translation id="8459404855768962328">Hvis du kopierer dette element, deles det med alle, der kan se den delte mappe "<ph name="DESTINATION_NAME" />".</translation>
-<translation id="8461467696380332069">Højreklik på en fil, og vælg "Fastgør til hylde" for at få hurtig adgang til dine filer på hylden.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamesisk VIQR</translation>
 <translation id="8475647382427415476">Google Drev kunne ikke synkronisere "<ph name="FILENAME" />" på nuværende tidspunkt. Google Drev prøver igen senere.</translation>
@@ -905,7 +914,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> er valgt.</translation>
 <translation id="872537912056138402">Kroatisk</translation>
 <translation id="8743164338060742337">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, opret forbindelse</translation>
-<translation id="8750438273876807512">Tryk på en fil, hold fingeren nede, tryk på <ph name="ICON" />, og vælg "Fastgør til hylde" for at få hurtig adgang til dine filer på hylden.</translation>
 <translation id="8787254343425541995">Tillad proxyer til delte netværk</translation>
 <translation id="8790981080411996443">Person, der vander blomster</translation>
 <translation id="8798099450830957504">Standard</translation>
@@ -940,6 +948,7 @@
 <translation id="9100610230175265781">Adgangssætning kræves</translation>
 <translation id="9110990317705400362">Vi leder hele tiden efter nye metoder til at gøre din browsing mere sikker. Før kunne ethvert website anmode dig om at tilføje en udvidelse i din browser. I de nyeste versioner af Google Chrome skal du udtrykkeligt give Chrome besked om, at du vil installere udvidelser, ved at tilføje dem via siden Udvidelser. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Lås op</translation>
+<translation id="9116909380156770361">Filoverførsel til <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">Medlemmer af "<ph name="DESTINATION_NAME" />" får adgang til disse elementer.</translation>
 <translation id="9131598836763251128">Vælg en eller flere filer</translation>
@@ -961,6 +970,7 @@
 <translation id="943972244133411984">Ændret af</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="947144732524271678">Valgte et interval med <ph name="ENTRY_COUNT" /> elementer fra <ph name="FROM_ENTRY_NAME" /> til <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Administratorpolitikken forhindrer:</translation>
 <translation id="965477715979482472">Engelsk (Sydafrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Der findes allerede en fil med navnet "<ph name="FILE_NAME" />". Vil du erstatte den?</translation>

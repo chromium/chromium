@@ -1620,6 +1620,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2468178265280335214">Zrychlení posouvání touchpadem</translation>
 <translation id="2468205691404969808">Používá soubory cookie k uložení vašeho nastavení i v případě, že stránky nenavštívíte</translation>
 <translation id="2468402215065996499">Tamagoči</translation>
+<translation id="2468470085922875120">Používáte hesla, která není snadné uhodnout</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 karta}few{<ph name="GROUP_TITLE" /> – # karty}many{<ph name="GROUP_TITLE" /> – # karty}other{<ph name="GROUP_TITLE" /> – # karet}}</translation>
 <translation id="2469141124738294431">Stav virtuálního počítače</translation>
 <translation id="2469259292033957819">Nemáte žádné uložené tiskárny.</translation>
@@ -1958,6 +1959,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2783321960289401138">Vytvořit zástupce...</translation>
 <translation id="2783829359200813069">Vyberte typy šifrování</translation>
 <translation id="2783952358106015700">Použijte pro aplikaci <ph name="APP_NAME" /> svůj bezpečnostní klíč</translation>
+<translation id="2785267875302712148">Kontrola hesel</translation>
 <translation id="2785873697295365461">Deskriptory souborů</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Zachovat místní údaje o prohlížení (záložky, hesla, historii apod.)</translation>
@@ -2033,6 +2035,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2844169650293029770">Zařízení USB Type-C (levý přední port)</translation>
 <translation id="2844809857160214557">Zobrazení a správa tiskových úloh</translation>
 <translation id="2845382757467349449">&amp;Vždy zobrazovat lištu záložek</translation>
+<translation id="284581348330507117">Vytvářejte unikátní hesla</translation>
 <translation id="284805635805850872">Odstranit škodlivý software?</translation>
 <translation id="2849035674501872372">Podívat se nahoru</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2184,6 +2187,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2985348301114641460">Požádat administrátora o instalaci rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2987620471460279764">Text sdílený z jiného zařízení</translation>
 <translation id="2988018669686457659">Rezervní vykreslovací proces</translation>
+<translation id="2988328607561082373">Nemáte žádná opakovaně použitá hesla</translation>
 <translation id="2989123969927553766">Zrychlení posouvání myší</translation>
 <translation id="2989474696604907455">nepřipojeno</translation>
 <translation id="2989786307324390836">Binární soubor kódovaný DER, jeden certifikát</translation>
@@ -2212,6 +2216,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3009178788565917040">Výstup</translation>
 <translation id="3009300415590184725">Opravdu chcete zrušit proces nastavení služby mobilních dat?</translation>
 <translation id="3009779501245596802">Indexované databáze</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Vaše hesla jsou silná}=1{{COUNT} slabé heslo}few{{COUNT} slabá hesla}many{{COUNT} slabého hesla}other{{COUNT} slabých hesel}}</translation>
 <translation id="3010279545267083280">Heslo bylo smazáno</translation>
 <translation id="3010389206479238935">Nuceně otevřít v</translation>
 <translation id="3011384993885886186">Teple šedá</translation>
@@ -4417,6 +4422,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5153234146675181447">Zapomenout telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Rozšířené nastavení tiskárny <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Nemáte žádná uložená hesla.}=1{Byla zkontrolována hesla pro {COUNT} web}few{Byla zkontrolována hesla pro {COUNT} weby nebo aplikace}many{Byla zkontrolována hesla pro {COUNT} webu nebo aplikace}other{Byla zkontrolována hesla pro {COUNT} webů nebo aplikací}}</translation>
 <translation id="5154702632169343078">Předmět</translation>
 <translation id="5155327081870541046">Do adresního řádku zadejte zkratku pro web, na kterém chcete vyhledávat, například „@bookmarks“. Potom stiskněte požadovanou klávesovou zkratku a zadejte vyhledávací dotaz.</translation>
 <translation id="5156638757840305347">Když se kurzor zobrazí nebo pohne, zvýrazní se</translation>
@@ -4997,6 +5003,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5713158217420111469">Připojeno k síti <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Styl zadávání mezer</translation>
 <translation id="5715711091495208045">Zprostředkovatel pluginu: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Měli byste je hned změnit</translation>
 <translation id="5719603411793408026">Výchozí vyhledávače</translation>
 <translation id="5719854774000914513">Weby mohou žádat o připojení k zařízením HID</translation>
 <translation id="572155275267014074">Nastavení zařízení Android</translation>
@@ -6458,6 +6465,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7098447629416471489">Zde se zobrazí ostatní uložené vyhledávače</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Odstranit aplikaci}few{Odstranit aplikace}many{Odstranit aplikace}other{Odstranit aplikace}}</translation>
 <translation id="7099337801055912064">Soubor PPD nelze načíst, protože je příliš velký. Maximální povolená velikost je 250 kB.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Nebyla nalezena žádná prolomená hesla}=1{Bylo nalezeno {COUNT} prolomené heslo}few{Byla nalezena {COUNT} prolomená hesla}many{Bylo nalezeno {COUNT} prolomeného hesla}other{Bylo nalezeno {COUNT} prolomených hesel}}</translation>
 <translation id="7102687220333134671">Automatické aktualizace jsou zapnuté</translation>
 <translation id="7102832101143475489">Časový limit požadavku vypršel</translation>
 <translation id="710640343305609397">Otevřít nastavení sítě</translation>
@@ -7402,6 +7410,7 @@ Soubor klíče: <ph name="KEY_FILE" />
 Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat při vytváření nových verzí svého rozšíření.</translation>
 <translation id="8002274832045662704">Rozšířená konfigurace tiskárny</translation>
 <translation id="8002670234429879764">Tiskárna <ph name="PRINTER_NAME" /> už není dostupná</translation>
+<translation id="8004092996156083991">Pokud dojde k prolomení hesel, dáme vám vědět</translation>
 <translation id="8004582292198964060">Prohlížeč</translation>
 <translation id="8005600846065423578">Webu <ph name="HOST" /> čtení obsahu schránky vždy povolit</translation>
 <translation id="8006630792898017994">Mezerník nebo tabulátor</translation>
@@ -7901,6 +7910,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8470513973197838199">Uložená hesla z webu <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Weby se obvykle připojují k zařízením USB kvůli funkcím, jako je tisk dokumentu nebo uložení obsahu na paměťové zařízení</translation>
 <translation id="8471959340398751476">Slevy jsou vypnuté. Můžete je zapnout v nabídce přizpůsobení</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Vaše hesla jsou unikátní}=1{{COUNT} opakovaně použité heslo}few{{COUNT} opakovaně použitá hesla}many{{COUNT} opakovaně použitého hesla}other{{COUNT} opakovaně použitých hesel}}</translation>
 <translation id="8472623782143987204">hardwarová</translation>
 <translation id="8473863474539038330">Adresy a další</translation>
 <translation id="8475313423285172237">Jiný program ve vašem počítači nainstaloval rozšíření, které může měnit funkce Chromu.</translation>
@@ -8382,6 +8392,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8940081510938872932">Počítač teď vykonává příliš mnoho úloh. Zkuste to znovu později.</translation>
 <translation id="8940381019874223173">Z vašich Fotek Google</translation>
 <translation id="8941173171815156065">Odebrat oprávnění <ph name="PERMISSION" /></translation>
+<translation id="894191600409472540">Vytvářejte silná hesla</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Bude rychleji vybíjet baterii (aktuálně <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8945274638472141382">Velikost ikon</translation>
@@ -8605,6 +8616,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9140067245205650184">Používáte nepodporovaný příznak funkce: <ph name="BAD_FLAG" />. Bude to mít negativní vliv na stabilitu a zabezpečení.</translation>
 <translation id="9142637293078737510">Alias obrazu</translation>
 <translation id="9143298529634201539">Odstranit návrh?</translation>
+<translation id="9143922477019434797">Chraňte svá hesla</translation>
 <translation id="9147392381910171771">&amp;Možnosti</translation>
 <translation id="9148058034647219655">Ukončit</translation>
 <translation id="9148126808321036104">Znovu přihlásit</translation>

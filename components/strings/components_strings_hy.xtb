@@ -1262,6 +1262,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Միացումը <ph name="SITE" /> կայքին պաշտպանված չէ</translation>
 <translation id="4349365535725594680">Հնարավոր չէ կիսվել կոնֆիդենցիալ բովանդակությամբ</translation>
+<translation id="4349810866125026513">Վերբեռնել</translation>
 <translation id="4350629523305688469">Բազմաֆունկցիոնալ դարակ</translation>
 <translation id="4351060348582610152">Թույլ տվեք <ph name="ORIGIN" /> կայքին որոնել մոտակա Bluetooth սարքեր: Գտնվել են հետևյալ սարքերը՝</translation>
 <translation id="4351175281479794167">Մուտքագրեք հաստատման կոդը</translation>
@@ -1986,6 +1987,7 @@
 <translation id="6337133576188860026">Կազատվի մինչև <ph name="SIZE" /> տարածք։ Դրանից հետո որոշ կայքեր հնարավոր է՝ ավելի դանդաղ բեռնվեն։</translation>
 <translation id="6337534724793800597">Զտել կանոններն ըստ անվան</translation>
 <translation id="6340739886198108203">Ադմինիստրատորը խորհուրդ չի տալիս սքրինշոթներ կամ տեսագրություններ անել, երբ էկրանին կոնֆիդենցիալ բովանդակություն է երևում։</translation>
+<translation id="6341434961864773665">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը վերբեռնել <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը վերբեռնել <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը վերբեռնել <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Ընթացիկ տարբերակներ</translation>
 <translation id="6349101878882523185">Տեղադրել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Չկա}=1{1 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված է)}=2{2 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված են)}one{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված են)}other{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված են)}}</translation>
@@ -2620,6 +2622,7 @@
 <translation id="8075736640322370409">Արագ ստեղծել Google աղյուսակ</translation>
 <translation id="8075898834294118863">Կառավարել կայքի կարգավորումները</translation>
 <translation id="8076492880354921740">Ներդիրներ</translation>
+<translation id="8078006011486731853">{0,plural, =1{Վերբեռնե՞լ կոնֆիդենցիալ ֆայլը}one{Վերբեռնե՞լ կոնֆիդենցիալ ֆայլը}other{Վերբեռնե՞լ կոնֆիդենցիալ ֆայլերը}}</translation>
 <translation id="8078141288243656252">Հնարավոր չէ ծանոթագրություն ավելացնել, երբ փաստաթուղթը պտտված է</translation>
 <translation id="8079031581361219619">Վերաբեռնե՞լ կայքը</translation>
 <translation id="8081087320434522107">Սեդաններ</translation>

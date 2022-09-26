@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> ကူးယူနေ...</translation>
 <translation id="1178581264944972037">ဆိုင်းငံ့ထားရန်</translation>
 <translation id="1190144681599273207">ဒီဖိုင်ကို ရယူခြင်းက မိုဘိုင်း ဒေတာ၏ <ph name="FILE_SIZE" />ခန့်ကို အသုံးပြုမည်။</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> က ဖိုင်အသုံးပြုနိုင်သည်</translation>
 <translation id="1201402288615127009">ရှေ့သို့</translation>
 <translation id="1209796539517632982">အလိုအလျောက် အမည် ဆာဗာများ</translation>
 <translation id="1210831758834677569">လာအို</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome စက်ပစ္စည်းများ</translation>
 <translation id="1572585716423026576">နောက်ခံအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="1576937952766665062">ဘင်္ဂါလီ အက္ခရာဖလှယ်ခြင်း</translation>
+<translation id="1577977504532381335">စီမံခန့်ခွဲသူ မူဝါဒကို ပြန်ကြည့်ခြင်း</translation>
 <translation id="158849752021629804">ပင်မ ကွန်ရက် လိုအပ်</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">ပုံကြည်လင်ပြတ်သားမှု</translation>
 <translation id="1972984168337863910">ဖိုင်တုံ့ပြန်မှု အကန့်များ ချဲ့ပြရန်</translation>
 <translation id="1995337122023280937">ဖိုင်တည်နေရာသို့ သွားရန်</translation>
+<translation id="1999709132469742660">url အားလုံးက ဖိုင်အသုံးပြုနိုင်သည်</translation>
 <translation id="2001796770603320721">Drive တွင် စီမံပါ</translation>
 <translation id="2009067268969781306">ဒရိုက်ဗ်တစ်ခုကို ဖော်မက်ချခြင်းသည် ၎င်းပေါ်ရှိ ဒေတာများအားလုံးကို ဖျက်လိုက်ပါမည်။ ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။</translation>
 <translation id="2025955442973426285">တီဂရင်းညာ</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">ကော်ဖီသောက်နေသူ</translation>
 <translation id="2251368349685848079">အမှိုက်ပုံးမှ ပြန်ယူရန်</translation>
 <translation id="2282155092769082568">အလိုအလျောက် စီစဉ်သတ်မှတ်ခြင်း URL −</translation>
+<translation id="2284767815536050991">ဖယ်ရှားနိုင်သည့် သိုလှောင်ခန်း</translation>
 <translation id="2288278176040912387">ကစားသူ မှတ်တမ်းတင်</translation>
 <translation id="2291538123825441971">ဖိုင် <ph name="NUMBER_OF_FILES" /> ခု ဖွင့်နေသည်။</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" />ဖိုင် ကို ဖွင့်နေသည်။</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">အိုင်းရစ်ရှ်</translation>
 <translation id="4124935795427217608">သိင်္ဂဿမြင်း</translation>
 <translation id="4131235941541910880">မလိုသောဖိုင်များကို အမှိုက်ပုံးသို့ ရွှေ့ပါ</translation>
+<translation id="4157569377477607576">စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ-</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ကို ရွှေ့ထားသည်။</translation>
 <translation id="4176286497474237543">အမှိုက်ပုံးကို ယခုရှင်းရန်</translation>
 <translation id="4186579485882418952">အော့ဖ်လိုင်းသုံးရန်</translation>
@@ -506,6 +511,7 @@
 <translation id="5323213332664049067">လက်တင် အမေရိက</translation>
 <translation id="5330145655348521461">ဤဖိုင်များကို အခြား ဒက်စ်တော့မှာ ဖွင့်ထားသည်။  ၎င်းကို ကြည့်ရန် <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)သို့ သွားပါ။</translation>
 <translation id="5330512191124428349">အချက်အလက်ရယူရန်</translation>
+<translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> မှအပ url အားလုံးက ဖိုင်အသုံးပြုနိုင်သည်</translation>
 <translation id="535792325654997756">ကြောင်များနှင့်လူ</translation>
 <translation id="5358764674931277">ဖရိမ်ပြနှုန်း</translation>
 <translation id="5363339716524495120">လက်ကွက်ဘာသာစကားသည် Chinese ဖြစ်သည်</translation>
@@ -531,6 +537,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ပုံ</translation>
 <translation id="5534520101572674276">ဆိုက</translation>
 <translation id="554153475311314364">ဂရိ အက္ခရာဖလှယ်ခြင်း</translation>
+<translation id="5580591966435005537">ပကတိအသွင်စက်</translation>
 <translation id="5583640892426849032">နောက်ပြန်</translation>
 <translation id="5583664733673201137">ပုဒ်ဖြတ်ပုဒ်ရပ်အကျယ် ပြည့်သွားပြီ</translation>
 <translation id="5602622065581044566">အသံထွက်ကီးဘုတ်ဖြင့် ဘူလ်ဂေးရီးယား</translation>
@@ -591,6 +598,7 @@
 <translation id="61118516107968648">CSV စာသား</translation>
 <translation id="6129953537138746214">နေရာခြား</translation>
 <translation id="6133173853026656527">ရွှေ့နေ <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">စီမံခန့်ခွဲသူ စောင့်ကြည့်မှုများ-</translation>
 <translation id="613750717151263950">ယူအက်စ်ကီးဘုတ်ဖြင့် ဂျပန်</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />၊ ကွန်ရက်မရှိပါ</translation>
 <translation id="6146563240635539929">ဗီယီယိုများ</translation>
@@ -611,6 +619,7 @@
 <translation id="6287852322318138013">ဒီဖိုင်ကို ဖွင့်ရန် အက်ပ် တစ်ခုကို ရွေးပါ</translation>
 <translation id="6295542640242147836">ဆင်းမ်လော့ခ်ချရန်</translation>
 <translation id="6296410173147755564">PUK မမှန်ပါ</translation>
+<translation id="6308243004861726558">ဤဖိုင်ကလျှို့ဝှက်ဖြစ်ပြီး စီမံခန့်ခွဲသူ မူဝါဒနှင့်အညီ ဖြစ်သည်။ အောက်ပါ ဖိုင်အသုံးပြုခွင့်နှင့် လွှဲပြောင်းမှု လုပ်ဆောင်ချက်များ ရှိသည်။</translation>
 <translation id="6312403991423642364">ကွန်ရက်အမှားအကြောင်း မသိပါ</translation>
 <translation id="6317608858038767920">စိတ်ကြိုက် အမည်ဆာဗာ <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> မှတ်တမ်း</translation>
@@ -841,6 +850,7 @@
 <translation id="8255595130163158297">အမှိုက်ပုံးထဲရှိ ဖိုင်အားလုံးကို ဖျက်လိုက်မည်ဖြစ်ပြီး ၎င်းတို့ကို ပြန်ယူ၍မရပါ။</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8261561378965667560">တရုတ်လက်ကွက် အခင်းအကျင်း</translation>
+<translation id="8262872909443689080">စီမံခန့်ခွဲသူ မူဝါဒ</translation>
 <translation id="8264024885325823677">ဤဆက်တင်ကို သင့် 'ကြီးကြပ်သူ' က စီမံသည်။</translation>
 <translation id="8269755669432358899">ဖိုင်တုံ့ပြန်မှု အကန့်များ လျှော့ပြရန်</translation>
 <translation id="8280151743281770066">အာမန်းနီးယမ်း အသံထွက်</translation>
@@ -867,7 +877,6 @@
 <translation id="8456681095658380701">အမည် မမှန်</translation>
 <translation id="8457767749626250697">သင့်ဆင်းမ်ကို လော့ခ်ချထားသည်</translation>
 <translation id="8459404855768962328">ဤဖိုင်ကို မိတ္တူကူးသောအခါ မျှဝေထားသောဖိုင်တွဲ ‘<ph name="DESTINATION_NAME" />’ ကို ကြည့်ခွင့်ရသူတိုင်းနှင့် မျှဝေပါမည်။</translation>
-<translation id="8461467696380332069">ဖိုင်ကို ညာဘက်ခလုတ်နှိပ်ပြီး စင်ပေါ်ရှိ သင့်ဖိုင်များကို အမြန်သုံးခွင့်အတွက် "စင်တွင်ပင်ထိုးရန်" ကို ရွေးပါ။</translation>
 <translation id="8461914792118322307">ပရောက်စီ</translation>
 <translation id="8463494891489624050">ဗီယက်နမ် VIQR</translation>
 <translation id="8475647382427415476">Google Drive က "<ph name="FILENAME" />" ကို ယခုချက်ချင်း စင့်က် မလုပ်နိုင်ခဲ့ပါ။ Google Drive သည် နောက်မှာ ထပ်စမ်းကြည့်မည်။</translation>
@@ -904,7 +913,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ကို ရွေးချယ်ထားသည်။</translation>
 <translation id="872537912056138402">ခရိုအေးရှန်း</translation>
 <translation id="8743164338060742337">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" /> လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ ချိတ်ဆက်ရန်</translation>
-<translation id="8750438273876807512">ဖိုင်တစ်ဖိုင်ကို တို့ထိ၍ဖိထားပြီး <ph name="ICON" /> ကို တို့ပါ၊ ထို့နောက် စင်ပေါ်ရှိ သင့်ဖိုင်များကို အမြန်သုံးခွင့်အတွက် "စင်တွင်ပင်ထိုးရန်" ကို ရွေးပါ။</translation>
 <translation id="8787254343425541995">မျှဝေထားသော ကွန်ယက်များအတွက် ပရောက်စီများကို ခွင့်ပြုမည်</translation>
 <translation id="8790981080411996443">အပင်ရေလောင်းနေသူ</translation>
 <translation id="8798099450830957504">ပုံသေ</translation>
@@ -939,6 +947,7 @@
 <translation id="9100610230175265781">စကားဝှက် လိုအပ်</translation>
 <translation id="9110990317705400362">သင်၏ ဘရောင်ဇာ သုံးမှု ပိုလုံခြုုံလာရေး နည်းလမ်းများကို ကျွန်ုပ်တို့ တချိန်လုံး ရှာကြံနေကြပါသည်။ အရင်တုန်းက၊ ဘယ် ဝက်ဘ်ဆိုက်မဆို သင်၏ ဘရောက်ဇာ ထဲသို့ တိုးချဲ့မှု တစ်ခုခိုကို ထည့်ပေးရန် တိုက်တွန်းခဲ့ပါမည်။ Google Chrome ၏ နောက်ဆုံး ဗားရှင်း ထဲမှာ၊ သင်သည် တိုးချဲ့မှု စာမျက်နှာ ထဲကို ထည့်ပေးခြင်း မှတစ်ဆင့် ထိုတိုးချဲ့မှုများကို ထည့်သွင်းလိုကြောင်း သင်သည် အတိအလင်း ပြောရန် လိုပါသည်။ <ph name="BEGIN_LINK" />ပိုမို လေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">သော့ဖွင့်ရန်</translation>
+<translation id="9116909380156770361"><ph name="RESTRICTED_COMPONENTS" /> သို့ ဖိုင်လွှဲပြောင်းသည်</translation>
 <translation id="912419004897138677">ကိုးဒက်ခ်</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' ၏ အဖွဲ့ဝင်များသည် ဤအရာများကို အသုံးပြုခွင့်ရရှိမည်ဖြစ်သည်။</translation>
 <translation id="9131598836763251128">ဖိုင်များကို တစ်ခု သို့မဟုတ် ပိုများပြီး ရွေးရန်</translation>
@@ -960,6 +969,7 @@
 <translation id="943972244133411984">ပြုပြင်ထားသူ</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> မှ<ph name="TO_ENTRY_NAME" /> သို့ ထည့်သွင်းမှု အပိုင်းအခြား <ph name="ENTRY_COUNT" /> ခု ကို ရွေးထားသည်။</translation>
+<translation id="954194396377670556">စီမံခန့်ခွဲသူ မူဝါဒက တားဆီးမှုများ-</translation>
 <translation id="965477715979482472">အင်္ဂလိပ် (တောင်အာဖရိက)</translation>
 <translation id="981121421437150478">အော့ဖ်လိုင်း</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" အမည်ဖြင့် ဖိုင်ရှိပြီးဖြစ်ပါသည်။ ၎င်းကို အစားထိုးလိုပါသလား။</translation>

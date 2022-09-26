@@ -860,7 +860,6 @@
 <translation id="8456681095658380701">Ce nom n'est pas valide.</translation>
 <translation id="8457767749626250697">Votre carte SIM est verrouillée</translation>
 <translation id="8459404855768962328">En copiant cet élément, vous le partagerez avec toute personne pouvant voir le dossier partagé "<ph name="DESTINATION_NAME" />".</translation>
-<translation id="8461467696380332069">Effectuez un clic droit sur un fichier, puis sélectionnez "Épingler sur l'étagère" pour y accéder ensuite plus rapidement.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamien (VIQR)</translation>
 <translation id="8475647382427415476">Impossible de synchroniser "<ph name="FILENAME" />" sur Google Drive pour le moment. Une nouvelle tentative aura lieu plus tard.</translation>
@@ -897,7 +896,6 @@
 <translation id="8719721339511222681">Élément <ph name="ENTRY_NAME" /> sélectionné.</translation>
 <translation id="872537912056138402">Croate</translation>
 <translation id="8743164338060742337">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, connexion</translation>
-<translation id="8750438273876807512">Appuyez de manière prolongée sur un fichier, puis appuyez sur l'icône <ph name="ICON" />. Sélectionnez "Épingler sur l'étagère" pour accéder ensuite plus rapidement à ce fichier.</translation>
 <translation id="8787254343425541995">Autoriser les proxys pour les réseaux partagés</translation>
 <translation id="8790981080411996443">Personne arrosant des plantes</translation>
 <translation id="8798099450830957504">Par défaut</translation>

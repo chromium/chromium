@@ -878,7 +878,6 @@
 <translation id="8456681095658380701">Nevažeće ime</translation>
 <translation id="8457767749626250697">SIM je zaključan</translation>
 <translation id="8459404855768962328">Ako kopirate ovu stavku, dijelit će se sa svakim ko može vidjeti dijeljeni folder "<ph name="DESTINATION_NAME" />".</translation>
-<translation id="8461467696380332069">Desnim tasterom kliknite na fajl i odaberite "Zakači na policu" da brzo pristupite fajlovima na polici.</translation>
 <translation id="8461914792118322307">Proksi server</translation>
 <translation id="8463494891489624050">vijetnamski VIQR</translation>
 <translation id="8475647382427415476">Google Disk trenutno ne može sinhronizirati fajl "<ph name="FILENAME" />". Google Disk će pokušati ponovo kasnije.</translation>
@@ -915,7 +914,6 @@
 <translation id="8719721339511222681">Odabran je unos <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">hrvatska</translation>
 <translation id="8743164338060742337">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja vaš administrator, poveži</translation>
-<translation id="8750438273876807512">Dodirnite i zadržite fajl i dodirnite <ph name="ICON" />, a nakon toga odaberite "Zakači na policu" da brzo pristupite fajlovima na polici.</translation>
 <translation id="8787254343425541995">Dozvoli proksi servere za dijeljene mreže</translation>
 <translation id="8790981080411996443">Osoba zaljeva biljke</translation>
 <translation id="8798099450830957504">Zadano</translation>

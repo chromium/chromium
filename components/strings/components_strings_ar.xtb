@@ -1264,6 +1264,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">الاتصال بالموقع الإلكتروني <ph name="SITE" /> غير آمن</translation>
 <translation id="4349365535725594680">مشاركة المحتوى السرّي غير مسموح بها</translation>
+<translation id="4349810866125026513">التحميل على أي حال</translation>
 <translation id="4350629523305688469">دُرج متعدد الوظائف</translation>
 <translation id="4351060348582610152">يريد <ph name="ORIGIN" /> البحث عن أجهزة البلوتوث المجاورة. وتم العثور على الأجهزة التالية:</translation>
 <translation id="4351175281479794167">إدخال رمز التحقق</translation>
@@ -1987,6 +1988,7 @@
 <translation id="6337133576188860026">إخلاء أقل من <ph name="SIZE" />. وقد يتم تحميل بعض المواقع الإلكترونية بشكل أبطأ عند زيارتها في المرة القادمة.</translation>
 <translation id="6337534724793800597">تصفية السياسات بحسب الاسم</translation>
 <translation id="6340739886198108203">حسب سياسة المشرف، لا يُنصح بأخذ لقطات شاشة أو تسجيل فيديوهات لمحتوى سرّي معروض على الشاشة:</translation>
+<translation id="6341434961864773665">{0,plural, =1{لا تنصح سياسة المشرف بتحميل هذا الملف إلى <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بتحميل هذين الملفَين إلى <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="6348220984832452017">الأنماط المتنوّعة المفعَّلة</translation>
 <translation id="6349101878882523185">تثبيت <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ما من كلمات مرور}=1{كلمة مرور واحدة (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}=2{كلمتا مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}few{# كلمات مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}many{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}other{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}}</translation>
@@ -2619,6 +2621,7 @@
 <translation id="8075736640322370409">‏إنشاء "جدول بيانات Google" جديد بسرعة</translation>
 <translation id="8075898834294118863">إدارة إعدادات المواقع الإلكترونية</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>
+<translation id="8078006011486731853">{0,plural, =1{هل تريد تحميل الملف السرّي؟}zero{هل تريد تحميل الملفات السرّية؟}two{هل تريد تحميل الملفَين السرّيَين؟}few{هل تريد تحميل الملفات السرّية؟}many{هل تريد تحميل الملفات السرّية؟}other{هل تريد تحميل الملفات السرّية؟}}</translation>
 <translation id="8078141288243656252">لا يمكن إضافة تعليق توضيحي عند تدوير المستند</translation>
 <translation id="8079031581361219619">هل تريد تحديث الموقع؟</translation>
 <translation id="8081087320434522107">سيارات سيدان</translation>

@@ -225,6 +225,7 @@
 <translation id="2227179592712503583">Уклони предлог</translation>
 <translation id="225680501294068881">Скенирање уређаја...</translation>
 <translation id="2257486738914982088">Дошло је до проблема при преузимању фајла <ph name="FILENAME" /></translation>
+<translation id="2258734398699965611">Предложени фајлови</translation>
 <translation id="2268130516524549846">Bluetooth је онемогућен</translation>
 <translation id="2268813581635650749">Одјави све</translation>
 <translation id="2269016722240250274">Апликација користи микрофон</translation>
@@ -901,6 +902,7 @@
 <translation id="6099678161144790572">Измењено протеклог месеца</translation>
 <translation id="6103838137565245112">систем</translation>
 <translation id="6114505516289286752">Преузети су фајлови са говором на језику <ph name="LANGUAGE" /></translation>
+<translation id="6116825164611323644">Приступ камери је искључен на овом уређају</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Потврдите преузимање фајла <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google помоћник није доступан у сесији госта.</translation>
@@ -1350,6 +1352,7 @@
 <translation id="8734991477317290293">Можда покушава да украде вашу комбинацију тастера</translation>
 <translation id="8735678380411481005">Боја позадинског осветљења тастатуре</translation>
 <translation id="8735953464173050365">Прегледајте подешавања тастатуре. Изабрана је <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8752416742247198423">Укључите приступ камери да бисте дозволили апликацијама и веб-страницама са дозволом за камеру да користе камере повезане са овим уређајем.</translation>
 <translation id="8755498163081687682">Верификујте идентитет: <ph name="ORIGIN_NAME" /> жели да потврди да сте то ви</translation>
 <translation id="875593634123171288">Прегледајте подешавања VPN-а</translation>
 <translation id="8759408218731716181">Није могуће подесити вишеструко пријављивање</translation>
@@ -1364,6 +1367,7 @@
 <translation id="8819728065740986820">Адаптивно пуњење је укључено</translation>
 <translation id="8825863694328519386">Превуците са леве стране да бисте се вратили</translation>
 <translation id="8834539327799336565">Тренутно повезани</translation>
+<translation id="8834657930627018205">Укључи приступ камери.</translation>
 <translation id="8841375032071747811">Дугме Назад</translation>
 <translation id="8843682306134542540">Укључите/искључите закључавање ротације. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

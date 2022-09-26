@@ -878,7 +878,6 @@
 <translation id="8456681095658380701">ชื่อไม่ถูกต้อง</translation>
 <translation id="8457767749626250697">ซิมล็อกอยู่</translation>
 <translation id="8459404855768962328">การคัดลอกรายการนี้จะเป็นการแชร์กับทุกคนที่ดูโฟลเดอร์ที่แชร์ "<ph name="DESTINATION_NAME" />" ได้</translation>
-<translation id="8461467696380332069">คลิกขวาที่ไฟล์แล้วเลือก "ปักหมุดที่ชั้นวาง" เพื่อให้เข้าถึงไฟล์ในชั้นวางได้อย่างรวดเร็ว</translation>
 <translation id="8461914792118322307">พร็อกซี</translation>
 <translation id="8463494891489624050">เวียดนาม (VIQR)</translation>
 <translation id="8475647382427415476">Google ไดรฟ์ไม่สามารถซิงค์ "<ph name="FILENAME" />" ได้ตอนนี้ Google ไดรฟ์จะลองใหม่ภายหลัง</translation>
@@ -915,7 +914,6 @@
 <translation id="8719721339511222681">เลือก <ph name="ENTRY_NAME" /> ไว้</translation>
 <translation id="872537912056138402">โครเอเชีย</translation>
 <translation id="8743164338060742337">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, จัดการโดยผู้ดูแลระบบ, เชื่อมต่อ</translation>
-<translation id="8750438273876807512">แตะไฟล์ค้างไว้แล้วแตะ <ph name="ICON" /> จากนั้นเลือก "ปักหมุดที่ชั้นวาง" เพื่อให้เข้าถึงไฟล์ในชั้นวางได้อย่างรวดเร็ว</translation>
 <translation id="8787254343425541995">อนุญาตให้ใช้พร็อกซีสำหรับเครือข่ายที่แชร์ไว้</translation>
 <translation id="8790981080411996443">คนกำลังรดน้ำต้นไม้</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>

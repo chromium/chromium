@@ -142,6 +142,11 @@
      Perakende modunda oturum açma ekranında ekran koruyucunun devreye girmesi için geçecek süreyi belirler.
 
       Politika değeri mili saniye olarak belirtilmelidir.</translation>
+<translation id="1143257335984030879">Bu politika, alışveriş listesi özelliğinin kullanılabilirliğini kontrol eder.
+      Etkinleştirilirse kullanıcılara mevcut sayfada gösterilen ürünün fiyatını takip edebilecekleri bir kullanıcı arayüzü sunulur. Takip edilen ürün, yer işaretleri yan panelinde gösterilir.
+      Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar alışveriş listesi özelliğini kullanabilirler.
+      Bu politika, Devre Dışı değerine ayarlanırsa alışveriş listesi özelliği kullanılamaz.
+      </translation>
 <translation id="1144540226829648811">Bu cihazın kilitlenmesi gereken yayın kanalını belirtir.
 
       <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> politikasının etkili olabilmesi için <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> politikasının Yanlış değerine ayarlanması şarttır.</translation>
@@ -440,6 +445,11 @@
       Uzantı yazıcıları ayrıca yazdırma sağlayıcı hedefleri olarak da bilinir ve <ph name="PRODUCT_NAME" /> uzantısına ait olan herhangi bir hedefi içerir.
 
       Yerel yazıcılar ayrıca yerel yazdırma hedefleri olarak da bilinir ve yerel makineler ile paylaşılan ağ yazıcılarının kullanabildiği hedefleri içerir.</translation>
+<translation id="1456449214426764016">Standart olmayan API window.webkitStorageInfo desteği sonlandırıldı ve kaldırılması planlanıyor.
+      Bu politika, API'yi yeniden etkinleştirir.
+      Bu politika, Etkin değerine ayarlanırsa window.webkitStorageInfo API'si kullanılabilir.
+      Bu politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa window.webkitStorageInfo API'si kullanılamaz.
+      </translation>
 <translation id="1456822151187621582">Windows (<ph name="PRODUCT_OS_NAME" /> istemcileri):</translation>
 <translation id="1464848559468748897"><ph name="PRODUCT_OS_NAME" /> cihazlarda çoklu profil içeren oturumdaki kullanıcı davranışını denetle.
 
@@ -3199,6 +3209,7 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
       Ayrıntılı bilgi için https://developer.chrome.com/blog/immutable-document-domain/
       sayfasını inceleyin.
       </translation>
+<translation id="416817811987180750">Alışveriş listesi özelliği kullanıcılar tarafından kullanılabilir.</translation>
 <translation id="4169692397912242417">Giriş ekranında sözlü geri bildirim erişilebilirlik özelliğini etkinleştirin.
 
           Bu politika true (doğru) değerine ayarlanırsa giriş ekranında sözlü geri bildirim her zaman etkinleştirilir.
@@ -3885,6 +3896,7 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kiosk web uygulaması yalnızca ana tarayıcı penceresini kullanabilir ve yeni bir pencere açamaz. Yeni bir pencere açmak için JavaScript işlevlerinin çağrılması yoksayılır.</translation>
 <translation id="4980635395568992380">Veri türü:</translation>
+<translation id="4981831669478419057">Alışveriş listesi özelliği kullanıcılar tarafından kullanılamaz.</translation>
 <translation id="4983201894483989687">Eski eklentilerin çalıştırılmasına izin ver</translation>
 <translation id="4986560318567565414">Alternatif tarayıcıdan Chrome'a geçiş yapma yolu.</translation>
 <translation id="4987813583395474995">Politika Etkin değerine ayarlanırsa, kullanımdan kaldırılan U2F Security Key API kullanılabilir ve U2F API istekleri için gösterilen kullanımdan kaldırma hatırlatıcı istemi gizlenir.
@@ -6704,6 +6716,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Bu politika <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" /> olarak ayarlanırsa tarayıcı, önceki oturumu geri yükleyip ayrı bir pencere açarak <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> politikasından ayarlanan URL'leri gösterir. Kullanıcıların bu URL'leri açık tutmayı seçebileceğini ve sonraki oturumda bu URL'lerin de geri yükleneceğini unutmayın.
 
       <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev, yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
+<translation id="7919665519909231619">Alışveriş listesi özelliğinin etkinleştirilmesine izin ver</translation>
 <translation id="7922358664346625612">Chrome'da son sekmeyi açık tut.</translation>
 <translation id="7924321157669251966">Pil gücüyle çalışırken ekran parlaklığı yüzdesi</translation>
 <translation id="7925224837072026018">Bu politika ayarlanırsa uzantıların veya Android uygulamalarının şirket anahtarlarına erişmesine izin verilir. Anahtarlar ancak yönetilen bir hesapta chrome.enterprise.platformKeys API kullanılarak oluşturulmuşsa şirket kullanımı için atanır. Kullanıcılar, uzantıların ya da Android uygulamalarının şirket anahtarlarına erişimine izin veremez veya şirket anahtarlarına erişim izinlerini kaldıramaz.
@@ -7125,6 +7138,12 @@ Windows'da politika yapılandırmak için önerilen yol GPO kullanmaktır. Ancak
       Politika değeri mili saniye olarak belirtilmelidir.</translation>
 <translation id="8330437518362176921">Kiosk Chrome uygulamalarını indirirken ve güncellerken yalnızca politika tarafından sağlanan güncelleme URL'sini kullan</translation>
 <translation id="8331479227794770304">Yapışkan tuşları etkinleştir</translation>
+<translation id="8336469459912731404">Bu politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" />, sunucu sertifikalarının doğrulamasını, herkese açık güven kaynağı Chrome Root Store olacak şekilde yerleşik sertifika doğrulayıcıyı kullanarak gerçekleştirir.
+      Bu politika, Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" />, sistem sertifikası doğrulayıcıyı ve sistem kök sertifikalarını kullanır.
+      Bu ayar belirtilmezse Chrome Root Store veya sistem tarafından sağlanan kökler kullanılabilir.
+
+      Platform tarafından sağlanan sertifika doğrulayıcıyı ve kökleri kullanma desteğinin kaldırılması planlandığından bu politikanın da <ph name="MS_WIN_NAME" /> ve <ph name="MAC_OS_NAME" /> sürüm 111 için <ph name="PRODUCT_NAME" /> ürününden kaldırılması planlanmıştır.
+      </translation>
 <translation id="8337114537412769126"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> protokolünün ayarlanması, POST ile öneri araması yaparken parametreleri belirtir. Virgülle ayrılmış ad-değer çiftlerini içerir. Değer, <ph name="SEARCH_TERM_MARKER" /> gibi bir şablon parametresi ise gerçek arama terimleri verisiyle değiştirilir.
 
       <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> politikası ayarlanmadan bırakılırsa öneri araması istekleri GET yöntemi kullanılarak gönderilir.</translation>

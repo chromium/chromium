@@ -424,6 +424,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4536418791685807335">Probajte ponovo da se prijavite.</translation>
 <translation id="4540780316273593836">Nešto nije u redu</translation>
 <translation id="457386861538956877">Još...</translation>
+<translation id="4588014171431912783">Podešavanja sinhronizacije će se vratiti osnovu poslednje rezervne kopije. <ph name="BEGIN_LINK" />Pogledajte šta možete da sinhronizujete<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Tastatura</translation>
 <translation id="4606247758155004938">Organizacija upravlja pregledačem.</translation>
 <translation id="461440297010471931">Pretražujete pomoću Google-a</translation>
@@ -703,6 +704,7 @@ Potrudite se da koristite jedinstvenu lozinku za svaki sajt.</translation>
 <translation id="661266467055912436">Poboljšava bezbednost za vas i druge na vebu.</translation>
 <translation id="6620279676667515405">Otkaži</translation>
 <translation id="6624219055418309072">Blokiraj u režimu bez arhiviranja</translation>
+<translation id="6625830436658400045">Podešavanja sinhronizacije će se vratiti osnovu poslednje rezervne kopije. Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK" />podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="6628106477656132239">Nevažeći datum isteka</translation>
 <translation id="6634432609054530164">Organizacija je isključila režim bez arhiviranja</translation>
 <translation id="6638511529934826365">Zumiraj tekst…</translation>

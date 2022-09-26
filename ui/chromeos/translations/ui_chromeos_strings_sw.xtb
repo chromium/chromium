@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Inanakili <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Sitisha</translation>
 <translation id="1190144681599273207">Kuleta faili hii kutatumia takriban <ph name="FILE_SIZE" /> wa data ya simu.</translation>
+<translation id="1194390763418645112">Faili inaweza kufikiwa na <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Endelea</translation>
 <translation id="1209796539517632982">Seva za jina otomatiki</translation>
 <translation id="1210831758834677569">Kilao</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Vifaa vya Chrome</translation>
 <translation id="1572585716423026576">Weka kama mandhari</translation>
 <translation id="1576937952766665062">Unukuzi wa mfumo wa kuandika Kibangla</translation>
+<translation id="1577977504532381335">Kagua sera ya msimamizi</translation>
 <translation id="158849752021629804">Inahitaji mtandao wa nyumbani</translation>
 <translation id="1589128298353575783">PB <ph name="NUMBER_OF_PB" /></translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Ubora wa picha</translation>
 <translation id="1972984168337863910">Panua vidirisha vya maoni ya faili</translation>
 <translation id="1995337122023280937">Nenda mahali faili ilipo</translation>
+<translation id="1999709132469742660">URL zote zinaweza kufikia faili</translation>
 <translation id="2001796770603320721">Dhibiti katika Hifadhi ya Google</translation>
 <translation id="2009067268969781306">Hatua ya kubadilisha muundo wa hifadhi itafuta data yote iliyomo. Kitendo hiki hakiwezi kutenduliwa.</translation>
 <translation id="2025955442973426285">Kitigrinya</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Mtu aliye na kahawa</translation>
 <translation id="2251368349685848079">Rejesha kutoka kwenye tupio</translation>
 <translation id="2282155092769082568">URL ya kuweka mipangilio kiotomatiki:</translation>
+<translation id="2284767815536050991">nafasi ya hifadhi inayoweza kuondolewa</translation>
 <translation id="2288278176040912387">Kicheza rekodi</translation>
 <translation id="2291538123825441971">Inafungua faili <ph name="NUMBER_OF_FILES" />.</translation>
 <translation id="2303301624314357662">Inafungua faili ya <ph name="FILE_NAME" />.</translation>
@@ -341,6 +345,7 @@
 <translation id="4057991113334098539">Inawashwa...</translation>
 <translation id="4092890906744441904">Kiayalandi</translation>
 <translation id="4124935795427217608">Farasi mwenye pembe</translation>
+<translation id="4157569377477607576">Sera ya msimamizi haipendekezi:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> imehamishwa.</translation>
 <translation id="4176286497474237543">Safisha tupio sasa</translation>
 <translation id="4186579485882418952">Washa hali ya Nje ya Mtandao</translation>
@@ -502,6 +507,7 @@
 <translation id="5323213332664049067">Amerika ya Kusini</translation>
 <translation id="5330145655348521461">Faili hizi zilifunguka kwenye eneo-kazi tofauti. Sogea kwenye <ph name="USER_NAME" /> ( <ph name="MAIL_ADDRESS" /> ) ili uzione.</translation>
 <translation id="5330512191124428349">Pata maelezo</translation>
+<translation id="5337538975554986899">URL zote zinaweza kufikia faili isipokuwa <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Mtu aliye na paka</translation>
 <translation id="5358764674931277">Kasi ya picha</translation>
 <translation id="5363339716524495120">Lugha ya kuweka data ni Kichina</translation>
@@ -526,6 +532,7 @@
 <translation id="5533102081734025921">Picha ya <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Inakokotoa ukubwa</translation>
 <translation id="554153475311314364">Unukuzi wa mfumo wa kuandika Kigiriki</translation>
+<translation id="5580591966435005537">mashine pepe</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Upana wa uakifishaji Umejaa</translation>
 <translation id="5602622065581044566">Kibulgaria kwenye kibodi ya Fonetiki</translation>
@@ -586,6 +593,7 @@
 <translation id="61118516107968648">Matini ya faili ya CSV</translation>
 <translation id="6129953537138746214">Nafasi</translation>
 <translation id="6133173853026656527">Inasogeza <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Skrini za Msimamizi:</translation>
 <translation id="613750717151263950">Kijapani kwenye kibodi ya Marekani</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, hakuna mtandao</translation>
 <translation id="6146563240635539929">Video</translation>
@@ -606,6 +614,7 @@
 <translation id="6287852322318138013">Chagua programu ili ufungue faili hii</translation>
 <translation id="6295542640242147836">Kufunga SIM</translation>
 <translation id="6296410173147755564">PUK si sahihi</translation>
+<translation id="6308243004861726558">Faili hii ni siri na inazingatia sera ya msimamizi. Vitendo vifuatavyo vya ufikiaji na uhamishaji vinazingatiwa.</translation>
 <translation id="6312403991423642364">Hitilafu isiyojulikana ya mtandao</translation>
 <translation id="6317608858038767920">Nameserver maalum ya <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Faili ya kumbukumbu ya <ph name="ARCHIVE_TYPE" /></translation>
@@ -834,6 +843,7 @@
 <translation id="8250920743982581267">Hati</translation>
 <translation id="8261506727792406068">Futa</translation>
 <translation id="8261561378965667560">Mbinu ya Array ya kuingiza data ya Kichina</translation>
+<translation id="8262872909443689080">Sera ya msimamizi</translation>
 <translation id="8264024885325823677">Mipangilio hii inadhibitiwa na msimamizi wako.</translation>
 <translation id="8269755669432358899">Kunja vidirisha vya maoni ya faili</translation>
 <translation id="8280151743281770066">Fonetiki ya Kiarmenia</translation>
@@ -860,7 +870,6 @@
 <translation id="8456681095658380701">Jina batili</translation>
 <translation id="8457767749626250697">SIM yako imefungwa</translation>
 <translation id="8459404855768962328">Hatua ya kunakili kipengee hiki itakishiriki na kila mtu anayeweza kuona folda ya pamoja iitwayo '<ph name="DESTINATION_NAME" />'.</translation>
-<translation id="8461467696380332069">Bofya kulia kwenye faili kisha uchague "Bandika kwenye rafu" ili uweze kufikia faili zako zilizo kwenye rafu kwa haraka.</translation>
 <translation id="8461914792118322307">Proksi</translation>
 <translation id="8463494891489624050">VIQR ya Kivietinamu</translation>
 <translation id="8475647382427415476">Hifadhi ya Google haikuweza kusawazisha "<ph name="FILENAME" />" hivi sasa. Hifadhi ya Google itajaribu tena baadaye.</translation>
@@ -897,7 +906,6 @@
 <translation id="8719721339511222681">Umechagua <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Kikroeshia</translation>
 <translation id="8743164338060742337">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Unadhibitiwa na Msimamizi wako, Unganisha</translation>
-<translation id="8750438273876807512">Gusa na ushikilie faili na uguse <ph name="ICON" />, kisha uchague "Bandika kwenye rafu" ili uweze kufikia faili zako zilizo kwenye rafu kwa haraka.</translation>
 <translation id="8787254343425541995">Ruhusu proksi za mitandao iliyoshirikiwa</translation>
 <translation id="8790981080411996443">Mtu anayenyunyizia mimea maji</translation>
 <translation id="8798099450830957504">Chaguomsingi</translation>
@@ -931,6 +939,7 @@
 <translation id="9100610230175265781">Kaulisiri inahitajika</translation>
 <translation id="9110990317705400362">Tunaendelea kutafuta njia za kufanya kuvinjari kwako kuwe salama zaidi. Hapo awali, tovuti yoyote ingeweza kukuomba kuongeza kiendelezi katika kivinjari chako. Katika matoleo mapya ya Google Chrome, lazima uiambie Chrome kwa uwazi kuwa unataka kusakinisha viendelezi hivi kwa kuviongeza kupitia ukurasa wa Viendelezi. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Fungua</translation>
+<translation id="9116909380156770361">Faili inahamishwa kwenda kwenye <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Kodeki</translation>
 <translation id="9130775360844693113">Wanachama wa '<ph name="DESTINATION_NAME" />' watapata idhini ya kuvifikia vipengee hivi.</translation>
 <translation id="9131598836763251128">Chagua faili moja au zaidi</translation>
@@ -952,6 +961,7 @@
 <translation id="943972244133411984">Ilibadilishwa na</translation>
 <translation id="945522503751344254">Tuma maoni</translation>
 <translation id="947144732524271678">Umechagua fungu lenye vipengee <ph name="ENTRY_COUNT" /> kuanzia <ph name="FROM_ENTRY_NAME" /> hadi <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Sera ya msimamizi inazuia:</translation>
 <translation id="965477715979482472">Kiingereza (Afrika Kusini)</translation>
 <translation id="981121421437150478">Nje ya mtandao</translation>
 <translation id="988685240266037636">Faili yenye jina "<ph name="FILE_NAME" />" tayari ipo. Ungependa kuibadilisha?</translation>

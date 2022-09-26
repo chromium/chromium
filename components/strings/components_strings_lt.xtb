@@ -1263,6 +1263,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Ryšys su <ph name="SITE" /> nėra saugus</translation>
 <translation id="4349365535725594680">Negalima bendrinti konfidencialaus turinio</translation>
+<translation id="4349810866125026513">Vis tiek įkelti</translation>
 <translation id="4350629523305688469">Kelių funkcijų dėklas</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> nori nuskaityti netoliese esančius „Bluetooth“ įrenginius. Rasti šie įrenginiai:</translation>
 <translation id="4351175281479794167">Įveskite patvirtinimo kodą</translation>
@@ -1396,6 +1397,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4744514002166662487">Sukurti pristatymą</translation>
 <translation id="4744603770635761495">Vykdomasis kelias</translation>
 <translation id="4749011317274908093">Veikia inkognito režimas</translation>
+<translation id="4750671009706599284">šį telefoną</translation>
 <translation id="4750917950439032686">Į šią svetainę siunčiama informacija (pvz., slaptažodžiai arba kredito kortelių numeriai) yra privati.</translation>
 <translation id="4751476147751820511">Judesio arba šviesos jutikliai</translation>
 <translation id="4754461935447132332">Neleidžiama nesaugiose svetainėse</translation>
@@ -1985,6 +1987,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6337133576188860026">Atlaisvina mažiau nei <ph name="SIZE" />. Per kitą jūsų apsilankymą kai kurios svetainės gali būti įkeliamos lėčiau.</translation>
 <translation id="6337534724793800597">Filtruoti politiką pagal pavadinimą</translation>
 <translation id="6340739886198108203">Pagal administratoriaus politikos nuostatas nerekomenduojama daryti ekrano kopijų arba įrašyti, kai matomas konfidencialus turinys.</translation>
+<translation id="6341434961864773665">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šio failo į <ph name="DESTINATION_NAME" />}one{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į <ph name="DESTINATION_NAME" />}few{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į <ph name="DESTINATION_NAME" />}many{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į <ph name="DESTINATION_NAME" />}other{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Aktyvūs variantai</translation>
 <translation id="6349101878882523185">Įdiegti <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nėra}=1{1 slaptažodis (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}=2{2 slaptažodžiai (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}one{# slaptažodis (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}few{# slaptažodžiai (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}many{# slaptažodžio (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}other{# slaptažodžių (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}}</translation>
@@ -2163,6 +2166,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">„Chrome“ supaprastino šį puslapį, kad būtų paprasčiau skaityti. „Chrome“ gavo pradinį puslapį prisijungusi nesaugiu ryšiu.</translation>
 <translation id="6890443033788248019">Leisti pasiekti vietovę?</translation>
+<translation id="6890531741535756070">Pasirinkote patvirtinti naudodami <ph name="DEVICE_LABEL" /> svetainėse, kuriose naudojama <ph name="PROVIDER_ORIGIN" />. Šis teikėjas galėjo išsaugoti informaciją apie jūsų mokėjimo metodą, kurią <ph name="BEGIN_LINK" />galite paprašyti ištrinti<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Politikos lygis nepalaikomas.</translation>
 <translation id="6895143722905299846">Virtualus numeris:</translation>
 <translation id="6895330447102777224">Kortelė patvirtinta</translation>
@@ -2523,6 +2527,7 @@ Papildoma išsami informacija:
 <translation id="7764225426217299476">Pridėti adresą</translation>
 <translation id="7766518757692125295">Pakraštys</translation>
 <translation id="7773005668374414287">Ta pačia tvarka, gerąja puse į viršų</translation>
+<translation id="7785790577395078482">šį planšetinį kompiuterį</translation>
 <translation id="7791011319128895129">Neišleista</translation>
 <translation id="7791196057686275387">Pakavimas</translation>
 <translation id="7791543448312431591">Pridėti</translation>
@@ -2617,6 +2622,7 @@ Papildoma išsami informacija:
 <translation id="8075736640322370409">Greitai sukurkite naują „Google“ skaičiuoklę</translation>
 <translation id="8075898834294118863">Tvarkyti svetainių nustatymus</translation>
 <translation id="8076492880354921740">Skirtukai</translation>
+<translation id="8078006011486731853">{0,plural, =1{Įkelti konfidencialų failą?}one{Įkelti konfidencialius failus?}few{Įkelti konfidencialius failus?}many{Įkelti konfidencialius failus?}other{Įkelti konfidencialius failus?}}</translation>
 <translation id="8078141288243656252">Negalima rašyti komentarų, kai pasukta</translation>
 <translation id="8079031581361219619">Iš naujo įkelti svetainę?</translation>
 <translation id="8081087320434522107">Sedanai</translation>

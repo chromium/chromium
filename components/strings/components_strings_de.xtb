@@ -1260,6 +1260,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Die Verbindung zu <ph name="SITE" /> ist nicht sicher</translation>
 <translation id="4349365535725594680">Vertrauliche Inhalte können nicht freigegeben werden</translation>
+<translation id="4349810866125026513">Trotzdem hochladen</translation>
 <translation id="4350629523305688469">Multifunktionsfach</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> möchte nach Bluetooth-Geräten in der Nähe suchen. Die folgenden Geräte wurden gefunden:</translation>
 <translation id="4351175281479794167">Bestätigungscode eingeben</translation>
@@ -1982,6 +1983,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6337133576188860026">Es werden weniger als <ph name="SIZE" /> Speicherplatz freigegeben. Manche Websites werden beim nächsten Öffnen eventuell langsamer geladen.</translation>
 <translation id="6337534724793800597">Richtlinien nach Name filtern</translation>
 <translation id="6340739886198108203">Gemäß der Administratorrichtlinie wird nicht empfohlen, Screenshots oder Aufnahmen zu machen, wenn vertrauliche Inhalte zu sehen sind:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei auf <ph name="DESTINATION_NAME" /> hochzuladen}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien auf <ph name="DESTINATION_NAME" /> hochzuladen}}</translation>
 <translation id="6348220984832452017">Aktive Variationen</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installieren</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Keins}=1{1 Passwort (für <ph name="DOMAIN_LIST" />, synchronisiert)}=2{2 Passwörter (für <ph name="DOMAIN_LIST" />, synchronisiert)}other{# Passwörter (für <ph name="DOMAIN_LIST" />, synchronisiert)}}</translation>
@@ -2614,6 +2616,7 @@ Weitere Details:
 <translation id="8075736640322370409">Schnell eine neue Google-Tabelle erstellen</translation>
 <translation id="8075898834294118863">Website-Einstellungen verwalten</translation>
 <translation id="8076492880354921740">Tabs</translation>
+<translation id="8078006011486731853">{0,plural, =1{Vertrauliche Datei hochladen?}other{Vertrauliche Dateien hochladen?}}</translation>
 <translation id="8078141288243656252">Anmerkungen bei gedrehtem Dokument nicht möglich</translation>
 <translation id="8079031581361219619">Website neu laden?</translation>
 <translation id="8081087320434522107">Limousinen</translation>

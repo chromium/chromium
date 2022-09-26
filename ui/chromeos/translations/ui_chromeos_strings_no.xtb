@@ -868,7 +868,6 @@
 <translation id="8456681095658380701">Ugyldig navn</translation>
 <translation id="8457767749626250697">SIM-kortet ditt er låst</translation>
 <translation id="8459404855768962328">Hvis du kopierer dette elementet, deles det med alle som kan se den delte mappen «<ph name="DESTINATION_NAME" />».</translation>
-<translation id="8461467696380332069">Høyreklikk på en fil, og velg «Fest til hyllen» for rask tilgang til filene dine på hyllen.</translation>
 <translation id="8461914792118322307">Proxy-tjener</translation>
 <translation id="8463494891489624050">Vietnamesisk VIQR</translation>
 <translation id="8475647382427415476">Google Disk kunne ikke synkronisere «<ph name="FILENAME" />» akkurat nå. Vi prøver igjen senere.</translation>
@@ -905,7 +904,6 @@
 <translation id="8719721339511222681">Valgte <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Kroatisk</translation>
 <translation id="8743164338060742337">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="NETWORK_PROVIDER_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – koble til</translation>
-<translation id="8750438273876807512">Trykk og hold på en fil, trykk på <ph name="ICON" />, og velg «Fest til hyllen» for rask tilgang til filer på hyllen.</translation>
 <translation id="8787254343425541995">Gi tillatelse til proxy-tjenere for delte nettverk</translation>
 <translation id="8790981080411996443">Person som vanner blomster</translation>
 <translation id="8798099450830957504">Standard</translation>

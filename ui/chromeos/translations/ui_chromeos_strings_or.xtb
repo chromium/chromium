@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" />.କପି ହେଉଛି…</translation>
 <translation id="1178581264944972037">ବିରତି</translation>
 <translation id="1190144681599273207">ଏହି ଫାଇଲ୍ ଆଣିବା ପାଇଁ ଆନୁମାନିକ <ph name="FILE_SIZE" /> ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର ହେବ।</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> ଦ୍ୱାରା ଫାଇଲ ଆକ୍ସେସ</translation>
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
 <translation id="1209796539517632982">ସ୍ୱଚାଳିତ ନାମ ସର୍ଭର</translation>
 <translation id="1210831758834677569">ଲାଓ</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="1572585716423026576">ୱାଲ୍‌‌ପେପର୍‌ ଭାବରେ ସେଟ୍‍ କରନ୍ତୁ</translation>
 <translation id="1576937952766665062">ବଙ୍ଗଳା ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
+<translation id="1577977504532381335">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତିର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="158849752021629804">ହୋମ୍‌ ନେଟ୍‌ୱର୍କ ଦରକାର</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">ଛବି ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="1972984168337863910">ମତାମତ ପ୍ୟାନେଲ୍‍ଗୁଡ଼ିକୁ ପ୍ରସାରଣ କରନ୍ତୁ</translation>
 <translation id="1995337122023280937">ଫାଇଲ୍ ଲୋକେସନକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="1999709132469742660">ସବୁ URL ଦ୍ୱାରା ଫାଇଲ ଆକ୍ସେସ</translation>
 <translation id="2001796770603320721">Driveରେ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2009067268969781306">କୌଣସି ଡ୍ରାଇଭ୍‍କୁ ଡିଲିଟ୍ କରିବା ଦ୍ୱାରା ଏଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଡିଲିଟ୍ ହୋଇଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2025955442973426285">ଟାଇଗ୍ରିନ୍ୟା</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">କଫି ପିଉଥିବା ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="2251368349685848079">ଟ୍ରାସରୁ ରିଷ୍ଟୋର୍ କରନ୍ତୁ</translation>
 <translation id="2282155092769082568">ସ୍ଵତଃକନଫିଗ୍‌ରେସନ୍ URL:</translation>
+<translation id="2284767815536050991">କାଢ଼ି ହେଉଥିବା ଷ୍ଟୋରେଜ</translation>
 <translation id="2288278176040912387">ରେକର୍ଡ ପ୍ଲେୟାର୍</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />ଟି ଫାଇଲ୍ ଖୋଲାଯାଉଛି।</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" />ଫାଇଲ୍ ଖୋଲୁଛି।</translation>
@@ -224,6 +228,7 @@
 <translation id="3016566519832145558">ସାବଧାନ: ଏହି ଫାଇଲଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କରେ ସ୍ପେସ୍ ଖାଲି କରିବା ପାଇଁ ଏଗୁଡ଼ିକ ସ୍ୱଚାଳିତ ଭାବେ ଡିଲିଟ୍ ହୋଇଯାଇପାରେ।</translation>
 <translation id="3029114385395636667">Docs, Sheets ଏବଂ Slidesକୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରିବା ପାଇଁ Google Docs ଅଫଲାଇନକୁ ସକ୍ଷମ କରନ୍ତୁ।</translation>
 <translation id="303198083543495566">ଭୌଗଳିକ</translation>
+<translation id="3044404008258011032">ଏହି ଆଇଟମଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରିବା ପାଇଁ, ସେଗୁଡ଼ିକୁ ଟ୍ରାସର ବାହାରେ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ଡ୍ରାଗ କରନ୍ତୁ। ଏହି ଆଇଟମର ମୂଳ ଫୋଲ୍ଡର "<ph name="PARENT_FOLDER_NAME" />"କୁ ଡିଲିଟ କରିଦିଆଯାଇଛି।</translation>
 <translation id="3047197340186497470">ଚାଇନିଜ୍ ଡାୟି</translation>
 <translation id="3067790092342515856">Windows ଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -341,6 +346,8 @@
 <translation id="4057991113334098539">ସକ୍ରିୟ ହେଉଛି...</translation>
 <translation id="4092890906744441904">ଆଇରିଶ୍</translation>
 <translation id="4124935795427217608">ୟୁନିକର୍ନ</translation>
+<translation id="4131235941541910880">ଆପଣ ଆବଶ୍ୟକ କରୁନଥିବା ଆଇଟମଗୁଡ଼ିକୁ ଟ୍ରାସକୁ ମୁଭ କରନ୍ତୁ</translation>
+<translation id="4157569377477607576">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଏହା ସୁପାରିଶ କରେ ନାହିଁ:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="4176286497474237543">ବର୍ତ୍ତମାନ ଟ୍ରାସକୁ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="4186579485882418952">ଅଫଲାଇନ୍ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -435,8 +442,10 @@
 <translation id="485316830061041779">ଜର୍ମାନ୍</translation>
 <translation id="4867079195717347957">କଲମ୍‍କୁ ବଡ଼ରୁ ସାନ କ୍ରମରେ ସଜାଇବା ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ବାଇଟ୍</translation>
+<translation id="4874569719830985133">ସବୁଦିନ ପାଇଁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="4880214202172289027">ଭଲ୍ୟୁମ୍‍ ସ୍ଲାଇଡର୍‍</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
+<translation id="4891091358278567964">ଏହି ଆଇଟମଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରିବା ପାଇଁ, ସେଗୁଡ଼ିକୁ ଟ୍ରାସର ବାହାରେ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ଡ୍ରାଗ କରନ୍ତୁ। ଏହି ଆଇଟମଗୁଡ଼ିକର ମୂଳ ଫୋଲ୍ଡରଗୁଡ଼ିକୁ ଡିଲିଟ କରିଦିଆଯାଇଛି।</translation>
 <translation id="4900532980794411603">Parallels Desktop ସହ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଫୋନ୍ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" />%, ବିବରଣୀ</translation>
@@ -488,6 +497,7 @@
 <translation id="5257456363153333584">ଡ୍ରାଗନ୍‌ଫ୍ଲାଏ</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />ସବୁ ଜାଗାରୁ, ଏପରିକି ଅଫ୍‍ଲାଇନ୍‌ରେ ଫାଇଲ୍ ଆକ୍ସେସ୍ କରେ।<ph name="MARKUP_2" />Google ଡ୍ରାଇଭ୍‍‌ରେ ଫାଇଲ୍‍ଗୁଡ଼ିକ ଅପ୍ ଟୁ ଡେଟ୍ ଅଛି ଏବଂ ଯେକୌଣସି ଡିଭାଇସ୍‍ରୁ ଉପଲବ୍ଧ ଅଟେ।<ph name="MARKUP_3" /> <ph name="MARKUP_4" />ଆପଣଙ୍କର ଫାଇଲ୍‍ଗୁଡ଼ିକ ସୁରକ୍ଷିତ ରଖନ୍ତୁ।<ph name="MARKUP_5" /> ଆପଣଙ୍କ ଡିଭାଇସ୍‍ର ଯାହା ହେଉନା କାହିଁକି, ଆପଣଙ୍କର ଫାଇଲ୍‍ଗୁଡ଼ିକ Google ଡ୍ରାଇଭ୍‌ରେ ସୁରକ୍ଷିତ ଭାବେ ଷ୍ଟୋର୍ ହୋଇରହିବ।<ph name="MARKUP_6" /> <ph name="MARKUP_7" />ଗୋଟିଏ ସ୍ଥାନରେ ଫାଇଲ୍‍ଗୁଡ଼ିକ ସେୟାର୍ କରନ୍ତୁ, ତିଆରି କରନ୍ତୁ<ph name="MARKUP_8" /> ଏବଂ ଅନ୍ୟମାନଙ୍କ ସହ ସହଯୋଗିତା କରନ୍ତୁ।<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Driveରୁ ଫାଇଲ୍ ପୁନରୁଦ୍ଧାର ହୋଇଛି</translation>
+<translation id="5278111733643988471">ଏହି ଆଇଟମକୁ ରିଷ୍ଟୋର କରିବା ପାଇଁ, ଏହାକୁ ଟ୍ରାସର ବାହାରେ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ଡ୍ରାଗ କରନ୍ତୁ। ଏହି ଆଇଟମର ମୂଳ ଫୋଲ୍ଡର "<ph name="PARENT_FOLDER_NAME" />"କୁ ଡିଲିଟ କରିଦିଆଯାଇଛି।</translation>
 <translation id="5286194356314741248">ସ୍କାନ୍ ହେଉଛି</translation>
 <translation id="5288441970121584418">ବର୍ଗର୍</translation>
 <translation id="5305688511332277257">କିଛି ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇନାହିଁ</translation>
@@ -496,9 +506,11 @@
 <translation id="5323213332664049067">ଲାଟିନ୍‍ ଆମେରିକାନ୍‍</translation>
 <translation id="5330145655348521461">ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଏକ ଅଲଗା ଡେସ୍କଟପ୍‌ରେ ଖୋଲାଗଲା। ଏହାକୁ ଦେଖିବା ପାଇଁ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="5330512191124428349">ସୂଚନା ପାଆନ୍ତୁ</translation>
+<translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> ବ୍ୟତୀତ ସବୁ URL ଦ୍ୱାରା ଫାଇଲ ଆକ୍ସେସ</translation>
 <translation id="535792325654997756">ବିଲେଇମାନଙ୍କ ସହ ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="5358764674931277">ଫ୍ରେମ୍ ହାର</translation>
 <translation id="5363339716524495120">ଇନପୁଟ ଭାଷା ଚାଇନିଜ ଅଟେ</translation>
+<translation id="5364067326287025678">ଟ୍ରାସରେ କିଛି ନାହିଁ</translation>
 <translation id="5368191757080475556">Linux ସହ ଫୋଲ୍ଡର୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5402367795255837559">ବ୍ରେଲ୍ଲୀ</translation>
 <translation id="5411472733320185105">ଏହି ହୋଷ୍ଟ ଏବଂ ଡୋମେନ୍‌ଗୁଡ଼ିକ ପାଇଁ ପ୍ରକ୍ସି ସେଟିଂସ୍ ବ୍ୟବହାର କରନ୍ତୁ ନାହିଁ:</translation>
@@ -520,6 +532,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ଛବି</translation>
 <translation id="5534520101572674276">ଆକାର ଗଣନା କରାଯାଉଛି</translation>
 <translation id="554153475311314364">ଗ୍ରୀକ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
+<translation id="5580591966435005537">ଭର୍ଚୁଆଲ ମେସିନ</translation>
 <translation id="5583640892426849032">ପଶ୍ଚାତ୍</translation>
 <translation id="5583664733673201137">ବିରାମ ଚିହ୍ନର ଚଉଡ଼ା ପୂର୍ଣ୍ଣ ଅଛି</translation>
 <translation id="5602622065581044566">ଫୋନେଟିକ୍ କୀବୋର୍ଡ ସହ ବୁଲଗେରିଆନ୍</translation>
@@ -580,6 +593,7 @@
 <translation id="61118516107968648">CSV ଟେକ୍ସଟ</translation>
 <translation id="6129953537138746214">ସ୍ପେସ୍</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> ଘୁଞ୍ଚୁଛି...</translation>
+<translation id="6133877453787250710">ଆଡମିନିଷ୍ଟ୍ରେଟର ମନିଟର:</translation>
 <translation id="613750717151263950">US କୀବୋର୍ଡ ସହ ଜାପାନିଜ</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, କୌଣସି ନେଟ୍‌ୱାର୍କ ନାହିଁ</translation>
 <translation id="6146563240635539929">ଭିଡିଓଗୁଡ଼ିକ</translation>
@@ -600,6 +614,7 @@
 <translation id="6287852322318138013">ଏହି ଫାଇଲ୍ ଖୋଲିବା ପାଇଁ ଗୋଟିଏ ଆପ୍ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6295542640242147836">SIMକୁ ଲକ କରନ୍ତୁ</translation>
 <translation id="6296410173147755564">ଅବୈଧ PUK</translation>
+<translation id="6308243004861726558">ଏହି ଫାଇଲଟି ଗୋପନୀୟ ଅଟେ ଏବଂ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତିର ଅଧୀନ ଅଟେ। ନିମ୍ନୋକ୍ତ ଫାଇଲ ଆକ୍ସେସ ଏବଂ ଟ୍ରାନ୍ସଫର କାର୍ଯ୍ୟଗୁଡ଼ିକ ପ୍ରଯୁଜ୍ୟ।</translation>
 <translation id="6312403991423642364">ଅଜଣା ନେଟ୍‌ୱର୍କ ତ୍ରୁଟି</translation>
 <translation id="6317608858038767920">କଷ୍ଟମ୍ ନେମ୍‌ସର୍ଭର୍ <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> ଆର୍କାଇଭ</translation>
@@ -765,6 +780,7 @@
 <translation id="7711920809702896782">ଛବି ସୂଚନା</translation>
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7732111077498238432">ନେଟ୍‍ୱର୍କ ନୀତି ନିୟନ୍ତ୍ରିତ ଅଟେ</translation>
+<translation id="7736003208887389532">ଏହି ଫାଇଲଗୁଡ଼ିକୁ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ କରିବେ?</translation>
 <translation id="7748626145866214022">ଆକ୍ସନ୍‌ ବାର୍‌ରେ ଅଧିକ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି ଆକ୍ସନ ବାର୍‌କୁ ଫୋକସ୍‌ କରିବାକୁ Alt + A ଦବାନ୍ତୁ।</translation>
 <translation id="7760449188139285140">ଚାଇନିଜ୍ ୟୁବି</translation>
 <translation id="7765158879357617694">ନିଅନ୍ତୁ</translation>
@@ -826,8 +842,10 @@
 <translation id="8249296373107784235">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8250690786522693009">ଲାଟିନ</translation>
 <translation id="8250920743982581267">ଡକୁମେଣ୍ଟ</translation>
+<translation id="8255595130163158297">ଟ୍ରାସରେ ଥିବା ସମସ୍ତ ଆଇଟମକୁ ଡିଲିଟ କରିଦିଆଯିବ ଏବଂ ଆପଣ ସେଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରିବାକୁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>
 <translation id="8261506727792406068">ବିଲୋପ</translation>
 <translation id="8261561378965667560">ଚାଇନିଜ୍ ଆରେ</translation>
+<translation id="8262872909443689080">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି</translation>
 <translation id="8264024885325823677">ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ।</translation>
 <translation id="8269755669432358899">ଫାଇଲ୍ ମତାମତ ପ୍ୟାନେଲ୍‍ଗୁଡ଼ିକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="8280151743281770066">ଆରମେନିଆନ୍ ଫୋନେଟିକ୍</translation>
@@ -854,7 +872,6 @@
 <translation id="8456681095658380701">ଅବୈଧ ନାମ</translation>
 <translation id="8457767749626250697">ଆପଣଙ୍କ SIMକୁ ଲକ କରାଯାଇଛି</translation>
 <translation id="8459404855768962328">ଏହି ଆଇଟମକୁ କପି କରିବା ଫଳରେ, ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡର୍ '<ph name="DESTINATION_NAME" />'କୁ ଦେଖିପାରୁଥିବା ସମସ୍ତ ଲୋକଙ୍କ ସହିତ ଏହା ସେୟାର୍ ହେବ।</translation>
-<translation id="8461467696380332069">ସେଲ୍ଫରେ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ଦ୍ରୁତ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଏକ ଫାଇଲରେ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତୁ ଏବଂ "ସେଲ୍ଫରେ ପିନ୍ କରନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="8461914792118322307">ପ୍ରକ୍ସି</translation>
 <translation id="8463494891489624050">ଭିଏତନାମିଜ୍ VIQR</translation>
 <translation id="8475647382427415476">Google ଡ୍ରାଇଭ୍ ଏହିକ୍ଷଣି "<ph name="FILENAME" />"କୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ। Google ଡ୍ରାଇଭ୍ ପୁଣି ପରେ ଚେଷ୍ଟା କରିବ।</translation>
@@ -891,7 +908,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ବଛାଯାଇଛି।</translation>
 <translation id="872537912056138402">କ୍ରୋଏସିଆନ୍</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />ର ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ସଂଯୋଗ କରନ୍ତୁ</translation>
-<translation id="8750438273876807512">ସେଲ୍ଫରେ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ଦ୍ରୁତ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଏକ ଫାଇଲକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ ଏବଂ <ph name="ICON" />ରେ ଟାପ୍ କରି "ସେଲ୍ଫରେ ପିନ୍ କରନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="8787254343425541995">ସେୟାର୍ ହୋଇଥିବା ନେଟ୍‌ୱାର୍କ ପାଇଁ ପ୍ରୋକ୍ସିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="8790981080411996443">ଗଛରେ ପାଣି ଦେଉଥିବା ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="8798099450830957504">ଡିଫଲ୍ଟ</translation>
@@ -904,6 +920,7 @@
 <translation id="8857149712089373752">ଫୋନେଟିକ୍ କୀବୋର୍ଡ ସହ ନେପାଳୀ</translation>
 <translation id="8860454412039442620">Excel ସ୍ପ୍ରେଡ୍‍ସିଟ୍</translation>
 <translation id="8866284467018526531">ଆରବିକ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
+<translation id="8873014196523807561">ଏହି ଆଇଟମଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରିବା ପାଇଁ, ସେଗୁଡ଼ିକୁ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ଡ୍ରାଗ କରନ୍ତୁ। ଏହି ଆଇଟମଗୁଡ଼ିକରୁ କିଛି ଆଇଟମର ମୂଳ ଫୋଲ୍ଡରଗୁଡ଼ିକୁ ଡିଲିଟ କରିଦିଆଯାଇଛି।</translation>
 <translation id="8874184842967597500">ସଂଯୁକ୍ତ ନାହିଁ</translation>
 <translation id="8900820606136623064">ହଙ୍ଗେରୀଆନ୍</translation>
 <translation id="8903931173357132290">ଗ୍ରାଜୁଏଟ୍</translation>
@@ -925,6 +942,7 @@
 <translation id="9100610230175265781">ପାସଫ୍ରେଜ୍ ଆବଶ୍ୟକ ଅଟେ</translation>
 <translation id="9110990317705400362">ଆପଣଙ୍କର ବ୍ରାଉଜର୍‌କୁ ସୁରକ୍ଷିତ କରିବାକୁ ଆମେ ନିରିବିଚ୍ଛିନ୍ନ ଭାବରେ ଉପାୟ ଖୋଜୁଛୁ। ପୂର୍ବରୁ, ଯେକୌଣସି ୱେବ୍‌ସାଇଟ୍‍ ଆପଣଙ୍କର ବ୍ରାଉଜର୍‌ରେ ଗୋଟିଏ ଏକ୍ସଟେନ୍‌ସନ୍‌ ଯୋଗ କରିବାକୁ ଆପଣଙ୍କୁ ସଙ୍କେତ ଦେଇଥିଲା। Google Chromeର ନବୀନତମ ସଂସ୍କରଣରେ, ଆପଣଙ୍କୁ ଏକ୍ସଟେନ୍‍ସନ୍‍ ପୃଷ୍ଠା ମାଧ୍ୟମରେ ଏହି ଏକ୍ସଟେନ୍‍ସନ୍‌କୁ ଯୋଗ କରି Chromeକୁ ସ୍ପଷ୍ଟ ଭାବରେ କହିବାକୁ ପଡ଼ିବ ଯେ ଆପଣ ଏହି ଏକ୍ସଟେନ୍‌ସନ୍‌‍ଗୁଡ଼ିକୁ ଇନ୍‍ଷ୍ଟଲ୍‍ କରିବାକୁ ଚାହୁଁଛନ୍ତି। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
+<translation id="9116909380156770361"><ph name="RESTRICTED_COMPONENTS" />କୁ ଫାଇଲ ଟ୍ରାନ୍ସଫର</translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113"><ph name="DESTINATION_NAME" />ର ସଦସ୍ୟମାନେ ଏହି ଆଇଟମ୍‍ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିପାରିବେ।</translation>
 <translation id="9131598836763251128">ଏକ କିମ୍ବା ଏକାଧିକ ଫାଇଲ୍‌ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
@@ -946,6 +964,7 @@
 <translation id="943972244133411984">ଏହାଙ୍କ ଦ୍ୱାରା ସଂଶୋଧନ କରାଗଲା</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ରୁ <ph name="TO_ENTRY_NAME" /> ମଧ୍ୟରେ <ph name="ENTRY_COUNT" />ଟି ଫାଇଲ୍‌ର ଏକ ପରିସର ବଛାଯାଇଛି।</translation>
+<translation id="954194396377670556">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଏହାକୁ ପ୍ରତିରୋଧ କରେ:</translation>
 <translation id="965477715979482472">ଇଂରାଜୀ (ଦକ୍ଷିଣ ଆଫ୍ରିକା)</translation>
 <translation id="981121421437150478">ଅଫ୍‍ଲାଇନ୍</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" ନାମକ ଗୋଟିଏ ଫାଇଲ୍ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଆପଣ ଏହାକୁ ପ୍ରତିସ୍ଥାପନ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>

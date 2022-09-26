@@ -4912,6 +4912,7 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
       Voer Chrome-apps in op basis van ID, zoals pjkljhegncpnkpknbcohdijeoejaedia; Android-apps op basis van pakketnaam, zoals com.google.android.gm; en web-apps op basis van de URL die wordt gebruikt in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, zoals https://google.com/maps.
 
       Als je het beleid niet instelt, kunnen gebruikers de lijst met vastgezette apps in de Launcher wijzigen.</translation>
+<translation id="6184385589352532028">Desk API niet aanzetten voor ChromeOS-beheer door derden</translation>
 <translation id="6190367314942602985">Gegevens over de identiteit van gebruikers rapporteren</translation>
 <translation id="6191963383731098056">Met dit beleid kunnen beheerders de kleur voor het thema van <ph name="PRODUCT_NAME" /> instellen. Je moet een geldige hexadecimale kleur opgeven in de vorm van een tekenreeks met de indeling #RRGGBB.
 
@@ -6744,6 +6745,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
       Als je dit beleid uitzet of niet instelt, kunnen gebruikers <ph name="LACROS_NAME" /> niet gebruiken.
 
       Als je dit beleid aanzet, kunnen gebruikers de <ph name="LACROS_NAME" />-browser gebruiken.</translation>
+<translation id="8020222525161221827">Desk API aanzetten voor ChromeOS-beheer door derden</translation>
 <translation id="802147957407376460">Scherm 0 graden draaien</translation>
 <translation id="80243978433618492">Hiermee sta je niet toe dat URL-parameters worden gefilterd.</translation>
 <translation id="8025620823136567878">Sneltoetsen voor internationale toetsenborden worden toegewezen aan de locatie van de toetsen op het toetsenbord in plaats van aan de glief van de toetsen.</translation>
@@ -7771,6 +7773,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
       Als je het beleid niet toepast, betekent dit dat ingeschreven apparaten geen audiostatus vastleggen of rapporteren.
       Uitzondering: informatie over het systeemvolumeniveau wordt beheerd door <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> voor M95 en lager.</translation>
+<translation id="9071527533179676468">Als je het beleid toepast, kunnen web-apps van derden Desk API gebruiken om ChromeOS-bureaus te beheren. Als je het beleid niet instelt of niet toepast, is Desk API niet beschikbaar.</translation>
 <translation id="9072475476775217730">Als je het beleid niet toepast, hebben pop-ups die <ph name="BLANK_PAGE_NAME" /> targeten, toegang (via JavaScript) tot de pagina die het openen van de pop-up heeft aangevraagd.
 
       Als je het beleid toepast of niet instelt, wordt de property <ph name="WINDOW_OPENER_PROPERTY" /> ingesteld op <ph name="NULL_VALUE" />, tenzij het anker <ph name="REL_OPENER_ATTRIBUTE" /> opgeeft.

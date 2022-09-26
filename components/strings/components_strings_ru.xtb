@@ -1261,6 +1261,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Подключение к сайту <ph name="SITE" /> не защищено.</translation>
 <translation id="4349365535725594680">Невозможно поделиться конфиденциальным контентом</translation>
+<translation id="4349810866125026513">Все равно загрузить</translation>
 <translation id="4350629523305688469">Многофункциональный лоток</translation>
 <translation id="4351060348582610152">Сайт <ph name="ORIGIN" /> ищет устройства Bluetooth поблизости. Обнаружены следующие устройства:</translation>
 <translation id="4351175281479794167">Введите код подтверждения</translation>
@@ -1394,6 +1395,7 @@
 <translation id="4744514002166662487">Создать презентацию</translation>
 <translation id="4744603770635761495">Путь к исполняемому файлу</translation>
 <translation id="4749011317274908093">Режим инкогнито</translation>
+<translation id="4750671009706599284">этот смартфон</translation>
 <translation id="4750917950439032686">Информация, которую вы сообщаете этому сайту (например, пароли и номера банковских карт), защищена.</translation>
 <translation id="4751476147751820511">Датчики движения и освещенности</translation>
 <translation id="4754461935447132332">Запрещено для незащищенных сайтов</translation>
@@ -1983,6 +1985,7 @@
 <translation id="6337133576188860026">Освободится менее <ph name="SIZE" /> пространства. После этого некоторые веб-страницы могут загружаться дольше обычного.</translation>
 <translation id="6337534724793800597">Фильтровать правила по названию</translation>
 <translation id="6340739886198108203">Администратор не рекомендует делать снимки и видеозаписи экрана, когда на нем показаны конфиденциальные данные:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Администратор не рекомендует загружать этот файл на <ph name="DESTINATION_NAME" />.}one{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}few{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}many{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}other{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="6348220984832452017">Текущие изменения</translation>
 <translation id="6349101878882523185">Установить приложение "<ph name="APP_NAME" />"</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Нет}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}=2{2 пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}few{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}many{# паролей (для <ph name="DOMAIN_LIST" />, синхронизировано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}}</translation>
@@ -2161,6 +2164,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" />, <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Браузер Chrome упростил вид страницы, чтобы ее было удобнее читать. Исходная страница была получена с использованием незащищенного соединения.</translation>
 <translation id="6890443033788248019">Предоставить доступ к данным о местоположении?</translation>
+<translation id="6890531741535756070">Вы выбрали <ph name="DEVICE_LABEL" /> для подтверждения покупок на сайтах, пользующихся услугами поставщика <ph name="PROVIDER_ORIGIN" />. Поставщик мог сохранить информацию о вашем способе оплаты. У вас есть право <ph name="BEGIN_LINK" />запросить удаление этих данных<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Значение правила не поддерживается.</translation>
 <translation id="6895143722905299846">Номер карты:</translation>
 <translation id="6895330447102777224">Ваша карта подтверждена</translation>
@@ -2521,6 +2525,7 @@
 <translation id="7764225426217299476">Добавить адрес</translation>
 <translation id="7766518757692125295">Юбка</translation>
 <translation id="7773005668374414287">В том же порядке лицевой стороной вверх</translation>
+<translation id="7785790577395078482">этот планшет</translation>
 <translation id="7791011319128895129">Не выпущено</translation>
 <translation id="7791196057686275387">Прессование</translation>
 <translation id="7791543448312431591">Добавить</translation>
@@ -2615,6 +2620,7 @@
 <translation id="8075736640322370409">Быстро создать таблицу Google</translation>
 <translation id="8075898834294118863">Открыть настройки сайтов</translation>
 <translation id="8076492880354921740">Вкладки</translation>
+<translation id="8078006011486731853">{0,plural, =1{Загрузить конфиденциальный файл?}one{Загрузить конфиденциальные файлы?}few{Загрузить конфиденциальные файлы?}many{Загрузить конфиденциальные файлы?}other{Загрузить конфиденциальные файлы?}}</translation>
 <translation id="8078141288243656252">Недоступно, когда документ повернут</translation>
 <translation id="8079031581361219619">Перезагрузить сайт?</translation>
 <translation id="8081087320434522107">Седаны</translation>

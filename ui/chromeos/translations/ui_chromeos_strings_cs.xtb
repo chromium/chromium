@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Kopírování souboru <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1190144681599273207">Načtení souboru spotřebuje přibližně <ph name="FILE_SIZE" /> mobilních dat.</translation>
+<translation id="1194390763418645112">Přístup k souborům ze zařízení <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Další</translation>
 <translation id="1209796539517632982">Automatické názvové servery</translation>
 <translation id="1210831758834677569">laoština</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome</translation>
 <translation id="1572585716423026576">Nastavit jako tapetu</translation>
 <translation id="1576937952766665062">bengálština (přepis)</translation>
+<translation id="1577977504532381335">Zkontrolovat zásady administrátora</translation>
 <translation id="158849752021629804">Je potřeba domácí síť</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Rozlišení obrázku</translation>
 <translation id="1972984168337863910">Rozbalit panely zpětné vazby k souborům</translation>
 <translation id="1995337122023280937">Přejít do umístění souboru</translation>
+<translation id="1999709132469742660">Přístup k souborům ze všech adres URL</translation>
 <translation id="2001796770603320721">Spravovat na Disku</translation>
 <translation id="2009067268969781306">Naformátováním jednotky smažete všechna na ní uložená data. Tuto akci nelze vrátit zpět.</translation>
 <translation id="2025955442973426285">tigrinijština</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Člověk s kávou</translation>
 <translation id="2251368349685848079">Obnovit z koše</translation>
 <translation id="2282155092769082568">Adresa URL automatické konfigurace:</translation>
+<translation id="2284767815536050991">vyměnitelné úložiště</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Otevírání <ph name="NUMBER_OF_FILES" /> souborů.</translation>
 <translation id="2303301624314357662">Otevírání souboru <ph name="FILE_NAME" />.</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">irština</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
 <translation id="4131235941541910880">Nepotřebné položky přesuňte do koše</translation>
+<translation id="4157569377477607576">Zásady administrátora nedoporučují:</translation>
 <translation id="4159731583141908892">Přesunutá položka: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Vysypat koš</translation>
 <translation id="4186579485882418952">Povolit režim offline</translation>
@@ -506,6 +511,7 @@
 <translation id="5323213332664049067">Latinská Amerika</translation>
 <translation id="5330145655348521461">Tyto soubory jsou otevřeny na jiné ploše. Chcete-li je zobrazit, přejděte do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Zobrazit informace</translation>
+<translation id="5337538975554986899">Přístup k souborům ze všech adres URL kromě <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Člověk s kočkami</translation>
 <translation id="5358764674931277">Snímková frekvence</translation>
 <translation id="5363339716524495120">Jazyk vstupu je čínština</translation>
@@ -531,6 +537,7 @@
 <translation id="5533102081734025921">Obrázek <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Výpočet velikosti</translation>
 <translation id="554153475311314364">řečtina (přepis)</translation>
+<translation id="5580591966435005537">virtuální počítač</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Šířka interpunkce je Plná</translation>
 <translation id="5602622065581044566">bulharština s fonetickou klávesnicí</translation>
@@ -591,6 +598,7 @@
 <translation id="61118516107968648">Text ve formátu CSV</translation>
 <translation id="6129953537138746214">Mezera</translation>
 <translation id="6133173853026656527">Přesouvání souboru <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Administrátor sleduje:</translation>
 <translation id="613750717151263950">japonština s americkou klávesnicí</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, žádná síť</translation>
 <translation id="6146563240635539929">Videa</translation>
@@ -611,6 +619,7 @@
 <translation id="6287852322318138013">Vyberte aplikaci, pomocí které soubor otevřete</translation>
 <translation id="6295542640242147836">Zamknout SIM kartu</translation>
 <translation id="6296410173147755564">Neplatný kód PUK</translation>
+<translation id="6308243004861726558">Tento soubor je důvěrný a vztahují se na něj zásady administrátora. K dispozici jsou následující možnosti přístupu a přenosu.</translation>
 <translation id="6312403991423642364">Neznámá chyba sítě</translation>
 <translation id="6317608858038767920">Vlastní názvový server <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Archiv <ph name="ARCHIVE_TYPE" /></translation>
@@ -841,6 +850,7 @@
 <translation id="8255595130163158297">Všechny položky v koši budou smazány a nebudete je moci obnovit.</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8261561378965667560">čínština (Array)</translation>
+<translation id="8262872909443689080">Zásady administrátora</translation>
 <translation id="8264024885325823677">Toto nastavení spravuje administrátor.</translation>
 <translation id="8269755669432358899">Sbalit panely zpětné vazby k souborům</translation>
 <translation id="8280151743281770066">Arménská fonetická klávesnice</translation>
@@ -867,7 +877,6 @@
 <translation id="8456681095658380701">Neplatný název</translation>
 <translation id="8457767749626250697">Vaše SIM karta je uzamčena</translation>
 <translation id="8459404855768962328">Když tuto položku zkopírujete, budete ji sdílet s každým, kdo může zobrazit sdílenou složku <ph name="DESTINATION_NAME" />.</translation>
-<translation id="8461467696380332069">Klikněte pravým tlačítkem na soubor a výběrem možnosti Připnout k poličce umožněte rychlý přístup k souborům na poličce.</translation>
 <translation id="8461914792118322307">Proxy server</translation>
 <translation id="8463494891489624050">vietnamština VIQR</translation>
 <translation id="8475647382427415476">Soubor <ph name="FILENAME" /> teď nebylo možné synchronizovat. Disk Google to zkusí znovu později.</translation>
@@ -904,7 +913,6 @@
 <translation id="8719721339511222681">Vybrali jste položku <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">chorvatština</translation>
 <translation id="8743164338060742337">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, spravováno administrátorem, připojit</translation>
-<translation id="8750438273876807512">Pokud k souboru chcete mít rychle přístup z poličky, podržte ho, klepněte na <ph name="ICON" /> a vyberte Připnout k poličce.</translation>
 <translation id="8787254343425541995">Povolit proxy servery u sdílených sítí</translation>
 <translation id="8790981080411996443">Člověk zalévající rostliny</translation>
 <translation id="8798099450830957504">Výchozí</translation>
@@ -939,6 +947,7 @@
 <translation id="9100610230175265781">Je vyžadována heslová fráze</translation>
 <translation id="9110990317705400362">Neustále hledáme způsoby, jak zvýšit bezpečnost prohlížení. V minulosti vás k přidání rozšíření do prohlížeče mohl vyzvat kterýkoliv web. V nejnovějších verzích Google Chrome musíte Chromu výslovně sdělit, že rozšíření chcete nainstalovat. Učiníte tak tím, že rozšíření přidáte na stránce Rozšíření. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Odemknout</translation>
+<translation id="9116909380156770361">Přenos souborů do zařízení <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Kodek</translation>
 <translation id="9130775360844693113">Členové týmu <ph name="DESTINATION_NAME" /> získají přístup k těmto položkám.</translation>
 <translation id="9131598836763251128">Vyberte jeden nebo více souborů</translation>
@@ -960,6 +969,7 @@
 <translation id="943972244133411984">Upravil(a)</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="947144732524271678">Vybrali jste položky <ph name="FROM_ENTRY_NAME" /> až <ph name="TO_ENTRY_NAME" /> (celkem <ph name="ENTRY_COUNT" />).</translation>
+<translation id="954194396377670556">Zásady administrátora brání:</translation>
 <translation id="965477715979482472">angličtina (Jižní Afrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Chcete jej nahradit?</translation>

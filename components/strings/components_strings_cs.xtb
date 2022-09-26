@@ -1258,6 +1258,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Připojení k webu <ph name="SITE" /> není zabezpečené</translation>
 <translation id="4349365535725594680">Důvěrný obsah nelze sdílet</translation>
+<translation id="4349810866125026513">Přesto nahrát</translation>
 <translation id="4350629523305688469">Multifunkční zásobník</translation>
 <translation id="4351060348582610152">Web <ph name="ORIGIN" /> chce vyhledat zařízení Bluetooth v okolí. Byla nalezena následující zařízení:</translation>
 <translation id="4351175281479794167">Zadat ověřovací kód</translation>
@@ -1980,6 +1981,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6337133576188860026">Uvolní méně než <ph name="SIZE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="6337534724793800597">Filtrovat zásady podle názvu</translation>
 <translation id="6340739886198108203">Zásady správce nedoporučují pořizování snímků nebo záznamů obrazovky, když je viditelný důvěrný obsah:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Zásady administrátora nedoporučují nahrávat tento soubor do následujícího cíle: <ph name="DESTINATION_NAME" />}few{Zásady administrátora nedoporučují nahrávat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}many{Zásady administrátora nedoporučují nahrávat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}other{Zásady administrátora nedoporučují nahrávat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Aktivní variace</translation>
 <translation id="6349101878882523185">Nainstalovat aplikaci <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Žádné}=1{1 heslo (pro <ph name="DOMAIN_LIST" />, synchronizováno)}=2{2 hesla (pro <ph name="DOMAIN_LIST" />, synchronizováno)}few{# hesla (pro <ph name="DOMAIN_LIST" />, synchronizováno)}many{# hesla (pro <ph name="DOMAIN_LIST" />, synchronizováno)}other{# hesel (pro <ph name="DOMAIN_LIST" />, synchronizováno)}}</translation>
@@ -2613,6 +2615,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8075736640322370409">Rychle vytvořit novou Tabulku Google</translation>
 <translation id="8075898834294118863">Spravovat nastavení webů</translation>
 <translation id="8076492880354921740">Karty</translation>
+<translation id="8078006011486731853">{0,plural, =1{Nahrát důvěrný soubor?}few{Nahrát důvěrné soubory?}many{Nahrát důvěrné soubory?}other{Nahrát důvěrné soubory?}}</translation>
 <translation id="8078141288243656252">Když je dokument otočený, nelze do něj přidávat značky a poznámky</translation>
 <translation id="8079031581361219619">Načíst web znovu?</translation>
 <translation id="8081087320434522107">Sedany</translation>

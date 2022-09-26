@@ -1634,6 +1634,7 @@
 <translation id="2468178265280335214">ਟੱਚਪੈਡ ਸਕ੍ਰੋਲ ਐਕਸੈੱਲਰੇਸ਼ਨ</translation>
 <translation id="2468205691404969808">ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਨੂੰ ਯਾਦ ਰੱਖਣ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਵਰਤੋਂ ਕਰਦੀ ਹੈ, ਭਾਵੇਂ ਤੁਸੀਂ ਉਹ ਪੰਨੇ ਨਹੀਂ ਦੇਖਦੇ</translation>
 <translation id="2468402215065996499">ਤਾਮਾਗੋਚੀ</translation>
+<translation id="2468470085922875120">ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਪਾਸਵਰਡਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ ਜਿਨ੍ਹਾਂ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣ ਔਖਾ ਹੁੰਦਾ ਹੈ</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ਟੈਬ}one{<ph name="GROUP_TITLE" /> - # ਟੈਬ}other{<ph name="GROUP_TITLE" /> - # ਟੈਬ}}</translation>
 <translation id="2469141124738294431">VM ਸਥਿਤੀ</translation>
 <translation id="2469259292033957819">ਤੁਹਾਡੇ ਕੋਲ ਰੱਖਿਅਤ ਕੀਤਾ ਕੋਈ ਪ੍ਰਿੰਟਰ ਨਹੀਂ ਹੈ।</translation>
@@ -1972,6 +1973,7 @@
 <translation id="2783321960289401138">ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ...</translation>
 <translation id="2783829359200813069">ਇਨਕ੍ਰਿਪਸ਼ਨ ਦੀਆਂ ਕਿਸਮਾਂ ਚੁਣੋ</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> ਨਾਲ ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਰਤੋ</translation>
+<translation id="2785267875302712148">ਪਾਸਵਰਡ ਜਾਂਚ</translation>
 <translation id="2785873697295365461">ਫ਼ਾਈਲ ਵਰਣਨਕਰਤਾ</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">ਸਥਨਾਕ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਰੱਖੋ (ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ, ਇਤਿਹਸ, ਆਦਿ)</translation>
@@ -2047,6 +2049,7 @@
 <translation id="2844169650293029770">USB-C ਡੀਵਾਈਸ (ਖੱਬੇ ਪਾਸੇ ਅੱਗੇ ਦਾ ਪੋਰਟ)</translation>
 <translation id="2844809857160214557">ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2845382757467349449">ਹਮੇਸਾਂ ਬੁੱਕਮਾਰਕਸ ਬਾਰ ਦਿਖਾਓ</translation>
+<translation id="284581348330507117">ਵਿਲੱਖਣ ਪਾਸਵਰਡ ਬਣਾਓ</translation>
 <translation id="284805635805850872">ਹਾਨੀਕਾਰਕ ਸਾਫਟਵੇਅਰ ਹਟਾਈਏ?</translation>
 <translation id="2849035674501872372">ਉੱਪਰ ਵੱਲ ਦੇਖੋ</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2197,6 +2200,7 @@
 <translation id="2985348301114641460">ਕੀ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਬੇਨਤੀ ਭੇਜਣੀ ਹੈ?</translation>
 <translation id="2987620471460279764">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਲਿਖਤ</translation>
 <translation id="2988018669686457659">ਵਾਧੂ ਰੈਂਡਰਰ</translation>
+<translation id="2988328607561082373">ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਪਾਸਵਰਡ ਦੀ ਮੁੜ-ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="2989123969927553766">ਮਾਊਸ ਸਕ੍ਰੋਲ ਐਕਸੈੱਲਰੇਸ਼ਨ</translation>
 <translation id="2989474696604907455">ਅਟੈਚ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="2989786307324390836">DER-ਐਨਕੋਡ ਕੀਤੀ ਬਾਈਨਰੀ, ਸਿੰਗਲ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
@@ -2225,6 +2229,7 @@
 <translation id="3009178788565917040">ਆਉਟਪੁਟ</translation>
 <translation id="3009300415590184725">ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ ਤੇ ਮੋਬਾਈਲ ਡਾਟਾ ਸੇਵਾ ਸੈਟਅਪ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਰੱਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="3009779501245596802">ਇੰਡੈਕਸ ਕੀਤੇ ਡਾਟਾਬੇਸ</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਮਜ਼ਬੂਤ ਲੱਗਦਾ ਹੈ}=1{{COUNT} ਕਮਜ਼ੋਰ ਪਾਸਵਰਡ}other{{COUNT} ਕਮਜ਼ੋਰ ਪਾਸਵਰਡ}}</translation>
 <translation id="3010279545267083280">ਪਾਸਵਰਡ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="3010389206479238935">ਇਸ ਵਿੱਚ ਜ਼ਬਰਦਸਤੀ ਖੋਲ੍ਹੋ</translation>
 <translation id="3011384993885886186">ਨਿੱਘਾ ਸਲੇਟੀ</translation>
@@ -4432,6 +4437,7 @@
 <translation id="5153234146675181447">ਫ਼ੋਨ ਭੁੱਲ ਜਾਓ</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> ਲਈ ਉੱਨਤ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{ਕੋਈ ਰੱਖਿਅਤ ਕੀਤਾ ਪਾਸਵਰਡ ਨਹੀਂ।}=1{{COUNT} ਸਾਈਟ ਲਈ ਪਾਸਵਰਡ ਦੀ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{{COUNT} ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਲਈ ਪਾਸਵਰਡ ਦੀ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="5154702632169343078">ਵਿਸ਼ਾ</translation>
 <translation id="5155327081870541046">ਪਤਾ ਬਾਰ ਵਿੱਚ, ਉਸ ਸਾਈਟ ਦਾ ਸ਼ਾਰਟਕੱਟ ਦਾਖਲ ਕਰੋ ਜਿਸਨੂੰ ਤੁਸੀਂ ਖੋਜਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਜਿਵੇਂ ਕਿ "@bookmarks"। ਫਿਰ, ਆਪਣਾ ਤਰਜੀਹੀ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ ਅਤੇ ਆਪਣਾ ਖੋਜ ਸ਼ਬਦ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="5156638757840305347">ਕਰਸਰ ਦਿਸਣ ਜਾਂ ਹਿਲਜੁਲ ਹੋਣ 'ਤੇ ਉਜਾਗਰ ਹੁੰਦਾ ਹੈ</translation>
@@ -5014,6 +5020,7 @@
 <translation id="5713158217420111469"><ph name="DEVICE" /> ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="5713960379473463904">ਸਪੇਸ ਇਨਪੁੱਟ ਸਟਾਈਲ</translation>
 <translation id="5715711091495208045">ਪਲੱਗਇਨ ਬ੍ਰੋਕਰ: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">ਤੁਹਾਨੂੰ ਹੁਣੇ ਇਨ੍ਹਾਂ ਨੂੰ ਬਦਲਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
 <translation id="5719603411793408026">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਖੋਜ ਇੰਜਣ</translation>
 <translation id="5719854774000914513">ਸਾਈਟਾਂ HID ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="572155275267014074">Android ਸੈਟਿੰਗਾਂ</translation>
@@ -6475,6 +6482,7 @@
 <translation id="7098447629416471489">ਰੱਖਿਅਤ ਕੀਤੇ ਹੋਰ ਖੋਜ ਇੰਜਣ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੇ</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ਐਪ ਨੂੰ ਹਟਾਓ}one{ਐਪ ਨੂੰ ਹਟਾਓ}other{ਐਪਾਂ ਨੂੰ ਹਟਾਓ}}</translation>
 <translation id="7099337801055912064">ਵੱਡੇ ਆਕਾਰ ਦਾ PPD ਲੋਡ ਨਹੀਂ ਕਰ ਸਕਦੇ। ਅਧਿਕਤਮ ਆਕਾਰ 250 KB ਹੈ।</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{ਕਿਸੇ ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਨਹੀਂ ਹੋਈ}=1{{COUNT} ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}other{{COUNT} ਪਾਸਵਰਡਾਂ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}}</translation>
 <translation id="7102687220333134671">ਸਵੈਚਲਿਤ ਅੱਪਡੇਟ ਚਾਲੂ ਹਨ</translation>
 <translation id="7102832101143475489">ਬੇਨਤੀ ਦੀ ਸਮਾਂ-ਸਮਾਪਤੀ</translation>
 <translation id="710640343305609397">ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -7419,6 +7427,7 @@
 ਆਪਣੀ ਮੁੱਖ ਫਾਈਲ ਨੂੰ ਇੱਕ ਸੁਰੱਖਿਅਤ ਥਾਂ 'ਤੇ ਰੱਖੋ। ਤੁਹਾਨੂੰ ਇਸਦੀ ਲੋੜ ਆਪਣੀ ਐਕਸਟੈਂਸ਼ਨ ਦੇ ਨਵੇਂ ਰੂਪ ਬਣਾਉਣ ਲਈ ਹੋਵੇਗੀ।</translation>
 <translation id="8002274832045662704">ਉੱਨਤ ਪ੍ਰਿੰਟਰ ਸੰਰੂਪਣ</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
+<translation id="8004092996156083991">ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਨਾਲ ਛੇੜਛਾੜ ਹੋਣ 'ਤੇ, ਅਸੀਂ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰਾਂਗੇ।</translation>
 <translation id="8004582292198964060">ਬ੍ਰਾਊਜ਼ਰ</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> ਨੂੰ ਹਮੇਸ਼ਾਂ ਕਲਿੱਪਬੋਰਡ ਦੇਖਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="8006630792898017994">Space ਜਾਂ Tab</translation>
@@ -7917,6 +7926,7 @@
 <translation id="8470513973197838199"><ph name="ORIGIN" /> ਲਈ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ</translation>
 <translation id="8471525937465764768">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਕਿਸੇ ਦਸਤਾਵੇਜ਼ ਨੂੰ ਪ੍ਰਿੰਟ ਕਰਨ ਜਾਂ ਕਿਸੇ ਸਟੋਰੇਜ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕਰਨ ਜਿਹੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ USB ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="8471959340398751476">ਛੋਟਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਬੰਦ ਹੈ। ਤੁਸੀਂ ਵਿਉਂਤਬੱਧ ਮੀਨੂ ਵਿੱਚ ਇਸਨੂੰ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਵਿਲੱਖਣ ਹਨ}=1{{COUNT} ਮੁੜ-ਵਰਤਿਆ ਪਾਸਵਰਡ}other{{COUNT} ਮੁੜ-ਵਰਤੇ ਪਾਸਵਰਡ}}</translation>
 <translation id="8472623782143987204">ਹਾਰਡਵੇਅਰ-ਬੈਕਅੱਪ</translation>
 <translation id="8473863474539038330">ਪਤੇ ਅਤੇ ਹੋਰ</translation>
 <translation id="8475313423285172237">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੇ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਗਰਾਮ ਨੇ ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਜੋੜ ਦਿੱਤੀ ਜੋ Chrome ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।</translation>
@@ -8397,6 +8407,7 @@
 <translation id="8940081510938872932">ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਹੁਣ ਕਈ ਚੀਜ਼ਾਂ ਕਰ ਰਿਹਾ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="8940381019874223173">ਤੁਹਾਡੀਆਂ Google Photos ਤੋਂ</translation>
 <translation id="8941173171815156065">ਅਨੁਮਤੀ '<ph name="PERMISSION" />' ਰੱਦ ਕਰੋ</translation>
+<translation id="894191600409472540">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਬਣਾਓ</translation>
 <translation id="894360074127026135">Netscape ਅੰਤਰਰਾਸ਼ਟਰੀ ਸਟੈਪ-ਅਪ</translation>
 <translation id="8944099748578356325">ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਬੈਟਰੀ ਵਰਤੇਗਾ (ਇਸ ਸਮੇਂ <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">ਪ੍ਰਤੀਕ ਆਕਾਰ</translation>
@@ -8620,6 +8631,7 @@
 <translation id="9140067245205650184">ਤੁਸੀਂ ਅਸਮਰਥਿਤ ਵਿਸ਼ੇਸ਼ਤਾ ਫਲੈਗ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ: <ph name="BAD_FLAG" />। ਸਥਿਰਤਾ ਅਤੇ ਸੁਰੱਖਿਆ 'ਤੇ ਅਸਰ ਪਵੇਗਾ।</translation>
 <translation id="9142637293078737510">ਚਿੱਤਰ ਦਾ ਉਪਨਾਮ</translation>
 <translation id="9143298529634201539">ਕੀ ਸੁਝਾਅ ਹਟਾਉਣਾ ਹੈ?</translation>
+<translation id="9143922477019434797">ਆਪਣੇ ਪਾਸਵਰਡ ਸੁਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="9147392381910171771">&amp;ਚੋਣਾਂ</translation>
 <translation id="9148058034647219655">ਬਾਹਰ ਜਾਓ</translation>
 <translation id="9148126808321036104">ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>

@@ -1257,6 +1257,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">De verbinding met <ph name="SITE" /> is niet beveiligd</translation>
 <translation id="4349365535725594680">Kan vertrouwelijke content niet delen</translation>
+<translation id="4349810866125026513">Toch uploaden</translation>
 <translation id="4350629523305688469">Multifunctionele lade</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> wil scannen naar Bluetooth-apparaten in de buurt. De volgende apparaten zijn gevonden:</translation>
 <translation id="4351175281479794167">Verificatiecode opgeven</translation>
@@ -1979,6 +1980,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6337133576188860026">Hiermee wordt minder dan <ph name="SIZE" /> vrijgemaakt. Sommige sites kunnen langzamer worden geladen wanneer je ze weer bezoekt.</translation>
 <translation id="6337534724793800597">Beleid filteren op naam</translation>
 <translation id="6340739886198108203">Op basis van het beheerdersbeleid wordt afgeraden screenshots of opnamen te maken als er vertrouwelijke content zichtbaar is:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand te uploaden naar <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden te uploaden naar <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Actieve variaties</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installeren</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Geen}=1{1 wachtwoord (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}=2{2 wachtwoorden (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}other{# wachtwoorden (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}}</translation>
@@ -2613,6 +2615,7 @@ Aanvullende informatie:
 <translation id="8075736640322370409">Snel een nieuwe Google-spreadsheet maken</translation>
 <translation id="8075898834294118863">Site-instellingen beheren</translation>
 <translation id="8076492880354921740">Tabbladen</translation>
+<translation id="8078006011486731853">{0,plural, =1{Vertrouwelijk bestand uploaden?}other{Vertrouwelijke bestanden uploaden?}}</translation>
 <translation id="8078141288243656252">Kan geen aantekeningen maken als het document is gedraaid</translation>
 <translation id="8079031581361219619">Site opnieuw laden?</translation>
 <translation id="8081087320434522107">Sedans</translation>

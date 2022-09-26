@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1005794457625275818">Pinapayagan ang cookies para sa <ph name="FPS_MEMBERS_COUNT" /> (na) site sa grupo ng <ph name="FPS_OWNER" />, kabilang ang <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Buksan Online</translation>
 <translation id="1044891598689252897">Gagana nang normal ang mga site</translation>
 <translation id="1124090076051167250">Iki-clear nito ang <ph name="DATASIZE" /> ng data at cookies na na-store ng mga site o ng mga app sa iyong Home screen.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Oo</translation>
 <translation id="1446450296470737166">Payagan ganap na kontrol sa MIDI device</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1633720957382884102">Mga kaugnay na site</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1647582022260550163">Sigurado ka bang gusto mong i-reset ang mga pahintulot, at i-clear ang cookies at data ng site?</translation>
 <translation id="1660204651932907780">Payagan ang mga site na mag-play ng tunog (inirerekomenda)</translation>

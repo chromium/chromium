@@ -858,6 +858,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3261488570342242926">Saznajte više o virtuelnim karticama</translation>
 <translation id="3264837738038045344">Dugme za upravljanje podešavanjima Chrome-a, pritisnite Enter da biste posetili podešavanja Chrome-a</translation>
 <translation id="3266793032086590337">Vrednost (neusaglašena)</translation>
+<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nema blokiranih sajtova, uključujući srodne sajtove}=1{1 sajt je blokiran, uključujući srodne sajtove}one{# sajt je blokiran, uključujući srodne sajtove}few{# sajta su blokirana, uključujući srodne sajtove}other{# sajtova je blokirano, uključujući srodne sajtove}}</translation>
 <translation id="3268451620468152448">Otvorene kartice</translation>
 <translation id="3270156322180235608">Vazdušni saobraćaj</translation>
 <translation id="3270847123878663523">&amp;Opozovi promenu redosleda</translation>
@@ -956,6 +957,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3528171143076753409">Sertifikat servera nije pouzdan.</translation>
 <translation id="3528485271872257980">Tamnobraon</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Najmanje 1 stavka na sinhronizovanim uređajima}=1{1 stavka (i još stavki na sinhronizovanim uređajima)}one{# stavka (i još stavki na sinhronizovanim uređajima)}few{# stavke (i još stavki na sinhronizovanim uređajima)}other{# stavki (i još stavki na sinhronizovanim uređajima)}}</translation>
+<translation id="3531366304259615706">Koristite zaključavanje ekrana</translation>
 <translation id="3531780078352352885">Radni listovi</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> želi da koristi mikrofon</translation>
 <translation id="3533328374079021623">5. poštansko sanduče</translation>
@@ -1667,6 +1669,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" />–<ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">4. pregrada za slaganje</translation>
 <translation id="5421136146218899937">Obriši podatke pregledanja...</translation>
+<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nema blokiranih sajtova}=1{1 sajt je blokiran}one{# sajt je blokiran}few{# sajta su blokirana}other{# sajtova je blokirano}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> želi da vam šalje obaveštenja</translation>
 <translation id="5428105026674456456">španski</translation>
 <translation id="5430298929874300616">Uklonite obeleživač</translation>
@@ -1772,6 +1775,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="571510845185711675">Veterinari</translation>
 <translation id="5720705177508910913">Trenutni korisnik</translation>
 <translation id="5723287205918986743">Vojna industrija</translation>
+<translation id="5725567311035061582">Upravljaj kolačićima i podacima o sajtovima</translation>
 <translation id="5730040223043577876">Chrome vam preporučuje da resetujete lozinku ako ste je koristili na drugim sajtovima.</translation>
 <translation id="5736165827969430182">Metalurgija i rudarstvo</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Sačuvajte karticu na Google nalogu}one{Sačuvajte kartice na Google nalogu}few{Sačuvajte kartice na Google nalogu}other{Sačuvajte kartice na Google nalogu}}</translation>
@@ -2347,6 +2351,7 @@ Dodatni detalji:
 <translation id="7372973238305370288">rezultat pretrage</translation>
 <translation id="7374461526650987610">Obrađivači protokola</translation>
 <translation id="7374733840632556089">Ovaj problem se javlja zbog sertifikata koji ste vi ili neko drugi instalirali na uređaju. Sertifikat se koristi za nadgledanje i presretanje mreža i Chrome ga ne smatra pouzdanim. Iako postoje pojedini opravdani razlozi za nadgledanje, na primer na školskoj ili poslovnoj mreži, Chrome želi da budete svesni da se to događa, čak i ako to ne možete da sprečite. Nadgledanje je moguće u bilo kom pregledaču ili aplikaciji koja pristupa vebu.</translation>
+<translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nijedan sajt nije dozvoljen}=1{1 sajt je dozvoljen}one{# sajt je dozvoljen}few{# sajta su dozvoljena}other{# sajtova je dozvoljeno}}</translation>
 <translation id="7375818412732305729">Datoteka je priložena</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">Kontrole za medije</translation>
@@ -2615,6 +2620,7 @@ Dodatni detalji:
 <translation id="8055534648776115597">Stručno osposobljavanje i kontinuirano obrazovanje</translation>
 <translation id="8057711352706143257">Softver „<ph name="SOFTWARE_NAME" />“ nije pravilno konfigurisan. Deinstaliranje softvera „<ph name="SOFTWARE_NAME" />“ obično rešava problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">Proizvodnja hrane</translation>
+<translation id="8066225060526005217">Upravljaju podešavanja kolačića</translation>
 <translation id="8067872629359326442">Upravo ste uneli lozinku na obmanjujućem sajtu. Chromium može da vam pomogne. Da biste promenili lozinku i obavestili Google da je nalog možda ugrožen, kliknite na Zaštiti nalog.</translation>
 <translation id="8070439594494267500">Ikona aplikacije</translation>
 <translation id="8075736640322370409">Brzo napravite novu Google tabelu</translation>
@@ -2705,6 +2711,7 @@ Dodatni detalji:
 <translation id="829335040383910391">zvuk</translation>
 <translation id="8294431847097064396">Izvor</translation>
 <translation id="8296205692406981542">Regionalni parkovi i bašte</translation>
+<translation id="8297545700510100061">Kolačići i drugi podaci o sajtovima se koriste da biste bili zapamćeni, na primer, radi prijavljivanja ili personalizovanja oglasa. Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">WiFi mreža koju koristite (<ph name="WIFI_NAME" />) će možda zahtevati da posetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8299269255470343364">japanski</translation>
 <translation id="8303854710873047864">Prikazuje se odeljak „<ph name="SECTION" />“</translation>

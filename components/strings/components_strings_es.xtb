@@ -1262,6 +1262,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">La conexión a <ph name="SITE" /> no es segura</translation>
 <translation id="4349365535725594680">No se puede compartir contenido confidencial</translation>
+<translation id="4349810866125026513">Subir de todos modos</translation>
 <translation id="4350629523305688469">Bandeja multifunción</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> quiere buscar dispositivos Bluetooth cercanos. Se han encontrado los siguientes dispositivos:</translation>
 <translation id="4351175281479794167">Introduce el código de verificación</translation>
@@ -1984,6 +1985,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. Algunos sitios pueden tardar más en cargarse la próxima vez que accedas a ellos.</translation>
 <translation id="6337534724793800597">Filtrar políticas por nombre</translation>
 <translation id="6340739886198108203">La política del administrador recomienda no hacer capturas de pantalla o grabaciones cuando se muestra contenido confidencial:</translation>
+<translation id="6341434961864773665">{0,plural, =1{La política del administrador recomienda no subir este archivo a <ph name="DESTINATION_NAME" />}other{La política del administrador recomienda no subir estos archivos a <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Variaciones activas</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ninguna}=1{1 contraseña de <ph name="DOMAIN_LIST" /> (sincronizada)}=2{2 contraseñas de <ph name="DOMAIN_LIST" /> (sincronizadas)}other{# contraseñas de <ph name="DOMAIN_LIST" /> (sincronizadas)}}</translation>
@@ -2616,6 +2618,7 @@ Más información:
 <translation id="8075736640322370409">Crea una nueva Hoja de cálculo de Google rápidamente</translation>
 <translation id="8075898834294118863">Gestionar la configuración del sitio</translation>
 <translation id="8076492880354921740">Pestañas</translation>
+<translation id="8078006011486731853">{0,plural, =1{¿Subir archivo confidencial?}other{¿Subir archivos confidenciales?}}</translation>
 <translation id="8078141288243656252">No se pueden añadir anotaciones a los documentos girados</translation>
 <translation id="8079031581361219619">¿Quieres volver a cargar el sitio web?</translation>
 <translation id="8081087320434522107">Sedanes</translation>

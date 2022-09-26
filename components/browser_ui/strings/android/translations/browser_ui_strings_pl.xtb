@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1005794457625275818">Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryn w grupie <ph name="FPS_OWNER" />, w tym <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Otwórz online</translation>
 <translation id="1044891598689252897">Strony będą działać normalnie</translation>
 <translation id="1124090076051167250">Spowoduje to usunięcie <ph name="DATASIZE" /> danych i plików cookie zapisanych przez stronę lub aplikacje na ekranie głównym.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Tak</translation>
 <translation id="1446450296470737166">Pełne sterowanie urządzeniami MIDI</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1633720957382884102">Powiązane witryny</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1647582022260550163">Czy na pewno chcesz zresetować uprawnienia oraz wyczyścić pliki cookie i dane witryn?</translation>
 <translation id="1660204651932907780">Zezwalaj na odtwarzanie dźwięku na stronach internetowych (zalecane)</translation>

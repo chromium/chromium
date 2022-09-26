@@ -142,6 +142,11 @@
       決定螢幕保護程式顯示前的閒置時間是否要顯示在零售模式下的裝置登入畫面上。
 
       應以毫秒數指定政策值。</translation>
+<translation id="1143257335984030879">這項政策會控管購物清單功能是否開放使用。
+      如果啟用政策，使用者就能透過 UI 追蹤目前頁面的產品價格，而追蹤的產品會顯示在書籤側邊面板中。
+      如果將這項政策設為啟用或未設定，使用者將可存取購物清單功能。
+      如果將這項政策設為停用，使用者將無法存取購物清單功能。
+      </translation>
 <translation id="1144540226829648811">指定這部裝置的固定發布版本。
 
       只有將 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> 設為 False，<ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 設定才會生效。</translation>
@@ -431,6 +436,10 @@
       擴充印表機也稱為列印服務提供者目的地，其中包含所有屬於 <ph name="PRODUCT_NAME" /> 擴充功能的目的地。
 
       本機印表機也稱為原生列印目的地，其中包含可供本機電腦和共用網路印表機使用的目的地。</translation>
+<translation id="1456449214426764016">非標準 API window.webkitStorageInfo 已淘汰，我們也計劃將這個 API 移除。
+      這項政策會重新啟用這個 API。
+      如果將這項政策設為啟用，系統將開放使用 window.webkitStorageInfo API。如果將這項政策設為停用或不設定，window.webkitStorageInfo API 就無法使用。
+      </translation>
 <translation id="1456822151187621582">Windows (<ph name="PRODUCT_OS_NAME" />用戶端)：</translation>
 <translation id="1464848559468748897">針對使用者在 <ph name="PRODUCT_OS_NAME" /> 裝置多重設定檔工作階段中的行為進行控制。
 
@@ -3137,6 +3146,7 @@
 
       詳情請參閱 https://developer.chrome.com/blog/immutable-document-domain/。
       </translation>
+<translation id="416817811987180750">使用者將可存取購物清單功能。</translation>
 <translation id="4169692397912242417">在登入畫面上啟用互動朗讀無障礙功能。
 
           如果將這項政策設為 True，系統將一律在登入畫面上啟用互動朗讀功能。
@@ -3823,6 +3833,7 @@
 
       如果將這項政策設為停用或不設定，Kiosk 網頁應用程式就只能使用主要瀏覽器視窗而無法開啟新視窗。如果呼叫任何可開啟新視窗的 JavaScript 函式，系統將一律忽略。</translation>
 <translation id="4980635395568992380">資料類型：</translation>
+<translation id="4981831669478419057">使用者將無法存取購物清單功能。</translation>
 <translation id="4983201894483989687">允許執行過舊的外掛程式</translation>
 <translation id="4986560318567565414">從替代瀏覽器切換到 Chrome 所使用的路徑。</translation>
 <translation id="4987813583395474995">如果將這項政策設為 Enabled，系統就能使用已淘汰的 U2F Security Key API，並針對 U2F API 要求隱藏淘汰提醒訊息。
@@ -6597,6 +6608,7 @@
           如果將這項政策設為 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />，瀏覽器將還原至前一個工作階段並開啟獨立視窗，以顯示透過 <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> 設定的網址。請注意，使用者可選擇讓那些網址保持開啟，這些網址也可以於日後的工作階段中復原。
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
+<translation id="7919665519909231619">允許啟用購物清單功能</translation>
 <translation id="7922358664346625612">讓 Chrome 中的最後一個分頁保持開啟。</translation>
 <translation id="7924321157669251966">使用電池供電時的螢幕亮度百分比</translation>
 <translation id="7925224837072026018">設定這項政策會將企業金鑰的存取權授予擴充功能或 Android 應用程式。在受管理的帳戶中使用 chrome.enterprise.platformKeys API 產生的金鑰僅供企業使用。使用者無法將企業金鑰的存取權授予擴充功能或 Android 應用程式，也無法撤銷擴充功能或 Android 應用程式對企業金鑰的存取權。
@@ -7005,6 +7017,12 @@
       應以毫秒數指定政策值。</translation>
 <translation id="8330437518362176921">下載及更新 Kiosk Chrome 應用程式時，只使用政策提供的更新網址</translation>
 <translation id="8331479227794770304">啟用相黏鍵</translation>
+<translation id="8336469459912731404">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 在驗證伺服器憑證時將使用內建憑證驗證器和 Chrome Root Store 做為公開信任來源。
+      如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 將使用系統憑證驗證器和系統根憑證。
+      如果不設定這項政策，系統可能會使用 Chrome Root Store 或系統提供的根層級。
+
+      我們計劃在 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 111 版的 <ph name="PRODUCT_NAME" /> 中移除這項政策，屆時將停止支援平台提供的憑證驗證器和根層級。
+      </translation>
 <translation id="8337114537412769126">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> 政策來指定使用 POST 提供搜尋建議時的參數。設定值由名稱和值的組合所構成 (以半形逗號分隔多個設定值)。如果值為範本參數 (例如 <ph name="SEARCH_TERM_MARKER" />)，實際的搜尋字詞資料會取代該參數。
 
       如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> 政策，系統會使用 GET 方法傳送建議搜尋要求。</translation>

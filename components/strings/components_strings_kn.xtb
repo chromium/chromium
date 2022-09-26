@@ -1391,6 +1391,7 @@
 <translation id="4744514002166662487">ಪ್ರಸ್ತುತಿಯನ್ನು ರಚಿಸಿ</translation>
 <translation id="4744603770635761495">ಪ್ರದರ್ಶನಗೊಳ್ಳುವಂತಹ ಹಾದಿ</translation>
 <translation id="4749011317274908093">ನೀವು ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿರುವಿರಿ</translation>
+<translation id="4750671009706599284">ಈ ಫೋನ್</translation>
 <translation id="4750917950439032686">ಈ ಸೈಟ್‌ಗೆ ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಕಳುಹಿಸಿದಾಗ ಅದು (ಉದಾಹರಣೆಗೆ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಗಳು) ಖಾಸಗಿಯಾಗಿರುತ್ತದೆ.</translation>
 <translation id="4751476147751820511">ಚಲನೆ ಅಥವಾ ಬೆಳಕಿನ ಸೆನ್ಸರ್‌ಗಳು</translation>
 <translation id="4754461935447132332">ಸುರಕ್ಷಿತವಲ್ಲದ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
@@ -2157,6 +2158,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">ಓದುವುದನ್ನು ಸುಲಭಗೊಳಿಸಲು, Chrome ಈ ಪುಟವನ್ನು ಸರಳೀಕರಿಸಿದೆ. Chrome, ಅಸುರಕ್ಷಿತ ಸಂಪರ್ಕದ ಮೂಲಕ ಮೂಲ ಪುಟವನ್ನು ಪಡೆದುಕೊಂಡಿದೆ.</translation>
 <translation id="6890443033788248019">ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಬೇಕೆ?</translation>
+<translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> ಅನ್ನು ಬಳಸುವ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ <ph name="DEVICE_LABEL" /> ಮೂಲಕ ಪರಿಶೀಲಿಸಲು ನೀವು ಆಯ್ಕೆಮಾಡಿದ್ದೀರಿ. ಈ ಪೂರೈಕೆದಾರರು ನಿಮ್ಮ ಪಾವತಿ ವಿಧಾನದ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸಿರಬಹುದು, ಅದನ್ನು <ph name="BEGIN_LINK" />ಅಳಿಸಲು ನೀವು ವಿನಂತಿಸಬಹುದು<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">ನೀತಿಯ ಮಟ್ಟವು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ.</translation>
 <translation id="6895143722905299846">ವರ್ಚುವಲ್ ಸಂಖ್ಯೆ:</translation>
 <translation id="6895330447102777224">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ದೃಢೀಕರಿಸಲಾಗಿದೆ</translation>
@@ -2516,6 +2518,7 @@
 <translation id="7764225426217299476">ವಿಳಾಸ ಸೇರಿಸಿ</translation>
 <translation id="7766518757692125295">ಸ್ಕರ್ಟ್</translation>
 <translation id="7773005668374414287">ಒಂದೇ ಆರ್ಡರ್ ಮುಖ ಮೇಲಕ್ಕೆ</translation>
+<translation id="7785790577395078482">ಈ ಟ್ಯಾಬ್ಲೆಟ್</translation>
 <translation id="7791011319128895129">ಪ್ರಕಟಿಸಿರದ</translation>
 <translation id="7791196057686275387">ಬೇಲ್</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>

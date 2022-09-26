@@ -860,7 +860,6 @@
 <translation id="8456681095658380701">Nombre no válido</translation>
 <translation id="8457767749626250697">Tu SIM está bloqueada</translation>
 <translation id="8459404855768962328">Si copias este elemento, se compartirá con las personas que pueden ver la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
-<translation id="8461467696380332069">Haz clic con el botón derecho en un archivo y selecciona "Fijar en la barra" para crear un acceso rápido en la barra.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamita (VIQR)</translation>
 <translation id="8475647382427415476">En este momento, Google Drive no puede sincronizar "<ph name="FILENAME" />". Google Drive volverá a intentarlo más tarde.</translation>
@@ -897,7 +896,6 @@
 <translation id="8719721339511222681">Se seleccionó <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>
 <translation id="8743164338060742337">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, administrada por tu administrador, conectar</translation>
-<translation id="8750438273876807512">Mantén presionado un archivo y presiona <ph name="ICON" />. Luego, selecciona "Fijar en la barra" para crear un acceso rápido en la barra.</translation>
 <translation id="8787254343425541995">Permitir proxies para redes compartidas</translation>
 <translation id="8790981080411996443">Persona regando plantas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>

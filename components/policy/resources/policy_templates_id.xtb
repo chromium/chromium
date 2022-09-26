@@ -142,6 +142,11 @@
       Menentukan durasi sebelum tirai layar ditampilkan di layar masuk dalam mode eceran.
 
       Nilai kebijakan harus ditentukan dalam milidetik.</translation>
+<translation id="1143257335984030879">Kebijakan ini mengontrol ketersediaan fitur daftar belanja.
+      Jika diaktifkan, pengguna akan melihat UI untuk memantau harga produk yang ditampilkan di halaman saat ini. Produk yang dipantau akan ditampilkan di panel samping bookmark.
+      Jika kebijakan ini disetel ke Aktif atau tidak disetel, fitur daftar belanja akan tersedia bagi pengguna.
+      Jika kebijakan ini disetel ke Nonaktif, fitur daftar belanja tidak akan tersedia.
+      </translation>
 <translation id="1144540226829648811">Menentukan saluran rilis yang harus dikaitkan ke perangkat ini.
 
       Menyetel <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> hanya akan berpengaruh jika <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> disetel ke Salah (False).</translation>
@@ -441,6 +446,11 @@
       Printer ekstensi juga disebut sebagai tujuan penyedia cetak, dan menyertakan semua tujuan yang termasuk dalam ekstensi <ph name="PRODUCT_NAME" />.
 
       Printer lokal juga disebut sebagai tujuan cetak native, dan menyertakan tujuan yang tersedia untuk mesin lokal dan printer jaringan bersama.</translation>
+<translation id="1456449214426764016">API non-standar window.webkitStorageInfo tidak digunakan lagi dan akan dihapus.
+      Kebijakan ini akan mengaktifkan kembali API tersebut.
+      Jika kebijakan ini disetel ke Aktif, window.webkitStorageInfo API akan tersedia.
+      Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, window.webkitStorageInfo API tidak akan tersedia.
+      </translation>
 <translation id="1456822151187621582">Windows (klien <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Mengontrol perilaku pengguna di sesi multi profil di perangkat <ph name="PRODUCT_OS_NAME" />.
 
@@ -3235,6 +3245,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Lihat https://developer.chrome.com/blog/immutable-document-domain/
       untuk detail selengkapnya.
       </translation>
+<translation id="416817811987180750">Fitur daftar belanja akan tersedia bagi pengguna.</translation>
 <translation id="4169692397912242417">Mengaktifkan fitur aksesibilitas respons lisan di layar login.
 
           Jika kebijakan ini ditetapkan ke true, respons lisan akan selalu diaktifkan di layar login.
@@ -3926,6 +3937,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, Aplikasi Web Kios hanya dapat menggunakan jendela utama browser dan tidak dapat membuka jendela baru. Memanggil fungsi JavaScript untuk membuka jendela baru akan diabaikan.</translation>
 <translation id="4980635395568992380">Jenis data:</translation>
+<translation id="4981831669478419057">Fitur daftar belanja tidak akan tersedia bagi pengguna.</translation>
 <translation id="4983201894483989687">Izinkan menjalankan plugin yang kedaluwarsa</translation>
 <translation id="4986560318567565414">Jalur ke Chrome untuk beralih dari browser alternatif.</translation>
 <translation id="4987813583395474995">Jika disetel ke Aktif, U2F Security Key API yang sudah tidak digunakan lagi dapat digunakan dan perintah pengingat penghentian penggunaan yang ditampilkan untuk permintaan U2F API akan disembunyikan.
@@ -4997,6 +5009,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Tentukan aplikasi Chrome berdasarkan ID, seperti pjkljhegncpnkpknbcohdijeoejaedia; aplikasi Android berdasarkan nama paket, seperti com.google.android.gm; dan aplikasi web berdasarkan URL yang digunakan di <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, seperti https://google.com/maps.
 
       Jika tidak ditetapkan, pengguna akan diizinkan mengubah daftar aplikasi yang dipasangi pin di peluncur.</translation>
+<translation id="6184385589352532028">Jangan aktifkan Desk API untuk kontrol ChromeOS pihak ketiga</translation>
 <translation id="6190367314942602985">Laporkan informasi Identifikasi Pengguna</translation>
 <translation id="6191963383731098056">Kebijakan ini memungkinkan admin mengonfigurasi warna tema <ph name="PRODUCT_NAME" />. String input harus berupa string warna hex valid yang sesuai dengan format "#RRGGBB".
 
@@ -6754,6 +6767,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika kebijakan ini disetel ke <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, browser akan memulihkan sesi sebelumnya dan membuka jendela terpisah untuk menampilkan URL yang disetel dari <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Perlu diperhatikan bahwa pengguna dapat memilih untuk membiarkan URL tersebut dibuka dan URL tersebut juga akan dipulihkan pada sesi mendatang.
 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
+<translation id="7919665519909231619">Mengizinkan fitur daftar belanja diaktifkan</translation>
 <translation id="7922358664346625612">Biarkan tab terakhir terbuka di Chrome.</translation>
 <translation id="7924321157669251966">Persentase kecerahan layar saat menggunakan daya baterai.</translation>
 <translation id="7925224837072026018">Menyetel kebijakan akan memberi ekstensi atau aplikasi Android akses ke kunci perusahaan. Kunci hanya ditujukan untuk pemakaian dalam perusahaan jika dibuat menggunakan chrome.enterprise.platformKeys API pada akun terkelola. Pengguna tidak dapat memberikan atau menarik akses ke kunci perusahaan kepada atau dari ekstensi atau aplikasi Android.
@@ -6843,6 +6857,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna tidak dapat menggunakan <ph name="LACROS_NAME" />.
 
       Jika kebijakan ini disetel ke Aktif, pengguna dapat menggunakan browser <ph name="LACROS_NAME" />.</translation>
+<translation id="8020222525161221827">Aktifkan Desk API untuk kontrol ChromeOS pihak ketiga</translation>
 <translation id="802147957407376460">Putar layar sebesar 0 derajat</translation>
 <translation id="80243978433618492">Jangan izinkan pemfilteran parameter URL apa pun.</translation>
 <translation id="8025620823136567878">Pintasan keyboard internasional dipetakan ke lokasi tombolnya di keyboard, bukan glyph tombol.</translation>
@@ -7173,6 +7188,12 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
       Nilai kebijakan harus ditentukan dalam milidetik.</translation>
 <translation id="8330437518362176921">Hanya menggunakan URL update yang disediakan oleh kebijakan saat mendownload dan mengupdate aplikasi Kiosk Chrome</translation>
 <translation id="8331479227794770304">Aktifkan tombol lengket</translation>
+<translation id="8336469459912731404">Jika kebijakan ini disetel ke aktif, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat bawaan dengan Chrome Root Store sebagai sumber tepercaya publik.
+      Jika kebijakan ini disetel ke nonaktif, <ph name="PRODUCT_NAME" /> akan menggunakan pemverifikasi sertifikat sistem dan root certificate sistem.
+      Jika kebijakan ini tidak disetel, Chrome Root Store atau root yang disediakan sistem dapat digunakan.
+
+      Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> untuk <ph name="MS_WIN_NAME" /> dan <ph name="MAC_OS_NAME" /> versi 111 dan saat ini terjadi, dukungan untuk penggunaan pemverifikasi sertifikat dan root yang disediakan platform akan dihapus.
+      </translation>
 <translation id="8337114537412769126">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> akan menentukan parameter ketika melakukan penelusuran saran dengan POST. Kebijakan terdiri dari pasangan nama kunci yang dipisahkan koma. Jika nilai adalah parameter template seperti <ph name="SEARCH_TERM_MARKER" />, data istilah penelusuran nyata akan menggantikannya.
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> tidak disetel, permintaan penelusuran saran dikirimkan menggunakan metode GET.</translation>
@@ -7873,6 +7894,7 @@ Kebijakan akan dihapus pada M75.</translation>
 
       Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan merekam atau melaporkan status audio.
       Pengecualian: Informasi tingkat volume sistem dikontrol oleh <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> untuk M95 dan yang lebih lama.</translation>
+<translation id="9071527533179676468">Jika kebijakan disetel ke Aktif, aplikasi web pihak ketiga dapat menggunakan Desk API untuk mengontrol desktop ChromeOS. Jika kebijakan ini disetel ke nonaktif atau tidak disetel, Desk API tidak akan tersedia.</translation>
 <translation id="9072475476775217730">Jika kebijakan disetel ke Nonaktif, pop-up yang menargetkan <ph name="BLANK_PAGE_NAME" /> akan diizinkan untuk mengakses (melalui JavaScript) halaman yang meminta pembukaan pop-up.
 
       Jika kebijakan disetel ke Aktif atau tidak disetel, properti <ph name="WINDOW_OPENER_PROPERTY" /> akan disetel ke <ph name="NULL_VALUE" /> kecuali anchor menentukan <ph name="REL_OPENER_ATTRIBUTE" />.

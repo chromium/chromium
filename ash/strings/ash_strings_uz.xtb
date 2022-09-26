@@ -225,6 +225,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2227179592712503583">Taklifni olib tashlash</translation>
 <translation id="225680501294068881">Qurilma qidirilmoqda...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> yuklab olinayotganda xatolik yuz berdi</translation>
+<translation id="2258734398699965611">Takfil qilingan fayllar</translation>
 <translation id="2268130516524549846">Bluetooth o‘chirildi</translation>
 <translation id="2268813581635650749">Hammasidan chiqish</translation>
 <translation id="2269016722240250274">Ilova mikrofoningizni ishlatmoqda</translation>
@@ -900,6 +901,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="6099678161144790572">Oxirgi oyda tahrirlangan</translation>
 <translation id="6103838137565245112">tizim</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> nutq fayllari yuklab olindi</translation>
+<translation id="6116825164611323644">Bu qurilmada kamera ruxsati yoqilmagan</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> fayli yuklanishni tasdiqlang</translation>
 <translation id="612734058257491180">Google Assistent mehmon seansida ishlamaydi.</translation>
@@ -1126,6 +1128,7 @@ yangi oʻrnatilgan</translation>
 <translation id="746232733191930409">Ekranni yozib olish rejimi</translation>
 <translation id="7466449121337984263">Sensorga tegining</translation>
 <translation id="7477793887173910789">Multimedia boshqaruvi</translation>
+<translation id="7490360161041035804">Google Drive omboridagi kabi muhim fayllarni mahkamlash mumkin. Mahkamlash uchun sichqonchani fayl ustiga suring yoki Fayllar ilovasini ochib, unga oʻng klik bosing.</translation>
 <translation id="7497767806359279797">Til va klaviaturani tanlang</translation>
 <translation id="7508690557411636492">Oxirgi oyda ochilgan</translation>
 <translation id="7509246181739783082">Shaxsni tasdiqlash</translation>
@@ -1222,6 +1225,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7982789257301363584">Tarmoq</translation>
 <translation id="7984197416080286869">Siz juda koʻp marta urindingiz</translation>
 <translation id="798779949890829624">Bu sozlama administrator tomonidan boshqariladi</translation>
+<translation id="799296642788192631">Muhim fayllarni mahkamlash mumkin. Mahkamlash uchun sichqonchani fayl ustiga suring yoki Fayllar ilovasini ochib, unga oʻng klik bosing.</translation>
 <translation id="7994370417837006925">Bir nechta hisobdan kirish</translation>
 <translation id="7995804128062002838">Ekran suratga olinmadi</translation>
 <translation id="8000066093800657092">Tarmoq topilmadi</translation>
@@ -1349,6 +1353,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8734991477317290293">Bu bosilayotgan tugmalarni kuzatish urinishi bo‘lishi mumkin.</translation>
 <translation id="8735678380411481005">Klaviatura orqa chirogʻi rangi</translation>
 <translation id="8735953464173050365">Klaviatura sozlamalarini ochish. <ph name="KEYBOARD_NAME" /> tanlandi</translation>
+<translation id="8752416742247198423">Ilova va saytlar bu qurilmaga ulangan kameradan foydalanishi uchun kamera ruxsatini yoqing.</translation>
 <translation id="8755498163081687682">Shaxsingizni tasdiqlang: <ph name="ORIGIN_NAME" /> bu siz ekanligingizni tasdiqlamoqchi</translation>
 <translation id="875593634123171288">VPN sozlamalarini ochish</translation>
 <translation id="8759408218731716181">Bir nechta hisobdan kirish sozlanmadi</translation>
@@ -1363,6 +1368,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8819728065740986820">Moslashuvchan quvvatlash yoniq</translation>
 <translation id="8825863694328519386">Orqaga qaytish uchun chapdan suring</translation>
 <translation id="8834539327799336565">Hozirda ulangan</translation>
+<translation id="8834657930627018205">Kamera ruxsatini yoqing</translation>
 <translation id="8841375032071747811">Orqaga tugmasi</translation>
 <translation id="8843682306134542540">Burishni qulflash/qulfdan chiqarish. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search + Esc</translation>

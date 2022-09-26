@@ -1393,6 +1393,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4744514002166662487">Crea presentazione</translation>
 <translation id="4744603770635761495">Percorso eseguibile</translation>
 <translation id="4749011317274908093">Stai navigando in incognito</translation>
+<translation id="4750671009706599284">questo telefono</translation>
 <translation id="4750917950439032686">Le tue informazioni (ad esempio password o numeri di carte di credito) restano private quando vengono inviate a questo sito.</translation>
 <translation id="4751476147751820511">Sensori di movimento o della luce</translation>
 <translation id="4754461935447132332">Non consentita per i siti non sicuri</translation>
@@ -2160,6 +2161,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome ha semplificato questa pagina per facilitarne la lettura. Chrome ha recuperato la pagina originale tramite una connessione non sicura.</translation>
 <translation id="6890443033788248019">Vuoi consentire l'accesso alla posizione?</translation>
+<translation id="6890531741535756070">Hai scelto di eseguire la verifica con <ph name="DEVICE_LABEL" /> sui siti web che utilizzano <ph name="PROVIDER_ORIGIN" />. Questo fornitore potrebbe aver memorizzato informazioni sul tuo metodo di pagamento, che puoi <ph name="BEGIN_LINK" />chiedere di eliminare<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Il livello della norma non è supportato.</translation>
 <translation id="6895143722905299846">Numero carta virtuale:</translation>
 <translation id="6895330447102777224">La carta è stata confermata</translation>
@@ -2520,6 +2522,7 @@ Ulteriori dettagli:
 <translation id="7764225426217299476">Aggiungi indirizzo</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">Stesso ordine a faccia in su</translation>
+<translation id="7785790577395078482">questo tablet</translation>
 <translation id="7791011319128895129">Non pubblicata</translation>
 <translation id="7791196057686275387">Rilegatura</translation>
 <translation id="7791543448312431591">Aggiungi</translation>

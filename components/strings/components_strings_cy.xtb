@@ -1262,6 +1262,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Nid yw'r cysylltiad â <ph name="SITE" /> yn ddiogel</translation>
 <translation id="4349365535725594680">Methu â rhannu cynnwys cyfrinachol</translation>
+<translation id="4349810866125026513">Uwchlwytho beth bynnag</translation>
 <translation id="4350629523305688469">Hambwrdd Aml-Bwrpas</translation>
 <translation id="4351060348582610152">Mae <ph name="ORIGIN" /> eisiau sganio am ddyfeisiau Bluetooth gerllaw. Canfuwyd y dyfeisiau canlynol:</translation>
 <translation id="4351175281479794167">Rhowch y cod dilysu</translation>
@@ -1395,6 +1396,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4744514002166662487">Creu cyflwyniad</translation>
 <translation id="4744603770635761495">Llwybr Gweithredadwy</translation>
 <translation id="4749011317274908093">Rydych wedi mynd yn Anhysbys</translation>
+<translation id="4750671009706599284">y ffôn hwn</translation>
 <translation id="4750917950439032686">Mae eich gwybodaeth (er enghraifft, cyfrineiriau neu rifau cardiau credyd) yn breifat pan fydd yn cael ei hanfon i'r wefan hon.</translation>
 <translation id="4751476147751820511">Synwyryddion ystumiau/goleuadau</translation>
 <translation id="4754461935447132332">Ni chaniateir ar gyfer gwefannau nad ydynt yn ddiogel</translation>
@@ -1984,6 +1986,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6337133576188860026">Yn creu llai na <ph name="SIZE" />. Mae'n bosib y bydd rhai gwefannau yn llwytho'n arafach ar eich ymweliad nesaf.</translation>
 <translation id="6337534724793800597">Hidlo polisïau yn ôl enw</translation>
 <translation id="6340739886198108203">Nid yw'r polisi gweinyddwr yn argymell cymryd sgrinluniau na recordiadau pan fydd cynnwys cyfrinachol yn weladwy:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Nid yw'r polisi gweinyddwr yn argymell uwchlwytho'r ffeil hon i <ph name="DESTINATION_NAME" />}zero{Nid yw'r polisi gweinyddwr yn argymell uwchlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}two{Nid yw'r polisi gweinyddwr yn argymell uwchlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}few{Nid yw'r polisi gweinyddwr yn argymell uwchlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}many{Nid yw'r polisi gweinyddwr yn argymell uwchlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}other{Nid yw'r polisi gweinyddwr yn argymell uwchlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Amrywiadau Gweithredol</translation>
 <translation id="6349101878882523185">Gosod <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Dim}=1{1 cyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}=2{2 gyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}few{# chyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}many{# chyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}other{# cyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}}</translation>
@@ -2162,6 +2165,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Mae Chrome wedi symleiddio'r dudalen hon i'w gwneud yn haws ei darllen. Gwnaeth Chrome adfer y dudalen wreiddiol dros gysylltiad anniogel.</translation>
 <translation id="6890443033788248019">Caniatáu Lleoliad?</translation>
+<translation id="6890531741535756070">Gwnaethoch ddewis dilysu gyda <ph name="DEVICE_LABEL" /> ar wefannau sy'n defnyddio <ph name="PROVIDER_ORIGIN" />. Mae'n bosib bod y darparwr hwn wedi storio gwybodaeth am eich dull talu, a gallwch <ph name="BEGIN_LINK" />ofyn am gael ei dileu<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Ni chefnogir lefel polisi.</translation>
 <translation id="6895143722905299846">Rhif rhithwir:</translation>
 <translation id="6895330447102777224">Mae eich cerdyn wedi'i gadarnhau</translation>
@@ -2522,6 +2526,7 @@ Manylion ychwanegol:
 <translation id="7764225426217299476">Ychwanegu cyfeiriad</translation>
 <translation id="7766518757692125295">Sgert</translation>
 <translation id="7773005668374414287">Yr un drefn wyneb i fyny</translation>
+<translation id="7785790577395078482">y llechen hon</translation>
 <translation id="7791011319128895129">Heb ei ryddhau</translation>
 <translation id="7791196057686275387">Bwndelu</translation>
 <translation id="7791543448312431591">Ychwanegu</translation>
@@ -2616,6 +2621,7 @@ Manylion ychwanegol:
 <translation id="8075736640322370409">Creu Google Sheet yn gyflym</translation>
 <translation id="8075898834294118863">Rheoli gosodiadau gwefan</translation>
 <translation id="8076492880354921740">Tabiau</translation>
+<translation id="8078006011486731853">{0,plural, =1{Uwchlwytho ffeil gyfrinachol?}zero{Uwchlwytho ffeiliau cyfrinachol?}two{Uwchlwytho ffeiliau cyfrinachol?}few{Uwchlwytho ffeiliau cyfrinachol?}many{Uwchlwytho ffeiliau cyfrinachol?}other{Uwchlwytho ffeiliau cyfrinachol?}}</translation>
 <translation id="8078141288243656252">Ni all ei anodi pan fydd yn cylchdroi</translation>
 <translation id="8079031581361219619">Ail-lwytho'r dudalen?</translation>
 <translation id="8081087320434522107">Ceir sedan</translation>

@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> کو کاپی کیا جا رہا ہے…</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1190144681599273207">اس فائل کو بازیافت کرنے میں تقریباً <ph name="FILE_SIZE" /> موبائل ڈیٹا استعمال ہوگا۔</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> کے ذریعے فائل تک رسائی</translation>
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1209796539517632982">خود کار نام سرورز</translation>
 <translation id="1210831758834677569">لاؤ</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">‏Chrome آلات</translation>
 <translation id="1572585716423026576">بطور وال پیپر سیٹ کریں</translation>
 <translation id="1576937952766665062">بنگالی نقل حرفی</translation>
+<translation id="1577977504532381335">منتظم کی پالیسی کا جائزہ لیں</translation>
 <translation id="158849752021629804">مقامی نیٹ ورک درکار ہے</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">کیمرا</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">تصویر کا ریزولیوشن</translation>
 <translation id="1972984168337863910">فائلز کے تاثرات کے پینلز کو پھیلائیں</translation>
 <translation id="1995337122023280937">فائل کے مقام پر جائیں</translation>
+<translation id="1999709132469742660">‏تمام urls کے ذریعے فائل تک رسائی</translation>
 <translation id="2001796770603320721">‏Drive میں نظم کریں</translation>
 <translation id="2009067268969781306">ڈرائیو کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا حذف ہو جائے گا۔ اس کارروائی کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="2025955442973426285">تگرینی</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">کافی لیے ہوئے شخص</translation>
 <translation id="2251368349685848079">کوڑے دان سے بحال کریں</translation>
 <translation id="2282155092769082568">‏خودکار کنفیگریشن URL:</translation>
+<translation id="2284767815536050991">ہٹائے جانے کے قابل اسٹوریج</translation>
 <translation id="2288278176040912387">ریکارڈ پلیئر</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> فائلیں کھل رہی ہیں۔</translation>
 <translation id="2303301624314357662">فائل <ph name="FILE_NAME" /> کھل رہی ہے۔</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">آئرش</translation>
 <translation id="4124935795427217608">یونیکارن</translation>
 <translation id="4131235941541910880">ان آئٹمز کو کوڑے دان میں منتقل کریں جن کی آپ کو ضرورت نہیں ہے</translation>
+<translation id="4157569377477607576">منتظم کی پالیسی درج ذیل کی تجویز نہیں کرتی ہے:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> منتقل ہو گیا۔</translation>
 <translation id="4176286497474237543">کوڑے دان ابھی خالی کریں</translation>
 <translation id="4186579485882418952">آف لائن فعال کریں</translation>
@@ -506,6 +511,7 @@
 <translation id="5323213332664049067">لاطینی امریکی</translation>
 <translation id="5330145655348521461">یہ فائلیں ایک مختلف ڈیسک ٹاپ پر کھولی گئیں۔ اسے دیکھنے کیلئے <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) پر جائیں۔</translation>
 <translation id="5330512191124428349">معلومات حاصل کریں</translation>
+<translation id="5337538975554986899">‏سوائے <ph name="NON_RESTRICTED_DESTINATIONS" /> کے تمام urls کے ذریعے فائل تک رسائی</translation>
 <translation id="535792325654997756">بلیوں کے ساتھ شخص</translation>
 <translation id="5358764674931277">فریم ریٹ</translation>
 <translation id="5363339716524495120">ان پٹ زبان چینی ہے</translation>
@@ -531,6 +537,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> تصویر</translation>
 <translation id="5534520101572674276">سائز کو شمار کیا جا رہا ہے</translation>
 <translation id="554153475311314364">يونانی نقل حرفی</translation>
+<translation id="5580591966435005537">ورچوئل مشین</translation>
 <translation id="5583640892426849032">بیک اسپیس</translation>
 <translation id="5583664733673201137">رموز اوقاف کی چوڑائی پوری ہے</translation>
 <translation id="5602622065581044566">فونیٹک کی بورڈ کے ساتھ بلغاریائی</translation>
@@ -591,6 +598,7 @@
 <translation id="61118516107968648">‏CSV ٹیکسٹ</translation>
 <translation id="6129953537138746214">اسپیس</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> منتقل کی جا رہی ہے…</translation>
+<translation id="6133877453787250710">منتظم مانیٹر کرتا ہے:</translation>
 <translation id="613750717151263950">امریکی کی بورڈ کے ساتھ جاپانی</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />، کوئی نیٹ ورک نہیں</translation>
 <translation id="6146563240635539929">ویڈیوز</translation>
@@ -611,6 +619,7 @@
 <translation id="6287852322318138013">یہ فائل کھولنے کیلئے ایک ایپ منتخب کریں</translation>
 <translation id="6295542640242147836">‏SIM مقفل کریں</translation>
 <translation id="6296410173147755564">‏غلط PUK</translation>
+<translation id="6308243004861726558">یہ فائل رازدارانہ ہے اور منتظم کی پالیسی کے ساتھ مشروط ہے۔ درج ذیل فائل تک رسائی اور منتقلی کی کارروائیاں لاگو ہوتی ہیں۔</translation>
 <translation id="6312403991423642364">نیٹ ورک کی نامعلوم خرابی</translation>
 <translation id="6317608858038767920">حسب ضرورت نام سرور <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> آرکائيو</translation>
@@ -841,6 +850,7 @@
 <translation id="8255595130163158297">کوڑے دان میں موجود تمام آئٹمز کو حذف کر دیا جائے گا اور آپ انہیں بحال نہیں کر سکیں گے۔</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8261561378965667560">‏چینی Array</translation>
+<translation id="8262872909443689080">منتظم کی پالیسی</translation>
 <translation id="8264024885325823677">یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
 <translation id="8269755669432358899">فائلز کے تاثرات کے پینلز کو سکیڑیں</translation>
 <translation id="8280151743281770066">آرمینیائی فونیٹک</translation>
@@ -867,7 +877,6 @@
 <translation id="8456681095658380701">غلط نام</translation>
 <translation id="8457767749626250697">‏آپ کی SIM مقفل ہے</translation>
 <translation id="8459404855768962328">اس آئٹم کو کاپی کرنے سے یہ ہر اس شخص کے ساتھ اشتراک ہو جائے گا جو اشتراک کردہ فولڈر '<ph name="DESTINATION_NAME" />' کو دیکھ سکتا ہے۔</translation>
-<translation id="8461467696380332069">شیلف میں اپنی فائلز تک فوری رسائی کے ليے فائل پر دائیں طرف کلک کریں اور 'شیلف میں پن کریں' کو منتخب کریں۔</translation>
 <translation id="8461914792118322307">پراکسی</translation>
 <translation id="8463494891489624050">‏ویتنامی VIQR</translation>
 <translation id="8475647382427415476">‏Google Drive اس وقت "<ph name="FILENAME" />" کی مطابقت پذیری نہیں کر سکا۔ Google Drive بعد میں دوبارہ کوشش کرے گا۔</translation>
@@ -904,7 +913,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> منتخب کیا گیا۔</translation>
 <translation id="872537912056138402">کراتی</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /> سگنل کی مضبوطی %<ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے، منسلک کریں</translation>
-<translation id="8750438273876807512">شیلف میں اپنی فائلز تک فوری رسائی کے ليے فائل ٹچ کریں اور دبائے رکھیں اور <ph name="ICON" /> تھپتھپائیں اور 'شیلف میں پن کریں' کو منتخب کریں۔</translation>
 <translation id="8787254343425541995">مشترکہ نیٹ ورکس کیلئے پراکسیز کی اجازت دیں</translation>
 <translation id="8790981080411996443">پودوں کو پانی دیتا ہوا شخص</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
@@ -939,6 +947,7 @@
 <translation id="9100610230175265781">پاس فریز درکار ہے</translation>
 <translation id="9110990317705400362">‏ہم آپ کی براؤزنگ کو محفوظ تر بنانے کے طریقے مستقل تلاش کر رہے ہیں۔ ازیں قبل، کوئی بھی ویب سائٹ آپ کو اپنے براؤزر میں ایک ایکسٹینشن شامل کرنے کا اشارہ دے سکتی تھی۔ Google Chrome کے تازہ ترین ورژن میں، ایکسٹینشنز صفحہ کے ذریعہ ایکسٹینشنز کو شامل کر کے آپ کو واضح طور پر Chrome کو بتا دینا چاہیے کہ آپ انہیں شامل کرنا چاہتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">غیر مقفل کریں</translation>
+<translation id="9116909380156770361"><ph name="RESTRICTED_COMPONENTS" /> میں فائل کی منتقلی</translation>
 <translation id="912419004897138677">کوڈیک</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' کے اراکین کو ان آئٹمز تک رسائي حاصل ہوگي۔</translation>
 <translation id="9131598836763251128">ایک یا مزید فائلیں منتخب کریں</translation>
@@ -960,6 +969,7 @@
 <translation id="943972244133411984">ترمیم کنندہ</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> سے <ph name="TO_ENTRY_NAME" /> تک <ph name="ENTRY_COUNT" /> اندراجات کی رینج کا انتخاب کیا گیا۔</translation>
+<translation id="954194396377670556">منتظم کی پالیسی اس کو روکتی ہے:</translation>
 <translation id="965477715979482472">انگریزی (جنوبی افریقہ)</translation>
 <translation id="981121421437150478">آف لائن</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" نام کی فائل پہلے سے موجود ہے۔ کیا آپ اسے تبدیل کرنا چاہتے ہیں؟</translation>

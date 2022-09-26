@@ -1264,6 +1264,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> سے کنکشن محفوظ نہیں ہے</translation>
 <translation id="4349365535725594680">رازدارانہ مواد کا اشتراک نہیں کیا جا سکتا</translation>
+<translation id="4349810866125026513">بہر حال اپ لوڈ کریں</translation>
 <translation id="4350629523305688469">ملٹی فنکشن ٹرے</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> قریبی بلوٹوتھ آلات کے لیے اسکین کرنا چاہتی ہے، مندرجہ ذیل آلات ملے ہیں:</translation>
 <translation id="4351175281479794167">توثیقی کوڈ درج کریں</translation>
@@ -1988,6 +1989,7 @@
 <translation id="6337133576188860026"><ph name="SIZE" /> سے کم بچت ہوتی ہے۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
 <translation id="6337534724793800597">نام کے لحاظ سے پالیسیاں فلٹر کریں</translation>
 <translation id="6340739886198108203">منتظم کی پالیسی رازدارانہ مواد کے مرئی ہونے پر اسکرین شاٹس یا ریکارڈنگز لینے کی تجویز نہیں کرتی ہے:</translation>
+<translation id="6341434961864773665">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں اپ لوڈ کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں اپ لوڈ کرنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="6348220984832452017">فعال تغیرات</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> انسٹال کریں</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{کوئی نہیں}=1{1 پاس ورڈ (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہے)}=2{2 پاس ورڈز (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہیں)}other{# پاس ورڈز (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہیں)}}</translation>
@@ -2622,6 +2624,7 @@
 <translation id="8075736640322370409">‏تیزی سے ایک نئی Google Sheet تخلیق کریں</translation>
 <translation id="8075898834294118863">سائٹ کی ترتیبات کا نظم کریں</translation>
 <translation id="8076492880354921740">ٹیبز</translation>
+<translation id="8078006011486731853">{0,plural, =1{رازدارانہ فائل اپ لوڈ کریں؟}other{رازدارانہ فائلز اپ لوڈ کریں؟}}</translation>
 <translation id="8078141288243656252">گھماتے وقت تشریح نہیں کی جا سکتی</translation>
 <translation id="8079031581361219619">سائٹ دوبارہ لوڈ کریں؟</translation>
 <translation id="8081087320434522107">سیڈانز</translation>

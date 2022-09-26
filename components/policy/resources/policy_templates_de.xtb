@@ -4928,6 +4928,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Chrome-Apps werden mit ihrer ID angegeben, z. B. "pjkljhegncpnkpknbcohdijeoejaedia", Android-Apps mit ihrem Paketnamen, z. B. "com.google.android.gm", und Web-Apps mit ihrer URL aus <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, z. B. "https://google.com/maps".
 
       Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinnten Apps ändern.</translation>
+<translation id="6184385589352532028">Desk API für die ChromeOS-Steuerung durch Drittanbieter nicht aktivieren</translation>
 <translation id="6190367314942602985">Personenbezogene Daten erfassen</translation>
 <translation id="6191963383731098056">Mit dieser Richtlinie können Administratoren die Farbe des Designs von <ph name="PRODUCT_NAME" /> konfigurieren. Der Eingabestring muss ein gültiger Hex-Farbcode mit dem Format „#RRGGBB“ sein.
 
@@ -6755,6 +6756,7 @@ werden abgelehnt.</translation>
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer <ph name="LACROS_NAME" /> nicht verwenden.
 
       Ist die Richtlinie aktiviert, können Nutzer <ph name="LACROS_NAME" /> verwenden.</translation>
+<translation id="8020222525161221827">Desk API für die ChromeOS-Steuerung durch Drittanbieter aktivieren</translation>
 <translation id="802147957407376460">Bildschirm um 0 Grad drehen</translation>
 <translation id="80243978433618492">Filtern von URL-Parametern unterbinden.</translation>
 <translation id="8025620823136567878">Internationale Tastenkürzel werden der Lage der Taste auf der Tastatur, statt dem Symbol der Taste zugeordnet.</translation>
@@ -7799,6 +7801,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Ist die Richtlinie deaktiviert, zeichnen angemeldete Geräte den Audiostatus nicht auf und melden diesen nicht.
       Ausnahme: Die Informationen zur Systemlautstärke werden für M95 und niedriger von <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> gesteuert.</translation>
+<translation id="9071527533179676468">Wenn die Richtlinie aktiviert ist, können Webanwendungen von Drittanbietern die Desk API verwenden, um ChromeOS-Desktops zu steuern. Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist die Desk API nicht verfügbar.</translation>
 <translation id="9072475476775217730">Wenn die Richtlinie deaktiviert ist, können Pop-ups mit <ph name="BLANK_PAGE_NAME" /> als Ziel (über JavaScript) auf die Seite zugreifen, auf der das Öffnen des Pop-ups angefordert wurde.
 
       Ist sie aktiviert oder nicht konfiguriert, wird das Attribut <ph name="WINDOW_OPENER_PROPERTY" /> auf <ph name="NULL_VALUE" /> gesetzt, es sei denn der Anker gibt <ph name="REL_OPENER_ATTRIBUTE" /> vor.

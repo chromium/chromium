@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> kopiëren...</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1190144681599273207">Voor het ophalen van dit bestand wordt ongeveer <ph name="FILE_SIZE" /> aan mobiele data gebruikt.</translation>
+<translation id="1194390763418645112">Bestandstoegang door <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1209796539517632982">Automatische naamservers</translation>
 <translation id="1210831758834677569">Lao</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome-apparaten</translation>
 <translation id="1572585716423026576">Instellen als achtergrond</translation>
 <translation id="1576937952766665062">Bangla (transliteratie)</translation>
+<translation id="1577977504532381335">Beheerdersbeleid bekijken</translation>
 <translation id="158849752021629804">Thuisnetwerk vereist</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Afbeeldingsresolutie</translation>
 <translation id="1972984168337863910">Feedbackvensters voor bestanden uitvouwen</translation>
 <translation id="1995337122023280937">Naar bestandslocatie</translation>
+<translation id="1999709132469742660">Bestandstoegang door alle URL's</translation>
 <translation id="2001796770603320721">Beheren in Drive</translation>
 <translation id="2009067268969781306">Tijdens het formatteren van een schijf worden alle opgeslagen gegevens verwijderd. Deze actie kan niet ongedaan worden gemaakt.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Persoon met koffie</translation>
 <translation id="2251368349685848079">Herstellen uit prullenbak</translation>
 <translation id="2282155092769082568">URL voor autoconfiguratie</translation>
+<translation id="2284767815536050991">verwijderbare opslag</translation>
 <translation id="2288278176040912387">Platenspeler</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> bestanden openen.</translation>
 <translation id="2303301624314357662">Bestand <ph name="FILE_NAME" /> wordt geopend.</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">Iers</translation>
 <translation id="4124935795427217608">Eenhoorn</translation>
 <translation id="4131235941541910880">Verplaats overbodige items naar de prullenbak.</translation>
+<translation id="4157569377477607576">Op basis van het beheerdersbeleid wordt het volgende afgeraden:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verplaatst.</translation>
 <translation id="4176286497474237543">Prullenbak leegmaken</translation>
 <translation id="4186579485882418952">Offline aanzetten</translation>
@@ -508,6 +513,7 @@
 <translation id="5323213332664049067">Latijns-Amerikaans</translation>
 <translation id="5330145655348521461">Deze bestanden zijn op een ander bureaublad geopend. Verplaats ze naar <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om ze te bekijken.</translation>
 <translation id="5330512191124428349">Informatie ophalen</translation>
+<translation id="5337538975554986899">Bestandstoegang door alle URL's, behalve <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Persoon met katten</translation>
 <translation id="5358764674931277">Framesnelheid</translation>
 <translation id="5363339716524495120">Invoertaal is Chinees</translation>
@@ -533,6 +539,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-afbeelding</translation>
 <translation id="5534520101572674276">Grootte berekenen</translation>
 <translation id="554153475311314364">Grieks (transliteratie)</translation>
+<translation id="5580591966435005537">virtuele machine</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Interpunctiebreedte: volledig (vol)</translation>
 <translation id="5602622065581044566">Bulgaars met fonetisch toetsenbord</translation>
@@ -593,6 +600,7 @@
 <translation id="61118516107968648">Csv-tekst</translation>
 <translation id="6129953537138746214">Spatie</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> verplaatsen...</translation>
+<translation id="6133877453787250710">De beheerder checkt het volgende:</translation>
 <translation id="613750717151263950">Japans met Amerikaans toetsenbord</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, geen netwerk</translation>
 <translation id="6146563240635539929">Video's</translation>
@@ -613,6 +621,7 @@
 <translation id="6287852322318138013">Een app selecteren om dit bestand te openen</translation>
 <translation id="6295542640242147836">Simkaart vergrendelen</translation>
 <translation id="6296410173147755564">Ongeldige pukcode</translation>
+<translation id="6308243004861726558">Dit bestand is vertrouwelijk en valt onder het beheerdersbeleid. De volgende acties voor bestandstoegang en -overdracht zijn van toepassing.</translation>
 <translation id="6312403991423642364">Onbekende netwerkfout</translation>
 <translation id="6317608858038767920">Aangepaste naamserver <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-archief</translation>
@@ -843,6 +852,7 @@
 <translation id="8255595130163158297">Alle items in de prullenbak worden verwijderd en je kunt ze niet herstellen.</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8261561378965667560">Chinees (Array)</translation>
+<translation id="8262872909443689080">Beheerdersbeleid</translation>
 <translation id="8264024885325823677">Deze instelling wordt beheerd door je beheerder.</translation>
 <translation id="8269755669432358899">Feedbackvensters voor bestanden samenvouwen</translation>
 <translation id="8280151743281770066">Armeens fonetisch</translation>
@@ -869,7 +879,6 @@
 <translation id="8456681095658380701">Ongeldige naam</translation>
 <translation id="8457767749626250697">Je simkaart is vergrendeld</translation>
 <translation id="8459404855768962328">Als je dit item kopieert, wordt het gedeeld met iedereen die de gedeelde map <ph name="DESTINATION_NAME" /> kan bekijken.</translation>
-<translation id="8461467696380332069">Klik met de rechtermuisknop op een bestand en selecteer 'Vastzetten op plank' om snel toegang tot je bestanden te krijgen op de plank.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamees (VIQR)</translation>
 <translation id="8475647382427415476">Google Drive kan '<ph name="FILENAME" />' nu niet synchroniseren. Google Drive probeert het later opnieuw.</translation>
@@ -906,7 +915,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> is geselecteerd.</translation>
 <translation id="872537912056138402">Kroatisch</translation>
 <translation id="8743164338060742337">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, verbinden</translation>
-<translation id="8750438273876807512">Tik op een bestand en houd dit vast. Tik vervolgens op <ph name="ICON" /> en selecteer 'Vastzetten op plank' om snel toegang tot je bestanden te krijgen op de plank.</translation>
 <translation id="8787254343425541995">Proxy's voor gedeelde netwerken toestaan</translation>
 <translation id="8790981080411996443">Persoon die de planten water geeft</translation>
 <translation id="8798099450830957504">Standaard</translation>
@@ -941,6 +949,7 @@
 <translation id="9100610230175265781">Wachtwoordzin vereist</translation>
 <translation id="9110990317705400362">We zijn altijd op zoek naar manieren om het surfen veiliger te maken. Vroeger kon elke website je vragen een extensie toe te voegen aan je browser. In de nieuwste versies van Google Chrome moet je Chrome expliciet toestemming geven om deze extensies te installeren door ze toe te voegen via de pagina 'Extensies'. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Ontgrendelen</translation>
+<translation id="9116909380156770361">Bestandsoverdracht naar <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">Leden van '<ph name="DESTINATION_NAME" />' krijgen toegang tot deze items.</translation>
 <translation id="9131598836763251128">Selecteer een of meer bestanden</translation>
@@ -962,6 +971,7 @@
 <translation id="943972244133411984">Aangepast door</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="947144732524271678">Een bereik van <ph name="ENTRY_COUNT" /> items van <ph name="FROM_ENTRY_NAME" /> tot <ph name="TO_ENTRY_NAME" /> is geselecteerd.</translation>
+<translation id="954194396377670556">Het beheerdersbeleid voorkomt het volgende:</translation>
 <translation id="965477715979482472">Engels (Zuid-Afrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Er bestaat al een bestand met de naam '<ph name="FILE_NAME" />'. Wil je dit bestand vervangen?</translation>

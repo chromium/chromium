@@ -1619,6 +1619,7 @@
 <translation id="2468178265280335214">تسريع التمرير عبر لوحة اللمس</translation>
 <translation id="2468205691404969808">يتم استخدام ملفات تعريف الارتباط لتذكّر اهتماماتك حتى لو لم تزُر تلك الصفحات.</translation>
 <translation id="2468402215065996499">تماغوتشي</translation>
+<translation id="2468470085922875120">يتم حاليًا استخدام كلمات مرور يصعُب تخمينها</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على علامة تبويب واحدة}zero{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على # علامة تبويب}two{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على علامتَي تبويب}few{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على # علامات تبويب}many{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على # علامة تبويب}other{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على # علامة تبويب}}</translation>
 <translation id="2469141124738294431">‏حالة الجهاز الافتراضي (VM)</translation>
 <translation id="2469259292033957819">لا تتوفّر لديك أي طابعات محفوظة.</translation>
@@ -1957,6 +1958,7 @@
 <translation id="2783321960289401138">جارٍ إنشاء اختصار...</translation>
 <translation id="2783829359200813069">اختيار أنواع التشفير</translation>
 <translation id="2783952358106015700">استخدام مفتاح الأمان مع <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">التحقّق من كلمة المرور</translation>
 <translation id="2785873697295365461">أدوات وصف الملفات</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">الاحتفاظ ببيانات التصفُّح المحلية (الإشارات المرجعية وكلمات المرور والسجلّ وغير ذلك)</translation>
@@ -2032,6 +2034,7 @@
 <translation id="2844169650293029770">‏جهاز USB-C (المنفذ الأمامي الأيسر)</translation>
 <translation id="2844809857160214557">عرض مهام الطباعة وإدارتها</translation>
 <translation id="2845382757467349449">عرض شريط الإشارات المرجعية دائمًا</translation>
+<translation id="284581348330507117">إنشاء كلمات مرور فريدة</translation>
 <translation id="284805635805850872">هل تريد إزالة البرامج الضارة؟</translation>
 <translation id="2849035674501872372">بحث</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2183,6 +2186,7 @@
 <translation id="2985348301114641460">هل تريد إرسال طلب إلى المشرف لتثبيت "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="2987620471460279764">النصوص التي تمت مشاركتها من جهاز آخر</translation>
 <translation id="2988018669686457659">عارِض احتياطي</translation>
+<translation id="2988328607561082373">لم يتم العثور على أي كلمات مرور مستخدَمة لحساب آخر</translation>
 <translation id="2989123969927553766">تسريع التمرير عبر الماوس</translation>
 <translation id="2989474696604907455">غير متصل</translation>
 <translation id="2989786307324390836">‏حفظ شهادة واحدة بتشفير DER ثنائي</translation>
@@ -2211,6 +2215,7 @@
 <translation id="3009178788565917040">الإخراج</translation>
 <translation id="3009300415590184725">هل تريد فعلًا إلغاء عملية إعداد خدمة بيانات الجوال؟</translation>
 <translation id="3009779501245596802">قواعد بيانات مفهرسة</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{كلمات مرورك تبدو قوية}=1{كلمة مرور واحدة ({COUNT}) ضعيفة}two{كلمتا مرور ({COUNT}) ضعيفتان}few{{COUNT} كلمات مرور ضعيفة}many{{COUNT} كلمة مرور ضعيفة}other{{COUNT} كلمة مرور ضعيفة}}</translation>
 <translation id="3010279545267083280">تم حذف كلمة المرور</translation>
 <translation id="3010389206479238935">فرض الفتح في</translation>
 <translation id="3011384993885886186">رمادي فاتح</translation>
@@ -4411,6 +4416,7 @@
 <translation id="5153234146675181447">عدم تذكُّر الهاتف</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">الإعدادات المتقدمة لـ <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{ما مِن كلمات مرور محفوظة.}=1{تم التحقّق من كلمات المرور على موقع إلكتروني واحد ({COUNT}).}two{تم التحقّق من كلمات المرور على تطبيقَين وموقعَين إلكترونيَين ({COUNT}).}few{تم التحقّق من كلمات المرور على {COUNT} تطبيقات ومواقع إلكترونية.}many{تم التحقّق من كلمات المرور على {COUNT} تطبيقًا وموقعًا إلكترونيًا.}other{تم التحقّق من كلمات المرور على {COUNT} تطبيق وموقع إلكتروني.}}</translation>
 <translation id="5154702632169343078">الموضوع</translation>
 <translation id="5155327081870541046">‏في شريط العناوين، أدخِل اختصار الموقع الإلكتروني الذي تريد البحث فيه، مثل "‎@bookmarks". بعد ذلك، اضغط على اختصار لوحة المفاتيح المفضّل لديك وأدخِل عبارة البحث.</translation>
 <translation id="5156638757840305347">يتم تمييز المؤشر عند ظهوره أو تحريكه.</translation>
@@ -4991,6 +4997,7 @@
 <translation id="5713158217420111469">متّصل بجهاز <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">نمط إدخال المسافات</translation>
 <translation id="5715711091495208045">وسيط المكوّن الإضافي: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">يجب تغيير كلمات المرور هذه الآن</translation>
 <translation id="5719603411793408026">محرّكات البحث التلقائية</translation>
 <translation id="5719854774000914513">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة HID</translation>
 <translation id="572155275267014074">‏إعدادات Android</translation>
@@ -6454,6 +6461,7 @@
 <translation id="7098447629416471489">ستظهر هنا محركات البحث المحفوظة الأخرى</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{إزالة التطبيق}zero{إزالة التطبيقات}two{إزالة التطبيقَين}few{إزالة التطبيقات}many{إزالة التطبيقات}other{إزالة التطبيقات}}</translation>
 <translation id="7099337801055912064">‏يتعذّر تحميل ملف PPD كبير الحجم. الحد الأقصى للحجم هو 250 كيلوبايت.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق}=1{كلمة مرور واحدة ({COUNT}) محتمَل تعرّضها للاختراق}two{كلمتا مرور ({COUNT}) محتمَل تعرّضهما للاختراق}few{{COUNT} كلمات مرور محتمَل تعرّضها للاختراق}many{{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}other{{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
 <translation id="7102687220333134671">تم تفعيل التحديثات التلقائية</translation>
 <translation id="7102832101143475489">انتهت مهلة الطلب</translation>
 <translation id="710640343305609397">فتح إعدادات الشبكة</translation>
@@ -7400,6 +7408,7 @@
 احتفظ بملف المفتاح في مكان آمن، حيث ستحتاج إليه لإنشاء إصدارات جديدة من إضافتك.</translation>
 <translation id="8002274832045662704">إعدادات الطابعة المتقدِّمة</translation>
 <translation id="8002670234429879764">لم تَعد <ph name="PRINTER_NAME" /> متوفرة.</translation>
+<translation id="8004092996156083991">إذا تم اختراق كلمات المرور الخاصة بك، سنُعلمك بذلك</translation>
 <translation id="8004582292198964060">المتصفّح</translation>
 <translation id="8005600846065423578">السماح دائمًا لـ <ph name="HOST" /> بالاطلاع على الحافظة</translation>
 <translation id="8006630792898017994">‏مفتاح المسافة أو مفتاح التبويب (Tab)</translation>
@@ -7898,6 +7907,7 @@
 <translation id="8470513973197838199">كلمات المرور المحفوظة لـ <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">‏تتّصل المواقع الإلكترونية عادةً بأجهزة USB لتتيح ميزات مثل طباعة مستند أو حفظ مستند على جهاز تخزين.</translation>
 <translation id="8471959340398751476">ميزة الحصول على الخصومات غير مفعّلة. يمكنك تفعيلها من خلال القائمة المخصّصة.</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{كلمات مرورك فريدة من نوعها}=1{كلمة مرور واحدة ({COUNT}) مستخدَمة لحساب آخر}two{كلمتا مرور ({COUNT}) مستخدَمتان لحساب آخر}few{{COUNT} كلمات مرور مستخدَمة لحساب آخر}many{{COUNT} كلمة مرور مستخدَمة لحساب آخر}other{{COUNT} كلمة مرور مستخدَمة لحساب آخر}}</translation>
 <translation id="8472623782143987204">يستند إلى الجهاز</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
 <translation id="8475313423285172237">‏أضاف برنامج آخر بجهاز الكمبيوتر إضافة قد تؤدي إلى تغيير طريقة عمل Chrome.</translation>
@@ -8380,6 +8390,7 @@
 <translation id="8940081510938872932">يجري الكمبيوتر الكثير من المهام في الوقت الحالي. أعد المحاولة لاحقًا.</translation>
 <translation id="8940381019874223173">‏من حسابك على "صور Google"</translation>
 <translation id="8941173171815156065">إلغاء الإذن "<ph name="PERMISSION" />"</translation>
+<translation id="894191600409472540">إنشاء كلمات مرور قوية</translation>
 <translation id="894360074127026135">‏الترقية الدولية لـ Netscape</translation>
 <translation id="8944099748578356325">استخدام البطارية بسرعة أكبر (حاليًا <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">حجم الرمز</translation>
@@ -8603,6 +8614,7 @@
 <translation id="9140067245205650184">أنت تستخدم علامة ميزة غير مدعومة: <ph name="BAD_FLAG" />. سيؤثر ذلك سلبًا على وظائف الميزة وأمانها.</translation>
 <translation id="9142637293078737510">العنوان البديل للصورة</translation>
 <translation id="9143298529634201539">هل تريد إزالة الاقتراح؟</translation>
+<translation id="9143922477019434797">حماية كلمات المرور الخاصة بك</translation>
 <translation id="9147392381910171771">&amp;الخيارات</translation>
 <translation id="9148058034647219655">إنهاء</translation>
 <translation id="9148126808321036104">تسجيل الدخول مرة أخرى</translation>

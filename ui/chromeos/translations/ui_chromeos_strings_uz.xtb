@@ -877,7 +877,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8456681095658380701">Yaroqsiz nom</translation>
 <translation id="8457767749626250697">SIM karta qulflangan</translation>
 <translation id="8459404855768962328">Bu fayl nusxalansa, u <ph name="DESTINATION_NAME" /> jildiga ruxsati bor barcha foydalanuvchilarga ulashiladi.</translation>
-<translation id="8461467696380332069">Fayl ustida oʻng tugmani bosing va javon ichidagi fayllarga tezkor kirish uchun “Javonga mahkamlash” bandini tanlang.</translation>
 <translation id="8461914792118322307">Proksi-server sozlamalari</translation>
 <translation id="8463494891489624050">Vyetnam (VIQR klaviaturasi)</translation>
 <translation id="8475647382427415476">“<ph name="FILENAME" />” faylini Google Drive bilan sinxronlab bo‘lmadi. Tizim keyinroq qayta urinib ko‘radi.</translation>
@@ -914,7 +913,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> tanlandi.</translation>
 <translation id="872537912056138402">Xorvat</translation>
 <translation id="8743164338060742337">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator boshqaruvida, Ulanish</translation>
-<translation id="8750438273876807512">Faylni tanlab, <ph name="ICON" /> ustiga bosing va javon ichidagi fayllarga tezkor kirish uchun “Javonga mahkamlash” bandini tanlang.</translation>
 <translation id="8787254343425541995">Umumiy tarmoqlarga proksi-serverlardan foydalanishga ruxsat berish</translation>
 <translation id="8790981080411996443">Oʻsimlik sugʻoruvchi odam</translation>
 <translation id="8798099450830957504">Standart</translation>

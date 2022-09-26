@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" />ను కాపీ చేస్తోంది...</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="1190144681599273207">ఈ ఫైల్‌ను పొందడానికి మొబైల్ డేటాలో సుమారుగా <ph name="FILE_SIZE" /> ఉపయోగించబడుతుంది.</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" />‌కు ఫైల్ యాక్సెస్</translation>
 <translation id="1201402288615127009">తరువాత</translation>
 <translation id="1209796539517632982">ఆటోమేటిక్‌ పేరు సర్వర్‌లు</translation>
 <translation id="1210831758834677569">లావో</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome పరికరాలు</translation>
 <translation id="1572585716423026576">వాల్‌పేపర్‌గా సెట్ చేయి</translation>
 <translation id="1576937952766665062">బంగ్లా ట్రాన్స్‌లిటరేషన్</translation>
+<translation id="1577977504532381335">అడ్మిన్ పాలసీని రివ్యూ చేయండి</translation>
 <translation id="158849752021629804">హోమ్ నెట్‌వర్క్ అవసరం</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">చిత్ర రిజల్యూషన్</translation>
 <translation id="1972984168337863910">అభిప్రాయ ప్యానెల్‌ల ఫైళ్లు విస్తరించు</translation>
 <translation id="1995337122023280937">ఫైల్ లొకేషన్‌కు వెళ్ళు</translation>
+<translation id="1999709132469742660">అన్ని URLలకు ఫైల్ యాక్సెస్</translation>
 <translation id="2001796770603320721">డిస్క్‌లో నిర్వహించు</translation>
 <translation id="2009067268969781306">డ్రైవ్‌ను ఫార్మాట్ చేయడం వలన దానిలో నిల్వ చేయబడిన మొత్తం డేటా తొలగించబడుతుంది. ఈ చర్యను రద్దు చేయలేరు.</translation>
 <translation id="2025955442973426285">టైగ్రిన్యా</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">కాఫీని పట్టుకుని ఉన్న వ్యక్తి</translation>
 <translation id="2251368349685848079">ట్రాష్ నుండి రీస్టోర్ చేయండి</translation>
 <translation id="2282155092769082568">ఆటోకాన్ఫిగరేషన్ URL:</translation>
+<translation id="2284767815536050991">తీసివేయదగిన స్టోరేజ్</translation>
 <translation id="2288278176040912387">రికార్డ్ ప్లేయర్</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ఫైళ్లను తెరుస్తోంది.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ఫైల్‌ని తెరుస్తోంది.</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">ఐరిష్</translation>
 <translation id="4124935795427217608">యునికార్న్</translation>
 <translation id="4131235941541910880">మీకు అవసరం లేని ఐటెమ్‌లను ట్రాష్‌కు తరలించండి</translation>
+<translation id="4157569377477607576">అడ్మినిస్ట్రేటర్ పాలసీ వీటిని సిఫార్సు చేయదు:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> తరలించబడింది.</translation>
 <translation id="4176286497474237543">ఇప్పుడే ట్రాష్‌ను ఖాళీ చేయండి</translation>
 <translation id="4186579485882418952">ఆఫ్‌లైన్ మోడ్‌ను ఎనేబుల్ చేయి</translation>
@@ -507,6 +512,7 @@
 <translation id="5323213332664049067">లాటిన్ అమెరికన్</translation>
 <translation id="5330145655348521461">ఈ ఫైల్స్ వేరే డెస్క్‌టాప్‌లో తెరవబడ్డాయి. దీన్ని చూడటానికి <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)కు తరలించండి.</translation>
 <translation id="5330512191124428349">సమాచారం పొందండి</translation>
+<translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" />‌ను మినహాయించి అన్ని URLలకు ఫైల్ యాక్సెస్</translation>
 <translation id="535792325654997756">పిల్లులతో ఉన్న వ్యక్తి</translation>
 <translation id="5358764674931277">ఫ్రేమ్ రేట్</translation>
 <translation id="5363339716524495120">ఇన్‌పుట్ భాష చైనీస్</translation>
@@ -532,6 +538,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> చిత్రం</translation>
 <translation id="5534520101572674276">పరిమాణాన్ని లెక్కిస్తోంది</translation>
 <translation id="554153475311314364">గ్రీక్ ట్రాన్స్‌లిటరేషన్</translation>
+<translation id="5580591966435005537">వర్చువల్ మెషిన్</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">విరామచిహ్నం వెడల్పు నిండింది</translation>
 <translation id="5602622065581044566">ఫోనెటిక్ కీబోర్డ్‌తో బల్గేరియన్</translation>
@@ -592,6 +599,7 @@
 <translation id="61118516107968648">CSV టెక్స్ట్</translation>
 <translation id="6129953537138746214">ఖాళీ</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" />ని తరలిస్తోంది...</translation>
+<translation id="6133877453787250710">అడ్మినిస్ట్రేటర్ ఇవి మానిటర్ చేస్తారు:</translation>
 <translation id="613750717151263950">US కీబోర్డ్‌తో జపనీస్</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, నెట్‌వర్క్ లేదు</translation>
 <translation id="6146563240635539929">వీడియోలు</translation>
@@ -612,6 +620,7 @@
 <translation id="6287852322318138013">ఈ ఫైల్‌ను తెరవడానికి యాప్‌ను ఎంచుకోండి</translation>
 <translation id="6295542640242147836">లాక్ SIM</translation>
 <translation id="6296410173147755564">చెల్లని PUK</translation>
+<translation id="6308243004861726558">ఈ ఫైల్ గోప్యమైనది, అడ్మినిస్ట్రేటర్ పాలసీకి లోబడి ఉంటుంది. కింది ఫైల్ యాక్సెస్, బదిలీ చర్యలు వర్తిస్తాయి.</translation>
 <translation id="6312403991423642364">తెలియని నెట్‌వర్క్ ఎర్రర్</translation>
 <translation id="6317608858038767920">అనుకూల నేమ్‌సర్వర్ <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> ఆర్కైవ్</translation>
@@ -842,6 +851,7 @@
 <translation id="8255595130163158297">ట్రాష్‌లోని అన్ని ఐటెమ్‌లు తొలగించబడతాయి, ఇంకా మీరు వాటిని రీస్టోర్ చేయలేరు.</translation>
 <translation id="8261506727792406068">తొలగించు</translation>
 <translation id="8261561378965667560">చైనీస్ శ్రేణి</translation>
+<translation id="8262872909443689080">అడ్మినిస్ట్రేటర్ పాలసీ</translation>
 <translation id="8264024885325823677">ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా నిర్వహించబడుతుంది.</translation>
 <translation id="8269755669432358899">అభిప్రాయ ప్యానెల్‌ల ఫైళ్లు కుదించు</translation>
 <translation id="8280151743281770066">ఆర్మేనియన్ ఫోనెటిక్</translation>
@@ -868,7 +878,6 @@
 <translation id="8456681095658380701">చెల్లని పేరు</translation>
 <translation id="8457767749626250697">మీ SIM లాక్ చేయబడింది</translation>
 <translation id="8459404855768962328">ఈ ఐటెమ్‌ను కాపీ చేస్తే అది షేర్ చేయబడిన ఫోల్డర్ '<ph name="DESTINATION_NAME" />'ను చూడగలిగే ప్రతి ఒక్కరితో షేర్ చేయబడుతుంది.</translation>
-<translation id="8461467696380332069">ఫైల్ మీద 'కుడి క్లిక్' చేసి, "షెల్ఫ్‌కు పిన్ చేయి"ని ఎంచుకోవడం ద్వారా షెల్ఫ్‌లోని మీ ఫైల్స్‌కు త్వరిత యాక్సెస్‌ను పొందండి.</translation>
 <translation id="8461914792118322307">ప్రాక్సీ</translation>
 <translation id="8463494891489624050">వియత్నామీస్ VIQR</translation>
 <translation id="8475647382427415476">Google Drive ప్రస్తుతం "<ph name="FILENAME" />"ని సింక్ చేయలేకపోయింది. Google Drive తర్వాత మళ్లీ ప్రయత్నిస్తుంది.</translation>
@@ -905,7 +914,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ఎంపిక చేయబడింది.</translation>
 <translation id="872537912056138402">క్రోవేషియన్</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతుంది, కనెక్ట్ చేయండి</translation>
-<translation id="8750438273876807512">షెల్ఫ్‌లోని మీ ఫైళ్లకు త్వరిత యాక్సెస్‌ను పొందడం కోసం ఫైల్‌ను నొక్కి, పట్టుకుని, <ph name="ICON" />ను ట్యాప్ చేసి, ఆపై "షెల్ఫ్‌కు పిన్ చేయి"ని ఎంచుకోండి.</translation>
 <translation id="8787254343425541995">భాగస్వామ్య నెట్‌వర్క్‌లకు ప్రాక్సీలను అనుమతించండి</translation>
 <translation id="8790981080411996443">మొక్కలకు నీరు పోస్తున్న వ్యక్తి</translation>
 <translation id="8798099450830957504">డిఫాల్ట్</translation>
@@ -940,6 +948,7 @@
 <translation id="9100610230175265781">రహస్య పదబంధం అవసరం</translation>
 <translation id="9110990317705400362">మేము మీ బ్రౌజింగ్‌ను సురక్షితం చేసే మార్గాల కోసం నిరంతరం శోధిస్తున్నాము. గతంలో, ఏ వెబ్‌సైట్ అయినా మీ బ్రౌజర్‌కు ఎక్స్‌టెన్ష‌న్‌ను జోడించడానికి మిమ్మల్ని ప్రాంప్ట్ చేసి ఉండ‌వ‌చ్చు. Google Chrome తాజా వెర్ష‌న్‌ల‌లో, మీరు తప్పనిసరిగా ఎక్స్‌టెన్ష‌న్‌ల పేజీలో వాటిని జోడించడం ద్వారా ఈ ఎక్స్‌టెన్ష‌న్‌లను ఇన్‌స్టాల్ చేయాలని అనుకుంటున్నట్లు Chromeకు ప్రత్యేకించి తెలియజేయాలి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">అన్‌లాక్ చేయి</translation>
+<translation id="9116909380156770361"><ph name="RESTRICTED_COMPONENTS" />‌కు ఫైల్ బదిలీ</translation>
 <translation id="912419004897138677">కోడెక్</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' మెంబర్‌లు ఈ ఐటెమ్‌లకు యాక్సెస్ పొందుతారు.</translation>
 <translation id="9131598836763251128">దయచేసి ఒకటి లేదా మరిన్ని ఫైళ్ళను ఎంచుకోండి</translation>
@@ -961,6 +970,7 @@
 <translation id="943972244133411984">వీరు ఎడిట్ చేశారు</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> నుండి <ph name="TO_ENTRY_NAME" /> మధ్యలో ఉన్న <ph name="ENTRY_COUNT" /> నమోదులు ఎంపిక చేయబడ్డాయి.</translation>
+<translation id="954194396377670556">అడ్మినిస్ట్రేటర్ పాలసీ వీటిని నిరోధిస్తుంది:</translation>
 <translation id="965477715979482472">ఇంగ్లీష్ (దక్షిణాఫ్రికా)</translation>
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" పేరు గల ఫైల్ ఇప్పటికే వినియోగంలో ఉంది. మీరు దీనిని భర్తీ చేయాలనుకుంటున్నారా?</translation>

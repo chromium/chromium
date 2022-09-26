@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> ֆայլը պատճենվում է…</translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1190144681599273207">Այս ֆայլը քաշելու համար կպահանջվի մոտ <ph name="FILE_SIZE" /> բջջային տվյալների հոսք:</translation>
+<translation id="1194390763418645112">Ֆայլի հասանելիություն հետևյալ URL-ների միջոցով՝ <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Հաջորդը</translation>
 <translation id="1209796539517632982">Անունների ավտոմատ սերվերներ</translation>
 <translation id="1210831758834677569">լաոսերեն</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome սարքեր</translation>
 <translation id="1572585716423026576">Օգտագործել որպես պաստառ</translation>
 <translation id="1576937952766665062">բանգլա (տառադարձություն)</translation>
+<translation id="1577977504532381335">Ծանոթանալ ադմինիստրատորի կանոններին</translation>
 <translation id="158849752021629804">Հարկավոր է ներքին ցանց</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ՊԲ</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Պատկերի լուծաչափը</translation>
 <translation id="1972984168337863910">Ծավալել ֆայլերի մասին կարծիք հայտնելու վահանակները</translation>
 <translation id="1995337122023280937">Անցնել ֆայլի տեղադրություն</translation>
+<translation id="1999709132469742660">Ֆայլի հասանելիություն բոլոր URL-ների միջոցով</translation>
 <translation id="2001796770603320721">Կառավարել Drive-ում</translation>
 <translation id="2009067268969781306">Ֆորմատավորման արդյունքում կրիչի վրա պահված բոլոր տվյալները կջնջվեն: Այս գործողությունը հնարավոր չէ հետարկել:</translation>
 <translation id="2025955442973426285">թիգրինյա</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Սուրճով մարդ</translation>
 <translation id="2251368349685848079">Վերականգնել աղբարկղից</translation>
 <translation id="2282155092769082568">Ինքնակազմաձևման URL-ը՝</translation>
+<translation id="2284767815536050991">շարժական կրիչ</translation>
 <translation id="2288278176040912387">Գրամոֆոն</translation>
 <translation id="2291538123825441971">Բացվում է <ph name="NUMBER_OF_FILES" /> ֆայլ։</translation>
 <translation id="2303301624314357662">Բացվում է <ph name="FILE_NAME" /> ֆայլը։</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">իռլանդերեն</translation>
 <translation id="4124935795427217608">Միաեղջյուր</translation>
 <translation id="4131235941541910880">Ոչ պետքական ֆայլերը տեղափոխեք աղբարկղ</translation>
+<translation id="4157569377477607576">Ադմինիստրատորը խորհուրդ չի տալիս՝</translation>
 <translation id="4159731583141908892">Տեղափոխվեց <ph name="FILE_NAME" /> տարր։</translation>
 <translation id="4176286497474237543">Դատարկել աղբարկղը</translation>
 <translation id="4186579485882418952">Միացնել անցանց ռեժիմը</translation>
@@ -506,6 +511,7 @@
 <translation id="5323213332664049067">Լատինամերիկյան</translation>
 <translation id="5330145655348521461">Այս ֆայլերը բացված են այլ աշխատասեղանի վրա: Դիտելու համար տեղափոխվեք <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />):</translation>
 <translation id="5330512191124428349">Ստանալ տեղեկություններ</translation>
+<translation id="5337538975554986899">Ֆայլի հասանելիություն բոլոր URL-ների միջոցով (բացառությամբ հետևյալների՝ <ph name="NON_RESTRICTED_DESTINATIONS" />)</translation>
 <translation id="535792325654997756">Կատուներով մարդ</translation>
 <translation id="5358764674931277">Կադրերի արագությունը</translation>
 <translation id="5363339716524495120">Ներածման լեզուն չինարենն է</translation>
@@ -531,6 +537,7 @@
 <translation id="5533102081734025921">Պատկեր (<ph name="IMAGE_TYPE" />)</translation>
 <translation id="5534520101572674276">Չափի հաշվարկում</translation>
 <translation id="554153475311314364">հունարեն (տառադարձություն)</translation>
+<translation id="5580591966435005537">վիրտուալ մեքենա</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Կետադրական նշանների լայնությունը՝ լիալայնք</translation>
 <translation id="5602622065581044566">բուլղարերեն (հնչյունային ստեղնաշար)</translation>
@@ -591,6 +598,7 @@
 <translation id="61118516107968648">CSV ձևաչափով տեքստային ֆայլ</translation>
 <translation id="6129953537138746214">Բացատ</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> ֆայլը տեղափոխվում է…</translation>
+<translation id="6133877453787250710">Վերահսկվում է ադմինիստրատորի կողմից՝</translation>
 <translation id="613750717151263950">ճապոներեն՝ ԱՄՆ ստեղնաշարով</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ցանց չկա</translation>
 <translation id="6146563240635539929">Տեսանյութեր</translation>
@@ -611,6 +619,7 @@
 <translation id="6287852322318138013">Այս ֆայլը բացելու համար ընտրեք հավելված</translation>
 <translation id="6295542640242147836">SIM քարտի կողպում</translation>
 <translation id="6296410173147755564">PUK կոդն անվավեր է</translation>
+<translation id="6308243004861726558">Սա կոնֆիդենցիալ ֆայլ է, որի վրա տարածվում են անդմինիստրատորի կանոնները։ Ֆայլի նկատմամբ կիրառվում են մուտքի և փոխանցման հետևյալ գործողությունները։</translation>
 <translation id="6312403991423642364">Ցանցի անհայտ սխալ</translation>
 <translation id="6317608858038767920">Հատուկ DNS սերվեր <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> արխիվ</translation>
@@ -841,6 +850,7 @@
 <translation id="8255595130163158297">Բոլոր տարրերը կջնջվեն աղբարկղից, և դուք չեք կարողանա վերականգնել դրանք։</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="8261561378965667560">չինարեն (կառուցվածքային մուտքագրում)</translation>
+<translation id="8262872909443689080">Ադմինիստրատորի կանոններ</translation>
 <translation id="8264024885325823677">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="8269755669432358899">Ծալել ֆայլերի մասին կարծիք հայտնելու վահանակները</translation>
 <translation id="8280151743281770066">Հայկական հնչյունային</translation>
@@ -867,7 +877,6 @@
 <translation id="8456681095658380701">Սխալ անուն</translation>
 <translation id="8457767749626250697">Ձեր SIM քարտը կողպված է</translation>
 <translation id="8459404855768962328">Այս տարրը պատճենելու դեպքում այն հասանելի կդառնա բոլորին, ում տեսանելի է «<ph name="DESTINATION_NAME" />» ընդհանուր պանակը։</translation>
-<translation id="8461467696380332069">Մկնիկի աջ կոճակով սեղմեք ֆայլի վրա և ընտրեք «Ամրացնել դարակում»։</translation>
 <translation id="8461914792118322307">Պրոքսի-սերվեր</translation>
 <translation id="8463494891489624050">վիետնամերեն (VIQR ստեղնաշար)</translation>
 <translation id="8475647382427415476">Google Drive-ը չկարողացավ համաժամացնել «<ph name="FILENAME" />» ֆայլը: Ավելի ուշ այն նորից կփորձի:</translation>
@@ -904,7 +913,6 @@
 <translation id="8719721339511222681">Ընտրվեց «<ph name="ENTRY_NAME" />» գրառումը:</translation>
 <translation id="872537912056138402">Խորվաթական</translation>
 <translation id="8743164338060742337">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />-ի ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, միացում</translation>
-<translation id="8750438273876807512">Սեղմեք որևէ ֆայլի վրա և պահեք, ապա սեղմեք <ph name="ICON" /> և ընտրեք «Ամրացնել դարակին»։</translation>
 <translation id="8787254343425541995">Օգտագործել պրոքսի-սերվերներ՝ համօգտագործվող ցանցերի համար</translation>
 <translation id="8790981080411996443">Բույսեր ջրող մարդ</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
@@ -939,6 +947,7 @@
 <translation id="9100610230175265781">Անհրաժեշտ է անցաբառ</translation>
 <translation id="9110990317705400362">Մենք մշտապես փորձում ենք ձեր զննարկումն ավելի ապահով դարձնել: Նախկինում ցանկացած վեբկայք կարող էր առաջարկել ձեզ ընդլայնում ավելացնել ձեր դիտարկիչին: Google Chrome-ի վերջին տարբերակներում Chrome-ը ձեզանից հստակորեն պետք է հրաման ստանա, եթե դուք ցանկանաք տեղադրել որևէ ընդլայնում՝ ավելացնելով դրանք Ընդլայնումների էջի միջոցով: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Ապակողպել</translation>
+<translation id="9116909380156770361">Ֆայլի փոխանցում <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Կոդեկ</translation>
 <translation id="9130775360844693113">«<ph name="DESTINATION_NAME" />»-ի անդամներին այս տարրերը հասանելի կդառնան։</translation>
 <translation id="9131598836763251128">Ընտրեք մեկ կամ ավելի ֆայլեր</translation>
@@ -960,6 +969,7 @@
 <translation id="943972244133411984">Ով է փոփոխել</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="947144732524271678">Դուք ընտրեցիք <ph name="ENTRY_COUNT" /> գրառում՝ «<ph name="FROM_ENTRY_NAME" />»-ից «<ph name="TO_ENTRY_NAME" />»:</translation>
+<translation id="954194396377670556">Արգելափակված է ադմինիստրատորի կողմից՝</translation>
 <translation id="965477715979482472">Անգլերեն (Հարավային Աֆրիկա)</translation>
 <translation id="981121421437150478">Անցանց</translation>
 <translation id="988685240266037636">«<ph name="FILE_NAME" />» անունով ֆայլ արդեն գոյություն ունի: Ուզո՞ւմ եք փոխարինել այն:</translation>

@@ -1262,6 +1262,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Forbindelsen til <ph name="SITE" /> er ikke sikker</translation>
 <translation id="4349365535725594680">Fortroligt indhold kan ikke deles</translation>
+<translation id="4349810866125026513">Upload alligevel</translation>
 <translation id="4350629523305688469">Multifunktionsbakke</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vil gerne søge efter Bluetooth-enheder i nærheden. Følgende enheder blev fundet:</translation>
 <translation id="4351175281479794167">Angiv bekræftelseskode</translation>
@@ -1985,6 +1986,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6337133576188860026">Frigiver mindre end <ph name="SIZE" />. Nogle websites indlæses muligvis langsommere under dit næste besøg.</translation>
 <translation id="6337534724793800597">Filtrér politikker efter navn</translation>
 <translation id="6340739886198108203">Administratorpolitikken fraråder screenshots og optagelser, når der vises fortroligt indhold på skærmen:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Administratorpolitikken fraråder at uploade denne fil til <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at uploade denne fil til <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at uploade disse filer til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Aktive variationer</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ingen}=1{1 adgangskode (til <ph name="DOMAIN_LIST" /> – synkroniseret)}=2{2 adgangskoder (til <ph name="DOMAIN_LIST" /> – synkroniseret)}one{# adgangskode (til <ph name="DOMAIN_LIST" /> – synkroniseret)}other{# adgangskoder (til <ph name="DOMAIN_LIST" /> – synkroniseret)}}</translation>
@@ -2619,6 +2621,7 @@ Yderligere oplysninger:
 <translation id="8075736640322370409">Opret hurtigt et nyt Google-regneark</translation>
 <translation id="8075898834294118863">Administrer indstillinger for websites</translation>
 <translation id="8076492880354921740">Faner</translation>
+<translation id="8078006011486731853">{0,plural, =1{Vil du uploade den fortrolige fil?}one{Vil du uploade den fortrolige fil?}other{Vil du uploade de fortrolige filer?}}</translation>
 <translation id="8078141288243656252">Der kan ikke annoteres ved rotering</translation>
 <translation id="8079031581361219619">Vil du genindlæse websitet?</translation>
 <translation id="8081087320434522107">Sedaner</translation>

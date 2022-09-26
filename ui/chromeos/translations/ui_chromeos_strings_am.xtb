@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">ማስጠንቀቂያ፦ እነዚህ ፋይሎች ጊዜያዊ የሆኑና የአንጻፊ ቦታ ነጻ ለማስለቀቅ በራስ-ሰር ሊሰረዙ የሚችሉ ናቸው።</translation>
 <translation id="3029114385395636667">ሰነዶችን፣ ሉሆችን እና ስላይዶችን ከመስመር ውጭ እንዲገኙ ለማድረግ ከመስመር ውጭ Google ሰነዶችን ያንቁ።</translation>
 <translation id="303198083543495566">ጂኦግራፊ</translation>
+<translation id="3044404008258011032">እነዚህን ንጥሎች ወደነበሩበት ለመመለስ ከመጣያ ውጭ ወደ አዲስ አቃፊ ይጎትቷቸው። ለእነዚህ ንጥሎች የመጀመሪያው አቃፊ «<ph name="PARENT_FOLDER_NAME" />» ተሰርዟል።</translation>
 <translation id="3047197340186497470">ቻይንኛ ዳዪ</translation>
 <translation id="3067790092342515856">የWindows ፋይሎች</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">በማግበር ላይ...</translation>
 <translation id="4092890906744441904">አይርላንድኛ</translation>
 <translation id="4124935795427217608">ዩኒኮርን</translation>
+<translation id="4131235941541910880">የማያስፈልጉዎትን ንጥሎች ወደ መጣያ ይውሰዷቸው</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ተወስደዋል።</translation>
 <translation id="4176286497474237543">የቆሻሻ ማጠራቀሚያውን አሁኑኑ አጽዳ</translation>
 <translation id="4186579485882418952">ከመስመር ውጭን አንቃ</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">ጀርመን</translation>
 <translation id="4867079195717347957">በወራጅ ቅደም ተከተል ዓምዱን ለመደርደር ጠቅ ያድርጉ።</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ባይት</translation>
+<translation id="4874569719830985133">ለዘላለም ሰርዝ</translation>
 <translation id="4880214202172289027">የድምጽ ተንሸራታች</translation>
 <translation id="4881695831933465202">ክፍት የሚሆንባቸው</translation>
+<translation id="4891091358278567964">እነዚህን ንጥሎች ወደነበሩበት ለመመለስ ከመጣያ ውጭ ወደ አዲስ አቃፊ ይጎትቷቸው። ለእነዚህ ንጥሎች የመጀመሪያዎቹ አቃፊዎች ተሰርዘዋል።</translation>
 <translation id="4900532980794411603">በParallels ዴስክቶፕ አጋራ</translation>
 <translation id="4902546322522096650">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ ሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ አገናኝ</translation>
 <translation id="4906580650526544301">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />፣ <ph name="PROVIDER_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ የስልክ ባትሪ <ph name="BATTERY_STATUS" />%፣ ዝርዝሮች</translation>
@@ -493,6 +497,7 @@
         ፋይሎችን በአንድ ቦታ ላይ 
         <ph name="MARKUP_7" />ያጋሩ፣ ይፍጠሩ እና ያቀናጁ<ph name="MARKUP_8" />።<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">ከGoogle Drive መልሰው የተገኙ ፋይሎች</translation>
+<translation id="5278111733643988471">ይህን ንጥል ወደነበረበት ለመመለስ ከመጣያ ውጭ ወደ አዲስ አቃፊ ይጎትቱት። ለዚህ ንጥል የመጀመሪያው አቃፊ «<ph name="PARENT_FOLDER_NAME" />» ተሰርዟል።</translation>
 <translation id="5286194356314741248">በመቃኘት ላይ</translation>
 <translation id="5288441970121584418">በርገር</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -505,6 +510,7 @@
 <translation id="535792325654997756">ድመቶች ያሉት ሰው</translation>
 <translation id="5358764674931277">የክፈፍ ፍጥነት</translation>
 <translation id="5363339716524495120">የግቤት ቋንቋ ቻይንኛ ነው</translation>
+<translation id="5364067326287025678">መጣያ ውስጥ ምንም የለም</translation>
 <translation id="5368191757080475556">ከLinux ጋር አቃፊን አጋራ</translation>
 <translation id="5402367795255837559">ብሬይል</translation>
 <translation id="5411472733320185105">ተኪ ቅንብሮቹን ለእነዚህ አስተናጋጆች እና ጎራዎች አይጠቀሙ፦</translation>
@@ -771,6 +777,7 @@
 <translation id="7711920809702896782">የምስል መረጃ</translation>
 <translation id="7724603315864178912">ቁረጥ</translation>
 <translation id="7732111077498238432">አውታረ መረብ በመመሪያ ቁጥጥር የሚደረግበት ነው</translation>
+<translation id="7736003208887389532">እነዚህ ፋይሎች በቋሚነት ይሰረዙ?</translation>
 <translation id="7748626145866214022">ተጨማሪ አማራጮች በእርምጃ አሞሌው ላይ ይገኛሉ። በእርምጃ አሞሌው ላይ ለማተኮር Alt + A ይጫኑ።</translation>
 <translation id="7760449188139285140">ቻይንኛ ዉቢ</translation>
 <translation id="7765158879357617694">ውሰድ</translation>
@@ -832,6 +839,7 @@
 <translation id="8249296373107784235">አጨንግፍ</translation>
 <translation id="8250690786522693009">ላቲን</translation>
 <translation id="8250920743982581267">ሰነዶች</translation>
+<translation id="8255595130163158297">መጣያ ውስጥ ያሉ ሁሉም ንጥሎች ይሰረዛሉ እና እነሱን ወደነበሩበት መመለስ አይችሉም።</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8261561378965667560">የቻይንኛ ድርድር</translation>
 <translation id="8264024885325823677">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
@@ -860,7 +868,6 @@
 <translation id="8456681095658380701">ልክ ያልሆነ ስም</translation>
 <translation id="8457767749626250697">የእርስዎ ሲም ተቆልፏል</translation>
 <translation id="8459404855768962328">ይህን ንጥል መቅዳት የተጋራውን አቃፊ «<ph name="DESTINATION_NAME" />» ማየት ለሚችል ለሁሉም ሰው እንዲጋራ ያደርገዋል።</translation>
-<translation id="8461467696380332069">በመደርደሪያ ውስጥ ያሉትን ፋይሎችዎ በፍጥነት ለመድረስ አንድ ፋይል በቀኝ ጠቅ ያድርጉ እና «ለመደርደሪያ ሰካ»ን ይምረጡ።</translation>
 <translation id="8461914792118322307">ተኪ</translation>
 <translation id="8463494891489624050">ቪዬትናምኛ VIQR</translation>
 <translation id="8475647382427415476">Google Drive አሁን «<ph name="FILENAME" />» ማስመር አልቻለም። Google Drive ቆይቶ እንደገና ይሞክራል።</translation>
@@ -897,7 +904,6 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ተመርጧል።</translation>
 <translation id="872537912056138402">ክሮሽያንኛ</translation>
 <translation id="8743164338060742337">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" /> <ph name="NETWORK_PROVIDER_NAME" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በአስተዳዳሪ የሚተዳደር፣ ተገናኝ</translation>
-<translation id="8750438273876807512">በመደርደሪያ ውስጥ ያሉትን ፋይሎችዎ በፍጥነት ለመድረስ ፋይልን ይንኩ እና ይያዙ እና <ph name="ICON" />ን መታ ያድርጉ እና «ለመደርደሪያ ሰካ»ን ይምረጡ።</translation>
 <translation id="8787254343425541995">ለተጋሩ አውታረ መረቦች ተኪዎችን ይፍቀዱ</translation>
 <translation id="8790981080411996443">ተክሎችን ውሃ የሚያጠጣ ሰው</translation>
 <translation id="8798099450830957504">እንደወረደ</translation>
@@ -910,6 +916,7 @@
 <translation id="8857149712089373752">ኔፓልኛ በፎነቲክ ቁልፍ ሰሌዳ</translation>
 <translation id="8860454412039442620">የExcel ተመን ሉህ</translation>
 <translation id="8866284467018526531">በአረብኛ ቋንቋ ፊደል መጻፍ</translation>
+<translation id="8873014196523807561">እነዚህን ንጥሎች ወደነበሩበት ለመመለስ ወደ አዲስ አቃፊ ይጎትቷቸው። የእነዚህ ንጥሎች አንዳንዶቹ የመጀመሪያ አቃፊዎች ተሰርዘዋል።</translation>
 <translation id="8874184842967597500">አልተገናኘም</translation>
 <translation id="8900820606136623064">ሀንጋሪኛ</translation>
 <translation id="8903931173357132290">ትምህርት ይጨርሱ</translation>

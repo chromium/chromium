@@ -1259,6 +1259,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> ସହ କରାଯାଇଥିବା ସଂଯୋଗ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="4349365535725594680">ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ସେୟାର କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="4349810866125026513">ଯେ କୌଣସି ଉପାୟରେ ଅପଲୋଡ କରନ୍ତୁ</translation>
 <translation id="4350629523305688469">ମଲ୍ଟିଫଙ୍କସନ୍ ଟ୍ରେ</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ଆଖପାଖର ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ସ୍କାନ୍ କରିବାକୁ ଚାହୁଁଛି। ନିମ୍ନୋକ୍ତ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ମିଳିଛି:</translation>
 <translation id="4351175281479794167">ଯାଞ୍ଚକରଣ କୋଡ ଲେଖନ୍ତୁ</translation>
@@ -1392,6 +1393,7 @@
 <translation id="4744514002166662487">ପ୍ରେଜେଣ୍ଟେସନ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="4744603770635761495">ଏକ୍‌ଜିକ୍ୟୁଟେବଲ୍ ପାଥ୍</translation>
 <translation id="4749011317274908093">ଆପଣ ଇନକଗ୍ନିଟୋ ମୋଡକୁ ଚାଲି ଯାଇଛନ୍ତି</translation>
+<translation id="4750671009706599284">ଏହି ଫୋନ</translation>
 <translation id="4750917950439032686">ଅପଣଙ୍କର ସୂଚନା (ଉଦାହରଣ ସ୍ୱରୂପ, ପାସ୍‍ୱର୍ଡ କିମ୍ବା କ୍ରେଡିଟ୍ କାର୍ଡ ନମ୍ବର) ଏହି ସାଇଟ୍‍କୁ ଯେତେବେଳେ ପଠାଯାଏ, ସେତେବେଳେ ବ୍ୟକ୍ତିଗତ ଥାଏ।</translation>
 <translation id="4751476147751820511">ମୋସନ୍ କିମ୍ବା ଲାଇଟ୍ ସେନ୍ସର୍</translation>
 <translation id="4754461935447132332">ଅସୁରକ୍ଷିତ ସାଇଟଗୁଡ଼ିକ ପାଇଁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
@@ -1981,6 +1983,7 @@
 <translation id="6337133576188860026"><ph name="SIZE" />ଠାରୁ କମ୍ ଖାଲି କରନ୍ତି। କିଛି ଆପଣଙ୍କର ପରବର୍ତ୍ତୀ ଭ୍ରମଣ ସମୟରେ ଆହୁରି ଧୀରେ ଲୋଡ୍ ହୋଇପାରନ୍ତି।</translation>
 <translation id="6337534724793800597">ନାମ ଅନୁଯାୟୀ ନୀତିଗୁଡ଼ିକ ଫିଲ୍ଟର୍‍ କରନ୍ତୁ</translation>
 <translation id="6340739886198108203">ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ଦେଖାଯାଉଥିବା ବେଳେ ସ୍କ୍ରିନସଟ ନେବା କିମ୍ବା ରେକର୍ଡ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ:</translation>
+<translation id="6341434961864773665">{0,plural, =1{<ph name="DESTINATION_NAME" />କୁ ଏହି ଫାଇଲ ଅପଲୋଡ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}other{<ph name="DESTINATION_NAME" />କୁ ଏହି ଫାଇଲଗୁଡ଼ିକ ଅପଲୋଡ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}}</translation>
 <translation id="6348220984832452017">ସକ୍ରିୟ ଭେରିଏସନଗୁଡ଼ିକ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ଇନଷ୍ଟଲ୍‍ କରନ୍ତୁ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{କୌଣସିଟି ନୁହେଁ}=1{1ଟି ପାସ୍‌ୱାର୍ଡ (<ph name="DOMAIN_LIST" /> ପାଇଁ, ସିଙ୍କ୍ କରାଯାଇଛି)}=2{2ଟି ପାସ୍‌ୱାର୍ଡ (<ph name="DOMAIN_LIST" /> ପାଇଁ, ସିଙ୍କ୍ କରାଯାଇଛି)}other{#ଟି ପାସ୍‌ୱାର୍ଡ (<ph name="DOMAIN_LIST" /> ପାଇଁ, ସିଙ୍କ୍ କରାଯାଇଛି)}}</translation>
@@ -2159,6 +2162,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /><ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">ଏହି ପୃଷ୍ଠାଟି ପଢ଼ିବାକୁ ସହଜ କରିବା ପାଇଁ Chrome ଏହାକୁ ସରଳୀକୃତ କରିଛି। Chrome ଏକ ଅସୁରକ୍ଷିତ ସଂଯୋଗ ମାଧ୍ୟମରେ ଅରିଜିନାଲ ପୃଷ୍ଠାକୁ ପୁନରୁଦ୍ଧାର କରିଛି।</translation>
 <translation id="6890443033788248019">ଲୋକେସନ୍ ଅନୁମତି ଦେବେ?</translation>
+<translation id="6890531741535756070">ଆପଣ <ph name="PROVIDER_ORIGIN" /> ବ୍ୟବହାର କରୁଥିବା ୱେବସାଇଟଗୁଡ଼ିକରେ <ph name="DEVICE_LABEL" /> ମାଧ୍ୟମରେ ଯାଞ୍ଚ କରିବାକୁ ବାଛିଛନ୍ତି। ଏହି ପ୍ରଦାନକାରୀ ଆପଣଙ୍କ ପେମେଣ୍ଟ ପଦ୍ଧତି ବିଷୟରେ ସୂଚନା ଷ୍ଟୋର କରିଥାଇପାରନ୍ତି, ଯାହାକୁ ଆପଣ <ph name="BEGIN_LINK" />ଡିଲିଟ କରିବାକୁ ଅନୁରୋଧ<ph name="END_LINK" /> କରିପାରିବେ।</translation>
 <translation id="6891596781022320156">ନୀତି ସ୍ତର ସମର୍ଥିତ ନୁହେଁ।</translation>
 <translation id="6895143722905299846">ଭର୍ଚୁଆଲ୍ ନମ୍ବର:</translation>
 <translation id="6895330447102777224">ଆପଣଙ୍କ କାର୍ଡ ସୁନିଶ୍ଚିତ କରାଯାଇଛି</translation>
@@ -2519,6 +2523,7 @@
 <translation id="7764225426217299476">ଠିକଣା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7766518757692125295">ସ୍କର୍ଟ୍</translation>
 <translation id="7773005668374414287">ସେହି ସମାନ ଅର୍ଡରରେ ଫେସ୍ ଅପ୍</translation>
+<translation id="7785790577395078482">ଏହି ଟାବଲେଟ</translation>
 <translation id="7791011319128895129">ରିଲିଜ୍ ହୋଇନାହିଁ</translation>
 <translation id="7791196057686275387">ବେଲ୍</translation>
 <translation id="7791543448312431591">ଯୋଡନ୍ତୁ</translation>
@@ -2613,6 +2618,7 @@
 <translation id="8075736640322370409">ଶୀଘ୍ର ଏକ ନୂଆ Google Sheet ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8075898834294118863">ସାଇଟ୍ ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8076492880354921740">ଟାବ୍</translation>
+<translation id="8078006011486731853">{0,plural, =1{ଗୋପନୀୟ ଫାଇଲକୁ ଅପଲୋଡ କରିବେ?}other{ଗୋପନୀୟ ଫାଇଲଗୁଡ଼ିକୁ ଅପଲୋଡ କରିବେ?}}</translation>
 <translation id="8078141288243656252">ଘୂରିଯାଇଥିବା ବେଳେ ବ୍ୟାଖ୍ୟା କରିପାରିବେ ନାହିଁ</translation>
 <translation id="8079031581361219619">ସାଇଟ୍‌କୁ ରିଲୋଡ୍ କରିବେ?</translation>
 <translation id="8081087320434522107">ସେଡାନଗୁଡ଼ିକ</translation>

@@ -1634,6 +1634,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2468178265280335214">Acceleration af rulning på touchplade</translation>
 <translation id="2468205691404969808">Bruger cookies til at huske dine indstillinger, også selvom du ikke besøger siderne</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470085922875120">Du bruger adgangskoder, der er svære at gætte</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 fane}one{<ph name="GROUP_TITLE" /> – # fane}other{<ph name="GROUP_TITLE" /> – # faner}}</translation>
 <translation id="2469141124738294431">Status for VM</translation>
 <translation id="2469259292033957819">Du har ingen gemte printere.</translation>
@@ -1972,6 +1973,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2783321960289401138">Opret genvej...</translation>
 <translation id="2783829359200813069">Vælg krypteringstyper</translation>
 <translation id="2783952358106015700">Brug din sikkerhedsnøgle med <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">Adgangskodetjek</translation>
 <translation id="2785873697295365461">Filbeskrivelser</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Behold lokale browserdata (bogmærker, adgangskoder, historik osv.)</translation>
@@ -2047,6 +2049,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2844169650293029770">USB-C-enhed (porten foran i venstre side)</translation>
 <translation id="2844809857160214557">Se og administrer udskriftsjobs</translation>
 <translation id="2845382757467349449">Vis altid bogmærkelinjen</translation>
+<translation id="284581348330507117">Opret unikke adgangskoder</translation>
 <translation id="284805635805850872">Vil du slette den skadelige software?</translation>
 <translation id="2849035674501872372">Find</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2198,6 +2201,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2985348301114641460">Vil du sende en anmodning om at installere "<ph name="EXTENSION_NAME" />" til din administrator?</translation>
 <translation id="2987620471460279764">Tekst, der er delt fra en anden enhed</translation>
 <translation id="2988018669686457659">Spare Renderer</translation>
+<translation id="2988328607561082373">Du genbruger ikke nogen adgangskoder</translation>
 <translation id="2989123969927553766">Acceleration af rulning med mus</translation>
 <translation id="2989474696604907455">ikke tilknyttet</translation>
 <translation id="2989786307324390836">DER-kodet binær, enkeltcertifikat</translation>
@@ -2226,6 +2230,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009300415590184725">Er du sikker på, at du vil annullere konfigurationen af en mobildatatjeneste?</translation>
 <translation id="3009779501245596802">Indekserede databaser</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Dine adgangskoder ser stærke ud}=1{{COUNT} svag adgangskode}one{{COUNT} svag adgangskode}other{{COUNT} svage adgangskoder}}</translation>
 <translation id="3010279545267083280">Adgangskoden er slettet</translation>
 <translation id="3010389206479238935">Gennemtving åbning i</translation>
 <translation id="3011384993885886186">Varm grå</translation>
@@ -4433,6 +4438,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5153234146675181447">Glem telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Avancerede indstillinger for <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Der er ingen gemte adgangskoder.}=1{Der blev tjekket adgangskoder for {COUNT} website}one{Der blev tjekket adgangskoder for {COUNT} website og app}other{Der blev tjekket adgangskoder for {COUNT} websites og apps}}</translation>
 <translation id="5154702632169343078">Emne</translation>
 <translation id="5155327081870541046">I adresselinjen skal du angive genvejen til det website, du vil søge på, f.eks. "@bogmærker". Tryk derefter på din foretrukne tastaturgenvej, og angiv din søgeterm.</translation>
 <translation id="5156638757840305347">Markøren fremhæves, når den vises eller flyttes</translation>
@@ -5015,6 +5021,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5713158217420111469">Forbundet med <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Indtastningstypografi for mellemrum</translation>
 <translation id="5715711091495208045">Pluginmægler: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Du bør ændre adgangskoderne med det samme</translation>
 <translation id="5719603411793408026">Standardsøgemaskiner</translation>
 <translation id="5719854774000914513">Websites kan anmode om tilladelse til at oprette forbindelse til HID-enheder</translation>
 <translation id="572155275267014074">Indstillinger for Android</translation>
@@ -6475,6 +6482,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7098447629416471489">Andre gemte søgemaskiner vises her</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Fjern app}one{Fjern app}other{Fjern apps}}</translation>
 <translation id="7099337801055912064">Den store PPD-fil kan ikke indlæses. Filen må ikke fylde mere end 250 kB.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Ingen kompromitterede adgangskoder}=1{{COUNT} kompromitteret adgangskode}one{{COUNT} kompromitteret adgangskode}other{{COUNT} kompromitterede adgangskoder}}</translation>
 <translation id="7102687220333134671">Automatiske opdateringer er slået til</translation>
 <translation id="7102832101143475489">Der opstod timeout for anmodningen</translation>
 <translation id="710640343305609397">Åbn netværksindstillingerne</translation>
@@ -7419,6 +7427,7 @@ Nøglefil: <ph name="KEY_FILE" />
 Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye versioner af din udvidelse.</translation>
 <translation id="8002274832045662704">Avanceret konfiguration af printer</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> er ikke længere tilgængelig</translation>
+<translation id="8004092996156083991">Hvis dine adgangskoder kompromitteres, kontakter vi dig.</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8005600846065423578">Giv altid <ph name="HOST" /> tilladelse til at se udklipsholderen</translation>
 <translation id="8006630792898017994">Mellemrumstasten eller Tab-tasten</translation>
@@ -7918,6 +7927,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8470513973197838199">Gemte adgangskoder til <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Websites opretter normalt forbindelse til USB-enheder for at kunne udskrive dokumenter eller gemme filer på en lagerenhed</translation>
 <translation id="8471959340398751476">Rabatter er slået fra. Du kan slå rabatter til i menuen for tilpasning</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Dine adgangskoder er unikke}=1{{COUNT} genbrugt adgangskode}one{{COUNT} genbrugt adgangskode}other{{COUNT} genbrugte adgangskoder}}</translation>
 <translation id="8472623782143987204">hardwarebaseret</translation>
 <translation id="8473863474539038330">Adresser m.m.</translation>
 <translation id="8475313423285172237">Et andet program på din computer tilføjede en udvidelse, der kan ændre den måde, hvorpå Chrome fungerer.</translation>
@@ -8399,6 +8409,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8940081510938872932">Computeren foretager sig for mange ting i øjeblikket. Prøv igen senere.</translation>
 <translation id="8940381019874223173">Fra Google Fotos</translation>
 <translation id="8941173171815156065">Tilbagekald tilladelsen "<ph name="PERMISSION" />"</translation>
+<translation id="894191600409472540">Opret stærke adgangskoder</translation>
 <translation id="894360074127026135">Netscape, international optrapning</translation>
 <translation id="8944099748578356325">Batteriet bruges hurtigere (i øjeblikket <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8945274638472141382">Ikonstørrelse</translation>
@@ -8622,6 +8633,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9140067245205650184">Du benytter en ikke-understøttet funktionsmarkering: <ph name="BAD_FLAG" />. Det går ud over stabiliteten og sikkerheden.</translation>
 <translation id="9142637293078737510">Billedalias</translation>
 <translation id="9143298529634201539">Vil du fjerne forslaget?</translation>
+<translation id="9143922477019434797">Beskyt dine adgangskoder</translation>
 <translation id="9147392381910171771">&amp;Valgmuligheder</translation>
 <translation id="9148058034647219655">Afslut</translation>
 <translation id="9148126808321036104">Log ind igen</translation>

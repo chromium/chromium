@@ -1259,6 +1259,7 @@
 <translation id="4346833872170306413">ROC 16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> ਤੋਂ ਕਨੈਕਸ਼ਨ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4349365535725594680">ਗੁਪਤ ਸਮੱਗਰੀ ਨੂੰ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="4349810866125026513">ਫਿਰ ਵੀ ਅੱਪਲੋਡ ਕਰੋ</translation>
 <translation id="4350629523305688469">ਮਲਟੀ-ਫੰਕਸ਼ਨ ਟ੍ਰੇਅ</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ਦੀ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ, ਅੱਗੇ ਦਿੱਤੇ ਡੀਵਾਈਸ ਮਿਲੇ ਹਨ:</translation>
 <translation id="4351175281479794167">ਪੁਸ਼ਟੀਕਰਨ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
@@ -1981,6 +1982,7 @@
 <translation id="6337133576188860026"><ph name="SIZE" /> ਤੋਂ ਘੱਟ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਦਾ ਹੈ। ਤੁਹਾਡੀ ਅਗਲੀ ਫੇਰੀ 'ਤੇ ਕੁਝ ਸਾਈਟਾਂ ਵਧੇਰੇ ਹੌਲੀ ਲੋਡ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="6337534724793800597">ਨਾਮ ਮੁਤਾਬਕ ਨੀਤੀਆਂ ਫਿਲਟਰ ਕਰੋ</translation>
 <translation id="6340739886198108203">ਗੁਪਤ ਸਮੱਗਰੀ ਦੇ ਦਿਸਣਯੋਗ ਹੋਣ 'ਤੇ ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ ਜਾਂ ਰਿਕਾਰਡਿੰਗਾਂ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ:</translation>
+<translation id="6341434961864773665">{0,plural, =1{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਅੱਪਲੋਡ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}one{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਅੱਪਲੋਡ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}other{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਅੱਪਲੋਡ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}}</translation>
 <translation id="6348220984832452017">ਕਿਰਿਆਸ਼ੀਲ ਭਿੰਨਤਾਵਾਂ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਪਾਸਵਰਡ (<ph name="DOMAIN_LIST" /> ਲਈ, ਸਿੰਕ ਕੀਤਾ ਗਿਆ)}=2{2 ਪਾਸਵਰਡ (<ph name="DOMAIN_LIST" /> ਲਈ, ਸਿੰਕ ਕੀਤੇ ਗਏ)}other{# ਪਾਸਵਰਡ (<ph name="DOMAIN_LIST" /> ਲਈ, ਸਿੰਕ ਕੀਤੇ ਗਏ)}}</translation>
@@ -2615,6 +2617,7 @@
 <translation id="8075736640322370409">ਤੇਜ਼ੀ ਨਾਲ ਨਵੀਂ Google ਸ਼ੀਟ ਬਣਾਓ</translation>
 <translation id="8075898834294118863">ਸਾਈਟ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8076492880354921740">ਟੈਬਾਂ</translation>
+<translation id="8078006011486731853">{0,plural, =1{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨਾ ਹੈ?}one{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨਾ ਹੈ?}other{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨਾ ਹੈ?}}</translation>
 <translation id="8078141288243656252">ਘੁਮਾਉਣ 'ਤੇ ਐਨੋਟੇਟ ਨਹੀਂ ਕਰ ਸਕਦੇ</translation>
 <translation id="8079031581361219619">ਕੀ ਸਾਈਟ ਰੀਲੋਡ ਕਰਨੀ ਹੈ?</translation>
 <translation id="8081087320434522107">ਸੇਡਾਨ</translation>
