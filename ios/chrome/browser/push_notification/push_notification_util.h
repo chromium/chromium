@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class UIApplication;
+@class UNNotificationCategory;
 @class UNNotificationSettings;
 
 // This collection of class functions' purpose is to encapsulate the push
@@ -21,6 +22,11 @@
 // unsuccessful, then AppDelegate's didRegisterForNotificationsWithError
 // function is called.
 + (void)registerDeviceWithAPNS;
+
+// The function registers the set of `UNNotificationCategory` objects with iOS'
+// UNNotificationCenter.
++ (void)registerActionableNotifications:
+    (NSSet<UNNotificationCategory*>*)categories;
 
 // This function displays a permission request system prompt. On display of this
 // prompt, the user must decide whether or not to allow iOS to notify them of

@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/push_notification/push_notification_util.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -20,9 +22,8 @@ PushNotificationClientManager::PushNotificationClientManager() = default;
 PushNotificationClientManager::~PushNotificationClientManager() = default;
 
 void PushNotificationClientManager::AddPushNotificationClient(
-    PushNotificationClientId client_id,
     std::unique_ptr<PushNotificationClient> client) {
-  clients_.insert(std::make_pair(client_id, std::move(client)));
+  clients_.insert(std::make_pair(client->GetClientId(), std::move(client)));
 }
 
 void PushNotificationClientManager::HandleNotificationInteraction(
@@ -53,4 +54,19 @@ PushNotificationClientManager::HandleNotificationReception(
   }
 
   return UIBackgroundFetchResultNoData;
+}
+
+void PushNotificationClientManager::RegisterActionableNotifications() {
+  NSMutableSet* categorySet = [[NSMutableSet alloc] init];
+
+  for (auto& client : clients_) {
+    NSArray<UNNotificationCategory*>* client_categories =
+        client.second->RegisterActionableNotifications();
+
+    for (id category in client_categories) {
+      [categorySet addObject:category];
+    }
+  }
+
+  [PushNotificationUtil registerActionableNotifications:categorySet];
 }

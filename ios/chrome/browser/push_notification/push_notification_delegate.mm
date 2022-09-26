@@ -119,6 +119,11 @@ constexpr int kTimeRangeHistogramBucketCount = 30;
   PushNotificationService* notification_service =
       GetApplicationContext()->GetPushNotificationService();
 
+  // Registers Chrome's PushNotificationClients' Actionable Notifications with
+  // iOS.
+  notification_service->GetPushNotificationClientManager()
+      ->RegisterActionableNotifications();
+
   PushNotificationConfiguration* config =
       [[PushNotificationConfiguration alloc] init];
 

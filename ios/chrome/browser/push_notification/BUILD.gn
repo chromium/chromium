@@ -5,6 +5,8 @@
 source_set("push_notification_service") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "push_notification_client_manager.h",
+    "push_notification_client_manager.mm",
     "push_notification_configuration.h",
     "push_notification_configuration.mm",
     "push_notification_delegate.h",
@@ -15,21 +17,10 @@ source_set("push_notification_service") {
     "push_notification_util.mm",
   ]
   deps = [
-    ":push_notification_client_manager",
+    ":push_notification_client",
     "//base",
     "//ios/chrome/browser/application_context:application_context",
     "//ios/chrome/browser/browser_state:browser_state",
-  ]
-}
-source_set("push_notification_client_manager") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "push_notification_client_manager.h",
-    "push_notification_client_manager.mm",
-  ]
-  deps = [
-    ":push_notification_client",
-    "//base",
   ]
 }
 

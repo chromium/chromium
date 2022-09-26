@@ -37,7 +37,8 @@ class PushNotificationClient {
   // with predetermined actions that the user can select to manipulate the
   // application without ever entering the application. Actionable
   // notifications must be registered during application startup.
-  virtual void RegisterActionableNotifications() = 0;
+  virtual NSArray<UNNotificationCategory*>*
+  RegisterActionableNotifications() = 0;
 
   // Returns the feature's `client_id_`.
   PushNotificationClientId GetClientId();

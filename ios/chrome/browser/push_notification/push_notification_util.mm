@@ -21,6 +21,13 @@
   });
 }
 
++ (void)registerActionableNotifications:
+    (NSSet<UNNotificationCategory*>*)categories {
+  UNUserNotificationCenter* center =
+      UNUserNotificationCenter.currentNotificationCenter;
+  [center setNotificationCategories:categories];
+}
+
 + (void)requestPushNotificationPermission:
     (void (^)(bool granted, NSError* error))completionHandler {
   UNAuthorizationOptions options = UNAuthorizationOptionAlert |

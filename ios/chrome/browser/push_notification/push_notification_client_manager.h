@@ -29,7 +29,6 @@ class PushNotificationClientManager {
   // This function dynamically adds a mapping between a PushNotificationClientId
   // and a PushNotificationClient to the PushNotificationClientManager.
   void AddPushNotificationClient(
-      PushNotificationClientId client_id,
       std::unique_ptr<PushNotificationClient> client);
 
   // This function is called when the user interacts with the delivered
@@ -45,6 +44,14 @@ class PushNotificationClientManager {
   // PushNotificationClient.
   UIBackgroundFetchResult HandleNotificationReception(
       NSDictionary<NSString*, id>* user_info);
+
+  // Actionable Notifications are push notifications that provide the user
+  // with predetermined actions that the user can select to manipulate the
+  // application without ever entering the application. This function register
+  // each PushNotificationClient's Actionable Notifications. To ensure that the
+  // notifications are properly registered, this function must invoked
+  // during application startup.
+  void RegisterActionableNotifications();
 
  private:
   // A list of features that support push notifications.
