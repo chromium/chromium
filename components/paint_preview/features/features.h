@@ -15,14 +15,14 @@ namespace paint_preview {
 // preview for the current page. The paint preview UI will be dismissed on back
 // press and all associated stored files deleted. This intended to test whether
 // capturing and playing paint preview works on a specific site.
-extern const base::Feature kPaintPreviewDemo;
+BASE_DECLARE_FEATURE(kPaintPreviewDemo);
 
 // Used to enable the paint preview capture and show on startup for Android. If
 // enabled, paint previews for each tab are captured when a tab is hidden and
 // are deleted when a tab is closed. When a tab with a captured paint perview
 // is shown at startup and there is no cached page we will show the paint
 // preview.
-extern const base::Feature kPaintPreviewShowOnStartup;
+BASE_DECLARE_FEATURE(kPaintPreviewShowOnStartup);
 
 }  // namespace paint_preview
 
