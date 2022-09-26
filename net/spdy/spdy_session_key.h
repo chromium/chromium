@@ -90,7 +90,7 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
 
   const SocketTag& socket_tag() const { return socket_tag_; }
 
-  const NetworkAnonymizationKey& network_isolation_key() const {
+  const NetworkAnonymizationKey& network_anonymization_key() const {
     return network_anonymization_key_;
   }
 

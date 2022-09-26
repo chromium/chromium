@@ -121,6 +121,17 @@ class NET_EXPORT NetworkAnonymizationKey {
   static NetworkAnonymizationKey CreateFromNetworkIsolationKey(
       const net::NetworkIsolationKey& network_isolation_key);
 
+  // TODO(https://crbug.com/1343856): Remove once migration to
+  // NetworkAnonymizationKey is complete.
+
+  // This is a temporary converter to create NetworkAnonymizationKeys from
+  // NetworkIsolationKeys while we switch the two classes. All call sites of
+  // this method are temporary and will be removed before network state
+  // partitioning experiments are enabled.
+  static NetworkAnonymizationKey
+  CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+      const net::NetworkIsolationKey& network_isolation_key);
+
   // Creates a transient non-empty NetworkIsolationKey by creating an opaque
   // origin. This prevents the NetworkIsolationKey from sharing data with other
   // NetworkIsolationKeys.

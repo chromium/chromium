@@ -2981,7 +2981,8 @@ TEST_F(SpdySessionTest, VerifyDomainAuthenticationExpectCT) {
   session_deps_.transport_security_state->AddExpectCT(
       "www.example.org", expiry, true, GURL(), NetworkAnonymizationKey());
   session_deps_.transport_security_state->AddExpectCT(
-      "mail.example.org", expiry, true, GURL(), key_.network_isolation_key());
+      "mail.example.org", expiry, true, GURL(),
+      key_.network_anonymization_key());
   session_deps_.transport_security_state->AddExpectCT(
       "mail.example.com", expiry, true, GURL(),
       NetworkAnonymizationKey::CreateTransient());
@@ -6752,7 +6753,7 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameWithExpectCTError) {
       std::make_unique<TransportSecurityState>();
   session_deps_.transport_security_state->AddExpectCT(
       GURL(origin).host(), base::Time::Now() + base::Days(1) /* expiry */, true,
-      GURL(), key_.network_isolation_key());
+      GURL(), key_.network_anonymization_key());
 
   spdy::SpdyAltSvcIR altsvc_ir(/* stream_id = */ 0);
   altsvc_ir.add_altsvc(alternative_service_);
@@ -6769,13 +6770,13 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameWithExpectCTError) {
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
-                                               key_.network_isolation_key())
+                                               key_.network_anonymization_key())
                   .empty());
 
   ASSERT_TRUE(
       spdy_session_pool_->http_server_properties()
           ->GetAlternativeServiceInfos(url::SchemeHostPort(GURL(origin)),
-                                       key_.network_isolation_key())
+                                       key_.network_anonymization_key())
           .empty());
 }
 
