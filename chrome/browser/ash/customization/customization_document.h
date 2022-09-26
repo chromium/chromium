@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefRegistrySimple;
@@ -181,7 +182,7 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   bool GetDefaultWallpaperUrl(GURL* out_url) const;
 
   // Returns list of default apps.
-  std::unique_ptr<base::DictionaryValue> GetDefaultApps() const;
+  absl::optional<base::Value::Dict> GetDefaultApps() const;
 
   // Creates an extensions::ExternalLoader that will provide OEM default apps.
   // Cache of OEM default apps stored in profile preferences.
@@ -250,7 +251,7 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   void OnManifestLoaded();
 
   // Returns list of default apps in ExternalProvider format.
-  static std::unique_ptr<base::DictionaryValue> GetDefaultAppsInProviderFormat(
+  static base::Value::Dict GetDefaultAppsInProviderFormat(
       const base::Value::Dict& root);
 
   // Update cached manifest for |profile|.

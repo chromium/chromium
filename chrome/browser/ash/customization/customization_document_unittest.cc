@@ -308,26 +308,26 @@ TEST_F(ServicesCustomizationDocumentTest, Basic) {
   EXPECT_FALSE(doc->GetDefaultWallpaperUrl(&wallpaper_url));
   EXPECT_EQ("", wallpaper_url.spec());
 
-  std::unique_ptr<base::DictionaryValue> default_apps(doc->GetDefaultApps());
+  auto default_apps = doc->GetDefaultApps();
   ASSERT_TRUE(default_apps);
-  EXPECT_EQ(default_apps->DictSize(), 2u);
+  EXPECT_EQ(default_apps->size(), 2u);
 
-  const base::DictionaryValue* app_entry = nullptr;
-  ASSERT_TRUE(default_apps->GetDictionary("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                                          &app_entry));
-  EXPECT_EQ(app_entry->DictSize(), 1u);
-  EXPECT_TRUE(app_entry->FindKey(
-                  extensions::ExternalProviderImpl::kExternalUpdateUrl) !=
-              nullptr);
-
-  ASSERT_TRUE(default_apps->GetDictionary("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-                                          &app_entry));
-  EXPECT_EQ(app_entry->DictSize(), 2u);
-  EXPECT_TRUE(app_entry->FindKey(
-                  extensions::ExternalProviderImpl::kExternalUpdateUrl) !=
-              nullptr);
+  const base::Value::Dict* app_entry =
+      default_apps->FindDict("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  ASSERT_TRUE(app_entry);
+  EXPECT_EQ(app_entry->size(), 1u);
   EXPECT_TRUE(
-      app_entry->FindKey(
+      app_entry->Find(extensions::ExternalProviderImpl::kExternalUpdateUrl) !=
+      nullptr);
+
+  app_entry = default_apps->FindDict("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+  ASSERT_TRUE(app_entry);
+  EXPECT_EQ(app_entry->size(), 2u);
+  EXPECT_TRUE(
+      app_entry->Find(extensions::ExternalProviderImpl::kExternalUpdateUrl) !=
+      nullptr);
+  EXPECT_TRUE(
+      app_entry->Find(
           extensions::ExternalProviderImpl::kDoNotInstallForEnterprise) !=
       nullptr);
 

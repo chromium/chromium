@@ -54,6 +54,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -208,7 +209,7 @@ class ServicesCustomizationExternalLoader
       public base::SupportsWeakPtr<ServicesCustomizationExternalLoader> {
  public:
   explicit ServicesCustomizationExternalLoader(Profile* profile)
-      : is_apps_set_(false), profile_(profile) {}
+      : profile_(profile) {}
 
   ServicesCustomizationExternalLoader(
       const ServicesCustomizationExternalLoader&) = delete;
@@ -218,8 +219,8 @@ class ServicesCustomizationExternalLoader
   Profile* profile() { return profile_; }
 
   // Used by the ServicesCustomizationDocument to update the current apps.
-  void SetCurrentApps(std::unique_ptr<base::DictionaryValue> prefs) {
-    apps_.Swap(prefs.get());
+  void SetCurrentApps(base::Value::Dict prefs) {
+    apps_ = std::move(prefs);
     is_apps_set_ = true;
     StartLoading();
   }
@@ -239,16 +240,16 @@ class ServicesCustomizationExternalLoader
     }
 
     VLOG(1) << "ServicesCustomization extension loader publishing "
-            << apps_.DictSize() << " apps.";
-    LoadFinished(apps_.CreateDeepCopy());
+            << apps_.size() << " apps.";
+    LoadFinishedWithDict(apps_.Clone());
   }
 
  protected:
   ~ServicesCustomizationExternalLoader() override {}
 
  private:
-  bool is_apps_set_;
-  base::DictionaryValue apps_;
+  bool is_apps_set_ = false;
+  base::Value::Dict apps_;
   Profile* profile_;
 };
 
@@ -656,15 +657,12 @@ void ServicesCustomizationDocument::OnManifestLoaded() {
   if (!WasOOBECustomizationApplied())
     ApplyOOBECustomization();
 
-  std::unique_ptr<base::DictionaryValue> prefs =
-      GetDefaultAppsInProviderFormat(*root_);
-  for (ExternalLoaders::iterator it = external_loaders_.begin();
-       it != external_loaders_.end(); ++it) {
-    if (*it) {
-      UpdateCachedManifest((*it)->profile());
-      (*it)->SetCurrentApps(base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(prefs->Clone())));
-      SetOemFolderName((*it)->profile(), *root_);
+  auto prefs = GetDefaultAppsInProviderFormat(*root_);
+  for (auto& external_loader : external_loaders_) {
+    if (external_loader) {
+      UpdateCachedManifest(external_loader->profile());
+      external_loader->SetCurrentApps(prefs.Clone());
+      SetOemFolderName(external_loader->profile(), *root_);
     }
   }
 }
@@ -725,10 +723,10 @@ bool ServicesCustomizationDocument::GetDefaultWallpaperUrl(
   return true;
 }
 
-std::unique_ptr<base::DictionaryValue>
+absl::optional<base::Value::Dict>
 ServicesCustomizationDocument::GetDefaultApps() const {
   if (!IsReady())
-    return nullptr;
+    return absl::nullopt;
 
   return GetDefaultAppsInProviderFormat(*root_);
 }
@@ -741,42 +739,37 @@ std::string ServicesCustomizationDocument::GetOemAppsFolderName(
   return GetOemAppsFolderNameImpl(locale, *root_);
 }
 
-std::unique_ptr<base::DictionaryValue>
-ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
+base::Value::Dict ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
     const base::Value::Dict& root) {
-  std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
+  base::Value::Dict prefs;
   const base::Value::List* apps_list = root.FindList(kDefaultAppsAttr);
   if (apps_list) {
     for (const base::Value& app_entry_value : *apps_list) {
       std::string app_id;
-      std::unique_ptr<base::DictionaryValue> entry;
+      base::Value::Dict entry;
       if (app_entry_value.is_string()) {
         app_id = app_entry_value.GetString();
-        entry = std::make_unique<base::DictionaryValue>();
       } else if (app_entry_value.is_dict()) {
-        const base::DictionaryValue& app_entry =
-            base::Value::AsDictionaryValue(app_entry_value);
-        const std::string* app_id_ptr = app_entry.FindStringKey(kIdAttr);
+        const base::Value::Dict& app_entry = app_entry_value.GetDict();
+        const std::string* app_id_ptr = app_entry.FindString(kIdAttr);
         if (!app_id_ptr) {
           LOG(ERROR) << "Wrong format of default application list";
-          prefs->DictClear();
+          prefs.clear();
           break;
         }
         app_id = *app_id_ptr;
-        entry = app_entry.CreateDeepCopy();
-        entry->RemoveKey(kIdAttr);
+        entry = app_entry.Clone();
+        entry.Remove(kIdAttr);
       } else {
         LOG(ERROR) << "Wrong format of default application list";
-        prefs->DictClear();
+        prefs.clear();
         break;
       }
-      if (!entry->FindKey(
-              extensions::ExternalProviderImpl::kExternalUpdateUrl)) {
-        entry->SetStringKey(
-            extensions::ExternalProviderImpl::kExternalUpdateUrl,
-            extension_urls::GetWebstoreUpdateUrl().spec());
+      if (!entry.Find(extensions::ExternalProviderImpl::kExternalUpdateUrl)) {
+        entry.Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                  extension_urls::GetWebstoreUpdateUrl().spec());
       }
-      prefs->SetPath(app_id, base::Value::FromUniquePtrValue(std::move(entry)));
+      prefs.SetByDottedPath(app_id, std::move(entry));
     }
   }
 
