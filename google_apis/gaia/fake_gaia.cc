@@ -18,6 +18,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -387,8 +388,8 @@ void FakeGaia::Initialize() {
 
 FakeGaia::RequestHandlerMap::iterator FakeGaia::FindHandlerByPathPrefix(
     const std::string& request_path) {
-  return std::find_if(
-      request_handlers_.begin(), request_handlers_.end(),
+  return base::ranges::find_if(
+      request_handlers_,
       [request_path](std::pair<std::string, HttpRequestHandlerCallback> entry) {
         return base::StartsWith(request_path, entry.first,
                                 base::CompareCase::SENSITIVE);
