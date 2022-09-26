@@ -524,8 +524,12 @@ void WaylandSurface::ApplyPendingState() {
   if (pending_state_.crop.IsEmpty()) {
     viewport_src_dip = gfx::RectF(bounds);
   } else {
+    // viewport_src_dip needs to be in post-transform coordinates.
+    gfx::RectF crop_transformed = wl::ApplyWaylandTransform(
+        pending_state_.crop, gfx::SizeF(1, 1),
+        wl::ToWaylandTransform(pending_state_.buffer_transform));
     viewport_src_dip =
-        gfx::ScaleRect(pending_state_.crop, bounds.width(), bounds.height());
+        gfx::ScaleRect(crop_transformed, bounds.width(), bounds.height());
     DCHECK(viewport());
     if (wl_fixed_from_double(viewport_src_dip.width()) == 0 ||
         wl_fixed_from_double(viewport_src_dip.height()) == 0) {

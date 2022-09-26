@@ -379,6 +379,13 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
       DCHECK(
           absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
 
+      // Apply the buffer transform so that the candidate's |uv_rect| has the
+      // same orientation as |display_rect| when applying the clip.
+      gfx::Transform buffer_transform = gfx::OverlayTransformToTransform(
+          absl::get<gfx::OverlayTransform>(candidate.transform),
+          gfx::SizeF(1, 1));
+      buffer_transform.TransformRect(&candidate.uv_rect);
+
       if (candidate.clip_rect.has_value())
         OverlayCandidate::ApplyClip(candidate,
                                     gfx::RectF(*candidate.clip_rect));
@@ -394,6 +401,9 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
       // and the window by one pixel. Exo does not yet clip these quads so we
       // need to clip here with the |primary_rect|.
       OverlayCandidate::ApplyClip(candidate, primary_rect_);
+
+      // Return |uv_rect| to buffer uv space.
+      buffer_transform.TransformRectReverse(&candidate.uv_rect);
 
       if (candidate.display_rect.IsEmpty())
         return CandidateStatus::kFailVisible;
@@ -561,6 +571,7 @@ void OverlayCandidateFactory::HandleClipAndSubsampling(
   DCHECK(absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
 
   // Calculate |uv_rect| of |clip_rect| in |display_rect|
+  // TODO(rivr): Handle candidates with an overlay transform applied.
   gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
       candidate.uv_rect, candidate.display_rect,
       gfx::RectF(*candidate.clip_rect));

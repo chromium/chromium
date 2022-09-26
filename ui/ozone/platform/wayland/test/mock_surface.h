@@ -49,6 +49,7 @@ class MockSurface : public ServerObject {
                void(int32_t x, int32_t y, int32_t width, int32_t height));
   MOCK_METHOD0(Commit, void());
   MOCK_METHOD1(SetBufferScale, void(int32_t scale));
+  MOCK_METHOD1(SetBufferTransform, void(int32_t transform));
   MOCK_METHOD4(DamageBuffer,
                void(int32_t x, int32_t y, int32_t width, int32_t height));
 

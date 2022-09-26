@@ -3489,7 +3489,7 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   surface->AttachBuffer(connection_->buffer_manager_host()->EnsureBufferHandle(
       surface, buffer_id));
 
-  surface->set_viewport_source({0.5, 0.5, 0.5, 0.5});
+  surface->set_buffer_crop({0.5, 0.5, 0.5, 0.5});
   surface->set_viewport_destination({800, 600});
   surface->ApplyPendingState();
   surface->Commit();
@@ -3505,7 +3505,7 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   surface->AttachBuffer(connection_->buffer_manager_host()->EnsureBufferHandle(
       surface, buffer_id));
 
-  surface->set_viewport_source({0.5, 0.5, 0.5, 0.5});
+  surface->set_buffer_crop({0.5, 0.5, 0.5, 0.5});
   surface->set_viewport_destination({800, 600});
   surface->ApplyPendingState();
   surface->Commit();
@@ -3521,7 +3521,7 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   surface->AttachBuffer(connection_->buffer_manager_host()->EnsureBufferHandle(
       surface, buffer_id));
 
-  surface->set_viewport_source({0., 0., 1., 1.});
+  surface->set_buffer_crop({0., 0., 1., 1.});
   surface->set_viewport_destination({1024, 768});
   surface->ApplyPendingState();
   surface->Commit();
@@ -3537,7 +3537,7 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   surface->AttachBuffer(connection_->buffer_manager_host()->EnsureBufferHandle(
       surface, buffer_id));
 
-  surface->set_viewport_source({0., 0., 1., 1.});
+  surface->set_buffer_crop({0., 0., 1., 1.});
   surface->set_viewport_destination({1024, 768});
   surface->ApplyPendingState();
   surface->Commit();

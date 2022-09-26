@@ -314,7 +314,7 @@ void WaylandFrameManager::ApplySurfaceConfigure(
 
   surface->set_buffer_transform(config.transform);
   surface->set_surface_buffer_scale(ceil(config.surface_scale_factor));
-  surface->set_viewport_source(config.crop_rect);
+  surface->set_buffer_crop(config.crop_rect);
   surface->set_viewport_destination(config.bounds_rect.size());
   surface->set_opacity(config.opacity);
   surface->set_blending(config.enable_blend);
