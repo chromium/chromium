@@ -40,9 +40,10 @@ class ASH_EXPORT OverviewHighlightController {
   // Moves the focus ring directly to |target_view|. |target_view| must be a
   // traversable view, i.e. one of the views returned by GetTraversableViews().
   // This should be used when a view requests focus directly so the overview
-  // highlight can be in-sync with focus. Due to this expected use, this does
-  // not trigger an accessibility event.
-  void MoveHighlightToView(OverviewHighlightableView* target_view);
+  // highlight can be in-sync with focus. Due to this expected use, it should
+  // not normally be necessary to trigger an accessibility event.
+  void MoveHighlightToView(OverviewHighlightableView* target_view,
+                           bool suppress_accessibility_event = true);
 
   // Called when a |view| that might be in the focus traversal rotation is about
   // to be deleted.

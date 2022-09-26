@@ -93,14 +93,15 @@ void OverviewHighlightController::UpdateA11yFocusWindow(
 }
 
 void OverviewHighlightController::MoveHighlightToView(
-    OverviewHighlightableView* target_view) {
+    OverviewHighlightableView* target_view,
+    bool suppress_accessibility_event) {
   const std::vector<OverviewHighlightableView*> traversable_views =
       GetTraversableViews();
   auto it = std::find(traversable_views.begin(), traversable_views.end(),
                       target_view);
   DCHECK(it != traversable_views.end());
 
-  UpdateHighlight(target_view, /*suppress_accessibility_event=*/true);
+  UpdateHighlight(target_view, suppress_accessibility_event);
 }
 
 void OverviewHighlightController::OnViewDestroyingOrDisabling(

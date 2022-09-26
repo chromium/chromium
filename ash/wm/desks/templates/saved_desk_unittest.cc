@@ -1986,7 +1986,6 @@ TEST_F(SavedDeskTest, OverviewTabbing) {
   SavedDeskItemView* second_item = GetItemViewFromTemplatesGrid(1);
 
   // Testing that we first traverse the views of the first item.
-  SendKey(ui::VKEY_TAB);
   EXPECT_EQ(first_item, GetHighlightedView());
 
   // Testing that we traverse to the `name_view` of the first item.
@@ -2615,7 +2614,6 @@ TEST_F(SavedDeskTest, EditTemplateNameWithKeyboardNoCrash) {
 
   // Tab until we focus the name view of the first template item.
   SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
   ASSERT_EQ(name_view, GetHighlightedView());
 
   // Rename template "a" to template "d".
@@ -2646,7 +2644,6 @@ TEST_F(SavedDeskTest, EditTemplateNameShutdownNoCrash) {
   SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
 
   // Tab until we focus the name view of the first template item.
-  SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   ASSERT_EQ(name_view, GetHighlightedView());
 
@@ -3945,7 +3942,6 @@ TEST_F(SavedDeskTest, AdminTemplate) {
 
   // Tests that the name view cannot be tabbed into for admin templates, as they
   // aren't editable anyhow.
-  SendKey(ui::VKEY_TAB);
   EXPECT_EQ(item_view, GetHighlightedView());
   SendKey(ui::VKEY_TAB);
   EXPECT_NE(name_view, GetHighlightedView());
@@ -4034,16 +4030,16 @@ TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
     SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(i);
 
     // Verify item view is highlighted and fully visible.
-    SendKey(ui::VKEY_TAB);
     EXPECT_TRUE(item_view->IsViewHighlighted());
     EXPECT_EQ(item_view->GetPreferredSize(),
               item_view->GetVisibleBounds().size());
+    SendKey(ui::VKEY_TAB);
 
     // Verify name view is highlighted and fully visible.
-    SendKey(ui::VKEY_TAB);
     EXPECT_TRUE(item_view->name_view()->IsViewHighlighted());
     EXPECT_EQ(item_view->name_view()->GetPreferredSize(),
               item_view->name_view()->GetVisibleBounds().size());
+    SendKey(ui::VKEY_TAB);
   }
 }
 

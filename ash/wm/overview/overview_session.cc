@@ -31,6 +31,8 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
+#include "ash/wm/desks/templates/saved_desk_grid_view.h"
+#include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
@@ -1048,6 +1050,32 @@ void OverviewSession::ShowDesksTemplatesGrids(
   // needed when hiding, because we either move the focus to the new desk, or
   // delete all the grid templates items which would reset their highlights.
   highlight_controller_->ResetHighlightedView();
+
+  // If not given anything to focus, focus the first saved desk.
+  if (item_to_focus.is_valid())
+    return;
+
+  OverviewGrid* overview_grid = GetGridWithRootWindow(root_window);
+  if (!overview_grid)
+    return;
+
+  SavedDeskLibraryView* library_view = overview_grid->GetSavedDeskLibraryView();
+  if (!library_view)
+    return;
+
+  std::vector<SavedDeskGridView*> grid_views = library_view->grid_views();
+  if (grid_views.empty())
+    return;
+
+  std::vector<SavedDeskItemView*> grid_items = grid_views.front()->grid_items();
+  if (grid_items.empty() ||
+      library_view->GetWidget()->GetNativeWindow()->GetRootWindow() !=
+          root_window) {
+    return;
+  }
+
+  highlight_controller_->MoveHighlightToView(
+      grid_items.front(), /*suppress_accessibility_event=*/false);
 }
 
 void OverviewSession::HideDesksTemplatesGrids() {
