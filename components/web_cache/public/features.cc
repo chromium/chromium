@@ -7,7 +7,8 @@
 
 namespace web_cache {
 
-const base::Feature kTrimWebCacheOnMemoryPressureOnly{
-    "TrimWebCacheOnMemoryPressureOnly", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTrimWebCacheOnMemoryPressureOnly,
+             "TrimWebCacheOnMemoryPressureOnly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace web_cache
