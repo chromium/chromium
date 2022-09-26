@@ -31,10 +31,10 @@ namespace {
 void ScheduleDelayedCryptohomeRemoval(const AccountId& account_id) {
   PrefService* const local_state = g_browser_process->local_state();
   {
-    DictionaryPrefUpdate dict_update(local_state,
+    ScopedDictPrefUpdate dict_update(local_state,
                                      prefs::kAllKioskUsersToRemove);
-    dict_update->SetKey(cryptohome::Identification(account_id).id(),
-                        base::Value(account_id.GetUserEmail()));
+    dict_update->Set(cryptohome::Identification(account_id).id(),
+                     account_id.GetUserEmail());
   }
   local_state->CommitPendingWrite();
 }
@@ -42,9 +42,9 @@ void ScheduleDelayedCryptohomeRemoval(const AccountId& account_id) {
 void UnscheduleDelayedCryptohomeRemoval(const cryptohome::Identification& id) {
   PrefService* const local_state = g_browser_process->local_state();
   {
-    DictionaryPrefUpdate dict_update(local_state,
+    ScopedDictPrefUpdate dict_update(local_state,
                                      prefs::kAllKioskUsersToRemove);
-    dict_update->RemoveKey(id.id());
+    dict_update->Remove(id.id());
   }
   local_state->CommitPendingWrite();
 }

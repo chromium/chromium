@@ -49,19 +49,18 @@ void SaveIconToLocalOnBlockingPool(const base::FilePath& icon_path,
   }
 }
 
-void RemoveDictionaryPath(base::Value* dict, base::StringPiece path) {
-  DCHECK(dict->is_dict());
+void RemoveDictionaryPath(base::Value::Dict& dict, base::StringPiece path) {
   base::StringPiece current_path(path);
-  base::Value* current_dictionary = dict;
+  base::Value::Dict* current_dictionary = &dict;
   size_t delimiter_position = current_path.rfind('.');
   if (delimiter_position != base::StringPiece::npos) {
     current_dictionary =
-        dict->FindPath(current_path.substr(0, delimiter_position));
+        dict.FindDictByDottedPath(current_path.substr(0, delimiter_position));
     if (!current_dictionary)
       return;
     current_path = current_path.substr(delimiter_position + 1);
   }
-  current_dictionary->RemoveKey(current_path);
+  current_dictionary->Remove(current_path);
 }
 
 }  // namespace
@@ -78,22 +77,22 @@ KioskAppDataBase::KioskAppDataBase(const std::string& dictionary_name,
 
 KioskAppDataBase::~KioskAppDataBase() = default;
 
-void KioskAppDataBase::SaveToDictionary(DictionaryPrefUpdate& dict_update) {
+void KioskAppDataBase::SaveToDictionary(ScopedDictPrefUpdate& dict_update) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const std::string app_key = std::string(kKeyApps) + '.' + app_id_;
   const std::string name_key = app_key + '.' + kKeyName;
   const std::string icon_path_key = app_key + '.' + kKeyIcon;
 
-  dict_update->SetStringPath(name_key, name_);
-  dict_update->SetStringPath(icon_path_key, icon_path_.value());
+  dict_update->SetByDottedPath(name_key, name_);
+  dict_update->SetByDottedPath(icon_path_key, icon_path_.value());
 }
 
-void KioskAppDataBase::SaveIconToDictionary(DictionaryPrefUpdate& dict_update) {
+void KioskAppDataBase::SaveIconToDictionary(ScopedDictPrefUpdate& dict_update) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const std::string app_key = std::string(kKeyApps) + '.' + app_id_;
   const std::string icon_path_key = app_key + '.' + kKeyIcon;
 
-  dict_update->SetStringPath(icon_path_key, icon_path_.value());
+  dict_update->SetByDottedPath(icon_path_key, icon_path_.value());
 }
 
 bool KioskAppDataBase::LoadFromDictionary(const base::Value::Dict& dict,
@@ -152,7 +151,7 @@ void KioskAppDataBase::ClearCache() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PrefService* local_state = g_browser_process->local_state();
 
-  DictionaryPrefUpdate dict_update(local_state, dictionary_name());
+  ScopedDictPrefUpdate dict_update(local_state, dictionary_name());
 
   const std::string app_key =
       std::string(KioskAppDataBase::kKeyApps) + '.' + app_id_;

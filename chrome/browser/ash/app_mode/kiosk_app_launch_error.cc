@@ -76,9 +76,9 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
 // static
 void KioskAppLaunchError::Save(KioskAppLaunchError::Error error) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(local_state,
+  ScopedDictPrefUpdate dict_update(local_state,
                                    KioskAppManager::kKioskDictionaryName);
-  dict_update->SetIntPath(kKeyLaunchError, static_cast<int>(error));
+  dict_update->SetByDottedPath(kKeyLaunchError, static_cast<int>(error));
   s_last_error = error;
 }
 
@@ -86,9 +86,9 @@ void KioskAppLaunchError::Save(KioskAppLaunchError::Error error) {
 void KioskAppLaunchError::SaveCryptohomeFailure(
     const AuthFailure& auth_failure) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(local_state,
+  ScopedDictPrefUpdate dict_update(local_state,
                                    KioskAppManager::kKioskDictionaryName);
-  dict_update->SetIntPath(kKeyCryptohomeFailure, auth_failure.reason());
+  dict_update->SetByDottedPath(kKeyCryptohomeFailure, auth_failure.reason());
 }
 
 // static
@@ -112,27 +112,27 @@ KioskAppLaunchError::Error KioskAppLaunchError::Get() {
 // static
 void KioskAppLaunchError::RecordMetricAndClear() {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(local_state,
+  ScopedDictPrefUpdate dict_update(local_state,
                                    KioskAppManager::kKioskDictionaryName);
 
-  absl::optional<int> error = dict_update->FindIntKey(kKeyLaunchError);
+  absl::optional<int> error = dict_update->FindInt(kKeyLaunchError);
   if (error) {
     base::UmaHistogramEnumeration("Kiosk.Launch.Error",
                                   static_cast<Error>(*error));
   }
 
-  dict_update->RemoveKey(kKeyLaunchError);
+  dict_update->Remove(kKeyLaunchError);
   s_last_error = absl::nullopt;
 
   absl::optional<int> cryptohome_failure =
-      dict_update->FindIntKey(kKeyCryptohomeFailure);
+      dict_update->FindInt(kKeyCryptohomeFailure);
   if (cryptohome_failure) {
     UMA_HISTOGRAM_ENUMERATION(
         "Kiosk.Launch.CryptohomeFailure",
         static_cast<AuthFailure::FailureReason>(*cryptohome_failure),
         AuthFailure::NUM_FAILURE_REASONS);
   }
-  dict_update->RemoveKey(kKeyCryptohomeFailure);
+  dict_update->Remove(kKeyCryptohomeFailure);
 }
 
 }  // namespace ash

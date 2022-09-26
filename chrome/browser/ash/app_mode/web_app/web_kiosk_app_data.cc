@@ -237,13 +237,13 @@ void WebKioskAppData::UpdateAppInfo(const std::string& title,
   }
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(local_state, dictionary_name());
+  ScopedDictPrefUpdate dict_update(local_state, dictionary_name());
   SaveToDictionary(dict_update);
 
   launch_url_ = start_url;
-  dict_update->FindDictKey(KioskAppDataBase::kKeyApps)
-      ->FindDictKey(app_id())
-      ->SetStringKey(kKeyLaunchUrl, launch_url_.spec());
+  dict_update->FindDict(KioskAppDataBase::kKeyApps)
+      ->FindDict(app_id())
+      ->Set(kKeyLaunchUrl, launch_url_.spec());
 
   SetStatus(Status::kInstalled);
 }
@@ -306,12 +306,12 @@ void WebKioskAppData::OnDidDownloadIcon(const SkBitmap& icon) {
   SaveIcon(icon, cache_dir);
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(local_state, dictionary_name());
+  ScopedDictPrefUpdate dict_update(local_state, dictionary_name());
   SaveIconToDictionary(dict_update);
 
-  dict_update->FindDictKey(KioskAppDataBase::kKeyApps)
-      ->FindDictKey(app_id())
-      ->SetStringKey(kKeyLastIconUrl, icon_url_.spec());
+  dict_update->FindDict(KioskAppDataBase::kKeyApps)
+      ->FindDict(app_id())
+      ->Set(kKeyLastIconUrl, icon_url_.spec());
 
   SetStatus(Status::kLoaded);
 }
