@@ -8,7 +8,8 @@
 
 namespace url_param_filter::features {
 
-const base::Feature kIncognitoParamFilterEnabled{
-    "IncognitoParamFilterEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kIncognitoParamFilterEnabled,
+             "IncognitoParamFilterEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace url_param_filter::features

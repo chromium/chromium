@@ -9,7 +9,7 @@
 
 namespace url_param_filter::features {
 
-extern const base::Feature kIncognitoParamFilterEnabled;
+BASE_DECLARE_FEATURE(kIncognitoParamFilterEnabled);
 
 }  // namespace url_param_filter::features
 
