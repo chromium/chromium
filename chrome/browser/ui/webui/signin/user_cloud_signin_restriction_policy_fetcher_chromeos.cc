@@ -31,7 +31,7 @@ const char kJsonContentType[] = "application/json";
 // Presence of this key in the user info response indicates whether the user is
 // on a hosted domain.
 const char kHostedDomainKey[] = "hd";
-constexpr net::NetworkTrafficAnnotationTag annotation =
+constexpr net::NetworkTrafficAnnotationTag kAnnotation =
     net::DefineNetworkTrafficAnnotation(
         "managed_acccount_signin_restrictions_secure_connect_chromeos",
         R"(
@@ -183,7 +183,7 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::
   // Each url loader can only be used for one request.
   url_loader_ =
       CreateUrlLoader(GURL(GetSecureConnectApiGetAccountSigninRestrictionUrl()),
-                      access_token_, annotation);
+                      access_token_, kAnnotation);
   // base::Unretained is safe here because `url_loader_` is owned by `this`.
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
