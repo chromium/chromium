@@ -64,26 +64,26 @@ struct DidOverscrollParams;
                        NSTextInputClient,
                        NSAccessibility> {
  @private
+  // Dummy host and host helper that are always valid (see comments below about
+  // host_).
+  // These need to be declared before |host_| and |host_helper_| so that it
+  // gets destroyed last.
+  mojo::Remote<remote_cocoa::mojom::RenderWidgetHostNSViewHost> _dummyHost;
+  std::unique_ptr<remote_cocoa::RenderWidgetHostNSViewHostHelper>
+      _dummyHostHelper;
+
   // The communications channel to the RenderWidgetHostViewMac. This pointer is
   // always valid. When the original host disconnects, |host_| is changed to
   // point to |dummyHost_|, to avoid having to preface every dereference with
   // a nullptr check.
-  raw_ptr<remote_cocoa::mojom::RenderWidgetHostNSViewHost, DanglingUntriaged>
-      _host;
+  raw_ptr<remote_cocoa::mojom::RenderWidgetHostNSViewHost> _host;
 
   // A separate host interface for the parts of the interface to
   // RenderWidgetHostViewMac that cannot or should not be forwarded over mojo.
   // This includes events (where the extra translation is unnecessary or loses
   // information) and access to accessibility structures (only present in the
   // browser process).
-  raw_ptr<remote_cocoa::RenderWidgetHostNSViewHostHelper, DanglingUntriaged>
-      _hostHelper;
-
-  // Dummy host and host helper that are always valid (see above comments
-  // about host_).
-  mojo::Remote<remote_cocoa::mojom::RenderWidgetHostNSViewHost> _dummyHost;
-  std::unique_ptr<remote_cocoa::RenderWidgetHostNSViewHostHelper>
-      _dummyHostHelper;
+  raw_ptr<remote_cocoa::RenderWidgetHostNSViewHostHelper> _hostHelper;
 
   // This ivar is the cocoa delegate of the NSResponder.
   base::scoped_nsobject<NSObject<RenderWidgetHostViewMacDelegate>>
