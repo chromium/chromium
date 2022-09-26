@@ -360,10 +360,13 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
       apps_vector->emplace_back(std::make_unique<AppSearchProvider::App>(
           this, update.AppId(), name, update.LastLaunchTime(),
           update.InstallTime(), update.InstalledInternally()));
+      // TODO(crbug.com/1364452): Test that non-recommendable apps are not shown
+      // in the Recent Apps section.
       apps_vector->back()->set_recommendable(
           update.Recommendable().value_or(false) &&
           !update.Paused().value_or(false) &&
-          update.Readiness() != apps::Readiness::kDisabledByPolicy);
+          update.Readiness() != apps::Readiness::kDisabledByPolicy &&
+          update.ShowInLauncher());
       apps_vector->back()->set_searchable(update.Searchable().value_or(false));
 
       for (const std::string& term : update.AdditionalSearchTerms()) {
