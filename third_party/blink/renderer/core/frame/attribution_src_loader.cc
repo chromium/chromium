@@ -436,9 +436,8 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     return false;
 
   const uint64_t request_id = request.InspectorId();
-
   scoped_refptr<const SecurityOrigin> reporting_origin =
-      ReportingOriginForUrlIfValid(response.CurrentRequestUrl(),
+      ReportingOriginForUrlIfValid(response.ResponseUrl(),
                                    /*element=*/nullptr, request_id);
   if (!reporting_origin)
     return false;
@@ -563,7 +562,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     return;
 
   scoped_refptr<const SecurityOrigin> reporting_origin =
-      loader_->ReportingOriginForUrlIfValid(response.CurrentRequestUrl(),
+      loader_->ReportingOriginForUrlIfValid(response.ResponseUrl(),
                                             /*element=*/nullptr, request_id);
   if (!reporting_origin)
     return;
