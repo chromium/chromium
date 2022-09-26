@@ -309,11 +309,8 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
       "realboxMatchSearchboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
 
-  source->AddBoolean(
-      "roundCorners",
-      base::GetFieldTrialParamByFeatureAsInt(
-          ntp_features::kRealboxMatchSearchboxTheme,
-          ntp_features::kRealboxMatchSearchboxThemeParam, 0) == 1);
+  source->AddBoolean("roundCorners", base::FeatureList::IsEnabled(
+                                         ntp_features::kRealboxRoundedCorners));
 
   source->AddString(
       "realboxDefaultIcon",

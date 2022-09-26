@@ -50,10 +50,16 @@ BASE_FEATURE(kRealboxMatchOmniboxTheme,
              "NtpRealboxMatchOmniboxTheme",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the NTP "realbox" will be themed like the searchbox (same border/
-// drop shadow on hover state/rounded corners).
+// If enabled, the NTP "realbox" will have same border/drop shadow in hover
+// state as searchbox.
 BASE_FEATURE(kRealboxMatchSearchboxTheme,
              "NtpRealboxMatchSearchboxTheme",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the NTP "realbox" will have the same rounded corners as
+// searchbox.
+BASE_FEATURE(kRealboxRoundedCorners,
+             "NtpRealboxRoundedCorners",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the real search box ("realbox") on the New Tab page will show a
@@ -242,8 +248,6 @@ const char kNtpSafeBrowsingModuleCountMaxParam[] =
     "NtpSafeBrowsingModuleCountMaxParam";
 const char kRealboxMatchOmniboxThemeVariantParam[] =
     "RealboxMatchOmniboxThemeVariantParam";
-const char kRealboxMatchSearchboxThemeParam[] =
-    "RealboxMatchSearchboxThemeParam";
 const char kNtpRecipeTasksModuleDataParam[] = "NtpRecipeTasksModuleDataParam";
 const char kNtpRecipeTasksModuleCacheMaxAgeSParam[] =
     "NtpRecipeTasksModuleCacheMaxAgeSParam";

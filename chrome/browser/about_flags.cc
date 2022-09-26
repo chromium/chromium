@@ -1755,13 +1755,6 @@ const FeatureEntry::FeatureVariation kRealboxMatchOmniboxThemeVariations[] = {
      kRealboxMatchOmniboxThemeVar2, std::size(kRealboxMatchOmniboxThemeVar2),
      nullptr}};
 
-const FeatureEntry::FeatureParam kRealboxMatchSearchboxThemeRoundedCorners[] = {
-    {ntp_features::kRealboxMatchSearchboxThemeParam, "1"}};
-
-const FeatureEntry::FeatureVariation kRealboxMatchSearchboxThemeVariations[] = {
-    {"(Rounded Corners)", kRealboxMatchSearchboxThemeRoundedCorners,
-     std::size(kRealboxMatchSearchboxThemeRoundedCorners), nullptr}};
-
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleFakeData[] = {
     {ntp_features::kNtpRecipeTasksModuleDataParam, "fake"}};
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleHistorical7Days[] = {
@@ -5970,13 +5963,16 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-realbox-match-searchbox-theme",
      flag_descriptions::kNtpRealboxMatchSearchboxThemeName,
      flag_descriptions::kNtpRealboxMatchSearchboxThemeDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kRealboxMatchSearchboxTheme,
-                                    kRealboxMatchSearchboxThemeVariations,
-                                    "OmniboxBundledExperimentV1")},
+     FEATURE_VALUE_TYPE(ntp_features::kRealboxMatchSearchboxTheme)},
 
     {"ntp-realbox-pedals", flag_descriptions::kNtpRealboxPedalsName,
      flag_descriptions::kNtpRealboxPedalsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kNtpRealboxPedals)},
+
+    {"ntp-realbox-rounded-corners",
+     flag_descriptions::kNtpRealboxRoundedCornersName,
+     flag_descriptions::kNtpRealboxRoundedCornersDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kRealboxRoundedCorners)},
 
     {"ntp-realbox-use-google-g-icon",
      flag_descriptions::kNtpRealboxUseGoogleGIconName,

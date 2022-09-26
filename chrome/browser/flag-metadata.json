@@ -4772,6 +4772,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "ntp-realbox-rounded-corners",
+    "owners": [ "mahmadi", "mfacey" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "ntp-realbox-use-google-g-icon",
     "owners": [ "mahmadi", "mfacey" ],
     "expiry_milestone": 110

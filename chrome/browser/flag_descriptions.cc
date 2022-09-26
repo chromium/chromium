@@ -4360,12 +4360,15 @@ const char kNtpRealboxMatchOmniboxThemeDescription[] =
 const char kNtpRealboxMatchSearchboxThemeName[] =
     "NTP Realbox Matches Searchbox Theme";
 const char kNtpRealboxMatchSearchboxThemeDescription[] =
-    "NTP Realbox matches the Searchbox theme when enabled. Specifically a "
-    "border, drop shadow on hover.";
+    "Makes NTP Realbox drop shadow match that of the Searchbox when enabled.";
 
 const char kNtpRealboxPedalsName[] = "NTP Realbox Pedals";
 const char kNtpRealboxPedalsDescription[] =
     "Shows pedals in the NTP Realbox when enabled.";
+
+const char kNtpRealboxRoundedCornersName[] = "NTP Realbox Rounded Corners";
+const char kNtpRealboxRoundedCornersDescription[] =
+    "Make NTP realbox dropdown corners match that of the Searchbox.";
 
 const char kNtpRealboxUseGoogleGIconName[] = "NTP Realbox Google G Icon";
 const char kNtpRealboxUseGoogleGIconDescription[] =

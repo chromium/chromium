@@ -29,6 +29,7 @@ BASE_DECLARE_FEATURE(kIframeOneGoogleBar);
 BASE_DECLARE_FEATURE(kOneGoogleBarModalOverlays);
 BASE_DECLARE_FEATURE(kRealboxMatchOmniboxTheme);
 BASE_DECLARE_FEATURE(kRealboxMatchSearchboxTheme);
+BASE_DECLARE_FEATURE(kRealboxRoundedCorners);
 BASE_DECLARE_FEATURE(kRealboxUseGoogleGIcon);
 BASE_DECLARE_FEATURE(kNtpChromeCartModule);
 BASE_DECLARE_FEATURE(kNtpDriveModule);
@@ -107,8 +108,6 @@ extern const char kNtpSafeBrowsingModuleCountMaxParam[];
 extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 // Parameter determining the variation of the omnibox theme matching.
 extern const char kRealboxMatchOmniboxThemeVariantParam[];
-// Parameter determining the variations of searchbox theme matching.
-extern const char kRealboxMatchSearchboxThemeParam[];
 // Parameter determining the type of recipe data to request.
 extern const char kNtpRecipeTasksModuleDataParam[];
 // Parameter determining the max age in seconds of the cache for recipe tasks
