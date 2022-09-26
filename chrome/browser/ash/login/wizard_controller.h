@@ -80,10 +80,6 @@ class TimeZoneProvider;
 struct TimeZoneResponseData;
 enum class KioskAppType;
 
-namespace login {
-class NetworkStateHelper;
-}
-
 // Class that manages control flow between wizard screens. Wizard controller
 // interacts with screen controllers to move the user between screens.
 class WizardController : public OobeUI::Observer {
@@ -538,9 +534,6 @@ class WizardController : public OobeUI::Observer {
 
   std::unique_ptr<SimpleGeolocationProvider> geolocation_provider_;
   std::unique_ptr<TimeZoneProvider> timezone_provider_;
-
-  // Helper for network realted operations.
-  std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
 
   // Controller of the demo mode setup. It has the lifetime of the single demo
   // mode setup flow.
