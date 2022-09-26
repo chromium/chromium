@@ -276,9 +276,6 @@ void RecordSavedDevicesTotalUxLoadTime(base::TimeDelta total_load_time);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordSavedDevicesCount(int num_devices);
 
-COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-void RecordGetFastPairRepositoryForSavedDevicesPageResult(bool success);
-
 }  // namespace quick_pair
 }  // namespace ash
 

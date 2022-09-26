@@ -876,18 +876,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Bluetooth.ChromeOS.FastPair.SavedDevices.GetFastPairRepository.Result"
-    enum="BooleanSuccess" expires_after="2022-09-20">
-  <owner>akingsb@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the success or failure of fetching the Fast Pair Repository when the
-    Saved Devices page is loaded. This metric is emitted during a Load Saved
-    Device page request.
-  </summary>
-</histogram>
-
-<histogram
     name="Bluetooth.ChromeOS.FastPair.SavedDevices.GetSavedDevices.Result"
     enum="BooleanSuccess" expires_after="2023-02-26">
   <owner>julietlevesque@google.com</owner>

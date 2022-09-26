@@ -15,13 +15,18 @@
 
 namespace ash {
 namespace quick_pair {
+namespace {
 
 constexpr int kBluetoothAddressSize = 6;
 FastPairRepository* g_instance = nullptr;
 
+}  // namespace
+
 // static
 FastPairRepository* FastPairRepository::Get() {
-  // g_instance should always exist
+  // b/240621764 team members have seen g_instance return null during testing.
+  // Fail loudly if that happens to avoid undefined behavior.
+  CHECK(g_instance);
   return g_instance;
 }
 

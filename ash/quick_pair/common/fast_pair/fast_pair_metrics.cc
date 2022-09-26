@@ -202,8 +202,6 @@ const char kSavedDevicesTotalUxLoadTime[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.TotalUxLoadTime";
 const char kSavedDevicesCount[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.DeviceCount";
-const char kSavedDeviceGetFastPairRepositoryResult[] =
-    "Bluetooth.ChromeOS.FastPair.SavedDevices.GetFastPairRepository.Result";
 
 }  // namespace
 
@@ -590,10 +588,6 @@ void RecordSavedDevicesTotalUxLoadTime(base::TimeDelta total_load_time) {
 
 void RecordSavedDevicesCount(int num_devices) {
   base::UmaHistogramCounts100(kSavedDevicesCount, num_devices);
-}
-
-void RecordGetFastPairRepositoryForSavedDevicesPageResult(bool success) {
-  base::UmaHistogramBoolean(kSavedDeviceGetFastPairRepositoryResult, success);
 }
 
 }  // namespace quick_pair
