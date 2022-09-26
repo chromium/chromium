@@ -1,11 +1,13 @@
 <!DOCTYPE html>
+<meta name="timeout" content="long">
 <script src="/common/utils.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
-<meta name="timeout" content="long">
 <body>
 <script>
+
+setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
   // The key used for storing a test result in the server.
@@ -13,7 +15,7 @@ promise_test(async t => {
 
   // Open the test runner in a popup - it will prerender itself, record the
   // test results, and send them back to this harness.
-  const url = `resources/csp-prefetch-src-disallow.html?key=${key}`;
+  const url = `resources/csp-prefetch-src-disallow.sub.html?key=${key}`;
   window.open(url, '_blank', 'noopener');
 
   // Wait until the test sends us the results.
