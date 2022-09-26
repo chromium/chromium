@@ -78,9 +78,7 @@ void UserImageSyncObserver::OnProfileGained(Profile* profile) {
       kUserImageInfo,
       base::BindRepeating(&UserImageSyncObserver::OnPreferenceChanged,
                           base::Unretained(this)));
-  is_synced_ = chromeos::features::IsSyncSettingsCategorizationEnabled()
-                   ? prefs_->AreOsPriorityPrefsSyncing()
-                   : prefs_->IsPrioritySyncing();
+  is_synced_ = prefs_->AreOsPriorityPrefsSyncing();
   if (!is_synced_) {
     prefs_->AddObserver(this);
   } else {
@@ -126,9 +124,7 @@ void UserImageSyncObserver::OnUserImageChanged(const user_manager::User& user) {
 }
 
 void UserImageSyncObserver::OnIsSyncingChanged() {
-  is_synced_ = chromeos::features::IsSyncSettingsCategorizationEnabled()
-                   ? prefs_->AreOsPriorityPrefsSyncing()
-                   : prefs_->IsPrioritySyncing();
+  is_synced_ = prefs_->AreOsPriorityPrefsSyncing();
   if (is_synced_) {
     prefs_->RemoveObserver(this);
     OnInitialSync();
