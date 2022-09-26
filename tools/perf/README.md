@@ -125,12 +125,3 @@ in tracking, and uploads them to cloud storage to visualize with the help of
 [Data Studio]: https://datastudio.google.com/
 [v8_dashboard]: https://datastudio.google.com/s/iNcXppkP3DI
 [health_dashboard]: https://datastudio.google.com/s/jUXfKZXXfT8
-
-## pinboard
-
-Allows scheduling daily [pinpoint][] jobs to compare measurements with/without a
-patch being applied. This is useful for teams developing a new feature behind a
-flag, who wants to track the effects on performance as the development of their
-feature progresses. Processed data for relevant measurements is uploaded to
-cloud storage, where it can be read by [Data Studio][]. This also backs data
-displayed on the [v8][v8_dashboard] dashboard.
