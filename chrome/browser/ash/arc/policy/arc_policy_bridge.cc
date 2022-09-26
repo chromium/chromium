@@ -49,7 +49,6 @@ namespace {
 constexpr char kArcCaCerts[] = "caCerts";
 constexpr char kPolicyCompliantJson[] = "{ \"policyCompliant\": true }";
 constexpr char kArcRequiredKeyPairs[] = "requiredKeyPairs";
-constexpr char kPlayStorePackageName[] = "com.android.vending";
 constexpr char kPrivateKeySelectionEnabled[] = "privateKeySelectionEnabled";
 constexpr char kChoosePrivateKeyRules[] = "choosePrivateKeyRules";
 
@@ -346,25 +345,6 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
     // Adds "playStoreMode" policy. The policy value is used to restrict the
     // user from being able to toggle between different accounts in ARC++.
     filtered_policies.SetStringKey("playStoreMode", "SUPERVISED");
-
-    // Updates "applications" policy value for PlayStore to include the child's
-    // primary email account.
-    base::Value* applications_value =
-        filtered_policies.FindListKey(ArcPolicyBridge::kApplications);
-    if (applications_value) {
-      base::Value::ListView list_view = applications_value->GetListDeprecated();
-      for (base::Value& entry : list_view) {
-        const std::string* packageName =
-            entry.FindStringKey(ArcPolicyBridge::kPackageName);
-        if (packageName && *packageName != kPlayStorePackageName)
-          continue;
-        base::Value management_entry(base::Value::Type::DICTIONARY);
-        management_entry.SetStringKey("allowed_accounts",
-                                      profile->GetProfileUserName());
-        entry.SetKey(ArcPolicyBridge::kManagedConfiguration,
-                     std::move(management_entry));
-      }
-    }
   }
 
   const PrefService* profile_prefs = profile->GetPrefs();

@@ -108,38 +108,10 @@ constexpr char kMountPhysicalMediaDisabledPolicySetting[] =
 constexpr char kSupervisedUserPlayStoreModePolicySetting[] =
     "\"playStoreMode\":\"SUPERVISED\"";
 
-constexpr char kPlayStoreManagedRestriction[] =
-    "\"managedConfiguration\":{"
-    "\"allowed_accounts\":\"%s\"},";
-
-constexpr char kApplicationsPolicy[] =
-    "\"applications\":["
-    "{"
-    "\"disabled\":false,"
-    "\"installType\":\"OPTIONAL\","
-    "%s"
-    "\"packageName\":\"com.android.vending\""
-    "},"
-    "{"
-    "\"disabled\":false,"
-    "\"installType\":\"OPTIONAL\","
-    "\"packageName\":\"com.a.b\""
-    "}]";
-
 constexpr char kTestUserEmail[] = "user@gmail.com";
 
 constexpr char kChromeAppId[] = "chromeappid";
 constexpr char kAndroidAppId[] = "android.app.id";
-
-std::string GetSupervisedUserPlayStoreApplicationPolicy(
-    bool include_playstore_restriction,
-    const std::string& user_email) {
-  std::string restriction_used =
-      include_playstore_restriction
-          ? base::StringPrintf(kPlayStoreManagedRestriction, user_email.c_str())
-          : "";
-  return base::StringPrintf(kApplicationsPolicy, restriction_used.c_str());
-}
 
 void AddKeyPermissionForAppId(base::Value* key_permissions,
                               const std::string& app_id,
@@ -770,28 +742,6 @@ TEST_F(ArcPolicyBridgeTest, ManualChildUserPoliciesSet) {
       base::StrCat({"{\"apkCacheEnabled\":true,\"guid\":\"", instance_guid(),
                     "\",", kMountPhysicalMediaDisabledPolicySetting, ",",
                     kSupervisedUserPlayStoreModePolicySetting, "}"}));
-
-  // ARC policy with applications policy:
-  // The  managedConfiguration for Play Store should be set in this case.
-  // PlayStoreMode policy should also be set in this case.
-  const std::string arc_policy =
-      base::StrCat({"{",
-                    GetSupervisedUserPlayStoreApplicationPolicy(
-                        /* include_playstore_restriction */ false, ""),
-                    "}"});
-
-  policy_map().Set(policy::key::kArcPolicy, policy::POLICY_LEVEL_MANDATORY,
-                   policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                   base::Value(arc_policy),
-                   /* external_data_fetcher */ nullptr);
-  const std::string expected_policy_result = base::StrCat(
-      {"{\"apkCacheEnabled\":true,",
-       GetSupervisedUserPlayStoreApplicationPolicy(
-           /* include_playstore_restriction */ true, kTestUserEmail),
-       ",\"guid\":\"", instance_guid(), "\",",
-       kMountPhysicalMediaDisabledPolicySetting, ",",
-       kSupervisedUserPlayStoreModePolicySetting, "}"});
-  GetPoliciesAndVerifyResult(expected_policy_result);
 }
 
 // Test that required and force-installed apps get disabled during ARC data
