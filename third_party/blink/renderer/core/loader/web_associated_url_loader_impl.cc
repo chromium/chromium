@@ -360,14 +360,21 @@ void WebAssociatedURLLoaderImpl::LoadAsynchronously(
   DCHECK(!client_adapter_);
 
   DCHECK(client);
+  client_ = client;
+
+  if (!observer_) {
+    ReleaseClient()->DidFail(
+        WebURLError(ResourceError::CancelledError(KURL())));
+    return;
+  }
 
   bool allow_load = true;
   WebURLRequest new_request;
   new_request.CopyFrom(request);
   if (options_.untrusted_http) {
     WebString method = new_request.HttpMethod();
-    allow_load = observer_ && IsValidHTTPToken(method) &&
-                 !FetchUtils::IsForbiddenMethod(method);
+    allow_load =
+        IsValidHTTPToken(method) && !FetchUtils::IsForbiddenMethod(method);
     if (allow_load) {
       new_request.SetHttpMethod(FetchUtils::NormalizeMethod(method));
       HTTPRequestHeaderValidator validator;
@@ -389,17 +396,9 @@ void WebAssociatedURLLoaderImpl::LoadAsynchronously(
   new_request.ToMutableResourceRequest().SetCorsPreflightPolicy(
       options_.preflight_policy);
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-  // |observer_| can be null if Cancel, ContextDestroyed or
-  // ClientAdapterDone gets called between creating the loader and
-  // calling LoadAsynchronously.
-  if (observer_) {
-    task_runner = observer_->GetExecutionContext()->GetTaskRunner(
-        TaskType::kInternalLoading);
-  } else {
-    task_runner = Thread::Current()->GetDeprecatedTaskRunner();
-  }
-  client_ = client;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      observer_->GetExecutionContext()->GetTaskRunner(
+          TaskType::kInternalLoading);
   client_adapter_ = MakeGarbageCollected<ClientAdapter>(
       this, client, options_, request.GetMode(), request.GetCredentialsMode(),
       std::move(task_runner));
@@ -440,12 +439,10 @@ void WebAssociatedURLLoaderImpl::LoadAsynchronously(
           fetch_initiator_type_names::kAudio;
     }
 
-    if (observer_) {
-      loader_ = MakeGarbageCollected<ThreadableLoader>(
-          *observer_->GetExecutionContext(), client_adapter_,
-          resource_loader_options);
-      loader_->Start(std::move(webcore_request));
-    }
+    loader_ = MakeGarbageCollected<ThreadableLoader>(
+        *observer_->GetExecutionContext(), client_adapter_,
+        resource_loader_options);
+    loader_->Start(std::move(webcore_request));
   }
 
   if (!loader_) {
