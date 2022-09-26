@@ -6,14 +6,14 @@
 
 namespace privacy_sandbox {
 
-const base::Feature kPrivacySandboxSettings3 {
-  "PrivacySandboxSettings3",
+BASE_FEATURE(kPrivacySandboxSettings3,
+             "PrivacySandboxSettings3",
 #if !BUILDFLAG(IS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 const base::FeatureParam<bool> kPrivacySandboxSettings3ConsentRequired{
     &kPrivacySandboxSettings3, "consent-required", false};
 const base::FeatureParam<bool> kPrivacySandboxSettings3NoticeRequired{
@@ -32,15 +32,17 @@ const base::FeatureParam<bool> kPrivacySandboxSettings3ShowSampleDataForTesting{
 const base::FeatureParam<bool> kPrivacySandboxSettings3DisableDialogForTesting{
     &kPrivacySandboxSettings3, "disable-dialog-for-testing", false};
 
-const base::Feature kOverridePrivacySandboxSettingsLocalTesting{
-    "OverridePrivacySandboxSettingsLocalTesting",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting,
+             "OverridePrivacySandboxSettingsLocalTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kDisablePrivacySandboxPrompts{
-    "DisablePrivacySandboxPrompts", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDisablePrivacySandboxPrompts,
+             "DisablePrivacySandboxPrompts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPrivacySandboxFirstPartySetsUI{
-    "PrivacySandboxFirstPartySetsUI", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPrivacySandboxFirstPartySetsUI,
+             "PrivacySandboxFirstPartySetsUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kPrivacySandboxFirstPartySetsUISampleSets{
     &kPrivacySandboxFirstPartySetsUI, "use-sample-sets", false};
 
