@@ -18,7 +18,9 @@ XDGOutput::XDGOutput(zxdg_output_v1* xdg_output) : xdg_output_(xdg_output) {
       &XDGOutput::OutputHandleName,
       &XDGOutput::OutputHandleDescription,
   };
-  zxdg_output_v1_add_listener(xdg_output_.get(), &listener, this);
+  // Can be nullptr in tests.
+  if (xdg_output_)
+    zxdg_output_v1_add_listener(xdg_output_.get(), &listener, this);
 }
 
 XDGOutput::~XDGOutput() = default;

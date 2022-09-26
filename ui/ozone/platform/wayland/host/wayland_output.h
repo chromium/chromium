@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -95,6 +96,8 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   void SetScaleFactorForTesting(float scale_factor);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, NameAndDescriptionFallback);
+
   static constexpr int32_t kDefaultScaleFactor = 1;
 
   void TriggerDelegateNotifications();

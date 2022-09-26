@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -29,6 +30,8 @@ class XDGOutput {
   const std::string& name() const { return name_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, NameAndDescriptionFallback);
+
   static void OutputHandleLogicalPosition(void* data,
                                           struct zxdg_output_v1* zxdg_output_v1,
                                           int32_t x,
