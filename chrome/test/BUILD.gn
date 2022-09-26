@@ -4289,6 +4289,7 @@ if (!is_android) {
         "//components/drive",
         "//components/exo:test_support",
         "//components/feedback:feedback",
+        "//components/feedback/content:content",
         "//components/feedback/content:factory",
         "//components/live_caption:constants",
         "//components/metrics/structured",

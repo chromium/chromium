@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/feedback/content/content_tracing_manager.h"
 #include "components/feedback/content/feedback_uploader_factory.h"
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/feedback_report.h"
@@ -322,6 +323,15 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetSignedInUserEmail) {
   signin::MakePrimaryAccountAvailable(identity_manager, kSignedInUserEmail,
                                       signin::ConsentLevel::kSignin);
   EXPECT_EQ(feedback_delegate_.GetSignedInUserEmail(), kSignedInUserEmail);
+}
+
+// Test GetPerformanceTraceId returns id for performance trace data if any.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetPerformanceTraceId) {
+  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+  EXPECT_EQ(feedback_delegate_.GetPerformanceTraceId(), 0);
+  std::unique_ptr<ContentTracingManager> tracing_manager =
+      ContentTracingManager::Create();
+  EXPECT_EQ(feedback_delegate_.GetPerformanceTraceId(), 1);
 }
 
 // Test that feedback params and data are populated with correct data before

@@ -33,6 +33,7 @@ constexpr char kFeedbackAppPostSubmitAction[] =
 bool kUseInternalUserEmail = false;
 constexpr bool kIsInternalEmail = true;
 constexpr bool kIsNotInternalEmail = false;
+constexpr int kPerformanceTraceId = 1;
 const std::vector<uint8_t> kFakePngData = {42, 22, 26, 13, 7, 16, 8, 2};
 
 using FeedbackAppPostSubmitAction =
@@ -62,6 +63,8 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
     return kUseInternalUserEmail ? kSignedInInternalUserEmail
                                  : kSignedInUserEmail;
   }
+
+  int GetPerformanceTraceId() override { return kPerformanceTraceId; }
 
   void GetScreenshotPng(GetScreenshotPngCallback callback) override {
     std::move(callback).Run(kFakePngData);

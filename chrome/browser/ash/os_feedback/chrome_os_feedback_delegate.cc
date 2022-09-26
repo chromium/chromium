@@ -148,6 +148,14 @@ absl::optional<std::string> ChromeOsFeedbackDelegate::GetSignedInUserEmail()
       .email;
 }
 
+int ChromeOsFeedbackDelegate::GetPerformanceTraceId() {
+  if (ContentTracingManager* manager = ContentTracingManager::Get()) {
+    return manager->RequestTrace();
+  } else {
+    return 0;
+  }
+}
+
 void ChromeOsFeedbackDelegate::GetScreenshotPng(
     GetScreenshotPngCallback callback) {
   scoped_refptr<base::RefCountedMemory> png_data = GetScreenshotData();

@@ -33,6 +33,8 @@ class OsFeedbackDelegate {
   // Returns the normalized email address of the signed-in user associated with
   // the browser context, if any.
   virtual absl::optional<std::string> GetSignedInUserEmail() const = 0;
+  // Returns id for performance trace data. If tracing is off, returns zero.
+  virtual int GetPerformanceTraceId() = 0;
   // Return the screenshot of the primary display in PNG format. It was taken
   // right before the feedback tool is launched.
   virtual void GetScreenshotPng(GetScreenshotPngCallback callback) = 0;
