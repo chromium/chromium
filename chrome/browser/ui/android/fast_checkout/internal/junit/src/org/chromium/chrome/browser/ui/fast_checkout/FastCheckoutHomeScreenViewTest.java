@@ -153,17 +153,6 @@ public class FastCheckoutHomeScreenViewTest {
         verify(mMockDelegate, times(1)).onOptionsAccepted();
     }
 
-    @Test
-    @SmallTest
-    public void testDecliningHomeScreenOptions() {
-        // Click on decline button.
-        View declineButton = mHomeScreenView.findViewById(R.id.fast_checkout_button_decline);
-        assertNotNull(declineButton);
-        declineButton.performClick();
-
-        ShadowLooper.shadowMainLooper().idle();
-        verify(mMockDelegate, times(1)).onDismiss();
-    }
     /** Returns the text contained in TextView with resId inside the home screen view. */
     private String getTextFromView(int resId) {
         TextView textView = mHomeScreenView.findViewById(resId);

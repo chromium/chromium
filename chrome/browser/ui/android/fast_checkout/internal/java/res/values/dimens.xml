@@ -21,6 +21,7 @@ found in the LICENSE file.
     <!-- Home sheet dimensions. -->
     <dimen name="fast_checkout_home_sheet_items_spacing">24dp</dimen>
     <dimen name="fast_checkout_home_sheet_address_card_padding">16dp</dimen>
+    <dimen name="fast_checkout_home_sheet_action_button_bottom_margin">28dp</dimen>
     <dimen name="fast_checkout_home_sheet_expand_option_icon_margin_start">16dp</dimen>
     <dimen name="fast_checkout_home_sheet_expand_option_icon_margin_end">8dp</dimen>
     <dimen name="fast_checkout_sheet_home_screen_cc_min_height">56dp</dimen>

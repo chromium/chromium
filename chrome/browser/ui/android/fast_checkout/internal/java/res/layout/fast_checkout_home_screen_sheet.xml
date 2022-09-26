@@ -140,28 +140,16 @@ found in the LICENSE file.
       </LinearLayout>
     </LinearLayout>
 
-    <!-- Action buttons -->
+    <!-- Action button -->
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/fast_checkout_button_accept"
         style="@style/FilledButton.Flat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/fast_checkout_home_sheet_items_spacing"
+        android:layout_marginBottom="@dimen/fast_checkout_home_sheet_action_button_bottom_margin"
         android:ellipsize="end"
         android:gravity="center"
         android:singleLine="true"
         android:text="@string/fast_checkout_home_sheet_accept" />
-
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/fast_checkout_button_decline"
-        style="@style/TextButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:layout_marginBottom="@dimen/fast_checkout_home_sheet_items_spacing"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:singleLine="true"
-        android:text="@string/fast_checkout_home_sheet_decline" />
-
 </LinearLayout>

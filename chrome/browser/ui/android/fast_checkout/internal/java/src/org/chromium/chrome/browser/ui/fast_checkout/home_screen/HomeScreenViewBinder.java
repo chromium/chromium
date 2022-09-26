@@ -42,7 +42,6 @@ public class HomeScreenViewBinder {
         final LinearLayout mSelectedAddressView;
         final LinearLayout mSelectedCreditCardView;
         final ButtonCompat mAcceptButton;
-        final ButtonCompat mDeclineButton;
 
         ViewHolder(Context context, View contentView) {
             mContext = context;
@@ -60,7 +59,6 @@ public class HomeScreenViewBinder {
             mSelectedAddressView = contentView.findViewById(R.id.selected_address_profile_view);
             mSelectedCreditCardView = contentView.findViewById(R.id.selected_credit_card_view);
             mAcceptButton = contentView.findViewById(R.id.fast_checkout_button_accept);
-            mDeclineButton = contentView.findViewById(R.id.fast_checkout_button_decline);
         }
     }
 
@@ -71,8 +69,6 @@ public class HomeScreenViewBinder {
             view.mSelectedAddressView.setOnClickListener((v) -> delegate.onShowAddressesList());
 
             view.mSelectedCreditCardView.setOnClickListener((v) -> delegate.onShowCreditCardList());
-
-            view.mDeclineButton.setOnClickListener((v) -> delegate.onDismiss());
 
             view.mAcceptButton.setOnClickListener((v) -> delegate.onOptionsAccepted());
         } else if (propertyKey == SELECTED_PROFILE) {

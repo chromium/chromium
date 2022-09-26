@@ -88,15 +88,6 @@ public class FastCheckoutMediator {
             };
 
             @Override
-            public void onDismiss() {
-                if (!mModel.get(FastCheckoutProperties.VISIBLE)) {
-                    return; // Dismiss only if not dismissed yet.
-                }
-                mModel.set(FastCheckoutProperties.VISIBLE, false);
-                mDelegate.onDismissed();
-            }
-
-            @Override
             public void onShowAddressesList() {
                 setCurrentScreen(FastCheckoutProperties.ScreenType.AUTOFILL_PROFILE_SCREEN);
             }

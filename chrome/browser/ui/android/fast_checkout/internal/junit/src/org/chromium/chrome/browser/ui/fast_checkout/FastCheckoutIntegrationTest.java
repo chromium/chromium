@@ -97,6 +97,7 @@ public class FastCheckoutIntegrationTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private BottomSheetController mBottomSheetController;
+    private BottomSheetTestSupport mTestSupport;
 
     public FastCheckoutIntegrationTest() {
         MockitoAnnotations.initMocks(this);
@@ -109,6 +110,7 @@ public class FastCheckoutIntegrationTest {
             mFastCheckout = new FastCheckoutCoordinator();
             mBottomSheetController = BottomSheetControllerProvider.from(
                     mActivityTestRule.getActivity().getWindowAndroid());
+            mTestSupport = new BottomSheetTestSupport(mBottomSheetController);
             mFastCheckout.initialize(
                     mActivityTestRule.getActivity(), mBottomSheetController, mMockBridge);
         });
@@ -192,18 +194,13 @@ public class FastCheckoutIntegrationTest {
 
     @Test
     @MediumTest
-    public void testClickNoThanksCallsCallback() {
+    public void testUserDismissBottomSheetCallsCallback() {
         runOnUiThreadBlocking(() -> { mFastCheckout.showOptions(DUMMY_PROFILES, DUMMY_CARDS); });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.fast_checkout_home_sheet_decline)))
-                .check(matches(isDisplayed()));
-
-        // Decline the bottom sheet.
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.fast_checkout_home_sheet_decline)))
-                .perform(click());
+        // Hide the bottom sheet.
+        runOnUiThreadBlocking(
+                () -> mTestSupport.setSheetState(BottomSheetController.SheetState.HIDDEN, false));
 
         waitForEvent(mMockBridge).onDismissed();
         verify(mMockBridge, never()).onOptionsSelected(any(), any());

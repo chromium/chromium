@@ -18,8 +18,6 @@ public class HomeScreenCoordinator {
     public interface Delegate {
         /** The current selected options were accepted. */
         void onOptionsAccepted();
-        /** The current selected options were declined by the user. */
-        void onDismiss();
         /** The user clicked on the selected address item. */
         void onShowAddressesList();
         /** The user clicked on the selected credit card item. */
