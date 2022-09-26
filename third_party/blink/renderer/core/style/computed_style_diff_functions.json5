@@ -368,15 +368,24 @@
                      "transform-box"],
     },
     {
+        // Diff of the transform property only. See
+        // |UpdatePropertySpecificDifferencesOtherTransform|.
         name: "UpdatePropertySpecificDifferencesTransform",
-        fields_to_diff: ["transform", "translate", "rotate",
+        fields_to_diff: ["transform"],
+    },
+    {
+        // Diff of transform-related properties other than the transform itself.
+        // Because HasTransform() is checked below, this will also check for
+        // changes to the existence of the transform property.
+        name: "UpdatePropertySpecificDifferencesOtherTransform",
+        fields_to_diff: ["translate", "rotate",
                     "scale", "offset-path", "offset-rotate", "transform-origin",
                      "offset-position", "offset-anchor", "offset-distance",
                      "perspective", "perspective-origin", "transform-box"],
         methods_to_diff: [
           {
             // It's possible for the old and new style transform data to be equivalent
-            // while hasTransform() differs, as it checks a number of conditions aside
+            // while HasTransform() differs, as it checks a number of conditions aside
             // from just the matrix, including but not limited to animation state.
             method: "HasTransform()",
             field_dependencies: ["transform", "offset-position",

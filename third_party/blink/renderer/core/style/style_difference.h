@@ -18,18 +18,22 @@ class StyleDifference {
 
  public:
   enum PropertyDifference {
-    kTransformChanged = 1 << 0,
-    kOpacityChanged = 1 << 1,
-    kZIndexChanged = 1 << 2,
-    kFilterChanged = 1 << 3,
-    kCSSClipChanged = 1 << 4,
+    kTransformPropertyChanged = 1 << 0,
+    // Other transform properties include changes other than the transform
+    // property itself such as individual transform properties, motion
+    // path, etc. See: |ComputedStyle::HasTransform|.
+    kOtherTransformPropertyChanged = 1 << 1,
+    kOpacityChanged = 1 << 2,
+    kZIndexChanged = 1 << 3,
+    kFilterChanged = 1 << 4,
+    kCSSClipChanged = 1 << 5,
     // The object needs to issue paint invalidations if it is affected by text
     // decorations or properties dependent on color (e.g., border or outline).
     // TextDecorationLine changes must also invalidate ink overflow.
-    kTextDecorationOrColorChanged = 1 << 5,
-    kBlendModeChanged = 1 << 6,
-    kMaskChanged = 1 << 7,
-    kBackgroundColorChanged = 1 << 8,
+    kTextDecorationOrColorChanged = 1 << 6,
+    kBlendModeChanged = 1 << 7,
+    kMaskChanged = 1 << 8,
+    kBackgroundColorChanged = 1 << 9,
     // If you add a value here, be sure to update kPropertyDifferenceCount.
   };
 
@@ -101,11 +105,21 @@ class StyleDifference {
   bool NeedsVisualRectUpdate() const { return visual_rect_update_; }
   void SetNeedsVisualRectUpdate() { visual_rect_update_ = true; }
 
+  // True if the transform property itself changed, or properties related to
+  // transform changed (e.g., individual transform properties, motion path,
+  // etc.). See: |ComputedStyle::HasTransform|.
   bool TransformChanged() const {
-    return property_specific_differences_ & kTransformChanged;
+    return property_specific_differences_ & kTransformPropertyChanged ||
+           property_specific_differences_ & kOtherTransformPropertyChanged;
   }
-  void SetTransformChanged() {
-    property_specific_differences_ |= kTransformChanged;
+  bool OtherTransformPropertyChanged() const {
+    return property_specific_differences_ & kOtherTransformPropertyChanged;
+  }
+  void SetTransformPropertyChanged() {
+    property_specific_differences_ |= kTransformPropertyChanged;
+  }
+  void SetOtherTransformPropertyChanged() {
+    property_specific_differences_ |= kOtherTransformPropertyChanged;
   }
 
   bool OpacityChanged() const {
@@ -176,7 +190,7 @@ class StyleDifference {
   }
 
  private:
-  static constexpr int kPropertyDifferenceCount = 9;
+  static constexpr int kPropertyDifferenceCount = 10;
 
   friend CORE_EXPORT std::ostream& operator<<(std::ostream&,
                                               const StyleDifference&);

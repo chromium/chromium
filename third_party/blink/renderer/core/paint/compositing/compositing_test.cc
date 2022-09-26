@@ -913,8 +913,6 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdate) {
 // This is similar to |DirectTransformPropertyUpdate|, but the update is done
 // from style rather than the property tree builder.
 TEST_P(CompositingSimTest, FastPathTransformUpdateFromStyle) {
-  if (!base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates))
-    return;
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>

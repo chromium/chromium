@@ -1676,10 +1676,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   style->SetTransformOrigin(TransformOrigin(Length(70, Length::kFixed),
                                             Length(30, Length::kFixed), 0));
   target->SetStyle(std::move(style));
-  if (base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates))
-    EXPECT_FALSE(target->NeedsPaintPropertyUpdate());
-  else
-    EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   {
 #if DCHECK_IS_ON()
@@ -1957,8 +1954,6 @@ TEST_P(PaintPropertyTreeUpdateTest, LocalBorderBoxPropertiesChange) {
 // running the blink property tree builder.
 TEST_P(PaintPropertyTreeUpdateTest,
        DirectTransformUpdateSkipsPropertyTreeBuilder) {
-  if (!base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates))
-    return;
   SetBodyInnerHTML(R"HTML(
       <div id='div' style="transform:translateX(100px)"></div>
   )HTML");

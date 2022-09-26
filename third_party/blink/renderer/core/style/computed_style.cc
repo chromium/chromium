@@ -1094,8 +1094,15 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
   if (ComputedStyleBase::UpdatePropertySpecificDifferencesZIndex(*this, other))
     diff.SetZIndexChanged();
 
-  if (UpdatePropertySpecificDifferencesTransform(*this, other))
-    diff.SetTransformChanged();
+  if (ComputedStyleBase::UpdatePropertySpecificDifferencesTransform(*this,
+                                                                    other)) {
+    diff.SetTransformPropertyChanged();
+  }
+
+  if (ComputedStyleBase::UpdatePropertySpecificDifferencesOtherTransform(
+          *this, other)) {
+    diff.SetOtherTransformPropertyChanged();
+  }
 
   if (ComputedStyleBase::UpdatePropertySpecificDifferencesOpacity(*this, other))
     diff.SetOpacityChanged();

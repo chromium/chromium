@@ -2446,8 +2446,10 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
 
   bool needs_full_transform_update = diff.TransformChanged();
   if (needs_full_transform_update) {
-    // Schedule a direct transform update instead of full update.
-    if (PaintPropertyTreeBuilder::ScheduleDeferredTransformNodeUpdate(
+    // If only the transform property changed, without other related properties
+    // changing, try to schedule a deferred transform node update.
+    if (!diff.OtherTransformPropertyChanged() &&
+        PaintPropertyTreeBuilder::ScheduleDeferredTransformNodeUpdate(
             GetLayoutObject())) {
       needs_full_transform_update = false;
       SetNeedsDescendantDependentFlagsUpdate();
