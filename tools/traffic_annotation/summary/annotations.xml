@@ -391,4 +391,6 @@ Refer to README.md for content description and update process.
  <item id="shopping_list_ui_image_fetcher" added_in_milestone="107" content_hash_code="0680ae03" os_list="linux,windows,chromeos" file_path="chrome/browser/commerce/price_tracking/shopping_list_ui_tab_helper.cc" />
  <item id="chrome_commerce_price_email_pref_fetcher" added_in_milestone="107" content_hash_code="00b3dc73" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/account_checker.cc" />
  <item id="chrome_commerce_price_email_pref_sender" added_in_milestone="107" content_hash_code="03f51c85" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/account_checker.cc" />
+ <item id="receive_messages_express" added_in_milestone="108" content_hash_code="024cb475" os_list="chromeos" file_path="chrome/browser/nearby_sharing/instantmessaging/receive_messages_express.cc" />
+ <item id="send_message_express" added_in_milestone="108" content_hash_code="05c5d134" os_list="chromeos" file_path="chrome/browser/nearby_sharing/instantmessaging/send_message_express.cc" />
 </annotations>
