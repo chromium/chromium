@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -49,17 +48,11 @@ ArcPackageSyncModelTypeController::ArcPackageSyncModelTypeController(
   auto delegate_for_full_sync_mode =
       std::make_unique<ForwardingModelTypeControllerDelegate>(delegate);
 
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     // Runs in transport-mode and full-sync mode, sharing the bridge's delegate.
-    InitModelTypeController(
-        std::move(delegate_for_full_sync_mode),
-        /*delegate_for_transport_mode=*/
-        std::make_unique<ForwardingModelTypeControllerDelegate>(delegate));
-  } else {
-    // Only runs in full-sync mode.
-    InitModelTypeController(std::move(delegate_for_full_sync_mode),
-                            /*delegate_for_transport_mode=*/nullptr);
-  }
+  InitModelTypeController(
+      std::move(delegate_for_full_sync_mode),
+      /*delegate_for_transport_mode=*/
+      std::make_unique<ForwardingModelTypeControllerDelegate>(delegate));
 
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   if (arc_session_manager) {
