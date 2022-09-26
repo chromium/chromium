@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -26,13 +27,10 @@
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "chrome/common/privacy_budget/types.h"
-#include "chrome/test/base/chrome_test_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/test/fake_server.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -62,6 +60,7 @@ namespace {
 
 using testing::IsSupersetOf;
 using testing::Key;
+using testing::UnorderedElementsAreArray;
 
 uint64_t HashFeature(const blink::mojom::WebFeature& feature) {
   return blink::IdentifiableSurface::FromTypeAndToken(
@@ -551,54 +550,75 @@ class PrivacyBudgetBrowserTestActiveSampling : public PlatformBrowserTest {
     params.enable_active_sampling = true;
     params.actively_sampled_fonts = {"Arial", "Helvetica"};
     privacy_budget_config_.Apply(params);
+
+    expected_keys_ = {
+        blink::IdentifiableSurface::FromTypeAndToken(
+            blink::IdentifiableSurface::Type::
+                kNavigatorUAData_GetHighEntropyValues,
+            blink::IdentifiableToken("model"))
+            .ToUkmMetricHash(),
+        blink::IdentifiableSurface::FromTypeAndToken(
+            blink::IdentifiableSurface::Type::kFontFamilyAvailable,
+            blink::IdentifiableToken("arial"))
+            .ToUkmMetricHash(),
+        blink::IdentifiableSurface::FromTypeAndToken(
+            blink::IdentifiableSurface::Type::kFontFamilyAvailable,
+            blink::IdentifiableToken("helvetica"))
+            .ToUkmMetricHash()};
   }
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
     PlatformBrowserTest::CreatedBrowserMainParts(parts);
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
+    // We wait for the expected metrics to be reported. Since some of the
+    // metrics are reported from the renderer process, this is the only reliable
+    // way to be sure we waited long enough.
+    run_loop_ = std::make_unique<base::RunLoop>();
+    ukm_recorder_->SetOnAddEntryCallback(
+        ukm::builders::Identifiability::kEntryName,
+        base::BindLambdaForTesting([this]() {
+          if (GetReportedSurfaceKeys().size() == expected_keys_.size())
+            run_loop_->Quit();
+        }));
   }
 
-  ukm::TestUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
+  base::flat_set<uint64_t> GetReportedSurfaceKeys() {
+    std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+        ukm_recorder_->GetMergedEntriesByName(
+            ukm::builders::Identifiability::kEntryName);
+
+    base::flat_set<uint64_t> reported_surface_keys;
+    for (const auto& entry : merged_entries) {
+      for (const auto& metric : entry.second->metrics) {
+        if (base::Contains(expected_keys_, metric.first))
+          reported_surface_keys.insert(metric.first);
+      }
+    }
+    return reported_surface_keys;
+  }
+
+  base::RunLoop& run_loop() { return *run_loop_; }
+
+  const std::vector<uint64_t> expected_keys() const { return expected_keys_; }
 
  private:
   test::ScopedPrivacyBudgetConfig privacy_budget_config_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   std::unique_ptr<base::RunLoop> run_loop_;
+
+  std::vector<uint64_t> expected_keys_;
 };
 
 }  // namespace
 
-// TODO[b/247955960]: Fix flakiness and reenable test.
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestActiveSampling,
-                       DISABLED_ActiveSamplingIsPerformed) {
-  content::NavigateToURLBlockUntilNavigationsComplete(
-      chrome_test_utils::GetActiveWebContents(this), GURL("about:blank"), 1);
-  content::RunAllTasksUntilIdle();
-  auto merged_entries = ukm_recorder().GetMergedEntriesByName(
-      ukm::builders::Identifiability::kEntryName);
+                       ActiveSamplingIsPerformed) {
+  run_loop().Run();
 
-  std::vector<uint64_t> reported_surface_keys;
-  for (const auto& entry : merged_entries) {
-    for (const auto& metric : entry.second->metrics) {
-      reported_surface_keys.push_back(metric.first);
-    }
-  }
-
-  uint64_t key_model = blink::IdentifiableSurface::FromTypeAndToken(
-                           blink::IdentifiableSurface::Type::
-                               kNavigatorUAData_GetHighEntropyValues,
-                           blink::IdentifiableToken("model"))
-                           .ToUkmMetricHash();
-  uint64_t key_arial =
-      blink::IdentifiableSurface::FromTypeAndToken(
-          blink::IdentifiableSurface::Type::kFontFamilyAvailable,
-          blink::IdentifiableToken("arial"))
-          .ToUkmMetricHash();
-  uint64_t key_helvetica =
-      blink::IdentifiableSurface::FromTypeAndToken(
-          blink::IdentifiableSurface::Type::kFontFamilyAvailable,
-          blink::IdentifiableToken("helvetica"))
-          .ToUkmMetricHash();
-  EXPECT_THAT(reported_surface_keys,
-              testing::IsSupersetOf({key_model, key_arial, key_helvetica}));
+  // Test succeeds if there is no timeout. However, let's recheck the metrics
+  // here, so that if there is a timeout we get an output of which metrics are
+  // missing.
+  EXPECT_THAT(GetReportedSurfaceKeys(),
+              UnorderedElementsAreArray(expected_keys()));
 }
