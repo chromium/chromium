@@ -2115,7 +2115,8 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
     _shouldRequestTextSubstitutions = YES;
   } else {
     // The user uses mouse or touch bar to select a word on the IME.
-    gfx::Range replacement_range(replacementRange);
+    gfx::Range replacement_range =
+        gfx::Range::FromPossiblyInvalidNSRange(replacementRange);
     _host->ImeCommitText(base::SysNSStringToUTF16(imText), replacement_range);
   }
 
