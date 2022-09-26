@@ -229,10 +229,7 @@ PagedAppsGridView::PagedAppsGridView(
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  view_structure_.Init(
-      (IsInFolder() || features::IsProductivityLauncherEnabled())
-          ? PagedViewStructure::Mode::kFullPages
-          : PagedViewStructure::Mode::kPartialPages);
+  view_structure_.Init(PagedViewStructure::Mode::kFullPages);
 
   pagination_model_.SetTransitionDurations(kPageTransitionDuration,
                                            kOverscrollPageTransitionDuration);

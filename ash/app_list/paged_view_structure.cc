@@ -46,19 +46,6 @@ PagedViewStructure::GetSanitizeLock() {
   return std::make_unique<ScopedSanitizeLock>(this);
 }
 
-void PagedViewStructure::AllowEmptyPages() {
-  empty_pages_allowed_ = true;
-}
-
-void PagedViewStructure::LoadFromOther(const PagedViewStructure& other) {
-  DCHECK_EQ(apps_grid_view_, other.apps_grid_view_);
-
-  mode_ = other.mode_;
-  pages_ = other.pages_;
-
-  Sanitize();
-}
-
 void PagedViewStructure::LoadFromMetadata() {
   const auto* view_model = apps_grid_view_->view_model();
 
@@ -110,7 +97,7 @@ void PagedViewStructure::LoadFromMetadata() {
   }
 
   // Remove trailing empty page if exist.
-  if (!empty_pages_allowed_ && sanitize_locks_ == 0 && pages_.back().empty())
+  if (sanitize_locks_ == 0 && pages_.back().empty())
     pages_.pop_back();
 }
 
@@ -423,8 +410,7 @@ bool PagedViewStructure::IsValidReorderTargetIndex(
   // The user can drag an item view to another page's end. Also covers the case
   // where a dragged folder item is being reparented to the last target index of
   // the root level grid.
-  if ((index.page < total_pages() ||
-       (index.page == total_pages() && mode_ == Mode::kPartialPages)) &&
+  if (index.page < total_pages() &&
       GetLastTargetIndexOfPage(index.page) == index) {
     return true;
   }
@@ -452,11 +438,10 @@ int PagedViewStructure::CalculateTargetSlot(const Page& page) const {
 }
 
 void PagedViewStructure::Sanitize() {
-  if (sanitize_locks_ == 0)
+  if (sanitize_locks_ == 0) {
     ClearOverflow();
-
-  if (!empty_pages_allowed_ && sanitize_locks_ == 0)
     ClearEmptyPages();
+  }
 }
 
 void PagedViewStructure::ClearOverflow() {

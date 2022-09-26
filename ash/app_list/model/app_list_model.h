@@ -65,6 +65,8 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
                                const std::string& folder_id);
 
   // Add a "page break" item right after the specified item in item list.
+  // TODO(crbug.com/1366414): Delete this method. The launcher no longer
+  // supports page breaks.
   void AddPageBreakItemAfter(const AppListItem* previous_item);
 
   // Updates an item's metadata (e.g. name, position, etc).

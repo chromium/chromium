@@ -43,12 +43,10 @@ class ASH_EXPORT PagedViewStructure {
   ~PagedViewStructure();
 
   enum class Mode {
-    // Paged, with partially full pages created by page break items.
-    kPartialPages,
-    // Paged, with all pages full. Used for folders.
+    // Paged, with all pages full. Used for paged apps grid (for tablet mode).
     kFullPages,
     // A single long page. Ignores page breaks in the data model. Used for
-    // scrollable apps grid.
+    // scrollable apps grid (for clamshell mode and folders).
     kSinglePage
   };
   void Init(Mode mode);
@@ -63,15 +61,6 @@ class ASH_EXPORT PagedViewStructure {
   // NOTE: The caller should ensure that the returned object does not outlive
   // the PagedViewStructure instance.
   std::unique_ptr<ScopedSanitizeLock> GetSanitizeLock();
-
-  // Permanently allows empty pages in this paged view structure.
-  void AllowEmptyPages();
-
-  // Loads the view structure and mode from another `PagedViewStructure`.
-  // `other` view structure should be associated with the same apps grid.
-  // This will attempt to sanitize view structure - use `GetSanitizeLock()`
-  // beforehand to avoid sanitization.
-  void LoadFromOther(const PagedViewStructure& other);
 
   // Loads the view structure based on the position and page position in the
   // metadata of item views in the view model.
@@ -152,7 +141,7 @@ class ASH_EXPORT PagedViewStructure {
   int TilesPerPage(int page) const;
 
   // Not const for tests.
-  Mode mode_ = Mode::kPartialPages;
+  Mode mode_ = Mode::kFullPages;
 
   // Represents the item views' locations in each page.
   Pages pages_;
@@ -162,9 +151,6 @@ class ASH_EXPORT PagedViewStructure {
   // The number of active `ScopedSanitizeLocks` that disable
   // sanitization of empty pages and page overflow sanitization.
   int sanitize_locks_ = 0;
-
-  // Whether this view structure allows empty pages.
-  bool empty_pages_allowed_ = false;
 };
 
 }  // namespace ash

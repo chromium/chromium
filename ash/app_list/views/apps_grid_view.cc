@@ -1308,11 +1308,6 @@ void AppsGridView::SetIdealBoundsForViewToGridIndex(
 }
 
 void AppsGridView::CalculateIdealBounds() {
-  if (view_structure_.mode() == PagedViewStructure::Mode::kPartialPages) {
-    CalculateIdealBoundsForPageStructureWithPartialPages();
-    return;
-  }
-
   AppListItemView* view_with_locked_position = nullptr;
   if (open_folder_info_)
     view_with_locked_position = GetItemViewForItem(open_folder_info_->item_id);
@@ -1352,71 +1347,6 @@ void AppsGridView::CalculateIdealBounds() {
       view_model_.view_at(i)->SetMostRecentGridIndex(view_index, cols_);
     SetIdealBoundsForViewToGridIndex(i, view_index);
     ++slot_index;
-  }
-}
-
-void AppsGridView::CalculateIdealBoundsForPageStructureWithPartialPages() {
-  DCHECK(!IsInFolder());
-  DCHECK_EQ(view_structure_.mode(), PagedViewStructure::Mode::kPartialPages);
-
-  // |view_structure_| should only be updated at the end of drag. So make a
-  // copy of it and only change the copy for calculating the ideal bounds of
-  // each item view.
-  PagedViewStructure copied_view_structure(this);
-  // Allow empty pages in the copied view structure so an app list page does
-  // not get removed when dragging the last item in the page.
-  copied_view_structure.AllowEmptyPages();
-
-  {
-    // Delay page overflow sanitization until both drag view was removed, and
-    // reorder placeholder was added to the view structure.
-    std::unique_ptr<PagedViewStructure::ScopedSanitizeLock> sanitize_lock =
-        copied_view_structure.GetSanitizeLock();
-    copied_view_structure.LoadFromOther(view_structure_);
-
-    // Remove the item view being dragged.
-    if (drag_view_)
-      copied_view_structure.Remove(drag_view_);
-
-    // Leave a blank space in the grid for the current reorder placeholder.
-    if (IsValidIndex(reorder_placeholder()))
-      copied_view_structure.Add(nullptr, reorder_placeholder());
-  }
-
-  // Convert visual index to ideal bounds.
-  const auto& pages = copied_view_structure.pages();
-  int model_index = 0;
-  for (size_t i = 0; i < pages.size(); ++i) {
-    auto& page = pages[i];
-    for (size_t j = 0; j < page.size(); ++j) {
-      if (page[j] == nullptr)
-        continue;
-
-      // Skip the dragged view
-      if (view_model()->view_at(model_index) == drag_view_)
-        ++model_index;
-
-      gfx::Rect tile_slot = GetExpectedTileBounds(GridIndex(i, j));
-      tile_slot.Offset(CalculateTransitionOffset(i));
-      view_model()
-          ->view_at(model_index)
-          ->SetMostRecentGridIndex(GridIndex(i, j), cols_);
-      view_model()->set_ideal_bounds(model_index, tile_slot);
-      ++model_index;
-    }
-  }
-
-  // All pulsing blocks come after item views.
-  GridIndex pulsing_block_index = copied_view_structure.GetLastTargetIndex();
-  for (size_t i = 0; i < pulsing_blocks_model().view_size(); ++i) {
-    if (pulsing_block_index.slot == TilesPerPage(pulsing_block_index.page)) {
-      ++pulsing_block_index.page;
-      pulsing_block_index.slot = 0;
-    }
-    gfx::Rect tile_slot = GetExpectedTileBounds(pulsing_block_index);
-    tile_slot.Offset(CalculateTransitionOffset(pulsing_block_index.page));
-    pulsing_blocks_model().set_ideal_bounds(i, tile_slot);
-    ++pulsing_block_index.slot;
   }
 }
 
@@ -2389,27 +2319,6 @@ void AppsGridView::DispatchDragEventToDragAndDropHost(
   }
 }
 
-bool AppsGridView::IsMoveTargetOnNewPage(const GridIndex& target) const {
-  // This is used to determine whether move should create a page break item,
-  // which is only relevant for page structure with partial pages.
-  DCHECK_EQ(view_structure_.mode(), PagedViewStructure::Mode::kPartialPages);
-
-  return target.page == GetTotalPages() ||
-         (target.page == GetTotalPages() - 1 &&
-          view_structure_.GetLastTargetIndexOfPage(target.page).slot == 0);
-}
-
-void AppsGridView::EnsurePageBreakBeforeItem(const std::string& item_id) {
-  DCHECK_EQ(view_structure_.mode(), PagedViewStructure::Mode::kPartialPages);
-
-  size_t item_list_index = 0;
-  if (item_list_->FindItemIndex(item_id, &item_list_index) &&
-      item_list_index > 0 &&
-      !item_list_->item_at(item_list_index - 1)->is_page_break()) {
-    model_->AddPageBreakItemAfter(item_list_->item_at(item_list_index - 1));
-  }
-}
-
 void AppsGridView::MoveItemInModel(AppListItem* item, const GridIndex& target) {
   const std::string item_id = item->id();
 
@@ -2419,19 +2328,9 @@ void AppsGridView::MoveItemInModel(AppListItem* item, const GridIndex& target) {
 
   size_t target_item_list_index =
       view_structure_.GetTargetItemListIndexForMove(item, target);
-
-  const bool moving_to_new_page =
-      view_structure_.mode() == PagedViewStructure::Mode::kPartialPages &&
-      IsMoveTargetOnNewPage(target);
-
   {
     ScopedModelUpdate update(this);
     item_list_->MoveItem(current_item_list_index, target_item_list_index);
-
-    // If the item is being moved to a new page, ensure that it's preceded by a
-    // page break.
-    if (moving_to_new_page)
-      EnsurePageBreakBeforeItem(item_id);
   }
 }
 
@@ -2488,18 +2387,9 @@ void AppsGridView::ReparentItemForReorder(AppListItem* item,
   if (target_item_index < static_cast<int>(item_list_->item_count()))
     target_position = item_list_->item_at(target_item_index)->position();
 
-  const bool moving_to_new_page =
-      view_structure_.mode() == PagedViewStructure::Mode::kPartialPages &&
-      IsMoveTargetOnNewPage(target);
-
   {
     ScopedModelUpdate update(this);
     model_->MoveItemToRootAt(item, target_position);
-
-    // If the item is being moved to a new page, ensure that it's preceded by a
-    // page break.
-    if (moving_to_new_page)
-      EnsurePageBreakBeforeItem(item_id);
   }
 
   MaybeRecordFolderDeleteUserAction(source_folder_id);
@@ -2823,7 +2713,6 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardMove(
   DCHECK(selected_view_);
 
   const GridIndex source_index = GetIndexOfView(selected_view_);
-  GridIndex target_index;
   if (key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT) {
     // Define backward key for traversal based on RTL.
     const ui::KeyboardCode backward =
@@ -2834,32 +2723,12 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardMove(
     if (target_model_index > 0 || key_code != backward)
       target_model_index += (key_code == backward) ? -1 : 1;
 
-    // A forward move on the last item in |view_model_| should result in page
-    // creation.
+    // A forward move on the last item in |view_model_| should do nothing.
     if (target_model_index == view_model_.view_size()) {
-      // Only grid structure with partial pages supports page creation by
-      // keyboard move.
-      if (view_structure_.mode() != PagedViewStructure::Mode::kPartialPages)
-        return source_index;
-      // If |source_index| is the last item in the grid on a page by itself,
-      // moving right to a new page should be a no-op.
-      if (view_structure_.items_on_page(source_index.page) == 1)
-        return source_index;
-      return GridIndex(GetTotalPages(), 0);
+      return source_index;
     }
-
-    target_index = GetIndexOfView(
+    return GetIndexOfView(
         static_cast<const AppListItemView*>(GetItemViewAt(target_model_index)));
-    if (view_structure_.mode() == PagedViewStructure::Mode::kPartialPages &&
-        key_code == backward && target_index.page < source_index.page &&
-        !view_structure_.IsFullPage(target_index.page)) {
-      // Apps swap positions if the target page is the same as the
-      // destination page, or the target page is full. If the page is not
-      // full the app is dumped on the page. Increase the slot in this case
-      // to account for the new available spot.
-      ++target_index.slot;
-    }
-    return target_index;
   }
 
   // Handle the vertical move. Attempt to place the app in the same column.
