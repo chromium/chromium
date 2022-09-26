@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   const std::string& Version() const;
   bool VersionChanged() const;
 
-  std::vector<std::string> AdditionalSearchTerms() const;
+  const std::vector<std::string>& AdditionalSearchTerms() const;
   bool AdditionalSearchTermsChanged() const;
 
   absl::optional<apps::IconKey> IconKey() const;
@@ -121,10 +121,10 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::InstallSource InstallSource() const;
   bool InstallSourceChanged() const;
 
-  // An optional ID used for policy to identify the app.
-  // For web apps, it contains the install URL.
-  const std::string& PolicyId() const;
-  bool PolicyIdChanged() const;
+  // IDs used for policy to identify the app.
+  // For web apps, it contains the install URL(s).
+  const std::vector<std::string>& PolicyIds() const;
+  bool PolicyIdsChanged() const;
 
   bool InstalledInternally() const;
 

@@ -230,6 +230,7 @@ AppPtr ExtensionAppsBase::CreateAppImpl(const extensions::Extension* extension,
   app->short_name = extension->short_name();
   app->description = extension->description();
   app->version = extension->GetVersionForDisplay();
+  app->policy_ids = {extension->id()};
 
   if (profile_) {
     auto* prefs = extensions::ExtensionPrefs::Get(profile_);
@@ -264,6 +265,7 @@ apps::mojom::AppPtr ExtensionAppsBase::ConvertImpl(
   app->short_name = extension->short_name();
   app->description = extension->description();
   app->version = extension->GetVersionForDisplay();
+  app->policy_ids = {extension->id()};
 
   if (profile_) {
     auto* prefs = extensions::ExtensionPrefs::Get(profile_);

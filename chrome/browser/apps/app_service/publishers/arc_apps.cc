@@ -1905,6 +1905,7 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
                                                : InstallSource::kPlayStore);
 
   app->publisher_id = app_info.package_name;
+  app->policy_ids = {app_info.package_name};
 
   if (update_icon) {
     app->icon_key = std::move(

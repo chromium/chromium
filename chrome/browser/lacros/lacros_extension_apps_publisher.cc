@@ -283,6 +283,11 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->name = extension->name();
     app->short_name = extension->short_name();
 
+    // TODO(crbug.com/1367337): Work out how pinning interacts with Lacros
+    // multi-profile support once there is a product decision on what that looks
+    // like.
+    app->policy_ids = {extension->id()};
+
     // We always use an empty icon key since we currently do not support
     // dynamically changing icons or modifying the appearance of icons.
     // This bug is tracked at https://crbug.com/1248499, but given that Chrome

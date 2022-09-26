@@ -47,6 +47,16 @@ apps::IconKeyPtr StructTraits<crosapi::mojom::AppDataView,
 }
 
 // static
+absl::optional<std::string>
+StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::deprecated_policy_id(
+    const apps::AppPtr& r) {
+  if (!r->policy_ids.empty()) {
+    return r->policy_ids[0];
+  }
+  return {};
+}
+
+// static
 crosapi::mojom::OptionalBool
 StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::recommendable(
     const apps::AppPtr& r) {
@@ -178,8 +188,12 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
   if (!data.ReadInstallReason(&install_reason))
     return false;
 
-  absl::optional<std::string> policy_id;
-  if (!data.ReadPolicyId(&policy_id))
+  absl::optional<std::string> deprecated_policy_id;
+  if (!data.ReadDeprecatedPolicyId(&deprecated_policy_id))
+    return false;
+
+  std::vector<std::string> policy_ids;
+  if (!data.ReadPolicyIds(&policy_ids))
     return false;
 
   crosapi::mojom::OptionalBool recommendable;
@@ -249,13 +263,19 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
   app->publisher_id = publisher_id;
   app->description = description;
   app->version = version;
-  app->additional_search_terms = additional_search_terms;
+  app->additional_search_terms = std::move(additional_search_terms);
   if (icon_key)
     app->icon_key = std::move(*icon_key);
   app->last_launch_time = last_launch_time;
   app->install_time = install_time;
   app->install_reason = install_reason;
-  app->policy_id = policy_id;
+
+  if (!policy_ids.empty()) {
+    app->policy_ids = std::move(policy_ids);
+  } else if (deprecated_policy_id) {
+    app->policy_ids = {std::move(*deprecated_policy_id)};
+  }
+
   app->recommendable = ConvertMojomOptionalBoolToOptionalBool(recommendable);
   app->searchable = ConvertMojomOptionalBoolToOptionalBool(searchable);
   app->show_in_launcher =

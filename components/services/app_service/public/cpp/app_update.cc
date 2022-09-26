@@ -14,18 +14,20 @@
 
 namespace {
 
+// Represents an empty fallback vector. This comes in handy when both delta_ and
+// state_ in AppUpdate are null, so instead of returning a prohibited temporary
+// reference in AppUpdate::AdditionalSearchTerms / AppUpdate::PolicyIds() we
+// respond with this object.
+static const std::vector<std::string>& EmptyStringVector() {
+  static const std::vector<std::string> g_empty_string_vector;
+  return g_empty_string_vector;
+}
+
 void CloneMojomPermissions(
     const std::vector<apps::mojom::PermissionPtr>& clone_from,
     std::vector<apps::mojom::PermissionPtr>* clone_to) {
   for (const auto& permission : clone_from) {
     clone_to->push_back(permission->Clone());
-  }
-}
-
-void CloneStrings(const std::vector<std::string>& clone_from,
-                  std::vector<std::string>* clone_to) {
-  for (const auto& s : clone_from) {
-    clone_to->push_back(s);
   }
 }
 
@@ -86,8 +88,7 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   }
   if (!delta->additional_search_terms.empty()) {
     state->additional_search_terms.clear();
-    CloneStrings(delta->additional_search_terms,
-                 &state->additional_search_terms);
+    state->additional_search_terms = delta->additional_search_terms;
   }
   if (!delta->icon_key.is_null()) {
     state->icon_key = delta->icon_key.Clone();
@@ -108,8 +109,9 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   if (delta->install_source != apps::mojom::InstallSource::kUnknown) {
     state->install_source = delta->install_source;
   }
-  if (delta->policy_id.has_value()) {
-    state->policy_id = delta->policy_id;
+  if (!delta->policy_ids.empty()) {
+    state->policy_ids.clear();
+    state->policy_ids = delta->policy_ids;
   }
   if (delta->is_platform_app != apps::mojom::OptionalBool::kUnknown) {
     state->is_platform_app = delta->is_platform_app;
@@ -205,8 +207,13 @@ void AppUpdate::Merge(App* state, const App* delta) {
 
   SET_ENUM_VALUE(install_reason, InstallReason::kUnknown);
   SET_ENUM_VALUE(install_source, InstallSource::kUnknown);
-  SET_OPTIONAL_VALUE(policy_id);
   SET_OPTIONAL_VALUE(is_platform_app);
+
+  if (!delta->policy_ids.empty()) {
+    state->policy_ids.clear();
+    state->policy_ids = delta->policy_ids;
+  }
+
   SET_OPTIONAL_VALUE(recommendable);
   SET_OPTIONAL_VALUE(searchable);
   SET_OPTIONAL_VALUE(show_in_launcher);
@@ -317,9 +324,9 @@ bool AppUpdate::VersionChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(version);
 }
 
-std::vector<std::string> AppUpdate::AdditionalSearchTerms() const {
+const std::vector<std::string>& AppUpdate::AdditionalSearchTerms() const {
   GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(additional_search_terms, empty,
-                                          std::vector<std::string>{})
+                                          EmptyStringVector());
 }
 
 bool AppUpdate::AdditionalSearchTermsChanged() const {
@@ -383,15 +390,16 @@ apps::InstallSource AppUpdate::InstallSource() const {
 }
 
 bool AppUpdate::InstallSourceChanged() const {
-  IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(install_source, InstallSource::kUnknown)
+  IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(install_source, InstallSource::kUnknown);
 }
 
-const std::string& AppUpdate::PolicyId() const {
-  GET_VALUE_WITH_FALLBACK(policy_id, base::EmptyString())
+const std::vector<std::string>& AppUpdate::PolicyIds() const {
+  GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(policy_ids, empty,
+                                          EmptyStringVector());
 }
 
-bool AppUpdate::PolicyIdChanged() const {
-  RETURN_OPTIONAL_VALUE_CHANGED(policy_id)
+bool AppUpdate::PolicyIdsChanged() const {
+  IS_VALUE_CHANGED_WITH_CHECK(policy_ids, empty);
 }
 
 bool AppUpdate::InstalledInternally() const {
@@ -588,11 +596,8 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   out << "Description: " << app.Description() << std::endl;
   out << "Version: " << app.Version() << std::endl;
 
-  out << "AdditionalSearchTerms: ";
-  for (const std::string& term : app.AdditionalSearchTerms()) {
-    out << term << ", ";
-  }
-  out << std::endl;
+  out << "AdditionalSearchTerms: "
+      << base::JoinString(app.AdditionalSearchTerms(), ", ") << std::endl;
 
   out << "LastLaunchTime: " << app.LastLaunchTime() << std::endl;
   out << "InstallTime: " << app.InstallTime() << std::endl;
@@ -604,7 +609,9 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
 
   out << "InstallReason: " << EnumToString(app.InstallReason()) << std::endl;
   out << "InstallSource: " << EnumToString(app.InstallSource()) << std::endl;
-  out << "PolicyId: " << app.PolicyId() << std::endl;
+
+  out << "PolicyId: " << base::JoinString(app.PolicyIds(), ", ") << std::endl;
+
   out << "InstalledInternally: " << app.InstalledInternally() << std::endl;
   out << "IsPlatformApp: " << PRINT_OPTIONAL_VALUE(IsPlatformApp) << std::endl;
   out << "Recommendable: " << PRINT_OPTIONAL_VALUE(Recommendable) << std::endl;

@@ -68,6 +68,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/display/types/display_constants.h"
@@ -355,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardMask);
 }
 
-IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PolicyId) {
+IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PolicyIds) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
   const GURL install_url =
@@ -369,18 +370,26 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PolicyId) {
 
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->publisher_id,
             app_url.spec());
-  EXPECT_TRUE(mock_app_publisher.get_deltas().back()->policy_id->empty());
+  EXPECT_TRUE(mock_app_publisher.get_deltas().back()->policy_ids.empty());
 
   // Writing to the external prefs to set policy to pin the app.
   web_app::test::AddInstallUrlData(
       browser()->profile()->GetPrefs(), &provider().sync_bridge(), app_id,
       install_url, ExternalInstallSource::kExternalPolicy);
 
+  // Add a mock secondary install url to verify that all values are propagated
+  // to policy_ids correctly.
+  const GURL secondary_install_url{"http://install.url/manifest.json"};
+  web_app::test::AddInstallUrlData(
+      browser()->profile()->GetPrefs(), &provider().sync_bridge(), app_id,
+      secondary_install_url, ExternalInstallSource::kExternalPolicy);
+
   provider().install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
 
   mock_app_publisher.Wait();
-  EXPECT_EQ(mock_app_publisher.get_deltas().back()->policy_id,
-            install_url.spec());
+  EXPECT_THAT(mock_app_publisher.get_deltas().back()->policy_ids,
+              testing::UnorderedElementsAre(install_url.spec(),
+                                            secondary_install_url.spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ContentSettings) {

@@ -27,6 +27,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
@@ -722,7 +723,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   DCHECK_EQ(web_app->IsSystemApp(),
             app->install_reason == apps::InstallReason::kSystem);
 
-  app->policy_id = GetPolicyId(*web_app);
+  app->policy_ids = GetPolicyIds(*web_app);
 
   app->permissions = CreatePermissions(web_app);
 
@@ -1702,26 +1703,36 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
   std::move(callback).Run({LaunchAppWithParams(std::move(params))});
 }
 
-std::string WebAppPublisherHelper::GetPolicyId(const WebApp& web_app) {
+std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
+    const WebApp& web_app) const {
+  const auto& app_id = web_app.app_id();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // File Manager SWA uses File Manager Extension's ID for policy.
-  if (web_app.app_id() == file_manager::kFileManagerSwaAppId) {
-    return file_manager::kFileManagerAppId;
+  if (app_id == file_manager::kFileManagerSwaAppId) {
+    return {file_manager::kFileManagerAppId};
   }
 #endif
 
-  GURL install_url;
-  if (registrar().HasExternalAppWithInstallSource(
-          web_app.app_id(), ExternalInstallSource::kExternalPolicy)) {
-    base::flat_map<AppId, base::flat_set<GURL>> installed_apps =
-        registrar().GetExternallyInstalledApps(
-            ExternalInstallSource::kExternalPolicy);
-    if (base::Contains(installed_apps, web_app.app_id())) {
-      DCHECK(installed_apps[web_app.app_id()].size() > 0);
-      install_url = *installed_apps[web_app.app_id()].begin();
-    }
+  if (!registrar().HasExternalAppWithInstallSource(
+          app_id, ExternalInstallSource::kExternalPolicy)) {
+    return {};
   }
-  return install_url.spec();
+
+  base::flat_map<AppId, base::flat_set<GURL>> installed_apps =
+      registrar().GetExternallyInstalledApps(
+          ExternalInstallSource::kExternalPolicy);
+  if (auto it = installed_apps.find(app_id); it != installed_apps.end()) {
+    const auto& install_urls = it->second;
+    DCHECK(!install_urls.empty());
+
+    std::vector<std::string> policy_ids;
+    base::ranges::transform(install_urls, std::back_inserter(policy_ids),
+                            &GURL::spec);
+    return policy_ids;
+  }
+
+  return {};
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -47,7 +47,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -1093,29 +1095,65 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     extension_service_->UnloadExtension(extension_id, reason);
   }
 
-  void AddWebApp(const char* web_app_id) {
+  const GURL& GetWebAppUrl(const std::string& web_app_id) const {
+    static const base::flat_map<std::string, GURL> web_app_id_to_start_url{
+        {web_app::kGmailAppId,
+         GURL("https://mail.google.com/mail/?usp=installed_webapp")},
+        {web_app::kGoogleCalendarAppId,
+         GURL("https://calendar.google.com/calendar/r")},
+        {web_app::kGoogleDocsAppId,
+         GURL("https://docs.google.com/document/?usp=installed_webapp")},
+        {web_app::kMessagesAppId, GURL("https://messages.google.com/web/")},
+        {web_app::kYoutubeAppId,
+         GURL("https://www.youtube.com/?feature=ytca")}};
+
+    DCHECK(base::Contains(web_app_id_to_start_url, web_app_id));
+    return web_app_id_to_start_url.at(web_app_id);
+  }
+
+  void AddWebApp(const std::string& web_app_id) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    if (web_app_id == web_app::kGmailAppId) {
-      web_app_info->start_url =
-          GURL("https://mail.google.com/mail/?usp=installed_webapp");
-    } else if (web_app_id == web_app::kGoogleCalendarAppId) {
-      web_app_info->start_url = GURL("https://calendar.google.com/calendar/r");
-    } else if (web_app_id == web_app::kGoogleDocsAppId) {
-      web_app_info->start_url =
-          GURL("https://docs.google.com/document/?usp=installed_webapp");
-    } else if (web_app_id == web_app::kMessagesAppId) {
-      web_app_info->start_url = GURL("https://messages.google.com/web/");
-    } else if (web_app_id == web_app::kYoutubeAppId) {
-      web_app_info->start_url = GURL("https://www.youtube.com/?feature=ytca");
-    } else {
-      NOTREACHED();
-      FAIL();
-    }
+
+    web_app_info->start_url = GetWebAppUrl(web_app_id);
 
     web_app::AppId installed_app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
     ASSERT_EQ(installed_app_id, web_app_id);
     web_app::AppReadinessWaiter(profile(), web_app_id).Await();
+  }
+
+  web_app::AppId InstallExternalWebApp(
+      const GURL& start_url,
+      const absl::optional<GURL>& install_url = {}) {
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    web_app_info->start_url = GURL(start_url);
+    web_app_info->install_url = GURL(install_url ? *install_url : start_url);
+    const web_app::AppId expected_web_app_id = web_app::GenerateAppId(
+        /*manifest_id=*/absl::nullopt, web_app_info->start_url);
+    PrefService* prefs = browser()->profile()->GetPrefs();
+    web_app::ExternallyInstalledWebAppPrefs web_app_prefs(prefs);
+    web_app_prefs.Insert(GURL(web_app_info->install_url), expected_web_app_id,
+                         web_app::ExternalInstallSource::kExternalPolicy);
+    // Ensure prefs are written before the web app install process reads
+    // them.
+    base::RunLoop run_loop;
+    prefs->CommitPendingWrite(run_loop.QuitClosure());
+    run_loop.Run();
+    web_app::AppId web_app_id = web_app::test::InstallWebApp(
+        profile(), std::move(web_app_info),
+        /*overwrite_existing_manifest_fields =*/false,
+        webapps::WebappInstallSource::EXTERNAL_POLICY);
+    DCHECK_EQ(expected_web_app_id, web_app_id);
+    return web_app_id;
+  }
+
+  web_app::AppId InstallExternalWebApp(
+      const std::string& start_url,
+      const absl::optional<std::string>& install_url = {}) {
+    return InstallExternalWebApp(GURL(start_url), install_url
+                                                      ? GURL(*install_url)
+                                                      : absl::optional<GURL>());
   }
 
   void WaitForOnAppRemoved() {
@@ -1381,9 +1419,8 @@ class V2App {
     extensions::AppWindow::CreateParams params;
     params.window_type = window_type;
     // Note: normally, the creator RFH is the background page of the
-    // app/extension
-    // calling chrome.app.window.create. For unit testing purposes, just passing
-    // in a random RenderFrameHost is Good Enough™.
+    // app/extension calling chrome.app.window.create. For unit testing
+    // purposes, just passing in a random RenderFrameHost is Good Enough™.
     window_->Init(GURL(std::string()),
                   std::make_unique<extensions::AppWindowContentsImpl>(window_),
                   creator_web_contents_->GetPrimaryMainFrame(), params);
@@ -1415,9 +1452,8 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
  protected:
   MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest() {
     // `kLacrosSupport` is disabled since Lacros does not support the ChromeOS
-    // Legacy multi profile feature.
-    // `kMediaRouter` is disabled because it has unmet dependencies and is
-    // unrelated to this unit test.
+    // Legacy multi profile feature. `kMediaRouter` is disabled because it has
+    // unmet dependencies and is unrelated to this unit test.
     scoped_feature_list_.InitWithFeatures(
         /*enabled=*/{}, /*disabled=*/{chromeos::features::kLacrosSupport,
                                       media_router::kMediaRouter});
@@ -1864,8 +1900,33 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
 TEST_F(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
   InitShelfController();
 
-  AddWebApp(web_app::kGoogleDocsAppId);
-  AddWebApp(web_app::kGmailAppId);
+  // Install two versions of google docs with different install_urls.
+  const GURL& google_docs_start_url = GetWebAppUrl(web_app::kGoogleDocsAppId);
+
+  const GURL google_docs_install_url_v1{
+      base::StrCat({google_docs_start_url.spec(), "&v=1"})};
+  const GURL google_docs_install_url_v2{
+      base::StrCat({google_docs_start_url.spec(), "&v=2"})};
+
+  InstallExternalWebApp(/*start_url=*/google_docs_start_url,
+                        /*install_url=*/google_docs_install_url_v1);
+  InstallExternalWebApp(/*start_url=*/google_docs_start_url,
+                        /*install_url=*/google_docs_install_url_v2);
+
+  // Check that both values are propagated to PolicyIds().
+  std::vector<std::string> google_docs_install_urls = {
+      google_docs_install_url_v1.spec(),
+      google_docs_install_url_v2.spec(),
+  };
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->AppRegistryCache()
+      .ForOneApp(web_app::kGoogleDocsAppId, [&google_docs_install_urls](
+                                                const auto& update) {
+        ASSERT_THAT(update.PolicyIds(), testing::UnorderedElementsAreArray(
+                                            google_docs_install_urls));
+      });
+
+  InstallExternalWebApp(GetWebAppUrl(web_app::kGmailAppId));
   extension_service_->AddExtension(extension1_.get());
   extension_service_->AddExtension(extension5_.get());
   // extension 1, 3 are pinned by user
@@ -1873,12 +1934,12 @@ TEST_F(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
   InsertAddPinChange(&sync_list, 0, extension1_->id());
   InsertAddPinChange(&sync_list, 1, app_constants::kChromeAppId);
   InsertAddPinChange(&sync_list, 2, web_app::kGmailAppId);
-  SendPinChanges(sync_list, true);
+  SendPinChanges(sync_list, /*reset_pin_model=*/true);
 
   base::Value::List policy_value;
   // extension 2 4 are pinned by policy
   AppendPrefValue(policy_value, extension2_->id());
-  AppendPrefValue(policy_value, web_app::kGoogleDocsAppId);
+  AppendPrefValue(policy_value, google_docs_install_url_v2.spec());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
 
@@ -3105,9 +3166,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
       MultiUserWindowManagerHelper::GetWindowManager();
 
   // Create a second test profile. The first is the one in profile() created in
-  // BrowserWithTestWindowTest::SetUp().
-  // No need to add the profiles to the MultiUserWindowManagerHelper here.
-  // CreateMultiUserProfile() already does that.
+  // BrowserWithTestWindowTest::SetUp(). No need to add the profiles to the
+  // MultiUserWindowManagerHelper here. CreateMultiUserProfile() already does
+  // that.
   TestingProfile* profile2 = CreateMultiUserProfile("user2");
   const AccountId current_user =
       multi_user_util::GetAccountIdFromProfile(profile());
@@ -3780,8 +3841,8 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // After the application was killed there should still be 1 item.
   EXPECT_EQ(1, model_->item_count());
 
-  // Switching then back to the default user should not show the additional item
-  // anymore.
+  // Switching then back to the default user should not show the additional
+  // item anymore.
   SwitchActiveUser(account_id);
   EXPECT_EQ(1, model_->item_count());
 }
@@ -3976,10 +4037,10 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
     SwitchActiveUser(account_id);
     // The following expectation does not work in current impl. It was working
-    // before because MultiProfileSupport is not attached to user
-    // associated with profile() hence not actually handling windows for the
-    // user. It is a real bug. See http://crbug.com/693634
-    // EXPECT_EQ(2, model_->item_count());
+    // before because MultiProfileSupport is not attached to user associated
+    // with profile() hence not actually handling windows for the user. It is
+    // a real bug. See http://crbug.com/693634 EXPECT_EQ(2,
+    // model_->item_count());
 
     v2_app_1.window()->Show(extensions::AppWindow::SHOW_ACTIVE);
     EXPECT_EQ(2, model_->item_count());
@@ -4940,28 +5001,6 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
     ChromeShelfControllerTestBase::TearDown();
   }
 
-  web_app::AppId InstallExternalWebApp(std::string start_url) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = GURL(start_url);
-    web_app_info->install_url = GURL(start_url);
-    const web_app::AppId expected_web_app_id = web_app::GenerateAppId(
-        /*manifest_id=*/absl::nullopt, web_app_info->start_url);
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    web_app::ExternallyInstalledWebAppPrefs web_app_prefs(prefs);
-    web_app_prefs.Insert(GURL(start_url), expected_web_app_id,
-                         web_app::ExternalInstallSource::kExternalPolicy);
-    // Ensure prefs are written before the web app install process reads them.
-    base::RunLoop run_loop;
-    prefs->CommitPendingWrite(run_loop.QuitClosure());
-    run_loop.Run();
-    web_app::AppId web_app_id = web_app::test::InstallWebApp(
-        profile(), std::move(web_app_info),
-        /*overwrite_existing_manifest_fields =*/false,
-        webapps::WebappInstallSource::EXTERNAL_POLICY);
-    DCHECK_EQ(expected_web_app_id, web_app_id);
-    return web_app_id;
-  }
-
  private:
   std::unique_ptr<ash::DemoModeTestHelper> demo_mode_test_helper_;
 };
@@ -5001,8 +5040,8 @@ TEST_F(ChromeShelfControllerDemoModeTest, MAYBE_PinnedAppsOnline) {
   web_app::AppId web_app_id = InstallExternalWebApp(kWebAppUrl);
   AppendPrefValue(policy_value, kWebAppUrl);
 
-  // If the device is offline, extension2, onlineonly, and TestPWA should
-  // be unpinned. Since the device is online here, these apps should still be
+  // If the device is offline, extension2, onlineonly, and TestPWA should be
+  // unpinned. Since the device is online here, these apps should still be
   // pinned, even though we're ignoring them here.
   ash::DemoSession::Get()->OverrideIgnorePinPolicyAppsForTesting(
       {extension2_->id(), online_only_appinfo->package_name});
@@ -5098,15 +5137,15 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
   EXPECT_EQ(AppListControllerDelegate::PIN_EDITABLE,
             GetPinnableForAppID(extension2_->id(), profile()));
 
-  // Pin an ARC app that would have been pinned by policy but was suppressed
-  // for Demo Mode.
+  // Pin an ARC app that would have been pinned by policy but was suppressed for
+  // Demo Mode.
   PinAppWithIDToShelf(online_only_app_id);
   EXPECT_TRUE(shelf_controller_->IsAppPinned(online_only_app_id));
   EXPECT_EQ(AppListControllerDelegate::PIN_EDITABLE,
             GetPinnableForAppID(online_only_app_id, profile()));
 
   // Pin a web app that would have been pinned by policy but was suppressed for
-  // Demo Mode
+  // Demo Mode.
   PinAppWithIDToShelf(web_app_id);
   EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app_id));
   EXPECT_EQ(AppListControllerDelegate::PIN_EDITABLE,

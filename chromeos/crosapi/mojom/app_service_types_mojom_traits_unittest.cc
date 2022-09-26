@@ -17,6 +17,7 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/shortcut.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -36,7 +37,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   input->last_launch_time = base::Time() + base::Days(1);
   input->install_time = base::Time() + base::Days(2);
   input->install_reason = apps::InstallReason::kUser;
-  input->policy_id = "https://app.site/alpha";
+  input->policy_ids = {"https://app.site/alpha"};
   input->recommendable = true;
   input->searchable = true;
   input->show_in_launcher = true;
@@ -89,7 +90,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   EXPECT_EQ(output->install_time, base::Time() + base::Days(2));
 
   EXPECT_EQ(output->install_reason, apps::InstallReason::kUser);
-  EXPECT_EQ(output->policy_id, "https://app.site/alpha");
+  EXPECT_THAT(output->policy_ids,
+              ::testing::ElementsAre("https://app.site/alpha"));
   EXPECT_TRUE(output->recommendable.value());
   EXPECT_TRUE(output->searchable.value());
   EXPECT_TRUE(output->show_in_launcher.value());
@@ -168,7 +170,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   EXPECT_EQ(output->additional_search_terms, input->additional_search_terms);
 
   EXPECT_EQ(output->install_reason, apps::InstallReason::kUser);
-  EXPECT_FALSE(output->policy_id.has_value());
+  EXPECT_TRUE(output->policy_ids.empty());
   EXPECT_TRUE(output->recommendable.value());
   EXPECT_TRUE(output->searchable.value());
   EXPECT_TRUE(output->show_in_launcher.value());

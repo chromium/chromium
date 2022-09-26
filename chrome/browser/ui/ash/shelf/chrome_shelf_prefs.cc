@@ -21,9 +21,11 @@
 #include "base/containers/checked_iterators.h"
 #include "base/containers/checked_range.h"
 #include "base/containers/contains.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -53,6 +55,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
@@ -263,27 +266,19 @@ void ChromeShelfPrefs::InitLocalPref(PrefService* prefs,
 // Helper that extracts app list from policy preferences.
 std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
     ShelfControllerHelper* helper) {
-  const PrefService* prefs = GetPrefs();
-  std::vector<std::string> result;
   const base::Value::List& policy_apps =
-      prefs->GetList(prefs::kPolicyPinnedLauncherApps);
-  if (policy_apps.empty())
-    return result;
+      GetPrefs()->GetList(prefs::kPolicyPinnedLauncherApps);
+  if (policy_apps.empty()) {
+    return {};
+  }
 
-  // Obtain here all ids of ARC apps because it takes linear time, and getting
-  // them in the loop bellow would lead to quadratic complexity.
-  const ArcAppListPrefs* const arc_app_list_pref = helper->GetArcAppListPrefs();
-  const std::vector<std::string> all_arc_app_ids(
-      arc_app_list_pref ? arc_app_list_pref->GetAppIds()
-                        : std::vector<std::string>());
-
-  for (const auto& policy_dict_entry : policy_apps) {
-    const std::string* policy_entry =
-        policy_dict_entry.is_dict()
-            ? policy_dict_entry.GetDict().FindString(
-                  ChromeShelfPrefs::kPinnedAppsPrefAppIDKey)
-            : nullptr;
-
+  std::vector<std::string> policy_entries;
+  for (const auto& policy_app : policy_apps) {
+    if (!policy_app.is_dict()) {
+      continue;
+    }
+    const std::string* policy_entry = policy_app.GetDict().FindString(
+        ChromeShelfPrefs::kPinnedAppsPrefAppIDKey);
     if (!policy_entry) {
       LOG(ERROR) << "Cannot extract policy app info from prefs.";
       continue;
@@ -295,57 +290,68 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
       continue;
     }
 
-    // URLs provided through policy might not match exactly (eg. missing
-    // trailing slash), so check the normalized version of valid URLs too.
-    std::vector<std::string> policy_entries_to_check{*policy_entry};
-    const GURL normalized_policy_url(*policy_entry);
-    if (normalized_policy_url.is_valid() &&
-        normalized_policy_url.spec() != *policy_entry) {
-      policy_entries_to_check.push_back(normalized_policy_url.spec());
-    }
-
-    // Handle App Service policy IDs (currently Web Apps only)
-    if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-            helper->profile())) {
-      size_t initial_result_size = result.size();
-      apps::AppServiceProxyFactory::GetForProfile(helper->profile())
-          ->AppRegistryCache()
-          .ForEachApp([&result, &policy_entries_to_check](
-                          const apps::AppUpdate& update) {
-            if (base::Contains(policy_entries_to_check, update.PolicyId())) {
-              result.emplace_back(update.AppId());
-            }
-          });
-      if (result.size() > initial_result_size) {
-        continue;
-      }
-    }
-
-    // Handle Chrome App ids
-    if (crx_file::id_util::IdIsValid(*policy_entry)) {
-      result.emplace_back(*policy_entry);
-      continue;
-    }
-
-    // Handle Arc++ App ids
-    if (IsAppIdArcPackage(*policy_entry)) {
-      if (!arc_app_list_pref)
-        continue;
-
-      // We are dealing with package name, not with 32 characters ID.
-      const std::string& arc_package = *policy_entry;
-      const std::vector<std::string> activities = GetActivitiesForPackage(
-          arc_package, all_arc_app_ids, *arc_app_list_pref);
-      for (const auto& activity : activities) {
-        const std::string arc_app_id =
-            ArcAppListPrefs::GetAppId(arc_package, activity);
-        result.emplace_back(arc_app_id);
-      }
-
-      continue;
+    // If the provided entry is a valid GURL, append its spec instead of the raw
+    // entry.
+    if (const GURL policy_entry_gurl{*policy_entry};
+        policy_entry_gurl.is_valid()) {
+      policy_entries.push_back(policy_entry_gurl.spec());
+    } else {
+      policy_entries.push_back(*policy_entry);
     }
   }
-  return result;
+
+  if (policy_entries.empty()) {
+    return {};
+  }
+
+  std::vector<std::string> results;
+  // App Service is absent in some cases e.g. Arc++ Kiosk Mode.
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+          helper->profile())) {
+    // Rely only on app service data.
+
+    auto* app_service_proxy =
+        apps::AppServiceProxyFactory::GetForProfile(helper->profile());
+    for (const auto& policy_entry : policy_entries) {
+      app_service_proxy->AppRegistryCache().ForEachApp(
+          [&policy_entry, &results](const apps::AppUpdate& update) {
+            // If any of the app policy_ids match the provided list,
+            // append app_id and return.
+            if (base::Contains(update.PolicyIds(), policy_entry)) {
+              results.push_back(update.AppId());
+            }
+          });
+    }
+  } else {
+    // Obtain here all ids of ARC apps because it takes linear time, and getting
+    // them in the loop below would lead to quadratic complexity.
+
+    const ArcAppListPrefs* const arc_app_list_pref =
+        helper->GetArcAppListPrefs();
+    const std::vector<std::string> all_arc_app_ids(
+        arc_app_list_pref ? arc_app_list_pref->GetAppIds()
+                          : std::vector<std::string>());
+
+    for (const auto& policy_entry : policy_entries) {
+      // Handle Chrome App ids
+      if (crx_file::id_util::IdIsValid(policy_entry)) {
+        results.emplace_back(policy_entry);
+        continue;
+      }
+
+      // Handle Arc++ App ids
+      if (arc_app_list_pref && IsAppIdArcPackage(policy_entry)) {
+        // We are dealing with package name, not with 32 characters ID.
+        const std::vector<std::string> activities = GetActivitiesForPackage(
+            policy_entry, all_arc_app_ids, *arc_app_list_pref);
+        for (const auto& activity : activities) {
+          results.push_back(ArcAppListPrefs::GetAppId(policy_entry, activity));
+        }
+      }
+    }
+  }
+
+  return results;
 }
 
 // Helper to creates pin position that stays before any synced app, even if
