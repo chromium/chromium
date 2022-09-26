@@ -183,9 +183,13 @@ void OpensPasswordsInOtherApps() {
 
 #pragma mark - Test cases
 
+// TODO(crbug.com/1367807): Several tests in this file are disabled because
+// they are intermittently crashing on the bots. The crash is happening at
+// teardown and is likely related to the tests themselves.
+
 // Tests Passwords In Other Apps first shows instructions when auto-fill is off,
 // then shows the caption label after auto-fill is turned on.
-- (void)testTurnOnPasswordsInOtherApps {
+- (void)DISABLED_testTurnOnPasswordsInOtherApps {
   // Rewrites passwordInAppsViewController.useShortInstruction property.
   EarlGreyScopedBlockSwizzler longInstruction(
       @"PasswordsInOtherAppsViewController", @"useShortInstruction", ^{
@@ -207,7 +211,7 @@ void OpensPasswordsInOtherApps() {
 
 // Tests Passwords In Other Apps first shows instructions when auto-fill is on,
 // then shows the caption label after auto-fill is turned off.
-- (void)testTurnOffPasswordsInOtherApps {
+- (void)DISABLED_testTurnOffPasswordsInOtherApps {
   // Rewrites passwordInAppsViewController.useShortInstruction property.
   EarlGreyScopedBlockSwizzler longInstruction(
       @"PasswordsInOtherAppsViewController", @"useShortInstruction", ^{
@@ -229,7 +233,7 @@ void OpensPasswordsInOtherApps() {
 
 // Tests Passwords In Other Apps shows instructions when auto-fill is off with
 // short instruction.
-- (void)testShowPasswordsInOtherAppsWithShortInstruction {
+- (void)DISABLED_testShowPasswordsInOtherAppsWithShortInstruction {
   // Rewrites passwordInAppsViewController.useShortInstruction property.
   EarlGreyScopedBlockSwizzler shortInstruction(
       @"PasswordsInOtherAppsViewController", @"useShortInstruction", ^{
@@ -261,7 +265,7 @@ void OpensPasswordsInOtherApps() {
 
 // Tests Passwords In Other Apps shows instructions when auto-fill state is
 // unknown.
-- (void)testOpenPasswordsInOtherAppsWithAutoFillUnknown {
+- (void)DISABLED_testOpenPasswordsInOtherAppsWithAutoFillUnknown {
   OpensPasswordsInOtherApps();
 
   [self checkThatCommonElementsAreVisible];
@@ -308,7 +312,7 @@ void OpensPasswordsInOtherApps() {
 
 // Tests Passwords In Other Apps doesn't show the image on iPhone landscape
 // mode, while showing it for iPad.
-- (void)testImageVisibilityForLandscapeMode {
+- (void)DISABLED_testImageVisibilityForLandscapeMode {
   OpensPasswordsInOtherApps();
   [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsImageMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.2)];
