@@ -148,7 +148,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
 
     raw_ptr<DisplayResourceProvider> resource_provider_ = nullptr;
     ResourceId resource_id_ = kInvalidResourceId;
-    raw_ptr<ChildResource, DanglingUntriaged> resource_ = nullptr;
+    raw_ptr<ChildResource> resource_ = nullptr;
   };
 
   // All resources that are returned to children while an instance of this
