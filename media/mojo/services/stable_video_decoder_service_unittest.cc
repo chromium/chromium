@@ -767,7 +767,7 @@ TEST_F(StableVideoDecoderServiceTest,
   MediaLogRecord media_log_record_to_send;
   media_log_record_to_send.id = 2;
   media_log_record_to_send.type = MediaLogRecord::Type::kMediaStatus;
-  media_log_record_to_send.params.SetStringKey("Test", "Value");
+  media_log_record_to_send.params.Set("Test", "Value");
   media_log_record_to_send.time = base::TimeTicks::Now();
 
   EXPECT_CALL(*auxiliary_endpoints->mock_stable_media_log,

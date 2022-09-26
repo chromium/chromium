@@ -384,7 +384,7 @@ static bool ConvertEventToUpdate(int render_process_id,
   const double ticks_millis = ticks / base::Time::kMicrosecondsPerMillisecond;
   dict.Set("ticksMillis", ticks_millis);
 
-  base::Value::Dict cloned_params = event.params.GetDict().Clone();
+  base::Value::Dict cloned_params = event.params.Clone();
   switch (event.type) {
     case media::MediaLogRecord::Type::kMessage:
       dict.Set("type", "MEDIA_LOG_ENTRY");

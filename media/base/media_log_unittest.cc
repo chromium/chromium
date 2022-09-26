@@ -58,13 +58,13 @@ TEST_F(MediaLogTest, DontTruncateShortUrlString) {
   root_log_->AddEvent<MediaLogEvent::kLoad>(short_url);
   auto event = root_log_->take_most_recent_event();
   EXPECT_NE(event, nullptr);
-  EXPECT_EQ(*event->params.FindStringPath("url"), "chromium.org");
+  EXPECT_EQ(*event->params.FindString("url"), "chromium.org");
 
   // Verify that CreatedEvent does not truncate the short URL.
   root_log_->AddEvent<MediaLogEvent::kWebMediaPlayerCreated>(short_url);
   event = root_log_->take_most_recent_event();
   EXPECT_NE(event, nullptr);
-  EXPECT_EQ(*event->params.FindStringPath("origin_url"), "chromium.org");
+  EXPECT_EQ(*event->params.FindString("origin_url"), "chromium.org");
 }
 
 TEST_F(MediaLogTest, TruncateLongUrlStrings) {
@@ -90,13 +90,13 @@ TEST_F(MediaLogTest, TruncateLongUrlStrings) {
   root_log_->AddEvent<MediaLogEvent::kLoad>(long_url);
   auto event = root_log_->take_most_recent_event();
   EXPECT_NE(event, nullptr);
-  EXPECT_EQ(*event->params.FindStringPath("url"), expected_url);
+  EXPECT_EQ(*event->params.FindString("url"), expected_url);
 
   // Verify that CreatedEvent does not truncate the short URL.
   root_log_->AddEvent<MediaLogEvent::kWebMediaPlayerCreated>(long_url);
   event = root_log_->take_most_recent_event();
   EXPECT_NE(event, nullptr);
-  EXPECT_EQ(*event->params.FindStringPath("origin_url"), expected_url);
+  EXPECT_EQ(*event->params.FindString("origin_url"), expected_url);
 }
 
 }  // namespace media

@@ -686,11 +686,11 @@ StructTraits<media::stable::mojom::MediaLogRecordDataView,
 }
 
 // static
-const base::Value& StructTraits<
+const base::Value::Dict& StructTraits<
     media::stable::mojom::MediaLogRecordDataView,
     media::MediaLogRecord>::params(const media::MediaLogRecord& input) {
   static_assert(std::is_same<decltype(::media::MediaLogRecord::params),
-                             base::DictionaryValue>::value,
+                             base::Value::Dict>::value,
                 "Unexpected type for media::MediaLogRecord::params. If you "
                 "need to change this assertion, please contact "
                 "chromeos-gfx-video@google.com.");
@@ -722,9 +722,7 @@ bool StructTraits<media::stable::mojom::MediaLogRecordDataView,
   if (!data.ReadType(&output->type))
     return false;
 
-  if (!data.ReadParams(static_cast<base::Value*>(&output->params)))
-    return false;
-  if (!output->params.is_dict())
+  if (!data.ReadParams(&output->params))
     return false;
 
   if (!data.ReadTime(&output->time))

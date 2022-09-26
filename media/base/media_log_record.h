@@ -6,7 +6,6 @@
 #define MEDIA_BASE_MEDIA_LOG_RECORD_H_
 
 #include <stdint.h>
-#include <memory>
 
 #include "base/time/time.h"
 #include "base/values.h"
@@ -23,9 +22,7 @@ struct MediaLogRecord {
   MediaLogRecord& operator=(const MediaLogRecord& event) {
     id = event.id;
     type = event.type;
-    params.Swap(base::DictionaryValue::From(
-                    base::Value::ToUniquePtrValue(event.params.Clone()))
-                    .get());
+    params = event.params.Clone();
     time = event.time;
     return *this;
   }
@@ -56,7 +53,7 @@ struct MediaLogRecord {
 
   int32_t id;
   Type type;
-  base::DictionaryValue params;
+  base::Value::Dict params;
   base::TimeTicks time;
 };
 

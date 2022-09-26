@@ -78,6 +78,12 @@ blink::WebString ToString(const base::Value& value) {
   return blink::WebString::FromUTF8(output_str);
 }
 
+blink::WebString ToString(const base::Value::Dict& value) {
+  std::string output_str;
+  base::JSONWriter::Write(value, &output_str);
+  return blink::WebString::FromUTF8(output_str);
+}
+
 // TODO(tmathmeyer) stop using a string here eventually. This means rewriting
 // the MediaLogRecord mojom interface.
 blink::InspectorPlayerMessage::Level LevelFromString(const std::string& level) {
@@ -117,7 +123,7 @@ void InspectorMediaEventHandler::SendQueuedMediaEvents(
   for (media::MediaLogRecord event : events_to_send) {
     switch (event.type) {
       case media::MediaLogRecord::Type::kMessage: {
-        for (auto&& itr : event.params.DictItems()) {
+        for (auto&& itr : event.params) {
           blink::InspectorPlayerMessage msg = {
               LevelFromString(itr.first),
               blink::WebString::FromUTF8(itr.second.GetString())};
@@ -126,7 +132,7 @@ void InspectorMediaEventHandler::SendQueuedMediaEvents(
         break;
       }
       case media::MediaLogRecord::Type::kMediaPropertyChange: {
-        for (auto&& itr : event.params.DictItems()) {
+        for (auto&& itr : event.params) {
           blink::InspectorPlayerProperty prop = {
               blink::WebString::FromUTF8(itr.first), ToString(itr.second)};
           properties.emplace_back(std::move(prop));
@@ -140,7 +146,7 @@ void InspectorMediaEventHandler::SendQueuedMediaEvents(
       }
       case media::MediaLogRecord::Type::kMediaStatus: {
         absl::optional<blink::InspectorPlayerError> error =
-            ErrorFromParams(event.params.GetDict());
+            ErrorFromParams(event.params);
         if (error.has_value())
           errors.emplace_back(std::move(*error));
       }

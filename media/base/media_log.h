@@ -97,8 +97,9 @@ class MEDIA_EXPORT MediaLog {
     DCHECK(!status.is_ok());
     std::unique_ptr<MediaLogRecord> record =
         CreateRecord(MediaLogRecord::Type::kMediaStatus);
-    auto serialized = MediaSerialize(status);
-    record->params.MergeDictionary(&serialized);
+    base::Value serialized = MediaSerialize(status);
+    DCHECK(serialized.is_dict());
+    record->params.Merge(std::move(serialized.GetDict()));
     AddLogRecord(std::move(record));
   }
 
@@ -147,16 +148,16 @@ class MEDIA_EXPORT MediaLog {
   template <MediaLogProperty P, typename T>
   std::unique_ptr<MediaLogRecord> CreatePropertyRecord(const T& value) {
     auto record = CreateRecord(MediaLogRecord::Type::kMediaPropertyChange);
-    record->params.SetKey(MediaLogPropertyKeyToString(P),
-                          MediaLogPropertyTypeSupport<P, T>::Convert(value));
+    record->params.Set(MediaLogPropertyKeyToString(P),
+                       MediaLogPropertyTypeSupport<P, T>::Convert(value));
     return record;
   }
   template <MediaLogEvent E, typename... Opt>
   std::unique_ptr<MediaLogRecord> CreateEventRecord() {
     std::unique_ptr<MediaLogRecord> record(
         CreateRecord(MediaLogRecord::Type::kMediaEventTriggered));
-    record->params.SetString(MediaLog::kEventKey,
-                             MediaLogEventTypeSupport<E, Opt...>::TypeName());
+    record->params.Set(MediaLog::kEventKey,
+                       MediaLogEventTypeSupport<E, Opt...>::TypeName());
     return record;
   }
 

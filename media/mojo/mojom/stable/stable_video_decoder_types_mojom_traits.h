@@ -681,7 +681,7 @@ struct StructTraits<media::stable::mojom::MediaLogRecordDataView,
 
   static media::MediaLogRecord::Type type(const media::MediaLogRecord& input);
 
-  static const base::Value& params(const media::MediaLogRecord& input);
+  static const base::Value::Dict& params(const media::MediaLogRecord& input);
 
   static base::TimeTicks time(const media::MediaLogRecord& input);
 
