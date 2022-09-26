@@ -13,8 +13,9 @@ namespace bookmarks {
 // accurate check, but it returns false positives; therefore, it's only a
 // precursor to and not a replacement for the real check. Does nothing if
 // `omnibox::kBookmarkPaths` is disabled.
-const base::Feature kApproximateNodeMatch{"BookmarkApproximateNodeMatch",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kApproximateNodeMatch,
+             "BookmarkApproximateNodeMatch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, uses an alternative approach to loading typed counts for URLs
 // when fetching bookmark matches for the bookmark provider.
@@ -27,17 +28,18 @@ const base::Feature kApproximateNodeMatch{"BookmarkApproximateNodeMatch",
 //   This map isn't cached since the DB changes as the user visits and deletes
 //   visits; and propagating those changes to the cached map would add
 //   complexity.
-const base::Feature kTypedUrlsMap{"BookmarkTypedUrlsMap",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTypedUrlsMap,
+             "BookmarkTypedUrlsMap",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, further limits the maximum number of nodes to fetch when looking
 // for bookmark nodes that match any input term. When disabled, the limit is
 // 3000, which was picked to be very lax; it should rarely be reached and avoids
 // only extreme latency but still allows noticeable latency. Does nothing when
 // `omnibox::kBookmarkPaths` is disabled.
-const base::Feature kLimitNumNodesForBookmarkSearch{
-    "BookmarkLimitNumNodesForBookmarkSearch",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLimitNumNodesForBookmarkSearch,
+             "BookmarkLimitNumNodesForBookmarkSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // See `kLimitNumNodesForBookmarkSearch`.
 const base::FeatureParam<int> kLimitNumNodesForBookmarkSearchCount(

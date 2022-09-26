@@ -10,11 +10,11 @@
 
 namespace bookmarks {
 
-extern const base::Feature kApproximateNodeMatch;
+BASE_DECLARE_FEATURE(kApproximateNodeMatch);
 
-extern const base::Feature kTypedUrlsMap;
+BASE_DECLARE_FEATURE(kTypedUrlsMap);
 
-extern const base::Feature kLimitNumNodesForBookmarkSearch;
+BASE_DECLARE_FEATURE(kLimitNumNodesForBookmarkSearch);
 
 extern const base::FeatureParam<int> kLimitNumNodesForBookmarkSearchCount;
 
