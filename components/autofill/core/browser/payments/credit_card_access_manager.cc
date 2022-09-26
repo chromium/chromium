@@ -250,9 +250,14 @@ void CreditCardAccessManager::FetchCreditCard(
     return;
   }
 
-  if (card->record_type() == CreditCard::VIRTUAL_CARD) {
+  // Log the server card unmasking attempt, and differentiate based on server
+  // card or virtual card.
+  CreditCard::RecordType record_type = card->record_type();
+  if (ShouldLogServerCardUnmaskAttemptMetrics(record_type)) {
     AutofillMetrics::LogServerCardUnmaskAttempt(
-        AutofillClient::PaymentsRpcCardType::kVirtualCard);
+        record_type == CreditCard::VIRTUAL_CARD
+            ? AutofillClient::PaymentsRpcCardType::kVirtualCard
+            : AutofillClient::PaymentsRpcCardType::kServerCard);
   }
 
   // If card has been previously unmasked, use cached data.
@@ -1204,6 +1209,27 @@ void CreditCardAccessManager::ShowUnmaskAuthenticatorSelectionDialog() {
           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&CreditCardAccessManager::OnVirtualCardUnmaskCancelled,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool CreditCardAccessManager::ShouldLogServerCardUnmaskAttemptMetrics(
+    CreditCard::RecordType record_type) {
+  // We always want to log virtual card unmask attempts.
+  if (record_type == CreditCard::VIRTUAL_CARD)
+    return true;
+
+  // We only want to log masked server card or full server card unmask
+  // attempts if the `kAutofillEnableRemadeDownstreamMetrics` feature flag is
+  // enabled, due to this being a histogram refactoring that we want to roll out
+  // slowly to ensure that it works properly.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableRemadeDownstreamMetrics)) {
+    return record_type == CreditCard::MASKED_SERVER_CARD ||
+           record_type == CreditCard::FULL_SERVER_CARD;
+  }
+
+  // No conditions were met to log a server card unmasking attempt, so return
+  // false.
+  return false;
 }
 
 }  // namespace autofill

@@ -622,28 +622,46 @@ TEST_F(CreditCardAccessManagerTest, FetchNullptrFailure) {
 // Ensures that FetchCreditCard() returns the full PAN upon a successful
 // response from payments.
 TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCSuccess) {
-  CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
-  base::HistogramTester histogram_tester;
-  std::string flow_events_histogram_name = "Autofill.BetterAuth.FlowEvents.Cvc";
+  for (bool enable_downstream_histogram_remake : {true, false}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    if (enable_downstream_histogram_remake) {
+      scoped_feature_list.InitAndEnableFeature(
+          features::kAutofillEnableRemadeDownstreamMetrics);
+    } else {
+      scoped_feature_list.InitAndDisableFeature(
+          features::kAutofillEnableRemadeDownstreamMetrics);
+    }
+    CreateServerCard(kTestGUID, kTestNumber);
+    CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
+    base::HistogramTester histogram_tester;
+    std::string flow_events_histogram_name =
+        "Autofill.BetterAuth.FlowEvents.Cvc";
 
-  credit_card_access_manager_->PrepareToFetchCreditCard();
-  WaitForCallbacks();
+    credit_card_access_manager_->PrepareToFetchCreditCard();
+    WaitForCallbacks();
 
-  credit_card_access_manager_->FetchCreditCard(card, accessor_->GetWeakPtr());
-  histogram_tester.ExpectUniqueSample(
-      flow_events_histogram_name,
-      CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
+    credit_card_access_manager_->FetchCreditCard(card, accessor_->GetWeakPtr());
+    histogram_tester.ExpectUniqueSample(
+        flow_events_histogram_name,
+        CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
 
-  EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
-                                   kTestNumber));
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
-  EXPECT_EQ(kTestNumber16, accessor_->number());
-  EXPECT_EQ(kTestCvc16, accessor_->cvc());
+    EXPECT_TRUE(GetRealPanForCVCAuth(
+        AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber));
+    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
+    EXPECT_EQ(kTestNumber16, accessor_->number());
+    EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
-  histogram_tester.ExpectBucketCount(
-      flow_events_histogram_name,
-      CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptCompleted, 1);
+    histogram_tester.ExpectBucketCount(
+        flow_events_histogram_name,
+        CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptCompleted, 1);
+    if (enable_downstream_histogram_remake) {
+      histogram_tester.ExpectUniqueSample(
+          "Autofill.ServerCardUnmask.ServerCard.Attempt", true, 1);
+    } else {
+      histogram_tester.ExpectBucketCount(
+          "Autofill.ServerCardUnmask.ServerCard.Attempt", true, 0);
+    }
+  }
 }
 
 // Ensures that FetchCreditCard() returns a failure upon a negative response
