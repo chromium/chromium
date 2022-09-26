@@ -101,7 +101,7 @@ void CannedServiceWorkerHelper::StartFetching(FetchCallback callback) {
 
   std::list<StorageUsageInfo> result;
   for (const auto& origin : pending_origins_)
-    result.emplace_back(origin, 0, base::Time());
+    result.emplace_back(blink::StorageKey(origin), 0, base::Time());
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));

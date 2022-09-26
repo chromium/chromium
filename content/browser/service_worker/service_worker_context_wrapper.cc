@@ -1402,7 +1402,7 @@ void ServiceWorkerContextWrapper::DidGetAllRegistrationsForGetAllOrigins(
     auto it = origins.find(origin);
     if (it == origins.end()) {
       origins[origin] = StorageUsageInfo(
-          url::Origin::Create(origin),
+          blink::StorageKey(url::Origin::Create(origin)),
           registration_info.stored_version_size_bytes, base::Time());
     } else {
       it->second.total_size_bytes +=

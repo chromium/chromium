@@ -35,10 +35,10 @@ void MockCacheStorageHelper::DeleteCacheStorage(const url::Origin& origin) {
 void MockCacheStorageHelper::AddCacheStorageSamples() {
   const url::Origin kOrigin1 = url::Origin::Create(GURL("https://cshost1:1/"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("https://cshost2:2/"));
-  content::StorageUsageInfo info1(kOrigin1, 1, base::Time());
+  content::StorageUsageInfo info1(blink::StorageKey(kOrigin1), 1, base::Time());
   response_.push_back(info1);
   origins_[kOrigin1] = true;
-  content::StorageUsageInfo info2(kOrigin2, 2, base::Time());
+  content::StorageUsageInfo info2(blink::StorageKey(kOrigin2), 2, base::Time());
   response_.push_back(info2);
   origins_[kOrigin2] = true;
 }

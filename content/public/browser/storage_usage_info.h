@@ -25,16 +25,6 @@ struct CONTENT_EXPORT StorageUsageInfo {
         total_size_bytes(total_size_bytes),
         last_modified(last_modified) {}
 
-  // DEPRECATED: Use the above StorageKey constructor
-  // (https://crbug.com/1361545).
-  StorageUsageInfo(const url::Origin& origin,
-                   int64_t total_size_bytes,
-                   base::Time last_modified)
-      : storage_key(blink::StorageKey(origin)),
-        origin(origin),
-        total_size_bytes(total_size_bytes),
-        last_modified(last_modified) {}
-
   // For assignment into maps without wordy emplace(std::make_pair()) syntax.
   StorageUsageInfo() = default;
 

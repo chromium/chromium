@@ -44,7 +44,7 @@ void MockLocalStorageHelper::AddLocalStorageSamples() {
 void MockLocalStorageHelper::AddLocalStorageForStorageKey(
     const blink::StorageKey& storage_key,
     int64_t size) {
-  response_.emplace_back(storage_key.origin(), size, base::Time());
+  response_.emplace_back(storage_key, size, base::Time());
   storage_keys_[storage_key] = true;
 }
 

@@ -56,7 +56,7 @@ void DatabaseHelper::StartFetching(FetchCallback callback) {
                     info.GetOriginIdentifier());
                 if (!HasWebScheme(origin.GetURL()))
                   continue;
-                result.emplace_back(origin, info.TotalSize(),
+                result.emplace_back(blink::StorageKey(origin), info.TotalSize(),
                                     info.LastModified());
               }
             }
@@ -109,7 +109,7 @@ void CannedDatabaseHelper::StartFetching(FetchCallback callback) {
 
   std::list<StorageUsageInfo> result;
   for (const auto& origin : pending_origins_) {
-    result.emplace_back(origin, 0, base::Time());
+    result.emplace_back(blink::StorageKey(origin), 0, base::Time());
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(

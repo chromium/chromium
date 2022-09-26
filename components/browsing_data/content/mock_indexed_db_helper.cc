@@ -42,11 +42,11 @@ void MockIndexedDBHelper::AddIndexedDBSamples() {
   const blink::StorageKey kStorageKey2 =
       blink::StorageKey::CreateFromStringForTesting("http://idbhost2:2/");
 
-  content::StorageUsageInfo info1(kStorageKey1.origin(), 1, base::Time());
+  content::StorageUsageInfo info1(kStorageKey1, 1, base::Time());
   response_.push_back(info1);
   storage_keys_[kStorageKey1] = true;
 
-  content::StorageUsageInfo info2(kStorageKey2.origin(), 2, base::Time());
+  content::StorageUsageInfo info2(kStorageKey2, 2, base::Time());
   response_.push_back(info2);
   storage_keys_[kStorageKey2] = true;
 }

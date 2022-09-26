@@ -139,10 +139,7 @@ void CannedLocalStorageHelper::UpdateIgnoredEmptyKeys(base::OnceClosure done) {
 void CannedLocalStorageHelper::StartFetchingInternal(FetchCallback callback) {
   std::list<content::StorageUsageInfo> result;
   for (const auto& storage_key : non_empty_pending_storage_keys_)
-    result.emplace_back(
-        // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-        // StorageUsageInfo is converted.
-        storage_key.origin(), 0, base::Time());
+    result.emplace_back(storage_key, 0, base::Time());
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
