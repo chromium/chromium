@@ -177,12 +177,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
   bool IsPrioritySyncing() {
     sync_preferences::PrefServiceSyncable* prefs =
         PrefServiceSyncableFromProfile(profile_);
-    DCHECK(prefs);
-    // SyncSettingsCategorization moves prefs like language and keyboard/mouse
-    // config to OS priority prefs.
-    return chromeos::features::IsSyncSettingsCategorizationEnabled()
-               ? prefs->AreOsPriorityPrefsSyncing()
-               : prefs->IsPrioritySyncing();
+    return prefs->AreOsPriorityPrefsSyncing();
   }
 
   void AddObservers() {
