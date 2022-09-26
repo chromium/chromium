@@ -20,6 +20,12 @@ ContentAutofillDriverFactoryTestApi::ContentAutofillDriverFactoryTestApi(
     ContentAutofillDriverFactory* factory)
     : factory_(factory) {}
 
+void ContentAutofillDriverFactoryTestApi::SetDriver(
+    content::RenderFrameHost* rfh,
+    std::unique_ptr<ContentAutofillDriver> driver) {
+  factory_->driver_map_[rfh] = std::move(driver);
+}
+
 ContentAutofillDriver* ContentAutofillDriverFactoryTestApi::GetDriver(
     content::RenderFrameHost* rfh) {
   auto it = factory_->driver_map_.find(rfh);

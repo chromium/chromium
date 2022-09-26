@@ -16,14 +16,9 @@
 
 class Browser;
 
-namespace content {
-class RenderFrameHost;
-}  // namespace content
-
 namespace autofill {
 
 class AutofillProfile;
-class ContentAutofillDriver;
 class CreditCard;
 class PersonalDataManager;
 
@@ -76,8 +71,7 @@ class AutofillContextMenuManager {
   AutofillContextMenuManager(PersonalDataManager* personal_data_manager,
                              RenderViewContextMenuBase* delegate,
                              ui::SimpleMenuModel* menu_model,
-                             Browser* browser,
-                             content::RenderFrameHost* render_frame_host);
+                             Browser* browser);
   ~AutofillContextMenuManager();
   AutofillContextMenuManager(const AutofillContextMenuManager&) = delete;
   AutofillContextMenuManager& operator=(const AutofillContextMenuManager&) =
@@ -103,12 +97,6 @@ class AutofillContextMenuManager {
   // Setter for `params_` used for testing purposes.
   void set_params_for_testing(content::ContextMenuParams params) {
     params_ = params;
-  }
-
-  // Setter for `content_autofill_driver_` used for testing purposes.
-  void set_content_autofill_driver_for_testing(
-      ContentAutofillDriver* content_autofill_driver) {
-    content_autofill_driver_ = content_autofill_driver;
   }
 
  private:
@@ -142,8 +130,6 @@ class AutofillContextMenuManager {
   raw_ptr<ui::SimpleMenuModel> menu_model_;
   raw_ptr<RenderViewContextMenuBase> delegate_;
   raw_ptr<Browser> browser_;
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
-  raw_ptr<ContentAutofillDriver> content_autofill_driver_;
   content::ContextMenuParams params_;
 
   // Stores the count of items added to the context menu from Autofill.

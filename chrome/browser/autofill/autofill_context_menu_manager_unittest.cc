@@ -9,7 +9,10 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -18,6 +21,8 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 using testing::_;
+
+namespace autofill {
 
 namespace {
 // Generates a ContextMenuParams for the Autofill context menu options.
@@ -30,9 +35,6 @@ static content::ContextMenuParams CreateContextMenuParams(
   rv.field_renderer_id = field_render_id.value();
   return rv;
 }
-}  // namespace
-
-namespace autofill {
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
@@ -46,6 +48,8 @@ class MockAutofillDriver : public TestAutofillDriver {
               (const FieldGlobalId& field_id, const std::u16string& value),
               (override));
 };
+
+}  // namespace
 
 class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -65,41 +69,57 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
     PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
         profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
-    personal_data_manager_ = std::make_unique<TestPersonalDataManager>();
-    personal_data_manager_->SetPrefService(profile()->GetPrefs());
-    menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
+    auto pdm = std::make_unique<TestPersonalDataManager>();
+    pdm->SetPrefService(profile()->GetPrefs());
+    pdm->AddProfile(test::GetFullProfile());
+    pdm->AddCreditCard(test::GetCreditCard());
 
-    personal_data_manager_->AddProfile(test::GetFullProfile());
-    personal_data_manager_->AddCreditCard(test::GetCreditCard());
+    autofill_client_ = std::make_unique<TestAutofillClient>(std::move(pdm));
+    menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
+    render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
+        *main_rfh(), content::ContextMenuParams());
+    render_view_context_menu_->Init();
 
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
-            personal_data_manager_.get(), nullptr, menu_model_.get(), nullptr,
-            main_rfh());
+            autofill_client_->GetPersonalDataManager(),
+            render_view_context_menu_.get(), menu_model_.get(), nullptr);
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams());
     autofill_context_menu_manager_->AppendItems();
   }
 
   void TearDown() override {
-    personal_data_manager_.reset();
+    autofill_context_menu_manager_.reset();
+    render_view_context_menu_.reset();
+    autofill_client_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
  protected:
+  MockAutofillDriver& InjectAutofillDriver(
+      content::RenderFrameHost* rfh,
+      std::unique_ptr<MockAutofillDriver> driver) {
+    auto* raw_driver = driver.get();
+    ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
+        web_contents(), autofill_client_.get(),
+        ContentAutofillDriverFactory::DriverInitCallback());
+    auto* cadf = ContentAutofillDriverFactory::FromWebContents(web_contents());
+    ContentAutofillDriverFactoryTestApi(cadf).SetDriver(rfh, std::move(driver));
+    return *raw_driver;
+  }
+
   ui::SimpleMenuModel* menu_model() const { return menu_model_.get(); }
 
   AutofillContextMenuManager* autofill_context_menu_manager() const {
     return autofill_context_menu_manager_.get();
   }
 
-  MockAutofillDriver* autofill_driver() { return &autofill_driver_; }
-
  private:
-  std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
+  std::unique_ptr<TestAutofillClient> autofill_client_;
+  std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
-  MockAutofillDriver autofill_driver_;
   base::test::ScopedFeatureList feature_;
 };
 
@@ -186,6 +206,9 @@ TEST_F(AutofillContextMenuManagerTest, ExecuteCommand) {
 
   int incremental_field_renderer_id = 0;
 
+  MockAutofillDriver& driver =
+      InjectAutofillDriver(main_rfh(), std::make_unique<MockAutofillDriver>());
+
   for (auto const& [command_id, map_value] : mapper) {
     // Requires a browser instance which is not available in this test.
     if (map_value.is_manage_item)
@@ -199,11 +222,9 @@ TEST_F(AutofillContextMenuManagerTest, ExecuteCommand) {
 
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams(field_renderer_id));
-    autofill_context_menu_manager()->set_content_autofill_driver_for_testing(
-        autofill_driver());
 
-    EXPECT_CALL(*autofill_driver(), RendererShouldFillFieldWithValue(
-                                        field_global_id, map_value.fill_value));
+    EXPECT_CALL(driver, RendererShouldFillFieldWithValue(field_global_id,
+                                                         map_value.fill_value));
     autofill_context_menu_manager()->ExecuteCommand(command_id);
   }
 }

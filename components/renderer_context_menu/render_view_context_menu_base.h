@@ -124,6 +124,9 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   content::WebContents* GetWebContents() const override;
   content::BrowserContext* GetBrowserContext() const override;
 
+  // May return nullptr if the frame was deleted while the menu was open.
+  content::RenderFrameHost* GetRenderFrameHost() const;
+
  protected:
   friend class RenderViewContextMenuTest;
   friend class RenderViewContextMenuPrefsTest;
@@ -161,9 +164,6 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   // TODO(oshima): Remove this.
   virtual void AppendPlatformEditableItems() {}
   virtual void ExecOpenInReadAnything() = 0;
-
-  // May return nullptr if the frame was deleted while the menu was open.
-  content::RenderFrameHost* GetRenderFrameHost() const;
 
   bool IsCustomItemChecked(int id) const;
   bool IsCustomItemEnabled(int id) const;

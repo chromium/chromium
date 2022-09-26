@@ -26,6 +26,8 @@ class ContentAutofillDriverFactoryTestApi {
 
   size_t num_drivers() const { return factory_->driver_map_.size(); }
 
+  void SetDriver(content::RenderFrameHost* rfh,
+                 std::unique_ptr<ContentAutofillDriver> driver);
   ContentAutofillDriver* GetDriver(content::RenderFrameHost* rfh);
 
   ContentAutofillRouter& router() { return factory_->router_; }
