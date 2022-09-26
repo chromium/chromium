@@ -1270,9 +1270,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames3.AllSequences"
-    units="%" expires_after="2023-05-11">
+    units="%" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Tracks the percent of dropped frames for a sequence by aggregating all its
     animations and interactions, where a sequence is a series of frames produced
@@ -1292,6 +1295,9 @@ chromium-metrics-reviews@google.com.
 
     This is a new implementation of the older
     Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </summary>
 </histogram>
 
