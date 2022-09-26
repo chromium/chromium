@@ -48,8 +48,6 @@
 
 using chrome_test_util::BookmarksNavigationBarDoneButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::ClearBrowsingDataButton;
-using chrome_test_util::ConfirmClearBrowsingDataButton;
 using chrome_test_util::GoogleServicesSettingsButton;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
@@ -61,7 +59,6 @@ using chrome_test_util::SettingsImportDataContinueButton;
 using chrome_test_util::SettingsImportDataImportButton;
 using chrome_test_util::SettingsImportDataKeepSeparateButton;
 using chrome_test_util::SettingsLink;
-using chrome_test_util::SettingsMenuPrivacyButton;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 using l10n_util::GetNSString;
 using testing::ButtonWithAccessibilityLabel;
@@ -258,7 +255,7 @@ void ExpectSyncConsentHistogram(
   [BookmarkEarlGreyUI openBookmarks];
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+    [[EarlGrey selectElementWithMatcher:grey_text(GetNSString(
                                             IDS_IOS_BOOKMARK_EMPTY_TITLE))]
         assertWithMatcher:grey_notVisible()
                     error:&error];
@@ -846,9 +843,8 @@ void ExpectSyncConsentHistogram(
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   // Select the identity disc particle.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_ACCNAME_PARTICLE_DISC))]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSString(
+                                          IDS_ACCNAME_PARTICLE_DISC))]
       performAction:grey_tap()];
 
   // Ensure the Settings menu is displayed.
@@ -871,8 +867,7 @@ void ExpectSyncConsentHistogram(
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityValue(
-                                       l10n_util::GetNSString(
-                                           IDS_IOS_SETTING_ON)),
+                                       GetNSString(IDS_IOS_SETTING_ON)),
                                    grey_accessibilityID(
                                        kSettingsGoogleSyncAndServicesCellId),
                                    nil)]
@@ -897,8 +892,7 @@ void ExpectSyncConsentHistogram(
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityValue(
-                                       l10n_util::GetNSString(
-                                           IDS_IOS_SETTING_OFF)),
+                                       GetNSString(IDS_IOS_SETTING_OFF)),
                                    grey_accessibilityID(
                                        kSettingsGoogleSyncAndServicesCellId),
                                    nil)] performAction:grey_tap()];
@@ -910,8 +904,7 @@ void ExpectSyncConsentHistogram(
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityValue(
-                                       l10n_util::GetNSString(
-                                           IDS_IOS_SETTING_ON)),
+                                       GetNSString(IDS_IOS_SETTING_ON)),
                                    grey_accessibilityID(
                                        kSettingsGoogleSyncAndServicesCellId),
                                    grey_sufficientlyVisible(), nil)]
@@ -934,8 +927,7 @@ void ExpectSyncConsentHistogram(
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityValue(
-                                       l10n_util::GetNSString(
-                                           IDS_IOS_SETTING_OFF)),
+                                       GetNSString(IDS_IOS_SETTING_OFF)),
                                    grey_accessibilityID(
                                        kSettingsGoogleSyncAndServicesCellId),
                                    nil)] performAction:grey_tap()];
@@ -950,8 +942,7 @@ void ExpectSyncConsentHistogram(
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityValue(
-                                       l10n_util::GetNSString(
-                                           IDS_IOS_SETTING_OFF)),
+                                       GetNSString(IDS_IOS_SETTING_OFF)),
                                    grey_accessibilityID(
                                        kSettingsGoogleSyncAndServicesCellId),
                                    grey_sufficientlyVisible(), nil)]
@@ -1068,11 +1059,12 @@ void ExpectSyncConsentHistogram(
                       GoogleServicesSettingsButton()];
 
   [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityValue(l10n_util::GetNSString(
-                         IDS_IOS_SYNC_ENCRYPTION_DESCRIPTION)),
-                     grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
-                     grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityValue(GetNSString(
+                                       IDS_IOS_SYNC_ENCRYPTION_DESCRIPTION)),
+                                   grey_accessibilityID(
+                                       kSettingsGoogleSyncAndServicesCellId),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
   // Scroll to bottom of Manage Sync Settings, if necessary.
@@ -1143,7 +1135,7 @@ void ExpectSyncConsentHistogram(
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(
-              grey_accessibilityLabel(l10n_util::GetNSString(
+              grey_accessibilityLabel(GetNSString(
                   IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE_SYNC_MANAGED)),
               grey_sufficientlyVisible(), nil)]
 
@@ -1153,7 +1145,7 @@ void ExpectSyncConsentHistogram(
   [ChromeEarlGreyUI waitForAppToIdle];
 
   NSString* policyText =
-      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_LEARN_MORE);
+      GetNSString(IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_LEARN_MORE);
   policyText = [policyText stringByReplacingOccurrencesOfString:@"BEGIN_LINK"
                                                      withString:@""];
   policyText = [policyText stringByReplacingOccurrencesOfString:@"END_LINK"
@@ -1183,10 +1175,11 @@ void ExpectSyncConsentHistogram(
 - (void)testTurnOffSyncDisablePolicy {
   // Disable sync by policy.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                                IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
-                            grey_userInteractionEnabled(), nil)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(GetNSString(
+                                       IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
+                                   grey_userInteractionEnabled(), nil)]
       performAction:grey_tap()];
   // Open other device tab.
   [ChromeEarlGreyUI openTabGrid];
