@@ -33,7 +33,9 @@ public class ApplicationTestUtils {
 
     /** Waits until the given activity transitions to the given state. */
     public static void waitForActivityState(Activity activity, Stage stage) {
-        waitForActivityState(null, activity, stage);
+        waitForActivityState("Activity " + activity.getLocalClassName()
+                        + " did not reach stage: " + stage + ". Is the device screen turned on?",
+                activity, stage);
     }
 
     /** Waits until the given activity transitions to the given state. */

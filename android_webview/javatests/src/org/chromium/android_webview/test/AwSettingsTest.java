@@ -30,6 +30,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwFeatureList;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwSettings.LayoutAlgorithm;
+import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.android_webview.test.TestAwContentsClient.DoUpdateVisitedHistoryHelper;
@@ -3578,6 +3579,23 @@ public class AwSettingsTest {
         awSettings.setRequestedWithHeaderOriginAllowList(allowList);
 
         Assert.assertEquals(allowList, awSettings.getRequestedWithHeaderOriginAllowList());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    @CommandLineFlags.Add({"enable-features=WebViewXRequestedWithHeaderManifestAllowList"})
+    public void testXRequestedWithAllowListSetByManifest() throws Throwable {
+        final Set<String> allowList = Set.of("https://*.example.com", "https://*.google.com");
+        try (var a = ManifestMetadataUtil.setXRequestedWithAllowListScopedForTesting(allowList)) {
+            TestAwContentsClient contentClient = new TestAwContentsClient();
+            AwTestContainerView testContainerView =
+                    mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
+            AwContents awContents = testContainerView.getAwContents();
+            AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
+            Set<String> changedList = awSettings.getRequestedWithHeaderOriginAllowList();
+            Assert.assertEquals(allowList, changedList);
+        }
     }
 
     static class ViewPair {

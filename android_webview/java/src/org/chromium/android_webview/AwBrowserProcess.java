@@ -158,7 +158,7 @@ public final class AwBrowserProcess {
                 // Check android settings but only when safebrowsing is enabled.
                 try (ScopedSysTraceEvent e2 =
                                 ScopedSysTraceEvent.scoped("AwBrowserProcess.maybeEnable")) {
-                    AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest(appContext);
+                    AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest();
                 }
 
                 TrustTokenFulfillerManager.setFactory(
@@ -233,8 +233,7 @@ public final class AwBrowserProcess {
                 ThreadUtils.assertOnUiThread();
                 boolean userApproved = Boolean.TRUE.equals(enabled);
                 if (updateMetricsConsent) {
-                    AwMetricsServiceClient.setConsentSetting(
-                            ContextUtils.getApplicationContext(), userApproved);
+                    AwMetricsServiceClient.setConsentSetting(userApproved);
                 }
 
                 if (!enableMinidumpUploadingForTesting) {
@@ -432,7 +431,7 @@ public final class AwBrowserProcess {
      */
     public static void collectNonembeddedMetrics() {
         final Context appContext = ContextUtils.getApplicationContext();
-        if (AwMetricsServiceClient.isAppOptedOut(appContext)) {
+        if (ManifestMetadataUtil.isAppOptedOutFromMetricsCollection()) {
             Log.d(TAG, "App opted out from metrics collection, not connecting to metrics service");
             return;
         }

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Process;
 import android.webkit.WebSettings;
 
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -34,7 +35,7 @@ public class AwServiceWorkerSettings {
     private boolean mBlockNetworkLoads;  // Default depends on permission of the embedding APK
     private boolean mAcceptThirdPartyCookies;
 
-    private Set<String> mRequestedWithHeaderAllowedOriginRules = Collections.emptySet();
+    private Set<String> mRequestedWithHeaderAllowedOriginRules;
 
     // Lock to protect all settings.
     private final Object mAwServiceWorkerSettingsLock = new Object();
@@ -51,6 +52,13 @@ public class AwServiceWorkerSettings {
         synchronized (mAwServiceWorkerSettingsLock) {
             mHasInternetPermission = hasInternetPermission;
             mBlockNetworkLoads = !hasInternetPermission;
+            if (AwFeatureList.isEnabled(
+                        AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_MANIFEST_ALLOW_LIST)) {
+                mRequestedWithHeaderAllowedOriginRules =
+                        ManifestMetadataUtil.getXRequestedWithAllowList();
+            } else {
+                mRequestedWithHeaderAllowedOriginRules = Collections.emptySet();
+            }
         }
     }
 

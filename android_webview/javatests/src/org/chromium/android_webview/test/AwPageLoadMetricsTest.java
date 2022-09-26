@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MetricsUtils;
@@ -31,6 +32,7 @@ import java.util.concurrent.Callable;
 /**
  * Integration test for PageLoadMetrics.
  */
+@Batch(Batch.PER_CLASS)
 public class AwPageLoadMetricsTest {
     private static final String MAIN_FRAME_FILE = "/main_frame.html";
 
@@ -38,7 +40,6 @@ public class AwPageLoadMetricsTest {
     public AwActivityTestRule mRule = new AwActivityTestRule();
 
     private AwTestContainerView mTestContainerView;
-    private AwContents mAwContents;
     private TestAwContentsClient mContentsClient;
     private TestWebServer mWebServer;
 
@@ -46,7 +47,7 @@ public class AwPageLoadMetricsTest {
     public void setUp() throws Exception {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        mAwContents = mTestContainerView.getAwContents();
+        AwContents mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
         mWebServer = TestWebServer.start();
     }
@@ -146,7 +147,7 @@ public class AwPageLoadMetricsTest {
         int foregroundDuration = RecordHistogram.getHistogramTotalCountForTesting(
                 "PageLoad.PageTiming.ForegroundDuration");
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { AwMetricsServiceClient.setConsentSetting(mRule.getActivity(), true); });
+                () -> { AwMetricsServiceClient.setConsentSetting(true); });
         loadUrlSync(url);
         // Remove the WebView from the container, to simulate app going to background.
         TestThreadUtils.runOnUiThreadBlocking(() -> { mRule.getActivity().removeAllViews(); });

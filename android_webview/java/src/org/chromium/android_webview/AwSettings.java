@@ -82,7 +82,7 @@ public class AwSettings {
     @ForceDarkBehavior
     private int mForceDarkBehavior = ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
 
-    private Set<String> mRequestedWithHeaderAllowedOriginRules = Collections.emptySet();
+    private Set<String> mRequestedWithHeaderAllowedOriginRules;
 
     private Context mContext;
 
@@ -302,6 +302,13 @@ public class AwSettings {
             mAllowFileUrlAccess =
                     ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
                     < Build.VERSION_CODES.R;
+            if (AwFeatureList.isEnabled(
+                        AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_MANIFEST_ALLOW_LIST)) {
+                mRequestedWithHeaderAllowedOriginRules =
+                        ManifestMetadataUtil.getXRequestedWithAllowList();
+            } else {
+                mRequestedWithHeaderAllowedOriginRules = Collections.emptySet();
+            }
         }
         // Defer initializing the native side until a native WebContents instance is set.
     }

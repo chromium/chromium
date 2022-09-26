@@ -95,6 +95,13 @@ BASE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs,
              "WebViewSuppressDifferentOriginSubframeJSDialogs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Only synthesize page load for URL spoof prevention at most once, on initial
+// main document access (instead on every NavigationStateChanged call that
+// invalidates the URL after).
+BASE_FEATURE(kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess,
+             "WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // A Feature used for WebView variations tests. Not used in production.
 BASE_FEATURE(kWebViewTestFeature,
              "WebViewTestFeature",
@@ -124,12 +131,11 @@ BASE_FEATURE(kWebViewXRequestedWithHeaderControl,
 const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode{
     &kWebViewXRequestedWithHeaderControl, "WebViewXRequestedWithHeaderMode", 0};
 
-// Only synthesize page load for URL spoof prevention at most once, on initial
-// main document access (instead on every NavigationStateChanged call that
-// invalidates the URL after).
-BASE_FEATURE(kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess,
-             "WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Control whether WebView will attempt to read the XRW header allow-list from
+// the manifest.
+BASE_FEATURE(kWebViewXRequestedWithHeaderManifestAllowList,
+             "WebViewXRequestedWithHeaderManifestAllowList",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace android_webview

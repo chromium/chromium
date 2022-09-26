@@ -381,6 +381,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/KeySystemTest.java",
     "../javatests/src/org/chromium/android_webview/test/LoadDataWithBaseUrlTest.java",
     "../javatests/src/org/chromium/android_webview/test/LoadUrlTest.java",
+    "../javatests/src/org/chromium/android_webview/test/ManifestMetadataUtilTest.java",
     "../javatests/src/org/chromium/android_webview/test/MediaAccessPermissionRequestTest.java",
     "../javatests/src/org/chromium/android_webview/test/MemoryMetricsLoggerTest.java",
     "../javatests/src/org/chromium/android_webview/test/MetricsTestPlatformServiceBridge.java",
@@ -498,17 +499,20 @@ android_library("webview_instrumentation_test_utils_java") {
   testonly = true
   sources = [
     "../javatests/src/org/chromium/android_webview/test/util/EmbeddedComponentLoaderFactory.java",
+    "../javatests/src/org/chromium/android_webview/test/util/ManifestMetadataMockApplicationContext.java",
     "../javatests/src/org/chromium/android_webview/test/util/RendererProcessMetricsProviderUtils.java",
     "../javatests/src/org/chromium/android_webview/test/util/VariationsTestUtils.java",
     "shell/src/org/chromium/android_webview/test/util/MemoryMetricsLoggerUtils.java",
   ]
   deps = [
     "//android_webview:common_variations_java",
+    "//base:base_java_test_support",
     "//base:jni_java",
     "//build/android:build_java",
     "//components/component_updater/android:embedded_component_loader_java",
     "//components/variations/android:variations_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
