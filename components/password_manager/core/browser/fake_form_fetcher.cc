@@ -117,4 +117,15 @@ void FakeFormFetcher::NotifyFetchCompleted() {
   for (Consumer& consumer : consumers_)
     consumer.OnFetchCompleted();
 }
+
+absl::optional<PasswordStoreBackendError>
+FakeFormFetcher::GetProfileStoreBackendError() const {
+  return profile_store_backend_error_;
+}
+
+void FakeFormFetcher::SetProfileStoreBackendError(
+    absl::optional<PasswordStoreBackendError> error) {
+  profile_store_backend_error_ = error;
+}
+
 }  // namespace password_manager

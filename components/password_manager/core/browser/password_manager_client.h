@@ -99,6 +99,8 @@ enum class SyncState {
   kAccountPasswordsActiveNormalEncryption
 };
 
+enum class ErrorMessageFlowType { kSaveFlow, kFillFlow };
+
 // An abstraction of operations that depend on the embedders (e.g. Chrome)
 // environment. PasswordManagerClient is instantiated once per WebContents.
 // Main frame w.r.t WebContents refers to the primary main frame so usages of
@@ -190,6 +192,10 @@ class PasswordManagerClient {
       CredentialsCallback callback) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
+  // Shows the error message that suggests the user to sign in to "save" or
+  // "use" passwords, depending on the |flow_type|.
+  virtual void ShowPasswordManagerErrorMessage(ErrorMessageFlowType flow_type);
+
   // Instructs the client to show the Touch To Fill UI.
   virtual void ShowTouchToFill(
       PasswordManagerDriver* driver,

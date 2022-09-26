@@ -10,6 +10,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/aura/window.h"
@@ -24,7 +25,8 @@ PasswordManagerErrorMessageDelegate::~PasswordManagerErrorMessageDelegate() =
 
 void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
     content::WebContents* web_contents,
-    bool save_password) {
+    password_manager::ErrorMessageFlowType flow_type,
+    base::OnceCallback<void()> dismissal_callback) {
   DCHECK(web_contents);
 
   if (!helper_bridge_->ShouldShowErrorUI())
@@ -32,11 +34,12 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
 
   DCHECK(!message_);
 
-  CreateMessage(web_contents, save_password);
+  CreateMessage(web_contents, flow_type);
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS,
       messages::MessagePriority::kUrgent);
   helper_bridge_->SaveErrorUIShownTimestamp();
+  dismissal_callback_ = std::move(dismissal_callback);
 }
 
 void PasswordManagerErrorMessageDelegate::DismissPasswordManagerErrorMessage(
@@ -44,12 +47,13 @@ void PasswordManagerErrorMessageDelegate::DismissPasswordManagerErrorMessage(
   if (message_ != nullptr) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(message_.get(),
                                                              dismiss_reason);
+    std::move(dismissal_callback_).Run();
   }
 }
 
 void PasswordManagerErrorMessageDelegate::CreateMessage(
     content::WebContents* web_contents,
-    bool save_password) {
+    password_manager::ErrorMessageFlowType flow_type) {
   messages::MessageIdentifier message_id =
       messages::MessageIdentifier::PASSWORD_MANAGER_ERROR;
   // Binding with base::Unretained(this) is safe here because
@@ -68,8 +72,10 @@ void PasswordManagerErrorMessageDelegate::CreateMessage(
           &PasswordManagerErrorMessageDelegate::HandleMessageDismissed,
           base::Unretained(this)));
 
-  int title_message_id = save_password ? IDS_SIGN_IN_TO_SAVE_PASSWORDS
-                                       : IDS_SIGN_IN_TO_USE_PASSWORDS;
+  int title_message_id =
+      flow_type == password_manager::ErrorMessageFlowType::kSaveFlow
+          ? IDS_SIGN_IN_TO_SAVE_PASSWORDS
+          : IDS_SIGN_IN_TO_USE_PASSWORDS;
   message_->SetTitle(l10n_util::GetStringUTF16(title_message_id));
 
   std::u16string description =
