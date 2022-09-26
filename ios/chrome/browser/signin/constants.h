@@ -39,12 +39,10 @@ typedef enum {
 // Enum for identity avatar size. See GetSizeForIdentityAvatarSize() to convert
 // the enum value to point.
 enum class IdentityAvatarSize {
-  // 30 pt.
-  TableViewIcon,
-  // 32 pt.
-  SmallSize,
-  // 40 pt.
-  DefaultLarge,
+  TableViewIcon,  // 30 pt.
+  SmallSize,      // 32 pt.
+  Regular,        // 40 pt.
+  Large,          // 48 pt.
 };
 
 namespace signin_ui {

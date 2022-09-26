@@ -310,7 +310,8 @@ void ChromeAccountManagerService::OnChromeIdentityServiceDidChange(
   // sso identities.
   default_table_view_avatar_cache_ = nil;
   small_size_avatar_cache_ = nil;
-  default_large_avatar_cache_ = nil;
+  regular_avatar_cache_ = nil;
+  large_avatar_cache_ = nil;
   OnIdentityListChanged(false);
   for (auto& observer : observer_list_)
     observer.OnServiceSupportedChanged();
@@ -340,8 +341,11 @@ ChromeAccountManagerService::GetAvatarCacheForIdentityAvatarSize(
     case IdentityAvatarSize::SmallSize:
       avatar_cache = &small_size_avatar_cache_;
       break;
-    case IdentityAvatarSize::DefaultLarge:
-      avatar_cache = &default_large_avatar_cache_;
+    case IdentityAvatarSize::Regular:
+      avatar_cache = &regular_avatar_cache_;
+      break;
+    case IdentityAvatarSize::Large:
+      avatar_cache = &large_avatar_cache_;
       break;
   }
   DCHECK(avatar_cache);

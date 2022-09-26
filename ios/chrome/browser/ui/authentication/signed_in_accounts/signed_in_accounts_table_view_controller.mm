@@ -126,7 +126,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.name = identity.userFullName;
   item.email = identity.userEmail;
   item.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-      identity, IdentityAvatarSize::DefaultLarge);
+      identity, IdentityAvatarSize::Regular);
 }
 
 @end

@@ -117,7 +117,7 @@
   item.selected =
       [self.selectedIdentity.gaiaID isEqualToString:identity.gaiaID];
   item.avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
-      identity, IdentityAvatarSize::DefaultLarge);
+      identity, IdentityAvatarSize::Regular);
   [self.consumer itemHasChanged:item];
 }
 

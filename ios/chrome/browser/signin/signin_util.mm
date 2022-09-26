@@ -41,8 +41,11 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
     case IdentityAvatarSize::SmallSize:
       size = 32.;
       break;
-    case IdentityAvatarSize::DefaultLarge:
+    case IdentityAvatarSize::Regular:
       size = 40.;
+      break;
+    case IdentityAvatarSize::Large:
+      size = 48.;
       break;
   }
   DCHECK_NE(size, 0);

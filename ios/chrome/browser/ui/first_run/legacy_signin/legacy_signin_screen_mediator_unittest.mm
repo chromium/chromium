@@ -137,7 +137,7 @@ TEST_F(LegacySigninScreenMediatorTest,
   UIImage* avatar = consumer_.avatar;
   EXPECT_NE(nil, avatar);
   CGSize expected_size =
-      GetSizeForIdentityAvatarSize(IdentityAvatarSize::DefaultLarge);
+      GetSizeForIdentityAvatarSize(IdentityAvatarSize::Regular);
   EXPECT_TRUE(CGSizeEqualToSize(expected_size, avatar.size));
 }
 
@@ -161,7 +161,7 @@ TEST_F(LegacySigninScreenMediatorTest, TestUpdatingSelectedIdentity) {
   UIImage* avatar = consumer_.avatar;
   EXPECT_NE(nil, avatar);
   CGSize expected_size =
-      GetSizeForIdentityAvatarSize(IdentityAvatarSize::DefaultLarge);
+      GetSizeForIdentityAvatarSize(IdentityAvatarSize::Regular);
   EXPECT_TRUE(CGSizeEqualToSize(expected_size, avatar.size));
 }
 
@@ -186,7 +186,7 @@ TEST_F(LegacySigninScreenMediatorTest, TestIdentityListChanged) {
   UIImage* avatar = consumer_.avatar;
   EXPECT_NE(nil, avatar);
   CGSize expected_size =
-      GetSizeForIdentityAvatarSize(IdentityAvatarSize::DefaultLarge);
+      GetSizeForIdentityAvatarSize(IdentityAvatarSize::Regular);
   EXPECT_TRUE(CGSizeEqualToSize(expected_size, avatar.size));
 
   // Removing all the identity is resetting the selected identity.

@@ -148,8 +148,10 @@ class ChromeAccountManagerService : public KeyedService,
   ResizedAvatarCache* default_table_view_avatar_cache_;
   // ResizedAvatarCache for IdentityAvatarSize::SmallSize.
   ResizedAvatarCache* small_size_avatar_cache_;
-  // ResizedAvatarCache for IdentityAvatarSize::DefaultLarge.
-  ResizedAvatarCache* default_large_avatar_cache_;
+  // ResizedAvatarCache for IdentityAvatarSize::Regular.
+  ResizedAvatarCache* regular_avatar_cache_;
+  // ResizedAvatarCache for IdentityAvatarSize::Large.
+  ResizedAvatarCache* large_avatar_cache_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_CHROME_ACCOUNT_MANAGER_SERVICE_H_

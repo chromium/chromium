@@ -116,7 +116,7 @@
                                               email:self.selectedIdentity
                                                         .userEmail];
     UIImage* avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
-        self.selectedIdentity, IdentityAvatarSize::DefaultLarge);
+        self.selectedIdentity, IdentityAvatarSize::Regular);
     DCHECK(avatar);
     [self.unifiedConsentViewController
         updateIdentityButtonControlWithAvatar:avatar];
