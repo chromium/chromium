@@ -4,6 +4,7 @@
 
 #include "components/prefs/segregated_pref_store.h"
 
+#include <string>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -11,7 +12,9 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "components/prefs/pref_name_set.h"
 
 SegregatedPrefStore::UnderlyingPrefStoreObserver::UnderlyingPrefStoreObserver(
     SegregatedPrefStore* outer)
@@ -52,7 +55,7 @@ void SegregatedPrefStore::UnderlyingPrefStoreObserver::
 SegregatedPrefStore::SegregatedPrefStore(
     scoped_refptr<PersistentPrefStore> default_pref_store,
     scoped_refptr<PersistentPrefStore> selected_pref_store,
-    std::set<std::string> selected_pref_names)
+    PrefNameSet selected_pref_names)
     : default_pref_store_(std::move(default_pref_store)),
       selected_pref_store_(std::move(selected_pref_store)),
       selected_preference_names_(std::move(selected_pref_names)),
@@ -84,7 +87,7 @@ bool SegregatedPrefStore::IsInitializationSuccessful() const {
          selected_observer_.initialization_succeeded();
 }
 
-bool SegregatedPrefStore::GetValue(const std::string& key,
+bool SegregatedPrefStore::GetValue(base::StringPiece key,
                                    const base::Value** result) const {
   return StoreForKey(key)->GetValue(key, result);
 }
@@ -215,14 +218,14 @@ SegregatedPrefStore::~SegregatedPrefStore() {
   selected_pref_store_->RemoveObserver(&selected_observer_);
 }
 
-PersistentPrefStore* SegregatedPrefStore::StoreForKey(const std::string& key) {
+PersistentPrefStore* SegregatedPrefStore::StoreForKey(base::StringPiece key) {
   return (base::Contains(selected_preference_names_, key) ? selected_pref_store_
                                                           : default_pref_store_)
       .get();
 }
 
 const PersistentPrefStore* SegregatedPrefStore::StoreForKey(
-    const std::string& key) const {
+    base::StringPiece key) const {
   return (base::Contains(selected_preference_names_, key) ? selected_pref_store_
                                                           : default_pref_store_)
       .get();

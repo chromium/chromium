@@ -5,16 +5,18 @@
 #include "components/prefs/in_memory_pref_store.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 InMemoryPrefStore::InMemoryPrefStore() {}
 
 InMemoryPrefStore::~InMemoryPrefStore() {}
 
-bool InMemoryPrefStore::GetValue(const std::string& key,
+bool InMemoryPrefStore::GetValue(base::StringPiece key,
                                  const base::Value** value) const {
   return prefs_.GetValue(key, value);
 }

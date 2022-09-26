@@ -5,14 +5,16 @@
 #include "components/prefs/value_map_pref_store.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 ValueMapPrefStore::ValueMapPrefStore() {}
 
-bool ValueMapPrefStore::GetValue(const std::string& key,
+bool ValueMapPrefStore::GetValue(base::StringPiece key,
                                  const base::Value** value) const {
   return prefs_.GetValue(key, value);
 }

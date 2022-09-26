@@ -17,6 +17,7 @@
 #include "chromecast/chromecast_buildflags.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/prefs/json_pref_store.h"
+#include "components/prefs/pref_name_set.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/pref_store.h"
@@ -55,7 +56,7 @@ scoped_refptr<PersistentPrefStore> MakePrefStore(ProcessType process_type) {
   auto default_pref_store =
       base::MakeRefCounted<JsonPrefStore>(GetConfigPath(process_type));
 
-  std::set<std::string> selected_pref_names;
+  PrefNameSet selected_pref_names;
   if (PrefServiceHelper::LargePrefNames) {
     selected_pref_names = PrefServiceHelper::LargePrefNames();
   }

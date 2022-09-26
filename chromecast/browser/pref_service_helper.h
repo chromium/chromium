@@ -8,12 +8,11 @@
 #define CHROMECAST_BROWSER_PREF_SERVICE_HELPER_H_
 
 #include <memory>
-#include <set>
-#include <string>
 
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "chromecast/base/process_types.h"
+#include "components/prefs/pref_name_set.h"
 #include "components/prefs/pref_service.h"
 
 class PrefRegistrySimple;
@@ -32,7 +31,7 @@ class PrefServiceHelper {
 
   // Provides names of prefs that take a large amount of storage, and are
   // therefore stored in a different file.
-  static std::set<std::string> LargePrefNames() __attribute__((weak));
+  static PrefNameSet LargePrefNames() __attribute__((weak));
 
  private:
   // Registers any needed preferences for the current platform.

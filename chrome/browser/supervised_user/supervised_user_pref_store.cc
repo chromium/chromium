@@ -5,6 +5,7 @@
 #include "chrome/browser/supervised_user/supervised_user_pref_store.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -86,7 +88,7 @@ SupervisedUserPrefStore::SupervisedUserPrefStore(
               base::Unretained(this)));
 }
 
-bool SupervisedUserPrefStore::GetValue(const std::string& key,
+bool SupervisedUserPrefStore::GetValue(base::StringPiece key,
                                        const base::Value** value) const {
   return prefs_->GetValue(key, value);
 }

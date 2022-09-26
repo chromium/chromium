@@ -9,13 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/prefs_export.h"
 
 // A generic string to value map used by the PrefStore implementations.
 class COMPONENTS_PREFS_EXPORT PrefValueMap {
  public:
-  using Map = std::map<std::string, base::Value>;
+  using Map = std::map<std::string, base::Value, std::less<void>>;
   using iterator = Map::iterator;
   using const_iterator = Map::const_iterator;
 
@@ -29,8 +30,8 @@ class COMPONENTS_PREFS_EXPORT PrefValueMap {
   // Gets the value for |key| and stores it in |value|. Ownership remains with
   // the map. Returns true if a value is present. If not, |value| is not
   // touched.
-  bool GetValue(const std::string& key, const base::Value** value) const;
-  bool GetValue(const std::string& key, base::Value** value);
+  bool GetValue(base::StringPiece key, const base::Value** value) const;
+  bool GetValue(base::StringPiece key, base::Value** value);
 
   // Sets a new |value| for |key|. Returns true if the value changed.
   bool SetValue(const std::string& key, base::Value value);

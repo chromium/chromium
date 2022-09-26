@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/pref_value_map.h"
@@ -25,7 +26,7 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
   DefaultPrefStore& operator=(const DefaultPrefStore&) = delete;
 
   // PrefStore implementation:
-  bool GetValue(const std::string& key,
+  bool GetValue(base::StringPiece key,
                 const base::Value** result) const override;
   base::Value::Dict GetValues() const override;
   void AddObserver(PrefStore::Observer* observer) override;

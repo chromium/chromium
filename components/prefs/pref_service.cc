@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -19,6 +20,7 @@
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -198,23 +200,23 @@ void PrefService::SchedulePendingLossyWrites() {
   user_pref_store_->SchedulePendingLossyWrites();
 }
 
-bool PrefService::GetBoolean(const std::string& path) const {
+bool PrefService::GetBoolean(base::StringPiece path) const {
   return GetValue(path).GetBool();
 }
 
-int PrefService::GetInteger(const std::string& path) const {
+int PrefService::GetInteger(base::StringPiece path) const {
   return GetValue(path).GetInt();
 }
 
-double PrefService::GetDouble(const std::string& path) const {
+double PrefService::GetDouble(base::StringPiece path) const {
   return GetValue(path).GetDouble();
 }
 
-const std::string& PrefService::GetString(const std::string& path) const {
+const std::string& PrefService::GetString(base::StringPiece path) const {
   return GetValue(path).GetString();
 }
 
-base::FilePath PrefService::GetFilePath(const std::string& path) const {
+base::FilePath PrefService::GetFilePath(base::StringPiece path) const {
   const base::Value& value = GetValue(path);
   absl::optional<base::FilePath> result = base::ValueToFilePath(value);
   DCHECK(result);
@@ -312,17 +314,17 @@ bool PrefService::IsUserModifiablePreference(
   return pref && pref->IsUserModifiable();
 }
 
-const base::Value& PrefService::GetValue(const std::string& path) const {
+const base::Value& PrefService::GetValue(base::StringPiece path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return *GetPreferenceValueChecked(path);
 }
 
-const base::Value::Dict& PrefService::GetDict(const std::string& path) const {
+const base::Value::Dict& PrefService::GetDict(base::StringPiece path) const {
   const base::Value& value = GetValue(path);
   return value.GetDict();
 }
 
-const base::Value::List& PrefService::GetList(const std::string& path) const {
+const base::Value::List& PrefService::GetList(base::StringPiece path) const {
   const base::Value& value = GetValue(path);
   return value.GetList();
 }
@@ -659,7 +661,7 @@ bool PrefService::Preference::IsStandaloneBrowserModifiable() const {
 #endif
 
 const base::Value* PrefService::GetPreferenceValue(
-    const std::string& path) const {
+    base::StringPiece path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(battre): This is a check for crbug.com/435208. After analyzing some
@@ -686,7 +688,7 @@ const base::Value* PrefService::GetPreferenceValue(
 }
 
 const base::Value* PrefService::GetPreferenceValueChecked(
-    const std::string& path) const {
+    base::StringPiece path) const {
   const base::Value* value = GetPreferenceValue(path);
   DCHECK(value) << "Trying to read an unregistered pref: " << path;
   return value;

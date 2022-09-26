@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/prefs_export.h"
 
@@ -49,7 +50,7 @@ class COMPONENTS_PREFS_EXPORT PrefStore : public base::RefCounted<PrefStore> {
   // Get the value for a given preference |key| and stores it in |*result|.
   // |*result| is only modified if the return value is true and if |result|
   // is not NULL. Ownership of the |*result| value remains with the PrefStore.
-  virtual bool GetValue(const std::string& key,
+  virtual bool GetValue(base::StringPiece key,
                         const base::Value** result) const = 0;
 
   // Get all the values.

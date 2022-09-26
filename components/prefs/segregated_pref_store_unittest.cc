@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/prefs/persistent_pref_store.h"
+#include "components/prefs/pref_name_set.h"
 #include "components/prefs/pref_store_observer_mock.h"
 #include "components/prefs/testing_pref_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,7 +105,7 @@ class SegregatedPrefStoreTest
   scoped_refptr<TestingPrefStore> selected_store_;
   scoped_refptr<SegregatedPrefStore> segregated_store_;
 
-  std::set<std::string> selected_pref_names_;
+  PrefNameSet selected_pref_names_;
   MockReadErrorDelegate::Data read_error_delegate_data_;
 
  private:

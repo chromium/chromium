@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
+#include "components/prefs/pref_name_set.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/preferences/tracked/dictionary_hash_store_contents.h"
 #include "services/preferences/tracked/hash_store_contents.h"
@@ -93,8 +94,8 @@ class TrackedPreferencesMigrationTest : public testing::Test {
   void SetUp() override { Reset(); }
 
   void Reset() {
-    std::set<std::string> unprotected_pref_names;
-    std::set<std::string> protected_pref_names;
+    PrefNameSet unprotected_pref_names;
+    PrefNameSet protected_pref_names;
     unprotected_pref_names.insert(kUnprotectedPref);
     unprotected_pref_names.insert(kPreviouslyProtectedPref);
     protected_pref_names.insert(kProtectedPref);

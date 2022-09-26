@@ -5,9 +5,11 @@
 #include "components/prefs/testing_pref_store.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,7 +23,7 @@ TestingPrefStore::TestingPrefStore()
       init_complete_(false),
       committed_(true) {}
 
-bool TestingPrefStore::GetValue(const std::string& key,
+bool TestingPrefStore::GetValue(base::StringPiece key,
                                 const base::Value** value) const {
   return prefs_.GetValue(key, value);
 }

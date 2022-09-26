@@ -6,10 +6,10 @@
 #define COMPONENTS_POLICY_CORE_BROWSER_CONFIGURATION_POLICY_PREF_STORE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"
@@ -47,7 +47,7 @@ class POLICY_EXPORT ConfigurationPolicyPrefStore
   void RemoveObserver(PrefStore::Observer* observer) override;
   bool HasObservers() const override;
   bool IsInitializationComplete() const override;
-  bool GetValue(const std::string& key,
+  bool GetValue(base::StringPiece key,
                 const base::Value** result) const override;
   base::Value::Dict GetValues() const override;
 

@@ -6,11 +6,13 @@
 
 #include <memory>
 #include <ostream>
+#include <string>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/in_memory_pref_store.h"
 
@@ -74,7 +76,7 @@ bool OverlayUserPrefStore::IsInitializationComplete() const {
          ephemeral_user_pref_store_->IsInitializationComplete();
 }
 
-bool OverlayUserPrefStore::GetValue(const std::string& key,
+bool OverlayUserPrefStore::GetValue(base::StringPiece key,
                                     const base::Value** result) const {
   // If the |key| shall NOT be stored in the ephemeral store, there must not
   // be an entry.
@@ -250,6 +252,6 @@ void OverlayUserPrefStore::OnInitializationCompleted(bool ephemeral,
 }
 
 bool OverlayUserPrefStore::ShallBeStoredInPersistent(
-    const std::string& key) const {
+    base::StringPiece key) const {
   return persistent_names_set_.find(key) != persistent_names_set_.end();
 }

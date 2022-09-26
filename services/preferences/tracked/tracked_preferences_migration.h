@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "components/prefs/pref_name_set.h"
 #include "services/preferences/tracked/pref_hash_store.h"
 
 class InterceptablePrefFilter;
@@ -28,8 +29,8 @@ class PrefHashStore;
 // resilient to a failed cleanup (it will simply try again in the next Chrome
 // run).
 void SetupTrackedPreferencesMigration(
-    const std::set<std::string>& unprotected_pref_names,
-    const std::set<std::string>& protected_pref_names,
+    const PrefNameSet& unprotected_pref_names,
+    const PrefNameSet& protected_pref_names,
     const base::RepeatingCallback<void(const std::string& key)>&
         unprotected_store_cleaner,
     const base::RepeatingCallback<void(const std::string& key)>&

@@ -5,8 +5,10 @@
 #include "components/prefs/pref_value_store.h"
 
 #include <stddef.h>
+#include <string>
 
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "components/prefs/pref_notifier.h"
 #include "components/prefs/pref_observer.h"
 
@@ -104,7 +106,7 @@ std::unique_ptr<PrefValueStore> PrefValueStore::CloneAndSpecialize(
       recommended_prefs, default_prefs, pref_notifier);
 }
 
-bool PrefValueStore::GetValue(const std::string& name,
+bool PrefValueStore::GetValue(base::StringPiece name,
                               base::Value::Type type,
                               const base::Value** out_value) const {
   // Check the |PrefStore|s in order of their priority from highest to lowest,
@@ -242,7 +244,7 @@ PrefValueStore::PrefStoreType PrefValueStore::ControllingPrefStoreForPref(
   return INVALID_STORE;
 }
 
-bool PrefValueStore::GetValueFromStore(const std::string& name,
+bool PrefValueStore::GetValueFromStore(base::StringPiece name,
                                        PrefValueStore::PrefStoreType store_type,
                                        const base::Value** out_value) const {
   // Only return true if we find a value and it is the correct type, so stale
@@ -258,7 +260,7 @@ bool PrefValueStore::GetValueFromStore(const std::string& name,
 }
 
 bool PrefValueStore::GetValueFromStoreWithType(
-    const std::string& name,
+    base::StringPiece name,
     base::Value::Type type,
     PrefStoreType store,
     const base::Value** out_value) const {

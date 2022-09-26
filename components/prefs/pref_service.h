@@ -24,6 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -236,25 +237,25 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // If the path is valid and the value at the end of the path matches the type
   // specified, it will return the specified value.  Otherwise, the default
   // value (set when the pref was registered) will be returned.
-  bool GetBoolean(const std::string& path) const;
-  int GetInteger(const std::string& path) const;
-  double GetDouble(const std::string& path) const;
-  const std::string& GetString(const std::string& path) const;
-  base::FilePath GetFilePath(const std::string& path) const;
+  bool GetBoolean(base::StringPiece path) const;
+  int GetInteger(base::StringPiece path) const;
+  double GetDouble(base::StringPiece path) const;
+  const std::string& GetString(base::StringPiece path) const;
+  base::FilePath GetFilePath(base::StringPiece path) const;
 
   // Returns the branch if it exists, or the registered default value otherwise.
   // `path` must point to a registered preference (DCHECK).
-  const base::Value& GetValue(const std::string& path) const;
+  const base::Value& GetValue(base::StringPiece path) const;
 
   // Returns the branch if it exists, or the registered default value otherwise.
   // `path` must point to a registered preference whose value and registered
   // default are of type `base::Value::Type::DICT (DCHECK).
-  const base::Value::Dict& GetDict(const std::string& path) const;
+  const base::Value::Dict& GetDict(base::StringPiece path) const;
 
   // Returns the branch if it exists, or the registered default value otherwise.
   // `path` must point to a registered preference whose value and registered
   // default are of type `base::Value::Type::LIST (DCHECK).
-  const base::Value::List& GetList(const std::string& path) const;
+  const base::Value::List& GetList(base::StringPiece path) const;
 
   // Removes a user pref and restores the pref to its default value.
   void ClearPref(const std::string& path);
@@ -505,8 +506,8 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // not need to find or create a Preference object to get the
   // value (GetValue() calls back though the preference service to
   // actually get the value.).
-  const base::Value* GetPreferenceValue(const std::string& path) const;
-  const base::Value* GetPreferenceValueChecked(const std::string& path) const;
+  const base::Value* GetPreferenceValue(base::StringPiece path) const;
+  const base::Value* GetPreferenceValueChecked(base::StringPiece path) const;
 
   const scoped_refptr<PrefRegistry> pref_registry_;
 

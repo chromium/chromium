@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
+#include "components/prefs/pref_name_set.h"
 #include "components/prefs/segregated_pref_store.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
@@ -72,8 +73,8 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
       unprotected_configuration;
   std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>
       protected_configuration;
-  std::set<std::string> protected_pref_names;
-  std::set<std::string> unprotected_pref_names;
+  PrefNameSet protected_pref_names;
+  PrefNameSet unprotected_pref_names;
   for (auto& metadata : config->tracking_configuration) {
     if (metadata->enforcement_level > prefs::mojom::TrackedPreferenceMetadata::
                                           EnforcementLevel::NO_ENFORCEMENT) {
