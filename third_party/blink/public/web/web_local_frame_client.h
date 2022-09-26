@@ -623,16 +623,9 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Notifies the embedder about an accessibility event on a WebAXObject.
   virtual void PostAccessibilityEvent(const ui::AXEvent& event) {}
 
-  // Notifies the embedder that a WebAXObject is dirty and its state needs
-  // to be serialized again. If |subtree| is true, the entire subtree is
-  // dirty.
-  // |event_from| and |event_from_action| annotate this node change with info
-  // about the event which caused the change. For example, an event from a user
-  // or an event from a focus action.
-  virtual void MarkWebAXObjectDirty(const WebAXObject&,
-                                    bool subtree,
-                                    ax::mojom::EventFrom event_from,
-                                    ax::mojom::Action event_from_action) {}
+  // Notifies tests that a WebAXObject is dirty and its state needs
+  // to be serialized again.
+  virtual void NotifyWebAXObjectMarkedDirty(const WebAXObject&) {}
 
   // Audio Output Devices API --------------------------------------------
 

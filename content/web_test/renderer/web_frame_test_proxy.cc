@@ -676,11 +676,8 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
   RenderFrameImpl::PostAccessibilityEvent(event);
 }
 
-void WebFrameTestProxy::MarkWebAXObjectDirty(
-    const blink::WebAXObject& object,
-    bool subtree,
-    ax::mojom::EventFrom event_from,
-    ax::mojom::Action event_from_action) {
+void WebFrameTestProxy::NotifyWebAXObjectMarkedDirty(
+    const blink::WebAXObject& object) {
   HandleWebAccessibilityEvent(object, "MarkDirty",
                               std::vector<ui::AXEventIntent>());
 
@@ -690,8 +687,7 @@ void WebFrameTestProxy::MarkWebAXObjectDirty(
   if (object.IsDetached())
     return;  // |this| is invalid.
 
-  RenderFrameImpl::MarkWebAXObjectDirty(object, subtree, event_from,
-                                        event_from_action);
+  RenderFrameImpl::NotifyWebAXObjectMarkedDirty(object);
 }
 
 void WebFrameTestProxy::HandleWebAccessibilityEvent(

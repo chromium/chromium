@@ -491,7 +491,7 @@ void RenderAccessibilityImpl::Reset(int32_t reset_token) {
   if (ax_context_)
     ax_context_->ResetSerializer();
   pending_events_.clear();
-  dirty_objects_.clear();
+  ax_context_->ClearDirtyObjects();
 
   const WebDocument& document = GetMainDocument();
   if (!document.IsNull()) {
@@ -514,11 +514,15 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
     ax::mojom::Event event_type) {
   DCHECK(obj.AccessibilityIsIncludedInTree())
       << "Cannot serialize unincluded object: " << obj.ToString(true).Utf8();
-  EnqueueDirtyObject(obj, event_from, event_from_action, event_intents,
-                     dirty_objects_.end());
 
-  if (subtree)
-    obj.InvalidateSerializerSubtree();
+  obj.MarkDirty(subtree, event_from, event_from_action, event_intents);
+
+  NotifyWebAXObjectMarkedDirty(obj, event_type);
+}
+
+void RenderAccessibilityImpl::NotifyWebAXObjectMarkedDirty(
+  const blink::WebAXObject& obj,
+  ax::mojom::Event event_type) {
 
   // If the event occurred on the focused object, process immediately.
   // kLayoutComplete is an exception because it always fires on the root
@@ -646,23 +650,6 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
       NOTREACHED() << "Event not expected from Blink: " << event.event_type;
       return false;
   }
-}
-
-std::list<std::unique_ptr<AXDirtyObject>>::iterator
-RenderAccessibilityImpl::EnqueueDirtyObject(
-    const blink::WebAXObject& obj,
-    ax::mojom::EventFrom event_from,
-    ax::mojom::Action event_from_action,
-    std::vector<ui::AXEventIntent> event_intents,
-    std::list<std::unique_ptr<AXDirtyObject>>::iterator insertion_point) {
-  DCHECK(!obj.IsDetached());
-  AXDirtyObject* dirty_object = new AXDirtyObject();
-  dirty_object->obj = obj;
-  dirty_object->event_from = event_from;
-  dirty_object->event_from_action = event_from_action;
-  dirty_object->event_intents = event_intents;
-  return std::next(dirty_objects_.insert(
-      insertion_point, base::WrapUnique<AXDirtyObject>(dirty_object)));
 }
 
 int RenderAccessibilityImpl::GetDeferredEventsDelay() {
@@ -1052,72 +1039,16 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
   // time to inject a stylesheet for image annotation debugging.
   bool had_load_complete_messages = false;
 
-  // Dirty objects can be added as a result of serialization. For example,
-  // as children are iterated during depth first traversal in the serializer,
-  // the children sometimes need to be created. The initialization of these
-  // new children can lead to the discovery of parenting changes via
-  // aria-owns, or name changes on an ancestor that collects its name its from
-  // contents. In some cases this has led to an infinite loop, as the
-  // serialization of new dirty objects keeps adding new dirty objects to
-  // consider. The infinite loop is avoided by tracking the number of dirty
-  // objects that can be serialized from the loop, which is the initial
-  // number of dirty objects + kMaxExtraDirtyObjectsToSerialize.
-  // Allowing kMaxExtraDirtyObjectsToSerialize ensures that most important
-  // additional related changes occur at the same time, and that dump event
-  // tests have consistent results (the results change when dirty objects are
-  // processed in separate batches).
-  constexpr int kMaxExtraDirtyObjectsToSerialize = 100;
-  size_t num_remaining_objects_to_serialize =
-      dirty_objects_.size() + kMaxExtraDirtyObjectsToSerialize;
-
   // Keep track of IDs serialized so we don't serialize the same node twice.
   std::set<int32_t> already_serialized_ids;
 
   // Serialize all dirty objects in the list at this point in time, stopping
   // either when the queue is empty, or the number of remaining objects to
   // serialize has been reached.
-  while (!dirty_objects_.empty() && --num_remaining_objects_to_serialize > 0) {
-    std::unique_ptr<AXDirtyObject> current_dirty_object =
-        std::move(dirty_objects_.front());
-    dirty_objects_.pop_front();
-    auto obj = current_dirty_object->obj;
+  ax_context_->SerializeDirtyObjects(updates, already_serialized_ids,
+    !!plugin_tree_source_);
 
-    // Cannot serialize detached or unincluded object.
-    // Dirty objects can be added using MarkWebAXObjectDirty(obj) from other
-    // parts of the code as well, so we need to ensure the object still exists
-    // and is still included in the tree. Only included objects are marked
-    // dirty, but this can happen if the object becomes unincluded after it was
-    // originally marked dirty, in which case a children changed will also be
-    // fired on the included ancestor. The children changed event on the
-    // ancestor means that attempting to serialize this unincluded object is not
-    // necessary.
-    if (!obj.AccessibilityIsIncludedInTree())
-      continue;
-
-    DCHECK(obj.AxID() != ui::kInvalidAXNodeID);
-
-    // Further down this loop, we update |already_serialized_ids| with all IDs
-    // actually serialized. However, add this object's ID first because there's
-    // a chance that we try to serialize this object but the serializer ends up
-    // skipping it. That's probably a Blink bug if that happens, but still we
-    // need to make sure we don't keep trying the same object over again.
-    if (!already_serialized_ids.insert(obj.AxID()).second)
-      continue;  // No insertion, was already present.
-
-    ui::AXTreeUpdate update;
-    update.event_from = current_dirty_object->event_from;
-    update.event_from_action = current_dirty_object->event_from_action;
-    update.event_intents = current_dirty_object->event_intents;
-    // If there's a plugin, force the tree data to be generated in every
-    // message so the plugin can merge its own tree data changes.
-    if (plugin_tree_source_)
-      update.has_tree_data = true;
-
-    if (!obj.SerializeChanges(&update)) {
-      VLOG(1) << "Failed to serialize one accessibility event.";
-      continue;
-    }
-
+  for (auto& update : updates) {
     if (update.node_id_to_clear > 0)
       invalidate_plugin_subtree = true;
 
@@ -1125,14 +1056,6 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
       AddPluginTreeToUpdate(&update, invalidate_plugin_subtree);
 
     AddImageAnnotations(document, update.nodes);
-
-    DCHECK_GT(update.nodes.size(), 0U);
-    for (auto& node : update.nodes) {
-      DCHECK(node.id != ui::kInvalidAXNodeID);
-      already_serialized_ids.insert(node.id);
-    }
-
-    updates.push_back(update);
   }
 
   // Loop over each event and generate an updated event message.
@@ -1237,7 +1160,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     }
   }
 
-  if (pending_events_.empty() && dirty_objects_.empty()) {
+  if (pending_events_.empty() && !ax_context_->HasDirtyObjects()) {
     // By default, assume the next batch does not have interactive events, and
     // defer so that the batch of events is larger. If any interactive events
     // come in, the batch will be processed immediately.
@@ -1621,9 +1544,5 @@ void RenderAccessibilityImpl::ResetUKMData() {
   ukm_timer_ = std::make_unique<base::ElapsedTimer>();
   last_ukm_source_id_ = ukm::kInvalidSourceId;
 }
-
-AXDirtyObject::AXDirtyObject() = default;
-AXDirtyObject::AXDirtyObject(const AXDirtyObject& other) = default;
-AXDirtyObject::~AXDirtyObject() = default;
 
 }  // namespace content

@@ -3659,9 +3659,11 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
   WebLocalFrameImpl* webframe = WebLocalFrameImpl::FromFrame(
       obj->GetDocument()->AXObjectCacheOwner().GetFrame());
   if (webframe && webframe->Client()) {
-    webframe->Client()->MarkWebAXObjectDirty(WebAXObject(obj), subtree,
-                                             event_from, event_from_action);
+    webframe->Client()->NotifyWebAXObjectMarkedDirty(WebAXObject(obj));
   }
+
+  std::vector<ui::AXEventIntent> event_intents;
+  MarkAXObjectDirty(obj, subtree, event_from, event_from_action, event_intents);
 
   obj->UpdateCachedAttributeValuesIfNeeded(true);
   for (auto agent : agents_)
@@ -3911,6 +3913,100 @@ bool AXObjectCacheImpl::SerializeEntireTree(bool exclude_offscreen,
   bool result = serializer.SerializeChanges(tree_source.GetRoot(), response);
   tree_source.Thaw();
   return result;
+}
+
+void AXObjectCacheImpl::MarkAXObjectDirty(
+    AXObject* obj,
+    bool subtree,
+    ax::mojom::blink::EventFrom event_from,
+    ax::mojom::blink::Action event_from_action,
+    const std::vector<ui::AXEventIntent>& event_intents) {
+  dirty_objects_.push_back(
+      AXDirtyObject::Create(obj, event_from, event_from_action, event_intents));
+
+  if (subtree)
+    InvalidateSerializerSubtree(*obj);
+}
+
+void AXObjectCacheImpl::SerializeDirtyObjects(
+    std::vector<ui::AXTreeUpdate>& updates,
+    std::set<int32_t>& already_serialized_ids,
+    bool has_plugin_tree_source) {
+  // Dirty objects can be added as a result of serialization. For example,
+  // as children are iterated during depth first traversal in the serializer,
+  // the children sometimes need to be created. The initialization of these
+  // new children can lead to the discovery of parenting changes via
+  // aria-owns, or name changes on an ancestor that collects its name its from
+  // contents. In some cases this has led to an infinite loop, as the
+  // serialization of new dirty objects keeps adding new dirty objects to
+  // consider. The infinite loop is avoided by tracking the number of dirty
+  // objects that can be serialized from the loop, which is the initial
+  // number of dirty objects + kMaxExtraDirtyObjectsToSerialize.
+  // Allowing kMaxExtraDirtyObjectsToSerialize ensures that most important
+  // additional related changes occur at the same time, and that dump event
+  // tests have consistent results (the results change when dirty objects are
+  // processed in separate batches).
+  constexpr int kMaxExtraDirtyObjectsToSerialize = 100;
+
+  size_t num_remaining_objects_to_serialize =
+      dirty_objects_.size() + kMaxExtraDirtyObjectsToSerialize;
+
+  UpdateLifecycleIfNeeded();
+
+  while (!dirty_objects_.empty() && --num_remaining_objects_to_serialize > 0) {
+    AXDirtyObject* current_dirty_object = std::move(dirty_objects_.front());
+    dirty_objects_.pop_front();
+    AXObject* obj = current_dirty_object->obj;
+
+    // Dirty objects can be added using MarkWebAXObjectDirty(obj) from other
+    // parts of the code as well, so we need to ensure the object still
+    // exists.
+    if (!obj || obj->IsDetached())
+      continue;
+
+    // Cannot serialize unincluded object.
+    // Only included objects are marked dirty, but this can happen if the
+    // object becomes unincluded after it was originally marked dirty, in which
+    // cas a children changed will also be fired on the included ancestor. The
+    // children changed event on the ancestor means that attempting to
+    // serialize this unincluded object is not necessary.
+    if (!obj->AccessibilityIsIncludedInTree())
+      continue;
+
+    DCHECK(obj->AXObjectID());
+
+    // Further down this loop, we update |already_serialized_ids| with all
+    // IDs actually serialized. However, add this object's ID first because
+    // there's a chance that we try to serialize this object but the serializer
+    // ends up skipping it. That's probably a Blink bug if that happens, but
+    // still we need to make sure we don't keep trying the same object over
+    // again.
+    if (!already_serialized_ids.insert(obj->AXObjectID()).second)
+      continue;  // No insertion, was already present.
+
+    ui::AXTreeUpdate update;
+    update.event_from = current_dirty_object->event_from;
+    update.event_from_action = current_dirty_object->event_from_action;
+    update.event_intents = current_dirty_object->event_intents;
+
+    // If there's a plugin, force the tree data to be generated in every
+    // message so the plugin can merge its own tree data changes.
+    if (has_plugin_tree_source)
+      update.has_tree_data = true;
+
+    if (!SerializeChanges(*obj, &update)) {
+      VLOG(1) << "Failed to serialize one accessibility event.";
+      continue;
+    }
+
+    DCHECK_GT(update.nodes.size(), 0U);
+    for (auto& node : update.nodes) {
+      DCHECK(node.id);
+      already_serialized_ids.insert(node.id);
+    }
+
+    updates.push_back(update);
+  }
 }
 
 mojo::Remote<blink::mojom::blink::RenderAccessibilityHost>&
@@ -4309,6 +4405,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(nodes_with_pending_children_changed_);
   visitor->Trace(nodes_with_spelling_or_grammar_markers_);
   visitor->Trace(ax_tree_source_);
+  visitor->Trace(dirty_objects_);
   AXObjectCache::Trace(visitor);
 }
 

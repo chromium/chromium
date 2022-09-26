@@ -54,16 +54,6 @@ class RenderAccessibilityManager;
 
 using BlinkAXTreeSerializer = ui::AXTreeSerializer<blink::WebAXObject>;
 
-struct AXDirtyObject {
-  AXDirtyObject();
-  AXDirtyObject(const AXDirtyObject& other);
-  ~AXDirtyObject();
-  blink::WebAXObject obj;
-  ax::mojom::EventFrom event_from;
-  ax::mojom::Action event_from_action;
-  std::vector<ui::AXEventIntent> event_intents;
-};
-
 // The browser process implements native accessibility APIs, allowing assistive
 // technology (e.g., screen readers, magnifiers) to access and control the web
 // contents with high-level APIs. These APIs are also used by automation tools,
@@ -129,6 +119,9 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
       std::vector<ui::AXEventIntent> event_intents = {},
       ax::mojom::Event event_type = ax::mojom::Event::kNone);
 
+  void NotifyWebAXObjectMarkedDirty(const blink::WebAXObject& obj,
+    ax::mojom::Event event_type = ax::mojom::Event::kNone);
+
   // Returns the main top-level document for this page, or NULL if there's
   // no view or frame.
   blink::WebDocument GetMainDocument();
@@ -174,15 +167,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
     // Events are not scheduled and we are not waiting for an ack.
     kNotWaiting
   };
-
-  // Add an AXDirtyObject to the dirty_objects_ queue.
-  // Returns an iterator pointing just after the newly inserted object.
-  std::list<std::unique_ptr<AXDirtyObject>>::iterator EnqueueDirtyObject(
-      const blink::WebAXObject& obj,
-      ax::mojom::EventFrom event_from,
-      ax::mojom::Action event_from_action,
-      std::vector<ui::AXEventIntent> event_intents,
-      std::list<std::unique_ptr<AXDirtyObject>>::iterator insertion_point);
 
   // Callback that will be called from the browser upon handling the message
   // previously sent to it via SendPendingAccessibilityEvents().
@@ -278,11 +262,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Events from Blink are collected until they are ready to be
   // sent to the browser.
   std::vector<ui::AXEvent> pending_events_;
-
-  // Objects that need to be re-serialized, the next time
-  // we send an event bundle to the browser - but don't specifically need
-  // an event fired.
-  std::list<std::unique_ptr<AXDirtyObject>> dirty_objects_;
 
   using PluginAXTreeSerializer = ui::AXTreeSerializer<const ui::AXNode*>;
   std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;

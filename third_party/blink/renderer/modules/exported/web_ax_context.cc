@@ -79,4 +79,26 @@ void WebAXContext::MarkAllImageAXObjectsDirty(
   private_->GetAXObjectCache().MarkAllImageAXObjectsDirty(event_from_action);
 }
 
+void WebAXContext::SerializeDirtyObjects(
+    std::vector<ui::AXTreeUpdate>& updates,
+    std::set<int32_t>& already_serialized_ids,
+    bool has_plugin_tree_source) {
+  if (!private_->HasActiveDocument())
+    return;
+  private_->GetAXObjectCache().SerializeDirtyObjects(
+      updates, already_serialized_ids, has_plugin_tree_source);
+}
+
+void WebAXContext::ClearDirtyObjects() {
+  if (!private_->HasActiveDocument())
+    return;
+  private_->GetAXObjectCache().ClearDirtyObjects();
+}
+
+bool WebAXContext::HasDirtyObjects() {
+  if (!private_->HasActiveDocument())
+    return true;
+  return private_->GetAXObjectCache().HasDirtyObjects();
+}
+
 }  // namespace blink

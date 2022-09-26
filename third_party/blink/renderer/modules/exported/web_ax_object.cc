@@ -223,6 +223,17 @@ bool WebAXObject::SerializeChanges(ui::AXTreeUpdate* update) {
   return private_->AXObjectCache().SerializeChanges(*private_, update);
 }
 
+void WebAXObject::MarkDirty(
+    bool subtree,
+    ax::mojom::blink::EventFrom event_from,
+    ax::mojom::blink::Action event_from_action,
+    std::vector<ui::AXEventIntent> event_intents) const {
+  if (IsDetached())
+    return;
+  private_->AXObjectCache().MarkAXObjectDirty(
+      private_.Get(), subtree, event_from, event_from_action, event_intents);
+}
+
 bool WebAXObject::IsInClientTree() {
   if (IsDetached())
     return false;

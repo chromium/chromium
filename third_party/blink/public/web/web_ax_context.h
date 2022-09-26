@@ -56,6 +56,20 @@ class BLINK_EXPORT WebAXContext {
   void MarkAllImageAXObjectsDirty(
       ax::mojom::Action event_from_action);
 
+  // Serialize all AXObjects that are dirty (have changed their state since
+  // the last serialization) into |updates|. (Heuristically) skips
+  // serializing dirty nodes whose AX id is in |already_serialized_ids|, and
+  // adds serialized dirty objects into |already_serialized_ids|.
+  void SerializeDirtyObjects(std::vector<ui::AXTreeUpdate>& updates,
+                             std::set<int32_t>& already_serialized_ids,
+                             bool has_plugin_tree_source);
+
+  // Clears out the list of dirty AXObjects.
+  void ClearDirtyObjects();
+
+  // Returns true if any AXObject is dirty.
+  bool HasDirtyObjects();
+
  private:
   std::unique_ptr<AXContext> private_;
 };
