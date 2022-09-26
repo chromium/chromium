@@ -71,12 +71,6 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
   // content::WebContentsObserver:
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void PrimaryPageChanged(content::Page& page) override;
-
-  // content::WebContentsDelegate:
-  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
-                         const content::ContextMenuParams& params) override;
-
-  // content::WebContentsObserver:
   void DidOpenRequestedURL(content::WebContents* new_contents,
                            content::RenderFrameHost* source_render_frame_host,
                            const GURL& url,
@@ -85,6 +79,10 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
+
+  // content::WebContentsDelegate:
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override;
 
   raw_ptr<BrowserView> browser_view_;
   raw_ptr<views::Separator> separator_;

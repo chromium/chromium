@@ -66,8 +66,6 @@ const char DefaultSearchManager::kImageURLPostParams[] =
 const char DefaultSearchManager::kSideSearchParam[] = "side_search_param";
 const char DefaultSearchManager::kSideImageSearchParam[] =
     "side_image_search_param";
-const char DefaultSearchManager::kImageSearchFaviconUrl[] =
-    "image_search_favicon_url";
 const char DefaultSearchManager::kImageSearchBrandingLabel[] =
     "image_search_branding_label";
 

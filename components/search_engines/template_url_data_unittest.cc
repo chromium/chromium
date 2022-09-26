@@ -16,8 +16,8 @@ TEST(TemplateURLDataTest, Trim) {
       base::StringPiece(), base::StringPiece(), base::StringPiece(),
       base::StringPiece(), base::StringPiece(), base::StringPiece(),
       base::StringPiece(), base::StringPiece(), base::StringPiece(),
-      base::StringPiece(), base::StringPiece(), base::StringPiece16(),
-      base::ListValue(), false, false, 0);
+      base::StringPiece(), base::StringPiece16(), base::ListValue(), false,
+      false, 0);
 
   EXPECT_EQ(u"shortname", data.short_name());
   EXPECT_EQ(u"keyword", data.keyword());
