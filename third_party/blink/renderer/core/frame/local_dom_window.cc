@@ -38,7 +38,6 @@
 #include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/frame/event_page_show_persisted.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
@@ -838,15 +837,6 @@ void LocalDOMWindow::EnqueueNonPersistedPageshowEvent() {
                                                false /* persisted */),
                   document_.Get());
   }
-
-  // This UMA is recorded regardless of whether the event will be actually
-  // dispatched or not. It should only be possible for an enqueued page-show
-  // event to skip dispatch when the renderer exits. If this is not the case or
-  // there are other cases, we need to fix this code to only record the metric
-  // once the event is dispatched.
-  if (GetFrame() && GetFrame()->IsOutermostMainFrame()) {
-    RecordUMAEventPageShowPersisted(EventPageShowPersisted::kNoInRenderer);
-  }
 }
 
 void LocalDOMWindow::DispatchPersistedPageshowEvent(
@@ -856,10 +846,6 @@ void LocalDOMWindow::DispatchPersistedPageshowEvent(
   // |navigation_start| time of the back navigation.
   DispatchEvent(*PageTransitionEvent::CreatePersistedPageshow(navigation_start),
                 document_.Get());
-
-  if (GetFrame() && GetFrame()->IsOutermostMainFrame()) {
-    RecordUMAEventPageShowPersisted(EventPageShowPersisted::kYesInRenderer);
-  }
 }
 
 void LocalDOMWindow::DispatchPagehideEvent(

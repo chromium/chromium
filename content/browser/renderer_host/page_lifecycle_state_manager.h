@@ -44,12 +44,9 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   void SetIsFrozen(bool frozen);
   void SetFrameTreeVisibility(
       blink::mojom::PageVisibilityState visibility_state);
-  // TODO(https://crbug.com/1234634): Remove
-  // restoring_main_frame_from_back_forward_cache.
   void SetIsInBackForwardCache(
       bool is_in_back_forward_cache,
-      blink::mojom::PageRestoreParamsPtr page_restore_params,
-      bool restoring_main_frame_from_back_forward_cache);
+      blink::mojom::PageRestoreParamsPtr page_restore_params);
   bool IsInBackForwardCache() const { return is_in_back_forward_cache_; }
 
   // Called when we're committing main-frame same-site navigations where we did
@@ -88,20 +85,12 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   void SetDelegateForTesting(TestDelegate* test_delegate_);
 
-  // TODO(https://crbug.com/1234634): Remove this.
-  absl::optional<base::Time> persisted_pageshow_timestamp_bug_1234634() {
-    return persisted_pageshow_timestamp_bug_1234634_;
-  }
-
  private:
   // Send mojo message to renderer if the effective (page) lifecycle state has
   // changed.
-  // TODO(https://crbug.com/1234634): Remove
-  // restoring_main_frame_from_back_forward_cache.
   void SendUpdatesToRendererIfNeeded(
       blink::mojom::PageRestoreParamsPtr page_restore_params,
-      base::OnceClosure done_cb,
-      bool restoring_main_frame_from_back_forward_cache);
+      base::OnceClosure done_cb);
 
   void OnPageLifecycleChangedAck(
       blink::mojom::PageLifecycleStatePtr acknowledged_state,
@@ -142,11 +131,6 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   base::OneShotTimer back_forward_cache_timeout_monitor_;
 
   raw_ptr<TestDelegate> test_delegate_{nullptr};
-
-  // TODO(https://crbug.com/1234634): Remove this.
-  // We set this when we send an updated state that should result in a pageshow
-  // with persisted=true. It may be set multiple times.
-  absl::optional<base::Time> persisted_pageshow_timestamp_bug_1234634_;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<PageLifecycleStateManager> weak_ptr_factory_{this};

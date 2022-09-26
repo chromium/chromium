@@ -347,19 +347,6 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   TRACE_EVENT_INSTANT("navigation", "~RenderViewHostImpl()",
                       ChromeTrackEvent::kRenderViewHost, *this);
 
-  // TODO(https://crbug.com/1234634): Remove this.
-  // If the view is destroyed while we were are still waiting for an ack,
-  // then log how long we have been waiting.
-  if (page_lifecycle_state_manager_->persisted_pageshow_timestamp_bug_1234634()
-          .has_value()) {
-    base::TimeDelta delta =
-        base::Time::Now() - page_lifecycle_state_manager_
-                                ->persisted_pageshow_timestamp_bug_1234634()
-                                .value();
-    base::UmaHistogramMediumTimes("Event.PageShow.Persisted.ViewDestroyed.Time",
-                                  delta);
-  }
-
   PerProcessRenderViewHostSet::GetOrCreateForProcess(GetProcess())->Erase(this);
 
   // Destroy the RenderWidgetHost.
@@ -579,8 +566,7 @@ void RenderViewHostImpl::EnterBackForwardCache() {
   registered_with_frame_tree_ = false;
   is_in_back_forward_cache_ = true;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
-      is_in_back_forward_cache_, /*page_restore_params=*/nullptr,
-      /*restoring_main_frame_from_back_forward_cache=*/false);
+      is_in_back_forward_cache_, /*page_restore_params=*/nullptr);
 }
 
 void RenderViewHostImpl::PrepareToLeaveBackForwardCache(
@@ -590,8 +576,7 @@ void RenderViewHostImpl::PrepareToLeaveBackForwardCache(
 }
 
 void RenderViewHostImpl::LeaveBackForwardCache(
-    blink::mojom::PageRestoreParamsPtr page_restore_params,
-    bool restoring_main_frame_from_back_forward_cache) {
+    blink::mojom::PageRestoreParamsPtr page_restore_params) {
   TRACE_EVENT("navigation", "RenderViewHostImpl::LeaveBackForwardCache",
               ChromeTrackEvent::kRenderViewHost, *this);
   DCHECK(!registered_with_frame_tree_);
@@ -601,8 +586,7 @@ void RenderViewHostImpl::LeaveBackForwardCache(
   registered_with_frame_tree_ = true;
   is_in_back_forward_cache_ = false;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
-      is_in_back_forward_cache_, std::move(page_restore_params),
-      restoring_main_frame_from_back_forward_cache);
+      is_in_back_forward_cache_, std::move(page_restore_params));
 }
 
 void RenderViewHostImpl::ActivatePrerenderedPage(
@@ -763,30 +747,6 @@ void RenderViewHostImpl::ZoomToFindInPageRect(const gfx::Rect& rect_to_zoom) {
 void RenderViewHostImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
-  // TODO(https://crbug.com/1234634): Remove this.
-  // If the renderer has exited while we were are still waiting for a ack,
-  // then log information about the exit.
-  if (page_lifecycle_state_manager_->persisted_pageshow_timestamp_bug_1234634()
-          .has_value()) {
-    base::TimeDelta delta =
-        base::Time::Now() - page_lifecycle_state_manager_
-                                ->persisted_pageshow_timestamp_bug_1234634()
-                                .value();
-    // We want to understand if we are losing pageshows because renderers are
-    // exiting soon after restoring from BFCache. We keep the normal exits
-    // separate from the unexpected.
-    const char* histogram =
-        info.status == base::TERMINATION_STATUS_NORMAL_TERMINATION
-            ? "Event.PageShow.Persisted.Termination.Normal.Time"
-            : "Event.PageShow.Persisted.Termination.Unexpected.Time";
-    base::UmaHistogramMediumTimes(histogram, delta);
-    // We don't record this as an enum because the enum is platform dependent.
-    // Since this is temporary debugging, 20 seems a safe upper limit for the
-    // number of elements.
-    base::UmaHistogramExactLinear("Event.PageShow.Persisted.Termination.Status",
-                                  static_cast<int>(info.status), 20);
-  }
-
   renderer_view_created_ = false;
   GetWidget()->RendererExited();
   delegate_->RenderViewTerminated(this, info.status, info.exit_code);

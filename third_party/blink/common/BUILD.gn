@@ -132,7 +132,6 @@ source_set("common") {
     "features.cc",
     "fenced_frame/fenced_frame_utils.cc",
     "fetch/fetch_api_request_body_mojom_traits.cc",
-    "frame/event_page_show_persisted.cc",
     "frame/frame_ad_evidence.cc",
     "frame/frame_ad_evidence_mojom_traits.cc",
     "frame/frame_policy.cc",

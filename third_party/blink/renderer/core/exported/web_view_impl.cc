@@ -46,11 +46,9 @@
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/frame/event_page_show_persisted.h"
 #include "third_party/blink/public/common/history/session_history_constants.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
-#include "third_party/blink/public/common/page/page_lifecycle_state_updater.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
@@ -2390,15 +2388,26 @@ void WebViewImpl::SetPageLifecycleState(
     mojom::blink::PageRestoreParamsPtr page_restore_params,
     SetPageLifecycleStateCallback callback) {
   TRACE_EVENT0("navigation", "WebViewImpl::SetPageLifecycleState");
-  // TODO(https://crbug.com/1234634): Remove this.
-  if (state->should_dispatch_pageshow_for_debugging) {
-    blink::RecordUMAEventPageShowPersisted(
-        blink::EventPageShowPersisted::kBrowserYesInRenderer);
-  }
   SetPageLifecycleStateInternal(std::move(state),
                                 std::move(page_restore_params));
   // Tell the browser that the lifecycle update was successful.
   std::move(callback).Run();
+}
+
+// Returns true if this state update is for the page being restored from
+// back-forward cache, causing the pageshow event to fire with persisted=true.
+bool IsRestoredFromBackForwardCache(
+    const mojom::blink::PageLifecycleStatePtr& old_state,
+    const mojom::blink::PageLifecycleStatePtr& new_state) {
+  if (!old_state)
+    return false;
+  bool old_state_hidden = old_state->pagehide_dispatch !=
+                          mojom::blink::PagehideDispatch::kNotDispatched;
+  bool new_state_shown = new_state->pagehide_dispatch ==
+                         mojom::blink::PagehideDispatch::kNotDispatched;
+  // It's a pageshow but it can't be the initial pageshow since it was already
+  // hidden. So it must be a back-forward cache restore.
+  return old_state_hidden && new_state_shown;
 }
 
 void WebViewImpl::SetPageLifecycleStateInternal(
@@ -2410,10 +2419,6 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   auto& old_state = page->GetPageLifecycleState();
   TRACE_EVENT2("navigation", "WebViewImpl::SetPageLifecycleStateInternal",
                "old_state", old_state, "new_state", new_state);
-  if (new_state->should_dispatch_pageshow_for_debugging) {
-    blink::RecordUMAEventPageShowPersisted(
-        blink::EventPageShowPersisted::kBrowserYesInRendererWithPage);
-  }
 
   bool storing_in_bfcache = new_state->is_in_back_forward_cache &&
                             !old_state->is_in_back_forward_cache;
@@ -2435,20 +2440,6 @@ void WebViewImpl::SetPageLifecycleStateInternal(
       IsRestoredFromBackForwardCache(old_state, new_state);
   bool eviction_changed =
       new_state->eviction_enabled != old_state->eviction_enabled;
-
-  if (new_state->should_dispatch_pageshow_for_debugging) {
-    if (!dispatching_pageshow) {
-      SCOPED_CRASH_KEY_NUMBER("Bug1234634", "old-pagehide-dispatch",
-                              static_cast<int>(old_state->pagehide_dispatch));
-      SCOPED_CRASH_KEY_NUMBER("Bug1234634", "new-pagehide-dispatch",
-                              static_cast<int>(new_state->pagehide_dispatch));
-      base::debug::DumpWithoutCrashing();
-      NOTREACHED();
-    }
-  }
-  // Reset to false as this object can be reused in same-site main frame
-  // navigations.
-  new_state->should_dispatch_pageshow_for_debugging = false;
 
   if (dispatching_pagehide) {
     RemoveFocusAndTextInputState();

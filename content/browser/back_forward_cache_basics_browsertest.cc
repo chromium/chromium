@@ -14,7 +14,6 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
-#include "third_party/blink/public/common/frame/event_page_show_persisted.h"
 
 // This file contains back/forward-cache tests that test basic functionality,
 // e.g. navigation, different responses and document structures.
@@ -780,13 +779,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
   // At A, a page-show event is recorded for the first loading.
   MatchEventList(rfh_a.get(), ListValueOf("window.pageshow"));
 
-  constexpr char kEventPageShowPersisted[] = "Event.PageShow.Persisted";
-
   content::FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(
-      histogram_tester().GetAllSamples(kEventPageShowPersisted),
-      testing::UnorderedElementsAre(base::Bucket(
-          static_cast<int>(blink::EventPageShowPersisted::kNoInRenderer), 1)));
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -803,10 +796,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
   // At B, a page-show event is recorded for the first loading.
   MatchEventList(rfh_b.get(), ListValueOf("window.pageshow"));
   content::FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(
-      histogram_tester().GetAllSamples(kEventPageShowPersisted),
-      testing::UnorderedElementsAre(base::Bucket(
-          static_cast<int>(blink::EventPageShowPersisted::kNoInRenderer), 2)));
 
   // 3) Go back to A. Confirm that expected events are fired.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -822,51 +811,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
                   "document.freeze", "document.resume",
                   "document.visibilitychange", "window.visibilitychange",
                   "window.pageshow.persisted"));
-
-  content::FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(
-      histogram_tester().GetAllSamples(kEventPageShowPersisted),
-      testing::UnorderedElementsAre(
-          base::Bucket(
-              static_cast<int>(blink::EventPageShowPersisted::kNoInRenderer),
-              2),
-          base::Bucket(
-              static_cast<int>(blink::EventPageShowPersisted::kYesInBrowser),
-              1),
-          base::Bucket(
-              static_cast<int>(blink::EventPageShowPersisted::kYesInRenderer),
-              1),
-          base::Bucket(
-              static_cast<int>(
-                  blink::EventPageShowPersisted::kBrowserYesInRenderer),
-              1),
-          base::Bucket(
-              static_cast<int>(
-                  blink::EventPageShowPersisted::kBrowserYesInRendererWithPage),
-              1),
-          base::Bucket(
-              static_cast<int>(blink::EventPageShowPersisted::kYesInBrowserAck),
-              1),
-          base::Bucket(
-              static_cast<int>(
-                  blink::EventPageShowPersisted::
-                      kYesInBrowser_BackForwardCache_WillCommitNavigationToCachedEntry),
-              1),
-          base::Bucket(
-              static_cast<int>(
-                  blink::EventPageShowPersisted::
-                      kYesInBrowser_BackForwardCache_RestoreEntry_Attempt),
-              1),
-          base::Bucket(
-              static_cast<int>(
-                  blink::EventPageShowPersisted::
-                      kYesInBrowser_BackForwardCache_RestoreEntry_Succeed),
-              1),
-          base::Bucket(
-              static_cast<int>(
-                  blink::EventPageShowPersisted::
-                      kYesInBrowser_RenderFrameHostManager_CommitPending),
-              1)));
 }
 
 // Tests the events are fired for subframes when going back from the cache.
