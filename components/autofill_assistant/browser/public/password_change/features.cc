@@ -12,9 +12,9 @@ namespace features {
 
 // Decides whether leak checks may be performed on saving a manually
 // submitted password in an automated password change flow.
-const base::Feature kAutofillAssistantAPCLeakCheckOnSaveSubmittedPassword{
-    "AutofillAssistantAPCLeakCheckOnSaveSubmittedPassword",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAutofillAssistantAPCLeakCheckOnSaveSubmittedPassword,
+             "AutofillAssistantAPCLeakCheckOnSaveSubmittedPassword",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace password_change
