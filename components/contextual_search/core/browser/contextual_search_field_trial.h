@@ -11,7 +11,7 @@
 
 #include "base/feature_list.h"
 
-extern const base::Feature kContextualSearchDebug;
+BASE_DECLARE_FEATURE(kContextualSearchDebug);
 
 // Manages the Contextual Search field trials for native classes.
 class ContextualSearchFieldTrial {
