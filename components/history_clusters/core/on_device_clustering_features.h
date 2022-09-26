@@ -15,22 +15,22 @@ namespace features {
 // Params & helpers functions
 
 // Enables configuring the on-device clustering backend.
-extern const base::Feature kOnDeviceClustering;
+BASE_DECLARE_FEATURE(kOnDeviceClustering);
 
 // Uses an in-memory cache that stores engagement score.
-extern const base::Feature kUseEngagementScoreCache;
+BASE_DECLARE_FEATURE(kUseEngagementScoreCache);
 
 // Splits clustering task into smaller batches.
-extern const base::Feature kSplitClusteringTasksToSmallerBatches;
+BASE_DECLARE_FEATURE(kSplitClusteringTasksToSmallerBatches);
 
 // Specifies various blocklists for on-device clustering backend.
-extern const base::Feature kOnDeviceClusteringBlocklists;
+BASE_DECLARE_FEATURE(kOnDeviceClusteringBlocklists);
 
 // Specifies how keywords get filtered and added to a cluster.
-extern const base::Feature kOnDeviceClusteringKeywordFiltering;
+BASE_DECLARE_FEATURE(kOnDeviceClusteringKeywordFiltering);
 
 // Specifies how categories get used for filtering.
-extern const base::Feature kOnDeviceClusteringCategoryFiltering;
+BASE_DECLARE_FEATURE(kOnDeviceClusteringCategoryFiltering);
 
 }  // namespace features
 }  // namespace history_clusters

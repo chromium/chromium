@@ -27,51 +27,62 @@ constexpr auto enabled_by_default_desktop_only =
 
 namespace internal {
 
-const base::Feature kJourneys{"Journeys", enabled_by_default_desktop_only};
+BASE_FEATURE(kJourneys, "Journeys", enabled_by_default_desktop_only);
 
-const base::Feature kJourneysLabels{"JourneysLabel",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kJourneysLabels,
+             "JourneysLabel",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kPersistedClusters{"HistoryClustersPersistedClusters",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPersistedClusters,
+             "HistoryClustersPersistedClusters",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kOmniboxAction{"JourneysOmniboxAction",
-                                   enabled_by_default_desktop_only};
+BASE_FEATURE(kOmniboxAction,
+             "JourneysOmniboxAction",
+             enabled_by_default_desktop_only);
 
-const base::Feature kOmniboxHistoryClusterProvider{
-    "JourneysOmniboxHistoryClusterProvider", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOmniboxHistoryClusterProvider,
+             "JourneysOmniboxHistoryClusterProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kNonUserVisibleDebug{"JourneysNonUserVisibleDebug",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNonUserVisibleDebug,
+             "JourneysNonUserVisibleDebug",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kUserVisibleDebug{"JourneysUserVisibleDebug",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUserVisibleDebug,
+             "JourneysUserVisibleDebug",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPersistContextAnnotationsInHistoryDb{
-    "JourneysPersistContextAnnotationsInHistoryDb",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPersistContextAnnotationsInHistoryDb,
+             "JourneysPersistContextAnnotationsInHistoryDb",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kHistoryClustersInternalsPage{
-    "HistoryClustersInternalsPage", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kHistoryClustersInternalsPage,
+             "HistoryClustersInternalsPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kHistoryClustersUseContinueOnShutdown{
-    "HistoryClustersUseContinueOnShutdown", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kHistoryClustersUseContinueOnShutdown,
+             "HistoryClustersUseContinueOnShutdown",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kHistoryClustersKeywordFiltering{
-    "HistoryClustersKeywordFiltering", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kHistoryClustersKeywordFiltering,
+             "HistoryClustersKeywordFiltering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace internal
 
-const base::Feature kJourneysSurveyForHistoryEntrypoint{
-    "JourneysSurveyForHistoryEntrypoint", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kJourneysSurveyForHistoryEntrypoint,
+             "JourneysSurveyForHistoryEntrypoint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>
     kJourneysSurveyForHistoryEntrypointDelay{
         &kJourneysSurveyForHistoryEntrypoint, "survey-delay-duration",
         base::Seconds(6)};
 
-const base::Feature kJourneysSurveyForOmniboxEntrypoint{
-    "JourneysSurveyForOmniboxEntrypoint", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kJourneysSurveyForOmniboxEntrypoint,
+             "JourneysSurveyForOmniboxEntrypoint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>
     kJourneysSurveyForOmniboxEntrypointDelay{

@@ -14,24 +14,29 @@
 namespace history_clusters {
 namespace features {
 
-const base::Feature kOnDeviceClustering{"HistoryClustersOnDeviceClustering",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOnDeviceClustering,
+             "HistoryClustersOnDeviceClustering",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kUseEngagementScoreCache{"JourneysUseEngagementScoreCache",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUseEngagementScoreCache,
+             "JourneysUseEngagementScoreCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSplitClusteringTasksToSmallerBatches{
-    "JourneysSplitClusteringTasksToSmallerBatches",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSplitClusteringTasksToSmallerBatches,
+             "JourneysSplitClusteringTasksToSmallerBatches",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kOnDeviceClusteringBlocklists{
-    "JourneysOnDeviceClusteringBlocklist", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOnDeviceClusteringBlocklists,
+             "JourneysOnDeviceClusteringBlocklist",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kOnDeviceClusteringKeywordFiltering{
-    "JourneysKeywordFiltering", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOnDeviceClusteringKeywordFiltering,
+             "JourneysKeywordFiltering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kOnDeviceClusteringCategoryFiltering{
-    "JourneysCategoryFiltering", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOnDeviceClusteringCategoryFiltering,
+             "JourneysCategoryFiltering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace history_clusters
