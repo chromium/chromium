@@ -52,7 +52,6 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
-#include "base/process/port_provider_mac.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_IOS)
@@ -217,8 +216,10 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
   ThreadPoolInstance* thread_pool_set_before_case_ = nullptr;
 };
 
-// base::Process is not available on iOS
-#if !BUILDFLAG(IS_IOS)
+// iOS: base::Process is not available.
+// macOS: Tests may run at background priority locally (crbug.com/1358639#c6) or
+// on bots (crbug.com/931721#c7).
+#if !BUILDFLAG(IS_APPLE)
 class CheckProcessPriority : public testing::EmptyTestEventListener {
  public:
   CheckProcessPriority() { CHECK(!IsProcessBackgrounded()); }
@@ -230,34 +231,15 @@ class CheckProcessPriority : public testing::EmptyTestEventListener {
     EXPECT_FALSE(IsProcessBackgrounded());
   }
   void OnTestEnd(const testing::TestInfo& test) override {
-#if !BUILDFLAG(IS_MAC)
-    // Flakes are found on Mac OS 10.11. See https://crbug.com/931721#c7.
     EXPECT_FALSE(IsProcessBackgrounded());
-#endif
   }
 
  private:
-#if BUILDFLAG(IS_APPLE)
-  // Returns the calling process's task port, ignoring its argument.
-  class CurrentProcessPortProvider : public PortProvider {
-    mach_port_t TaskForPid(ProcessHandle process) const override {
-      // This PortProvider implementation only works for the current process.
-      CHECK_EQ(process, base::GetCurrentProcessHandle());
-      return mach_task_self();
-    }
-  };
-#endif
-
   bool IsProcessBackgrounded() const {
-#if BUILDFLAG(IS_APPLE)
-    CurrentProcessPortProvider port_provider;
-    return Process::Current().IsProcessBackgrounded(&port_provider);
-#else
     return Process::Current().IsProcessBackgrounded();
-#endif
   }
 };
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_APPLE)
 
 const std::string& GetProfileName() {
   static const NoDestructor<std::string> profile_name([]() {
@@ -646,7 +628,7 @@ void TestSuite::Initialize() {
   if (check_for_leaked_globals_)
     listeners.Append(new CheckForLeakedGlobals);
   if (check_for_thread_and_process_priority_) {
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_APPLE)
     listeners.Append(new CheckProcessPriority);
 #endif
   }
