@@ -1968,6 +1968,31 @@
             ]
         }
     ],
+    "BlinkSchedulerCompositorTQPolicyDuringThreadedScroll": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithLowPriority_20220729",
+                    "params": {
+                        "policy": "low-priority-with-anti-starvation"
+                    },
+                    "enable_features": [
+                        "ThreadedScrollPreventRenderingStarvation"
+                    ]
+                }
+            ]
+        }
+    ],
     "BlinkSchedulerPrioritizeRenderingAfterInput": [
         {
             "platforms": [
