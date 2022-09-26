@@ -7,7 +7,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("../../cr.gni")
 
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/js/cr/ui"
 if (is_chromeos_ash) {

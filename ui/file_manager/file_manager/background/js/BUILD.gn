@@ -6,7 +6,6 @@ import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_type_check.gni")
-import("//ui/webui/resources/js/cr.gni")
 
 related_apps = [ "//ui/file_manager/file_manager/*" ]
 

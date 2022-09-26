@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//ui/webui/resources/js/cr.gni")
 
 group("js_modules") {
   deps = [
