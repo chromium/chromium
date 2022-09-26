@@ -126,18 +126,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Apps is an OS type on Ash if SyncSettingsCategorization is enabled.
-  if (ash::features::IsSyncSettingsCategorizationEnabled()) {
-    ASSERT_TRUE(
-        settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
-    EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
+  ASSERT_TRUE(
+      settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
+  EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
 
-    settings->SetSelectedOsTypes(false, UserSelectableOsTypeSet());
-    ASSERT_FALSE(
-        settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
-    EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  settings->SetSelectedOsTypes(false, UserSelectableOsTypeSet());
+  ASSERT_FALSE(
+      settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
+  EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
+#else  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ASSERT_TRUE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
@@ -145,6 +142,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   settings->SetSelectedTypes(false, UserSelectableTypeSet());
   ASSERT_FALSE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,

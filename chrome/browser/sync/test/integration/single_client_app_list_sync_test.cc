@@ -226,13 +226,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   // Disable app sync by disabling all user-selectable types.
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    sync_service->GetUserSettings()->SetSelectedOsTypes(
-        /*sync_all_os_types=*/false, syncer::UserSelectableOsTypeSet());
-  } else {
-    sync_service->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/false, syncer::UserSelectableTypeSet());
-  }
+  sync_service->GetUserSettings()->SetSelectedOsTypes(
+      /*sync_all_os_types=*/false, syncer::UserSelectableOsTypeSet());
 
   // Change data when sync is off.
   for (const std::string& app_id : app_ids) {
@@ -247,13 +242,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   EXPECT_FALSE(SyncItemsMatch(service, &compare_service));
 
   // Restore app sync and sync data should override local changes.
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    sync_service->GetUserSettings()->SetSelectedOsTypes(
-        /*sync_all_os_types=*/true, syncer::UserSelectableOsTypeSet());
-  } else {
-    sync_service->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/true, syncer::UserSelectableTypeSet());
-  }
+  sync_service->GetUserSettings()->SetSelectedOsTypes(
+      /*sync_all_os_types=*/true, syncer::UserSelectableOsTypeSet());
   EXPECT_TRUE(AppListSyncUpdateWaiter(service).Wait());
   EXPECT_TRUE(SyncItemsMatch(service, &compare_service));
 }

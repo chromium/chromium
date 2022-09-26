@@ -64,15 +64,9 @@ class SingleClientWorkspaceDeskSyncTest : public SyncTest {
   void DisableDeskSync() {
     syncer::SyncService* service = GetSyncService(0);
 
-    if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
       // Disable all OS types, including the desk sync type.
-      service->GetUserSettings()->SetSelectedOsTypes(
-          /*sync_all_os_types=*/false, syncer::UserSelectableOsTypeSet());
-    } else {
-      // Disable all user types, including the desk sync type.
-      service->GetUserSettings()->SetSelectedTypes(
-          /*sync_everything=*/false, syncer::UserSelectableTypeSet());
-    }
+    service->GetUserSettings()->SetSelectedOsTypes(
+        /*sync_all_os_types=*/false, syncer::UserSelectableOsTypeSet());
 
     GetClient(0)->AwaitSyncSetupCompletion();
   }

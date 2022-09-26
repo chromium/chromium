@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "ash/constants/ash_features.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -335,32 +334,24 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, DisableApps) {
   WaitForExtensionServicesToLoad();
   ASSERT_TRUE(AllProfilesHaveSameAppList());
 
-  // Disable APP_LIST by disabling apps sync.
   SyncUserSettings* settings = GetClient(1)->service()->GetUserSettings();
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+  {
+    // Disable APP_LIST by disabling apps sync.
     UserSelectableOsTypeSet types = settings->GetSelectedOsTypes();
     types.Remove(UserSelectableOsType::kOsApps);
     settings->SetSelectedOsTypes(/*sync_all_os_types=*/false, types);
-  } else {
-    UserSelectableTypeSet types = settings->GetSelectedTypes();
-    types.Remove(UserSelectableType::kApps);
-    settings->SetSelectedTypes(/*sync_everything=*/false, types);
+    InstallHostedApp(GetProfile(0), 0);
+    ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+    ASSERT_FALSE(AllProfilesHaveSameAppList());
   }
-  InstallHostedApp(GetProfile(0), 0);
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  ASSERT_FALSE(AllProfilesHaveSameAppList());
 
-  // Enable APP_LIST by enabling apps sync.
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+  {
+    // Enable APP_LIST by enabling apps sync.
     UserSelectableOsTypeSet types = settings->GetSelectedOsTypes();
     types.Put(UserSelectableOsType::kOsApps);
     settings->SetSelectedOsTypes(/*sync_all_os_types=*/false, types);
-  } else {
-    UserSelectableTypeSet types = settings->GetSelectedTypes();
-    types.Put(UserSelectableType::kApps);
-    settings->SetSelectedTypes(/*sync_everything=*/false, types);
+    AwaitQuiescenceAndInstallAppsPendingForSync();
   }
-  AwaitQuiescenceAndInstallAppsPendingForSync();
 
   ASSERT_TRUE(AllProfilesHaveSameAppList());
 }

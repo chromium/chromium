@@ -123,10 +123,8 @@ class SyncServiceFactoryTest : public testing::Test {
     if (arc::IsArcAllowedForProfile(profile())) {
       datatypes.Put(syncer::ARC_PACKAGE);
     }
-    if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-      datatypes.Put(syncer::OS_PREFERENCES);
-      datatypes.Put(syncer::OS_PRIORITY_PREFERENCES);
-    }
+    datatypes.Put(syncer::OS_PREFERENCES);
+    datatypes.Put(syncer::OS_PRIORITY_PREFERENCES);
     datatypes.Put(syncer::PRINTERS);
     if (chromeos::features::IsOAuthIppEnabled()) {
       datatypes.Put(syncer::PRINTERS_AUTHORIZATION_SERVERS);
