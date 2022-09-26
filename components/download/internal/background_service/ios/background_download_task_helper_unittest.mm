@@ -64,7 +64,8 @@ class BackgroundDownloadTaskHelperTest
 };
 
 // Verifies download can be finished.
-TEST_F(BackgroundDownloadTaskHelperTest, DownloadComplete) {
+// TODO(crbug/1367306): Re-enable the test.
+TEST_F(BackgroundDownloadTaskHelperTest, DISABLED_DownloadComplete) {
   base::RunLoop loop;
   std::string guid = base::GenerateGUID();
   Download("/test", guid,
@@ -89,9 +90,9 @@ TEST_F(BackgroundDownloadTaskHelperTest, DownloadComplete) {
 }
 
 // Verifies non success http code is treated as error.
-// TODO(crbug.com/1261881):Disabled test because it fails multiple builders.
-// Re-enable it when fixed.
-TEST_F(BackgroundDownloadTaskHelperTest, DownloadErrorNonSuccessHttpCode) {
+// TODO(crbug/1367306): Re-enable the test.
+TEST_F(BackgroundDownloadTaskHelperTest,
+       DISABLED_DownloadErrorNonSuccessHttpCode) {
   base::RunLoop loop;
   std::string guid = base::GenerateGUID();
   Download("/notfound", guid,
@@ -107,8 +108,8 @@ TEST_F(BackgroundDownloadTaskHelperTest, DownloadErrorNonSuccessHttpCode) {
 }
 
 // Verifies data URL should result in failure.
-// TODO(crbug.com/1261931): Flaky test. Please remove it when fixed.
-TEST_F(BackgroundDownloadTaskHelperTest, DataURL) {
+// TODO(crbug/1367306): Re-enable the test.
+TEST_F(BackgroundDownloadTaskHelperTest, DISABLED_DataURL) {
   base::RunLoop loop;
   std::string guid = base::GenerateGUID();
   DownloadParams params;
