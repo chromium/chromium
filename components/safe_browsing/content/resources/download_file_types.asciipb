@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 52
+version_id: 53
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -156,6 +156,7 @@ file_types {
   uma_value: 52
   is_archive: true
   ping_setting: FULL_PING
+  inspection_type: SEVEN_ZIP
 }
 file_types {
   extension: "ace"
