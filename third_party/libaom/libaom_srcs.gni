@@ -193,12 +193,6 @@ aom_av1_encoder_intrin_avx2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/temporal_filter_avx2.c",
 ]
 
-aom_av1_encoder_intrin_msa = [
-  "//third_party/libaom/source/libaom/av1/encoder/mips/msa/error_msa.c",
-  "//third_party/libaom/source/libaom/av1/encoder/mips/msa/fdct4x4_msa.c",
-  "//third_party/libaom/source/libaom/av1/encoder/mips/msa/temporal_filter_msa.c",
-]
-
 aom_av1_encoder_intrin_neon = [
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/quantize_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_highbd_quantize_neon.c",
@@ -416,31 +410,6 @@ aom_dsp_common_intrin_avx2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/bitdepth_conversion_avx2.h",
 ]
 
-aom_dsp_common_intrin_dspr2 = [
-  "//third_party/libaom/source/libaom/aom_dsp/mips/aom_convolve_copy_dspr2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/common_dspr2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/common_dspr2.h",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/convolve2_dspr2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/convolve2_horiz_dspr2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/convolve2_vert_dspr2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/convolve8_horiz_dspr2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/convolve8_vert_dspr2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/convolve_common_dspr2.h",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/intrapred16_dspr2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/intrapred4_dspr2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/intrapred8_dspr2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/inv_txfm_dspr2.h",
-]
-
-aom_dsp_common_intrin_msa = [
-  "//third_party/libaom/source/libaom/aom_dsp/mips/aom_convolve8_horiz_msa.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/aom_convolve8_vert_msa.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/aom_convolve_copy_msa.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/aom_convolve_msa.h",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/intrapred_msa.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/macros_msa.h",
-]
-
 aom_dsp_common_intrin_neon = [
   "//third_party/libaom/source/libaom/aom_dsp/arm/aom_convolve_copy_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/fwd_txfm_neon.c",
@@ -567,13 +536,6 @@ aom_dsp_encoder_intrin_avx2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/sum_squares_avx2.c",
 ]
 
-aom_dsp_encoder_intrin_msa = [
-  "//third_party/libaom/source/libaom/aom_dsp/mips/sad_msa.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/subtract_msa.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/variance_msa.c",
-  "//third_party/libaom/source/libaom/aom_dsp/mips/sub_pixel_variance_msa.c",
-]
-
 aom_dsp_encoder_intrin_neon = [
   "//third_party/libaom/source/libaom/aom_dsp/arm/sad4d_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/sad_neon.c",
@@ -677,10 +639,6 @@ aom_rtcd_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/aom_dsp_rtcd.c",
   "//third_party/libaom/source/libaom/aom_scale/aom_scale_rtcd.c",
   "//third_party/libaom/source/libaom/av1/common/av1_rtcd.c",
-]
-
-aom_scale_intrin_dspr2 = [
-  "//third_party/libaom/source/libaom/aom_scale/mips/dspr2/yv12extend_dspr2.c",
 ]
 
 aom_scale_sources = [

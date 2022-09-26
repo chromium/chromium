@@ -2552,19 +2552,55 @@ RTCD_EXTERN void (*aom_ifft8x8_float)(const float* input,
                                       float* temp,
                                       float* output);
 
-int16_t aom_int_pro_col_c(const uint8_t* ref, const int width);
-int16_t aom_int_pro_col_sse2(const uint8_t* ref, const int width);
-#define aom_int_pro_col aom_int_pro_col_sse2
-
-void aom_int_pro_row_c(int16_t hbuf[16],
+void aom_int_pro_col_c(int16_t* vbuf,
                        const uint8_t* ref,
                        const int ref_stride,
-                       const int height);
-void aom_int_pro_row_sse2(int16_t hbuf[16],
+                       const int width,
+                       const int height,
+                       int norm_factor);
+void aom_int_pro_col_sse2(int16_t* vbuf,
                           const uint8_t* ref,
                           const int ref_stride,
-                          const int height);
-#define aom_int_pro_row aom_int_pro_row_sse2
+                          const int width,
+                          const int height,
+                          int norm_factor);
+void aom_int_pro_col_avx2(int16_t* vbuf,
+                          const uint8_t* ref,
+                          const int ref_stride,
+                          const int width,
+                          const int height,
+                          int norm_factor);
+RTCD_EXTERN void (*aom_int_pro_col)(int16_t* vbuf,
+                                    const uint8_t* ref,
+                                    const int ref_stride,
+                                    const int width,
+                                    const int height,
+                                    int norm_factor);
+
+void aom_int_pro_row_c(int16_t* hbuf,
+                       const uint8_t* ref,
+                       const int ref_stride,
+                       const int width,
+                       const int height,
+                       int norm_factor);
+void aom_int_pro_row_sse2(int16_t* hbuf,
+                          const uint8_t* ref,
+                          const int ref_stride,
+                          const int width,
+                          const int height,
+                          int norm_factor);
+void aom_int_pro_row_avx2(int16_t* hbuf,
+                          const uint8_t* ref,
+                          const int ref_stride,
+                          const int width,
+                          const int height,
+                          int norm_factor);
+RTCD_EXTERN void (*aom_int_pro_row)(int16_t* hbuf,
+                                    const uint8_t* ref,
+                                    const int ref_stride,
+                                    const int width,
+                                    const int height,
+                                    int norm_factor);
 
 void aom_lowbd_blend_a64_d16_mask_c(uint8_t* dst,
                                     uint32_t dst_stride,
@@ -4598,6 +4634,22 @@ unsigned int aom_mse8x8_sse2(const uint8_t* src_ptr,
                              int recon_stride,
                              unsigned int* sse);
 #define aom_mse8x8 aom_mse8x8_sse2
+
+uint64_t aom_mse_16xh_16bit_c(uint8_t* dst,
+                              int dstride,
+                              uint16_t* src,
+                              int w,
+                              int h);
+uint64_t aom_mse_16xh_16bit_avx2(uint8_t* dst,
+                                 int dstride,
+                                 uint16_t* src,
+                                 int w,
+                                 int h);
+RTCD_EXTERN uint64_t (*aom_mse_16xh_16bit)(uint8_t* dst,
+                                           int dstride,
+                                           uint16_t* src,
+                                           int w,
+                                           int h);
 
 uint64_t aom_mse_wxh_16bit_c(uint8_t* dst,
                              int dstride,
@@ -9446,6 +9498,12 @@ static void setup_rtcd_internal(void) {
   aom_ifft8x8_float = aom_ifft8x8_float_sse2;
   if (flags & HAS_AVX2)
     aom_ifft8x8_float = aom_ifft8x8_float_avx2;
+  aom_int_pro_col = aom_int_pro_col_sse2;
+  if (flags & HAS_AVX2)
+    aom_int_pro_col = aom_int_pro_col_avx2;
+  aom_int_pro_row = aom_int_pro_row_sse2;
+  if (flags & HAS_AVX2)
+    aom_int_pro_row = aom_int_pro_row_avx2;
   aom_lowbd_blend_a64_d16_mask = aom_lowbd_blend_a64_d16_mask_c;
   if (flags & HAS_SSE4_1)
     aom_lowbd_blend_a64_d16_mask = aom_lowbd_blend_a64_d16_mask_sse4_1;
@@ -9649,6 +9707,9 @@ static void setup_rtcd_internal(void) {
   aom_mse16x16 = aom_mse16x16_sse2;
   if (flags & HAS_AVX2)
     aom_mse16x16 = aom_mse16x16_avx2;
+  aom_mse_16xh_16bit = aom_mse_16xh_16bit_c;
+  if (flags & HAS_AVX2)
+    aom_mse_16xh_16bit = aom_mse_16xh_16bit_avx2;
   aom_mse_wxh_16bit = aom_mse_wxh_16bit_sse2;
   if (flags & HAS_AVX2)
     aom_mse_wxh_16bit = aom_mse_wxh_16bit_avx2;

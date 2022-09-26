@@ -1167,13 +1167,20 @@ void aom_ifft4x4_float_c(const float* input, float* temp, float* output);
 void aom_ifft8x8_float_c(const float* input, float* temp, float* output);
 #define aom_ifft8x8_float aom_ifft8x8_float_c
 
-int16_t aom_int_pro_col_c(const uint8_t* ref, const int width);
-#define aom_int_pro_col aom_int_pro_col_c
-
-void aom_int_pro_row_c(int16_t hbuf[16],
+void aom_int_pro_col_c(int16_t* vbuf,
                        const uint8_t* ref,
                        const int ref_stride,
-                       const int height);
+                       const int width,
+                       const int height,
+                       int norm_factor);
+#define aom_int_pro_col aom_int_pro_col_c
+
+void aom_int_pro_row_c(int16_t* hbuf,
+                       const uint8_t* ref,
+                       const int ref_stride,
+                       const int width,
+                       const int height,
+                       int norm_factor);
 #define aom_int_pro_row aom_int_pro_row_c
 
 void aom_lowbd_blend_a64_d16_mask_c(uint8_t* dst,
@@ -1965,6 +1972,13 @@ unsigned int aom_mse8x8_c(const uint8_t* src_ptr,
                           int recon_stride,
                           unsigned int* sse);
 #define aom_mse8x8 aom_mse8x8_c
+
+uint64_t aom_mse_16xh_16bit_c(uint8_t* dst,
+                              int dstride,
+                              uint16_t* src,
+                              int w,
+                              int h);
+#define aom_mse_16xh_16bit aom_mse_16xh_16bit_c
 
 uint64_t aom_mse_wxh_16bit_c(uint8_t* dst,
                              int dstride,

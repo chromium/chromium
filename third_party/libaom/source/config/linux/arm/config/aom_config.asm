@@ -9,7 +9,6 @@
 ; PATENTS file, you can obtain it at www.aomedia.org/license/patent.
 ;
 ARCH_ARM equ 1
-ARCH_MIPS equ 0
 ARCH_PPC equ 0
 ARCH_X86 equ 0
 ARCH_X86_64 equ 0
@@ -70,12 +69,8 @@ FORCE_HIGHBITDEPTH_DECODING equ 0
 HAVE_ARM_CRC32 equ 0
 HAVE_AVX equ 0
 HAVE_AVX2 equ 0
-HAVE_DSPR2 equ 0
 HAVE_FEXCEPT equ 1
-HAVE_MIPS32 equ 0
-HAVE_MIPS64 equ 0
 HAVE_MMX equ 0
-HAVE_MSA equ 0
 HAVE_NEON equ 0
 HAVE_PTHREAD_H equ 1
 HAVE_SSE equ 0
