@@ -7,9 +7,12 @@
 #include <string>
 #include <utility>
 
+#include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/field_trial.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
 #include "base/process/launch.h"
@@ -39,6 +42,7 @@ int NaClBrokerMain(content::MainFunctionParams parameters) {
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
   base::PlatformThread::SetName("CrNaClBrokerMain");
 
+  mojo::core::InitFeatures();
   mojo::core::Init();
 
   base::PowerMonitor::Initialize(
@@ -63,6 +67,15 @@ int NaClWin64Main() {
       base::CommandLine::ForCurrentProcess();
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
+
+  base::FieldTrialList field_trial_list(nullptr);
+  base::FieldTrialList::CreateTrialsFromCommandLine(*command_line,
+                                                    /*unused_fd_key=*/0);
+
+  auto feature_list = std::make_unique<base::FeatureList>();
+  base::FieldTrialList::CreateFeaturesFromCommandLine(*command_line,
+                                                      feature_list.get());
+  base::FeatureList::SetInstance(std::move(feature_list));
 
   // Copy what ContentMain() does.
   base::EnableTerminationOnHeapCorruption();

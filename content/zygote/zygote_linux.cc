@@ -395,6 +395,7 @@ void Zygote::HandleGetTerminationStatus(int fd, base::PickleIterator iter) {
 }
 
 int Zygote::ForkWithRealPid(const std::string& process_type,
+                            const std::vector<std::string>& args,
                             const base::GlobalDescriptors::Mapping& fd_mapping,
                             base::ScopedFD pid_oracle,
                             std::string* uma_name,
@@ -416,10 +417,12 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
       DLOG(ERROR) << "Failed to find kMojoIPCChannel in FD mapping";
       return -1;
     }
+    int field_trial_fd = LookUpFd(fd_mapping, kFieldTrialDescriptor);
     std::vector<int> fds;
     fds.push_back(mojo_channel_fd);   // kBrowserFDIndex
     fds.push_back(pid_oracle.get());  // kPIDOracleFDIndex
-    pid = helper->Fork(process_type, fds, /*channel_id=*/std::string());
+    fds.push_back(field_trial_fd);
+    pid = helper->Fork(process_type, args, fds, /*channel_id=*/std::string());
 
     // Helpers should never return in the child process.
     CHECK_NE(pid, 0);
@@ -587,10 +590,14 @@ base::ProcessId Zygote::ReadArgsAndFork(base::PickleIterator iter,
 
   mapping.push_back(ipc_backchannel_);
 
-  // Returns twice, once per process.
+  // Returns at most twice: once with a valid PID (in the parent process,
+  // returning the PID of the new child); and optionally once with a zero PID
+  // in the forked child process. Note that a delegate may spawn the child
+  // process without actually forking the calling process directly, so the
+  // second return path is not guanteed.
   base::ProcessId child_pid =
-      ForkWithRealPid(process_type, mapping, std::move(pid_oracle), uma_name,
-                      uma_sample, uma_boundary_value);
+      ForkWithRealPid(process_type, args, mapping, std::move(pid_oracle),
+                      uma_name, uma_sample, uma_boundary_value);
   if (!child_pid) {
     // This is the child process.
 

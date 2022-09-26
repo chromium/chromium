@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
@@ -32,6 +33,7 @@
 #include "components/nacl/loader/nacl_helper_linux.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
+#include "mojo/core/embedder/embedder.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
 #include "sandbox/linux/suid/client/setuid_sandbox_client.h"
 #include "sandbox/linux/suid/client/setuid_sandbox_host.h"
@@ -346,6 +348,7 @@ bool NaClForkDelegate::CanHelp(const std::string& process_type,
 }
 
 pid_t NaClForkDelegate::Fork(const std::string& process_type,
+                             const std::vector<std::string>& args,
                              const std::vector<int>& fds,
                              const std::string& channel_id) {
   VLOG(1) << "NaClForkDelegate::Fork";
@@ -361,6 +364,10 @@ pid_t NaClForkDelegate::Fork(const std::string& process_type,
   base::Pickle write_pickle;
   write_pickle.WriteInt(nacl::kNaClForkRequest);
   write_pickle.WriteString(channel_id);
+  write_pickle.WriteInt(base::checked_cast<int>(args.size()));
+  for (const std::string& arg : args) {
+    write_pickle.WriteString(arg);
+  }
 
   char reply_buf[kNaClMaxIPCMessageLength];
   ssize_t reply_size = 0;

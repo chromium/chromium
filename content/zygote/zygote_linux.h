@@ -94,6 +94,7 @@ class Zygote {
   // and |uma_boundary_value| may be set if the helper wants to make a UMA
   // report via UMA_HISTOGRAM_ENUMERATION.
   int ForkWithRealPid(const std::string& process_type,
+                      const std::vector<std::string>& args,
                       const base::GlobalDescriptors::Mapping& fd_mapping,
                       base::ScopedFD pid_oracle,
                       std::string* uma_name,

@@ -23,12 +23,14 @@
 #include <vector>
 
 #include "base/at_exit.h"
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/scoped_file.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/field_trial.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
 #include "base/posix/unix_domain_socket.h"
@@ -122,23 +124,38 @@ void AddVerboseLoggingInNaclSwitch(base::CommandLine* command_line) {
 //   if (!child) {
 void BecomeNaClLoader(base::ScopedFD browser_fd,
                       const NaClLoaderSystemInfo& system_info,
-                      nacl::NaClSandbox* nacl_sandbox) {
+                      nacl::NaClSandbox* nacl_sandbox,
+                      const std::vector<std::string>& args) {
   DCHECK(nacl_sandbox);
   VLOG(1) << "NaCl loader: setting up IPC descriptor";
   // Close or shutdown IPC channels that we don't need anymore.
   PCHECK(0 == IGNORE_EINTR(close(kNaClZygoteDescriptor)));
 
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kVerboseLoggingInNacl)) {
+  // Append any passed switches to the forked loader's command line. This is
+  // necessary to get e.g. any field trial handle and feature overrides from
+  // whomever initiated the this fork request.
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  base::CommandLine passed_command_line(base::CommandLine::NO_PROGRAM);
+  passed_command_line.InitFromArgv(args);
+  command_line.AppendArguments(passed_command_line, /*include_program=*/false);
+  if (command_line.HasSwitch(switches::kVerboseLoggingInNacl)) {
     base::Environment::Create()->SetVar(
         "NACLVERBOSITY",
-        command_line->GetSwitchValueASCII(switches::kVerboseLoggingInNacl));
+        command_line.GetSwitchValueASCII(switches::kVerboseLoggingInNacl));
   }
 
   // Always ignore SIGPIPE, for consistency with other Chrome processes and
   // because some IPC code, such as sync_socket_posix.cc, requires this.
   // We do this before seccomp-bpf is initialized.
   PCHECK(signal(SIGPIPE, SIG_IGN) != SIG_ERR);
+
+  base::FieldTrialList field_trial_list(nullptr);
+  base::FieldTrialList::CreateTrialsFromCommandLine(command_line,
+                                                    kFieldTrialDescriptor);
+  auto feature_list = std::make_unique<base::FeatureList>();
+  base::FieldTrialList::CreateFeaturesFromCommandLine(command_line,
+                                                      feature_list.get());
+  base::FeatureList::SetInstance(std::move(feature_list));
 
   // Finish layer-1 sandbox initialization and initialize the layer-2 sandbox.
   CHECK(!nacl_sandbox->HasOpenDirectory());
@@ -150,6 +167,7 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
                                               browser_fd.release());
 
   // The Mojo EDK must be initialized before using IPC.
+  mojo::core::InitFeatures();
   mojo::core::Init();
 
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
@@ -165,7 +183,8 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
 void ChildNaClLoaderInit(std::vector<base::ScopedFD> child_fds,
                          const NaClLoaderSystemInfo& system_info,
                          nacl::NaClSandbox* nacl_sandbox,
-                         const std::string& channel_id) {
+                         const std::string& channel_id,
+                         const std::vector<std::string>& args) {
   DCHECK(child_fds.size() >
          std::max(content::ZygoteForkDelegate::kPIDOracleFDIndex,
                   content::ZygoteForkDelegate::kBrowserFDIndex));
@@ -174,12 +193,18 @@ void ChildNaClLoaderInit(std::vector<base::ScopedFD> child_fds,
   CHECK(content::SendZygoteChildPing(
       child_fds[content::ZygoteForkDelegate::kPIDOracleFDIndex].get()));
 
+  // Stash the field trial descriptor in GlobalDescriptors so FieldTrialList
+  // can be initialized later. See BecomeNaClLoader().
+  base::GlobalDescriptors::GetInstance()->Set(
+      kFieldTrialDescriptor,
+      child_fds[content::ZygoteForkDelegate::kFieldTrialFDIndex].release());
+
   // Save the browser socket and close the rest.
   base::ScopedFD browser_fd(
       std::move(child_fds[content::ZygoteForkDelegate::kBrowserFDIndex]));
   child_fds.clear();
 
-  BecomeNaClLoader(std::move(browser_fd), system_info, nacl_sandbox);
+  BecomeNaClLoader(std::move(browser_fd), system_info, nacl_sandbox, args);
   _exit(1);
 }
 
@@ -195,6 +220,21 @@ bool HandleForkRequest(std::vector<base::ScopedFD> child_fds,
   if (!input_iter->ReadString(&channel_id)) {
     LOG(ERROR) << "Could not read channel_id string";
     return false;
+  }
+
+  // Read the args passed by the launcher and prepare to forward them to our own
+  // forked child.
+  int argc;
+  if (!input_iter->ReadInt(&argc) || argc < 0) {
+    LOG(ERROR) << "nacl_helper: Invalid argument list";
+    return false;
+  }
+  std::vector<std::string> args(static_cast<size_t>(argc));
+  for (std::string& arg : args) {
+    if (!input_iter->ReadString(&arg)) {
+      LOG(ERROR) << "nacl_helper: Invalid argument list";
+      return false;
+    }
   }
 
   if (content::ZygoteForkDelegate::kNumPassedFDs != child_fds.size()) {
@@ -218,7 +258,7 @@ bool HandleForkRequest(std::vector<base::ScopedFD> child_fds,
 
   if (child_pid == 0) {
     ChildNaClLoaderInit(std::move(child_fds), system_info, nacl_sandbox,
-                        channel_id);
+                        channel_id, args);
     NOTREACHED();
   }
 
