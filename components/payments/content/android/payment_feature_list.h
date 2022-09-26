@@ -13,7 +13,7 @@ namespace payments {
 namespace android {
 
 // Android only payment features in alphabetical order:
-extern const base::Feature kAndroidAppPaymentUpdateEvents;
+BASE_DECLARE_FEATURE(kAndroidAppPaymentUpdateEvents);
 
 }  // namespace android
 }  // namespace payments

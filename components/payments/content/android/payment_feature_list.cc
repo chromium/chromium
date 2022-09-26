@@ -49,8 +49,9 @@ const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
 }  // namespace
 
 // Android only features.
-const base::Feature kAndroidAppPaymentUpdateEvents{
-    "AndroidAppPaymentUpdateEvents", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAndroidAppPaymentUpdateEvents,
+             "AndroidAppPaymentUpdateEvents",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 static jboolean JNI_PaymentFeatureList_IsEnabled(
     JNIEnv* env,
