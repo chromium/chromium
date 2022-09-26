@@ -157,6 +157,11 @@ TEST_F(EmojiSuggesterTest, SuggestWhenStringEndsWithSpace) {
   EXPECT_TRUE(emoji_suggester_->TrySuggestWithSurroundingText(u"happy ", 6, 6));
 }
 
+TEST_F(EmojiSuggesterTest, SuggestWhenStringEndsWithSpaceInNewLine) {
+  EXPECT_TRUE(emoji_suggester_->TrySuggestWithSurroundingText(
+      u"oldline\nhappy ", 14, 14));
+}
+
 TEST_F(EmojiSuggesterTest, PassesContextIdToHandlerOnSuggestion) {
   emoji_suggester_->TrySuggestWithSurroundingText(u"happy ", 6, 6);
   engine_->VerifyContextId(kContextId);

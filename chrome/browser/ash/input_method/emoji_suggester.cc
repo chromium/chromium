@@ -72,7 +72,7 @@ std::string GetLastWord(const std::string& str) {
   DCHECK_EQ(kSpaceChar, str.back());
   size_t last_pos_to_search = str.length() - 2;
 
-  const auto space_before_last_word = str.find_last_of(" ", last_pos_to_search);
+  auto space_before_last_word = str.find_last_of(" \n", last_pos_to_search);
 
   // If not found, return the entire string up to the last position to search
   // else return the last word.
