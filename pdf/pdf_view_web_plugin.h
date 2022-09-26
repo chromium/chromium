@@ -81,7 +81,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public PdfAccessibilityActionHandler,
                                public PreviewModeClient::Client {
  public:
-  // Do not save files with over 100 MB. This cap should be kept in sync with
+  // Do not save files larger than 100 MB. This cap should be kept in sync with
   // and is also enforced in chrome/browser/resources/pdf/pdf_viewer.ts.
   static constexpr size_t kMaximumSavedFileSize = 100 * 1000 * 1000;
 
@@ -372,9 +372,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Initializes the plugin for testing, bypassing certain consistency checks.
   bool InitializeForTesting();
 
-  const gfx::Rect& GetPluginRectForTesting() const { return plugin_rect(); }
+  const gfx::Rect& GetPluginRectForTesting() const { return plugin_rect_; }
 
-  float GetDeviceScaleForTesting() const { return device_scale(); }
+  float GetDeviceScaleForTesting() const { return device_scale_; }
 
  protected:
   // PdfViewPluginBase:
@@ -701,7 +701,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // The URL currently under the cursor.
   std::string link_under_cursor_;
 
-  // The id of the current find operation, or -1 if no current operation is
+  // The ID of the current find operation, or -1 if no current operation is
   // present.
   int find_identifier_ = -1;
 
