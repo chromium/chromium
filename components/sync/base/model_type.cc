@@ -188,10 +188,6 @@ static_assert(42 == syncer::GetNumModelTypes(),
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
-static_assert(42 == syncer::GetNumModelTypes(),
-              "When adding a new type, update kAllocatorDumpNameAllowlist in "
-              "base/trace_event/memory_infra_background_allowlist.cc.");
-
 void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
   switch (type) {
     case UNSPECIFIED:
