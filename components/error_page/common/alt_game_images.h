@@ -12,7 +12,7 @@
 
 namespace error_page {
 
-extern const base::Feature kNetErrorAltGameMode;
+BASE_DECLARE_FEATURE(kNetErrorAltGameMode);
 extern const base::FeatureParam<std::string> kNetErrorAltGameModeKey;
 
 // Gets the value of kNetErrorAltGameMode.
