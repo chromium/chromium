@@ -17,6 +17,11 @@ AcceleratorConfiguration::~AcceleratorConfiguration() = default;
 void AcceleratorConfiguration::AddAcceleratorsUpdatedCallback(
     AcceleratorsUpdatedCallback callback) {
   callbacks_.push_back(callback);
+
+  // If there is a stored cache, notify event immediately.
+  if (!accelerator_mapping_cache_.empty()) {
+    NotifyAcceleratorsUpdated();
+  }
 }
 
 void AcceleratorConfiguration::RemoveAcceleratorsUpdatedCallback(
@@ -28,10 +33,19 @@ void AcceleratorConfiguration::RemoveAcceleratorsUpdatedCallback(
   callbacks_.erase(it);
 }
 
-void AcceleratorConfiguration::NotifyAcceleratorsUpdated(
-    const std::multimap<AcceleratorActionId, AcceleratorInfo>& accelerators) {
+void AcceleratorConfiguration::UpdateAccelerators(
+    const std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>&
+        accelerators) {
+  // Update local cache everything an observable event is fired.
+  accelerator_mapping_cache_ = accelerators;
+
+  NotifyAcceleratorsUpdated();
+}
+
+void AcceleratorConfiguration::NotifyAcceleratorsUpdated() {
   for (auto& cb : callbacks_) {
-    cb.Run(source_, accelerators);
+    cb.Run(source_, accelerator_mapping_cache_);
   }
 }
+
 }  // namespace ash

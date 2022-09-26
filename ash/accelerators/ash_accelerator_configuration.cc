@@ -165,6 +165,7 @@ void AshAcceleratorConfiguration::AddAccelerators(
     accelerator_infos_.push_back(info);
     AddLayoutInfo(data);
   }
+  UpdateAccelerators(id_to_accelerator_infos_);
 }
 
 const DeprecatedAcceleratorData*

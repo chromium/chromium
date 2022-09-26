@@ -48,7 +48,7 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
  public:
   using AcceleratorsUpdatedCallback = base::RepeatingCallback<void(
       ash::mojom::AcceleratorSource,
-      std::multimap<AcceleratorActionId, AcceleratorInfo>)>;
+      const std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>&)>;
 
   explicit AcceleratorConfiguration(ash::mojom::AcceleratorSource source);
   virtual ~AcceleratorConfiguration();
@@ -96,10 +96,14 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
   virtual AcceleratorConfigResult RestoreAllDefaults() = 0;
 
  protected:
-  void NotifyAcceleratorsUpdated(
-      const std::multimap<AcceleratorActionId, AcceleratorInfo>& accelerators);
+  // Updates the local cache and notifies observers of the updated accelerators.
+  void UpdateAccelerators(
+      const std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>&
+          accelerators);
 
  private:
+  void NotifyAcceleratorsUpdated();
+
   // The source of the accelerators. Derived classes are responsible for only
   // one source.
   const ash::mojom::AcceleratorSource source_;
@@ -108,6 +112,12 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
   // AddAcceleratorsUpdatedCallback or RemoveAcceleratorsUpdatedCallback to
   // add/remove callbacks to the container.
   std::vector<AcceleratorsUpdatedCallback> callbacks_;
+
+  // Keep a cache of the accelerator map, it's possible that adding a new
+  // observer is done after initializing the accelerator mapping. This lets
+  // new observers to get the immediate cached mapping.
+  std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>
+      accelerator_mapping_cache_;
 };
 
 }  // namespace ash

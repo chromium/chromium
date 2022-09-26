@@ -4,6 +4,8 @@
 
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
 
+#include "ash/accelerators/ash_accelerator_configuration.h"
+#include "ash/shell.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -12,7 +14,15 @@
 namespace ash {
 namespace shortcut_ui {
 
-AcceleratorConfigurationProvider::AcceleratorConfigurationProvider() = default;
+AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
+    : ash_accelerator_configuration_(
+          Shell::Get()->ash_accelerator_configuration()) {
+  ash_accelerator_configuration_->AddAcceleratorsUpdatedCallback(
+      base::BindRepeating(
+          &AcceleratorConfigurationProvider::OnAshAcceleratorsUpdated,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
 AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() = default;
 
 void AcceleratorConfigurationProvider::IsMutable(
@@ -34,6 +44,15 @@ void AcceleratorConfigurationProvider::BindInterface(
         shortcut_customization::mojom::AcceleratorConfigurationProvider>
         receiver) {
   receiver_.Bind(std::move(receiver));
+}
+
+void AcceleratorConfigurationProvider::OnAshAcceleratorsUpdated(
+    mojom::AcceleratorSource source,
+    const std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>&
+        mapping) {
+  // TODO(jimmyxgong): Remove `ash_accelerator_mapping_` and instead fire the
+  // Mojo event with the mapping.
+  ash_accelerator_mapping_ = mapping;
 }
 
 }  // namespace shortcut_ui

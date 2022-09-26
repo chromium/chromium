@@ -13,6 +13,7 @@ static_library("backend") {
   ]
 
   deps = [
+    "//ash",
     "//ash/public/cpp",
     "//ash/public/mojom",
     "//ash/webui/shortcut_customization_ui/mojom",
@@ -26,6 +27,8 @@ source_set("unit_tests") {
 
   deps = [
     ":backend",
+    "//ash",
+    "//ash:test_support",
     "//ash/public/cpp",
     "//ash/public/mojom",
     "//ash/webui/shortcut_customization_ui/mojom",
