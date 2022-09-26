@@ -7,6 +7,7 @@
 #include <thread>
 
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -82,7 +83,7 @@ class MockProgressReporter : public gl::ProgressReporter {
 };
 
 class GLTextureImageBackingFactoryTestBase
-    : public testing::TestWithParam<std::tuple<bool, viz::ResourceFormat>> {
+    : public testing::TestWithParam<viz::ResourceFormat> {
  public:
   explicit GLTextureImageBackingFactoryTestBase(bool is_thread_safe)
       : shared_image_manager_(
@@ -116,7 +117,8 @@ class GLTextureImageBackingFactoryTestBase
   }
 
   bool use_passthrough() {
-    return std::get<0>(GetParam()) &&
+    return gles2::UsePassthroughCommandDecoder(
+               base::CommandLine::ForCurrentProcess()) &&
            gles2::PassthroughCommandDecoderSupported();
   }
 
@@ -130,7 +132,7 @@ class GLTextureImageBackingFactoryTestBase
     return true;
   }
 
-  viz::ResourceFormat get_format() { return std::get<1>(GetParam()); }
+  viz::ResourceFormat get_format() { return GetParam(); }
 
  protected:
   ::testing::NiceMock<MockProgressReporter> progress_reporter_;
@@ -613,25 +615,18 @@ const auto kResourceFormats =
     );
 
 std::string TestParamToString(
-    const testing::TestParamInfo<std::tuple<bool, viz::ResourceFormat>>&
-        param_info) {
-  const bool allow_passthrough = std::get<0>(param_info.param);
-  const viz::ResourceFormat format = std::get<1>(param_info.param);
-  return base::StringPrintf(
-      "%s_%s", (allow_passthrough ? "AllowPassthrough" : "DisallowPassthrough"),
-      viz::ResourceFormatToString(format));
+    const testing::TestParamInfo<viz::ResourceFormat>& param_info) {
+  return viz::ResourceFormatToString(param_info.param);
 }
 
-INSTANTIATE_TEST_SUITE_P(Service,
+INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            kResourceFormats),
+                         kResourceFormats,
                          TestParamToString);
 
-INSTANTIATE_TEST_SUITE_P(Service,
+INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithUploadTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            kResourceFormats),
+                         kResourceFormats,
                          TestParamToString);
 
 }  // anonymous namespace
