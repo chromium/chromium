@@ -207,7 +207,6 @@ void FlushShortcutTasks() {
 }
 
 struct SiteConfig {
-  std::string relative_scope_url;
   std::string relative_start_url;
   std::string relative_manifest_id;
   std::string app_name;
@@ -218,8 +217,7 @@ struct SiteConfig {
 
 base::flat_map<Site, SiteConfig> g_site_configs = {
     {Site::kStandalone,
-     {.relative_scope_url = "/webapps_integration/standalone/",
-      .relative_start_url = "/webapps_integration/standalone/basic.html",
+     {.relative_start_url = "/webapps_integration/standalone/basic.html",
       .relative_manifest_id = "webapps_integration/standalone/basic.html",
       .app_name = "Site A",
       // WCO disabled is the defaulting state so the title when disabled should
@@ -228,43 +226,37 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .icon_color = SK_ColorGREEN,
       .alternate_titles = {"Site A - Updated name"}}},
     {Site::kMinimalUi,
-     {.relative_scope_url = "/webapps_integration/minimal_ui/",
-      .relative_start_url = "/webapps_integration/minimal_ui/basic.html",
+     {.relative_start_url = "/webapps_integration/minimal_ui/basic.html",
       .relative_manifest_id = "webapps_integration/minimal_ui/basic.html",
       .app_name = "Site B",
       .wco_not_enabled_title = u"Site B",
       .icon_color = SK_ColorBLACK}},
     {Site::kNotPromotable,
-     {.relative_scope_url = "/webapps_integration/not_promotable/",
-      .relative_start_url = "/webapps_integration/not_promotable/basic.html",
+     {.relative_start_url = "/webapps_integration/not_promotable/basic.html",
       .relative_manifest_id = "webapps_integration/not_promotable/basic.html",
       .app_name = "Site C",
       .wco_not_enabled_title = u"Site C",
       .icon_color = SK_ColorTRANSPARENT}},
     {Site::kWco,
-     {.relative_scope_url = "/webapps_integration/wco/",
-      .relative_start_url = "/webapps_integration/wco/basic.html",
+     {.relative_start_url = "/webapps_integration/wco/basic.html",
       .relative_manifest_id = "webapps_integration/wco/basic.html",
       .app_name = "Site WCO",
       .wco_not_enabled_title = u"Site WCO",
       .icon_color = SK_ColorGREEN}},
     {Site::kStandaloneNestedA,
-     {.relative_scope_url = "/webapps_integration/standalone/foo/",
-      .relative_start_url = "/webapps_integration/standalone/foo/basic.html",
+     {.relative_start_url = "/webapps_integration/standalone/foo/basic.html",
       .relative_manifest_id = "webapps_integration/standalone/foo/basic.html",
       .app_name = "Site A Foo",
       .wco_not_enabled_title = u"Site A Foo",
       .icon_color = SK_ColorGREEN}},
     {Site::kStandaloneNestedB,
-     {.relative_scope_url = "/webapps_integration/standalone/bar/",
-      .relative_start_url = "/webapps_integration/standalone/bar/basic.html",
+     {.relative_start_url = "/webapps_integration/standalone/bar/basic.html",
       .relative_manifest_id = "webapps_integration/standalone/bar/basic.html",
       .app_name = "Site A Bar",
       .wco_not_enabled_title = u"Site A Bar",
       .icon_color = SK_ColorGREEN}},
     {Site::kIsolated,
-     {.relative_scope_url = "/webapps_integration/isolated_app/",
-      // This file actually lives in /webapps_integration/isolated_app/. We
+     {// This file actually lives in /webapps_integration/isolated_app/. We
       // serve this directory as root in a special test server to allow the
       // isolated app to live at the root scope.
       .relative_start_url = "/basic.html",
@@ -274,15 +266,13 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .wco_not_enabled_title = u"Isolated App",
       .icon_color = SK_ColorGREEN}},
     {Site::kFileHandler,
-     {.relative_scope_url = "/webapps_integration/file_handler/",
-      .relative_start_url = "/webapps_integration/file_handler/basic.html",
+     {.relative_start_url = "/webapps_integration/file_handler/basic.html",
       .relative_manifest_id = "webapps_integration/file_handler/basic.html",
       .app_name = "File Handler",
       .wco_not_enabled_title = u"File Handler",
       .icon_color = SK_ColorBLACK}},
     {Site::kNoServiceWorker,
-     {.relative_scope_url = "/webapps_integration/site_no_service_worker/",
-      .relative_start_url =
+     {.relative_start_url =
           "/webapps_integration/site_no_service_worker/basic.html",
       .relative_manifest_id =
           "webapps_integration/site_no_service_worker/basic.html",
@@ -290,8 +280,7 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .wco_not_enabled_title = u"Site NoServiceWorker",
       .icon_color = SK_ColorGREEN}},
     {Site::kNotInstalled,
-     {.relative_scope_url = "/webapps_integration/not_installed/",
-      .relative_start_url = "/webapps_integration/not_installed/basic.html",
+     {.relative_start_url = "/webapps_integration/not_installed/basic.html",
       .relative_manifest_id = "webapps_integration/not_installed/basic.html",
       .app_name = "Not Installed",
       .wco_not_enabled_title = u"Not Installed",
@@ -2683,12 +2672,6 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
   return std::make_unique<StateSnapshot>(std::move(profile_state_map));
 }
 
-std::string WebAppIntegrationTestDriver::GetBrowserWindowTitle(
-    Browser* browser) {
-  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-  return convert.to_bytes(browser->GetWindowTitleForCurrentTab(false));
-}
-
 content::WebContents* WebAppIntegrationTestDriver::GetCurrentTab(
     Browser* browser) {
   return browser->tab_strip_model()->GetActiveWebContents();
@@ -2696,11 +2679,6 @@ content::WebContents* WebAppIntegrationTestDriver::GetCurrentTab(
 
 GURL WebAppIntegrationTestDriver::GetInScopeURL(Site site) {
   return GetAppStartURL(site);
-}
-
-GURL WebAppIntegrationTestDriver::GetScopeForSiteMode(Site site) {
-  auto scope_url_path = GetSiteConfiguration(site).relative_scope_url;
-  return GetTestServerForSiteMode(site).GetURL(scope_url_path);
 }
 
 base::FilePath WebAppIntegrationTestDriver::GetShortcutPath(

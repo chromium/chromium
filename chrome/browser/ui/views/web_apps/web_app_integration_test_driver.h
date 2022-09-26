@@ -330,15 +330,11 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   std::unique_ptr<StateSnapshot> ConstructStateSnapshot();
 
-  std::string GetBrowserWindowTitle(Browser* browser);
   content::WebContents* GetCurrentTab(Browser* browser);
   GURL GetInScopeURL(Site site);
-  GURL GetScopeForSiteMode(Site site);
   base::FilePath GetShortcutPath(base::FilePath shortcut_dir,
                                  const std::string& app_name,
                                  const AppId& app_id);
-  GURL GetURLForSiteMode(Site site);
-
   void InstallPolicyAppInternal(Site site,
                                 base::Value default_launch_container,
                                 const bool create_shortcut,
@@ -348,8 +344,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void UninstallPolicyAppById(const AppId& id);
   void ForceUpdateManifestContents(Site site,
                                    const GURL& app_url_with_manifest_param);
-  void MaybeWaitForManifestUpdates();
-
   void MaybeNavigateTabbedBrowserInScope(Site site);
 
   enum class NavigationMode { kNewTab, kCurrentTab };
