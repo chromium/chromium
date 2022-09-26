@@ -75,7 +75,7 @@ GetBackgroundTracingConfigFromFile(const base::FilePath& config_file) {
   }
 
   auto config = content::BackgroundTracingConfig::FromDict(
-      std::move(value_with_error->GetDict()));
+      std::move(*value_with_error).TakeDict());
 
   if (!config) {
     LOG(ERROR) << "Background tracing config dict has invalid contents";
