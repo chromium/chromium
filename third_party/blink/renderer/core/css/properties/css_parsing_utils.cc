@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
+#include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
@@ -39,10 +40,13 @@
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
+#include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -3466,6 +3470,26 @@ bool IsDashedIdent(const CSSParserToken& token) {
     return false;
   DCHECK(!IsCSSWideKeyword(token.Value()));
   return token.Value().ToString().StartsWith(kTwoDashes);
+}
+
+CSSValue* ConsumeCSSWideKeyword(CSSParserTokenRange& range) {
+  if (!IsCSSWideKeyword(range.Peek().Id()))
+    return nullptr;
+  switch (range.ConsumeIncludingWhitespace().Id()) {
+    case CSSValueID::kInitial:
+      return CSSInitialValue::Create();
+    case CSSValueID::kInherit:
+      return CSSInheritedValue::Create();
+    case CSSValueID::kUnset:
+      return cssvalue::CSSUnsetValue::Create();
+    case CSSValueID::kRevert:
+      return cssvalue::CSSRevertValue::Create();
+    case CSSValueID::kRevertLayer:
+      return cssvalue::CSSRevertLayerValue::Create();
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
 }
 
 bool IsTimelineName(const CSSParserToken& token) {

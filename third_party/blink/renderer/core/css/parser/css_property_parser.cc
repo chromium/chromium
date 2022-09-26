@@ -4,13 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 
-#include "third_party/blink/renderer/core/css/css_inherited_value.h"
-#include "third_party/blink/renderer/core/css/css_initial_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
-#include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
-#include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
-#include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/hash_tools.h"
 #include "third_party/blink/renderer/core/css/known_exposed_properties.h"
@@ -35,28 +30,15 @@ class CSSIdentifierValue;
 namespace {
 
 const CSSValue* MaybeConsumeCSSWideKeyword(CSSParserTokenRange& range) {
-  CSSParserTokenRange local_range = range;
+  CSSParserTokenRange original_range = range;
 
-  CSSValueID id = local_range.ConsumeIncludingWhitespace().Id();
-  if (!local_range.AtEnd())
-    return nullptr;
+  if (CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(range)) {
+    if (range.AtEnd())
+      return value;
+  }
 
-  const CSSValue* value = nullptr;
-  if (id == CSSValueID::kInitial)
-    value = CSSInitialValue::Create();
-  if (id == CSSValueID::kInherit)
-    value = CSSInheritedValue::Create();
-  if (id == CSSValueID::kUnset)
-    value = cssvalue::CSSUnsetValue::Create();
-  if (id == CSSValueID::kRevert)
-    value = cssvalue::CSSRevertValue::Create();
-  if (id == CSSValueID::kRevertLayer)
-    value = cssvalue::CSSRevertLayerValue::Create();
-
-  if (value)
-    range = local_range;
-
-  return value;
+  range = original_range;
+  return nullptr;
 }
 
 bool IsPropertyAllowedInRule(const CSSProperty& property,

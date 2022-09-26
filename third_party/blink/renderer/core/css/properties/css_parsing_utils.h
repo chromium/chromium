@@ -281,6 +281,8 @@ bool IsDefaultKeyword(StringView);
 bool IsHashIdentifier(const CSSParserToken&);
 CORE_EXPORT bool IsDashedIdent(const CSSParserToken&);
 
+CSSValue* ConsumeCSSWideKeyword(CSSParserTokenRange&);
+
 // This function returns false for CSS-wide keywords, 'default', and any
 // template parameters provided.
 //
