@@ -53,6 +53,7 @@ class SaveUpdatePasswordMessageDelegate {
 
  private:
   friend class SaveUpdatePasswordMessageDelegateTest;
+  enum class SavePasswordDialogMenuItem { kNeverSave = 0, kEditPassword = 1 };
 
   SaveUpdatePasswordMessageDelegate(
       PasswordEditDialogFactory password_edit_dialog_factory);
@@ -67,6 +68,10 @@ class SaveUpdatePasswordMessageDelegate {
   void CreateMessage(bool update_password);
   void SetupCogMenu(std::unique_ptr<messages::MessageWrapper>& message,
                     bool update_password);
+  void SetupCogMenuForDialogWithDetails(
+      std::unique_ptr<messages::MessageWrapper>& message,
+      bool update_password);
+  void HandleSaveMessageMenuItemClick(int item_id);
 
   // Returns the message description depending on whether the password is being
   // saved or updated and if unified password manager is enabled.

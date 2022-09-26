@@ -163,9 +163,11 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
 
   // With detailed dialog feature enabled the cog button is always shown
   // (it was shown only for Save password dialog before)
-  if (!update_password ||
-      base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails))
+  if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)) {
+    SetupCogMenuForDialogWithDetails(message_, update_password);
+  } else if (!update_password) {
     SetupCogMenu(message_, update_password);
+  }
 }
 
 void SaveUpdatePasswordMessageDelegate::SetupCogMenu(
@@ -173,13 +175,6 @@ void SaveUpdatePasswordMessageDelegate::SetupCogMenu(
     bool update_password) {
   message->SetSecondaryIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
-  if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)) {
-    message->SetSecondaryActionCallback(base::BindRepeating(
-        &SaveUpdatePasswordMessageDelegate::DisplayEditDialog,
-        base::Unretained(this), update_password));
-    return;
-  }
-
   message->SetSecondaryButtonMenuText(l10n_util::GetStringUTF16(
       password_manager::features::UsesUnifiedPasswordManagerUi()
           ? IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM
@@ -187,6 +182,43 @@ void SaveUpdatePasswordMessageDelegate::SetupCogMenu(
   message->SetSecondaryActionCallback(base::BindRepeating(
       &SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked,
       base::Unretained(this)));
+}
+
+void SaveUpdatePasswordMessageDelegate::SetupCogMenuForDialogWithDetails(
+    std::unique_ptr<messages::MessageWrapper>& message,
+    bool update_password) {
+  message->SetSecondaryIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
+  if (update_password) {
+    message->SetSecondaryActionCallback(base::BindRepeating(
+        &SaveUpdatePasswordMessageDelegate::DisplayEditDialog,
+        base::Unretained(this), update_password));
+  } else {
+    message_->SetSecondaryMenuItemSelectedCallback(base::BindRepeating(
+        &SaveUpdatePasswordMessageDelegate::HandleSaveMessageMenuItemClick,
+        base::Unretained(this)));
+    message_->AddSecondaryMenuItem(
+        static_cast<int>(SavePasswordDialogMenuItem::kNeverSave),
+        /*resource_id=*/0,
+        l10n_util::GetStringUTF16(IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM));
+    message_->AddSecondaryMenuItem(
+        static_cast<int>(SavePasswordDialogMenuItem::kEditPassword),
+        /*resource_id=*/0,
+        l10n_util::GetStringUTF16(
+            IDS_PASSWORD_MESSAGE_EDIT_PASSWORD_MENU_ITEM));
+  }
+}
+
+void SaveUpdatePasswordMessageDelegate::HandleSaveMessageMenuItemClick(
+    int item_id) {
+  switch (static_cast<SavePasswordDialogMenuItem>(item_id)) {
+    case SavePasswordDialogMenuItem::kNeverSave:
+      HandleNeverSaveClicked();
+      break;
+    case SavePasswordDialogMenuItem::kEditPassword:
+      DisplayEditDialog(/*update_password=*/false);
+      break;
+  }
 }
 
 std::u16string SaveUpdatePasswordMessageDelegate::GetMessageDescription(
