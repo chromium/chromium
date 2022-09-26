@@ -47,18 +47,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.ClickToCallAppsToShow" units="apps"
-    expires_after="2022-09-11">
-<!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    The number of available apps that are about to be shown in a UI for picking
-    an app to start a phone call with. Desktop only.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.ClickToCallDevicesToShow" units="devices"
     expires_after="2022-10-23">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->

@@ -9525,7 +9525,6 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="SharingClickToCallUi" separator=".">
   <suffix name="ContextMenu" label="Context menu"/>
   <suffix name="Dialog" label="Dialog"/>
-  <affected-histogram name="Sharing.ClickToCallAppsToShow"/>
   <affected-histogram name="Sharing.ClickToCallDevicesToShow"/>
   <affected-histogram name="Sharing.ClickToCallSelectedAppIndex"/>
   <affected-histogram name="Sharing.ClickToCallSelectedDeviceIndex"/>
