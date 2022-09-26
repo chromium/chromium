@@ -16,10 +16,6 @@ import {MacroName} from '../macros/macro_names.js';
 import * as RepeatableKeyPressMacro from '../macros/repeatable_key_press_macro.js';
 
 import {ParseStrategy} from './parse_strategy.js';
-// PumpkinAvailability is based on the gn argument enable_pumpkin_for_dictation,
-// and pumpkin_availability.js is copied from either include_pumpkin.js
-// or exclude_pumpkin.js in the BUILD rule.
-import {PumpkinAvailability} from './pumpkin/pumpkin_availability.js';
 
 /** A parsing strategy that utilizes the Pumpkin semantic parser. */
 export class PumpkinParseStrategy extends ParseStrategy {
@@ -30,10 +26,6 @@ export class PumpkinParseStrategy extends ParseStrategy {
   static async create(inputController) {
     const locale = LocaleInfo.locale;
     const instance = new PumpkinParseStrategy(inputController);
-    if (PumpkinAvailability.usePumpkin(locale)) {
-      await instance.initPumpkin_(PumpkinAvailability.LOCALES[locale]);
-    }
-
     return instance;
   }
 

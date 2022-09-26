@@ -19,16 +19,7 @@ accessibility_common_dir =
     "$root_out_dir/resources/chromeos/accessibility/accessibility_common"
 
 group("build") {
-  deps = [
-    ":accessibility_common_copied_files",
-    ":pumpkin_availability_files",
-  ]
-
-  # Only copy pumpkin files if Dictation will use Pumpkin. This keeps the build
-  # size from being inflated during Pumpkin development.
-  if (enable_pumpkin_for_dictation) {
-    deps += [ ":unzip_pumpkin_files" ]
-  }
+  deps = [ ":accessibility_common_copied_files" ]
 }
 
 # Instead of setting up copy targets, use a script to copy all files.
@@ -72,37 +63,6 @@ run_jsbundler("accessibility_common_copied_files") {
   rewrite_rules = [
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
-  ]
-}
-
-if (enable_pumpkin_for_dictation) {
-  pumpkin_output_dir = "$accessibility_common_dir/dictation/parse/pumpkin"
-
-  action("unzip_pumpkin_files") {
-    script = "dictation/parse/pumpkin/unzip_pumpkin.py"
-    sources = [ "dictation/parse/pumpkin/pumpkin_files.zip" ]
-    args = [
-      "--output-dir=resources/chromeos/accessibility/accessibility_common/dictation/parse/pumpkin",
-      rebase_path("dictation/parse/pumpkin/pumpkin_files.zip", root_build_dir),
-    ]
-    outputs = [
-      "$pumpkin_output_dir/js_pumpkin_tagger_bin.js",
-      "$pumpkin_output_dir/tagger_wasm_main.js",
-      "$pumpkin_output_dir/tagger_wasm_main.wasm",
-      "$pumpkin_output_dir/en_us/action_config.binarypb",
-      "$pumpkin_output_dir/en_us/pumpkin_config.binarypb",
-    ]
-  }
-}
-
-copy("pumpkin_availability_files") {
-  if (enable_pumpkin_for_dictation) {
-    sources = [ "dictation/parse/pumpkin/include_pumpkin.js" ]
-  } else {
-    sources = [ "dictation/parse/pumpkin/exclude_pumpkin.js" ]
-  }
-  outputs = [
-    "$accessibility_common_dir/dictation/parse/pumpkin/pumpkin_availability.js",
   ]
 }
 
@@ -280,11 +240,6 @@ js_library("speech_parsing") {
     "dictation/parse/simple_parse_strategy.js",
     "dictation/parse/speech_parser.js",
   ]
-  if (enable_pumpkin_for_dictation) {
-    sources += [ "dictation/parse/pumpkin/include_pumpkin.js" ]
-  } else {
-    sources += [ "dictation/parse/pumpkin/exclude_pumpkin.js" ]
-  }
   deps = [
     ":dictation_input_controller",
     ":dictation_locale_info",
