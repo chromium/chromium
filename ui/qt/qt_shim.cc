@@ -50,7 +50,7 @@ FontHinting QtHintingToFontHinting(QFont::HintingPreference hinting) {
 SkColor GradientColor(const QGradient& gradient) {
   QGradientStops stops = gradient.stops();
   if (stops.empty())
-    return QColorConstants::Transparent.rgba();
+    return qRgba(0, 0, 0, 0);
 
   float a = 0;
   float r = 0;
@@ -84,7 +84,7 @@ SkColor GradientColor(const QGradient& gradient) {
 SkColor TextureColor(QImage image) {
   size_t size = image.width() * image.height();
   if (!size)
-    return QColorConstants::Transparent.rgba();
+    return qRgba(0, 0, 0, 0);
 
   if (image.format() != QImage::Format_ARGB32_Premultiplied)
     image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
