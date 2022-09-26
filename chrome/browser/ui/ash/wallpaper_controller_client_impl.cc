@@ -537,15 +537,10 @@ bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
       SyncServiceFactory::GetForProfile(profile);
   if (!sync_service)
     return false;
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    syncer::SyncUserSettings* user_settings = sync_service->GetUserSettings();
-    return user_settings->IsSyncAllOsTypesEnabled() ||
-           profile->GetPrefs()->GetBoolean(
-               chromeos::settings::prefs::kSyncOsWallpaper);
-  }
-  return sync_service->CanSyncFeatureStart() &&
-         sync_service->GetUserSettings()->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kThemes);
+  syncer::SyncUserSettings* user_settings = sync_service->GetUserSettings();
+  return user_settings->IsSyncAllOsTypesEnabled() ||
+         profile->GetPrefs()->GetBoolean(
+             chromeos::settings::prefs::kSyncOsWallpaper);
 }
 
 void WallpaperControllerClientImpl::OnVolumeMounted(
