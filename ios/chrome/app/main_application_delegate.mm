@@ -255,8 +255,8 @@ const int kMainIntentCheckDelay = 1;
     handleEventsForBackgroundURLSession:(NSString*)identifier
                       completionHandler:(void (^)())completionHandler {
   if ([identifier
-          isEqualToString:base::SysUTF8ToNSString(
-                              download::kBackgroundDownloadIdentifier)]) {
+          hasPrefix:base::SysUTF8ToNSString(
+                        download::kBackgroundDownloadIdentifierPrefix)]) {
     download::BackgroundDownloadService* download_service =
         BackgroundDownloadServiceFactory::GetForBrowserState(
             _mainController.interfaceProvider.mainInterface.browserState);

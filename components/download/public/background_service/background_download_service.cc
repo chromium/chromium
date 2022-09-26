@@ -6,6 +6,6 @@
 
 namespace download {
 #if BUILDFLAG(IS_IOS)
-const char kBackgroundDownloadIdentifier[] = "background_download";
+const char kBackgroundDownloadIdentifierPrefix[] = "background_download";
 #endif  // BUILDFLAG(IS_IOS)
 }  // namespace download

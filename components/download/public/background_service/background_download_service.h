@@ -27,7 +27,7 @@ using TaskFinishedCallback = base::OnceCallback<void(bool)>;
 
 #if BUILDFLAG(IS_IOS)
 // Identifier for background download service.
-extern const char kBackgroundDownloadIdentifier[];
+extern const char kBackgroundDownloadIdentifierPrefix[];
 #endif  // BUILDFLAG(IS_IOS)
 
 // A service responsible for helping facilitate the scheduling and downloading

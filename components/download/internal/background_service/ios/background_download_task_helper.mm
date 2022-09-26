@@ -15,7 +15,9 @@
 #include "base/mac/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -266,9 +268,13 @@ using CreateUrlSessionCallback =
 
 void CreateNSURLSession(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                         CreateUrlSessionCallback callback) {
+  const int kIdentifierSuffix = 1000000;
+  std::string identifier =
+      base::StringPrintf("%s-%d", download::kBackgroundDownloadIdentifierPrefix,
+                         base::RandInt(0, kIdentifierSuffix));
   NSURLSessionConfiguration* configuration = [NSURLSessionConfiguration
-      backgroundSessionConfigurationWithIdentifier:
-          base::SysUTF8ToNSString(download::kBackgroundDownloadIdentifier)];
+      backgroundSessionConfigurationWithIdentifier:base::SysUTF8ToNSString(
+                                                       identifier)];
   configuration.sessionSendsLaunchEvents = YES;
   // TODO(qinmin): Check if we need 2 sessions here, since discretionary
   // value may be different.
