@@ -84,9 +84,9 @@ const char
 //
 // For cumulative layout shift scores, we use actual score values for back-
 // forward cache navigations instead of 0s.
-const base::Feature kBackForwardCacheEmitZeroSamplesForKeyMetrics{
-    "BackForwardCacheEmitZeroSamplesForKeyMetrics",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBackForwardCacheEmitZeroSamplesForKeyMetrics,
+             "BackForwardCacheEmitZeroSamplesForKeyMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace internal
 

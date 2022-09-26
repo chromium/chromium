@@ -12,8 +12,9 @@
 namespace features {
 
 // Enables or disables per-frame memory monitoring.
-const base::Feature kV8PerFrameMemoryMonitoring{
-    "V8PerFrameMemoryMonitoring", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kV8PerFrameMemoryMonitoring,
+             "V8PerFrameMemoryMonitoring",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 

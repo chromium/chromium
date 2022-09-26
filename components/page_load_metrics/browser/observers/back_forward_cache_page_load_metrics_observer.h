@@ -44,7 +44,7 @@ extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[];
 extern const char
     kHistogramCumulativeShiftScoreMainFrameAfterBackForwardCacheRestore[];
 extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[];
-extern const base::Feature kBackForwardCacheEmitZeroSamplesForKeyMetrics;
+BASE_DECLARE_FEATURE(kBackForwardCacheEmitZeroSamplesForKeyMetrics);
 
 }  // namespace internal
 

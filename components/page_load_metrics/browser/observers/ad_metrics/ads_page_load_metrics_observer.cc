@@ -71,8 +71,9 @@ namespace features {
 //
 // Currently this feature only changes AdTagging behavior for metrics recorded
 // in AdsPageLoadMetricsObserver, and for triggering the Heavy Ad Intervention.
-const base::Feature kRestrictedNavigationAdTagging{
-    "RestrictedNavigationAdTagging", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kRestrictedNavigationAdTagging,
+             "RestrictedNavigationAdTagging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 

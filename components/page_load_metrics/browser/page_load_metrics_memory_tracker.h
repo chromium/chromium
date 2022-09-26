@@ -14,7 +14,7 @@
 
 namespace features {
 
-extern const base::Feature kV8PerFrameMemoryMonitoring;
+BASE_DECLARE_FEATURE(kV8PerFrameMemoryMonitoring);
 
 }  // namespace features
 

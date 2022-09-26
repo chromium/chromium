@@ -37,7 +37,7 @@ class HeavyAdService;
 namespace page_load_metrics {
 
 namespace features {
-extern const base::Feature kRestrictedNavigationAdTagging;
+BASE_DECLARE_FEATURE(kRestrictedNavigationAdTagging);
 }
 
 // This observer labels each sub-frame as an ad or not, and keeps track of
