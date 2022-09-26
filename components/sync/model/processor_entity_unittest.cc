@@ -232,6 +232,32 @@ TEST_F(ProcessorEntityTest, NewLocalItem) {
   EXPECT_FALSE(entity->HasCommitData());
 }
 
+// Test handling of invalid server version.
+TEST_F(ProcessorEntityTest,
+       ShouldIgnoreCommitResponseWithInvalidServerVersion) {
+  std::unique_ptr<ProcessorEntity> entity = CreateNew();
+  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1),
+                            /*trimmed_specifics=*/{});
+
+  CommitRequestData request;
+
+  // Ack the commit - set current version to 2.
+  entity->InitializeCommitRequestData(&request);
+  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 2), false);
+
+  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue2),
+                            /*trimmed_specifics=*/{});
+  ASSERT_EQ(2, entity->metadata().server_version());
+  ASSERT_EQ(2, entity->metadata().sequence_number());
+  ASSERT_EQ(1, entity->metadata().acked_sequence_number());
+
+  // Ack the commit - try server version 1.
+  entity->InitializeCommitRequestData(&request);
+  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 1), false);
+  // no update as the server responds with an older version.
+  EXPECT_EQ(2, entity->metadata().server_version());
+}
+
 // Test state for a newly synced server item.
 TEST_F(ProcessorEntityTest, NewServerItem) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();

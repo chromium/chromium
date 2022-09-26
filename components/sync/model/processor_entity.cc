@@ -270,9 +270,10 @@ void ProcessorEntity::ReceiveCommitResponse(const CommitResponseData& data,
   DCHECK_GT(data.sequence_number, metadata_.acked_sequence_number());
   // Version is not valid for commit only types, as it's stripped before being
   // sent to the server, so it cannot behave correctly.
-  // TODO(crbug.com/1351666): do not use DCHECK to verify the server response.
-  DCHECK(commit_only || data.response_version > metadata_.server_version())
-      << data.response_version << " vs " << metadata_.server_version();
+  // Ignore the response if the server responds with an unexpected version.
+  if (!commit_only && data.response_version <= metadata_.server_version()) {
+    return;
+  }
 
   // The server can assign us a new ID in a commit response.
   metadata_.set_server_id(data.id);
