@@ -145,6 +145,11 @@ std::u16string GetAppShortcutsSubdirName();
 using DefaultWebClientWorkerCallback =
     base::OnceCallback<void(DefaultWebClientState)>;
 
+// The type of callback used to communicate processing state to consumers of
+// DefaultBrowserWorker and DefaultProtocolClientWorker.
+using DefaultProtocolHandlerWorkerCallback =
+    base::OnceCallback<void(DefaultWebClientState, const std::u16string&)>;
+
 //  Helper objects that handle checking if Chrome is the default browser
 //  or application for a url protocol on Windows and Linux, and also setting
 //  it as the default. These operations are performed asynchronously on a
@@ -249,24 +254,48 @@ class DefaultBrowserWorker : public DefaultWebClientWorker {
 class DefaultProtocolClientWorker : public DefaultWebClientWorker {
  public:
   explicit DefaultProtocolClientWorker(const std::string& protocol);
+  explicit DefaultProtocolClientWorker(const GURL& url);
 
   DefaultProtocolClientWorker(const DefaultProtocolClientWorker&) = delete;
   DefaultProtocolClientWorker& operator=(const DefaultProtocolClientWorker&) =
       delete;
 
+  // Checks to see if Chrome is the default application for the |url_|.
+  // The provided callback will be run to communicate the default state to the
+  // caller, and also return the name of the default client if available.
+  void StartCheckIsDefaultAndGetDefaultClientName(
+      DefaultProtocolHandlerWorkerCallback callback);
+
   const std::string& protocol() const { return protocol_; }
+  const GURL& url() const { return url_; }
 
  protected:
   ~DefaultProtocolClientWorker() override;
 
+  // Communicates the result via |callback|.
+  void OnCheckIsDefaultAndGetDefaultClientNameComplete(
+      DefaultWebClientState state,
+      std::u16string program_name,
+      DefaultProtocolHandlerWorkerCallback callback);
+
  private:
+  // Checks whether Chrome is the default client for |url_|. This also returns
+  // the default client name if available.
+  void CheckIsDefaultAndGetDefaultClientName(
+      DefaultProtocolHandlerWorkerCallback callback);
+
   // Check if Chrome is the default handler for this protocol.
   DefaultWebClientState CheckIsDefaultImpl() override;
+
+  // Gets the default client name for |protocol_|. Always called on a blocking
+  // sequence.
+  virtual std::u16string GetDefaultClientNameImpl();
 
   // Set Chrome as the default handler for this protocol.
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override;
 
-  std::string protocol_;
+  const std::string protocol_;
+  const GURL url_;
 };
 
 }  // namespace shell_integration

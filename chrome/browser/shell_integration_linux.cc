@@ -293,6 +293,66 @@ void SetActionsForDesktopApplication(
 }
 #endif
 
+base::FilePath GetDesktopFileForDefaultSchemeHandler(base::Environment* env,
+                                                     const GURL& url) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  std::vector<std::string> argv;
+  argv.push_back(shell_integration_linux::kXdgSettings);
+  argv.push_back("get");
+  argv.push_back(shell_integration_linux::kXdgSettingsDefaultSchemeHandler);
+  argv.push_back(url.scheme());
+  argv.push_back(chrome::GetDesktopName(env));
+
+  std::string desktop_file_name;
+  if (base::GetAppOutput(base::CommandLine(argv), &desktop_file_name) &&
+      desktop_file_name.find(".desktop") != std::string::npos) {
+    // Remove trailing newline
+    desktop_file_name.erase(desktop_file_name.length() - 1, 1);
+    return base::FilePath(desktop_file_name);
+  }
+
+  return base::FilePath();
+}
+
+std::string GetDesktopEntryStringValueFromFromDesktopFile(
+    const std::string& key,
+    const std::string& shortcut_contents) {
+  std::string key_value;
+#if defined(USE_GLIB)
+  // An empty file causes a crash with glib <= 2.32, so special case here.
+  if (shortcut_contents.empty())
+    return key_value;
+
+  GKeyFile* key_file = g_key_file_new();
+  GError* err = nullptr;
+  if (!g_key_file_load_from_data(key_file, shortcut_contents.c_str(),
+                                 shortcut_contents.size(), G_KEY_FILE_NONE,
+                                 &err)) {
+    LOG(WARNING) << "Unable to read desktop file template: " << err->message;
+    g_error_free(err);
+    g_key_file_free(key_file);
+    return key_value;
+  }
+
+  char* key_c_string =
+      g_key_file_get_string(key_file, kDesktopEntry, key.c_str(), &err);
+  if (key_c_string) {
+    key_value = key_c_string;
+    g_free(key_c_string);
+  } else {
+    g_error_free(err);
+  }
+
+  g_key_file_free(key_file);
+#else
+  NOTIMPLEMENTED();
+#endif
+
+  return key_value;
+}
+
 }  // namespace
 
 // Allows LaunchXdgUtility to join a process.
@@ -364,42 +424,20 @@ std::vector<base::FilePath> GetDataSearchLocations(base::Environment* env) {
 
 namespace internal {
 
+std::string GetDesktopEntryStringValueFromFromDesktopFileForTest(
+    const std::string& key,
+    const std::string& shortcut_contents) {
+  return shell_integration_linux::GetDesktopEntryStringValueFromFromDesktopFile(
+      key, shortcut_contents);
+}
+
 // Get the value of NoDisplay from the [Desktop Entry] section of a .desktop
 // file, given in |shortcut_contents|. If the key is not found, returns false.
 bool GetNoDisplayFromDesktopFile(const std::string& shortcut_contents) {
-#if defined(USE_GLIB)
-  // An empty file causes a crash with glib <= 2.32, so special case here.
-  if (shortcut_contents.empty())
-    return false;
-
-  GKeyFile* key_file = g_key_file_new();
-  GError* err = NULL;
-  if (!g_key_file_load_from_data(key_file, shortcut_contents.c_str(),
-                                 shortcut_contents.size(), G_KEY_FILE_NONE,
-                                 &err)) {
-    LOG(WARNING) << "Unable to read desktop file template: " << err->message;
-    g_error_free(err);
-    g_key_file_free(key_file);
-    return false;
-  }
-
-  bool nodisplay = false;
-  char* nodisplay_c_string = g_key_file_get_string(key_file, kDesktopEntry,
-                                                   "NoDisplay", &err);
-  if (nodisplay_c_string) {
-    if (!g_strcmp0(nodisplay_c_string, "true"))
-      nodisplay = true;
-    g_free(nodisplay_c_string);
-  } else {
-    g_error_free(err);
-  }
-
-  g_key_file_free(key_file);
-  return nodisplay;
-#else
-  NOTIMPLEMENTED();
-  return false;
-#endif
+  std::string nodisplay_value =
+      shell_integration_linux::GetDesktopEntryStringValueFromFromDesktopFile(
+          "NoDisplay", shortcut_contents);
+  return nodisplay_value == "true";
 }
 
 // Gets the path to the Chrome executable or wrapper script.
@@ -773,7 +811,22 @@ DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
 }
 
 std::u16string GetApplicationNameForProtocol(const GURL& url) {
-  return u"xdg-open";
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+
+  std::string desktop_file_contents;
+  std::string application_name;
+  base::FilePath desktop_filepath =
+      shell_integration_linux::GetDesktopFileForDefaultSchemeHandler(env.get(),
+                                                                     url);
+  if (shell_integration_linux::GetExistingShortcutContents(
+          env.get(), desktop_filepath, &desktop_file_contents)) {
+    application_name =
+        shell_integration_linux::GetDesktopEntryStringValueFromFromDesktopFile(
+            "Name", desktop_file_contents);
+  }
+
+  return application_name.empty() ? u"xdg-open"
+                                  : base::ASCIIToUTF16(application_name);
 }
 
 DefaultWebClientState GetDefaultBrowser() {

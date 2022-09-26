@@ -19,7 +19,8 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     bool has_user_gesture,
     bool is_in_fenced_frame_tree,
     const absl::optional<url::Origin>& initiating_origin,
-    content::WeakDocumentPtr) {
+    content::WeakDocumentPtr,
+    const std::u16string& program_name) {
   navigation_interception::InterceptNavigationDelegate* delegate =
       navigation_interception::InterceptNavigationDelegate::Get(web_contents);
   if (!delegate)

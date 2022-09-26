@@ -27,10 +27,12 @@ class FakeExternalProtocolHandlerWorker
     : public shell_integration::DefaultProtocolClientWorker {
  public:
   FakeExternalProtocolHandlerWorker(
-      const std::string& protocol,
-      shell_integration::DefaultWebClientState os_state)
-      : shell_integration::DefaultProtocolClientWorker(protocol),
-        os_state_(os_state) {}
+      const GURL& url,
+      shell_integration::DefaultWebClientState os_state,
+      const std::u16string& program_name)
+      : shell_integration::DefaultProtocolClientWorker(url),
+        os_state_(os_state),
+        program_name_(program_name) {}
 
  private:
   ~FakeExternalProtocolHandlerWorker() override = default;
@@ -39,11 +41,14 @@ class FakeExternalProtocolHandlerWorker
     return os_state_;
   }
 
+  std::u16string GetDefaultClientNameImpl() override { return program_name_; }
+
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
     std::move(on_finished_callback).Run();
   }
 
   shell_integration::DefaultWebClientState os_state_;
+  std::u16string program_name_;
 };
 
 class FakeExternalProtocolHandlerDelegate
@@ -56,12 +61,12 @@ class FakeExternalProtocolHandlerDelegate
         has_launched_(false),
         has_prompted_(false),
         has_blocked_(false),
-        on_complete_(std::move(on_complete)) {}
+        on_complete_(std::move(on_complete)),
+        program_name_(u"") {}
 
   scoped_refptr<shell_integration::DefaultProtocolClientWorker>
-  CreateShellWorker(
-      const std::string& protocol) override {
-    return new FakeExternalProtocolHandlerWorker(protocol, os_state_);
+  CreateShellWorker(const GURL& url) override {
+    return new FakeExternalProtocolHandlerWorker(url, os_state_, program_name_);
   }
 
   ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
@@ -82,9 +87,11 @@ class FakeExternalProtocolHandlerDelegate
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin) override {
+      const absl::optional<url::Origin>& initiating_origin,
+      const std::u16string& program_name) override {
     EXPECT_EQ(block_state_, ExternalProtocolHandler::UNKNOWN);
     EXPECT_NE(os_state_, shell_integration::IS_DEFAULT);
+    EXPECT_EQ(program_name_, program_name);
     has_prompted_ = true;
     launch_or_prompt_url_ = url;
     initiating_origin_ = initiating_origin;
@@ -109,6 +116,8 @@ class FakeExternalProtocolHandlerDelegate
   void set_os_state(shell_integration::DefaultWebClientState value) {
     os_state_ = value;
   }
+
+  void set_program_name(const std::u16string& value) { program_name_ = value; }
 
   void set_block_state(ExternalProtocolHandler::BlockState value) {
     block_state_ = value;
@@ -140,6 +149,7 @@ class FakeExternalProtocolHandlerDelegate
   GURL launch_or_prompt_url_;
   absl::optional<url::Origin> initiating_origin_;
   base::OnceClosure on_complete_;
+  std::u16string program_name_;
 };
 
 class ExternalProtocolHandlerTest : public testing::Test {
@@ -166,7 +176,7 @@ class ExternalProtocolHandlerTest : public testing::Test {
               Action expected_action) {
     DoTest(block_state, os_state, expected_action, GURL("mailto:test@test.com"),
            url::Origin::Create(GURL("https://example.test")),
-           url::Origin::Create(GURL("https://precursor.test")));
+           url::Origin::Create(GURL("https://precursor.test")), u"TestApp");
   }
 
   // Launches |url| in the current WebContents and checks that the
@@ -183,13 +193,15 @@ class ExternalProtocolHandlerTest : public testing::Test {
               Action expected_action,
               const GURL& url,
               const url::Origin& initiating_origin,
-              const url::Origin& expected_initiating_precursor_origin) {
+              const url::Origin& expected_initiating_precursor_origin,
+              const std::u16string& program_name) {
     EXPECT_FALSE(delegate_.has_prompted());
     EXPECT_FALSE(delegate_.has_launched());
     EXPECT_FALSE(delegate_.has_blocked());
     ExternalProtocolHandler::SetDelegateForTesting(&delegate_);
     delegate_.set_block_state(block_state);
     delegate_.set_os_state(os_state);
+    delegate_.set_program_name(program_name);
     ExternalProtocolHandler::LaunchUrl(
         url,
         base::BindRepeating(&ExternalProtocolHandlerTest::GetWebContents,
@@ -295,7 +307,7 @@ TEST_F(ExternalProtocolHandlerTest, TestUrlEscape) {
   GURL url("alert:test message\" --bad%2B\r\n 文本 \"file");
   DoTest(ExternalProtocolHandler::UNKNOWN, shell_integration::NOT_DEFAULT,
          Action::PROMPT, url, url::Origin::Create(GURL("https://example.test")),
-         url::Origin::Create(GURL("https://precursor.test")));
+         url::Origin::Create(GURL("https://precursor.test")), u"TestApp");
   // Expect that the "\r\n" has been removed, and all other illegal URL
   // characters have been escaped.
   EXPECT_EQ("alert:test%20message%22%20--bad%2B%20%E6%96%87%E6%9C%AC%20%22file",
@@ -499,5 +511,5 @@ TEST_F(ExternalProtocolHandlerTest, TestOpaqueInitiatingOrigin) {
       url::Origin::Resolve(GURL("data:text/html,hi"), precursor_origin);
   DoTest(ExternalProtocolHandler::UNKNOWN, shell_integration::NOT_DEFAULT,
          Action::PROMPT, GURL("mailto:test@test.test"), opaque_origin,
-         precursor_origin);
+         precursor_origin, u"TestApp");
 }

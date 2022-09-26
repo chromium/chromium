@@ -56,11 +56,10 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     bool ignored_has_user_gesture,
     bool ignored_is_in_fenced_frame_tree,
     const absl::optional<url::Origin>& initiating_origin,
-    content::WeakDocumentPtr initiator_document) {
+    content::WeakDocumentPtr initiator_document,
+    const std::u16string& program_name) {
   DCHECK(web_contents);
 
-  std::u16string program_name =
-      shell_integration::GetApplicationNameForProtocol(url);
   if (program_name.empty()) {
     // ShellExecute won't do anything. Don't bother warning the user.
     return;

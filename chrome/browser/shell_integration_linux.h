@@ -148,6 +148,13 @@ bool GetNoDisplayFromDesktopFile(const std::string& shortcut_contents);
 // never happen.
 base::FilePath GetChromeExePath();
 
+// Get the value of |key| from the [Desktop Entry] section of a .desktop file,
+// given in |shortcut_contents|. If the key is not found, returns an empty
+// string.
+std::string GetDesktopEntryStringValueFromFromDesktopFileForTest(
+    const std::string& key,
+    const std::string& shortcut_contents);
+
 }  // namespace internal
 
 }  // namespace shell_integration_linux

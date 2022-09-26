@@ -43,7 +43,8 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     bool has_user_gesture,
     bool is_in_fenced_frame_tree,
     const absl::optional<url::Origin>& initiating_origin,
-    content::WeakDocumentPtr initiator_document) {
+    content::WeakDocumentPtr initiator_document,
+    const std::u16string& program_name) {
   // First, check if ARC version of the dialog is available and run ARC version
   // when possible.
   arc::RunArcExternalProtocolDialog(

@@ -98,12 +98,12 @@ void AddMessageToConsole(const content::WeakDocumentPtr& document,
 // Functions enabling unit testing. Using a NULL delegate will use the default
 // behavior; if a delegate is provided it will be used instead.
 scoped_refptr<shell_integration::DefaultProtocolClientWorker> CreateShellWorker(
-    const std::string& protocol,
+    const GURL& url,
     ExternalProtocolHandler::Delegate* delegate) {
   if (delegate)
-    return delegate->CreateShellWorker(protocol);
+    return delegate->CreateShellWorker(url);
   return base::MakeRefCounted<shell_integration::DefaultProtocolClientWorker>(
-      protocol);
+      url);
 }
 
 ExternalProtocolHandler::BlockState GetBlockStateWithDelegate(
@@ -125,18 +125,20 @@ void RunExternalProtocolDialogWithDelegate(
     bool is_in_fenced_frame_tree,
     const absl::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document,
+    const std::u16string& program_name,
     ExternalProtocolHandler::Delegate* delegate) {
   DCHECK(web_contents);
   if (delegate) {
     delegate->RunExternalProtocolDialog(url, web_contents, page_transition,
-                                        has_user_gesture, initiating_origin);
+                                        has_user_gesture, initiating_origin,
+                                        program_name);
     return;
   }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // If the Shell does not have a registered name for the protocol,
   // attempting to invoke the protocol will fail.
-  if (shell_integration::GetApplicationNameForProtocol(url).empty()) {
+  if (program_name.empty()) {
     AddMessageToConsole(
         initiator_document, blink::mojom::ConsoleMessageLevel::kError,
         "Failed to launch '" + url.possibly_invalid_spec() +
@@ -147,8 +149,8 @@ void RunExternalProtocolDialogWithDelegate(
 
   ExternalProtocolHandler::RunExternalProtocolDialog(
       url, web_contents, page_transition, has_user_gesture,
-      is_in_fenced_frame_tree, initiating_origin,
-      std::move(initiator_document));
+      is_in_fenced_frame_tree, initiating_origin, std::move(initiator_document),
+      program_name);
 }
 
 void LaunchUrlWithoutSecurityCheckWithDelegate(
@@ -201,7 +203,8 @@ void OnDefaultProtocolClientWorkerFinished(
     const absl::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document,
     ExternalProtocolHandler::Delegate* delegate,
-    shell_integration::DefaultWebClientState state) {
+    shell_integration::DefaultWebClientState state,
+    const std::u16string& program_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (delegate)
@@ -221,9 +224,9 @@ void OnDefaultProtocolClientWorkerFinished(
                           web_contents->GetBrowserContext(), escaped_url)) {
     // Handle tel links by opening the Click to Call dialog. This will call back
     // into LaunchUrlWithoutSecurityCheck if the user selects a system handler.
-    ClickToCallUiController::ShowDialog(web_contents, initiating_origin,
-                                        std::move(initiator_document),
-                                        escaped_url, chrome_is_default_handler);
+    ClickToCallUiController::ShowDialog(
+        web_contents, initiating_origin, std::move(initiator_document),
+        escaped_url, chrome_is_default_handler, program_name);
     return;
   }
 #endif
@@ -247,7 +250,7 @@ void OnDefaultProtocolClientWorkerFinished(
     RunExternalProtocolDialogWithDelegate(
         escaped_url, web_contents, page_transition, has_user_gesture,
         is_in_fenced_frame_tree, initiating_origin,
-        std::move(initiator_document), delegate);
+        std::move(initiator_document), program_name, delegate);
     return;
   }
 
@@ -471,17 +474,19 @@ void ExternalProtocolHandler::LaunchUrl(
 
   // The worker creates tasks with references to itself and puts them into
   // message loops.
-  shell_integration::DefaultWebClientWorkerCallback callback = base::BindOnce(
-      &OnDefaultProtocolClientWorkerFinished, escaped_url,
-      std::move(web_contents_getter), block_state == UNKNOWN, page_transition,
-      has_user_gesture, is_in_fenced_frame_tree, initiating_origin_or_precursor,
-      std::move(initiator_document), g_external_protocol_handler_delegate);
+  shell_integration::DefaultProtocolHandlerWorkerCallback callback =
+      base::BindOnce(&OnDefaultProtocolClientWorkerFinished, escaped_url,
+                     std::move(web_contents_getter), block_state == UNKNOWN,
+                     page_transition, has_user_gesture, is_in_fenced_frame_tree,
+                     initiating_origin_or_precursor,
+                     std::move(initiator_document),
+                     g_external_protocol_handler_delegate);
 
   // Start the check process running. This will send tasks to a worker task
   // runner and when the answer is known will send the result back to
   // OnDefaultProtocolClientWorkerFinished().
-  CreateShellWorker(escaped_url.scheme(), g_external_protocol_handler_delegate)
-      ->StartCheckIsDefault(std::move(callback));
+  CreateShellWorker(escaped_url, g_external_protocol_handler_delegate)
+      ->StartCheckIsDefaultAndGetDefaultClientName(std::move(callback));
 }
 
 // static

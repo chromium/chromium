@@ -56,8 +56,8 @@ constexpr char kRedirectingOrigin[] = "b.test";
 class FakeDefaultProtocolClientWorker
     : public shell_integration::DefaultProtocolClientWorker {
  public:
-  explicit FakeDefaultProtocolClientWorker(const std::string& protocol)
-      : DefaultProtocolClientWorker(protocol) {}
+  explicit FakeDefaultProtocolClientWorker(const GURL& url)
+      : DefaultProtocolClientWorker(url) {}
   FakeDefaultProtocolClientWorker(const FakeDefaultProtocolClientWorker&) =
       delete;
   FakeDefaultProtocolClientWorker& operator=(
@@ -68,6 +68,8 @@ class FakeDefaultProtocolClientWorker
   shell_integration::DefaultWebClientState CheckIsDefaultImpl() override {
     return shell_integration::DefaultWebClientState::NOT_DEFAULT;
   }
+
+  std::u16string GetDefaultClientNameImpl() override { return u"TestApp"; }
 
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -109,11 +111,12 @@ class ExternalProtocolDialogBrowserTest
     test::ExternalProtocolDialogTestApi(dialog_).SetCheckBoxSelected(checked);
   }
 
-  // ExternalProtocolHander::Delegate:
+  // ExternalProtocolHandler::Delegate:
   scoped_refptr<shell_integration::DefaultProtocolClientWorker>
-  CreateShellWorker(const std::string& protocol) override {
-    return base::MakeRefCounted<FakeDefaultProtocolClientWorker>(protocol);
+  CreateShellWorker(const GURL& url) override {
+    return base::MakeRefCounted<FakeDefaultProtocolClientWorker>(url);
   }
+
   ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
                                                     Profile* profile) override {
     return ExternalProtocolHandler::UNKNOWN;
@@ -124,7 +127,9 @@ class ExternalProtocolDialogBrowserTest
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin) override {
+      const absl::optional<url::Origin>& initiating_origin,
+      const std::u16string& program_name) override {
+    EXPECT_EQ(program_name, u"TestApp");
     url_did_launch_ = true;
     launch_url_ = initiating_origin->host();
     if (launch_url_run_loop_)

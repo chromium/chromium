@@ -692,4 +692,49 @@ TEST(ShellIntegrationTest, WmClass) {
       internal::GetProgramClassClass(command_line, "foo.desktop"));
 }
 
+TEST(ShellIntegrationTest, GetDesktopEntryStringValueFromFromDesktopFile) {
+  const char* const kDesktopFileContents =
+      "#!/usr/bin/env xdg-open\n"
+      "[Desktop Entry]\n"
+      "Version=1.0\n"
+      "Terminal=false\n"
+      "Type=Application\n"
+      "Name=Lawful example\n"
+      "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId\n"
+      "Icon=IconName\n"
+      "StartupWMClass=example.app\n"
+      "Actions=action1\n\n"
+      "[Desktop Action action1]\n"
+      "Name=Action 1\n"
+      "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId --Test"
+      "Action1=Value";
+
+  // Verify basic strings return the right value.
+  EXPECT_EQ("Lawful example",
+            shell_integration_linux::internal::
+                GetDesktopEntryStringValueFromFromDesktopFileForTest(
+                    "Name", kDesktopFileContents));
+  EXPECT_EQ("example.app",
+            shell_integration_linux::internal::
+                GetDesktopEntryStringValueFromFromDesktopFileForTest(
+                    "StartupWMClass", kDesktopFileContents));
+  // Verify that booleans are returned correctly.
+  EXPECT_EQ("false", shell_integration_linux::internal::
+                         GetDesktopEntryStringValueFromFromDesktopFileForTest(
+                             "Terminal", kDesktopFileContents));
+  // Verify that numbers are returned correctly.
+  EXPECT_EQ("1.0", shell_integration_linux::internal::
+                       GetDesktopEntryStringValueFromFromDesktopFileForTest(
+                           "Version", kDesktopFileContents));
+  // Verify that a non-existent key returns an empty string.
+  EXPECT_EQ("", shell_integration_linux::internal::
+                    GetDesktopEntryStringValueFromFromDesktopFileForTest(
+                        "DoesNotExistKey", kDesktopFileContents));
+  // Verify that a non-existent key in [Desktop Entry] section returns an empty
+  // string.
+  EXPECT_EQ("", shell_integration_linux::internal::
+                    GetDesktopEntryStringValueFromFromDesktopFileForTest(
+                        "Action1", kDesktopFileContents));
+}
+
 }  // namespace shell_integration_linux

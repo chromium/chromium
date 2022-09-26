@@ -286,7 +286,7 @@ class AlwaysBlockedExternalProtocolHandlerDelegate
   }
 
   scoped_refptr<shell_integration::DefaultProtocolClientWorker>
-  CreateShellWorker(const std::string& protocol) override {
+  CreateShellWorker(const GURL& url) override {
     NOTREACHED();
     return nullptr;
   }
@@ -300,7 +300,8 @@ class AlwaysBlockedExternalProtocolHandlerDelegate
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin) override {
+      const absl::optional<url::Origin>& initiating_origin,
+      const std::u16string& program_name) override {
     NOTREACHED();
   }
   void LaunchUrlWithoutSecurityCheck(

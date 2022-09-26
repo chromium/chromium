@@ -365,12 +365,12 @@ class MailtoExternalProtocolHandlerDelegate
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin) override {}
+      const absl::optional<url::Origin>& initiating_origin,
+      const std::u16string& program_name) override {}
 
   scoped_refptr<shell_integration::DefaultProtocolClientWorker>
-  CreateShellWorker(
-      const std::string& protocol) override {
-    return new shell_integration::DefaultProtocolClientWorker(protocol);
+  CreateShellWorker(const GURL& url) override {
+    return new shell_integration::DefaultProtocolClientWorker(url);
   }
 
   ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,

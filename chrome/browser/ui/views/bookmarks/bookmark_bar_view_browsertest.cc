@@ -215,8 +215,8 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
   class FakeDefaultProtocolClientWorker
       : public shell_integration::DefaultProtocolClientWorker {
    public:
-    explicit FakeDefaultProtocolClientWorker(const std::string& protocol)
-        : DefaultProtocolClientWorker(protocol) {}
+    explicit FakeDefaultProtocolClientWorker(const GURL& url)
+        : DefaultProtocolClientWorker(url) {}
     FakeDefaultProtocolClientWorker(
         const FakeDefaultProtocolClientWorker& other) = delete;
     FakeDefaultProtocolClientWorker& operator=(
@@ -228,6 +228,8 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
       return shell_integration::DefaultWebClientState::NOT_DEFAULT;
     }
 
+    std::u16string GetDefaultClientNameImpl() override { return u"TestApp"; }
+
     void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, std::move(on_finished_callback));
@@ -236,8 +238,8 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
 
  private:
   scoped_refptr<shell_integration::DefaultProtocolClientWorker>
-  CreateShellWorker(const std::string& protocol) override {
-    return base::MakeRefCounted<FakeDefaultProtocolClientWorker>(protocol);
+  CreateShellWorker(const GURL& url) override {
+    return base::MakeRefCounted<FakeDefaultProtocolClientWorker>(url);
   }
 
   void BlockRequest() override { FAIL(); }
@@ -252,7 +254,8 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin) override {
+      const absl::optional<url::Origin>& initiating_origin,
+      const std::u16string& program_name) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     EXPECT_TRUE(url_invoked_.is_empty());

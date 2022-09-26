@@ -47,7 +47,7 @@ class ExternalProtocolHandler {
   class Delegate {
    public:
     virtual scoped_refptr<shell_integration::DefaultProtocolClientWorker>
-    CreateShellWorker(const std::string& protocol) = 0;
+    CreateShellWorker(const GURL& url) = 0;
     virtual BlockState GetBlockState(const std::string& scheme,
                                      Profile* profile) = 0;
     virtual void BlockRequest() = 0;
@@ -56,7 +56,8 @@ class ExternalProtocolHandler {
         content::WebContents* web_contents,
         ui::PageTransition page_transition,
         bool has_user_gesture,
-        const absl::optional<url::Origin>& initiating_origin) = 0;
+        const absl::optional<url::Origin>& initiating_origin,
+        const std::u16string& program_name) = 0;
     virtual void LaunchUrlWithoutSecurityCheck(
         const GURL& url,
         content::WebContents* web_contents) = 0;
@@ -169,7 +170,8 @@ class ExternalProtocolHandler {
       bool has_user_gesture,
       bool is_in_fenced_frame_tree,
       const absl::optional<url::Origin>& initiating_origin,
-      content::WeakDocumentPtr initiator_document);
+      content::WeakDocumentPtr initiator_document,
+      const std::u16string& program_name);
 
   // Clears the external protocol handling data.
   static void ClearData(Profile* profile);

@@ -65,20 +65,25 @@ base::LazyThreadPoolSequencedTaskRunner g_sequenced_task_runner =
         base::TaskTraits(base::MayBlock()));
 #endif
 
+bool IsValidDefaultWebClientState(DefaultWebClientState state) {
+  switch (state) {
+    case NOT_DEFAULT:
+    case IS_DEFAULT:
+    case UNKNOWN_DEFAULT:
+    case OTHER_MODE_IS_DEFAULT:
+      return true;
+    case NUM_DEFAULT_STATES:
+      break;
+  }
+  NOTREACHED();
+  return false;
+}
+
 void RunCallback(DefaultWebClientWorkerCallback callback,
                  DefaultWebClientState state) {
-  if (!callback.is_null()) {
-    switch (state) {
-      case NOT_DEFAULT:
-      case IS_DEFAULT:
-      case UNKNOWN_DEFAULT:
-      case OTHER_MODE_IS_DEFAULT:
-        std::move(callback).Run(state);
-        return;
-      case NUM_DEFAULT_STATES:
-        break;
-    }
-    NOTREACHED();
+  if (!callback.is_null() && IsValidDefaultWebClientState(state)) {
+    std::move(callback).Run(state);
+    return;
   }
 }
 
@@ -305,16 +310,61 @@ DefaultProtocolClientWorker::DefaultProtocolClientWorker(
     const std::string& protocol)
     : DefaultWebClientWorker("DefaultProtocolClient"), protocol_(protocol) {}
 
+DefaultProtocolClientWorker::DefaultProtocolClientWorker(const GURL& url)
+    : DefaultWebClientWorker("DefaultProtocolClient"),
+      protocol_(url.scheme()),
+      url_(url) {}
+
+void DefaultProtocolClientWorker::StartCheckIsDefaultAndGetDefaultClientName(
+    DefaultProtocolHandlerWorkerCallback callback) {
+  g_sequenced_task_runner.Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &DefaultProtocolClientWorker::CheckIsDefaultAndGetDefaultClientName,
+          this, std::move(callback)));
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // DefaultProtocolClientWorker, protected:
 
 DefaultProtocolClientWorker::~DefaultProtocolClientWorker() = default;
 
+void DefaultProtocolClientWorker::
+    OnCheckIsDefaultAndGetDefaultClientNameComplete(
+        DefaultWebClientState state,
+        std::u16string program_name,
+        DefaultProtocolHandlerWorkerCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!callback.is_null() && IsValidDefaultWebClientState(state)) {
+    std::move(callback).Run(state, program_name);
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // DefaultProtocolClientWorker, private:
 
+void DefaultProtocolClientWorker::CheckIsDefaultAndGetDefaultClientName(
+    DefaultProtocolHandlerWorkerCallback callback) {
+  DCHECK(!url_.is_empty());
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  DefaultWebClientState state = CheckIsDefaultImpl();
+  std::u16string program_name = GetDefaultClientNameImpl();
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DefaultProtocolClientWorker::
+                         OnCheckIsDefaultAndGetDefaultClientNameComplete,
+                     this, state, program_name, std::move(callback)));
+}
+
 DefaultWebClientState DefaultProtocolClientWorker::CheckIsDefaultImpl() {
   return IsDefaultProtocolClient(protocol_);
+}
+
+std::u16string DefaultProtocolClientWorker::GetDefaultClientNameImpl() {
+  return GetApplicationNameForProtocol(url_);
 }
 
 void DefaultProtocolClientWorker::SetAsDefaultImpl(
