@@ -6450,6 +6450,26 @@
             ]
         }
     ],
+    "MediaAppPhotosIntegration": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220926",
+                    "params": {
+                        "minPhotosVersionForImage": "6.8",
+                        "minPhotosVersionForVideo": "6.8"
+                    },
+                    "enable_features": [
+                        "MediaAppPhotosIntegrationImage",
+                        "MediaAppPhotosIntegrationVideo"
+                    ]
+                }
+            ]
+        }
+    ],
     "MediaFoundationD3D11VideoCapture": [
         {
             "platforms": [
