@@ -10,6 +10,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
+#include "ash/shell.h"
+#include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -557,6 +560,17 @@ void DemoSession::OnSessionStateChanged() {
                                                    current_locale_iso_code);
       }
       RestoreDefaultLocaleForNextSession();
+
+      if (ash::Shell::HasInstance() &&
+          user_manager::UserManager::Get()->GetActiveUser()) {
+        ash::Shell::Get()
+            ->keyboard_backlight_color_controller()
+            ->SetBacklightColor(
+                personalization_app::mojom::BacklightColor::kRainbow,
+                user_manager::UserManager::Get()
+                    ->GetActiveUser()
+                    ->GetAccountId());
+      }
 
       if (!ash::features::IsDemoModeSWAEnabled() ||
           extension_misc::IsDemoModeChromeApp(GetHighlightsAppId())) {
