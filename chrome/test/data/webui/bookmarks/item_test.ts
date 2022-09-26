@@ -44,7 +44,7 @@ suite('<bookmarks-item>', function() {
     // Change to a folder.
     item.itemId = '1';
 
-    assertEquals('folder-icon', item.$.icon.className);
+    assertEquals('folder-icon icon-folder-open', item.$.icon.className);
   });
 
   test('pressing the menu button selects the item', function() {

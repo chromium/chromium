@@ -32,23 +32,12 @@ class CrIconsDemoComponent extends PolymerElement {
   }
 
   private crIcons_: string[] = [
-    'icon-arrow-back',
-    'icon-arrow-dropdown',
-    'icon-cancel',
-    'icon-clear',
-    'icon-copy-content',
-    'icon-delete-gray',
-    'icon-edit',
-    'icon-picture-delete',
-    'icon-expand-less',
-    'icon-expand-more',
-    'icon-external',
-    'icon-more-vert',
-    'icon-refresh',
-    'icon-search',
-    'icon-settings',
-    'icon-visibility',
-    'icon-visibility-off',
+    'icon-arrow-back',  'icon-arrow-dropdown', 'icon-cancel',
+    'icon-clear',       'icon-copy-content',   'icon-delete-gray',
+    'icon-edit',        'icon-folder-open',    'icon-picture-delete',
+    'icon-expand-less', 'icon-expand-more',    'icon-external',
+    'icon-more-vert',   'icon-refresh',        'icon-search',
+    'icon-settings',    'icon-visibility',     'icon-visibility-off',
     'subpage-arrow',
   ];
   private iconColor_: string = '#000000';

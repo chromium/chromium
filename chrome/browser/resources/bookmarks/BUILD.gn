@@ -7,10 +7,7 @@ import("//chrome/browser/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "bookmarks"
 
-  static_files = [
-    "bookmarks.html",
-    "images/folder_open.svg",
-  ]
+  static_files = [ "bookmarks.html" ]
 
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [

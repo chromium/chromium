@@ -8,7 +8,9 @@
 <div id="bookmarksContainer">
   <template is="dom-if" if="[[showPowerBookmarks_]]" restamp>
     <template is="dom-repeat" items="[[topLevelBookmarks_]]">
-      <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]">
+      <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
+          description="[[getBookmarkDescription_(item)]]"
+          compact="[[compact_]]">
       </power-bookmark-row>
     </template>
   </template>

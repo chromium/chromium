@@ -67,6 +67,11 @@ export class BookmarksListElement extends PolymerElement {
         reflectToAttribute: true,
         value: loadTimeData.getBoolean('showPowerBookmarks'),
       },
+
+      compact_: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -85,6 +90,7 @@ export class BookmarksListElement extends PolymerElement {
   private openFolders_: string[];
   private shoppingListenerIds_: number[] = [];
   private showPowerBookmarks_: boolean;
+  private compact_: boolean;
 
   override ready() {
     super.ready();
@@ -213,6 +219,19 @@ export class BookmarksListElement extends PolymerElement {
   private addListener_(eventName: string, callback: Function): void {
     this.bookmarksApi_.callbackRouter[eventName]!.addListener(callback);
     this.listeners_.set(eventName, callback);
+  }
+
+  /**
+   * Returns a text description for the given bookmark, to be displayed
+   * following the bookmark title.
+   */
+  private getBookmarkDescription_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      string {
+    if (bookmark.url && !this.compact_) {
+      return bookmark.url;
+    } else {
+      return '';
+    }
   }
 
   /**

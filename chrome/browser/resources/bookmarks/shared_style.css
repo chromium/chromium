@@ -60,7 +60,7 @@ hr {
 }
 
 .folder-icon {
-  -webkit-mask-image: url(chrome://bookmarks/images/folder_open.svg);
+  -webkit-mask-image: var(--cr-icon-image);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: var(--cr-icon-size);

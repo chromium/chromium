@@ -35,6 +35,10 @@
   --cr-icon-image: url(chrome://resources/images/icon_edit.svg);
 }
 
+.icon-folder-open {
+  --cr-icon-image: url(chrome://resources/images/icon_folder_open.svg);
+}
+
 .icon-picture-delete {
   --cr-icon-image: url(chrome://resources/images/icon_picture_delete.svg);
 }

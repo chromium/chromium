@@ -266,7 +266,8 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
   }
 
   private updateFavicon_(url: string) {
-    this.$.icon.className = url ? 'website-icon' : 'folder-icon';
+    this.$.icon.className =
+        url ? 'website-icon' : 'folder-icon icon-folder-open';
     this.$.icon.style.backgroundImage =
         url ? getFaviconForPageURL(url, false) : '';
   }
