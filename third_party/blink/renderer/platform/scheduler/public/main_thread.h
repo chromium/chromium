@@ -18,6 +18,7 @@ class MainThreadTaskRunnerRestricted {
   friend class CachedStorageArea;
   friend class CategorizedWorkerPoolImpl;
   friend class MemoryCache;
+  friend class ParkableImageManager;
   friend class RendererResourceCoordinatorImpl;
   friend class SharedGpuContext;
   friend class ThreadedIconLoader;

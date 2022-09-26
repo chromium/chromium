@@ -41,17 +41,16 @@ class ParkableImageBaseTest : public ::testing::Test {
                   ThreadPoolExecutionMode::DEFAULT) {}
 
   void SetUp() override {
-    Platform::SetMainThreadTaskRunnerForTesting();
     auto& manager = ParkableImageManager::Instance();
     manager.ResetForTesting();
     manager.SetDataAllocatorForTesting(
         std::make_unique<InMemoryDataAllocator>());
+    manager.SetTaskRunnerForTesting(task_env_.GetMainThreadTaskRunner());
   }
 
   void TearDown() override {
     CHECK_EQ(ParkableImageManager::Instance().Size(), 0u);
     task_env_.FastForwardUntilNoTasksRemain();
-    Platform::UnsetMainThreadTaskRunnerForTesting();
   }
 
  protected:
@@ -73,8 +72,8 @@ class ParkableImageBaseTest : public ::testing::Test {
     return task_env_.GetPendingMainThreadTaskCount();
   }
 
-  static bool MaybePark(scoped_refptr<ParkableImage> pi) {
-    return pi->impl_->MaybePark();
+  bool MaybePark(scoped_refptr<ParkableImage> pi) {
+    return pi->impl_->MaybePark(task_env_.GetMainThreadTaskRunner());
   }
   static void Unpark(scoped_refptr<ParkableImage> pi) {
     base::AutoLock lock(pi->impl_->lock_);

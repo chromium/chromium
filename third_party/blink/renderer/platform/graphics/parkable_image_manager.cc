@@ -35,6 +35,16 @@ ParkableImageManager& ParkableImageManager::Instance() {
   return *instance;
 }
 
+ParkableImageManager::ParkableImageManager()
+    : task_runner_(Thread::MainThread()->GetTaskRunner(
+          MainThreadTaskRunnerRestricted())) {}
+
+void ParkableImageManager::SetTaskRunnerForTesting(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  DCHECK(task_runner);
+  task_runner_ = std::move(task_runner);
+}
+
 bool ParkableImageManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs&,
     base::trace_event::ProcessMemoryDump* pmd) {
@@ -104,11 +114,9 @@ void ParkableImageManager::Add(ParkableImageImpl* impl) {
   ScheduleDelayedParkingTaskIfNeeded();
 
   if (!has_posted_accounting_task_) {
-    auto task_runner = Thread::Current()->GetDeprecatedTaskRunner();
-    DCHECK(task_runner);
     // |base::Unretained(this)| is fine because |this| is a NoDestructor
     // singleton.
-    task_runner->PostDelayedTask(
+    task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ParkableImageManager::RecordStatisticsAfter5Minutes,
                        base::Unretained(this)),
@@ -166,11 +174,7 @@ void ParkableImageManager::DestroyParkableImage(
   if (IsMainThread()) {
     DestroyParkableImageOnMainThread(std::move(image));
   } else {
-    auto* thread = Thread::MainThread();
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        thread->GetDeprecatedTaskRunner();
-    DCHECK(task_runner);
-    task_runner->PostTask(
+    task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ParkableImageManager::DestroyParkableImageOnMainThread,
                        base::Unretained(this), std::move(image)));
@@ -224,10 +228,7 @@ void ParkableImageManager::ScheduleDelayedParkingTaskIfNeeded() {
   if (has_pending_parking_task_)
     return;
 
-  auto* thread = Thread::MainThread();
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      thread->GetDeprecatedTaskRunner();
-  task_runner->PostDelayedTask(
+  task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ParkableImageManager::MaybeParkImages,
                      base::Unretained(this)),
@@ -261,7 +262,7 @@ void ParkableImageManager::MaybeParkImages() {
   for (auto* image : unparked_images) {
     if (image->ShouldReschedule())
       should_reschedule = true;
-    image->MaybePark();
+    image->MaybePark(task_runner_);
   }
 
   lock_.Acquire();

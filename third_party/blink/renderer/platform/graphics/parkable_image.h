@@ -79,7 +79,8 @@ class PLATFORM_EXPORT ParkableImageImpl final
 
   // Attempt to park to disk. Returns false if it cannot be parked right now for
   // whatever reason, true if we will _attempt_ to park it to disk.
-  bool MaybePark() LOCKS_EXCLUDED(lock_);
+  bool MaybePark(scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      LOCKS_EXCLUDED(lock_);
 
   // Unpark the data from disk. This is blocking, on the same thread (since we
   // cannot expect to continue with anything that needs the data until we have

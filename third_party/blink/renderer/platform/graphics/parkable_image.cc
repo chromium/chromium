@@ -311,7 +311,8 @@ bool ParkableImageImpl::TransientlyUnableToPark() const {
   }
 }
 
-bool ParkableImageImpl::MaybePark() {
+bool ParkableImageImpl::MaybePark(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
 
   base::AutoLock lock(lock_);
@@ -335,7 +336,7 @@ bool ParkableImageImpl::MaybePark() {
       FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&ParkableImageImpl::WriteToDiskInBackground,
                           scoped_refptr<ParkableImageImpl>(this),
-                          Thread::Current()->GetDeprecatedTaskRunner()));
+                          std::move(task_runner)));
   return true;
 }
 
