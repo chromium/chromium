@@ -44,9 +44,9 @@ namespace network_time {
 class NetworkTimeTracker;
 }
 
-extern const base::Feature kMITMSoftwareInterstitial;
-extern const base::Feature kCaptivePortalInterstitial;
-extern const base::Feature kCaptivePortalCertificateList;
+BASE_DECLARE_FEATURE(kMITMSoftwareInterstitial);
+BASE_DECLARE_FEATURE(kCaptivePortalInterstitial);
+BASE_DECLARE_FEATURE(kCaptivePortalCertificateList);
 
 // This class is responsible for deciding what type of interstitial to display
 // for an SSL validation error and actually displaying it. The display of the
