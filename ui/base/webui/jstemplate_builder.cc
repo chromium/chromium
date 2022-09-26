@@ -41,7 +41,7 @@ void AppendLoadTimeData(std::string* output) {
   // fetch and cache the pointer of the jstemplate resource source text.
   std::string load_time_data_src =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_WEBUI_JS_LOAD_TIME_DATA_JS);
+          IDR_WEBUI_JS_LOAD_TIME_DATA_DEPRECATED_JS);
 
   if (load_time_data_src.empty()) {
     NOTREACHED() << "Unable to get loadTimeData src";

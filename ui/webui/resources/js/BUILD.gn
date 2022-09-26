@@ -6,11 +6,8 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("../tools/js_modulizer.gni")
-import("../tools/js_unmodulizer.gni")
 
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/js"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 preprocess_src_manifest = "preprocessed_src_manifest.json"
 
 include_polymer = !is_android && !is_ios
@@ -19,10 +16,7 @@ generate_grd("build_grdp") {
   grd_prefix = "webui_js"
   out_grd = "$target_gen_dir/resources.grdp"
   public_deps = [ ":preprocess" ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_gen_manifest",
-    "$target_gen_dir/$preprocess_src_manifest",
-  ]
+  manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
   if (include_polymer) {
     manifest_files += [ "$target_gen_dir/browser_command/build_ts.manifest" ]
   }
@@ -31,7 +25,6 @@ generate_grd("build_grdp") {
 
 group("preprocess") {
   public_deps = [
-    ":preprocess_generated",
     ":preprocess_src",
     ":preprocess_src_ts",
     "cr/ui:preprocess",
@@ -67,6 +60,7 @@ preprocess_if_expr("preprocess_src") {
     "event_tracker.js",
     "icon.js",
     "load_time_data.m.js",
+    "load_time_data_deprecated.js",
     "parse_html_subset.js",
     "plural_string_proxy.js",
     "promise_resolver.js",
@@ -98,14 +92,6 @@ preprocess_if_expr("preprocess_src") {
   }
 }
 
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":unmodulize" ]
-  in_folder = target_gen_dir
-  out_folder = "$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [ "load_time_data.js" ]
-}
-
 group("closure_compile") {
   deps = [ ":js_resources" ]
 }
@@ -113,7 +99,7 @@ group("closure_compile") {
 js_type_check("js_resources") {
   uses_legacy_modules = true
   deps = [
-    ":load_time_data",
+    ":load_time_data_deprecated",
     ":util_deprecated",
     ":webui_resource_test",
   ]
@@ -132,9 +118,7 @@ if (is_chromeos_ash) {
   }
 }
 
-js_library("load_time_data") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/load_time_data.js" ]
-  extra_deps = [ ":unmodulize" ]
+js_library("load_time_data_deprecated") {
 }
 
 js_library("util_deprecated") {
@@ -147,12 +131,7 @@ js_library("webui_resource_test") {
   externs_list = [ "dom_automation_controller.js" ]
 }
 
-# Targets for auto-generating and type-checking JS Modules
-
-js_unmodulizer("unmodulize") {
-  input_files = [ "load_time_data.m.js" ]
-  output_files = [ "load_time_data.js" ]
-}
+# Targets for type-checking JS Modules
 
 group("closure_compile_modules") {
   deps = [

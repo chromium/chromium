@@ -131,7 +131,6 @@ _web_instance_host_deps_files_to_exclude = [
   "lib/libEGL.so",
   "lib/libGLESv2.so",
   "lib/libvulkan.so",
-  "ui/webui/resources/js/load_time_data.js",
 
   # TODO(crbug.com/1022542): SwiftShader is not used in cast_runner.
   # This list should match the list of SwiftShader files excluded from the

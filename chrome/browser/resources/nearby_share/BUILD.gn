@@ -162,7 +162,7 @@ js_library("app") {
     "./shared:nearby_visibility_page",
     "./shared:types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "//ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager_externs.js" ]
 }

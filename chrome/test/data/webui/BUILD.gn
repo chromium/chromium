@@ -137,7 +137,6 @@ if (include_js_tests) {
       "//crypto:buildflags",
       "//services/network/public/cpp",
       "//skia",
-      "//ui/webui/resources/js:unmodulize",
     ]
 
     if (use_nss_certs) {
@@ -214,7 +213,7 @@ if (include_js_tests) {
       ]
     }
 
-    data = [ "$root_gen_dir/ui/webui/resources/js/load_time_data.js" ]
+    data = [ "//ui/webui/resources/js/load_time_data_deprecated.js" ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
