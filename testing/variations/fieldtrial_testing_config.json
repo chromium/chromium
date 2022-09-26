@@ -9328,7 +9328,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220707",
+                    "name": "Enabled_20220923",
                     "enable_features": [
                         "ShutdownConfirmationBubble"
                     ]
