@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace {
 const char kExtensionFeaturesHistogramName[] =
@@ -587,6 +588,74 @@ TEST_F(UseCounterImplTest, H1UserAgentFontSizeInSectionApplied) {
   UpdateAllLifecyclePhases(document);
   EXPECT_TRUE(document.IsUseCounted(feature))
       << "Inside sectioning element with UA font-size";
+}
+
+TEST_F(UseCounterImplTest, CSSAtSupportsDropInvalidWhileForgivingParsing) {
+  ScopedCSSAtSupportsAlwaysNonForgivingParsingForTest scoped_feature(false);
+
+  auto test_counter = [this](const char* selector, bool counted) {
+    auto dummy_page_holder =
+        std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+    Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+    Document& document = dummy_page_holder->GetDocument();
+    WebFeature feature =
+        WebFeature::kCSSAtSupportsDropInvalidWhileForgivingParsing;
+    EXPECT_FALSE(document.IsUseCounted(feature));
+
+    {
+      StringBuilder html;
+      html.Append("<style> ");
+      html.Append(selector);
+      html.Append(" {} </style>");
+      document.body()->setInnerHTML(html.ReleaseString());
+      UpdateAllLifecyclePhases(document);
+      EXPECT_FALSE(document.IsUseCounted(feature)) << selector;
+    }
+
+    {
+      StringBuilder html;
+      html.Append("<style> @supports selector(");
+      html.Append(selector);
+      html.Append(") {} </style>");
+      document.body()->setInnerHTML(html.ReleaseString());
+      UpdateAllLifecyclePhases(document);
+      EXPECT_EQ(document.IsUseCounted(feature), counted) << selector;
+    }
+  };
+
+  test_counter(":is(.a)", false);
+  test_counter(":is(.a .b)", false);
+  test_counter(":is(.a, .b)", false);
+  test_counter(":is(:not(.a))", false);
+  test_counter(":host(:is(.a))", false);
+  test_counter(":is()", true);
+  test_counter(":is(:foo)", true);
+  test_counter(":is(:foo,.a)", true);
+  test_counter(":is(.a,:foo)", true);
+  test_counter(":is(,.a)", true);
+  test_counter(":is(::first-line)", true);
+  test_counter(":host(:is())", true);
+  test_counter(":host(:is(:foo))", true);
+  test_counter(":host(:is(,.a))", true);
+  test_counter(":host(:is(.a .b))", true);
+  test_counter("::part(foo):is(.a)", true);
+
+  test_counter(":has(.a)", false);
+  test_counter(":has(.a .b)", false);
+  test_counter(":has(.a, .b)", false);
+  test_counter(":has(:not(.a))", false);
+  test_counter(":has()", true);
+  test_counter(":has(:foo)", true);
+  test_counter(":has(:foo,.a)", true);
+  test_counter(":has(.a,:foo)", true);
+  test_counter(":has(,.a)", true);
+  test_counter(":has(::first-line)", true);
+  test_counter(":host(:has())", true);
+  test_counter(":host(:has(:foo))", true);
+  test_counter(":host(:has(,.a))", true);
+  test_counter(":host(:has(.a))", true);
+  test_counter("::part(foo):has(.a)", true);
+  test_counter(":has(:has(.a))", true);
 }
 
 }  // namespace blink

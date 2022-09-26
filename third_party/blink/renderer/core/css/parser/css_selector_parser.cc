@@ -221,6 +221,33 @@ CSSSelectorList CSSSelectorParser<UseArena>::ConsumeNestedSelectorList(
   return CSSSelectorList::AdoptSelectorVector<UseArena>(result);
 }
 
+namespace {
+
+// Added to get usecounter of dropping invalid selectors while parsing
+// selectors inside @supports in the forgiving way to check the potential
+// breakage after enabling CSSAtSupportsAlwaysNonForgivingParsing.
+// TODO(blee@igalia.com) Need to remove this after the flag is enabled.
+class CSSAtSupportsDropInvalidWhileForgivingParsingCounter {
+  STACK_ALLOCATED();
+
+ public:
+  explicit CSSAtSupportsDropInvalidWhileForgivingParsingCounter(
+      const CSSParserContext* context)
+      : context_(context) {}
+  ~CSSAtSupportsDropInvalidWhileForgivingParsingCounter() {
+    if (!counted_)
+      return;
+    context_->Count(WebFeature::kCSSAtSupportsDropInvalidWhileForgivingParsing);
+  }
+  void Count() { counted_ = true; }
+
+ private:
+  const CSSParserContext* context_;
+  bool counted_{false};
+};
+
+}  // namespace
+
 template <bool UseArena>
 absl::optional<CSSSelectorList>
 CSSSelectorParser<UseArena>::ConsumeForgivingNestedSelectorList(
@@ -244,6 +271,8 @@ CSSSelectorParser<UseArena>::ConsumeForgivingComplexSelectorList(
   }
 
   CSSSelectorVector<UseArena> selector_list;
+  CSSAtSupportsDropInvalidWhileForgivingParsingCounter
+      at_supports_drop_invalid_counter(context_);
 
   while (!range.AtEnd()) {
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
@@ -251,13 +280,18 @@ CSSSelectorParser<UseArena>::ConsumeForgivingComplexSelectorList(
     SelectorReturnType selector = ConsumeComplexSelector(argument);
     if (selector && !failed_parsing_ && argument.AtEnd())
       selector_list.push_back(std::move(selector));
+    else if (in_supports_parsing_)
+      at_supports_drop_invalid_counter.Count();
     if (range.Peek().GetType() != kCommaToken)
       break;
     range.ConsumeIncludingWhitespace();
   }
 
-  if (selector_list.empty())
+  if (selector_list.empty()) {
+    if (in_supports_parsing_)
+      at_supports_drop_invalid_counter.Count();
     return CSSSelectorList();
+  }
 
   return CSSSelectorList::AdoptSelectorVector<UseArena>(selector_list);
 }
@@ -275,6 +309,8 @@ CSSSelectorParser<UseArena>::ConsumeForgivingCompoundSelectorList(
   }
 
   CSSSelectorVector<UseArena> selector_list;
+  CSSAtSupportsDropInvalidWhileForgivingParsingCounter
+      at_supports_drop_invalid_counter(context_);
 
   while (!range.AtEnd()) {
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
@@ -283,13 +319,18 @@ CSSSelectorParser<UseArena>::ConsumeForgivingCompoundSelectorList(
     argument.ConsumeWhitespace();
     if (selector && !failed_parsing_ && argument.AtEnd())
       selector_list.push_back(std::move(selector));
+    else if (in_supports_parsing_)
+      at_supports_drop_invalid_counter.Count();
     if (range.Peek().GetType() != kCommaToken)
       break;
     range.ConsumeIncludingWhitespace();
   }
 
-  if (selector_list.empty())
+  if (selector_list.empty()) {
+    if (in_supports_parsing_)
+      at_supports_drop_invalid_counter.Count();
     return CSSSelectorList();
+  }
 
   return CSSSelectorList::AdoptSelectorVector<UseArena>(selector_list);
 }
@@ -307,6 +348,8 @@ CSSSelectorParser<UseArena>::ConsumeForgivingRelativeSelectorList(
   }
 
   CSSSelectorVector<UseArena> selector_list;
+  CSSAtSupportsDropInvalidWhileForgivingParsingCounter
+      at_supports_drop_invalid_counter(context_);
 
   while (!range.AtEnd()) {
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
@@ -314,6 +357,8 @@ CSSSelectorParser<UseArena>::ConsumeForgivingRelativeSelectorList(
     SelectorReturnType selector = ConsumeRelativeSelector(argument);
     if (selector && !failed_parsing_ && argument.AtEnd())
       selector_list.push_back(std::move(selector));
+    else if (in_supports_parsing_)
+      at_supports_drop_invalid_counter.Count();
     if (range.Peek().GetType() != kCommaToken)
       break;
     range.ConsumeIncludingWhitespace();
@@ -325,6 +370,9 @@ CSSSelectorParser<UseArena>::ConsumeForgivingRelativeSelectorList(
   if (inside_compound_pseudo_ ||
       restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
       selector_list.empty()) {
+    if (in_supports_parsing_)
+      at_supports_drop_invalid_counter.Count();
+
     // TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
     // JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
     // Should return empty CSSSelectorList. (return CSSSelectorList())
