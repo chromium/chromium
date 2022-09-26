@@ -84,6 +84,10 @@ test_valid_value("color", "hwb(120 30% 50% / 0)", "rgba(77, 128, 77, 0)");
 test_valid_value("color", "hwb(none 100% 50% / none)", "rgba(170, 170, 170, 0)");
 test_valid_value("color", "hwb(0 100% 50% / 0)", "rgba(170, 170, 170, 0)");
 
+test_valid_value("color", "hsl(72deg 22% 77%)", "rgb(204, 209, 183)");
+test_valid_value("color", "hwb(160grad 30% 17%)", "rgb(77, 212, 131)");
+test_valid_value("color", "hsl(3.77rad 43% 24%)", "rgb(35, 56, 88)");
+test_valid_value("color", "hwb(0.8turn 29% 6%)", "rgb(207, 74, 240)");
 
 for (const colorSpace of [ "srgb", "srgb-linear", "a98-rgb", "rec2020", "prophoto-rgb", "display-p3" ]) {
     test_valid_value("color", `color(${colorSpace} 0% 0% 0%)`, `color(${colorSpace} 0 0 0)`);

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 452 tests; 436 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 456 tests; 440 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS e.style['color'] = "currentcolor" should set the property value
 PASS e.style['color'] = "transparent" should set the property value
 PASS e.style['color'] = "red" should set the property value
@@ -68,6 +68,10 @@ PASS e.style['color'] = "hwb(120 30% 50% / none)" should set the property value
 PASS e.style['color'] = "hwb(120 30% 50% / 0)" should set the property value
 PASS e.style['color'] = "hwb(none 100% 50% / none)" should set the property value
 PASS e.style['color'] = "hwb(0 100% 50% / 0)" should set the property value
+PASS e.style['color'] = "hsl(72deg 22% 77%)" should set the property value
+PASS e.style['color'] = "hwb(160grad 30% 17%)" should set the property value
+PASS e.style['color'] = "hsl(3.77rad 43% 24%)" should set the property value
+PASS e.style['color'] = "hwb(0.8turn 29% 6%)" should set the property value
 PASS e.style['color'] = "color(srgb 0% 0% 0%)" should set the property value
 PASS e.style['color'] = "color(srgb 10% 10% 10%)" should set the property value
 PASS e.style['color'] = "color(srgb .2 .2 25%)" should set the property value
