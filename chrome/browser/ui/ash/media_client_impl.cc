@@ -471,7 +471,7 @@ void MediaClientImpl::OnActiveClientChange(cros::mojom::CameraClientType type,
       ash::Shell::Get()
           ->privacy_hub_controller()
           ->camera_controller()
-          .ShowNotification(GetNameOfAppAccessingCameraInternal());
+          .ShowCameraOffNotification();
     }
   }
 }

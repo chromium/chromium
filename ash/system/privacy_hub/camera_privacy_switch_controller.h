@@ -9,11 +9,22 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 namespace ash {
+
+// The ID for a notification shown when the user tries to use a camera while the
+// camera is disabled in Privacy Hub.
+inline constexpr char kPrivacyHubCameraOffNotificationId[] =
+    "ash.media.privacy_hub.activity_with_disabled_camera";
+// The ID for a notification shown when the user enables camera via a HW switch
+// but it is still disabled in PrivacyHub.
+inline constexpr char
+    kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId[] =
+        "ash.media.privacy_hub.want_to_turn_off_camera";
 
 // Enumeration of camera switch states.
 enum class CameraSWPrivacySwitchSetting { kDisabled, kEnabled };
@@ -62,11 +73,21 @@ class ASH_EXPORT CameraPrivacySwitchController
       std::unique_ptr<CameraPrivacySwitchAPI> switch_api);
 
   // Displays the camera off notification.
-  void ShowNotification(const std::u16string& app_name);
+  void ShowCameraOffNotification();
 
  private:
   // Retrieves the current value of the user pref.
   CameraSWPrivacySwitchSetting GetUserSwitchPreference();
+
+  // Displays the "Do you want to turn the camera off" notification.
+  void ShowHWCameraSwitchOffSWCameraSwitchOnNotification();
+
+  // Displays a notification with an action that can enable/disable the camera.
+  void ShowNotification(bool action_enables_camera,
+                        const char* kNotificationId,
+                        const int notification_title_id,
+                        const int notification_message_id,
+                        const NotificationCatalogName catalog);
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CameraPrivacySwitchAPI> switch_api_;

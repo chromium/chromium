@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 
 using testing::_;
 
@@ -53,6 +54,13 @@ class PrivacyHubCameraControllerTests : public AshTestBase {
   void SetUserPref(bool allowed) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
         prefs::kUserCameraAllowed, allowed);
+  }
+
+  bool GetUserPref() const {
+    return Shell::Get()
+        ->session_controller()
+        ->GetActivePrefService()
+        ->GetBoolean(prefs::kUserCameraAllowed);
   }
 
   // AshTestBase:
@@ -106,12 +114,52 @@ TEST_F(PrivacyHubCameraControllerTests, UIAction) {
 TEST_F(PrivacyHubCameraControllerTests, OnCameraHardwarePrivacySwitchChanged) {
   EXPECT_CALL(mock_frontend_, CameraHardwareToggleChanged(
                                   cros::mojom::CameraPrivacySwitchState::OFF));
+  EXPECT_CALL(mock_frontend_, CameraHardwareToggleChanged(
+                                  cros::mojom::CameraPrivacySwitchState::ON));
   CameraPrivacySwitchController& controller =
       Shell::Get()->privacy_hub_controller()->camera_controller();
+  SetUserPref(true);
+
   controller.OnCameraHWPrivacySwitchStatusChanged(
       0, cros::mojom::CameraPrivacySwitchState::OFF);
   EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::OFF,
             controller.HWSwitchState());
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
+
+  controller.OnCameraHWPrivacySwitchStatusChanged(
+      0, cros::mojom::CameraPrivacySwitchState::ON);
+  EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::ON,
+            controller.HWSwitchState());
+
+  message_center::MessageCenter* const mcenter =
+      message_center::MessageCenter::Get();
+  EXPECT_TRUE(mcenter->FindNotificationById(
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
+  EXPECT_TRUE(GetUserPref());
+  mcenter->ClickOnNotificationButton(
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId, 0);
+  EXPECT_FALSE(GetUserPref());
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
+}
+
+TEST_F(PrivacyHubCameraControllerTests, CameraOffNotification) {
+  SetUserPref(false);
+  message_center::MessageCenter* const mcenter =
+      message_center::MessageCenter::Get();
+  EXPECT_TRUE(mcenter);
+  EXPECT_FALSE(
+      mcenter->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+
+  controller_->ShowCameraOffNotification();
+  EXPECT_TRUE(
+      mcenter->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_FALSE(GetUserPref());
+  mcenter->ClickOnNotificationButton(kPrivacyHubCameraOffNotificationId, 0);
+  EXPECT_TRUE(GetUserPref());
+  EXPECT_FALSE(
+      mcenter->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 }
 
 }  // namespace ash

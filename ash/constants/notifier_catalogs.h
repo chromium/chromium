@@ -167,7 +167,8 @@ enum class NotificationCatalogName {
   kArcLowDiskSpacePostStop = 152,
   kMultiCapture = 153,
   kPrivacyHubCamera = 154,
-  kMaxValue = kPrivacyHubCamera
+  kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn = 155,
+  kMaxValue = kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn
 };
 
 // A living catalog that registers system nudges.
