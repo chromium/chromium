@@ -4,43 +4,19 @@
 
 #include "gin/shell_runner.h"
 
-#include "base/compiler_specific.h"
-#include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "gin/array_buffer.h"
 #include "gin/converter.h"
 #include "gin/public/isolate_holder.h"
-#include "gin/v8_initializer.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-#ifdef V8_USE_EXTERNAL_STARTUP_DATA
-#include "gin/public/isolate_holder.h"
-#endif
-
-using v8::Isolate;
-using v8::Object;
-using v8::Script;
-using v8::String;
+#include "gin/test/v8_test.h"
 
 namespace gin {
 
-TEST(RunnerTest, Run) {
-  // V8 is generally multi threaded and may use tasks for arbitrary reasons,
-  // such as GC and off-thread compilation.
-  base::test::TaskEnvironment task_environment;
+typedef V8Test RunnerTest;
+
+TEST_F(RunnerTest, Run) {
   std::string source = "this.result = 'PASS';\n";
 
-#ifdef V8_USE_EXTERNAL_STARTUP_DATA
-  gin::V8Initializer::LoadV8Snapshot();
-#endif
-
-  gin::IsolateHolder::Initialize(gin::IsolateHolder::kStrictMode,
-                                 gin::ArrayBufferAllocator::SharedInstance());
-  gin::IsolateHolder instance(base::ThreadTaskRunnerHandle::Get(),
-                              gin::IsolateHolder::IsolateType::kTest);
-
   ShellRunnerDelegate delegate;
-  Isolate* isolate = instance.isolate();
+  v8::Isolate* isolate = instance_->isolate();
   ShellRunner runner(&delegate, isolate);
   Runner::Scope scope(&runner);
   runner.Run(source, "test_data.js");
