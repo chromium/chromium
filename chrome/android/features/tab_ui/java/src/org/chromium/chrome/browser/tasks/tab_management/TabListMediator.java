@@ -1438,7 +1438,8 @@ class TabListMediator {
                 int itemType = mModel.get(position).type;
 
                 if (itemType == TabProperties.UiType.MESSAGE
-                        || itemType == TabProperties.UiType.LARGE_MESSAGE) {
+                        || itemType == TabProperties.UiType.LARGE_MESSAGE
+                        || itemType == UiType.DIVIDER) {
                     return manager.getSpanCount();
                 }
                 return 1;

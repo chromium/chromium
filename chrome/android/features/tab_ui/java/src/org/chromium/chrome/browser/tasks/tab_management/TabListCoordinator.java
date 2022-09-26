@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -270,7 +273,7 @@ public class TabListCoordinator
             }
         }
 
-        if (mMode == TabListMode.GRID && selectionDelegateProvider == null) {
+        if (mMode == TabListMode.GRID) {
             mGlobalLayoutListener = this::updateThumbnailLocation;
             if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mContext)) {
                 mListLayoutListener = (view, left, top, right, bottom, oldLeft, oldTop, oldRight,
@@ -346,8 +349,14 @@ public class TabListCoordinator
         final int cardWidthPx = (viewWidth / layoutManager.getSpanCount());
         final int cardHeightPx = TabUtils.deriveGridCardHeight(cardWidthPx, mContext);
         for (int i = 0; i < mModel.size(); i++) {
-            mModel.get(i).model.set(
-                    TabProperties.GRID_CARD_SIZE, new Size(cardWidthPx, cardHeightPx));
+            PropertyModel tabPropertyModel = mModel.get(i).model;
+            // Other GTS items might intentionally have different dimensions. For example, the
+            // pre-selected tab group divider and the large price tracking message span the width of
+            // the recycler view.
+            if (tabPropertyModel.get(CARD_TYPE) == ModelType.TAB) {
+                tabPropertyModel.set(
+                        TabProperties.GRID_CARD_SIZE, new Size(cardWidthPx, cardHeightPx));
+            }
         }
     }
 
@@ -414,6 +423,21 @@ public class TabListCoordinator
         mMediator.hardCleanup();
     }
 
+    private void registerLayoutChangeListener() {
+        if (mListLayoutListener != null) {
+            assert !mLayoutListenerRegistered;
+            mLayoutListenerRegistered = true;
+            mRecyclerView.addOnLayoutChangeListener(mListLayoutListener);
+        }
+    }
+
+    private void unregisterLayoutChangeListener() {
+        if (mListLayoutListener != null) {
+            mRecyclerView.removeOnLayoutChangeListener(mListLayoutListener);
+            mLayoutListenerRegistered = false;
+        }
+    }
+
     void prepareTabSwitcherView() {
         if (mGlobalLayoutListener != null) {
             mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
@@ -424,26 +448,19 @@ public class TabListCoordinator
         mMediator.registerOnScrolledListener(mRecyclerView);
     }
 
-    private void registerLayoutChangeListener() {
-        if (mListLayoutListener != null) {
-            assert !mLayoutListenerRegistered;
-            mLayoutListenerRegistered = true;
-            mRecyclerView.addOnLayoutChangeListener(mListLayoutListener);
-        }
+    public void prepareTabGridView() {
+        registerLayoutChangeListener();
     }
 
-    public void prepareTabGridDialogView() {
-        registerLayoutChangeListener();
+    public void cleanupTabGridView() {
+        unregisterLayoutChangeListener();
     }
 
     void postHiding() {
         if (mGlobalLayoutListener != null) {
             mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(mGlobalLayoutListener);
         }
-        if (mListLayoutListener != null) {
-            mRecyclerView.removeOnLayoutChangeListener(mListLayoutListener);
-            mLayoutListenerRegistered = false;
-        }
+        unregisterLayoutChangeListener();
         mRecyclerView.postHiding();
         mMediator.postHiding();
     }

@@ -71,7 +71,7 @@ public class TabGridThumbnailView extends RoundedCornerImageView {
             int height = (int) (getWidth() * 1.0 / expectedThumbnailAspectRatio);
             setMinimumHeight(Math.min(getHeight(), height));
         } else {
-            setMinimumHeight(getWidth());
+            setMinimumHeight(getHeight());
         }
     }
 }
