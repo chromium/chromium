@@ -6177,14 +6177,7 @@ void RenderFrameHostImpl::GoToEntryAtOffset(int32_t offset,
 
   // All frames are allowed to navigate the global history.
   if (delegate_->IsAllowedToGoToEntryAtOffset(offset)) {
-    if (IsSandboxed(network::mojom::WebSandboxFlags::kTopNavigation)) {
-      // Keep track of whether this is a session history from a sandboxed iframe
-      // with top level navigation disallowed.
-      frame_tree_->controller().GoToOffsetInSandboxedFrame(
-          offset, GetFrameTreeNodeId());
-    } else {
-      frame_tree_->controller().GoToOffsetFromRenderer(offset);
-    }
+    frame_tree_->controller().GoToOffsetFromRenderer(offset, this);
   }
 }
 
@@ -6200,12 +6193,7 @@ void RenderFrameHostImpl::NavigateToNavigationApiKey(const std::string& key,
           frame_tree_->root()->navigation_request(), has_user_gesture)) {
     return;
   }
-  int sandboxed_source_frame_tree_node_id =
-      IsSandboxed(network::mojom::WebSandboxFlags::kTopNavigation)
-          ? frame_tree_node()->frame_tree_node_id()
-          : FrameTreeNode::kFrameTreeNodeInvalidId;
-  frame_tree_->controller().NavigateToNavigationApiKey(
-      frame_tree_node(), sandboxed_source_frame_tree_node_id, key);
+  frame_tree_->controller().NavigateToNavigationApiKey(this, key);
 }
 
 void RenderFrameHostImpl::HandleAccessibilityFindInPageResult(

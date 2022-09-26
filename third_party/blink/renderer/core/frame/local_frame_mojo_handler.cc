@@ -1243,6 +1243,15 @@ void LocalFrameMojoHandler::NotifyNavigationApiOfDisposedEntries(
   }
 }
 
+void LocalFrameMojoHandler::TraverseCancelled(
+    const String& navigation_api_key,
+    mojom::blink::TraverseCancelledReason reason) {
+  if (NavigationApi* navigation_api =
+          NavigationApi::navigation(*frame_->DomWindow())) {
+    navigation_api->TraverseCancelled(navigation_api_key, reason);
+  }
+}
+
 void LocalFrameMojoHandler::AnimateDoubleTapZoom(const gfx::Point& point,
                                                  const gfx::Rect& rect) {
   frame_->GetPage()->GetChromeClient().AnimateDoubleTapZoom(point, rect);

@@ -138,6 +138,14 @@ enum JavaScriptExecutionResultType {
   kException,
 };
 
+// The reason why a navigation API traversal was cancelled in the browser
+// process, so the navigation API can report the appropriate error.
+// https://wicg.github.io/navigation-api/#perform-a-navigation-api-traversal
+enum TraverseCancelledReason {
+  kNotFound,
+  kSandboxViolation,
+};
+
 // The maximum number of characters of the document's title that we're willing
 // to accept in the browser process.
 const uint16 kMaxTitleChars = 4096; // 4 * 1024;
@@ -874,6 +882,14 @@ interface LocalFrame {
   // Updates navigation.entries() when entries are disposed from the session
   // history.
   NotifyNavigationApiOfDisposedEntries(array<string> keys);
+
+  // Called when a traversal requested by the NavigationApi is cancelled in the
+  // browser.
+  // When the NavigationApi requests a traversal, it provides
+  // |navigation_api_key| to the browser, which is an opaque reference to a
+  // session history entry for this frame. It is sent back to the renderer here
+  // to indicate which traversal failed.
+  TraverseCancelled(string navigation_api_key, TraverseCancelledReason reason);
 };
 
 // Also implemented in Blink, this interface defines frame-specific methods

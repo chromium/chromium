@@ -197,6 +197,8 @@ class LocalFrameMojoHandler
       mojom::blink::NavigationApiHistoryEntryArraysPtr) final;
   void NotifyNavigationApiOfDisposedEntries(
       const WTF::Vector<WTF::String>&) final;
+  void TraverseCancelled(const String& navigation_api_key,
+                         mojom::blink::TraverseCancelledReason reason) final;
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,

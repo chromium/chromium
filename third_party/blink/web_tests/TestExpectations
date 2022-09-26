@@ -6667,10 +6667,6 @@ crbug.com/1311015 [ Mac ] external/wpt/paint-timing/fcp-only/fcp-document-opacit
 crbug.com/1311015 [ Win ] external/wpt/paint-timing/fcp-only/fcp-document-opacity-image.html [ Failure Pass ]
 crbug.com/1311128 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text.html [ Skip ]
 
-# Navigation API incorrectly leaves promises forever unsettled (crbug.com/1311786)
-crbug.com/1311786 external/wpt/navigation-api/navigation-methods/sandboxing-back-parent.html [ Skip ]
-crbug.com/1311786 external/wpt/navigation-api/navigation-methods/sandboxing-back-sibling.html [ Skip ]
-
 # Scroll Unification known issues (go/su-web-tests) for enabling in test:
 crbug.com/1311431 [ Mac ] fast/scroll-behavior/overscroll-behavior.html [ Failure Pass ]
 crbug.com/1248581 fast/scrolling/resize-corner-tracking-touch.html [ Failure Pass ]

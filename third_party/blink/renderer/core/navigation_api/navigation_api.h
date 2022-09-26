@@ -128,6 +128,10 @@ class CORE_EXPORT NavigationApi final
   void InformAboutCanceledNavigation(
       CancelNavigationReason reason = CancelNavigationReason::kOther);
 
+  // Called when a traverse is cancelled in the browser process.
+  void TraverseCancelled(const String& key,
+                         mojom::blink::TraverseCancelledReason reason);
+
   int GetIndexFor(NavigationHistoryEntry*);
 
   // EventTargetWithInlineData overrides:

@@ -944,6 +944,34 @@ void NavigationApi::InformAboutCanceledNavigation(
   }
 }
 
+void NavigationApi::TraverseCancelled(
+    const String& key,
+    mojom::blink::TraverseCancelledReason reason) {
+  auto traversal = upcoming_traversals_.find(key);
+  if (traversal == upcoming_traversals_.end())
+    return;
+
+  auto* script_state =
+      ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
+  ScriptState::Scope scope(script_state);
+  DOMException* exception = nullptr;
+  if (reason == mojom::blink::TraverseCancelledReason::kNotFound) {
+    exception = MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "Invalid key");
+  } else if (reason ==
+             mojom::blink::TraverseCancelledReason::kSandboxViolation) {
+    exception = MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kSecurityError,
+        "Navigating to key " + key +
+            " would require a navigation that "
+            "violates this frame's sandbox policy");
+  }
+  DCHECK(exception);
+
+  RejectPromisesAndFireNavigateErrorEvent(
+      traversal->value, ScriptValue::From(script_state, exception));
+}
+
 void NavigationApi::ContextDestroyed() {
   if (ongoing_navigation_)
     ongoing_navigation_->CleanupForWillNeverSettle();

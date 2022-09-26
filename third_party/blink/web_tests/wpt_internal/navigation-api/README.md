@@ -7,5 +7,3 @@ scheduled for removal in M108.
 
 The tests that are not part of the transitionWhile() regression suite are:
 * navigate-from-initial-about-blank-gc.html
-* sandboxing-back-parent-never-settles.html
-* sandboxing-back-sibling-never-settles.html

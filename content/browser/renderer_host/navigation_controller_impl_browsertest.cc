@@ -21501,6 +21501,32 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(), "window.dispose2_fired").ExtractBool());
 }
 
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       NavigationApiTraverseCancelledByRaceCondition) {
+  GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  EXPECT_TRUE(NavigateToURL(contents(), url1));
+  EXPECT_TRUE(NavigateToURL(contents(), url2));
+
+  EXPECT_TRUE(ExecJs(contents(),
+                     "navigation.onnavigateerror = e => document.title ="
+                     "e.error.name === 'InvalidStateError'"
+                     "    ? 'PASS' : 'WRONG_ERROR_TYPE';"));
+
+  // Request navigation.back() in the renderer.
+  ExecuteScriptAsync(contents()->GetPrimaryFrameTree().root(),
+                     "navigation.back()");
+
+  // Before the navigation.back() is processed and sent to the browser, remove
+  // the NavigationEntry that navigation.back() will request to be navigated to.
+  contents()->GetController().PruneAllButLastCommitted();
+
+  // The browser process should notify the renderer that an appropriate entry
+  // could not be found, and the renderer should fire a navigateerror event.
+  TitleWatcher title_watcher(shell()->web_contents(), u"PASS");
+  EXPECT_EQ(u"PASS", title_watcher.WaitAndGetTitle());
+}
+
 // Tests that renderer-initiated navigation cancellation from the same JS task
 // that created the navigation can still be triggered after WillProcessResponse,
 // as the browser defers the navigation until the JS task that started it

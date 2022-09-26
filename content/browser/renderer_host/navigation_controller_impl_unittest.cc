@@ -4535,8 +4535,7 @@ TEST_F(NavigationControllerTest,
 
   // Attempte to provide the cross-site-instance key to
   // NavigateToNavigationApiKey(). No navigation should occur.
-  controller.NavigateToNavigationApiKey(
-      root_ftn(), FrameTreeNode::kFrameTreeNodeInvalidId, first_key);
+  controller.NavigateToNavigationApiKey(main_test_rfh(), first_key);
   EXPECT_FALSE(controller.GetPendingEntry());
 }
 
@@ -4571,13 +4570,12 @@ TEST_F(NavigationControllerTest, NavigateToNavigationApiKey_KeyForWrongFrame) {
   FrameTreeNode* subframe_node =
       main_test_rfh()->frame_tree_node()->child_at(0);
   controller_impl().NavigateToNavigationApiKey(
-      subframe_node, FrameTreeNode::kFrameTreeNodeInvalidId, first_main_key);
+      subframe_node->current_frame_host(), first_main_key);
   EXPECT_FALSE(controller_impl().GetPendingEntry());
 
   // Call NavigateToNavigationApiKey() on the main frame with the key from the
   // main frame. This time a navigation should begin.
-  controller_impl().NavigateToNavigationApiKey(
-      root_ftn(), FrameTreeNode::kFrameTreeNodeInvalidId, first_main_key);
+  controller_impl().NavigateToNavigationApiKey(main_test_rfh(), first_main_key);
   EXPECT_TRUE(controller_impl().GetPendingEntry());
 }
 
