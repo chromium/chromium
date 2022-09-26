@@ -132,8 +132,7 @@ void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
       web_contents()->GetBrowserContext()->IsOffTheRecord();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (guest_view::GuestViewBase::IsGuest(
-          content::WebContents::FromRenderFrameHost(rfh))) {
+  if (guest_view::GuestViewBase::IsGuest(rfh)) {
     GetGuestViewDefaultContentSettingRules(is_off_the_record, rules);
     return;
   }
