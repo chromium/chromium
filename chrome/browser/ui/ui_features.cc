@@ -306,10 +306,11 @@ BASE_FEATURE(kWebUIBubblePerProfilePersistence,
 BASE_FEATURE(kWebUITabStrip,
              "WebUITabStrip",
 #if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
+);
 
 // The default value of this flag is aligned with platform behavior to handle
 // context menu with touch.
