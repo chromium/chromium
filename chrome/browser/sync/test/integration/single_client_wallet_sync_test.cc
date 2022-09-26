@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -43,6 +44,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
+#include "components/sync/test/entity_builder_factory.h"
 #include "components/sync/test/fake_server.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "content/public/test/browser_test.h"
@@ -1319,6 +1321,37 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   // No conversion happens now.
   histogram_tester_.ExpectTotalCount("Autofill.WalletAddressConversionType",
                                      /*count=*/0);
+}
+
+// Regression test for crbug.com/1203984.
+IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
+                       ShouldUpdateWhenDownloadingManyUpdates) {
+  // Tests that a Wallet update is successfully applied even if there are more
+  // updates to download for other types. In the past it might result in Wallet
+  // data type failure due to a bug with handling |gc_directive|.
+
+  GetFakeServer()->SetMaxGetUpdatesBatchSize(5);
+  ASSERT_TRUE(SetupSync());
+
+  // Use the ID which is the least one to guarantee that Wallet entity will be
+  // in the first GetUpdates request.
+  GetFakeServer()->SetWalletData({CreateSyncWalletCard(
+      /*name=*/"server_id_0", /*last_four=*/"0001", kDefaultBillingAddressID)});
+
+  // Inject a lot of bookmark to result in several GetUpdates requests.
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  for (int i = 1; i < 15; i++) {
+    std::string title = "Montreal Canadiens";
+    fake_server::BookmarkEntityBuilder bookmark_builder =
+        entity_builder_factory.NewBookmarkEntityBuilder(title);
+    bookmark_builder.SetId("server_id_" + base::NumberToString(i));
+    fake_server_->InjectEntity(bookmark_builder.BuildBookmark(
+        GURL("http://foo.com/" + base::NumberToString(i))));
+  }
+
+  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
+  ASSERT_NE(nullptr, pdm);
+  WaitForNumberOfCards(1, pdm);
 }
 
 class SingleClientWalletSecondaryAccountSyncTest

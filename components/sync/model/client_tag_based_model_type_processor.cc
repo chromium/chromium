@@ -841,7 +841,7 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
   // update.
   DCHECK(model_type_state.initial_sync_done());
 
-  // Ensure that this is the initial sync or a cleanup.
+  // Ensure that this is the initial sync, and it was not already marked done.
   DCHECK(HasClearAllDirective(gc_directive) || !entity_tracker_);
 
   if (entity_tracker_ && HasClearAllDirective(gc_directive)) {

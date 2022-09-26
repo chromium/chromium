@@ -149,6 +149,12 @@ sync_pb::DataTypeProgressMarker SingleTypeMockServer::GetProgress() const {
   sync_pb::DataTypeProgressMarker progress;
   progress.set_data_type_id(type_);
   progress.set_token(progress_marker_token_);
+  if (return_gc_directive_) {
+    progress.mutable_gc_directive()->set_type(
+        sync_pb::GarbageCollectionDirective::VERSION_WATERMARK);
+    // The value of version watermark is not used, so just provide some number.
+    progress.mutable_gc_directive()->set_version_watermark(123);
+  }
   return progress;
 }
 
@@ -177,6 +183,10 @@ int64_t SingleTypeMockServer::GetServerVersion(
 void SingleTypeMockServer::SetServerVersion(const ClientTagHash& tag_hash,
                                             int64_t version) {
   server_versions_[tag_hash] = version;
+}
+
+void SingleTypeMockServer::SetReturnGcDirective(bool return_gc_directive) {
+  return_gc_directive_ = return_gc_directive;
 }
 
 }  // namespace syncer

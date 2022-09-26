@@ -56,6 +56,9 @@ const char kBlockedByUndecryptableUpdateHistogramName[] =
 const char kPasswordNotesStateHistogramName[] =
     "Sync.PasswordNotesStateInUpdate";
 
+const base::Feature kSyncKeepGcDirectiveDuringSyncCycle{
+    "SyncKeepGcDirectiveDuringSyncCycle", base::FEATURE_ENABLED_BY_DEFAULT};
+
 void LogPasswordNotesState(PasswordNotesStateForUMA state) {
   base::UmaHistogramEnumeration(kPasswordNotesStateHistogramName, state);
 }
@@ -343,6 +346,15 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
 
   // TODO(rlarocque): Handle data type context conflicts.
   *model_type_state_.mutable_type_context() = mutated_context;
+
+  if (progress_marker.has_gc_directive() &&
+      base::FeatureList::IsEnabled(kSyncKeepGcDirectiveDuringSyncCycle)) {
+    // Clean up all the pending updates because a new GC directive has been
+    // received which means that all existing data should be cleaned up.
+    pending_updates_.clear();
+    entries_pending_decryption_.clear();
+  }
+
   *model_type_state_.mutable_progress_marker() = progress_marker;
   ExtractGcDirective();
 
@@ -948,6 +960,28 @@ bool ModelTypeWorker::HasNonDeletionUpdates() const {
 
 void ModelTypeWorker::ExtractGcDirective() {
   DCHECK(model_type_state_.has_progress_marker());
+  // This is a workaround for multiple GetUpdates during one sync cycle. The
+  // server returns gc_directive only if there are updates for the data type.
+  // For example, if there are many bookmarks to download and several Wallet
+  // entities (which use GC directive), there might be the following sequence of
+  // GetUpdates responses:
+  //
+  // 1. Response with Wallet updates and bookmarks:
+  // * wallet_entities: 10
+  // ** progress_marker: {progress_token: "w1", gc_directive: "1"}
+  // * bookmark_entities: 10
+  // ** progress_marker: {progress_token: "b1"}
+  //
+  // 2. Response with remaining bookmarks only:
+  // * wallet_entities: 0
+  // ** progress_marker: {progress_token: "w1"}
+  // * bookmark_entities: 15
+  // ** progress_marker: {progress_token: "b2"}
+  //
+  // In this case the GC directive from the first request has to be kept until
+  // the end of the sync cycle.
+  // TODO(crbug.com/1356900): consider a better approach instead of this
+  // workaround.
 
   if (model_type_state_.progress_marker().has_gc_directive()) {
     // Keep a new GC directive if received.
@@ -956,10 +990,19 @@ void ModelTypeWorker::ExtractGcDirective() {
     return;
   }
 
-  // Remove the GC directive if not present in the response, to mimic the
-  // previous behavior.
-  // TODO(crbug.com/1356900): keep the GC directive during current sync cycle.
-  pending_gc_directive_.reset();
+  if (pending_gc_directive_.has_value() &&
+      !base::FeatureList::IsEnabled(kSyncKeepGcDirectiveDuringSyncCycle)) {
+    // Remove the GC directive if not present in the response, to mimic the
+    // previous behavior.
+    pending_gc_directive_.reset();
+    return;
+  }
+
+  // Note that normally if the server returns non-empty updates for a
+  // download-only data type, it returns a non-empty |gc_directive| as well.
+  // However, it's safer to keep the GC directive until it's applied even if the
+  // server returns non-empty updates without GC directive within the same sync
+  // cycle.
 }
 
 GetLocalChangesRequest::GetLocalChangesRequest(
