@@ -785,7 +785,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SwitchToTabCorrectWindow) {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // This test verifies that "switch to tab" prefers the latest used browser,
 // if multiple exist.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SwitchToTabLatestWindow) {
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, DISABLED_SwitchToTabLatestWindow) {
   // Navigate to a site.
   NavigateHelper(GURL("http://maps.google.com/"), browser(),
                  WindowOpenDisposition::CURRENT_TAB, true);
