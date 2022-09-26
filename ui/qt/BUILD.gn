@@ -4,6 +4,7 @@
 
 import("//build/config/chromecast_build.gni")
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/sysroot.gni")
 import("//ui/qt/qt.gni")
 
 assert(use_qt)
@@ -46,6 +47,15 @@ source_set("qt_interface") {
   sources = [ "qt_interface.cc" ]
 }
 
+if (!use_sysroot) {
+  action("generate_moc") {
+    script = "moc_wrapper.py"
+    inputs = [ "//ui/qt/qt_shim.h" ]
+    outputs = [ "$root_gen_dir/qt_shim_moc.cc" ]
+    args = rebase_path(inputs + outputs, root_build_dir)
+  }
+}
+
 shared_library("qt5_shim") {
   visibility = [
     ":qt",
@@ -72,11 +82,15 @@ shared_library("qt5_shim") {
   sources = [
     "qt_shim.cc",
     "qt_shim.h",
-
-    # This file is generated with gen_qt_shim_moc.sh on an amd64 system to
-    # avoid a build-time dependency on `moc`.
-    "qt_shim_moc.cc",
   ]
+  if (use_sysroot) {
+    # This file is generated with gen_qt_shim_moc.sh on an amd64 system to
+    # avoid a build-time dependency on `moc` when using the sysroot.
+    sources += [ "qt_shim_moc.cc" ]
+  } else {
+    sources += get_target_outputs(":generate_moc")
+    deps += [ ":generate_moc" ]
+  }
 }
 
 component("qt") {
