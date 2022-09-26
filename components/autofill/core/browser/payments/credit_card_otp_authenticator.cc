@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 
@@ -165,8 +166,9 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
   // vcn permanent error, show temporary error dialog for the rest failure cases
   // since currently only virtual card is supported.
   autofill_client_->ShowVirtualCardErrorDialog(
-      /*is_permanent_error=*/result ==
-      AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
+      AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+          /*is_permanent_error=*/result ==
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
   OtpAuthenticationResponse response;
   if (result ==
           AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
@@ -316,8 +318,9 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
   autofill_client_->OnUnmaskOtpVerificationResult(
       OtpUnmaskResult::kPermanentFailure);
   autofill_client_->ShowVirtualCardErrorDialog(
-      /*is_permanent_error=*/result ==
-      AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
+      AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+          /*is_permanent_error=*/result ==
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
   Reset();
 }
 

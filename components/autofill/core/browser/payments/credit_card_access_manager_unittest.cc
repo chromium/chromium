@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
@@ -2483,6 +2484,7 @@ TEST_F(CreditCardAccessManagerTest,
   // Expect the CreditCardAccessManager to end the session.
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
+  EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
 #if !BUILDFLAG(IS_IOS)
   EXPECT_FALSE(fido_authenticator_->authenticate_invoked());
 #endif
@@ -2490,6 +2492,40 @@ TEST_F(CreditCardAccessManagerTest,
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
+      AutofillMetrics::ServerCardUnmaskResult::kVirtualCardRetrievalError, 1);
+}
+
+TEST_F(CreditCardAccessManagerTest,
+       RiskBasedVirtualCardUnmasking_Failure_MerchantOptedOut) {
+  base::HistogramTester histogram_tester;
+  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
+  CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
+  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  credit_card_access_manager_->FetchCreditCard(virtual_card,
+                                               accessor_->GetWeakPtr());
+
+  AutofillErrorDialogContext autofill_error_dialog_context;
+  autofill_error_dialog_context.server_returned_title =
+      "test_server_returned_title";
+  autofill_error_dialog_context.server_returned_description =
+      "test_server_returned_description";
+
+  payments::PaymentsClient::UnmaskResponseDetails response;
+  response.autofill_error_dialog_context = autofill_error_dialog_context;
+  credit_card_access_manager_->OnVirtualCardUnmaskResponseReceived(
+      AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+      response);
+
+  EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
+  const AutofillErrorDialogContext& displayed_error_dialog_context =
+      autofill_client_.autofill_error_dialog_context();
+  EXPECT_EQ(*displayed_error_dialog_context.server_returned_title,
+            *autofill_error_dialog_context.server_returned_title);
+  EXPECT_EQ(*displayed_error_dialog_context.server_returned_description,
+            *autofill_error_dialog_context.server_returned_description);
+
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
       AutofillMetrics::ServerCardUnmaskResult::kVirtualCardRetrievalError, 1);

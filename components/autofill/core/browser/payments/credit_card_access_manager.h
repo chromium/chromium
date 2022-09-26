@@ -197,6 +197,9 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
       RiskBasedVirtualCardUnmasking_CreditCardAccessManagerReset_TriggersOtpAuthenticatorResetOnFlowCancelled);
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardAccessManagerTest,
+      RiskBasedVirtualCardUnmasking_Failure_MerchantOptedOut);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerTest,
       RiskBasedVirtualCardUnmasking_Failure_NoOptionReturned);
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardAccessManagerTest,

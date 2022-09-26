@@ -32,6 +32,12 @@ enum class AutofillErrorDialogType {
 
 // The context for the autofill error dialog.
 struct AutofillErrorDialogContext {
+  // Returns an AutofillErrorDialogContext that is type
+  // kVirtualCardPermanentError if `is_permanent_error` is true, and type
+  // kVirtualCardTemporaryError if `is_permanent_error` is false.
+  static AutofillErrorDialogContext WithPermanentOrTemporaryError(
+      bool is_permanent_error);
+
   AutofillErrorDialogContext();
   AutofillErrorDialogContext(const AutofillErrorDialogContext& other);
   AutofillErrorDialogContext& operator=(const AutofillErrorDialogContext&);
