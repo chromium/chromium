@@ -13,41 +13,6 @@ found in the LICENSE file.
         <item name="colorControlHighlight">@color/filled_button_bg_color</item>
     </style>
 
-    <!-- Theme overlay for theme refactor 2021 -->
-    <style name="TabGridCardTopFaviconStyle">
-        <item name="android:minWidth">@dimen/tab_grid_card_favicon_padding</item>
-        <item name="android:layout_height">@dimen/tab_grid_card_header_height</item>
-        <item name="android:layout_width">wrap_content</item>
-    </style>
-
-    <style name="TabGridCardActionButtonStyle">
-        <item name="android:layout_width">@dimen/tab_list_card_action_button_size</item>
-        <item name="android:layout_height">@dimen/tab_list_card_action_button_size</item>
-        <item name="android:layout_margin">@dimen/tab_list_card_action_button_margin</item>
-    </style>
-
-    <style name="TabGridCardThumbnailStyle">
-        <item name="android:layout_marginLeft">@dimen/tab_grid_card_thumbnail_margin</item>
-        <item name="android:layout_marginRight">@dimen/tab_grid_card_thumbnail_margin</item>
-        <item name="android:layout_marginBottom">@dimen/tab_grid_card_thumbnail_margin</item>
-        <item name="cornerRadiusTopStart">@dimen/tab_grid_card_thumbnail_corner_radius_top</item>
-        <item name="cornerRadiusTopEnd">@dimen/tab_grid_card_thumbnail_corner_radius_top</item>
-        <item name="cornerRadiusBottomStart">@dimen/tab_grid_card_thumbnail_corner_radius_bottom</item>
-        <item name="cornerRadiusBottomEnd">@dimen/tab_grid_card_thumbnail_corner_radius_bottom</item>
-    </style>
-
-    <style name="TabGridCardTitleStyle">
-        <item name="android:layout_marginEnd">@dimen/tab_grid_card_title_end_margin</item>
-        <item name="android:requiresFadingEdge">horizontal</item>
-        <item name="android:fadingEdgeLength">@dimen/tab_grid_card_title_fading_length</item>
-        <item name="android:minHeight">@dimen/tab_grid_card_header_height</item>
-    </style>
-
-    <style name="TabGridDialogUngroupBarDivider.Hairline" parent="">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:src">@drawable/toolbar_hairline</item>
-    </style>
-
     <style name="TabThumbnailPlaceHolderStyle">
         <item name="colorTileBase">?attr/colorSurface</item>
         <item name="elevationTileBase">@dimen/default_elevation_1</item>

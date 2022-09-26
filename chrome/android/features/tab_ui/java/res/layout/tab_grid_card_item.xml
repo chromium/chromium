@@ -26,32 +26,42 @@ found in the LICENSE file.
             android:layout_margin="@dimen/tab_grid_card_margin">
             <ImageView
                 android:id="@+id/tab_favicon"
+                android:layout_height="@dimen/tab_grid_card_header_height"
+                android:layout_width="wrap_content"
+                android:minWidth="@dimen/tab_grid_card_favicon_padding"
                 android:adjustViewBounds="true"
                 android:importantForAccessibility="no"
-                app:srcCompat="@drawable/ic_globe_24dp"
-                style="@style/TabGridCardTopFaviconStyle"/>
+                app:srcCompat="@drawable/ic_globe_24dp" />
             <TextView
                 android:id="@+id/tab_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/tab_favicon"
+                android:layout_marginEnd="@dimen/tab_grid_card_title_end_margin"
+                android:requiresFadingEdge="horizontal"
+                android:fadingEdgeLength="@dimen/tab_grid_card_title_fading_length"
+                android:minHeight="@dimen/tab_grid_card_header_height"
                 android:gravity="center_vertical"
                 android:ellipsize="none"
                 android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
-                style="@style/TabGridCardTitleStyle"/>
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
             <org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView
                 android:id="@+id/tab_thumbnail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tab_title"
+                android:layout_marginLeft="@dimen/tab_grid_card_thumbnail_margin"
+                android:layout_marginRight="@dimen/tab_grid_card_thumbnail_margin"
+                android:layout_marginBottom="@dimen/tab_grid_card_thumbnail_margin"
                 android:gravity="center_horizontal"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
                 android:importantForAccessibility="no"
                 android:src="@color/thumbnail_placeholder_on_primary_bg"
-                style="@style/TabGridCardThumbnailStyle"/>
-
+                app:cornerRadiusTopStart="@dimen/tab_grid_card_thumbnail_corner_radius_top"
+                app:cornerRadiusTopEnd="@dimen/tab_grid_card_thumbnail_corner_radius_top"
+                app:cornerRadiusBottomStart="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"
+                app:cornerRadiusBottomEnd="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"/>
             <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
                 android:id="@+id/price_info_box_outer"
                 android:layout_below="@id/tab_title"
@@ -108,9 +118,11 @@ found in the LICENSE file.
         </RelativeLayout>
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/action_button"
+            android:layout_width="@dimen/tab_list_card_action_button_size"
+            android:layout_height="@dimen/tab_list_card_action_button_size"
+            android:layout_margin="@dimen/tab_list_card_action_button_margin"
             android:scaleType="center"
             android:layout_gravity="end"
-            android:tint="@macro/default_icon_color"
-            style="@style/TabGridCardActionButtonStyle"/>
+            android:tint="@macro/default_icon_color"/>
     </FrameLayout>
 </merge>
