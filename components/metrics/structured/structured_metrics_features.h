@@ -11,15 +11,15 @@ namespace metrics {
 namespace structured {
 
 // This can be used to disable structured metrics as a whole.
-extern const base::Feature kStructuredMetrics;
+BASE_DECLARE_FEATURE(kStructuredMetrics);
 
 // Controls whether CrOSEvents logging is enabled or not.
-extern const base::Feature kCrOSEvents;
+BASE_DECLARE_FEATURE(kCrOSEvents);
 
-extern const base::Feature kBluetoothSessionizedMetrics;
+BASE_DECLARE_FEATURE(kBluetoothSessionizedMetrics);
 
 // Delays appending structured metrics events until HWID has been loaded.
-extern const base::Feature kDelayUploadUntilHwid;
+BASE_DECLARE_FEATURE(kDelayUploadUntilHwid);
 
 // TODO(crbug.com/1148168): This is a temporary switch to revert structured
 // metrics upload to its old behaviour. Old behaviour:

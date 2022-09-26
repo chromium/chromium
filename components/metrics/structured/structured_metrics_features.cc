@@ -9,18 +9,22 @@
 namespace metrics {
 namespace structured {
 
-const base::Feature kStructuredMetrics{"EnableStructuredMetrics",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kStructuredMetrics,
+             "EnableStructuredMetrics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kCrOSEvents{"EnableCrOSEvents",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSEvents,
+             "EnableCrOSEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(b/181724341): Remove this experimental once the feature is rolled out.
-const base::Feature kBluetoothSessionizedMetrics{
-    "BluetoothSessionizedMetrics", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kBluetoothSessionizedMetrics,
+             "BluetoothSessionizedMetrics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kDelayUploadUntilHwid("DelayUploadUntilHwid",
-                                          base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDelayUploadUntilHwid,
+             "DelayUploadUntilHwid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsIndependentMetricsUploadEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
