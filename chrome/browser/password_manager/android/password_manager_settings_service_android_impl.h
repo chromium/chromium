@@ -13,6 +13,7 @@
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/sync_service.h"
 
 class PrefService;
@@ -54,6 +55,10 @@ class PasswordManagerSettingsServiceAndroidImpl
   void TurnOffAutoSignIn() override;
 
  private:
+  // Does actions that need to be done on startup (e.g. attaches services
+  // observers and migrates and requests settings if needed).
+  void Init();
+
   void OnChromeForegrounded();
 
   // PasswordSettingsUpdaterAndroidBridge::Consumer implementation
@@ -86,12 +91,19 @@ class PasswordManagerSettingsServiceAndroidImpl
   // GMS prefs.
   void DumpChromePrefsIntoGMSPrefs();
 
+  // Migrates settings to GMS Core if the user is reenrolled into the UPM
+  // in the middle of the browser session.
+  void OnUnenrollmentPreferenceChanged();
+
   // Pref service used to read and write password manager user prefs.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
+  // An observer for the pref service.
+  PrefChangeRegistrar pref_change_registrar_;
+
   // Sync service used to check whether the user has chosen to sync passwords
   // or settings.
-  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
   // Bridge used by the service to talk to the Java side.
   std::unique_ptr<password_manager::PasswordSettingsUpdaterAndroidBridge>
