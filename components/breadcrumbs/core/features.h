@@ -10,7 +10,7 @@
 namespace breadcrumbs {
 
 // Feature flag to log breadcrumb events.
-extern const base::Feature kLogBreadcrumbs;
+BASE_DECLARE_FEATURE(kLogBreadcrumbs);
 
 }  // namespace breadcrumbs
 

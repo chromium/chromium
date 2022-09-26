@@ -6,7 +6,8 @@
 
 namespace breadcrumbs {
 
-const base::Feature kLogBreadcrumbs{"LogBreadcrumbs",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLogBreadcrumbs,
+             "LogBreadcrumbs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace breadcrumbs
