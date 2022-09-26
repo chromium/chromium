@@ -316,10 +316,6 @@ TEST_P(PhoneFieldTest, CountryCodeIsSelectElement) {
 // classified by the heuristic when the phone code field is a select element
 // consisting of valid options.
 TEST_P(PhoneFieldTest, CountryCodeWithOptions) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
   // Options consisting of the country code followed by the country names.
   std::vector<const char*> augmented_field_options_list = {
       "(+91) India",     "(+49) Germany",  "(+1) United States", "(+20) Egypt",
@@ -335,10 +331,6 @@ TEST_P(PhoneFieldTest, CountryCodeWithOptions) {
 // Tests if the country code field is correctly classified by the heuristic when
 // the phone code is a select element and consists of valid options.
 TEST_P(PhoneFieldTest, IsPhoneCountryCodeField) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
   std::vector<std::vector<const char*>> augmented_field_options_list = {
       // Options with the country name followed by the country code in brackets.
       {"India(+91) ", "Germany(+49)", "United States(+1)", "Egypt(+20)",
@@ -405,10 +397,6 @@ TEST_P(PhoneFieldTest, IsPhoneCountryCodeField) {
 
 // Tests that the month field is not classified as |PHONE_HOME_COUNTRY_CODE|.
 TEST_P(PhoneFieldTest, IsMonthField) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
   std::vector<std::vector<const char*>> augmented_field_options_list = {
       // Month options in numeric.
       {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"},
@@ -430,10 +418,6 @@ TEST_P(PhoneFieldTest, IsMonthField) {
 
 // Tests that the day field is not classified as |PHONE_HOME_COUNTRY_CODE|.
 TEST_P(PhoneFieldTest, IsDayField) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
   std::vector<std::vector<const char*>> augmented_field_options_list = {
       // Numeric day options.
       {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
@@ -485,10 +469,6 @@ TEST_P(PhoneFieldTest, IsDayField) {
 
 // Tests that the field is not classified as |PHONE_HOME_COUNTRY_CODE|.
 TEST_P(PhoneFieldTest, IsYearField) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
   std::vector<std::vector<const char*>> augmented_field_options_list = {
       // Numeric four digit year options.
       {"1990", "1991", "1992", "1993", "1994", "1995", "1996",
@@ -526,10 +506,6 @@ TEST_P(PhoneFieldTest, IsYearField) {
 
 // Tests that the timezone field is not classified as |PHONE_HOME_COUNTRY_CODE|.
 TEST_P(PhoneFieldTest, IsTimeZoneField) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
   std::vector<std::vector<const char*>> augmented_field_options_list = {
       // Time Zone options.
       {"Yemen (UTC+03:00)", "Uruguay (UTC−03:00)", "UAE (UTC+04:00)",

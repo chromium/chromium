@@ -60254,8 +60254,6 @@ from previous Chrome versions.
   <int value="195335115" label="AudioWorkletRealtimeThread:disabled"/>
   <int value="195570937" label="EnableHomeLauncher:disabled"/>
   <int value="196103097" label="PaintPreviewShowOnStartup:disabled"/>
-  <int value="196578182"
-      label="AutofillEnableAugmentedPhoneCountryCode:disabled"/>
   <int value="197180779" label="SearchResumptionModuleAndroid:disabled"/>
   <int value="198386935" label="OmitCorsClientCert:enabled"/>
   <int value="198719062" label="WebAssemblyLazyCompilation:disabled"/>
@@ -60503,8 +60501,6 @@ from previous Chrome versions.
   <int value="348854923" label="v8-cache-strategies-for-cache-storage"/>
   <int value="348887417" label="HandwritingLibraryDlc:enabled"/>
   <int value="349469694" label="WebGPUService:disabled"/>
-  <int value="350362421"
-      label="AutofillEnableAugmentedPhoneCountryCode:enabled"/>
   <int value="350399958" label="ModuleScriptsImportMetaUrl:disabled"/>
   <int value="350611185" label="SharingDesktopScreenshotsEdit:enabled"/>
   <int value="350635266" label="TabGroupsContinuationAndroid:enabled"/>

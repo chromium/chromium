@@ -209,8 +209,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        features::kAutofillAcrossIframes,
        // TODO(crbug.com/1076175) Remove once launched.
        features::kAutofillUseNewSectioningMethod,
-       // Remove once launched
-       features::kAutofillEnableAugmentedPhoneCountryCode,
        // TODO(crbug.com/1157405) Remove once launched.
        features::kAutofillEnableDependentLocalityParsing,
        // TODO(crbug.com/1150895) Remove once launched.

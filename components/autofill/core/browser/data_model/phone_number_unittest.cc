@@ -432,10 +432,6 @@ TEST(PhoneNumberTest, Extension) {
 // Tests whether the |PHONE_HOME_COUNTRY_CODE| is added to the set of matching
 // types.
 TEST(PhoneNumberTest, CountryCodeInMatchingTypes) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
   AutofillProfile profile;
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   // Set the phone number such that country_code == 1, city_code = 650,
@@ -478,10 +474,6 @@ TEST(PhoneNumberTest, CountryCodeInMatchingTypes) {
 // Tests that the |PHONE_HOME_COUNTRY_CODE| should not be added to the set of
 // matching types.
 TEST(PhoneNumberTest, CountryCodeNotInMatchingTypes) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
   AutofillProfile profile;
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   // Set phone number so country_code == 1, city_code = 650, number = 2345678.

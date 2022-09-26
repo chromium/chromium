@@ -228,13 +228,6 @@ BASE_FEATURE(kAutofillEnableAccountWalletStorage,
 #endif
 );
 
-// Controls whether to detect and fill the augmented phone country code field
-// when enabled.
-// TODO(crbug.com/1150890) Remove once launched
-BASE_FEATURE(kAutofillEnableAugmentedPhoneCountryCode,
-             "AutofillEnableAugmentedPhoneCountryCode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables parsing for birthdate fields. Filling is not supported and parsing
 // is meant to prevent false positive credit card expiration dates.
 // TODO(crbug.com/1306654): Remove once launched.

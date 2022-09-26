@@ -1725,16 +1725,7 @@ struct FillAugmentedPhoneCountryCodeTestCase {
 class AutofillFillAugmentedPhoneCountryCodeTest
     : public AutofillFieldFillerTest,
       public testing::WithParamInterface<
-          FillAugmentedPhoneCountryCodeTestCase> {
- public:
-  AutofillFillAugmentedPhoneCountryCodeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableAugmentedPhoneCountryCode);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+          FillAugmentedPhoneCountryCodeTestCase> {};
 
 TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
        FillAugmentedPhoneCountryCodeField) {

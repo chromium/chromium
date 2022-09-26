@@ -139,17 +139,14 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
     }
   }
 
-  // |PHONE_HOME_COUNTRY_CODE| is added to the set of the |matching_types| when
-  // the digits extracted from the |stripped_text| match the |country_code|.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAugmentedPhoneCountryCode)) {
-    std::u16string candidate =
-        data_util::FindPossiblePhoneCountryCode(stripped_text);
-    std::u16string country_code =
-        GetInfo(AutofillType(PHONE_HOME_COUNTRY_CODE), app_locale);
-    if (candidate.size() > 0 && candidate == country_code)
-      matching_types->insert(PHONE_HOME_COUNTRY_CODE);
-  }
+  // `PHONE_HOME_COUNTRY_CODE` is added to the set of the `matching_types` when
+  // the digits extracted from the `stripped_text` match the `country_code`.
+  std::u16string candidate =
+      data_util::FindPossiblePhoneCountryCode(stripped_text);
+  std::u16string country_code =
+      GetInfo(AutofillType(PHONE_HOME_COUNTRY_CODE), app_locale);
+  if (candidate.size() > 0 && candidate == country_code)
+    matching_types->insert(PHONE_HOME_COUNTRY_CODE);
 
   // The following pairs of types coincide in countries without trunk prefixes:
   // - PHONE_HOME_CITY_CODE, PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX

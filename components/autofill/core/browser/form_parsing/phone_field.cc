@@ -137,12 +137,6 @@ const std::vector<PhoneField::PhoneGrammar>& PhoneField::GetPhoneGrammars() {
 bool PhoneField::LikelyAugmentedPhoneCountryCode(
     AutofillScanner* scanner,
     AutofillField** matched_field) {
-  // If the experiment |kAutofillEnableAugmentedPhoneCountryCode| is not
-  // enabled, return false.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableAugmentedPhoneCountryCode))
-    return false;
-
   AutofillField* field = scanner->Cursor();
 
   // Return false if the field is not a selection box.

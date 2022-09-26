@@ -932,12 +932,10 @@ std::u16string GetValueForProfile(const AutofillProfile& profile,
   std::u16string value = profile.GetInfo(type, app_locale);
 
   if (type.group() == FieldTypeGroup::kPhoneHome) {
-    // If the |field_data| is a selection box and having the type
-    // |PHONE_HOME_COUNTRY_CODE|, call
-    // |GetPhoneCountryCodeSelectControlForInput|.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableAugmentedPhoneCountryCode) &&
-        field_data->form_control_type == "select-one" &&
+    // If the `field_data` is a selection box and having the type
+    // `PHONE_HOME_COUNTRY_CODE`, call
+    // `GetPhoneCountryCodeSelectControlForInput`.
+    if (field_data->form_control_type == "select-one" &&
         type.GetStorableType() == PHONE_HOME_COUNTRY_CODE) {
       value = GetPhoneCountryCodeSelectControlForInput(value, field_data,
                                                        failure_to_fill);

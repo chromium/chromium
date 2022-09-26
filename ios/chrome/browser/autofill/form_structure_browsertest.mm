@@ -200,8 +200,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
       // Enabled
       {// TODO(crbug.com/1076175) Remove once launched.
        autofill::features::kAutofillUseNewSectioningMethod,
-       // TODO(crbug.com/1150890) Remove once launched
-       features::kAutofillEnableAugmentedPhoneCountryCode,
        // TODO(crbug.com/1157405) Remove once launched.
        features::kAutofillEnableDependentLocalityParsing,
        // TODO(crbug.com/1165780): Remove once shared labels are launched.
