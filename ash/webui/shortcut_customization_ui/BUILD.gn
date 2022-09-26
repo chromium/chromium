@@ -19,6 +19,7 @@ static_library("shortcut_customization_ui") {
     "//ash/webui/shortcut_customization_ui/backend",
     "//ash/webui/shortcut_customization_ui/mojom",
     "//ash/webui/system_apps/public:system_web_app_config",
+    "//chromeos/strings",
     "//content/public/browser",
     "//ui/resources:webui_generated_resources_grd_grit",
     "//ui/webui",

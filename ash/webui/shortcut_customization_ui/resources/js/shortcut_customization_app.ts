@@ -5,11 +5,13 @@
 import './accelerator_edit_dialog.js';
 import './shortcut_input.js';
 import './shortcuts_page.js';
+import '../strings.m.js';
 import '../css/shortcut_customization_fonts.css.js';
 import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
 
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorEditDialogElement} from './accelerator_edit_dialog.js';
@@ -39,7 +41,11 @@ declare global {
  * 'shortcut-customization-app' is the main landing page for the shortcut
  * customization app.
  */
-export class ShortcutCustomizationAppElement extends PolymerElement {
+
+const ShortcutCustomizationAppElementBase = I18nMixin(PolymerElement);
+
+export class ShortcutCustomizationAppElement extends
+    ShortcutCustomizationAppElementBase {
   static get is() {
     return 'shortcut-customization-app';
   }

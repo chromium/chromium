@@ -3569,6 +3569,12 @@ Try tapping the mic to ask me anything.
         Done
       </message>
       <!-- End of Feedback Tool -->
+
+      <!-- Shortcut Customization -->
+      <message name="IDS_SHORTCUT_CUSTOMIZATION_APP_TITLE" desc="Title of the app" translateable="false">
+        Shortcuts
+      </message>
+      <!-- End of Shortcut Customization -->
     </messages>
   </release>
 </grit>

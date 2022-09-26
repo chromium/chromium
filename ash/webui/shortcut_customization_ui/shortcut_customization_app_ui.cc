@@ -12,6 +12,7 @@
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -35,6 +36,15 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
 }
 
+void AddLocalizedStrings(content::WebUIDataSource* source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"appTitle", IDS_SHORTCUT_CUSTOMIZATION_APP_TITLE},
+  };
+
+  source->AddLocalizedStrings(kLocalizedStrings);
+  source->UseStringsJs();
+}
+
 }  // namespace
 
 ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
@@ -54,6 +64,7 @@ ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
                       kAshShortcutCustomizationAppResourcesSize);
   SetUpWebUIDataSource(source, resources,
                        IDR_ASH_SHORTCUT_CUSTOMIZATION_APP_INDEX_HTML);
+  AddLocalizedStrings(source);
 
   provider_ = std::make_unique<shortcut_ui::AcceleratorConfigurationProvider>();
 }
