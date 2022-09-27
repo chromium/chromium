@@ -133,8 +133,10 @@ public class ContextMenuDragTest {
     @Test
     @SmallTest
     @CommandLineFlags.
-    Add({"force-fieldtrial-params=Study.Group:DragAndDropMovementThresholdDipParam/"
-            + TEST_MIN_DIST})
+    Add({"enable-features=" + ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:DragAndDropMovementThresholdDipParam/"
+                    + TEST_MIN_DIST})
     public void
     testTriggerContextMenuWithDrag() throws TimeoutException {
         longPressOpenContextMenu(TEST_IMAGE_ID);
