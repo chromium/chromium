@@ -251,7 +251,8 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   zx_status_t status =
       process_.wait_one(ZX_TASK_TERMINATED, deadline, &signals_observed);
   if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "zx_object_wait_one";
+    ZX_DLOG_IF(ERROR, status != ZX_ERR_TIMED_OUT, status)
+        << "zx_object_wait_one";
     return false;
   }
 
