@@ -128,9 +128,7 @@ CreateSuggestionGroupsMap(const AutocompleteResult& result,
     realbox::mojom::SuggestionGroupPtr suggestion_group =
         realbox::mojom::SuggestionGroup::New();
     suggestion_group->header =
-        pair.second.group_config.has_header_text()
-            ? base::UTF8ToUTF16(pair.second.group_config.header_text())
-            : u"";
+        base::UTF8ToUTF16(pair.second.group_config.header_text());
     suggestion_group->hidden =
         result.IsSuggestionGroupHidden(prefs, pair.first);
     suggestion_group->show_group_a11y_label = l10n_util::GetStringFUTF16(

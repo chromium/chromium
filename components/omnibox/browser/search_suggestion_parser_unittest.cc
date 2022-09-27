@@ -457,9 +457,9 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
           "a":{
             "40000":"Recent Searches",
             "40008":"Recommended for you",
-            "garbage_non_int":"NOT RECOMMENDED FOR YOU"
+            "40009": 123
           },
-          "h":[40000, "40008", "garbage_non_int"]
+          "h":[40000, "40008", 40009]
         },
         "google:suggestdetail":[
           {

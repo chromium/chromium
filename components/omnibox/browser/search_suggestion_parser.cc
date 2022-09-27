@@ -627,7 +627,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
       if (headers) {
         for (auto it : headers->DictItems()) {
           int suggestion_group_id;
-          if (base::StringToInt(it.first, &suggestion_group_id)) {
+          if (base::StringToInt(it.first, &suggestion_group_id) &&
+              it.second.is_string()) {
             (*groups_info.mutable_group_configs())[suggestion_group_id]
                 .set_header_text(it.second.GetString());
           }
@@ -638,8 +639,10 @@ bool SearchSuggestionParser::ParseSuggestResults(
       if (hidden_group_ids) {
         for (const auto& value : hidden_group_ids->GetList()) {
           if (value.is_int()) {
-            (*groups_info.mutable_group_configs())[value.GetInt()]
-                .set_visibility(omnibox::GroupConfig_Visibility_HIDDEN);
+            auto it = groups_info.mutable_group_configs()->find(value.GetInt());
+            if (it != groups_info.mutable_group_configs()->end()) {
+              it->second.set_visibility(omnibox::GroupConfig_Visibility_HIDDEN);
+            }
           }
         }
       }

@@ -876,10 +876,27 @@ TEST_F(AutocompleteProviderTest, SuggestionGroups) {
       omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS;
   const std::string kRecentSearches = "Recent Searches";
 
-  // This exists to verify that suggestion group IDs without associated
-  // suggestion groups information are stripped away.
   const auto kBadGroupId = omnibox::GROUP_INVALID;
 
+  {
+    // AutocompleteResult::GetHeaderForSuggestionGroup() returns an empty string
+    // for unknown suggestion group IDs.
+    EXPECT_EQ(u"", result_.GetHeaderForSuggestionGroup(kBadGroupId));
+
+    // AutocompleteResult::IsSuggestionGroupHidden() returns false for unknown
+    // suggestion group IDs.
+    EXPECT_FALSE(result_.IsSuggestionGroupHidden(GetPrefs(), kBadGroupId));
+
+    // AutocompleteResult::SetSuggestionGroupHidden() does nothing for unknown
+    // suggestion group IDs.
+    result_.SetSuggestionGroupHidden(GetPrefs(), kBadGroupId, /*hidden=*/true);
+    EXPECT_FALSE(result_.IsSuggestionGroupHidden(GetPrefs(), kBadGroupId));
+
+    // AutocompleteResult::GetPriorityForSuggestionGroup() returns kDefault
+    // for unknown suggestion group IDs.
+    EXPECT_EQ(SuggestionGroupPriority::kDefault,
+              result_.GetPriorityForSuggestionGroup(kBadGroupId));
+  }
   {
     // Headers are optional for suggestion groups.
     SuggestionGroupsMap suggestion_groups_map;
@@ -887,10 +904,10 @@ TEST_F(AutocompleteProviderTest, SuggestionGroups) {
         kRecommended);
     suggestion_groups_map[kRecommendedGroupId].priority =
         SuggestionGroupPriority::kRemoteZeroSuggest4;
-    suggestion_groups_map[kRecentSearchesGroupId].group_config.set_header_text(
-        "");
+
     suggestion_groups_map[kRecentSearchesGroupId].priority =
         SuggestionGroupPriority::kRemoteZeroSuggest3;
+
     UpdateResultsWithSuggestionGroupsTestData({std::move(suggestion_groups_map),
                                                {
                                                    {},

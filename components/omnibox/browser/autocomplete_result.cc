@@ -434,24 +434,26 @@ void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
     if (!match.suggestion_group_id.has_value()) {
       continue;
     }
-    any_matches_in_groups = true;
 
     const omnibox::GroupId group_id = match.suggestion_group_id.value();
-    if (suggestion_groups_map_.find(group_id) != suggestion_groups_map_.end()) {
-      // Record suggestion group information into the additional_info field
-      // for chrome://omnibox.
-      match.RecordAdditionalInfo("group id", group_id);
-      match.RecordAdditionalInfo("group header",
-                                 GetHeaderForSuggestionGroup(group_id));
-      match.RecordAdditionalInfo(
-          "group priority",
-          static_cast<int>(GetPriorityForSuggestionGroup(group_id)));
-    } else {
+    if (!base::Contains(suggestion_groups_map_, group_id)) {
       // Strip group IDs from the matches for which there is no suggestion
       // group information. These matches should instead be treated as
       // ordinary matches with no group IDs.
       match.suggestion_group_id.reset();
+      continue;
     }
+
+    any_matches_in_groups = true;
+
+    // Record suggestion group information into the additional_info field
+    // for chrome://omnibox.
+    match.RecordAdditionalInfo("group id", group_id);
+    match.RecordAdditionalInfo("group header",
+                               GetHeaderForSuggestionGroup(group_id));
+    match.RecordAdditionalInfo(
+        "group priority",
+        static_cast<int>(GetPriorityForSuggestionGroup(group_id)));
   }
 
   // No need to group and demote matches in groups if none exists.
@@ -989,18 +991,20 @@ AutocompleteResult::GetMatchDedupComparators() const {
 
 std::u16string AutocompleteResult::GetHeaderForSuggestionGroup(
     omnibox::GroupId suggestion_group_id) const {
-  const auto& it = suggestion_groups_map_.find(suggestion_group_id);
-  DCHECK(it != suggestion_groups_map_.end());
-  return it->second.group_config.has_header_text()
-             ? base::UTF8ToUTF16(it->second.group_config.header_text())
-             : u"";
+  auto it = suggestion_groups_map_.find(suggestion_group_id);
+  if (it == suggestion_groups_map_.end()) {
+    return u"";
+  }
+  return base::UTF8ToUTF16(it->second.group_config.header_text());
 }
 
 bool AutocompleteResult::IsSuggestionGroupHidden(
     PrefService* prefs,
     omnibox::GroupId suggestion_group_id) const {
-  const auto& it = suggestion_groups_map_.find(suggestion_group_id);
-  DCHECK(it != suggestion_groups_map_.end());
+  auto it = suggestion_groups_map_.find(suggestion_group_id);
+  if (it == suggestion_groups_map_.end()) {
+    return false;
+  }
   if (!it->second.original_group_id.has_value()) {
     return false;
   }
@@ -1023,9 +1027,13 @@ void AutocompleteResult::SetSuggestionGroupHidden(
     PrefService* prefs,
     omnibox::GroupId suggestion_group_id,
     bool hidden) const {
-  const auto& it = suggestion_groups_map_.find(suggestion_group_id);
-  DCHECK(it != suggestion_groups_map_.end());
-  DCHECK(it->second.original_group_id.has_value());
+  auto it = suggestion_groups_map_.find(suggestion_group_id);
+  if (it == suggestion_groups_map_.end()) {
+    return;
+  }
+  if (!it->second.original_group_id.has_value()) {
+    return;
+  }
 
   omnibox::SetUserPreferenceForSuggestionGroupVisibility(
       prefs, it->second.original_group_id.value(),
@@ -1035,8 +1043,11 @@ void AutocompleteResult::SetSuggestionGroupHidden(
 
 SuggestionGroupPriority AutocompleteResult::GetPriorityForSuggestionGroup(
     omnibox::GroupId suggestion_group_id) const {
-  const auto& it = suggestion_groups_map_.find(suggestion_group_id);
-  DCHECK(it != suggestion_groups_map_.end());
+  auto it = suggestion_groups_map_.find(suggestion_group_id);
+  if (it == suggestion_groups_map_.end()) {
+    return SuggestionGroupPriority::kDefault;
+  }
+
   return it->second.priority;
 }
 
