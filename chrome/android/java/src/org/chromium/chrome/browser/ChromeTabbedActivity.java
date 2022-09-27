@@ -37,6 +37,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleRegistry;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
@@ -2259,6 +2260,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public boolean handleBackPressed() {
         if (!mUIWithNativeInitialized) return false;
+
+        // This only intercepts back press 1. on T+ 2. back press refactor is disabled
+        // 3. predictive back gesture is opted in.
+        if (BuildInfo.isAtLeastT() && getToolbarManager() != null
+                && getToolbarManager().unfocusUrlBarOnBackPress()) {
+            BackPressManager.record(BackPressHandler.Type.LOCATION_BAR);
+            return true;
+        }
 
         if (mTabModalHandler.onBackPressed()) {
             BackPressManager.record(BackPressHandler.Type.TAB_MODAL_HANDLER);

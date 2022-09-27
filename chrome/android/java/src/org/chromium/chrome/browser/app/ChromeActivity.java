@@ -38,6 +38,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -2269,6 +2270,15 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (mRootUiCoordinator.getBottomSheetController() != null
                 && mRootUiCoordinator.getBottomSheetController().handleBackPress()) {
             BackPressManager.record(BackPressHandler.Type.BOTTOM_SHEET);
+            return;
+        }
+
+        // This only intercepts back press when back press refactor is disabled on T+. Otherwise,
+        // back press is intercepted in FindToolbarManager internally.
+        if (BuildInfo.isAtLeastT() && mRootUiCoordinator.getFindToolbarManager() != null
+                && mRootUiCoordinator.getFindToolbarManager().isShowing()) {
+            BackPressManager.record(BackPressHandler.Type.FIND_TOOLBAR);
+            mRootUiCoordinator.getFindToolbarManager().hideToolbar();
             return;
         }
 

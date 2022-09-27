@@ -1469,6 +1469,14 @@ public class RootUiCoordinator
     }
 
     /**
+     * @return The {@link FindToolbarManager} controlling find toolbar.
+     */
+    @Nullable
+    public FindToolbarManager getFindToolbarManager() {
+        return mFindToolbarManager;
+    }
+
+    /**
      * Gets the browser controls manager, creates it unless already created.
      * @deprecated Instead, inject this directly to your constructor. If that's not possible, then
      *         use {@link BrowserControlsManagerSupplier}.
