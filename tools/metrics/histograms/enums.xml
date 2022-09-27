@@ -5730,10 +5730,10 @@ others/histograms.xml -->
   <int value="10" label="Fingerprint to PIN"/>
   <int value="11" label="Fingerprint to Smartlock"/>
   <int value="12" label="Password to Challenge-response"/>
-  <int value="13" label="Nothing to Fingerprint"/>
-  <int value="14" label="Nothing to Password"/>
-  <int value="15" label="Nothing to PIN"/>
-  <int value="16" label="Nothing to Smartlock"/>
+  <int value="13" label="Nothing to Password"/>
+  <int value="14" label="Nothing to PIN"/>
+  <int value="15" label="Nothing to Smartlock"/>
+  <int value="16" label="Nothing to Fingerprint"/>
   <int value="17" label="Nothing to Challenge-response"/>
 </enum>
 
