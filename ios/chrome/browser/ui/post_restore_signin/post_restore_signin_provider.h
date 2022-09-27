@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_POST_RESTORE_SIGNIN_POST_RESTORE_SIGNIN_PROVIDER_H_
 #define IOS_CHROME_BROWSER_UI_POST_RESTORE_SIGNIN_POST_RESTORE_SIGNIN_PROVIDER_H_
 
+#import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_alert_provider.h"
 
@@ -15,6 +16,12 @@
 // necessary data and functionality to power both variations of this promo.
 @interface PostRestoreSignInProvider
     : NSObject <BanneredPromoViewProvider, StandardPromoAlertProvider>
+
+- (instancetype)init;
+
+// The handler is used to start the sign-in flow.
+@property(nonatomic, weak) id<PromosManagerCommands> handler;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POST_RESTORE_SIGNIN_POST_RESTORE_SIGNIN_PROVIDER_H_

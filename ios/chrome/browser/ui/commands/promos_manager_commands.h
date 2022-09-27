@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/promos_manager/constants.h"
 
+@class ShowSigninCommand;
+
 // Commands to show app-wide promos.
 @protocol PromosManagerCommands <NSObject>
 
@@ -17,6 +19,9 @@
 
 // Makes a request to Apple to present the user the App Store Rating Promo.
 - (void)requestAppStoreReview;
+
+// Asks the presenter to display the signin UI configured by `command`.
+- (void)showSignin:(ShowSigninCommand*)command;
 
 @end
 

@@ -7,13 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 @interface PostRestoreSignInViewController : PromoStyleViewController
 
 // Initializes the Post Restore Sign-in promo and displays the passed-in user
-// given name.
-- (instancetype)initWithUserGivenName:(NSString*)userGivenName;
+// info.
+- (instancetype)initWithAccountInfo:(AccountInfo)accountInfo;
 
 @end
 

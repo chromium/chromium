@@ -7,7 +7,10 @@
 #import "base/check_op.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
@@ -18,8 +21,27 @@
 #error "This file requires ARC support."
 #endif
 
+@interface PostRestoreSignInProvider ()
+
+// Returns the email address of the last account that was signed in pre-restore.
+@property(readonly) NSString* userEmail;
+
+// Returns the given name of the last account that was signed in pre-restore.
+@property(readonly) NSString* userGivenName;
+
+@end
+
 @implementation PostRestoreSignInProvider {
   PromoStyleViewController* _viewController;
+  absl::optional<AccountInfo> _accountInfo;
+}
+
+#pragma mark - Initializers
+
+- (instancetype)init {
+  if (self = [super init])
+    _accountInfo = GetPreRestoreIdentity();
+  return self;
 }
 
 #pragma mark - PromoProtocol
@@ -56,45 +78,35 @@
 #pragma mark - StandardPromoAlertHandler
 
 - (void)standardPromoAlertDefaultAction {
-  // TODO(crbug.com/1363283): Implement `standardPromoAlertDefaultAction`.
+  [self showSignin];
 }
 
 - (void)standardPromoAlertCancelAction {
-  // TODO(crbug.com/1363283): Implement `standardPromoAlertCancelAction`.
+  // TODO(crbug.com/1363893): Implement UMA metrics.
 }
 
 #pragma mark - StandardPromoAlertProvider
 
 - (NSString*)title {
-  return l10n_util::GetNSString(
-      IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PROMO_TITLE);
+  return l10n_util::GetNSStringF(
+      IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PROMO_TITLE,
+      base::SysNSStringToUTF16(self.userGivenName));
 }
 
 - (NSString*)message {
-  // TODO(crbug.com/1363906): Remove mock user data, `userEmail`, below, and
-  // instead pass the user email off ChromeIdentity.
-  NSString* userEmail = @"elisa@example.test";
-
   return l10n_util::GetNSStringF(
       IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_MESSAGE,
-      base::SysNSStringToUTF16(userEmail));
+      base::SysNSStringToUTF16(self.userEmail));
 }
 
 #pragma mark - StandardPromoViewProvider
 
 - (PromoStyleViewController*)viewController {
-  // TODO(crbug.com/1363906): Fetch user details (name, email, photo) and pass
-  // it to PostRestoreSignInViewController's initializer.
-
-  // TODO(crbug.com/1363906): Remove mock user data, `userShortName`, below, and
-  // instead pass `userGivenName` off ChromeIdentity.
-  NSString* userGivenName = @"Elisa";
-
   if (_viewController)
     return _viewController;
 
   _viewController = [[PostRestoreSignInViewController alloc]
-      initWithUserGivenName:userGivenName];
+      initWithAccountInfo:_accountInfo.value()];
 
   return _viewController;
 }
@@ -103,7 +115,10 @@
 
 // The "Primary Action" was touched.
 - (void)standardPromoPrimaryAction {
-  // TODO(crbug.com/1363283): Implement `standardPromoPrimaryAction`.
+  [self.viewController dismissViewControllerAnimated:YES
+                                          completion:^{
+                                            [self showSignin];
+                                          }];
 }
 
 // The "Dismiss" button was touched. This same dismiss handler will be used for
@@ -117,7 +132,39 @@
 //
 // In both variations, the same dismiss functionality is desired.
 - (void)standardPromoDismissAction {
-  // TODO(crbug.com/1363283): Implement `standardPromoDismissAction`.
+  // TODO(crbug.com/1363893): Implement UMA metrics.
+}
+
+#pragma mark - Internal
+
+// Returns the user's pre-restore given name.
+- (NSString*)userGivenName {
+  if (!_accountInfo.has_value())
+    return nil;
+
+  return base::SysUTF8ToNSString(_accountInfo->given_name);
+}
+
+// Returns the user's pre-restore email.
+- (NSString*)userEmail {
+  if (!_accountInfo.has_value())
+    return nil;
+
+  return base::SysUTF8ToNSString(_accountInfo->email);
+}
+
+- (void)showSignin {
+  DCHECK(self.handler);
+
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperationReauthenticate
+               identity:nil
+            accessPoint:signin_metrics::AccessPoint::
+                            ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+               callback:nil];
+  [self.handler showSignin:command];
 }
 
 @end
