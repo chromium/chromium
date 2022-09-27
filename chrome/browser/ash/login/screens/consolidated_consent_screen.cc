@@ -87,7 +87,6 @@ std::string ConsolidatedConsentScreen::GetResultString(Result result) {
     case Result::ACCEPTED:
       return "AcceptedRegular";
     case Result::ACCEPTED_DEMO_ONLINE:
-    case Result::ACCEPTED_DEMO_OFFLINE:
       return "AcceptedDemo";
     case Result::BACK_DEMO:
       return "BackDemo";

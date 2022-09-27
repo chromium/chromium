@@ -1229,10 +1229,6 @@ void WizardController::OnConsolidatedConsentScreenExit(
       DCHECK(demo_setup_controller_);
       ShowAutoEnrollmentCheckScreen();
       break;
-    case ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_OFFLINE:
-      DCHECK(demo_setup_controller_);
-      ShowDemoModeSetupScreen();
-      break;
     case ConsolidatedConsentScreen::Result::BACK_DEMO:
       DCHECK(demo_setup_controller_);
       ShowDemoModePreferencesScreen();

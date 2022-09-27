@@ -33,9 +33,6 @@ class ConsolidatedConsentScreen
     // The user accepted terms of service in online demo mode.
     ACCEPTED_DEMO_ONLINE,
 
-    // The user accepted terms of service in offline demo mode.
-    ACCEPTED_DEMO_OFFLINE,
-
     // Consolidated Consent screen skipped.
     NOT_APPLICABLE,
   };
