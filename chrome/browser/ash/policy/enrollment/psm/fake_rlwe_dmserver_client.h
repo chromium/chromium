@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PRIVATE_MEMBERSHIP_FAKE_PSM_RLWE_DMSERVER_CLIENT_H_
-#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PRIVATE_MEMBERSHIP_FAKE_PSM_RLWE_DMSERVER_CLIENT_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_FAKE_RLWE_DMSERVER_CLIENT_H_
+#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_FAKE_RLWE_DMSERVER_CLIENT_H_
 
-#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client.h"
+#include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
 
 namespace policy {
 
@@ -36,4 +36,4 @@ class FakePsmRlweDmserverClient : public PsmRlweDmserverClient {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PRIVATE_MEMBERSHIP_FAKE_PSM_RLWE_DMSERVER_CLIENT_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_FAKE_RLWE_DMSERVER_CLIENT_H_

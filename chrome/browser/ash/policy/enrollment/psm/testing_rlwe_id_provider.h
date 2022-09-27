@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PRIVATE_MEMBERSHIP_TESTING_PSM_RLWE_ID_PROVIDER_H_
-#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PRIVATE_MEMBERSHIP_TESTING_PSM_RLWE_ID_PROVIDER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_TESTING_RLWE_ID_PROVIDER_H_
+#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_TESTING_RLWE_ID_PROVIDER_H_
 
-#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_id_provider.h"
+#include "chrome/browser/ash/policy/enrollment/psm/rlwe_id_provider.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 
 namespace policy {
@@ -34,4 +34,4 @@ class TestingPsmRlweIdProvider : public PsmRlweIdProvider {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PRIVATE_MEMBERSHIP_TESTING_PSM_RLWE_ID_PROVIDER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_TESTING_RLWE_ID_PROVIDER_H_

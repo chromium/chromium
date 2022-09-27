@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/enrollment/private_membership/testing_psm_rlwe_id_provider.h"
+#include "chrome/browser/ash/policy/enrollment/psm/testing_rlwe_id_provider.h"
 
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 

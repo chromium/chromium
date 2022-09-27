@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PRIVATE_MEMBERSHIP_TESTING_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
-#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PRIVATE_MEMBERSHIP_TESTING_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_TESTING_RLWE_CLIENT_H_
+#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_TESTING_RLWE_CLIENT_H_
 
-#include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client.h"
 
 #include <memory>
 #include <string>
@@ -92,4 +92,4 @@ class TestingPrivateMembershipRlweClient : public PrivateMembershipRlweClient {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PRIVATE_MEMBERSHIP_TESTING_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_TESTING_RLWE_CLIENT_H_

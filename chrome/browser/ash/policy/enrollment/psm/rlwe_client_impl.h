@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PRIVATE_MEMBERSHIP_FAKE_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
-#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PRIVATE_MEMBERSHIP_FAKE_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_CLIENT_IMPL_H_
+#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_CLIENT_IMPL_H_
 
-#include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -15,41 +16,44 @@
 
 namespace private_membership {
 namespace rlwe {
+class PrivateMembershipRlweClient;
 class RlweMembershipResponses;
 }  // namespace rlwe
 }  // namespace private_membership
 
 namespace policy {
 
-class FakePrivateMembershipRlweClient : public PrivateMembershipRlweClient {
+class PrivateMembershipRlweClientImpl : public PrivateMembershipRlweClient {
  public:
-  // A factory that creates |FakePrivateMembershipRlweClient|s.
+  // A factory that creates |PrivateMembershipRlweClientImpl|s.
   class FactoryImpl : public Factory {
    public:
-    FactoryImpl() = default;
+    FactoryImpl();
 
     // FactoryImpl is neither copyable nor copy assignable.
     FactoryImpl(const FactoryImpl&) = delete;
     FactoryImpl& operator=(const FactoryImpl&) = delete;
 
-    ~FactoryImpl() override = default;
+    ~FactoryImpl() override;
 
-    // Creates a fake PSM RLWE client for testing purposes.
+    // Creates PSM RLWE client that generates and holds a randomly generated
+    // key.
     ::rlwe::StatusOr<std::unique_ptr<PrivateMembershipRlweClient>> Create(
         private_membership::rlwe::RlweUseCase use_case,
         const std::vector<private_membership::rlwe::RlwePlaintextId>&
             plaintext_ids) override;
   };
 
-  // FakePrivateMembershipRlweClient is neither copyable nor copy assignable.
-  FakePrivateMembershipRlweClient(const FakePrivateMembershipRlweClient&) =
+  // PrivateMembershipRlweClientImpl is neither copyable nor copy assignable.
+  PrivateMembershipRlweClientImpl(const PrivateMembershipRlweClientImpl&) =
       delete;
-  FakePrivateMembershipRlweClient& operator=(
-      const FakePrivateMembershipRlweClient&) = delete;
+  PrivateMembershipRlweClientImpl& operator=(
+      const PrivateMembershipRlweClientImpl&) = delete;
 
-  ~FakePrivateMembershipRlweClient() override;
+  ~PrivateMembershipRlweClientImpl() override;
 
-  // Mocks all function calls of PrivateMembershipRlweClient.
+  // Delegates all function calls into PrivateMembershipRlweClient by
+  // |psm_rlwe_client_|.
 
   ::rlwe::StatusOr<private_membership::rlwe::PrivateMembershipRlweOprfRequest>
   CreateOprfRequest() override;
@@ -63,14 +67,14 @@ class FakePrivateMembershipRlweClient : public PrivateMembershipRlweClient {
           query_response) override;
 
  private:
-  FakePrivateMembershipRlweClient(
-      private_membership::rlwe::RlweUseCase use_case,
-      std::vector<private_membership::rlwe::RlwePlaintextId> plaintext_ids);
+  explicit PrivateMembershipRlweClientImpl(
+      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
+          psm_rlwe_client);
 
-  const private_membership::rlwe::RlweUseCase use_case_;
-  const std::vector<private_membership::rlwe::RlwePlaintextId> plaintext_ids_;
+  const std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
+      psm_rlwe_client_;
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PRIVATE_MEMBERSHIP_FAKE_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_CLIENT_IMPL_H_

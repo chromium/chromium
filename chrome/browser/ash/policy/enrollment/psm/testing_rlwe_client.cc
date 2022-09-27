@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/enrollment/private_membership/testing_private_membership_rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/psm/testing_rlwe_client.h"
 
 #include <memory>
 #include <string>
@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
-#include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
