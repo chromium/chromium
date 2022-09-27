@@ -69,6 +69,9 @@ GPUSupportedFeatures* MakeFeatureNameSet(const DawnProcTable& procs,
       case WGPUFeatureName_DawnMultiPlanarFormats:
         features->AddFeatureName("multi-planar-formats");
         break;
+      case WGPUFeatureName_RG11B10UfloatRenderable:
+        features->AddFeatureName("rg11b10ufloat-renderable");
+        break;
       default:
         break;
     }

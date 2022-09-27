@@ -700,6 +700,8 @@ WGPUFeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return WGPUFeatureName_IndirectFirstInstance;
     case V8GPUFeatureName::Enum::kChromiumExperimentalDp4A:
       return WGPUFeatureName_ChromiumExperimentalDp4a;
+    case V8GPUFeatureName::Enum::kRg11B10UfloatRenderable:
+      return WGPUFeatureName_RG11B10UfloatRenderable;
   }
 }
 

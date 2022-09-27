@@ -15,6 +15,7 @@ enum GPUFeatureName {
     "depth32float-stencil8",
     "indirect-first-instance",
     "chromium-experimental-dp4a",
+    "rg11b10ufloat-renderable",
 };
 
 [
