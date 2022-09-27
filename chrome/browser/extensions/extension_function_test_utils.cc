@@ -67,7 +67,7 @@ base::Value::Dict ToDictionary(std::unique_ptr<base::Value> val) {
     ADD_FAILURE() << "val is nullptr or is not a dictonary.";
     return base::Value::Dict();
   }
-  return std::move(val->GetDict());
+  return std::move(*val).TakeDict();
 }
 
 base::Value::Dict ToDictionary(const base::Value& val) {
@@ -82,7 +82,7 @@ base::Value::List ToList(std::unique_ptr<base::Value> val) {
     ADD_FAILURE() << "val is nullptr or is not a list.";
     return base::Value::List();
   }
-  return std::move(val->GetList());
+  return std::move(*val).TakeList();
 }
 
 bool HasAnyPrivacySensitiveFields(const base::Value::Dict& dict) {

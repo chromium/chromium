@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
             get_targets_function.get(), "[]", browser()));
 
     ASSERT_TRUE(value.is_list());
-    const base::Value::List targets = std::move(value.GetList());
+    const base::Value::List targets = std::move(value).TakeList();
     ASSERT_THAT(targets, testing::SizeIs(1));
     EXPECT_THAT(targets[0], base::test::DictionaryHasValue(
                                 "url", base::Value("about:blank")));
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
             api_test_utils::RunFunctionFlags::INCLUDE_INCOGNITO));
 
     ASSERT_TRUE(value.is_list());
-    const base::Value::List targets = std::move(value.GetList());
+    const base::Value::List targets = std::move(value).TakeList();
     std::vector<std::string> urls;
     std::transform(
         targets.begin(), targets.end(), std::back_inserter(urls),

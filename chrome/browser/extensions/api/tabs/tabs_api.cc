@@ -1671,7 +1671,8 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
     return RespondNow(Error("No tabs given."));
   if (num_tabs == 1) {
     CHECK_EQ(1u, tab_values.GetList().size());
-    return RespondNow(WithArguments(std::move(tab_values.GetList()[0])));
+    base::Value::List tabs = std::move(tab_values).TakeList();
+    return RespondNow(WithArguments(std::move(tabs[0])));
   }
 
   // Return the results as an array if there are multiple tabs.
