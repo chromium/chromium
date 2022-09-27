@@ -195,7 +195,13 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     // this default behavior.
     e.preventDefault();
 
-    this.feedbackServiceProvider_.openBluetoothLogsInfoDialog();
+    this.getElement_('#bluetoothDialog').showModal();
+    this.getElement_('#bluetoothDialogDoneButton').focus();
+  }
+
+  /** @protected */
+  handleCloseBluetoothDialogClicked_() {
+    this.getElement_('#bluetoothDialog').close();
   }
 
   /**

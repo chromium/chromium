@@ -673,19 +673,31 @@ export function shareDataPageTestSuite() {
   });
 
   /**
-   * Test that feedbackServiceProvider.openBluetoothLogsInfoDialog is called
-   * when #bluetoothLogsLink link is clicked.
+   * Test that clicking the #bluetoothLogsLink will open the dialog and set the
+   * focus on the close dialog icon button.
    */
-  test('openBluetoothLogsInfoDialog', async () => {
+  test('openBluetoothLogsDialog', async () => {
     await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
 
-    assertEquals(
-        0, feedbackServiceProvider.getOpenBluetoothLogsInfoDialogCallCount());
+    // The bluetooth dialog is not visible as default.
+    const closeDialogButton = getElement('#bluetoothDialogDoneButton');
+    assertFalse(isVisible(closeDialogButton));
 
+    // After clicking the #bluetoothLogsLink, the dialog pops up.
     getElement('#bluetoothLogsInfoLink').click();
+    assertTrue(isVisible(closeDialogButton));
 
-    assertEquals(
-        1, feedbackServiceProvider.getOpenBluetoothLogsInfoDialogCallCount());
+    // The preview dialog's close icon button is focused.
+    assertEquals(closeDialogButton, getDeepActiveElement());
+
+    // Press enter should close the preview dialog.
+    closeDialogButton.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter'}));
+    await flushTasks();
+
+    // The preview dialog's close icon button is not visible now.
+    assertFalse(isVisible(closeDialogButton));
   });
 
   /**
