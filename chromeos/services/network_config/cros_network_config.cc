@@ -1608,8 +1608,22 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       cellular->imei = GetString(cellular_dict, ::onc::cellular::kIMEI);
       const base::Value* apn_dict =
           GetDictionary(cellular_dict, ::onc::cellular::kLastGoodAPN);
-      if (apn_dict)
+      if (apn_dict) {
         cellular->last_good_apn = GetApnProperties(apn_dict);
+        if (ash::features::IsApnRevampEnabled()) {
+          const absl::optional<std::string> connection_state =
+              GetString(properties, ::onc::network_config::kConnectionState);
+
+          // The connected_apn will only be set when the network is connected,
+          // and will indicate which APN was used to establish the data
+          // connection. The last_good_apn property is set by Shill, and can be
+          // present when the network is not connected.
+          if (connection_state &&
+              *connection_state == ::onc::connection_state::kConnected) {
+            cellular->connected_apn = GetApnProperties(apn_dict);
+          }
+        }
+      }
       cellular->manufacturer =
           GetString(cellular_dict, ::onc::cellular::kManufacturer);
       cellular->mdn = GetString(cellular_dict, ::onc::cellular::kMDN);

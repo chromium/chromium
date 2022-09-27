@@ -627,6 +627,9 @@ struct ManagedCellularProperties {
   string? iccid;
   string? imei;
   ApnProperties? last_good_apn;
+  // The APN used to connect to the network. Note: This field is not
+  // part of ONC, and it is set only when the kApnRevamp flag is enabled.
+  ApnProperties? connected_apn;
   string? manufacturer;
   string? mdn;
   string? meid;

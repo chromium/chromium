@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -14,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
@@ -53,27 +55,34 @@ namespace network_config {
 
 namespace {
 
-const int kSimRetriesLeft = 3;
-const char kCellularDevicePath[] = "/device/stub_cellular_device";
-const char kCellularTestIccid[] = "1234567890";
+constexpr int kSimRetriesLeft = 3;
+constexpr char kCellularDevicePath[] = "/device/stub_cellular_device";
+constexpr char kCellularTestIccid[] = "1234567890";
 
-const char kCellularTestApn1[] = "TEST.APN1";
-const char kCellularTestApnName1[] = "Test Apn 1";
-const char kCellularTestApnUsername1[] = "Test User";
-const char kCellularTestApnPassword1[] = "Test Pass";
-const char kCellularTestApnAttach1[] = "";
+constexpr char kCellularTestApn1[] = "TEST.APN1";
+constexpr char kCellularTestApnName1[] = "Test Apn 1";
+constexpr char kCellularTestApnUsername1[] = "Test User";
+constexpr char kCellularTestApnPassword1[] = "Test Pass";
+constexpr char kCellularTestApnAttach1[] = "";
 
-const char kCellularTestApn2[] = "TEST.APN2";
-const char kCellularTestApnName2[] = "Test Apn 2";
-const char kCellularTestApnUsername2[] = "Test User";
-const char kCellularTestApnPassword2[] = "Test Pass";
-const char kCellularTestApnAttach2[] = "";
+constexpr char kCellularTestApn2[] = "TEST.APN2";
+constexpr char kCellularTestApnName2[] = "Test Apn 2";
+constexpr char kCellularTestApnUsername2[] = "Test User";
+constexpr char kCellularTestApnPassword2[] = "Test Pass";
+constexpr char kCellularTestApnAttach2[] = "";
 
-const char kCellularTestApn3[] = "TEST.APN3";
-const char kCellularTestApnName3[] = "Test Apn 3";
-const char kCellularTestApnUsername3[] = "Test User";
-const char kCellularTestApnPassword3[] = "Test Pass";
-const char kCellularTestApnAttach3[] = "attach";
+constexpr char kCellularTestApn3[] = "TEST.APN3";
+constexpr char kCellularTestApnName3[] = "Test Apn 3";
+constexpr char kCellularTestApnUsername3[] = "Test User";
+constexpr char kCellularTestApnPassword3[] = "Test Pass";
+constexpr char kCellularTestApnAttach3[] = "attach";
+
+constexpr char kTestApnCellularGuid[] = "test_apn_cellular_guid";
+constexpr char kTestApnCellularShillDictFmt[] =
+    R"({"GUID": "%s", "Type": "cellular",  "State": "%s",
+            "Strength": 0, "Cellular.NetworkTechnology": "LTE",
+            "Cellular.ActivationState": "activated", "Cellular.ICCID": "%s",
+            "Profile": "%s", "Cellular.LastGoodAPN": %s})";
 
 // Escaped twice, as it will be embedded as part of a JSON string, which should
 // have a single level of escapes still present.
@@ -126,6 +135,16 @@ void CompareTrafficCounters(
                 (size_t)expected_tc.FindKey("tx_bytes")->GetDouble());
     }
   }
+}
+
+std::string CreateApnShillDict() {
+  return base::StringPrintf(
+      R"({"%s": "%s", "%s": "%s", "%s": "%s", "%s": "%s", "%s": "%s"})",
+      shill::kApnProperty, kCellularTestApn1, shill::kApnNameProperty,
+      kCellularTestApnName1, shill::kApnUsernameProperty,
+      kCellularTestApnUsername1, shill::kApnPasswordProperty,
+      kCellularTestApnPassword1, shill::kApnAttachProperty,
+      kCellularTestApnAttach1);
 }
 
 }  // namespace
@@ -1525,6 +1544,111 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
   ASSERT_EQ(kCellularTestApnAttach3, properties->type_properties->get_cellular()
                                          ->custom_apn_list->front()
                                          ->attach);
+}
+
+TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+
+  // Configure a cellular network with a last good APN and disconnected
+  // as connection status
+  helper()->ConfigureService(base::StringPrintf(
+      kTestApnCellularShillDictFmt, kTestApnCellularGuid, shill::kStateIdle,
+      kCellularTestIccid, NetworkProfileHandler::GetSharedProfilePath().c_str(),
+      CreateApnShillDict().c_str()));
+
+  // Verify the connection state
+  mojom::ManagedPropertiesPtr properties =
+      GetManagedProperties(kTestApnCellularGuid);
+  ASSERT_TRUE(properties);
+  EXPECT_EQ(kTestApnCellularGuid, properties->guid);
+  EXPECT_EQ(mojom::NetworkType::kCellular, properties->type);
+  EXPECT_EQ(mojom::ConnectionStateType::kNotConnected,
+            properties->connection_state);
+  ASSERT_TRUE(properties->type_properties->is_cellular());
+  mojom::ManagedCellularProperties* cellular_props =
+      properties->type_properties->get_cellular().get();
+  ASSERT_TRUE(cellular_props);
+
+  // Check that last_good_apn was set, but not the connected_apn
+  EXPECT_TRUE(cellular_props->last_good_apn);
+  EXPECT_FALSE(cellular_props->connected_apn);
+
+  // Simulate an update where Shill was able to connect to the cellular network
+  helper()->ConfigureService(base::StringPrintf(
+      kTestApnCellularShillDictFmt, kTestApnCellularGuid, shill::kStateReady,
+      kCellularTestIccid, NetworkProfileHandler::GetSharedProfilePath().c_str(),
+      CreateApnShillDict().c_str()));
+
+  // Verify the new connection state
+  properties = GetManagedProperties(kTestApnCellularGuid);
+  ASSERT_TRUE(properties);
+  EXPECT_EQ(kTestApnCellularGuid, properties->guid);
+  EXPECT_EQ(mojom::NetworkType::kCellular, properties->type);
+  EXPECT_EQ(mojom::ConnectionStateType::kConnected,
+            properties->connection_state);
+  EXPECT_TRUE(properties->type_properties->is_cellular());
+
+  // Check now that last_good_apn is set, and matches with connected_apn
+  cellular_props = properties->type_properties->get_cellular().get();
+  ASSERT_TRUE(cellular_props);
+  EXPECT_TRUE(cellular_props->last_good_apn);
+  const mojom::ApnPropertiesPtr& connected_apn = cellular_props->connected_apn;
+  EXPECT_EQ(connected_apn, cellular_props->last_good_apn);
+  EXPECT_EQ(kCellularTestApn1, connected_apn->access_point_name);
+  EXPECT_EQ(kCellularTestApnName1, connected_apn->name);
+  EXPECT_EQ(kCellularTestApnUsername1, connected_apn->username);
+  EXPECT_EQ(kCellularTestApnPassword1, connected_apn->password);
+  EXPECT_EQ(kCellularTestApnAttach1, connected_apn->attach);
+}
+
+TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
+  // Configure a cellular network with a last good APN and disconnected
+  // as connection status
+  helper()->ConfigureService(base::StringPrintf(
+      kTestApnCellularShillDictFmt, kTestApnCellularGuid, shill::kStateIdle,
+      kCellularTestIccid, NetworkProfileHandler::GetSharedProfilePath().c_str(),
+      CreateApnShillDict().c_str()));
+
+  // Verify the connection state
+  mojom::ManagedPropertiesPtr properties =
+      GetManagedProperties(kTestApnCellularGuid);
+  ASSERT_TRUE(properties);
+  EXPECT_EQ(kTestApnCellularGuid, properties->guid);
+  EXPECT_EQ(mojom::NetworkType::kCellular, properties->type);
+  EXPECT_EQ(mojom::ConnectionStateType::kNotConnected,
+            properties->connection_state);
+  ASSERT_TRUE(properties->type_properties->is_cellular());
+  mojom::ManagedCellularProperties* cellular_props =
+      properties->type_properties->get_cellular().get();
+  ASSERT_TRUE(cellular_props);
+
+  // Check that last_good_apn was set, but not the connected_apn
+  EXPECT_TRUE(cellular_props->last_good_apn);
+  EXPECT_FALSE(cellular_props->connected_apn);
+
+  // Simulate an update where Shill was able to connect to the cellular network
+  helper()->ConfigureService(base::StringPrintf(
+      kTestApnCellularShillDictFmt, kTestApnCellularGuid, shill::kStateReady,
+      kCellularTestIccid, NetworkProfileHandler::GetSharedProfilePath().c_str(),
+      CreateApnShillDict().c_str()));
+
+  // Verify the new connection state
+  properties = GetManagedProperties(kTestApnCellularGuid);
+  ASSERT_TRUE(properties);
+  EXPECT_EQ(kTestApnCellularGuid, properties->guid);
+  EXPECT_EQ(mojom::NetworkType::kCellular, properties->type);
+  EXPECT_EQ(mojom::ConnectionStateType::kConnected,
+            properties->connection_state);
+  EXPECT_TRUE(properties->type_properties->is_cellular());
+
+  // Check that last_good_apn was set, and the connected_apn is still not set
+  cellular_props = properties->type_properties->get_cellular().get();
+  ASSERT_TRUE(cellular_props);
+  EXPECT_TRUE(cellular_props->last_good_apn);
+  EXPECT_FALSE(cellular_props->connected_apn);
 }
 
 TEST_F(CrosNetworkConfigTest, UnrecognizedAttachApnValue) {
