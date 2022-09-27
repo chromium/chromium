@@ -99,12 +99,11 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpOnMainThread();
 
     auto manager = std::make_unique<MockAttributionManager>();
-    manager_ = manager.get();
 
-    ON_CALL(*manager_, GetActiveSourcesForWebUI)
+    ON_CALL(*manager, GetActiveSourcesForWebUI)
         .WillByDefault(InvokeCallback(std::vector<StoredSource>{}));
 
-    ON_CALL(*manager_, GetPendingReportsForInternalUse)
+    ON_CALL(*manager, GetPendingReportsForInternalUse)
         .WillByDefault(InvokeCallback(std::vector<AttributionReport>{}));
 
     static_cast<StoragePartitionImpl*>(shell()
@@ -144,10 +143,16 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
         ExecJsInWebUI(JsReplace(kObserveEmptyReportsTableScript, title)));
   }
 
-  MockAttributionManager* manager() { return manager_; }
+  MockAttributionManager* manager() {
+    AttributionManager* manager =
+        static_cast<StoragePartitionImpl*>(shell()
+                                               ->web_contents()
+                                               ->GetBrowserContext()
+                                               ->GetDefaultStoragePartition())
+            ->GetAttributionManager();
 
- private:
-  raw_ptr<MockAttributionManager, DanglingUntriaged> manager_;
+    return static_cast<MockAttributionManager*>(manager);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,

@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -58,7 +57,7 @@ class AttributionTriggerRegistrationBrowserTest : public ContentBrowserTest {
         "content/test/data/attribution_reporting");
     ASSERT_TRUE(https_server_->Start());
 
-    mock_attribution_host_ = MockAttributionHost::Override(web_contents());
+    MockAttributionHost::Override(web_contents());
   }
 
   WebContents* web_contents() { return shell()->web_contents(); }
@@ -66,14 +65,15 @@ class AttributionTriggerRegistrationBrowserTest : public ContentBrowserTest {
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
   MockAttributionHost& mock_attribution_host() {
-    return *mock_attribution_host_;
+    AttributionHost* attribution_host =
+        AttributionHost::FromWebContents(web_contents());
+    return *static_cast<MockAttributionHost*>(attribution_host);
   }
 
  private:
   AttributionManagerImpl::ScopedUseInMemoryStorageForTesting
       attribution_manager_in_memory_setting_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  base::raw_ptr<MockAttributionHost, DanglingUntriaged> mock_attribution_host_;
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,

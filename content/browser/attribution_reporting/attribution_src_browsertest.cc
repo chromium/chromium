@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -89,7 +88,7 @@ class AttributionSrcBrowserTest : public ContentBrowserTest {
     https_server_->ServeFilesFromSourceDirectory("content/test/data");
     ASSERT_TRUE(https_server_->Start());
 
-    mock_attribution_host_ = MockAttributionHost::Override(web_contents());
+    MockAttributionHost::Override(web_contents());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -103,14 +102,15 @@ class AttributionSrcBrowserTest : public ContentBrowserTest {
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
   MockAttributionHost& mock_attribution_host() {
-    return *mock_attribution_host_;
+    AttributionHost* attribution_host =
+        AttributionHost::FromWebContents(web_contents());
+    return *static_cast<MockAttributionHost*>(attribution_host);
   }
 
  private:
   AttributionManagerImpl::ScopedUseInMemoryStorageForTesting
       attribution_manager_in_memory_setting_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  base::raw_ptr<MockAttributionHost, DanglingUntriaged> mock_attribution_host_;
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
