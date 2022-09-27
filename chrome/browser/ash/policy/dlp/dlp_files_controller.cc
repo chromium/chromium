@@ -320,6 +320,14 @@ void DlpFilesController::CheckIfDownloadAllowed(
           std::move(result_callback)));
 }
 
+void DlpFilesController::CheckIfLaunchAllowed(
+    const std::string& app_id,
+    apps::IntentPtr intent,
+    CheckIfLaunchAllowedCallback result_callback) {
+  // TODO(crbug.com/1362527): Add implementation details.
+  std::move(result_callback).Run(true);
+}
+
 void DlpFilesController::IsFilesTransferRestricted(
     const std::vector<FileDaemonInfo>& transferred_files,
     const DlpFileDestination& destination,

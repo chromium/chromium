@@ -20,7 +20,9 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/grit/supervised_user_unscaled_resources.h"
 #include "chrome/browser/web_applications/app_service/web_apps.h"
@@ -40,6 +42,16 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
+
+namespace {
+// Return DlpFilesController* if exists.
+policy::DlpFilesController* GetDlpFilesController() {
+  // Primary profile restrictions are enforced across all profiles.
+  policy::DlpRulesManager* rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  return rules_manager ? rules_manager->GetDlpFilesController() : nullptr;
+}
+}  // namespace
 
 AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
     : AppServiceProxyBase(profile) {
@@ -309,10 +321,19 @@ void AppServiceProxyAsh::LaunchAppWithIntent(const std::string& app_id,
                                              LaunchSource launch_source,
                                              WindowInfoPtr window_info,
                                              LaunchCallback callback) {
-  // TODO(1359312): Apply DLP checks if possible
-  AppServiceProxyBase::LaunchAppWithIntent(
-      app_id, event_flags, std::move(intent), launch_source,
-      std::move(window_info), std::move(callback));
+  apps::IntentPtr intent_copy = intent->Clone();
+  base::OnceCallback launch_callback = base::BindOnce(
+      &AppServiceProxyAsh::LaunchAppWithIntentIfAllowed,
+      weak_ptr_factory_.GetWeakPtr(), app_id, event_flags, std::move(intent),
+      std::move(launch_source), std::move(window_info), std::move(callback));
+
+  policy::DlpFilesController* files_controller = GetDlpFilesController();
+  if (files_controller) {
+    files_controller->CheckIfLaunchAllowed(app_id, std::move(intent_copy),
+                                           std::move(launch_callback));
+  } else {
+    std::move(launch_callback).Run(/*is_allowed=*/true);
+  }
 }
 
 void AppServiceProxyAsh::LaunchAppWithIntent(
@@ -322,10 +343,19 @@ void AppServiceProxyAsh::LaunchAppWithIntent(
     apps::mojom::LaunchSource launch_source,
     apps::mojom::WindowInfoPtr window_info,
     apps::mojom::Publisher::LaunchAppWithIntentCallback callback) {
-  // TODO(1359312): Apply DLP checks if possible
-  AppServiceProxyBase::LaunchAppWithIntent(
-      app_id, event_flags, std::move(intent), launch_source,
-      std::move(window_info), std::move(callback));
+  apps::IntentPtr intent_copy = apps::ConvertMojomIntentToIntent(intent);
+  base::OnceCallback launch_callback = base::BindOnce(
+      &AppServiceProxyAsh::LaunchAppWithMojoIntentIfAllowed,
+      weak_ptr_factory_.GetWeakPtr(), app_id, event_flags, std::move(intent),
+      std::move(launch_source), std::move(window_info), std::move(callback));
+
+  policy::DlpFilesController* files_controller = GetDlpFilesController();
+  if (files_controller) {
+    files_controller->CheckIfLaunchAllowed(app_id, std::move(intent_copy),
+                                           std::move(launch_callback));
+  } else {
+    std::move(launch_callback).Run(/*is_allowed=*/true);
+  }
 }
 
 base::WeakPtr<AppServiceProxyAsh> AppServiceProxyAsh::GetWeakPtr() {
@@ -695,6 +725,40 @@ bool AppServiceProxyAsh::CanRunLaunchCallback(
   }
 
   return true;
+}
+
+void AppServiceProxyAsh::LaunchAppWithIntentIfAllowed(
+    const std::string& app_id,
+    int32_t event_flags,
+    IntentPtr intent,
+    LaunchSource launch_source,
+    WindowInfoPtr window_info,
+    LaunchCallback callback,
+    bool is_allowed) {
+  if (!is_allowed) {
+    std::move(callback).Run(LaunchResult(State::FAILED));
+    return;
+  }
+  AppServiceProxyBase::LaunchAppWithIntent(
+      app_id, event_flags, std::move(intent), std::move(launch_source),
+      std::move(window_info), std::move(callback));
+}
+
+void AppServiceProxyAsh::LaunchAppWithMojoIntentIfAllowed(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::IntentPtr intent,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::WindowInfoPtr window_info,
+    apps::mojom::Publisher::LaunchAppWithIntentCallback callback,
+    bool is_allowed) {
+  if (!is_allowed) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  AppServiceProxyBase::LaunchAppWithIntent(
+      app_id, event_flags, std::move(intent), std::move(launch_source),
+      std::move(window_info), std::move(callback));
 }
 
 }  // namespace apps

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "url/gurl.h"
@@ -131,6 +132,7 @@ class DlpFilesController {
   using FilterDisallowedUploadsCallback = base::OnceCallback<void(
       std::vector<blink::mojom::FileChooserFileInfoPtr>)>;
   using CheckIfDownloadAllowedCallback = base::OnceCallback<void(bool)>;
+  using CheckIfLaunchAllowedCallback = base::OnceCallback<void(bool)>;
   using GetDlpMetadataCallback =
       base::OnceCallback<void(std::vector<DlpFileMetadata>)>;
   using IsFilesTransferRestrictedCallback =
@@ -164,6 +166,11 @@ class DlpFilesController {
   void CheckIfDownloadAllowed(const GURL& download_url,
                               const base::FilePath& file_path,
                               CheckIfDownloadAllowedCallback result_callback);
+
+  // Checks whether launching `app_id` with `intent` is allowed.
+  void CheckIfLaunchAllowed(const std::string& app_id,
+                            apps::IntentPtr intent,
+                            CheckIfLaunchAllowedCallback result_callback);
 
   // Returns a sublist of |transferred_files| which aren't allowed to be
   // transferred to either |destination_url| or |destination_component| in

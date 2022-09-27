@@ -243,6 +243,25 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   bool CanRunLaunchCallback(
       const std::vector<base::UnguessableToken>& instance_ids);
 
+  // Launches the app if `is_allowed` is set true.
+  void LaunchAppWithIntentIfAllowed(const std::string& app_id,
+                                    int32_t event_flags,
+                                    IntentPtr intent,
+                                    LaunchSource launch_source,
+                                    WindowInfoPtr window_info,
+                                    LaunchCallback callback,
+                                    bool is_allowed);
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
+  void LaunchAppWithMojoIntentIfAllowed(
+      const std::string& app_id,
+      int32_t event_flags,
+      apps::mojom::IntentPtr intent,
+      apps::mojom::LaunchSource launch_source,
+      apps::mojom::WindowInfoPtr window_info,
+      apps::mojom::Publisher::LaunchAppWithIntentCallback callback,
+      bool is_allowed);
+
   SubscriberCrosapi* crosapi_subscriber_ = nullptr;
 
   std::unique_ptr<PublisherHost> publisher_host_;
