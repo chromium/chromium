@@ -74,6 +74,8 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
   scoped_refptr<gl::GLImageEGLAngleVulkan> egl_image_;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
   GrBackendTexture backend_texture_{};
+  sk_sp<SkPromiseImageTexture> promise_texture_;
+  int surface_msaa_count_ = 0;
   GLenum layout_ = GL_NONE;
   bool is_skia_write_in_process_ = false;
   bool is_gl_write_in_process_ = false;

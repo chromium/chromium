@@ -46,9 +46,7 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
                                      MemoryTypeTracker* tracker)
       : SkiaImageRepresentation(manager, backing, tracker) {}
 
-  ~SkiaAngleVulkanImageRepresentation() override {
-    backing_impl()->context_state_->EraseCachedSkSurface(this);
-  }
+  ~SkiaAngleVulkanImageRepresentation() override = default;
 
   // SkiaImageRepresentation implementation.
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
@@ -57,7 +55,7 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     if (!backing_impl()->BeginAccessSkia(/*readonly=*/true))
       return nullptr;
-    return SkPromiseImageTexture::Make(backing_impl()->backend_texture_);
+    return backing_impl()->promise_texture_;
   }
 
   void EndReadAccess() override { backing_impl()->EndAccessSkia(); }
@@ -68,7 +66,7 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     if (!backing_impl()->BeginAccessSkia(/*readonly=*/false))
       return nullptr;
-    return SkPromiseImageTexture::Make(backing_impl()->backend_texture_);
+    return backing_impl()->promise_texture_;
   }
 
   sk_sp<SkSurface> BeginWriteAccess(
@@ -77,29 +75,32 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
-    auto promise_image_texture =
+    auto promise_texture =
         BeginWriteAccess(begin_semaphores, end_semaphores, end_state);
-    if (!promise_image_texture)
+    if (!promise_texture)
       return nullptr;
 
-    auto surface = backing_impl()->context_state_->GetCachedSkSurface(this);
+    auto surface = backing_impl()->context_state_->GetCachedSkSurface(
+        backing_impl()->promise_texture_.get());
 
     // If surface properties are different from the last access, then we cannot
     // reuse the cached SkSurface.
     if (!surface || surface_props != surface->props() ||
-        final_msaa_count != surface_msaa_count_) {
+        final_msaa_count != backing_impl()->surface_msaa_count_) {
       SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
           true /* gpu_compositing */, format());
       surface = SkSurface::MakeFromBackendTexture(
-          backing_impl()->gr_context(), promise_image_texture->backendTexture(),
+          backing_impl()->gr_context(), backing_impl()->backend_texture_,
           surface_origin(), final_msaa_count, sk_color_type,
           backing_impl()->color_space().ToSkColorSpace(), &surface_props);
       if (!surface) {
-        backing_impl()->context_state_->EraseCachedSkSurface(this);
+        backing_impl()->context_state_->EraseCachedSkSurface(
+            backing_impl()->promise_texture_.get());
         return nullptr;
       }
-      surface_msaa_count_ = final_msaa_count;
-      backing_impl()->context_state_->CacheSkSurface(this, surface);
+      backing_impl()->surface_msaa_count_ = final_msaa_count;
+      backing_impl()->context_state_->CacheSkSurface(
+          backing_impl()->promise_texture_.get(), surface);
     }
 
     [[maybe_unused]] int count = surface->getCanvas()->save();
@@ -112,7 +113,8 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
     if (surface) {
       surface->getCanvas()->restoreToCount(1);
       surface = nullptr;
-      DCHECK(backing_impl()->context_state_->CachedSkSurfaceIsUnique(this));
+      DCHECK(backing_impl()->context_state_->CachedSkSurfaceIsUnique(
+          backing_impl()->promise_texture_.get()));
     }
     backing_impl()->EndAccessSkia();
   }
@@ -121,8 +123,6 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
   AngleVulkanImageBacking* backing_impl() const {
     return static_cast<AngleVulkanImageBacking*>(backing());
   }
-
-  int surface_msaa_count_ = 0;
 };
 
 AngleVulkanImageBacking::AngleVulkanImageBacking(
@@ -151,6 +151,11 @@ AngleVulkanImageBacking::~AngleVulkanImageBacking() {
   DCHECK_EQ(gl_reads_in_process_, 0);
   DCHECK_EQ(skia_reads_in_process_, 0);
 
+  if (promise_texture_) {
+    context_state_->EraseCachedSkSurface(promise_texture_.get());
+    promise_texture_.reset();
+  }
+
   if (passthrough_texture_) {
     if (!gl::GLContext::GetCurrent())
       context_state_->MakeCurrent(/*surface=*/nullptr, /*needs_gl=*/true);
@@ -161,6 +166,7 @@ AngleVulkanImageBacking::~AngleVulkanImageBacking() {
     passthrough_texture_.reset();
     egl_image_.reset();
   }
+
   if (vulkan_image_) {
     auto* fence_helper = context_state_->vk_context_provider()
                              ->GetDeviceQueue()
@@ -201,6 +207,10 @@ bool AngleVulkanImageBacking::Initialize(
     return false;
 
   vulkan_image_ = std::move(vulkan_image);
+
+  GrVkImageInfo info = CreateGrVkImageInfo(vulkan_image_.get());
+  backend_texture_ = GrBackendTexture(size().width(), size().height(), info);
+  promise_texture_ = SkPromiseImageTexture::Make(backend_texture_);
 
   if (!data.empty()) {
     size_t stride = BitsPerPixel(format()) / 8 * size().width();
@@ -354,10 +364,6 @@ void AngleVulkanImageBacking::ReleaseTextureANGLE() {
 }
 
 void AngleVulkanImageBacking::PrepareBackendTexture() {
-  if (!backend_texture_.isValid()) {
-    GrVkImageInfo info = CreateGrVkImageInfo(vulkan_image_.get());
-    backend_texture_ = GrBackendTexture(size().width(), size().height(), info);
-  }
   auto vk_layout = GLImageLayoutToVkImageLayout(layout_);
   backend_texture_.setVkImageLayout(vk_layout);
 }
