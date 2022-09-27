@@ -95,10 +95,6 @@ bool GetCompatToolInfo(const std::string& owner_id, std::string* output);
 CompatToolInfo ParseCompatToolInfo(absl::optional<int> game_id,
                                    const std::string& output);
 
-// Used in the splash screen to get the dlc path as dlcservice could not be
-// imported directly.
-void GetDlcPath(base::OnceCallback<void(const std::string& path)> callback);
-
 }  // namespace borealis
 
 #endif  // CHROME_BROWSER_ASH_BOREALIS_BOREALIS_UTIL_H_

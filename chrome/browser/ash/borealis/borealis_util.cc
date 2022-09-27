@@ -261,24 +261,4 @@ CompatToolInfo ParseCompatToolInfo(absl::optional<int> game_id,
   return compat_tool_info;
 }
 
-void OnGetDlcState(base::OnceCallback<void(const std::string& path)> callback,
-                   const std::string& err,
-                   const dlcservice::DlcState& dlc_state) {
-  if (err != dlcservice::kErrorNone) {
-    LOG(ERROR) << "Failed to get dlc state with error: " << err;
-  }
-
-  // TODO(b/220799106): Add user visible error.
-  if (!dlc_state.INSTALLED) {
-    LOG(ERROR) << "Borealis dlc is not installed";
-    return;
-  }
-  std::move(callback).Run(dlc_state.root_path());
-}
-
-void GetDlcPath(base::OnceCallback<void(const std::string& path)> callback) {
-  ash::DlcserviceClient::Get()->GetDlcState(
-      kBorealisDlcName, base::BindOnce(&OnGetDlcState, std::move(callback)));
-}
-
 }  // namespace borealis

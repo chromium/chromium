@@ -33,8 +33,6 @@ class BorealisSplashScreenView
   void OnGetRootPath(const std::string& path);
 
  private:
-  void CreateImageView(gfx::Image image);
-
   Profile* profile_ = nullptr;
   base::raw_ptr<views::Label> starting_label_;
   base::WeakPtrFactory<BorealisSplashScreenView> weak_factory_;
