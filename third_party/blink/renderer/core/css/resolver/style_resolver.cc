@@ -1537,11 +1537,9 @@ scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
   initial_style->SetTapHighlightColor(
       ComputedStyleInitialValues::InitialTapHighlightColor());
 
-  Settings* settings = GetDocument().GetSettings();
-  bool force_dark = settings ? settings->GetForceDarkModeEnabled() : false;
   initial_style->SetUsedColorScheme(engine.GetPageColorSchemes(),
                                     engine.GetPreferredColorScheme(),
-                                    force_dark);
+                                    engine.GetForceDarkModeEnabled());
 
   FontDescription document_font_description =
       initial_style->GetFontDescription();

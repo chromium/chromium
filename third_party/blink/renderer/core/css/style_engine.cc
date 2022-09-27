@@ -157,6 +157,8 @@ StyleEngine::StyleEngine(Document& document)
 
     DCHECK(document.GetSettings());
     preferred_color_scheme_ = document.GetSettings()->GetPreferredColorScheme();
+    force_dark_mode_enabled_ =
+        document.GetSettings()->GetForceDarkModeEnabled();
     UpdateColorSchemeMetrics();
   }
 
@@ -3105,6 +3107,8 @@ void StyleEngine::UpdateColorScheme() {
   mojom::blink::PreferredColorScheme old_preferred_color_scheme =
       preferred_color_scheme_;
   preferred_color_scheme_ = settings->GetPreferredColorScheme();
+  bool old_force_dark_mode_enabled = force_dark_mode_enabled_;
+  force_dark_mode_enabled_ = settings->GetForceDarkModeEnabled();
 
   if (const auto* overrides =
           GetDocument().GetPage()->GetMediaFeatureOverrides()) {
@@ -3119,11 +3123,14 @@ void StyleEngine::UpdateColorScheme() {
     }
   }
 
-  if (GetDocument().Printing())
+  if (GetDocument().Printing()) {
     preferred_color_scheme_ = mojom::blink::PreferredColorScheme::kLight;
+    force_dark_mode_enabled_ = false;
+  }
 
   if (forced_colors_ != old_forced_colors ||
-      preferred_color_scheme_ != old_preferred_color_scheme) {
+      preferred_color_scheme_ != old_preferred_color_scheme ||
+      force_dark_mode_enabled_ != old_force_dark_mode_enabled) {
     PlatformColorsChanged();
   }
 

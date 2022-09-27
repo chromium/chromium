@@ -552,6 +552,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   mojom::PreferredColorScheme GetPreferredColorScheme() const {
     return preferred_color_scheme_;
   }
+  bool GetForceDarkModeEnabled() const { return force_dark_mode_enabled_; }
   ForcedColors GetForcedColors() const { return forced_colors_; }
   void UpdateColorSchemeBackground(bool color_scheme_changed = false);
   Color ForcedBackgroundColor() const { return forced_background_color_; }
@@ -907,6 +908,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   ForcedColors forced_colors_{ForcedColors::kNone};
 
   Color forced_background_color_;
+
+  bool force_dark_mode_enabled_{false};
 
   friend class NodeTest;
   friend class StyleEngineTest;

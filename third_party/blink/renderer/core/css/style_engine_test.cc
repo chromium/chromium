@@ -3154,6 +3154,33 @@ TEST_F(StyleEngineTest, PrintNoDarkColorScheme) {
       body->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
+TEST_F(StyleEngineTest, PrintNoForceDarkMode) {
+  auto* frame_view = GetDocument().View();
+  GetDocument().documentElement()->SetInlineStyleProperty(
+      CSSPropertyID::kBackgroundColor, "white");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(frame_view->DocumentBackgroundColor(), Color::kWhite);
+  EXPECT_EQ(GetDocument().documentElement()->GetComputedStyle()->ForceDark(),
+            false);
+
+  GetDocument().GetSettings()->SetForceDarkModeEnabled(true);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(frame_view->DocumentBackgroundColor(), Color(18, 18, 18));
+  EXPECT_EQ(GetDocument().documentElement()->GetComputedStyle()->ForceDark(),
+            true);
+
+  gfx::SizeF page_size(400, 400);
+  GetDocument().GetFrame()->StartPrinting(page_size, page_size, 1);
+  EXPECT_EQ(frame_view->DocumentBackgroundColor(), Color::kWhite);
+  EXPECT_EQ(GetDocument().documentElement()->GetComputedStyle()->ForceDark(),
+            false);
+
+  GetDocument().GetFrame()->EndPrinting();
+  EXPECT_EQ(frame_view->DocumentBackgroundColor(), Color(18, 18, 18));
+  EXPECT_EQ(GetDocument().documentElement()->GetComputedStyle()->ForceDark(),
+            true);
+}
+
 TEST_F(StyleEngineTest, AtPropertyUseCount) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>

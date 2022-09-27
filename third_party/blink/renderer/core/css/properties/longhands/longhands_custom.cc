@@ -1724,10 +1724,9 @@ void ApplyColorSchemeValue(StyleResolverState& state,
 
   state.StyleRef().SetColorScheme(std::move(color_schemes));
 
-  Settings* settings = document.GetSettings();
-  bool force_dark = settings ? settings->GetForceDarkModeEnabled() : false;
   state.StyleRef().SetUsedColorScheme(
-      flags, document.GetStyleEngine().GetPreferredColorScheme(), force_dark);
+      flags, document.GetStyleEngine().GetPreferredColorScheme(),
+      document.GetStyleEngine().GetForceDarkModeEnabled());
 
   if (flags & static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark)) {
     // Record kColorSchemeDarkSupportedOnRoot if dark is present (though dark
