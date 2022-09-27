@@ -77,7 +77,7 @@ size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
 
 int BytesPerPixel(viz::ResourceFormat format) {
   int bits = viz::BitsPerPixel(format);
-  DCHECK_GT(bits, 8);
+  DCHECK_GE(bits, 8);
   return bits / 8;
 }
 
