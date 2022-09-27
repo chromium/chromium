@@ -11,6 +11,9 @@
 #include "base/debug/stack_trace.h"
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/abseil_string_conversions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/http/http_response_headers.h"
@@ -19,7 +22,6 @@
 #include "net/ssl/ssl_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "third_party/abseil-cpp/absl/strings/escaping.h"
 
 namespace net {
 
@@ -70,7 +72,8 @@ class Http2Connection::DataFrameSource
 
   bool Send(absl::string_view frame_header, size_t payload_length) override {
     std::string concatenated =
-        absl::StrCat(frame_header, chunks_.front().substr(0, payload_length));
+        base::StrCat({base::StringViewToStringPiece(frame_header),
+                      chunks_.front().substr(0, payload_length)});
     const int64_t result = connection_->OnReadyToSend(concatenated);
     // Write encountered error.
     if (result < 0) {
