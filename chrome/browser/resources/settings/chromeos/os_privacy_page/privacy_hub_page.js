@@ -163,6 +163,21 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
       },
 
       /**
+       * The list of connected cameras.
+       * @private {Array<string>}
+       */
+      camerasConnected_: {
+        type: Array,
+        value: [],
+      },
+
+      /** @private {boolean} */
+      isCameraListEmpty_: {
+        type: Boolean,
+        computed: 'computeIsCameraListEmpty_(camerasConnected_)',
+      },
+
+      /**
        * The list of connected microphones.
        * @private {Array<string>}
        */
@@ -247,6 +262,15 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
   }
 
   /**
+   * @return {boolean} Whether the list of cameras displayed in this page is
+   *     empty.
+   * @private
+   */
+  computeIsCameraListEmpty_() {
+    return (this.camerasConnected_.length === 0);
+  }
+
+  /**
    * @return {boolean} Whether the list of microphones displayed in this page is
    *     empty.
    * @private
@@ -258,12 +282,17 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
   /** @private */
   updateMediaDeviceLists_() {
     MediaDevicesProxy.getMediaDevices().enumerateDevices().then((devices) => {
+      const connectedCameras = [];
       const connectedMicrophones = [];
       devices.forEach((device) => {
-        if (device.kind === 'audioinput' && device.deviceId !== 'default') {
+        if (device.kind === 'videoinput') {
+          connectedCameras.push(device.label);
+        } else if (
+            device.kind === 'audioinput' && device.deviceId !== 'default') {
           connectedMicrophones.push(device.label);
         }
       });
+      this.camerasConnected_ = connectedCameras;
       this.microphonesConnected_ = connectedMicrophones;
     });
   }

@@ -10,14 +10,33 @@
     }
 </style>
 
-<settings-toggle-button
-    pref="{{prefs.ash.user.camera_allowed}}"
-    id="cameraToggle"
-    label="$i18n{cameraToggleTitle}"
-    sub-label="[[cameraToggleActive_]]"
-    deep-link-focus-id$="[[Setting.kCameraOnOff]]">
-</settings-toggle-button>
-<div class="hr"></div>
+<div id="camera">
+  <settings-toggle-button
+      pref="{{prefs.ash.user.camera_allowed}}"
+      id="cameraToggle"
+      label="$i18n{cameraToggleTitle}"
+      sub-label="[[cameraToggleActive_]]"
+      deep-link-focus-id$="[[Setting.kCameraOnOff]]">
+  </settings-toggle-button>
+
+  <template is="dom-if" if="[[isCameraListEmpty_]]" restamp>
+    <div id="noCamera" class="subsection settings-box-text">
+      $i18n{noCameraConnectedText}
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[!isCameraListEmpty_]]" restamp>
+    <iron-list id="cameraList" items="[[camerasConnected_]]">
+      <template>
+        <div class="subsection settings-box">
+          [[item]]
+        </div>
+      </template>
+    </iron-list>
+  </template>
+
+  <div class="hr"></div>
+</div>
 
 <div id="microphone">
   <settings-toggle-button

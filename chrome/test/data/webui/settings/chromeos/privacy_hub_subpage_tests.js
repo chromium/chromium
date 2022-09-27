@@ -307,43 +307,150 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     }
   });
 
-  test('Microphone list in the Privacy Hub subpage', async () => {
-    const getNoMicText = () =>
+  test('Media device lists in the Privacy Hub subpage', async () => {
+    const getNoCameraText = () =>
+        privacyHubSubpage.shadowRoot.querySelector('#noCamera');
+    const getCameraList = () =>
+        privacyHubSubpage.shadowRoot.querySelector('#cameraList');
+
+    const getNoMicrophoneText = () =>
         privacyHubSubpage.shadowRoot.querySelector('#noMic');
     const getMicrophoneList = () =>
         privacyHubSubpage.shadowRoot.querySelector('#micList');
 
-    // Initially, the microphone list should be empty and `#noMic` text should
-    // be displayed.
-    assertTrue(!!getNoMicText());
+    // Initially, the lists of media devices should be hidden and `#noMic` and
+    // `#noCamera` should be displayed.
+    assertFalse(!!getCameraList());
+    assertTrue(!!getNoCameraText());
     assertEquals(
-        getNoMicText().textContent.trim(),
+        getNoCameraText().textContent.trim(),
+        privacyHubSubpage.i18n('noCameraConnectedText'));
+
+    assertFalse(!!getMicrophoneList());
+    assertTrue(!!getNoMicrophoneText());
+    assertEquals(
+        getNoMicrophoneText().textContent.trim(),
         privacyHubSubpage.i18n('noMicrophoneConnectedText'));
-    assertFalse(!!getMicrophoneList());
 
-    // Adding a fake microphone.
-    mediaDevices.addDevice('audioinput', 'Fake microphone 1');
-    await waitAfterNextRender(privacyHubSubpage);
-    assertTrue(!!getMicrophoneList());
-    assertEquals(getMicrophoneList().items.length, 1);
+    const tests = [
+      {
+        device: {
+          kind: 'audiooutput',
+          label: 'Fake Speaker 1',
+        },
+        changes: {
+          cam: false,
+          mic: false,
+        },
+      },
+      {
+        device: {
+          kind: 'videoinput',
+          label: 'Fake Camera 1',
+        },
+        changes: {
+          mic: false,
+          cam: true,
+        },
+      },
+      {
+        device: {
+          kind: 'audioinput',
+          label: 'Fake Microphone 1',
+        },
+        changes: {
+          cam: false,
+          mic: true,
+        },
+      },
+      {
+        device: {
+          kind: 'videoinput',
+          label: 'Fake Camera 2',
+        },
+        changes: {
+          cam: true,
+          mic: false,
+        },
+      },
+      {
+        device: {
+          kind: 'audiooutput',
+          label: 'Fake Speaker 2',
+        },
+        changes: {
+          cam: false,
+          mic: false,
+        },
+      },
+      {
+        device: {
+          kind: 'audioinput',
+          label: 'Fake Microphone 2',
+        },
+        changes: {
+          cam: false,
+          mic: true,
+        },
+      },
+    ];
 
-    // Adding another fake microphone.
-    mediaDevices.addDevice('audioinput', 'Fake microphone 2');
-    await waitAfterNextRender(privacyHubSubpage);
-    assertTrue(!!getMicrophoneList());
-    assertEquals(getMicrophoneList().items.length, 2);
+    let cams = 0;
+    let mics = 0;
 
-    // Removing a microphone.
-    mediaDevices.popDevice();
-    await waitAfterNextRender(privacyHubSubpage);
-    assertTrue(!!getMicrophoneList());
-    assertEquals(getMicrophoneList().items.length, 1);
+    // Adding a media device in each iteration.
+    for (const test of tests) {
+      mediaDevices.addDevice(test.device.kind, test.device.label);
+      await waitAfterNextRender(privacyHubSubpage);
 
-    // Removing a microphone. The list of microphones should now be hidden as it
-    // is empty.
-    mediaDevices.popDevice();
-    await waitAfterNextRender(privacyHubSubpage);
-    assertFalse(!!getMicrophoneList());
+      if (test.changes.cam) {
+        cams++;
+      }
+      if (test.changes.mic) {
+        mics++;
+      }
+
+      if (cams) {
+        assertTrue(!!getCameraList());
+        assertEquals(getCameraList().items.length, cams);
+      } else {
+        assertFalse(!!getCameraList());
+      }
+
+      if (mics) {
+        assertTrue(!!getMicrophoneList());
+        assertEquals(getMicrophoneList().items.length, mics);
+      } else {
+        assertFalse(!!getMicrophoneList());
+      }
+    }
+
+    // Removing the most recently added media device in each iteration.
+    for (const test of tests.reverse()) {
+      mediaDevices.popDevice();
+      await waitAfterNextRender(privacyHubSubpage);
+
+      if (test.changes.cam) {
+        cams--;
+      }
+      if (test.changes.mic) {
+        mics--;
+      }
+
+      if (cams) {
+        assertTrue(!!getCameraList());
+        assertEquals(getCameraList().items.length, cams);
+      } else {
+        assertFalse(!!getCameraList());
+      }
+
+      if (mics) {
+        assertTrue(!!getMicrophoneList());
+        assertEquals(getMicrophoneList().items.length, mics);
+      } else {
+        assertFalse(!!getMicrophoneList());
+      }
+    }
   });
 }
 
