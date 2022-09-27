@@ -386,13 +386,13 @@ TEST_F(AppContextMenuTest, ExtensionApp) {
          pinnable <= AppListControllerDelegate::PIN_FIXED;
          pinnable =
              static_cast<AppListControllerDelegate::Pinnable>(pinnable + 1)) {
-      for (size_t combinations = 0; combinations < (1 << 2); ++combinations) {
-        TestExtensionApp(AppListTestBase::kHostedAppId,
-                         (combinations & (1 << 0)) != 0, pinnable, launch_type);
-        TestExtensionApp(AppListTestBase::kPackagedApp1Id,
-                         (combinations & (1 << 0)) != 0, pinnable, launch_type);
-        TestExtensionApp(AppListTestBase::kPackagedApp2Id,
-                         (combinations & (1 << 0)) != 0, pinnable, launch_type);
+      for (bool is_platform_app : {false, true}) {
+        TestExtensionApp(AppListTestBase::kHostedAppId, is_platform_app,
+                         pinnable, launch_type);
+        TestExtensionApp(AppListTestBase::kPackagedApp1Id, is_platform_app,
+                         pinnable, launch_type);
+        TestExtensionApp(AppListTestBase::kPackagedApp2Id, is_platform_app,
+                         pinnable, launch_type);
       }
     }
   }
