@@ -58,8 +58,9 @@ absl::optional<TopicData> FindAnyDuplicatedTopic(
 
 }  // namespace
 
-const base::Feature kRestoreInterestingTopicsFeature{
-    "InvalidatorRestoreInterestingTopics", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kRestoreInterestingTopicsFeature,
+             "InvalidatorRestoreInterestingTopics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 void InvalidatorRegistrarWithMemory::RegisterProfilePrefs(
