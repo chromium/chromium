@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
@@ -48,6 +49,7 @@ SessionAuthFactors& SessionAuthFactors::operator=(const SessionAuthFactors&) =
 
 const cryptohome::KeyDefinition* SessionAuthFactors::FindOnlinePasswordKey()
     const {
+  DCHECK(session_factors_.empty());
   for (const cryptohome::KeyDefinition& key_def : keys_) {
     if (key_def.label.value() == kCryptohomeGaiaKeyLabel)
       return &key_def;
@@ -63,6 +65,7 @@ const cryptohome::KeyDefinition* SessionAuthFactors::FindOnlinePasswordKey()
 }
 
 const cryptohome::KeyDefinition* SessionAuthFactors::FindKioskKey() const {
+  DCHECK(session_factors_.empty());
   for (const cryptohome::KeyDefinition& key_def : keys_) {
     if (key_def.type == cryptohome::KeyDefinition::TYPE_PUBLIC_MOUNT)
       return &key_def;
@@ -71,6 +74,7 @@ const cryptohome::KeyDefinition* SessionAuthFactors::FindKioskKey() const {
 }
 
 bool SessionAuthFactors::HasPasswordKey(const std::string& label) const {
+  DCHECK(session_factors_.empty());
   DCHECK_NE(label, kCryptohomePinLabel);
 
   for (const cryptohome::KeyDefinition& key_def : keys_) {
@@ -82,6 +86,7 @@ bool SessionAuthFactors::HasPasswordKey(const std::string& label) const {
 }
 
 const cryptohome::KeyDefinition* SessionAuthFactors::FindPinKey() const {
+  DCHECK(session_factors_.empty());
   for (const cryptohome::KeyDefinition& key_def : keys_) {
     if (key_def.type == cryptohome::KeyDefinition::TYPE_PASSWORD &&
         key_def.policy.low_entropy_credential) {
@@ -94,6 +99,7 @@ const cryptohome::KeyDefinition* SessionAuthFactors::FindPinKey() const {
 
 const cryptohome::AuthFactor* SessionAuthFactors::FindFactorByType(
     cryptohome::AuthFactorType type) const {
+  DCHECK(keys_.empty());
   const auto& result = base::ranges::find(
       session_factors_, type, [](const auto& f) { return f.ref().type(); });
   if (result == session_factors_.end())
@@ -103,6 +109,7 @@ const cryptohome::AuthFactor* SessionAuthFactors::FindFactorByType(
 
 const cryptohome::AuthFactor* SessionAuthFactors::FindOnlinePasswordFactor()
     const {
+  DCHECK(keys_.empty());
   const auto& result = base::ranges::find_if(session_factors_, [](auto& f) {
     if (f.ref().type() != cryptohome::AuthFactorType::kPassword)
       return false;
@@ -117,6 +124,7 @@ const cryptohome::AuthFactor* SessionAuthFactors::FindOnlinePasswordFactor()
 
 const cryptohome::AuthFactor* SessionAuthFactors::FindPasswordFactor(
     const cryptohome::KeyLabel& label) const {
+  DCHECK(keys_.empty());
   DCHECK_NE(label.value(), kCryptohomePinLabel);
 
   const auto& result =
@@ -131,14 +139,17 @@ const cryptohome::AuthFactor* SessionAuthFactors::FindPasswordFactor(
 }
 
 const cryptohome::AuthFactor* SessionAuthFactors::FindKioskFactor() const {
+  DCHECK(keys_.empty());
   return FindFactorByType(cryptohome::AuthFactorType::kKiosk);
 }
 
 const cryptohome::AuthFactor* SessionAuthFactors::FindPinFactor() const {
+  DCHECK(keys_.empty());
   return FindFactorByType(cryptohome::AuthFactorType::kPin);
 }
 
 const cryptohome::AuthFactor* SessionAuthFactors::FindRecoveryFactor() const {
+  DCHECK(keys_.empty());
   return FindFactorByType(cryptohome::AuthFactorType::kRecovery);
 }
 

@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -315,6 +317,7 @@ void UserContext::SetAuthFactorsConfiguration(
 
 const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration()
     const {
+  DCHECK(features::IsUseAuthFactorsEnabled());
   return auth_factors_configuration_;
 }
 
