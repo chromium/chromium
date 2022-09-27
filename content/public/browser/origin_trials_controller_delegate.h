@@ -40,6 +40,12 @@ class CONTENT_EXPORT OriginTrialsControllerDelegate {
   virtual bool IsTrialPersistedForOrigin(const url::Origin& origin,
                                          const base::StringPiece trial_name,
                                          const base::Time current_time) = 0;
+
+  // Return the list of persistent origin trials that have been saved for
+  // |origin| and haven't expired given the |current_time| parameter.
+  virtual base::flat_set<std::string> GetPersistedTrialsForOrigin(
+      const url::Origin& origin,
+      base::Time current_time) = 0;
 };
 
 }  // namespace content

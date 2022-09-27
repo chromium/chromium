@@ -9,10 +9,12 @@
 #include "components/variations/net/variations_url_loader_throttle.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/client_hints/critical_client_hints_throttle.h"
+#include "content/browser/origin_trials/critical_origin_trials_throttle.h"
 #include "content/browser/reduce_accept_language/reduce_accept_language_throttle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -67,6 +69,21 @@ CreateContentBrowserURLLoaderThrottles(
     if (request.is_outermost_main_frame && reduce_accept_lang_delegate) {
       throttles.push_back(std::make_unique<ReduceAcceptLanguageThrottle>(
           *reduce_accept_lang_delegate));
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kPersistentOriginTrials)) {
+    OriginTrialsControllerDelegate* origin_trials_delegate =
+        browser_context->GetOriginTrialsControllerDelegate();
+    // Critical Origin Trials may restart the network request, so only allow on
+    // safe methods, since the origin trials in question may change request
+    // headers or other aspects of the network request. We want to avoid servers
+    // making any changes twice as a result of the duplicate request, and if
+    // headers are changed, any idempotent method is still allowed to make
+    // further changes to server state.
+    if (net::HttpUtil::IsMethodSafe(request.method) && origin_trials_delegate) {
+      throttles.push_back(std::make_unique<CriticalOriginTrialsThrottle>(
+          *origin_trials_delegate));
     }
   }
 

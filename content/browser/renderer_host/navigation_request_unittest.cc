@@ -1045,6 +1045,13 @@ class OriginTrialsControllerDelegateMock
     return false;
   }
 
+  base::flat_set<std::string> GetPersistedTrialsForOrigin(
+      const url::Origin& origin,
+      base::Time current_time) override {
+    DCHECK(false) << "Method not implemented for test.";
+    return base::flat_set<std::string>();
+  }
+
   base::flat_map<url::Origin, std::vector<std::string>> persisted_tokens_;
 };
 

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -36,7 +37,6 @@ const char kTestTokenPublicKey[] =
     "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
 
 const char kTrialEnabledDomain[] = "example.com";
-const char kTrialEnabledPath[] = "/origin-trial";
 const char kFrobulatePersistentTrialName[] = "FrobulatePersistent";
 // Generated with
 // tools/origin_trials/generate_token.py https://example.com \
@@ -46,6 +46,13 @@ const char kFrobulatePersistentToken[] =
     "8nIszQSlHYjbuYVE3jwaNZG3X4t11zRhzPWWJwTZ+JJDS3JJsyEZcpz+y20pAP6/"
     "6upOQ4AAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI"
     "6ICJGcm9idWxhdGVQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+
+const char kTrialEnabledPath[] = "/origin-trial";
+const char kCriticalTrialEnabledPath[] = "/critical-origin-trial";
+
+const char kPageWithOriginTrialResourcePath[] = "/has-origin-trial-resource";
+
+const char kOriginTrialResourceJavascriptPath[] = "/origin-trial-script.js";
 
 class OriginTrialsBrowserTest : public PlatformBrowserTest {
  public:
@@ -62,25 +69,49 @@ class OriginTrialsBrowserTest : public PlatformBrowserTest {
   void SetUpOnMainThread() override {
     PlatformBrowserTest::SetUpOnMainThread();
     url_loader_interceptor_ = std::make_unique<content::URLLoaderInterceptor>(
-        base::BindRepeating(&OriginTrialsBrowserTest::InterceptRequest));
+        base::BindRepeating(&OriginTrialsBrowserTest::InterceptRequest,
+                            base::Unretained(this)));
   }
 
-  static bool InterceptRequest(
-      content::URLLoaderInterceptor::RequestParams* params) {
-    std::string headers =
-        "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
-    // Find the appropriate origin trial token.
-    if (params->url_request.url.DomainIs(kTrialEnabledDomain) &&
-        params->url_request.url.path() == kTrialEnabledPath) {
-      // Construct and send the response.
+  bool InterceptRequest(content::URLLoaderInterceptor::RequestParams* params) {
+    std::string path = params->url_request.url.path();
 
+    std::string headers = "HTTP/1.1 200 OK\n";
+    // Set Origin-Trial related headers
+    if (params->url_request.url.DomainIs(kTrialEnabledDomain)) {
+      received_request_counts_[path]++;
+      if (path == kTrialEnabledPath || path == kCriticalTrialEnabledPath ||
+          path == kOriginTrialResourceJavascriptPath) {
+        base::StrAppend(&headers,
+                        {"Origin-Trial: ", kFrobulatePersistentToken, "\n"});
+      }
+      if (path == kCriticalTrialEnabledPath) {
+        base::StrAppend(
+            &headers,
+            {"Critical-Origin-Trial: ", kFrobulatePersistentTrialName, "\n"});
+      }
+    }
+
+    // Set Content-Type header
+    if (path == kOriginTrialResourceJavascriptPath) {
       base::StrAppend(&headers,
-                      {"Origin-Trial: ", kFrobulatePersistentToken, "\n"});
+                      {"Content-Type: text/javascript; charset=utf-8\n"});
+    } else {
+      base::StrAppend(&headers, {"Content-Type: text/html; charset=utf-8\n"});
     }
     headers += '\n';
-    std::string body = "<!DOCTYPE html><body>Hello world!</body>";
+
+    // Set body contents
+    std::string body;
+    if (path == kPageWithOriginTrialResourcePath) {
+      base::StrAppend(&body,
+                      {"<!DOCTYPE html><head><script src=\"",
+                       kOriginTrialResourceJavascriptPath, "\"></script>"});
+    }
+
     content::URLLoaderInterceptor::WriteResponse(headers, body,
                                                  params->client.get());
+
     return true;
   }
 
@@ -97,12 +128,9 @@ class OriginTrialsBrowserTest : public PlatformBrowserTest {
   base::flat_set<std::string> GetOriginTrialsForEnabledOrigin() {
     url::Origin origin = url::Origin::CreateFromNormalizedTuple(
         "https", kTrialEnabledDomain, 443);
-    // TODO(crbug.com/1257579) Remove cast once the method is part of the
-    // delegate interface.
     content::OriginTrialsControllerDelegate* delegate =
         browser()->profile()->GetOriginTrialsControllerDelegate();
-    return static_cast<origin_trials::OriginTrials*>(delegate)
-        ->GetPersistedTrialsForOrigin(origin, base::Time::Now());
+    return delegate->GetPersistedTrialsForOrigin(origin, base::Time::Now());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -122,11 +150,9 @@ class OriginTrialsBrowserTest : public PlatformBrowserTest {
         browser(), GURL(base::StrCat({"https://", kTrialEnabledDomain, "/"}))));
   }
 
-  // Navigate to our enabled origin with a response containing |token|
-  // in the Origin-Trial header
-  void RequestForOriginTrial() {
-    GURL url(
-        base::StrCat({"https://", kTrialEnabledDomain, kTrialEnabledPath}));
+  // Navigate to our enabled origin on a path that sets the Origin-Trial header.
+  void RequestForOriginTrial(const std::string& path) {
+    GURL url(base::StrCat({"https://", kTrialEnabledDomain, path}));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
@@ -134,6 +160,7 @@ class OriginTrialsBrowserTest : public PlatformBrowserTest {
   std::unique_ptr<base::AutoReset<bool>> disable_token_cleanup_for_test_;
   base::test::ScopedFeatureList test_features_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
+  base::flat_map<std::string, int> received_request_counts_;
 };
 
 IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest, NoHeaderDoesNotEnableResponse) {
@@ -143,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest, NoHeaderDoesNotEnableResponse) {
 }
 
 IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest, ResponseEnablesOriginTrial) {
-  RequestForOriginTrial();
+  RequestForOriginTrial(kTrialEnabledPath);
   base::flat_set<std::string> trials = GetOriginTrialsForEnabledOrigin();
   ASSERT_FALSE(trials.empty());
   EXPECT_EQ(kFrobulatePersistentTrialName, *(trials.begin()));
@@ -152,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest, ResponseEnablesOriginTrial) {
 IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest,
                        TrialEnabledAfterNavigationToOtherDomain) {
   // Navigate to a page that enables a persistent origin trial
-  RequestForOriginTrial();
+  RequestForOriginTrial(kTrialEnabledPath);
   EXPECT_FALSE(GetOriginTrialsForEnabledOrigin().empty());
   // Navigate to a different domain
   RequestToHttpDomain();
@@ -166,13 +193,58 @@ IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest,
 IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest,
                        TrialDisabledAfterNavigationToSameDomain) {
   // Navigate to a page that enables a persistent origin trial
-  RequestForOriginTrial();
+  RequestForOriginTrial(kTrialEnabledPath);
   EXPECT_FALSE(GetOriginTrialsForEnabledOrigin().empty());
   // Navigate to same domain without the Origin-Trial header set
   RequestWithoutHeaders();
 
   // The trial should no longer be enabled
   EXPECT_TRUE(GetOriginTrialsForEnabledOrigin().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest,
+                       CriticalOriginTrialRestartsRequest) {
+  RequestForOriginTrial(kCriticalTrialEnabledPath);
+  EXPECT_FALSE(GetOriginTrialsForEnabledOrigin().empty());
+
+  // The trial was critical, so expect two requests due to restart.
+  EXPECT_EQ(2, received_request_counts_[kCriticalTrialEnabledPath]);
+
+  // Navigate to another page
+  RequestToHttpDomain();
+
+  // Load the original page again
+  received_request_counts_[kCriticalTrialEnabledPath] = 0;
+  RequestForOriginTrial(kCriticalTrialEnabledPath);
+  EXPECT_FALSE(GetOriginTrialsForEnabledOrigin().empty());
+
+  // The trial should already be persisted, so no restart should have happened
+  EXPECT_EQ(1, received_request_counts_[kCriticalTrialEnabledPath]);
+}
+
+IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest,
+                       NonCriticalTrialDoesNotRestart) {
+  RequestForOriginTrial(kTrialEnabledPath);
+  EXPECT_FALSE(GetOriginTrialsForEnabledOrigin().empty());
+
+  // The trial was not critical, so expect one request.
+  EXPECT_EQ(1, received_request_counts_[kTrialEnabledPath]);
+}
+
+IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest,
+                       OnlyNavigationRequestIsRestarted) {
+  RequestForOriginTrial(kPageWithOriginTrialResourcePath);
+  // We do not expect the trial to be set, since
+  // |kPageWithOriginTrialResourcePath| doesn't set the header on navigation.
+  EXPECT_TRUE(GetOriginTrialsForEnabledOrigin().empty());
+
+  // The main page did not have any origin trial headers, so we only expect one
+  // request.
+  EXPECT_EQ(1, received_request_counts_[kPageWithOriginTrialResourcePath]);
+  // Despite the javascript path setting headers, including
+  // Critical-Origin-Trial, we do not expect a restart, as only navigations
+  // should restart.
+  EXPECT_EQ(1, received_request_counts_[kOriginTrialResourceJavascriptPath]);
 }
 
 }  // namespace

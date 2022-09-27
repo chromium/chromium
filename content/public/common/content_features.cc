@@ -766,8 +766,9 @@ BASE_FEATURE(kPepperCrossOriginRedirectRestriction,
 // and persisted for the next navigation. This way, an origin trial can affect
 // things before receiving the response, for instance it can affect the next
 // navigation's network request.
-const base::Feature kPersistentOriginTrials{"PersistentOriginTrials",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPersistentOriginTrials,
+             "PersistentOriginTrials",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A browser-side equivalent of the Blink feature "DocumentPictureInPictureAPI".
 // This is used for sanity checks to ensure that the feature can't be enabled by

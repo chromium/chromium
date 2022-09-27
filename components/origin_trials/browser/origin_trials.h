@@ -45,12 +45,6 @@ class OriginTrials : public KeyedService,
 
   ~OriginTrials() override;
 
-  // Return the list of persistent origin trials that have been saved for
-  // |origin| and haven't expired given the |current_time| parameter.
-  virtual base::flat_set<std::string> GetPersistedTrialsForOrigin(
-      const url::Origin& origin,
-      base::Time current_time);
-
   // content::OriginTrialsControllerDelegate
   void PersistTrialsFromTokens(
       const url::Origin& origin,
@@ -59,6 +53,9 @@ class OriginTrials : public KeyedService,
   bool IsTrialPersistedForOrigin(const url::Origin& origin,
                                  const base::StringPiece trial_name,
                                  const base::Time current_time) override;
+  base::flat_set<std::string> GetPersistedTrialsForOrigin(
+      const url::Origin& origin,
+      base::Time current_time) override;
 
  private:
   std::unique_ptr<OriginTrialsPersistenceProvider> persistence_provider_;

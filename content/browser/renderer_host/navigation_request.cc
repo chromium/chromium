@@ -52,6 +52,7 @@
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
+#include "content/browser/origin_trials/origin_trials_utils.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
@@ -1068,12 +1069,8 @@ void PersistOriginTrialsFromHeaders(
   if (!origin_trials_delegate)
     return;
 
-  size_t iter = 0;
-  std::string token;
-  std::vector<std::string> tokens;
-  while (response->headers->EnumerateHeader(&iter, "Origin-Trial", &token)) {
-    tokens.push_back(token);
-  }
+  std::vector<std::string> tokens =
+      GetOriginTrialHeaderValues(response->headers.get());
   origin_trials_delegate->PersistTrialsFromTokens(origin, tokens,
                                                   base::Time::Now());
 }
