@@ -207,32 +207,11 @@ void TestBrowserAutofillManager::AddSeenForm(
     bool preserve_values_in_form_structure) {
   auto form_structure = std::make_unique<FormStructure>(
       preserve_values_in_form_structure ? form : test::WithoutValues(form));
-  FormGlobalId form_id = form_structure->global_id();
+  test_api(form_structure.get()).SetFieldTypes(heuristic_types, server_types);
+  test_api(form_structure.get())
+      .IdentifySections(/*ignore_autocomplete=*/false);
   AddSeenFormStructure(std::move(form_structure));
-  SetSeenFormPredictions(form_id, heuristic_types, server_types);
   form_interactions_ukm_logger()->OnFormsParsed(client()->GetUkmSourceId());
-}
-
-void TestBrowserAutofillManager::SetSeenFormPredictions(
-    FormGlobalId form_id,
-    const std::vector<ServerFieldType>& heuristic_types,
-    const std::vector<ServerFieldType>& server_types) {
-  std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>
-      all_heuristic_types;
-  for (ServerFieldType type : heuristic_types)
-    all_heuristic_types.push_back({{GetActivePatternSource(), type}});
-  SetSeenFormPredictions(form_id, all_heuristic_types, server_types);
-}
-
-void TestBrowserAutofillManager::SetSeenFormPredictions(
-    FormGlobalId form_id,
-    const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
-        heuristic_types,
-    const std::vector<ServerFieldType>& server_types) {
-  FormStructure* form_structure = FindCachedFormByRendererId(form_id);
-  ASSERT_TRUE(form_structure);
-  test_api(form_structure).SetFieldTypes(heuristic_types, server_types);
-  test_api(form_structure).IdentifySections(/*ignore_autocomplete=*/false);
 }
 
 void TestBrowserAutofillManager::AddSeenFormStructure(

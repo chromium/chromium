@@ -104,17 +104,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       const std::vector<ServerFieldType>& server_types,
       bool preserve_values_in_form_structure = false);
 
-  void SetSeenFormPredictions(
-      FormGlobalId form_id,
-      const std::vector<ServerFieldType>& heuristic_types,
-      const std::vector<ServerFieldType>& server_types);
-
-  void SetSeenFormPredictions(
-      FormGlobalId form_id,
-      const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
-          heuristic_types,
-      const std::vector<ServerFieldType>& server_types);
-
   void AddSeenFormStructure(std::unique_ptr<FormStructure> form_structure);
 
   void ClearFormStructures();

@@ -2334,9 +2334,9 @@ TEST_F(AutofillMetricsTest, QualityMetrics_NoSubmission) {
   // Changes the name field to match the full name.
   SimulateUserChangedTextFieldTo(form, form.fields[0], u"Elvis Aaron Presley");
 
-  // Trigger a form upload and metrics by Resetting the manager.
   base::HistogramTester histogram_tester;
 
+  // Triggers the metrics.
   autofill_manager().Reset();
 
   auto Buck = [](ServerFieldType field_type,
