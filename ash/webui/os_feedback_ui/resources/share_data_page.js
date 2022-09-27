@@ -77,6 +77,12 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
      * @type {string}
      * @protected
      */
+    this.performanceTraceCheckboxLabel_;
+
+    /**
+     * @type {string}
+     * @protected
+     */
     this.bluetoothLogsCheckboxLabel_;
 
     /**
@@ -93,6 +99,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     super.ready();
     this.setPrivacyNote_();
     this.setSysInfoCheckboxLabelAndAttributes_();
+    this.setPerformanceTraceCheckboxLabelAndAttributes_();
     this.setBluetoothLogsCheckboxLabelAndAttributes_();
     // Set the aria description works the best for screen reader.
     // It reads the description when the checkbox is focused, and when it is
@@ -353,6 +360,14 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       this.feedbackServiceProvider_.recordPreSubmitAction(
           FeedbackAppPreSubmitAction.kViewedMetrics);
     });
+  }
+
+  /** @private */
+  setPerformanceTraceCheckboxLabelAndAttributes_() {
+    this.performanceTraceCheckboxLabel_ = this.i18nAdvanced(
+        'includePerformanceTraceCheckboxLabel', {attrs: ['id']});
+    // TODO(swifton): Make the hyperlink download the trace like in the original
+    // app.
   }
 
   /** @private */
