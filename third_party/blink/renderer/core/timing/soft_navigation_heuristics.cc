@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
+#include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
@@ -172,6 +173,8 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
       if (Document* document = window->document()) {
         PaintTiming::From(*document).ResetFirstPaintAndFCP();
       }
+      DCHECK(frame->View());
+      frame->View()->GetPaintTimingDetector().StartRecordingLCP();
     }
   }
 

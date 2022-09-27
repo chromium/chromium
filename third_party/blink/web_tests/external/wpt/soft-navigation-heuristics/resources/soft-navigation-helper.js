@@ -5,20 +5,26 @@ const url = "/foobar.html";
 const test_soft_navigation = (add_content, button, push_state, clicks,
                               extra_validations, test_name) => {
   promise_test(async t => {
+    const pre_click_lcp = await get_lcp_entries();
     setClickEvent(t, button, push_state, add_content);
     for (let i = 0; i < clicks; ++i) {
       clicked = false;
       click(button);
-      await wait_for_click();
+      await new Promise(resolve => {
+        (new PerformanceObserver(() => resolve())).observe(
+          {type: 'soft-navigation'});
+        });
     }
-    assert_equals(document.softNavigations, clicks);
+    assert_equals(document.softNavigations, clicks,
+      "Soft Navigations detected are the same as the number of clicks");
     await validate_soft_navigation_entry(clicks, extra_validations);
 
-    await new Promise(r => {
-      requestAnimationFrame(()=>requestAnimationFrame(r));
-    });
+    await double_raf();
+
     validate_paint_entries("first-contentful-paint");
     validate_paint_entries("first-paint");
+    const post_click_lcp = await get_lcp_entries();
+    assert_greater_than(post_click_lcp.length, pre_click_lcp.length);
 
    }, test_name);
 }
@@ -29,15 +35,11 @@ const click = button => {
   }
 }
 
-const wait_for_click = () => {
+const double_raf = () => {
   return new Promise(r => {
-    setInterval(() => {
-      if(clicked) {
-        r();
-      }
-    }, 10)
+    requestAnimationFrame(()=>requestAnimationFrame(r));
   });
-}
+};
 
 const setClickEvent = (t, button, push_state, add_content) => {
   button.addEventListener("click", async e => {
@@ -45,7 +47,7 @@ const setClickEvent = (t, button, push_state, add_content) => {
     await new Promise(r => t.step_timeout(r, 0));
 
     // Fetch some content
-    const response = await fetch("../resources/content.json");
+    const response = await fetch("/soft-navigation-heuristics/resources/content.json");
     const json = await response.json();
 
     if (push_state) {
@@ -53,7 +55,7 @@ const setClickEvent = (t, button, push_state, add_content) => {
       history.pushState({}, '', url + "?" + counter);
     }
 
-    add_content(json);
+    await add_content(json);
     ++counter;
 
     clicked = true;
@@ -90,5 +92,14 @@ const validate_paint_entries = async type => {
   assert_equals(entries.length, 2, "There are two entries for " + type);
   assert_not_equals(entries[0].startTime, entries[1].startTime,
     "Entries have different timestamps for " + type);
+};
+
+const get_lcp_entries = async () => {
+  const entries = await new Promise(resolve => {
+    (new PerformanceObserver(list => resolve(
+      list.getEntries()))).observe(
+      {type: 'largest-contentful-paint', buffered: true});
+    });
+  return entries;
 };
 

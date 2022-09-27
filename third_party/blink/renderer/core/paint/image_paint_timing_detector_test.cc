@@ -109,60 +109,60 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   ImageRecord* LargestImage() {
     return GetPaintTimingDetector()
         .GetImagePaintTimingDetector()
-        ->records_manager_.LargestImage();
+        .records_manager_.LargestImage();
   }
 
   ImageRecord* LargestPaintedImage() {
     return GetPaintTimingDetector()
         .GetImagePaintTimingDetector()
-        ->records_manager_.largest_painted_image_.get();
+        .records_manager_.largest_painted_image_.get();
   }
 
   ImageRecord* ChildFrameLargestImage() {
     return GetChildFrameView()
         .GetPaintTimingDetector()
         .GetImagePaintTimingDetector()
-        ->records_manager_.LargestImage();
+        .records_manager_.LargestImage();
   }
 
   size_t CountImageRecords() {
     return GetPaintTimingDetector()
         .GetImagePaintTimingDetector()
-        ->records_manager_.recorded_images_.size();
+        .records_manager_.recorded_images_.size();
   }
 
   size_t ContainerTotalSize() {
     return GetPaintTimingDetector()
                .GetImagePaintTimingDetector()
-               ->records_manager_.recorded_images_.size() +
+               .records_manager_.recorded_images_.size() +
            GetPaintTimingDetector()
                .GetImagePaintTimingDetector()
-               ->records_manager_.pending_images_.size() +
+               .records_manager_.pending_images_.size() +
            GetPaintTimingDetector()
                .GetImagePaintTimingDetector()
-               ->records_manager_.size_ordered_set_.size() +
+               .records_manager_.size_ordered_set_.size() +
            GetPaintTimingDetector()
                .GetImagePaintTimingDetector()
-               ->records_manager_.images_queued_for_paint_time_.size() +
+               .records_manager_.images_queued_for_paint_time_.size() +
            GetPaintTimingDetector()
                .GetImagePaintTimingDetector()
-               ->records_manager_.image_finished_times_.size();
+               .records_manager_.image_finished_times_.size();
   }
 
   size_t CountChildFrameRecords() {
     return GetChildPaintTimingDetector()
         .GetImagePaintTimingDetector()
-        ->records_manager_.recorded_images_.size();
+        .records_manager_.recorded_images_.size();
   }
 
   void UpdateCandidate() {
-    GetPaintTimingDetector().GetImagePaintTimingDetector()->UpdateCandidate();
+    GetPaintTimingDetector().GetImagePaintTimingDetector().UpdateCandidate();
   }
 
   void UpdateCandidateForChildFrame() {
     GetChildPaintTimingDetector()
         .GetImagePaintTimingDetector()
-        ->UpdateCandidate();
+        .UpdateCandidate();
   }
 
   base::TimeTicks LargestPaintTime() {
@@ -196,9 +196,8 @@ class ImagePaintTimingDetectorTest : public testing::Test,
         KURL("http://test.com"));
     mock_callback_manager_ =
         MakeGarbageCollected<MockPaintTimingCallbackManager>();
-    GetPaintTimingDetector()
-        .GetImagePaintTimingDetector()
-        ->ResetCallbackManager(mock_callback_manager_);
+    GetPaintTimingDetector().GetImagePaintTimingDetector().ResetCallbackManager(
+        mock_callback_manager_);
     UpdateAllLifecyclePhases();
   }
 
@@ -209,7 +208,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
         MakeGarbageCollected<MockPaintTimingCallbackManager>();
     GetChildPaintTimingDetector()
         .GetImagePaintTimingDetector()
-        ->ResetCallbackManager(child_mock_callback_manager_);
+        .ResetCallbackManager(child_mock_callback_manager_);
     UpdateAllLifecyclePhases();
   }
 
@@ -1040,7 +1039,9 @@ TEST_P(ImagePaintTimingDetectorTest, DeactivateAfterUserInput) {
   SimulateScroll();
   SetImageAndPaint("target", 5, 5);
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
-  EXPECT_FALSE(GetPaintTimingDetector().GetImagePaintTimingDetector());
+  EXPECT_FALSE(GetPaintTimingDetector()
+                   .GetImagePaintTimingDetector()
+                   .IsRecordingLargestImagePaint());
 }
 
 TEST_P(ImagePaintTimingDetectorTest, ContinueAfterKeyUp) {
@@ -1052,7 +1053,9 @@ TEST_P(ImagePaintTimingDetectorTest, ContinueAfterKeyUp) {
   SimulateKeyUp();
   SetImageAndPaint("target", 5, 5);
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
-  EXPECT_TRUE(GetPaintTimingDetector().GetImagePaintTimingDetector());
+  EXPECT_TRUE(GetPaintTimingDetector()
+                  .GetImagePaintTimingDetector()
+                  .IsRecordingLargestImagePaint());
 }
 
 TEST_P(ImagePaintTimingDetectorTest, NullTimeNoCrash) {

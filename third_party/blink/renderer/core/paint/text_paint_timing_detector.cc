@@ -118,7 +118,7 @@ void TextPaintTimingDetector::ReportPresentationTime(
     }
   }
   AssignPaintTimeToQueuedRecords(frame_index, timestamp);
-  if (ltp_manager_)
+  if (recording_largest_text_paint_)
     ltp_manager_->UpdateCandidate();
 }
 
@@ -177,8 +177,8 @@ void TextPaintTimingDetector::RecordAggregatedText(
   }
 }
 
-void TextPaintTimingDetector::StopRecordingLargestTextPaint() {
-  ltp_manager_.Clear();
+void TextPaintTimingDetector::SetRecordingLargestTextPaint(bool recording) {
+  recording_largest_text_paint_ = recording;
 }
 
 void TextPaintTimingDetector::ReportLargestIgnoredText() {

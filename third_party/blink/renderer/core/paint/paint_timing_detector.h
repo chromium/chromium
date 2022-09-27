@@ -170,13 +170,15 @@ class CORE_EXPORT PaintTimingDetector
   gfx::RectF CalculateVisualRect(const gfx::Rect& visual_rect,
                                  const PropertyTreeStateOrAlias&) const;
 
-  TextPaintTimingDetector* GetTextPaintTimingDetector() const {
+  TextPaintTimingDetector& GetTextPaintTimingDetector() const {
     DCHECK(text_paint_timing_detector_);
-    return text_paint_timing_detector_;
+    return *text_paint_timing_detector_;
   }
-  ImagePaintTimingDetector* GetImagePaintTimingDetector() const {
-    return image_paint_timing_detector_;
+  ImagePaintTimingDetector& GetImagePaintTimingDetector() const {
+    DCHECK(image_paint_timing_detector_);
+    return *image_paint_timing_detector_;
   }
+  void StartRecordingLCP();
 
   LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator();
 
@@ -222,8 +224,7 @@ class CORE_EXPORT PaintTimingDetector
   Member<LocalFrameView> frame_view_;
   // This member lives forever because it is also used for Text Element Timing.
   Member<TextPaintTimingDetector> text_paint_timing_detector_;
-  // This member lives until the end of the paint phase after the largest
-  // image paint is found.
+  // This member lives forever, to detect LCP entries for soft navigations.
   Member<ImagePaintTimingDetector> image_paint_timing_detector_;
 
   // This member lives for as long as the largest contentful paint is being

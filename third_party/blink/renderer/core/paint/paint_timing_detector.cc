@@ -124,9 +124,9 @@ bool PaintTimingDetector::NotifyBackgroundImagePaint(
   if (!frame_view)
     return false;
 
-  ImagePaintTimingDetector* detector =
+  ImagePaintTimingDetector& image_paint_timing_detector =
       frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
-  if (!detector)
+  if (!image_paint_timing_detector.IsRecordingLargestImagePaint())
     return false;
 
   if (!IsBackgroundImageContentful(*object, image))
@@ -137,9 +137,9 @@ bool PaintTimingDetector::NotifyBackgroundImagePaint(
   // TODO(yoav): |image| and |cached_image.GetImage()| are not the same here in
   // the case of SVGs. Figure out why and if we can remove this footgun.
 
-  return detector->RecordImage(*object, image.Size(), *cached_image,
-                               current_paint_chunk_properties, &style_image,
-                               image_border);
+  return image_paint_timing_detector.RecordImage(
+      *object, image.Size(), *cached_image, current_paint_chunk_properties,
+      &style_image, image_border);
 }
 
 // static
@@ -154,22 +154,23 @@ bool PaintTimingDetector::NotifyImagePaint(
   LocalFrameView* frame_view = object.GetFrameView();
   if (!frame_view)
     return false;
-  ImagePaintTimingDetector* detector =
+  ImagePaintTimingDetector& image_paint_timing_detector =
       frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
-  if (!detector)
+  if (!image_paint_timing_detector.IsRecordingLargestImagePaint())
     return false;
 
-  return detector->RecordImage(object, intrinsic_size, media_timing,
-                               current_paint_chunk_properties, nullptr,
-                               image_border);
+  return image_paint_timing_detector.RecordImage(
+      object, intrinsic_size, media_timing, current_paint_chunk_properties,
+      nullptr, image_border);
 }
 
 void PaintTimingDetector::NotifyImageFinished(const LayoutObject& object,
                                               const MediaTiming* media_timing) {
-  if (IgnorePaintTimingScope::ShouldIgnore())
+  if (IgnorePaintTimingScope::ShouldIgnore() ||
+      !image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
     return;
-  if (image_paint_timing_detector_)
-    image_paint_timing_detector_->NotifyImageFinished(object, media_timing);
+  }
+  image_paint_timing_detector_->NotifyImageFinished(object, media_timing);
 }
 
 void PaintTimingDetector::LayoutObjectWillBeDestroyed(
@@ -180,29 +181,25 @@ void PaintTimingDetector::LayoutObjectWillBeDestroyed(
 void PaintTimingDetector::NotifyImageRemoved(
     const LayoutObject& object,
     const ImageResourceContent* cached_image) {
-  if (image_paint_timing_detector_) {
+  if (image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
     image_paint_timing_detector_->NotifyImageRemoved(object, cached_image);
   }
 }
 
 void PaintTimingDetector::OnInputOrScroll() {
-  // If we have already stopped, then abort. |image_paint_timing_detector_|
-  // being nullptr is a reliable way to tell if we have already aborted or not
-  // because it is initialized on the constructor and only destroyed on this
-  // method.
-  if (!image_paint_timing_detector_)
+  // If we have already stopped and we're no longer recording the largest image
+  // paint, then abort.
+  if (!image_paint_timing_detector_->IsRecordingLargestImagePaint())
     return;
 
   // TextPaintTimingDetector is used for both Largest Contentful Paint and for
   // Element Timing. Therefore, here we only want to stop recording Largest
   // Contentful Paint.
-  text_paint_timing_detector_->StopRecordingLargestTextPaint();
+  text_paint_timing_detector_->SetRecordingLargestTextPaint(false);
   // ImagePaintTimingDetector is currently only being used for
   // LargestContentfulPaint.
-  if (image_paint_timing_detector_) {
-    image_paint_timing_detector_->StopRecordEntries();
-    image_paint_timing_detector_ = nullptr;
-  }
+  image_paint_timing_detector_->StopRecordEntries();
+  image_paint_timing_detector_->SetRecordingLargestImagePaint(false);
   largest_contentful_paint_calculator_ = nullptr;
 
   DCHECK_EQ(first_input_or_scroll_notified_timestamp_, base::TimeTicks());
@@ -234,6 +231,12 @@ bool PaintTimingDetector::NeedToNotifyInputOrScroll() const {
   DCHECK(text_paint_timing_detector_);
   return text_paint_timing_detector_->IsRecordingLargestTextPaint() ||
          image_paint_timing_detector_;
+}
+
+void PaintTimingDetector::StartRecordingLCP() {
+  text_paint_timing_detector_->SetRecordingLargestTextPaint(true);
+  image_paint_timing_detector_->SetRecordingLargestImagePaint(true);
+  first_input_or_scroll_notified_timestamp_ = base::TimeTicks();
 }
 
 LargestContentfulPaintCalculator*
@@ -402,13 +405,11 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
   // loading. The perf API should wait until the paint-time is available.
   const TextRecord* largest_text_record = nullptr;
   const ImageRecord* largest_image_record = nullptr;
-  if (auto* text_timing_detector = GetTextPaintTimingDetector()) {
-    if (text_timing_detector->IsRecordingLargestTextPaint()) {
-      largest_text_record = text_timing_detector->UpdateCandidate();
-    }
+  if (text_paint_timing_detector_->IsRecordingLargestTextPaint()) {
+    largest_text_record = text_paint_timing_detector_->UpdateCandidate();
   }
-  if (auto* image_timing_detector = GetImagePaintTimingDetector()) {
-    largest_image_record = image_timing_detector->UpdateCandidate();
+  if (image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
+    largest_image_record = image_paint_timing_detector_->UpdateCandidate();
   }
 
   lcp_calculator->UpdateLargestContentfulPaintIfNeeded(largest_text_record,
@@ -416,11 +417,9 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {
-  if (auto* text_timing_detector = GetTextPaintTimingDetector()) {
-    text_paint_timing_detector_->ReportLargestIgnoredText();
-  }
-  if (auto* image_timing_detector = GetImagePaintTimingDetector()) {
-    image_timing_detector->ReportLargestIgnoredImage();
+  text_paint_timing_detector_->ReportLargestIgnoredText();
+  if (image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
+    image_paint_timing_detector_->ReportLargestIgnoredImage();
   }
 }
 
@@ -440,12 +439,12 @@ void ScopedPaintTimingDetectorBlockPaintHook::EmplaceIfNeeded(
     return;
 
   reset_top_.emplace(&top_, this);
-  TextPaintTimingDetector* detector = aggregator.GetFrameView()
+  TextPaintTimingDetector& detector = aggregator.GetFrameView()
                                           ->GetPaintTimingDetector()
                                           .GetTextPaintTimingDetector();
   // Only set |data_| if we need to walk the object.
-  if (detector && detector->ShouldWalkObject(aggregator))
-    data_.emplace(aggregator, property_tree_state, detector);
+  if (detector.ShouldWalkObject(aggregator))
+    data_.emplace(aggregator, property_tree_state, &detector);
 }
 
 ScopedPaintTimingDetectorBlockPaintHook::Data::Data(

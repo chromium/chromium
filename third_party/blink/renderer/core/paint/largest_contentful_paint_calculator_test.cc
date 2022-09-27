@@ -38,16 +38,16 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   }
 
   ImagePaintTimingDetector* GetImagePaintTimingDetector() {
-    return GetFrame()
-        .View()
-        ->GetPaintTimingDetector()
-        .GetImagePaintTimingDetector();
+    return &GetFrame()
+                .View()
+                ->GetPaintTimingDetector()
+                .GetImagePaintTimingDetector();
   }
   TextPaintTimingDetector* GetTextPaintTimingDetector() {
-    return GetFrame()
-        .View()
-        ->GetPaintTimingDetector()
-        .GetTextPaintTimingDetector();
+    return &GetFrame()
+                .View()
+                ->GetPaintTimingDetector()
+                .GetTextPaintTimingDetector();
   }
 
   void SetImage(const char* id, int width, int height, int bytes = 0) {

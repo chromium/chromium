@@ -65,13 +65,13 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   TextPaintTimingDetector* GetTextPaintTimingDetector() {
-    return GetPaintTimingDetector().GetTextPaintTimingDetector();
+    return &GetPaintTimingDetector().GetTextPaintTimingDetector();
   }
 
   TextPaintTimingDetector* GetChildFrameTextPaintTimingDetector() {
-    return GetChildFrameView()
-        .GetPaintTimingDetector()
-        .GetTextPaintTimingDetector();
+    return &GetChildFrameView()
+                .GetPaintTimingDetector()
+                .GetTextPaintTimingDetector();
   }
 
   LargestTextPaintManager* GetLargestTextPaintManager() {
@@ -86,7 +86,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
   wtf_size_t TextQueuedForPaintTimeSize(const LocalFrameView& view) {
     return view.GetPaintTimingDetector()
         .GetTextPaintTimingDetector()
-        ->texts_queued_for_paint_time_.size();
+        .texts_queued_for_paint_time_.size();
   }
 
   wtf_size_t ContainerTotalSize() {
@@ -196,7 +196,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
     return GetChildFrameView()
         .GetPaintTimingDetector()
         .GetTextPaintTimingDetector()
-        ->ltp_manager_->LargestText();
+        .ltp_manager_->LargestText();
   }
 
   void SetFontSize(Element* font_element, uint16_t font_size) {
@@ -572,27 +572,28 @@ TEST_F(TextPaintTimingDetectorTest,
   EXPECT_EQ(ContainerTotalSize(), 0u);
 }
 
-TEST_F(TextPaintTimingDetectorTest,
-       DestroyLargestTextPaintMangerAfterUserInput) {
+TEST_F(TextPaintTimingDetectorTest, StopRecordingLCPAfterUserInput) {
   SetBodyInnerHTML(R"HTML(
   )HTML");
   AppendDivElementToBody("text");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_TRUE(GetLargestTextPaintManager());
+  EXPECT_TRUE(GetTextPaintTimingDetector()->IsRecordingLargestTextPaint());
 
   SimulateInputEvent();
-  EXPECT_FALSE(GetLargestTextPaintManager());
+  EXPECT_TRUE(GetLargestTextPaintManager());
+  EXPECT_FALSE(GetTextPaintTimingDetector()->IsRecordingLargestTextPaint());
 }
 
-TEST_F(TextPaintTimingDetectorTest, KeepLargestTextPaintMangerAfterUserInput) {
+TEST_F(TextPaintTimingDetectorTest, DoNotStopRecordingLCPAfterKeyUp) {
   SetBodyInnerHTML(R"HTML(
   )HTML");
   AppendDivElementToBody("text");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_TRUE(GetLargestTextPaintManager());
+  EXPECT_TRUE(GetTextPaintTimingDetector()->IsRecordingLargestTextPaint());
 
   SimulateKeyUp();
   EXPECT_TRUE(GetLargestTextPaintManager());
+  EXPECT_TRUE(GetTextPaintTimingDetector()->IsRecordingLargestTextPaint());
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TextRecordAfterRemoval) {
