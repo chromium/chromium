@@ -11,7 +11,7 @@ namespace download {
 
 // Used to set configuration of download service through Finch. This is not used
 // to turn on/off the feature.
-extern const base::Feature kDownloadServiceFeature;
+BASE_DECLARE_FEATURE(kDownloadServiceFeature);
 
 }  // namespace download
 
