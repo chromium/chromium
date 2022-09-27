@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
+#include "components/continuous_search/renderer/config.h"
 #include "components/continuous_search/renderer/search_result_extractor_impl.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
@@ -126,6 +127,12 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractResultsOnly) {
 }
 
 TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractRelatedSearches) {
+  Config config;
+  config.related_searches_id = "someid";
+  config.related_searches_anchor_classname = "someanchor";
+  config.related_searches_title_classname = "sometitle";
+  SetConfigForTesting(config);
+
   auto result1 = mojom::SearchResult::New();
   result1->link = GURL("https://www.example1.com/");
   result1->title = u"Related 1";
@@ -144,24 +151,23 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractRelatedSearches) {
   expected_results->groups.push_back(std::move(related_searches_group));
 
   LoadHtmlAndExpectExtractedOutput(
-      base::StringPrintf(
-          R"(<!doctype html>
+      R"(<!doctype html>
          <body>
-           <div id="%s">
+           <div id="someid">
              <div class="foo">
-               <a href="https://www.example1.com/" class="%s bar">
-                 <div class="%s bar">
+               <a href="https://www.example1.com/" class="someanchor bar">
+                 <div class="sometitle bar">
                    <span>Related 1</span>
                  </div>
                </a>
-               <a href="https://www.example2.com/" class="%s baz">
-                 <div class="%s baz">
+               <a href="https://www.example2.com/" class="someanchor baz">
+                 <div class="sometitle baz">
                    <span>Related 2</span>
                  </div>
                </a>
              </div>
              <div class="mnr-c bar">
-               <a href="https://www.example1.com/" class="%s buz">
+               <a href="https://www.example1.com/" class="someanchor buz">
                  <div>
                    <span>Skipped</span>
                  </div>
@@ -169,9 +175,6 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractRelatedSearches) {
              </div>
            </div>
          </body>)",
-          kRelatedSearchesId, kRelatedSearchesAnchorClassname,
-          kRelatedSearchesTitleClassname, kRelatedSearchesAnchorClassname,
-          kRelatedSearchesTitleClassname, kRelatedSearchesTitleClassname),
       {mojom::ResultType::kRelatedSearches},
       mojom::SearchResultExtractor::Status::kSuccess,
       std::move(expected_results));

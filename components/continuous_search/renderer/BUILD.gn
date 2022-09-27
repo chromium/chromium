@@ -4,6 +4,8 @@
 
 source_set("renderer") {
   sources = [
+    "config.cc",
+    "config.h",
     "search_result_extractor_impl.cc",
     "search_result_extractor_impl.h",
   ]
