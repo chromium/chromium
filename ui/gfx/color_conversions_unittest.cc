@@ -6,6 +6,7 @@
 #include <tuple>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_conversions.h"
 
 namespace gfx {
@@ -112,6 +113,121 @@ TEST(ColorConversions, XYZD50tosRGBLinear) {
         << ' ' << expected_g << ' ' << expected_b << " produced " << output_r
         << ' ' << output_g << ' ' << output_b;
   }
+}
+
+TEST(ColorConversions, LchToLab) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{89.11f, 69.04f, 161.5f},
+       {89.11f, -65.472265155436f, 21.906713478207564f}},
+      {{29.6915239933531f, 66.82572352143814f, 327.1054738802461f},
+       {29.6915239933531f, 56.11167248735513f,
+        -36.292665028011974f}},  // purple
+      {{38.14895894517021f, 59.598372928277406f, 32.286662896162966f},
+       {38.14895894517021f, 50.38364171345111f, 31.834803335164764f}},  // brown
+      {{46.27770902748027f, 67.9842594463414f, 134.3838583288382f},
+       {46.27770902748027f, -47.55240796497723f,
+        48.586294664234586f}}};  // green
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_l, input_a, input_b] = color_pair.input;
+    auto [expected_l, expected_a, expected_b] = color_pair.expected;
+    auto [output_l, output_a, output_b] =
+        LchToLab(input_l, input_a, absl::optional<float>(input_b));
+    EXPECT_NEAR(output_l, expected_l, 0.001f)
+        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_l
+        << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
+        << ' ' << output_a << ' ' << output_b;
+    EXPECT_NEAR(output_a, expected_a, 0.001f)
+        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_l
+        << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
+        << ' ' << output_a << ' ' << output_b;
+    EXPECT_NEAR(output_b, expected_b, 0.001f)
+        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_l
+        << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
+        << ' ' << output_a << ' ' << output_b;
+  }
+
+  // Try with a none hue value (white).
+  float input_l = 100.0f;
+  float input_a = 0.000010331815288315629f;
+  absl::optional<float> input_h = absl::nullopt;
+  float expected_l = 100.0f;
+  float expected_a = -0.000007807961277528364f;
+  float expected_b = 0.000006766250648659877f;
+  auto [output_l, output_a, output_b] =
+      LchToLab(input_l, input_a, absl::optional<float>(input_h));
+  EXPECT_NEAR(output_l, expected_l, 0.001f)
+      << input_l << ' ' << input_a << ' ' << "none"
+      << " to " << expected_l << ' ' << expected_a << ' ' << expected_b
+      << " produced " << output_l << ' ' << output_a << ' ' << output_b;
+  EXPECT_NEAR(output_a, expected_a, 0.001f)
+      << input_l << ' ' << input_a << ' ' << "none"
+      << " to " << expected_l << ' ' << expected_a << ' ' << expected_b
+      << " produced " << output_l << ' ' << output_a << ' ' << output_b;
+  EXPECT_NEAR(output_b, expected_b, 0.001f)
+      << input_l << ' ' << input_a << ' ' << "none"
+      << " to " << expected_l << ' ' << expected_a << ' ' << expected_b
+      << " produced " << output_l << ' ' << output_a << ' ' << output_b;
+}
+
+TEST(ColorConversions, LchTosRGB) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{87.81853633115202f, 113.33150206540324f, 134.38385832883824f},
+       {0.0f, 1.0f, 0.0f}},  // lime
+      {{29.6915239933531f, 66.82572352143814f, 327.1054738802461f},
+       {0.5019607843137255f, 0.0f, 0.5019607843137255f}},  // purple
+      {{38.14895894517021f, 59.598372928277406f, 32.286662896162966f},
+       {0.6470588235294118f, 0.16470588235294117f,
+        0.16470588235294117f}},  // brown
+      {{46.27770902748027f, 67.9842594463414f, 134.3838583288382f},
+       {0.0f, 0.5019607843137255f, 0.0f}}};  // green
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_l, input_c, input_h] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    SkColor4f color =
+        LchToSkColor4f(input_l, input_c, absl::optional<float>(input_h), 1.0f);
+    EXPECT_NEAR(color.fR, expected_r, 0.01f)
+        << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fG, expected_g, 0.01f)
+        << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fB, expected_b, 0.01f)
+        << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+  }
+
+  // Try with a none hue value (white).
+  float input_l = 100.0f;
+  float input_c = 0.000010331815288315629f;
+  absl::optional<float> input_h = absl::nullopt;
+  float expected_r = 1.0f;
+  float expected_g = 1.0f;
+  float expected_b = 1.0f;
+  SkColor4f color =
+      LchToSkColor4f(input_l, input_c, absl::optional<float>(input_h), 1.0f);
+  EXPECT_NEAR(color.fR, expected_r, 0.001f)
+      << input_l << ' ' << input_c << ' ' << "none"
+      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
+      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
+  EXPECT_NEAR(color.fG, expected_g, 0.001f)
+      << input_l << ' ' << input_c << ' ' << "none"
+      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
+      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
+  EXPECT_NEAR(color.fB, expected_b, 0.001f)
+      << input_l << ' ' << input_c << ' ' << "none"
+      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
+      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
 }
 
 TEST(ColorConversions, XYZD50ToSkColor4f) {

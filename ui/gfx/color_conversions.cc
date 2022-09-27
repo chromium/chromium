@@ -86,6 +86,16 @@ std::tuple<float, float, float> ApplyTransferFnsRGB(float r, float g, float b) {
 
 }  // namespace
 
+std::tuple<float, float, float> LchToLab(float l,
+                                         float c,
+                                         absl::optional<float> h) {
+  if (!h.has_value())
+    return std::make_tuple(l, 0, 0);
+
+  return std::make_tuple(l, c * std::cos(h.value() * 3.141592f / 180.0f),
+                         c * std::sin(h.value() * 3.141592f / 180.0f));
+}
+
 std::tuple<float, float, float> LabToXYZD50(float l, float a, float b) {
   // https://en.wikipedia.org/wiki/CIELAB_color_space#Converting_between_CIELAB_and_CIEXYZ_coordinates
   float y = (l + 16.0f) / 116.0f;
@@ -157,6 +167,15 @@ SkColor4f LabToSkColor4f(float l, float a, float b, float alpha) {
 
 SkColor4f DisplayP3ToSkColor4f(float r, float g, float b, float alpha) {
   auto [x, y, z] = DisplayP3ToXYZD50(r, g, b);
+  return XYZD50ToSkColor4f(x, y, z, alpha);
+}
+
+SkColor4f LchToSkColor4f(float l_input,
+                         float c,
+                         absl::optional<float> h,
+                         float alpha) {
+  auto [l, a, b] = LchToLab(l_input, c, h);
+  auto [x, y, z] = LabToXYZD50(l, a, b);
   return XYZD50ToSkColor4f(x, y, z, alpha);
 }
 

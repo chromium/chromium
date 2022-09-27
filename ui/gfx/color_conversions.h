@@ -7,6 +7,7 @@
 
 #include <tuple>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/gfx_export.h"
 
@@ -37,6 +38,11 @@ GFX_EXPORT std::tuple<float, float, float> XYZD50tosRGBLinear(float r,
                                                               float g,
                                                               float b);
 
+// Method exposed for testing purposes.
+GFX_EXPORT std::tuple<float, float, float> LchToLab(float l,
+                                                    float c,
+                                                    absl::optional<float> h);
+
 // Method exposed for blink::color conversions.
 GFX_EXPORT SkColor4f XYZD50ToSkColor4f(float x, float y, float z, float alpha);
 
@@ -57,6 +63,12 @@ GFX_EXPORT SkColor4f DisplayP3ToSkColor4f(float r,
                                           float g,
                                           float b,
                                           float alpha);
+
+// Method exposed for blink::color conversions.
+GFX_EXPORT SkColor4f LchToSkColor4f(float l,
+                                    float a,
+                                    absl::optional<float> b,
+                                    float alpha);
 
 }  // namespace gfx
 

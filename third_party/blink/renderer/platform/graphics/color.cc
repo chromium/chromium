@@ -27,6 +27,7 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -391,6 +392,11 @@ SkColor4f Color::toSkColor4f() const {
       // TODO(crbug.com/1354622): Implement CSSColor4 types.
       // https://www.w3.org/TR/css-color-4/
       return SkColor4f{0.0f, 0.0f, 0.0f, 0.0f};
+    case SerializationType::kLCH:
+      return gfx::LchToSkColor4f(
+          param0_, param1_,
+          param2_is_none_ ? absl::nullopt : absl::optional<float>(param2_),
+          alpha_);
     case SerializationType::kColor:
       switch (color_function_space_) {
         case ColorFunctionSpace::kSRGB:
