@@ -401,10 +401,10 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
   {
     base::Value authority_web_trust_mangled = onc_certificates->Clone();
     base::Value* trust_bits =
-        authority_web_trust_mangled.GetListDeprecated()[1].FindKeyOfType(
+        authority_web_trust_mangled.GetList()[1].FindKeyOfType(
             "TrustBits", base::Value::Type::LIST);
     ASSERT_TRUE(trust_bits);
-    trust_bits->GetListDeprecated()[0] = base::Value("UnknownTrustBit");
+    trust_bits->GetList()[0] = base::Value("UnknownTrustBit");
 
     OncParsedCertificates parsed_authority_web_trust_mangled(
         authority_web_trust_mangled);
@@ -419,8 +419,8 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
   // Mangle the guid part of an authority certificate.
   {
     base::Value authority_guid_mangled = onc_certificates->Clone();
-    authority_guid_mangled.GetListDeprecated()[1].SetKey(
-        "GUID", base::Value("otherguid"));
+    authority_guid_mangled.GetList()[1].SetKey("GUID",
+                                               base::Value("otherguid"));
 
     OncParsedCertificates parsed_authority_guid_mangled(authority_guid_mangled);
     EXPECT_FALSE(parsed_authority_guid_mangled.has_error());
@@ -433,8 +433,7 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
   // Mangle the type part of an authority certificate.
   {
     base::Value authority_type_mangled = onc_certificates->Clone();
-    authority_type_mangled.GetListDeprecated()[1].SetKey("Type",
-                                                         base::Value("Server"));
+    authority_type_mangled.GetList()[1].SetKey("Type", base::Value("Server"));
 
     OncParsedCertificates parsed_authority_type_mangled(authority_type_mangled);
     EXPECT_FALSE(parsed_authority_type_mangled.has_error());
@@ -447,7 +446,7 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
   // Mangle the X509 payload an authority certificate.
   {
     base::Value authority_x509_mangled = onc_certificates->Clone();
-    authority_x509_mangled.GetListDeprecated()[1].SetKey("X509", base::Value(R"(
+    authority_x509_mangled.GetList()[1].SetKey("X509", base::Value(R"(
                             -----BEGIN CERTIFICATE-----
                             MIICWDCCAcECAxAAATANBgkqhkiG9w0BAQQFADCBkzEVMBMGA1
                             UEChMMR29vZ2xlLCBJbm
@@ -486,8 +485,7 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
   // Mangle the GUID of a client certificate.
   {
     base::Value client_guid_mangled = onc_certificates->Clone();
-    client_guid_mangled.GetListDeprecated()[0].SetKey(
-        "GUID", base::Value("other-guid"));
+    client_guid_mangled.GetList()[0].SetKey("GUID", base::Value("other-guid"));
 
     OncParsedCertificates parsed_client_guid_mangled(client_guid_mangled);
     EXPECT_FALSE(parsed_client_guid_mangled.has_error());
@@ -500,8 +498,7 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
   // Mangle the PKCS12 payload of a client certificate.
   {
     base::Value client_pkcs12_mangled = onc_certificates->Clone();
-    client_pkcs12_mangled.GetListDeprecated()[0].SetKey("PKCS12",
-                                                        base::Value("YQ=="));
+    client_pkcs12_mangled.GetList()[0].SetKey("PKCS12", base::Value("YQ=="));
 
     OncParsedCertificates parsed_client_pkcs12_mangled(client_pkcs12_mangled);
     EXPECT_FALSE(parsed_client_pkcs12_mangled.has_error());

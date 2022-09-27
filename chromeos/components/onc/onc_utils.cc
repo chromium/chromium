@@ -125,7 +125,7 @@ class OncMaskValues : public Mapper {
 // the Certificates section of ONC, which is passed in as |certificates|.
 CertPEMsByGUIDMap GetServerAndCACertsByGUID(const base::Value& certificates) {
   CertPEMsByGUIDMap certs_by_guid;
-  for (const auto& cert : certificates.GetListDeprecated()) {
+  for (const auto& cert : certificates.GetList()) {
     DCHECK(cert.is_dict());
 
     const std::string* guid = cert.FindStringKey(::onc::certificate::kGUID);
@@ -158,13 +158,13 @@ CertPEMsByGUIDMap GetServerAndCACertsByGUID(const base::Value& certificates) {
 
 // Fills HexSSID fields in all entries in the |network_configs| list.
 void FillInHexSSIDFieldsInNetworks(base::Value* network_configs) {
-  for (auto& network : network_configs->GetListDeprecated())
+  for (auto& network : network_configs->GetList())
     FillInHexSSIDFieldsInOncObject(kNetworkConfigurationSignature, &network);
 }
 
 // Sets HiddenSSID fields in all entries in the |network_configs| list.
 void SetHiddenSSIDFieldsInNetworks(base::Value* network_configs) {
-  for (auto& network : network_configs->GetListDeprecated())
+  for (auto& network : network_configs->GetList())
     SetHiddenSSIDFieldInOncObject(kNetworkConfigurationSignature, &network);
 }
 
@@ -230,7 +230,7 @@ bool ResolveCertRefList(const CertPEMsByGUIDMap& certs_by_guid,
     return true;
 
   base::Value pem_list(base::Value::Type::LIST);
-  for (const auto& entry : guid_ref_list->GetListDeprecated()) {
+  for (const auto& entry : guid_ref_list->GetList()) {
     std::string pem_encoded;
     if (!GUIDRefToPEMEncoding(certs_by_guid, entry.GetString(), &pem_encoded))
       return false;
@@ -504,7 +504,7 @@ void ExpandStringsInOncObject(const OncValueSignature& signature,
 
 void ExpandStringsInNetworks(const VariableExpander& variable_expander,
                              base::Value* network_configs) {
-  for (auto& network : network_configs->GetListDeprecated()) {
+  for (auto& network : network_configs->GetList()) {
     DCHECK(network.is_dict());
     ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
                              &network);

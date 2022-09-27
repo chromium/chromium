@@ -121,9 +121,8 @@ TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {
         test_case.FindListKey("WithResolvedRefs");
     ASSERT_TRUE(expected_resolved_onc);
 
-    bool expected_success =
-        (networks_with_cert_refs->GetListDeprecated().size() ==
-         expected_resolved_onc->GetListDeprecated().size());
+    bool expected_success = (networks_with_cert_refs->GetList().size() ==
+                             expected_resolved_onc->GetList().size());
 
     base::Value actual_resolved_onc(networks_with_cert_refs->Clone());
     bool success = ResolveServerCertRefsInNetworks(certs, &actual_resolved_onc);
