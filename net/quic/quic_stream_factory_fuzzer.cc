@@ -53,7 +53,8 @@ const char kMethod[] = "GET";
 const size_t kBufferSize = 4096;
 const int kCertVerifyFlags = 0;
 
-// Static initialization for persistent factory data
+// Persistent factory data, statically initialized on the first time
+// LLVMFuzzerTestOneInput is called.
 struct Env {
   Env() : scheme_host_port(url::kHttpsScheme, kServerHostName, kServerPort) {
     quic_context.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
@@ -79,8 +80,6 @@ struct Env {
   MockQuicContext quic_context;
 };
 
-static struct Env* env = new Env();
-
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider data_provider(data, size);
 
@@ -93,6 +92,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Initialize this on each loop since some options mutate this.
   HttpServerProperties http_server_properties;
 
+  static Env* env = new Env();
   QuicParams& params = *env->quic_context.params();
   params.max_server_configs_stored_in_properties =
       data_provider.ConsumeBool() ? 1 : 0;
