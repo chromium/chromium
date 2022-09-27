@@ -197,7 +197,7 @@ std::unique_ptr<Action::ActionVector> FullStreamUIPolicy::DoReadFilteredData(
       absl::optional<base::Value> parsed_value =
           base::JSONReader::Read(query.ColumnString(4));
       if (parsed_value && parsed_value->is_list()) {
-        action->set_args(std::move(parsed_value->GetList()));
+        action->set_args(std::move(*parsed_value).TakeList());
       }
     }
 
@@ -209,7 +209,7 @@ std::unique_ptr<Action::ActionVector> FullStreamUIPolicy::DoReadFilteredData(
       absl::optional<base::Value> parsed_value =
           base::JSONReader::Read(query.ColumnString(8));
       if (parsed_value && parsed_value->is_dict()) {
-        action->set_other(std::move(parsed_value->GetDict()));
+        action->set_other(std::move(*parsed_value).TakeDict());
       }
     }
     actions->push_back(action);
