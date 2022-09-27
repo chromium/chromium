@@ -56,7 +56,7 @@ BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
 // Enables Quick Answers for more locales.
 BASE_FEATURE(kQuickAnswersForMoreLocales,
              "QuickAnswersForMoreLocales",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsCloudGamingDeviceEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
