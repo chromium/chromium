@@ -1054,8 +1054,7 @@ void NearbySharingServiceImpl::CleanupAfterNearbyProcessStopped() {
     // Cleanup send transfer resources where the user started ARC Nearby Share
     // but did not complete (i.e. cancel, abort, utility process stopped, etc.)
     // prior to shutdown.
-    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                               std::move(arc_transfer_cleanup_callback_));
+    std::move(arc_transfer_cleanup_callback_).Run();
   }
 }
 
@@ -2358,8 +2357,7 @@ void NearbySharingServiceImpl::OnTransferComplete() {
   // descriptor(s) are done at this point even though there could be Nearby
   // Connection frames cached that are not yet sent to the remote device.
   if (was_sending_files && arc_transfer_cleanup_callback_) {
-    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                               std::move(arc_transfer_cleanup_callback_));
+    std::move(arc_transfer_cleanup_callback_).Run();
   }
 
   NS_LOG(VERBOSE) << __func__

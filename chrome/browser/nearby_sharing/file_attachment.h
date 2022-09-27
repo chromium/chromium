@@ -18,7 +18,12 @@ class FileAttachment : public Attachment {
  public:
   using Type = sharing::mojom::FileMetadata::Type;
 
-  explicit FileAttachment(base::FilePath file_path);
+  explicit FileAttachment(const base::FilePath& file_path);
+  // Create a FileAttachment for |file_path|, with a separate human-readable
+  // |base_name|. |file_path| may have an opaque generated filename when working
+  // with alternative filesystems.
+  FileAttachment(const base::FilePath& file_path,
+                 const base::FilePath& base_name);
   FileAttachment(int64_t id,
                  int64_t size,
                  std::string file_name,

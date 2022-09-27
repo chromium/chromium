@@ -10,14 +10,17 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/files/safe_base_name.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/nearby_sharing/file_attachment.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -200,4 +203,29 @@ TEST_F(NearbyShareActionTest, CreateAttachmentsFromIntent) {
     }
     EXPECT_EQ(file_attachment_count, test_case.file_count);
   }
+}
+
+// Verify that a file attachment uses the file name given in the Intent, when
+// available.
+TEST_F(NearbyShareActionTest, CreateAttachmentFromIntentWithCustomName) {
+  const base::FilePath kTestPath =
+      base::FilePath("/some/path/with/opaque/name/0123456ABCDEF");
+  auto intent =
+      std::make_unique<apps::Intent>(apps_util::kIntentActionSendMultiple);
+
+  auto file =
+      std::make_unique<apps::IntentFile>(net::FilePathToFileURL(kTestPath));
+  file->file_name = base::SafeBaseName::Create("foo.jpg");
+  intent->files.push_back(std::move(file));
+
+  auto attachments = NearbyShareAction::CreateAttachmentsFromIntent(
+      profile_, std::move(intent));
+
+  ASSERT_EQ(attachments.size(), 1);
+  ASSERT_EQ(attachments[0]->family(), Attachment::Family::kFile);
+
+  auto* file_attachment = static_cast<FileAttachment*>(attachments[0].get());
+  ASSERT_EQ(file_attachment->file_name(), "foo.jpg");
+  ASSERT_EQ(file_attachment->type(), FileAttachment::Type::kImage);
+  ASSERT_EQ(file_attachment->file_path(), kTestPath);
 }

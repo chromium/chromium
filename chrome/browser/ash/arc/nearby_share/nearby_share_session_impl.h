@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_NEARBY_SHARE_SESSION_IMPL_H_
 
 #include "ash/components/arc/mojom/nearby_share.mojom.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/nearby_share/share_info_file_handler.h"
-#include "chrome/browser/sharesheet/sharesheet_service.h"
+#include "chrome/browser/ash/fusebox/fusebox_moniker.h"
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chromeos/components/sharesheet/constants.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,6 +37,13 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
                                public aura::EnvObserver {
  public:
   using SessionFinishedCallback = base::OnceCallback<void(uint32_t)>;
+  using SharesheetCallback = base::RepeatingCallback<void(
+      gfx::NativeWindow native_window,
+      apps::IntentPtr intent,
+      sharesheet::LaunchSource source,
+      sharesheet::DeliveredCallback delivered_callback,
+      sharesheet::CloseCallback close_callback,
+      sharesheet::ActionCleanupCallback cleanup_callback)>;
 
   NearbyShareSessionImpl(
       Profile* profile,
@@ -61,13 +70,23 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   void OnWindowVisibilityChanged(aura::Window* const window,
                                  bool visible) override;
 
+  // Sets a callback which will be called instead of showing the Sharesheet
+  // bubble.
+  void SetSharesheetCallbackForTesting(SharesheetCallback callback) {
+    test_sharesheet_callback_ = std::move(callback);
+  }
+
  private:
   // Called once an ARC window is found for the given |task_id_|. This will
   // either prepare files or directly show the Nearby Share bubble.
   void OnArcWindowFound(aura::Window* const arc_window);
 
   // Converts |share_info_| to |apps::IntentPtr| type.
-  apps::IntentPtr ConvertShareIntentInfoToIntent() const;
+  apps::IntentPtr ConvertShareIntentInfoToIntent();
+
+  // Converts |share_info_| to |apps::IntentPtr| type, using fusebox::Monikers
+  // to share files.
+  apps::IntentPtr ConvertShareIntentInfoToMonikerFileIntent();
 
   void OnNearbyShareBubbleShown(sharesheet::SharesheetResult result);
 
@@ -157,6 +176,13 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
 
   // Callback when the Nearby Share Session is finished and no longer needed.
   SessionFinishedCallback session_finished_callback_;
+
+  // Monikers which have been created for sharing files from ARC. These should
+  // be destroyed once sharing is complete.
+  std::vector<fusebox::Moniker> shared_monikers_;
+
+  // Test callback to override the sharesheet bubble in test environments.
+  SharesheetCallback test_sharesheet_callback_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

@@ -8,12 +8,15 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
@@ -21,13 +24,18 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/error_dialog_view.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/low_disk_space_dialog_view.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/nearby_share_overlay_view.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/progress_bar_dialog_view.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -37,6 +45,8 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/filename_util.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 
 // Enable VLOG level 1.
@@ -101,6 +111,62 @@ base::FilePath GetUserCacheFilePath(Profile* const profile) {
   DCHECK(profile);
   base::FilePath file_path = file_manager::util::GetShareCacheFilePath(profile);
   return file_path.Append(kArcNearbyShareDirname);
+}
+
+void DestroySharedMonikers(const std::vector<fusebox::Moniker>& monikers) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (monikers.empty()) {
+    return;
+  }
+
+  fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
+  if (!fusebox_server) {
+    LOG(ERROR)
+        << "FuseBox server was unavailable when cleaning up shared files.";
+    return;
+  }
+
+  for (const fusebox::Moniker& moniker : monikers) {
+    fusebox_server->DestroyMoniker(moniker);
+  }
+}
+
+void DeleteFilesAndMonikers(const base::FilePath& file_path,
+                            const std::vector<fusebox::Moniker>& monikers) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DestroySharedMonikers(monikers);
+  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                             base::BindOnce(&DeletePathAndFiles, file_path));
+}
+
+absl::optional<fusebox::Moniker> ConvertToMoniker(Profile* profile,
+                                                  const GURL& content_url) {
+  GURL external_file_url = arc::ArcUrlToExternalFileUrl(content_url);
+
+  const base::FilePath virtual_path =
+      chromeos::ExternalFileURLToVirtualPath(external_file_url);
+
+  const storage::FileSystemURL fs_url =
+      file_manager::util::GetFileManagerFileSystemContext(profile)
+          ->CreateCrackedFileSystemURL(
+              blink::StorageKey(file_manager::util::GetFilesAppOrigin()),
+              storage::kFileSystemTypeExternal, virtual_path);
+  if (!fs_url.is_valid()) {
+    LOG(ERROR) << "Failed to create moniker for invalid FileSystemURL.";
+    return absl::nullopt;
+  }
+
+  fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
+  if (!fusebox_server) {
+    LOG(ERROR) << "FuseBox server was unavailable when creating moniker.";
+    return absl::nullopt;
+  }
+
+  return fusebox_server->CreateMoniker(fs_url, /*read_only=*/true);
+}
+
+bool FileSharingThroughFuseBoxEnabled() {
+  return base::FeatureList::IsEnabled(arc::kEnableArcNearbyShareFuseBox);
 }
 
 }  // namespace
@@ -216,8 +282,8 @@ void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
 
   DVLOG(1) << __func__;
   arc_window_ = arc_window;
-  if (share_info_->files.has_value()) {
-    // File sharing.
+  if (share_info_->files.has_value() && !FileSharingThroughFuseBoxEnabled()) {
+    // File sharing through temporary copy.
     const base::FilePath arc_nearby_share_directory =
         GetUserCacheFilePath(profile_);
 
@@ -231,17 +297,20 @@ void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
         base::BindOnce(&NearbyShareSessionImpl::OnPreparedDirectory,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
-    // Sharing text.
+    // Sharing text, or file sharing through FuseBox.
     ShowNearbyShareBubbleInArcWindow();
   }
 }
 
-apps::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent() const {
+apps::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent() {
   DCHECK(share_info_);
 
   DVLOG(1) << __func__;
   // Sharing files
   if (share_info_->files.has_value()) {
+    if (FileSharingThroughFuseBoxEnabled()) {
+      return ConvertShareIntentInfoToMonikerFileIntent();
+    }
     const auto share_file_paths = file_handler_->GetFilePaths();
     DCHECK_GT(share_file_paths.size(), 0u);
     const auto share_file_mime_types = file_handler_->GetMimeTypes();
@@ -268,6 +337,36 @@ apps::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent() const {
     return share_intent;
   }
   return nullptr;
+}
+
+apps::IntentPtr
+NearbyShareSessionImpl::ConvertShareIntentInfoToMonikerFileIntent() {
+  std::vector<std::string> mime_types;
+  std::vector<GURL> file_paths;
+
+  std::vector<apps::IntentFilePtr> files;
+  for (const auto& file_info : *share_info_->files) {
+    absl::optional<fusebox::Moniker> moniker =
+        ConvertToMoniker(profile_, file_info->content_uri);
+    if (!moniker.has_value()) {
+      return nullptr;
+    }
+    GURL moniker_url = net::FilePathToFileURL(
+        base::FilePath(fusebox::MonikerMap::GetFilename(moniker.value())));
+    apps::IntentFilePtr file = std::make_unique<apps::IntentFile>(moniker_url);
+    file->mime_type = file_info->mime_type;
+    file->file_name = base::SafeBaseName::Create(file_info->name);
+    files.push_back(std::move(file));
+    shared_monikers_.push_back(moniker.value());
+  }
+
+  apps::IntentPtr intent = std::make_unique<apps::Intent>(
+      files.size() == 1 ? apps_util::kIntentActionSend
+                        : apps_util::kIntentActionSendMultiple);
+  intent->files = std::move(files);
+  intent->share_title = share_info_->title;
+
+  return intent;
 }
 
 void NearbyShareSessionImpl::OnPreparedDirectory(base::File::Error result) {
@@ -399,15 +498,29 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
   if (file_handler_) {
     share_path = file_handler_->GetShareDirectory();
   }
+
+  sharesheet::DeliveredCallback delivered_callback =
+      base::BindOnce(&NearbyShareSessionImpl::OnNearbyShareBubbleShown,
+                     weak_ptr_factory_.GetWeakPtr());
+  sharesheet::CloseCallback close_callback =
+      base::BindOnce(&NearbyShareSessionImpl::OnNearbyShareClosed,
+                     weak_ptr_factory_.GetWeakPtr());
+  sharesheet::ActionCleanupCallback cleanup_callback = base::BindOnce(
+      &DeleteFilesAndMonikers, share_path, std::move(shared_monikers_));
+
+  if (test_sharesheet_callback_) {
+    test_sharesheet_callback_.Run(arc_window_, std::move(intent),
+                                  sharesheet::LaunchSource::kArcNearbyShare,
+                                  std::move(delivered_callback),
+                                  std::move(close_callback),
+                                  std::move(cleanup_callback));
+    return;
+  }
+
   sharesheet_service->ShowNearbyShareBubbleForArc(
       arc_window_, std::move(intent), sharesheet::LaunchSource::kArcNearbyShare,
-      /*delivered_callback=*/
-      base::BindOnce(&NearbyShareSessionImpl::OnNearbyShareBubbleShown,
-                     weak_ptr_factory_.GetWeakPtr()),
-      /*close_callback=*/
-      base::BindOnce(&NearbyShareSessionImpl::OnNearbyShareClosed,
-                     weak_ptr_factory_.GetWeakPtr()),
-      /*cleanup_callback=*/base::BindOnce(&DeletePathAndFiles, share_path));
+      std::move(delivered_callback), std::move(close_callback),
+      std::move(cleanup_callback));
 }
 
 void NearbyShareSessionImpl::OnTimerFired() {
@@ -445,6 +558,10 @@ void NearbyShareSessionImpl::CleanupSession(bool should_cleanup_files) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DVLOG(1) << __func__;
+  if (should_cleanup_files) {
+    DestroySharedMonikers(shared_monikers_);
+  }
+
   // PrepareDirectoryTask must first relinquish ownership of |share_path|.
   prepare_directory_task_.reset();
   if (file_handler_) {
