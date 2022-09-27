@@ -158,18 +158,19 @@ public class SecurePaymentConfirmationNoMatchingCredController {
      * @param optOutCallback Invoked if the user elects to opt out on the UI.
      * @param showOptOut Whether to display the opt out UX to the user.
      * @param rpId The relying party ID of the SPC credential.
+     * @return whether or not the UI was successfully shown.
      */
-    public void show(
+    public boolean show(
             Runnable responseCallback, Runnable optOutCallback, boolean showOptOut, String rpId) {
-        if (mHider != null) return;
+        if (mHider != null) return false;
 
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
-        if (windowAndroid == null) return;
+        if (windowAndroid == null) return false;
         Context context = windowAndroid.getContext().get();
-        if (context == null) return;
+        if (context == null) return false;
 
         BottomSheetController bottomSheet = BottomSheetControllerProvider.from(windowAndroid);
-        if (bottomSheet == null) return;
+        if (bottomSheet == null) return false;
 
         bottomSheet.addObserver(mBottomSheetObserver);
 
@@ -188,7 +189,21 @@ public class SecurePaymentConfirmationNoMatchingCredController {
         mResponseCallback = responseCallback;
         mOptOutCallback = showOptOut ? optOutCallback : null;
 
-        if (!bottomSheet.requestShowContent(mBottomSheetContent, /*animate=*/true)) close();
+        if (!bottomSheet.requestShowContent(mBottomSheetContent, /*animate=*/true)) {
+            close();
+            return false;
+        }
+        return true;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public SecurePaymentConfirmationNoMatchingCredView getView() {
+        return mView;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean isHidden() {
+        return mHider == null;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
