@@ -13,8 +13,9 @@ namespace ui {
 namespace {
 // Control use of cross-process CALayers to display content directly from the
 // GPU process on Mac.
-base::Feature kRemoteCoreAnimationAPI{"RemoteCoreAnimationAPI",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kRemoteCoreAnimationAPI,
+             "RemoteCoreAnimationAPI",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
 bool RemoteLayerAPISupported() {
