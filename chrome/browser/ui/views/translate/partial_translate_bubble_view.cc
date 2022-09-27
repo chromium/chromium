@@ -372,6 +372,9 @@ PartialTranslateBubbleView::PartialTranslateBubbleView(
       web_contents_(web_contents) {
   UpdateInsets(PartialTranslateBubbleModel::VIEW_STATE_WAITING);
 
+  previous_source_language_index_ = model_->GetSourceLanguageIndex();
+  previous_target_language_index_ = model_->GetTargetLanguageIndex();
+
   if (web_contents)  // web_contents can be null in unit_tests.
     mouse_handler_ =
         std::make_unique<WebContentMouseHandler>(this, web_contents);
@@ -427,12 +430,9 @@ void PartialTranslateBubbleView::ConfirmAdvancedOptions() {
           PartialTranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE) ||
       DidLanguageSelectionChange(
           PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE)) {
-    std::u16string source_language_name;
-    std::u16string target_language_name;
-    DCHECK(tabbed_pane_);
-    UpdateLanguageNames(&source_language_name, &target_language_name);
-    tabbed_pane_->GetTabAt(0)->SetTitleText(source_language_name);
-    tabbed_pane_->GetTabAt(1)->SetTitleText(target_language_name);
+    previous_source_language_index_ = model_->GetSourceLanguageIndex();
+    previous_target_language_index_ = model_->GetTargetLanguageIndex();
+    UpdateLanguageTabNames();
     model_->Translate(web_contents_);
 
     // Update max width of text selection label to match width of bubble, which
@@ -463,6 +463,12 @@ void PartialTranslateBubbleView::ConfirmAdvancedOptions() {
               TARGET_LANGUAGE_SELECTION_DONE_BUTTON_CLICKED);
     }
   }
+}
+
+void PartialTranslateBubbleView::UpdateLanguageTabNames() {
+  DCHECK(tabbed_pane_);
+  tabbed_pane_->GetTabAt(0)->SetTitleText(model_->GetSourceLanguageName());
+  tabbed_pane_->GetTabAt(1)->SetTitleText(model_->GetTargetLanguageName());
 }
 
 void PartialTranslateBubbleView::SourceLanguageChanged() {
@@ -501,10 +507,6 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateEmptyPane() {
 }
 
 std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
-  std::u16string source_language_name;
-  std::u16string target_language_name;
-  UpdateLanguageNames(&source_language_name, &target_language_name);
-
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
   auto view = std::make_unique<views::View>();
@@ -529,8 +531,8 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
 
   // NOTE: Panes must be added after |tabbed_pane| has been added to its
   // parent.
-  tabbed_pane_->AddTab(source_language_name, CreateEmptyPane());
-  tabbed_pane_->AddTab(target_language_name, CreateEmptyPane());
+  tabbed_pane_->AddTab(model_->GetSourceLanguageName(), CreateEmptyPane());
+  tabbed_pane_->AddTab(model_->GetTargetLanguageName(), CreateEmptyPane());
   tabbed_pane_->GetTabAt(0)->SetProperty(views::kElementIdentifierKey,
                                          kSourceLanguageTab);
   tabbed_pane_->GetTabAt(1)->SetProperty(views::kElementIdentifierKey,
@@ -1015,6 +1017,7 @@ void PartialTranslateBubbleView::SwitchView(
   }
 
   UpdateViewState(view_state);
+  UpdateLanguageTabNames();
   if (view_state == PartialTranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
       view_state == PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE)
     UpdateAdvancedView();
@@ -1086,18 +1089,6 @@ void PartialTranslateBubbleView::UpdateAdvancedView() {
     advanced_reset_button_target_->SetEnabled(changed);
   }
   Layout();
-}
-
-void PartialTranslateBubbleView::UpdateLanguageNames(
-    std::u16string* source_language_name,
-    std::u16string* target_language_name) {
-  DCHECK(source_language_name && target_language_name);
-  previous_source_language_index_ = model_->GetSourceLanguageIndex();
-  *source_language_name =
-      model_->GetSourceLanguageNameAt(previous_source_language_index_);
-  previous_target_language_index_ = model_->GetTargetLanguageIndex();
-  *target_language_name =
-      model_->GetTargetLanguageNameAt(previous_target_language_index_);
 }
 
 void PartialTranslateBubbleView::UpdateInsets(

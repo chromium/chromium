@@ -30,15 +30,18 @@ struct PartialTranslateRequest {
   // The selection's encoding.
   std::string selection_encoding;
 
-  // The detected source language. This may be overridden by the server if it
-  // detects another language.
-  std::string source_language;
+  // The source language to translate from. If this isn't specified the server
+  // will attempt to detect the selection language.
+  absl::optional<std::string> source_language;
 
   // The desired target language.
   std::string target_language;
+};
 
-  // The languages that the user understands.
-  std::vector<std::string> fluent_languages;
+// Indicates the outcome of a Partial Translate request.
+enum class PartialTranslateStatus {
+  kSuccess,
+  kError,
 };
 
 // Structure used to return translation details for a given partial translate.
@@ -46,6 +49,9 @@ struct PartialTranslateResponse {
   PartialTranslateResponse();
   PartialTranslateResponse(const PartialTranslateResponse& other);
   ~PartialTranslateResponse();
+
+  // The result status.
+  PartialTranslateStatus status;
 
   // The translated text.
   std::u16string translated_text;

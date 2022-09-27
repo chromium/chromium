@@ -13,6 +13,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/translate/core/browser/mock_translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_step.h"
+#include "components/translate/core/common/translate_errors.h"
 #include "components/translate/core/common/translate_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -104,6 +105,7 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
     DCHECK_NE(VIEW_STATE_SOURCE_LANGUAGE, view_state);
     DCHECK_NE(VIEW_STATE_TARGET_LANGUAGE, view_state);
     current_view_state_ = view_state;
+    error_ = translate::TranslateErrors::NONE;
   }
 
   void AddObserver(PartialTranslateBubbleModel::Observer* observer) override {
@@ -131,10 +133,10 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
   void SetTargetText(const std::u16string& text) override {}
   std::u16string GetTargetText() const override { return u"target"; }
 
-  void SetError(translate::TranslateErrors error_type) override {}
-  translate::TranslateErrors GetError() const override {
-    return translate::TranslateErrors::NONE;
+  void SetError(translate::TranslateErrors error_type) override {
+    error_ = error_type;
   }
+  translate::TranslateErrors GetError() const override { return error_; }
 
   int GetNumberOfSourceLanguages() const override { return 1000; }
 
@@ -171,6 +173,7 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
   }
 
   ViewState current_view_state_;
+  translate::TranslateErrors error_;
 
  private:
   base::ObserverList<PartialTranslateBubbleModel::Observer> observers_;
@@ -335,4 +338,16 @@ TEST_F(TranslateBubbleControllerTest, PartialTranslateResponseBeforeTimer) {
       controller_->GetPartialTranslateBubble()->GetWidget()->IsVisible());
   EXPECT_EQ(fake_partial_translate_bubble_model_->GetViewState(),
             PartialTranslateBubbleModel::ViewState::VIEW_STATE_AFTER_TRANSLATE);
+}
+
+TEST_F(TranslateBubbleControllerTest, PartialTranslateError) {
+  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+                                     "fr", "en", std::u16string());
+  fake_partial_translate_bubble_model_->SetError(
+      translate::TranslateErrors::TRANSLATION_ERROR);
+  fake_partial_translate_bubble_model_->NotifyTranslated();
+  EXPECT_TRUE(
+      controller_->GetPartialTranslateBubble()->GetWidget()->IsVisible());
+  EXPECT_EQ(fake_partial_translate_bubble_model_->GetViewState(),
+            PartialTranslateBubbleModel::ViewState::VIEW_STATE_ERROR);
 }

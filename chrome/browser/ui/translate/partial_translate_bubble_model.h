@@ -91,6 +91,14 @@ class PartialTranslateBubbleModel : public TranslateLanguageListModel {
   virtual std::string GetSourceLanguageCode() const = 0;
   virtual std::string GetTargetLanguageCode() const = 0;
 
+  // Convenience methods for getting the source and target language names.
+  std::u16string GetSourceLanguageName() const {
+    return GetSourceLanguageNameAt(GetSourceLanguageIndex());
+  }
+  std::u16string GetTargetLanguageName() const {
+    return GetTargetLanguageNameAt(GetTargetLanguageIndex());
+  }
+
   // Starts translating the selected text. Clients will be notified of
   // completion via Observer::OnPartialTranslateCompleted.
   virtual void Translate(content::WebContents* web_contents) = 0;

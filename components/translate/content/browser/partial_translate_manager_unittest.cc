@@ -64,7 +64,6 @@ TEST_F(PartialTranslateManagerTest, CreateContext) {
   request.selection_encoding = "UTF16";
   request.source_language = "en-US";
   request.target_language = "ja-JP";
-  request.fluent_languages = {"ja-JP"};
 
   manager_->StartPartialTranslate(nullptr, request, base::DoNothing());
 
@@ -74,7 +73,6 @@ TEST_F(PartialTranslateManagerTest, CreateContext) {
   ASSERT_EQ(context.GetSurroundingText(), u"Selected text");
   ASSERT_EQ(context.GetTranslationLanguages().detected_language, "en-US");
   ASSERT_EQ(context.GetTranslationLanguages().target_language, "ja-JP");
-  ASSERT_EQ(context.GetTranslationLanguages().fluent_languages, "ja-JP");
 }
 
 TEST_F(PartialTranslateManagerTest, CreateResponse) {
@@ -83,7 +81,6 @@ TEST_F(PartialTranslateManagerTest, CreateResponse) {
   request.selection_encoding = "UTF16";
   request.source_language = "en-US";
   request.target_language = "ja-JP";
-  request.fluent_languages = {"ja-JP"};
 
   PartialTranslateResponse response;
   PartialTranslateManager::PartialTranslateCallback callback = base::BindOnce(
