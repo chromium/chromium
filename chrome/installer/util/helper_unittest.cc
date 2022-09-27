@@ -188,14 +188,13 @@ class GetChromeInstallPathWithPrefsTest : public GetChromeInstallPathTest {
     return result;
   }
 
-  static base::DictionaryValue prefs_json() {
+  static base::Value::Dict prefs_json() {
     base::FilePath result;
     if (GetParam().target_dir_key.has_value())
       base::PathService::Get(GetParam().target_dir_key.value(), &result);
-    base::DictionaryValue distribution;
-    distribution.SetStringPath("distribution.program_files_dir",
-                               result.AsUTF8Unsafe());
-
+    base::Value::Dict distribution;
+    distribution.SetByDottedPath("distribution.program_files_dir",
+                                 result.AsUTF8Unsafe());
     return distribution;
   }
 };

@@ -421,21 +421,22 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
       return EULA_EXIT_NOW;
     }
 
-    std::unique_ptr<base::DictionaryValue> initial_dictionary =
-        initial_prefs->initial_dictionary().CreateDeepCopy();
+    base::Value::Dict initial_dictionary =
+        initial_prefs->initial_dictionary().Clone();
     // The distribution dictionary (and any prefs below it) are never registered
     // for use in Chrome's PrefService. Strip them from the initial dictionary
     // before mapping it to prefs.
-    initial_dictionary->RemoveKey(installer::initial_preferences::kDistroDict);
+    initial_dictionary.Remove(installer::initial_preferences::kDistroDict);
 
     if (!chrome_prefs::InitializePrefsFromMasterPrefs(
             profiles::GetDefaultProfileDir(user_data_dir),
-            std::move(initial_dictionary))) {
+            base::DictionaryValue::From(std::make_unique<base::Value>(
+                std::move(initial_dictionary))))) {
       DLOG(ERROR) << "Failed to initialize from initial preferences.";
     }
 
-    base::DictionaryValue* extensions = nullptr;
-    if (initial_prefs->GetExtensionsBlock(&extensions)) {
+    const base::Value::Dict* extensions = nullptr;
+    if (initial_prefs->GetExtensionsBlock(extensions)) {
       DVLOG(1) << "Extensions block found in initial preferences";
       extensions::ExtensionUpdater::UpdateImmediatelyForFirstRun();
     }

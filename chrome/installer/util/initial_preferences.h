@@ -13,10 +13,10 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/values.h"
 #include "build/build_config.h"
 
 namespace base {
-class DictionaryValue;
 class FilePath;
 }  // namespace base
 
@@ -95,7 +95,7 @@ class InitialPreferences {
 
   // Parses a preferences directly from |prefs| and does not merge any command
   // line switches with the distribution dictionary.
-  explicit InitialPreferences(const base::DictionaryValue& prefs);
+  explicit InitialPreferences(base::Value::Dict prefs);
 
   InitialPreferences(const InitialPreferences&) = delete;
   InitialPreferences& operator=(const InitialPreferences&) = delete;
@@ -159,22 +159,21 @@ class InitialPreferences {
   //        }
   //     }
   //  }
-  //
-  bool GetExtensionsBlock(base::DictionaryValue** extensions) const;
+  bool GetExtensionsBlock(const base::Value::Dict*& extensions) const;
 
   // Returns the compressed variations seed entry from the initial prefs.
-  std::string GetCompressedVariationsSeed() const;
+  std::string GetCompressedVariationsSeed();
 
   // Returns the variations seed signature entry from the initial prefs.
-  std::string GetVariationsSeedSignature() const;
+  std::string GetVariationsSeedSignature();
 
   // Returns true iff the initial preferences were successfully read from a
   // file.
   bool read_from_file() const { return preferences_read_from_file_; }
 
   // Returns a reference to this InitialPreferences' root dictionary of values.
-  const base::DictionaryValue& initial_dictionary() const {
-    return *initial_dictionary_.get();
+  const base::Value::Dict& initial_dictionary() const {
+    return *initial_dictionary_;
   }
 
   // Returns a static preference object that has been initialized with the
@@ -198,10 +197,10 @@ class InitialPreferences {
   // Removes the specified string pref from the initial preferences and returns
   // its value. Should be used for initial prefs that shouldn't be automatically
   // copied over to profile preferences.
-  std::string ExtractPrefString(const std::string& name) const;
+  std::string ExtractPrefString(const std::string& name);
 
-  std::unique_ptr<base::DictionaryValue> initial_dictionary_;
-  base::DictionaryValue* distribution_ = nullptr;
+  absl::optional<base::Value::Dict> initial_dictionary_;
+  base::Value::Dict* distribution_ = nullptr;
   bool preferences_read_from_file_ = false;
 };
 
