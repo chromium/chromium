@@ -13,7 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "net/base/host_port_pair.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
@@ -43,12 +43,13 @@ class QuicStreamFactoryPeer {
 
   static std::unique_ptr<QuicCryptoClientConfigHandle> GetCryptoConfig(
       QuicStreamFactory* factory,
-      const NetworkIsolationKey& network_isolation_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   static bool HasActiveSession(
       QuicStreamFactory* factory,
       const quic::QuicServerId& server_id,
-      const NetworkIsolationKey& network_isolation_key = NetworkIsolationKey());
+      const NetworkAnonymizationKey& network_anonymization_key =
+          NetworkAnonymizationKey());
 
   static bool HasActiveJob(QuicStreamFactory* factory,
                            const quic::QuicServerId& server_id);
@@ -61,7 +62,8 @@ class QuicStreamFactoryPeer {
   static QuicChromiumClientSession* GetActiveSession(
       QuicStreamFactory* factory,
       const quic::QuicServerId& server_id,
-      const NetworkIsolationKey& network_isolation_key = NetworkIsolationKey());
+      const NetworkAnonymizationKey& network_anonymization_key =
+          NetworkAnonymizationKey());
 
   static bool HasLiveSession(QuicStreamFactory* factory,
                              url::SchemeHostPort destination,
@@ -90,15 +92,15 @@ class QuicStreamFactoryPeer {
   static bool CryptoConfigCacheIsEmpty(
       QuicStreamFactory* factory,
       const quic::QuicServerId& quic_server_id,
-      const NetworkIsolationKey& network_isolation_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Creates a dummy QUIC server config and caches it. Caller must be holding
   // onto a QuicCryptoClientConfigHandle for the corresponding
-  // |network_isolation_key|.
+  // |network_anonymization_key|.
   static void CacheDummyServerConfig(
       QuicStreamFactory* factory,
       const quic::QuicServerId& quic_server_id,
-      const NetworkIsolationKey& network_isolation_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   static int GetNumPushStreamsCreated(QuicStreamFactory* factory);
 

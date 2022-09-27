@@ -1264,7 +1264,7 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
     RewriteUrlWithHostMappingRules(mapped_origin);
     QuicSessionKey session_key(
         HostPortPair::FromURL(mapped_origin), request_info.privacy_mode,
-        request_info.socket_tag, request_info.network_isolation_key,
+        request_info.socket_tag, request_info.network_anonymization_key,
         request_info.secure_dns_policy, /*require_dns_https_alpn=*/false);
 
     GURL destination = CreateAltSvcUrl(

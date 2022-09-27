@@ -296,8 +296,8 @@ base::Value NetLogQuicClientSessionParams(
   dict.Set("port", session_key->server_id().port());
   dict.Set("privacy_mode",
            PrivacyModeToDebugString(session_key->privacy_mode()));
-  dict.Set("network_isolation_key",
-           session_key->network_isolation_key().ToDebugString());
+  dict.Set("network_anonymization_key",
+           session_key->network_anonymization_key().ToDebugString());
   dict.Set("require_confirmation", require_confirmation);
   dict.Set("cert_verify_flags", cert_verify_flags);
   dict.Set("connection_id", connection_id.ToString());
@@ -347,9 +347,7 @@ class QuicServerPushHelper : public ServerPushDelegate::ServerPushHelper {
 
   NetworkAnonymizationKey GetNetworkAnonymizationKey() const override {
     if (session_) {
-      return NetworkAnonymizationKey::
-          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-              session_->quic_session_key().network_isolation_key());
+      return session_->quic_session_key().network_anonymization_key();
     }
     return NetworkAnonymizationKey();
   }
@@ -1542,10 +1540,7 @@ bool QuicChromiumClientSession::CanPool(
 
   return SpdySession::CanPool(
       transport_security_state_, ssl_info, *ssl_config_service_,
-      session_key_.host(), hostname,
-      NetworkAnonymizationKey::
-          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-              session_key_.network_isolation_key()));
+      session_key_.host(), hostname, session_key_.network_anonymization_key());
 }
 
 bool QuicChromiumClientSession::ShouldCreateIncomingStream(
@@ -3287,8 +3282,10 @@ base::Value QuicChromiumClientSession::GetInfoAsValue(
 
   dict.Set("total_streams", static_cast<int>(num_total_streams_));
   dict.Set("peer_address", peer_address().ToString());
+  // TODO(https://crbug.com/1343856): Upddate "network_isolation_key" to
+  // "network_anonymization_key" and change NetLog viewer.
   dict.Set("network_isolation_key",
-           session_key_.network_isolation_key().ToDebugString());
+           session_key_.network_anonymization_key().ToDebugString());
   dict.Set("connection_id", connection_id().ToString());
   if (!connection()->client_connection_id().IsEmpty()) {
     dict.Set("client_connection_id",

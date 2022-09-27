@@ -16,7 +16,7 @@ void QuicChromiumClientSessionPeer::SetHostname(
                                session->session_key_.server_id().port(),
                                session->session_key_.privacy_mode());
   session->session_key_ =
-      QuicSessionKey(server_id, SocketTag(), NetworkIsolationKey(),
+      QuicSessionKey(server_id, SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false);
 }
 

@@ -542,7 +542,7 @@ class BidirectionalStreamQuicImplTest
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
         QuicSessionKey(kDefaultServerHostName, kDefaultServerPort,
                        PRIVACY_MODE_DISABLED, SocketTag(),
-                       NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                        /*require_dns_https_alpn=*/false),
         /*require_confirmation=*/false,
         /*migrate_session_early_v2=*/false,
