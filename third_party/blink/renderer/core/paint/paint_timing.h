@@ -114,6 +114,14 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return first_contentful_paint_;
   }
 
+  void ResetFirstPaintAndFCP() {
+    first_paint_ = base::TimeTicks();
+    first_paint_presentation_ = base::TimeTicks();
+    first_contentful_paint_ = base::TimeTicks();
+    first_contentful_paint_presentation_ = base::TimeTicks();
+    // TODO(yoav): Investigate if we should also reset first_image_paint_ here.
+  }
+
   // FirstImagePaint returns the first time that image content was painted.
   base::TimeTicks FirstImagePaint() const {
     return first_image_paint_presentation_;

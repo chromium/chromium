@@ -13,6 +13,13 @@ const test_soft_navigation = (add_content, button, push_state, clicks,
     }
     assert_equals(document.softNavigations, clicks);
     await validate_soft_navigation_entry(clicks, extra_validations);
+
+    await new Promise(r => {
+      requestAnimationFrame(()=>requestAnimationFrame(r));
+    });
+    validate_paint_entries("first-contentful-paint");
+    validate_paint_entries("first-paint");
+
    }, test_name);
 }
 
@@ -71,4 +78,17 @@ const validate_soft_navigation_entry = async (clicks, extra_validations) => {
   assert_equals(performance.getEntriesByType("soft-navigation").length,
                 expected_clicks, "Performance timeline got an entry");
   extra_validations(entries, options);
+
 };
+
+const validate_paint_entries = async type => {
+  const entries = await new Promise(resolve => {
+    (new PerformanceObserver(list => resolve(
+      list.getEntriesByName(type)))).observe(
+      {type: 'paint', buffered: true});
+    });
+  assert_equals(entries.length, 2, "There are two entries for " + type);
+  assert_not_equals(entries[0].startTime, entries[1].startTime,
+    "Entries have different timestamps for " + type);
+};
+
