@@ -31,7 +31,8 @@ struct Serializer<StringDataView, MaybeConstUserType> {
 
     auto r = Traits::GetUTF8(input);
     fragment.AllocateArrayData(r.size());
-    memcpy(fragment->storage(), r.data(), r.size());
+    if (r.size() > 0)
+      memcpy(fragment->storage(), r.data(), r.size());
   }
 
   static bool Deserialize(String_Data* input,
