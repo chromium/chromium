@@ -383,15 +383,3 @@ class Target(object):
         if pkgctl_out != meta_far_merkle:
           raise Exception('Hash mismatch for %s after resolve (%s vs %s).' %
                           (package_name, pkgctl_out, meta_far_merkle))
-
-  def RunFFXCommand(self, ffx_args):
-    """Automatically gets the FFX path and runs FFX based on the
-    arguments provided.
-
-    Args:
-      ffx_args: The arguments for a ffx command.
-
-    Returns:
-      A Popen object for the command.
-    """
-    return self._ffx_runner.open_ffx(ffx_args)
