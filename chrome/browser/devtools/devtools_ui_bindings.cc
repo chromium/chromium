@@ -705,7 +705,7 @@ void DevToolsUIBindings::HandleMessageFromDevToolsFrontend(
   int id = message.FindInt(kFrontendHostId).value_or(0);
   base::Value::List params_list;
   if (params)
-    params_list = std::move(params->GetList());
+    params_list = std::move(*params).TakeList();
   embedder_message_dispatcher_->Dispatch(
       base::BindOnce(&DevToolsUIBindings::SendMessageAck,
                      weak_factory_.GetWeakPtr(), id),
