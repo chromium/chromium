@@ -145,8 +145,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.MojoConnectionEvent"
-    enum="MachineLearningServiceMojoConnectionEvent" expires_after="2022-10-10">
+    enum="MachineLearningServiceMojoConnectionEvent" expires_after="2023-03-12">
   <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
     Events related to the connection and disconnection of the Mojo IPC channel
