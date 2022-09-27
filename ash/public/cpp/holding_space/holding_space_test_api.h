@@ -115,15 +115,22 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // expanded state.
   views::ImageView* GetSuggestionsSectionChevronIcon();
 
+  // Returns the top-level bubble.
+  views::View* GetBubble();
+
   // Returns the pinned files bubble.
   views::View* GetPinnedFilesBubble();
 
   // Returns whether the pinned files bubble is shown.
   bool PinnedFilesBubbleShown() const;
 
+  // Returns the recent files bubble.
+  views::View* GetRecentFilesBubble();
+
   // Returns whether the recent files bubble is shown.
   bool RecentFilesBubbleShown() const;
 
+  // Returns whether the recent files placeholder is shown.
   bool RecentFilesPlaceholderShown() const;
 
  private:

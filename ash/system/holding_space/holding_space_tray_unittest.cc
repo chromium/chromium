@@ -49,15 +49,19 @@
 #include "build/branding_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/drag_utils.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -3616,13 +3620,13 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
       pinned_files_bubble));
 }
 
-// Base class for tests of the holding space accessibility text parameterized by
-// a boolean for the kHoldingSpaceRebrand feature flag.
-class HoldingSpaceTrayAccessibilityTest
+// Base class for tests of holding space parameterized by whether the
+// `kHoldingSpaceRebrand` feature flag is enabled.
+class HoldingSpaceTrayRebrandTest
     : public HoldingSpaceTrayTestBase,
-      public ::testing::WithParamInterface<bool> {
+      public testing::WithParamInterface</*rebrand_enabled=*/bool> {
  public:
-  HoldingSpaceTrayAccessibilityTest() {
+  HoldingSpaceTrayRebrandTest() {
     scoped_feature_list_.InitWithFeatureState(features::kHoldingSpaceRebrand,
                                               IsHoldingSpaceRebrandEnabled());
   }
@@ -3634,10 +3638,10 @@ class HoldingSpaceTrayAccessibilityTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceTrayAccessibilityTest,
-                         ::testing::Bool());
+                         HoldingSpaceTrayRebrandTest,
+                         /*rebrand_enabled=*/testing::Bool());
 
-TEST_P(HoldingSpaceTrayAccessibilityTest, CheckTrayAccessibilityText) {
+TEST_P(HoldingSpaceTrayRebrandTest, CheckTrayAccessibilityText) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_EQ(
@@ -3647,27 +3651,7 @@ TEST_P(HoldingSpaceTrayAccessibilityTest, CheckTrayAccessibilityText) {
           : u"Tote: recent screen captures, downloads, and pinned files");
 }
 
-// Base class for tests of the holding space icon parameterized by a boolean for
-// the kHoldingSpaceRebrand feature flag.
-class HoldingSpaceTrayIconTest : public HoldingSpaceTrayTestBase,
-                                 public ::testing::WithParamInterface<bool> {
- public:
-  HoldingSpaceTrayIconTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kHoldingSpaceRebrand,
-                                              IsHoldingSpaceRebrandEnabled());
-  }
-
-  // Returns if kHoldingSpaceRebrand flag is enabled given the test
-  // parameterization.
-  bool IsHoldingSpaceRebrandEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayIconTest, ::testing::Bool());
-
-TEST_P(HoldingSpaceTrayIconTest, TrayButtonWithRebrandIcon) {
+TEST_P(HoldingSpaceTrayRebrandTest, TrayButtonWithRebrandIcon) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_TRUE(gfx::BitmapsAreEqual(
@@ -3681,11 +3665,69 @@ TEST_P(HoldingSpaceTrayIconTest, TrayButtonWithRebrandIcon) {
            .bitmap()));
 }
 
-TEST_P(HoldingSpaceTrayIconTest, CheckTrayTooltipText) {
+TEST_P(HoldingSpaceTrayRebrandTest, CheckTrayTooltipText) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()),
             IsHoldingSpaceRebrandEnabled() ? u"Quick Files" : u"Tote");
+}
+
+TEST_P(HoldingSpaceTrayRebrandTest, PaintsSeparatorBetweenBubbles) {
+  StartSession();
+
+  // Add a pinned file and a download to holding space so that both the
+  // pinned files bubble and recent files bubble will be populated.
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake1"));
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"));
+
+  // Show holding space and verify that both the pinned files bubble and the
+  // recent files bubble are shown.
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
+
+  // Paint the holding space `bubble` to a `bitmap`.
+  views::View* bubble = test_api()->GetBubble();
+  ASSERT_TRUE(bubble);
+  SkBitmap bitmap;
+  bubble->Paint(views::PaintInfo::CreateRootPaintInfo(
+      ui::CanvasPainter(
+          &bitmap, bubble->size(),
+          views::ScaleFactorForDragFromWidget(bubble->GetWidget()),
+          /*clear_color=*/SK_ColorTRANSPARENT,
+          bubble->GetWidget()->GetCompositor()->is_pixel_canvas())
+          .context(),
+      bubble->size()));
+
+  // Determine the midpoint of where a separator would appear if painted.
+  views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
+  ASSERT_TRUE(pinned_files_bubble);
+  views::View* recent_files_bubble = test_api()->GetRecentFilesBubble();
+  ASSERT_TRUE(recent_files_bubble);
+  const int separator_midpoint_x = std::round(bubble->width() / 2.f);
+  const int separator_midpoint_y = gfx::Tween::LinearIntValueBetween(
+      0.5f, pinned_files_bubble->bounds().bottom(),
+      recent_files_bubble->bounds().y());
+
+  // Cache the `actual_color` of the pixel at the midpoint of where a separator
+  // would appear as well as the `expected_color` given feature flag state.
+  SkColor actual_color =
+      bitmap.getColor(separator_midpoint_x, separator_midpoint_y);
+  SkColor expected_color = color_utils::GetResultingPaintColor(
+      /*foreground=*/IsHoldingSpaceRebrandEnabled()
+          ? AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kSeparatorColor)
+          : SK_ColorTRANSPARENT,
+      /*background=*/bubble->GetBackground()
+          ? bubble->GetBackground()->get_color()
+          : SK_ColorTRANSPARENT);
+
+  // Verify that the RGBA components of the `actual_color` versus the
+  // `expected_color` are near enough to be considered equal.
+  EXPECT_NEAR(SkColorGetR(actual_color), SkColorGetR(expected_color), 1);
+  EXPECT_NEAR(SkColorGetG(actual_color), SkColorGetG(expected_color), 1);
+  EXPECT_NEAR(SkColorGetB(actual_color), SkColorGetB(expected_color), 1);
+  EXPECT_NEAR(SkColorGetA(actual_color), SkColorGetA(expected_color), 1);
 }
 
 // Base class for holding space tray tests which make assertions about primary

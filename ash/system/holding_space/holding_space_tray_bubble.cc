@@ -28,6 +28,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/box_layout.h"
@@ -268,6 +269,39 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
   }
 
   void Layout() override { layout_manager_.ApplyLayout(current_layout_); }
+
+  void OnPaint(gfx::Canvas* canvas) override {
+    views::View::OnPaint(canvas);
+
+    // Separators are drawn between child bubbles iff rebranding is enabled.
+    if (!features::IsHoldingSpaceRebrandEnabled())
+      return;
+
+    // Cache `x`, `height`, and `width` which is consistent across separators.
+    const float x = kHoldingSpaceChildBubblePadding.left();
+    const float height = 1.f;
+    const float width =
+        bounds().width() - kHoldingSpaceChildBubblePadding.width();
+
+    // Cache `color` which is consistent across separators.
+    SkColor color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kSeparatorColor);
+
+    // Iterate over all children, drawing separators between visible siblings.
+    const views::View* last_visible_child = nullptr;
+    for (const views::View* child : children()) {
+      if (!child->GetVisible())
+        continue;
+
+      if (last_visible_child) {
+        float y = gfx::Tween::FloatValueBetween(
+            0.5f, last_visible_child->bounds().bottom(), child->bounds().y());
+        canvas->DrawRect(gfx::RectF(x, y, width, height), color);
+      }
+
+      last_visible_child = child;
+    }
+  }
 
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override {

@@ -220,6 +220,10 @@ views::ImageView* HoldingSpaceTestApi::GetSuggestionsSectionChevronIcon() {
              : nullptr;
 }
 
+views::View* HoldingSpaceTestApi::GetBubble() {
+  return holding_space_tray_->GetBubbleView();
+}
+
 views::View* HoldingSpaceTestApi::GetPinnedFilesBubble() {
   if (!holding_space_tray_->GetBubbleView())
     return nullptr;
@@ -234,6 +238,13 @@ bool HoldingSpaceTestApi::PinnedFilesBubbleShown() const {
   views::View* bubble = holding_space_tray_->GetBubbleView()->GetViewByID(
       kHoldingSpacePinnedFilesBubbleId);
   return bubble && bubble->GetVisible();
+}
+
+views::View* HoldingSpaceTestApi::GetRecentFilesBubble() {
+  if (!holding_space_tray_->GetBubbleView())
+    return nullptr;
+  return holding_space_tray_->GetBubbleView()->GetViewByID(
+      kHoldingSpaceRecentFilesBubbleId);
 }
 
 bool HoldingSpaceTestApi::RecentFilesBubbleShown() const {
