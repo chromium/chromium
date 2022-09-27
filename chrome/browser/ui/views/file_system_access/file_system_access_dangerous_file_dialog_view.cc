@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/file_system_access/file_system_access_dangerous_file_dialog_view.h"
 
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
@@ -30,14 +31,16 @@ views::Widget* FileSystemAccessDangerousFileDialogView::ShowDialog(
     const base::FilePath& path,
     base::OnceCallback<void(DangerousFileResult)> callback,
     content::WebContents* web_contents) {
+  auto* browser = chrome::FindBrowserWithWebContents(web_contents);
   auto delegate = base::WrapUnique(new FileSystemAccessDangerousFileDialogView(
-      origin, path, std::move(callback)));
+      browser, origin, path, std::move(callback)));
   return constrained_window::ShowWebModalDialogViews(delegate.release(),
                                                      web_contents);
 }
 
 FileSystemAccessDangerousFileDialogView::
     FileSystemAccessDangerousFileDialogView(
+        Browser* browser,
         const url::Origin& origin,
         const base::FilePath& path,
         base::OnceCallback<void(DangerousFileResult)> callback)
@@ -75,7 +78,7 @@ FileSystemAccessDangerousFileDialogView::
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   AddChildView(file_system_access_ui_helper::CreateOriginLabel(
-      IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_TEXT, origin,
+      browser, IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_TEXT, origin,
       views::style::CONTEXT_DIALOG_BODY_TEXT, /*show_emphasis=*/true));
 }
 

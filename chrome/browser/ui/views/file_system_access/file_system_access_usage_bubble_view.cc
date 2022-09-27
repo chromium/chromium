@@ -400,14 +400,16 @@ void FileSystemAccessUsageBubbleView::Init() {
   int heading_message_id =
       ComputeHeadingMessageFromUsage(usage_, &embedded_path);
 
+  auto* browser = chrome::FindBrowserWithWebContents(web_contents());
   if (!embedded_path.empty()) {
     AddChildView(file_system_access_ui_helper::CreateOriginPathLabel(
-        heading_message_id, origin_, embedded_path,
+        browser, heading_message_id, origin_, embedded_path,
         views::style::CONTEXT_DIALOG_BODY_TEXT,
         /*show_emphasis=*/false));
   } else {
     AddChildView(file_system_access_ui_helper::CreateOriginLabel(
-        heading_message_id, origin_, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        browser, heading_message_id, origin_,
+        views::style::CONTEXT_DIALOG_BODY_TEXT,
         /*show_emphasis=*/false));
 
     if (writable_paths_model_.RowCount() > 0) {

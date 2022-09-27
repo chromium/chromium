@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include "chrome/browser/ui/browser.h"
 
 namespace base {
 class FilePath;
@@ -24,7 +25,8 @@ namespace file_system_access_ui_helper {
 
 // Creates and returns a label where the place holder is replaced with |origin|.
 // If |show_emphasis| is true, the origin is formatted as emphasized text.
-std::unique_ptr<views::View> CreateOriginLabel(int message_id,
+std::unique_ptr<views::View> CreateOriginLabel(Browser* browser,
+                                               int message_id,
                                                const url::Origin& origin,
                                                int text_context,
                                                bool show_emphasis);
@@ -32,7 +34,8 @@ std::unique_ptr<views::View> CreateOriginLabel(int message_id,
 // Creates and returns a label where the place holders are replaced with
 // |origin| and |path|. If |show_emphasis| is true, the origin and path are
 // formatted as emphasized text.
-std::unique_ptr<views::View> CreateOriginPathLabel(int message_id,
+std::unique_ptr<views::View> CreateOriginPathLabel(Browser* browser,
+                                                   int message_id,
                                                    const url::Origin& origin,
                                                    const base::FilePath& path,
                                                    int text_context,
