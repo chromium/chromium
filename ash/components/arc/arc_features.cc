@@ -303,7 +303,7 @@ BASE_FEATURE(kVmBroadcastPreNotifyANR,
 // will signal the balloon sizing code, which may deflate the balloon instead
 // of killing the app.
 const base::FeatureParam<bool> kVmBalloonPolicyResponsive{&kVmBalloonPolicy,
-                                                          "responsive", false};
+                                                          "responsive", true};
 
 // The amount of time LMKD will wait for a response from concierge before
 // killing an app.
