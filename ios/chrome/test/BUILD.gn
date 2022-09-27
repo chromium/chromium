@@ -378,6 +378,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/toolbar_container:unit_tests",
     "//ios/chrome/browser/ui/util:unit_tests",
     "//ios/chrome/browser/ui/voice:unit_tests",
+    "//ios/chrome/browser/ui/whats_new/cells:unit_tests",
     "//ios/chrome/browser/update_client:unit_tests",
     "//ios/chrome/browser/upgrade:unit_tests",
     "//ios/chrome/browser/url_loading:unit_tests",
