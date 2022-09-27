@@ -373,6 +373,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(CcFeatures.NON_BLOCKING_COMMIT,
                     "Don't block the renderer main thread unconditionally while waiting "
                             + "for commit to finish on the compositor thread."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_CLIENT_HINTS_CONTROLLER_DELEGATE,
+                    "This persists client hints between top-level navigations."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

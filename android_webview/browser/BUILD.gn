@@ -36,6 +36,8 @@ source_set("browser") {
     "aw_browser_process.h",
     "aw_browser_terminator.cc",
     "aw_browser_terminator.h",
+    "aw_client_hints_controller_delegate.cc",
+    "aw_client_hints_controller_delegate.h",
     "aw_content_browser_client.cc",
     "aw_content_browser_client.h",
     "aw_content_browser_client_receiver_bindings.cc",

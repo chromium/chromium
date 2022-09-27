@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/aw_client_hints_controller_delegate.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_download_manager_delegate.h"
@@ -445,7 +446,15 @@ AwBrowserContext::GetPermissionControllerDelegate() {
 
 content::ClientHintsControllerDelegate*
 AwBrowserContext::GetClientHintsControllerDelegate() {
-  return nullptr;
+  if (!base::FeatureList::IsEnabled(
+          android_webview::features::kWebViewClientHintsControllerDelegate)) {
+    return nullptr;
+  }
+  if (!client_hints_controller_delegate_.get()) {
+    client_hints_controller_delegate_ =
+        std::make_unique<AwClientHintsControllerDelegate>();
+  }
+  return client_hints_controller_delegate_.get();
 }
 
 content::BackgroundFetchDelegate*

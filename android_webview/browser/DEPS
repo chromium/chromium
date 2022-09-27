@@ -98,10 +98,12 @@ include_rules = [
   "+storage/browser/quota",
   "+storage/common/quota",
 
-  "+third_party/blink/public/common/page_state/page_state.h",
+  "+third_party/blink/public/common/client_hints/enabled_client_hints.h",
   "+third_party/blink/public/common/features.h",
+  "+third_party/blink/public/common/page_state/page_state.h",
   "+third_party/blink/public/common/permissions/permission_utils.h",
   "+third_party/blink/public/common/storage_key/storage_key.h",
+  "+third_party/blink/public/common/user_agent/user_agent_metadata.h",
   "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
   "+third_party/crashpad/crashpad/client",
   "+third_party/crashpad/crashpad/util",

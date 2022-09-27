@@ -29,6 +29,7 @@ class AutocompleteHistoryManager;
 }
 
 namespace content {
+class ClientHintsControllerDelegate;
 class PermissionControllerDelegate;
 class ResourceContext;
 class SSLHostStateDelegate;
@@ -159,6 +160,8 @@ class AwBrowserContext : public content::BrowserContext,
   std::unique_ptr<PrefService> user_pref_service_;
   std::unique_ptr<AwSSLHostStateDelegate> ssl_host_state_delegate_;
   std::unique_ptr<content::PermissionControllerDelegate> permission_manager_;
+  std::unique_ptr<content::ClientHintsControllerDelegate>
+      client_hints_controller_delegate_;
 
   SimpleFactoryKey simple_factory_key_;
 

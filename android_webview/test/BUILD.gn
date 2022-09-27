@@ -360,6 +360,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/CleanupReferenceTest.java",
     "../javatests/src/org/chromium/android_webview/test/ClearHistoryTest.java",
     "../javatests/src/org/chromium/android_webview/test/ClientAddMessageToConsoleTest.java",
+    "../javatests/src/org/chromium/android_webview/test/ClientHintsTest.java",
     "../javatests/src/org/chromium/android_webview/test/ClientOnPageFinishedTest.java",
     "../javatests/src/org/chromium/android_webview/test/ClientOnPageStartedTest.java",
     "../javatests/src/org/chromium/android_webview/test/ClientOnReceivedError2Test.java",
@@ -597,6 +598,7 @@ test("android_webview_unittests") {
 
   sources = [
     "../browser/aw_browser_context_unittest.cc",
+    "../browser/aw_client_hints_controller_delegate_unittest.cc",
     "../browser/aw_content_browser_client_unittest.cc",
     "../browser/aw_contents_client_bridge_unittest.cc",
     "../browser/aw_feature_entries_unittest.cc",
