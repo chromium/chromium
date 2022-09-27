@@ -14,9 +14,11 @@
 
 namespace syncer {
 
-// A SyncChange object reflects a change to a piece of synced data. The change
-// can be either a delete, add, or an update. All data relevant to the change
-// is encapsulated within the SyncChange, which, once created, is immutable.
+// A SyncChange object reflects a change to a sync entity (unit of sync data),
+// which can be either a delete, add, or an update. Specifically, it is used
+// in the SyncableService API, as opposed to the analogous class EntityChange
+// used in the more modern equivalent ModelTypeSyncBridge API.
+//
 // Note: it is safe and cheap to pass these by value or make copies, as they do
 // not create deep copies of their internal data.
 class SyncChange {
@@ -27,32 +29,26 @@ class SyncChange {
     ACTION_DELETE,
   };
 
-  // Create a new change with the specified sync data.
+  // Returns a string representation of |change_type|.
+  static std::string ChangeTypeToString(SyncChangeType change_type);
+
+  // Create a new change with the specified sync data. |sync_data| must be
+  // valid.
   SyncChange(const base::Location& from_here,
              SyncChangeType change_type,
              const SyncData& sync_data);
-  // Copy constructor and assignment operator welcome.
+
+  // Copyable cheaply.
   SyncChange(const SyncChange&) = default;
-  SyncChange& operator=(const SyncChange&) = default;
-  // Move constructor and assignment operator allowed (although questionable).
-  // TODO(crbug.com/1152824): Avoid move semantics if that leads invalid state.
-  SyncChange(SyncChange&&) = default;
-  SyncChange& operator=(SyncChange&&) = default;
+
   ~SyncChange();
 
-  // Whether this change is valid. This must be true before attempting to access
-  // the data. It may only return false for moved-away instances (unspecified
-  // behavior). Otherwise it's guaranteed to return true.
-  // TODO(crbug.com/1152824): Remove this API once move semantics are removed.
-  bool IsValid() const;
+  SyncChange& operator=(const SyncChange&) = default;
 
   // Getters.
-  SyncChangeType change_type() const;
-  SyncData sync_data() const;
-  base::Location location() const;
-
-  // Returns a string representation of |change_type|.
-  static std::string ChangeTypeToString(SyncChangeType change_type);
+  SyncChangeType change_type() const { return change_type_; }
+  const SyncData& sync_data() const { return sync_data_; }
+  base::Location location() const { return location_; }
 
   // Returns a string representation of the entire object. Used for gmock
   // printing method, PrintTo.
@@ -60,11 +56,7 @@ class SyncChange {
 
  private:
   base::Location location_;
-
   SyncChangeType change_type_;
-
-  // An immutable container for the data of this SyncChange. Whenever
-  // SyncChanges are copied, they copy references to this data.
   SyncData sync_data_;
 };
 

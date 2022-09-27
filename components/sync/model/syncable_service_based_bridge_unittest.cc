@@ -54,7 +54,7 @@ MATCHER_P(SyncDataMatches, name, "") {
 }
 
 MATCHER_P2(SyncChangeMatches, change_type, name, "") {
-  return arg.IsValid() && change_type == arg.change_type() &&
+  return arg.change_type() == change_type &&
          arg.sync_data().GetDataType() == kModelType &&
          arg.sync_data().GetSpecifics().preference().name() == name;
 }

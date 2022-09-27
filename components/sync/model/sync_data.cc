@@ -77,6 +77,7 @@ SyncData SyncData::CreateRemoteData(sync_pb::EntitySpecifics specifics,
   SyncData data(base::MakeRefCounted<InternalData>());
   data.ptr_->client_tag_hash = client_tag_hash;
   data.ptr_->specifics = std::move(specifics);
+  DCHECK(IsRealDataType(data.GetDataType()));
   return data;
 }
 
