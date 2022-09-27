@@ -665,6 +665,7 @@ crbug.com/785246 external/wpt/svg/struct/reftests/use-inheritance-001.svg [ Fail
 crbug.com/785246 external/wpt/svg/linking/reftests/use-descendant-combinator-003.html [ Failure ]
 crbug.com/674797 external/wpt/svg/painting/reftests/marker-path-022.svg [ Failure ]
 crbug.com/674797 external/wpt/svg/painting/reftests/marker-path-023.svg [ Failure ]
+crbug.com/1368167 external/wpt/svg/struct/reftests/currentScale-change-repaint.html [ Failure ]
 
 crbug.com/699040 external/wpt/svg/text/reftests/text-xml-space-001.svg [ Failure ]
 
@@ -3269,7 +3270,6 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/svg/struct/reftests/currentScale-change-repaint.html [ Failure ]
 crbug.com/626703 external/wpt/resize-observer/notify.html [ Timeout ]
 crbug.com/626703 external/wpt/resize-observer/svg.html [ Timeout ]
 crbug.com/626703 [ Win11 ] wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
