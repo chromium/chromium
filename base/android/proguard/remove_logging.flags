@@ -3,12 +3,15 @@
 # found in the LICENSE file.
 
 
-# Remove Log.d(), Log.v(), and all isLoggable() (which is generally used
-# only with Level.DEBUG and Level.VERBOSE).
+# Remove Log.d(), Log.v(), and all isLoggable() where the return value is
+# unused (e.g. if it was guarding a call to Log.d()).
 -assumenosideeffects class android.util.Log {
   static int d(...);
   static int v(...);
-  static boolean isLoggable(...) return false;
+  # Don't use "return false" here because some code guards info logs behind
+  # isLoggable(DEBUG) as a way to enable logs via adb.
+  # https://crbug.com/1366880
+  static boolean isLoggable(...);
 }
 
 # Makes try-with-resources less inefficient. Saved 3.8kb when added.
