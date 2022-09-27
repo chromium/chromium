@@ -7,6 +7,8 @@ static_library("browser") {
     "base_signals_collector.h",
     "file_system_signals_collector.h",
     "metrics_utils.h",
+    "settings_client.h",
+    "settings_signals_collector.h",
     "signals_aggregator.h",
     "signals_aggregator_impl.h",
     "signals_collector.h",
@@ -22,6 +24,7 @@ static_library("browser") {
     "base_signals_collector.cc",
     "file_system_signals_collector.cc",
     "metrics_utils.cc",
+    "settings_signals_collector.cc",
     "signals_aggregator_impl.cc",
     "signals_types.cc",
     "user_context.cc",
@@ -55,6 +58,8 @@ static_library("browser") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "mock_settings_client.cc",
+    "mock_settings_client.h",
     "mock_signals_aggregator.cc",
     "mock_signals_aggregator.h",
     "mock_signals_collector.cc",
@@ -80,6 +85,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "file_system_signals_collector_unittest.cc",
+    "settings_signals_collector_unittest.cc",
     "signals_aggregator_impl_unittest.cc",
     "user_permission_service_impl_unittest.cc",
   ]

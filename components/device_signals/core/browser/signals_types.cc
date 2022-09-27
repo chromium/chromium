@@ -49,8 +49,6 @@ HotfixSignalResponse& HotfixSignalResponse::operator=(
 HotfixSignalResponse::~HotfixSignalResponse() = default;
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
 GetSettingsOptions::GetSettingsOptions() = default;
 GetSettingsOptions::GetSettingsOptions(const GetSettingsOptions&) = default;
 
@@ -58,6 +56,11 @@ GetSettingsOptions& GetSettingsOptions::operator=(const GetSettingsOptions&) =
     default;
 
 GetSettingsOptions::~GetSettingsOptions() = default;
+
+bool GetSettingsOptions::operator==(const GetSettingsOptions& other) const {
+  return path == other.path && key == other.key &&
+         get_value == other.get_value && hive == other.hive;
+}
 
 SettingsItem::SettingsItem() = default;
 
@@ -84,6 +87,11 @@ SettingsItem& SettingsItem::operator=(const SettingsItem& other) {
 
 SettingsItem::~SettingsItem() = default;
 
+bool SettingsItem::operator==(const SettingsItem& other) const {
+  return path == other.path && presence == other.presence && key == other.key &&
+         hive == other.hive && setting_value == other.setting_value;
+}
+
 SettingsResponse::SettingsResponse() = default;
 SettingsResponse::SettingsResponse(const SettingsResponse&) = default;
 
@@ -91,8 +99,6 @@ SettingsResponse& SettingsResponse::operator=(const SettingsResponse&) =
     default;
 
 SettingsResponse::~SettingsResponse() = default;
-
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 FileSystemInfoResponse::FileSystemInfoResponse() = default;
 FileSystemInfoResponse::FileSystemInfoResponse(const FileSystemInfoResponse&) =

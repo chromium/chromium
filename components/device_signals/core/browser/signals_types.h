@@ -87,8 +87,6 @@ struct HotfixSignalResponse : BaseSignalResponse {
 };
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
 enum class RegistryHive {
   kHkeyClassesRoot,
   kHkeyLocalMachine,
@@ -129,6 +127,8 @@ struct GetSettingsOptions {
   // Windows registry hive containing the desired value. This values is required
   // on Windows, but will be ignored on Mac.
   absl::optional<RegistryHive> hive = absl::nullopt;
+
+  bool operator==(const GetSettingsOptions& other) const;
 };
 
 struct SettingsItem {
@@ -151,6 +151,8 @@ struct SettingsItem {
   // Value of the setting. Only set when the setting was found and `get_value`
   // was true on the corresponding request options.
   absl::optional<base::Value> setting_value = absl::nullopt;
+
+  bool operator==(const SettingsItem& other) const;
 };
 
 struct SettingsResponse : BaseSignalResponse {
@@ -163,8 +165,6 @@ struct SettingsResponse : BaseSignalResponse {
 
   std::vector<SettingsItem> settings_items{};
 };
-
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 struct FileSystemInfoResponse : BaseSignalResponse {
   FileSystemInfoResponse();
@@ -199,9 +199,7 @@ struct SignalsAggregationRequest {
   // the device's file system.
   std::vector<GetFileSystemInfoOptions> file_system_signal_parameters{};
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   std::vector<GetSettingsOptions> settings_signal_parameters{};
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   bool operator==(const SignalsAggregationRequest& other) const;
 };
@@ -225,9 +223,7 @@ struct SignalsAggregationResponse {
   absl::optional<AntiVirusSignalResponse> av_signal_response = absl::nullopt;
   absl::optional<HotfixSignalResponse> hotfix_signal_response = absl::nullopt;
 #endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   absl::optional<SettingsResponse> settings_response = absl::nullopt;
-#endif
 
   absl::optional<FileSystemInfoResponse> file_system_info_response =
       absl::nullopt;
