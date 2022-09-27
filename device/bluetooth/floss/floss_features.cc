@@ -13,7 +13,7 @@ namespace features {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables Floss client if supported by platform
-const base::Feature kFlossEnabled{"Floss", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kFlossEnabled, "Floss", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 bool IsFlossEnabled() {

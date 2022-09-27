@@ -13,34 +13,33 @@
 namespace device {
 
 #if BUILDFLAG(IS_MAC)
-DEVICE_BASE_EXPORT extern const base::Feature kNewUsbBackend;
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kNewUsbBackend);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-DEVICE_BASE_EXPORT extern const base::Feature kNewBLEWinImplementation;
-DEVICE_BASE_EXPORT extern const base::Feature kNewBLEGattSessionHandling;
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kNewBLEWinImplementation);
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kNewBLEGattSessionHandling);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_VR)
-DEVICE_BASE_EXPORT extern const base::Feature kWebXrOrientationSensorDevice;
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kWebXrOrientationSensorDevice);
 #endif  // BUILDFLAG(ENABLE_VR)
 
 // New features should be added to the device::features namespace.
 
 namespace features {
 #if BUILDFLAG(ENABLE_OPENXR)
-DEVICE_BASE_EXPORT extern const base::Feature kOpenXR;
-DEVICE_BASE_EXPORT extern const base::Feature kOpenXrExtendedFeatureSupport;
-DEVICE_BASE_EXPORT extern const base::Feature kOpenXRSharedImages;
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kOpenXR);
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kOpenXrExtendedFeatureSupport);
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kOpenXRSharedImages);
 #endif  // ENABLE_OPENXR
 
-DEVICE_BASE_EXPORT extern const base::Feature kWebXrHandInput;
-DEVICE_BASE_EXPORT extern const base::Feature kWebXrHitTest;
-DEVICE_BASE_EXPORT extern const base::Feature kWebXrIncubations;
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kWebXrHandInput);
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kWebXrHitTest);
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kWebXrIncubations);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-DEVICE_BASE_EXPORT extern const base::Feature
-    kWebBluetoothConfirmPairingSupport;
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kWebBluetoothConfirmPairingSupport);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 }  // namespace features

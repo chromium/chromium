@@ -20,44 +20,41 @@ namespace device {
 #if BUILDFLAG(IS_WIN)
 // Controls whether on Windows, U2F/CTAP2 requests are forwarded to the
 // native WebAuthentication API, where available.
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const base::Feature kWebAuthUseNativeWinApi;
+COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthUseNativeWinApi);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Support the caBLE extension in assertion requests from any origin.
 COMPONENT_EXPORT(DEVICE_FIDO)
-extern const base::Feature kWebAuthCableExtensionAnywhere;
+BASE_DECLARE_FEATURE(kWebAuthCableExtensionAnywhere);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Enable a ChromeOS platform authenticator
 COMPONENT_EXPORT(DEVICE_FIDO)
-extern const base::Feature kWebAuthCrosPlatformAuthenticator;
+BASE_DECLARE_FEATURE(kWebAuthCrosPlatformAuthenticator);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const base::Feature kU2fPermissionPrompt;
+COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kU2fPermissionPrompt);
 
 // Feature flag for the Google-internal
 // `WebAuthenticationAllowGoogleCorpRemoteRequestProxying` enterprise policy.
 COMPONENT_EXPORT(DEVICE_FIDO)
-extern const base::Feature kWebAuthnGoogleCorpRemoteDesktopClientPrivilege;
+BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
 
 // Enable some experimental UI changes
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const base::Feature kWebAuthPasskeysUI;
+COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthPasskeysUI);
 
 // Reshuffle WebAuthn request UI to put account selection for discoverable
 // credentials on platform authenticators first, where applicable.
 COMPONENT_EXPORT(DEVICE_FIDO)
-extern const base::Feature kWebAuthnNewDiscoverableCredentialsUi;
+BASE_DECLARE_FEATURE(kWebAuthnNewDiscoverableCredentialsUi);
 
 // Don't send empty displayName values to security keys when creating
 // credentials.
-extern const base::Feature kWebAuthnNoEmptyDisplayNameCBOR;
+BASE_DECLARE_FEATURE(kWebAuthnNoEmptyDisplayNameCBOR);
 
 // Include an indication for non-discoverable makeCredential calls in caBLE QR
 // codes.
-extern const base::Feature kWebAuthnNonDiscoverableMakeCredentialQRFlag;
+BASE_DECLARE_FEATURE(kWebAuthnNonDiscoverableMakeCredentialQRFlag);
 
 }  // namespace device
 

@@ -10,7 +10,7 @@
 
 namespace bluez::features {
 
-extern const DEVICE_BLUETOOTH_EXPORT base::Feature kLinkLayerPrivacy;
+DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kLinkLayerPrivacy);
 
 }  // namespace bluez::features
 

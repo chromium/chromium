@@ -20,8 +20,9 @@ namespace fido_filter {
 
 namespace {
 
-const base::Feature kFilter{"WebAuthenticationFilter",
-                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kFilter,
+             "WebAuthenticationFilter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kFilterJSON{
     &kFilter,

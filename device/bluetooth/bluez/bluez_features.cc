@@ -6,7 +6,8 @@
 
 namespace bluez::features {
 
-const base::Feature kLinkLayerPrivacy{"LinkLayerPrivacy",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLinkLayerPrivacy,
+             "LinkLayerPrivacy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace bluez::features
