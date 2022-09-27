@@ -828,7 +828,7 @@ struct SystemInfo {
 
 // The OS information.
 //
-// NextMinVersion: 2, NextIndex: 5
+// NextMinVersion: 3, NextIndex: 6
 [Stable]
 struct OsInfo {
   // Google code name for the given model. While it is OK to use this string for
@@ -844,6 +844,20 @@ struct OsInfo {
   BootMode boot_mode@3;
   // Contents of CrosConfig in /branding/oem-name.
   [MinVersion=1] string? oem_name@4;
+
+  // NextMinVersion: 1, NextIndex: 4
+  [Stable, Extensible]
+  enum EfiPlatformSize {
+    // An enum value not defined in this version of the enum definition.
+    [Default] kUnmappedEnumField = 0,
+    // Unknown size. Always sets to this if not boot from efi.
+    kUnknown = 1,
+    // 64 bit platform.
+    k64 = 2,
+    // 32 bit platform.
+    k32 = 3,
+  };
+  [MinVersion=2] EfiPlatformSize efi_platform_size@5;
 };
 
 // Structure containing information about the operating system version of the
