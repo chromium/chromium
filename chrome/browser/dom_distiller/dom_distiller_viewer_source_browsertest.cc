@@ -306,11 +306,10 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, EarlyTemplateLoad) {
           base::BindRepeating(&DomDistillerViewerSourceBrowserTest::Build,
                               base::Unretained(this)));
 
-  scoped_refptr<content::MessageLoopRunner> distillation_done_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop distillation_done_loop;
 
   FakeDistiller* distiller =
-      new FakeDistiller(false, distillation_done_runner->QuitClosure());
+      new FakeDistiller(false, distillation_done_loop.QuitClosure());
   EXPECT_CALL(*distiller_factory_, CreateDistillerImpl())
       .WillOnce(testing::Return(distiller));
 
@@ -319,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, EarlyTemplateLoad) {
       kDomDistillerScheme, GURL("http://urlthatlooksvalid.com"), "Title"));
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
   Navigate(&params);
-  distillation_done_runner->Run();
+  distillation_done_loop.Run();
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -425,11 +424,10 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, MultiPageArticle) {
           base::BindRepeating(&DomDistillerViewerSourceBrowserTest::Build,
                               base::Unretained(this)));
 
-  scoped_refptr<content::MessageLoopRunner> distillation_done_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop distillation_done_loop;
 
   FakeDistiller* distiller =
-      new FakeDistiller(false, distillation_done_runner->QuitClosure());
+      new FakeDistiller(false, distillation_done_loop.QuitClosure());
   EXPECT_CALL(*distiller_factory_, CreateDistillerImpl())
       .WillOnce(testing::Return(distiller));
 
@@ -442,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, MultiPageArticle) {
       kDomDistillerScheme, GURL("http://urlthatlooksvalid.com"), "Title"));
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
   Navigate(&params);
-  distillation_done_runner->Run();
+  distillation_done_loop.Run();
 
   // Fake a multi-page response from distiller.
 
