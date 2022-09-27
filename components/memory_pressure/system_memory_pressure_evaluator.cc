@@ -20,8 +20,9 @@
 namespace memory_pressure {
 
 #if BUILDFLAG(IS_WIN)
-constexpr base::Feature kUseWinOSMemoryPressureSignals{
-    "UseWinOSMemoryPressureSignals", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseWinOSMemoryPressureSignals,
+             "UseWinOSMemoryPressureSignals",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // static
