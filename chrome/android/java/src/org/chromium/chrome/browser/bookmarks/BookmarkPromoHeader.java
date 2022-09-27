@@ -114,7 +114,7 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
      */
     ViewHolder createPersonalizedSigninAndSyncPromoHolder(ViewGroup parent) {
         View view = LayoutInflater.from(mContext).inflate(
-                R.layout.personalized_signin_promo_view_bookmarks, parent, false);
+                R.layout.sync_promo_view_bookmarks, parent, false);
 
         // ViewHolder is abstract and it cannot be instantiated directly.
         return new ViewHolder(view) {};
