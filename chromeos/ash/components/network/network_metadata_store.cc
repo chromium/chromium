@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -17,6 +18,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/onc/onc_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -35,6 +37,7 @@ const char kOwner[] = "owner";
 const char kExternalModifications[] = "external_modifications";
 const char kBadPassword[] = "bad_password";
 const char kCustomApnList[] = "custom_apn_list";
+const char kCustomApnListV2[] = "custom_apn_list_v2";
 const char kHasFixedHiddenNetworks[] =
     "metadata_store.has_fixed_hidden_networks";
 const char kEnableTrafficCountersAutoReset[] =
@@ -61,6 +64,21 @@ bool ListContains(const base::Value::List* list, const std::string& value) {
   if (!list)
     return false;
   return std::find(list->begin(), list->end(), value) != list->end();
+}
+
+bool IsApnListValid(const base::Value& list) {
+  if (!list.is_list())
+    return false;
+
+  for (const base::Value& apn : list.GetList()) {
+    if (!apn.is_dict())
+      return false;
+
+    if (!apn.GetDict().Find(::onc::cellular_apn::kAccessPointName))
+      return false;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -477,11 +495,25 @@ bool NetworkMetadataStore::GetHasBadPassword(const std::string& network_guid) {
 
 void NetworkMetadataStore::SetCustomAPNList(const std::string& network_guid,
                                             base::Value list) {
+  if (ash::features::IsApnRevampEnabled()) {
+    if (!IsApnListValid(list)) {
+      NET_LOG(ERROR) << "network_guid: " << network_guid << std::endl
+                     << "Invalid list passed to SetCustomAPNList():" << list;
+      return;
+    }
+
+    SetPref(network_guid, kCustomApnListV2, std::move(list));
+    return;
+  }
+
   SetPref(network_guid, kCustomApnList, std::move(list));
 }
 
 const base::Value* NetworkMetadataStore::GetCustomAPNList(
     const std::string& network_guid) {
+  if (ash::features::IsApnRevampEnabled())
+    return GetPref(network_guid, kCustomApnListV2);
+
   return GetPref(network_guid, kCustomApnList);
 }
 

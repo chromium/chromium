@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
@@ -19,6 +20,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/onc/onc_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -30,6 +32,44 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
+
+namespace {
+constexpr char kGuid[] = "wifi0";
+constexpr char kGuid1[] = "wifi1";
+constexpr char kGuid3[] = "eth0";
+constexpr char kConfigWifi0Connectable[] =
+    "{ \"GUID\": \"wifi0\", \"Type\": \"wifi\", \"State\": \"idle\", "
+    "  \"Connectable\": true }";
+constexpr char kConfigWifi0HiddenUser[] =
+    "{ \"GUID\": \"wifi0\", \"Type\": \"wifi\", \"State\": \"idle\", "
+    "  \"Connectable\": true, \"Profile\": \"user_profile_path\", "
+    "\"WiFi.HiddenSSID\": true }";
+constexpr char kConfigWifi1HiddenUser[] =
+    "{ \"GUID\": \"wifi1\", \"Type\": \"wifi\", \"State\": \"idle\", "
+    "  \"Connectable\": true, \"Profile\": \"user_profile_path\", "
+    "\"WiFi.HiddenSSID\": true }";
+constexpr char kConfigWifi1Shared[] =
+    "{ \"GUID\": \"wifi0\", \"Type\": \"wifi\", \"State\": \"idle\", "
+    "  \"Connectable\": true, \"Profile\": \"/profile/default\" }";
+constexpr char kConfigEthernet[] =
+    "{ \"GUID\": \"eth0\", \"Type\": \"ethernet\", \"State\": \"idle\", "
+    "  \"Connectable\": true }";
+constexpr char kHasFixedHiddenNetworks[] =
+    "metadata_store.has_fixed_hidden_networks";
+
+constexpr char kCellularkGuid[] = "cellular";
+constexpr char kConfigCellular[] =
+    R"({"GUID": "cellular_guid1", "Type": "cellular", "Technology": "LTE",
+            "State": "idle"})";
+constexpr char kApn[] = "apn";
+constexpr char kApnName[] = "apnName";
+constexpr char kApnUsername[] = "apnUsername";
+constexpr char kApnPassword[] = "apnPassword";
+constexpr char kApnAuthentication[] = "authentication";
+constexpr char kApnLocalizedName[] = "localizedName";
+constexpr char kApnLanguage[] = "language";
+constexpr char kApnAttach[] = "attach";
+}  // namespace
 
 class TestNetworkMetadataObserver : public NetworkMetadataObserver {
  public:
@@ -183,10 +223,65 @@ class NetworkMetadataStoreTest : public ::testing::Test {
   }
 
  protected:
+  void TestGetSetCustomApnList() {
+    ConfigureService(kConfigCellular);
+    EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+
+    base::Value list(base::Value::Type::LIST);
+    base::Value custom_apn(base::Value::Type::DICTIONARY);
+    custom_apn.SetStringKey(::onc::cellular_apn::kAccessPointName, kApn);
+    custom_apn.SetStringKey(::onc::cellular_apn::kName, kApnName);
+    custom_apn.SetStringKey(::onc::cellular_apn::kUsername, kApnUsername);
+    custom_apn.SetStringKey(::onc::cellular_apn::kPassword, kApnPassword);
+    custom_apn.SetStringKey(::onc::cellular_apn::kAuthentication,
+                            kApnAuthentication);
+    custom_apn.SetStringKey(::onc::cellular_apn::kLocalizedName,
+                            kApnLocalizedName);
+    custom_apn.SetStringKey(::onc::cellular_apn::kLanguage, kApnLanguage);
+    custom_apn.SetStringKey(::onc::cellular_apn::kAttach, kApnAttach);
+    list.Append(std::move(custom_apn));
+    metadata_store()->SetCustomAPNList(kCellularkGuid, std::move(list));
+
+    AssertCustomApnListFirstValue();
+    ResetStore();
+    AssertCustomApnListFirstValue();
+  }
+
   const user_manager::User* primary_user_;
   const user_manager::User* secondary_user_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
+  void AssertCustomApnListFirstValue() {
+    const base::Value* custom_apn_list =
+        metadata_store()->GetCustomAPNList(kCellularkGuid);
+
+    EXPECT_TRUE(custom_apn_list);
+    EXPECT_TRUE(custom_apn_list->is_list());
+    EXPECT_TRUE(custom_apn_list->GetList().front().is_dict());
+    const base::Value::Dict* custom_apn =
+        custom_apn_list->GetList().front().GetIfDict();
+    EXPECT_EQ(
+        kApn,
+        custom_apn->Find(::onc::cellular_apn::kAccessPointName)->GetString());
+    EXPECT_EQ(kApnName,
+              custom_apn->Find(::onc::cellular_apn::kName)->GetString());
+    EXPECT_EQ(kApnUsername,
+              custom_apn->Find(::onc::cellular_apn::kUsername)->GetString());
+    EXPECT_EQ(kApnPassword,
+              custom_apn->Find(::onc::cellular_apn::kPassword)->GetString());
+    EXPECT_EQ(
+        kApnAuthentication,
+        custom_apn->Find(::onc::cellular_apn::kAuthentication)->GetString());
+    EXPECT_EQ(
+        kApnLocalizedName,
+        custom_apn->Find(::onc::cellular_apn::kLocalizedName)->GetString());
+    EXPECT_EQ(kApnLanguage,
+              custom_apn->Find(::onc::cellular_apn::kLanguage)->GetString());
+    EXPECT_EQ(kApnAttach,
+              custom_apn->Find(::onc::cellular_apn::kAttach)->GetString());
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NetworkStateTestHelper helper_{false /* use_default_devices_and_services */};
@@ -199,31 +294,6 @@ class NetworkMetadataStoreTest : public ::testing::Test {
   std::unique_ptr<TestNetworkMetadataObserver> metadata_observer_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
-
-namespace {
-const char* kGuid = "wifi0";
-const char* kGuid1 = "wifi1";
-const char* kGuid3 = "eth0";
-const char* kConfigWifi0Connectable =
-    "{ \"GUID\": \"wifi0\", \"Type\": \"wifi\", \"State\": \"idle\", "
-    "  \"Connectable\": true }";
-const char* kConfigWifi0HiddenUser =
-    "{ \"GUID\": \"wifi0\", \"Type\": \"wifi\", \"State\": \"idle\", "
-    "  \"Connectable\": true, \"Profile\": \"user_profile_path\", "
-    "\"WiFi.HiddenSSID\": true }";
-const char* kConfigWifi1HiddenUser =
-    "{ \"GUID\": \"wifi1\", \"Type\": \"wifi\", \"State\": \"idle\", "
-    "  \"Connectable\": true, \"Profile\": \"user_profile_path\", "
-    "\"WiFi.HiddenSSID\": true }";
-const char* kConfigWifi1Shared =
-    "{ \"GUID\": \"wifi0\", \"Type\": \"wifi\", \"State\": \"idle\", "
-    "  \"Connectable\": true, \"Profile\": \"/profile/default\" }";
-const char* kConfigEthernet =
-    "{ \"GUID\": \"eth0\", \"Type\": \"ethernet\", \"State\": \"idle\", "
-    "  \"Connectable\": true }";
-const char kHasFixedHiddenNetworks[] =
-    "metadata_store.has_fixed_hidden_networks";
-}  // namespace
 
 TEST_F(NetworkMetadataStoreTest, FirstConnect) {
   std::string service_path = ConfigureService(kConfigWifi0Connectable);
@@ -610,6 +680,83 @@ TEST_F(NetworkMetadataStoreTest, SetTrafficCountersAutoResetDay) {
   value = metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
   ASSERT_TRUE(value);
   EXPECT_TRUE(value->is_none());
+}
+
+TEST_F(NetworkMetadataStoreTest, CustomApnListGetSet_ApnRevampDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(ash::features::kApnRevamp);
+  TestGetSetCustomApnList();
+}
+
+TEST_F(NetworkMetadataStoreTest, CustomApnListGetSet_ApnRevampEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
+  TestGetSetCustomApnList();
+}
+
+TEST_F(NetworkMetadataStoreTest, CustomApnListSetWrongApn) {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
+  ConfigureService(kConfigCellular);
+  EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+
+  base::Value not_list(base::Value::Type::INTEGER);
+  metadata_store()->SetCustomAPNList(kCellularkGuid, std::move(not_list));
+  EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+
+  // Checks the case where the apn list doesn't contain a dict.
+  base::Value wrong_list(base::Value::Type::LIST);
+  base::Value not_dict(base::Value::Type::INTEGER);
+  wrong_list.Append(std::move(not_dict));
+  metadata_store()->SetCustomAPNList(kCellularkGuid, std::move(wrong_list));
+  EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+
+  // Checks the case where the apn list contains a dict without kAccessPointName
+  // key.
+  base::Value custom_apn_list(base::Value::Type::LIST);
+  base::Value custom_apn(base::Value::Type::DICT);
+  base::Value wrong_custom_apn(base::Value::Type::DICT);
+  custom_apn.SetStringKey(::onc::cellular_apn::kAccessPointName, kApn);
+  wrong_custom_apn.SetStringKey(::onc::cellular_apn::kName, kApnName);
+  custom_apn_list.Append(std::move(custom_apn));
+  custom_apn_list.Append(std::move(wrong_custom_apn));
+  metadata_store()->SetCustomAPNList(kCellularkGuid,
+                                     std::move(custom_apn_list));
+  EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+
+  // Empty lists are valid.
+  base::Value list(base::Value::Type::LIST);
+  metadata_store()->SetCustomAPNList(kCellularkGuid, std::move(list));
+  EXPECT_TRUE(metadata_store()->GetCustomAPNList(kCellularkGuid)->is_list());
+  EXPECT_TRUE(
+      metadata_store()->GetCustomAPNList(kCellularkGuid)->GetList().empty());
+}
+
+TEST_F(NetworkMetadataStoreTest, CustomApnListFlagChangingValues) {
+  ConfigureService(kConfigCellular);
+  EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
+    base::Value not_list(1);
+    // We validate the input only when the flag is enabled.
+    metadata_store()->SetCustomAPNList(kCellularkGuid, std::move(not_list));
+    EXPECT_EQ(1, metadata_store()->GetCustomAPNList(kCellularkGuid)->GetInt());
+  }
+  {
+    base::test::ScopedFeatureList enabled_feature_list;
+    enabled_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+    EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+
+    base::Value list(base::Value::Type::LIST);
+    metadata_store()->SetCustomAPNList(kCellularkGuid, std::move(list));
+    EXPECT_TRUE(metadata_store()->GetCustomAPNList(kCellularkGuid)->is_list());
+    EXPECT_TRUE(
+        metadata_store()->GetCustomAPNList(kCellularkGuid)->GetList().empty());
+  }
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
+    EXPECT_EQ(1, metadata_store()->GetCustomAPNList(kCellularkGuid)->GetInt());
+  }
 }
 
 }  // namespace ash
