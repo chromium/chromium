@@ -53,7 +53,7 @@ class ScreenlockBridge {
 
     // Converts parameters to a dictionary values that can be sent to the
     // screenlock web UI.
-    std::unique_ptr<base::DictionaryValue> ToDictionaryValue() const;
+    base::Value::Dict ToDictForTesting() const;
 
     // Sets the icon that should be shown in the UI.
     void SetIcon(UserPodCustomIcon icon);
@@ -86,11 +86,11 @@ class ScreenlockBridge {
     UserPodCustomIcon icon_;
 
     std::u16string tooltip_;
-    bool autoshow_tooltip_;
+    bool autoshow_tooltip_ = false;
 
     std::u16string aria_label_;
 
-    bool hardlock_on_click_;
+    bool hardlock_on_click_ = false;
   };
 
   class LockHandler {

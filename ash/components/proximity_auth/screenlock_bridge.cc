@@ -9,6 +9,8 @@
 
 #include <memory>
 
+#include "base/check_is_test.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -52,28 +54,28 @@ std::string GetIdForIcon(ScreenlockBridge::UserPodCustomIcon icon) {
 
 }  // namespace
 
-ScreenlockBridge::UserPodCustomIconInfo::UserPodCustomIconInfo()
-    : autoshow_tooltip_(false), hardlock_on_click_(false) {}
+ScreenlockBridge::UserPodCustomIconInfo::UserPodCustomIconInfo() = default;
 
-ScreenlockBridge::UserPodCustomIconInfo::~UserPodCustomIconInfo() {}
+ScreenlockBridge::UserPodCustomIconInfo::~UserPodCustomIconInfo() = default;
 
-std::unique_ptr<base::DictionaryValue>
-ScreenlockBridge::UserPodCustomIconInfo::ToDictionaryValue() const {
-  auto result = std::make_unique<base::DictionaryValue>();
-  result->SetStringKey("id", GetIDString());
+base::Value::Dict ScreenlockBridge::UserPodCustomIconInfo::ToDictForTesting()
+    const {
+  CHECK_IS_TEST();
+  auto result = base::Value::Dict();
+  result.Set("id", GetIDString());
 
   if (!tooltip_.empty()) {
-    base::DictionaryValue tooltip_options;
-    tooltip_options.SetStringKey("text", tooltip_);
-    tooltip_options.SetBoolKey("autoshow", autoshow_tooltip_);
-    result->SetKey("tooltip", std::move(tooltip_options));
+    base::Value::Dict tooltip_options;
+    tooltip_options.Set("text", tooltip_);
+    tooltip_options.Set("autoshow", autoshow_tooltip_);
+    result.Set("tooltip", std::move(tooltip_options));
   }
 
   if (!aria_label_.empty())
-    result->SetStringKey("ariaLabel", aria_label_);
+    result.Set("ariaLabel", aria_label_);
 
   if (hardlock_on_click_)
-    result->SetBoolKey("hardlockOnClick", true);
+    result.Set("hardlockOnClick", true);
 
   return result;
 }

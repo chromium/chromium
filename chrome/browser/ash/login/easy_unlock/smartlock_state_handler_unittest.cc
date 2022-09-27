@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -91,9 +92,7 @@ bool StringHasPlaceholders(const std::u16string& input) {
 class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
  public:
   explicit TestLockHandler(const AccountId& account_id)
-      : account_id_(account_id),
-        show_icon_count_(0u),
-        auth_type_(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD) {}
+      : account_id_(account_id) {}
 
   TestLockHandler(const TestLockHandler&) = delete;
   TestLockHandler& operator=(const TestLockHandler&) = delete;
@@ -114,7 +113,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
         << "account_id_=" << account_id_.Serialize()
         << " != account_id=" << account_id.Serialize();
     ++show_icon_count_;
-    last_custom_icon_ = icon_info.ToDictionaryValue();
+    last_custom_icon_ = icon_info.ToDictForTesting();
     ValidateCustomIcon();
   }
 
@@ -194,7 +193,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   }
 
   // Whether the custom icon is set.
-  bool HasCustomIcon() const { return !!last_custom_icon_; }
+  bool HasCustomIcon() const { return last_custom_icon_.has_value(); }
 
   // If custom icon is set, returns the icon's id.
   // If there is no icon, or if it doesn't have an id set, returns an empty
@@ -202,7 +201,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   std::string GetCustomIconId() const {
     std::string result;
     if (last_custom_icon_) {
-      const std::string* result_ptr = last_custom_icon_->FindStringKey("id");
+      const std::string* result_ptr = last_custom_icon_->FindString("id");
       if (result_ptr)
         result = *result_ptr;
     }
@@ -211,7 +210,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
 
   // Whether the custom icon is set and it has a tooltip.
   bool CustomIconHasTooltip() const {
-    return last_custom_icon_ && last_custom_icon_->FindKey("tooltip");
+    return last_custom_icon_ && last_custom_icon_->Find("tooltip");
   }
 
   // Gets the custom icon's tooltip text, if one is set.
@@ -219,7 +218,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
     std::u16string result;
     if (last_custom_icon_) {
       const std::string* result_ptr =
-          last_custom_icon_->FindStringPath("tooltip.text");
+          last_custom_icon_->FindStringByDottedPath("tooltip.text");
       if (result_ptr)
         result = base::UTF8ToUTF16(*result_ptr);
     }
@@ -232,7 +231,8 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
     if (!last_custom_icon_)
       return false;
 
-    return last_custom_icon_->FindBoolPath("tooltip.autoshow").value_or(false);
+    return last_custom_icon_->FindBoolByDottedPath("tooltip.autoshow")
+        .value_or(false);
   }
 
   // Whether the custom icon is set and if has hardlock capability enabed.
@@ -240,21 +240,21 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
     if (!last_custom_icon_)
       return false;
 
-    return last_custom_icon_->FindBoolKey("hardlockOnClick").value_or(false);
+    return last_custom_icon_->FindBool("hardlockOnClick").value_or(false);
   }
 
  private:
   // Does some sanity checks on the last icon set by `ShowUserPodCustomIcon`.
   // It will cause a test failure if the icon is not valid.
   void ValidateCustomIcon() {
-    ASSERT_TRUE(last_custom_icon_.get());
+    ASSERT_TRUE(HasCustomIcon());
 
-    EXPECT_TRUE(last_custom_icon_->FindKey("id") != nullptr);
+    EXPECT_TRUE(last_custom_icon_->Find("id") != nullptr);
 
-    if (last_custom_icon_->FindKey("tooltip")) {
+    if (last_custom_icon_->Find("tooltip")) {
       std::u16string tooltip;
       const std::string* tooltip_ptr =
-          last_custom_icon_->FindStringPath("tooltip.text");
+          last_custom_icon_->FindStringByDottedPath("tooltip.text");
       EXPECT_TRUE(tooltip_ptr);
       tooltip = base::UTF8ToUTF16(*tooltip_ptr);
       EXPECT_FALSE(tooltip.empty());
@@ -268,11 +268,12 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
 
   // The last icon set using `SetUserPodCustomIcon`. Call to
   // `HideUserPodcustomIcon` resets it.
-  std::unique_ptr<base::DictionaryValue> last_custom_icon_;
-  size_t show_icon_count_;
+  absl::optional<base::Value::Dict> last_custom_icon_;
+  size_t show_icon_count_ = 0;
 
   // Auth type and value set using `SetAuthType`.
-  proximity_auth::mojom::AuthType auth_type_;
+  proximity_auth::mojom::AuthType auth_type_ =
+      proximity_auth::mojom::AuthType::OFFLINE_PASSWORD;
   std::u16string auth_value_;
 };
 
