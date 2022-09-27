@@ -1,0 +1,22 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("worklet_utils") {
+  sources = [
+    "private_aggregation_utils.cc",
+    "private_aggregation_utils.h",
+  ]
+
+  configs += [ "//content:content_implementation" ]
+
+  deps = [
+    "//base",
+    "//content:export",
+    "//gin",
+    "//mojo/public/cpp/bindings",
+    "//v8",
+  ]
+
+  public_deps = [ "//content/common:mojo_bindings" ]
+}

@@ -87,6 +87,7 @@ source_set("auction_worklet") {
     "//base",
     "//content:export",
     "//content/common",
+    "//content/services/worklet_utils",
     "//gin",
     "//mojo/public/cpp/bindings",
     "//net",

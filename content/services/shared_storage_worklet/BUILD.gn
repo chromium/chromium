@@ -37,6 +37,7 @@ source_set("shared_storage_worklet") {
   deps = [
     "//base",
     "//content:export",
+    "//content/services/worklet_utils",
     "//gin",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
