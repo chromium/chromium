@@ -17331,6 +17331,10 @@
                 {
                   "class": "SCREEN_SHARE",
                   "level": "BLOCK"
+                },
+                {
+                  "class": "FILES",
+                  "level": "WARN"
                 }
               ]
             }
