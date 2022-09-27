@@ -95,10 +95,10 @@ bool DeviceImageStore::PersistDeviceImages(const std::string& model_id) {
     QP_LOG(WARNING) << __func__ << ": No shell local state available.";
     return false;
   }
-  DictionaryPrefUpdate device_image_store(local_state, kDeviceImageStorePref);
+  ScopedDictPrefUpdate device_image_store(local_state, kDeviceImageStorePref);
   // TODO(dclasson): Once we add TrueWireless support, need to modify this to
   // merge new & persisted images objects.
-  if (!device_image_store->SetKey(model_id, images.ToDictionaryValue())) {
+  if (!device_image_store->Set(model_id, images.ToDictionaryValue())) {
     QP_LOG(WARNING) << __func__
                     << ": Failed to persist images to prefs for model ID: " +
                            model_id;
@@ -113,8 +113,8 @@ bool DeviceImageStore::EvictDeviceImages(const std::string& model_id) {
     QP_LOG(WARNING) << __func__ << ": No shell local state available.";
     return false;
   }
-  DictionaryPrefUpdate device_image_store(local_state, kDeviceImageStorePref);
-  if (!device_image_store->RemoveKey(model_id)) {
+  ScopedDictPrefUpdate device_image_store(local_state, kDeviceImageStorePref);
+  if (!device_image_store->Remove(model_id)) {
     QP_LOG(WARNING) << __func__
                     << ": Failed to evict images from prefs for model ID: " +
                            model_id;

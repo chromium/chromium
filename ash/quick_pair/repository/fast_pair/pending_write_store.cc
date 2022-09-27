@@ -51,8 +51,8 @@ void PendingWriteStore::AddPairedDevice(const std::string& mac_address,
     QP_LOG(WARNING) << __func__ << ": No user pref service available.";
     return;
   }
-  DictionaryPrefUpdate update(pref_service, kFastPairPendingWritesPref);
-  update->GetDict().Set(mac_address, hex_model_id);
+  ScopedDictPrefUpdate update(pref_service, kFastPairPendingWritesPref);
+  update->Set(mac_address, hex_model_id);
 }
 
 std::vector<PendingWriteStore::PendingWrite>
@@ -83,8 +83,8 @@ void PendingWriteStore::OnPairedDeviceSaved(const std::string& mac_address) {
     return;
   }
 
-  DictionaryPrefUpdate update(pref_service, kFastPairPendingWritesPref);
-  update->GetDict().Remove(mac_address);
+  ScopedDictPrefUpdate update(pref_service, kFastPairPendingWritesPref);
+  update->Remove(mac_address);
 }
 
 void PendingWriteStore::DeletePairedDevice(const std::string& mac_address,
@@ -95,8 +95,8 @@ void PendingWriteStore::DeletePairedDevice(const std::string& mac_address,
     QP_LOG(WARNING) << __func__ << ": No user pref service available.";
     return;
   }
-  DictionaryPrefUpdate update(pref_service, kFastPairPendingDeletesPref);
-  update->GetDict().Set(mac_address, hex_account_key);
+  ScopedDictPrefUpdate update(pref_service, kFastPairPendingDeletesPref);
+  update->Set(mac_address, hex_account_key);
 }
 
 std::vector<PendingWriteStore::PendingDelete>
@@ -127,8 +127,8 @@ void PendingWriteStore::OnPairedDeviceDeleted(const std::string& mac_address) {
     return;
   }
 
-  DictionaryPrefUpdate update(pref_service, kFastPairPendingDeletesPref);
-  update->GetDict().Remove(mac_address);
+  ScopedDictPrefUpdate update(pref_service, kFastPairPendingDeletesPref);
+  update->Remove(mac_address);
 }
 
 void PendingWriteStore::OnPairedDeviceDeleted(
@@ -141,14 +141,14 @@ void PendingWriteStore::OnPairedDeviceDeleted(
   }
 
   std::string hex_account_key = base::HexEncode(account_key);
-  DictionaryPrefUpdate update(pref_service, kFastPairPendingDeletesPref);
-  base::Value result =
-      pref_service->GetValue(kFastPairPendingDeletesPref).Clone();
-  for (const auto item : result.DictItems()) {
+  ScopedDictPrefUpdate update(pref_service, kFastPairPendingDeletesPref);
+  const base::Value::Dict result =
+      pref_service->GetDict(kFastPairPendingDeletesPref).Clone();
+  for (const auto item : result) {
     if (item.second == hex_account_key) {
       QP_LOG(INFO) << __func__
                    << ": Successfully removed pending delete from prefs.";
-      update->GetDict().Remove(item.first);
+      update->Remove(item.first);
     }
   }
 }

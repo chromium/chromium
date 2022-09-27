@@ -43,8 +43,8 @@ void SavedDeviceRegistry::SaveAccountKey(
     return;
   }
   std::string encoded = base::Base64Encode(account_key);
-  DictionaryPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
-  update->SetStringKey(mac_address, encoded);
+  ScopedDictPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
+  update->Set(mac_address, encoded);
   QP_LOG(INFO) << __func__ << ": Saved account key.";
 }
 
@@ -56,8 +56,8 @@ bool SavedDeviceRegistry::DeleteAccountKey(const std::string& mac_address) {
     return false;
   }
 
-  DictionaryPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
-  if (!update->RemoveKey(mac_address)) {
+  ScopedDictPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
+  if (!update->Remove(mac_address)) {
     QP_LOG(WARNING)
         << __func__
         << ": Failed to delete mac address -> account key record from prefs";
@@ -81,8 +81,8 @@ bool SavedDeviceRegistry::DeleteAccountKey(
   for (const auto it : saved_devices) {
     const std::string* value = it.second.GetIfString();
     if (value && *value == encoded_key) {
-      DictionaryPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
-      return update->RemoveKey(it.first);
+      ScopedDictPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
+      return update->Remove(it.first);
     }
   }
   QP_LOG(WARNING) << __func__
@@ -165,8 +165,8 @@ void SavedDeviceRegistry::RemoveDevicesIfRemovedFromDifferentUser(
   for (const auto it : saved_devices) {
     const std::string& mac_address = it.first;
     if (!base::Contains(paired_devices, mac_address)) {
-      DictionaryPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
-      update->RemoveKey(it.first);
+      ScopedDictPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
+      update->Remove(it.first);
       QP_LOG(VERBOSE) << __func__
                       << ": removed device from registry at address= "
                       << mac_address;

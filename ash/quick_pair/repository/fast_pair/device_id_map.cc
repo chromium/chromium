@@ -96,8 +96,8 @@ bool DeviceIdMap::PersistDeviceIdRecord(const std::string& device_id) {
     return false;
   }
 
-  DictionaryPrefUpdate device_id_map_dict(local_state, kDeviceIdMapPref);
-  if (!device_id_map_dict->SetStringKey(device_id, model_id)) {
+  ScopedDictPrefUpdate device_id_map_dict(local_state, kDeviceIdMapPref);
+  if (!device_id_map_dict->Set(device_id, model_id)) {
     QP_LOG(WARNING)
         << __func__
         << ": Failed to persist device ID -> model ID record for device ID: " +
@@ -114,8 +114,8 @@ bool DeviceIdMap::EvictDeviceIdRecord(const std::string& device_id) {
     return false;
   }
 
-  DictionaryPrefUpdate device_id_map_dict(local_state, kDeviceIdMapPref);
-  if (!device_id_map_dict->RemoveKey(device_id)) {
+  ScopedDictPrefUpdate device_id_map_dict(local_state, kDeviceIdMapPref);
+  if (!device_id_map_dict->Remove(device_id)) {
     QP_LOG(WARNING) << __func__
                     << ": Failed to evict device ID -> model ID record from "
                        "prefs for device ID: " +
