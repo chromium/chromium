@@ -12,8 +12,6 @@ struct wl_client;
 namespace exo {
 namespace wayland {
 
-constexpr uint32_t kZwpLinuxDmabufVersion = 2;
-
 void bind_linux_dmabuf(wl_client* client,
                        void* data,
                        uint32_t version,
