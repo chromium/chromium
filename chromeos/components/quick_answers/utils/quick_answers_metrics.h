@@ -78,6 +78,9 @@ void RecordDictionaryIntentSource(DictionaryIntentSource source);
 // Record the query language of dictionary intent.
 void RecordDictionaryIntentLanguage(const std::string& language);
 
+// Record the feature enabled status when the first user session starts.
+void RecordFeatureEnabled(bool enabled);
+
 }  // namespace quick_answers
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_QUICK_ANSWERS_METRICS_H_

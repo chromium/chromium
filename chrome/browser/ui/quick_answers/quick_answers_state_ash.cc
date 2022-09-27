@@ -7,6 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -104,6 +105,9 @@ void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   for (auto& observer : observers_) {
     observer.OnPrefsInitialized();
   }
+
+  quick_answers::RecordFeatureEnabled(
+      pref_service->GetBoolean(kQuickAnswersEnabled));
 
   UpdateEligibility();
 }

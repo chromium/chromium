@@ -32,6 +32,7 @@ const char kQuickAnswersDictionaryIntentLanguage[] =
 const char kQuickAnswersNetworkError[] = "QuickAnswers.NetworkError.IntentType";
 const char kQuickAnswersNetworkResponseCode[] =
     "QuickAnswers.NetworkError.ResponseCode";
+const char kQuickAnswerFeatureEnabled[] = "QuickAnswers.FeatureEnabled";
 
 const char kDurationSuffix[] = ".Duration";
 const char kDefinitionSuffix[] = ".Definition";
@@ -160,6 +161,10 @@ void RecordDictionaryIntentLanguage(const std::string& language) {
   base::UmaHistogramSparse(
       kQuickAnswersDictionaryIntentLanguage,
       language::LanguageUsageMetrics::ToLanguageCodeHash(language));
+}
+
+void RecordFeatureEnabled(bool enabled) {
+  base::UmaHistogramBoolean(kQuickAnswerFeatureEnabled, enabled);
 }
 
 }  // namespace quick_answers
