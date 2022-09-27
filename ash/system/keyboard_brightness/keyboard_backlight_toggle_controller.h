@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_KEYBOARD_BRIGHTNESS_KEYBOARD_BACKLIGHT_TOGGLE_CONTROLLER_H_
 #define ASH_SYSTEM_KEYBOARD_BRIGHTNESS_KEYBOARD_BACKLIGHT_TOGGLE_CONTROLLER_H_
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/unified_slider_view.h"
 
 namespace ash {
@@ -25,6 +26,7 @@ class KeyboardBacklightToggleController : public UnifiedSliderListener {
 
   // UnifiedSliderListener:
   views::View* CreateView() override;
+  QsSliderCatalogName GetCatalogName() override;
   void SliderValueChanged(views::Slider* sender,
                           float value,
                           float old_value,

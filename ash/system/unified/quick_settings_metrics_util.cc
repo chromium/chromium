@@ -28,6 +28,12 @@ constexpr char kQuickSettingsFeaturePodCount[] =
     "Ash.QuickSettings.Clamshell.FeaturePodCountOnOpen";
 constexpr char kQuickSettingsTabletFeaturePodCount[] =
     "Ash.QuickSettings.Tablet.FeaturePodCountOnOpen";
+constexpr char kQuickSettingsSliderUp[] = "Ash.QuickSettings.Slider.Up";
+constexpr char kQuickSettingsSliderDown[] = "Ash.QuickSettings.Slider.Down";
+constexpr char kQuickSettingsSliderEnable[] =
+    "Ash.QuickSettings.Slider.EnableFeature";
+constexpr char kQuickSettingsSliderDisable[] =
+    "Ash.QuickSettings.Slider.DisableFeature";
 
 // For the old view:
 constexpr char kUnifiedViewButton[] = "Ash.UnifiedSystemView.Button.Activated";
@@ -43,6 +49,13 @@ constexpr char kUnifiedViewFeaturePodCount[] =
     "Ash.UnifiedSystemView.Clamshell.FeaturePodCountOnOpen";
 constexpr char kUnifiedViewTabletFeaturePodCount[] =
     "Ash.UnifiedSystemView.Tablet.FeaturePodCountOnOpen";
+constexpr char kUnifiedSystemViewSliderUp[] = "Ash.UnifiedSystemView.Slider.Up";
+constexpr char kUnifiedSystemViewSliderDown[] =
+    "Ash.UnifiedSystemView.Slider.Down";
+constexpr char kUnifiedSystemViewSliderEnable[] =
+    "Ash.UnifiedSystemView.Slider.EnableFeature";
+constexpr char kUnifiedSystemViewSliderDisable[] =
+    "Ash.UnifiedSystemView.Slider.DisableFeature";
 
 }  // namespace
 
@@ -98,6 +111,38 @@ void RecordQsFeaturePodCount(int feature_pod_count, bool is_tablet) {
                                ? kQuickSettingsFeaturePodCount
                                : kUnifiedViewFeaturePodCount,
                            feature_pod_count);
+}
+
+void RecordQsSliderValueChange(QsSliderCatalogName slider_catalog_name,
+                               bool going_up) {
+  if (going_up) {
+    base::UmaHistogramEnumeration(features::IsQsRevampEnabled()
+                                      ? kQuickSettingsSliderUp
+                                      : kUnifiedSystemViewSliderUp,
+                                  slider_catalog_name);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(features::IsQsRevampEnabled()
+                                    ? kQuickSettingsSliderDown
+                                    : kUnifiedSystemViewSliderDown,
+                                slider_catalog_name);
+}
+
+void RecordQsSliderToggle(QsSliderCatalogName slider_catalog_name,
+                          bool enable) {
+  if (enable) {
+    base::UmaHistogramEnumeration(features::IsQsRevampEnabled()
+                                      ? kQuickSettingsSliderEnable
+                                      : kUnifiedSystemViewSliderEnable,
+                                  slider_catalog_name);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(features::IsQsRevampEnabled()
+                                    ? kQuickSettingsSliderDisable
+                                    : kUnifiedSystemViewSliderDisable,
+                                slider_catalog_name);
 }
 
 }  // namespace quick_settings_metrics_util

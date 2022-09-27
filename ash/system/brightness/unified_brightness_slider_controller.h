@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_BRIGHTNESS_UNIFIED_BRIGHTNESS_SLIDER_CONTROLLER_H_
 #define ASH_SYSTEM_BRIGHTNESS_UNIFIED_BRIGHTNESS_SLIDER_CONTROLLER_H_
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "base/memory/scoped_refptr.h"
 
@@ -27,6 +28,7 @@ class UnifiedBrightnessSliderController : public UnifiedSliderListener {
 
   // UnifiedSliderListener:
   views::View* CreateView() override;
+  QsSliderCatalogName GetCatalogName() override;
   void SliderValueChanged(views::Slider* sender,
                           float value,
                           float old_value,

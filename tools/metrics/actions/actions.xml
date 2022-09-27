@@ -30812,6 +30812,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Audio_Muted">
+  <obsolete>
+    Replaced with &quot;Ash.QuickSettings.Slider.{SliderBehavior}&quot; in ash,
+    09/2022.
+  </obsolete>
   <owner>tetsui@chromium.org</owner>
   <description>User muted audio from the button in SystemTray.</description>
 </action>
@@ -30835,6 +30839,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Audio_Unmuted">
+  <obsolete>
+    Replaced with &quot;Ash.QuickSettings.Slider.{SliderBehavior}&quot; in ash,
+    09/2022.
+  </obsolete>
   <owner>tetsui@chromium.org</owner>
   <description>User unmuted audio from the button in SystemTray.</description>
 </action>
@@ -31126,6 +31134,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Mic_Gain_Changed">
+  <obsolete>
+    Replaced with &quot;Ash.QuickSettings.Slider.{SliderBehavior}&quot; in ash,
+    09/2022.
+  </obsolete>
   <owner>amehfooz@chromium.org tengs@chromium.org</owner>
   <description>
     The user changed the slider for mic gain in the audio detailed view.
@@ -31133,6 +31145,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Mic_Muted">
+  <obsolete>
+    Replaced with &quot;Ash.QuickSettings.Slider.{SliderBehavior}&quot; in ash,
+    09/2022.
+  </obsolete>
   <owner>amehfooz@chromium.org tengs@chromium.org</owner>
   <description>
     The user muted the mic by pressing the mic mute button.
@@ -31140,6 +31156,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Mic_Unmuted">
+  <obsolete>
+    Replaced with &quot;Ash.QuickSettings.Slider.{SliderBehavior}&quot; in ash,
+    09/2022.
+  </obsolete>
   <owner>amehfooz@chromium.org tengs@chromium.org</owner>
   <description>
     The user unmuted the mic by pressing the mic mute button
@@ -31415,6 +31435,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Volume_ChangedMenu">
+  <obsolete>
+    Replaced with &quot;Ash.QuickSettings.Slider.{SliderBehavior}&quot; in ash,
+    09/2022.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>

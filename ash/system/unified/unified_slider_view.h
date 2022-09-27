@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_UNIFIED_UNIFIED_SLIDER_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_UNIFIED_SLIDER_VIEW_H_
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/style/icon_button.h"
 #include "ui/views/controls/slider.h"
 #include "ui/views/view.h"
@@ -21,11 +22,25 @@ namespace ash {
 
 class UnifiedSliderListener : public views::SliderListener {
  public:
+  ~UnifiedSliderListener() override = default;
+
   // Instantiates UnifiedSliderView. The view will be onwed by views hierarchy.
   // The view should be always deleted after the controller is destructed.
   virtual views::View* CreateView() = 0;
 
-  ~UnifiedSliderListener() override = default;
+  // Returns the slider catalog name which is used for UMA tracking. Please
+  // remember to call the corresponding tracking method (`TrackToggleUMA` and
+  // `TrackValueChangeUMA`) in the `SliderButtonPressed` and
+  // `SliderValueChanged` implementation.
+  virtual QsSliderCatalogName GetCatalogName() = 0;
+
+  // Tracks the toggling behavior, usually happens in `SliderButtonPressed`.If
+  // the feature has no `target_toggle_state` state, pass `true` to this method.
+  void TrackToggleUMA(bool target_toggle_state);
+
+  // Tracks slider value change behavior, usually happens in
+  // `SliderValueChanged`.
+  void TrackValueChangeUMA(bool going_up);
 };
 
 // Base view class of a slider row in UnifiedSystemTray. It has a button on the

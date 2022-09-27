@@ -3623,6 +3623,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.QuickSettings.Slider.{SliderBehavior}"
+    enum="QsSliderCatalogName" expires_after="2023-09-21">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when an action is done on any slider in the quick settings view or
+    in the slider bubble. {SliderBehavior} can be changing the value or toggling
+    to enable the feature.
+  </summary>
+  <token key="SliderBehavior">
+    <variant name="DisableFeature" summary="Toggle to disable the feature"/>
+    <variant name="Down" summary="Turn the slider value down"/>
+    <variant name="EnableFeature" summary="Toggle to enable the feature"/>
+    <variant name="Up" summary="Turn the slider value up"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.QuickSettings.UserJourneyTime" units="ms"
     expires_after="2023-04-01">
   <owner>kradtke@chromium.org</owner>
@@ -4558,6 +4575,23 @@ chromium-metrics-reviews@google.com.
     <variant name="ToggleOff" summary="Toggle to disable the feature"/>
     <variant name="ToggleOn" summary="Toggle to enable the feature"/>
     <variant name="Visible" summary="The feature pod is shown"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.UnifiedSystemView.Slider.{SliderBehavior}"
+    enum="QsSliderCatalogName" expires_after="2023-09-21">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when an action is done on any slider in the old quick settings view
+    or in the slider bubble. {SliderBehavior} can be changing the value or
+    toggling to enable the feature.
+  </summary>
+  <token key="SliderBehavior">
+    <variant name="DisableFeature" summary="Toggle to disable the feature"/>
+    <variant name="Down" summary="Turn the slider value down"/>
+    <variant name="EnableFeature" summary="Toggle to enable the feature"/>
+    <variant name="Up" summary="Turn the slider value up"/>
   </token>
 </histogram>
 

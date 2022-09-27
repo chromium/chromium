@@ -29,7 +29,7 @@ enum class QsButtonCatalogName {
 };
 
 // A catalog that registers all the features on the Quick Settings page. This
-// catalog should be kept in sync with the buttons on the Quick Settings page.
+// catalog should be kept in sync with the pods on the Quick Settings page.
 // Current values should not be renumbered or removed, because they are recorded
 // in histograms (histograms' enums.xml `QsFeatureCatalogName`). To deprecate
 // use `_DEPRECATED` post-fix on the name.
@@ -52,6 +52,21 @@ enum class QsFeatureCatalogName {
   kShelfParty = 15,
   kAutozoom = 16,
   kMaxValue = kAutozoom
+};
+
+// A catalog that registers all the sliders on the Quick Settings page (also
+// includes the slider bubble which is a separate bubble from the quick settings
+// page). This catalog should be kept in sync with the sliders on the Quick
+// Settings page. Current values should not be renumbered or removed, because
+// they are recorded in histograms (histograms' enums.xml
+// `QsSliderCatalogName`). To deprecate use `_DEPRECATED` post-fix on the name.
+enum class QsSliderCatalogName {
+  kUnknown = 0,
+  kVolume = 1,
+  kBrightness = 2,
+  kMicGain = 3,
+  kKeyboardBrightness = 4,
+  kMaxValue = kKeyboardBrightness
 };
 
 }  // namespace ash

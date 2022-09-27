@@ -4,6 +4,7 @@
 
 #include "ash/system/audio/mic_gain_slider_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/audio/mic_gain_slider_view.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -39,6 +40,10 @@ views::View* MicGainSliderController::CreateView() {
   return new MicGainSliderView(this);
 }
 
+QsSliderCatalogName MicGainSliderController::GetCatalogName() {
+  return QsSliderCatalogName::kMicGain;
+}
+
 void MicGainSliderController::SliderValueChanged(
     views::Slider* sender,
     float value,
@@ -53,18 +58,21 @@ void MicGainSliderController::SliderValueChanged(
         CrasAudioHandler::Get()->GetPrimaryActiveInputNode(), false);
   }
 
-  base::RecordAction(base::UserMetricsAction("StatusArea_Mic_Gain_Changed"));
+  const int level = value * 100;
+  if (level != CrasAudioHandler::Get()->GetInputGainPercent()) {
+    TrackValueChangeUMA(/*going_up=*/level >
+                        CrasAudioHandler::Get()->GetInputGainPercent());
+  }
 
-  CrasAudioHandler::Get()->SetInputGainPercent(value * 100);
+  CrasAudioHandler::Get()->SetInputGainPercent(level);
 }
 
 void MicGainSliderController::SliderButtonPressed() {
   auto* const audio_handler = CrasAudioHandler::Get();
   const bool mute = !audio_handler->IsInputMuted();
-  if (mute)
-    base::RecordAction(base::UserMetricsAction("StatusArea_Mic_Muted"));
-  else
-    base::RecordAction(base::UserMetricsAction("StatusArea_Mic_Unmuted"));
+
+  TrackToggleUMA(/*target_toggle_state=*/mute);
+
   audio_handler->SetMuteForDevice(audio_handler->GetPrimaryActiveInputNode(),
                                   mute);
 }

@@ -27,7 +27,7 @@ class ASH_EXPORT FeaturePodControllerBase {
 
   // Returns the feature catalog name which is used for UMA tracking. Please
   // remember to call the corresponding tracking method (`TrackToggleUMA` and
-  // `TrackDiveInUMA`) in the `OnIconPressed` and OnLabelPressed`
+  // `TrackDiveInUMA`) in the `OnIconPressed` and `OnLabelPressed`
   // implementation.
   virtual QsFeatureCatalogName GetCatalogName() = 0;
 

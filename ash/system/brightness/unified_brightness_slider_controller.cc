@@ -4,6 +4,7 @@
 
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/shell.h"
 #include "ash/system/brightness/unified_brightness_view.h"
 #include "ash/system/brightness_control_delegate.h"
@@ -34,6 +35,10 @@ views::View* UnifiedBrightnessSliderController::CreateView() {
   return slider_;
 }
 
+QsSliderCatalogName UnifiedBrightnessSliderController::GetCatalogName() {
+  return QsSliderCatalogName::kBrightness;
+}
+
 void UnifiedBrightnessSliderController::SliderValueChanged(
     views::Slider* sender,
     float value,
@@ -54,6 +59,11 @@ void UnifiedBrightnessSliderController::SliderValueChanged(
       previous_percent_ < kMinBrightnessPercent) {
     return;
   }
+
+  if (previous_percent_ != percent) {
+    TrackValueChangeUMA(/*going_up=*/percent > previous_percent_);
+  }
+
   // We have to store previous manually set value because |old_value| might be
   // set by UnifiedSystemTrayModel::Observer.
   previous_percent_ = percent;

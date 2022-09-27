@@ -31,6 +31,7 @@ class ASH_EXPORT MicGainSliderController : public UnifiedSliderListener {
 
   // UnifiedSliderListener:
   views::View* CreateView() override;
+  QsSliderCatalogName GetCatalogName() override;
   void SliderValueChanged(views::Slider* sender,
                           float value,
                           float old_value,

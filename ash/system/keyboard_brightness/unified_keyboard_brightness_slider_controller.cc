@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/personalization_entry_point.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -134,6 +135,11 @@ views::View* UnifiedKeyboardBrightnessSliderController::CreateView() {
   DCHECK(!slider_);
   slider_ = new UnifiedKeyboardBrightnessView(this, model_);
   return slider_;
+}
+
+QsSliderCatalogName
+UnifiedKeyboardBrightnessSliderController::GetCatalogName() {
+  return QsSliderCatalogName::kKeyboardBrightness;
 }
 
 void UnifiedKeyboardBrightnessSliderController::SliderValueChanged(

@@ -38,6 +38,17 @@ void RecordVisibleQsFeature(QsFeatureCatalogName feature_catalog_name);
 // Records visible feature pod number in the quick settings main page.
 void RecordQsFeaturePodCount(int feature_pod_count, bool is_tablet);
 
+// Records slider value change in the quick settings main page or in the slider
+// bubble.
+void RecordQsSliderValueChange(QsSliderCatalogName slider_catalog_name,
+                               bool going_up);
+
+// Records toggle to enable/disable the corresponding functionality of the
+// slider in the quick settings page or the slider bubble. The arg `enable ==
+// true` means this feature was disabled and will be enabled by this toggle
+// action.
+void RecordQsSliderToggle(QsSliderCatalogName slider_catalog_name, bool enable);
+
 }  // namespace ash::quick_settings_metrics_util
 
 #endif  // ASH_SYSTEM_UNIFIED_QUICK_SETTINGS_METRICS_UTIL_H_
