@@ -19,7 +19,7 @@ namespace remoting {
 class X11CrtcResizer {
  public:
   X11CrtcResizer(x11::RandR::GetScreenResourcesCurrentReply* resources,
-                 x11::RandR* randr);
+                 x11::Connection* connection);
   X11CrtcResizer(const X11CrtcResizer&) = delete;
   X11CrtcResizer& operator=(const X11CrtcResizer&) = delete;
   ~X11CrtcResizer();
@@ -77,6 +77,12 @@ class X11CrtcResizer {
   // offsets are shifted the same amount so that the new bounding-box's top-left
   // corner is at (0, 0).
   void NormalizeCrtcs();
+
+  // This should be called after a new layout is computed and normalized, just
+  // before applying the changes to the X server. This moves any visible
+  // windows, to try to keep them in the same relative positions to any moved
+  // CRTCs.
+  void MoveApplicationWindows();
 
   // Returns the bounding box of |active_crtcs_| from their current xy-offsets
   // and sizes.
@@ -169,6 +175,7 @@ class X11CrtcResizer {
   void Transpose();
 
   raw_ptr<x11::RandR::GetScreenResourcesCurrentReply> resources_;
+  raw_ptr<x11::Connection> connection_;
   raw_ptr<x11::RandR> randr_;
 
   // Information on all CRTCs that are currently enabled (including the CRTC

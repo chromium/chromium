@@ -57,8 +57,14 @@ bool X11CrtcResizer::CrtcInfo::OffsetsChanged() const {
 
 X11CrtcResizer::X11CrtcResizer(
     x11::RandR::GetScreenResourcesCurrentReply* resources,
-    x11::RandR* randr)
-    : resources_(resources), randr_(randr) {}
+    x11::Connection* connection)
+    : resources_(resources), connection_(connection) {
+  // Unittests provide nullptr, and do not exercise code-paths that talk to the
+  // X server.
+  if (connection_) {
+    randr_ = &connection_->randr();
+  }
+}
 
 X11CrtcResizer::~X11CrtcResizer() = default;
 
@@ -195,6 +201,66 @@ void X11CrtcResizer::NormalizeCrtcs() {
   for (auto& crtc : active_crtcs_) {
     crtc.x += adjustment.x();
     crtc.y += adjustment.y();
+  }
+}
+
+void X11CrtcResizer::MoveApplicationWindows() {
+  if (!connection_) {
+    // connection_ is nullptr in unittests.
+    return;
+  }
+
+  // Only direct descendants of the root window should be moved. Child
+  // windows automatically track the location of their parents, and can only
+  // be moved within their parent window.
+  auto query_response =
+      connection_->QueryTree({connection_->default_root()}).Sync();
+  if (!query_response) {
+    return;
+  }
+  for (const auto& window : query_response->children) {
+    auto attributes_response =
+        connection_->GetWindowAttributes({window}).Sync();
+    if (!attributes_response) {
+      continue;
+    }
+    if (attributes_response->map_state != x11::MapState::Viewable) {
+      // Unmapped or hidden windows can be left alone - their geometries
+      // might not be meaningful. If the window later becomes mapped, the
+      // window-manager will be responsible for its placement.
+      continue;
+    }
+    auto geometry_response = connection_->GetGeometry(window).Sync();
+    if (!geometry_response) {
+      continue;
+    }
+
+    // Look for any CRTC which contains the window's top-left corner. If the
+    // CRTC is being moved, request the window to be moved the same amount.
+    for (const auto& crtc_info : active_crtcs_) {
+      if (!crtc_info.OffsetsChanged()) {
+        continue;
+      }
+
+      auto old_rect = webrtc::DesktopRect::MakeXYWH(
+          crtc_info.old_x, crtc_info.old_y, crtc_info.width, crtc_info.height);
+      webrtc::DesktopVector window_top_left(geometry_response->x,
+                                            geometry_response->y);
+      if (!old_rect.Contains(window_top_left)) {
+        continue;
+      }
+
+      webrtc::DesktopVector adjustment(crtc_info.x - crtc_info.old_x,
+                                       crtc_info.y - crtc_info.old_y);
+      window_top_left = window_top_left.add(adjustment);
+
+      connection_->ConfigureWindow({
+          .window = window,
+          .x = window_top_left.x(),
+          .y = window_top_left.y(),
+      });
+      break;
+    }
   }
 }
 

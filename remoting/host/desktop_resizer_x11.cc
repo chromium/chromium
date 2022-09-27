@@ -278,7 +278,7 @@ void DesktopResizerX11::SetVideoLayout(const protocol::VideoLayout& layout) {
   // between displays.
   DisplayLayoutDiff diff = CalculateDisplayLayoutDiff(current_displays, layout);
 
-  X11CrtcResizer resizer(resources_.get(), randr_);
+  X11CrtcResizer resizer(resources_.get(), connection_);
   resizer.FetchActiveCrtcs();
 
   // Add displays
@@ -377,7 +377,7 @@ void DesktopResizerX11::SetResolutionForOutput(
   HOST_LOG << "Changing desktop size to " << resolution.dimensions().width()
            << "x" << resolution.dimensions().height();
 
-  X11CrtcResizer resizer(resources_.get(), randr_);
+  X11CrtcResizer resizer(resources_.get(), connection_);
 
   resizer.FetchActiveCrtcs();
   auto crtc = resizer.GetCrtcForOutput(output);
@@ -459,6 +459,8 @@ void DesktopResizerX11::UpdateRootWindow(X11CrtcResizer& resizer) {
   randr_->SetScreenSize({root_, static_cast<uint16_t>(dimensions.width()),
                          static_cast<uint16_t>(dimensions.height()), width_mm,
                          height_mm});
+
+  resizer.MoveApplicationWindows();
 
   // Apply the new CRTCs, which will re-enable any that were disabled.
   resizer.ApplyActiveCrtcs();
