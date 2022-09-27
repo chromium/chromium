@@ -2258,6 +2258,7 @@ fyi_mac_builder(
         short_name = "bld",
     ),
     cores = None,
+    cpu = cpu.ARM64,
     os = None,
     goma_backend = None,
     reclient_jobs = reclient.jobs.DEFAULT,
