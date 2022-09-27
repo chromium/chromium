@@ -2453,11 +2453,11 @@ void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
                                            CONTENT_SETTING_DEFAULT);
 
         // If the current setting matches the desired setting after clearing the
-        // site URL from the exception list we can simply return otherwise we
+        // site URL from the exception list we can simply skip otherwise we
         // will add the site URL to the exception list.
         if (setting ==
             map->GetContentSetting(url, url, ContentSettingsType::SOUND)) {
-          return;
+          continue;
         }
       }
       // Adds the site URL to the exception list for the setting.

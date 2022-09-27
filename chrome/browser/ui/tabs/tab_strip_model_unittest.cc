@@ -4506,3 +4506,38 @@ TEST_F(TabStripModelTest, ToggleSiteMutedWithDifferentDefault) {
 
   tabstrip.CloseAllTabs();
 }
+
+TEST_F(TabStripModelTest, ToggleMuteUnmuteMultipleSites) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  GURL url1("https://example1.com/");
+  std::unique_ptr<WebContents> new_tab_contents1 = CreateWebContents();
+  content::WebContentsTester::For(new_tab_contents1.get())
+      ->SetLastCommittedURL(url1);
+  tabstrip.AddWebContents(std::move(new_tab_contents1), -1,
+                          ui::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+
+  GURL url2("https://example2.com/");
+  std::unique_ptr<WebContents> new_tab_contents2 = CreateWebContents();
+  content::WebContentsTester::For(new_tab_contents2.get())
+      ->SetLastCommittedURL(url2);
+  tabstrip.AddWebContents(std::move(new_tab_contents2), -1,
+                          ui::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 1));
+
+  EXPECT_TRUE(tabstrip.ToggleSelectionAt(0));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
+
+  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
+  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 1));
+
+  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 1));
+
+  tabstrip.CloseAllTabs();
+}
