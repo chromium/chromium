@@ -57502,6 +57502,7 @@ from previous Chrome versions.
   <int value="-1469228683" label="QuickUnlockPinSignin:disabled"/>
   <int value="-1469116522" label="Floss:disabled"/>
   <int value="-1468126425" label="ResourceLoadScheduler:disabled"/>
+  <int value="-1467980330" label="enable-privacy-sandbox-ads-apis"/>
   <int value="-1467856474" label="MaxUnthrottledTimeoutNestingLevel:disabled"/>
   <int value="-1467839547" label="ContextMenuShopWithGoogleLens:disabled"/>
   <int value="-1467642274" label="KeyboardShortcutViewer:disabled"/>

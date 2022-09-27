@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 
+#include <functional>
 #include <set>
 #include <vector>
 
@@ -45,11 +46,13 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service_factory.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
+#include "content/public/common/content_switches.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -57,6 +60,42 @@
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace {
+
+// Returns a list of extra switch-dependent feature overrides to be applied
+// during FeatureList initialization. Combines the overrides defined at the
+// content layer with additional chrome layer overrides.
+std::vector<base::FeatureList::FeatureOverrideInfo>
+GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
+  std::vector<base::FeatureList::FeatureOverrideInfo> overrides =
+      content::GetSwitchDependentFeatureOverrides(command_line);
+
+  // Describes a switch-dependent override.
+  struct SwitchDependentFeatureOverrideInfo {
+    // Switch that the override depends upon. The override will be registered if
+    // this switch is present.
+    const char* switch_name;
+    // Feature to override.
+    const std::reference_wrapper<const base::Feature> feature;
+    // State to override the feature with.
+    base::FeatureList::OverrideState override_state;
+  } chrome_layer_override_info[] = {
+      // Override for --privacy-sandbox-ads-apis. See also content layer
+      // overrides.
+      {switches::kEnablePrivacySandboxAdsApis,
+       std::cref(privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+  };
+
+  for (const auto& info : chrome_layer_override_info) {
+    if (command_line.HasSwitch(info.switch_name))
+      overrides.emplace_back(info.feature, info.override_state);
+  }
+  return overrides;
+}
+
+}  // namespace
 
 ChromeFeatureListCreator::ChromeFeatureListCreator() = default;
 
@@ -228,7 +267,7 @@ void ChromeFeatureListCreator::SetUpFieldTrials(
       metrics_services_manager_->GetVariationsService();
   variations_service->SetUpFieldTrials(
       variation_ids, command_line_variation_ids,
-      content::GetSwitchDependentFeatureOverrides(
+      GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       std::move(feature_list), browser_field_trials_.get());
   variations::InitCrashKeys();

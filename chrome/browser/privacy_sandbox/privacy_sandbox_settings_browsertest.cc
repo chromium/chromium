@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -10,9 +11,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
@@ -112,4 +115,31 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsBrowserTest,
 
   EXPECT_EQ(base::Time(),
             privacy_sandbox_settings()->TopicsDataAccessibleSince());
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsBrowserTest,
+                       SettingsAreNotOverridden) {
+  privacy_sandbox_settings()->SetPrivacySandboxEnabled(false);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+  EXPECT_FALSE(base::FeatureList::IsEnabled(
+      privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting));
+}
+
+class PrivacySandboxSettingsAdsApisFlagBrowserTest
+    : public PrivacySandboxSettingsBrowserTest {
+ public:
+  PrivacySandboxSettingsAdsApisFlagBrowserTest() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnablePrivacySandboxAdsApis);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsAdsApisFlagBrowserTest,
+                       FollowsOverrideBehavior) {
+  privacy_sandbox_settings()->SetPrivacySandboxEnabled(false);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  // The flag should enable this feature.
+  EXPECT_TRUE(base::FeatureList::IsEnabled(
+      privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting));
 }

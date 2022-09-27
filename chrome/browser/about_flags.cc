@@ -7957,16 +7957,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"privacy-sandbox-ads-apis",
      flag_descriptions::kPrivacySandboxAdsAPIsOverrideName,
      flag_descriptions::kPrivacySandboxAdsAPIsOverrideDescription, kOsAll,
-     // Use a command-line parameter instead of a FEATURE_VALUE_TYPE to enable
-     // multiple related features when they are available.
-     SINGLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
-                                 "PrivacySandboxAdsAPIsOverride,"
-                                 "InterestGroupStorage,Fledge,"
-                                 "BiddingAndScoringDebugReportingAPI,"
-                                 "AllowURNsInIframes,BrowsingTopics,"
-                                 "ConversionMeasurement,FencedFrames,"
-                                 "OverridePrivacySandboxSettingsLocalTesting,"
-                                 "SharedStorageAPI,PrivateAggregationApi")},
+     SINGLE_VALUE_TYPE(switches::kEnablePrivacySandboxAdsApis)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"site-data-improvements", flag_descriptions::kSiteDataImprovementsName,
