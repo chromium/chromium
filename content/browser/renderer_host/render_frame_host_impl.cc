@@ -454,7 +454,7 @@ RendererEvictionReasonToNotRestoredReason(
 class ScopedCommitStateResetter {
  public:
   explicit ScopedCommitStateResetter(RenderFrameHostImpl* render_frame_host)
-      : render_frame_host_(render_frame_host), disabled_(false) {}
+      : render_frame_host_(render_frame_host) {}
 
   ~ScopedCommitStateResetter() {
     if (!disabled_) {
@@ -466,7 +466,7 @@ class ScopedCommitStateResetter {
 
  private:
   raw_ptr<RenderFrameHostImpl> render_frame_host_;
-  bool disabled_;
+  bool disabled_ = false;
 };
 
 class ActiveURLMessageFilter : public mojo::MessageFilter {
@@ -3045,7 +3045,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
             parent_policies.cross_origin_opener_policy,
             parent_policies.cross_origin_embedder_policy,
             network::mojom::WebSandboxFlags::kNone,
-            /*anonymous=*/false)));
+            /*is_anonymous=*/false)));
   } else if (frame_tree_node_->opener()) {
     // During a `window.open(...)` without `noopener`, a new popup is created
     // and always starts from the initial empty document. The opener has
