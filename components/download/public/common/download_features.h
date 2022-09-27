@@ -21,58 +21,53 @@ constexpr char kDownloadLaterShowDateTimePicker[] = "show_date_time_picker";
 constexpr char kDownloadLaterMinFileSizeKb[] = "min_file_size_kb";
 
 // Whether offline content provider should be used for the downloads UI..
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
-    kUseDownloadOfflineContentProvider;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
+    kUseDownloadOfflineContentProvider);
 
 // Whether download auto-resumptions are enabled in native.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
-    kDownloadAutoResumptionNative;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDownloadAutoResumptionNative);
 
 // Whether a download can be handled by parallel jobs.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature kParallelDownloading;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kParallelDownloading);
 
 // Whether to enable download later feature.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature kDownloadLater;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDownloadLater);
 
 #if BUILDFLAG(IS_ANDROID)
 // Whether download expiration date will be refreshed on resumption.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature kRefreshExpirationDate;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kRefreshExpirationDate);
 
 // Whether to enable smart suggestion for large downloads
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
-    kSmartSuggestionForLargeDownloads;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
+    kSmartSuggestionForLargeDownloads);
 #endif
 
 // Whether in-progress download manager will be used to initialize download
 // service.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
-    kUseInProgressDownloadManagerForDownloadService;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
+    kUseInProgressDownloadManagerForDownloadService);
 
 // Whether download resumption is allowed when there are no strong validators.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
-    kAllowDownloadResumptionWithoutStrongValidators;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
+    kAllowDownloadResumptionWithoutStrongValidators);
 
 // Whether parallel download is used for HTTP2 connections.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
-    kUseParallelRequestsForHTTP2;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kUseParallelRequestsForHTTP2);
 
 // Whether parallel download is used for QUIC connections.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
-    kUseParallelRequestsForQUIC;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kUseParallelRequestsForQUIC);
 
 // Whether to delete expired download.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature kDeleteExpiredDownloads;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDeleteExpiredDownloads);
 
 // Whether to delete downloads that are overwritten by others.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
-    kDeleteOverwrittenDownloads;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDeleteOverwrittenDownloads);
 
 // Whether to allow changing the size of file buffer.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
-    kAllowFileBufferSizeControl;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kAllowFileBufferSizeControl);
 
 // Arbitrary range request support for download system.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature kDownloadRange;
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDownloadRange);
 }  // namespace features
 
 namespace switches {
