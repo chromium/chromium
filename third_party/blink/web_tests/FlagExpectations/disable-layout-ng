@@ -880,6 +880,7 @@ crbug.com/1251788 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-002
 crbug.com/1251788 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004.html [ Failure ]
 crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-024.html [ Failure ]
 crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-026.html [ Failure ]
+crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-042.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/calc-margins-block.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/calc-margins-fieldset-content.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/calc-margins-fieldset-legend.html [ Failure ]
