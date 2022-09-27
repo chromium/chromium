@@ -11,48 +11,63 @@ namespace features {
 
 // If enabled, base::DumpWithoutCrashing is called whenever an audio service
 // hang is detected.
-const base::Feature kDumpOnAudioServiceHang{"DumpOnAudioServiceHang",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDumpOnAudioServiceHang,
+             "DumpOnAudioServiceHang",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables loading and using AAudio instead of OpenSLES on compatible devices,
 // for audio output streams.
-const base::Feature kUseAAudioDriver{"UseAAudioDriver",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUseAAudioDriver,
+             "UseAAudioDriver",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-const base::Feature kCrOSSystemAEC{"CrOSSystemAECWithBoardTuningsAllowed",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kCrOSSystemAECDeactivatedGroups{
-    "CrOSSystemAECDeactivatedGroups", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kCrOSEnforceSystemAecNsAgc{
-    "CrOSEnforceSystemAecNsAgc", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kCrOSEnforceSystemAecNs{"CrOSEnforceSystemAecNs",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kCrOSEnforceSystemAecAgc{"CrOSEnforceSystemAecAgc",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kCrOSEnforceSystemAec{"CrOSEnforceSystemAec",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSSystemAEC,
+             "CrOSSystemAECWithBoardTuningsAllowed",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSSystemAECDeactivatedGroups,
+             "CrOSSystemAECDeactivatedGroups",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSEnforceSystemAecNsAgc,
+             "CrOSEnforceSystemAecNsAgc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSEnforceSystemAecNs,
+             "CrOSEnforceSystemAecNs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSEnforceSystemAecAgc,
+             "CrOSEnforceSystemAecAgc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSEnforceSystemAec,
+             "CrOSEnforceSystemAec",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kCrOSDspBasedAecDeactivatedGroups{
-    "CrOSDspBasedAecDeactivatedGroups", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kCrOSDspBasedNsDeactivatedGroups{
-    "CrOSDspBasedNsDeactivatedGroups", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kCrOSDspBasedAgcDeactivatedGroups{
-    "CrOSDspBasedAgcDeactivatedGroups", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSDspBasedAecDeactivatedGroups,
+             "CrOSDspBasedAecDeactivatedGroups",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSDspBasedNsDeactivatedGroups,
+             "CrOSDspBasedNsDeactivatedGroups",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSDspBasedAgcDeactivatedGroups,
+             "CrOSDspBasedAgcDeactivatedGroups",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kCrOSDspBasedAecAllowed{"CrOSDspBasedAecAllowed",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kCrOSDspBasedNsAllowed{"CrOSDspBasedNsAllowed",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kCrOSDspBasedAgcAllowed{"CrOSDspBasedAgcAllowed",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSDspBasedAecAllowed,
+             "CrOSDspBasedAecAllowed",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSDspBasedNsAllowed,
+             "CrOSDspBasedNsAllowed",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSDspBasedAgcAllowed,
+             "CrOSDspBasedAgcAllowed",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif
 
 #if BUILDFLAG(IS_WIN)
-const base::Feature kAllowIAudioClient3{"AllowIAudioClient3",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAllowIAudioClient3,
+             "AllowIAudioClient3",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 }  // namespace features

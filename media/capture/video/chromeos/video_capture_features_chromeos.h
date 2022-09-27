@@ -26,7 +26,7 @@ constexpr char kAutoFramingForceDisabled[] = "force-disabled";
 
 namespace features {
 
-CAPTURE_EXPORT extern const base::Feature kDisableCameraFrameRotationAtSource;
+CAPTURE_EXPORT BASE_DECLARE_FEATURE(kDisableCameraFrameRotationAtSource);
 
 }  // namespace features
 

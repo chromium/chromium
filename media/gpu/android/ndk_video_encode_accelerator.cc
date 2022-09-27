@@ -90,8 +90,9 @@ MediaFormatPtr CreateVideoFormat(const std::string& mime,
   return result;
 }
 
-const base::Feature kAndroidNdkVideoEncoder{"AndroidNdkVideoEncoder",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAndroidNdkVideoEncoder,
+             "AndroidNdkVideoEncoder",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 static bool InitMediaCodec() {
   // We need at least Android P for AMediaCodec_getInputFormat(), but in

@@ -11,30 +11,30 @@
 
 namespace features {
 
-MEDIA_EXPORT extern const base::Feature kAudioServiceOutOfProcessKillAtHang;
-MEDIA_EXPORT extern const base::Feature kDumpOnAudioServiceHang;
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioServiceOutOfProcessKillAtHang);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kDumpOnAudioServiceHang);
 
 #if BUILDFLAG(IS_ANDROID)
-MEDIA_EXPORT extern const base::Feature kUseAAudioDriver;
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAAudioDriver);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-MEDIA_EXPORT extern const base::Feature kCrOSSystemAEC;
-MEDIA_EXPORT extern const base::Feature kCrOSSystemAECDeactivatedGroups;
-MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAecNsAgc;
-MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAecNs;
-MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAecAgc;
-MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAec;
-MEDIA_EXPORT extern const base::Feature kCrOSDspBasedAecDeactivatedGroups;
-MEDIA_EXPORT extern const base::Feature kCrOSDspBasedNsDeactivatedGroups;
-MEDIA_EXPORT extern const base::Feature kCrOSDspBasedAgcDeactivatedGroups;
-MEDIA_EXPORT extern const base::Feature kCrOSDspBasedAecAllowed;
-MEDIA_EXPORT extern const base::Feature kCrOSDspBasedNsAllowed;
-MEDIA_EXPORT extern const base::Feature kCrOSDspBasedAgcAllowed;
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSSystemAEC);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSSystemAECDeactivatedGroups);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSEnforceSystemAecNsAgc);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSEnforceSystemAecNs);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSEnforceSystemAecAgc);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSEnforceSystemAec);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSDspBasedAecDeactivatedGroups);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSDspBasedNsDeactivatedGroups);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSDspBasedAgcDeactivatedGroups);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSDspBasedAecAllowed);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSDspBasedNsAllowed);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSDspBasedAgcAllowed);
 #endif
 
 #if BUILDFLAG(IS_WIN)
-MEDIA_EXPORT extern const base::Feature kAllowIAudioClient3;
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowIAudioClient3);
 #endif
 
 }  // namespace features

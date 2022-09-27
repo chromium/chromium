@@ -65,7 +65,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
 // the capturer. These are available either when the camera supports it and
 // kAVFoundationCaptureV2ZeroCopy is enabled or when kInCaptureConvertToNv12 is
 // used to convert frames to NV12.
-CAPTURE_EXPORT extern const base::Feature kInCapturerScaling;
+CAPTURE_EXPORT BASE_DECLARE_FEATURE(kInCapturerScaling);
 
 // Find the best capture format from |formats| for the specified dimensions and
 // frame rate. Returns an element of |formats|, or nil.

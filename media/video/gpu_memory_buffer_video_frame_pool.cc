@@ -54,14 +54,14 @@
 
 namespace media {
 
-const base::Feature kMultiPlaneSoftwareVideoSharedImages {
-  "MultiPlaneSoftwareVideoSharedImages",
+BASE_FEATURE(kMultiPlaneSoftwareVideoSharedImages,
+             "MultiPlaneSoftwareVideoSharedImages",
 #if BUILDFLAG(IS_MAC)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 bool GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled() {
   return base::FeatureList::IsEnabled(kMultiPlaneSoftwareVideoSharedImages);
