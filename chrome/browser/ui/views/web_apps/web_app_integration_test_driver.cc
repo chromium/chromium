@@ -1199,7 +1199,7 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
 
   NavigateTabbedBrowserToSite(GetInScopeURL(site), NavigationMode::kNewTab);
 
-  EXPECT_TRUE(intent_picker_view()->GetVisible());
+  ASSERT_TRUE(intent_picker_view()->GetVisible());
 
   BrowserAddedWaiter browser_added_waiter;
 
