@@ -19,9 +19,6 @@ ci.defaults.set(
     pool = ci.DEFAULT_POOL,
     priority = ci.DEFAULT_FYI_PRIORITY,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 consoles.console_view(
@@ -1529,9 +1526,6 @@ ci.builder(
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     os = os.LINUX_DEFAULT,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
@@ -1548,9 +1542,6 @@ ci.builder(
     ),
     os = os.LINUX_DEFAULT,
     triggered_by = ["ci/Linux Builder"],
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 # Start - Reclient migration, phase 2, block 1 shadow builders
@@ -1642,9 +1633,6 @@ ci.builder(
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     os = os.WINDOWS_DEFAULT,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
@@ -1661,9 +1649,6 @@ ci.builder(
     ),
     os = os.WINDOWS_DEFAULT,
     triggered_by = ["ci/Win x64 Builder"],
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 fyi_mac_builder(
@@ -1706,9 +1691,6 @@ fyi_mac_builder(
         short_name = "py3",
     ),
     description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Mac12%20Tests\">Mac12 Tests</a>, but runs on bots not having python2.",
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
     triggered_by = ["ci/Mac Builder"],
 )
 
