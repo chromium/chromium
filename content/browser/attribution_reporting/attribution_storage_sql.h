@@ -21,7 +21,6 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
-#include "sql/meta_table.h"
 
 namespace base {
 class GUID;
@@ -388,8 +387,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // `rate_limit_table_` references `delegate_` So it must be declared last and
   // deleted first.
   RateLimitTable rate_limit_table_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Time at which `DeleteExpiredSources()` was last called. Initialized to
   // the NULL time.

@@ -46,6 +46,7 @@
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "sql/database.h"
+#include "sql/meta_table.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
@@ -1971,12 +1972,14 @@ bool AttributionStorageSql::InitializeSchema(bool db_empty) {
   if (db_empty)
     return CreateSchema();
 
+  sql::MetaTable meta_table;
+
   // Create the meta table if it doesn't already exist. The only version for
   // which this is the case is version 1.
-  if (!meta_table_.Init(db_.get(), /*version=*/1, kCompatibleVersionNumber))
+  if (!meta_table.Init(db_.get(), /*version=*/1, kCompatibleVersionNumber))
     return false;
 
-  int version = meta_table_.GetVersionNumber();
+  int version = meta_table.GetVersionNumber();
   if (version == kCurrentVersionNumber)
     return true;
 
@@ -1985,15 +1988,14 @@ bool AttributionStorageSql::InitializeSchema(bool db_empty) {
   // will continue using this Chrome version and raze the DB to get attribution
   // reporting working.
   if (version <= kDeprecatedVersionNumber ||
-      meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
+      meta_table.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
     // Note that this also razes the meta table, so it will need to be
     // initialized again.
     db_->Raze();
-    meta_table_.Reset();
     return CreateSchema();
   }
 
-  return UpgradeAttributionStorageSqlSchema(db_.get(), &meta_table_);
+  return UpgradeAttributionStorageSqlSchema(db_.get(), &meta_table);
 }
 
 bool AttributionStorageSql::CreateSchema() {
@@ -2240,8 +2242,8 @@ bool AttributionStorageSql::CreateSchema() {
   if (!db_->Execute(kContributionAggregationIdIndexSql))
     return false;
 
-  if (!meta_table_.Init(db_.get(), kCurrentVersionNumber,
-                        kCompatibleVersionNumber)) {
+  if (sql::MetaTable meta_table; !meta_table.Init(
+          db_.get(), kCurrentVersionNumber, kCompatibleVersionNumber)) {
     return false;
   }
 
