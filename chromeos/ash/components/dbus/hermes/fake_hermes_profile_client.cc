@@ -199,7 +199,7 @@ void FakeHermesProfileClient::UpdateCellularServices(const std::string& iccid,
       ShillServiceClient::Get()->GetTestInterface();
 
   base::Value service_list = manager_test->GetEnabledServiceList();
-  for (const base::Value& service_path : service_list.GetListDeprecated()) {
+  for (const base::Value& service_path : service_list.GetList()) {
     const base::Value* properties =
         service_test->GetServiceProperties(service_path.GetString());
     const std::string* type = properties->FindStringKey(shill::kTypeProperty);
