@@ -97,7 +97,7 @@ class QemuTarget(emu_target.EmuTarget):
         # any changes.
         '-snapshot',
         '-drive',
-        'file=%s,format=qcow2,if=none,id=blobstore,snapshot=on' %
+        'file=%s,format=qcow2,if=none,id=blobstore,snapshot=on,cache=unsafe' %
         _EnsureBlobstoreQcowAndReturnPath(self._out_dir,
                                           self._GetTargetSdkArch()),
         '-object',
