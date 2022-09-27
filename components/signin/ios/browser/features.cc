@@ -18,10 +18,12 @@ const char kDelayThresholdMinutesToUpdateGaiaCookie[] =
 const char kWaitThresholdMillisecondsForCapabilitiesApi[] =
     "wait-threshold-milliseconds-for-capabilities-api";
 
-const base::Feature kNewMobileIdentityConsistencyFRE{
-    "NewMobileIdentityConsistencyFRE", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNewMobileIdentityConsistencyFRE,
+             "NewMobileIdentityConsistencyFRE",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableUnicornAccountSupport{
-    "EnableUnicornAccountSupport", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableUnicornAccountSupport,
+             "EnableUnicornAccountSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace signin
