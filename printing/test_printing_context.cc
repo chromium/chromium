@@ -171,6 +171,11 @@ mojom::ResultCode TestPrintingContext::RenderPage(const PrintedPage& page,
   if (render_page_blocked_by_permissions_)
     return mojom::ResultCode::kAccessDenied;
 
+  if (render_page_fail_for_page_number_.has_value() &&
+      *render_page_fail_for_page_number_ == page.page_number()) {
+    return mojom::ResultCode::kFailed;
+  }
+
   // No-op.
   return mojom::ResultCode::kSuccess;
 }

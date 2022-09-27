@@ -15,6 +15,10 @@
 #include "printing/print_settings.h"
 #include "printing/printing_context.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif
+
 namespace printing {
 
 class TestPrintingContextDelegate : public PrintingContext::Delegate {
@@ -51,6 +55,9 @@ class TestPrintingContext : public PrintingContext {
 #if BUILDFLAG(IS_WIN)
   void SetOnRenderPageBlockedByPermissions() {
     render_page_blocked_by_permissions_ = true;
+  }
+  void SetOnRenderPageFailsForPage(uint32_t page_number) {
+    render_page_fail_for_page_number_ = page_number;
   }
 #endif
   void SetOnRenderDocumentBlockedByPermissions() {
@@ -103,6 +110,7 @@ class TestPrintingContext : public PrintingContext {
   bool new_document_blocked_by_permissions_ = false;
 #if BUILDFLAG(IS_WIN)
   bool render_page_blocked_by_permissions_ = false;
+  absl::optional<uint32_t> render_page_fail_for_page_number_;
 #endif
   bool render_document_blocked_by_permissions_ = false;
   bool document_done_blocked_by_permissions_ = false;

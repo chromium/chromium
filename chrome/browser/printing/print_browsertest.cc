@@ -253,6 +253,10 @@ class BrowserPrintingContextFactoryForTest
 #if BUILDFLAG(IS_WIN)
     if (access_denied_errors_for_render_page_)
       context->SetOnRenderPageBlockedByPermissions();
+    if (failed_error_for_render_page_number_) {
+      context->SetOnRenderPageFailsForPage(
+          failed_error_for_render_page_number_);
+    }
 #endif
     if (access_denied_errors_for_render_document_)
       context->SetOnRenderDocumentBlockedByPermissions();
@@ -285,6 +289,10 @@ class BrowserPrintingContextFactoryForTest
   void SetAccessDeniedErrorOnRenderPage(bool cause_errors) {
     access_denied_errors_for_render_page_ = cause_errors;
   }
+
+  void SetFailedErrorForRenderPage(uint32_t page_number) {
+    failed_error_for_render_page_number_ = page_number;
+  }
 #endif
 
   void SetAccessDeniedErrorOnRenderDocument(bool cause_errors) {
@@ -314,6 +322,7 @@ class BrowserPrintingContextFactoryForTest
   bool access_denied_errors_for_new_document_ = false;
 #if BUILDFLAG(IS_WIN)
   bool access_denied_errors_for_render_page_ = false;
+  uint32_t failed_error_for_render_page_number_ = 0;
 #endif
   bool access_denied_errors_for_render_document_ = false;
   bool access_denied_errors_for_document_done_ = false;
@@ -2714,6 +2723,14 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
     test_printing_context_factory()->SetAccessDeniedErrorOnRenderPage(
         /*cause_errors=*/true);
   }
+
+  void PrimeForDelayedRenderingUntilPage(uint32_t page_number) {
+    print_backend_service_->set_rendering_delayed_until_page(page_number);
+  }
+
+  void PrimeForRenderingErrorOnPage(uint32_t page_number) {
+    test_printing_context_factory()->SetFailedErrorForRenderPage(page_number);
+  }
 #endif
 
   void PrimeForAccessDeniedErrorsInRenderPrintedDocument() {
@@ -3215,6 +3232,41 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(render_printed_page_count(), 0);
   EXPECT_TRUE(error_dialog_shown());
   EXPECT_TRUE(stop_invoked());
+}
+
+// TODO(crbug.com/1326580):  Enable test once use-after-free after a failed
+// call is avoided.
+IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
+                       DISABLED_StartPrintingMultipageMidJobError) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  // Delay rendering until all pages have been sent, to avoid any race
+  // conditions related to error handling.  This is to ensure that page 3 is in
+  // the service queued for processing, before we let page 2 be processed and
+  // have it trigger an error that could affect page 3 processing.
+  PrimeForDelayedRenderingUntilPage(/*page_number=*/3);
+  PrimeForRenderingErrorOnPage(/*page_number=*/2);
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // TODO(crbug.com/1326580):  Update behavior description after UAF during
+  // error processing in the PrintBackendService is resolved.  In meantime
+  // replicate the expected message count from StartPrintingMultipage test.
+  SetNumExpectedMessages(/*num=*/6);
+
+  PrintAfterPreviewIsReadyAndLoaded();
+
+  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kFailed);
+  // TODO(crbug.com/1326580):  Update remaining behavior checks after UAF
+  // during error processing in the PrintBackendService is resolved.
 }
 #endif  // BUILDFLAG(IS_WIN)
 

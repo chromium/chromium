@@ -268,8 +268,15 @@ mojom::ResultCode DocumentContainer::DoRenderPrintedPage(
   document_->SetPage(page_index, std::move(render_data->metafile),
                      shrink_factor, page_size, page_content_rect);
 
-  return document_->RenderPrintedPage(*document_->GetPage(page_index),
-                                      context_.get());
+  mojom::ResultCode result = document_->RenderPrintedPage(
+      *document_->GetPage(page_index), context_.get());
+  if (result != mojom::ResultCode::kSuccess) {
+    DLOG(ERROR) << "Failure rendering page " << page_index << " of document "
+                << document_->cookie() << ", error: " << result;
+    return result;
+  }
+
+  return mojom::ResultCode::kSuccess;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
