@@ -1,0 +1,13 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("promo_style_avatar_circle") {
+  sources = [
+    "promo_style_avatar_circle.imageset/Contents.json",
+    "promo_style_avatar_circle.imageset/promo_style_avatar_circle@2x.png",
+    "promo_style_avatar_circle.imageset/promo_style_avatar_circle@3x.png",
+  ]
+}

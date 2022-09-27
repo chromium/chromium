@@ -21,6 +21,7 @@ source_set("promo_style") {
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/promo_style/resources:promo_style_avatar_circle",
     "//ios/chrome/common/ui/resources:help_icon",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",

@@ -28,7 +28,7 @@ namespace {
 constexpr CGFloat kDefaultMargin = 16;
 // TODO(crbug.com/1363812): Need to adjust the value.
 constexpr CGFloat kFullAvatarImagerUpperMargin = 40;
-constexpr CGFloat kFullAvatarImagerBottomMargin = 24;
+constexpr CGFloat kFullAvatarImagerBottomMargin = 5;
 constexpr CGFloat kTitleHorizontalMargin = 18;
 constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kTallBannerMultiplier = 0.35;
@@ -40,7 +40,7 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 constexpr CGFloat kSeparatorHeight = 1;
 constexpr CGFloat kLearnMoreButtonSide = 40;
 constexpr CGFloat kAvatarImageSize = 48;
-constexpr CGFloat kFullAvatarImageSize = 60;
+constexpr CGFloat kFullAvatarImageSize = 100;
 
 }  // namespace
 
@@ -488,9 +488,9 @@ constexpr CGFloat kFullAvatarImageSize = 60;
 - (UIView*)fullAvatarImageView {
   if (!_fullAvatarImageView) {
     DCHECK(self.hasAvatarImage);
-    // TODO(crbug.com/1363812): Add a background image.
-    _fullAvatarImageView = [[UIImageView alloc] init];
-    _fullAvatarImageView.clipsToBounds = YES;
+    UIImage* circleImage = [UIImage imageNamed:@"promo_style_avatar_circle"];
+    DCHECK(circleImage);
+    _fullAvatarImageView = [[UIImageView alloc] initWithImage:circleImage];
     _fullAvatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
   }
   return _fullAvatarImageView;
@@ -510,6 +510,8 @@ constexpr CGFloat kFullAvatarImageSize = 60;
 - (void)setAvatarImage:(UIImage*)avatarImage {
   _avatarImage = avatarImage;
   if (self.hasAvatarImage) {
+    DCHECK_EQ(avatarImage.size.width, kAvatarImageSize);
+    DCHECK_EQ(avatarImage.size.height, kAvatarImageSize);
     self.avatarImageView.image = avatarImage;
   }
 }
