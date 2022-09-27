@@ -212,24 +212,23 @@ void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {
 }
 
 void IndexedDBContextImpl::GetUsageImpl(GetUsageCallback usage_callback) {
-  // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-  // StorageUsageInfo is converted.
-  std::map<url::Origin, storage::mojom::StorageUsageInfoPtr> usage_map;
+  std::map<blink::StorageKey, storage::mojom::StorageUsageInfoV2Ptr> usage_map;
   for (const auto& bucket_locator : GetAllBuckets()) {
-    const auto& origin = bucket_locator.storage_key.origin();
-    if (usage_map.find(origin) != usage_map.end()) {
-      usage_map[origin]->total_size_bytes += GetBucketDiskUsage(bucket_locator);
+    const auto& it = usage_map.find(bucket_locator.storage_key);
+    if (it != usage_map.end()) {
+      it->second->total_size_bytes += GetBucketDiskUsage(bucket_locator);
       const auto& last_modified = GetBucketLastModified(bucket_locator);
-      if (usage_map[origin]->last_modified < last_modified) {
-        usage_map[origin]->last_modified = last_modified;
+      if (it->second->last_modified < last_modified) {
+        it->second->last_modified = last_modified;
       }
     } else {
-      usage_map[origin] = storage::mojom::StorageUsageInfo::New(
-          origin, GetBucketDiskUsage(bucket_locator),
-          GetBucketLastModified(bucket_locator));
+      usage_map[bucket_locator.storage_key] =
+          storage::mojom::StorageUsageInfoV2::New(
+              bucket_locator.storage_key, GetBucketDiskUsage(bucket_locator),
+              GetBucketLastModified(bucket_locator));
     }
   }
-  std::vector<storage::mojom::StorageUsageInfoPtr> result;
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> result;
   for (const auto& it : usage_map) {
     result.emplace_back(it.second->Clone());
   }

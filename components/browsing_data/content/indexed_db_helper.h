@@ -62,7 +62,7 @@ class IndexedDBHelper : public base::RefCountedThreadSafe<IndexedDBHelper> {
   // Enumerates all indexed database files in the IndexedDB thread.
   void IndexedDBUsageInfoReceived(
       FetchCallback callback,
-      std::vector<storage::mojom::StorageUsageInfoPtr> origins);
+      std::vector<storage::mojom::StorageUsageInfoV2Ptr> usages);
 };
 
 // This class is an implementation of IndexedDBHelper that does

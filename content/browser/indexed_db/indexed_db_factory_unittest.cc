@@ -360,9 +360,9 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
   EXPECT_TRUE(bucket_state5_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(s.ok()) << s.ToString();
 
-  std::vector<storage::mojom::StorageUsageInfoPtr> origin_info;
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> infos;
   storage::mojom::IndexedDBControlAsyncWaiter sync_control(context());
-  sync_control.GetUsage(&origin_info);
+  sync_control.GetUsage(&infos);
 
   int64_t bucket_size_1 =
       filesystem_proxy->ComputeDirectorySize(file_1.DirName());
@@ -375,28 +375,30 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
   int64_t bucket_size_5 =
       filesystem_proxy->ComputeDirectorySize(file_5.DirName());
 
-  // Since buckets 1, 4 and 5 have the same origin, they merge when calling
-  // GetUsage.
-  EXPECT_EQ(3ul, origin_info.size());
-  for (const auto& info : origin_info) {
-    if (info->origin == bucket_locator_1.storage_key.origin()) {
+  // Buckets 1, 4, and 5 merge if partitioning is on. If partitioning is off
+  // buckets 1 and 5 merge.
+  EXPECT_EQ(IsThirdPartyStoragePartitioningEnabled() ? 4ul : 3ul, infos.size());
+  for (const auto& info : infos) {
+    if (info->storage_key == bucket_locator_1.storage_key) {
       // This is the size of the 10 and 10000 character files (buckets 1 and 4).
       if (IsThirdPartyStoragePartitioningEnabled()) {
         // If third party storage partitioning is on, additional space is taken
         // by supporting files for the independent buckets.
-        EXPECT_EQ(info->total_size_bytes,
-                  bucket_size_1 + bucket_size_4 + bucket_size_5);
+        EXPECT_NE(bucket_size_1, bucket_size_4);
       } else {
-        EXPECT_EQ(bucket_size_1, bucket_size_4);
         EXPECT_NE(bucket_size_1, bucket_size_5);
-        EXPECT_EQ(info->total_size_bytes, bucket_size_1 + bucket_size_5);
       }
-    } else if (info->origin == bucket_locator_2.storage_key.origin()) {
+      EXPECT_NE(bucket_size_1, bucket_size_5);
+      EXPECT_EQ(info->total_size_bytes, bucket_size_1 + bucket_size_5);
+    } else if (info->storage_key == bucket_locator_2.storage_key) {
       // This is the size of the 100 character file (bucket 2).
       EXPECT_EQ(info->total_size_bytes, bucket_size_2);
-    } else if (info->origin == bucket_locator_3.storage_key.origin()) {
+    } else if (info->storage_key == bucket_locator_3.storage_key) {
       // This is the size of the 1000 character file (bucket 3).
       EXPECT_EQ(info->total_size_bytes, bucket_size_3);
+    } else if (info->storage_key == bucket_locator_4.storage_key) {
+      // This is the size of the 1000 character file (bucket 4).
+      EXPECT_EQ(info->total_size_bytes, bucket_size_4);
     } else {
       NOTREACHED();
     }

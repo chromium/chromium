@@ -51,15 +51,14 @@ void IndexedDBHelper::DeleteIndexedDB(const blink::StorageKey& storage_key,
 
 void IndexedDBHelper::IndexedDBUsageInfoReceived(
     FetchCallback callback,
-    std::vector<storage::mojom::StorageUsageInfoPtr> origins) {
+    std::vector<storage::mojom::StorageUsageInfoV2Ptr> usages) {
   DCHECK(!callback.is_null());
   std::list<content::StorageUsageInfo> result;
-  for (const auto& origin_usage : origins) {
-    if (!HasWebScheme(origin_usage->origin.GetURL()))
+  for (const auto& usage : usages) {
+    if (!HasWebScheme(usage->storage_key.origin().GetURL()))
       continue;  // Non-websafe state is not considered browsing data.
-    result.emplace_back(blink::StorageKey(origin_usage->origin),
-                        origin_usage->total_size_bytes,
-                        origin_usage->last_modified);
+    result.emplace_back(usage->storage_key, usage->total_size_bytes,
+                        usage->last_modified);
   }
   std::move(callback).Run(std::move(result));
 }
