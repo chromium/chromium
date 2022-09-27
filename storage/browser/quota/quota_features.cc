@@ -14,12 +14,14 @@ constexpr int64_t kMBytes = 1024 * 1024;
 }  // namespace
 
 // Enables Storage Pressure Event.
-const base::Feature kStoragePressureEvent{"StoragePressureEvent",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kStoragePressureEvent,
+             "StoragePressureEvent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables customized storage quota settings for embedders.
-const base::Feature kStorageQuotaSettings{"StorageQuotaSettings",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kStorageQuotaSettings,
+             "StorageQuotaSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<double> kMustRemainAvailableBytes{
     &kStorageQuotaSettings, "MustRemainAvailableBytes", 1024 * kMBytes /* 1GB */
 };
@@ -40,9 +42,9 @@ constexpr base::FeatureParam<double> kShouldRemainAvailableRatio{
 };
 
 // Whether the StoragePolicyObserver only sends updates for modified origins.
-const base::Feature kOnlySendStoragePolicyUpdatesForModifiedOrigins{
-    "OnlySendStoragePolicyUpdatesForModifiedOrigins",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOnlySendStoragePolicyUpdatesForModifiedOrigins,
+             "OnlySendStoragePolicyUpdatesForModifiedOrigins",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace storage

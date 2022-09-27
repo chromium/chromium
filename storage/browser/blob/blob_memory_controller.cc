@@ -43,10 +43,9 @@ using base::FilePath;
 namespace storage {
 
 // static
-const base::Feature
-    BlobMemoryController::kInhibitBlobMemoryControllerMemoryPressureResponse{
-        "InhibitBlobMemoryControllerMemoryPressureResponse",
-        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kInhibitBlobMemoryControllerMemoryPressureResponse,
+             "InhibitBlobMemoryControllerMemoryPressureResponse",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 constexpr int64_t kUnknownDiskAvailability = -1ll;

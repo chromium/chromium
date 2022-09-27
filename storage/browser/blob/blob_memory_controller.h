@@ -42,6 +42,9 @@ namespace storage {
 class ShareableBlobDataItem;
 class ShareableFileReference;
 
+COMPONENT_EXPORT(STORAGE_BROWSER)
+BASE_DECLARE_FEATURE(kInhibitBlobMemoryControllerMemoryPressureResponse);
+
 // This class's main responsibility is deciding how blob data gets stored.
 // This encompasses:
 // * Keeping track of memory & file quota,
@@ -53,8 +56,6 @@ class ShareableFileReference;
 // This class can only be interacted with on the IO thread.
 class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
  public:
-  static const base::Feature kInhibitBlobMemoryControllerMemoryPressureResponse;
-
   enum class Strategy {
     // We don't have enough memory for this blob.
     TOO_LARGE,

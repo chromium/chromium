@@ -13,10 +13,10 @@ namespace storage {
 namespace features {
 
 COMPONENT_EXPORT(STORAGE_BROWSER)
-extern const base::Feature kEnablePersistentFilesystemInIncognito;
+BASE_DECLARE_FEATURE(kEnablePersistentFilesystemInIncognito);
 
 COMPONENT_EXPORT(STORAGE_BROWSER)
-extern const base::Feature kIncognitoFileSystemContextForTesting;
+BASE_DECLARE_FEATURE(kIncognitoFileSystemContextForTesting);
 
 }  // namespace features
 
