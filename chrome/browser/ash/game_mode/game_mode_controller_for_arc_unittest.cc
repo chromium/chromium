@@ -35,7 +35,6 @@ class GameModeControllerForArcTest : public GameModeControllerTestBase {
   }
 
   void TearDown() override {
-    game_mode::ClearArcPkgNamesForTesting();
     focus_client_ = nullptr;
     arc_app_test_.TearDown();
 

@@ -106,6 +106,16 @@ GameModeController::GameModeController() {
   focus_client->AddObserver(this);
   // In case a window is already focused when this is constructed.
   OnWindowFocused(focus_client->GetFocusedWindow(), nullptr);
+
+  g_arc_game_pkg_names->clear();
+
+  // This does not have a category set as of v1.18.32 (circa late Sept, 2022).
+  g_arc_game_pkg_names->insert("com.mojang.minecraftedu");
+
+  // Not sure about whether the app already has the correct category, as I do
+  // not have access to the APK. As we have no way to alter the list between
+  // release milestones, add it just in case.
+  g_arc_game_pkg_names->insert("com.mojang.minecraftpe");
 }
 
 GameModeController::~GameModeController() {
@@ -151,10 +161,6 @@ void GameModeController::OnWindowFocused(aura::Window* gained_focus,
 
 void AddArcPkgNameForTesting(const std::string& pkg_name) {
   g_arc_game_pkg_names->insert(pkg_name);
-}
-
-void ClearArcPkgNamesForTesting() {
-  g_arc_game_pkg_names->clear();
 }
 
 GameModeController::WindowTracker::WindowTracker(
