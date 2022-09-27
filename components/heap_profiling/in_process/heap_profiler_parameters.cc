@@ -148,8 +148,9 @@ bool ConvertCollectionInterval(const base::Value* value,
 
 }  // namespace
 
-constexpr base::Feature kHeapProfilerReporting CONSTINIT{
-    "HeapProfilerReporting", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kHeapProfilerReporting,
+             "HeapProfilerReporting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 void HeapProfilerParameters::RegisterJSONConverter(

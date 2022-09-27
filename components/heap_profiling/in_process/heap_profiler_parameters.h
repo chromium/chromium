@@ -19,7 +19,7 @@ namespace heap_profiling {
 // channel, or the "nonstable-probability" parameter otherwise). Sampled heap
 // profiles will then be reported through the metrics service iff metrics
 // reporting is enabled.
-extern const base::Feature kHeapProfilerReporting;
+BASE_DECLARE_FEATURE(kHeapProfilerReporting);
 
 // Parameters to control the heap profiler.
 struct HeapProfilerParameters {
