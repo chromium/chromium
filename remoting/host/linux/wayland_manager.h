@@ -25,7 +25,7 @@ class WaylandManager {
  public:
   using DesktopMetadataCallbackSignature = void(webrtc::DesktopCaptureMetadata);
   using DesktopMetadataCallback =
-      base::OnceCallback<DesktopMetadataCallbackSignature>;
+      base::RepeatingCallback<DesktopMetadataCallbackSignature>;
   using UpdateScreenResolutionSignature = void(ScreenResolution,
                                                webrtc::ScreenId);
   using UpdateScreenResolutionCallback =
@@ -66,7 +66,7 @@ class WaylandManager {
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   std::unique_ptr<WaylandConnection> wayland_connection_;
-  base::OnceCallbackList<DesktopMetadataCallbackSignature>
+  base::RepeatingCallbackList<DesktopMetadataCallbackSignature>
       capturer_metadata_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::RepeatingCallbackList<UpdateScreenResolutionSignature>
       screen_resolution_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
