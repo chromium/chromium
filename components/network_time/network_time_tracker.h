@@ -46,7 +46,7 @@ const int64_t kTicksResolutionMs = 1;  // Assume 1ms for non-windows platforms.
 #endif
 
 // Feature that enables network time service querying.
-extern const base::Feature kNetworkTimeServiceQuerying;
+BASE_DECLARE_FEATURE(kNetworkTimeServiceQuerying);
 
 // A class that receives network time updates and can provide the network time
 // for a corresponding local time. This class is not thread safe.
