@@ -98,9 +98,13 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     // Invoked by the client when a navigation has finished in the context in which this object is
     // operating.
-    public void onNavigationFinished(NavigationHandle navigation) {
-        if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()) return;
+    public void onNavigationFinishedInPrimaryMainFrame(NavigationHandle navigation) {
+        if (!navigation.hasCommitted()) return;
         maybeUpdateNavigationHistory();
+    }
+
+    public void onNavigationFinishedNoop(NavigationHandle navigation) {
+        if (!navigation.isInPrimaryMainFrame()) return;
     }
 
     public void setExternalNavigationHandler(ExternalNavigationHandler handler) {

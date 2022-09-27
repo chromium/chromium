@@ -103,14 +103,14 @@ class ScopeChangeController {
         }
 
         @Override
-        public void didFinishNavigation(NavigationHandle navigationHandle) {
+        public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {
             if (mScopeKey.scopeType != MessageScopeType.NAVIGATION
                     && mScopeKey.scopeType != MessageScopeType.ORIGIN) {
                 return;
             }
 
-            if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()
-                    || !navigationHandle.hasCommitted() || navigationHandle.isReload()) {
+            if (navigationHandle.isSameDocument() || !navigationHandle.hasCommitted()
+                    || navigationHandle.isReload()) {
                 return;
             }
 
@@ -123,6 +123,11 @@ class ScopeChangeController {
                 mLastVisitedUrl = navigationHandle.getUrl();
             }
             destroy();
+        }
+
+        @Override
+        public void didFinishNavigationNoop(NavigationHandle navigationHandle) {
+            if (!navigationHandle.isInPrimaryMainFrame()) return;
         }
 
         @Override

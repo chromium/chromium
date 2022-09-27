@@ -1937,10 +1937,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(mTabModelSelector) {
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-                if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()) {
-                    return;
-                }
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
+                if (!navigation.hasCommitted()) return;
+
                 try (TraceEvent e = TraceEvent.scoped("CheckSyncErrorOnDidFinishNavigation")) {
                     if (SyncErrorPromptUtils.isMessageUiEnabled()) {
                         SyncErrorMessage.maybeShowMessageUi(
@@ -1952,6 +1952,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 try (TraceEvent te = TraceEvent.scoped("updateActiveWebContents")) {
                     SendTabToSelfAndroidBridge.updateActiveWebContents(tab.getWebContents());
                 }
+            }
+
+            @Override
+            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+                if (!navigation.isInPrimaryMainFrame()) return;
             }
         };
         mAppIndexingUtil = new AppIndexingUtil(mTabModelSelector);

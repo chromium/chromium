@@ -63,7 +63,8 @@ public class PermissionNavigationTest {
         final CallbackHelper callbackHelper = new CallbackHelper();
         EmptyTabObserver navigationWaiter = new EmptyTabObserver() {
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
                 callbackHelper.notifyCalled();
             }
         };

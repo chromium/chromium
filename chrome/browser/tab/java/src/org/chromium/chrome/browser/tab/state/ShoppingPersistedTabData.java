@@ -371,9 +371,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             }
 
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()
-                        || !navigationHandle.hasCommitted()) {
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigationHandle) {
+                if (navigationHandle.isSameDocument() || !navigationHandle.hasCommitted()) {
                     return;
                 }
 
@@ -388,6 +388,11 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 if (isPriceTrackingWithOptimizationGuideEnabled()) {
                     prefetchOnNewNavigation(tab, navigationHandle);
                 }
+            }
+
+            @Override
+            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
+                if (!navigationHandle.isInPrimaryMainFrame()) return;
             }
         };
         tab.addObserver(mUrlUpdatedObserver);

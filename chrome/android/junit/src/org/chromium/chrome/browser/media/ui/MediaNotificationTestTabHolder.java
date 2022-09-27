@@ -138,7 +138,7 @@ public class MediaNotificationTestTabHolder {
                 false /* isFragmentNavigation */, false /* isDownload */,
                 false /* isValidSearchFormUrl */, 0 /* pageTransition */, 0 /* errorCode */,
                 200 /* httpStatusCode */, false /* isExternalProtocol */);
-        mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver.didFinishNavigation(
-                navigation);
+        mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver
+                .didFinishNavigationInPrimaryMainFrame(navigation);
     }
 }

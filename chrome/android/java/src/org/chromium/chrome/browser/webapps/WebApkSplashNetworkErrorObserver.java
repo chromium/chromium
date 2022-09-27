@@ -41,9 +41,8 @@ public class WebApkSplashNetworkErrorObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onDidFinishNavigation(final Tab tab, NavigationHandle navigation) {
-        if (!navigation.isInPrimaryMainFrame()) return;
-
+    public void onDidFinishNavigationInPrimaryMainFrame(
+            final Tab tab, NavigationHandle navigation) {
         switch (navigation.errorCode()) {
             case NetError.OK:
                 if (mOfflineDialog != null) {
@@ -63,6 +62,11 @@ public class WebApkSplashNetworkErrorObserver extends EmptyTabObserver {
                 break;
         }
         WebApkUmaRecorder.recordNetworkErrorWhenLaunch(-navigation.errorCode());
+    }
+
+    @Override
+    public void onDidFinishNavigationNoop(final Tab tab, NavigationHandle navigation) {
+        if (!navigation.isInPrimaryMainFrame()) return;
     }
 
     private void onNetworkChanged(Tab tab) {

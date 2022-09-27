@@ -201,7 +201,7 @@ public class CurrentPageVerifierTest {
                 false /* isValidSearchFormUrl */, 0 /* pageTransition */, 0 /* errorCode*/,
                 200 /* httpStatusCode*/, false /* isExternalProtocol */);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
-            tabObserver.onDidFinishNavigation(mTab, navigation);
+            tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
         }
     }
 }

@@ -44,8 +44,14 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
             }
 
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-                mInterceptNavigationDelegate.onNavigationFinished(navigation);
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
+                mInterceptNavigationDelegate.onNavigationFinishedInPrimaryMainFrame(navigation);
+            }
+
+            @Override
+            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+                mInterceptNavigationDelegate.onNavigationFinishedNoop(navigation);
             }
 
             @Override

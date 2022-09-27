@@ -197,7 +197,7 @@ public class NavigationHandle {
 
     /**
      * Return the HTTP status code. This can be used after the response is received in
-     * didFinishNavigation()
+     * didFinishNavigationInPrimaryMainFrame()
      */
     public int httpStatusCode() {
         return mHttpStatusCode;

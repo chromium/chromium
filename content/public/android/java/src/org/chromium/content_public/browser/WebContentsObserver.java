@@ -52,7 +52,7 @@ public abstract class WebContentsObserver {
      * @param navigationHandle
      *        NavigationHandle are provided to several WebContentsObserver methods to allow
      *        observers to track specific navigations. Observers should clear any references to a
-     *        NavigationHandle at didFinishNavigation();
+     *        NavigationHandle at didFinishNavigationInPrimaryMainFrame();
      */
     public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {}
 
@@ -66,21 +66,28 @@ public abstract class WebContentsObserver {
     /**
      * Called when the browser process redirect a navigation.
      * @param navigationHandle
-     *        NavigationHandle are provided to several WebContentsObserver methods to allow
+     *        NavigationHandle are proided to several WebContentsObserver methods to allow
      *        observers to track specific navigations. Observers should clear any references to a
-     *        NavigationHandle at didFinishNavigation();
+     *        NavigationHandle at didFinishNavigationInPrimaryMainFrame();
      */
     public void didRedirectNavigation(NavigationHandle navigationHandle) {}
 
     /**
-     * Called when the current navigation is finished. This happens when a navigation is committed,
-     * aborted or replaced by a new one.
+     * Called when the current navigation on the primary main frame is finished. This happens when a
+     * navigation is committed, aborted or replaced by a new one.
      * @param navigationHandle
      *        NavigationHandle are provided to several WebContentsObserver methods to allow
      *        observers to track specific navigations. Observers should clear any references to a
      *        NavigationHandle at the end of this function.
      */
-    public void didFinishNavigation(NavigationHandle navigationHandle) {}
+    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {}
+
+    /**
+     * TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf experiment is finished.
+     * No-op, for measuring performance of calling didFinishNavigation in only the primary main
+     * frame vs calling it in all frames.
+     */
+    public void didFinishNavigationNoop(NavigationHandle navigationHandle) {}
 
     /**
      * Called when the a page starts loading.

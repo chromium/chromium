@@ -425,12 +425,16 @@ public class VoiceRecognitionHandler {
         }
 
         @Override
-        public void didFinishNavigation(NavigationHandle navigation) {
-            if (navigation.hasCommitted() && navigation.isInPrimaryMainFrame()
-                    && !navigation.isErrorPage()) {
+        public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+            if (navigation.hasCommitted() && !navigation.isErrorPage()) {
                 setReceivedUserGesture(navigation.getUrl());
             }
             destroy();
+        }
+
+        @Override
+        public void didFinishNavigationNoop(NavigationHandle navigation) {
+            if (!navigation.isInPrimaryMainFrame()) return;
         }
     }
 

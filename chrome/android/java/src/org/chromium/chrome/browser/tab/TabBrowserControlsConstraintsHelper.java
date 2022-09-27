@@ -126,13 +126,17 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
             }
 
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInPrimaryMainFrame()) return;
-
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigationHandle) {
                 // At this point, we might have switched renderer processes, so push the existing
                 // constraints to the new renderer (has the potential to be slightly spammy, but
                 // the renderer has logic to suppress duplicate calls).
                 updateAfterRendererProcessSwitch(tab, navigationHandle.hasCommitted());
+            }
+
+            @Override
+            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
+                if (!navigationHandle.isInPrimaryMainFrame()) return;
             }
 
             @Override

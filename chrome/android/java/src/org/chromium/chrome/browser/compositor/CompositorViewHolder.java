@@ -359,13 +359,18 @@ public class CompositorViewHolder extends FrameLayout
             }
 
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-                if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()
-                        && navigation.hasCommitted()) {
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
+                if (!navigation.isSameDocument() && navigation.hasCommitted()) {
                     assert getWebContents() == tab.getWebContents();
                     assert getWebContents() != null;
                     updateVirtualKeyboardMode(getWebContents().getVirtualKeyboardMode());
                 }
+            }
+
+            @Override
+            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+                if (!navigation.isInPrimaryMainFrame()) return;
             }
         };
 

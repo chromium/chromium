@@ -39,7 +39,7 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
+    public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
         // For a navigation from page A to page B, there can be any number of redirects in between.
         // The first navigation which opens the custom tab will have a transition of type FROM_API.
         // Each redirect can then be treated as its own navigation with a separate call to this
@@ -70,6 +70,12 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
             DeferredStartupHandler.getInstance().addDeferredTask(urlRegistration);
             NewDownloadTab.from(tab, coordinator, mActivity).show();
         }
+    }
+    @Override
+    public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+        // In case something goes wrong, we can enable NotifyJavaSpuriouslyToMeasurePerf so
+        // didFinishNavigation has the same behavior as before.
+        onDidFinishNavigationInPrimaryMainFrame(tab, navigation);
     }
 
     private void unregister() {

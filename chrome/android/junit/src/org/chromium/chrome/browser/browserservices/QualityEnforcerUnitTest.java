@@ -269,7 +269,7 @@ public class QualityEnforcerUnitTest {
                 false /* isValidSearchFormUrl */, 0 /* pageTransition */, errorCode, httpStatusCode,
                 false /* isExternalProtocol */);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
-            tabObserver.onDidFinishNavigation(mTab, navigation);
+            tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
         }
     }
 

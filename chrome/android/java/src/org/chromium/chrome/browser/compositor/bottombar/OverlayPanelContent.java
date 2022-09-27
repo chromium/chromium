@@ -393,14 +393,19 @@ public class OverlayPanelContent {
                     }
 
                     @Override
-                    public void didFinishNavigation(NavigationHandle navigation) {
-                        if (navigation.hasCommitted() && navigation.isInPrimaryMainFrame()) {
+                    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        if (navigation.hasCommitted()) {
                             mIsProcessingPendingNavigation = false;
                             mContentDelegate.onMainFrameNavigation(navigation.getUrl().getSpec(),
                                     !TextUtils.equals(navigation.getUrl().getSpec(), mLoadedUrl),
                                     isHttpFailureCode(navigation.httpStatusCode()),
                                     navigation.isErrorPage());
                         }
+                    }
+
+                    @Override
+                    public void didFinishNavigationNoop(NavigationHandle navigation) {
+                        if (!navigation.isInPrimaryMainFrame()) return;
                     }
 
                     @Override

@@ -101,10 +101,15 @@ import org.chromium.url.GURL;
     }
 
     @Override
-    public void didFinishNavigation(NavigationHandle navigation) {
-        if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()) return;
+    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+        if (!navigation.hasCommitted()) return;
         mModel.set(PaymentHandlerToolbarProperties.URL, mWebContentsRef.getVisibleUrl());
         mModel.set(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, false);
+    }
+
+    @Override
+    public void didFinishNavigationNoop(NavigationHandle navigation) {
+        if (!navigation.isInPrimaryMainFrame()) return;
     }
 
     @Override

@@ -281,10 +281,16 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
             }
 
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-                if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
+                if (!navigation.isSameDocument()) {
                     if (tab == modelSelector.getCurrentTab()) exitPersistentFullscreenMode();
                 }
+            }
+
+            @Override
+            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+                if (!navigation.isInPrimaryMainFrame()) return;
             }
 
             @Override

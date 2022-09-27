@@ -255,13 +255,12 @@ public class ReaderModeManagerTest {
 
         // Simulate a navigation from a distilled page.
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
-        when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(false);
         when(mNavigationHandle.hasCommitted()).thenReturn(true);
         when(mNavigationHandle.getUrl()).thenReturn(MOCK_URL);
 
         mWebContentsObserver.didStartNavigationInPrimaryMainFrame(mNavigationHandle);
-        mWebContentsObserver.didFinishNavigation(mNavigationHandle);
+        mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
 
         // Distiller entry should have been removed.
         verify(mNavController).removeEntryAtIndex(0);
@@ -275,12 +274,11 @@ public class ReaderModeManagerTest {
 
         // Simulate a navigation to a distilled page.
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
-        when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(false);
         when(mNavigationHandle.getUrl()).thenReturn(MOCK_DISTILLER_URL);
 
         mWebContentsObserver.didStartNavigationInPrimaryMainFrame(mNavigationHandle);
-        mWebContentsObserver.didFinishNavigation(mNavigationHandle);
+        mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
 
         assertEquals("Distillation should have started.", DistillationStatus.STARTED,
                 mManager.getDistillationStatus());
@@ -293,12 +291,11 @@ public class ReaderModeManagerTest {
 
         // Simulate an same-document navigation.
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
-        when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(true);
         when(mNavigationHandle.getUrl()).thenReturn(MOCK_URL);
 
         mWebContentsObserver.didStartNavigationInPrimaryMainFrame(mNavigationHandle);
-        mWebContentsObserver.didFinishNavigation(mNavigationHandle);
+        mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
 
         assertEquals("Distillation should not be possible.", DistillationStatus.NOT_POSSIBLE,
                 mManager.getDistillationStatus());

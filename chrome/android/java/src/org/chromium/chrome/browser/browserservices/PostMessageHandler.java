@@ -77,14 +77,20 @@ public class PostMessageHandler implements OriginVerificationListener {
             private boolean mNavigatedOnce;
 
             @Override
-            public void didFinishNavigation(NavigationHandle navigation) {
-                if (mNavigatedOnce && navigation.hasCommitted() && navigation.isInPrimaryMainFrame()
-                        && !navigation.isSameDocument() && mChannel != null) {
+            public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                if (mNavigatedOnce && navigation.hasCommitted() && !navigation.isSameDocument()
+                        && mChannel != null) {
                     webContents.removeObserver(this);
                     disconnectChannel();
                     return;
                 }
                 mNavigatedOnce = true;
+            }
+
+            @Override
+            public void didFinishNavigationNoop(NavigationHandle navigationHandle) {
+                mNavigatedOnce = true;
+                if (!mNavigatedOnce || !navigationHandle.isInPrimaryMainFrame()) return;
             }
 
             @Override

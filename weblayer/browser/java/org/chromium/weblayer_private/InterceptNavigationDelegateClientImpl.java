@@ -36,8 +36,14 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
         mRedirectHandler = RedirectHandler.create();
         mWebContentsObserver = new WebContentsObserver() {
             @Override
-            public void didFinishNavigation(NavigationHandle navigationHandle) {
-                mInterceptNavigationDelegate.onNavigationFinished(navigationHandle);
+            public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {
+                mInterceptNavigationDelegate.onNavigationFinishedInPrimaryMainFrame(
+                        navigationHandle);
+            }
+
+            @Override
+            public void didFinishNavigationNoop(NavigationHandle navigation) {
+                mInterceptNavigationDelegate.onNavigationFinishedNoop(navigation);
             }
         };
     }
