@@ -277,6 +277,8 @@ export class Preview {
     video.addEventListener(
         'click',
         (event) => this.onFocusClicked(assertInstanceof(event, MouseEvent)));
+    // Disable right click on video which let user show video control.
+    video.addEventListener('contextmenu', (event) => event.preventDefault());
     return this.onIntrinsicSizeChanged();
   }
 
