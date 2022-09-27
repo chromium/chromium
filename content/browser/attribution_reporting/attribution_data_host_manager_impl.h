@@ -54,7 +54,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) override;
-  void NotifyNavigationRedirectRegistation(
+  void NotifyNavigationRedirectRegistration(
       const blink::AttributionSrcToken& attribution_src_token,
       const std::string& header_value,
       url::Origin reporting_origin,

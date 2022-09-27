@@ -1242,7 +1242,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_site = url::Origin::Create(GURL("http://source.test"));
 
   const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1260,7 +1260,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
   const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1278,7 +1278,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
   const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1296,7 +1296,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
   const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
 
   data_host_manager_.NotifyNavigationForDataHost(
@@ -1305,7 +1305,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // Wait for parsing to finish. Note that this relies on the DataDecoder
   // callback not being invoked in the same callstack as the call to
-  // `NotifyNavigationRedirectRegistation()` above. If flakes result, perhaps
+  // `NotifyNavigationRedirectRegistration()` above. If flakes result, perhaps
   // due to a change in the DataDecoder implementation, consider replacing this
   // with a mock whose callback sequencing we can explicitly control.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1319,7 +1319,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
   const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1339,7 +1339,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
   const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
   data_host_manager_.NotifyNavigationFailure(attribution_src_token);
 
@@ -1355,12 +1355,12 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
   const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
 
   data_host_manager_.NotifyNavigationForDataHost(
@@ -1378,12 +1378,12 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
   const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, "!!!invalid json", reporter, source_site);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
 
   data_host_manager_.NotifyNavigationForDataHost(
@@ -1410,7 +1410,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
   const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
@@ -1459,9 +1459,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
   const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
 
   // Wait for parsing.
@@ -1506,9 +1506,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
   const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
-  data_host_manager_.NotifyNavigationRedirectRegistation(
+  data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
 
   // Wait for parsing.

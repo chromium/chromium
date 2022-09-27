@@ -45,7 +45,7 @@ class AttributionDataHostManager {
   // Notifies the manager that an attribution enabled navigation has registered
   // a source header. May be called multiple times for the same navigation.
   // Important: `header_value` is untrusted.
-  virtual void NotifyNavigationRedirectRegistation(
+  virtual void NotifyNavigationRedirectRegistration(
       const blink::AttributionSrcToken& attribution_src_token,
       const std::string& header_value,
       url::Origin reporting_origin,

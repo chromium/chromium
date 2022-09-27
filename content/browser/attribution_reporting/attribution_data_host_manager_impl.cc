@@ -251,7 +251,7 @@ bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
   return true;
 }
 
-void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistation(
+void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
     const blink::AttributionSrcToken& attribution_src_token,
     const std::string& header_value,
     url::Origin reporting_origin,
