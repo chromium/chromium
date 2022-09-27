@@ -19,6 +19,7 @@ source_set("lib") {
     "//components/services/app_service/public/cpp:preferred_app",
     "//components/services/app_service/public/cpp:preferred_apps",
     "//components/services/app_service/public/mojom",
+    "//components/services/app_service/public/protos",
   ]
 }
 

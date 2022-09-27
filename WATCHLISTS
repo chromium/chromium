@@ -138,6 +138,9 @@
                   '|chrome/browser/ui/views/apps/app_dialog/' \
                   '|components/services/app_service/',
     },
+    'app_service_protos': {
+      'filepath': 'components/services/app_service/public/protos/',
+    },
     'app_shortcuts': {
       'filepath': 'apps/app_shim/'\
                   '|chrome/common/mac/'
@@ -2253,6 +2256,8 @@
     'app_preload_service': ['jshikaram+watch-app_preload_service@chromium.org'],
     'app_service': ['dominickn+watch-app_service@chromium.org',
                     'nancylingwang@chromium.org'],
+    'app_service_protos': ['cros-reporting-team+watch@google.com',
+                           'vshenvi+watch@google.com'],
     'app_shortcuts': ['dominickn+watch-app_shortcuts@chromium.org',
                       'loyso+watch@chromium.org',
                       'mgiuca+watch@chromium.org',

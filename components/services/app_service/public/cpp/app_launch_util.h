@@ -12,10 +12,11 @@
 namespace apps {
 
 // Enumeration of possible app launch sources.
-// This should be kept in sync with metadata/apps/histograms.xml, and
-// LaunchSource in enums.xml.
-// Note the enumeration is used in UMA histogram so entries should not be
-// re-ordered or removed. New entries should be added at the bottom.
+// This should be kept in sync with metadata/apps/histograms.xml,
+// LaunchSource in enums.xml, as well as ApplicationLaunchSource in
+// //components/services/app_service/public/protos/app_types.proto. Note the
+// enumeration is used in UMA histogram so entries should not be re-ordered or
+// removed. New entries should be added at the bottom.
 enum class LaunchSource {
   kUnknown = 0,
   kFromAppListGrid = 1,              // Grid of apps, not the search box.
