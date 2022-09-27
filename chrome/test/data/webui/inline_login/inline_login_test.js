@@ -4,7 +4,7 @@
 
 import 'chrome://chrome-signin/inline_login_app.js';
 
-import {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
+import {InlineLoginAppElement, View} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
@@ -69,16 +69,15 @@ suite(inline_login_test.suiteName, () => {
   test(assert(inline_login_test.TestNames.Initialize), () => {
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
     // 'Add account' screen should be shown.
-    assertTrue(isVisible(`#${inlineLoginComponent.View.addAccount}`));
+    assertTrue(isVisible(`#${View.ADD_ACCOUNT}`));
     if (isChromeOS) {
       // 'Welcome' screen should be hidden.
-      assertFalse(isVisible(`#${inlineLoginComponent.View.welcome}`));
+      assertFalse(isVisible(`#${View.WELCOME}`));
     } else {
       // 'Welcome' screen should exist only on Chrome OS.
       assertEquals(
           null,
-          inlineLoginComponent.shadowRoot.querySelector(
-              `#${inlineLoginComponent.View.welcome}`));
+          inlineLoginComponent.shadowRoot.querySelector(`#${View.WELCOME}`));
     }
 
     // The 'loading' spinner should be shown and 'initialize' should be called

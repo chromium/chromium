@@ -69,28 +69,28 @@
     <!-- Show welcome screen on Chrome OS to clarify that account will be
          available in ARC. -->
     <if expr="chromeos_ash">
-      <div id="[[View.welcome]]" slot="view">
+      <div id="[[viewEnum_.WELCOME]]" slot="view">
         <welcome-page-app is-available-in-arc="{{isAvailableInArc_}}"
             on-opened-new-window="closeDialog_">
         </welcome-page-app>
       </div>
-      <div id="[[View.arcAccountPicker]]" slot="view">
+      <div id="[[viewEnum_.ARC_ACCOUNT_PICKER]]" slot="view">
         <arc-account-picker-app on-opened-new-window="closeDialog_"
             on-add-account="goToWelcomeScreen_">
         </arc-account-picker-app>
       </div>
-      <div id="[[View.signinBlockedByPolicy]]" slot="view">
+      <div id="[[viewEnum_.SIGNIN_BLOCKED_BY_POLICY]]" slot="view">
         <signin-blocked-by-policy-page email="[[email_]]"
           hosted-domain="[[hostedDomain_]]" device-type="[[deviceType_]]">
         </signin-blocked-by-policy-page>
       </div>
-      <div id="[[View.signinError]]" slot="view">
+      <div id="[[viewEnum_.SIGNIN_ERROR]]" slot="view">
         <signin-error-page>
         </signin-error-page>
       </div>
     </if>
 
-    <div id="[[View.addAccount]]" slot="view">
+    <div id="[[viewEnum_.ADD_ACCOUNT]]" slot="view">
       <paper-spinner-lite
         active="[[isSpinnerActive_(loading_, verifyingAccount_)]]">
       </paper-spinner-lite>

@@ -5,7 +5,7 @@
 import 'chrome://chrome-signin/inline_login_app.js';
 
 import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
-import {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
+import {InlineLoginAppElement, View} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
@@ -77,7 +77,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
             'load-auth-extension', fakeAuthExtensionDataWithEmail);
         // Welcome screen should be skipped for reauth.
         assertEquals(
-            inlineLoginComponent.View.addAccount, getActiveViewId(),
+            View.ADD_ACCOUNT, getActiveViewId(),
             'Welcome screen should be active');
       });
 
@@ -89,12 +89,11 @@ suite(inline_login_welcome_page_test.suiteName, () => {
     // OK button and welcome screen should be visible.
     assertFalse(okButton.hidden, 'OK button should be visible');
     assertEquals(
-        inlineLoginComponent.View.welcome, getActiveViewId(),
-        'Welcome screen should be active');
+        View.WELCOME, getActiveViewId(), 'Welcome screen should be active');
 
     okButton.click();
     assertEquals(
-        inlineLoginComponent.View.addAccount, getActiveViewId(),
+        View.ADD_ACCOUNT, getActiveViewId(),
         'Add account screen should be active');
 
     if (loadTimeData.getBoolean('isArcAccountRestrictionsEnabled')) {
@@ -137,22 +136,20 @@ suite(inline_login_welcome_page_test.suiteName, () => {
     assertTrue(backButton.hidden, 'Back button should be hidden');
     assertFalse(okButton.hidden, 'OK button should be visible');
     assertEquals(
-        inlineLoginComponent.View.welcome, getActiveViewId(),
-        'Welcome screen should be active');
+        View.WELCOME, getActiveViewId(), 'Welcome screen should be active');
 
     okButton.click();
     assertTrue(okButton.hidden, 'OK button should be hidden');
     assertFalse(backButton.hidden, 'Back button should be visible');
     assertEquals(
-        inlineLoginComponent.View.addAccount, getActiveViewId(),
+        View.ADD_ACCOUNT, getActiveViewId(),
         'Add account screen should be active');
 
     backButton.click();
     assertTrue(backButton.hidden, 'Back button should be hidden');
     assertFalse(okButton.hidden, 'OK button should be visible');
     assertEquals(
-        inlineLoginComponent.View.welcome, getActiveViewId(),
-        'Welcome screen should be active');
+        View.WELCOME, getActiveViewId(), 'Welcome screen should be active');
   });
 
   test(

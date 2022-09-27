@@ -35,12 +35,12 @@ import {InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_log
  */
 
 /** @enum {string} */
-const View = {
-  addAccount: 'addAccount',
-  signinBlockedByPolicy: 'signinBlockedByPolicy',
-  signinError: 'signinError',
-  welcome: 'welcome',
-  arcAccountPicker: 'arcAccountPicker',
+export const View = {
+  ADD_ACCOUNT: 'addAccount',
+  SIGNIN_BLOCKED_BY_POLICY: 'signinBlockedByPolicy',
+  SIGNIN_ERROR: 'signinError',
+  WELCOME: 'welcome',
+  ARC_ACCOUNT_PICKER: 'arcAccountPicker',
 };
 
 
@@ -66,7 +66,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   static get properties() {
     return {
       /** Mirroring the enum so that it can be used from HTML bindings. */
-      View: {
+      viewEnum_: {
         type: Object,
         value: View,
       },
@@ -379,7 +379,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
    * @private
    */
   goToWelcomeScreen_() {
-    this.switchView_(View.welcome);
+    this.switchView_(View.WELCOME);
   }
 
   /**
@@ -392,7 +392,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       this.$.signinFrame.focus();
     } else if (this.isWelcomePageEnabled_()) {
       // Allow user go back to the welcome page, if it's enabled.
-      this.switchView_(View.welcome);
+      this.switchView_(View.WELCOME);
     } else {
       this.closeDialog_();
     }
@@ -411,8 +411,8 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
    * @private
    */
   getNextButtonLabel_(currentView, isArcAccountRestrictionsEnabled) {
-    if (currentView === View.signinBlockedByPolicy ||
-        currentView === View.signinError) {
+    if (currentView === View.SIGNIN_BLOCKED_BY_POLICY ||
+        currentView === View.SIGNIN_ERROR) {
       return this.i18n('ok');
     }
     if (!isArcAccountRestrictionsEnabled) {
@@ -429,7 +429,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
    * @private
    */
   shouldShowBackButton_(currentView, verifyingAccount) {
-    return currentView === View.addAccount && !verifyingAccount;
+    return currentView === View.ADD_ACCOUNT && !verifyingAccount;
   }
 
   /**
@@ -437,9 +437,9 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
    * @private
    */
   shouldShowOkButton_() {
-    return this.currentView_ === View.welcome ||
-        this.currentView_ === View.signinBlockedByPolicy ||
-        this.currentView_ === View.signinError;
+    return this.currentView_ === View.WELCOME ||
+        this.currentView_ === View.SIGNIN_BLOCKED_BY_POLICY ||
+        this.currentView_ === View.SIGNIN_ERROR;
   }
 
   /**
@@ -447,7 +447,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
    * @private
    */
   shouldShowGaiaButtons_() {
-    return this.currentView_ === View.addAccount;
+    return this.currentView_ === View.ADD_ACCOUNT;
   }
   // </if>
 
@@ -460,16 +460,16 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
     // <if expr="chromeos_ash">
     if (this.isArcAccountRestrictionsEnabled_ &&
-        view === View.arcAccountPicker) {
+        view === View.ARC_ACCOUNT_PICKER) {
       this.shadowRoot.querySelector('arc-account-picker-app')
           .loadAccounts()
           .then(
               accountsFound => {
                 this.switchView_(
-                    accountsFound ? View.arcAccountPicker : View.welcome);
+                    accountsFound ? View.ARC_ACCOUNT_PICKER : View.WELCOME);
               },
               reject => {
-                this.switchView_(View.welcome);
+                this.switchView_(View.WELCOME);
               });
       return;
     }
@@ -487,22 +487,21 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     // split into CrOS and non-CrOS parts.
     // <if expr="not chromeos_ash">
     // On non-ChromeOS always show 'Add account'.
-    return View.addAccount;
+    return View.ADD_ACCOUNT;
     // </if>
 
     // <if expr="chromeos_ash">
     if (this.isReauthentication_) {
-      return View.addAccount;
+      return View.ADD_ACCOUNT;
     }
     if (this.isArcAccountRestrictionsEnabled_) {
       const options = getAccountAdditionOptionsFromJSON(
           InlineLoginBrowserProxyImpl.getInstance().getDialogArguments());
       if (!!options && options.showArcAvailabilityPicker) {
-        return View.arcAccountPicker;
+        return View.ARC_ACCOUNT_PICKER;
       }
     }
-    return this.shouldSkipWelcomePage_ ? View.addAccount :
-                                         View.welcome;
+    return this.shouldSkipWelcomePage_ ? View.ADD_ACCOUNT : View.WELCOME;
     // </if>
   }
 
@@ -550,9 +549,9 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       this.set('hostedDomain_', data.hostedDomain);
       this.set('deviceType_', data.deviceType);
       this.switchView_(
-          View.signinBlockedByPolicy, 'no-animation', 'no-animation');
+          View.SIGNIN_BLOCKED_BY_POLICY, 'no-animation', 'no-animation');
     } else {
-      this.switchView_(View.signinError, 'no-animation', 'no-animation');
+      this.switchView_(View.SIGNIN_ERROR, 'no-animation', 'no-animation');
     }
 
     this.setFocusToWebview_();
@@ -561,8 +560,8 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   /** @private */
   onOkButtonClick_() {
     switch (this.currentView_) {
-      case View.welcome:
-        this.switchView_(View.addAccount);
+      case View.WELCOME:
+        this.switchView_(View.ADD_ACCOUNT);
         const skipChecked =
             /** @type {WelcomePageAppElement} */ (
                 this.shadowRoot.querySelector('welcome-page-app'))
@@ -570,8 +569,8 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
         this.browserProxy_.skipWelcomePage(skipChecked);
         this.setFocusToWebview_();
         break;
-      case View.signinBlockedByPolicy:
-      case View.signinError:
+      case View.SIGNIN_BLOCKED_BY_POLICY:
+      case View.SIGNIN_ERROR:
         this.closeDialog_();
         break;
     }

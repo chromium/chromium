@@ -7,7 +7,7 @@ import 'chrome://chrome-signin/inline_login_app.js';
 import {ArcAccountPickerAppElement} from 'chrome://chrome-signin/arc_account_picker/arc_account_picker_app.js';
 import {Account} from 'chrome://chrome-signin/arc_account_picker/arc_account_picker_browser_proxy.js';
 import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
-import {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
+import {InlineLoginAppElement, View} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
@@ -94,7 +94,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
             // flow.
             fakeAuthExtensionData);
         assertEquals(
-            inlineLoginComponent.View.arcAccountPicker, getActiveViewId(),
+            View.ARC_ACCOUNT_PICKER, getActiveViewId(),
             'ARC account picker screen should be active');
 
         const uiAccounts = [
@@ -114,7 +114,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
             // flow.
             fakeAuthExtensionDataWithEmail);
         assertEquals(
-            inlineLoginComponent.View.addAccount, getActiveViewId(),
+            View.ADD_ACCOUNT, getActiveViewId(),
             'Add account view should be active for reauthentication');
       });
 
@@ -128,7 +128,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
             // flow.
             fakeAuthExtensionData);
         assertEquals(
-            inlineLoginComponent.View.welcome, getActiveViewId(),
+            View.WELCOME, getActiveViewId(),
             'Welcome view should be active when there are 0 accounts' +
                 ' not available in ARC');
       });
@@ -140,13 +140,13 @@ suite(arc_account_picker_page_test.suiteName, () => {
         // Send auth extension data without email -> it's account addition flow.
         fakeAuthExtensionData);
     assertEquals(
-        inlineLoginComponent.View.arcAccountPicker, getActiveViewId(),
+        View.ARC_ACCOUNT_PICKER, getActiveViewId(),
         'ARC account picker screen should be active');
 
     arcAccountPickerComponent.shadowRoot.querySelector('#addAccountButton')
         .click();
     assertEquals(
-        inlineLoginComponent.View.welcome, getActiveViewId(),
+        View.WELCOME, getActiveViewId(),
         'Welcome screen should be active after Add account button click');
   });
 
@@ -160,7 +160,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
             // flow.
             fakeAuthExtensionData);
         assertEquals(
-            inlineLoginComponent.View.arcAccountPicker, getActiveViewId(),
+            View.ARC_ACCOUNT_PICKER, getActiveViewId(),
             'ARC account picker screen should be active');
 
         const expectedAccount = getFakeAccountsNotAvailableInArcList()[0];

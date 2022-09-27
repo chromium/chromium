@@ -11,7 +11,7 @@
 import 'chrome://chrome-signin/inline_login_app.js';
 
 import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
-import {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
+import {InlineLoginAppElement, View} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {SigninBlockedByPolicyPageElement} from 'chrome://chrome-signin/signin_blocked_by_policy_page.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -85,7 +85,7 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
         webUIListenerCallback(
             'show-signin-error-page', fakeSigninBlockedByPolicyData);
         assertEquals(
-            inlineLoginComponent.View.signinBlockedByPolicy, getActiveViewId(),
+            View.SIGNIN_BLOCKED_BY_POLICY, getActiveViewId(),
             'Sing-in blocked by policy page should be shown');
 
         const title =
@@ -115,7 +115,7 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
         webUIListenerCallback(
             'show-signin-error-page', fakeSigninBlockedByPolicyData);
         assertEquals(
-            inlineLoginComponent.View.signinBlockedByPolicy, getActiveViewId(),
+            View.SIGNIN_BLOCKED_BY_POLICY, getActiveViewId(),
             'Sing-in blocked by policy should be shown');
         let textBody =
             signinBlockedByPolicyPageComponent.shadowRoot.querySelector(
@@ -160,7 +160,7 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
         // OK button and signin blocked by policy screen should be visible.
         assertFalse(okButton.hidden, 'OK button should be visible');
         assertEquals(
-            inlineLoginComponent.View.signinBlockedByPolicy, getActiveViewId(),
+            View.SIGNIN_BLOCKED_BY_POLICY, getActiveViewId(),
             'Sing-in blocked by policy should be shown');
 
         okButton.click();
