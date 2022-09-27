@@ -886,6 +886,11 @@
     'cr_elements': {
       'filepath': 'ui/webui/resources/cr_element',
     },
+    'creator': {
+      'filepath': 'components/creator/|' \
+                  'chrome/android/java/src/org/chromium/chrome/browser/app/creator/|' \
+                  'chrome/browser/creator/|'
+    },
     'cros_commercial_policy': {
       'filepath': 'ash/components/policy/'\
                   '|ash/policy/'\
@@ -2566,6 +2571,10 @@
            'ukai+cc@chromium.org',
            'yyanagisawa+cc@chromium.org'],
     'cr_elements': ['michaelpg+watch-elements@chromium.org'],
+    'creator':['jeffreycohen+watch-creator@chromium.org',
+              'sophey+watch-creator@chromium.org',
+              'wiss+watch-creator@chromium.org',
+              'wry+watch-creator@chromium.org',],
     'cros_commercial_policy': ['enterprise-policy-review@google.com'],
     'cros_discovery': ['melzhang+watch+discovery@chromium.org'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
