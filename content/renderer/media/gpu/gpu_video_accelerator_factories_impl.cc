@@ -174,17 +174,21 @@ void GpuVideoAcceleratorFactoriesImpl::BindOnTaskRunner(
   }
 
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
-  // Note: This is a bit of a hack, since we don't specify the implementation
-  // before asking for the map of supported configs.  We do this because it
-  // (a) saves an ipc call, and (b) makes the return of those configs atomic.
-  interface_factory_->CreateVideoDecoder(
-      video_decoder_.BindNewPipeAndPassReceiver(), /*dst_video_decoder=*/{});
-  video_decoder_.set_disconnect_handler(
-      base::BindOnce(&GpuVideoAcceleratorFactoriesImpl::OnDecoderSupportFailed,
-                     base::Unretained(this)));
-  video_decoder_->GetSupportedConfigs(base::BindOnce(
-      &GpuVideoAcceleratorFactoriesImpl::OnSupportedDecoderConfigs,
-      base::Unretained(this)));
+  if (video_decode_accelerator_enabled_) {
+    // Note: This is a bit of a hack, since we don't specify the implementation
+    // before asking for the map of supported configs.  We do this because it
+    // (a) saves an ipc call, and (b) makes the return of those configs atomic.
+    interface_factory_->CreateVideoDecoder(
+        video_decoder_.BindNewPipeAndPassReceiver(), /*dst_video_decoder=*/{});
+    video_decoder_.set_disconnect_handler(base::BindOnce(
+        &GpuVideoAcceleratorFactoriesImpl::OnDecoderSupportFailed,
+        base::Unretained(this)));
+    video_decoder_->GetSupportedConfigs(base::BindOnce(
+        &GpuVideoAcceleratorFactoriesImpl::OnSupportedDecoderConfigs,
+        base::Unretained(this)));
+  } else {
+    OnDecoderSupportFailed();
+  }
 #else
   OnDecoderSupportFailed();
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
