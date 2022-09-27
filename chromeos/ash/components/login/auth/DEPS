@@ -17,6 +17,8 @@ include_rules = [
   "+crypto",
   "+google_apis",
   "+net",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+testing",
   "+third_party/boringssl/src/include",
   "+third_party/cros_system_api",
