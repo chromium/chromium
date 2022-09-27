@@ -12,16 +12,20 @@ pressure_test(async (t, mockPressureService) => {
       if (++n === 2)
         resolve(observer_changes);
     }, {sampleRate: 1.0});
-    await observer.observe('cpu');
-
+    observer.observe('cpu');
+    const updatesDelivered = mockPressureService.updatesDelivered();
     mockPressureService.setPressureUpdate('critical');
-    mockPressureService.sendUpdate();
-    mockPressureService.setPressureUpdate('critical');
-    mockPressureService.sendUpdate();
+    mockPressureService.startPlatformCollector(/*sampleRate*/ 1.0);
+    // Deliver 3 updates.
+    await t.step_wait(
+        () => mockPressureService.updatesDelivered() >= (updatesDelivered + 3),
+        'Wait for more than one update to be delivered to the observer');
     mockPressureService.setPressureUpdate('nominal');
-    mockPressureService.sendUpdate();
+    // Deliver more updates, |resolve()| will be called when the new pressure
+    // state reaches PressureObserver and its callback is invoked
+    // for the second time.
   });
   assert_equals(pressureChanges.length, 2);
   assert_equals(pressureChanges[0][0].state, 'critical');
   assert_equals(pressureChanges[1][0].state, 'nominal');
-}, 'Changes that fail the "has changes in data" test are discarded.');
+}, 'Changes that fail the "has change in data" test are discarded.');

@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_record.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
@@ -39,16 +37,14 @@ Vector<V8PressureSource> PressureObserver::supportedSources() {
       {V8PressureSource(V8PressureSource::Enum::kCpu)});
 }
 
-// TODO(crbug.com/1308303): Remove ScriptPromise to match specs, whenever
-// we redesign the interface with browser.
-ScriptPromise PressureObserver::observe(ScriptState* script_state,
-                                        V8PressureSource source,
-                                        ExceptionState& exception_state) {
+void PressureObserver::observe(ScriptState* script_state,
+                               V8PressureSource source,
+                               ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
-    return ScriptPromise();
+    return;
   }
 
   if (!manager_) {
@@ -56,7 +52,7 @@ ScriptPromise PressureObserver::observe(ScriptState* script_state,
     manager_ = PressureObserverManager::From(*window);
   }
 
-  return manager_->AddObserver(source, this, script_state, exception_state);
+  manager_->AddObserver(source, this);
 }
 
 // TODO(crbug.com/1306819): Unobserve is supposed to only stop observing

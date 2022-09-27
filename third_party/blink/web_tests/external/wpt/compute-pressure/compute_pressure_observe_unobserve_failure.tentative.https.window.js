@@ -1,13 +1,15 @@
 'use strict';
 
-promise_test(async t => {
+test(t => {
   const observer = new PressureObserver(
       t.unreached_func('oops should not end up here'), {sampleRate: 1.0});
   t.add_cleanup(() => observer.disconnect());
-  await promise_rejects_js(t, TypeError, observer.observe('random'));
+  assert_throws_js(TypeError, () => {
+    observer.observe('random');
+  });
 }, 'PressureObserver.observe() requires a valid source');
 
-test(function(t) {
+test(t => {
   const observer = new PressureObserver(
       t.unreached_func('oops should not end up here'), {sampleRate: 1.0});
   t.add_cleanup(() => observer.disconnect());

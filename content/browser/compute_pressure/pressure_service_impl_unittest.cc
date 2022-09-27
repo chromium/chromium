@@ -12,6 +12,8 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
@@ -241,6 +243,50 @@ TEST_F(PressureServiceImplTest, NoVisibility) {
 
   ASSERT_EQ(observer.updates().size(), 1u);
   EXPECT_EQ(observer.updates()[0], update3);
+}
+
+class PressureServiceImplFencedFrameTest : public PressureServiceImplTest {
+ public:
+  PressureServiceImplFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~PressureServiceImplFencedFrameTest() override = default;
+
+ protected:
+  RenderFrameHost* CreateFencedFrame(RenderFrameHost* parent) {
+    RenderFrameHost* fenced_frame =
+        RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    return fenced_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PressureServiceImplFencedFrameTest, BindObserverFromFencedFrame) {
+  auto* fenced_frame_rfh = CreateFencedFrame(contents()->GetPrimaryMainFrame());
+  // PressureServiceImpl::Create() will fail if the RenderFrameHost* passed to
+  // it has not navigated to a secure origin, so we need to create a navigation
+  // here.
+  auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
+      GURL("https://fencedframe.com"), fenced_frame_rfh);
+  navigation_simulator->Commit();
+  fenced_frame_rfh = static_cast<RenderFrameHostImpl*>(
+      navigation_simulator->GetFinalRenderFrameHost());
+
+  mojo::Remote<blink::mojom::PressureService> fenced_frame_pressure_service;
+  PressureServiceImpl::Create(
+      fenced_frame_rfh,
+      fenced_frame_pressure_service.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(fenced_frame_pressure_service.is_bound());
+
+  auto fenced_frame_sync_service = std::make_unique<PressureServiceImplSync>(
+      fenced_frame_pressure_service.get());
+  FakePressureObserver observer;
+  EXPECT_EQ(fenced_frame_sync_service->BindObserver(
+                observer.BindNewPipeAndPassRemote()),
+            blink::mojom::PressureStatus::kSecurityError);
 }
 
 TEST_F(PressureServiceImplTest, BindObserver_NotSupported) {

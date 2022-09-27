@@ -1,22 +1,22 @@
 'use strict';
 
 promise_test(async t => {
-  const changes1_promise = new Promise((resolve, reject) => {
+  const changes1_promise = new Promise(resolve => {
     const observer = new PressureObserver(resolve, {sampleRate: 1.0});
     t.add_cleanup(() => observer.disconnect());
-    observer.observe('cpu').catch(reject);
+    observer.observe('cpu');
   });
 
-  const changes2_promise = new Promise((resolve, reject) => {
+  const changes2_promise = new Promise(resolve => {
     const observer = new PressureObserver(resolve, {sampleRate: 1.0});
     t.add_cleanup(() => observer.disconnect());
-    observer.observe('cpu').catch(reject);
+    observer.observe('cpu');
   });
 
-  const changes3_promise = new Promise((resolve, reject) => {
+  const changes3_promise = new Promise(resolve => {
     const observer = new PressureObserver(resolve, {sampleRate: 1.0});
     t.add_cleanup(() => observer.disconnect());
-    observer.observe('cpu').catch(reject);
+    observer.observe('cpu');
   });
 
   const [changes1, changes2, changes3] =
