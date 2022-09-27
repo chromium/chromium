@@ -58,9 +58,10 @@ constexpr char kHelpMsg[] =
     "        result in output files of the form \"test/test_000000.yuv\",\n"
     "       \"test/test_000001.yuv\", etc.\n"
     "    --md5=<path>\n"
-    "        Optional. If specified, prints the md5 of each decoded (and\n"
-    "        visible, if --visible is specified) frame in I420 format to\n"
-    "        stdout. If argument specified, prints m5d to specified file\n"
+    "        Optional. If specified, computes md5 checksum. If specified\n"
+    "        with argument, prints the md5 checksum of each decoded (and\n"
+    "        visible, if --visible is specified) frame in I420 format\n"
+    "        to specified file. Verbose level 2 will display md5 checksums.\n"
     "    --visible\n"
     "        Optional. If specified, computes md5 hash values only for\n"
     "        visible frames.\n"
@@ -76,15 +77,13 @@ void ComputeAndPrintMD5hash(const std::vector<char>& yuv_plane, const base::File
   base::MD5Sum(yuv_plane.data(), yuv_plane.size(), &md5_digest);
   std::string md5_digest_b16 = MD5DigestToBase16(md5_digest);
 
-  if (md5_log_location.empty()) {
-    std::cout << md5_digest_b16 << std::endl;
-  } else {
+  if (!md5_log_location.empty()) {
     if (!PathExists(md5_log_location))
       WriteFile(md5_log_location, md5_digest_b16 + "\n");
     else
       AppendToFile(md5_log_location, md5_digest_b16 + "\n");
   }
-
+  VLOG(2) << md5_digest_b16;
 }
 
 // Creates the appropriate decoder for |stream|, which points to IVF data.
