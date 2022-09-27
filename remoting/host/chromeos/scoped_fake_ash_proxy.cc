@@ -8,6 +8,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/aura/scoped_window_capture_request.h"
 #include "ui/display/manager/managed_display_info.h"
 
 namespace remoting::test {
@@ -20,7 +21,11 @@ ScreenshotRequest::ScreenshotRequest(ScreenshotRequest&&) = default;
 ScreenshotRequest& ScreenshotRequest::operator=(ScreenshotRequest&&) = default;
 ScreenshotRequest::~ScreenshotRequest() = default;
 
-ScopedFakeAshProxy::ScopedFakeAshProxy() {
+ScopedFakeAshProxy::ScopedFakeAshProxy() : ScopedFakeAshProxy(nullptr) {}
+
+ScopedFakeAshProxy::ScopedFakeAshProxy(
+    ash::curtain::SecurityCurtainController* controller)
+    : security_curtain_controller_(controller) {
   AshProxy::SetInstanceForTesting(this);
 }
 
@@ -117,6 +122,11 @@ void ScopedFakeAshProxy::CreateVideoCapturer(
   receiver_->Bind(std::move(video_capturer));
 }
 
+aura::ScopedWindowCaptureRequest ScopedFakeAshProxy::MakeDisplayCapturable(
+    DisplayId source_display_id) {
+  return aura::ScopedWindowCaptureRequest();
+}
+
 viz::FrameSinkId ScopedFakeAshProxy::GetFrameSinkId(
     DisplayId source_display_id) {
   return viz::FrameSinkId(source_display_id, source_display_id);
@@ -125,6 +135,14 @@ viz::FrameSinkId ScopedFakeAshProxy::GetFrameSinkId(
 void ScopedFakeAshProxy::SetVideoCapturerReceiver(
     mojo::Receiver<viz::mojom::FrameSinkVideoCapturer>* receiver) {
   receiver_ = receiver;
+}
+
+ash::curtain::SecurityCurtainController&
+ScopedFakeAshProxy::GetSecurityCurtainController() {
+  DCHECK(security_curtain_controller_)
+      << "Your test must pass a SecurityCurtainController to the constructor "
+         "of ScopedFakeAshProxy before it can be used.";
+  return *security_curtain_controller_;
 }
 
 }  // namespace remoting::test

@@ -75,6 +75,7 @@ void AuraDesktopCapturer::CaptureFrame() {
 void AuraDesktopCapturer::OnFrameCaptured(
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   if (!frame) {
+    VLOG(3) << "Failed to capture a desktop frame";
     callback_->OnCaptureResult(DesktopCapturer::Result::ERROR_TEMPORARY,
                                nullptr);
     return;

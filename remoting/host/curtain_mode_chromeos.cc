@@ -6,23 +6,44 @@
 
 #include <memory>
 
+#include "ash/curtain/security_curtain_controller.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "remoting/host/chromeos/ash_proxy.h"
 
 namespace remoting {
-
-bool CurtainModeChromeOs::Activate() {
-  // TODO(b/236687774): Implement curtain mode on ChromeOS.
-  return true;
-}
 
 // static
 std::unique_ptr<CurtainMode> CurtainMode::Create(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     base::WeakPtr<ClientSessionControl> client_session_control) {
-  return std::make_unique<CurtainModeChromeOs>();
+  return std::make_unique<CurtainModeChromeOs>(ui_task_runner);
+}
+
+CurtainModeChromeOs::CurtainModeChromeOs(
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
+    : core_(ui_task_runner) {}
+
+CurtainModeChromeOs::~CurtainModeChromeOs() = default;
+
+bool CurtainModeChromeOs::Activate() {
+  core_.AsyncCall(&Core::Activate);
+  return true;
+}
+
+CurtainModeChromeOs::Core::~Core() {
+  security_curtain_controller().Disable();
+}
+
+void CurtainModeChromeOs::Core::Activate() {
+  security_curtain_controller().Enable();
+}
+
+ash::curtain::SecurityCurtainController&
+CurtainModeChromeOs::Core::security_curtain_controller() {
+  return AshProxy::Get().GetSecurityCurtainController();
 }
 
 }  // namespace remoting

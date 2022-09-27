@@ -4,7 +4,6 @@
 
 #include "remoting/host/chromeos/frame_sink_desktop_capturer.h"
 
-#include "base/bind.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "media/base/video_types.h"
@@ -46,9 +45,6 @@ void FrameSinkDesktopCapturer::Start(DesktopCapturer::Callback* callback) {
   video_capturer_.emplace(base::BindRepeating(
       &FrameSinkDesktopCapturer::BindRemote, base::Unretained(this)));
 
-  source_display_id_ = ash_.GetPrimaryDisplayId();
-  const auto frame_sink_id = ash_.GetFrameSinkId(source_display_id_);
-
   video_capturer_->SetResolutionConstraints(kMinResolution, kMaxResolution,
                                             /*use_fixed_aspect_ratio=*/false);
   video_capturer_->SetFormat(kPixelFormat);
@@ -60,10 +56,10 @@ void FrameSinkDesktopCapturer::Start(DesktopCapturer::Callback* callback) {
   // Disable auto-throttling so the capturer will always use the real resolution
   // of the display we're capturing.
   video_capturer_->SetAutoThrottlingEnabled(kAutoThrottle);
-  video_capturer_->ChangeTarget(viz::VideoCaptureTarget(frame_sink_id),
-                                /*crop_version=*/0);
   video_capturer_->Start(&video_consumer_,
                          viz::mojom::BufferFormatPreference::kDefault);
+
+  SelectSource(ash_.GetPrimaryDisplayId());
 }
 
 void FrameSinkDesktopCapturer::BindRemote(
@@ -103,9 +99,13 @@ bool FrameSinkDesktopCapturer::SelectSource(SourceId id) {
 
   source_display_id_ = id;
 
-  viz::FrameSinkId frame_sink_id = ash_.GetFrameSinkId(source_display_id_);
-  video_capturer_->ChangeTarget(viz::VideoCaptureTarget(frame_sink_id),
-                                /*crop_version=*/0);
+  scoped_window_capture_request_ =
+      ash_.MakeDisplayCapturable(source_display_id_);
+
+  video_capturer_->ChangeTarget(
+      viz::VideoCaptureTarget(ash_.GetFrameSinkId(source_display_id_),
+                              scoped_window_capture_request_.GetCaptureId()),
+      /*crop_version=*/0);
   return true;
 }
 

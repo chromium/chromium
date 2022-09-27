@@ -5,12 +5,14 @@
 #include "remoting/host/it2me_desktop_environment.h"
 #include <memory>
 
+#include "ash/curtain/security_curtain_controller.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/chromeos/features.h"
+#include "remoting/host/chromeos/scoped_fake_ash_proxy.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_events.h"
 #include "remoting/proto/control.pb.h"
@@ -67,10 +69,38 @@ class FakeClientSessionEvents : public ClientSessionEvents {
   base::WeakPtrFactory<FakeClientSessionEvents> weak_ptr_factory_{this};
 };
 
+class FakeSecurityCurtainController
+    : public ash::curtain::SecurityCurtainController {
+ public:
+  FakeSecurityCurtainController() = default;
+  FakeSecurityCurtainController(const FakeSecurityCurtainController&) = delete;
+  FakeSecurityCurtainController& operator=(
+      const FakeSecurityCurtainController&) = delete;
+  ~FakeSecurityCurtainController() override = default;
+
+  // ash::curtain::SecurityCurtainController implementation:
+  void Enable() override {
+    DCHECK(!is_enabled_);
+    is_enabled_ = true;
+  }
+  void Disable() override {
+    DCHECK(is_enabled_);
+    is_enabled_ = false;
+  }
+  bool IsEnabled() const override { return is_enabled_; }
+
+ private:
+  bool is_enabled_ = false;
+};
+
 class It2MeDesktopEnvironmentTest : public ::testing::Test {
  public:
   It2MeDesktopEnvironmentTest() = default;
   ~It2MeDesktopEnvironmentTest() override = default;
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kEnableCrdAdminRemoteAccess);
+  }
 
   DesktopEnvironmentOptions default_options() {
     DesktopEnvironmentOptions options;
@@ -95,11 +125,30 @@ class It2MeDesktopEnvironmentTest : public ::testing::Test {
         static_cast<It2MeDesktopEnvironment*>(base_ptr.release()));
   }
 
+  std::unique_ptr<It2MeDesktopEnvironment> CreateCurtainedSession() {
+    DesktopEnvironmentOptions options(default_options());
+    options.set_enable_curtaining(true);
+    return Create(options);
+  }
+
+  void FlushUiSequence() {
+    // In our test scenario all sequences are single threaded,
+    // so to flush the UI sequence we can simply flush the main thread.
+    environment_.RunUntilIdle();
+  }
+
+  ash::curtain::SecurityCurtainController& security_curtain_controller() {
+    return security_curtain_controller_;
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment environment_;
 
+  base::test::ScopedFeatureList feature_list_;
   FakeClientSessionControl session_control_;
   FakeClientSessionEvents session_events_;
+  FakeSecurityCurtainController security_curtain_controller_;
+  test::ScopedFakeAshProxy ash_proxy_{&security_curtain_controller_};
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -138,6 +187,29 @@ TEST_F(It2MeDesktopEnvironmentTest,
   auto desktop_environment = Create(options);
   EXPECT_THAT(desktop_environment->is_curtained(), Eq(false));
 }
+
+TEST_F(It2MeDesktopEnvironmentTest,
+       ACurtainedSessionShouldEnableSecurityCurtain) {
+  ASSERT_THAT(security_curtain_controller().IsEnabled(), Eq(false));
+
+  auto desktop_environment = CreateCurtainedSession();
+  FlushUiSequence();
+
+  EXPECT_THAT(security_curtain_controller().IsEnabled(), Eq(true));
+}
+
+TEST_F(It2MeDesktopEnvironmentTest,
+       ClosingACurtainedSessionShouldDisableSecurityCurtain) {
+  auto desktop_environment = CreateCurtainedSession();
+  FlushUiSequence();
+
+  // Closing the CRD session will destroy the desktop environment.
+  desktop_environment.reset();
+  FlushUiSequence();
+
+  EXPECT_THAT(security_curtain_controller().IsEnabled(), Eq(false));
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

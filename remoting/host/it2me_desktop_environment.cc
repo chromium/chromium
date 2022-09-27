@@ -93,7 +93,7 @@ bool It2MeDesktopEnvironment::InitializeCurtainMode() {
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kEnableCrdAdminRemoteAccess)) {
     if (desktop_environment_options().enable_curtaining()) {
-      curtain_mode_ = std::make_unique<CurtainModeChromeOs>();
+      curtain_mode_ = std::make_unique<CurtainModeChromeOs>(ui_task_runner());
       if (!curtain_mode_->Activate()) {
         LOG(ERROR) << "Failed to activate the curtain mode.";
         curtain_mode_ = nullptr;

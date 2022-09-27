@@ -5,13 +5,14 @@
 #ifndef REMOTING_HOST_CHROMEOS_SCOPED_FAKE_ASH_PROXY_H_
 #define REMOTING_HOST_CHROMEOS_SCOPED_FAKE_ASH_PROXY_H_
 
+#include "remoting/host/chromeos/ash_proxy.h"
+
 #include <string>
 #include <vector>
 
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "remoting/host/chromeos/ash_proxy.h"
-
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace remoting::test {
 
@@ -33,24 +34,24 @@ class ScopedFakeAshProxy : public AshProxy {
   static constexpr DisplayId kDefaultPrimaryDisplayId = 12345678901;
 
   ScopedFakeAshProxy();
+  // It's the responsibility of the caller to ensure this
+  // SecurityCurtainController outlives ScopedFakeAshProxy.
+  explicit ScopedFakeAshProxy(
+      ash::curtain::SecurityCurtainController* controller);
   ScopedFakeAshProxy(const ScopedFakeAshProxy&) = delete;
   ScopedFakeAshProxy& operator=(const ScopedFakeAshProxy&) = delete;
   ~ScopedFakeAshProxy() override;
 
   display::Display& AddPrimaryDisplay(DisplayId id = kDefaultPrimaryDisplayId);
-
   display::Display& AddDisplayWithId(DisplayId id);
-
+  void RemoveDisplay(DisplayId id);
   // Create a display with the given specifications.
   // See display::ManagedDisplayInfo::CreateFromSpec for details of the
   // specification string.
   display::Display& AddDisplayFromSpecWithId(const std::string& spec,
                                              DisplayId id);
 
-  void RemoveDisplay(DisplayId id);
-
   ScreenshotRequest WaitForScreenshotRequest();
-
   void ReplyWithScreenshot(const absl::optional<SkBitmap>& screenshot);
 
   // AshProxy implementation:
@@ -59,11 +60,15 @@ class ScopedFakeAshProxy : public AshProxy {
   const display::Display* GetDisplayForId(DisplayId display_id) const override;
   void TakeScreenshotOfDisplay(DisplayId display_id,
                                ScreenshotCallback callback) override;
+  ash::curtain::SecurityCurtainController& GetSecurityCurtainController()
+      override;
 
   void CreateVideoCapturer(
       mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> video_capturer)
       override;
 
+  aura::ScopedWindowCaptureRequest MakeDisplayCapturable(
+      DisplayId source_display_id) override;
   viz::FrameSinkId GetFrameSinkId(DisplayId source_display_id) override;
 
   void SetVideoCapturerReceiver(
@@ -77,6 +82,8 @@ class ScopedFakeAshProxy : public AshProxy {
   mojo::Receiver<viz::mojom::FrameSinkVideoCapturer>* receiver_ = nullptr;
 
   base::test::TestFuture<ScreenshotRequest> screenshot_request_;
+
+  raw_ptr<ash::curtain::SecurityCurtainController> security_curtain_controller_;
 };
 
 }  // namespace remoting::test

@@ -11,6 +11,7 @@
 #include "remoting/host/chromeos/ash_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
+#include "ui/aura/scoped_window_capture_request.h"
 #include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
 
@@ -45,7 +46,11 @@ class FrameSinkDesktopCapturer : public webrtc::DesktopCapturer {
   AshProxy& ash_;
   AshMojomVideoConsumer video_consumer_;
   raw_ptr<DesktopCapturer::Callback> callback_ = nullptr;
+
   DisplayId source_display_id_ = display::kInvalidDisplayId;
+  // Helper object that makes our source window in the selected display
+  // capturable.
+  aura::ScopedWindowCaptureRequest scoped_window_capture_request_;
 
   base::WeakPtrFactory<FrameSinkDesktopCapturer> weak_factory_{this};
 };

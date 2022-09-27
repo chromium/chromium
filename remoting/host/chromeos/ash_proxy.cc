@@ -4,12 +4,16 @@
 
 #include "remoting/host/chromeos/ash_proxy.h"
 
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "remoting/base/constants.h"
+#include "remoting/host/chromeos/features.h"
 #include "ui/aura/env.h"
+#include "ui/aura/scoped_window_capture_request.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
@@ -57,7 +61,7 @@ class DefaultAshProxy : public AshProxy {
 
   void TakeScreenshotOfDisplay(DisplayId display_id,
                                ScreenshotCallback callback) override {
-    aura::Window* root_window = GetRootWindowForId(display_id);
+    aura::Window* root_window = GetWindowToCaptureForId(display_id);
     if (!root_window) {
       std::move(callback).Run(absl::nullopt);
       return;
@@ -81,6 +85,20 @@ class DefaultAshProxy : public AshProxy {
         ->CreateVideoCapturer(std::move(video_capturer));
   }
 
+  aura::ScopedWindowCaptureRequest MakeDisplayCapturable(
+      DisplayId source_display_id) override {
+    aura::Window* window = GetWindowToCaptureForId(source_display_id);
+    DCHECK(window) << "No window exists for the source_display_id: "
+                   << source_display_id;
+
+    if (window->IsRootWindow()) {
+      // Root window is always capturable so nothing to do here.
+      return aura::ScopedWindowCaptureRequest();
+    } else {
+      return window->MakeWindowCapturable();
+    }
+  }
+
   viz::FrameSinkId GetFrameSinkId(DisplayId source_display_id) override {
     aura::Window* window =
         ash::Shell::GetRootWindowForDisplayId(source_display_id);
@@ -88,6 +106,11 @@ class DefaultAshProxy : public AshProxy {
     DCHECK(window) << "No window exists for the source_display_id: "
                    << source_display_id;
     return window->GetFrameSinkId();
+  }
+
+  ash::curtain::SecurityCurtainController& GetSecurityCurtainController()
+      override {
+    return shell().security_curtain_controller();
   }
 
  private:
@@ -106,6 +129,18 @@ class DefaultAshProxy : public AshProxy {
   }
   aura::Window* GetRootWindowForId(DisplayId id) {
     return shell().GetRootWindowForDisplayId(id);
+  }
+
+  aura::Window* GetWindowToCaptureForId(DisplayId id) {
+    aura::Window* root_window = GetRootWindowForId(id);
+    if (base::FeatureList::IsEnabled(
+            remoting::features::kEnableCrdAdminRemoteAccess)) {
+      // Capture the uncurtained window.
+      return ash::Shell::GetContainer(
+          root_window, ash::kShellWindowId_ScreenAnimationContainer);
+    }
+
+    return root_window;
   }
 };
 
