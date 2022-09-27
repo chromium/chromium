@@ -8,7 +8,7 @@
  * Any containers with the 'scrollable' attribute set will have the following
  * classes toggled appropriately: can-scroll, is-scrolled, scrolled-to-bottom.
  * These classes are used to style the container div and list elements
- * appropriately, see shared_style_css.html.
+ * appropriately, see cr_shared_style.css.
  *
  * The associated HTML should look something like:
  *   <div id="container" scrollable>
