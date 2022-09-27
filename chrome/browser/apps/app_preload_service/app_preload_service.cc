@@ -40,13 +40,16 @@ static constexpr char kApsStateManager[] =
 
 AppPreloadService::AppPreloadService(Profile* profile)
     : profile_(profile),
-      server_connector_(std::make_unique<AppPreloadServerConnector>()) {
+      server_connector_(std::make_unique<AppPreloadServerConnector>()),
+      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {
   // Check to see if the service has been run before.
   auto is_first_run = GetStateManager().FindBool(kFirstLoginFlowCompletedKey);
   if (is_first_run == absl::nullopt) {
     // the first run completed key has not been set, kick off the initial app
     // installation flow.
-    StartAppInstallationForFirstLogin();
+    device_info_manager_->GetDeviceInfo(
+        base::BindOnce(&AppPreloadService::StartAppInstallationForFirstLogin,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -63,9 +66,10 @@ void AppPreloadService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kApsStateManager);
 }
 
-void AppPreloadService::StartAppInstallationForFirstLogin() {
+void AppPreloadService::StartAppInstallationForFirstLogin(
+    DeviceInfo device_info) {
   server_connector_->GetAppsForFirstLogin(
-      DeviceInfoManager(profile_),
+      std::move(device_info),
       base::BindOnce(&AppPreloadService::OnGetAppsForFirstLoginCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -73,6 +77,10 @@ void AppPreloadService::StartAppInstallationForFirstLogin() {
 void AppPreloadService::OnGetAppsForFirstLoginCompleted() {
   ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kApsStateManager)
       ->Set(kFirstLoginFlowCompletedKey, true);
+
+  if (check_first_pref_set_callback_) {
+    std::move(check_first_pref_set_callback_).Run();
+  }
 }
 
 const base::Value::Dict& AppPreloadService::GetStateManager() const {

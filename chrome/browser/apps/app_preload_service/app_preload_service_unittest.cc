@@ -6,34 +6,64 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using testing::ElementsAre;
 
 namespace {
 
 static constexpr char kFirstLoginFlowCompletedKey[] =
     "first_login_flow_completed";
 
+static constexpr char kApsStateManager[] =
+    "apps.app_preload_service.state_manager";
+
+const base::Value::Dict& GetStateManager(Profile* profile) {
+  return profile->GetPrefs()->GetDict(kApsStateManager);
+}
+
 }  // namespace
 
 namespace apps {
 
 class AppPreloadServiceTest : public testing::Test {
+ public:
+  void VerifyFirstLoginPrefSet(base::OnceClosure on_complete) {
+    // We expect that the key has been set after the first login flow has been
+    // completed.
+    auto flow_completed =
+        GetStateManager(GetProfile()).FindBool(kFirstLoginFlowCompletedKey);
+    EXPECT_NE(flow_completed, absl::nullopt);
+    EXPECT_TRUE(flow_completed.value());
+
+    std::move(on_complete).Run();
+  }
+
  protected:
   AppPreloadServiceTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kAppPreloadService);
   }
 
+  void SetUp() override {
+    testing::Test::SetUp();
+
+    profile_ = std::make_unique<TestingProfile>();
+  }
+
+  Profile* GetProfile() { return profile_.get(); }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(AppPreloadServiceTest, ServiceAccessPerProfile) {
@@ -68,20 +98,19 @@ TEST_F(AppPreloadServiceTest, ServiceAccessPerProfile) {
 }
 
 TEST_F(AppPreloadServiceTest, FirstLoginPrefSet) {
-  TestingProfile::Builder profile_builder;
-  auto profile = profile_builder.Build();
-  auto* service = AppPreloadService::Get(profile.get());
-
   auto flow_completed =
-      service->GetStateManager().FindBool(kFirstLoginFlowCompletedKey);
+      GetStateManager(GetProfile()).FindBool(kFirstLoginFlowCompletedKey);
+  // Since we're creating a new profile with no saved state, we expect the
+  // absence of the key.
+  EXPECT_EQ(flow_completed, absl::nullopt);
 
-  // We expect that the key has been set after the profile has been created.
-  // This is because the service is run on profile creation and it checks
-  // that the first login flow has been completed.
-  // Since we're creating a new profile with no saved state, we don't need
-  // to check for the the absence of the key.
-  EXPECT_NE(flow_completed, absl::nullopt);
-  EXPECT_TRUE(flow_completed.value());
+  base::RunLoop run_loop;
+  auto* service = AppPreloadService::Get(GetProfile());
+  service->check_first_pref_set_callback_ =
+      base::BindOnce(&AppPreloadServiceTest::VerifyFirstLoginPrefSet,
+                     base::Unretained(this), run_loop.QuitClosure());
+
+  run_loop.Run();
 }
 
 }  // namespace apps

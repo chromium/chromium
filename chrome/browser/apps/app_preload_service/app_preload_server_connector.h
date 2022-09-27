@@ -9,7 +9,7 @@
 
 namespace apps {
 
-class DeviceInfoManager;
+struct DeviceInfo;
 
 using GetInitialAppsCallback = base::OnceCallback<void()>;
 
@@ -24,7 +24,7 @@ class AppPreloadServerConnector {
       delete;
   ~AppPreloadServerConnector();
 
-  void GetAppsForFirstLogin(const DeviceInfoManager& device_info,
+  void GetAppsForFirstLogin(const DeviceInfo device_info,
                             GetInitialAppsCallback callback);
 };
 

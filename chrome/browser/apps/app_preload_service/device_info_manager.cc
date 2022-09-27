@@ -4,45 +4,88 @@
 
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
 
-#include "base/system/sys_info.h"
+#include "base/callback.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chromeos/version/version_loader.h"
 #include "components/version_info/version_info.h"
 
 namespace apps {
 
+DeviceInfo::DeviceInfo() = default;
+
+DeviceInfo::DeviceInfo(const DeviceInfo& other) = default;
+
+DeviceInfo& DeviceInfo::operator=(const DeviceInfo& other) = default;
+
+DeviceInfo::~DeviceInfo() = default;
+
 DeviceInfoManager::DeviceInfoManager(Profile* profile) : profile_(profile) {}
 
 DeviceInfoManager::~DeviceInfoManager() = default;
 
-std::string DeviceInfoManager::GetBoard() const {
-  return base::SysInfo::HardwareModelName();
+// This method populates:
+//  - board
+//  - version_info.ash_chrome
+//  - user_type
+// The method then asynchronously populates:
+//  - version_info.platform (OnPlatformVersionNumber)
+//  - model (OnModelInfo)
+void DeviceInfoManager::GetDeviceInfo(
+    base::OnceCallback<void(DeviceInfo)> callback) {
+  if (device_info_ != absl::nullopt) {
+    std::move(callback).Run(device_info_.value());
+    return;
+  }
+
+  DeviceInfo device_info;
+
+  device_info.board = base::SysInfo::HardwareModelName();
+  device_info.version_info.ash_chrome = version_info::GetVersionNumber();
+  device_info.user_type = apps::DetermineUserType(profile_);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&chromeos::version_loader::GetVersion,
+                     chromeos::version_loader::VERSION_SHORT),
+      base::BindOnce(&DeviceInfoManager::OnPlatformVersionNumber,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     device_info));
 }
 
-std::string DeviceInfoManager::GetChromeVersion() const {
-  return version_info::GetVersionNumber();
+void DeviceInfoManager::OnPlatformVersionNumber(
+    base::OnceCallback<void(DeviceInfo)> callback,
+    DeviceInfo device_info,
+    const absl::optional<std::string>& version) {
+  device_info.version_info.platform = version.value_or("unknown");
+  base::SysInfo::GetHardwareInfo(base::BindOnce(
+      &DeviceInfoManager::OnModelInfo, weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), device_info));
 }
 
-std::string DeviceInfoManager::GetChromeOsPlatformVersion() const {
-  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
-      chromeos::version_loader::VERSION_SHORT);
-  return version.value_or("0.0.0.0");
+void DeviceInfoManager::OnModelInfo(
+    base::OnceCallback<void(DeviceInfo)> callback,
+    DeviceInfo device_info,
+    base::SysInfo::HardwareInfo hardware_info) {
+  device_info.model = hardware_info.model;
+  device_info_ = device_info;
+  std::move(callback).Run(device_info);
 }
 
-std::string DeviceInfoManager::GetUserType() const {
-  return apps::DetermineUserType(profile_);
+std::ostream& operator<<(std::ostream& os, const DeviceInfo& device_info) {
+  os << "Device Info: " << std::endl;
+  os << "- Board: " << device_info.board << std::endl;
+  os << "- Model: " << device_info.model << std::endl;
+  os << "- User Type: " << device_info.user_type << std::endl;
+  os << device_info.version_info;
+  return os;
 }
 
-std::ostream& operator<<(std::ostream& os,
-                         const DeviceInfoManager& device_info_manager) {
-  os << "Device info Manager:" << std::endl;
-  os << "- Board: " << device_info_manager.GetBoard() << std::endl;
-  os << "- Versions: " << std::endl;
-  os << "  - Ash Chrome: " << device_info_manager.GetChromeVersion()
-     << std::endl;
-  os << "  - Platform: " << device_info_manager.GetChromeOsPlatformVersion()
-     << std::endl;
-  os << "- User Type: " << device_info_manager.GetUserType() << std::endl;
+std::ostream& operator<<(std::ostream& os, const VersionInfo& version_info) {
+  os << "- Version Info: " << std::endl;
+  os << "  - Ash Chrome: " << version_info.ash_chrome << std::endl;
+  os << "  - Platform: " << version_info.platform << std::endl;
   return os;
 }
 
