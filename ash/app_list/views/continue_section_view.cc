@@ -19,9 +19,6 @@
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/app_list_view_util.h"
 #include "ash/app_list/views/continue_task_view.h"
-#include "ash/bubble/bubble_utils.h"
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -33,9 +30,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -43,9 +37,6 @@ namespace ash {
 namespace {
 // Whether the files section has been shown.
 bool g_continue_section_files_shown = false;
-
-// Header paddings in dips.
-constexpr auto kHeaderPadding = gfx::Insets::TLBR(0, 12, 4, 12);
 
 // Suggested tasks layout constants.
 constexpr size_t kMinFilesForContinueSectionClamshellMode = 3;
@@ -72,12 +63,6 @@ constexpr base::TimeDelta kShowSuggestionsAnimationDuration =
 // AppListBubbleAppsPage.
 constexpr int kVerticalPaddingFromParent = 16;
 
-std::unique_ptr<views::Label> CreateContinueLabel(const std::u16string& text) {
-  auto label = std::make_unique<views::Label>(text);
-  bubble_utils::ApplyStyle(label.get(), bubble_utils::LabelStyle::kSubtitle);
-  return label;
-}
-
 void CleanupLayer(views::View* view) {
   view->DestroyLayer();
 }
@@ -103,15 +88,6 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
                   views::FlexSpecification(
                       views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
                       views::MaximumFlexSizeRule::kUnbounded));
-
-  // The launcher "hide continue section" feature makes the label a child of
-  // AppListBubbleAppsPage.
-  if (!tablet_mode && !features::IsLauncherHideContinueSectionEnabled()) {
-    continue_label_ = AddChildView(CreateContinueLabel(
-        l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL)));
-    continue_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    continue_label_->SetBorder(views::CreateEmptyBorder(kHeaderPadding));
-  }
 
   suggestions_container_ =
       AddChildView(std::make_unique<ContinueTaskContainerView>(
@@ -279,14 +255,6 @@ void ContinueSectionView::AnimateShowContinueSection() {
   gfx::Transform initial_transform;
   initial_transform.Translate(0, -kVerticalPaddingFromParent);
 
-  if (continue_label_) {
-    height_difference -= continue_label_->GetPreferredSize().height();
-    PrepareForLayerAnimation(continue_label_);
-    continue_label_->SetVisible(true);
-    continue_label_->layer()->SetOpacity(0);
-    continue_label_->layer()->SetTransform(initial_transform);
-  }
-
   PrepareForLayerAnimation(suggestions_container_);
   suggestions_container_->layer()->SetTransform(initial_transform);
 
@@ -299,29 +267,12 @@ void ContinueSectionView::AnimateShowContinueSection() {
 
   AnimateSlideLauncherContent(height_difference);
 
-  auto cleanup = continue_label_
-                     ? base::BindRepeating(&CleanupLayer, continue_label_)
-                     : base::DoNothing();
-
-  views::AnimationBuilder animation_builder;
-  animation_builder.OnEnded(cleanup);
-  animation_builder.OnAborted(cleanup);
-  animation_builder.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  animation_builder.Once();
-
-  animation_builder.GetCurrentSequence().SetTransform(
-      suggestions_container_, gfx::Transform(), animation_tween);
-
-  if (continue_label_) {
-    animation_builder.GetCurrentSequence().SetOpacity(continue_label_, 1.0,
-                                                      animation_tween);
-    animation_builder.GetCurrentSequence().SetTransform(
-        continue_label_, gfx::Transform(), animation_tween);
-  }
-
-  animation_builder.GetCurrentSequence().SetDuration(
-      kShowSuggestionsAnimationDuration);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetTransform(suggestions_container_, gfx::Transform(), animation_tween)
+      .SetDuration(kShowSuggestionsAnimationDuration);
 }
 
 void ContinueSectionView::RemovePrivacyNotice() {
@@ -436,8 +387,6 @@ void ContinueSectionView::UpdateElementsVisibility() {
   const bool suggestions_visibility_changed =
       show_files_section != suggestions_container_->GetVisible();
   suggestions_container_->SetVisible(show_files_section);
-  if (continue_label_)
-    continue_label_->SetVisible(show_files_section);
 
   if (suggestions_visibility_changed)
     PreferredSizeChanged();
@@ -445,14 +394,6 @@ void ContinueSectionView::UpdateElementsVisibility() {
 
 void ContinueSectionView::AddedToWidget() {
   GetFocusManager()->AddFocusChangeListener(this);
-}
-
-void ContinueSectionView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  if (continue_label_) {
-    bubble_utils::ApplyStyle(continue_label_,
-                             bubble_utils::LabelStyle::kSubtitle);
-  }
 }
 
 void ContinueSectionView::RemovedFromWidget() {
@@ -470,25 +411,16 @@ void ContinueSectionView::OnDidChangeFocus(views::View* focused_before,
   // If a child of the privacy toast gained focus (e.g. the OK button) then
   // ensure the whole toast is visible.
   if (privacy_toast_ && privacy_toast_->Contains(focused_now)) {
-    if (features::IsLauncherHideContinueSectionEnabled()) {
-      // The parent view owns the continue label, which provides more context
-      // for the privacy notice. Ensure the label is visible.
-      parent()->ScrollViewToVisible();
-    } else {
-      privacy_toast_->ScrollViewToVisible();
-    }
+    // The parent view owns the continue label, which provides more context
+    // for the privacy notice. Ensure the label is visible.
+    parent()->ScrollViewToVisible();
     return;
   }
   // If a suggested task gained focus then ensure the continue label is visible
   // so the user knows what this section is.
   if (suggestions_container_->Contains(focused_now)) {
-    if (features::IsLauncherHideContinueSectionEnabled()) {
-      // The parent view owns the continue label, so ensure label visibility.
-      parent()->ScrollViewToVisible();
-    } else {
-      DCHECK(continue_label_);
-      continue_label_->ScrollViewToVisible();
-    }
+    // The parent view owns the continue label, so ensure label visibility.
+    parent()->ScrollViewToVisible();
   }
 }
 

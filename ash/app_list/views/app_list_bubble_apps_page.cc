@@ -192,11 +192,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       kVerticalPaddingBetweenSections));
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
-  // When feature LauncherHideContinueSection is enabled, the "Continue where
-  // you left off" label is in a container that is a child of this view.
-  // Otherwise the label is a child of the ContinueSectionView.
-  if (features::IsLauncherHideContinueSectionEnabled())
-    InitContinueLabelContainer(scroll_contents.get());
+  // The "Continue where you left off" label is in a container that is a child
+  // of this view.
+  InitContinueLabelContainer(scroll_contents.get());
 
   // Continue section row.
   continue_section_ = scroll_contents->AddChildView(
@@ -205,12 +203,10 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   continue_section_->SetBorder(
       views::CreateEmptyBorder(kContinueSectionInsets));
   continue_section_->SetNudgeController(app_list_nudge_controller_.get());
-  if (features::IsLauncherHideContinueSectionEnabled()) {
-    // Decrease the between-sections spacing so the continue label is closer to
-    // the continue tasks section.
-    continue_section_->SetProperty(views::kMarginsKey,
-                                   gfx::Insets::TLBR(-14, 0, 0, 0));
-  }
+  // Decrease the between-sections spacing so the continue label is closer to
+  // the continue tasks section.
+  continue_section_->SetProperty(views::kMarginsKey,
+                                 gfx::Insets::TLBR(-14, 0, 0, 0));
 
   // Observe changes in continue section visibility, to keep separator
   // visibility in sync.

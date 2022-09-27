@@ -278,11 +278,10 @@ void AppListBubbleView::InitContentsView(
           view_delegate_, drag_and_drop_host, GetAppListConfig(),
           a11y_announcer_.get(), /*folder_controller=*/this,
           /*search_box=*/search_box_view_));
-  if (features::IsLauncherHideContinueSectionEnabled()) {
-    // Skip the "hide continue section" button on arrow up/down in app list.
-    button_focus_skipper_->AddButton(
-        apps_page_->toggle_continue_section_button());
-  }
+
+  // Skip the "hide continue section" button on arrow up/down in app list.
+  button_focus_skipper_->AddButton(
+      apps_page_->toggle_continue_section_button());
 
   search_page_ =
       pages_container->AddChildView(std::make_unique<AppListBubbleSearchPage>(

@@ -300,9 +300,6 @@ TEST_F(AppListBubbleAppsPageTest, ContinueSectionVisibleByDefault) {
 }
 
 TEST_F(AppListBubbleAppsPageTest, ContinueLabelHiddenWhenNoTasksAndNoRecents) {
-  base::test::ScopedFeatureList feature_list(
-      features::kLauncherHideContinueSection);
-
   // Show the app list with no continue suggestions and no recent apps.
   auto* helper = GetAppListTestHelper();
   helper->AddAppItems(5);
@@ -314,9 +311,6 @@ TEST_F(AppListBubbleAppsPageTest, ContinueLabelHiddenWhenNoTasksAndNoRecents) {
 }
 
 TEST_F(AppListBubbleAppsPageTest, CanHideContinueSectionByClickingButton) {
-  base::test::ScopedFeatureList feature_list(
-      features::kLauncherHideContinueSection);
-
   // Show the app list with enough items to make the continue section and
   // recent apps visible.
   auto* helper = GetAppListTestHelper();
@@ -346,9 +340,6 @@ TEST_F(AppListBubbleAppsPageTest, CanHideContinueSectionByClickingButton) {
 }
 
 TEST_F(AppListBubbleAppsPageTest, CanHideContinueSectionByClickingHeader) {
-  base::test::ScopedFeatureList feature_list(
-      features::kLauncherHideContinueSection);
-
   // Show the app list with enough items to make the continue section and
   // recent apps visible.
   auto* helper = GetAppListTestHelper();
@@ -379,9 +370,6 @@ TEST_F(AppListBubbleAppsPageTest, CanHideContinueSectionByClickingHeader) {
 }
 
 TEST_F(AppListBubbleAppsPageTest, HideContinueSectionPlaysAnimation) {
-  base::test::ScopedFeatureList feature_list(
-      features::kLauncherHideContinueSection);
-
   // Open the app list without animation.
   ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -409,9 +397,6 @@ TEST_F(AppListBubbleAppsPageTest, HideContinueSectionPlaysAnimation) {
 }
 
 TEST_F(AppListBubbleAppsPageTest, CanShowContinueSectionByClickingButton) {
-  base::test::ScopedFeatureList feature_list(
-      features::kLauncherHideContinueSection);
-
   // Simulate a user with the continue section hidden on startup.
   Shell::Get()->app_list_controller()->SetHideContinueSection(true);
 
@@ -446,9 +431,6 @@ TEST_F(AppListBubbleAppsPageTest, CanShowContinueSectionByClickingButton) {
 }
 
 TEST_F(AppListBubbleAppsPageTest, ShowContinueSectionPlaysAnimation) {
-  base::test::ScopedFeatureList feature_list(
-      features::kLauncherHideContinueSection);
-
   // Simulate a user with the continue section hidden on startup.
   Shell::Get()->app_list_controller()->SetHideContinueSection(true);
 
@@ -492,9 +474,6 @@ TEST_F(AppListBubbleAppsPageTest, ShowContinueSectionPlaysAnimation) {
 
 // Regression test for https://crbug.com/1329227
 TEST_F(AppListBubbleAppsPageTest, HiddenContinueSectionDoesNotAnimateOnShow) {
-  base::test::ScopedFeatureList feature_list(
-      features::kLauncherHideContinueSection);
-
   // Simulate a user with the continue section hidden on startup.
   Shell::Get()->app_list_controller()->SetHideContinueSection(true);
 

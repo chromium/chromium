@@ -4300,11 +4300,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "launcher-hide-continue-section",
-    "owners": ["jamescook", "//ash/app_list/OWNERS"],
-    "expiry_milestone": 109
-  },
-  {
     "name": "launcher-item-suggest",
     "owners": ["wrong", "amandadeacon", "tby"],
     "expiry_milestone": 110

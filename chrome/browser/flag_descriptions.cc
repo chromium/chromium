@@ -6185,12 +6185,6 @@ const char kLauncherGameSearchName[] = "Enable launcher game search";
 const char kLauncherGameSearchDescription[] =
     "Enables cloud game search results in the launcher.";
 
-const char kLauncherHideContinueSectionName[] =
-    "Launcher hide continue section";
-const char kLauncherHideContinueSectionDescription[] =
-    "Adds a 'Hide all suggestions' option to the continue section item "
-    "right-click menus.";
-
 const char kMacAddressRandomizationName[] = "MAC address randomization";
 const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "

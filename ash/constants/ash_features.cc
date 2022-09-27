@@ -1211,12 +1211,6 @@ BASE_FEATURE(kLauncherDismissButtonsOnSortNudgeAndToast,
              "LauncherDismissButtonsOnSortNudgeAndToast",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, adds UI to the launcher that allows the user to hide the
-// continue tasks and recent apps.
-BASE_FEATURE(kLauncherHideContinueSection,
-             "LauncherHideContinueSection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Uses short intervals for launcher nudge for testing if enabled.
 BASE_FEATURE(kLauncherNudgeShortInterval,
              "LauncherNudgeShortInterval",
@@ -2493,11 +2487,6 @@ bool IsLauncherDismissButtonsOnSortNudgeAndToastEnabled() {
   return IsLauncherAppSortEnabled() &&
          base::FeatureList::IsEnabled(
              kLauncherDismissButtonsOnSortNudgeAndToast);
-}
-
-bool IsLauncherHideContinueSectionEnabled() {
-  return IsProductivityLauncherEnabled() &&
-         base::FeatureList::IsEnabled(kLauncherHideContinueSection);
 }
 
 bool IsLauncherNudgeShortIntervalEnabled() {

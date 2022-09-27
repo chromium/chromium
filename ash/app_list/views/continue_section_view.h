@@ -13,10 +13,6 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
-namespace views {
-class Label;
-}  // namespace views
-
 namespace ash {
 
 class AppListNudgeController;
@@ -81,7 +77,6 @@ class ASH_EXPORT ContinueSectionView : public views::View,
 
   // views::View:
   void AddedToWidget() override;
-  void OnThemeChanged() override;
   void RemovedFromWidget() override;
 
   // views::FocusChangeListener:
@@ -149,7 +144,6 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // Not owned.
   AppListNudgeController* nudge_controller_ = nullptr;
 
-  views::Label* continue_label_ = nullptr;
   AppListToastView* privacy_toast_ = nullptr;
   ContinueTaskContainerView* suggestions_container_ = nullptr;
 

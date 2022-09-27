@@ -224,7 +224,6 @@ class ASH_EXPORT AppListBubbleAppsPage
   RoundedScrollBar* scroll_bar_ = nullptr;
 
   // Wraps both the continue label and the toggle continue section button.
-  // Only exists when feature LauncherHideContinueSection is enabled.
   views::View* continue_label_container_ = nullptr;
   views::Label* continue_label_ = nullptr;
   IconButton* toggle_continue_section_button_ = nullptr;

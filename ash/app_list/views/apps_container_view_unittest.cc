@@ -11,11 +11,9 @@
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -56,12 +54,7 @@ class TransitionWaiter : public PaginationModelObserver {
 
 class AppsContainerViewTest : public AshTestBase {
  public:
-  AppsContainerViewTest() {
-    // These tests primarily exercise the "hide continue section" behavior.
-    features_.InitWithFeatures({features::kProductivityLauncher,
-                                features::kLauncherHideContinueSection},
-                               {});
-  }
+  AppsContainerViewTest() = default;
   ~AppsContainerViewTest() override = default;
 
   // testing::Test:
@@ -112,7 +105,6 @@ class AppsContainerViewTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList features_;
   std::unique_ptr<test::AppListTestModel> app_list_test_model_;
   std::unique_ptr<SearchModel> search_model_;
 };

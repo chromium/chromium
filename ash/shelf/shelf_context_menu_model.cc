@@ -123,12 +123,10 @@ void ShelfContextMenuModel::ExecuteCommand(int command_id, int event_flags) {
       NewWindowDelegate::GetPrimary()->OpenPersonalizationHub();
       break;
     case MENU_HIDE_CONTINUE_SECTION:
-      DCHECK(features::IsLauncherHideContinueSectionEnabled());
       DCHECK(is_tablet_mode);
       shell->app_list_controller()->SetHideContinueSection(true);
       break;
     case MENU_SHOW_CONTINUE_SECTION:
-      DCHECK(features::IsLauncherHideContinueSectionEnabled());
       DCHECK(is_tablet_mode);
       shell->app_list_controller()->SetHideContinueSection(false);
       break;

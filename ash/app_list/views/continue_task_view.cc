@@ -283,8 +283,7 @@ ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
           IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE),
       ui::ImageModel::FromVectorIcon(kRemoveOutlineIcon,
                                      ui::kColorAshSystemUIMenuIcon));
-  if (features::IsLauncherHideContinueSectionEnabled() &&
-      Shell::Get()->IsInTabletMode()) {
+  if (Shell::Get()->IsInTabletMode()) {
     context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
     context_menu_model_->AddItemWithIcon(
         ContinueTaskCommandId::kHideContinueSection,

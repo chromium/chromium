@@ -350,8 +350,6 @@ BASE_DECLARE_FEATURE(kLauncherFolderRenameKeepsSortOrder);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLauncherDismissButtonsOnSortNudgeAndToast);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kLauncherHideContinueSection);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLauncherNudgeShortInterval);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLauncherNudgeSessionReset);
@@ -681,7 +679,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsLauncherFolderRenameKeepsSortOrderEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsLauncherDismissButtonsOnSortNudgeAndToastEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherHideContinueSectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeShortIntervalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeSessionResetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLicensePackagedOobeFlowEnabled();

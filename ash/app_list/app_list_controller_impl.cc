@@ -1604,9 +1604,6 @@ bool AppListControllerImpl::HasValidProfile() const {
 }
 
 bool AppListControllerImpl::ShouldHideContinueSection() const {
-  if (!features::IsLauncherHideContinueSectionEnabled())
-    return false;
-
   PrefService* prefs = GetLastActiveUserPrefService();
   return prefs->GetBoolean(prefs::kLauncherContinueSectionHidden);
 }

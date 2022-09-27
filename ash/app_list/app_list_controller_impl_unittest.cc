@@ -1088,9 +1088,6 @@ TEST_F(AppListControllerImplAppListBubbleTest,
 }
 
 TEST_F(AppListControllerImplAppListBubbleTest, HideContinueSectionUpdatesPref) {
-  base::test::ScopedFeatureList feature_list(
-      features::kLauncherHideContinueSection);
-
   auto* controller = Shell::Get()->app_list_controller();
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
