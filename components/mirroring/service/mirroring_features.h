@@ -12,17 +12,15 @@
 namespace mirroring {
 namespace features {
 
-COMPONENT_EXPORT(MIRRORING_SERVICE)
-extern const base::Feature kCastStreamingAv1;
+COMPONENT_EXPORT(MIRRORING_SERVICE) BASE_DECLARE_FEATURE(kCastStreamingAv1);
+
+COMPONENT_EXPORT(MIRRORING_SERVICE) BASE_DECLARE_FEATURE(kCastStreamingVp9);
 
 COMPONENT_EXPORT(MIRRORING_SERVICE)
-extern const base::Feature kCastStreamingVp9;
+BASE_DECLARE_FEATURE(kCastUseBlocklistForRemotingQuery);
 
 COMPONENT_EXPORT(MIRRORING_SERVICE)
-extern const base::Feature kCastUseBlocklistForRemotingQuery;
-
-COMPONENT_EXPORT(MIRRORING_SERVICE)
-extern const base::Feature kCastForceEnableRemotingQuery;
+BASE_DECLARE_FEATURE(kCastForceEnableRemotingQuery);
 
 bool IsCastStreamingAV1Enabled();
 
