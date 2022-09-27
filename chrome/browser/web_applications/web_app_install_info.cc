@@ -235,6 +235,7 @@ WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
   create_shortcut_info.display_mode = other.display_mode;
   create_shortcut_info.display_override = other.display_override;
   create_shortcut_info.additional_search_terms = other.additional_search_terms;
+  create_shortcut_info.install_url = other.install_url;
   return create_shortcut_info;
 }
 
