@@ -8,32 +8,30 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
-#include "base/observer_list.h"
-#include "build/build_config.h"
-#include "content/public/browser/browser_xr_runtime.h"
-#include "device/vr/public/mojom/vr_service.mojom-shared.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_hardware_buffer_compat.h"
-#endif
-
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
+#include "base/logging.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "content/browser/xr/service/vr_service_impl.h"
 #include "content/browser/xr/xr_utils.h"
+#include "content/public/browser/browser_xr_runtime.h"
 #include "content/public/browser/xr_install_helper.h"
 #include "content/public/browser/xr_integration_client.h"
 #include "content/public/common/content_features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/session_mode.h"
+#include "device/vr/public/mojom/vr_service.mojom-shared.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_hardware_buffer_compat.h"
 #endif
 
 namespace content {

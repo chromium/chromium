@@ -15,7 +15,6 @@
 
 #if defined(USE_AURA)
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/cursor/cursor.h"
 #endif
 
 namespace content {
