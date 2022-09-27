@@ -1536,7 +1536,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.MessageCenter.ScrollActionReason"
-    enum="ChromeOSMessageCenterScrollActionReason" expires_after="2023-01-22">
+    enum="ChromeOSMessageCenterScrollActionReason" expires_after="2023-03-26">
   <owner>yoshiki@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <owner>leandre@chromium.org</owner>
@@ -1666,7 +1666,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SAML.Scraping.PasswordCountAll" units="passwords"
-    expires_after="2023-01-22">
+    expires_after="2023-03-26">
   <owner>mslus@chromium.org</owner>
   <owner>emaxx@chromium.org</owner>
   <summary>

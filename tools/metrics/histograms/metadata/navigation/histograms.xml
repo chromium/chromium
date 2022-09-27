@@ -864,7 +864,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.MainFrame.MaxFrameCount" units="frames"
-    expires_after="2023-01-20">
+    expires_after="2023-03-26">
   <owner>michaelpg@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -921,7 +921,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.MainFrameHasRTLDomain2" enum="Boolean"
-    expires_after="2023-01-22">
+    expires_after="2023-03-26">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -1449,7 +1449,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.UrlParamFilter.ClassificationListValidationResult"
-    enum="ClassificationListValidationResult" expires_after="2023-01-22">
+    enum="ClassificationListValidationResult" expires_after="2023-03-26">
   <owner>kaklilu@chromium.org</owner>
   <owner>src/chrome/browser/url_param_filter/OWNERS</owner>
   <summary>

@@ -827,7 +827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ORB.BlockingReason"
-    enum="OrbBlockingDecisionReason" expires_after="2023-01-22">
+    enum="OrbBlockingDecisionReason" expires_after="2023-03-26">
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -838,7 +838,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ORB.CorbVsOrb" enum="CorbVsOrb"
-    expires_after="2023-01-22">
+    expires_after="2023-03-26">
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -852,7 +852,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ORB.CorbVsOrb.OrbBlockedAndCorbDidnt.Reason"
-    enum="OrbBlockingDecisionReason" expires_after="2023-01-22">
+    enum="OrbBlockingDecisionReason" expires_after="2023-03-26">
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -962,7 +962,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ReusePendingOrCommittedSite.CouldReuse2"
-    enum="ReusePendingOrCommittedSiteEnum" expires_after="2023-01-20">
+    enum="ReusePendingOrCommittedSiteEnum" expires_after="2023-03-26">
   <owner>clamy@chromium.org</owner>
   <summary>
     Whether SiteInstances with a ProcessReusePolicy of

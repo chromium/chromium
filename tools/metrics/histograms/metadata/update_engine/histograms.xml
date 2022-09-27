@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Check.RollbackTargetVersion"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2023-01-01">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2023-03-26">
   <owner>mpolzer@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
@@ -624,7 +624,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.DownloadSourcesUsed"
-    enum="UpdateEngineDownloadSources" expires_after="2023-01-01">
+    enum="UpdateEngineDownloadSources" expires_after="2023-03-26">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
