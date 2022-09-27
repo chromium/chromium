@@ -35,11 +35,13 @@ namespace {
 #if DCHECK_IS_ON()
 // Give the feature a different name on the Albatross build so it can get
 // different parameters.
-constexpr base::Feature kStressTestFeature{"StressTestWebMeasureMemoryDcheck",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kStressTestFeature,
+             "StressTestWebMeasureMemoryDcheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #else
-constexpr base::Feature kStressTestFeature{"StressTestWebMeasureMemory",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kStressTestFeature,
+             "StressTestWebMeasureMemory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 constexpr base::FeatureParam<double> kStressTestProbabilityParam{
