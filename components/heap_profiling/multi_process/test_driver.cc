@@ -89,7 +89,7 @@ int NumProcessesWithName(base::Value* dump_json,
                          std::vector<int>* pids) {
   int num_processes = 0;
   base::Value* events = dump_json->FindKey("traceEvents");
-  for (const base::Value& event : events->GetListDeprecated()) {
+  for (const base::Value& event : events->GetList()) {
     const base::Value* found_name =
         event.FindKeyOfType("name", base::Value::Type::STRING);
     if (!found_name)
@@ -128,7 +128,7 @@ base::Value* FindArgDump(base::ProcessId pid,
   base::Value* events = dump_json->FindKey("traceEvents");
   base::Value* dumps = nullptr;
   base::Value* heaps_v2 = nullptr;
-  for (base::Value& event : events->GetListDeprecated()) {
+  for (base::Value& event : events->GetList()) {
     const base::Value* found_name =
         event.FindKeyOfType("name", base::Value::Type::STRING);
     if (!found_name)
@@ -160,7 +160,7 @@ using NodeMap = std::unordered_map<uint64_t, Node>;
 // Parses maps.types and maps.strings. Returns |true| on success.
 bool ParseTypes(base::Value* heaps_v2, NodeMap* output) {
   base::Value* types = heaps_v2->FindPath({"maps", "types"});
-  for (const base::Value& type_value : types->GetListDeprecated()) {
+  for (const base::Value& type_value : types->GetList()) {
     const base::Value* id = type_value.FindKey("id");
     const base::Value* name_sid = type_value.FindKey("name_sid");
     if (!id || !name_sid) {
@@ -174,7 +174,7 @@ bool ParseTypes(base::Value* heaps_v2, NodeMap* output) {
   }
 
   base::Value* strings = heaps_v2->FindPath({"maps", "strings"});
-  for (const base::Value& string_value : strings->GetListDeprecated()) {
+  for (const base::Value& string_value : strings->GetList()) {
     const base::Value* id = string_value.FindKey("id");
     const base::Value* string = string_value.FindKey("string");
     if (!id || !string) {
@@ -197,7 +197,7 @@ bool GetAllocatorSubarray(base::Value* heaps_v2,
                           const char* allocator_name,
                           const char* subarray_name,
                           size_t expected_size,
-                          base::Value::ConstListView* output) {
+                          const base::Value::List*& output) {
   base::Value* subarray =
       heaps_v2->FindPath({"allocators", allocator_name, subarray_name});
   if (!subarray) {
@@ -206,13 +206,13 @@ bool GetAllocatorSubarray(base::Value* heaps_v2,
     return false;
   }
 
-  base::Value::ConstListView subarray_list = subarray->GetListDeprecated();
+  const base::Value::List& subarray_list = subarray->GetList();
   if (expected_size && subarray_list.size() != expected_size) {
     LOG(ERROR) << subarray_name << " has wrong size";
     return false;
   }
 
-  *output = subarray_list;
+  output = &subarray_list;
   return true;
 }
 
@@ -241,30 +241,29 @@ bool ValidateSamplingAllocations(base::Value* heaps_v2,
   }
 
   // Find the type with the appropriate id.
-  base::Value::ConstListView types_list;
-  if (!GetAllocatorSubarray(heaps_v2, allocator_name, "types", 0,
-                            &types_list)) {
+  const base::Value::List* types_list = nullptr;
+  if (!GetAllocatorSubarray(heaps_v2, allocator_name, "types", 0, types_list)) {
     return false;
   }
 
   // Look up the size.
-  base::Value::ConstListView sizes;
+  const base::Value::List* sizes = nullptr;
   if (!GetAllocatorSubarray(heaps_v2, allocator_name, "sizes",
-                            types_list.size(), &sizes)) {
+                            types_list->size(), sizes)) {
     return false;
   }
 
   // Look up the count.
-  base::Value::ConstListView counts;
+  const base::Value::List* counts = nullptr;
   if (!GetAllocatorSubarray(heaps_v2, allocator_name, "counts",
-                            types_list.size(), &counts)) {
+                            types_list->size(), counts)) {
     return false;
   }
 
   int allocations_with_matching_type = 0;
   size_t index = 0;
-  for (size_t i = 0; i < types_list.size(); ++i) {
-    if (types_list[i].GetInt() == id_of_type) {
+  for (size_t i = 0; i < types_list->size(); ++i) {
+    if ((*types_list)[i].GetInt() == id_of_type) {
       index = i;
       ++allocations_with_matching_type;
     }
@@ -276,17 +275,17 @@ bool ValidateSamplingAllocations(base::Value* heaps_v2,
     return false;
   }
 
-  if (sizes[index].GetInt() < approximate_size / 2 ||
-      sizes[index].GetInt() > approximate_size * 2) {
-    LOG(ERROR) << "sampling size " << sizes[index].GetInt()
+  if ((*sizes)[index].GetInt() < approximate_size / 2 ||
+      (*sizes)[index].GetInt() > approximate_size * 2) {
+    LOG(ERROR) << "sampling size " << (*sizes)[index].GetInt()
                << " was not within a factor of 2 of expected size "
                << approximate_size;
     return false;
   }
 
-  if (counts[index].GetInt() < approximate_count / 2 ||
-      counts[index].GetInt() > approximate_count * 2) {
-    LOG(ERROR) << "sampling size " << counts[index].GetInt()
+  if ((*counts)[index].GetInt() < approximate_count / 2 ||
+      (*counts)[index].GetInt() > approximate_count * 2) {
+    LOG(ERROR) << "sampling size " << (*counts)[index].GetInt()
                << " was not within a factor of 2 of expected count "
                << approximate_count;
     return false;
@@ -300,7 +299,7 @@ bool ValidateProcessMmaps(base::Value* process_mmaps,
   size_t count = 0;
   if (process_mmaps) {
     vm_regions = process_mmaps->FindKey("vm_regions");
-    count = vm_regions->GetListDeprecated().size();
+    count = vm_regions->GetList().size();
   }
   if (!should_have_contents) {
     if (count != 0) {
@@ -317,7 +316,7 @@ bool ValidateProcessMmaps(base::Value* process_mmaps,
 
   // File paths may contain PII. Make sure that "mf" entries only contain the
   // basename, rather than a full path.
-  for (const base::Value& vm_region : vm_regions->GetListDeprecated()) {
+  for (const base::Value& vm_region : vm_regions->GetList()) {
     const base::Value* file_path_value = vm_region.FindKey("mf");
     if (file_path_value) {
       std::string file_path = file_path_value->GetString();
