@@ -6,6 +6,7 @@
     --icon-color: var(--google-grey-700);
     --price-chip-background: var(--google-green-50);
     --price-chip-text-color: var(--google-green-700);
+    --product-image-background: none;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -15,6 +16,7 @@
           rgba(var(--google-green-300-rgb), 0.12),
           rgba(var(--google-green-300-rgb), 0.12)), var(--google-grey-900);
       --price-chip-text-color: var(--google-green-300);
+      --product-image-background: var(--google-grey-100);
     }
   }
 
@@ -127,9 +129,11 @@
   }
 
   .product-image {
+    background: var(--product-image-background);
     height: 100%;
     margin: auto;
     object-fit: contain;
+    width: 100%;
   }
 
   .favicon-image {
