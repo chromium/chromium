@@ -193,11 +193,11 @@ template <typename OffsetMappingBuilder>
 NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::BoxInfo(
     unsigned item_index,
     const NGInlineItem& item)
-    : item_index(item_index),
+    : style(*item.Style()),
+      item_index(item_index),
       should_create_box_fragment(item.ShouldCreateBoxFragment()),
-      may_have_margin_(item.Style()->MayHaveMargin()),
-      text_metrics(item.Style()->GetFontHeight()) {
-  DCHECK(item.Style());
+      text_metrics(style.GetFontHeight()) {
+  DCHECK(&style);
 }
 
 // True if this inline box should create a box fragment when it has |child|.
@@ -206,7 +206,16 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::
     ShouldCreateBoxFragmentForChild(const BoxInfo& child) const {
   // When a child inline box has margins, the parent has different width/height
   // from the union of children.
-  if (child.may_have_margin_)
+  const ComputedStyle& child_style = child.style;
+  if (child_style.MayHaveMargin())
+    return true;
+
+  // Because a culled inline box computes its position from its first child,
+  // when the first child is shifted vertically, its position will shift too.
+  // Note, this is needed only when it's the first child, but checking it need
+  // to take collapsed spaces into account. Uncull even when it's not the first
+  // child.
+  if (child_style.VerticalAlign() != EVerticalAlign::kBaseline)
     return true;
 
   // Returns true when parent and child boxes have different font metrics, since

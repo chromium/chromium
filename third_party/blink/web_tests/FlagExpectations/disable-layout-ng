@@ -998,6 +998,7 @@ crbug.com/1017164 external/wpt/css/css-text/word-break/word-break-break-all-inli
 crbug.com/1205334 external/wpt/css/css-text/word-break/word-break-min-content-007.html [ Failure ]
 
 ### external/wpt/css/css-text-decor/
+crbug.com/1366288 external/wpt/css/css-text-decor/text-decoration-decorating-box-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text-decor/text-decoration-skip-ink-vertical-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text-decor/text-decoration-skip-ink-vertical-002.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-002.html [ Failure ]

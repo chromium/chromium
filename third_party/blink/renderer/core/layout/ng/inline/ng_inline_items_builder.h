@@ -177,9 +177,9 @@ class NGInlineItemsBuilderTemplate {
   struct BoxInfo {
     DISALLOW_NEW();
 
+    const ComputedStyle& style;
     unsigned item_index;
     bool should_create_box_fragment;
-    bool may_have_margin_;
     FontHeight text_metrics;
 
     BoxInfo(unsigned item_index, const NGInlineItem& item);

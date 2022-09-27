@@ -117,7 +117,7 @@ TEST_F(NGInlinePaintContextTest, VerticalAlign) {
     <div>
       <span id="span1" class="ul">
         span1
-        <span id="span2" sclass="up ul">
+        <span id="span2" class="up ul">
           span2
           <span id="span3" class="up">
             span3
@@ -130,12 +130,12 @@ TEST_F(NGInlinePaintContextTest, VerticalAlign) {
   NGInlineCursor cursor;
   const LayoutObject* span1 = GetLayoutObjectByElementId("span1");
   cursor.MoveToIncludingCulledInline(*span1);
-  EXPECT_EQ(StringFromTextItem(cursor), "span1");
+  EXPECT_EQ(cursor.Current().GetLayoutObject(), span1);
   const NGFragmentItem& span1_item = *cursor.Current();
 
   const LayoutObject* span2 = GetLayoutObjectByElementId("span2");
   cursor.MoveToIncludingCulledInline(*span2);
-  EXPECT_EQ(StringFromTextItem(cursor), "span2");
+  EXPECT_EQ(cursor.Current().GetLayoutObject(), span2);
   const NGFragmentItem& span2_item = *cursor.Current();
 
   const LayoutObject* span3 = GetLayoutObjectByElementId("span3");
