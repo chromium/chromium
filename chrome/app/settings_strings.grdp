@@ -937,25 +937,31 @@
   </message>
 
   <if expr="is_win or is_macosx">
-    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_LABEL" desc="The label on a button that a user can click in order to see and delete passkeys saved on their computer. For consistency, the word 'passkey' is in the glossery with translations already suggested.">
+    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_LABEL" desc="The label on a button that a user can click in order to see and delete passkeys saved on their computer. For consistency, the word 'passkey' is in the glossary with translations already suggested.">
       Manage passkeys
     </message>
-    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_NO_SUPPORT"  desc="An error message that appears when the user's version of Microsoft Windows is too old and doesn't support managing passkeys. For consistency, the word 'passkey' is in the glossery with translations already suggested">
+    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_NO_SUPPORT"  desc="An error message that appears when the user's version of Microsoft Windows is too old and doesn't support managing passkeys. For consistency, the word 'passkey' is in the glossary with translations already suggested">
       To manage passkeys, use a newer version of Windows
     </message>
-    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_TITLE" desc="The title on a page where the user can see and delete passkeys saved on their computer. For consistency, the word 'passkey' is in the glossery with translations already suggested.">
+    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_TITLE" desc="The title on a page where the user can see and delete passkeys saved on their computer. For consistency, the word 'passkey' is in the glossary with translations already suggested.">
       Passkeys
     </message>
-    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_SUB_TITLE" desc="A warning on a page where the user can see and delete passkeys saved on their computer. It communicates that the passkeys shown are stored in Windows Hello, which is a Microsoft product name, and not in the user's Google account. For consistency, the word 'passkey' is in the glossery with translations already suggested.">
+    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_SUB_TITLE" desc="A warning on a page where the user can see and delete passkeys saved on their computer. It communicates that the passkeys shown are stored in Windows Hello, which is a Microsoft product name, and not in the user's Google account. For consistency, the word 'passkey' is in the glossary with translations already suggested.">
       These passkeys are stored in Windows Hello on this computer. They aren't saved to your Google Account.
     </message>
-    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_SEARCH" desc="The label on a field that a user can use to search within a list of passkeys. For consistency, the word 'passkey' is in the glossery with translations already suggested.">
+    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_SEARCH" desc="The label on a field that a user can use to search within a list of passkeys. For consistency, the word 'passkey' is in the glossary with translations already suggested.">
       Search passkeys
     </message>
-    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_CANNOT_DELETE_TITLE" desc="The title of a dialog shown when Chromium fails to delete a passkey. For consistency, the word 'passkey' is in the glossery with translations already suggested.">
+    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_DELETE_CONFIRMATION_TITLE" desc="The title of a dialog that asks the user to confirm the deletion of a passkey. For consistency, the word 'passkey' is in the glossary with translations already suggested.">
+      Delete passkey
+    </message>
+    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_DELETE_CONFIRMATION_DESCRIPTION" desc="The body of a dialog that asks the user to confirm the deletion of a passkey. For consistency, the word 'passkey' is in the glossary with translations already suggested.">
+      Are you sure you want to delete this passkey?
+    </message>
+    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_CANNOT_DELETE_TITLE" desc="The title of a dialog shown when Chromium fails to delete a passkey. For consistency, the word 'passkey' is in the glossary with translations already suggested.">
       Can't delete passkey
     </message>
-    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_CANNOT_DELETE_BODY" desc="The body of a dialog that explains that we cannot delete certain passkeys on Windows which are involved when the user signs into the Windows computer itself. For consistency, the word 'passkey' is in the glossery with translations already suggested.">
+    <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_CANNOT_DELETE_BODY" desc="The body of a dialog that explains that we cannot delete certain passkeys on Windows which are involved when the user signs into the Windows computer itself. For consistency, the word 'passkey' is in the glossary with translations already suggested.">
       You need this passkey to sign in to your computer
     </message>
   </if>

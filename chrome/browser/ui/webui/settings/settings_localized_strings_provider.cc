@@ -1207,6 +1207,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
      IDS_AUTOFILL_MANAGE_PASSKEYS_CANNOT_DELETE_TITLE},
     {"managePasskeysCannotDeleteBody",
      IDS_AUTOFILL_MANAGE_PASSKEYS_CANNOT_DELETE_BODY},
+    {"managePasskeysDeleteConfirmationTitle",
+     IDS_AUTOFILL_MANAGE_PASSKEYS_DELETE_CONFIRMATION_TITLE},
+    {"managePasskeysDeleteConfirmationDescription",
+     IDS_AUTOFILL_MANAGE_PASSKEYS_DELETE_CONFIRMATION_DESCRIPTION},
 #endif
 #if BUILDFLAG(IS_MAC)
     {"biometricAuthenticaionForFillingLabel",

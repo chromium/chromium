@@ -288,7 +288,10 @@ build_webui("build") {
     ]
   }
   if (is_win || is_mac) {
-    web_component_files += [ "autofill_page/passkeys_subpage.ts" ]
+    web_component_files += [
+      "autofill_page/passkeys_subpage.ts",
+      "autofill_page/passkeys_delete_confirmation_dialog.ts",
+    ]
   }
   if (is_chromeos) {
     web_component_files += [ "controls/password_prompt_dialog.ts" ]

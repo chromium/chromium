@@ -90,6 +90,7 @@ export {BlockingRequestManager} from './autofill_page/blocking_request_manager.j
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';
 // <if expr="is_win or is_macosx">
 export {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './autofill_page/passkeys_browser_proxy.js';
+export {SettingsPasskeysDeleteConfirmationDialogElement} from './autofill_page/passkeys_delete_confirmation_dialog.js';
 export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';
 // </if>
 export {SettingsPasswordCheckElement} from './autofill_page/password_check.js';
