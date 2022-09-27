@@ -7,7 +7,6 @@
 #include <errno.h>
 #include <limits.h>
 
-#include <algorithm>
 #include <cstring>
 #include <string>
 #include <unordered_map>
@@ -18,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
@@ -310,10 +310,8 @@ std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromNameservers(
 std::string GetDohProviderIdForHistogramFromServerConfig(
     const DnsOverHttpsServerConfig& doh_server) {
   const auto& entries = DohProviderEntry::GetList();
-  const auto it =
-      std::find_if(entries.begin(), entries.end(), [&](const auto* entry) {
-        return entry->doh_server_config == doh_server;
-      });
+  const auto it = base::ranges::find(entries, doh_server,
+                                     &DohProviderEntry::doh_server_config);
   return it != entries.end() ? (*it)->provider : "Other";
 }
 

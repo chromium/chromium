@@ -4,7 +4,6 @@
 
 #include "net/socket/transport_client_socket_pool.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -19,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1510,14 +1510,11 @@ std::unique_ptr<ConnectJob> TransportClientSocketPool::Group::RemoveUnboundJob(
   SanityCheck();
 
   // Check that |job| is in the list.
-  auto it = std::find_if(jobs_.begin(), jobs_.end(),
-                         [job](const std::unique_ptr<ConnectJob>& ptr) {
-                           return ptr.get() == job;
-                         });
+  auto it = base::ranges::find(jobs_, job, &std::unique_ptr<ConnectJob>::get);
   DCHECK(it != jobs_.end());
 
   // Check if |job| is in the unassigned jobs list. If so, remove it.
-  auto it2 = std::find(unassigned_jobs_.begin(), unassigned_jobs_.end(), job);
+  auto it2 = base::ranges::find(unassigned_jobs_, job);
   if (it2 != unassigned_jobs_.end()) {
     unassigned_jobs_.erase(it2);
   } else {
@@ -1625,13 +1622,9 @@ void TransportClientSocketPool::Group::SanityCheck() const {
       ConnectJob* job = pointer.value()->job();
       DCHECK(job);
       // The request's job is not in |unassigned_jobs_|
-      DCHECK(std::find(unassigned_jobs_.begin(), unassigned_jobs_.end(), job) ==
-             unassigned_jobs_.end());
+      DCHECK(!base::Contains(unassigned_jobs_, job));
       // The request's job is in |jobs_|
-      DCHECK(std::find_if(jobs_.begin(), jobs_.end(),
-                          [job](const std::unique_ptr<ConnectJob>& ptr) {
-                            return ptr.get() == job;
-                          }) != jobs_.end());
+      DCHECK(base::Contains(jobs_, job, &std::unique_ptr<ConnectJob>::get));
       // The same job is not assigned to any other request with a job.
       RequestQueue::Pointer pointer2 =
           unbound_requests_.GetNextTowardsLastMin(pointer);
@@ -1652,20 +1645,17 @@ void TransportClientSocketPool::Group::SanityCheck() const {
   for (auto it = unassigned_jobs_.begin(); it != unassigned_jobs_.end(); ++it) {
     // Check that all unassigned jobs are in |jobs_|
     ConnectJob* job = *it;
-    DCHECK(std::find_if(jobs_.begin(), jobs_.end(),
-                        [job](const std::unique_ptr<ConnectJob>& ptr) {
-                          return ptr.get() == job;
-                        }) != jobs_.end());
+    DCHECK(base::Contains(jobs_, job, &std::unique_ptr<ConnectJob>::get));
     // Check that there are no duplicated entries in |unassigned_jobs_|
     for (auto it2 = std::next(it); it2 != unassigned_jobs_.end(); ++it2) {
       DCHECK_NE(job, *it2);
     }
 
     // Check that no |unassigned_jobs_| are in |bound_requests_|.
-    DCHECK(std::find_if(bound_requests_.begin(), bound_requests_.end(),
-                        [job](const BoundRequest& bound_request) {
-                          return bound_request.connect_job.get() == job;
-                        }) == bound_requests_.end());
+    DCHECK(!base::Contains(bound_requests_, job,
+                           [](const BoundRequest& bound_request) {
+                             return bound_request.connect_job.get();
+                           }));
   }
 #endif
 }
@@ -1935,8 +1925,7 @@ TransportClientSocketPool::Group::FindUnboundRequestWithJob(
       return pointer;
   }
   // If a request with the job was not found, it must be in |unassigned_jobs_|.
-  DCHECK(std::find(unassigned_jobs_.begin(), unassigned_jobs_.end(), job) !=
-         unassigned_jobs_.end());
+  DCHECK(base::Contains(unassigned_jobs_, job));
   return RequestQueue::Pointer();
 }
 

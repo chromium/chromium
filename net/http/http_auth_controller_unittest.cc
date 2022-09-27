@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "net/base/net_errors.h"
@@ -147,8 +148,8 @@ TEST(HttpAuthControllerTest, Logging) {
   // There should be at least two events.
   ASSERT_GE(entries.size(), 2u);
 
-  auto begin = std::find_if(
-      entries.begin(), entries.end(), [](const NetLogEntry& e) -> bool {
+  auto begin =
+      base::ranges::find_if(entries, [](const NetLogEntry& e) {
         if (e.type != NetLogEventType::AUTH_CONTROLLER ||
             e.phase != NetLogEventPhase::BEGIN)
           return false;
@@ -163,12 +164,10 @@ TEST(HttpAuthControllerTest, Logging) {
         return true;
       });
   EXPECT_TRUE(begin != entries.end());
-  auto end = std::find_if(++begin, entries.end(),
-                          [](const NetLogEntry& e) -> bool {
-                            return e.type == NetLogEventType::AUTH_CONTROLLER &&
-                                   e.phase == NetLogEventPhase::END;
-                          });
-  EXPECT_TRUE(end != entries.end());
+  EXPECT_TRUE(std::any_of(++begin, entries.end(), [](const NetLogEntry& e) {
+    return e.type == NetLogEventType::AUTH_CONTROLLER &&
+           e.phase == NetLogEventPhase::END;
+  }));
 }
 
 // If an HttpAuthHandler indicates that it doesn't allow explicit

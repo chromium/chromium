@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -126,10 +127,8 @@ bool ProxyConfigServiceWin::AddKeyToWatchList(HKEY rootkey,
 
 void ProxyConfigServiceWin::OnObjectSignaled(base::win::RegKey* key) {
   // Figure out which registry key signalled this change.
-  auto it = std::find_if(keys_to_watch_.begin(), keys_to_watch_.end(),
-                         [key](const std::unique_ptr<base::win::RegKey>& ptr) {
-                           return ptr.get() == key;
-                         });
+  auto it = base::ranges::find(keys_to_watch_, key,
+                               &std::unique_ptr<base::win::RegKey>::get);
   DCHECK(it != keys_to_watch_.end());
 
   // Keep watching the registry key.

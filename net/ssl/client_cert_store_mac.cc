@@ -10,7 +10,6 @@
 #include <Security/SecBase.h>
 #include <Security/Security.h>
 
-#include <algorithm>
 #include <functional>
 #include <memory>
 #include <string>
@@ -23,6 +22,7 @@
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/task_runner_util.h"
@@ -228,16 +228,16 @@ void GetClientCertsImpl(
     }
 
     // Skip duplicates (a cert may be in multiple keychains).
-    auto cert_iter = std::find_if(
-        selected_identities->begin(), selected_identities->end(),
-        [&cert](
-            const std::unique_ptr<ClientCertIdentity>& other_cert_identity) {
-          return x509_util::CryptoBufferEqual(
-              cert->certificate()->cert_buffer(),
-              other_cert_identity->certificate()->cert_buffer());
-        });
-    if (cert_iter != selected_identities->end())
+    if (base::ranges::any_of(
+            *selected_identities,
+            [&cert](const std::unique_ptr<ClientCertIdentity>&
+                        other_cert_identity) {
+              return x509_util::CryptoBufferEqual(
+                  cert->certificate()->cert_buffer(),
+                  other_cert_identity->certificate()->cert_buffer());
+            })) {
       continue;
+    }
 
     // Check if the certificate issuer is allowed by the server.
     if (request.cert_authorities.empty() ||

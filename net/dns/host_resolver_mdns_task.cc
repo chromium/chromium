@@ -174,8 +174,7 @@ HostCache::Entry HostResolverMdnsTask::GetResults() const {
                               [](const Transaction& t) { return t.IsDone(); }));
 
   auto found_error =
-      std::find_if(transactions_.begin(), transactions_.end(),
-                   [](const Transaction& t) { return t.IsError(); });
+      base::ranges::find_if(transactions_, &Transaction::IsError);
   if (found_error != transactions_.end()) {
     return found_error->results();
   }

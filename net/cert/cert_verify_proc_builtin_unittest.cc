@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -530,25 +531,25 @@ TEST_F(CertVerifyProcBuiltinTest, EVNoOCSPRevocationChecks) {
 
   auto events = net_log_observer.GetEntriesForSource(verify_net_log_source);
 
-  auto event = std::find_if(events.begin(), events.end(), [](const auto& e) {
-    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT;
-  });
+  auto event = base::ranges::find(
+      events, NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT,
+      &NetLogEntry::type);
   ASSERT_NE(event, events.end());
   EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
   ASSERT_TRUE(event->params.is_dict());
   EXPECT_EQ(true, event->params.FindBoolKey("is_ev_attempt"));
 
-  event = std::find_if(++event, events.end(), [](const auto& e) {
-    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT;
-  });
+  event = base::ranges::find(++event, events.end(),
+                             NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT,
+                             &NetLogEntry::type);
   ASSERT_NE(event, events.end());
   EXPECT_EQ(net::NetLogEventPhase::NONE, event->phase);
   ASSERT_TRUE(event->params.is_dict());
   EXPECT_FALSE(event->params.FindStringKey("errors"));
 
-  event = std::find_if(++event, events.end(), [](const auto& e) {
-    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT;
-  });
+  event = base::ranges::find(
+      ++event, events.end(),
+      NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, &NetLogEntry::type);
   ASSERT_NE(event, events.end());
   EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
   ASSERT_TRUE(event->params.is_dict());

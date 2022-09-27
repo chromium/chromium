@@ -4,7 +4,6 @@
 
 #include "net/spdy/spdy_session.h"
 
-#include <algorithm>
 #include <limits>
 #include <map>
 #include <string>
@@ -19,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -473,21 +473,6 @@ size_t GetTotalSize(const T (&arr)[N]) {
   }
   return total_size;
 }
-
-// Helper class for std:find_if on STL container containing
-// SpdyStreamRequest weak pointers.
-class RequestEquals {
- public:
-  explicit RequestEquals(const base::WeakPtr<SpdyStreamRequest>& request)
-      : request_(request) {}
-
-  bool operator()(const base::WeakPtr<SpdyStreamRequest>& request) const {
-    return request_.get() == request.get();
-  }
-
- private:
-  const base::WeakPtr<SpdyStreamRequest> request_;
-};
 
 // The maximum number of concurrent streams we will ever create.  Even if
 // the server permits more, we will never exceed this limit.
@@ -1913,24 +1898,24 @@ bool SpdySession::CancelStreamRequest(
   for (int i = MINIMUM_PRIORITY; i <= MAXIMUM_PRIORITY; ++i) {
     if (priority == i)
       continue;
-    PendingStreamRequestQueue* queue = &pending_create_stream_queues_[i];
-    DCHECK(std::find_if(queue->begin(), queue->end(), RequestEquals(request)) ==
-           queue->end());
+    DCHECK(!base::Contains(pending_create_stream_queues_[i], request.get(),
+                           &base::WeakPtr<SpdyStreamRequest>::get));
   }
 #endif
 
   PendingStreamRequestQueue* queue = &pending_create_stream_queues_[priority];
   // Remove |request| from |queue| while preserving the order of the
   // other elements.
-  PendingStreamRequestQueue::iterator it =
-      std::find_if(queue->begin(), queue->end(), RequestEquals(request));
+  PendingStreamRequestQueue::iterator it = base::ranges::find(
+      *queue, request.get(), &base::WeakPtr<SpdyStreamRequest>::get);
   // The request may already be removed if there's a
   // CompleteStreamRequest() in flight.
   if (it != queue->end()) {
     it = queue->erase(it);
     // |request| should be in the queue at most once, and if it is
     // present, should not be pending completion.
-    DCHECK(std::find_if(it, queue->end(), RequestEquals(request)) ==
+    DCHECK(base::ranges::find(it, queue->end(), request.get(),
+                              &base::WeakPtr<SpdyStreamRequest>::get) ==
            queue->end());
     return true;
   }
