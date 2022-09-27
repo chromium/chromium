@@ -115,7 +115,7 @@ WebSchedulerTrackedFeatures SupportedFeaturesImpl() {
     auto feature = blink::scheduler::StringToFeature(token);
     if (feature.has_value()) {
       features.Put(feature.value());
-    } else {
+    } else if (!blink::scheduler::IsRemovedFeature(token)) {
       // |feature| might not have its value when the user is in an experimental
       // group with the feature, and the feature is already removed.
       DLOG(WARNING) << "Invalid feature string: " << token;

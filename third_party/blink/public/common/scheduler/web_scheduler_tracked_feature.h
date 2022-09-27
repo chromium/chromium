@@ -19,8 +19,10 @@ namespace scheduler {
 // for metrics-related purposes.
 // When you add a feature, be sure to add it in the lists either to
 // kDisallowedFeatures or kAllowedFeatures in BackForwardCacheImpl.
-// When you remove a feature, add its index in removed_features in
-// BackForwardCacheMetricsTest.AllFeaturesCovered.
+// When you remove a feature
+// - add its index in removed_features in
+//   BackForwardCacheMetricsTest.AllFeaturesCovered.
+// - add it to the list in IsRemovedFeature if it appear in finch configs.
 enum class WebSchedulerTrackedFeature : uint32_t {
   kMinValue = 0,
   kWebSocket = 0,
@@ -136,6 +138,10 @@ BLINK_COMMON_EXPORT std::string FeatureToShortString(
 
 BLINK_COMMON_EXPORT absl::optional<WebSchedulerTrackedFeature> StringToFeature(
     const std::string& str);
+// Returns true if there was previously a feature by this name.
+// It is not comprehensive, just enough to cover what was used in finch,
+// in order to stop warnings at startup. See https://crbug.com/1363846.
+BLINK_COMMON_EXPORT bool IsRemovedFeature(const std::string& feature);
 
 // Converts a WebSchedulerTrackedFeature to a bit for use in a bitmask.
 BLINK_COMMON_EXPORT constexpr uint64_t FeatureToBit(

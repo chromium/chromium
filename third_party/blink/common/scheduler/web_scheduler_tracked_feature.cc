@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <map>
+#include <vector>
 
 namespace blink {
 namespace scheduler {
@@ -167,6 +168,20 @@ absl::optional<WebSchedulerTrackedFeature> StringToFeature(
     return absl::nullopt;
   }
   return it->second;
+}
+
+bool IsRemovedFeature(const std::string& feature) {
+  // This is an incomplete list. It only contains features that were
+  // BFCache-enabled via finch. It does not contain all those that were removed.
+  // This function is simple, not efficient because it is called once during
+  // finch param parsing.
+  const char* removed_features[] = {"MediaSessionImplOnServiceCreated"};
+  for (const char* removed_feature : removed_features) {
+    if (feature == removed_feature) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool IsFeatureSticky(WebSchedulerTrackedFeature feature) {
