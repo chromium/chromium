@@ -44,6 +44,9 @@ const char kUnenrolledFromGoogleMobileServicesWithErrorListVersion[] =
     "unenrolled_from_google_mobile_services_with_error_list_version";
 
 const char kUPMErrorUIShownTimestamp[] = "profile.upm_error_ui_shown_timestamp";
+
+const char kTimesReenrolledToGoogleMobileServices[] =
+    "times_reenrolled_to_google_mobile_services";
 #endif
 
 #if BUILDFLAG(IS_WIN)

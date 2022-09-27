@@ -52,6 +52,9 @@ bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
 // If syncing passwords is enabled in settings.
 bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service);
 
+// If passwords are actively syncing.
+bool IsPasswordSyncActive(const syncer::SyncService* sync_service);
+
 // Active syncing account if one exists. If password sync is disabled
 // absl::nullopt will be returned.
 absl::optional<std::string> GetSyncingAccount(

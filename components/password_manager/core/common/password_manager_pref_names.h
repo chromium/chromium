@@ -109,6 +109,11 @@ extern const char kUnenrolledFromGoogleMobileServicesWithErrorListVersion[];
 // This is needed to ensure that the UI is prompted only once per given
 // time interval (currently 24h).
 extern const char kUPMErrorUIShownTimestamp[];
+
+// Integer value indicating the number of times the client was reenrolled into
+// the UPM experiment after expriencing user-unresolvable errors in
+// communication with Google Mobile Services.
+extern const char kTimesReenrolledToGoogleMobileServices[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

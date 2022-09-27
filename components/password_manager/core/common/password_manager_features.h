@@ -82,6 +82,7 @@ extern const base::Feature kUnifiedCredentialManagerDryRun;
 extern const base::Feature kUnifiedPasswordManagerAndroid;
 extern const base::Feature kUnifiedPasswordManagerErrorMessages;
 extern const base::Feature kUnifiedPasswordManagerSyncUsingAndroidBackendOnly;
+extern const base::Feature kUnifiedPasswordManagerReenrollment;
 #endif
 extern const base::Feature kUsernameFirstFlowFallbackCrowdsourcing;
 
@@ -117,6 +118,7 @@ constexpr base::FeatureParam<UpmExperimentVariation>
                                  UpmExperimentVariation::kEnableForSyncingUsers,
                                  &kUpmExperimentVariationOption};
 
+extern const base::FeatureParam<int> kMaxUPMReenrollmentAttempts;
 #endif
 
 // Field trial and corresponding parameters.

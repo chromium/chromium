@@ -56,15 +56,24 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
     // Clears cached prefs when they are not needed anymore.
     void ResetCachedPrefs();
 
+    void set_migrator(BuiltInBackendToAndroidBackendMigrator* migrator) {
+      migrator_ = migrator;
+    }
+
    private:
     // syncer::SyncServiceObserver implementation.
     void OnStateChanged(syncer::SyncService* sync) override;
+    void OnSyncCycleCompleted(syncer::SyncService* sync) override;
 
     // Pref service.
     const raw_ptr<PrefService> prefs_ = nullptr;
 
     // Set when sync_service is already initialized and can be interacted with.
     raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
+
+    // Migrator object to use in case observed sync service events should
+    // trigger migration.
+    raw_ptr<BuiltInBackendToAndroidBackendMigrator> migrator_ = nullptr;
 
     // Cached value of the configured password sync setting. Updated when the
     // user is changing sync settings, and may from
@@ -75,6 +84,9 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
     // |password_sync_configured_setting_| at the moment when the user is
     // changing sync settings. Updated when new settings take action.
     bool password_sync_applied_setting_ = false;
+
+    // If the first sync cycle after the startup has completed.
+    bool is_waiting_for_the_first_sync_cycle_ = true;
   };
 
   // Implements PasswordStoreBackend interface.

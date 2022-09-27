@@ -58,6 +58,9 @@ std::string MigrationTypeToString(
       return "NonSyncableDataMigrationToBuiltInBackend";
     case BuiltInBackendToAndroidBackendMigrator::MigrationType::kForLocalUsers:
       return "MigrationForLocalUsers";
+    case BuiltInBackendToAndroidBackendMigrator::MigrationType::
+        kReenrollmentAttempt:
+      return "ReenrollmentAttemptMigration";
     case BuiltInBackendToAndroidBackendMigrator::MigrationType::kNone:
       NOTREACHED() << "No migration should be executed.";
       return std::string();
@@ -139,7 +142,8 @@ BuiltInBackendToAndroidBackendMigrator::BuiltInBackendToAndroidBackendMigrator(
 BuiltInBackendToAndroidBackendMigrator::
     ~BuiltInBackendToAndroidBackendMigrator() = default;
 
-void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
+void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary(
+    bool should_attempt_upm_reenrollment) {
   DCHECK(features::RequiresMigrationForUnifiedPasswordManager());
 
   // Don't try to migrate passwords if there was an attempt earlier today.
@@ -149,8 +153,8 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
           password_manager::prefs::kTimeOfLastMigrationAttempt));
   if (time_passed_since_last_migration_attempt < kMigrationThreshold)
     return;
-
-  MigrationType migration_type = GetMigrationType();
+  MigrationType migration_type =
+      GetMigrationType(should_attempt_upm_reenrollment);
   if (migration_type != MigrationType::kNone)
     PrepareForMigration(migration_type);
 }
@@ -158,6 +162,11 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
 void BuiltInBackendToAndroidBackendMigrator::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_service_ = sync_service;
+}
+
+base::WeakPtr<BuiltInBackendToAndroidBackendMigrator>
+BuiltInBackendToAndroidBackendMigrator::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
@@ -171,7 +180,11 @@ void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
 }
 
 BuiltInBackendToAndroidBackendMigrator::MigrationType
-BuiltInBackendToAndroidBackendMigrator::GetMigrationType() const {
+BuiltInBackendToAndroidBackendMigrator::GetMigrationType(
+    bool should_attempt_upm_reenrollement) const {
+  if (should_attempt_upm_reenrollement)
+    return MigrationType::kReenrollmentAttempt;
+
   // Checks that pref and sync state indicate that the user needs an initial
   // migration to the android backend after enrolling into the UPM experiment.
   if (!HasMigratedToTheAndroidBackend(prefs_) &&
@@ -184,11 +197,11 @@ BuiltInBackendToAndroidBackendMigrator::GetMigrationType() const {
   // already transmitted through sync.
   // Once the local storage is supported, android backend becomes the only
   // active backend and there is no need to do this migration.
-  // Do not migrate if non-syncable data migration is already running. By the
-  // time it ends, the two backends will be identical, therefore the second
-  // migration won't be needed.
+  // Do not migrate if a migration is already running. By the time it ends, the
+  // two backends will be identical, therefore the second migration won't be
+  // needed.
   if (prefs_->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange) &&
-      !non_syncable_data_migration_in_progress_ &&
+      (migration_in_progress_type_ == MigrationType::kNone) &&
       !features::ManagesLocalPasswordsInUnifiedPasswordManager()) {
     return IsPasswordSyncEnabled(sync_service_)
                ? MigrationType::kNonSyncableToAndroidBackend
@@ -208,14 +221,7 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration(
     MigrationType migration_type) {
   prefs_->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
                     base::Time::Now().ToDoubleT());
-  if ((migration_type == MigrationType::kNonSyncableToAndroidBackend ||
-       migration_type == MigrationType::kNonSyncableToBuiltInBackend) &&
-      non_syncable_data_migration_in_progress_) {
-    // Non-syncable data migration already running. By the time it ends, the
-    // two backends will be identical, therefore the second migration is not
-    // needed.
-    return;
-  }
+  migration_in_progress_type_ = migration_type;
 
   metrics_reporter_ = std::make_unique<MigrationMetricsReporter>(
       MigrationTypeToString(migration_type));
@@ -223,7 +229,8 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration(
                                     "UnifiedPasswordManagerMigration", this);
 
   if (migration_type == MigrationType::kInitialForSyncUsers ||
-      migration_type == MigrationType::kNonSyncableToAndroidBackend) {
+      migration_type == MigrationType::kNonSyncableToAndroidBackend ||
+      migration_type == MigrationType::kReenrollmentAttempt) {
     // Sync is enabled. The synced passwords in the two backend should be
     // identical. Non-syncable data is not synced and needs to be migrated to
     // the android backend after enrolling into the experiment or after a sync
@@ -263,7 +270,6 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration(
 void BuiltInBackendToAndroidBackendMigrator::MigrateNonSyncableData(
     PasswordStoreBackend* target_backend,
     LoginsResultOrError logins_or_error) {
-  non_syncable_data_migration_in_progress_ = true;
   if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
     MigrationFinished(/*is_success=*/false);
     return;
@@ -575,8 +581,22 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
   DCHECK(metrics_reporter_);
   metrics_reporter_->ReportMetrics(is_success);
   metrics_reporter_.reset();
+
+  // Reenroll previously evicted user into the experiment if the migration has
+  // succeeded.
+  if (migration_in_progress_type_ == MigrationType::kReenrollmentAttempt &&
+      is_success) {
+    prefs_->ClearPref(password_manager::prefs::
+                          kUnenrolledFromGoogleMobileServicesDueToErrors);
+    prefs_->ClearPref(password_manager::prefs::
+                          kUnenrolledFromGoogleMobileServicesAfterApiErrorCode);
+    prefs_->SetInteger(
+        prefs::kTimesReenrolledToGoogleMobileServices,
+        prefs_->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices) + 1);
+  }
+
+  migration_in_progress_type_ = MigrationType::kNone;
   prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, false);
-  non_syncable_data_migration_in_progress_ = false;
   TRACE_EVENT_NESTABLE_ASYNC_END0("passwords",
                                   "UnifiedPasswordManagerMigration", this);
 }
