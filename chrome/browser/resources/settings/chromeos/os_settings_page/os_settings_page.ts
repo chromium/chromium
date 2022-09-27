@@ -29,12 +29,13 @@ import '../multidevice_page/multidevice_page.js';
 import '../os_bluetooth_page/os_bluetooth_page.js';
 import '../os_icons.js';
 
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {beforeNextRender, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
+import {castExists} from '../assert_extras.js';
 import {MainPageBehavior, MainPageBehaviorInterface} from '../main_page_behavior.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
 import {OSPageVisibility} from '../os_page_visibility.js';
@@ -261,9 +262,8 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
   }
 
   private getAdvancedPageTemplate_(): SettingsIdleLoadElement {
-    const el = this.shadowRoot!.getElementById('advancedPageTemplate');
-    assert(el);
-    return el as SettingsIdleLoadElement;
+    return castExists(this.shadowRoot!.querySelector<SettingsIdleLoadElement>(
+        '#advancedPageTemplate'));
   }
 
   /**
@@ -287,8 +287,8 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
     }
 
     this.advancedTogglingInProgress_ = true;
-    const toggle = this.shadowRoot!.getElementById('toggleContainer');
-    assert(toggle);
+    const toggle =
+        castExists(this.shadowRoot!.getElementById('toggleContainer'));
 
     if (!this.advancedToggleExpanded) {
       this.advancedToggleExpanded = true;

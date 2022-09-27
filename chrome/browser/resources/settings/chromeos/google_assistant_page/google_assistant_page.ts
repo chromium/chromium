@@ -17,13 +17,13 @@ import '../../settings_shared.css.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
+import {cast, castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
@@ -211,16 +211,16 @@ class SettingsGoogleAssistantPageElement extends
   }
 
   private onEnableHotwordChange_(event: Event) {
-    assertInstanceof(event.target, SettingsToggleButtonElement);
-    if (event.target.checked) {
+    const target = cast(event.target, SettingsToggleButtonElement);
+    if (target.checked) {
       this.browserProxy_.syncVoiceModelStatus();
     }
   }
 
   private onDspHotwordStateChange_() {
     const dspHotwordStateEl =
-        this.shadowRoot!.getElementById('dsp-hotword-state');
-    assertInstanceof(dspHotwordStateEl, HTMLSelectElement);
+        castExists(this.shadowRoot!.querySelector<HTMLSelectElement>(
+            '#dsp-hotword-state'));
 
     switch (Number(dspHotwordStateEl.value)) {
       case DspHotwordState.DEFAULT_ON:
@@ -282,9 +282,8 @@ class SettingsGoogleAssistantPageElement extends
     }
 
     const dspHotwordStateEl =
-        this.shadowRoot!.getElementById('dsp-hotword-state');
+        this.shadowRoot!.querySelector<HTMLSelectElement>('#dsp-hotword-state');
     if (dspHotwordStateEl) {
-      assertInstanceof(dspHotwordStateEl, HTMLSelectElement);
       dspHotwordStateEl.value = String(this.dspHotwordState_);
     }
   }

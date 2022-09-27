@@ -32,7 +32,7 @@ import {Debouncer, DomIf, microTask, mixinBehaviors, PolymerElement, timeOut} fr
 import {loadTimeData} from '../../i18n_setup.js';
 import {SettingsPrefsElement} from '../../prefs/prefs.js';
 import {Route, Router} from '../../router.js';
-import {cast} from '../assert_extras.js';
+import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
 import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
@@ -380,11 +380,12 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
   }
 
   private getDrawer_(): CrDrawerElement {
-    return cast(this.shadowRoot!.getElementById('drawer'), CrDrawerElement);
+    return castExists(
+        this.shadowRoot!.querySelector<CrDrawerElement>('#drawer'));
   }
 
   private getToolbar_(): OsToolbarElement {
-    return cast(this.shadowRoot!.querySelector('os-toolbar'), OsToolbarElement);
+    return castExists(this.shadowRoot!.querySelector('os-toolbar'));
   }
 
   private onRefreshPref_(e: CustomEvent<string>) {

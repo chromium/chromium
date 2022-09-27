@@ -23,6 +23,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {castExists} from '../assert_extras.js';
+
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, BrowserChannel, isTargetChannelMoreStable} from './about_page_browser_proxy.js';
 import {getTemplate} from './channel_switcher_dialog.html.js';
 
@@ -106,9 +108,7 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
   }
 
   private getRadioGroup_(): CrRadioGroupElement {
-    const radioGroup = this.shadowRoot!.querySelector('cr-radio-group');
-    assert(radioGroup);
-    return radioGroup;
+    return castExists(this.shadowRoot!.querySelector('cr-radio-group'));
   }
 
   private onCancelTap_() {

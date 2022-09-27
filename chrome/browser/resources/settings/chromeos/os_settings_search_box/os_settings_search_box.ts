@@ -15,8 +15,8 @@ import './os_search_result_row.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
@@ -25,6 +25,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {SearchResultsObserverInterface as PersonalizationSearchResultsObserverInterface, SearchResultsObserverReceiver as PersonalizationSearchResultsObserverReceiver} from '../../mojom-webui/personalization/search.mojom-webui.js';
 import {ParentResultBehavior, SearchResultsObserverInterface, SearchResultsObserverReceiver} from '../../mojom-webui/search/search.mojom-webui.js';
 import {Router} from '../../router.js';
+import {castExists} from '../assert_extras.js';
 import {combinedSearch, SearchResult} from '../combined_search_handler.js';
 import {recordSearch} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
@@ -282,10 +283,10 @@ class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
    * @return The <os-search-result-row> that is associated with the selectedItem
    */
   private getSelectedOsSearchResultRow_(): OsSearchResultRowElement {
-    const searchResultRowEl =
-        this.$.searchResultList.querySelector('os-search-result-row[selected]');
-    assert(searchResultRowEl, 'No OsSearchResultRow is selected.');
-    return searchResultRowEl as OsSearchResultRowElement;
+    return castExists(
+        this.$.searchResultList.querySelector<OsSearchResultRowElement>(
+            'os-search-result-row[selected]'),
+        'No OsSearchResultRow is selected.');
   }
 
   /**

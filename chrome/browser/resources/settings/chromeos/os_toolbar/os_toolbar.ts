@@ -12,8 +12,9 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import '../os_settings_search_box/os_settings_search_box.js';
 
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {castExists} from '../assert_extras.js';
 
 import {getTemplate} from './os_toolbar.html.js';
 
@@ -70,12 +71,10 @@ export class OsToolbarElement extends PolymerElement {
   private showingSearch_: boolean;
 
   getSearchField(): CrToolbarSearchFieldElement {
-    const searchBox = this.shadowRoot!.querySelector('os-settings-search-box');
-    assert(searchBox);
-    const searchField =
-        searchBox.shadowRoot!.querySelector('cr-toolbar-search-field');
-    assert(searchField);
-    return searchField;
+    const searchBox =
+        castExists(this.shadowRoot!.querySelector('os-settings-search-box'));
+    return castExists(
+        searchBox.shadowRoot!.querySelector('cr-toolbar-search-field'));
   }
 
   private onMenuTap_() {

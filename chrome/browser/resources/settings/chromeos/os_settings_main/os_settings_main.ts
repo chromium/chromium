@@ -17,11 +17,11 @@ import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
+import {assertExists, cast, castExists} from '../assert_extras.js';
 import {OSPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
@@ -136,7 +136,7 @@ class OsSettingsMainElement extends OsSettingsMainElementBase {
   }
 
   private overscrollChanged_() {
-    assert(this.offsetParent);
+    assertExists(this.offsetParent);
 
     if (!this.overscroll_ && this.boundScroll_) {
       this.offsetParent.removeEventListener('scroll', this.boundScroll_);
@@ -208,13 +208,12 @@ class OsSettingsMainElement extends OsSettingsMainElementBase {
     // Calculate the height that the overscroll padding should be set to, so
     // that the given section is displayed at the top of the viewport.
     // Find the distance from the section's top to the overscroll.
-    assert(section.offsetParent);
     const sectionTop =
-        (section.offsetParent as HTMLElement).offsetTop + section.offsetTop;
+        cast(section.offsetParent, HTMLElement).offsetTop + section.offsetTop;
     const distance = this.$.overscroll.offsetTop - sectionTop;
 
-    assert(this.offsetParent);
-    const overscroll = Math.max(0, this.offsetParent.clientHeight - distance);
+    const overscroll =
+        Math.max(0, castExists(this.offsetParent).clientHeight - distance);
     this.setOverscroll_(overscroll);
     section.scrollIntoView();
     section.focus();

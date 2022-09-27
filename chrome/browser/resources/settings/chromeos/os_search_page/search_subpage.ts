@@ -21,12 +21,12 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './search_engine.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
+import {castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
@@ -132,9 +132,8 @@ class SettingsSearchSubpageElement extends SettingsSearchSubpageElementBase {
     link.setAttribute('localized-string', subLabel);
     link.setAttribute('hidden', 'true');
     document.body.appendChild(link);
-    const container = link.shadowRoot!.getElementById('container');
-    assert(container);
-    const innerHTML = container.innerHTML;
+    const innerHTML =
+        castExists(link.shadowRoot!.getElementById('container')).innerHTML;
     document.body.removeChild(link);
     return innerHTML;
   }

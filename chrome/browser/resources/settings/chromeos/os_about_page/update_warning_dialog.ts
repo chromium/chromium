@@ -12,9 +12,10 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../../settings_shared.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {castExists} from '../assert_extras.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo} from './about_page_browser_proxy.js';
 import {getTemplate} from './update_warning_dialog.html.js';
@@ -85,8 +86,7 @@ class SettingsUpdateWarningDialogElement extends
     }
 
     const warningMessage =
-        this.shadowRoot!.querySelector('#update-warning-message');
-    assert(warningMessage);
+        castExists(this.shadowRoot!.getElementById('update-warning-message'));
     warningMessage.innerHTML = this.i18n(
         'aboutUpdateWarningMessage',
         // Convert bytes to megabytes
