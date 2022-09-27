@@ -59,6 +59,27 @@ LocalBrowserManagementStatusProvider::~LocalBrowserManagementStatusProvider() =
 
 EnterpriseManagementAuthority
 LocalBrowserManagementStatusProvider::FetchAuthority() {
+// BrowserPolicyConnector::HasMachineLevelPolicies is not supported on Chrome
+// OS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return EnterpriseManagementAuthority::NONE;
+#else
+  return g_browser_process && g_browser_process->browser_policy_connector() &&
+                 g_browser_process->browser_policy_connector()
+                     ->HasMachineLevelPolicies()
+             ? EnterpriseManagementAuthority::COMPUTER_LOCAL
+             : EnterpriseManagementAuthority::NONE;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+LocalDomainBrowserManagementStatusProvider::
+    LocalDomainBrowserManagementStatusProvider() = default;
+
+LocalDomainBrowserManagementStatusProvider::
+    ~LocalDomainBrowserManagementStatusProvider() = default;
+
+EnterpriseManagementAuthority
+LocalDomainBrowserManagementStatusProvider::FetchAuthority() {
   auto result = EnterpriseManagementAuthority::NONE;
 // BrowserPolicyConnector::HasMachineLevelPolicies is not supported on Chrome
 // OS.
