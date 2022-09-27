@@ -149,6 +149,10 @@ class HIDDetectionScreenTester extends ScreenElementApi {
     return loadTimeData.getString('hidDetectionUSBKeyboardConnected');
   }
 
+  getPointingDeviceDetectedText() {
+    return loadTimeData.getString('hidDetectionPointingDeviceConnected');
+  }
+
   getNextButtonName() {
     return loadTimeData.getString('hidDetectionContinue');
   }
