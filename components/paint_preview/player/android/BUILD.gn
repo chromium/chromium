@@ -92,7 +92,6 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
-    "//chrome/browser/flags:java",
     "//components/browser_ui/styles/android:java",
     "//components/paint_preview/browser/android:java",
     "//content/public/android:content_java",
