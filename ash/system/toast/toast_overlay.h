@@ -11,9 +11,9 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/callback.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/events/event.h"
-#include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -53,8 +53,10 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   ToastOverlay(Delegate* delegate,
                const std::u16string& text,
                const std::u16string& dismiss_text,
+               base::TimeDelta duration,
                bool show_on_lock_screen,
                bool is_managed,
+               bool persist_on_hover,
                base::RepeatingClosure dismiss_callback,
                base::RepeatingClosure expired_callback);
 
@@ -62,6 +64,8 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   ToastOverlay& operator=(const ToastOverlay&) = delete;
 
   ~ToastOverlay() override;
+
+  base::TimeTicks time_shown() const { return time_shown_; }
 
   // Shows or hides the overlay.
   void Show(bool visible);
@@ -84,12 +88,24 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   friend class DesksTestApi;
 
   class ToastDisplayObserver;
+  class ToastHoverObserver;
 
   // Returns the current bounds of the overlay, which is based on visibility.
   gfx::Rect CalculateOverlayBounds();
 
   // Executed the callback and closes the toast.
   void OnButtonClicked();
+
+  // Callback called by `hover_observer_` when the mouse hover enters or exits
+  // the toast.
+  void OnHoverStateChanged(bool is_hovering);
+
+  // Closes the toast after the toast's `duration_total_` has elapsed.
+  void OnToastExpired();
+
+  // Starts the `expiration_timer_` to call `OnToastExpired` when the remainder
+  // of the toast duration has elapsed.
+  void StartExpirationTimer();
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsScheduled() override;
@@ -111,6 +127,29 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   base::RepeatingClosure expired_callback_;
 
   gfx::Size widget_size_;
+
+  // Used to pause and resume the toast's `expiration_timer_` if
+  // we are allowing for the toast to persist on hover.
+  std::unique_ptr<ToastHoverObserver> hover_observer_;
+
+  // Duration of the toast. If the duration is not infinite, the toast should
+  // expire after the `TimeDelta` designated here has passed.
+  base::TimeDelta duration_total_;
+
+  // If we are allowing for the toast to persist on hover, then we record the
+  // `duration_elapsed_` when the toast is hovered so that we can calculate the
+  // remaining duration when the hover is removed.
+  base::TimeDelta duration_elapsed_;
+
+  // Records the time that the toast was shown so that the `ToastManagerImpl`
+  // can log it and so that we can calculate the time elapsed since showing the
+  // toast if we need to pause the `expiration_timer_`.
+  base::TimeTicks time_shown_;
+
+  // Timer that is started if `duration_total_` is not infinite. This will call
+  // the function to close the toast when the `duration_total_` time has
+  // elapsed.
+  base::OneShotTimer expiration_timer_;
 };
 
 }  // namespace ash

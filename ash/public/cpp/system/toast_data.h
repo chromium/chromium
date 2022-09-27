@@ -53,6 +53,7 @@ struct ASH_PUBLIC_EXPORT ToastData {
   bool visible_on_lock_screen;
   std::u16string dismiss_text;
   bool is_managed = false;
+  bool persist_on_hover = false;
   base::RepeatingClosure dismiss_callback;
   base::RepeatingClosure expired_callback;
   base::TimeTicks time_created;

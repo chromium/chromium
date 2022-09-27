@@ -7567,6 +7567,10 @@ TEST_F(DesksCloseAllTest, RestoreOrDestroyDeskWithToast) {
       EXPECT_FALSE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
       EXPECT_TRUE(window.is_valid());
     } else {
+      // Because undo toasts persist on hover, we need to move the cursor
+      // outside of the undo toast to start the countdown for its expiration.
+      GetEventGenerator()->MoveMouseTo(gfx::Point(0, 0));
+
       // When we wait for the undo toast to expire, `desk_1` should be
       // destroyed.
       WaitForMilliseconds(
@@ -7975,6 +7979,10 @@ TEST_F(DesksCloseAllTest, TestMetricsRecordingWhenCloseAllWindows) {
                                         ++undo_toast_expired_count);
 
     } else {
+      // Because undo toasts persist on hover, we need to move the cursor
+      // outside of the undo toast to start the countdown for its expiration.
+      GetEventGenerator()->MoveMouseTo(gfx::Point(0, 0));
+
       // When we wait for the undo toast to expire, `desk_1` should be
       // destroyed.
       WaitForMilliseconds(ToastData::kDefaultToastDuration.InMilliseconds());

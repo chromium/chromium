@@ -57,7 +57,6 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   friend class eche_app::LaunchAppHelperTest;
 
   void ShowLatest();
-  void OnDurationPassed(int toast_number);
 
   ToastOverlay* GetCurrentOverlayForTesting() { return overlay_.get(); }
   int serial_for_testing() const { return serial_; }

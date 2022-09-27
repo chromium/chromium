@@ -131,30 +131,19 @@ void ToastManagerImpl::ShowLatest() {
 
   overlay_ = std::make_unique<ToastOverlay>(
       this, current_toast_data_->text, current_toast_data_->dismiss_text,
+      current_toast_data_->duration,
       current_toast_data_->visible_on_lock_screen && locked_,
-      current_toast_data_->is_managed, current_toast_data_->dismiss_callback,
+      current_toast_data_->is_managed, current_toast_data_->persist_on_hover,
+      current_toast_data_->dismiss_callback,
       current_toast_data_->expired_callback);
   overlay_->Show(true);
 
-  if (current_toast_data_->duration != ToastData::kInfiniteDuration) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&ToastManagerImpl::OnDurationPassed,
-                       weak_ptr_factory_.GetWeakPtr(), serial_),
-        current_toast_data_->duration);
-  }
-
-  current_toast_data_->time_shown = base::TimeTicks::Now();
+  current_toast_data_->time_shown = overlay_->time_shown();
   base::UmaHistogramEnumeration("Ash.NotifierFramework.Toast.ShownCount",
                                 current_toast_data_->catalog_name);
   base::UmaHistogramMediumTimes(
       "Ash.NotifierFramework.Toast.TimeInQueue",
       base::TimeTicks::Now() - current_toast_data_->time_created);
-}
-
-void ToastManagerImpl::OnDurationPassed(int toast_number) {
-  if (overlay_ && serial_ == toast_number)
-    overlay_->Show(false);
 }
 
 void ToastManagerImpl::OnSessionStateChanged(

@@ -7,6 +7,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/hotseat_widget.h"
@@ -22,9 +23,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display_observer.h"
+#include "ui/events/event_observer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
@@ -36,6 +39,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -71,7 +75,7 @@ void AdjustWorkAreaBoundsForHotseatState(gfx::Rect& bounds,
 //  ToastDisplayObserver
 class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
  public:
-  ToastDisplayObserver(ToastOverlay* overlay) : overlay_(overlay) {}
+  explicit ToastDisplayObserver(ToastOverlay* overlay) : overlay_(overlay) {}
 
   ToastDisplayObserver(const ToastDisplayObserver&) = delete;
   ToastDisplayObserver& operator=(const ToastDisplayObserver&) = delete;
@@ -90,12 +94,60 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+//  ToastHoverObserver
+class ToastOverlay::ToastHoverObserver : public ui::EventObserver {
+ public:
+  using HoverStateChangeCallback =
+      base::RepeatingCallback<void(bool is_hovering)>;
+
+  ToastHoverObserver(aura::Window* widget_window,
+                     HoverStateChangeCallback on_hover_state_changed)
+      : event_monitor_(views::EventMonitor::CreateWindowMonitor(
+            /*event_observer=*/this,
+            widget_window,
+            {ui::ET_MOUSE_ENTERED, ui::ET_MOUSE_EXITED})),
+        on_hover_state_changed_(std::move(on_hover_state_changed)) {}
+
+  ToastHoverObserver(const ToastHoverObserver&) = delete;
+  ToastHoverObserver& operator=(const ToastHoverObserver&) = delete;
+
+  ~ToastHoverObserver() override = default;
+
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override {
+    switch (event.type()) {
+      case ui::ET_MOUSE_ENTERED:
+        on_hover_state_changed_.Run(/*is_hovering=*/true);
+        break;
+      case ui::ET_MOUSE_EXITED:
+        on_hover_state_changed_.Run(/*is_hovering=*/false);
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+
+ private:
+  // While this `EventMonitor` object exists, this object will only look for
+  // `ui::ET_MOUSE_ENTERED` and `ui::ET_MOUSE_EXITED` events that occur in the
+  // `widget_window` indicated in the constructor.
+  std::unique_ptr<views::EventMonitor> event_monitor_;
+
+  // This is run whenever the mouse enters or exits the observed window with a
+  // parameter to indicate whether the window is being hovered.
+  HoverStateChangeCallback on_hover_state_changed_;
+};
+
+///////////////////////////////////////////////////////////////////////////////
 //  ToastOverlay
 ToastOverlay::ToastOverlay(Delegate* delegate,
                            const std::u16string& text,
                            const std::u16string& dismiss_text,
+                           base::TimeDelta duration,
                            bool show_on_lock_screen,
                            bool is_managed,
+                           bool persist_on_hover,
                            base::RepeatingClosure dismiss_callback,
                            base::RepeatingClosure expired_callback)
     : delegate_(delegate),
@@ -111,7 +163,8 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
       display_observer_(std::make_unique<ToastDisplayObserver>(this)),
       dismiss_callback_(std::move(dismiss_callback)),
       expired_callback_(std::move(expired_callback)),
-      widget_size_(overlay_view_->GetPreferredSize()) {
+      widget_size_(overlay_view_->GetPreferredSize()),
+      duration_total_(duration) {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.name = "ToastOverlay";
@@ -134,6 +187,14 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
       overlay_window, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_VERTICAL);
   ::wm::SetWindowVisibilityAnimationDuration(
       overlay_window, base::Milliseconds(kSlideAnimationDurationMs));
+
+  if (persist_on_hover) {
+    DCHECK_NE(duration_total_, ToastData::kInfiniteDuration);
+    hover_observer_ = std::make_unique<ToastHoverObserver>(
+        overlay_widget_->GetNativeWindow(),
+        base::BindRepeating(&ToastOverlay::OnHoverStateChanged,
+                            base::Unretained(this)));
+  }
 
   keyboard::KeyboardUIController::Get()->AddObserver(this);
 }
@@ -165,6 +226,11 @@ void ToastOverlay::Show(bool visible) {
 
     // Notify accessibility about the overlay.
     overlay_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, false);
+
+    time_shown_ = base::TimeTicks::Now();
+
+    if (duration_total_ != ToastData::kInfiniteDuration)
+      StartExpirationTimer();
   } else {
     overlay_widget_->Hide();
   }
@@ -217,6 +283,34 @@ void ToastOverlay::OnButtonClicked() {
     dismiss_callback_.Run();
   }
   Show(/*visible=*/false);
+}
+
+void ToastOverlay::OnHoverStateChanged(bool is_hovering) {
+  DCHECK(hover_observer_);
+
+  if (!overlay_widget_->IsVisible())
+    return;
+
+  // If `is_hovering` is true, then we want to stop the `expiration_timer_` to
+  // maintain the toast while the hover persists. Otherwise we restart the
+  // timer with the remaining time for the toast.
+  if (is_hovering) {
+    duration_elapsed_ = base::TimeTicks::Now() - time_shown_;
+    expiration_timer_.Stop();
+  } else {
+    StartExpirationTimer();
+  }
+}
+
+void ToastOverlay::OnToastExpired() {
+  Show(/*visible=*/false);
+}
+
+void ToastOverlay::StartExpirationTimer() {
+  DCHECK_GE(duration_total_, duration_elapsed_);
+  expiration_timer_.Start(
+      FROM_HERE, duration_total_ - duration_elapsed_,
+      base::BindOnce(&ToastOverlay::OnToastExpired, base::Unretained(this)));
 }
 
 void ToastOverlay::OnImplicitAnimationsScheduled() {}

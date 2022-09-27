@@ -66,6 +66,14 @@ void WaitForAnimationEnded(ui::Layer* layer) {
   EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
 }
 
+// Waits for a time delta `time`.
+void WaitForTimeDelta(base::TimeDelta time) {
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), time);
+  run_loop.Run();
+}
+
 }  // namespace
 
 namespace ash {
@@ -855,17 +863,52 @@ TEST_F(ToastManagerImplTest, ExpiredCallbackRunsWhenToastOverlayClosed) {
         break;
       }
       case CancellationSource::kToastDuration: {
-        base::RunLoop run_loop;
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-            FROM_HERE, run_loop.QuitClosure(),
-            ToastData::kDefaultToastDuration);
-        run_loop.Run();
+        WaitForTimeDelta(ToastData::kDefaultToastDuration);
         break;
       }
     }
 
     EXPECT_TRUE(expired_callback_ran);
   }
+}
+
+// Tests that a toast that is created with `ToastData::persist_on_hover` set to
+// true will not expire while the mouse is hovering over it.
+TEST_F(ToastManagerImplTest, ToastsCanPersistOnHover) {
+  std::string toast_id = "TOAST_ID_" + base::NumberToString(GetToastSerial());
+
+  ToastData toast_data(toast_id, ToastCatalogName::kToastManagerUnittest,
+                       /*text=*/u"");
+  toast_data.persist_on_hover = true;
+
+  auto* toast_manager = manager();
+  toast_manager->Show(toast_data);
+  EXPECT_TRUE(toast_manager->IsRunning(toast_id));
+
+  // Wait for half of the toast duration to elapse.
+  WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
+
+  // Hover the mouse over the toast to stop the expiration countdown timer.
+  views::Widget* widget = GetCurrentWidget();
+  const gfx::Point toast_center =
+      widget->GetNativeWindow()->GetBoundsInScreen().CenterPoint();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(toast_center);
+  ASSERT_TRUE(widget->GetRootView()->IsMouseHovered());
+
+  // Wait for the remainder of the default toast duration. At this point the
+  // toast would normally expire, but because the mouse is hovered over it, it
+  // will not.
+  WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
+  ASSERT_TRUE(toast_manager->IsRunning(toast_id));
+
+  // Move the mouse away to resume the expiration countdown timer.
+  event_generator->MoveMouseTo(gfx::Point(0, 0));
+  ASSERT_FALSE(widget->GetRootView()->IsMouseHovered());
+
+  // Wait for the toast to expire now that the toast is no longer hovered.
+  WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
+  EXPECT_FALSE(toast_manager->IsRunning(toast_id));
 }
 
 }  // namespace ash
