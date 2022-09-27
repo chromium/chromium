@@ -11,7 +11,7 @@ namespace browser_watcher {
 
 // Enables activity tracking and extending crash reports with structured
 // high-level program state.
-extern const base::Feature kExtendedCrashReportingFeature;
+BASE_DECLARE_FEATURE(kExtendedCrashReportingFeature);
 
 // Name of an experiment parameter that controls whether to record browser
 // activity in-memory only.
