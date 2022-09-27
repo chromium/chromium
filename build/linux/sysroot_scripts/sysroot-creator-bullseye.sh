@@ -293,6 +293,7 @@ DEBIAN_PACKAGES="\
   libssl1.1
   libstdc++-10-dev
   libstdc++6
+  libsystemd-dev
   libsystemd0
   libtasn1-6
   libthai-dev

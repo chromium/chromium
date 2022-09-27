@@ -343,6 +343,7 @@ https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/s/speech-d
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/s/speech-dispatcher/libspeechd-dev_0.11.1-1~bpo11+1_mipsel.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/s/sqlite3/libsqlite3-0_3.34.1-3_mipsel.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/s/systemd/libsystemd0_250.4-1~bpo11+1_mipsel.deb
+https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/s/systemd/libsystemd-dev_250.4-1~bpo11+1_mipsel.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/s/systemd/libudev1_250.4-1~bpo11+1_mipsel.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/s/systemd/libudev-dev_250.4-1~bpo11+1_mipsel.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/t/tcp-wrappers/libwrap0_7.6.q-31_mipsel.deb
