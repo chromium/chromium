@@ -23,9 +23,9 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Quickoffice.csvFormattedCellCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the number of cells that contain formatting data in the default
     worksheet when a comma separated value spreadsheet is opened.
@@ -33,9 +33,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.csvNonEmptyCellCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the number of non-empty cells in the default worksheet when a comma
     separated value spreadsheet is opened.
@@ -43,9 +43,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.csvSheetCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the number of worksheets when a comma separated value spreadsheet is
     opened.
@@ -53,18 +53,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.docPageCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the page count when a compound binary format document is opened.
   </summary>
 </histogram>
 
 <histogram name="Quickoffice.docParagraphCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the paragraph count when a compound binary format document is
     opened.
@@ -72,45 +72,45 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.docSectionCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the section count when a compound binary format document is opened.
   </summary>
 </histogram>
 
 <histogram name="Quickoffice.docxPageCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the page count when an OOXML format document is opened.
   </summary>
 </histogram>
 
 <histogram name="Quickoffice.docxParagraphCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the paragraph count when an OOXML format document is opened.
   </summary>
 </histogram>
 
 <histogram name="Quickoffice.docxSectionCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the section count when an OOXML format document is opened.
   </summary>
 </histogram>
 
 <histogram name="Quickoffice.ErrorTypes" enum="QuickofficeErrorTypes"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the various different error types encountered when opening and
     reading MS Office file formats in the Quickoffice viewer. These range from
@@ -121,9 +121,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.FileFormat" enum="QuickofficeFileFormat"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the various different file types supported by Quickoffice (like MS
     Word, Excel, Powerpoint files) when they opened in the browser to measure
@@ -132,9 +132,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.pptMasterCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the number of slide masters when a compound binary format
     presentation is opened.
@@ -142,9 +142,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.pptSlideCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the slide count when a compound binary format presentation is
     opened.
@@ -152,9 +152,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.pptxMasterCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the number of slide masters when an OOXML format presentation is
     opened.
@@ -162,18 +162,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.pptxSlideCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the slide count when an OOXML format presentation is opened.
   </summary>
 </histogram>
 
 <histogram name="Quickoffice.xlsFormattedCellCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the number of cells that contain formatting data in the default
     worksheet when a compound binary format spreadsheet is opened.
@@ -181,9 +181,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.xlsNonEmptyCellCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the number of non-empty cells in the default worksheet when a
     compound binary format spreadsheet is opened.
@@ -191,9 +191,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.xlsSheetCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the number of worksheets when a compound binary format spreadsheet
     is opened.
@@ -201,9 +201,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.xlsxFormattedCellCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the number of cells that contain formatting data in the default
     worksheet when an OOXML format spreadsheet is opened.
@@ -211,9 +211,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.xlsxNonEmptyCellCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the number of non-empty cells when an OOXML format spreadsheet is
     opened.
@@ -221,9 +221,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.xlsxSheetCount" units="units"
-    expires_after="2021-02-15">
-  <owner>dpnkar@google.com</owner>
-  <owner>meenakshiv@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
     Records the number of worksheets when an OOXML format spreadsheet is opened.
   </summary>
