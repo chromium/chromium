@@ -29,16 +29,6 @@ _DISALLOW_NON_BLINK_MOJOM = (
 
 _CONFIG = [
     {
-        'paths': ['third_party/blink/'],
-        # These task runners are generally banned in blink to ensure
-        # that blink tasks remain properly labeled. See
-        # //third_party/blink/renderer/platform/scheduler/TaskSchedulingInBlink.md
-        # for more.
-        'inclass_disallowed': [
-            'base::(SingleThread|Sequenced)TaskRunner::(GetCurrentDefault|CurrentDefaultHandle)',
-        ]
-    },
-    {
         'paths': ['third_party/blink/renderer/'],
         'allowed': [
             # TODO(dcheng): Should these be in a more specific config?
@@ -728,6 +718,13 @@ _CONFIG = [
              'If you are in this case, you can use --bypass-hooks option to avoid the presubmit check when uploading your CL.'
              ),
             _DISALLOW_NON_BLINK_MOJOM,
+        ],
+        # These task runners are generally banned in blink to ensure
+        # that blink tasks remain properly labeled. See
+        # //third_party/blink/renderer/platform/scheduler/TaskSchedulingInBlink.md
+        # for more.
+        'inclass_disallowed': [
+            'base::(SingleThread|Sequenced)TaskRunner::(GetCurrentDefault|CurrentDefaultHandle)',
         ],
     },
     {
