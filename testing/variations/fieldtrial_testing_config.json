@@ -222,9 +222,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "AdpfTargetDurationMs": "9"
-                    },
                     "enable_features": [
                         "Adpf"
                     ],
