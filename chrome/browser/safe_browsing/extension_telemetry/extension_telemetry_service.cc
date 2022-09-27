@@ -20,6 +20,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_persister.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
@@ -192,6 +193,9 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     // Create signal processors.
     // Map the processors to the signals they eventually generate.
     signal_processors_.emplace(
+        ExtensionSignalType::kCookiesGetAll,
+        std::make_unique<CookiesGetAllSignalProcessor>());
+    signal_processors_.emplace(
         ExtensionSignalType::kTabsExecuteScript,
         std::make_unique<TabsExecuteScriptSignalProcessor>());
     signal_processors_.emplace(
@@ -203,6 +207,8 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
 
     // Create subscriber lists for each telemetry signal type.
     // Map the signal processors to the signals that they consume.
+    std::vector<ExtensionSignalProcessor*> subscribers_for_cookies_get_all = {
+        signal_processors_[ExtensionSignalType::kCookiesGetAll].get()};
     std::vector<ExtensionSignalProcessor*> subscribers_for_tabs_execute_script =
         {signal_processors_[ExtensionSignalType::kTabsExecuteScript].get()};
     std::vector<ExtensionSignalProcessor*>
@@ -213,6 +219,8 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     std::vector<ExtensionSignalProcessor*> subscribers_for_password_reuse = {
         signal_processors_[ExtensionSignalType::kPotentialPasswordTheft].get()};
 
+    signal_subscribers_.emplace(ExtensionSignalType::kCookiesGetAll,
+                                std::move(subscribers_for_cookies_get_all));
     signal_subscribers_.emplace(ExtensionSignalType::kTabsExecuteScript,
                                 std::move(subscribers_for_tabs_execute_script));
     signal_subscribers_.emplace(

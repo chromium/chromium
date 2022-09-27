@@ -113,6 +113,10 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryReportContactedHosts);
 // telemetry reports to SB servers.
 extern const base::Feature kExtensionTelemetryPotentialPasswordTheft;
 
+// Enables collection of arguments whenever an extension invokes the
+// cookies.getAll API call.
+BASE_DECLARE_FEATURE(kExtensionTelemetryCookiesGetAllSignal);
+
 // Determines the tag to pass to Omaha to get a file type policy.
 BASE_DECLARE_FEATURE(kFileTypePoliciesTag);
 

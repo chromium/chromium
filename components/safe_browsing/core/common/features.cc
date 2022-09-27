@@ -122,8 +122,13 @@ const base::Feature kExtensionTelemetryPotentialPasswordTheft{
     "SafeBrowsingExtensionTelemetryPotentialPasswordTheft",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kExtensionTelemetryCookiesGetAllSignal,
+             "SafeBrowsingExtensionTelemetryCookiesGetAllSignal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFileTypePoliciesTag,
+             "FileTypePoliciesTag",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
              "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
@@ -229,6 +234,7 @@ constexpr struct {
     {&kEnhancedProtectionPhase2IOS, true},
     {&kExtensionTelemetry, true},
     {&kExtensionTelemetryReportContactedHosts, true},
+    {&kExtensionTelemetryCookiesGetAllSignal, true},
     {&kExtensionTelemetryPersistence, true},
     {&kExtensionTelemetryPotentialPasswordTheft, true},
     {&kFileTypePoliciesTag, true},

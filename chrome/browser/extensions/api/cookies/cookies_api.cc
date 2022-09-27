@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/time/time.h"
@@ -19,14 +20,19 @@
 #include "chrome/browser/extensions/api/cookies/cookies_helpers.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/extensions/api/cookies.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -311,6 +317,9 @@ ExtensionFunction::ResponseAction CookiesGetAllFunction::Run() {
         base::BindOnce(&CookiesGetAllFunction::GetCookieListCallback, this));
   }
 
+  // Extension telemetry signal intercept
+  NotifyExtensionTelemetry();
+
   return RespondLater();
 }
 
@@ -349,6 +358,29 @@ void CookiesGetAllFunction::GetCookieListCallback(
     response = WithArguments();
   }
   Respond(std::move(response));
+}
+
+void CookiesGetAllFunction::NotifyExtensionTelemetry() {
+  auto* telemetry_service =
+      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context()));
+
+  if (!telemetry_service || !telemetry_service->enabled() ||
+      !base::FeatureList::IsEnabled(
+          safe_browsing::kExtensionTelemetryCookiesGetAllSignal)) {
+    return;
+  }
+
+  auto cookies_get_all_signal =
+      std::make_unique<safe_browsing::CookiesGetAllSignal>(
+          extension_id(), parsed_args_->details.domain.value_or(std::string()),
+          parsed_args_->details.name.value_or(std::string()),
+          parsed_args_->details.path.value_or(std::string()),
+          parsed_args_->details.secure.value_or(false),
+          parsed_args_->details.store_id.value_or(std::string()),
+          parsed_args_->details.url.value_or(std::string()),
+          parsed_args_->details.session.value_or(false));
+  telemetry_service->AddSignal(std::move(cookies_get_all_signal));
 }
 
 CookiesSetFunction::CookiesSetFunction()

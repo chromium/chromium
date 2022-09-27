@@ -140,6 +140,9 @@ class CookiesGetAllFunction : public ExtensionFunction {
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies);
 
+  // Notify the extension telemetry service when API is called.
+  void NotifyExtensionTelemetry();
+
   GURL url_;
   mojo::Remote<network::mojom::CookieManager> store_browser_cookie_manager_;
   std::unique_ptr<api::cookies::GetAll::Params> parsed_args_;
