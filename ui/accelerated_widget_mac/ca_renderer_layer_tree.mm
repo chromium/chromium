@@ -37,8 +37,9 @@ constexpr bool g_print_ca_layers = false;
 // Output level for VLOG.
 constexpr int kOutputLevel = 4;
 
-base::Feature kCALayerTreeOptimization{"CALayerTreeOptimization",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCALayerTreeOptimization,
+             "CALayerTreeOptimization",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 void RecordIOSurfaceHistograms(
     int changed_io_surfaces_during_commit,
