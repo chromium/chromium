@@ -23,6 +23,7 @@
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
+#include "components/search_engines/template_url.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/buildflags/buildflags.h"
@@ -139,6 +140,16 @@ class RenderViewContextMenu
   // This may return nullptr (e.g. for WebUI dialogs). Virtual to allow tests to
   // override.
   virtual Browser* GetBrowser() const;
+
+  // Returns the correct IDC for the Search by Image context menu string
+  int GetSearchForImageIdc() const;
+
+  // Returns the correct IDC for the Region Search context menu string
+  int GetRegionSearchIdc() const;
+
+  // Returns the correct provider name for the Search by Image context menu
+  // string
+  std::u16string GetImageSearchProviderName(const TemplateURL* provider) const;
 
   // Returns a (possibly truncated) version of the current selection text
   // suitable for putting in the title of a menu item.

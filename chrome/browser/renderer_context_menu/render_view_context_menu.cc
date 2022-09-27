@@ -299,9 +299,6 @@ using extensions::MenuManager;
 
 namespace {
 
-constexpr char16_t kGoogle[] = u"Google";
-constexpr char16_t kGoogleLens[] = u"Google Lens";
-
 constexpr char kOpenLinkAsProfileHistogram[] =
     "RenderViewContextMenu.OpenLinkAsProfile";
 
@@ -960,12 +957,7 @@ void RenderViewContextMenu::InitMenu() {
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE) &&
       !IsInProgressiveWebApp()) {
-    if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
-        search::DefaultSearchProviderIsGoogle(GetProfile())) {
-      AppendSearchLensForImageItems();
-    } else {
-      AppendSearchWebForImageItems();
-    }
+    AppendSearchWebForImageItems();
   }
 
   if (content_type_->SupportsGroup(
@@ -1164,6 +1156,35 @@ void RenderViewContextMenu::InitMenu() {
 
 Profile* RenderViewContextMenu::GetProfile() const {
   return Profile::FromBrowserContext(browser_context_);
+}
+
+int RenderViewContextMenu::GetSearchForImageIdc() const {
+  if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
+      search::DefaultSearchProviderIsGoogle(GetProfile())) {
+    return IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE;
+  }
+  return IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE;
+}
+
+int RenderViewContextMenu::GetRegionSearchIdc() const {
+  return search::DefaultSearchProviderIsGoogle(GetProfile())
+             ? IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH
+             : IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH;
+}
+
+std::u16string RenderViewContextMenu::GetImageSearchProviderName(
+    const TemplateURL* provider) const {
+  if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
+    // Check if string should use `Google Lens` as visual search provider or
+    // `Google`.
+    if (!base::FeatureList::IsEnabled(lens::features::kLensStandalone) ||
+        lens::features::UseGoogleAsVisualSearchProvider()) {
+      return provider->short_name();
+    }
+  }
+  // image_search_branding_label() returns the provider short name if no
+  // image_search_branding_label is set.
+  return provider->image_search_branding_label();
 }
 
 void RenderViewContextMenu::RecordUsedItem(int id) {
@@ -1680,31 +1701,9 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
   }
 
   menu_model_.AddItem(
-      IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE,
-      l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFORIMAGE,
-                                 provider->short_name()));
-}
-
-void RenderViewContextMenu::AppendSearchLensForImageItems() {
-  if (!params_.has_image_contents)
-    return;
-
-  TemplateURLService* service =
-      TemplateURLServiceFactory::GetForProfile(GetProfile());
-  const TemplateURL* const provider = service->GetDefaultSearchProvider();
-  if (!provider || provider->image_url().empty() ||
-      !provider->image_url_ref().IsValid(service->search_terms_data())) {
-    return;
-  }
-  std::u16string provider_name = std::u16string(kGoogleLens);
-  if (lens::features::UseGoogleAsVisualSearchProvider()) {
-    provider_name = std::u16string(kGoogle);
-  }
-
-  menu_model_.AddItem(
-      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE,
+      GetSearchForImageIdc(),
       l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE,
-                                 provider_name));
+                                 GetImageSearchProviderName(provider)));
 }
 
 void RenderViewContextMenu::AppendAudioItems() {
@@ -2218,29 +2217,17 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
   }
 
-  if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
-    // Check if string should use `Google Lens` as visual search provider or
-    // `Google`.
-    std::u16string provider_name = std::u16string(kGoogleLens);
-    if (lens::features::UseGoogleAsVisualSearchProvider()) {
-      provider_name = std::u16string(kGoogle);
-    }
-
-    menu_model_.AddItem(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
-                        l10n_util::GetStringFUTF16(resource_id, provider_name));
-  } else {
-    TemplateURLService* service =
-        TemplateURLServiceFactory::GetForProfile(GetProfile());
-    const TemplateURL* provider = service->GetDefaultSearchProvider();
-    // GetDefaultSearchProvider can return null in unit tests or when the
-    // default search provider is disabled by policy. In these cases, we align
-    // with the search web for image menu item by not adding the region search
-    // menu item.
-    if (provider) {
-      menu_model_.AddItem(
-          IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH,
-          l10n_util::GetStringFUTF16(resource_id, provider->short_name()));
-    }
+  TemplateURLService* service =
+      TemplateURLServiceFactory::GetForProfile(GetProfile());
+  const TemplateURL* provider = service->GetDefaultSearchProvider();
+  // GetDefaultSearchProvider can return null in unit tests or when the
+  // default search provider is disabled by policy. In these cases, we align
+  // with the search web for image menu item by not adding the region search
+  // menu item.
+  if (provider) {
+    menu_model_.AddItem(GetRegionSearchIdc(),
+                        l10n_util::GetStringFUTF16(
+                            resource_id, GetImageSearchProviderName(provider)));
   }
 }
 

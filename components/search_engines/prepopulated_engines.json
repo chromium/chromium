@@ -123,6 +123,7 @@
       "image_url_post_params": "encoded_image={google:imageThumbnail},image_url={google:imageURL},sbisrc={google:imageSearchSource},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight}",
       "side_search_param": "sidesearch",
       "side_image_search_param": "sideimagesearch",
+      "image_search_branding_label": "Google Lens",
       "alternate_urls": [
         "{google:baseURL}#q={searchTerms}",
         "{google:baseURL}search#q={searchTerms}",
