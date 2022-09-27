@@ -117,6 +117,7 @@ p {
 
 .illustration {
   display: inline;
+  width: 120px;
 }
 
 .frame-blocked {
@@ -211,7 +212,7 @@ p {
   justify-content: flex-start;
   padding: 16px;
   max-width: 276px;
-  margin: 20px auto 0;
+  margin-top: 20px;
 }
 
 #block-reason-header {
@@ -238,10 +239,6 @@ p {
 
 .secondary-button:active {
   background: var(--secondary-button-hover-fill-color);
-}
-
-picture {
-  margin: auto;
 }
 
 .primary-button, .secondary-button {
@@ -272,63 +269,40 @@ button:focus-visible {
   }
 }
 
-/* If the height is smaller than min-height, set top and bottom
-margin to 0. This will be useful for subframes. */
-@media (max-height: 315px) {
-  .frame-blocked {
-    margin-top: 0;
-  }
-}
-
-@media (max-width: 420px) {
-
-  button,
-  [dir='rtl'] button,
-  .small-link {
-    float: none;
-    width: 100%;
-  }
-
-  .details-button {
-    margin-top: 20px;
-  }
-}
-
 @media (max-width: 480px) {
+  html,
+  body,
+  .frame-blocked {
+    height: 100%;
+  }
 
-  body * {
+  body {
     padding: 0;
     margin: auto;
   }
 
   button,
   [dir='rtl'] button {
-    width: initial;
+    width: 100%;
+    padding: 10px;
   }
 
-  button {
-    margin: 0 4px 16px 4px;
-  }
-
-  .illustration {
-    display: none;
+  .primary-button, .secondary-button {
+      margin: 0 0 24px 0;
   }
 
   .frame-blocked {
-    align-items: center;
-    background-color: rgba(232, 234, 237, .38);
     border-radius: 12px;
-    padding: 0 8px;
-    width: 284px;
+    margin-top: 0;
+    padding: 0 32px;
   }
 
   .message-container {
-    align-items: center;
+    margin-top: 50px;
   }
 
   #main-message {
     margin-top: 32px;
-    text-align: center;
   }
 
   #custodians-information {
@@ -340,17 +314,19 @@ margin to 0. This will be useful for subframes. */
   }
 
   .custodian-contact {
-    height: 24px;
+    height: 32px;
   }
 
   .avatar-img {
-    height: 24px;
-    width: 24px;
+    height: 32px;
+    width: 32px;
   }
 
   .button-container {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-    margin: 24px 0 16px;
+    margin: auto 0 16px;
   }
 
   .go-back-button {
