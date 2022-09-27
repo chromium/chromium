@@ -102,6 +102,15 @@ FaviconView* CarouselItemFaviconView() {
   return self;
 }
 
+- (void)setSelected:(BOOL)selected {
+  [super setSelected:selected];
+  if (selected) {
+    self.backgroundColor = [UIColor colorNamed:kGrey200Color];
+  } else {
+    self.backgroundColor = UIColor.clearColor;
+  }
+}
+
 - (void)addSubviews {
   // TODO(crbug.com/1365374): Add rounded corners for the cell.
   // TODO(crbug.com/1365374): Add context Menu.
@@ -161,6 +170,8 @@ FaviconView* CarouselItemFaviconView() {
                                    (UIContextMenuConfiguration*)configuration
        highlightPreviewForItemWithIdentifier:(id<NSCopying>)identifier {
   UIPreviewParameters* previewParameters = [[UIPreviewParameters alloc] init];
+  previewParameters.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   previewParameters.visiblePath =
       [UIBezierPath bezierPathWithRoundedRect:interaction.view.bounds
                                  cornerRadius:kPreviewCornerRadius];
