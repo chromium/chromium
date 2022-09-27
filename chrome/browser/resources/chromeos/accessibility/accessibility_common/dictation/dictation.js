@@ -19,7 +19,6 @@ const StopEvent = chrome.speechRecognitionPrivate.SpeechRecognitionStopEvent;
 const SpeechRecognitionType =
     chrome.speechRecognitionPrivate.SpeechRecognitionType;
 const PrefObject = chrome.settingsPrivate.PrefObject;
-const PumpkinData = chrome.accessibilityPrivate.PumpkinData;
 
 /** Main class for the Chrome OS dictation feature. */
 export class Dictation {
@@ -65,9 +64,6 @@ export class Dictation {
 
     /** @private {?MetricsUtils} */
     this.metricsUtils_ = null;
-
-    /** @private {boolean} */
-    this.isPumpkinEnabled_ = false;
 
     /** @private {?FocusHandler} */
     this.focusHandler_ = null;
@@ -136,8 +132,6 @@ export class Dictation {
     // Browser process.
     chrome.accessibilityPrivate.onToggleDictation.addListener(
         this.onToggleDictationListener_);
-
-    this.maybeInstallPumpkin_();
   }
 
   /**
@@ -166,20 +160,6 @@ export class Dictation {
     if (this.inputController_) {
       this.inputController_.removeListeners();
     }
-  }
-
-  /** @private */
-  maybeInstallPumpkin_() {
-    const pumpkinFeature = chrome.accessibilityPrivate.AccessibilityFeature
-                               .DICTATION_PUMPKIN_PARSING;
-    chrome.accessibilityPrivate.isFeatureEnabled(pumpkinFeature, enabled => {
-      this.isPumpkinEnabled_ = enabled;
-      if (enabled) {
-        chrome.accessibilityPrivate.installPumpkinForDictation(data => {
-          this.onPumpkinInstalled_(data);
-        });
-      }
-    });
   }
 
   /**
@@ -529,19 +509,6 @@ export class Dictation {
   static removeAsInputMethod() {
     chrome.languageSettingsPrivate.removeInputMethod(
         InputController.IME_ENGINE_ID);
-  }
-
-  /**
-   * @param {PumpkinData} data
-   * @private
-   */
-  onPumpkinInstalled_(data) {
-    if (!this.isPumpkinEnabled_ || !data) {
-      return;
-    }
-
-    // TODO(akihiroota): Either instantiate a new Web Worker or sandboxed
-    // iframe to execute Pumpkin code.
   }
 
   /**

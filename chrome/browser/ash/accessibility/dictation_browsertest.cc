@@ -1632,28 +1632,27 @@ class DictationPumpkinInstallTest : public DictationTest {
   void SetUpOnMainThread() override {
     // Initialize Pumpkin DLC directory.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    base::ScopedTempDir pumpkin_root_dir;
-    ASSERT_TRUE(pumpkin_root_dir.CreateUniqueTempDir());
+    ASSERT_TRUE(pumpkin_root_dir_.CreateUniqueTempDir());
     // Create subdirectories for each locale supported by Pumpkin.
     std::vector<std::string> locales{"en_us", "fr_fr", "it_it", "de_de",
                                      "es_es"};
-    std::vector<base::ScopedTempDir> sub_dirs(locales.size());
     for (size_t i = 0; i < locales.size(); ++i) {
+      sub_dirs_.push_back(std::make_unique<base::ScopedTempDir>());
       ASSERT_TRUE(
-          sub_dirs[i].Set(pumpkin_root_dir.GetPath().Append(locales[i])));
+          sub_dirs_[i]->Set(pumpkin_root_dir_.GetPath().Append(locales[i])));
     }
 
     // Create fake DLC files.
-    AccessibilityManager::Get()->SetDlcPathForTest(pumpkin_root_dir.GetPath());
+    AccessibilityManager::Get()->SetDlcPathForTest(pumpkin_root_dir_.GetPath());
     std::string content = "Fake DLC file content";
     std::vector<base::FilePath> files{
-        pumpkin_root_dir.GetPath().Append("js_pumpkin_tagger_bin.js"),
-        pumpkin_root_dir.GetPath().Append("tagger_wasm_main.js"),
-        pumpkin_root_dir.GetPath().Append("tagger_wasm_main.wasm"),
+        pumpkin_root_dir_.GetPath().Append("js_pumpkin_tagger_bin.js"),
+        pumpkin_root_dir_.GetPath().Append("tagger_wasm_main.js"),
+        pumpkin_root_dir_.GetPath().Append("tagger_wasm_main.wasm"),
     };
-    for (const auto& sub_dir : sub_dirs) {
-      files.push_back(sub_dir.GetPath().Append("action_config.binarypb"));
-      files.push_back(sub_dir.GetPath().Append("pumpkin_config.binarypb"));
+    for (const auto& sub_dir : sub_dirs_) {
+      files.push_back(sub_dir->GetPath().Append("action_config.binarypb"));
+      files.push_back(sub_dir->GetPath().Append("pumpkin_config.binarypb"));
     }
     for (const auto& file : files) {
       ASSERT_TRUE(base::WriteFile(file, content));
@@ -1674,6 +1673,8 @@ class DictationPumpkinInstallTest : public DictationTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir pumpkin_root_dir_;
+  std::vector<std::unique_ptr<base::ScopedTempDir>> sub_dirs_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1686,13 +1687,7 @@ INSTANTIATE_TEST_SUITE_P(
     DictationPumpkinInstallTest,
     ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
-// TODO(crbug.com/1367156): Test is flaky on linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DictationPumpkinInstallTest DISABLED_DictationPumpkinInstallTest
-#else
-#define MAYBE_DictationPumpkinInstallTest DictationPumpkinInstallTest
-#endif
-IN_PROC_BROWSER_TEST_P(MAYBE_DictationPumpkinInstallTest, WaitForInstall) {
+IN_PROC_BROWSER_TEST_P(DictationPumpkinInstallTest, WaitForInstall) {
   // Dictation will request a Pumpkin install when it starts up. Wait for
   // the install to succeed.
   WaitForInstallToSucceed();
