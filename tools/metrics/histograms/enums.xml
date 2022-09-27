@@ -103713,7 +103713,7 @@ Called by update_scheduler_enums.py.-->
   <int value="-916174295" label="/internet"/>
   <int value="-907780721" label="/certificates"/>
   <int value="-898481268" label="/multidevice/features"/>
-  <int value="-876839853" label="/content/windowPlacement"/>
+  <int value="-876839853" label="/content/windowManagement"/>
   <int value="-842548379" label="/apps"/>
   <int value="-809146474" label="/content/location"/>
   <int value="-794215283" label="/content/images"/>
