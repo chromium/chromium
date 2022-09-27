@@ -69,6 +69,10 @@ class MODULES_EXPORT MediaStreamTrack
     MediaStreamSource::ReadyState ready_state;
   };
 
+  // See SetFromTransferredStateImplForTesting in ./test/transfer_test_utils.h.
+  using FromTransferredStateImplForTesting =
+      base::RepeatingCallback<MediaStreamTrack*(const TransferredValues&)>;
+
   // Create a MediaStreamTrack instance as a result of a transfer into this
   // context, eg when receiving a postMessage() with an MST in the transfer
   // list.
@@ -146,6 +150,15 @@ class MODULES_EXPORT MediaStreamTrack
   void Trace(Visitor* visitor) const override {
     EventTargetWithInlineData::Trace(visitor);
   }
+
+ private:
+  // Friend in order to allow setting a new impl for FromTransferredState.
+  friend void SetFromTransferredStateImplForTesting(
+      FromTransferredStateImplForTesting impl);
+  // Provides access to the global mock impl of FromTransferredState. Set to
+  // base::NullCallback() to restore the real impl.
+  static FromTransferredStateImplForTesting&
+  GetFromTransferredStateImplForTesting();
 };
 
 typedef HeapVector<Member<MediaStreamTrack>> MediaStreamTrackVector;

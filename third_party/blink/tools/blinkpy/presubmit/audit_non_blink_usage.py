@@ -1807,6 +1807,15 @@ _CONFIG = [
             'net::ParseMimeTypeWithoutParameter',
         ],
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/mediastream/media_stream_track.cc',
+        ],
+        'allowed': [
+            # Used for injecting a mock.
+            'base::NoDestructor',
+        ]
+    },
 ]
 
 

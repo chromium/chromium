@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
-#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
@@ -44,6 +43,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_video_capturer_source.h"
+#include "third_party/blink/renderer/modules/mediastream/test/transfer_test_utils.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
 #include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
@@ -1232,108 +1232,88 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
 
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      /*initial_view_size=*/gfx::Size(1, 1),
-      MakeGarbageCollected<EmptyChromeClient>());
-  auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
-      &(dummy_page_holder->GetFrame()),
-      MediaStreamVideoCapturerSource::SourceStoppedCallback(),
-      std::make_unique<MockVideoCapturerSource>());
-  auto platform_track = std::make_unique<MediaStreamVideoTrack>(
-      mock_source.get(),
-      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
-      /*enabled=*/true);
-
-  MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-                           "device_id", "device_name");
-  device.set_session_id(base::UnguessableToken::Create());
-  device.display_media_info = media::mojom::DisplayMediaInformation::New(
-      media::mojom::DisplayCaptureSurfaceType::BROWSER,
-      /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
-      /*capture_handle=*/nullptr);
-  mock_source->SetDevice(device);
-  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
-      "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
-      /*remote=*/false, std::move(mock_source));
+  const auto session_id = base::UnguessableToken::Create();
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source,
-                                                     std::move(platform_track));
-  component->SetContentHint(WebMediaStreamTrack::ContentHintType::kVideoMotion);
+      MakeTabCaptureVideoComponentForTest(&scope.GetFrame(), session_id);
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope.GetExecutionContext(), component,
       MediaStreamSource::ReadyState::kReadyStateMuted,
       /*callback=*/base::DoNothing());
   blink_track->setEnabled(false);
 
-  // Transfer the MediaStreamTrack and check if the label is correct.
+  ScopedMockMediaStreamTrackFromTransferredState mock_impl;
+
   Transferables transferables;
   transferables.media_stream_tracks.push_back(blink_track);
   v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
   v8::Local<v8::Value> result =
       RoundTripForModules(wrapper, scope, &transferables);
 
-  ASSERT_TRUE(V8MediaStreamTrack::HasInstance(result, scope.GetIsolate()));
-
-  MediaStreamTrack* new_track =
-      V8MediaStreamTrack::ToImpl(result.As<v8::Object>());
+  // Transferring should have ended the original track.
   EXPECT_TRUE(blink_track->Ended());
-  EXPECT_EQ(new_track->id(), "component_id");
-  EXPECT_EQ(new_track->label(), "test_name");
-  EXPECT_EQ(new_track->kind(), "video");
-  EXPECT_EQ(new_track->enabled(), false);
-  EXPECT_EQ(new_track->muted(), true);
-  EXPECT_EQ(new_track->ContentHint(), "motion");
-  EXPECT_EQ(new_track->readyState(), "live");
-  platform->RunUntilIdle();
-  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  ASSERT_TRUE(V8MediaStreamTrack::HasInstance(result, scope.GetIsolate()));
+  EXPECT_EQ(V8MediaStreamTrack::ToImpl(result.As<v8::Object>()),
+            mock_impl.return_value.Get());
+
+  const auto& data = mock_impl.last_argument;
+  // The assertions here match the TransferredValues in
+  // MediaStreamTrackTransferTest.TabCaptureVideoFromTransferredState. If you
+  // change this test, please augment MediaStreamTrackTransferTest to test the
+  // new scenario.
+  EXPECT_EQ(data.session_id, session_id);
+  // TODO(crbug.com/1352414): assert correct data.transfer_id
+  EXPECT_EQ(data.kind, "video");
+  EXPECT_EQ(data.id, "component_id");
+  EXPECT_EQ(data.label, "test_name");
+  EXPECT_EQ(data.enabled, false);
+  EXPECT_EQ(data.muted, true);
+  EXPECT_EQ(data.content_hint,
+            WebMediaStreamTrack::ContentHintType::kVideoMotion);
+  EXPECT_EQ(data.ready_state, MediaStreamSource::ReadyState::kReadyStateLive);
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, TransferAudioMediaStreamTrack) {
   V8TestingScope scope;
 
-  auto mock_source = std::make_unique<MediaStreamAudioSource>(
-      blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-      /*is_local_source=*/true);
-  auto platform_track =
-      std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/true);
-
-  MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-                           "device_id", "device_name");
-  device.set_session_id(base::UnguessableToken::Create());
-  device.display_media_info = media::mojom::DisplayMediaInformation::New(
-      media::mojom::DisplayCaptureSurfaceType::BROWSER,
-      /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
-      /*capture_handle=*/nullptr);
-  mock_source->SetDevice(device);
-  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
-      "test_id", MediaStreamSource::StreamType::kTypeAudio, "test_name",
-      /*remote=*/false, std::move(mock_source));
+  const auto session_id = base::UnguessableToken::Create();
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source,
-                                                     std::move(platform_track));
-  component->SetContentHint(WebMediaStreamTrack::ContentHintType::kAudioSpeech);
+      MakeTabCaptureAudioComponentForTest(session_id);
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope.GetExecutionContext(), component,
       MediaStreamSource::ReadyState::kReadyStateMuted,
       /*callback=*/base::DoNothing());
+
+  ScopedMockMediaStreamTrackFromTransferredState mock_impl;
 
   Transferables transferables;
   transferables.media_stream_tracks.push_back(blink_track);
   v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
   v8::Local<v8::Value> result =
       RoundTripForModules(wrapper, scope, &transferables);
-  ASSERT_TRUE(V8MediaStreamTrack::HasInstance(result, scope.GetIsolate()));
 
-  MediaStreamTrack* new_track =
-      V8MediaStreamTrack::ToImpl(result.As<v8::Object>());
+  // Transferring should have ended the original track.
   EXPECT_TRUE(blink_track->Ended());
-  EXPECT_EQ(new_track->id(), "component_id");
-  EXPECT_EQ(new_track->label(), "test_name");
-  EXPECT_EQ(new_track->kind(), "audio");
-  EXPECT_EQ(new_track->enabled(), true);
-  EXPECT_EQ(new_track->muted(), true);
-  EXPECT_EQ(new_track->ContentHint(), "speech");
-  EXPECT_EQ(new_track->readyState(), "live");
+
+  ASSERT_TRUE(V8MediaStreamTrack::HasInstance(result, scope.GetIsolate()));
+  EXPECT_EQ(V8MediaStreamTrack::ToImpl(result.As<v8::Object>()),
+            mock_impl.return_value.Get());
+
+  const auto& data = mock_impl.last_argument;
+  // The assertions here match the TransferredValues in
+  // MediaStreamTrackTransferTest.TabCaptureAudioFromTransferredState. If you
+  // change this test, please augment MediaStreamTrackTransferTest to test the
+  // new scenario.
+  EXPECT_EQ(data.session_id, session_id);
+  // TODO(crbug.com/1352414): assert correct data.transfer_id
+  EXPECT_EQ(data.kind, "audio");
+  EXPECT_EQ(data.id, "component_id");
+  EXPECT_EQ(data.label, "test_name");
+  EXPECT_EQ(data.enabled, true);
+  EXPECT_EQ(data.muted, true);
+  EXPECT_EQ(data.content_hint,
+            WebMediaStreamTrack::ContentHintType::kAudioSpeech);
+  EXPECT_EQ(data.ready_state, MediaStreamSource::ReadyState::kReadyStateLive);
 }
 
 TEST(V8ScriptValueSerializerForModulesTest,
@@ -1341,11 +1321,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
 
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      /*initial_view_size=*/gfx::Size(1, 1),
-      MakeGarbageCollected<EmptyChromeClient>());
   auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
-      &(dummy_page_holder->GetFrame()),
+      &scope.GetFrame(),
       MediaStreamVideoCapturerSource::SourceStoppedCallback(),
       std::make_unique<MockVideoCapturerSource>());
   auto platform_track = std::make_unique<MediaStreamVideoTrack>(
@@ -1391,11 +1368,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
 
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      /*initial_view_size=*/gfx::Size(1, 1),
-      MakeGarbageCollected<EmptyChromeClient>());
   auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
-      &(dummy_page_holder->GetFrame()),
+      &scope.GetFrame(),
       MediaStreamVideoCapturerSource::SourceStoppedCallback(),
       std::make_unique<MockVideoCapturerSource>());
   auto platform_track = std::make_unique<MediaStreamVideoTrack>(
@@ -1445,11 +1419,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
 
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      /*initial_view_size=*/gfx::Size(1, 1),
-      MakeGarbageCollected<EmptyChromeClient>());
   auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
-      &(dummy_page_holder->GetFrame()),
+      &scope.GetFrame(),
       MediaStreamVideoCapturerSource::SourceStoppedCallback(),
       std::make_unique<MockVideoCapturerSource>());
   auto platform_track = std::make_unique<MediaStreamVideoTrack>(
@@ -1503,33 +1474,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
                                  ExceptionState::kExecutionContext, "Window",
                                  "postMessage");
 
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      /*initial_view_size=*/gfx::Size(1, 1),
-      MakeGarbageCollected<EmptyChromeClient>());
-  auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
-      &(dummy_page_holder->GetFrame()),
-      MediaStreamVideoCapturerSource::SourceStoppedCallback(),
-      std::make_unique<MockVideoCapturerSource>());
-  auto platform_track = std::make_unique<MediaStreamVideoTrack>(
-      mock_source.get(),
-      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
-      /*enabled=*/true);
-
-  MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-                           "device_id", "device_name");
-  device.set_session_id(base::UnguessableToken::Create());
-  device.display_media_info = media::mojom::DisplayMediaInformation::New(
-      media::mojom::DisplayCaptureSurfaceType::BROWSER,
-      /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
-      /*capture_handle=*/nullptr);
-  mock_source->SetDevice(device);
-  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
-      "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
-      /*remote=*/false, std::move(mock_source));
-  MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source,
-                                                     std::move(platform_track));
-  component->SetContentHint(WebMediaStreamTrack::ContentHintType::kVideoMotion);
+  MediaStreamComponent* component = MakeTabCaptureVideoComponentForTest(
+      &scope.GetFrame(), base::UnguessableToken::Create());
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope.GetExecutionContext(), component,
       MediaStreamSource::ReadyState::kReadyStateMuted,
@@ -1559,32 +1505,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
                                  ExceptionState::kExecutionContext, "Window",
                                  "postMessage");
 
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      /*initial_view_size=*/gfx::Size(1, 1),
-      MakeGarbageCollected<EmptyChromeClient>());
-  auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
-      &(dummy_page_holder->GetFrame()),
-      MediaStreamVideoCapturerSource::SourceStoppedCallback(),
-      std::make_unique<MockVideoCapturerSource>());
-  auto platform_track = std::make_unique<MediaStreamVideoTrack>(
-      mock_source.get(),
-      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
-      /*enabled=*/true);
-
-  MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-                           "device_id", "device_name");
-  device.set_session_id(base::UnguessableToken::Create());
-  device.display_media_info = media::mojom::DisplayMediaInformation::New(
-      media::mojom::DisplayCaptureSurfaceType::BROWSER,
-      /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
-      /*capture_handle=*/nullptr);
-  mock_source->SetDevice(device);
-  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
-      "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
-      /*remote=*/false, std::move(mock_source));
-  MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source,
-                                                     std::move(platform_track));
+  MediaStreamComponent* component = MakeTabCaptureVideoComponentForTest(
+      &scope.GetFrame(), base::UnguessableToken::Create());
   component->SetContentHint(
       static_cast<WebMediaStreamTrack::ContentHintType>(666));
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
@@ -1615,11 +1537,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
                                  ExceptionState::kExecutionContext, "Window",
                                  "postMessage");
 
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      /*initial_view_size=*/gfx::Size(1, 1),
-      MakeGarbageCollected<EmptyChromeClient>());
   auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
-      &(dummy_page_holder->GetFrame()),
+      &scope.GetFrame(),
       MediaStreamVideoCapturerSource::SourceStoppedCallback(),
       std::make_unique<MockVideoCapturerSource>());
   auto platform_track = std::make_unique<MediaStreamVideoTrack>(

@@ -145,6 +145,8 @@ source_set("test_support") {
     "mock_media_stream_video_source.cc",
     "mock_media_stream_video_source.h",
     "mock_video_capturer_source.h",
+    "test/transfer_test_utils.cc",
+    "test/transfer_test_utils.h",
     "testing_platform_support_with_mock_audio_capture_source.cc",
     "testing_platform_support_with_mock_audio_capture_source.h",
   ]
