@@ -3,6 +3,7 @@
 
 # TODO(crbug/1231259)
 -org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessoryIntegrationTest.testFillsSuggestionOnClick
+-org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessoryIntegrationTest.testFillsSuggestionOnClick
 
 # TODO(crbug/1345499)
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
@@ -41,3 +42,9 @@
 
 # TODO(crbug/1366098)
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantCollectUserDataIntegrationTest.testEnterPayment
+
+# TODO(crbug/1368332)
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantCollectUserDataIntegrationTest.testFailingAutofillSendsProperError
+
+# TODO(crbug/1359954)
+-org.chromium.chrome.browser.tasks.tab_management.TabSuggestionMessageCardTest.groupTabSuggestionReviewedAndAccepted

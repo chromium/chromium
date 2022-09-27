@@ -25,3 +25,6 @@
 
 # TODO(crbug.com/1365601)
 -All/DumpAccessibilityTreeTest.AccessibilityNoSourceVideo/android
+
+# TODO(crbug.com/1368352)
+-FindRequestManagers/FindRequestManagerTestWithTestConfig.NavigateFrameDuringFind/1
