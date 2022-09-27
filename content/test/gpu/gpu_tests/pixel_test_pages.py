@@ -1151,6 +1151,21 @@ class PixelTestPages():
     ]
 
   @staticmethod
+  def MediaRecorderFromCanvasPages(base_name: str) -> List[PixelTestPage]:
+    # Full cycle capture-encode-decode test for MediaRecorder capturing canvas.
+    # This test has its own basic logic for validating MediaRecorder's output,
+    # it prevents false negatives, but also makes sure that color channels
+    # are not switched and frames are not black.
+    return [
+        PixelTestPage('pixel_media_recorder_from_canvas_2d.html',
+                      base_name + '_MediaRecorderFrom2DCanvas',
+                      test_rect=[0, 0, 256, 256],
+                      browser_args=[],
+                      matching_algorithm=VERY_PERMISSIVE_SOBEL_ALGO,
+                      grace_period_end=date(2022, 10, 20))
+    ]
+
+  @staticmethod
   def VideoFromCanvasPages(base_name: str) -> List[PixelTestPage]:
     # Tests for <video> element rendering results of <canvas> capture.
     # It's important for video conference software.

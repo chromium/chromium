@@ -242,6 +242,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     SkBitmap bitmap_;
     std::unique_ptr<cc::PaintCanvas> canvas_;
     std::unique_ptr<WebGraphicsContext3DProvider> encoder_thread_context_;
+    std::vector<uint8_t> resize_buffer_;
 
     media::VideoFramePool frame_pool_;
   };
