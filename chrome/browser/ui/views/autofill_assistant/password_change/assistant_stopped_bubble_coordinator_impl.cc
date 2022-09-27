@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_stopped_bubble_coordinator.h"
@@ -24,6 +25,12 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+constexpr char kUmaKeyAssistantStoppedBubbleCloseReason[] =
+    "PasswordManager.AutomaticChange.AssistantStoppedBubbleCloseReason";
+
+}  // namespace
+
 class AssistantStoppedBubbleCoordinatorDelegate
     : public ui::DialogModelDelegate {
  public:
@@ -58,7 +65,6 @@ class AssistantStoppedBubbleCoordinatorDelegate
   const GURL url_;
   const std::string username_;
 };
-}  // namespace
 
 std::unique_ptr<AssistantStoppedBubbleCoordinator>
 AssistantStoppedBubbleCoordinator::Create(content::WebContents* web_contents,
@@ -82,9 +88,15 @@ AssistantStoppedBubbleCoordinatorImpl::AssistantStoppedBubbleCoordinatorImpl(
 
 AssistantStoppedBubbleCoordinatorImpl::
     ~AssistantStoppedBubbleCoordinatorImpl() {
-  if (widget_) {
-    widget_->Close();
+  if (record_metric_) {
+    base::UmaHistogramEnumeration(kUmaKeyAssistantStoppedBubbleCloseReason,
+                                  widget_
+                                      ? CloseReason::kBubbleClosedImplicitly
+                                      : CloseReason::kBubbleClosedExplicitly);
   }
+
+  if (widget_)
+    widget_->Close();
 }
 
 void AssistantStoppedBubbleCoordinatorImpl::CreateWidget() {
@@ -138,6 +150,7 @@ void AssistantStoppedBubbleCoordinatorImpl::Show() {
     CreateWidget();
   }
   if (web_contents()->GetVisibility() == content::Visibility::VISIBLE) {
+    record_metric_ = true;
     widget_->Show();
   }
 }
@@ -151,12 +164,19 @@ void AssistantStoppedBubbleCoordinatorImpl::Hide() {
 void AssistantStoppedBubbleCoordinatorImpl::Close() {
   if (widget_) {
     widget_->Close();
+    widget_ = nullptr;
   }
 }
 
 void AssistantStoppedBubbleCoordinatorImpl::RestartLinkClicked(
     AssistantStoppedBubbleCoordinatorDelegate* bubble_delegate) {
-  bubble_delegate->RestartScript();
+  // Since the metric is recorded here already, no action is needed in the
+  // destructor.
+  record_metric_ = false;
+  base::UmaHistogramEnumeration(kUmaKeyAssistantStoppedBubbleCloseReason,
+                                CloseReason::kRestartLinkClicked);
+  if (bubble_delegate)
+    bubble_delegate->RestartScript();
 }
 
 void AssistantStoppedBubbleCoordinatorImpl::OnTabStripModelChanged(
@@ -185,6 +205,7 @@ void AssistantStoppedBubbleCoordinatorImpl::OnVisibilityChanged(
   if (visibility == content::Visibility::HIDDEN) {
     widget_->Hide();
   } else if (visibility == content::Visibility::VISIBLE) {
+    record_metric_ = true;
     widget_->Show();
   }
 }
