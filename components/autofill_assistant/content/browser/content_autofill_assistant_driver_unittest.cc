@@ -50,6 +50,9 @@ class ContentAutofillAssistantDriverTest : public testing::Test {
     // std::make_unique.
     driver_ = base::WrapUnique(new ContentAutofillAssistantDriver(
         web_contents_->GetPrimaryMainFrame()));
+  }
+
+  void SetUp() override {
     driver_->SetAnnotateDomModelService(annotate_dom_model_service_.get());
   }
 
@@ -133,6 +136,24 @@ TEST_F(ContentAutofillAssistantDriverTest, EmptyOverrides) {
 
   // Model loaded after being requested.
   annotate_dom_model_service_->SetModelFileForTest(model_file_.Duplicate());
+
+  EXPECT_FALSE(HasPendingCallbacks());
+}
+
+class ContentAutofillAssistantDriverMissingDomServiceTest
+    : public ContentAutofillAssistantDriverTest {
+  // Do not set the dom model service.
+  void SetUp() override {}
+};
+
+TEST_F(ContentAutofillAssistantDriverMissingDomServiceTest,
+       MissingDomModelService) {
+  EXPECT_CALL(callback_,
+              Run(mojom::ModelStatus::kUnexpectedError, _, std::string()))
+      .Times(1);
+
+  driver_->GetAnnotateDomModel(/* timeout= */ base::Milliseconds(1000),
+                               callback_.Get());
 
   EXPECT_FALSE(HasPendingCallbacks());
 }
