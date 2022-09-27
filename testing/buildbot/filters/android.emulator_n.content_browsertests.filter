@@ -29,3 +29,9 @@
 
 # TODO(crbug.com/1368352)
 -FindRequestManagers/FindRequestManagerTestWithTestConfig.NavigateFrameDuringFind/1
+
+# TODO(crbug.com/1368744)
+-All/DumpAccessibilityTreeTest.AccessibilityButtonNameCalc/android
+
+# TODO(crbug.com/1368694)
+-SubresourcePartitionedCookiesOriginTrialBrowserTest.NoToken
