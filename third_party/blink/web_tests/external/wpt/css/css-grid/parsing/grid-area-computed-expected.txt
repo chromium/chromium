@@ -16,7 +16,7 @@ PASS Property grid-row-end value '1 -πA'
 PASS Property grid-column-end value '5 π_'
 PASS Property grid-area value 'span 2 i / auto / auto / auto'
 PASS Property grid-row value 'span 2 / auto'
-PASS Property grid-column-start value 'span 1 i'
+FAIL Property grid-column-start value 'span 1 i' assert_equals: expected "span i" but got "span 1 i"
 PASS Property grid-row-end value 'span 2 i'
 PASS Property grid-column-end value 'span 2'
 FAIL Property grid-row-start value 'span i' assert_equals: expected "span i" but got "span 1 i"
