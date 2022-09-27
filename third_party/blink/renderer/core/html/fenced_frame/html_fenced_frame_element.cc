@@ -254,6 +254,10 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
             "allow-top-navigation-by-user-activation."));
     RecordFencedFrameCreationOutcome(
         FencedFrameCreationOutcome::kSandboxFlagsNotSet);
+    RecordFencedFrameUnsandboxedFlags(
+        outer_element->GetExecutionContext()->GetSandboxFlags());
+    RecordFencedFrameFailedSandboxLoadInTopLevelFrame(
+        outer_element->GetDocument().GetFrame()->IsMainFrame());
     return nullptr;
   }
 

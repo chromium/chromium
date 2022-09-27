@@ -103250,6 +103250,27 @@ others/histograms.xml -->
   <int value="11" label="StartCaptureFailed"/>
 </enum>
 
+<enum name="WebSandboxFlags">
+  <int value="1" label="Navigation"/>
+  <int value="2" label="Plugins"/>
+  <int value="4" label="Origin"/>
+  <int value="8" label="Forms"/>
+  <int value="16" label="Scripts"/>
+  <int value="32" label="Top Navigation"/>
+  <int value="64" label="Popups"/>
+  <int value="128" label="Automatic Features"/>
+  <int value="256" label="Pointer Lock"/>
+  <int value="512" label="Document Domain"/>
+  <int value="1024" label="Orientation Lock"/>
+  <int value="2048" label="Propagates To Auxiliary Browsing Contexts"/>
+  <int value="4096" label="Modals"/>
+  <int value="8192" label="Presentation Controller"/>
+  <int value="16384" label="Top Navigation By User Activation"/>
+  <int value="32768" label="Downloads"/>
+  <int value="65536" label="Storage Access By User Activation"/>
+  <int value="131072" label="Top Navigation To Custom Protocols"/>
+</enum>
+
 <enum name="WebSchedulerTrackedFeature">
 <!-- Generated from third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h.
 Called by update_scheduler_enums.py.-->

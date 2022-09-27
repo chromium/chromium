@@ -7,9 +7,10 @@
 #include <cstring>
 
 #include "base/guid.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -37,16 +38,35 @@ bool IsValidUrnUuidURL(const GURL& url) {
 
 void RecordFencedFrameCreationOutcome(
     const FencedFrameCreationOutcome outcome) {
-  UMA_HISTOGRAM_ENUMERATION(kFencedFrameCreationOrNavigationOutcomeHistogram,
-                            outcome);
+  base::UmaHistogramEnumeration(
+      kFencedFrameCreationOrNavigationOutcomeHistogram, outcome);
 }
 
 void RecordOpaqueFencedFrameSizeCoercion(bool did_coerce) {
-  UMA_HISTOGRAM_BOOLEAN(kIsOpaqueFencedFrameSizeCoercedHistogram, did_coerce);
+  base::UmaHistogramBoolean(kIsOpaqueFencedFrameSizeCoercedHistogram,
+                            did_coerce);
 }
 
 void RecordFencedFrameResizedAfterSizeFrozen() {
-  UMA_HISTOGRAM_BOOLEAN(kIsFencedFrameResizedAfterSizeFrozen, true);
+  base::UmaHistogramBoolean(kIsFencedFrameResizedAfterSizeFrozen, true);
+}
+
+void RecordFencedFrameUnsandboxedFlags(network::mojom::WebSandboxFlags flags) {
+  using WebSandboxFlags = network::mojom::WebSandboxFlags;
+  for (int32_t i = 1; i <= static_cast<int32_t>(WebSandboxFlags::kMaxValue);
+       i = i << 1) {
+    WebSandboxFlags current_mask = static_cast<WebSandboxFlags>(i);
+    if ((flags & kFencedFrameMandatoryUnsandboxedFlags & current_mask) !=
+        WebSandboxFlags::kNone) {
+      base::UmaHistogramSparse(kFencedFrameMandatoryUnsandboxedFlagsSandboxed,
+                               i);
+    }
+  }
+}
+
+void RecordFencedFrameFailedSandboxLoadInTopLevelFrame(bool is_main_frame) {
+  base::UmaHistogramBoolean(kFencedFrameFailedSandboxLoadInTopLevelFrame,
+                            is_main_frame);
 }
 
 }  // namespace blink
