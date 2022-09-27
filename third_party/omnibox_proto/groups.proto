@@ -64,10 +64,6 @@ enum GroupId {
   GROUP_TRENDS_ENTITY_CHIPS = 10003;
   GROUP_RELATED_QUERIES = 10004;
   GROUP_VISITED_DOC_RELATED = 10005;
-  GROUP_POLARIS_RESERVED_7 = 10006;
-  GROUP_POLARIS_RESERVED_8 = 10007;
-  GROUP_POLARIS_RESERVED_9 = 10008;
-  GROUP_POLARIS_RESERVED_10 = 10009;
   GROUP_POLARIS_RESERVED_MAX = 19999;
   // Mobile-specific auxiliary suggestions. These suggestions (e.g. Clipboard,
   // Search-ready Omnibox, Most Visited sites) are placed on top of any other
