@@ -39,6 +39,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -827,6 +828,10 @@ void HarfBuzzShaper::ShapeSegment(
       if (caps_support.NeedsSyntheticFont(small_caps_behavior))
         adjusted_font = font_data->SmallCapsFontData(font_description).get();
     }
+
+    // https://linear.app/replay/issue/RUN-480
+    recordreplay::Assert("HarfBuzzShaper::ShapeSegment #10 %d %d %d %d",
+                         text_.Is8Bit(), text_.length(), shape_start, shape_end);
 
     CaseMappingHarfBuzzBufferFiller(
         case_map_intend, font_description.LocaleOrDefault(), range_data->buffer,

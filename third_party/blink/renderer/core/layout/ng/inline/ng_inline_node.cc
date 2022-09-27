@@ -157,6 +157,11 @@ class ReusingTextShaper final {
 
   scoped_refptr<ShapeResult> Shape(const NGInlineItem& start_item,
                                    unsigned end_offset) {
+    // https://linear.app/replay/issue/RUN-480
+    recordreplay::Assert("ReusingTextShaper::Shape %d %u",
+                         recordreplay::PointerId(start_item.GetLayoutObject()),
+                         end_offset);
+
     const unsigned start_offset = start_item.StartOffset();
     DCHECK_LT(start_offset, end_offset);
 
@@ -241,6 +246,11 @@ class ReusingTextShaper final {
   scoped_refptr<ShapeResult> Reshape(const NGInlineItem& start_item,
                                      unsigned start_offset,
                                      unsigned end_offset) {
+    // https://linear.app/replay/issue/RUN-480
+    recordreplay::Assert("ReusingTextShaper::Reshape %d %u %u",
+                         recordreplay::PointerId(start_item.GetLayoutObject()),
+                         start_offset, end_offset);
+
     DCHECK_LT(start_offset, end_offset);
     const TextDirection direction = start_item.Direction();
     const Font& font = start_item.FontWithSVGScaling();
@@ -869,9 +879,14 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
 }
 
 const NGInlineNodeData& NGInlineNode::EnsureData() const {
-  recordreplay::Assert("NGInlineNode::EnsureData Start");
+  // https://linear.app/replay/issue/RUN-480
+  recordreplay::Assert("NGInlineNode::EnsureData Start %d",
+                       recordreplay::PointerId(GetLayoutBox()));
+
   PrepareLayoutIfNeeded();
-  recordreplay::Assert("NGInlineNode::EnsureData #1");
+
+  // https://linear.app/replay/issue/RUN-480
+  recordreplay::Assert("NGInlineNode::EnsureData Done");
   return Data();
 }
 
@@ -1154,6 +1169,10 @@ void NGInlineNode::SegmentBidiRuns(NGInlineNodeData* data) const {
 void NGInlineNode::ShapeText(NGInlineItemsData* data,
                              const String* previous_text,
                              const Vector<NGInlineItem>* previous_items) const {
+  // https://linear.app/replay/issue/RUN-480
+  recordreplay::Assert("NGInlineNode::ShapeText %d",
+                       recordreplay::PointerId(GetLayoutBox()));
+
   TRACE_EVENT0("fonts", "NGInlineNode::ShapeText");
   const String& text_content = data->text_content;
   Vector<NGInlineItem>* items = &data->items;
@@ -1167,6 +1186,11 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
   for (unsigned index = 0; index < items->size();) {
     NGInlineItem& start_item = (*items)[index];
+
+    // https://linear.app/replay/issue/RUN-480
+    recordreplay::Assert("NGInlineNode::ShapeText #1 %d",
+                         recordreplay::PointerId(start_item.GetLayoutObject()));
+
     if (start_item.Type() != NGInlineItem::kText || !start_item.Length()) {
       index++;
       continue;
