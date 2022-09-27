@@ -11,16 +11,16 @@ namespace content_capture {
 
 namespace features {
 
-extern const base::Feature kContentCapture;
+BASE_DECLARE_FEATURE(kContentCapture);
 
 // ContentCapture is triggered in the unpredictable conditions which might be
 // changed on different aiai release or configuration push, this feature allows
 // us to trigger the ContentCapture independently to get the unbiased result.
-extern const base::Feature kContentCaptureTriggeringForExperiment;
+BASE_DECLARE_FEATURE(kContentCaptureTriggeringForExperiment);
 
 // ContentCapture in WebLayer, this flag is independent from the kContentCapture
 // flag.
-extern const base::Feature kContentCaptureInWebLayer;
+BASE_DECLARE_FEATURE(kContentCaptureInWebLayer);
 
 bool IsContentCaptureEnabled();
 bool ShouldTriggerContentCaptureForExperiment();
