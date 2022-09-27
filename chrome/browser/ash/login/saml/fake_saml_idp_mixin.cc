@@ -174,6 +174,10 @@ bool FakeSamlIdpMixin::IsLastChallengeResponseExists() const {
   return challenge_response_.has_value();
 }
 
+int FakeSamlIdpMixin::GetChallengeResponseCount() const {
+  return challenge_response_count_;
+}
+
 void FakeSamlIdpMixin::AssertChallengeResponseMatchesTpmResponse() const {
   ASSERT_EQ(challenge_response_.value(), GetTpmResponseBase64());
 }
@@ -386,6 +390,7 @@ FakeSamlIdpMixin::BuildHTMLResponse(const std::string& html_template,
 void FakeSamlIdpMixin::SaveChallengeResponse(const std::string& response) {
   EXPECT_EQ(challenge_response_, absl::nullopt);
   challenge_response_ = response;
+  challenge_response_count_++;
 }
 
 void FakeSamlIdpMixin::ClearChallengeResponse() {

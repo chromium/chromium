@@ -54,6 +54,7 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -181,6 +182,8 @@ constexpr char kAffiliationID[] = "some-affiliation-id";
 
 constexpr char kDeviceTrustMatchHistogramName[] =
     "Enterprise.VerifiedAccess.SAML.DeviceTrustMatchesEndpoints";
+constexpr char kDeviceTrustAttestationFunnelStep[] =
+    "Enterprise.DeviceTrust.Attestation.Funnel";
 
 // A FakeUserDataAuthClient that stores the salted and hashed secret passed
 // to MountEx().
@@ -1924,6 +1927,8 @@ class SAMLDeviceAttestationEnrolledTest : public SAMLDeviceAttestationTest {
   SAMLDeviceAttestationEnrolledTest() {
     device_state_.SetState(
         DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_connectors::kDeviceTrustConnectorEnabled);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -1931,6 +1936,7 @@ class SAMLDeviceAttestationEnrolledTest : public SAMLDeviceAttestationTest {
     stub_install_attributes_.Get()->SetCloudManaged("google.com", "device_id");
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -2067,7 +2073,8 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
 }
 
 // Verify that device attestation is not available for URLs that also match the
-// ones on the DeviceContextAwareAccessSignalsAllowlist
+// ones on the DeviceContextAwareAccessSignalsAllowlist. Instead, device trust
+// is doing the attestation handshake.
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
                        PolicyDeviceTrustMatchError) {
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
@@ -2082,9 +2089,16 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
     return;
   }
 
-  histogram_tester_.ExpectBucketCount(kDeviceTrustMatchHistogramName, true, 1);
+  // TODO(b/249082222) kDeviceTrustMatchHistogramName should get called once
+  // with value "true"
+  histogram_tester_.ExpectTotalCount(kDeviceTrustMatchHistogramName, 0);
 
-  ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
+  ASSERT_EQ(fake_saml_idp()->GetChallengeResponseCount(), 1);
+
+  histogram_tester_.ExpectBucketCount(
+      kDeviceTrustAttestationFunnelStep,
+      enterprise_connectors::DTAttestationFunnelStep::kChallengeResponseSent,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, TimeoutError) {

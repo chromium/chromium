@@ -43,6 +43,7 @@ class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
   void SetSamlResponseFile(const std::string& xml_file);
   bool DeviceTrustHeaderRecieved() const;
   bool IsLastChallengeResponseExists() const;
+  int GetChallengeResponseCount() const;
   void AssertChallengeResponseMatchesTpmResponse() const;
 
   std::string GetIdpHost() const;
@@ -115,6 +116,7 @@ class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
   bool require_http_basic_auth_ = false;
 
   bool device_trust_header_recieved_ = false;
+  int challenge_response_count_ = 0;
   absl::optional<std::string> challenge_response_;
 };
 
