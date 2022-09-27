@@ -215,7 +215,7 @@ int GetLocationPermissionsExperimentLabelPromptLimit();
 BASE_DECLARE_FEATURE(kWin10TabSearchCaptionButton);
 #endif
 
-extern const base::Feature kStopLoadingAnimationForHiddenWindow;
+BASE_DECLARE_FEATURE(kStopLoadingAnimationForHiddenWindow);
 
 }  // namespace features
 
