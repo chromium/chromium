@@ -28,6 +28,7 @@ enum class ConsentLevel;
 class PrimaryAccountMutator {
  public:
   // Error returned by SetPrimaryAccount().
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.identitymanager
   enum class PrimaryAccountError {
     // No error, the operation was successful.
     kNoError = 0,

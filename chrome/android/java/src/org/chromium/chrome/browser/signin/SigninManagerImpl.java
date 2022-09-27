@@ -45,6 +45,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.signin.identitymanager.PrimaryAccountError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SigninReason;
 import org.chromium.components.signin.metrics.SignoutDelete;
@@ -324,9 +325,12 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         @ConsentLevel
         int consentLevel =
                 mSignInState.shouldTurnSyncOn() ? ConsentLevel.SYNC : ConsentLevel.SIGNIN;
-        if (!mIdentityMutator.setPrimaryAccount(
-                    mSignInState.mCoreAccountInfo.getId(), consentLevel)) {
-            Log.w(TAG, "Failed to set the PrimaryAccount in IdentityManager, aborting signin");
+        @PrimaryAccountError
+        int primaryAccountError = mIdentityMutator.setPrimaryAccount(
+                mSignInState.mCoreAccountInfo.getId(), consentLevel);
+        if (primaryAccountError != PrimaryAccountError.NO_ERROR) {
+            Log.w(TAG, "SetPrimaryAccountError in IdentityManager: %d, aborting signin",
+                    primaryAccountError);
             abortSignIn();
             return;
         }

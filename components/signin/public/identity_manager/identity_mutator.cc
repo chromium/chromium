@@ -23,7 +23,7 @@ namespace signin {
 JniIdentityMutator::JniIdentityMutator(IdentityMutator* identity_mutator)
     : identity_mutator_(identity_mutator) {}
 
-bool JniIdentityMutator::SetPrimaryAccount(
+jint JniIdentityMutator::SetPrimaryAccount(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& primary_account_id,
     jint j_consent_level) {
@@ -35,7 +35,7 @@ bool JniIdentityMutator::SetPrimaryAccount(
       primary_account_mutator->SetPrimaryAccount(
           ConvertFromJavaCoreAccountId(env, primary_account_id),
           static_cast<ConsentLevel>(j_consent_level));
-  return error == PrimaryAccountMutator::PrimaryAccountError::kNoError;
+  return static_cast<jint>(error);
 }
 
 bool JniIdentityMutator::ClearPrimaryAccount(JNIEnv* env,

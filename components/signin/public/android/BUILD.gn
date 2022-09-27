@@ -18,6 +18,7 @@ android_library("java") {
     ":tribool_javagen",
     "//components/signin/public/base:consent_level_enum_javagen",
     "//components/signin/public/base:signin_metrics_enum_javagen",
+    "//components/signin/public/identity_manager:primary_account_mutator_enum_javagen",
   ]
 
   sources = [

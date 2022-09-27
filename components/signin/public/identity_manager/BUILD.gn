@@ -87,6 +87,12 @@ source_set("identity_manager") {
   ]
 }
 
+if (is_android) {
+  java_cpp_enum("primary_account_mutator_enum_javagen") {
+    sources = [ "primary_account_mutator.h" ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
 

@@ -53,6 +53,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerJni;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.signin.identitymanager.PrimaryAccountError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -133,7 +134,8 @@ public class SigninManagerImplTest {
 
     @Test
     public void signinAndTurnSyncOn() {
-        when(mIdentityMutator.setPrimaryAccount(any(), anyInt())).thenReturn(true);
+        when(mIdentityMutator.setPrimaryAccount(any(), anyInt()))
+                .thenReturn(PrimaryAccountError.NO_ERROR);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
 
         // There is no signed in account.  Sign in is allowed.
@@ -168,7 +170,8 @@ public class SigninManagerImplTest {
 
     @Test
     public void signinNoTurnSyncOn() {
-        when(mIdentityMutator.setPrimaryAccount(any(), anyInt())).thenReturn(true);
+        when(mIdentityMutator.setPrimaryAccount(any(), anyInt()))
+                .thenReturn(PrimaryAccountError.NO_ERROR);
 
         assertTrue(mSigninManager.isSigninAllowed());
         assertTrue(mSigninManager.isSyncOptInAllowed());
@@ -531,12 +534,12 @@ public class SigninManagerImplTest {
 
     @Test
     public void callbackNotifiedOnSignin() {
-        final Answer<Boolean> setPrimaryAccountAnswer = invocation -> {
+        final Answer<Integer> setPrimaryAccountAnswer = invocation -> {
             // From now on getPrimaryAccountInfo should return account.
             when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                          eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                     .thenReturn(ACCOUNT_INFO);
-            return true;
+            return PrimaryAccountError.NO_ERROR;
         };
         doAnswer(setPrimaryAccountAnswer)
                 .when(mIdentityMutator)
