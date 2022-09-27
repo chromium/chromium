@@ -7,15 +7,15 @@ import './provisioning_page.js';
 import './final_page.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ActivationDelegateInterface, ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetup_StartActivation_ResponseParams, CellularSetupRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
-
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonState} from './cellular_types.js';
 import {getCellularSetupRemote} from './mojo_interface_provider.js';
+import {getTemplate} from './psim_flow_ui.html.js';
 import {SubflowBehavior} from './subflow_behavior.js';
 
 /** @enum {string} */
@@ -107,7 +107,7 @@ export const FAILED_PSIM_SETUP_DURATION_METRIC_NAME =
  * flow.
  */
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'psim-flow-ui',
 
   behaviors: [

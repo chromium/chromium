@@ -768,7 +768,7 @@
       'filepath': 'chromeos/ash/services/cellular_setup/|'\
                   'chromeos/ash/components/dbus/hermes/|'\
                   'chrome/test/data/webui/cr_components/chromeos/cellular_setup/|'\
-                  'ui/webui/resources/cr_components/chromeos/cellular_setup/',
+                  'ash/webui/common/resources/cellular_setup/',
     },
     'chromeos_geolocation': {
       'filepath': 'chromeos/ash/components/geolocation/',

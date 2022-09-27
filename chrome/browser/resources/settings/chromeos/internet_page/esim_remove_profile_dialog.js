@@ -6,12 +6,12 @@
  * @fileoverview Polymer element to remove eSIM profile
  */
 
-import 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.js';
+import 'chrome://resources/ash/common/cellular_setup/cellular_setup_icons.html.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
+import {getESimProfile} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {getESimProfile} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {ESimOperationResult, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';

@@ -13,16 +13,16 @@ import './confirmation_code_page.js';
 import {hasActiveCellularNetwork} from '//resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior} from '//resources/ash/common/network/network_listener_behavior.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ESimManagerRemote, ESimOperationResult, ESimProfileRemote, EuiccRemote, ProfileInstallResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
-
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonBarState, ButtonState} from './cellular_types.js';
+import {getTemplate} from './esim_flow_ui.html.js';
 import {getEuicc, getPendingESimProfiles} from './esim_manager_utils.js';
 import {getESimManagerRemote} from './mojo_interface_provider.js';
 import {SubflowBehavior} from './subflow_behavior.js';
@@ -82,7 +82,7 @@ export const FAILED_ESIM_SETUP_DURATION_METRIC_NAME =
  * the CellularSetup service to carry out the esim activation flow.
  */
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'esim-flow-ui',
 
   behaviors: [

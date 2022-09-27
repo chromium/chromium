@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
 
-assert(is_chromeos, "CellularSetup UI is Chrome OS only.")
+assert(is_chromeos_ash, "CellularSetup UI is Chrome OS only.")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -227,25 +226,5 @@ js_library("cellular_setup") {
     "//ash/webui/common/resources/network:cellular_utils",
     "//ash/webui/common/resources/network:mojo_interface_provider",
     "//ui/webui/resources/cr_elements:i18n_behavior",
-  ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "activation_code_page.js",
-    "activation_verification_page.js",
-    "base_page.js",
-    "button_bar.js",
-    "cellular_eid_dialog.js",
-    "cellular_setup_icons.js",
-    "cellular_setup.js",
-    "confirmation_code_page.js",
-    "esim_flow_ui.js",
-    "final_page.js",
-    "profile_discovery_list_item.js",
-    "profile_discovery_list_page.js",
-    "provisioning_page.js",
-    "psim_flow_ui.js",
-    "setup_loading_page.js",
   ]
 }

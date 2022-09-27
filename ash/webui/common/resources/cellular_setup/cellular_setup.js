@@ -10,15 +10,15 @@ import './button_bar.js';
 import './psim_flow_ui.js';
 import './esim_flow_ui.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
-
+import {getTemplate} from './cellular_setup.html.js';
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonBarState, CellularSetupPageName} from './cellular_types.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'cellular-setup',
 
   behaviors: [I18nBehavior],

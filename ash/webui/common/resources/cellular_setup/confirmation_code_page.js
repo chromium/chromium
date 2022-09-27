@@ -12,13 +12,14 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './base_page.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
+import {getTemplate} from './confirmation_code_page.html.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'confirmation-code-page',
 
   behaviors: [I18nBehavior],
@@ -115,7 +116,7 @@ Polymer({
    */
   getProfileImage_() {
     return this.isDarkModeActive_ ?
-        'chrome://resources/cr_components/chromeos/cellular_setup/default_esim_profile_dark.svg' :
-        'chrome://resources/cr_components/chromeos/cellular_setup/default_esim_profile.svg';
+        'chrome://resources/ash/common/cellular_setup/default_esim_profile_dark.svg' :
+        'chrome://resources/ash/common/cellular_setup/default_esim_profile.svg';
   },
 });

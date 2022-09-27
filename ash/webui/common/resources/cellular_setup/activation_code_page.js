@@ -9,15 +9,16 @@
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../../../cr_elements/cr_input/cr_input.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
 import './base_page.js';
-import './cellular_setup_icons.js';
+import './cellular_setup_icons.html.js';
 
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink_js.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {afterNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
+import {getTemplate} from './activation_code_page.html.js';
 
 /**
  * @type {!number}
@@ -63,7 +64,7 @@ const QR_CODE_FORMAT = 'qr_code';
 const ACTIVATION_CODE_PREFIX = 'LPA:1$';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'activation-code-page',
 
   behaviors: [I18nBehavior],
@@ -395,7 +396,7 @@ Polymer({
   async detectQrCode_() {
     try {
       this.qrCodeDetectorTimer_ = this.setIntervalFunction_(
-          (async function() {
+          (async () => {
             const capturer =
                 new this.imageCaptureClass_(this.stream_.getVideoTracks()[0]);
             const frame = await capturer.grabFrame();
@@ -413,7 +414,7 @@ Polymer({
                 this.state_ = PageState.SCANNING_INSTALL_FAILURE;
               }
             }
-          }).bind(this),
+          }),
           QR_CODE_DETECTION_INTERVAL_MS);
     } catch (error) {
       this.state_ = PageState.SCANNING_FAILURE;

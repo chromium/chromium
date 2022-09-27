@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/strings.m.js';
-import 'chrome://resources/cr_components/chromeos/cellular_setup/button_bar.js';
+import 'chrome://resources/ash/common/cellular_setup/button_bar.js';
 
-import {ButtonBarState, ButtonState} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.js';
+import {ButtonBarState, ButtonState} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertTrue} from '../../../chai_assert.js';

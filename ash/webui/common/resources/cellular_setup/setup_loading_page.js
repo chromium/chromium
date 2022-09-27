@@ -7,17 +7,18 @@
  * an error. This element contains error image asset and loading animation.
  */
 import './base_page.js';
-import '../../../cr_elements/cr_hidden_style.css.js';
+import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/cr_elements/cr_lottie/cr_lottie.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
+import {getTemplate} from './setup_loading_page.html.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'setup-loading-page',
 
   behaviors: [I18nBehavior],

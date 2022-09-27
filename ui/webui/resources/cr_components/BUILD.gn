@@ -22,18 +22,6 @@ if (is_chromeos_ash) {
     grd_prefix = "cr_components"
     out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
     public_deps = [ ":preprocess" ]
-    input_files_base_dir = rebase_path(".", "//")
-    input_files = [
-      "chromeos/cellular_setup/sim_detect_error.svg",
-      "chromeos/cellular_setup/sim_detect_error_dark.svg",
-      "chromeos/cellular_setup/error.svg",
-      "chromeos/cellular_setup/error_dark.svg",
-      "chromeos/cellular_setup/final_page_success.svg",
-      "chromeos/cellular_setup/final_page_success_dark.svg",
-      "chromeos/cellular_setup/default_esim_profile.svg",
-      "chromeos/cellular_setup/default_esim_profile_dark.svg",
-    ]
-
     manifest_files = [
       "$target_gen_dir/$preprocess_gen_manifest",
       "$target_gen_dir/$preprocess_src_manifest",
@@ -67,13 +55,6 @@ if (is_chromeos_ash) {
       "chromeos/bluetooth/bluetooth_types.js",
       "chromeos/bluetooth/bluetooth_metrics_utils.js",
       "chromeos/bluetooth/cros_bluetooth_config.js",
-      "chromeos/cellular_setup/cellular_types.js",
-      "chromeos/cellular_setup/cellular_setup_delegate.js",
-      "chromeos/cellular_setup/esim_manager_listener_behavior.js",
-      "chromeos/cellular_setup/esim_manager_utils.js",
-      "chromeos/cellular_setup/mojo_interface_provider.js",
-      "chromeos/cellular_setup/subflow_behavior.js",
-      "chromeos/cellular_setup/webview_post_util.js",
     ]
   }
 
@@ -97,21 +78,6 @@ if (is_chromeos_ash) {
       "chromeos/bluetooth/bluetooth_battery_icon_percentage.js",
       "chromeos/bluetooth/bluetooth_device_battery_info.js",
       "chromeos/bluetooth/bluetooth_pairing_ui.js",
-      "chromeos/cellular_setup/activation_code_page.js",
-      "chromeos/cellular_setup/activation_verification_page.js",
-      "chromeos/cellular_setup/base_page.js",
-      "chromeos/cellular_setup/button_bar.js",
-      "chromeos/cellular_setup/cellular_setup_icons.js",
-      "chromeos/cellular_setup/cellular_setup.js",
-      "chromeos/cellular_setup/confirmation_code_page.js",
-      "chromeos/cellular_setup/esim_flow_ui.js",
-      "chromeos/cellular_setup/final_page.js",
-      "chromeos/cellular_setup/profile_discovery_list_item.js",
-      "chromeos/cellular_setup/profile_discovery_list_page.js",
-      "chromeos/cellular_setup/provisioning_page.js",
-      "chromeos/cellular_setup/psim_flow_ui.js",
-      "chromeos/cellular_setup/cellular_eid_dialog.js",
-      "chromeos/cellular_setup/setup_loading_page.js",
     ]
   }
 }

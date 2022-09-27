@@ -23,6 +23,20 @@ web_component_files = [
   "navigation_view_panel.js",
   "page_toolbar.js",
 
+  "cellular_setup/activation_code_page.js",
+  "cellular_setup/activation_verification_page.js",
+  "cellular_setup/base_page.js",
+  "cellular_setup/button_bar.js",
+  "cellular_setup/cellular_setup.js",
+  "cellular_setup/confirmation_code_page.js",
+  "cellular_setup/esim_flow_ui.js",
+  "cellular_setup/final_page.js",
+  "cellular_setup/profile_discovery_list_item.js",
+  "cellular_setup/profile_discovery_list_page.js",
+  "cellular_setup/provisioning_page.js",
+  "cellular_setup/psim_flow_ui.js",
+  "cellular_setup/cellular_eid_dialog.js",
+  "cellular_setup/setup_loading_page.js",
   "cr_picture/cr_camera.js",
   "cr_picture/cr_picture_list.js",
   "cr_picture/cr_picture_pane.js",
@@ -64,6 +78,13 @@ web_component_files = [
 
 non_web_component_files = [
   "cr.js",
+  "cellular_setup/cellular_types.js",
+  "cellular_setup/cellular_setup_delegate.js",
+  "cellular_setup/esim_manager_listener_behavior.js",
+  "cellular_setup/esim_manager_utils.js",
+  "cellular_setup/mojo_interface_provider.js",
+  "cellular_setup/subflow_behavior.js",
+  "cellular_setup/webview_post_util.js",
   "cr_picture/cr_picture_types.js",
   "cr_picture/png.js",
   "cr_picture/webcam_utils.js",
@@ -97,6 +118,7 @@ icons_html_files = [
   "multidevice_setup/icons.html",
   "navigation_icons.html",
 
+  "cellular_setup/cellular_setup_icons.html",
   "cr_picture/icons.html",
   "network/network_icons.html",
   "quick_unlock/pin_keyboard_icons.html",
@@ -170,6 +192,14 @@ generate_grd("build_grdp") {
     "keyboard_layouts.js",
     "mojo_utils.js",
 
+    "cellular_setup/sim_detect_error.svg",
+    "cellular_setup/sim_detect_error_dark.svg",
+    "cellular_setup/error.svg",
+    "cellular_setup/error_dark.svg",
+    "cellular_setup/final_page_success.svg",
+    "cellular_setup/final_page_success_dark.svg",
+    "cellular_setup/default_esim_profile.svg",
+    "cellular_setup/default_esim_profile_dark.svg",
     "multidevice_setup/all_set_1x_dark.svg",
     "multidevice_setup/all_set_1x_light.svg",
     "multidevice_setup/all_set_2x_dark.svg",
@@ -207,6 +237,7 @@ generate_grd("build_grdp") {
 }
 
 generate_definitions_js_files = [
+  "cellular_setup/cellular_setup_icons.html.js",
   "cr_picture/cr_camera.html.js",
   "cr_picture/cr_picture_list.html.js",
   "cr_picture/cr_picture_list.js",
@@ -246,6 +277,19 @@ checked_in_dts_files = [
   "navigation_view_panel.d.ts",
   "navigation_selector.d.ts",
 
+  "cellular_setup/base_page.d.ts",
+  "cellular_setup/button_bar.d.ts",
+  "cellular_setup/cellular_eid_dialog.d.ts",
+  "cellular_setup/cellular_setup.d.ts",
+  "cellular_setup/cellular_setup_delegate.d.ts",
+  "cellular_setup/cellular_types.d.ts",
+  "cellular_setup/esim_flow_ui.d.ts",
+  "cellular_setup/esim_manager_listener_behavior.d.ts",
+  "cellular_setup/esim_manager_utils.d.ts",
+  "cellular_setup/profile_discovery_list_page.d.ts",
+  "cellular_setup/provisioning_page.d.ts",
+  "cellular_setup/psim_flow_ui.d.ts",
+  "cellular_setup/setup_loading_page.d.ts",
   "cr_picture/cr_camera.d.ts",
   "cr_picture/cr_picture_pane.d.ts",
   "smb_shares/add_smb_share_dialog.d.ts",
@@ -286,6 +330,7 @@ copy("copy_checked_in_dts_files") {
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
+    "cellular_setup:closure_compile_module",
     "cr_picture:closure_compile_module",
     "multidevice_setup:closure_compile_module",
     "network:closure_compile_module",

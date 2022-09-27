@@ -16,8 +16,8 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import './network_icon.js';
 
-import {CellularSetupPageName} from '//resources/cr_components/chromeos/cellular_setup/cellular_types.js';
-import {getESimProfileProperties} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
+import {CellularSetupPageName} from '//resources/ash/common/cellular_setup/cellular_types.js';
+import {getESimProfileProperties} from '//resources/ash/common/cellular_setup/esim_manager_utils.js';
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert} from '//resources/js/assert.js';
 import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.js';

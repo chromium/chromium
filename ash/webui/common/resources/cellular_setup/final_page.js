@@ -9,14 +9,14 @@
  */
 import './base_page.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
+import {getTemplate} from './final_page.html.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'final-page',
 
   behaviors: [I18nBehavior],

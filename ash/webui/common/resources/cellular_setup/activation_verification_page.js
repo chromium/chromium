@@ -11,12 +11,13 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/cr_elements/cr_lottie/cr_lottie.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
+import {getTemplate} from './activation_verification_page.html.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'activation-verification-page',
 
   behaviors: [I18nBehavior],

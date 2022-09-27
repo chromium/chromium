@@ -3,20 +3,20 @@
 // found in the LICENSE file.
 
 /** Element containing navigation buttons for the Cellular Setup flow. */
-import '../../../cr_elements/cr_button/cr_button.js';
-import '../../../cr_elements/cr_shared_style.css.js';
-import '../../../cr_elements/cr_shared_vars.css.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink_js.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
-
+import {getTemplate} from './button_bar.html.js';
 import {Button, ButtonBarState, ButtonState, CellularSetupPageName} from './cellular_types.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'button-bar',
 
   behaviors: [

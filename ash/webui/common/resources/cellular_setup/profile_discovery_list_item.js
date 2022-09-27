@@ -13,14 +13,16 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import './cellular_setup_icons.js';
+import './cellular_setup_icons.html.js';
 
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
+import {getTemplate} from './profile_discovery_list_item.html.js';
+
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'profile-discovery-list-item',
 
   behaviors: [I18nBehavior],
@@ -95,7 +97,7 @@ Polymer({
    */
   getProfileImage_() {
     return this.isDarkModeActive_ ?
-        'chrome://resources/cr_components/chromeos/cellular_setup/default_esim_profile_dark.svg' :
-        'chrome://resources/cr_components/chromeos/cellular_setup/default_esim_profile.svg';
+        'chrome://resources/ash/common/cellular_setup/default_esim_profile_dark.svg' :
+        'chrome://resources/ash/common/cellular_setup/default_esim_profile.svg';
   },
 });
