@@ -74,7 +74,7 @@ class CommerceHintAgent
   int extraction_count_{0};
   bool is_extraction_pending_{false};
   bool is_extraction_running_{false};
-  bool should_skip_{false};
+  absl::optional<bool> should_skip_;
   bool extraction_script_initialized_{false};
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
   base::WeakPtrFactory<CommerceHintAgent> weak_factory_{this};
@@ -97,6 +97,11 @@ class CommerceHintAgent
   // hint signals should be collected on current URL or not. (2) `heuristics`
   // carrying commerce heuristics that are applicable in current domain.
   void DidStartNavigationCallback(
+      const GURL& url,
+      mojo::Remote<mojom::CommerceHintObserver> observer,
+      bool should_skip,
+      mojom::HeuristicsPtr heuristics);
+  void DidCommitProvisionalLoadCallback(
       const GURL& url,
       mojo::Remote<mojom::CommerceHintObserver> observer,
       bool should_skip,
