@@ -43,6 +43,8 @@ constexpr uint64_t kProjectTwoHash = UINT64_C(5876808001962504629);
 constexpr uint64_t kProjectThreeHash = UINT64_C(10860358748803291132);
 // The name hash of "TestProjectFour".
 constexpr uint64_t kProjectFourHash = UINT64_C(6801665881746546626);
+// The name hash of "TestProjectFive"
+constexpr uint64_t kProjectFiveHash = UINT64_C(3960582687892677139);
 
 // The name hash of "chrome::TestProjectOne::TestEventOne".
 constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
@@ -485,6 +487,7 @@ TEST_F(StructuredMetricsProviderTest, UmaEventsReportedCorrectly) {
   {  // First event
     const auto& event = data.events(0);
     EXPECT_EQ(event.event_name_hash(), kEventFourHash);
+    EXPECT_EQ(event.project_name_hash(), kProjectThreeHash);
     // TODO(crbug.com/1148168): The UMA ID currently isn't attached to UMA
     // events, so just check it isn't set.
     EXPECT_FALSE(event.has_profile_event_id());
@@ -497,6 +500,7 @@ TEST_F(StructuredMetricsProviderTest, UmaEventsReportedCorrectly) {
   {  // Second event
     const auto& event = data.events(1);
     EXPECT_EQ(event.event_name_hash(), kEventFourHash);
+    EXPECT_EQ(event.project_name_hash(), kProjectThreeHash);
     // TODO(crbug.com/1148168): The UMA ID currently isn't attached to UMA
     // events, so just check it isn't set.
     EXPECT_FALSE(event.has_profile_event_id());
@@ -527,6 +531,7 @@ TEST_F(StructuredMetricsProviderTest, IndependentEventsReportedCorrectly) {
   {  // First event
     const auto& event = data.events(0);
     EXPECT_EQ(event.event_name_hash(), kEventOneHash);
+    EXPECT_EQ(event.project_name_hash(), kProjectOneHash);
     EXPECT_EQ(HashToHex(event.profile_event_id()), kProjectOneId);
     ASSERT_EQ(event.metrics_size(), 2);
 
@@ -549,6 +554,7 @@ TEST_F(StructuredMetricsProviderTest, IndependentEventsReportedCorrectly) {
   {  // Second event
     const auto& event = data.events(1);
     EXPECT_EQ(event.event_name_hash(), kEventTwoHash);
+    EXPECT_EQ(event.project_name_hash(), kProjectTwoHash);
     EXPECT_EQ(HashToHex(event.profile_event_id()), kProjectTwoId);
     ASSERT_EQ(event.metrics_size(), 1);
 
@@ -579,6 +585,7 @@ TEST_F(StructuredMetricsProviderTest, RawStringMetricsReportedCorrectly) {
 
   const auto& event = data.events(0);
   EXPECT_EQ(event.event_name_hash(), kEventSixHash);
+  EXPECT_EQ(event.project_name_hash(), kProjectFiveHash);
   EXPECT_FALSE(event.has_profile_event_id());
   EXPECT_EQ(event.event_type(), StructuredEventProto_EventType_RAW_STRING);
 
@@ -607,6 +614,7 @@ TEST_F(StructuredMetricsProviderTest, DeviceKeysUsedForDeviceScopedProjects) {
 
   const auto& event = data.events(0);
   EXPECT_EQ(event.event_name_hash(), kEventFiveHash);
+  EXPECT_EQ(event.project_name_hash(), kProjectFourHash);
   // The hex-encoded first 8 bytes of SHA256("ddd...d").
   EXPECT_EQ(HashToHex(event.profile_event_id()), kProjectFourId);
   ASSERT_EQ(event.metrics_size(), 1);
@@ -656,6 +664,12 @@ TEST_F(StructuredMetricsProviderTest, EventsWithinProjectReportedWithSameID) {
   EXPECT_EQ(event_one.event_name_hash(), kEventOneHash);
   EXPECT_EQ(event_two.event_name_hash(), kEventTwoHash);
   EXPECT_EQ(event_three.event_name_hash(), kEventThreeHash);
+
+  // Events two and three share a project, so should have the same project
+  // name hash. Event one should have its own project name hash.
+  EXPECT_EQ(event_one.project_name_hash(), kProjectOneHash);
+  EXPECT_EQ(event_two.project_name_hash(), kProjectTwoHash);
+  EXPECT_EQ(event_three.project_name_hash(), kProjectTwoHash);
 
   // Events two and three share a project, so should have the same ID. Event
   // one should have its own ID.

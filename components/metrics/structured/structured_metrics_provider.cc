@@ -456,7 +456,9 @@ void StructuredMetricsProvider::RecordEventFromEventBase(
       break;
   }
 
+  // Set the event name hash and project name hash
   event_proto->set_event_name_hash(event.name_hash());
+  event_proto->set_project_name_hash(event.project_name_hash());
 
   // Set each metric's name hash and value.
   for (const auto& metric : event.metrics()) {
