@@ -37,6 +37,8 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.jank_tracker.JankScenario;
@@ -46,6 +48,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -53,6 +56,7 @@ import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
+import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -75,6 +79,7 @@ import org.chromium.chrome.features.start_surface.StartSurface.TabSwitcherViewOb
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 
@@ -111,8 +116,16 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private final boolean mIsStartSurfaceEnabled;
     private final ObserverList<StartSurface.StateObserver> mStateObservers = new ObserverList<>();
     private final boolean mHadWarmStart;
+    private final boolean mExcludeMVTiles;
     private final boolean mExcludeQueryTiles;
     private final Runnable mInitializeMVTilesRunnable;
+    private final Supplier<Tab> mParentTabSupplier;
+    private final JankTracker mJankTracker;
+    private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
+            new ObservableSupplierImpl<>();
+    private final CallbackController mCallbackController = new CallbackController();
+    private final View mLogoContainerView;
+    private final boolean mShouldCreateLogo;
 
     // Boolean histogram used to record whether cached
     // ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE is consistent with
@@ -126,6 +139,10 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private TabSwitcher.Controller mSecondaryTasksSurfaceController;
     @Nullable
     private PropertyModel mSecondaryTasksSurfacePropertyModel;
+    // Non-null when ReturnToChromeUtils#shouldImproveStartWhenFeedIsDisabled is enabled and
+    // homepage is shown.
+    @Nullable
+    private LogoCoordinator mLogoCoordinator;
     private boolean mIsIncognito;
     @Nullable
     private OmniboxStub mOmniboxStub;
@@ -147,7 +164,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
     private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private ActivityStateChecker mActivityStateChecker;
-    private boolean mExcludeMVTiles;
     private OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     /**
      * Whether a pending observer needed be added to the normal TabModel after the TabModel is
@@ -168,13 +184,11 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private Boolean mFeedVisibilityInSharedPreferenceOnStartUp;
     private FeedPlaceholderCoordinator mFeedPlaceholderCoordinator;
     private boolean mHasFeedPlaceholderShown;
-    private final JankTracker mJankTracker;
     private boolean mHideOverviewOnTabSelecting = true;
     private StartSurface.OnTabSelectingListener mOnTabSelectingListener;
     private ViewGroup mTabSwitcherContainer;
     private SnackbarManager mSnackbarManager;
-    private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
-            new ObservableSupplierImpl<>();
+    private boolean mIsNativeInitialized;
 
     StartSurfaceMediator(Controller controller, ViewGroup tabSwitcherContainer,
             TabModelSelector tabModelSelector, @Nullable PropertyModel propertyModel,
@@ -184,6 +198,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             ActivityStateChecker activityStateChecker, boolean excludeMVTiles,
             boolean excludeQueryTiles, OneshotSupplier<StartSurface> startSurfaceSupplier,
             boolean hadWarmStart, JankTracker jankTracker, Runnable initializeMVTilesRunnable,
+            Supplier<Tab> parentTabSupplier, View logoContainerView,
             BackPressManager backPressManager, ViewGroup feedPlaceholderParentView) {
         mController = controller;
         mTabSwitcherContainer = tabSwitcherContainer;
@@ -201,6 +216,13 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mJankTracker = jankTracker;
         mLaunchOrigin = NewTabPageLaunchOrigin.UNKNOWN;
         mInitializeMVTilesRunnable = initializeMVTilesRunnable;
+        mParentTabSupplier = parentTabSupplier;
+        mLogoContainerView = logoContainerView;
+        // We need to check #shouldImproveStartWhenFeedIsDisabled and save it in the constructor
+        // here to keep consistent with toolbar's check. This cannot be moved to other places, since
+        // FEED_ARTICLES_LIST_VISIBLE may be changed after feed header is rendered, which then
+        // causes inconsistency with toolbar's check.
+        mShouldCreateLogo = ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context);
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;
@@ -344,7 +366,10 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 @Override
                 public void onUrlFocusChange(boolean hasFocus) {
                     assert !mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE);
-                    if (hasFakeSearchBox()) setFakeBoxVisibility(!hasFocus);
+                    if (hasFakeSearchBox()) {
+                        setFakeBoxVisibility(!hasFocus);
+                        setLogoVisibility(!hasFocus);
+                    }
                     notifyStateChange();
                 }
             };
@@ -375,6 +400,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     void initWithNative(@Nullable OmniboxStub omniboxStub,
             @Nullable ExploreSurfaceCoordinatorFactory exploreSurfaceCoordinatorFactory,
             PrefService prefService, @Nullable SnackbarManager snackbarManager) {
+        mIsNativeInitialized = true;
         mOmniboxStub = omniboxStub;
         mExploreSurfaceCoordinatorFactory = exploreSurfaceCoordinatorFactory;
         mSnackbarManager = snackbarManager;
@@ -398,11 +424,22 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                         setExploreSurfaceVisibility(!mIsIncognito);
                     }
                     if (mInitializeMVTilesRunnable != null) mInitializeMVTilesRunnable.run();
+                    if (mLogoCoordinator != null) mLogoCoordinator.initWithNative();
                 }
             }
         }
 
         mFeedVisibilityPrefOnStartUp = prefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE);
+    }
+
+    void destroy() {
+        if (mLogoCoordinator != null) {
+            mLogoCoordinator.destroy();
+            mLogoCoordinator = null;
+        }
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+        }
     }
 
     /**
@@ -427,13 +464,13 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mIsIncognito = mTabModelSelector.isIncognitoSelected();
         mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
         setMVTilesVisibility(!mIsIncognito);
+        setLogoVisibility(!mIsIncognito);
         setTabCarouselVisibility(getNormalTabCount() > 0 && !mIsIncognito);
         setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
         // TODO(qinmin): show query tiles when flag is enabled.
         setQueryTilesVisibility(false);
         setFakeBoxVisibility(!mIsIncognito);
-        setTopToolbarPlaceholderHeight(getPixelSize(R.dimen.control_container_height)
-                + getPixelSize(R.dimen.start_surface_fake_search_box_top_margin));
+        setTopToolbarPlaceholderHeight(getTopToolbarPlaceholderHeight());
         // Set the top margin to the top controls min height (indicator height if it's shown)
         // since the toolbar height as extra margin is handled by top toolbar placeholder.
         setTopMargin(mBrowserControlsStateProvider.getTopControlsMinHeight());
@@ -608,13 +645,13 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             // If new home surface for home button is enabled, MV tiles and carousel tab switcher
             // will not show.
             setMVTilesVisibility(!mIsIncognito);
+            setLogoVisibility(!mIsIncognito);
             setTabCarouselVisibility(hasNormalTab && !mIsIncognito);
             setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
             setQueryTilesVisibility(!mIsIncognito);
             setFakeBoxVisibility(!mIsIncognito);
             setSecondaryTasksSurfaceVisibility(mIsIncognito, /* skipUpdateController = */ false);
-            setTopToolbarPlaceholderHeight(getPixelSize(R.dimen.control_container_height)
-                    + getPixelSize(R.dimen.start_surface_fake_search_box_top_margin));
+            setTopToolbarPlaceholderHeight(getTopToolbarPlaceholderHeight());
             // Set the top margin to the top controls min height (indicator height if it's shown)
             // since the toolbar height as extra margin is handled by top toolbar placeholder.
             setTopMargin(mBrowserControlsStateProvider.getTopControlsMinHeight());
@@ -629,6 +666,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
             setTabCarouselVisibility(false);
             setMVTilesVisibility(false);
+            setLogoVisibility(false);
             setQueryTilesVisibility(false);
             setFakeBoxVisibility(false);
             setSecondaryTasksSurfaceVisibility(
@@ -1024,7 +1062,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     }
 
     private boolean hasFakeSearchBox() {
-        // No fake search box on the explore pane in two panes mode.
         return mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
     }
 
@@ -1048,6 +1085,11 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mPropertyModel.set(BOTTOM_BAR_HEIGHT, bottomMargin);
     }
 
+    /**
+     * This method should be called after setLogoVisibility() since we need to know whether logo is
+     * shown or not to decide the height.
+     * @param height The height of the top toolbar placeholder.
+     */
     private void setTopToolbarPlaceholderHeight(int height) {
         mPropertyModel.set(TOP_TOOLBAR_PLACEHOLDER_HEIGHT, height);
     }
@@ -1068,6 +1110,20 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         if (mExcludeMVTiles) return;
         if (isVisible && mInitializeMVTilesRunnable != null) mInitializeMVTilesRunnable.run();
         mPropertyModel.set(MV_TILES_VISIBLE, isVisible);
+    }
+
+    private void setLogoVisibility(boolean isVisible) {
+        if (!mShouldCreateLogo) return;
+
+        if (isVisible && mLogoCoordinator == null) {
+            mLogoCoordinator = initializeLogo();
+            if (mIsNativeInitialized) mLogoCoordinator.initWithNative();
+        }
+        if (mLogoCoordinator != null) {
+            boolean isShowingHomepage = isShowingStartSurfaceHomepage();
+            mLogoCoordinator.maybeLoadSearchProviderLogo(
+                    isShowingHomepage && isVisible, !isShowingHomepage, false);
+        }
     }
 
     private void setQueryTilesVisibility(boolean isVisible) {
@@ -1204,12 +1260,26 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         return Boolean.TRUE.equals(mController.getHandleBackPressChangedSupplier().get());
     }
 
+    @VisibleForTesting
+    boolean isLogoVisible() {
+        return mLogoCoordinator != null && mLogoCoordinator.isLogoVisible();
+    }
+
     TabSwitcher.Controller getSecondaryTasksSurfaceController() {
         return mSecondaryTasksSurfaceController;
     }
 
     void setOnTabSelectingListener(StartSurface.OnTabSelectingListener onTabSelectingListener) {
         mOnTabSelectingListener = onTabSelectingListener;
+    }
+
+    private int getTopToolbarPlaceholderHeight() {
+        // If logo is visible in Start surface instead of in the toolbar, we don't need to show the
+        // top margin of the fake search box.
+        return getPixelSize(R.dimen.control_container_height)
+                + (isLogoVisible()
+                                ? 0
+                                : getPixelSize(R.dimen.start_surface_fake_search_box_top_margin));
     }
 
     private int getPixelSize(int id) {
@@ -1226,6 +1296,25 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         if (feedReliabilityLogger != null) {
             mOmniboxStub.addUrlFocusChangeListener(feedReliabilityLogger);
         }
+    }
+
+    private LogoCoordinator initializeLogo() {
+        Callback<LoadUrlParams> logoClickedCallback =
+                mCallbackController.makeCancelable((urlParams) -> {
+                    // On NTP, the logo is in the new tab page layout instead of the toolbar and the
+                    // logo click events are processed in NewTabPageLayout. This callback passed
+                    // into TopToolbarCoordinator will only be used for StartSurfaceToolbar, so add
+                    // an assertion here.
+                    assert ReturnToChromeUtil.isStartSurfaceEnabled(mContext);
+                    ReturnToChromeUtil.handleLoadUrlFromStartSurface(
+                            urlParams, /*incognito=*/false, mParentTabSupplier.get());
+                });
+        mLogoContainerView.setVisibility(View.VISIBLE);
+
+        mLogoCoordinator = new LogoCoordinator(logoClickedCallback,
+                mLogoContainerView.findViewById(R.id.search_provider_logo), true, null, null,
+                isShowingStartSurfaceHomepage());
+        return mLogoCoordinator;
     }
 
     FeedReliabilityLogger getFeedReliabilityLogger() {

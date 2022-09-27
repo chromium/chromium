@@ -11,8 +11,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.doAnswer;
@@ -66,17 +68,26 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.logo.LogoBridge;
+import org.chromium.chrome.browser.logo.LogoBridgeJni;
+import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -86,6 +97,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
@@ -94,6 +106,7 @@ import org.chromium.chrome.features.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
@@ -110,6 +123,8 @@ public class StartSurfaceMediatorUnitTest {
     private PropertyModel mPropertyModel;
     private PropertyModel mSecondaryTasksSurfacePropertyModel;
 
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
     @Mock
@@ -156,6 +171,18 @@ public class StartSurfaceMediatorUnitTest {
     private FeedReliabilityLogger mFeedReliabilityLogger;
     @Mock
     private BackPressManager mBackPressManager;
+    @Mock
+    private Supplier<Tab> mParentTabSupplier;
+    @Mock
+    private View mLogoContainerView;
+    @Mock
+    private LogoView mLogoView;
+    @Mock
+    LogoBridge.Natives mLogoBridge;
+    @Mock
+    private Profile mProfile;
+    @Mock
+    private TemplateUrlService mTemplateUrlService;
     @Captor
     private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor
@@ -180,6 +207,9 @@ public class StartSurfaceMediatorUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        Profile.setLastUsedProfileForTesting(mProfile);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
 
         ArrayList<PropertyKey> allProperties =
                 new ArrayList<>(Arrays.asList(TasksSurfaceProperties.ALL_KEYS));
@@ -219,6 +249,8 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mFeedReliabilityLogger)
                 .when(mExploreSurfaceCoordinator)
                 .getFeedReliabilityLogger();
+        mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridge);
+        doReturn(mLogoView).when(mLogoContainerView).findViewById(R.id.search_provider_logo);
     }
 
     @After
@@ -1338,6 +1370,47 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
+    public void testInitializeLogoWhenShownHomepageWithFeedDisabled() throws Exception {
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, false);
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+
+        Assert.assertTrue(ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(
+                ContextUtils.getApplicationContext()));
+
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true, false);
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
+        mediator.showOverview(true);
+
+        verify(mLogoContainerView).setVisibility(View.VISIBLE);
+        verify(mLogoBridge).getCurrentLogo(anyLong(), any(), any());
+        Assert.assertTrue(mediator.isLogoVisible());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
+    public void testNotInitializeLogoWhenShownHomepageWithFeedEnabled() throws Exception {
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true);
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+
+        Assert.assertFalse(ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(
+                ContextUtils.getApplicationContext()));
+
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true, false);
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
+        mediator.showOverview(true);
+
+        verify(mLogoContainerView, times(0)).setVisibility(View.VISIBLE);
+        Assert.assertFalse(mediator.isLogoVisible());
+    }
+
+    @Test
     public void testFeedReliabilityLoggerPageLoadStarted() {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
 
@@ -1563,16 +1636,14 @@ public class StartSurfaceMediatorUnitTest {
 
     private StartSurfaceMediator createStartSurfaceMediatorWithoutInit(
             boolean isStartSurfaceEnabled, boolean excludeMVTiles, boolean hadWarmStart) {
-        StartSurfaceMediator mediator =
-                new StartSurfaceMediator(mMainTabGridController, null /* tabSwitcherContainer */,
-                        mTabModelSelector, !isStartSurfaceEnabled ? null : mPropertyModel,
-                        isStartSurfaceEnabled ? mSecondaryTasksSurfaceInitializer : null,
-                        isStartSurfaceEnabled, ContextUtils.getApplicationContext(),
-                        mBrowserControlsStateProvider, mActivityStateChecker, excludeMVTiles,
-                        true /* excludeQueryTiles */, mStartSurfaceSupplier, hadWarmStart,
-                        new DummyJankTracker(), mInitializeMVTilesRunnable, mBackPressManager,
-                        null /* feedPlaceholderParentView */);
-        return mediator;
+        return new StartSurfaceMediator(mMainTabGridController, null /* tabSwitcherContainer */,
+                mTabModelSelector, !isStartSurfaceEnabled ? null : mPropertyModel,
+                isStartSurfaceEnabled ? mSecondaryTasksSurfaceInitializer : null,
+                isStartSurfaceEnabled, ContextUtils.getApplicationContext(),
+                mBrowserControlsStateProvider, mActivityStateChecker, excludeMVTiles,
+                true /* excludeQueryTiles */, mStartSurfaceSupplier, hadWarmStart,
+                new DummyJankTracker(), mInitializeMVTilesRunnable, mParentTabSupplier,
+                mLogoContainerView, mBackPressManager, null /* feedPlaceholderParentView */);
     }
 
     private void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset) {

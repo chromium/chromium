@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -176,13 +177,14 @@ public class LogoCoordinatorUnitTest {
                 /*isParentSurfaceShown*/ false, /*shouldDestroyDelegate*/ false,
                 /*animationEnabled*/ false);
 
-        Assert.assertFalse(mLogoCoordinator.isLogoVisibleForTesting());
+        verify(mLogoView, times(1)).setVisibility(View.GONE);
         // When parent surface isn't showing, calling maybeLoadSearchProviderLogo() shouldn't
         // trigger getSearchProviderLogo() nor add any pending load task.
         Assert.assertFalse(mLogoCoordinator.getIsLoadPendingForTesting());
         mLogoCoordinator.initWithNative();
 
-        Assert.assertFalse(mLogoCoordinator.isLogoVisibleForTesting());
+        verify(mLogoView, times(2)).setVisibility(View.GONE);
+        Assert.assertFalse(mLogoCoordinator.isLogoVisible());
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
         verify(mTemplateUrlService).addObserver(mLogoCoordinator);
     }
@@ -194,13 +196,13 @@ public class LogoCoordinatorUnitTest {
                 /*isParentSurfaceShown*/ true, /*shouldDestroyDelegate*/ false,
                 /*animationEnabled*/ false);
 
-        Assert.assertTrue(mLogoCoordinator.isLogoVisibleForTesting());
+        Assert.assertTrue(mLogoCoordinator.isLogoVisible());
         // When parent surface is shown while native library isn't loaded, calling
         // maybeLoadSearchProviderLogo() will add a pending load task.
         Assert.assertTrue(mLogoCoordinator.getIsLoadPendingForTesting());
         mLogoCoordinator.initWithNative();
 
-        Assert.assertTrue(mLogoCoordinator.isLogoVisibleForTesting());
+        Assert.assertTrue(mLogoCoordinator.isLogoVisible());
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
         verify(mTemplateUrlService).addObserver(mLogoCoordinator);
     }
@@ -214,7 +216,7 @@ public class LogoCoordinatorUnitTest {
         mLogoCoordinator.maybeLoadSearchProviderLogo(
                 /*isParentSurfaceShown*/ false, /*shouldDestroyDelegate*/ false,
                 /*animationEnabled*/ false);
-        Assert.assertFalse(mLogoCoordinator.isLogoVisibleForTesting());
+        Assert.assertFalse(mLogoCoordinator.isLogoVisible());
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
         verify(mLogoDelegate, times(0)).destroy();
 
@@ -223,7 +225,7 @@ public class LogoCoordinatorUnitTest {
         mLogoCoordinator.maybeLoadSearchProviderLogo(
                 /*isParentSurfaceShown*/ false, /*shouldDestroyDelegate*/ true,
                 /*animationEnabled*/ false);
-        Assert.assertFalse(mLogoCoordinator.isLogoVisibleForTesting());
+        Assert.assertFalse(mLogoCoordinator.isLogoVisible());
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
         verify(mLogoDelegate, times(1)).destroy();
         Assert.assertNull(mLogoCoordinator.getLogoDelegateForTesting());
@@ -234,7 +236,7 @@ public class LogoCoordinatorUnitTest {
         mLogoCoordinator.maybeLoadSearchProviderLogo(
                 /*isParentSurfaceShown*/ true, /*shouldDestroyDelegate*/ false,
                 /*animationEnabled*/ false);
-        Assert.assertTrue(mLogoCoordinator.isLogoVisibleForTesting());
+        Assert.assertTrue(mLogoCoordinator.isLogoVisible());
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
         verify(mLogoDelegate, times(1)).destroy();
     }

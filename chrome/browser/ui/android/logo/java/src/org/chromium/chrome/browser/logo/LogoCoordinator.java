@@ -191,6 +191,13 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
     }
 
     /**
+     * Returns whether LogoView is visible.
+     */
+    public boolean isLogoVisible() {
+        return mShouldShowLogo && mLogoView.getVisibility() == View.VISIBLE;
+    }
+
+    /**
      * Load the search provider logo on Start surface.
      *
      * @param animationEnabled Whether to enable the fade in animation.
@@ -245,13 +252,7 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
         mShouldShowLogo = mIsParentSurfaceShown
                 && (!mIsNativeInitialized
                         || TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo());
-
         mLogoView.setVisibility(mShouldShowLogo ? View.VISIBLE : View.GONE);
-    }
-
-    @VisibleForTesting
-    public boolean isLogoVisibleForTesting() {
-        return mShouldShowLogo;
     }
 
     @VisibleForTesting

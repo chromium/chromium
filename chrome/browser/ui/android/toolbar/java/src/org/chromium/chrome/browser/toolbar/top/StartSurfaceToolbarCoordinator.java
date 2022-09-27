@@ -65,7 +65,8 @@ public class StartSurfaceToolbarCoordinator {
             Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
             boolean isTabToGtsAnimationEnabled, boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
-            Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled) {
+            Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled,
+            boolean shouldCreateLogoInToolbar) {
         mStub = startSurfaceToolbarStub;
 
         mPropertyModel =
@@ -95,7 +96,8 @@ public class StartSurfaceToolbarCoordinator {
                 StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),
                 isTabToGtsFadeAnimationEnabled, isTabGroupsAndroidContinuationEnabled,
                 isIncognitoModeEnabledSupplier, logoClickedCallback, isRefactorEnabled,
-                StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue());
+                StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue(),
+                shouldCreateLogoInToolbar);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;

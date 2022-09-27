@@ -293,6 +293,11 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         TabSwitcher.Controller controller =
                 mTabSwitcher != null ? mTabSwitcher.getController() : mTasksSurface.getController();
+        Runnable initializeMVTilesRunnable =
+                mTasksSurface == null ? null : mTasksSurface::initializeMVTiles;
+        View logoContainerView = mTasksSurface == null
+                ? null
+                : mTasksSurface.getView().findViewById(R.id.logo_container);
         ViewGroup feedPlaceholderParentView =
                 mTasksSurface == null ? null : mTasksSurface.getBodyViewContainer();
         mStartSurfaceMediator = new StartSurfaceMediator(controller, containerView,
@@ -300,9 +305,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mIsStartSurfaceEnabled ? this::initializeSecondaryTasksSurface : null,
                 mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
                 this::isActivityFinishingOrDestroyed, excludeMVTiles, excludeQueryTiles,
-                startSurfaceOneshotSupplier, hadWarmStart, jankTracker,
-                mTasksSurface != null ? mTasksSurface::initializeMVTiles : null, backPressManager,
-                feedPlaceholderParentView);
+                startSurfaceOneshotSupplier, hadWarmStart, jankTracker, initializeMVTilesRunnable,
+                mParentTabSupplier, logoContainerView, backPressManager, feedPlaceholderParentView);
 
         startSurfaceOneshotSupplier.set(this);
     }
@@ -329,6 +333,9 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (mOffsetChangedListenerToGenerateScrollEvents != null) {
             removeHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
             mOffsetChangedListenerToGenerateScrollEvents = null;
+        }
+        if (mStartSurfaceMediator != null) {
+            mStartSurfaceMediator.destroy();
         }
     }
 
