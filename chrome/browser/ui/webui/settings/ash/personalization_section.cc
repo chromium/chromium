@@ -21,6 +21,7 @@ namespace chromeos {
 namespace settings {
 namespace {
 
+// TODO(b/245607098): Clean up the search tags
 const std::vector<SearchConcept>& GetPersonalizationSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_PERSONALIZATION,
@@ -49,20 +50,7 @@ PersonalizationSection::PersonalizationSection(
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
     PrefService* pref_service)
-    : OsSettingsSection(profile, search_tag_registry) {
-  // Personalization search tags are not added in guest mode.
-  if (features::IsGuestModeActive())
-    return;
-
-  if (ash::features::IsPersonalizationHubEnabled()) {
-    // Personalization search is handled by Personalization Hub when feature is
-    // on.
-    return;
-  }
-
-  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.AddSearchTags(GetPersonalizationSearchConcepts());
-}
+    : OsSettingsSection(profile, search_tag_registry) {}
 
 PersonalizationSection::~PersonalizationSection() = default;
 
@@ -103,10 +91,8 @@ void PersonalizationSection::AddLoadTimeData(
 }
 
 void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
-  if (ash::features::IsPersonalizationHubEnabled()) {
-    web_ui->AddMessageHandler(
-        std::make_unique<chromeos::settings::PersonalizationHubHandler>());
-  }
+  web_ui->AddMessageHandler(
+      std::make_unique<chromeos::settings::PersonalizationHubHandler>());
 }
 
 int PersonalizationSection::GetSectionNameMessageId() const {

@@ -5408,11 +5408,6 @@
     "expiry_milestone": 107
   },
   {
-    "name": "personalization-hub",
-    "owners": ["jasontt", "assistive-eng@google.com"],
-    "expiry_milestone": 105
-  },
-  {
     "name": "pervasive-system-accent-color",
     "owners": ["pkasting"],
     "expiry_milestone": 110

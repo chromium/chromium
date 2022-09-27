@@ -131,9 +131,7 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
   PersonalizationAppAmbientProviderImplTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kPersonalizationHub,
-         ash::features::kAmbientModeAnimationFeature},
-        {});
+        {ash::features::kAmbientModeAnimationFeature}, {});
   }
   PersonalizationAppAmbientProviderImplTest(
       const PersonalizationAppAmbientProviderImplTest&) = delete;

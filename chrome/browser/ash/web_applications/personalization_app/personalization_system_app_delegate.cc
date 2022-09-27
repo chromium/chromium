@@ -36,49 +36,35 @@ PersonalizationSystemAppDelegate::GetWebAppInfo() const {
   info->start_url =
       GURL(ash::personalization_app::kChromeUIPersonalizationAppURL);
   info->scope = GURL(ash::personalization_app::kChromeUIPersonalizationAppURL);
-  info->title =
-      (chromeos::features::IsPersonalizationHubEnabled())
-          ? l10n_util::GetStringUTF16(
-                IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE)
-          : l10n_util::GetStringUTF16(IDS_PERSONALIZATION_APP_WALLPAPER_LABEL);
-  if (ash::features::IsPersonalizationHubEnabled()) {
-    web_app::CreateIconInfoForSystemWebApp(
-        info->start_url,
-        {
-            {
-                "app_hub_icon_64.png",
-                64,
-                IDR_ASH_PERSONALIZATION_APP_HUB_ICON_64_PNG,
-            },
-            {
-                "app_hub_icon_128.png",
-                128,
-                IDR_ASH_PERSONALIZATION_APP_HUB_ICON_128_PNG,
-            },
-            {
-                "app_hub_icon_192.png",
-                192,
-                IDR_ASH_PERSONALIZATION_APP_HUB_ICON_192_PNG,
-            },
-            {
-                "app_hub_icon_256.png",
-                256,
-                IDR_ASH_PERSONALIZATION_APP_HUB_ICON_256_PNG,
-            },
-        },
-        *info);
-  } else {
-    web_app::CreateIconInfoForSystemWebApp(
-        info->start_url,
-        {
-            {
-                "app_icon_192.png",
-                192,
-                IDR_ASH_PERSONALIZATION_APP_ICON_192_PNG,
-            },
-        },
-        *info);
-  }
+  info->title = l10n_util::GetStringUTF16(
+      IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE);
+
+  web_app::CreateIconInfoForSystemWebApp(
+      info->start_url,
+      {
+          {
+              "app_hub_icon_64.png",
+              64,
+              IDR_ASH_PERSONALIZATION_APP_HUB_ICON_64_PNG,
+          },
+          {
+              "app_hub_icon_128.png",
+              128,
+              IDR_ASH_PERSONALIZATION_APP_HUB_ICON_128_PNG,
+          },
+          {
+              "app_hub_icon_192.png",
+              192,
+              IDR_ASH_PERSONALIZATION_APP_HUB_ICON_192_PNG,
+          },
+          {
+              "app_hub_icon_256.png",
+              256,
+              IDR_ASH_PERSONALIZATION_APP_HUB_ICON_256_PNG,
+          },
+      },
+      *info);
+
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::UserDisplayMode::kStandalone;
 

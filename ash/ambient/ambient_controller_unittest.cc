@@ -14,7 +14,6 @@
 #include "ash/assistant/assistant_interaction_controller_impl.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/constants/ambient_animation_theme.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -1237,8 +1236,6 @@ TEST_P(AmbientControllerTestForAnyTheme,
 
 TEST_F(AmbientControllerTest,
        ANIMATION_TEST_WITH_RESOURCES(RendersCorrectView)) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPersonalizationHub);
   SetAmbientAnimationTheme(AmbientAnimationTheme::kFeelTheBreeze);
 
   LockScreen();
@@ -1280,8 +1277,6 @@ TEST_F(AmbientControllerTest,
 
 TEST_F(AmbientControllerTest,
        ANIMATION_TEST_WITH_RESOURCES(ClearsCacheWhenSwitchingThemes)) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPersonalizationHub);
   SetAmbientAnimationTheme(AmbientAnimationTheme::kSlideshow);
 
   LockScreen();

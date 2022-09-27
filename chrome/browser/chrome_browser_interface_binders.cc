@@ -1056,11 +1056,9 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::settings::mojom::SearchHandler,
       chromeos::settings::OSSettingsUI>(map);
 
-  if (ash::features::IsPersonalizationHubEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::personalization_app::mojom::SearchHandler,
-        chromeos::settings::OSSettingsUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      ash::personalization_app::mojom::SearchHandler,
+      chromeos::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::settings::app_notification::mojom::AppNotificationsHandler,
@@ -1213,23 +1211,21 @@ void PopulateChromeWebUIFrameBinders(
       ash::personalization_app::mojom::WallpaperProvider,
       ash::personalization_app::PersonalizationAppUI>(map);
 
-  if (ash::features::IsPersonalizationHubEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::personalization_app::mojom::AmbientProvider,
-        ash::personalization_app::PersonalizationAppUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      ash::personalization_app::mojom::AmbientProvider,
+      ash::personalization_app::PersonalizationAppUI>(map);
 
-    RegisterWebUIControllerInterfaceBinder<
-        ash::personalization_app::mojom::ThemeProvider,
-        ash::personalization_app::PersonalizationAppUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      ash::personalization_app::mojom::ThemeProvider,
+      ash::personalization_app::PersonalizationAppUI>(map);
 
-    RegisterWebUIControllerInterfaceBinder<
-        ash::personalization_app::mojom::UserProvider,
-        ash::personalization_app::PersonalizationAppUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      ash::personalization_app::mojom::UserProvider,
+      ash::personalization_app::PersonalizationAppUI>(map);
 
-    RegisterWebUIControllerInterfaceBinder<
-        ash::personalization_app::mojom::KeyboardBacklightProvider,
-        ash::personalization_app::PersonalizationAppUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      ash::personalization_app::mojom::KeyboardBacklightProvider,
+      ash::personalization_app::PersonalizationAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       launcher_internals::mojom::PageHandlerFactory,

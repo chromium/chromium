@@ -70,8 +70,7 @@ void DarkModeFeaturePodController::OnIconPressed() {
 
 void DarkModeFeaturePodController::OnLabelPressed() {
   TrackDiveInUMA();
-  if (ash::features::IsPersonalizationHubEnabled())
-    Shell::Get()->system_tray_model()->client()->ShowDarkModeSettings();
+  Shell::Get()->system_tray_model()->client()->ShowDarkModeSettings();
 }
 
 void DarkModeFeaturePodController::OnColorModeChanged(bool dark_mode_enabled) {

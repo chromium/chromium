@@ -2365,11 +2365,6 @@ const char kPersistentQuotaIsTemporaryQuotaDescription[] =
     "Causes the window.PERSISTENT quota type to have the same semantics as "
     "window.TEMPORARY.";
 
-const char kPersonalizationHubName[] = "Personalization Hub UI";
-const char kPersonalizationHubDescription[] =
-    "Enable the UI to let users customize their wallpapers, screensaver, and "
-    "avatars.";
-
 const char kPointerLockOptionsName[] = "Enables pointer lock options";
 const char kPointerLockOptionsDescription[] =
     "Enables pointer lock unadjustedMovement. When unadjustedMovement is set "

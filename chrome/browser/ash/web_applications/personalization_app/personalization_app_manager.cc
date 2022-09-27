@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
@@ -46,14 +45,9 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
       local_search_service::LocalSearchServiceProxy& local_search_service_proxy)
       : profile_(Profile::FromBrowserContext(context)) {
     DCHECK(profile_);
-    if (ash::features::IsPersonalizationHubEnabled()) {
-      // Only create the search handler if personalization hub feature is
-      // enabled. This makes it simpler to reason about settings vs
-      // personalization search results when the feature is off.
-      search_handler_ = std::make_unique<SearchHandler>(
-          local_search_service_proxy, profile_->GetPrefs(),
-          std::make_unique<EnterprisePolicyDelegateImpl>(context));
-    }
+    search_handler_ = std::make_unique<SearchHandler>(
+        local_search_service_proxy, profile_->GetPrefs(),
+        std::make_unique<EnterprisePolicyDelegateImpl>(context));
   }
 
   ~PersonalizationAppManagerImpl() override = default;
@@ -82,8 +76,7 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
   // Callback to |hats_timer_|. Will show the given survey type.
   void OnHatsTimerDone(HatsSurveyType hats_survey_type) {
     const base::flat_map<std::string, std::string>& product_specific_data = {
-        {"is_personalization_hub_enabled",
-         ::ash::features::IsPersonalizationHubEnabled() ? "true" : "false"}};
+        {"is_personalization_hub_enabled", "true"}};
 
     const HatsConfig& config = GetHatsConfig(hats_survey_type);
 

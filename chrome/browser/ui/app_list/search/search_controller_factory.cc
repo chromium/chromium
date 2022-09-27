@@ -192,8 +192,7 @@ std::unique_ptr<SearchController> CreateSearchController(
                                                 profile, list_controller));
   }
 
-  if (ash::features::IsPersonalizationHubEnabled() &&
-      ash::personalization_app::CanSeeWallpaperOrPersonalizationApp(profile)) {
+  if (ash::personalization_app::CanSeeWallpaperOrPersonalizationApp(profile)) {
     size_t personalization_app_group_id =
         controller->AddGroup(kGenericMaxResults);
 

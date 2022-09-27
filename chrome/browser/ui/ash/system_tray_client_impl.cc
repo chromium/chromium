@@ -425,7 +425,6 @@ void SystemTrayClientImpl::ShowDisplaySettings() {
 }
 
 void SystemTrayClientImpl::ShowDarkModeSettings() {
-  DCHECK(ash::features::IsPersonalizationHubEnabled());
   // Record entry point metric to Personalization through Dark Mode Quick
   // Settings/System Tray.
   ash::personalization_app::LogPersonalizationEntryPoint(

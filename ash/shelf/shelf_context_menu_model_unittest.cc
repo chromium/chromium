@@ -229,7 +229,7 @@ TEST_P(ShelfContextMenuModelTest, ExcludeClamshellOptionsOnTabletMode) {
             menu1.GetCommandIdAt(1));
 
   // Test that a menu shown out of tablet mode includes all three options:
-  // MENU_AUTO_HIDE, MENU_ALIGNMENT_MENU, and MENU_CHANGE_WALLPAPER.
+  // MENU_AUTO_HIDE, MENU_ALIGNMENT_MENU.
   tablet_mode_controller->SetEnabledForTest(false);
   ShelfContextMenuModel menu2(nullptr, primary_id);
   EXPECT_EQ(3u, menu2.GetItemCount());
@@ -271,7 +271,7 @@ TEST_P(ShelfContextMenuModelTest, CommandIdsMatchEnumsForHistograms) {
   EXPECT_EQ(502, ShelfContextMenuModel::MENU_ALIGNMENT_LEFT);
   EXPECT_EQ(503, ShelfContextMenuModel::MENU_ALIGNMENT_RIGHT);
   EXPECT_EQ(504, ShelfContextMenuModel::MENU_ALIGNMENT_BOTTOM);
-  EXPECT_EQ(505, ShelfContextMenuModel::MENU_CHANGE_WALLPAPER);
+  EXPECT_EQ(506, ShelfContextMenuModel::MENU_PERSONALIZATION_HUB);
 }
 
 TEST_P(ShelfContextMenuModelTest, ShelfContextMenuOptions) {

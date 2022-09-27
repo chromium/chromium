@@ -46,8 +46,6 @@ SearchHandler::SearchHandler(
           local_search_service_proxy,
           pref_service,
           std::move(enterprise_policy_delegate))) {
-  DCHECK(ash::features::IsPersonalizationHubEnabled())
-      << "Personalization search requires personalization hub feature";
   local_search_service_proxy.GetIndex(
       local_search_service::IndexId::kPersonalization,
       local_search_service::Backend::kLinearMap,

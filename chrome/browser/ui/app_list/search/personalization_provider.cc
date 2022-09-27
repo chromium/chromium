@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/personalization_entry_point.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
@@ -78,7 +77,6 @@ void PersonalizationResult::Open(int event_flags) {
 
 PersonalizationProvider::PersonalizationProvider(Profile* profile)
     : profile_(profile) {
-  DCHECK(ash::features::IsPersonalizationHubEnabled());
   DCHECK(
       ash::personalization_app::CanSeeWallpaperOrPersonalizationApp(profile_));
 

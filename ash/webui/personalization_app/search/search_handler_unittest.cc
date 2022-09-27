@@ -149,8 +149,7 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
  protected:
   PersonalizationAppSearchHandlerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{::ash::features::kPersonalizationHub,
-                              ::chromeos::features::kDarkLightMode,
+        /*enabled_features=*/{::chromeos::features::kDarkLightMode,
                               ::ash::features::kAmbientModeFeature},
         /*disabled_features=*/{});
   }

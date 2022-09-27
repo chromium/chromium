@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
@@ -375,30 +374,5 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     PersonalizationAppIntegrationTest);
-
-class PersonalizationAppWithoutHubIntegrationTest
-    : public PersonalizationAppIntegrationTest {
- public:
-  PersonalizationAppWithoutHubIntegrationTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kPersonalizationHub);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Test that the Personalization App installs correctly with PersonalizationHub
-// feature on.
-IN_PROC_BROWSER_TEST_P(PersonalizationAppWithoutHubIntegrationTest,
-                       PersonalizationAppInstalls) {
-  const GURL url(kChromeUIPersonalizationAppURL);
-  std::string appTitle = "Wallpaper";
-  EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      ash::SystemWebAppType::PERSONALIZATION, url, appTitle));
-}
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    PersonalizationAppWithoutHubIntegrationTest);
 
 }  // namespace ash::personalization_app

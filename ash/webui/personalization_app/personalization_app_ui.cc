@@ -329,8 +329,8 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                      features::IsWallpaperGooglePhotosIntegrationEnabled() &&
                          wallpaper_provider_->IsEligibleForGooglePhotos());
 
-  source->AddBoolean("isPersonalizationHubEnabled",
-                     features::IsPersonalizationHubEnabled());
+  // TODO(b/249098543): Remove this boolean.
+  source->AddBoolean("isPersonalizationHubEnabled", true);
 
   source->AddBoolean("isAmbientModeAnimationEnabled",
                      features::IsAmbientModeAnimationEnabled());

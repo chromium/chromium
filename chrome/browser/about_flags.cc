@@ -2793,7 +2793,6 @@ constexpr FeatureEntry::FeatureVariation
          std::size(kPlatformProvidedTrustTokenIssuance), nullptr}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kPersonalizationHubInternalName[] = "personalization-hub";
 constexpr char kWallpaperFastRefreshInternalName[] = "wallpaper-fast-refresh";
 constexpr char kWallpaperFullScreenPreviewInternalName[] =
     "wallpaper-fullscreen-preview";
@@ -8078,10 +8077,6 @@ const FeatureEntry kFeatureEntries[] = {
          features::kClearCrossSiteCrossBrowsingContextGroupWindowName)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {kPersonalizationHubInternalName,
-     flag_descriptions::kPersonalizationHubName,
-     flag_descriptions::kPersonalizationHubDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPersonalizationHub)},
     {kWallpaperFastRefreshInternalName,
      flag_descriptions::kWallpaperFastRefreshName,
      flag_descriptions::kWallpaperFastRefreshDescription, kOsCrOS,

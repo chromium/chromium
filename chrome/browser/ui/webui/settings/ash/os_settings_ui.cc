@@ -142,10 +142,6 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<::ash::personalization_app::mojom::SearchHandler>
         receiver) {
-  DCHECK(ash::features::IsPersonalizationHubEnabled())
-      << "This interface should only be bound if personalization hub feature "
-         "is enabled";
-
   auto* profile = Profile::FromWebUI(web_ui());
   DCHECK(
       ash::personalization_app::CanSeeWallpaperOrPersonalizationApp(profile));

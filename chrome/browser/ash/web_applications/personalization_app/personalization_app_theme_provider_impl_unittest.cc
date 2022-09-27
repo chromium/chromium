@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
@@ -76,8 +75,7 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
   PersonalizationAppThemeProviderImplTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    scoped_feature_list_.InitWithFeatures({ash::features::kPersonalizationHub,
-                                           chromeos::features::kDarkLightMode},
+    scoped_feature_list_.InitWithFeatures({chromeos::features::kDarkLightMode},
                                           {});
   }
   PersonalizationAppThemeProviderImplTest(

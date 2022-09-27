@@ -116,10 +116,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   // Personalization Hub.
   RgbKeyboardManager* rgb_keyboard_manager =
       Shell::Get()->rgb_keyboard_manager();
-  source->AddBoolean("rgbKeyboard",
-                     rgb_keyboard_manager &&
-                         rgb_keyboard_manager->IsRgbKeyboardSupported() &&
-                         features::IsPersonalizationHubEnabled());
+  source->AddBoolean(
+      "rgbKeyboard",
+      rgb_keyboard_manager && rgb_keyboard_manager->IsRgbKeyboardSupported());
 
   // Checks if there are active touch screens.
   source->AddBoolean(

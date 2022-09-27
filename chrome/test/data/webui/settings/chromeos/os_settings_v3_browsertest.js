@@ -402,7 +402,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'PersonalizationPageWithPersonalizationHub',
    'personalization_page_with_personalization_hub_test.js',
-   {enabled: ['ash::features::kPersonalizationHub']},
  ],
  ['PrintingPage', 'os_printing_page_tests.js'],
  [

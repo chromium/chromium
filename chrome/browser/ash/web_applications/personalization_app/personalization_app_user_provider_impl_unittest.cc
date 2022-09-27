@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/default_user_image.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/bind.h"
@@ -157,10 +156,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
  public:
   PersonalizationAppUserProviderImplTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kPersonalizationHub);
-  }
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
   PersonalizationAppUserProviderImplTest(
       const PersonalizationAppUserProviderImplTest&) = delete;
   PersonalizationAppUserProviderImplTest& operator=(

@@ -1444,12 +1444,6 @@ BASE_FEATURE(kPerformantSplitViewResizing,
              "PerformantSplitViewResizing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Provides a UI for users to customize their wallpapers, screensaver and
-// avatars.
-BASE_FEATURE(kPersonalizationHub,
-             "PersonalizationHub",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Provides a UI for users to view information about their Android phone
 // and perform phone-side actions within ChromeOS.
 BASE_FEATURE(kPhoneHub, "PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2118,8 +2112,7 @@ bool IsAllowAmbientEQEnabled() {
 }
 
 bool IsAmbientModeAnimationEnabled() {
-  return base::FeatureList::IsEnabled(kAmbientModeAnimationFeature) &&
-         IsPersonalizationHubEnabled();
+  return base::FeatureList::IsEnabled(kAmbientModeAnimationFeature);
 }
 
 bool IsAmbientModeDevUseProdEnabled() {
@@ -2670,10 +2663,6 @@ bool IsPhoneHubFeatureSetupErrorHandlingEnabled() {
 
 bool IsPerformantSplitViewResizingEnabled() {
   return base::FeatureList::IsEnabled(kPerformantSplitViewResizing);
-}
-
-bool IsPersonalizationHubEnabled() {
-  return base::FeatureList::IsEnabled(kPersonalizationHub);
 }
 
 bool IsPhoneHubEnabled() {
