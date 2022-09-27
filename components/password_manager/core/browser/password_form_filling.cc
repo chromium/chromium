@@ -32,15 +32,15 @@ namespace {
 
 // Controls whether we should suppress the account storage promos for websites
 // that are blocked by the user.
-const base::Feature kSuppressAccountStoragePromosForBlockedWebsite{
-    "SuppressAccountStoragePromosForBlockedWebsite",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSuppressAccountStoragePromosForBlockedWebsite,
+             "SuppressAccountStoragePromosForBlockedWebsite",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether we should suppress the account storage promos for when the
 // credentials service is disabled.
-const base::Feature kSuppressAccountStoragePromosWhenCredentialServiceDisabled{
-    "SuppressAccountStoragePromosWhenCredentialServiceDisabled",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSuppressAccountStoragePromosWhenCredentialServiceDisabled,
+             "SuppressAccountStoragePromosWhenCredentialServiceDisabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool PreferredRealmIsFromAndroid(const PasswordFormFillData& fill_data) {
   return FacetURI::FromPotentiallyInvalidSpec(fill_data.preferred_realm)
