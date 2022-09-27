@@ -27,6 +27,10 @@ static_library("webui_examples_lib") {
     "browser/ui/aura/content_window.h",
     "browser/ui/aura/fill_layout.cc",
     "browser/ui/aura/fill_layout.h",
+    "browser/ui/web/webui.cc",
+    "browser/ui/web/webui.h",
+    "browser/webui_controller_factory.cc",
+    "browser/webui_controller_factory.h",
     "common/content_client.cc",
     "common/content_client.h",
   ]
@@ -37,6 +41,7 @@ static_library("webui_examples_lib") {
     ":pak",
     ":resources_grit",
     "//base",
+    "//chrome/browser/resources/webui_gallery:resources",
     "//content/public/app",
     "//content/public/browser",
     "//ui/aura",
@@ -66,6 +71,7 @@ grit("resources") {
 repack("pak") {
   testonly = true
   sources = [
+    "$root_gen_dir/chrome/webui_gallery_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/webui_generated_resources.pak",
@@ -75,6 +81,7 @@ repack("pak") {
   ]
   deps = [
     ":resources",
+    "//chrome/browser/resources/webui_gallery:resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
     "//ui/resources",

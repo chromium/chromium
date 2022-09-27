@@ -1,4 +1,10 @@
 include_rules = [
+  # The WebUI examples currently depends on HTML in the chrome directory.
+  # Production code outside of //chrome should not depend on //chrome.
+  # This is a one-time exception as the WebUI examples is a non-production app.
+  "+chrome/grit/webui_gallery_resources.h",
+  "+chrome/grit/webui_gallery_resources_map.h",
+
   # The WebUI examples is a simple embedder, so it only uses content's public API.
   "+content/public",
 

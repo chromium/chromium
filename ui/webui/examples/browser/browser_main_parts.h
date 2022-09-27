@@ -21,6 +21,7 @@ namespace webui_examples {
 class AuraContext;
 class BrowserContext;
 class ContentWindow;
+class WebUIControllerFactory;
 
 class BrowserMainParts : public content::BrowserMainParts {
  public:
@@ -43,6 +44,7 @@ class BrowserMainParts : public content::BrowserMainParts {
   void QuitMessageLoop();
 
   base::ScopedTempDir temp_dir_;
+  std::unique_ptr<WebUIControllerFactory> web_ui_controller_factory_;
   std::unique_ptr<content::BrowserContext> browser_context_;
 
   std::unique_ptr<AuraContext> aura_context_;

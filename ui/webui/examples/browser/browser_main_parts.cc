@@ -16,6 +16,7 @@
 #include "ui/webui/examples/browser/browser_context.h"
 #include "ui/webui/examples/browser/ui/aura/aura_context.h"
 #include "ui/webui/examples/browser/ui/aura/content_window.h"
+#include "ui/webui/examples/browser/webui_controller_factory.h"
 #include "ui/webui/examples/grit/webui_examples_resources.h"
 
 namespace webui_examples {
@@ -29,10 +30,14 @@ int BrowserMainParts::PreMainMessageLoopRun() {
 
   browser_context_ = std::make_unique<BrowserContext>(temp_dir_.GetPath());
 
+  web_ui_controller_factory_ = std::make_unique<WebUIControllerFactory>();
+  content::WebUIControllerFactory::RegisterFactory(
+      web_ui_controller_factory_.get());
+
   aura_context_ = std::make_unique<AuraContext>();
 
   CreateAndShowContentWindow(
-      GURL("https://www.chromium.org/"),
+      GURL("chrome://main/"),
       l10n_util::GetStringUTF16(IDS_WEBUI_EXAMPLES_WINDOW_TITLE));
 
   return 0;
@@ -81,6 +86,7 @@ void BrowserMainParts::OnWindowClosed(
 
 void BrowserMainParts::QuitMessageLoop() {
   aura_context_.reset();
+  web_ui_controller_factory_.reset();
   quit_run_loop_.Run();
 }
 
