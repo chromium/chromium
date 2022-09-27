@@ -56,6 +56,8 @@ export class PasswordCheckListItemElement extends
        */
       item: Object,
 
+      showDetails: Boolean,
+
       isPasswordVisible: {
         type: Boolean,
         computed: 'computePasswordVisibility_(item.password)',
@@ -73,17 +75,18 @@ export class PasswordCheckListItemElement extends
 
       buttonClass_: {
         type: String,
-        computed: 'computeButtonClass_(item.compromisedInfo)',
+        computed: 'computeButtonClass_(showDetails)',
       },
 
       iconClass_: {
         type: String,
-        computed: 'computeIconClass_(item.compromisedInfo)',
+        computed: 'computeIconClass_(showDetails)',
       },
     };
   }
 
   item: chrome.passwordsPrivate.PasswordUiEntry;
+  showDetails: boolean = false;
   isPasswordVisible: boolean;
   private password_: string;
   clickedChangePassword: boolean;
@@ -91,20 +94,6 @@ export class PasswordCheckListItemElement extends
   private iconClass_: string;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
-
-  /**
-   * @return Whether |item| is compromised credential.
-   */
-  private isCompromisedItem_(): boolean {
-    return !!this.item.compromisedInfo;
-  }
-
-  /**
-   * @return Whether |item| is compromised credential but not muted.
-   */
-  private isNonMutedCompromisedItem_(): boolean {
-    return this.isCompromisedItem_() && !this.item.compromisedInfo!.isMuted;
-  }
 
   private getCompromiseType_(): string {
     const isLeaked = this.item.compromisedInfo!.compromiseTypes.some(
@@ -162,7 +151,7 @@ export class PasswordCheckListItemElement extends
   }
 
   private computeButtonClass_(): string {
-    if (this.isNonMutedCompromisedItem_()) {
+    if (this.showDetails) {
       // Strong CTA.
       return 'action-button';
     }
@@ -171,7 +160,7 @@ export class PasswordCheckListItemElement extends
   }
 
   private computeIconClass_(): string {
-    if (this.isNonMutedCompromisedItem_()) {
+    if (this.showDetails) {
       // Strong CTA, white icon.
       return '';
     }

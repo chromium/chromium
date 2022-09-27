@@ -15,7 +15,7 @@ import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {FakeSettingsPrivate} from './fake_settings_private.js';
 import {AutofillManagerExpectations, createAddressEntry, createCreditCardEntry, createExceptionEntry, createPasswordEntry, PaymentsManagerExpectations, TestAutofillManager, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
-import {makeCompromisedCredential} from './passwords_and_autofill_fake_data.js';
+import {makeInsecureCredential} from './passwords_and_autofill_fake_data.js';
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 import {PasswordManagerExpectations,TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
@@ -346,7 +346,7 @@ suite('PasswordsUITest', function() {
 
     // Simulate one compromised password
     const leakedPasswords = [
-      makeCompromisedCredential(
+      makeInsecureCredential(
           'google.com', 'jdoerrie',
           [chrome.passwordsPrivate.CompromiseType.LEAKED]),
     ];
