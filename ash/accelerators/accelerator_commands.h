@@ -91,9 +91,6 @@ ASH_EXPORT void BrightnessDown();
 // Brightness up.
 ASH_EXPORT void BrightnessUp();
 
-// Logs a dump of CalendarModel internal data.
-ASH_EXPORT void DumpCalendarModel();
-
 // Cycle backwards in the MRU window list. Usually Alt-Shift-Tab.
 ASH_EXPORT void CycleBackwardMru();
 
@@ -105,6 +102,9 @@ ASH_EXPORT void CycleUser(CycleUserDirection direction);
 
 // Disable caps-lock.
 ASH_EXPORT void DisableCapsLock();
+
+// Logs a dump of CalendarModel internal data.
+ASH_EXPORT void DumpCalendarModel();
 
 // Focus the camera preview if it is present.
 ASH_EXPORT void FocusCameraPreview();

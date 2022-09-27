@@ -82,12 +82,10 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/display/display.h"
-#include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/display/util/display_util.h"
-#include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget.h"
 
@@ -554,23 +552,9 @@ void BrightnessUp() {
     delegate->HandleBrightnessUp();
 }
 
-void CycleUser(CycleUserDirection direction) {
-  Shell::Get()->session_controller()->CycleActiveUser(direction);
-}
-
-void DumpCalendarModel() {
-  Shell::Get()->system_tray_model()->calendar_model()->DebugDump();
-}
-
 void CycleBackwardMru() {
   Shell::Get()->window_cycle_controller()->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kBackward);
-}
-
-void FocusPip() {
-  auto* widget = FindPipWidget();
-  if (widget)
-    Shell::Get()->focus_cycler()->FocusWidget(widget);
 }
 
 void CycleForwardMru() {
@@ -578,8 +562,28 @@ void CycleForwardMru() {
       WindowCycleController::WindowCyclingDirection::kForward);
 }
 
+void CycleUser(CycleUserDirection direction) {
+  Shell::Get()->session_controller()->CycleActiveUser(direction);
+}
+
 void DisableCapsLock() {
   Shell::Get()->ime_controller()->SetCapsLockEnabled(false);
+}
+
+void DumpCalendarModel() {
+  Shell::Get()->system_tray_model()->calendar_model()->DebugDump();
+}
+
+void FocusCameraPreview() {
+  auto* camera_controller = CaptureModeController::Get()->camera_controller();
+  DCHECK(camera_controller);
+  camera_controller->PseudoFocusCameraPreview();
+}
+
+void FocusPip() {
+  auto* widget = FindPipWidget();
+  if (widget)
+    Shell::Get()->focus_cycler()->FocusWidget(widget);
 }
 
 void FocusShelf() {
@@ -598,12 +602,6 @@ void FocusShelf() {
   // Focus the home button.
   Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
   shelf->shelf_focus_cycler()->FocusNavigation(false /* lastElement */);
-}
-
-void FocusCameraPreview() {
-  auto* camera_controller = CaptureModeController::Get()->camera_controller();
-  DCHECK(camera_controller);
-  camera_controller->PseudoFocusCameraPreview();
 }
 
 void KeyboardBrightnessDown() {
