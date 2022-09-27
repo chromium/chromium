@@ -4044,6 +4044,18 @@
           'isolated_scripts': 'chromium_win_rel_isolated_scripts',
         },
       },
+      'win10-wpt-content-shell-fyi-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'x86-64',
+          'win10',
+          'isolate_profile_data',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_content_shell',
+        },
+        'os_type': 'win',
+      },
     },
   },
   {
