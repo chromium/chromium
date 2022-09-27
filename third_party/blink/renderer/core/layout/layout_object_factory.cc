@@ -140,12 +140,7 @@ LayoutBlock* LayoutObjectFactory::CreateBlockForLineClamp(
 
 LayoutView* LayoutObjectFactory::CreateView(Document& document,
                                             const ComputedStyle& style) {
-  bool disable_ng_for_type =
-      !RuntimeEnabledFeatures::LayoutNGViewEnabled() ||
-      (LayoutView::ShouldUsePrintingLayout(document) &&
-       !RuntimeEnabledFeatures::LayoutNGPrintingEnabled());
-
-  if (disable_ng_for_type || !RuntimeEnabledFeatures::LayoutNGEnabled())
+  if (!RuntimeEnabledFeatures::LayoutNGPrintingEnabled())
     return MakeGarbageCollected<LayoutView>(&document);
   return MakeGarbageCollected<LayoutNGView>(&document);
 }

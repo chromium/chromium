@@ -638,7 +638,7 @@ bool IsGuaranteedToEnterNGBlockNodeLayout(const LayoutObject& layout_object) {
   // if the container for positioning is a legacy object. That is the case for
   // LayoutView, which is a legacy object but does not otherwise force
   // legacy layout objects.
-  if (!RuntimeEnabledFeatures::LayoutNGViewEnabled() &&
+  if (!RuntimeEnabledFeatures::LayoutNGPrintingEnabled() &&
       layout_object.IsOutOfFlowPositioned() &&
       layout_object.IsLayoutReplaced()) {
     return false;

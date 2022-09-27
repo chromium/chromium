@@ -1661,7 +1661,7 @@ crbug.com/1356256 fast/table/percent-widths-float.html [ Failure Pass ]
 
 # TablesNG ends
 
-### With LayoutNGView enabled:
+### With LayoutNGPrinting enabled:
 
 crbug.com/1367912 external/wpt/css/css-break/flexbox/flex-container-fragmentation-008.html [ Failure ]
 crbug.com/1367912 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-029.html [ Failure ]

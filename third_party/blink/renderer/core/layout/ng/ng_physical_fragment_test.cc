@@ -20,9 +20,11 @@ class NGPhysicalFragmentTest : public NGLayoutTest {
   }
 
   static bool IsNGViewEnabled() {
-    return RuntimeEnabledFeatures::LayoutNGViewEnabled() &&
-           RuntimeEnabledFeatures::LayoutNGEnabled();
+    return RuntimeEnabledFeatures::LayoutNGPrintingEnabled();
   }
+
+ private:
+  ScopedLayoutNGBlockFragmentationForTest enable_block_fragmentation_{true};
 };
 
 TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeBasic) {
@@ -156,7 +158,6 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithGrid) {
 }
 
 TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithTargetInsideColumn) {
-  ScopedLayoutNGBlockFragmentationForTest ng_block_frag(true);
   SetBodyInnerHTML(R"HTML(
     <div id="multicol" style="columns:3;">
       <div id="child" style="height:150px;"></div>

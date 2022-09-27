@@ -42,8 +42,7 @@ namespace blink {
 namespace {
 
 const char* ViewLayerName() {
-  return RuntimeEnabledFeatures::LayoutNGViewEnabled() &&
-                 RuntimeEnabledFeatures::LayoutNGEnabled()
+  return RuntimeEnabledFeatures::LayoutNGPrintingEnabled()
              ? "LayoutNGView #document"
              : "LayoutView #document";
 }

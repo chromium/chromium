@@ -295,8 +295,7 @@ void ExecuteScriptInMainWorld(
 }
 
 const char* ViewBackgroundLayerName() {
-  return RuntimeEnabledFeatures::LayoutNGViewEnabled() &&
-                 RuntimeEnabledFeatures::LayoutNGEnabled()
+  return RuntimeEnabledFeatures::LayoutNGPrintingEnabled()
              ? "Scrolling background of LayoutNGView #document"
              : "Scrolling background of LayoutView #document";
 }

@@ -1504,7 +1504,7 @@
     },
     {
       name: "LayoutNGPrinting",
-      depends_on: ["LayoutNG","LayoutNGBlockFragmentation","LayoutNGView"],
+      depends_on: ["LayoutNG","LayoutNGBlockFragmentation"],
       status: "test",
     },
     {
@@ -1518,10 +1518,6 @@
       name: "LayoutNGTableFragmentation",
       depends_on: ["LayoutNG","LayoutNGBlockFragmentation"],
       status: "stable",
-    },
-    {
-      name: "LayoutNGView",
-      status: "test",
     },
     {
       // crbug.com/1335309
