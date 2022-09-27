@@ -325,13 +325,13 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kTagOpenState) {
-      if (cc == '!') {
+      if (IsASCIIAlpha(cc)) {
+        token_->BeginStartTag(ToLowerCase(cc));
+        HTML_ADVANCE_PAST_NON_NEWLINE_TO(kTagNameState);
+      } else if (cc == '!') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kMarkupDeclarationOpenState);
       } else if (cc == '/') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kEndTagOpenState);
-      } else if (IsASCIIAlpha(cc)) {
-        token_->BeginStartTag(ToLowerCase(cc));
-        HTML_ADVANCE_PAST_NON_NEWLINE_TO(kTagNameState);
       } else if (cc == '?') {
         ParseError();
         // The spec consumes the current character before switching

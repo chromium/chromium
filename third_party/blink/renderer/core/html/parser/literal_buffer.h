@@ -54,7 +54,7 @@ class LiteralBufferBase {
     return base::checked_cast<wtf_size_t>(end_ - begin_);
   }
 
-  ALWAYS_INLINE bool IsEmpty() const { return size() == 0; }
+  ALWAYS_INLINE bool IsEmpty() const { return begin_ == end_; }
 
   ALWAYS_INLINE const T& operator[](wtf_size_t index) const {
     CHECK_GT(size(), index);
