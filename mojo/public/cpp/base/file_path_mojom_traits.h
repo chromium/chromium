@@ -33,6 +33,19 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
                    base::FilePath* out);
 };
 
+template <>
+struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
+    StructTraits<mojo_base::mojom::RelativeFilePathDataView, base::FilePath> {
+#if BUILDFLAG(IS_WIN)
+  static base::span<const uint16_t> path(const base::FilePath& path);
+#else
+  static const base::FilePath::StringType& path(const base::FilePath& path);
+#endif
+
+  static bool Read(mojo_base::mojom::RelativeFilePathDataView data,
+                   base::FilePath* out);
+};
+
 }  // namespace mojo
 
 #endif  // MOJO_PUBLIC_CPP_BASE_FILE_PATH_MOJOM_TRAITS_H_
