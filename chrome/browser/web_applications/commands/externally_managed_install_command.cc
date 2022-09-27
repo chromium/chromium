@@ -170,9 +170,7 @@ void ExternallyManagedInstallCommand::OnDidPerformInstallableCheck(
                                  web_app_info_.get());
   }
 
-  if (install_params_.install_as_shortcut &&
-      base::FeatureList::IsEnabled(
-          webapps::features::kCreateShortcutIgnoresManifest)) {
+  if (install_params_.install_as_shortcut) {
     *web_app_info_ = WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
         web_contents_->GetLastCommittedURL(), *web_app_info_);
   }
