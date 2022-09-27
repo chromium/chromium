@@ -1286,7 +1286,7 @@ BASE_FEATURE(kWebAssemblyTrapHandler,
 // Controls whether WebAuthn conditional UI requests are supported.
 BASE_FEATURE(kWebAuthConditionalUI,
              "WebAuthenticationConditionalUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the Web Bluetooth API is enabled:
 // https://webbluetoothcg.github.io/web-bluetooth/

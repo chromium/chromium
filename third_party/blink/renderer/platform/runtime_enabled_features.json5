@@ -2829,13 +2829,13 @@
       name: "WebAuthAuthenticatorAttachment",
       status: "test"
     },
-    // A more subtle UI for WebAuthn that is web exposed. Under development.
+    // A more subtle UI for WebAuthn that is web exposed.
     // It's controlled by the corresponding Chromium feature which needs to
     // be enabled to make the whole feature work, except for WPTs where the
     // virtual authenticator environment is used.
     {
       name: "WebAuthenticationConditionalUI",
-      status: "test",
+      status: "stable",
     },
     // https://github.com/w3c/webauthn/pull/1663
     {
