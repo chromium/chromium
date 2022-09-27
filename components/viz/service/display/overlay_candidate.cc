@@ -62,19 +62,6 @@ bool OverlayCandidate::IsOccluded(const OverlayCandidate& candidate,
   return false;
 }
 
-// static
-void OverlayCandidate::ApplyClip(OverlayCandidate& candidate,
-                                 const gfx::RectF& clip_rect) {
-  if (!clip_rect.Contains(candidate.display_rect)) {
-    gfx::RectF intersect_clip_display = clip_rect;
-    intersect_clip_display.Intersect(candidate.display_rect);
-    gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
-        candidate.uv_rect, candidate.display_rect, intersect_clip_display);
-    candidate.display_rect = intersect_clip_display;
-    candidate.uv_rect = uv_rect;
-  }
-}
-
 void OverlayCandidate::TransformRectToTargetSpace(
     gfx::RectF& content_rect) const {
   if (absl::holds_alternative<gfx::Transform>(transform)) {

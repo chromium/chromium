@@ -108,6 +108,31 @@ OverlayCandidate::CandidateStatus GetReasonForTransformNotAxisAligned(
   return OverlayCandidate::CandidateStatus::kFailNotAxisAligned2dRotation;
 }
 
+// Modifies the |candidate|'s |display_rect| to be clipped within |clip_rect|.
+// This function will also update the |uv_rect| based on what clipping was
+// applied to |display_rect|.
+// |clip_rect| should be in the same space as |candidate|'s |display_rect|.
+void ApplyClip(OverlayCandidate& candidate, const gfx::RectF& clip_rect) {
+  if (!clip_rect.Contains(candidate.display_rect)) {
+    // Apply the buffer transform to the candidate's |uv_rect| so that it is
+    // in the same orientation as |display_rect| when applying the clip.
+    gfx::Transform buffer_transform = gfx::OverlayTransformToTransform(
+        absl::get<gfx::OverlayTransform>(candidate.transform),
+        gfx::SizeF(1, 1));
+    buffer_transform.TransformRect(&candidate.uv_rect);
+
+    gfx::RectF intersect_clip_display = clip_rect;
+    intersect_clip_display.Intersect(candidate.display_rect);
+    gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
+        candidate.uv_rect, candidate.display_rect, intersect_clip_display);
+    candidate.display_rect = intersect_clip_display;
+    candidate.uv_rect = uv_rect;
+
+    // Return |uv_rect| to buffer uv space.
+    buffer_transform.TransformRectReverse(&candidate.uv_rect);
+  }
+}
+
 }  // namespace
 
 OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
@@ -379,31 +404,25 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
       DCHECK(
           absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
 
-      // Apply the buffer transform so that the candidate's |uv_rect| has the
-      // same orientation as |display_rect| when applying the clip.
-      gfx::Transform buffer_transform = gfx::OverlayTransformToTransform(
-          absl::get<gfx::OverlayTransform>(candidate.transform),
-          gfx::SizeF(1, 1));
-      buffer_transform.TransformRect(&candidate.uv_rect);
+      gfx::RectF clip_to_apply = candidate.display_rect;
 
       if (candidate.clip_rect.has_value())
-        OverlayCandidate::ApplyClip(candidate,
-                                    gfx::RectF(*candidate.clip_rect));
+        clip_to_apply.Intersect(gfx::RectF(*candidate.clip_rect));
 
       // TODO(rivr): Apply the same |visible_rect| and |display_rect| clip logic
       // when delegating |clip_rect|.
       if (quad->visible_rect != quad->rect) {
         auto visible_rect = gfx::RectF(quad->visible_rect);
         sqs->quad_to_target_transform.TransformRect(&visible_rect);
-        OverlayCandidate::ApplyClip(candidate, gfx::RectF(visible_rect));
+        clip_to_apply.Intersect(visible_rect);
       }
+
       // TODO(https://crbug.com/1300552) : Tile quads can overlay other quads
       // and the window by one pixel. Exo does not yet clip these quads so we
       // need to clip here with the |primary_rect|.
-      OverlayCandidate::ApplyClip(candidate, primary_rect_);
+      clip_to_apply.Intersect(primary_rect_);
 
-      // Return |uv_rect| to buffer uv space.
-      buffer_transform.TransformRectReverse(&candidate.uv_rect);
+      ApplyClip(candidate, clip_to_apply);
 
       if (candidate.display_rect.IsEmpty())
         return CandidateStatus::kFailVisible;

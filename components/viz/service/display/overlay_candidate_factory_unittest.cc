@@ -21,6 +21,7 @@
 #include "components/viz/test/test_context_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/overlay_transform_utils.h"
 #include "ui/gfx/video_types.h"
 
 using testing::_;
@@ -29,7 +30,7 @@ using testing::Mock;
 namespace viz {
 namespace {
 
-class OverlayCandidateFactoryArbitraryTransformTest : public testing::Test {
+class OverlayCandidateFactoryTestBase : public testing::Test {
  protected:
   void SetUp() override {
     scoped_refptr<ContextProvider> child_context_provider =
@@ -76,9 +77,20 @@ class OverlayCandidateFactoryArbitraryTransformTest : public testing::Test {
       bool has_arbitrary_transform_support = true) {
     return OverlayCandidateFactory(
         &render_pass, &resource_provider_, &surface_damage_list_, &identity_,
-        primary_rect, true, has_clip_support, has_arbitrary_transform_support);
+        primary_rect, /*is_delegated_context=*/true, has_clip_support,
+        has_arbitrary_transform_support);
   }
 
+  ResourceId overlay_resource_id_;
+  ClientResourceProvider child_resource_provider_;
+  DisplayResourceProviderNull resource_provider_;
+  SurfaceDamageRectList surface_damage_list_;
+  SkM44 identity_;
+};
+
+class OverlayCandidateFactoryArbitraryTransformTest
+    : public OverlayCandidateFactoryTestBase {
+ protected:
   TextureDrawQuad CreateUnclippedDrawQuad(
       AggregatedRenderPass& render_pass,
       const gfx::Rect& quad_rect,
@@ -94,12 +106,6 @@ class OverlayCandidateFactoryArbitraryTransformTest : public testing::Test {
 
     return quad;
   }
-
-  ResourceId overlay_resource_id_;
-  ClientResourceProvider child_resource_provider_;
-  DisplayResourceProviderNull resource_provider_;
-  SurfaceDamageRectList surface_damage_list_;
-  SkM44 identity_;
 };
 
 // Check that even axis-aligned transforms are stored separately from the
@@ -339,6 +345,100 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
                                             quad_list.end()),
               0);
   }
+}
+
+constexpr float kEpsilon = 0.001f;
+
+// Check that uv clips are applied correctly when the candidate is transformed.
+class TransformedOverlayClipRectTest : public OverlayCandidateFactoryTestBase {
+ protected:
+  TextureDrawQuad CreateClippedDrawQuad(
+      AggregatedRenderPass& render_pass,
+      const gfx::Rect& quad_rect,
+      const gfx::Transform& quad_to_target_transform,
+      const gfx::Rect& clip_rect,
+      const gfx::RectF& quad_uv_rect) {
+    SharedQuadState* sqs = render_pass.CreateAndAppendSharedQuadState();
+    sqs->quad_to_target_transform = quad_to_target_transform;
+    sqs->clip_rect = clip_rect;
+    TextureDrawQuad quad;
+    float vertex_opacity[4] = {1.0, 1.0, 1.0, 1.0};
+    quad.SetNew(sqs, quad_rect, quad_rect, false, overlay_resource_id_, false,
+                quad_uv_rect.origin(), quad_uv_rect.bottom_right(),
+                SkColors::kTransparent, vertex_opacity, false, false, false,
+                gfx::ProtectedVideoType::kClear);
+
+    return quad;
+  }
+
+  void RunClipToTopLeftCornerTest(gfx::OverlayTransform overlay_transform,
+                                  gfx::RectF quad_uvs,
+                                  gfx::RectF expected_uvs) {
+    AggregatedRenderPass render_pass;
+    gfx::Rect bounds(100, 100);
+    render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1), bounds,
+                       gfx::Rect(), gfx::Transform());
+    // Create a factory without clip rect or arbitrary transform delegation, so
+    // that any clips will be baked into the candidate.
+    OverlayCandidateFactory factory = CreateCandidateFactory(
+        render_pass, gfx::RectF(render_pass.output_rect), false, false);
+
+    // |transform| maps the rect (0,0 1x1) to (50,50 100x100).
+    gfx::Transform transform =
+        gfx::OverlayTransformToTransform(overlay_transform, gfx::SizeF(1, 1));
+    transform.PostScale(100, 100);
+    transform.PostTranslate(50, 50);
+    auto quad = CreateClippedDrawQuad(render_pass, gfx::Rect(1, 1), transform,
+                                      bounds, quad_uvs);
+
+    OverlayCandidate candidate;
+    OverlayCandidate::CandidateStatus result =
+        factory.FromDrawQuad(&quad, candidate);
+    ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
+    EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidate.transform),
+              overlay_transform);
+    EXPECT_EQ(candidate.display_rect, gfx::RectF(50, 50, 50, 50));
+    EXPECT_TRUE(
+        candidate.uv_rect.ApproximatelyEqual(expected_uvs, kEpsilon, kEpsilon));
+  }
+};
+
+TEST_F(TransformedOverlayClipRectTest, NoTransform) {
+  RunClipToTopLeftCornerTest(gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
+                             gfx::RectF(1, 1),
+                             gfx::RectF(0.0f, 0.0f, 0.5f, 0.5f));
+}
+
+TEST_F(TransformedOverlayClipRectTest, Rotate90) {
+  // If the candidate is rotated by 90 degrees, the top-left corner of the quad
+  // corresponds to the bottom-left corner in UV space.
+  RunClipToTopLeftCornerTest(gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_90,
+                             gfx::RectF(1, 1),
+                             gfx::RectF(0.0f, 0.5f, 0.5f, 0.5f));
+}
+
+TEST_F(TransformedOverlayClipRectTest, Rotate180) {
+  // If the candidate is rotated by 180 degrees, the top-left corner of the quad
+  // corresponds to the bottom-right corner in UV space.
+  RunClipToTopLeftCornerTest(
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_180, gfx::RectF(1, 1),
+      gfx::RectF(0.5f, 0.5f, 0.5f, 0.5f));
+}
+
+TEST_F(TransformedOverlayClipRectTest, Rotate270) {
+  // If the candidate is rotated by 270 degrees, the top-left corner of the quad
+  // corresponds to the top-right corner in UV space.
+  RunClipToTopLeftCornerTest(
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_270, gfx::RectF(1, 1),
+      gfx::RectF(0.5f, 0.0f, 0.5f, 0.5f));
+}
+
+TEST_F(TransformedOverlayClipRectTest, ClippedUvs) {
+  // Check that the clip is calculated correctly if the candidate's |uv_rect| is
+  // not full size, and offset from the origin.
+  RunClipToTopLeftCornerTest(
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_180,
+      gfx::RectF(0.1f, 0.2f, 0.4f, 0.4f), gfx::RectF(0.3f, 0.4f, 0.2f, 0.2f));
 }
 
 }  // namespace
