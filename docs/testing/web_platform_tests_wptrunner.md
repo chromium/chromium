@@ -1,4 +1,4 @@
-# Using `wptrunner` in Chromium (experimental)
+# Using wptrunner in Chromium (experimental)
 
 [`wptrunner`](https://github.com/web-platform-tests/wpt/tree/master/tools/wptrunner)
 is the harness shipped with the WPT project for running the test suite. This
@@ -39,13 +39,13 @@ The `wptrunner` wrapper script is
 [`//third_party/blink/tools/run_wpt_tests.py`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/run_wpt_tests.py).
 First, build the necessary ninja target:
 
-```shell
+``` sh
 autoninja -C out/Release wpt_tests_isolate_content_shell
 ```
 
 To run the script, run the command below from `//third_party/blink/tools`:
 
-```shell
+``` sh
 ./run_wpt_tests.py [test list]
 ```
 
@@ -119,7 +119,7 @@ files](web_test_expectations.md#Kinds-of-expectations-files).
 Metadata files record test and subtest expectations in a structured INI-like
 text format:
 
-```ini
+```
 [my-test.html]
   expected: OK
   bug: crbug.com/123  # Comments start with '#'
@@ -190,59 +190,14 @@ evaluated against **properties** (*i.e.*, variables) pulled from the [test
 environment](https://firefox-source-docs.mozilla.org/build/buildsystem/mozinfo.html).
 Properties available in Chromium are shown below:
 
-<table>
-  <tr>
-    <th>Property</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th colspan="2">Choices</th>
-  </tr>
-  <tr>
-    <td><code>os</code></td>
-    <td><code>str</code></td>
-    <td>OS family</td>
-    <td><code>linux</code></td>
-    <td><code>android</code></td>
-  </tr>
-  <tr>
-    <td><code>version</code></td>
-    <td><code>str</code></td>
-    <td>OS version</td>
-    <td><code>trusty</code></td>
-    <td><code>9</code></td>
-  </tr>
-  <tr>
-    <td><code>product</code></td>
-    <td><code>str</code></td>
-    <td>Browser or browser component</td>
-    <td><code>chrome</code>, <code>content_shell</code></td>
-    <td><code>chrome_android</code>, <code>android_webview</code></td>
-  </tr>
-  <tr>
-    <td><code>processor</code></td>
-    <td><code>str</code></td>
-    <td>CPU specifier</td>
-    <td colspan="2"><code>arm</code>, <code>x86</code>, <code>x86_64</code></td>
-  </tr>
-  <tr>
-    <td><code>flag_specific</code></td>
-    <td><code>str</code></td>
-    <td>Flag-specific suite name</td>
-    <td colspan="2">
-      See
-      <code>
-      <a
-    href="https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/FlagSpecificConfig">FlagSpecificConfig</a></code>
-      (will be falsy for the generic suite)
-    </td>
-  </tr>
-  <tr>
-    <td><code>debug</code></td>
-    <td><code>bool</code></td>
-    <td><code>is_debug</code> build?</td>
-    <td colspan="2">N/A</td>
-  </tr>
-</table>
+| Property | Type | Description | Choices |
+| - | - | - | - |
+| `os` | `str` | OS family | `linux`, `android` |
+| `version` | `str` | OS version | Depends on `os` |
+| `product` | `str` | Browser or browser component | `chrome`, `content_shell`, `chrome_android`, `android_webview` |
+| `processor` | `str` | CPU specifier | `arm`, `x86`, `x86_64` |
+| `flag_specific` | `str` | Flag-specific suite name | See [`FlagSpecificConfig`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/FlagSpecificConfig) (will be falsy for the generic suite) |
+| `debug` | `bool` | `is_debug` build? | N/A |
 
 ### Test Parameterization
 
@@ -259,7 +214,7 @@ For example, suppose a test `external/wpt/a.any.js` generates test IDs
 Then, a file named `external/wpt/a.any.js.ini` stores expectations for all
 parameterizations:
 
-```ini
+```
 [a.any.html?b]
   expected: OK
 
@@ -279,7 +234,7 @@ To set expectations or disable tests under a directory without editing an `.ini`
 file for every test, place a file named `__dir__.ini` under the desired
 directory with contents like:
 
-```ini
+```
 expected:
   if os == "linux": CRASH
 disabled:
@@ -307,7 +262,7 @@ subcommand that can automatically update expectations from try job results
 [`rebaseline-cl`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/tool/commands/rebaseline_cl.py)).
 Example invocation:
 
-```shell
+``` sh
 ./blink_tool.py update-metadata --verbose --bug=123 \
     --build=linux-wpt-content-shell-fyi-rel:30 css/
 ```
