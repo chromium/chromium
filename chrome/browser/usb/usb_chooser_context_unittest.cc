@@ -38,6 +38,12 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
+#include "chromeos/startup/browser_init_params.h"
+#endif
+
 using ::base::test::TestFuture;
 using ::device::mojom::UsbDeviceInfoPtr;
 using ::testing::_;
@@ -1281,8 +1287,9 @@ TEST_F(UsbChooserContextTest, MassStorageHidden) {
   loop.Run();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(UsbChooserContextTest, MassStorageShownWhenDetachable) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::Value::List allowlist;
   base::Value::Dict ids;
   ids.Set(ash::kUsbDetachableAllowlistKeyVid, 1234);
@@ -1291,6 +1298,22 @@ TEST_F(UsbChooserContextTest, MassStorageShownWhenDetachable) {
 
   profile()->ScopedCrosSettingsTestHelper()->GetStubbedProvider()->Set(
       ash::kUsbDetachableAllowlist, base::Value(std::move(allowlist)));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto allowlist = crosapi::mojom::UsbDetachableAllowlist::New();
+  auto device_id = crosapi::mojom::UsbDeviceId::New();
+  device_id->has_vendor_id = true;
+  device_id->vendor_id = 1234;
+  device_id->has_product_id = true;
+  device_id->product_id = 1;
+  allowlist->usb_device_ids.push_back(std::move(device_id));
+
+  auto params = crosapi::mojom::BrowserInitParams::New();
+  params->device_settings = crosapi::mojom::DeviceSettings::New();
+  params->device_settings->usb_detachable_allow_list = std::move(allowlist);
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   GURL kUrl("https://www.google.com");
   const auto origin = url::Origin::Create(kUrl);
