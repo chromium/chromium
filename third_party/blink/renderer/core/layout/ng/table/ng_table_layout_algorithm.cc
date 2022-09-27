@@ -1399,12 +1399,18 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       border_spacing_after_last_section = LayoutUnit();
     } else if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
       // Truncate trailing border-spacing to fit within the fragmentainer.
-      border_spacing_after_last_section =
+      LayoutUnit new_border_spacing_after_last_section =
           std::min(border_spacing_after_last_section,
                    fragmentainer_space_at_start - child_block_offset -
                        border_padding.block_end);
-      border_spacing_after_last_section =
-          border_spacing_after_last_section.ClampNegativeToZero();
+      new_border_spacing_after_last_section =
+          new_border_spacing_after_last_section.ClampNegativeToZero();
+      if (border_spacing_after_last_section !=
+          new_border_spacing_after_last_section) {
+        container_builder_.SetIsTruncatedByFragmentationLine();
+        border_spacing_after_last_section =
+            new_border_spacing_after_last_section;
+      }
     }
 
     if (!has_ended_table_box_layout) {

@@ -343,6 +343,12 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         if (cached_layout_result->IsBlockSizeForFragmentationClamped())
           return nullptr;
 
+        // If the fragment was truncated at the fragmentation line, and since we
+        // have now moved relatively to the fragmentation line, we cannot re-use
+        // the fragment.
+        if (cached_layout_result->IsTruncatedByFragmentationLine())
+          return nullptr;
+
         // TODO(layout-dev): This likely shouldn't be scoped to just OOFs, but
         // scoping it more widely results in several perf regressions[1].
         //

@@ -440,6 +440,13 @@ class CORE_EXPORT NGLayoutResult final
     return bitfields_.disable_simplified_layout;
   }
 
+  // Returns true if the fragment got truncated because it reached the
+  // fragmentation line. This typically means that we cannot re-use (cache-hit)
+  // this fragment if the fragmentation line moves.
+  bool IsTruncatedByFragmentationLine() const {
+    return bitfields_.is_truncated_by_fragmentation_line;
+  }
+
   // Returns the space which generated this object for caching purposes.
   const NGConstraintSpace& GetConstraintSpaceForCaching() const {
     return space_;
@@ -879,7 +886,8 @@ class CORE_EXPORT NGLayoutResult final
           initial_break_before(static_cast<unsigned>(EBreakBetween::kAuto)),
           final_break_after(static_cast<unsigned>(EBreakBetween::kAuto)),
           status(static_cast<unsigned>(kSuccess)),
-          disable_simplified_layout(false) {}
+          disable_simplified_layout(false),
+          is_truncated_by_fragmentation_line(false) {}
 
     unsigned has_rare_data_exclusion_space : 1;
     unsigned has_oof_positioned_offset : 1;
@@ -906,6 +914,7 @@ class CORE_EXPORT NGLayoutResult final
 
     unsigned status : 3;  // EStatus
     unsigned disable_simplified_layout : 1;
+    unsigned is_truncated_by_fragmentation_line : 1;
   };
 
   // The constraint space which generated this layout result.

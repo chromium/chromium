@@ -882,8 +882,12 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
         LayoutUnit bfc_block_offset =
             *container_builder_.BfcBlockOffset() +
             previous_inflow_position->logical_block_offset;
-        margin_strut_sum = AdjustedMarginAfterFinalChildFragment(
+        LayoutUnit new_margin_strut_sum = AdjustedMarginAfterFinalChildFragment(
             ConstraintSpace(), bfc_block_offset, margin_strut_sum);
+        if (new_margin_strut_sum != margin_strut_sum) {
+          container_builder_.SetIsTruncatedByFragmentationLine();
+          margin_strut_sum = new_margin_strut_sum;
+        }
       }
 
       // The trailing margin strut will be part of our intrinsic block size, but
