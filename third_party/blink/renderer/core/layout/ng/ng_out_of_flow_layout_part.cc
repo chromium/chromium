@@ -1180,7 +1180,9 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       // The CSS containing block of the last descendant, to group |descendants|
       // by the CSS containing block.
       const LayoutObject* last_css_containing_block = nullptr;
-      const NGLogicalAnchorQuery* stitched_anchor_query = nullptr;
+      const NGLogicalAnchorQuery* stitched_anchor_query =
+          &NGLogicalAnchorQuery::Empty();
+      DCHECK(stitched_anchor_query);
 
       // Sort the descendants by fragmentainer index in |descendants_to_layout|.
       // This will ensure that the descendants are laid out in the correct
@@ -1213,6 +1215,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         //
         // Note |descendant.containing_block.fragment| is |ContainingBlock|, not
         // the CSS containing block.
+        DCHECK(stitched_anchor_query);
         if (stitched_anchor_queries.ShouldLayoutByContainingBlock()) {
           const LayoutObject* css_containing_block =
               descendant.box->Container();
@@ -1222,7 +1225,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
             // if it has anchor query, for the performance reasons to minimize
             // the number of rebuilding fragmentainer fragments.
             if (last_css_containing_block &&
-                (stitched_anchor_query ||
+                (!stitched_anchor_query->IsEmpty() ||
                  stitched_anchor_queries.HasAnchorsOnOutOfFlowObjects())) {
               has_new_descendants_span = true;
               descendants_span = descendants_span.subspan(
@@ -1230,8 +1233,10 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
               break;
             }
             last_css_containing_block = css_containing_block;
-            stitched_anchor_query = stitched_anchor_queries.StitchedAnchorQuery(
-                *css_containing_block);
+            stitched_anchor_query =
+                &stitched_anchor_queries.StitchedAnchorQuery(
+                    *css_containing_block);
+            DCHECK(stitched_anchor_query);
           }
         }
 
