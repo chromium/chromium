@@ -4,6 +4,7 @@
 
 #include "remoting/host/chromeos/frame_sink_desktop_capturer.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "media/base/video_types.h"
@@ -25,16 +26,30 @@ constexpr bool kAutoThrottle = false;
 constexpr auto kMinResolution = gfx::Size(320, 180);
 constexpr auto kMaxResolution = gfx::Size(3840, 2160);
 
+const char kUmaKeyForCapturerCreated[] =
+    "Enterprise.DeviceRemoteCommand.Crd.Capturer.FrameSink.Created";
+const char kUmaKeyForCapturerDestroyed[] =
+    "Enterprise.DeviceRemoteCommand.Crd.Capturer.FrameSink.Destroyed";
+
+void SendEventToUma(const char* event_name) {
+  base::UmaHistogramBoolean(event_name, true);
+}
+
 }  // namespace
 
 FrameSinkDesktopCapturer::FrameSinkDesktopCapturer()
     : FrameSinkDesktopCapturer(AshProxy::Get()) {}
 
 FrameSinkDesktopCapturer::FrameSinkDesktopCapturer(AshProxy& ash_proxy)
-    : ash_(ash_proxy) {}
+    : ash_(ash_proxy) {
+  SendEventToUma(kUmaKeyForCapturerCreated);
+}
 
 FrameSinkDesktopCapturer::~FrameSinkDesktopCapturer() {
-  video_capturer_->Stop();
+  if (video_capturer_) {
+    video_capturer_->Stop();
+  }
+  SendEventToUma(kUmaKeyForCapturerDestroyed);
 }
 
 void FrameSinkDesktopCapturer::Start(DesktopCapturer::Callback* callback) {

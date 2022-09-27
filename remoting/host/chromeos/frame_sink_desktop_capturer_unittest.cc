@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -64,6 +65,11 @@ constexpr int kMaxFrameRate = 60;
 constexpr auto kMinResolution = Size(320, 180);
 constexpr auto kMaxResolution = Size(3840, 2160);
 constexpr bool kFixedAspectRatio = false;
+
+const char kUmaKeyForCapturerCreated[] =
+    "Enterprise.DeviceRemoteCommand.Crd.Capturer.FrameSink.Created";
+const char kUmaKeyForCapturerDestroyed[] =
+    "Enterprise.DeviceRemoteCommand.Crd.Capturer.FrameSink.Destroyed";
 
 std::unique_ptr<viz::VideoFramePool> GetVideoFramePool(int capacity) {
   return std::make_unique<viz::SharedMemoryVideoFramePool>(capacity);
@@ -455,6 +461,22 @@ TEST_F(FrameSinkDesktopCapturerTest,
   EXPECT_THAT(result.result,
               Eq(webrtc::DesktopCapturer::Result::ERROR_TEMPORARY));
   EXPECT_THAT(result.frame, IsNull());
+}
+
+TEST_F(FrameSinkDesktopCapturerTest,
+       ShouldSendUmaLogsOnCapturerConstructionAndDestruction) {
+  base::HistogramTester histogram_tester;
+
+  auto my_capturer = std::make_unique<FrameSinkDesktopCapturer>();
+  histogram_tester.ExpectUniqueSample(kUmaKeyForCapturerCreated, true, 1);
+
+  my_capturer = nullptr;
+  histogram_tester.ExpectUniqueSample(kUmaKeyForCapturerDestroyed, true, 1);
+}
+
+TEST_F(FrameSinkDesktopCapturerTest, ShouldNotCrashIfStartIsNeverCalled) {
+  auto my_capturer = std::make_unique<FrameSinkDesktopCapturer>();
+  my_capturer = nullptr;
 }
 
 }  // namespace remoting

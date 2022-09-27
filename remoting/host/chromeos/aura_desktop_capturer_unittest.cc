@@ -11,10 +11,10 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "remoting/host/chromeos/ash_proxy.h"
-#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/scoped_fake_ash_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,6 +51,10 @@ const unsigned char expected_frame[] = {
     0xe6, 0x84, 0x8f, 0xa3, 0x9d, 0x65, 0x4e, 0x2f, 0x57, 0xe3, 0xf6, 0xe6,
     0x20, 0x3c, 0x00, 0xc6, 0xe1, 0x73, 0x34, 0xe2, 0x23, 0x99, 0xc4, 0xfa,
     0x91, 0xc2, 0xd5, 0x97, 0xc1, 0x8b, 0xd0, 0x3c, 0x13, 0xba, 0xf0, 0xd7};
+const char kUmaKeyForCapturerCreated[] =
+    "Enterprise.DeviceRemoteCommand.Crd.Capturer.Aura.Created";
+const char kUmaKeyForCapturerDestroyed[] =
+    "Enterprise.DeviceRemoteCommand.Crd.Capturer.Aura.Destroyed";
 
 SkBitmap TestBitmap() {
   SkBitmap bitmap;
@@ -257,6 +261,17 @@ TEST_F(AuraDesktopCapturerTest, ShouldUseCorrectDisplayAfterSwitching) {
 
   test::ScreenshotRequest request = ash_proxy().WaitForScreenshotRequest();
   EXPECT_THAT(request.display, Eq(333));
+}
+
+TEST_F(AuraDesktopCapturerTest,
+       ShouldSendUmaLogsOnCapturerConstructionAndDestruction) {
+  base::HistogramTester histogram_tester;
+
+  auto my_capturer = std::make_unique<AuraDesktopCapturer>();
+  histogram_tester.ExpectUniqueSample(kUmaKeyForCapturerCreated, true, 1);
+
+  my_capturer = nullptr;
+  histogram_tester.ExpectUniqueSample(kUmaKeyForCapturerDestroyed, true, 1);
 }
 
 }  // namespace remoting

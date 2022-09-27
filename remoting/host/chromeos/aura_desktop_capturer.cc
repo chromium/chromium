@@ -9,12 +9,18 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "remoting/host/chromeos/ash_proxy.h"
 #include "remoting/host/chromeos/skia_bitmap_desktop_frame.h"
 
 namespace remoting {
 
 namespace {
+
+const char kUmaKeyForCapturerCreated[] =
+    "Enterprise.DeviceRemoteCommand.Crd.Capturer.Aura.Created";
+const char kUmaKeyForCapturerDestroyed[] =
+    "Enterprise.DeviceRemoteCommand.Crd.Capturer.Aura.Destroyed";
 
 std::unique_ptr<webrtc::DesktopFrame>
 ToDesktopFrame(int dpi, gfx::Point origin, absl::optional<SkBitmap> bitmap) {
@@ -35,15 +41,23 @@ ToDesktopFrame(int dpi, gfx::Point origin, absl::optional<SkBitmap> bitmap) {
   return frame;
 }
 
+void SendEventToUma(const char* event_name) {
+  base::UmaHistogramBoolean(event_name, true);
+}
+
 }  // namespace
 
 AuraDesktopCapturer::AuraDesktopCapturer()
     : AuraDesktopCapturer(AshProxy::Get()) {}
 
 AuraDesktopCapturer::AuraDesktopCapturer(AshProxy& ash_proxy)
-    : ash_(ash_proxy) {}
+    : ash_(ash_proxy) {
+  SendEventToUma(kUmaKeyForCapturerCreated);
+}
 
-AuraDesktopCapturer::~AuraDesktopCapturer() = default;
+AuraDesktopCapturer::~AuraDesktopCapturer() {
+  SendEventToUma(kUmaKeyForCapturerDestroyed);
+}
 
 void AuraDesktopCapturer::Start(webrtc::DesktopCapturer::Callback* callback) {
   DCHECK(!callback_) << "Start() can only be called once";
