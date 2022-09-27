@@ -418,7 +418,14 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
 
 // Tests that launching and then causing a crash the host results in a crashed
 // notification.
-IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest, LaunchAndCrash) {
+// TODO(https://crbug.com/1368044): Times out on android-arm64-tests.
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
+#define MAYBE_LaunchAndCrash DISABLED_LaunchAndCrash
+#else
+#define MAYBE_LaunchAndCrash LaunchAndCrash
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
+                       MAYBE_LaunchAndCrash) {
   base::WeakPtr<TestProcessHost> host = TestProcessHost::Create();
   int child_id = host->GetId();
 
