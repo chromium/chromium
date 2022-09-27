@@ -301,6 +301,9 @@ void URLRequestHttpJob::Start() {
 void URLRequestHttpJob::OnGotFirstPartySetMetadata(
     FirstPartySetMetadata first_party_set_metadata) {
   first_party_set_metadata_ = std::move(first_party_set_metadata);
+  // TODO(crbug.com/1316090): query the FPS cache filter info and stores it in
+  // the `request_info_`.
+
   // Privacy mode could still be disabled in SetCookieHeaderAndStart if we are
   // going to send previously saved cookies.
   request_info_.privacy_mode = DeterminePrivacyMode();

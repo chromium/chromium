@@ -35,6 +35,7 @@
 #include "net/http/http_response_info.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/connection_attempts.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -91,6 +92,8 @@ struct MockTransaction {
   // known aliases, e.g. from A, AAAA, or HTTPS, not just from the address used
   // for the connection, in no particular order.
   std::set<std::string> dns_aliases;
+  absl::optional<int64_t> fps_cache_filter;
+  absl::optional<int64_t> browser_run_id;
   int test_mode;
   MockTransactionHandler handler;
   MockTransactionReadHandler read_handler;

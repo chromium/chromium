@@ -64,6 +64,8 @@ const MockTransaction kSimpleGET_Transaction = {
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -86,6 +88,8 @@ const MockTransaction kSimplePOST_Transaction = {
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -109,6 +113,8 @@ const MockTransaction kTypicalGET_Transaction = {
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -132,6 +138,8 @@ const MockTransaction kETagGET_Transaction = {
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -154,6 +162,8 @@ const MockTransaction kRangeGET_Transaction = {
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -202,6 +212,8 @@ MockHttpRequest::MockHttpRequest(const MockTransaction& t) {
   SchemefulSite site(url);
   network_isolation_key = NetworkIsolationKey(site, site);
   network_anonymization_key = NetworkAnonymizationKey(site, site);
+  fps_cache_filter = t.fps_cache_filter;
+  browser_run_id = t.browser_run_id;
 }
 
 std::string MockHttpRequest::CacheKey() {

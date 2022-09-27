@@ -107,6 +107,15 @@ struct NET_EXPORT HttpRequestInfo {
   // Checksum of the request body and selected headers, in upper-case
   // hexadecimal. Only non-empty if the USE_SINGLE_KEYED_CACHE load flag is set.
   std::string checksum;
+
+  // If not null, the value is used to evaluate whether the cache entry should
+  // be bypassed; if is null, that means the request site does not match the
+  // filter.
+  absl::optional<int64_t> fps_cache_filter;
+
+  // Use as ID to mark the cache entry when persisting. Should be a positive
+  // number once set.
+  absl::optional<int64_t> browser_run_id;
 };
 
 }  // namespace net

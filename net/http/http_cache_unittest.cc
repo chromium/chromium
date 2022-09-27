@@ -73,6 +73,7 @@
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 using net::test::IsError;
@@ -389,6 +390,8 @@ const MockTransaction kFastNoStoreGET_Transaction = {
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_SYNC_NET_START,
     &FastTransactionServer::FastNoStoreHandler,
     nullptr,
@@ -592,6 +595,8 @@ const MockTransaction kRangeGET_TransactionOK = {
     base::Time(),
     "rg: 40-49 ",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_NORMAL,
     &RangeTransactionServer::RangeHandler,
     nullptr,
@@ -13576,6 +13581,71 @@ TEST_F(HttpCacheTest, DnsAliasesRevalidation) {
                                      &response);
   EXPECT_TRUE(response.was_cached);
   EXPECT_THAT(response.dns_aliases, testing::ElementsAre("alias3", "alias4"));
+}
+
+TEST_F(HttpCacheTest, FirstPartySetsBypassCache_ShouldBypass_NoId) {
+  MockHttpCache cache;
+  HttpResponseInfo response;
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_FALSE(response.was_cached);
+
+  transaction.fps_cache_filter = {5};
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_FALSE(response.was_cached);
+}
+
+TEST_F(HttpCacheTest, FirstPartySetsBypassCache_ShouldBypass_IdTooSmall) {
+  MockHttpCache cache;
+  HttpResponseInfo response;
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  const int64_t kBrowserRunId = 4;
+  transaction.browser_run_id = {kBrowserRunId};
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_FALSE(response.was_cached);
+  EXPECT_TRUE(response.browser_run_id.has_value());
+  EXPECT_EQ(kBrowserRunId, response.browser_run_id.value());
+
+  transaction.fps_cache_filter = {5};
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_FALSE(response.was_cached);
+}
+
+TEST_F(HttpCacheTest, FirstPartySetsBypassCache_ShouldNotBypass) {
+  MockHttpCache cache;
+  HttpResponseInfo response;
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  const int64_t kBrowserRunId = 5;
+  transaction.browser_run_id = {kBrowserRunId};
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_FALSE(response.was_cached);
+  EXPECT_TRUE(response.browser_run_id.has_value());
+  EXPECT_EQ(kBrowserRunId, response.browser_run_id.value());
+
+  transaction.fps_cache_filter = {5};
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_TRUE(response.was_cached);
+}
+
+TEST_F(HttpCacheTest, FirstPartySetsBypassCache_ShouldNotBypass_NoFilter) {
+  MockHttpCache cache;
+  HttpResponseInfo response;
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_FALSE(response.was_cached);
+
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_TRUE(response.was_cached);
 }
 
 TEST_F(HttpCacheTest, SecurityHeadersAreCopiedToConditionalizedResponse) {

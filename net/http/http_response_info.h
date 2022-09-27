@@ -266,6 +266,10 @@ class NET_EXPORT HttpResponseInfo {
   // in no particular order.
   std::set<std::string> dns_aliases;
 
+  // If not null, this indicates the response is stored during a certain browser
+  // session. Used for filtering cache access.
+  absl::optional<int64_t> browser_run_id;
+
   static std::string ConnectionInfoToString(ConnectionInfo connection_info);
 };
 

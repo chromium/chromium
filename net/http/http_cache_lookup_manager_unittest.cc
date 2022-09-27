@@ -19,6 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using net::test::IsOk;
 
@@ -66,6 +67,8 @@ std::unique_ptr<MockTransaction> CreateMockTransaction(const GURL& url) {
       base::Time(),
       "<html><body>Google Blah Blah</body></html>",
       {},
+      absl::nullopt,
+      absl::nullopt,
       TEST_MODE_NORMAL,
       nullptr,
       nullptr,

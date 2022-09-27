@@ -24,6 +24,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_util.h"
 
 using net::test::IsError;
@@ -118,6 +119,8 @@ const MockTransaction kNoFilterTransaction = {
     base::Time(),
     "hello",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -140,6 +143,8 @@ const MockTransaction kNoFilterTransactionWithInvalidLength = {
     base::Time(),
     "hello",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -163,6 +168,8 @@ const MockTransaction kGZipTransaction = {
     base::Time(),
     "",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_NORMAL,
     &GZipServer,
     nullptr,
@@ -186,6 +193,8 @@ const MockTransaction kGzipSlowTransaction = {
     base::Time(),
     "",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_SLOW_READ,
     &GZipHelloServer,
     nullptr,
@@ -210,6 +219,8 @@ const MockTransaction kRedirectTransaction = {
     base::Time(),
     "hello",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -232,6 +243,8 @@ const MockTransaction kEmptyBodyGzipTransaction = {
     base::Time(),
     "",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -255,6 +268,8 @@ const MockTransaction kInvalidContentGZipTransaction = {
     base::Time(),
     "not a valid gzip body",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -279,6 +294,8 @@ const MockTransaction kBrotliSlowTransaction = {
     base::Time(),
     "",
     {},
+    absl::nullopt,
+    absl::nullopt,
     TEST_MODE_SLOW_READ,
     &BrotliHelloServer,
     nullptr,

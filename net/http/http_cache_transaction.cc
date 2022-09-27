@@ -114,6 +114,13 @@ void RecordPervasivePayloadIndex(const char* histogram_name, int index) {
   }
 }
 
+bool ShouldByPassCacheForFirstPartySets(
+    const absl::optional<int64_t>& clear_at_run_id,
+    const absl::optional<int64_t>& written_at_run_id) {
+  return clear_at_run_id.has_value() &&
+         (!written_at_run_id.has_value() ||
+          written_at_run_id.value() < clear_at_run_id.value());
+}
 }  // namespace
 
 #define CACHE_STATUS_HISTOGRAMS(type)                                      \
@@ -1581,6 +1588,14 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
     return OnCacheReadError(result, true);
   }
 
+  // If the read response matches the clearing filter of FPS, doom the entry
+  // and restart transaction.
+  if (ShouldByPassCacheForFirstPartySets(initial_request_->fps_cache_filter,
+                                         response_.browser_run_id)) {
+    result = ERR_CACHE_ENTRY_NOT_SUITABLE;
+    return OnCacheReadError(result, true);
+  }
+
   if (response_.single_keyed_cache_entry_unusable) {
     RecordPervasivePayloadIndex("Network.CacheTransparency.MarkedUnusable",
                                 request_->pervasive_payloads_index_for_logging);
@@ -2176,6 +2191,9 @@ int HttpCache::Transaction::DoOverwriteCachedResponse() {
     TransitionToState(STATE_PARTIAL_HEADERS_RECEIVED);
     return OK;
   }
+  // Mark the response with browser_run_id before it gets written.
+  if (initial_request_->browser_run_id.has_value())
+    response_.browser_run_id = initial_request_->browser_run_id;
 
   TransitionToState(STATE_CACHE_WRITE_RESPONSE);
   return OK;

@@ -261,6 +261,22 @@ TEST_F(HttpResponseInfoTest, EmptyDnsAliases) {
   EXPECT_TRUE(restored_response_info.dns_aliases.empty());
 }
 
+// Test that `browser_run_id` is preserved.
+TEST_F(HttpResponseInfoTest, BrowserRunId) {
+  response_info_.browser_run_id = 1;
+  net::HttpResponseInfo restored_response_info;
+  PickleAndRestore(response_info_, &restored_response_info);
+  EXPECT_EQ(1, restored_response_info.browser_run_id);
+}
+
+// Test that an empty `browser_run_id` is preserved and doesn't throw an error.
+TEST_F(HttpResponseInfoTest, EmptyBrowserRunId) {
+  response_info_.browser_run_id = absl::nullopt;
+  net::HttpResponseInfo restored_response_info;
+  PickleAndRestore(response_info_, &restored_response_info);
+  EXPECT_FALSE(restored_response_info.browser_run_id.has_value());
+}
+
 }  // namespace
 
 }  // namespace net
