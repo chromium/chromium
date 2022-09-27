@@ -6,13 +6,24 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_callback.pb.h"
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
+
+namespace {
+parent_access_ui::mojom::ParentAccessParamsPtr GetParamsForWebApprovals() {
+  return parent_access_ui::mojom::ParentAccessParams::New(
+      parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
+      parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
+          parent_access_ui::mojom::WebApprovalsParams::New()));
+}
+}  // namespace
 
 namespace chromeos {
 
@@ -22,11 +33,14 @@ using ParentAccessUIHandlerImplBrowserTest =
 // Verify that the access token is successfully fetched.
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        GetOAuthTokenSuccess) {
-  // Open the Parent Access WebUI URL.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIParentAccessURL)));
+  // Show the parent access dialog.
+  ParentAccessDialog::ShowError error =
+      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
 
-  EXPECT_TRUE(content::WaitForLoadStop(contents()));
+  // Verify dialog is showing.
+  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+
+  EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
   ParentAccessUIHandlerImpl* handler = static_cast<ParentAccessUIHandlerImpl*>(
       GetParentAccessUI()->GetHandlerForTest());
@@ -45,11 +59,14 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 // Verifies that access token fetch errors are recorded.
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        GetOAuthTokenError) {
-  // Open the Parent Access WebUI URL.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIParentAccessURL)));
+  // Show the parent access dialog.
+  ParentAccessDialog::ShowError error =
+      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
 
-  EXPECT_TRUE(content::WaitForLoadStop(contents()));
+  // Verify dialog is showing.
+  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+
+  EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
   ParentAccessUIHandlerImpl* handler = static_cast<ParentAccessUIHandlerImpl*>(
       GetParentAccessUI()->GetHandlerForTest());
@@ -70,10 +87,14 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 // Verifies that only one access token fetch is possible at a time.
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        GetOAuthTokenOnlyOneFetchAtATimeError) {
-  // Open the Parent Access WebUI URL.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIParentAccessURL)));
-  EXPECT_TRUE(content::WaitForLoadStop(contents()));
+  // Show the parent access dialog.
+  ParentAccessDialog::ShowError error =
+      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
+
+  // Verify dialog is showing.
+  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+
+  EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
   ParentAccessUIHandlerImpl* handler = static_cast<ParentAccessUIHandlerImpl*>(
       GetParentAccessUI()->GetHandlerForTest());
@@ -100,10 +121,14 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 // Verifies that the ParentVerified status is handled correctly.
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        ParentVerifiedParsed) {
-  // Open the Parent Access WebUI URL.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIParentAccessURL)));
-  EXPECT_TRUE(content::WaitForLoadStop(contents()));
+  // Show the parent access dialog.
+  ParentAccessDialog::ShowError error =
+      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
+
+  // Verify dialog is showing.
+  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+
+  EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
   ParentAccessUIHandlerImpl* handler = static_cast<ParentAccessUIHandlerImpl*>(
       GetParentAccessUI()->GetHandlerForTest());
@@ -145,10 +170,14 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 // Verifies that the ConsentDeclined status is ignored.
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        ConsentDeclinedParsed) {
-  // Open the Parent Access WebUI URL.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIParentAccessURL)));
-  EXPECT_TRUE(content::WaitForLoadStop(contents()));
+  // Show the parent access dialog.
+  ParentAccessDialog::ShowError error =
+      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
+
+  // Verify dialog is showing.
+  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+
+  EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
   ParentAccessUIHandlerImpl* handler = static_cast<ParentAccessUIHandlerImpl*>(
       GetParentAccessUI()->GetHandlerForTest());
@@ -181,10 +210,14 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 // Verifies that the OnPageSizeChanged status is ignored.
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        OnPageSizeChangedIgnored) {
-  // Open the Parent Access WebUI URL.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIParentAccessURL)));
-  EXPECT_TRUE(content::WaitForLoadStop(contents()));
+  // Show the parent access dialog.
+  ParentAccessDialog::ShowError error =
+      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
+
+  // Verify dialog is showing.
+  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+
+  EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
   ParentAccessUIHandlerImpl* handler = static_cast<ParentAccessUIHandlerImpl*>(
       GetParentAccessUI()->GetHandlerForTest());
@@ -217,10 +250,13 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 // Verifies that the OnCommunicationEstablished status is ignored.
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        OnCommunicationEstablishedIgnored) {
-  // Open the Parent Access WebUI URL.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIParentAccessURL)));
-  EXPECT_TRUE(content::WaitForLoadStop(contents()));
+  // Show the parent access dialog.
+  ParentAccessDialog::ShowError error =
+      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
+
+  // Verify dialog is showing.
+  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+  EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
   ParentAccessUIHandlerImpl* handler = static_cast<ParentAccessUIHandlerImpl*>(
       GetParentAccessUI()->GetHandlerForTest());

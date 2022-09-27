@@ -9,7 +9,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 
 namespace chromeos {
 
@@ -24,13 +27,16 @@ void ParentAccessBrowserTestBase::SetUp() {
   MixinBasedInProcessBrowserTest::SetUp();
 }
 
-ParentAccessUI* ParentAccessBrowserTestBase::GetParentAccessUI() {
-  return static_cast<chromeos::ParentAccessUI*>(
-      contents()->GetWebUI()->GetController());
+content::WebUI* ParentAccessBrowserTestBase::GetWebUI() {
+  return ParentAccessDialog::GetInstance()->GetWebUIForTest();
 }
 
-content::WebContents* ParentAccessBrowserTestBase::contents() {
-  return browser()->tab_strip_model()->GetActiveWebContents();
+ParentAccessUI* ParentAccessBrowserTestBase::GetParentAccessUI() {
+  return static_cast<chromeos::ParentAccessUI*>(GetWebUI()->GetController());
+}
+
+content::WebContents* ParentAccessBrowserTestBase::GetContents() {
+  return GetWebUI()->GetWebContents();
 }
 
 // InProcessBrowserTest methods

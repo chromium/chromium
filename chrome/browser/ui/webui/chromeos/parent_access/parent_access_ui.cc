@@ -65,7 +65,7 @@ GURL GetParentAccessURL(std::string caller_id,
 signin::IdentityManager* ParentAccessUI::test_identity_manager_ = nullptr;
 
 ParentAccessUI::ParentAccessUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui) {
+    : ui::MojoWebDialogUI(web_ui) {
   // Set up the basic page framework.
   SetUpResources();
 }

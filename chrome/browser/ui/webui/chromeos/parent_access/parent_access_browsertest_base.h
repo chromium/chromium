@@ -9,7 +9,11 @@
 
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.h"
-#include "content/public/browser/web_contents.h"
+
+namespace content {
+class WebContents;
+class WebUI;
+}  // namespace content
 
 namespace signin {
 class IdentityTestEnvironment;
@@ -31,8 +35,12 @@ class ParentAccessBrowserTestBase : public MixinBasedInProcessBrowserTest {
   void SetUp() override;
   void SetUpOnMainThread() override;
 
+  // The WebUI is accessed via the ParentAccessDialog because the ParentAccess
+  // WebUI should not exist unless a dialog has been created. When writing
+  // tests, create a dialog if the WebUI needs to be created.
+  content::WebUI* GetWebUI();
   chromeos::ParentAccessUI* GetParentAccessUI();
-  content::WebContents* contents();
+  content::WebContents* GetContents();
 
  protected:
   virtual LoggedInUserMixin::LogInType GetLogInType() = 0;
