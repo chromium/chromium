@@ -320,6 +320,9 @@ crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRound
 crbug.com/1218288 [ fuchsia fuchsia-board-astro ] Pixel_PrecisionRoundedCorner [ Failure ]
 crbug.com/1136875 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
 
+# Flaky on Fuchsia.
+crbug.com/1368748 [ fuchsia ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
+
 # Still fails on Nexus 5 after all other Pixel_CanvasLowLatency* pass.
 crbug.com/1097752 [ android android-nexus-5 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/1097752 [ android android-nexus-5 ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Failure ]
