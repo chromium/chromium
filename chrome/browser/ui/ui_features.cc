@@ -82,12 +82,6 @@ BASE_FEATURE(kLightweightExtensionOverrideConfirmations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enables the reauth flow for authenticated profiles with invalid credentials
-// when the force sign-in policy is enabled.
-BASE_FEATURE(kForceSignInReauth,
-             "ForceSignInReauth",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Bookmarks++ Side Panel UI.
 BASE_FEATURE(kPowerBookmarksSidePanel,
              "PowerBookmarksSidePanel",
