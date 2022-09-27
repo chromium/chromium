@@ -3680,6 +3680,7 @@ enum WebFeature {
   kWebAuthnRkRequiredCreationSuccess = 4359,
   kDestructiveDocumentWriteAfterModuleScript = 4360,
   kCSSAtSupportsDropInvalidWhileForgivingParsing = 4361,
+  kPermissionsPolicyUnload = 4362,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
