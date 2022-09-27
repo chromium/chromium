@@ -548,3 +548,5 @@ crbug.com/1325690 [ Linux ] external/wpt/webdriver/tests/take_screenshot/user_pr
 crbug.com/1325690 [ Linux ] external/wpt/webdriver/tests/take_screenshot/user_prompts.py>>test_dismiss[capabilities0-alert-None] [ Failure Pass ]
 crbug.com/1325690 [ Linux ] external/wpt/webdriver/tests/take_screenshot/user_prompts.py>>test_dismiss[capabilities0-confirm-False] [ Failure Pass ]
 crbug.com/1325690 [ Linux ] external/wpt/webdriver/tests/take_screenshot/user_prompts.py>>test_dismiss[capabilities0-prompt-None] [ Failure Pass ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer_touch.py>>test_touch_pointer_properties [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer_touch.py>>test_touch_pointer_properties_tilt_twist [ Failure ]
