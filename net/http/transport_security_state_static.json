@@ -218,17 +218,6 @@
         "GlobalSignRootCA_R3"
       ],
       "report_uri": "http://csp.yahoo.com/beacon/csp?src=yahoocom-hpkp-report-only"
-    },
-    {
-      "name": "swehackCom",
-      "static_spki_hashes": [
-        "Swehack",
-        "LetsEncryptAuthorityPrimary_X1_X3",
-        "LetsEncryptAuthorityBackup_X2_X4",
-        "DSTRootCAX3",
-        "SwehackBackup",
-        "COMODORSADomainValidationSecureServerCA"
-      ]
     }
   ],
 
@@ -175415,8 +175404,6 @@
     { "name": "dm-drogeriemarkt.bg", "policy": "custom", "mode": "force-https", "include_subdomains": false },
     { "name": "grossbesteller.dm.de", "policy": "custom", "mode": "force-https", "include_subdomains": false },
     { "name": "www.figma.com", "policy": "custom", "mode": "force-https", "include_subdomains": false },
-    // HPKP
-    { "name": "swehack.org", "policy": "custom", "mode": "force-https", "include_subdomains": true, "pins": "swehackCom" },
     // TODO(elawrence): hstspreload.org can't scan IPv6-only sites due to Google
     // Cloud limitations. Move these entries to the bulk entries once they can
     // be handled automatically: github.com/chromium/hstspreload.org/issues/43
