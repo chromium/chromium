@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
@@ -50,7 +51,8 @@ AppRestoreArcTaskHandler::AppRestoreArcTaskHandler(Profile* profile) {
       arc_app_launch_handlers_[kFullRestoreId].get();
 
   // TODO(sstan): Modify ArcAppLaunchHandler to prevent redundant launch.
-  if (::full_restore::features::IsArcWindowPredictorEnabled()) {
+  if (::full_restore::features::IsArcWindowPredictorEnabled() ||
+      base::FeatureList::IsEnabled(arc::kFixupWindowFeature)) {
     arc_app_launch_handlers_[kArcWindowPredictorId] =
         std::make_unique<ArcAppLaunchHandler>();
     window_predictor_arc_app_launch_handler_observer_ =

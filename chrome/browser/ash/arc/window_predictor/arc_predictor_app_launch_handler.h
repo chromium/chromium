@@ -11,6 +11,8 @@
 
 namespace arc {
 
+enum class GhostWindowType;
+
 // A customized AppLaunchHandler to launch the pending apps when
 // they are ready. For ARC apps, it will use the launch optimization
 // policy to control the system resource usage.
@@ -24,6 +26,7 @@ class ArcPredictorAppLaunchHandler : public ash::AppLaunchHandler {
 
   void AddPendingApp(const std::string& app_id,
                      int event_flags,
+                     GhostWindowType window_type,
                      arc::mojom::WindowInfoPtr window_info);
 
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;

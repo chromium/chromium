@@ -33,6 +33,7 @@ bool LaunchArcAppWithGhostWindow(Profile* profile,
                                  const ArcAppListPrefs::AppInfo& app_info,
                                  int event_flags,
                                  arc::UserInteractionType user_interaction_type,
+                                 GhostWindowType window_type,
                                  const arc::mojom::WindowInfoPtr& window_info) {
   WindowPredictor::GetInstance()->MaybeCreateAppLaunchHandler(profile);
 
@@ -70,7 +71,7 @@ bool LaunchArcAppWithGhostWindow(Profile* profile,
       WindowPredictor::GetInstance()->app_launch_handler();
   DCHECK(app_launch_handler);
 
-  app_launch_handler->AddPendingApp(arc_app_id, event_flags,
+  app_launch_handler->AddPendingApp(arc_app_id, event_flags, window_type,
                                     std::move(predict_window_info));
   arc_app_launch_handler->RestoreArcApps(app_launch_handler);
 
