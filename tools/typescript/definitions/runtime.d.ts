@@ -5,10 +5,31 @@
 /** @fileoverview Definitions for chrome.runtime API */
 // TODO(crbug.com/1203307): Auto-generate this file.
 
-declare namespace chrome {
-  export namespace runtime {
-    export let lastError: {
-      message?: string,
-    } | undefined;
+import {ChromeEvent} from './chrome_event.js';
+
+declare global {
+  export namespace chrome {
+    export namespace runtime {
+      export let lastError: {
+        message?: string,
+      } | undefined;
+
+      export interface MessageSender {
+        id?: string;
+        tab?: chrome.tabs.Tab;
+        nativeApplication?: string;
+        frameId?: number;
+        url?: string;
+        tlsChannelId?: string;
+        origin?: string;
+      }
+
+      export interface ExtensionMessageEvent
+        extends ChromeEvent<(
+          message: any,
+          sender: MessageSender,
+          sendResponse: (response?: any) => void) => void> { }
+      export var onMessageExternal: ExtensionMessageEvent;
+    }
   }
 }

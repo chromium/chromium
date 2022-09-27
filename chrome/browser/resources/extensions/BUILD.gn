@@ -87,6 +87,7 @@ build_webui("build") {
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
   ]
   if (is_chromeos_ash) {
     ts_definitions += [ "//tools/typescript/definitions/chrome_send.d.ts" ]
