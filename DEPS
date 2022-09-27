@@ -1524,6 +1524,28 @@ deps = {
       'condition': 'checkout_android or checkout_linux',
   },
 
+  'src/third_party/lzma_sdk/bin/host_platform': {
+      'packages': [
+          {
+              'package': 'infra/3pp/tools/7z/${{platform}}',
+              'version': 'version:2@22.01',
+          },
+      ],
+      'condition': 'checkout_win',
+      'dep_type': 'cipd',
+  },
+
+  'src/third_party/lzma_sdk/bin/win64': {
+      'packages': [
+          {
+              'package': 'infra/3pp/tools/7z/windows-amd64',
+              'version': 'version:2@22.01',
+          },
+      ],
+      'condition': 'checkout_win',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/material_design_icons/src': {
       'url': Var('chromium_git') + '/external/github.com/google/material-design-icons.git' + '@' +
           '5ab428852e35dc177a8c37a2df9dc9ccf768c65a',
