@@ -430,7 +430,6 @@ crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-aft
 crbug.com/936891 virtual/threaded-prefer-compositing/fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Pass ]
 crbug.com/1049599 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Pass Skip Timeout ]
 crbug.com/1193920 virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Pass Timeout ]
-crbug.com/1335172 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/inertial-scrolling-with-pointer-events-none-overlay.html [ Failure Pass ]
 crbug.com/1335172 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/inertial-scrolling-with-pointer-events-none-overlay.html [ Failure Pass ]
 crbug.com/841567 [ Debug Mac11 ] virtual/threaded-prefer-compositing/fast/scrolling/listbox-wheel-event.html [ Failure Pass Timeout ]
 crbug.com/841567 [ Debug Mac12 ] virtual/threaded-prefer-compositing/fast/scrolling/listbox-wheel-event.html [ Failure Pass Timeout ]
@@ -4955,7 +4954,6 @@ crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/e
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure Timeout ]
-crbug.com/1357787 [ Mac ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/inertial-scrolling-with-pointer-events-none-overlay.html [ Failure Pass ]
 
 #fast/scroll-behavior/
 

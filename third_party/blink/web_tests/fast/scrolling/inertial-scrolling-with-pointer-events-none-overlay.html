@@ -54,6 +54,11 @@ function runTest() {
     const start_y = 200;
     const speed_in_pixels_s = 900;
 
+    // Inertial touch scroll not supported on a Mac.
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC')>=0;
+    if (isMac)
+      return;
+
     await waitForCompositorCommit();
     await swipe(pixels_to_scroll, start_x, start_y, 'up', speed_in_pixels_s);
     await waitForAnimationEndTimeBased(() => { return container.scrollTop; });
