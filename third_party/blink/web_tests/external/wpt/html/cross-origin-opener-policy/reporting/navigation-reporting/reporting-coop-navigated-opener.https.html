@@ -28,7 +28,7 @@ promise_test(async t => {
   const openee_url = same_origin + executor_path + `&uuid=${openee_token}`;
 
   // The "final" url the opener will navigate to. It has COOP and a reporter.
-  const final_report_token= token();
+  const final_report_token = reportToken();
   const final_token = token();
   const final_reportTo = reportingEndpointsHeaders(final_report_token);
   const final_url =  same_origin + executor_path + final_reportTo.header +
