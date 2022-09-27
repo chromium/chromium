@@ -119,15 +119,10 @@ function sendCommand(cmd) {
  * the page (and possibly showing a # in the link).
  */
 function preventDefaultOnPoundLinkClicks() {
-  document.addEventListener('click', function(e) {
-    const anchor = findAncestor(/** @type {Node} */ (e.target), function(el) {
-      return el.tagName === 'A';
-    });
-    // Use getAttribute() to prevent URL normalization.
-    if (anchor && anchor.getAttribute('href') === '#') {
-      e.preventDefault();
-    }
-  });
+  const anchors = document.body.querySelectorAll('a[href="#"]');
+  for (const anchor of anchors) {
+    anchor.addEventListener('click', e => e.preventDefault());
+  }
 }
 
 // <if expr="is_ios">

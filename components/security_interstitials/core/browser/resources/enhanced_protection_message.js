@@ -20,24 +20,28 @@ function setupEnhancedProtectionMessage() {
     return;
   }
 
-  if ($('enhanced-protection-link')) {
+  const enhancedProtectionLink =
+      document.querySelector('#enhanced-protection-link');
+  const enhancedProtectionMessage =
+      document.querySelector('#enhanced-protection-message');
+  if (enhancedProtectionLink) {
     if (mobileNav) {
       // To make sure the touch area of the link is larger than the
       // minimum touch area for accessibility, make the whole block tappable.
-      $('enhanced-protection-message').addEventListener('click', function() {
+      enhancedProtectionMessage.addEventListener('click', function() {
         sendCommand(SecurityInterstitialCommandId
                         .CMD_OPEN_ENHANCED_PROTECTION_SETTINGS);
         return false;
       });
     } else {
-      $('enhanced-protection-link').addEventListener('click', function() {
+      enhancedProtectionLink.addEventListener('click', function() {
         sendCommand(SecurityInterstitialCommandId
                         .CMD_OPEN_ENHANCED_PROTECTION_SETTINGS);
         return false;
       });
     }
   }
-  $('enhanced-protection-message').classList.remove('hidden');
+  enhancedProtectionMessage.classList.remove('hidden');
 
   const billing =
       interstitialType === 'SAFEBROWSING' && loadTimeData.getBoolean('billing');
@@ -47,5 +51,5 @@ function setupEnhancedProtectionMessage() {
     className = 'safe-browsing-enhanced-protection-message';
   }
 
-  $('enhanced-protection-message').classList.add(className);
+  enhancedProtectionMessage.classList.add(className);
 }

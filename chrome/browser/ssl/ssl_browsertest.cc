@@ -397,7 +397,8 @@ void ExpectInterstitialElementHidden(WebContents* tab,
   // Send CMD_TEXT_FOUND to indicate that the 'hidden' class is found, and
   // CMD_TEXT_NOT_FOUND if not.
   std::string command = base::StringPrintf(
-      "window.domAutomationController.send($('%s').classList.contains('hidden')"
+      "window.domAutomationController.send(document.querySelector('#%s')"
+      "    .classList.contains('hidden')"
       " ? %d : %d);",
       element_id.c_str(), security_interstitials::CMD_TEXT_FOUND,
       security_interstitials::CMD_TEXT_NOT_FOUND);

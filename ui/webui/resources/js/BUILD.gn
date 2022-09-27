@@ -100,7 +100,6 @@ js_type_check("js_resources") {
   uses_legacy_modules = true
   deps = [
     ":load_time_data_deprecated",
-    ":util_deprecated",
     ":webui_resource_test",
   ]
 
@@ -109,7 +108,10 @@ js_type_check("js_resources") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ ":action_link" ]
+    deps += [
+      ":action_link",
+      ":util_deprecated",
+    ]
   }
 }
 
@@ -121,7 +123,9 @@ if (is_chromeos_ash) {
 js_library("load_time_data_deprecated") {
 }
 
-js_library("util_deprecated") {
+if (is_chromeos_ash) {
+  js_library("util_deprecated") {
+  }
 }
 
 js_library("webview_manager") {

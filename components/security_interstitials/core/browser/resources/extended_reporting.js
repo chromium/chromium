@@ -22,17 +22,20 @@ function setupExtendedReportingCheckbox() {
     return;
   }
 
-  if ($('privacy-link')) {
-    $('privacy-link').addEventListener('click', function() {
+  const privacyLink = document.querySelector('#privacy-link');
+  if (privacyLink) {
+    privacyLink.addEventListener('click', function() {
       sendCommand(SecurityInterstitialCommandId.CMD_OPEN_REPORTING_PRIVACY);
       return false;
     });
-    $('privacy-link').addEventListener('mousedown', function() {
+    privacyLink.addEventListener('mousedown', function() {
       return false;
     });
   }
-  $('opt-in-checkbox').checked = loadTimeData.getBoolean(SB_BOX_CHECKED);
-  $('extended-reporting-opt-in').classList.remove('hidden');
+  document.querySelector('#opt-in-checkbox').checked =
+      loadTimeData.getBoolean(SB_BOX_CHECKED);
+  document.querySelector('#extended-reporting-opt-in')
+      .classList.remove('hidden');
 
   const billing =
       interstitialType === 'SAFEBROWSING' && loadTimeData.getBoolean('billing');
@@ -42,19 +45,22 @@ function setupExtendedReportingCheckbox() {
     className = 'safe-browsing-opt-in';
   }
 
-  $('extended-reporting-opt-in').classList.add(className);
+  document.querySelector('#extended-reporting-opt-in').classList.add(className);
 
-  $('body').classList.add('extended-reporting-has-checkbox');
+  document.querySelector('#body').classList.add(
+      'extended-reporting-has-checkbox');
 
-  if ($('whitepaper-link')) {
-    $('whitepaper-link').addEventListener('click', function(event) {
+  const whitepaperLink = document.querySelector('#whitepaper-link');
+  if (whitepaperLink) {
+    whitepaperLink.addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_OPEN_WHITEPAPER);
     });
   }
 
-  $('opt-in-checkbox').addEventListener('click', function() {
-    sendCommand($('opt-in-checkbox').checked ?
-                SecurityInterstitialCommandId.CMD_DO_REPORT :
-                SecurityInterstitialCommandId.CMD_DONT_REPORT);
+  const optInCheckbox = document.querySelector('#opt-in-checkbox');
+  optInCheckbox.addEventListener('click', function() {
+    sendCommand(
+        optInCheckbox.checked ? SecurityInterstitialCommandId.CMD_DO_REPORT :
+                                SecurityInterstitialCommandId.CMD_DONT_REPORT);
   });
 }
