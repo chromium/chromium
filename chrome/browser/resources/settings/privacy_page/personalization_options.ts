@@ -158,8 +158,7 @@ export class SettingsPersonalizationOptionsElement extends
 
   private showPriceEmailNotificationsToggle_(): boolean {
     // <if expr="chromeos_ash">
-    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
-        loadTimeData.getBoolean('isOSSettings')) {
+    if (loadTimeData.getBoolean('isOSSettings')) {
       // Should be hidden in OS settings.
       return false;
     }
@@ -244,8 +243,7 @@ export class SettingsPersonalizationOptionsElement extends
 
   private showSearchSuggestToggle_(): boolean {
     // <if expr="chromeos_ash">
-    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
-        loadTimeData.getBoolean('isOSSettings')) {
+    if (loadTimeData.getBoolean('isOSSettings')) {
       // Should be hidden in OS settings.
       return false;
     }
@@ -259,10 +257,7 @@ export class SettingsPersonalizationOptionsElement extends
 
   // <if expr="chromeos_ash">
   private showMetricsReportingAsLink_(): boolean {
-    // If SyncSettingsCategorization is enabled, browser settings should show
-    // a link to the OS settings.
-    return loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
-        !loadTimeData.getBoolean('isOSSettings');
+    return !loadTimeData.getBoolean('isOSSettings');
   }
 
   private onMetricsReportingLinkClick_() {
@@ -272,9 +267,9 @@ export class SettingsPersonalizationOptionsElement extends
 
   private showUrlCollectionToggle_(): boolean {
     // <if expr="chromeos_ash">
-    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      // Should be hidden in OS settings.
-      return !loadTimeData.getBoolean('isOSSettings');
+    // Should be hidden in OS settings.
+    if (loadTimeData.getBoolean('isOSSettings')) {
+      return false;
     }
     // </if>
     return true;
@@ -291,8 +286,7 @@ export class SettingsPersonalizationOptionsElement extends
 
   private showSpellCheckControlToggle_(): boolean {
     // <if expr="chromeos_ash">
-    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
-        !loadTimeData.getBoolean('isOSSettings')) {
+    if (!loadTimeData.getBoolean('isOSSettings')) {
       // The toggle should be hidden in Ash Browser settings page
       // (it shows a link to the OS Settings page instead).
       return false;
@@ -305,9 +299,6 @@ export class SettingsPersonalizationOptionsElement extends
 
   // <if expr="chromeos_ash">
   private showSpellCheckControlLink_(): boolean {
-    if (!loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      return false;
-    }
     if (loadTimeData.getBoolean('isOSSettings')) {
       return false;  // Should be hidden in OS settings.
     }
@@ -324,8 +315,7 @@ export class SettingsPersonalizationOptionsElement extends
 
   private shouldShowDriveSuggest_(): boolean {
     // <if expr="chromeos_ash">
-    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
-        loadTimeData.getBoolean('isOSSettings')) {
+    if (loadTimeData.getBoolean('isOSSettings')) {
       // Should be hidden in OS settings.
       return false;
     }
