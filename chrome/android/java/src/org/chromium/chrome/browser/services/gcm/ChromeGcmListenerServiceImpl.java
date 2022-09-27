@@ -91,11 +91,11 @@ public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl 
 
     /**
      * Returns if we deliver the GCMMessage with a background service by calling
-     * Context#startService. This will only work if Android has put us in a whitelist to allow
+     * Context#startService. This will only work if Android has put us in an allowlist to allow
      * background services to be started.
      */
     private static boolean maybeBypassScheduler(GCMMessage message) {
-        // Android only puts us on a whitelist for high priority messages.
+        // Android only puts us on an allowlist for high priority messages.
         if (message.getOriginalPriority() != GCMMessage.Priority.HIGH) {
             return false;
         }
@@ -113,7 +113,7 @@ public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl 
             context.startService(intent);
             return true;
         } catch (IllegalStateException e) {
-            // Failed to start service, maybe we're not whitelisted? Fallback to using
+            // Failed to start service, maybe we're not allowed? Fallback to using
             // BackgroundTaskScheduler to start Chrome.
             Log.e(TAG, "Could not start background service", e);
             return false;

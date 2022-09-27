@@ -354,7 +354,7 @@ public class IntentHandlerUnitTest {
     @Test
     @SmallTest
     public void testExtraHeadersVerifiedOrigin() throws Exception {
-        // Check that non-whitelisted headers from extras are passed
+        // Check that non-allowlisted headers from extras are passed
         // when origin is verified.
         Context context = InstrumentationRegistry.getTargetContext();
         Intent headersIntent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
@@ -386,7 +386,7 @@ public class IntentHandlerUnitTest {
     @Test
     @SmallTest
     public void testExtraHeadersNonVerifiedOrigin() throws Exception {
-        // Check that non-whitelisted headers from extras are passed
+        // Check that non-allowlisted headers from extras are passed
         // when origin is verified.
         Context context = InstrumentationRegistry.getTargetContext();
         Intent headersIntent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(

@@ -302,7 +302,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    public void testWhitelistedHeadersReceivedWhenConnectionVerified() throws Exception {
+    public void testAllowedHeadersReceivedWhenConnectionVerified() throws Exception {
         final Context context = InstrumentationRegistry.getInstrumentation()
                                         .getTargetContext()
                                         .getApplicationContext();
