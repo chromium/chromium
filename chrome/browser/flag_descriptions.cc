@@ -1772,6 +1772,11 @@ const char kJavascriptExperimentalSharedMemoryDescription[] =
 const char kJourneysName[] = "History Journeys";
 const char kJourneysDescription[] = "Enables the History Journeys UI.";
 
+const char kJourneysContentClusteringName[] =
+    "History Journeys Content Clustering";
+const char kJourneysContentClusteringDescription[] =
+    "Enables clustering page loads using content annotations.";
+
 const char kJourneysLabelsName[] = "History Journeys Labels";
 const char kJourneysLabelsDescription[] =
     "Enables labels for Journeys within the History Journeys UI.";

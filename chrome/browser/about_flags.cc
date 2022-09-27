@@ -1176,6 +1176,14 @@ const FeatureEntry::FeatureVariation
          kSidePanelJourneysOpensFromOmniboxParams,
          std::size(kSidePanelJourneysOpensFromOmniboxParams), nullptr},
 };
+const FeatureEntry::FeatureParam kJourneysContentClusteringParams[] = {
+    {"collections_blocklist", "/collections/software"},
+    {"exclude_entities_that_have_no_collections", "true"},
+};
+const FeatureEntry::FeatureVariation kJourneysContentClusteringVariations[] = {
+    {"With Blocklist", kJourneysContentClusteringParams,
+     std::size(kJourneysContentClusteringParams), nullptr},
+};
 const FeatureEntry::FeatureParam kJourneysLabelsWithEntitiesParams[] = {
     {"labels_from_entities", "true"},
 };
@@ -5650,6 +5658,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kJourneys,
                                     kJourneysVariations,
                                     "HistoryJourneys")},
+
+    {"history-journeys-content-clustering",
+     flag_descriptions::kJourneysContentClusteringName,
+     flag_descriptions::kJourneysContentClusteringDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         history_clusters::features::kOnDeviceClusteringContentClustering,
+         kJourneysContentClusteringVariations,
+         "HistoryJourneysContentClustering")},
 
     {"history-journeys-labels", flag_descriptions::kJourneysLabelsName,
      flag_descriptions::kJourneysLabelsDescription, kOsDesktop | kOsAndroid,
