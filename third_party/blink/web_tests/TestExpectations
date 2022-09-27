@@ -7147,6 +7147,8 @@ crbug.com/1367876 external/wpt/html/cross-origin-opener-policy/reporting/navigat
 crbug.com/1367514 http/tests/images/document-policy-oversized-images-resize.php [ Failure Pass ]
 crbug.com/1367067 [ Linux ] external/wpt/preload/preload-dynamic-csp.html [ Skip ]
 crbug.com/1341929 [ Win ] wpt_internal/attribution-reporting/debug-key.sub.https.html [ Failure Pass ]
+# Sheriff 2022-09-27
+crbug.com/1368574 external/wpt/html/cross-origin-opener-policy/reporting/document-reporting/reporting-redirect-with-same-origin-allow-popups.https.html [ Failure Pass ]
 
 # Temporarily disable tests for ORB (virtual suite, behind a flag) until 1359788 is fixed.
 crbug.com/1359788 virtual/orb-v01/external/wpt/fetch/corb/img-svg-doctype-html-mimetype-svg.sub.html [ Failure ]
