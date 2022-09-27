@@ -119,9 +119,9 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.use_occlusion_for_tile_prioritization = true;
   settings.main_frame_before_activation_enabled = false;
 
-  settings.release_tile_resources_for_hidden_layers =
-      base::FeatureList::IsEnabled(
-          features::kUiCompositorReleaseTileResourcesForHiddenLayers);
+  // Browser UI generally doesn't get gains from keeping around hidden layers.
+  // Better to release the resources and save memory.
+  settings.release_tile_resources_for_hidden_layers = true;
 
   // Disable edge anti-aliasing in order to increase support for HW overlays.
   settings.enable_edge_anti_aliasing = false;
@@ -213,13 +213,8 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
       (memory_limit_when_visible_mb > 0 ? memory_limit_when_visible_mb : 512) *
       1024 * 1024;
 
-  if (base::FeatureList::IsEnabled(features::kUiCompositorRequiredTilesOnly)) {
-    settings.memory_policy.priority_cutoff_when_visible =
-        gpu::MemoryAllocation::CUTOFF_ALLOW_REQUIRED_ONLY;
-  } else {
-    settings.memory_policy.priority_cutoff_when_visible =
-        gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
-  }
+  settings.memory_policy.priority_cutoff_when_visible =
+      gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
 
   settings.disallow_non_exact_resource_reuse =
       command_line->HasSwitch(switches::kDisallowNonExactResourceReuse);

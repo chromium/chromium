@@ -406,14 +406,6 @@ bool IsRawDrawUsingMSAA() {
   return kIsRawDrawUsingMSAA.Get();
 }
 
-BASE_FEATURE(kUiCompositorReleaseTileResourcesForHiddenLayers,
-             "UiCompositorReleaseTileResourcesForHiddenLayers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kUiCompositorRequiredTilesOnly,
-             "UiCompositorRequiredTilesOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableVariableRefreshRate,
              "EnableVariableRefreshRate",
              base::FEATURE_DISABLED_BY_DEFAULT);

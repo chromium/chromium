@@ -10384,26 +10384,6 @@
             ]
         }
     ],
-    "UiCompositorTilePolicy": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ReleaseHiddenTilesAndRequiredTilesOnly_1",
-                    "enable_features": [
-                        "UiCompositorReleaseTileResourcesForHiddenLayers",
-                        "UiCompositorRequiredTilesOnly"
-                    ]
-                }
-            ]
-        }
-    ],
     "UnifiedAutoplay": [
         {
             "platforms": [
