@@ -68,7 +68,7 @@
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols_reclient',
       'mac-arm64-archive-dbg': 'debug_bot_arm64',
       'mac-arm64-archive-rel': 'release_bot_mac_strip_minimal_symbols_arm64_reclient',
-      'mac-official': 'official_optimize_goma',
+      'mac-official': 'official_optimize_reclient',
       'win-archive-dbg': 'debug_bot_reclient',
       'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression_reclient',
       'win-official': 'official_optimize_minimal_symbols_goma',
@@ -470,7 +470,7 @@
       # TODO(crbug.com/1252626): remove this after the migration.
       'mac-arm64-on-arm64-rel-reclient': 'mac_arm64_release_bot_reclient',
       'mac-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
-      'mac-code-coverage': 'clang_code_coverage',
+      'mac-code-coverage': 'clang_code_coverage_reclient',
       'mac-fieldtrial-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'mac-hermetic-upgrade-rel': 'release_bot_reclient',
       'mac-perfetto-rel': 'perfetto_release_bot_reclient',
@@ -751,7 +751,7 @@
       'mac-updater-builder-arm64-dbg': 'updater_debug_bot_arm64',
       'mac-updater-builder-arm64-rel': 'updater_release_bot_arm64',
       'mac-updater-builder-dbg': 'updater_debug_bot',
-      'mac-updater-builder-rel': 'updater_release_bot',
+      'mac-updater-builder-rel': 'updater_release_bot_reclient',
       'win-updater-builder-dbg': 'updater_debug_bot_reclient',
       'win-updater-builder-rel': 'updater_release_bot_reclient',
       'win32-updater-builder-dbg': 'updater_debug_bot_x86_reclient',
@@ -3375,10 +3375,6 @@
       'official', 'goma', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
-    'official_optimize_goma': [
-      'official_optimize_goma',
-    ],
-
     'official_optimize_goma_trybot': [
       'official_optimize_goma_trybot',
     ],
@@ -3718,10 +3714,6 @@
 
     'updater_debug_bot_x86_reclient': [
       'updater_on_win_mac', 'debug_static_bot_reclient', 'x86', 'no_symbols',
-    ],
-
-    'updater_release_bot': [
-      'updater_on_win_mac', 'release_bot',
     ],
 
     'updater_release_bot_arm64': [

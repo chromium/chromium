@@ -89,6 +89,9 @@ ci.builder(
     ),
     cores = None,
     os = os.MAC_ANY,
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
