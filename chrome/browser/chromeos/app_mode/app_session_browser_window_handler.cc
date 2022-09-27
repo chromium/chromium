@@ -135,7 +135,7 @@ void AppSessionBrowserWindowHandler::OnBrowserRemoved(Browser* browser) {
 bool AppSessionBrowserWindowHandler::IsNewBrowserWindowAllowed(
     Browser* browser) const {
   return app_session_policies_->IsWindowCreationAllowed() &&
-         web_app_name_.has_value() &&
+         browser->is_type_app_popup() && web_app_name_.has_value() &&
          browser->app_name() == web_app_name_.value();
 }
 

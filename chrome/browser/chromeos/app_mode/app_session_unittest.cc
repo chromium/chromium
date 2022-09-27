@@ -17,6 +17,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -90,13 +91,26 @@ class AppSessionTest : public testing::Test {
         Browser::CreateParams(&profile_, true));
   }
 
+  Browser::CreateParams CreateBrowserParamsForApp(
+      const std::string& web_app_name) {
+    return Browser::CreateParams::CreateForAppPopup(
+        /*app_name=*/web_app_name, /*trusted_source=*/true,
+        /*window_bounds=*/gfx::Rect(), /*profile=*/&profile_,
+        /*user_gesture=*/true);
+  }
+
+  std::unique_ptr<Browser> CreateBrowserWithNameAndType(
+      const std::string& web_app_name,
+      Browser::Type browser_type) {
+    Browser::CreateParams params = CreateBrowserParamsForApp(web_app_name);
+    params.type = browser_type;
+    return CreateBrowserWithTestWindowForParams(params);
+  }
+
   std::unique_ptr<Browser> CreateBrowserForApp(
       const std::string& web_app_name) {
     return CreateBrowserWithTestWindowForParams(
-        Browser::CreateParams::CreateForAppPopup(
-            /*app_name=*/web_app_name, /*trusted_source=*/true,
-            /*window_bounds=*/gfx::Rect(), /*profile=*/&profile_,
-            /*user_gesture=*/true));
+        CreateBrowserParamsForApp(web_app_name));
   }
 
   // Simulate starting a web kiosk session.
@@ -353,6 +367,28 @@ TEST_F(AppSessionTest, OpenSecondBrowserInWebKioskIfAllowed) {
 
   EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(
       CreateBrowserForApp(kTestWebAppName1)->window()));
+}
+
+TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKioskIfTypeIsNotAppPopup) {
+  const std::vector<Browser::Type> not_app_popup_browser_types = {
+    Browser::Type::TYPE_NORMAL,
+    Browser::Type::TYPE_POPUP,
+    Browser::Type::TYPE_APP,
+    Browser::Type::TYPE_DEVTOOLS,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    Browser::Type::TYPE_CUSTOM_TAB,
+#endif
+    Browser::Type::TYPE_PICTURE_IN_PICTURE,
+  };
+
+  GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  StartWebKioskSession(kTestWebAppName1);
+
+  for (auto browser_type : not_app_popup_browser_types) {
+    EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+        CreateBrowserWithNameAndType(kTestWebAppName1, browser_type)
+            ->window()));
+  }
 }
 
 TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKioskWithEmptyWebAppName) {
