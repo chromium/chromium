@@ -119,7 +119,7 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
       const content::StorageUsageInfo& usage_info =
           *node.GetDetailedInfo().usage_info;
 
-      dict.Set(kKeyOrigin, usage_info.origin.Serialize());
+      dict.Set(kKeyOrigin, usage_info.storage_key.origin().Serialize());
       dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
       dict.Set(kKeyModified,
                base::TimeFormatFriendlyDateAndTime(usage_info.last_modified));
@@ -131,7 +131,7 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
       const content::StorageUsageInfo& local_storage_info =
           *node.GetDetailedInfo().usage_info;
 
-      dict.Set(kKeyOrigin, local_storage_info.origin.Serialize());
+      dict.Set(kKeyOrigin, local_storage_info.storage_key.origin().Serialize());
       dict.Set(kKeySize, ui::FormatBytes(local_storage_info.total_size_bytes));
       dict.Set(kKeyModified, base::TimeFormatFriendlyDateAndTime(
                                  local_storage_info.last_modified));
@@ -144,7 +144,7 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
       const content::StorageUsageInfo& usage_info =
           *node.GetDetailedInfo().usage_info;
 
-      dict.Set(kKeyOrigin, usage_info.origin.Serialize());
+      dict.Set(kKeyOrigin, usage_info.storage_key.origin().Serialize());
       dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
       dict.Set(kKeyModified,
                base::TimeFormatFriendlyDateAndTime(usage_info.last_modified));
@@ -194,7 +194,7 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
       const content::StorageUsageInfo& usage_info =
           *node.GetDetailedInfo().usage_info;
 
-      dict.Set(kKeyOrigin, usage_info.origin.Serialize());
+      dict.Set(kKeyOrigin, usage_info.storage_key.origin().Serialize());
       dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
       // TODO(jsbell): Include kKeyModified like other storage types.
       break;
@@ -215,7 +215,7 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
       const content::StorageUsageInfo& usage_info =
           *node.GetDetailedInfo().usage_info;
 
-      dict.Set(kKeyOrigin, usage_info.origin.Serialize());
+      dict.Set(kKeyOrigin, usage_info.storage_key.origin().Serialize());
       dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
       dict.Set(kKeyModified,
                base::TimeFormatFriendlyDateAndTime(usage_info.last_modified));

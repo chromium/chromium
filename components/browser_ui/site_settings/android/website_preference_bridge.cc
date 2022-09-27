@@ -569,7 +569,7 @@ void OnLocalStorageModelInfoLoaded(
   std::transform(local_storage_info.begin(), local_storage_info.end(),
                  important_notations.begin(),
                  [](const content::StorageUsageInfo& info) {
-                   return std::make_pair(info.origin, false);
+                   return std::make_pair(info.storage_key.origin(), false);
                  });
   if (fetch_important) {
     permissions::PermissionsClient::Get()->AreSitesImportant(
@@ -579,7 +579,7 @@ void OnLocalStorageModelInfoLoaded(
   int i = 0;
   for (const content::StorageUsageInfo& info : local_storage_info) {
     ScopedJavaLocalRef<jstring> java_origin =
-        ConvertUTF8ToJavaString(env, info.origin.Serialize());
+        ConvertUTF8ToJavaString(env, info.storage_key.origin().Serialize());
     Java_WebsitePreferenceBridge_insertLocalStorageInfoIntoMap(
         env, map, java_origin, info.total_size_bytes,
         important_notations[i++].second);

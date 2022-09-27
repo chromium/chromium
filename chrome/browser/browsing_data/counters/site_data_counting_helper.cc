@@ -158,8 +158,9 @@ void SiteDataCountingHelper::GetLocalStorageUsageInfoCallback(
   std::vector<GURL> origins;
   for (const auto& info : infos) {
     if (info.last_modified >= begin_ && info.last_modified < end_ &&
-        (!policy || !policy->IsStorageProtected(info.origin.GetURL()))) {
-      origins.push_back(info.origin.GetURL());
+        (!policy ||
+         !policy->IsStorageProtected(info.storage_key.origin().GetURL()))) {
+      origins.push_back(info.storage_key.origin().GetURL());
     }
   }
   Done(origins);

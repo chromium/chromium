@@ -40,7 +40,7 @@ void GetUsageInfoCallback(LocalStorageHelper::FetchCallback callback,
 
   std::list<content::StorageUsageInfo> result;
   for (const content::StorageUsageInfo& info : infos) {
-    if (HasStorageScheme(info.origin))
+    if (HasStorageScheme(info.storage_key.origin()))
       result.push_back(info);
   }
 
@@ -118,7 +118,7 @@ void CannedLocalStorageHelper::UpdateIgnoredEmptyKeysInternal(
   non_empty_origins_list.reserve(storage_usage_info.size());
   // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
   for (const auto& usage_info : storage_usage_info)
-    non_empty_origins_list.push_back(usage_info.origin);
+    non_empty_origins_list.push_back(usage_info.storage_key.origin());
   const base::flat_set<url::Origin> non_empty_origins(
       std::move(non_empty_origins_list));
 

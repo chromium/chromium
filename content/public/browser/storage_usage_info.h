@@ -14,14 +14,13 @@
 
 namespace content {
 
-// Used to report per-origin storage info for a storage type. The storage type
-// (Cache API, Indexed DB, Local Storage, etc) is implied by context.
+// Used to report per-storage key storage info for a storage type. The storage
+// type (Cache API, Indexed DB, Local Storage, etc) is implied by context.
 struct CONTENT_EXPORT StorageUsageInfo {
   StorageUsageInfo(const blink::StorageKey& storage_key,
                    int64_t total_size_bytes,
                    base::Time last_modified)
       : storage_key(storage_key),
-        origin(storage_key.origin()),
         total_size_bytes(total_size_bytes),
         last_modified(last_modified) {}
 
@@ -31,14 +30,10 @@ struct CONTENT_EXPORT StorageUsageInfo {
   // The storage key this object is describing.
   blink::StorageKey storage_key;
 
-  // The origin this object is describing.
-  // DEPRECATED, use storage_key instead (https://crbug.com/1361545).
-  url::Origin origin;
-
   // The total size, including resources, in bytes.
   int64_t total_size_bytes;
 
-  // Last modification time of the data for this origin.
+  // Last modification time of the data for this entry.
   base::Time last_modified;
 };
 

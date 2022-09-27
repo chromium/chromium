@@ -55,9 +55,9 @@ IN_PROC_BROWSER_TEST_F(IndexedDBHelperTest, CannedAddIndexedDB) {
 
   ASSERT_EQ(2U, result.size());
   auto info = result.begin();
-  EXPECT_EQ(storage_key1.origin().GetURL(), info->origin.GetURL());
+  EXPECT_EQ(storage_key1, info->storage_key);
   info++;
-  EXPECT_EQ(storage_key2.origin().GetURL(), info->origin.GetURL());
+  EXPECT_EQ(storage_key2, info->storage_key);
 }
 
 IN_PROC_BROWSER_TEST_F(IndexedDBHelperTest, CannedUnique) {
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBHelperTest, CannedUnique) {
   std::list<content::StorageUsageInfo> result = callback.result();
 
   ASSERT_EQ(1U, result.size());
-  EXPECT_EQ(storage_key.origin().GetURL(), result.begin()->origin.GetURL());
+  EXPECT_EQ(storage_key, result.begin()->storage_key);
 }
 }  // namespace
 }  // namespace browsing_data

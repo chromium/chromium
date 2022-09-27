@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest,
   std::vector<StorageUsageInfo> service_workers =
       browsing_data_browsertest_utils::GetServiceWorkers(storage_partition);
   EXPECT_EQ(service_workers.size(), 1u);
-  EXPECT_EQ(service_workers[0].origin.host(), "foo.bar.com");
+  EXPECT_EQ(service_workers[0].storage_key.origin().host(), "foo.bar.com");
 }
 
 }  // namespace content

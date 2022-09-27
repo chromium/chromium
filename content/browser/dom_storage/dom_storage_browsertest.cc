@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(DOMStorageBrowserTest, DeletePhysicalStorageKey) {
   SimpleTest(GetTestUrl("dom_storage", "store_data.html"), kNotIncognito);
   std::vector<StorageUsageInfo> usage = GetUsage();
   ASSERT_EQ(1U, usage.size());
-  DeletePhysicalStorageKey(blink::StorageKey(usage[0].origin));
+  DeletePhysicalStorageKey(usage[0].storage_key);
   EXPECT_EQ(0U, GetUsage().size());
 }
 

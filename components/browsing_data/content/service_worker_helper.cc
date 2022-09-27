@@ -27,15 +27,15 @@ namespace {
 
 void GetAllOriginsInfoForServiceWorkerCallback(
     ServiceWorkerHelper::FetchCallback callback,
-    const std::vector<StorageUsageInfo>& origins) {
+    const std::vector<StorageUsageInfo>& infos) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
 
   std::list<StorageUsageInfo> result;
-  for (const StorageUsageInfo& origin : origins) {
-    if (!HasWebScheme(origin.origin.GetURL()))
+  for (const StorageUsageInfo& info : infos) {
+    if (!HasWebScheme(info.storage_key.origin().GetURL()))
       continue;  // Non-websafe state is not considered browsing data.
-    result.push_back(origin);
+    result.push_back(info);
   }
 
   std::move(callback).Run(result);

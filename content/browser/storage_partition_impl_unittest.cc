@@ -291,7 +291,7 @@ class RemoveLocalStorageTester {
     GetLocalStorageUsage();
     await_completion_.BlockUntilNotified();
     for (size_t i = 0; i < infos_.size(); ++i) {
-      if (origin == infos_[i].origin)
+      if (origin == infos_[i].storage_key.origin())
         return true;
     }
     return false;

@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   service_workers =
       browsing_data_browsertest_utils::GetServiceWorkers(partition);
   ASSERT_EQ(1u, service_workers.size());
-  EXPECT_EQ(service_workers[0].origin.GetURL(),
+  EXPECT_EQ(service_workers[0].storage_key.origin().GetURL(),
             server->GetURL("origin2.com", "/"));
 
   // TODO(msramek): Test that the service worker update ping also deletes
