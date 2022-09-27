@@ -73,7 +73,7 @@ bool DeserializeChallengeResponseKeyFromKnownUser(
   deserialized_challenge_response_keys->clear();
   if (!pref_value.is_list())
     return false;
-  for (const base::Value& key_representation : pref_value.GetListDeprecated()) {
+  for (const base::Value& key_representation : pref_value.GetList()) {
     if (!key_representation.is_dict()) {
       LOG(WARNING) << "Ignoring challenge-response key info: not a dictionary";
       continue;
