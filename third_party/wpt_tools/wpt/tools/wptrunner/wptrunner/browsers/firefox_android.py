@@ -56,7 +56,6 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
             "stackwalk_binary": kwargs["stackwalk_binary"],
             "certutil_binary": kwargs["certutil_binary"],
             "ca_certificate_path": config.ssl_config["ca_cert_path"],
-            "enable_webrender": kwargs["enable_webrender"],
             "stackfix_dir": kwargs["stackfix_dir"],
             "binary_args": kwargs["binary_args"],
             "timeout_multiplier": get_timeout_multiplier(test_type,
@@ -150,7 +149,7 @@ class FirefoxAndroidBrowser(Browser):
     def __init__(self, logger, prefs_root, test_type, package_name="org.mozilla.geckoview.test_runner",
                  device_serial=None, extra_prefs=None, debug_info=None,
                  symbols_path=None, stackwalk_binary=None, certutil_binary=None,
-                 ca_certificate_path=None, e10s=False, enable_webrender=False, stackfix_dir=None,
+                 ca_certificate_path=None, e10s=False, stackfix_dir=None,
                  binary_args=None, timeout_multiplier=None, leak_check=False, asan=False,
                  stylo_threads=1, chaos_mode_flags=None, config=None, browser_channel="nightly",
                  install_fonts=False, tests_root=None, specialpowers_path=None, adb_binary=None,
@@ -167,7 +166,6 @@ class FirefoxAndroidBrowser(Browser):
         self.certutil_binary = certutil_binary
         self.ca_certificate_path = ca_certificate_path
         self.e10s = True
-        self.enable_webrender = enable_webrender
         self.stackfix_dir = stackfix_dir
         self.binary_args = binary_args
         self.timeout_multiplier = timeout_multiplier

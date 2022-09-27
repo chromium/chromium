@@ -91,7 +91,6 @@ class RunInfo(Dict[str, Any]):
                  browser_channel=None,
                  verify=None,
                  extras=None,
-                 enable_webrender=False,
                  device_serials=None,
                  adb_binary=None):
         import mozinfo
@@ -126,8 +125,6 @@ class RunInfo(Dict[str, Any]):
             self.update(extras)
         if "headless" not in self:
             self["headless"] = False
-
-        self["webrender"] = enable_webrender
 
         if adb_binary:
             self["adb_binary"] = adb_binary

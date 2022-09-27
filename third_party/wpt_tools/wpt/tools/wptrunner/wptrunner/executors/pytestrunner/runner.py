@@ -64,7 +64,7 @@ def run(path, server_config, session_config, timeout=0, environ=None):
 
             try:
                 basetemp = os.path.join(cache, "pytest")
-                pytest.main(["--strict",  # turn warnings into errors
+                pytest.main(["--strict-markers",  # turn function marker warnings into errors
                              "-vv",  # show each individual subtest and full failure logs
                              "--capture", "no",  # enable stdout/stderr from tests
                              "--basetemp", basetemp,  # temporary directory

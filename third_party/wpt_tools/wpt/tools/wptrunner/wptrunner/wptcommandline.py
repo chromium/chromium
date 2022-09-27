@@ -303,12 +303,9 @@ scheme host and port.""")
                              default=None, help="Don't preload a gecko instance for faster restarts")
     gecko_group.add_argument("--disable-e10s", dest="gecko_e10s", action="store_false", default=True,
                              help="Run tests without electrolysis preferences")
-    gecko_group.add_argument("--enable-webrender", dest="enable_webrender", action="store_true", default=None,
-                             help="Enable the WebRender compositor in Gecko (defaults to disabled).")
-    gecko_group.add_argument("--no-enable-webrender", dest="enable_webrender", action="store_false",
-                             help="Disable the WebRender compositor in Gecko.")
     gecko_group.add_argument("--enable-fission", dest="enable_fission", action="store_true", default=None,
-                             help="Enable fission in Gecko (defaults to disabled).")
+                             help="Enable fission in Gecko (defaults to enabled; "
+                             "this option only exists for backward compatibility).")
     gecko_group.add_argument("--no-enable-fission", dest="enable_fission", action="store_false",
                              help="Disable fission in Gecko.")
     gecko_group.add_argument("--stackfix-dir", dest="stackfix_dir", action="store",
@@ -639,9 +636,6 @@ def check_args(kwargs):
 
     if kwargs["reftest_screenshot"] is None:
         kwargs["reftest_screenshot"] = "unexpected" if not kwargs["debug_test"] else "always"
-
-    if kwargs["enable_webrender"] is None:
-        kwargs["enable_webrender"] = False
 
     if kwargs["preload_browser"] is None:
         # Default to preloading a gecko instance if we're only running a single process

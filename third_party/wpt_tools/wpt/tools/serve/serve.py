@@ -669,8 +669,11 @@ class ServerProc:
                 logger.critical(traceback.format_exc())
                 raise
 
-    def stop(self, timeout=None):
-        self.stop_flag.set()
+    def request_shutdown(self):
+        if self.is_alive():
+            self.stop_flag.set()
+
+    def wait(self, timeout=None):
         self.proc.join(timeout)
 
     def is_alive(self):
@@ -714,7 +717,8 @@ def check_subdomains(logger, config, routes, mp_context, log_handlers):
             logger.critical(f"Failed probing domain {domain}. {EDIT_HOSTS_HELP}")
             sys.exit(1)
 
-    wrapper.stop()
+    wrapper.request_shutdown()
+    wrapper.wait()
 
 
 def make_hosts_file(config, host):
@@ -1212,14 +1216,15 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handl
 
             failed_subproc = 0
             for server in iter_servers(servers):
-                subproc = server.proc
-                if subproc.is_alive():
-                    logger.info('Status of subprocess "%s": running', subproc.name)
-                    server.stop(timeout=1)
+                logger.info('Status of subprocess "%s": running', server.proc.name)
+                server.request_shutdown()
 
+            for server in iter_servers(servers):
+                server.wait(timeout=1)
                 if server.proc.exitcode == 0:
-                    logger.info('Status of subprocess "%s": exited correctly', subproc.name)
+                    logger.info('Status of subprocess "%s": exited correctly', server.proc.name)
                 else:
+                    subproc = server.proc
                     logger.warning('Status of subprocess "%s": failed. Exit with non-zero status: %d',
                                    subproc.name, subproc.exitcode)
                     failed_subproc += 1

@@ -1601,7 +1601,7 @@ class Safari(Browser):
                     else:
                         spec = SpecifierSet(f"=={version}.*")
 
-                    stp_downloads.append((spec, link.attrib["href"]))
+                    stp_downloads.append((spec, link.attrib["href"].strip()))
                     break
             else:
                 self.logger.debug(

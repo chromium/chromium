@@ -63,18 +63,15 @@ def get_timeout_multiplier(test_type, run_info_data, **kwargs):
             return 4
         else:
             return 2
+    elif run_info_data.get("ccov"):
+        return 4
     elif run_info_data["debug"] or run_info_data.get("asan") or run_info_data.get("tsan"):
-        if run_info_data.get("ccov"):
-            return 4
-        else:
-            return 3
+        return 3
     elif run_info_data["os"] == "android":
         return 4
     # https://bugzilla.mozilla.org/show_bug.cgi?id=1538725
     elif run_info_data["os"] == "win" and run_info_data["processor"] == "aarch64":
         return 4
-    elif run_info_data.get("ccov"):
-        return 2
     return 1
 
 
@@ -95,7 +92,7 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
             "certutil_binary": kwargs["certutil_binary"],
             "ca_certificate_path": config.ssl_config["ca_cert_path"],
             "e10s": kwargs["gecko_e10s"],
-            "enable_fission": kwargs["enable_fission"],
+            "enable_fission": run_info_data["fission"],
             "stackfix_dir": kwargs["stackfix_dir"],
             "binary_args": kwargs["binary_args"],
             "timeout_multiplier": get_timeout_multiplier(test_type,
@@ -176,13 +173,18 @@ def run_info_extras(**kwargs):
         pref_value = get_bool_pref_if_exists(pref)
         return pref_value if pref_value is not None else False
 
+    # Default fission to on, unless we get --[no-]enable-fission or
+    # --set-pref fission.autostart=[true|false]
+    enable_fission = [item for item in [kwargs.get("enable_fission"),
+                                        get_bool_pref_if_exists("fission.autostart"),
+                                        True] if item is not None][0]
+
     rv = {"e10s": kwargs["gecko_e10s"],
           "wasm": kwargs.get("wasm", True),
           "verify": kwargs["verify"],
           "headless": kwargs.get("headless", False) or "MOZ_HEADLESS" in os.environ,
-          "fission": kwargs.get("enable_fission") or get_bool_pref("fission.autostart"),
-          "sessionHistoryInParent": (kwargs.get("enable_fission") or
-                                     get_bool_pref("fission.autostart") or
+          "fission": enable_fission,
+          "sessionHistoryInParent": (enable_fission or
                                      get_bool_pref("fission.sessionHistoryInParent")),
           "swgl": get_bool_pref("gfx.webrender.software")}
 
@@ -648,6 +650,8 @@ class ProfileCreator:
 
         if self.enable_fission:
             profile.set_preferences({"fission.autostart": True})
+        else:
+            profile.set_preferences({"fission.autostart": False})
 
         if self.test_type in ("reftest", "print-reftest"):
             profile.set_preferences({"layout.interruptible-reflow.enabled": False})
@@ -720,7 +724,7 @@ class FirefoxBrowser(Browser):
 
     def __init__(self, logger, binary, prefs_root, test_type, extra_prefs=None, debug_info=None,
                  symbols_path=None, stackwalk_binary=None, certutil_binary=None,
-                 ca_certificate_path=None, e10s=False, enable_fission=False,
+                 ca_certificate_path=None, e10s=False, enable_fission=True,
                  stackfix_dir=None, binary_args=None, timeout_multiplier=None, leak_check=False,
                  asan=False, stylo_threads=1, chaos_mode_flags=None, config=None,
                  browser_channel="nightly", headless=None, preload_browser=False,
