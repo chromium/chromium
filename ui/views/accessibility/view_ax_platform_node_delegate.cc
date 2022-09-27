@@ -17,6 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_dummy_tree_manager.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
@@ -446,21 +447,25 @@ ViewAXPlatformNodeDelegate::CreateTextPositionAt(
   if (!IsDescendantOfAtomicTextField())
     return ui::AXNodePosition::CreateNullPosition();
 
-  if (!dummy_tree_) {
+  if (!dummy_tree_manager_) {
     ui::AXTreeUpdate initial_state;
     initial_state.root_id = GetData().id;
     initial_state.nodes = {GetData()};
     initial_state.has_tree_data = true;
     initial_state.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
-    dummy_tree_ = std::make_unique<ui::AXTree>(initial_state);
+    auto dummy_tree = std::make_unique<ui::AXTree>(initial_state);
+    dummy_tree_manager_ =
+        std::make_unique<ui::AXDummyTreeManager>(std::move(dummy_tree));
   } else {
+    DCHECK(dummy_tree_manager_->ax_tree());
     ui::AXTreeUpdate update;
     update.nodes = {GetData()};
-    dummy_tree_->Unserialize(update);
+    const_cast<ui::AXTree*>(dummy_tree_manager_->ax_tree())
+        ->Unserialize(update);
   }
 
-  return ui::AXNodePosition::CreatePosition(*dummy_tree_->root(), offset,
-                                            affinity);
+  return ui::AXNodePosition::CreatePosition(*dummy_tree_manager_->GetRoot(),
+                                            offset, affinity);
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNSWindow() {
