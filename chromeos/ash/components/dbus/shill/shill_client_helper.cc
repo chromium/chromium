@@ -428,7 +428,7 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
     }
     case base::Value::Type::LIST: {
       // Support list of string and list of string-to-string dictionary.
-      const auto& list_view = value.GetListDeprecated();
+      const auto& list_view = value.GetList();
       if (list_view.size() > 0 && list_view.front().is_dict()) {
         // aa{ss} to support WireGuard.Peers
         dbus::MessageWriter variant_writer(nullptr);

@@ -114,7 +114,7 @@ void ShillIPConfigClientImpl::SetProperty(
       writer.OpenVariant("as", &variant_writer);
       dbus::MessageWriter array_writer(nullptr);
       variant_writer.OpenArray("s", &array_writer);
-      for (const auto& entry : value.GetListDeprecated()) {
+      for (const auto& entry : value.GetList()) {
         DLOG_IF(ERROR, !entry.is_string())
             << "Unexpected type " << entry.type();
         array_writer.AppendString(entry.is_string() ? entry.GetString()

@@ -1221,7 +1221,7 @@ bool FakeShillManagerClient::TechnologyEnabled(const std::string& type) const {
   const base::Value* technologies =
       stub_properties_.FindListKey(shill::kEnabledTechnologiesProperty);
   if (technologies)
-    return base::Contains(technologies->GetListDeprecated(), base::Value(type));
+    return base::Contains(technologies->GetList(), base::Value(type));
   return false;
 }
 
@@ -1232,7 +1232,7 @@ base::Value FakeShillManagerClient::GetEnabledServiceList() const {
   if (service_list) {
     ShillServiceClient::TestInterface* service_client =
         ShillServiceClient::Get()->GetTestInterface();
-    for (const base::Value& v : service_list->GetListDeprecated()) {
+    for (const base::Value& v : service_list->GetList()) {
       std::string service_path = v.GetString();
       const base::Value* properties =
           service_client->GetServiceProperties(service_path);
