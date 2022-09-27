@@ -72,12 +72,26 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Login.ArcContinueBootImpulseTime2" units="ms"
     expires_after="2023-02-12">
+  <obsolete>
+    Removed 2022/09, replaced with ArcContinueBootImpulseTime3.
+  </obsolete>
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     Tracks the time to execute arc-boot-continue impulse. This is emitted when
     we successfully upgrade the ARC container from mini to full. This metrics
     increases the number of buckets to 50 and a maximum duration of 60 seconds.
+  </summary>
+</histogram>
+
+<histogram name="Login.ArcContinueBootImpulseTime3" units="ms"
+    expires_after="2023-09-12">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Tracks the time to execute arc-boot-continue impulse. This is emitted when
+    we successfully upgrade the ARC container from mini to full. This metrics
+    increases the number of buckets to 50 and a maximum duration of 40 seconds.
   </summary>
 </histogram>
 
