@@ -10,8 +10,11 @@ source_set("tangible_sync") {
   ]
   deps = [
     "//base:base",
+    "//components/sync/driver",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication/tangible_sync",
     "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator",
     "//ios/chrome/browser/ui/first_run:screen_delegate",

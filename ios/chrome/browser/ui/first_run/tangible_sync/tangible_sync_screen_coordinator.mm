@@ -4,8 +4,14 @@
 
 #import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
 
+#import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -37,6 +43,29 @@
 
 - (void)start {
   [super start];
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  if (!authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // Don't show sync screen if no logged-in user account.
+    [_delegate screenWillFinishPresenting];
+    return;
+  }
+  SyncSetupService* syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+
+  BOOL shouldSkipSyncScreen =
+      syncService->GetDisableReasons().Has(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+      syncSetupService->IsFirstSetupComplete();
+  if (shouldSkipSyncScreen) {
+    // Don't show sync screen if sync is disabled.
+    [_delegate screenWillFinishPresenting];
+    return;
+  }
   _tangibleSyncCoordinator = [[TangibleSyncCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser];
