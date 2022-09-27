@@ -587,13 +587,14 @@ bool DirectCompositionChildSurfaceWin::Resize(
                                             size.height(), format, flags);
     UMA_HISTOGRAM_BOOLEAN("GPU.DirectComposition.SwapChainResizeResult",
                           SUCCEEDED(hr));
-    if (SUCCEEDED(hr))
+    if (SUCCEEDED(hr)) {
+      // Resizing swap chain buffers causes the internal textures to be released
+      // and re-created as new textures. We need to label the new textures.
+      gl::LabelSwapChainBuffers(swap_chain_.Get(),
+                                kDirectCompositionChildSurfaceLabel);
       return true;
+    }
 
-    // Resizing swap chain buffers causes the internal textures to be released
-    // and re-created as new textures. We need to label the new textures.
-    gl::LabelSwapChainBuffers(swap_chain_.Get(),
-                              kDirectCompositionChildSurfaceLabel);
     DLOG(ERROR) << "ResizeBuffers failed with error 0x" << std::hex << hr;
   }
   // Next SetDrawRectangle call will recreate the swap chain or surface.
