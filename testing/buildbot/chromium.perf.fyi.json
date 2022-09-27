@@ -212,7 +212,7 @@
           "--output-format=histograms",
           "--experimental-tbmv3-metrics",
           "-d",
-          "--os-check=update",
+          "--os-check=check",
           "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/astro-release/smart_display_eng_arrested"
         ],
         "isolate_name": "performance_web_engine_test_suite",
@@ -264,7 +264,7 @@
           "--output-format=histograms",
           "--experimental-tbmv3-metrics",
           "-d",
-          "--os-check=update",
+          "--os-check=check",
           "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/chromebook-x64-release/sucrose_eng"
         ],
         "isolate_name": "performance_web_engine_test_suite",
@@ -316,7 +316,7 @@
           "--output-format=histograms",
           "--experimental-tbmv3-metrics",
           "-d",
-          "--os-check=update",
+          "--os-check=check",
           "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/astro-release/smart_display_eng_arrested"
         ],
         "isolate_name": "performance_web_engine_test_suite",
@@ -368,7 +368,7 @@
           "--output-format=histograms",
           "--experimental-tbmv3-metrics",
           "-d",
-          "--os-check=update",
+          "--os-check=check",
           "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested"
         ],
         "isolate_name": "performance_web_engine_test_suite",
@@ -420,7 +420,7 @@
           "--output-format=histograms",
           "--experimental-tbmv3-metrics",
           "-d",
-          "--os-check=update",
+          "--os-check=check",
           "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested"
         ],
         "isolate_name": "performance_web_engine_test_suite",
