@@ -14,14 +14,12 @@ namespace chrome {
 
 // This class finds the last active tabbed browser matching |profile|. If there
 // is no tabbed browser and it is possible to create one, a new non visible
-// browser is created, taking |should_trigger_session_restore| into account.
-// ScopedTabbedBrowserDisplayer ensures that the browser is made visible and is
-// activated by the time that ScopedTabbedBrowserDisplayer goes out of scope.
+// browser is created. ScopedTabbedBrowserDisplayer ensures that the browser is
+// made visible and is activated by the time that ScopedTabbedBrowserDisplayer
+// goes out of scope.
 class ScopedTabbedBrowserDisplayer {
  public:
-  explicit ScopedTabbedBrowserDisplayer(
-      Profile* profile,
-      bool should_trigger_session_restore = false);
+  explicit ScopedTabbedBrowserDisplayer(Profile* profile);
 
   ScopedTabbedBrowserDisplayer(const ScopedTabbedBrowserDisplayer&) = delete;
   ScopedTabbedBrowserDisplayer& operator=(const ScopedTabbedBrowserDisplayer&) =
