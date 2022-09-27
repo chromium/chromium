@@ -771,7 +771,8 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://os-settings/*",
-      "chrome://settings/*"
+      "chrome://settings/*",
+      "chrome://password-manager/*"
     ]
   }],
   "sidePanel": {

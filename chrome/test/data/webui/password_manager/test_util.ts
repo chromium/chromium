@@ -13,3 +13,24 @@ export function makePasswordCheckStatus(
     elapsedTimeSinceLastCheck: lastCheck,
   };
 }
+
+export function makePasswordManagerPrefs():
+    chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'credentials_enable_service',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'credentials_enable_autosignin',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'profile.password_dismiss_compromised_alert',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+  ];
+}

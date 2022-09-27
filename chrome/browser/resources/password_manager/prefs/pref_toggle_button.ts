@@ -10,12 +10,16 @@ import '//resources/cr_elements/cr_actionable_row_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import './pref_mixin.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrefMixin} from './pref_mixin.js';
 import {getTemplate} from './pref_toggle_button.html.js';
 
-export class PrefToggleButtonElement extends PolymerElement {
+const PrefToggleButtonElementBase = PrefMixin(PolymerElement);
+
+export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
   static get is() {
     return 'pref-toggle-button';
   }
@@ -48,28 +52,43 @@ export class PrefToggleButtonElement extends PolymerElement {
     };
   }
 
-  override ready() {
-    super.ready();
-
-    this.addEventListener('click', this.onHostTap_);
+  static get observers() {
+    return ['prefValueChanged_(pref.value)'];
   }
 
   label: string;
   subLabel: string;
   checked: boolean;
 
+  override ready() {
+    super.ready();
+
+    this.addEventListener('click', this.onHostClick_);
+  }
+
   private onChange_(e: CustomEvent<boolean>) {
     this.checked = e.detail;
+    this.updatePrefValue_();
   }
 
   /**
    * Handles non cr-toggle button clicks (cr-toggle handles its own click events
    * which don't bubble).
    */
-  private onHostTap_(e: Event) {
+  private onHostClick_(e: Event) {
     e.stopPropagation();
 
     this.checked = !this.checked;
+    this.updatePrefValue_();
+  }
+
+  private prefValueChanged_(prefValue: boolean) {
+    this.checked = prefValue;
+  }
+
+  /** Update the pref to the current |checked| value. */
+  private updatePrefValue_() {
+    this.setPrefValue(this.checked);
   }
 }
 

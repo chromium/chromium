@@ -9,11 +9,14 @@
 </style>
 <h2 class="page-title">$i18n{settings}</h2>
 <div class="card">
-  <pref-toggle-button id="passwordToggle" label="$i18n{savePasswordsLabel}">
+  <pref-toggle-button id="passwordToggle"
+      label="$i18n{savePasswordsLabel}"
+      pref-key="credentials_enable_service">
   </pref-toggle-button>
-  <pref-toggle-button id="autosigninCheckbox" class="hr"
+  <pref-toggle-button id="autosigninToggle" class="hr"
       label="$i18n{autosigninLabel}"
-      sub-label="$i18n{autosigninDescription}">
+      sub-label="$i18n{autosigninDescription}"
+      pref-key="credentials_enable_autosignin">
   </pref-toggle-button>
   <cr-link-row id="trustedVaultBanner" class="cr-row"
       label="$i18n{trustedVaultBannerLabelOfferOptIn}"

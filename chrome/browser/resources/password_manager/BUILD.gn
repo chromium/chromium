@@ -29,6 +29,8 @@ build_webui("build") {
     "password_manager_proxy.ts",
     "password_manager.ts",
     "router.ts",
+    "prefs/prefs_browser_proxy.ts",
+    "prefs/pref_mixin.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().
@@ -45,6 +47,8 @@ build_webui("build") {
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/passwords_private.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
   ]
 
   ts_deps = [

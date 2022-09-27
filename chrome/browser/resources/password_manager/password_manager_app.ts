@@ -19,6 +19,7 @@ import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {getTemplate} from './password_manager_app.html.js';
 import {Page, Route, RouteObserverMixin} from './router.js';
+import {SettingsSectionElement} from './settings_section.js';
 import {PasswordManagerSideBarElement} from './side_bar.js';
 import {PasswordManagerToolbarElement} from './toolbar.js';
 
@@ -27,13 +28,15 @@ export interface PasswordManagerAppElement {
     content: IronPagesElement,
     drawer: CrDrawerElement,
     drawerTemplate: DomIf,
+    settings: SettingsSectionElement,
     sidebar: PasswordManagerSideBarElement,
     toolbar: PasswordManagerToolbarElement,
   };
 }
 
-export class PasswordManagerAppElement extends RouteObserverMixin
-(PolymerElement) {
+const PasswordManagerAppElementBase = RouteObserverMixin(PolymerElement);
+
+export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   static get is() {
     return 'password-manager-app';
   }
