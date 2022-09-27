@@ -15,7 +15,6 @@ import sys
 from blinkpy.common import path_finder
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.port.android import (
-    PRODUCTS,
     PRODUCTS_TO_EXPECTATION_FILE_PATHS,
     ANDROID_WEBLAYER,
     ANDROID_WEBVIEW,

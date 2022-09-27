@@ -7,9 +7,7 @@ import web_idl
 from . import name_style
 from .blink_v8_bridge import blink_class_name
 from .blink_v8_bridge import blink_type_info
-from .blink_v8_bridge import make_blink_to_v8_value
 from .blink_v8_bridge import make_default_value_expr
-from .blink_v8_bridge import make_v8_to_blink_value
 from .blink_v8_bridge import native_value_tag
 from .code_node import EmptyNode
 from .code_node import FormatNode

@@ -29,11 +29,7 @@
 
 from __future__ import print_function
 
-import os.path
-import sys
-
 import json5_generator
-import license
 import name_utilities
 import template_expander
 

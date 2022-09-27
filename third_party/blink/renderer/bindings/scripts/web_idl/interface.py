@@ -5,7 +5,6 @@
 import itertools
 
 from .attribute import Attribute
-from .code_generator_info import CodeGeneratorInfo
 from .composition_parts import Identifier
 from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
@@ -17,7 +16,6 @@ from .composition_parts import WithOwner
 from .constant import Constant
 from .constructor import Constructor
 from .constructor import ConstructorGroup
-from .exposure import Exposure
 from .idl_type import IdlType
 from .ir_map import IRMap
 from .make_copy import make_copy

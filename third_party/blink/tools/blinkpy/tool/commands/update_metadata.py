@@ -4,7 +4,7 @@
 
 """Update WPT metadata from builder results."""
 
-from concurrent.futures import Executor, ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 import contextlib
 import io
 import json

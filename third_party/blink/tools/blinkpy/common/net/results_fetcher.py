@@ -26,22 +26,19 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import collections
 import logging
-import json
 import re
 import six.moves.urllib.request
 import six.moves.urllib.parse
 import six.moves.urllib.error
-import time
 
+# pylint: disable=unused-import; `Build` is imported by other modules
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.common.net.rpc import Build, ResultDBClient
 from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.web_tests.builder_list import BuilderList
-from blinkpy.web_tests.layout_package import json_results_generator
 
 _log = logging.getLogger(__name__)
 

@@ -4,7 +4,6 @@
 
 import itertools
 
-from .code_generator_info import CodeGeneratorInfo
 from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
 from .composition_parts import WithDebugInfo

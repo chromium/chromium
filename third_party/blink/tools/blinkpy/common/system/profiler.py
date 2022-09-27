@@ -28,7 +28,6 @@
 
 from __future__ import print_function
 import re
-import itertools
 from six.moves import range
 from six.moves import filter
 

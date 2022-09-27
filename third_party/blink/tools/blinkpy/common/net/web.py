@@ -30,7 +30,6 @@ import functools
 import gzip
 import io
 import logging
-import time
 import urllib.request
 
 from blinkpy.common.net.network_transaction import NetworkTransaction

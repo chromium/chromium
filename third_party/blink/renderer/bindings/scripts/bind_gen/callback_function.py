@@ -25,7 +25,6 @@ from .code_node_cxx import CxxNamespaceNode
 from .code_node_cxx import CxxUnlikelyIfNode
 from .codegen_accumulator import CodeGenAccumulator
 from .codegen_context import CodeGenContext
-from .codegen_format import format_template as _format
 from .codegen_utils import collect_forward_decls_and_include_headers
 from .codegen_utils import component_export
 from .codegen_utils import component_export_header

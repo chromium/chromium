@@ -7,7 +7,6 @@
 # 'run_blinkpy_tests.py' task, where jinja2 module is not available.
 
 import unittest
-import os
 from make_permissions_policy_features import PermissionsPolicyFeatureWriter
 from writer_test_util import path_to_test_file, WriterTest
 

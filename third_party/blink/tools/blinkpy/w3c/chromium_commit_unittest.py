@@ -5,7 +5,6 @@
 import unittest
 
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive, mock_git_commands

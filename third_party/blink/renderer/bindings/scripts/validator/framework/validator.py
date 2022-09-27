@@ -3,11 +3,9 @@
 # found in the LICENSE file.
 
 import web_idl
-from . import target
 from .rule_base import RuleBase
 from .rule_store import RuleStore
 from .target_store import TargetStore
-from .target_type import TargetType
 
 
 class Validator(object):

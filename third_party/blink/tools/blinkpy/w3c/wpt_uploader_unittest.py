@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import json
-
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.w3c.wpt_uploader import WptReportUploader

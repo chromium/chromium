@@ -11,7 +11,6 @@ If this script is given the argument --auto-update, it will also:
 """
 
 import argparse
-import datetime
 import json
 import logging
 import re
@@ -31,7 +30,6 @@ from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_github import WPTGitHub
 from blinkpy.w3c.wpt_manifest import WPTManifest, BASE_MANIFEST_NAME
 from blinkpy.web_tests.port.base import Port
-from blinkpy.web_tests.models.test_expectations import TestExpectations
 
 # Settings for how often to check try job results and how long to wait.
 POLL_DELAY_SECONDS = 2 * 60

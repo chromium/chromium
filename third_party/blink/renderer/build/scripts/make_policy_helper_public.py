@@ -4,8 +4,6 @@
 
 import json5_generator
 import template_expander
-from collections import defaultdict
-from make_runtime_features_utilities import origin_trials
 
 
 class PublicPermissionsPolicyFeatureWriter(json5_generator.Writer):

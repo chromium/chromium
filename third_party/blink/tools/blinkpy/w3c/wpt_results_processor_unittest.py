@@ -3,11 +3,9 @@
 # found in the LICENSE file.
 
 import base64
-import contextlib
 import json
 import re
 import textwrap
-from unittest.mock import patch, mock_open
 
 from blinkpy.common.host_mock import MockHost as BlinkMockHost
 from blinkpy.common.path_finder import PathFinder

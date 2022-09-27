@@ -33,7 +33,6 @@ filesystem, and can be replaced with a MockFileSystem in tests.
 from __future__ import unicode_literals
 
 import codecs
-import errno
 import glob
 import hashlib
 import logging

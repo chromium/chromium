@@ -13,7 +13,6 @@ import argparse
 import fnmatch
 import logging
 import os
-import re
 
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.log_utils import configure_logging

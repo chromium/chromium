@@ -8,10 +8,8 @@ manage changelists and try jobs associated with them.
 """
 
 import collections
-import json
 import logging
 import re
-import six
 from typing import Literal, Mapping, NamedTuple
 
 from blinkpy.common.checkout.git import Git

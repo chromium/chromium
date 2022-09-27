@@ -36,7 +36,6 @@ from .code_node_cxx import CxxUnlikelyIfNode
 from .codegen_accumulator import CodeGenAccumulator
 from .codegen_context import CodeGenContext
 from .codegen_expr import CodeGenExpr
-from .codegen_expr import expr_and
 from .codegen_expr import expr_from_exposure
 from .codegen_expr import expr_or
 from .codegen_format import format_template as _format

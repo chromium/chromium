@@ -36,7 +36,6 @@
 # INPUT_FILE is a path to *.y such as xpath_grammar.y.
 # OUTPUT_DIR is where the bison-generated .cc and .h files should be placed.
 
-import errno
 import os
 import os.path
 import subprocess

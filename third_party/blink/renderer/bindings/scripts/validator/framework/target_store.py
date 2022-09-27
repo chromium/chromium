@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import web_idl
-from . import target
 
 
 class TargetStore(object):

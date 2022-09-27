@@ -34,7 +34,6 @@ import tempfile
 from blinkpy.common.host import Host
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.web_tests.layout_package.bot_test_expectations import BotTestExpectationsFactory
-from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.android import (
     PRODUCTS, PRODUCTS_TO_STEPNAMES)
 

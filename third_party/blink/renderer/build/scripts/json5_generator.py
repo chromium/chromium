@@ -60,7 +60,6 @@ import copy
 import os
 import os.path
 import re
-import sys
 
 from blinkbuild.name_style_converter import NameStyleConverter
 

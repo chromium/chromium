@@ -10,8 +10,6 @@ import shutil
 import tempfile
 import unittest
 
-from json5_generator import Json5File, Writer
-
 
 @contextlib.contextmanager
 def tmp_dir():

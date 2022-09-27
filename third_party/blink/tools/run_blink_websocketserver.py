@@ -37,8 +37,6 @@ For example, to run a test http/tests/websocket/binary-type.html which depends
 on WebSocket, you can navigate to:
     http://127.0.0.1:8000/websocket/close-unref-websocket.html
 """
-import sys
-import optparse
 
 from blinkpy.web_tests.servers import cli_wrapper
 from blinkpy.web_tests.servers import pywebsocket

@@ -43,7 +43,6 @@ import six
 import sre_compile
 import unicodedata
 
-from blinkpy.common.memoized import memoized
 from blinkpy.common.system.filesystem import FileSystem
 
 from functools import total_ordering

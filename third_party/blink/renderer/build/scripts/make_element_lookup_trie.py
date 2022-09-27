@@ -27,8 +27,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import sys
-
 from blinkbuild.name_style_converter import NameStyleConverter
 import json5_generator
 import trie_builder

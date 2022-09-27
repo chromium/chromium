@@ -27,12 +27,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import sys
 from collections import defaultdict
 
 import json5_generator
 import template_expander
-import name_utilities
 
 from make_qualified_names import MakeQualifiedNamesWriter
 

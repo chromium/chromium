@@ -5,7 +5,6 @@
 import contextlib
 import io
 import json
-import optparse
 import textwrap
 import unittest
 from unittest.mock import patch

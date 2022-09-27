@@ -32,7 +32,7 @@ import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.net.results_fetcher import TestResultsFetcher, Build, filter_latest_builds
-from blinkpy.common.net.web_mock import MockWeb, MockResponse
+from blinkpy.common.net.web_mock import MockWeb
 from blinkpy.common.system.log_testing import LoggingTestCase
 
 

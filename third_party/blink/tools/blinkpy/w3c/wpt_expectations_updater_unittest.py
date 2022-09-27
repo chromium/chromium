@@ -9,7 +9,7 @@ from blinkpy.common.host_mock import MockHost
 from blinkpy.common.net.git_cl import TryJobStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.results_fetcher import Build
-from blinkpy.common.net.web_test_results import WebTestResult, WebTestResults
+from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_testing import LoggingTestCase
 

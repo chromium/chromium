@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .code_generator_info import CodeGeneratorInfo
 from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
 from .composition_parts import WithDebugInfo

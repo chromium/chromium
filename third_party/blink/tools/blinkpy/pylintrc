@@ -87,6 +87,9 @@ disable=
   # Allow dynamically created attributes.
   no-member,
 
+enable=
+  unused-import
+
 
 [REPORTS]
 

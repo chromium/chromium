@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .code_generator_info import CodeGeneratorInfo
 from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
 from .composition_parts import WithDebugInfo
@@ -11,7 +10,6 @@ from .composition_parts import WithExtendedAttributes
 from .composition_parts import WithIdentifier
 from .composition_parts import WithOwner
 from .composition_parts import WithOwnerMixin
-from .exposure import Exposure
 from .idl_type import IdlType
 from .literal_constant import LiteralConstant
 from .make_copy import make_copy

@@ -8,7 +8,6 @@ violate the rules described in Web IDL https://webidl.spec.whatwg.org/.
 Each rule class must inherit RuleBase.
 """
 
-import web_idl
 from validator.framework import target
 from validator.framework import RuleBase
 

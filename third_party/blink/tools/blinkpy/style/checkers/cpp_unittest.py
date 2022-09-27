@@ -35,7 +35,6 @@
 # FIXME: Add a good test that tests UpdateIncludeState.
 
 import os
-import random
 import re
 import unittest
 

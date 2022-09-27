@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import sys
-
 import json5_generator
 import make_runtime_features
 import template_expander

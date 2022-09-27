@@ -9,14 +9,10 @@ Specifically, this class fetches results from try bots for the current CL, then
 """
 
 import argparse
-import contextlib
 import copy
 import logging
-import os
 import re
-import shutil
 import sys
-import tempfile
 from collections import defaultdict, namedtuple
 
 from blinkpy.common.memoized import memoized
@@ -24,12 +20,10 @@ from blinkpy.common.net.git_cl import GitCL
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_utils import configure_logging
-from blinkpy.w3c.wpt_manifest import WPTManifest, BASE_MANIFEST_NAME
 from blinkpy.web_tests.models.test_expectations import (
     ParseError, SystemConfigurationRemover, TestExpectations)
 from blinkpy.web_tests.models.typ_types import ResultType
-from blinkpy.web_tests.port.android import (
-    PRODUCTS, PRODUCTS_TO_EXPECTATION_FILE_PATHS, WPT_SMOKE_TESTS_FILE)
+from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 
 _log = logging.getLogger(__name__)
 
