@@ -29,8 +29,9 @@
 namespace segmentation_platform {
 namespace {
 
-constexpr base::Feature kSegmentationCompactionFix{
-    "SegmentationCompactionFix", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSegmentationCompactionFix,
+             "SegmentationCompactionFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(shaktisahu): May be make this a class member for ease of testing.
 bool FilterKeyBasedOnRange(proto::SignalType signal_type,

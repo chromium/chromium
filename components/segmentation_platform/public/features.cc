@@ -8,48 +8,56 @@
 
 namespace segmentation_platform::features {
 
-const base::Feature kSegmentationPlatformFeature{
-    "SegmentationPlatform", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSegmentationPlatformFeature,
+             "SegmentationPlatform",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSegmentationPlatformDummyFeature{
-    "SegmentationPlatformDummyFeature", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSegmentationPlatformDummyFeature,
+             "SegmentationPlatformDummyFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSegmentationStructuredMetricsFeature{
-    "SegmentationStructuredMetrics", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSegmentationStructuredMetricsFeature,
+             "SegmentationStructuredMetrics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSegmentationPlatformUkmEngine{
-    "SegmentationPlatformUkmEngine", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSegmentationPlatformUkmEngine,
+             "SegmentationPlatformUkmEngine",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSegmentationPlatformLowEngagementFeature{
-    "SegmentationPlatformLowEngagementFeature",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSegmentationPlatformLowEngagementFeature,
+             "SegmentationPlatformLowEngagementFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kShoppingUserSegmentFeature{
-    "ShoppingUserSegmentFeature", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kShoppingUserSegmentFeature,
+             "ShoppingUserSegmentFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSegmentationPlatformFeedSegmentFeature{
-  "SegmentationPlatformFeedSegmentFeature",
+BASE_FEATURE(kSegmentationPlatformFeedSegmentFeature,
+             "SegmentationPlatformFeedSegmentFeature",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-      base::FEATURE_ENABLED_BY_DEFAULT
-};
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
-};
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-const base::Feature kResumeHeavyUserSegmentFeature{
-    "ResumeHeavyUserSegment", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kResumeHeavyUserSegmentFeature,
+             "ResumeHeavyUserSegment",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSegmentationPlatformPowerUserFeature{
-    "SegmentationPlatformPowerUserFeature", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSegmentationPlatformPowerUserFeature,
+             "SegmentationPlatformPowerUserFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kContextualPageActions{"ContextualPageActions",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kContextualPageActions,
+             "ContextualPageActions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kContextualPageActionPriceTracking{
-    "ContextualPageActionPriceTracking", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kContextualPageActionPriceTracking,
+             "ContextualPageActionPriceTracking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSegmentationPlatformSegmentInfoCache{
-    "SegmentationPlatformSegmentInfoCache", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSegmentationPlatformSegmentInfoCache,
+             "SegmentationPlatformSegmentInfoCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace segmentation_platform::features

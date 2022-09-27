@@ -11,42 +11,42 @@
 namespace segmentation_platform::features {
 
 // Core feature flag for segmentation platform.
-extern const base::Feature kSegmentationPlatformFeature;
+BASE_DECLARE_FEATURE(kSegmentationPlatformFeature);
 
 // Feature flag for segmentation platform dummy model that is used for
 // experimental models and data collection.
-extern const base::Feature kSegmentationPlatformDummyFeature;
+BASE_DECLARE_FEATURE(kSegmentationPlatformDummyFeature);
 
 // Feature flag for allowing structured metrics to be collected.
-extern const base::Feature kSegmentationStructuredMetricsFeature;
+BASE_DECLARE_FEATURE(kSegmentationStructuredMetricsFeature);
 
 // Feature flag for enabling UKM based engine.
-extern const base::Feature kSegmentationPlatformUkmEngine;
+BASE_DECLARE_FEATURE(kSegmentationPlatformUkmEngine);
 
 // Feature flag for enabling low engagement segmentation key.
-extern const base::Feature kSegmentationPlatformLowEngagementFeature;
+BASE_DECLARE_FEATURE(kSegmentationPlatformLowEngagementFeature);
 
 // Feature flag for enabling Feed user segments feature.
-extern const base::Feature kSegmentationPlatformFeedSegmentFeature;
+BASE_DECLARE_FEATURE(kSegmentationPlatformFeedSegmentFeature);
 
 // Feature flag for enabling categorization into resume heavy user.
-extern const base::Feature kResumeHeavyUserSegmentFeature;
+BASE_DECLARE_FEATURE(kResumeHeavyUserSegmentFeature);
 
 // Feature flag for enabling Power user segmentation.
-extern const base::Feature kSegmentationPlatformPowerUserFeature;
+BASE_DECLARE_FEATURE(kSegmentationPlatformPowerUserFeature);
 
 // Feature flag for enabling contextual page actions. Only effective when at
 // least one action is enabled.
-extern const base::Feature kContextualPageActions;
+BASE_DECLARE_FEATURE(kContextualPageActions);
 
 // Feature flag for enabling price tracking action feature.
-extern const base::Feature kContextualPageActionPriceTracking;
+BASE_DECLARE_FEATURE(kContextualPageActionPriceTracking);
 
 // Feature flag for enabling shopping user segment feature.
-extern const base::Feature kShoppingUserSegmentFeature;
+BASE_DECLARE_FEATURE(kShoppingUserSegmentFeature);
 
 // Feature flag for enabling `SegmentInfoCache` for `SegmentInfoDatabase`.
-extern const base::Feature kSegmentationPlatformSegmentInfoCache;
+BASE_DECLARE_FEATURE(kSegmentationPlatformSegmentInfoCache);
 
 }  // namespace segmentation_platform::features
 
