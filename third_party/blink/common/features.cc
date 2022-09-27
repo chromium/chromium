@@ -1556,6 +1556,10 @@ BASE_FEATURE(kFileSystemUrlNavigation,
              "FileSystemUrlNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFileSystemUrlNavigationForChromeAppsOnly,
+             "FileSystemUrlNavigationForChromeAppsOnly",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEarlyExitOnNoopClassOrStyleChange,
              "EarlyExitOnNoopClassOrStyleChange",
              base::FEATURE_DISABLED_BY_DEFAULT);

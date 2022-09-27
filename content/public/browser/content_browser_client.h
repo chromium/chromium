@@ -2328,6 +2328,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // we do not want to expose this.
   virtual bool ShouldSendOutermostOriginToRenderer(
       const url::Origin& outermost_origin);
+
+  // Returns true if a given filesystem: `url` navigation is allowed (i.e.
+  // originates from a Chrome App). Returns false for all other
+  // navigations.
+  virtual bool IsFileSystemURLNavigationAllowed(
+      content::BrowserContext* browser_context,
+      const GURL& url);
 };
 
 }  // namespace content

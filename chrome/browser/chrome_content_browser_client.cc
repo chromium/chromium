@@ -6951,3 +6951,23 @@ bool ChromeContentBrowserClient::ShouldSendOutermostOriginToRenderer(
   return false;
 #endif
 }
+
+bool ChromeContentBrowserClient::IsFileSystemURLNavigationAllowed(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // filesystem: URLs for Chrome Apps are in the following format:
+  // `filesystem:chrome-extension://<extension-id>/...`
+  if (!url.SchemeIsFileSystem())
+    return false;
+  // Once converted into an origin, we expect the following:
+  // scheme() is chrome-extension: (filesystem: is automatically discarded)
+  // host() is the extension-id
+  const url::Origin origin = url::Origin::Create(url);
+  if (origin.scheme() == extensions::kExtensionScheme) {
+    const std::string& extension_id = origin.host();
+    return extensions::util::IsChromeApp(extension_id, browser_context);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  return false;
+}

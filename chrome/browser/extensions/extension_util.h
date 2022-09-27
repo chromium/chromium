@@ -38,6 +38,10 @@ namespace util {
 bool HasIsolatedStorage(const std::string& extension_id,
                         content::BrowserContext* context);
 
+// Returns true if the extension associated with `extension_id` is a Chrome App.
+bool IsChromeApp(const std::string& extension_id,
+                 content::BrowserContext* context);
+
 // Sets whether |extension_id| can run in an incognito window. Reloads the
 // extension if it's enabled since this permission is applied at loading time
 // only. Note that an ExtensionService must exist.

@@ -41,6 +41,17 @@ BlockedSchemeNavigationThrottle::WillStartRequest() {
 
   RenderFrameHost* top_frame =
       request->frame_tree_node()->frame_tree()->root()->current_frame_host();
+  BrowserContext* browser_context = top_frame->GetBrowserContext();
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFileSystemUrlNavigationForChromeAppsOnly) &&
+      (url::Origin::Create(request->GetURL()) ==
+       request->GetInitiatorOrigin()) &&
+      content::GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
+          browser_context, request->GetURL())) {
+    return PROCEED;
+  }
+
   top_frame->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
       base::StringPrintf(kAnyFrameConsoleError,
@@ -88,10 +99,25 @@ BlockedSchemeNavigationThrottle::CreateThrottleForNavigation(
           features::kAllowContentInitiatedDataUrlNavigations)) {
     return std::make_unique<BlockedSchemeNavigationThrottle>(request);
   }
-  // Block all renderer initiated navigations to filesystem: URLs. These won't
-  // load anyway since no URL Loader exists for them, but the throttle lets us
-  // add a message to the console.
-  if (!base::FeatureList::IsEnabled(
+  // Block all renderer initiated navigations to filesystem: URLs except for
+  // when explicitly allowed by the embedder. These won't load anyway since no
+  // URL Loader exists for them, but the throttle lets us add a message to the
+  // console.
+  RenderFrameHost* current_frame_host =
+      request->frame_tree_node()->current_frame_host();
+  BrowserContext* browser_context = current_frame_host->GetBrowserContext();
+  // A navigation is permitted if the relevant feature flag is enabled, the
+  // request origin is equivalent to the initiator origin, and the embedder
+  // explicitly allows it.
+  bool is_navigation_allowed =
+      base::FeatureList::IsEnabled(
+          blink::features::kFileSystemUrlNavigationForChromeAppsOnly) &&
+      (url::Origin::Create(request->GetURL()) ==
+       request->GetInitiatorOrigin()) &&
+      content::GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
+          browser_context, request->GetURL());
+  if (!is_navigation_allowed &&
+      !base::FeatureList::IsEnabled(
           blink::features::kFileSystemUrlNavigation) &&
       request->IsRendererInitiated() &&
       request->GetURL().SchemeIs(url::kFileSystemScheme)) {

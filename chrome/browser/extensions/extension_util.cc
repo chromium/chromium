@@ -96,6 +96,14 @@ bool HasIsolatedStorage(const std::string& extension_id,
   return extension && AppIsolationInfo::HasIsolatedStorage(extension);
 }
 
+bool IsChromeApp(const std::string& extension_id,
+                 content::BrowserContext* context) {
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
+  return extension->is_platform_app();
+}
+
 void SetIsIncognitoEnabled(const std::string& extension_id,
                            content::BrowserContext* context,
                            bool enabled) {

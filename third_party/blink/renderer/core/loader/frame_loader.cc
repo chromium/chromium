@@ -645,8 +645,10 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   if (!AllowRequestForThisFrame(request))
     return;
 
-  // Block renderer-initiated loads of filesystem: URLs.
-  if (url.ProtocolIs("filesystem") &&
+  // Block renderer-initiated loads of filesystem: URLs not in a Chrome App.
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemUrlNavigationForChromeAppsOnly) &&
+      url.ProtocolIs("filesystem") &&
       !base::FeatureList::IsEnabled(features::kFileSystemUrlNavigation)) {
     frame_->GetDocument()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(

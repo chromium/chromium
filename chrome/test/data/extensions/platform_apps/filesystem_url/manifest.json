@@ -1,0 +1,10 @@
+{
+  "name": "Platform App Test: filesystem: URL navigations are allowed",
+  "manifest_version": 2,
+  "version": "1",
+  "app": {
+    "background": {
+      "scripts": ["test.js"]
+    }
+  }
+}

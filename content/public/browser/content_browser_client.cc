@@ -1400,4 +1400,10 @@ bool ContentBrowserClient::ShouldSendOutermostOriginToRenderer(
   return false;
 }
 
+bool ContentBrowserClient::IsFileSystemURLNavigationAllowed(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  return false;
+}
+
 }  // namespace content
