@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 
 namespace extensions {
@@ -23,12 +24,32 @@ SingleFileTarReader::SingleFileTarReader(Delegate* delegate)
 SingleFileTarReader::~SingleFileTarReader() = default;
 
 SingleFileTarReader::Result SingleFileTarReader::ExtractChunk() {
-  uint32_t bytes_read = buffer_.size();
-  Result result =
-      delegate_->ReadTarFile(buffer_.data(), &bytes_read, &error_id_);
-  if (result != Result::kSuccess) {
-    return result;
-  }
+  // Drain as much of the data as we can fit into the buffer.
+  base::span<char> storage = base::make_span(buffer_);
+  size_t bytes_read = 0;
+  bool pipe_drained = false;
+  do {
+    uint32_t num_bytes = static_cast<uint32_t>(storage.size());
+    const Result result =
+        delegate_->ReadTarFile(storage.data(), &num_bytes, &error_id_);
+    switch (result) {
+      case Result::kFailure:
+        return result;
+
+      case Result::kSuccess:
+        if (num_bytes == 0) {
+          pipe_drained = true;
+        } else {
+          storage = storage.subspan(num_bytes);
+          bytes_read += num_bytes;
+        }
+        break;
+
+      case Result::kShouldWait:
+        pipe_drained = true;
+        break;
+    }
+  } while (!pipe_drained && !storage.empty());
 
   int offset = 0;
 
