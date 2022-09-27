@@ -62,19 +62,20 @@ def main():
       parser.exit(1, '--cipd-prefix must be specified.')
     if not args.version:
       parser.exit(2, '--version must be specified.')
+    logging.info('Downloading GN SDK from CIPD...')
     ensure_file = '%s%s-%s %s' % (args.cipd_prefix, host_plat, _GetHostArch(),
                                   args.version)
-    subprocess.run(
-        ('cipd', 'ensure', '-ensure-file', '-', '-root', SDK_ROOT),
-        check=True,
-        input=ensure_file.encode('utf-8'))
+    subprocess.run(('cipd', 'ensure', '-ensure-file', '-', '-root', SDK_ROOT),
+                   check=True,
+                   text=True,
+                   input=ensure_file)
     return 0
 
   with open(sdk_override, 'r') as f:
     gcs_tarball_prefix = f.read()
 
   # Always re-download the SDK.
-  logging.info('Downloading GN SDK...')
+  logging.info('Downloading GN SDK from GCS...')
   MakeCleanDirectory(SDK_ROOT)
   DownloadAndUnpackFromCloudStorage(_GetTarballPath(gcs_tarball_prefix),
                                     SDK_ROOT)
