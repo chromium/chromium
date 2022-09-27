@@ -363,11 +363,14 @@ BrowserAccessibility* BrowserAccessibilityManager::GetParentNodeFromParentTree()
 
   // TODO(accessibility) Try to remove this redundant lookup. The call to
   // GetParentNodeFromParentTreeAsAXNode() already retrieved the parent manager.
-  BrowserAccessibilityManager* parent_manager = GetParentManager();
+  AXTreeManager* parent_manager = GetParentManager();
   DCHECK(parent_manager) << "Impossible to have null parent_manager if we "
                             "already have a parent AXNode.";
-  BrowserAccessibility* parent_node = parent_manager->GetFromAXNode(parent);
-  DCHECK_EQ(parent_node->manager(), parent_manager);
+  BrowserAccessibilityManager* parent_manager_wrapper =
+      static_cast<BrowserAccessibilityManager*>(parent_manager);
+  BrowserAccessibility* parent_node =
+      parent_manager_wrapper->GetFromAXNode(parent);
+  DCHECK_EQ(parent_node->manager(), parent_manager_wrapper);
   DCHECK_NE(parent_node->manager(), this);
   return parent_node;
 }
@@ -1675,7 +1678,7 @@ ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
 
 ui::AXNode* BrowserAccessibilityManager::GetParentNodeFromParentTreeAsAXNode()
     const {
-  BrowserAccessibilityManager* parent_manager = GetParentManager();
+  ui::AXTreeManager* parent_manager = GetParentManager();
   if (!parent_manager)
     return nullptr;
 
@@ -1714,7 +1717,8 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::GetRootManager()
   if (IsRootTree())
     return const_cast<BrowserAccessibilityManager*>(this);
 
-  BrowserAccessibilityManager* parent_manager = GetParentManager();
+  BrowserAccessibilityManager* parent_manager =
+      static_cast<BrowserAccessibilityManager*>(GetParentManager());
   if (!parent_manager) {
     // This can occur when the child frame has an embedding token, but the
     // parent element (e.g. <iframe>) does not yet know about the child.
@@ -1728,27 +1732,29 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::GetRootManager()
   return parent_manager->GetRootManager();
 }
 
-BrowserAccessibilityManager* BrowserAccessibilityManager::GetParentManager()
-    const {
-  ui::AXTreeID parent_tree_id = GetParentTreeID();
-  if (parent_tree_id == ui::AXTreeIDUnknown())
-    return nullptr;  // Not connected yet.
+ui::AXTreeManager* BrowserAccessibilityManager::GetParentManager() const {
+  // `AXTreeManager::GetParentManager` can still return null if the parent frame
+  // has not yet been serialized. We can't prevent a child frame from
+  // serializing before the parent frame does, because the child frame does not
+  // have access to the parent in the case of remote frames, aka Out-Of-Process
+  // Iframes, aka OOPIFs.
+  ui::AXTreeManager* parent = AXTreeManager::GetParentManager();
+  if (!parent)
+    return nullptr;
 
   DCHECK(!IsRootTree());
 
-  // This can still return null if the parent frame has not yet been serialized.
-  // We can't prevent a child frame from serializing before the parent frame
-  // does, because the child frame does not have access to the parent in the
-  // case of remote frames, aka Out-Of-Process Iframes, aka OOPIFs.
-  BrowserAccessibilityManager* parent =
-      BrowserAccessibilityManager::FromID(parent_tree_id);
 #if DCHECK_IS_ON()
-  DCHECK(parent || !connected_to_parent_tree_node_);
+  BrowserAccessibilityManager* browser_accessibility_manager_parent =
+      static_cast<BrowserAccessibilityManager*>(parent);
+  DCHECK(browser_accessibility_manager_parent ||
+         !connected_to_parent_tree_node_);
   // delegate_ is null during unit tests.
   if (parent && delegate_ && delegate_->AccessibilityRenderFrameHost()) {
     DCHECK(delegate_->AccessibilityRenderFrameHost()
                ->GetParentOrOuterDocumentOrEmbedder() ==
-           parent->delegate()->AccessibilityRenderFrameHost())
+           browser_accessibility_manager_parent->delegate()
+               ->AccessibilityRenderFrameHost())
         << "RenderFrameHost parent should match BrowserAccessibilityManager's "
            "parent's RenderFrameHost.";
   }

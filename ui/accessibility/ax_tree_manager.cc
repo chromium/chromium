@@ -192,4 +192,15 @@ void AXTreeManager::RemoveFromMap() {
   GetMap().RemoveTreeManager(ax_tree_id_);
 }
 
+AXTreeManager* AXTreeManager::GetParentManager() const {
+  AXTreeID parent_tree_id = GetParentTreeID();
+  if (parent_tree_id == ui::AXTreeIDUnknown())
+    return nullptr;
+
+  // There's no guarantee that we'll find an AXTreeManager for this AXTreeID, so
+  // we might still return nullptr.
+  // See `BrowserAccessibilityManager::GetParentManager` for more details.
+  return FromID(parent_tree_id);
+}
+
 }  // namespace ui

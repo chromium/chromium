@@ -657,12 +657,15 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // in a parent tree may need to link or unlink to this manager.
   void ParentConnectionChanged(BrowserAccessibility* parent);
 
-  // If this BrowserAccessibilityManager is a child frame or guest frame,
+  // This overrides `AXTreeManager::GetParentManager` only to add DCHECKs that
+  // validate the following assumptions:
+  // 1. If this BrowserAccessibilityManager is a child frame or guest frame,
   // returns the BrowserAccessibilityManager from the parent document in the
-  // frame tree. If the current frame is not connected to its parent frame yet,
-  // or if it got disconnected after being reparented, return nullptr to
-  // indicate that we don't have access to the parent manager yet.
-  BrowserAccessibilityManager* GetParentManager() const;
+  // frame tree.
+  // 2. If the current frame is not connected to its parent frame yet, or if it
+  // got disconnected after being reparented, return nullptr to indicate that we
+  // don't have access to the parent manager yet.
+  ui::AXTreeManager* GetParentManager() const override;
 
   // Performs hit testing on the AXTree using the cache from
   // BuildAXTreeHitTestCache. This requires BuildAXTreeHitTestCache to be
