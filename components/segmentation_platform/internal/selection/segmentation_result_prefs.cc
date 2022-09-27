@@ -23,21 +23,21 @@ SegmentationResultPrefs::SegmentationResultPrefs(PrefService* pref_service)
 void SegmentationResultPrefs::SaveSegmentationResultToPref(
     const std::string& result_key,
     const absl::optional<SelectedSegment>& selected_segment) {
-  DictionaryPrefUpdate update(prefs_, kSegmentationResultPref);
-  base::Value* dictionary = update.Get();
+  ScopedDictPrefUpdate update(prefs_, kSegmentationResultPref);
+  base::Value::Dict& dictionary = update.Get();
   if (!selected_segment.has_value()) {
-    dictionary->RemoveKey(result_key);
+    dictionary.Remove(result_key);
     return;
   }
 
-  base::Value segmentation_result(base::Value::Type::DICTIONARY);
-  segmentation_result.SetIntKey("segment_id", selected_segment->segment_id);
+  base::Value::Dict segmentation_result;
+  segmentation_result.Set("segment_id", selected_segment->segment_id);
   if (selected_segment->rank)
-    segmentation_result.SetDoubleKey("segment_rank", *selected_segment->rank);
-  segmentation_result.SetBoolKey("in_use", selected_segment->in_use);
-  segmentation_result.SetKey(
-      "selection_time", base::TimeToValue(selected_segment->selection_time));
-  dictionary->SetKey(result_key, std::move(segmentation_result));
+    segmentation_result.Set("segment_rank", *selected_segment->rank);
+  segmentation_result.Set("in_use", selected_segment->in_use);
+  segmentation_result.Set("selection_time",
+                          base::TimeToValue(selected_segment->selection_time));
+  dictionary.Set(result_key, std::move(segmentation_result));
 }
 
 absl::optional<SelectedSegment>

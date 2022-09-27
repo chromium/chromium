@@ -133,13 +133,13 @@ void SegmentationPlatformServiceTestBase::DestroyPlatform() {
 }
 
 void SegmentationPlatformServiceTestBase::SetUpPrefs() {
-  DictionaryPrefUpdate update(&pref_service_, kSegmentationResultPref);
-  base::Value* dictionary = update.Get();
+  ScopedDictPrefUpdate update(&pref_service_, kSegmentationResultPref);
+  base::Value::Dict& dictionary = update.Get();
 
-  base::Value segmentation_result(base::Value::Type::DICTIONARY);
-  segmentation_result.SetIntKey(
-      "segment_id", SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
-  dictionary->SetKey(kTestSegmentationKey1, std::move(segmentation_result));
+  base::Value::Dict segmentation_result;
+  segmentation_result.Set("segment_id",
+                          SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+  dictionary.Set(kTestSegmentationKey1, std::move(segmentation_result));
 }
 
 std::vector<std::unique_ptr<Config>>

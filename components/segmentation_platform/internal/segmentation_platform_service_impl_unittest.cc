@@ -288,18 +288,18 @@ TEST_F(SegmentationPlatformServiceImplEmptyConfigTest, InitializationFlow) {
 class SegmentationPlatformServiceImplMultiClientTest
     : public SegmentationPlatformServiceImplTest {
   void SetUpPrefs() override {
-    DictionaryPrefUpdate update(&pref_service_, kSegmentationResultPref);
-    base::Value* dictionary = update.Get();
+    ScopedDictPrefUpdate update(&pref_service_, kSegmentationResultPref);
+    base::Value::Dict& dictionary = update.Get();
 
-    base::Value segmentation_result(base::Value::Type::DICTIONARY);
-    segmentation_result.SetIntKey(
-        "segment_id", SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
-    dictionary->SetKey(kTestSegmentationKey1, std::move(segmentation_result));
+    base::Value::Dict segmentation_result;
+    segmentation_result.Set("segment_id",
+                            SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+    dictionary.Set(kTestSegmentationKey1, std::move(segmentation_result));
 
-    base::Value segmentation_result2(base::Value::Type::DICTIONARY);
-    segmentation_result2.SetIntKey(
-        "segment_id", SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
-    dictionary->SetKey(kTestSegmentationKey2, std::move(segmentation_result2));
+    base::Value::Dict segmentation_result2;
+    segmentation_result2.Set("segment_id",
+                             SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
+    dictionary.Set(kTestSegmentationKey2, std::move(segmentation_result2));
   }
 };
 
