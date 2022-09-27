@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/captive_portal/core/captive_portal_types.h"
@@ -22,11 +23,12 @@ namespace web {
 class WebState;
 }  // namespace web
 
-// Default delay in seconds before displaying the SSL interstitial.
+// Default delay before displaying the SSL interstitial.
 // - If a "captive portal detected" result arrives during this time,
 //   a captive portal interstitial is displayed.
 // - Otherwise, an SSL interstitial is displayed.
-extern const int64_t kSSLInterstitialDelayInSeconds;
+extern const int64_t kSSLInterstitialDelayInSeconds;  // deprecated
+constexpr base::TimeDelta kSSLInterstitialDelay = base::Seconds(3);
 
 // This class is responsible for deciding what type of interstitial to show for
 // an SSL validation error.
