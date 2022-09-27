@@ -3810,7 +3810,7 @@
       },
       'mac-backuprefptr-x64-fyi-rel': {
         'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests',
+          'gtest_tests': 'chromium_mac_and_dangling_pointer_detection_gtests',
         },
         'mixins': [
           'mac_10.15',
@@ -3876,7 +3876,7 @@
       },
       'win-backuprefptr-x64-fyi-rel': {
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'chromium_win_and_dangling_pointer_detection_gtests',
         },
         'mixins': [
           'win10',

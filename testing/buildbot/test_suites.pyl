@@ -1658,6 +1658,9 @@
           '--enable-features=PartitionAllocDanglingPtr:mode/crash',
         ],
         'test': 'content_browsertests',
+        'swarming': {
+          'shards': 8,
+        },
       },
     },
 
@@ -5455,6 +5458,7 @@
 
     'backuprefptr_gtests': [
       'backuprefptr_generic_gtests',
+      'dangling_pointer_detection_tests',
     ],
 
     'bfcache_android_gtests': [
@@ -5611,6 +5615,17 @@
       'chromium_web_tests_high_dpi_isolated_scripts',
     ],
 
+    'chromium_mac_and_dangling_pointer_detection_gtests': [
+      'dangling_pointer_detection_tests',
+      'chromium_gtests',
+      'chromium_gtests_for_devices_with_graphical_output',
+      'chromium_gtests_for_linux_and_mac_only',
+      'mac_specific_chromium_gtests',
+      'nocompile_tests',
+      'non_android_and_cast_and_chromeos_chromium_gtests',
+      'non_android_chromium_gtests',
+    ],
+
     'chromium_mac_gtests': [
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
@@ -5662,6 +5677,20 @@
     # 'chromium_win_gtests' + 'pixel_browser_tests_gtests' +
     # 'non_android_chromium_gtests_skia_gold'.
     'chromium_win10_gtests': [
+      'aura_gtests',
+      'chromium_gtests',
+      'chromium_gtests_for_devices_with_graphical_output',
+      'chromium_gtests_for_win_and_linux_only',
+      'non_android_and_cast_and_chromeos_chromium_gtests',
+      'non_android_chromium_gtests',
+      'non_android_chromium_gtests_skia_gold',
+      'pixel_browser_tests_gtests',
+      'vr_platform_specific_chromium_gtests',
+      'win_specific_chromium_gtests',
+    ],
+
+    'chromium_win_and_dangling_pointer_detection_gtests': [
+      'dangling_pointer_detection_tests',
       'aura_gtests',
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',

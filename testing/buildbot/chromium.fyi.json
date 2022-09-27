@@ -15971,6 +15971,53 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_content_browsertests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_content_browsertests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -16427,6 +16474,53 @@
         },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_content_browsertests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_content_browsertests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
@@ -97516,7 +97610,8 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -113818,6 +113913,29 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_content_browsertests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
@@ -119075,6 +119193,37 @@
       },
       {
         "args": [
+          "--browser-ui-tests-verify-pixels",
+          "--enable-pixel-output-in-tests",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter",
+          "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--git-revision=${got_revision}"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "pixel_browser_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
           "--gtest_filter=-*UsingRealWebcam*",
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
@@ -119313,6 +119462,29 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_content_browsertests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -119871,6 +120043,37 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--browser-ui-tests-verify-pixels",
+          "--enable-pixel-output-in-tests",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter",
+          "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--git-revision=${got_revision}"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "pixel_interactive_ui_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -120643,6 +120846,33 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--git-revision=${got_revision}"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_examples_unittests",
+        "test_id_prefix": "ninja://ui/views/examples:views_examples_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
@@ -120960,6 +121190,29 @@
         },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_content_browsertests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
