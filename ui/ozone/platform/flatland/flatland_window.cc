@@ -51,6 +51,9 @@ FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
 
   fuchsia::ui::composition::ViewBoundProtocols view_bound_protocols;
   view_bound_protocols.set_view_ref_focused(view_ref_focused_.NewRequest());
+  view_ref_focused_.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "ViewRefFocused disconnected.";
+  });
   fuchsia::ui::pointer::TouchSourceHandle touch_source;
   view_bound_protocols.set_touch_source(touch_source.NewRequest());
   fuchsia::ui::pointer::MouseSourceHandle mouse_source;
