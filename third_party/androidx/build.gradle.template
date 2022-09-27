@@ -25,6 +25,7 @@ dependencies {
 
     compile 'androidx.activity:activity:{{androidx_dependency_version}}'
     compile 'androidx.annotation:annotation:{{androidx_dependency_version}}'
+    compile 'androidx.annotation:annotation-jvm:{{androidx_dependency_version}}'
     compile 'androidx.appcompat:appcompat:{{androidx_dependency_version}}'
     compile 'androidx.appcompat:appcompat-resources:{{androidx_dependency_version}}'
     compile 'androidx.asynclayoutinflater:asynclayoutinflater:{{androidx_dependency_version}}'
@@ -68,7 +69,6 @@ dependencies {
     // Those are for use by doubledown libraries.
     compile 'androidx.arch.core:core-common:{{androidx_dependency_version}}'
     compile 'androidx.annotation:annotation-experimental:{{androidx_dependency_version}}'
-    compile 'androidx.annotation:annotation:{{androidx_dependency_version}}'
     compile 'androidx.emoji:emoji:{{androidx_dependency_version}}'
     compile 'androidx.lifecycle:lifecycle-runtime:{{androidx_dependency_version}}'
     compile 'androidx.room:room-runtime:{{androidx_dependency_version}}'
