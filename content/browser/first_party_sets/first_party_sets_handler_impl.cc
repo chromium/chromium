@@ -279,14 +279,13 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
   DCHECK(public_sets_.has_value());
   DCHECK(!browser_context_id.empty());
 
-  if (!db_helper_.is_null()) {
+  if (!db_helper_.is_null() && version_.has_value() && version_->IsValid()) {
     // TODO(crbug.com/1219656): Call site state clearing.
     // TODO(https://crbug.com/1219656): don't invoke `callback` until site state
     // clearing is complete.
-    db_helper_.AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistSets)
-        .WithArgs(browser_context_id, version_, public_sets_->Clone(),
-                  context_config == nullptr ? net::FirstPartySetsContextConfig()
-                                            : context_config->Clone());
+    db_helper_
+        .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistPublicSets)
+        .WithArgs(browser_context_id, version_.value(), public_sets_->Clone());
   }
   std::move(callback).Run();
 }

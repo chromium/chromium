@@ -428,7 +428,7 @@ TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
   net::SchemefulSite member3(GURL("https://member3.test"));
   const std::string browser_context_id("b");
 
-  db_helper_->PersistSets(
+  db_helper_->PersistPublicSets(
       browser_context_id, base::Version("0.0.1"),
       net::PublicSets(
           /*entries=*/{{example,
@@ -442,8 +442,7 @@ TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
                                  foo, net::SiteType::kPrimary, absl::nullopt)},
                        {member2, net::FirstPartySetEntry(
                                      foo, net::SiteType::kAssociated, 0)}},
-          /*aliases=*/{}),
-      /*config=*/net::FirstPartySetsContextConfig());
+          /*aliases=*/{}));
 
   net::PublicSets current_sets = net::PublicSets(
       /*entries=*/{{example,
