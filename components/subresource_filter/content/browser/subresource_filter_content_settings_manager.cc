@@ -148,7 +148,7 @@ SubresourceFilterContentSettingsManager::GetSiteMetadata(
   if (!value.is_dict())
     return absl::nullopt;
 
-  return std::move(value.GetDict());
+  return std::move(value).TakeDict();
 }
 
 void SubresourceFilterContentSettingsManager::SetSiteMetadataForTesting(
