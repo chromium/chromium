@@ -646,13 +646,16 @@ void BindScreenAIAnnotator(
 
   content::BrowserContext* browser_context =
       frame_host->GetProcess()->GetBrowserContext();
-  screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(browser_context)
-      ->BindScreenAIAnnotator(std::move(receiver));
 
   // Annotator function of ScreenAI service requires AXScreenAIAnnotator to be
   // ready to receive accessibility tree data.
+  // TODO(https://crbug.com/1278249): Consider renaming AXScreenAIAnnotator to
+  // reduce confusion.
   screen_ai::AXScreenAIAnnotatorFactory::EnsureExistsForBrowserContext(
       browser_context);
+
+  screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(browser_context)
+      ->BindScreenAIAnnotator(std::move(receiver));
 }
 
 void BindScreen2xMainContentExtractor(
