@@ -305,7 +305,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '93db76e181f2bda3e57d5238032deba8735df370',
+  'skia_revision': 'fe6c586f1c40faa3eb8e12e6faebe2e22fb67684',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
