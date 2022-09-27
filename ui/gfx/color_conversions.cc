@@ -69,6 +69,21 @@ skcms_TransferFunction* getSRGBInverseTrfn() {
   return &srgb_inverse;
 }
 
+std::tuple<float, float, float> ApplyInverseTransferFnsRGB(float r,
+                                                           float g,
+                                                           float b) {
+  return std::make_tuple(skcms_TransferFunction_eval(getSRGBInverseTrfn(), r),
+                         skcms_TransferFunction_eval(getSRGBInverseTrfn(), g),
+                         skcms_TransferFunction_eval(getSRGBInverseTrfn(), b));
+}
+
+std::tuple<float, float, float> ApplyTransferFnsRGB(float r, float g, float b) {
+  return std::make_tuple(
+      skcms_TransferFunction_eval(&SkNamedTransferFn::kSRGB, r),
+      skcms_TransferFunction_eval(&SkNamedTransferFn::kSRGB, g),
+      skcms_TransferFunction_eval(&SkNamedTransferFn::kSRGB, b));
+}
+
 }  // namespace
 
 std::tuple<float, float, float> LabToXYZD50(float l, float a, float b) {
@@ -111,10 +126,18 @@ std::tuple<float, float, float> XYZD50tosRGBLinear(float x, float y, float z) {
                          rgb_result.vals[2]);
 }
 
+std::tuple<float, float, float> DisplayP3ToXYZD50(float r, float g, float b) {
+  auto [r_, g_, b_] = ApplyTransferFnsRGB(r, g, b);
+  skcms_Vector3 rgb_input{{r_, g_, b_}};
+  skcms_Vector3 xyz_output =
+      skcms_Matrix3x3_apply(&SkNamedGamut::kDisplayP3, &rgb_input);
+  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
+                         xyz_output.vals[2]);
+}
+
 SkColor4f SRGBLinearToSkColor4f(float r, float g, float b, float alpha) {
-  return SkColor4f{skcms_TransferFunction_eval(getSRGBInverseTrfn(), r),
-                   skcms_TransferFunction_eval(getSRGBInverseTrfn(), g),
-                   skcms_TransferFunction_eval(getSRGBInverseTrfn(), b), alpha};
+  auto [srgb_r, srgb_g, srgb_b] = ApplyInverseTransferFnsRGB(r, g, b);
+  return SkColor4f{srgb_r, srgb_g, srgb_b, alpha};
 }
 
 SkColor4f XYZD50ToSkColor4f(float x, float y, float z, float alpha) {
@@ -122,8 +145,18 @@ SkColor4f XYZD50ToSkColor4f(float x, float y, float z, float alpha) {
   return SRGBLinearToSkColor4f(r, g, b, alpha);
 }
 
+SkColor4f XYZD65ToSkColor4f(float x, float y, float z, float alpha) {
+  auto [r, g, b] = XYZD65tosRGBLinear(x, y, z);
+  return SRGBLinearToSkColor4f(r, g, b, alpha);
+}
+
 SkColor4f LabToSkColor4f(float l, float a, float b, float alpha) {
   auto [x, y, z] = LabToXYZD50(l, a, b);
+  return XYZD50ToSkColor4f(x, y, z, alpha);
+}
+
+SkColor4f DisplayP3ToSkColor4f(float r, float g, float b, float alpha) {
+  auto [x, y, z] = DisplayP3ToXYZD50(r, g, b);
   return XYZD50ToSkColor4f(x, y, z, alpha);
 }
 

@@ -114,7 +114,76 @@ TEST(ColorConversions, XYZD50tosRGBLinear) {
   }
 }
 
-TEST(ColorConversions, LabTosRGB) {
+TEST(ColorConversions, XYZD50ToSkColor4f) {
+  // Color conversions obtained from
+  // https://www.nixsensor.com/free-color-converter/
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{0.9642956660812443f, 1.0000000361162846f, 0.8251045485672053f},
+       {1.0f, 1.0f, 1.0f}},  // white
+      {{0.3851514688337912f, 0.7168870538238823f, 0.09708128566574631f},
+       {0.0f, 1.0f, 0.0f}},  // lime
+      {{0.1763053229982614f, 0.10171766135467991f, 0.024020600356509242f},
+       {0.6470588235294118f, 0.16470588235294117f,
+        0.16470588235294117f}},  // brown
+      {{0.7245316165924385f, 0.6365774485679174f, 0.4915583325045292f},
+       {1.0f, 0.7529411764705882f, 0.796078431372549f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_x, input_y, input_z] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    SkColor4f color = XYZD50ToSkColor4f(input_x, input_y, input_z, 1.0f);
+    EXPECT_NEAR(color.fR, expected_r, 0.01f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fG, expected_g, 0.01f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fB, expected_b, 0.01f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+  }
+}
+
+TEST(ColorConversions, XYZD65ToSkColor4f) {
+  // Color conversions obtained from
+  // https://www.nixsensor.com/free-color-converter/
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{0.9504559270516717f, 1.f, 1.0890577507598784f},
+       {1.0f, 1.0f, 1.0f}},  // white
+      {{0.357584339383878f, 0.715168678767756f, 0.11919477979462598f},
+       {0.0f, 1.0f, 0.0f}},  // lime
+      {{0.167625056565021f, 0.09823806119130823f, 0.032041234257288932f},
+       {0.6470588235294118f, 0.16470588235294117f,
+        0.16470588235294117f}},  // brown
+      {{0.7086623628695997f, 0.6327286137205872f, 0.6498196912712672f},
+       {1.0f, 0.7529411764705882f, 0.796078431372549f}},  // pink
+      {{1.0f, 1.0f, 1.0f}, {1.085f, 0.9769f, 0.9587f}}};
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_x, input_y, input_z] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    SkColor4f color = XYZD65ToSkColor4f(input_x, input_y, input_z, 1.0f);
+    EXPECT_NEAR(color.fR, expected_r, 0.01f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fG, expected_g, 0.01f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fB, expected_b, 0.01f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+  }
+}
+
+TEST(ColorConversions, LabToSkColor4f) {
   // Color conversions obtained from
   // https://www.nixsensor.com/free-color-converter/
   ColorTest colors_tests[] = {
@@ -124,7 +193,8 @@ TEST(ColorConversions, LabTosRGB) {
       {{50.0f, 50.0f, 0.0f}, {0.756208f, 0.304487f, 0.475634f}},
       {{70.0f, -45.0f, 0.0f}, {0.10751f, 0.75558f, 0.66398f}},
       {{70.0f, 0.0f, 70.0f}, {0.766254f, 0.663607f, 0.055775f}},
-      {{55.0f, 0.0f, -60.0f}, {0.128128f, 0.53105f, 0.927645f}}};
+      {{55.0f, 0.0f, -60.0f}, {0.128128f, 0.53105f, 0.927645f}},
+      {{100.115f, 9.06448f, 5.80177f}, {1.085f, 0.9769f, 0.9587f}}};
 
   for (auto& color_pair : colors_tests) {
     auto [input_l, input_a, input_b] = color_pair.input;
@@ -165,6 +235,83 @@ TEST(ColorConversions, SRGBLinearToSkColor4f) {
     auto [input_r, input_g, input_b] = color_pair.input;
     auto [expected_r, expected_g, expected_b] = color_pair.expected;
     SkColor4f color = SRGBLinearToSkColor4f(input_r, input_g, input_b, 1.0f);
+    EXPECT_NEAR(color.fR, expected_r, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fG, expected_g, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fB, expected_b, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+  }
+}
+
+TEST(ColorConversions, DisplayP3ToXYZD50) {
+  // Color conversions obtained from
+  // https://www.nixsensor.com/free-color-converter/
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{0.9999999999999999f, 0.9999999999999997f, 0.9999999999999999f},
+       {0.9642956660812443f, 1.0000000361162846f,
+        0.8251045485672053f}},  // white
+      {{0.45840159019103005f, 0.9852645833250543f, 0.29829470783345835f},
+       {0.3851514688337912f, 0.7168870538238823f,
+        0.09708128566574631f}},  // lime
+      {{0.5957181607237907f, 0.2055939145569215f, 0.18695695018247227f},
+       {0.1763053229982614f, 0.10171766135467991f,
+        0.024020600356509242f}},  // brown
+      {{0.4584004101072638f, 0.07977226603250179f, 0.4847907338567859f},
+       {0.1250143560558979f, 0.0611129099463755f,
+        0.15715146562446167f}},  // purple
+      {{0.962148711796773f, 0.7628803605364196f, 0.7971503318758075f},
+       {0.7245316165924385f, 0.6365774485679174f,
+        0.4915583325045292f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_r, input_g, input_b] = color_pair.input;
+    auto [expected_x, expected_y, expected_z] = color_pair.expected;
+    auto [output_x, output_y, output_z] =
+        DisplayP3ToXYZD50(input_r, input_g, input_b);
+    EXPECT_NEAR(output_x, expected_x, 0.001f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+    EXPECT_NEAR(output_y, expected_y, 0.001f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+    EXPECT_NEAR(output_z, expected_z, 0.001f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+  }
+}
+
+TEST(ColorConversions, DisplayP3ToSkColor4f) {
+  // Color conversions obtained from
+  // https://www.nixsensor.com/free-color-converter/
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{0.9999999999999999f, 0.9999999999999997f, 0.9999999999999999f},
+       {1.0f, 1.0f, 1.0f}},  // white
+      {{0.45840159019103005f, 0.9852645833250543f, 0.29829470783345835f},
+       {0.0f, 1.0f, 0.0f}},  // lime
+      {{0.5957181607237907f, 0.2055939145569215f, 0.18695695018247227f},
+       {0.6470588235294118f, 0.16470588235294117f,
+        0.16470588235294117f}},  // brown
+      {{0.4584004101072638f, 0.07977226603250179f, 0.4847907338567859f},
+       {0.5019607843137255f, 0.0f, 0.5019607843137255f}},  // purple
+      {{0.962148711796773f, 0.7628803605364196f, 0.7971503318758075f},
+       {1.0f, 0.7529411764705882f, 0.796078431372549f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_r, input_g, input_b] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    SkColor4f color = DisplayP3ToSkColor4f(input_r, input_g, input_b, 1.0f);
     EXPECT_NEAR(color.fR, expected_r, 0.01f)
         << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
         << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR

@@ -18,6 +18,11 @@ GFX_EXPORT std::tuple<float, float, float> LabToXYZD50(float l,
                                                        float b);
 
 // Method exposed for testing purposes.
+GFX_EXPORT std::tuple<float, float, float> DisplayP3ToXYZD50(float r,
+                                                             float g,
+                                                             float b);
+
+// Method exposed for testing purposes.
 GFX_EXPORT std::tuple<float, float, float> XYZD50toD65(float x,
                                                        float y,
                                                        float z);
@@ -33,12 +38,25 @@ GFX_EXPORT std::tuple<float, float, float> XYZD50tosRGBLinear(float r,
                                                               float b);
 
 // Method exposed for blink::color conversions.
+GFX_EXPORT SkColor4f XYZD50ToSkColor4f(float x, float y, float z, float alpha);
+
+// Method exposed for blink::color conversions.
+GFX_EXPORT SkColor4f XYZD65ToSkColor4f(float x, float y, float z, float alpha);
+
+// Method exposed for blink::color conversions.
 GFX_EXPORT SkColor4f LabToSkColor4f(float l, float a, float b, float alpha);
 
+// Method exposed for blink::color conversions.
 GFX_EXPORT SkColor4f SRGBLinearToSkColor4f(float r,
                                            float g,
                                            float b,
                                            float alpha);
+
+// Method exposed for blink::color conversions.
+GFX_EXPORT SkColor4f DisplayP3ToSkColor4f(float r,
+                                          float g,
+                                          float b,
+                                          float alpha);
 
 }  // namespace gfx
 
