@@ -38,7 +38,6 @@
 
 namespace base {
 class ElapsedTimer;
-class ListValue;
 }  // namespace base
 
 namespace ash {
@@ -259,7 +258,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // login.
   void SetPublicSessionKeyboardLayoutAndLogin(
       const UserContext& user_context,
-      std::unique_ptr<base::ListValue> keyboard_layouts);
+      base::Value::List keyboard_layouts);
 
   // Starts the actual login process for a public session. Invoked when all
   // preconditions have been verified.

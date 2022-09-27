@@ -103,7 +103,7 @@ bool GetDeviceManager(std::string* out_manager) {
 // `out_selected_locale`: Output value of the initially selected locale.
 // `out_multiple_locales`: Output value indicates whether we have multiple
 // recommended locales.
-std::unique_ptr<base::ListValue> GetPublicSessionLocales(
+base::Value::List GetPublicSessionLocales(
     const std::vector<std::string>* public_session_recommended_locales,
     std::string* out_selected_locale,
     bool* out_multiple_locales) {
@@ -114,14 +114,14 @@ std::unique_ptr<base::ListValue> GetPublicSessionLocales(
 
   // Construct the list of available locales. This list consists of the
   // recommended locales, followed by all others.
-  std::unique_ptr<base::ListValue> available_locales =
+  auto available_locales =
       GetUILanguageList(&recommended_locales, std::string(),
                         input_method::InputMethodManager::Get());
 
   // Select the the first recommended locale that is actually available or the
   // current UI locale if none of them are available.
   *out_selected_locale =
-      FindMostRelevantLocale(recommended_locales, *available_locales.get(),
+      FindMostRelevantLocale(recommended_locales, available_locales,
                              g_browser_process->GetApplicationLocale());
 
   *out_multiple_locales = recommended_locales.size() >= 2;
@@ -943,10 +943,9 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
               : &public_session_recommended_locales_[account_id];
       std::string selected_locale;
       bool has_multiple_locales;
-      std::unique_ptr<base::ListValue> available_locales =
+      auto available_locales =
           GetPublicSessionLocales(public_session_recommended_locales,
                                   &selected_locale, &has_multiple_locales);
-      DCHECK(available_locales);
       user_info.public_account_info->available_locales =
           lock_screen_utils::FromListValueToLocaleItem(
               std::move(available_locales));

@@ -38,7 +38,7 @@ class UserBoardView {
   virtual void SetPublicSessionDisplayName(const AccountId& account_id,
                                            const std::string& display_name) = 0;
   virtual void SetPublicSessionLocales(const AccountId& account_id,
-                                       std::unique_ptr<base::ListValue> locales,
+                                       base::Value::List locales,
                                        const std::string& default_locale,
                                        bool multiple_recommended_locales) = 0;
   virtual void SetPublicSessionShowFullManagementDisclosure(

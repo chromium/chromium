@@ -10,6 +10,7 @@
 #include "ash/public/cpp/system_tray_observer.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
@@ -18,10 +19,6 @@ enum class ParentCodeValidationResult;
 class HatsUnlockSurveyTrigger;
 class LoginAuthRecorder;
 }  // namespace ash
-
-namespace base {
-class ListValue;
-}
 
 // Handles method calls sent from ash to chrome. Also sends messages from chrome
 // to ash.
@@ -136,10 +133,9 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
   views::Widget* GetLoginWindowWidget() override;
 
  private:
-  void SetPublicSessionKeyboardLayout(
-      const AccountId& account_id,
-      const std::string& locale,
-      std::unique_ptr<base::ListValue> keyboard_layouts);
+  void SetPublicSessionKeyboardLayout(const AccountId& account_id,
+                                      const std::string& locale,
+                                      base::Value::List keyboard_layouts);
 
   void ShowGaiaSigninInternal(const AccountId& prefilled_account);
 

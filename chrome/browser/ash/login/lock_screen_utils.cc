@@ -166,24 +166,24 @@ void SetKeyboardSettings(const AccountId& account_id) {
       rate);
 }
 
-std::vector<LocaleItem> FromListValueToLocaleItem(
-    std::unique_ptr<base::ListValue> locales) {
+std::vector<LocaleItem> FromListValueToLocaleItem(base::Value::List locales) {
   std::vector<LocaleItem> result;
-  for (const auto& locale : locales->GetList()) {
+  for (const auto& locale : locales) {
     if (!locale.is_dict())
       continue;
-
-    const base::Value::Dict& dict = locale.GetDict();
+    const auto& dictionary = locale.GetDict();
     LocaleItem locale_item;
-    const std::string* language_code = dict.FindString("value");
-    if (language_code)
+    if (const std::string* language_code = dictionary.FindString("value")) {
       locale_item.language_code = *language_code;
-    const std::string* title = dict.FindString("title");
-    if (title)
+    }
+    if (const std::string* title = dictionary.FindString("title")) {
       locale_item.title = *title;
-    const std::string* group_name = dict.FindString("optionGroupName");
-    if (group_name && !group_name->empty())
-      locale_item.group_name = *group_name;
+    }
+    if (const std::string* group_name =
+            dictionary.FindString("optionGroupName")) {
+      if (!group_name->empty())
+        locale_item.group_name = *group_name;
+    }
     result.push_back(std::move(locale_item));
   }
   return result;

@@ -24,8 +24,8 @@ namespace chromeos {
 
 namespace {
 
-void VerifyOnlyUILanguages(const base::ListValue& list) {
-  for (const base::Value& value : list.GetListDeprecated()) {
+void VerifyOnlyUILanguages(const base::Value::List& list) {
+  for (const base::Value& value : list) {
     ASSERT_TRUE(value.is_dict());
     const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
     const std::string* code = dict.GetDict().FindString("code");
@@ -36,13 +36,11 @@ void VerifyOnlyUILanguages(const base::ListValue& list) {
   }
 }
 
-void VerifyLanguageCode(const base::ListValue& list,
+void VerifyLanguageCode(const base::Value::List& list,
                         size_t index,
                         const std::string& expected_code) {
-  const base::Value& value = list.GetListDeprecated()[index];
-  ASSERT_TRUE(value.is_dict());
-  const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
-  const std::string* actual_code = dict.GetDict().FindString("code");
+  const base::Value::Dict& value = list[index].GetDict();
+  const std::string* actual_code = value.FindString("code");
   ASSERT_TRUE(actual_code);
   EXPECT_EQ(expected_code, *actual_code)
       << "Wrong language code at index " << index << ".";
@@ -99,18 +97,17 @@ TEST_F(L10nUtilTest, GetUILanguageList) {
   SetInputMethods1();
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  std::unique_ptr<base::ListValue> list(
-      GetUILanguageList(nullptr, std::string(), &input_manager_));
+  auto list(GetUILanguageList(nullptr, std::string(), &input_manager_));
 
-  VerifyOnlyUILanguages(*list);
+  VerifyOnlyUILanguages(list);
 }
 
 TEST_F(L10nUtilTest, FindMostRelevantLocale) {
-  base::ListValue available_locales;
+  base::Value::List available_locales;
   for (const char* locale : {"de", "fr", "en-GB"}) {
     base::Value::Dict dict;
     dict.Set("value", locale);
-    available_locales.GetList().Append(std::move(dict));
+    available_locales.Append(std::move(dict));
   }
 
   std::vector<std::string> most_relevant_language_codes;
@@ -160,19 +157,18 @@ TEST_F(L10nUtilTest, GetUILanguageListMulti) {
   SetInputMethods2();
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  std::unique_ptr<base::ListValue> list(
-      GetUILanguageList(nullptr, std::string(), &input_manager_));
+  auto list(GetUILanguageList(nullptr, std::string(), &input_manager_));
 
-  VerifyOnlyUILanguages(*list);
+  VerifyOnlyUILanguages(list);
 
   // (4 languages (except Irish) + divider) = 5 + all other languages
-  ASSERT_LE(5u, list->GetListDeprecated().size());
+  ASSERT_LE(5u, list.size());
 
-  VerifyLanguageCode(*list, 0, "fr");
-  VerifyLanguageCode(*list, 1, "en-US");
-  VerifyLanguageCode(*list, 2, "de");
-  VerifyLanguageCode(*list, 3, "it");
-  VerifyLanguageCode(*list, 4, kMostRelevantLanguagesDivider);
+  VerifyLanguageCode(list, 0, "fr");
+  VerifyLanguageCode(list, 1, "en-US");
+  VerifyLanguageCode(list, 2, "de");
+  VerifyLanguageCode(list, 3, "it");
+  VerifyLanguageCode(list, 4, kMostRelevantLanguagesDivider);
 }
 
 TEST_F(L10nUtilTest, GetUILanguageListWithMostRelevant) {
@@ -182,16 +178,16 @@ TEST_F(L10nUtilTest, GetUILanguageListWithMostRelevant) {
   most_relevant_language_codes.push_back("nonexistent");
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  std::unique_ptr<base::ListValue> list(GetUILanguageList(
-      &most_relevant_language_codes, std::string(), &input_manager_));
+  auto list(GetUILanguageList(&most_relevant_language_codes, std::string(),
+                              &input_manager_));
 
-  VerifyOnlyUILanguages(*list);
+  VerifyOnlyUILanguages(list);
 
-  ASSERT_LE(3u, list->GetListDeprecated().size());
+  ASSERT_LE(3u, list.size());
 
-  VerifyLanguageCode(*list, 0, "it");
-  VerifyLanguageCode(*list, 1, "de");
-  VerifyLanguageCode(*list, 2, kMostRelevantLanguagesDivider);
+  VerifyLanguageCode(list, 0, "it");
+  VerifyLanguageCode(list, 1, "de");
+  VerifyLanguageCode(list, 2, kMostRelevantLanguagesDivider);
 }
 
 }  // namespace chromeos

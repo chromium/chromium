@@ -357,10 +357,10 @@ void LoginScreenClientImpl::OnMaxIncorrectPasswordAttempted(
 void LoginScreenClientImpl::SetPublicSessionKeyboardLayout(
     const AccountId& account_id,
     const std::string& locale,
-    std::unique_ptr<base::ListValue> keyboard_layouts) {
+    base::Value::List keyboard_layouts) {
   std::vector<ash::InputMethodItem> result;
 
-  for (const auto& i : keyboard_layouts->GetList()) {
+  for (const auto& i : keyboard_layouts) {
     if (!i.is_dict())
       continue;
     const base::Value::Dict& dict = i.GetDict();

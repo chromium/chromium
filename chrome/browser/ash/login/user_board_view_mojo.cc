@@ -77,10 +77,9 @@ void UserBoardViewMojo::SetPublicSessionDisplayName(
 
 void UserBoardViewMojo::SetPublicSessionLocales(
     const AccountId& account_id,
-    std::unique_ptr<base::ListValue> locales,
+    base::Value::List locales,
     const std::string& default_locale,
     bool multiple_recommended_locales) {
-  DCHECK(locales);
   LoginScreen::Get()->GetModel()->SetPublicSessionLocales(
       account_id,
       lock_screen_utils::FromListValueToLocaleItem(std::move(locales)),

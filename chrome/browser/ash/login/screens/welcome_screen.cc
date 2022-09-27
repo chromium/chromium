@@ -254,7 +254,7 @@ void WelcomeScreen::SetApplicationLocale(const std::string& locale,
                                          const bool is_from_ui) {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   if (app_locale == locale || locale.empty()) {
-    if (language_list_.GetListDeprecated().empty())
+    if (language_list_.empty())
       UpdateLanguageList();
     return;
   }
@@ -603,12 +603,12 @@ void WelcomeScreen::ScheduleResolveLanguageList(
 }
 
 void WelcomeScreen::OnLanguageListResolved(
-    std::unique_ptr<base::ListValue> new_language_list,
+    base::Value::List new_language_list,
     const std::string& new_language_list_locale,
     const std::string& new_selected_language) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  language_list_ = std::move(*new_language_list);
+  language_list_ = std::move(new_language_list);
   language_list_locale_ = new_language_list_locale;
   selected_language_code_ = new_selected_language;
 

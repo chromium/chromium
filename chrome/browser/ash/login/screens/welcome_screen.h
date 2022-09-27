@@ -90,7 +90,7 @@ class WelcomeScreen : public BaseScreen,
   const std::string& language_list_locale() const {
     return language_list_locale_;
   }
-  const base::Value& language_list() const { return language_list_; }
+  const base::Value::List& language_list() const { return language_list_; }
 
   void UpdateLanguageList();
 
@@ -162,10 +162,9 @@ class WelcomeScreen : public BaseScreen,
           language_switch_result);
 
   // Callback for chromeos::ResolveUILanguageList() (from l10n_util).
-  void OnLanguageListResolved(
-      std::unique_ptr<base::ListValue> new_language_list,
-      const std::string& new_language_list_locale,
-      const std::string& new_selected_language);
+  void OnLanguageListResolved(base::Value::List new_language_list,
+                              const std::string& new_language_list_locale,
+                              const std::string& new_selected_language);
 
   // Callback when the system timezone settings is changed.
   void OnSystemTimezoneChanged();
@@ -194,7 +193,7 @@ class WelcomeScreen : public BaseScreen,
   // Creation of language list happens on Blocking Pool, so we cache
   // resolved data.
   std::string language_list_locale_;
-  base::Value language_list_{base::Value::Type::LIST};
+  base::Value::List language_list_;
 
   // The exact language code selected by user in the menu.
   std::string selected_language_code_;
