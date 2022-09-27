@@ -206,6 +206,14 @@
   _parent->OnVisibilityChanged();
 }
 
+// The delegate or the window class should implement this method so that
+// -[NSWindow isZoomed] can be then determined by whether or not the current
+// window frame is equal to the zoomed frame.
+- (NSRect)windowWillUseStandardFrame:(NSWindow*)window
+                        defaultFrame:(NSRect)newFrame {
+  return newFrame;
+}
+
 - (void)windowDidChangeBackingProperties:(NSNotification*)notification {
   _parent->OnBackingPropertiesChanged();
 }

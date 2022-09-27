@@ -1353,6 +1353,13 @@ void NativeWidgetNSWindowBridge::SetVisibleOnAllSpaces(bool always_visible) {
   gfx::SetNSWindowVisibleOnAllWorkspaces(window_, always_visible);
 }
 
+void NativeWidgetNSWindowBridge::SetZoomed(bool zoomed) {
+  const bool window_zoomed = [window_ isZoomed];
+  if (window_zoomed == zoomed)
+    return;
+  [window_ performZoom:nil];
+}
+
 void NativeWidgetNSWindowBridge::EnterFullscreen(int64_t target_display_id) {
   // Going fullscreen implicitly makes the window visible. AppKit does this.
   // That is, -[NSWindow isVisible] is always true after a call to -[NSWindow
@@ -1576,6 +1583,17 @@ void NativeWidgetNSWindowBridge::RemoveOrDestroyChildren() {
   }
 }
 
+void NativeWidgetNSWindowBridge::CheckAndNotifyZoomedStateChanged() {
+  const bool window_zoomed = [window_ isZoomed];
+  if (window_zoomed_ == window_zoomed)
+    return;
+
+  window_zoomed_ = window_zoomed;
+
+  // Notify that the window's zoomed state has changed.
+  host_->OnWindowZoomedChanged(window_zoomed_);
+}
+
 void NativeWidgetNSWindowBridge::NotifyVisibilityChangeDown() {
   // Child windows sometimes like to close themselves in response to visibility
   // changes. That's supported, but only with the asynchronous Widget::Close().
@@ -1610,6 +1628,8 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
   content_dip_size_ = content_in_screen.size();
 
   host_->OnWindowGeometryChanged(window_in_screen, content_in_screen);
+
+  CheckAndNotifyZoomedStateChanged();
 
   if (content_resized && !ca_transaction_sync_suppressed_)
     ui::CATransactionCoordinator::Get().Synchronize();

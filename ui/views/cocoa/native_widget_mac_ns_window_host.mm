@@ -84,6 +84,7 @@ class BridgedNativeWidgetHostDummy
       bool target_fullscreen_state) override {}
   void OnWindowFullscreenTransitionComplete(bool is_fullscreen) override {}
   void OnWindowMiniaturizedChanged(bool miniaturized) override {}
+  void OnWindowZoomedChanged(bool zoomed) override {}
   void OnWindowDisplayChanged(const display::Display& display) override {}
   void OnWindowWillClose() override {}
   void OnWindowHasClosed() override {}
@@ -1174,6 +1175,10 @@ void NativeWidgetMacNSWindowHost::OnWindowMiniaturizedChanged(
   is_miniaturized_ = miniaturized;
   if (native_widget_mac_)
     native_widget_mac_->GetWidget()->OnNativeWidgetWindowShowStateChanged();
+}
+
+void NativeWidgetMacNSWindowHost::OnWindowZoomedChanged(bool zoomed) {
+  is_zoomed_ = zoomed;
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(

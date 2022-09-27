@@ -138,6 +138,9 @@ interface NativeWidgetNSWindowHost {
   // Called when the window is miniaturized or deminiaturized.
   OnWindowMiniaturizedChanged(bool miniaturized);
 
+  // Called when the window's zoomed state changes.
+  OnWindowZoomedChanged(bool zoomed);
+
   // Called when the current display or the properties of the current display
   // change.
   OnWindowDisplayChanged(display.mojom.Display display);

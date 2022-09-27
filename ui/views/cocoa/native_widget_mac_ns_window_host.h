@@ -227,6 +227,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool IsMiniaturized() const { return is_miniaturized_; }
   bool IsWindowKey() const { return is_window_key_; }
   bool IsMouseCaptureActive() const { return is_mouse_capture_active_; }
+  bool IsZoomed() const { return is_zoomed_; }
 
   // Add a NSEvent local event monitor, which will send events to `client`
   // before they are dispatched to their ordinary target. Clients may specify
@@ -320,6 +321,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void OnWindowFullscreenTransitionComplete(
       bool target_fullscreen_state) override;
   void OnWindowMiniaturizedChanged(bool miniaturized) override;
+  void OnWindowZoomedChanged(bool zoomed) override;
   void OnWindowDisplayChanged(const display::Display& display) override;
   void OnWindowWillClose() override;
   void OnWindowHasClosed() override;
@@ -507,6 +509,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool is_window_key_ = false;
   bool is_mouse_capture_active_ = false;
   bool is_headless_mode_window_ = false;
+  bool is_zoomed_ = false;
   gfx::Rect window_bounds_before_fullscreen_;
 
   // Weak pointers to event monitors for this widget. The event monitors

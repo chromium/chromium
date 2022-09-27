@@ -654,7 +654,9 @@ bool NativeWidgetMac::IsVisibleOnAllWorkspaces() const {
 }
 
 void NativeWidgetMac::Maximize() {
-  NOTIMPLEMENTED();  // See IsMaximized().
+  if (!GetNSWindowMojo())
+    return;
+  GetNSWindowMojo()->SetZoomed(true);
 }
 
 void NativeWidgetMac::Minimize() {
@@ -664,9 +666,9 @@ void NativeWidgetMac::Minimize() {
 }
 
 bool NativeWidgetMac::IsMaximized() const {
-  // The window frame isn't altered on Mac unless going fullscreen. The green
-  // "+" button just makes the window bigger. So, always false.
-  return false;
+  if (!ns_window_host_)
+    return false;
+  return ns_window_host_->IsZoomed();
 }
 
 bool NativeWidgetMac::IsMinimized() const {
@@ -680,6 +682,7 @@ void NativeWidgetMac::Restore() {
     return;
   GetNSWindowMojo()->ExitFullscreen();
   GetNSWindowMojo()->SetMiniaturized(false);
+  GetNSWindowMojo()->SetZoomed(false);
 }
 
 void NativeWidgetMac::SetFullscreen(bool fullscreen,

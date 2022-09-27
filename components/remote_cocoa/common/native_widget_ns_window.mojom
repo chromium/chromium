@@ -191,6 +191,9 @@ interface NativeWidgetNSWindow {
   // Miniaturize or deminiaturize the window.
   SetMiniaturized(bool miniaturized);
 
+  // Zoom or un-zoom the window.
+  SetZoomed(bool zoomed);
+
   // Called by NativeWidgetMac when the window size constraints change.
   SetSizeConstraints(gfx.mojom.Size min_size,
                      gfx.mojom.Size max_size,
