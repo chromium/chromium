@@ -53,9 +53,6 @@ class CAPTURE_EXPORT VideoCaptureBufferPool
   virtual mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer(
       int buffer_id) = 0;
 
-  virtual mojom::SharedMemoryViaRawFileDescriptorPtr
-  CreateSharedMemoryViaRawFileDescriptorStruct(int buffer_id) = 0;
-
   // Try and obtain a read/write access to the buffer.
   virtual std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess(
       int buffer_id) = 0;

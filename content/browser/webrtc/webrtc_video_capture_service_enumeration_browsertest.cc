@@ -112,12 +112,12 @@ class WebRtcVideoCaptureServiceEnumerationBrowserTest
         switch (GetParam().api_to_use) {
           case ServiceApi::kSingleClient:
             factory_->AddSharedMemoryVirtualDevice(
-                info, std::move(producer), false,
+                info, std::move(producer),
                 virtual_device.InitWithNewPipeAndPassReceiver());
             break;
           case ServiceApi::kMultiClient:
             video_source_provider_->AddSharedMemoryVirtualDevice(
-                info, std::move(producer), false,
+                info, std::move(producer),
                 virtual_device.InitWithNewPipeAndPassReceiver());
             break;
         }

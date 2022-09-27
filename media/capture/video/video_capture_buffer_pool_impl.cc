@@ -69,39 +69,6 @@ VideoCaptureBufferPoolImpl::DuplicateAsMojoBuffer(int buffer_id) {
   return tracker->DuplicateAsMojoBuffer();
 }
 
-mojom::SharedMemoryViaRawFileDescriptorPtr
-VideoCaptureBufferPoolImpl::CreateSharedMemoryViaRawFileDescriptorStruct(
-    int buffer_id) {
-// This requires platforms where base::SharedMemoryHandle is backed by a
-// file descriptor.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  base::AutoLock lock(lock_);
-
-  VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
-  if (!tracker) {
-    NOTREACHED() << "Invalid buffer_id.";
-    return 0u;
-  }
-
-  // Convert the mojo::ScopedSharedBufferHandle to a PlatformSharedMemoryRegion
-  // in order to extract the platform file descriptor.
-  base::subtle::PlatformSharedMemoryRegion platform_region =
-      mojo::UnwrapPlatformSharedMemoryRegion(tracker->DuplicateAsMojoBuffer());
-  if (!platform_region.IsValid()) {
-    NOTREACHED();
-    return 0u;
-  }
-  base::subtle::ScopedFDPair fds = platform_region.PassPlatformHandle();
-  auto result = mojom::SharedMemoryViaRawFileDescriptor::New();
-  result->file_descriptor_handle = mojo::PlatformHandle(std::move(fds.fd));
-  result->shared_memory_size_in_bytes = tracker->GetMemorySizeInBytes();
-  return result;
-#else
-  NOTREACHED();
-  return mojom::SharedMemoryViaRawFileDescriptorPtr();
-#endif
-}
-
 std::unique_ptr<VideoCaptureBufferHandle>
 VideoCaptureBufferPoolImpl::GetHandleForInProcessAccess(int buffer_id) {
   base::AutoLock lock(lock_);

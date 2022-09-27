@@ -39,7 +39,6 @@ class VideoSourceProviderImpl : public mojom::VideoSourceProvider {
   void AddSharedMemoryVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingRemote<mojom::Producer> producer,
-      bool send_buffer_handles_to_producer_as_raw_file_descriptors,
       mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
           virtual_device_receiver) override;
   void AddTextureVirtualDevice(

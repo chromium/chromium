@@ -33,7 +33,6 @@ interface VideoSourceProvider {
   AddSharedMemoryVirtualDevice(
       media.mojom.VideoCaptureDeviceInfo device_info,
       pending_remote<Producer> producer,
-      bool send_buffer_handles_to_producer_as_raw_file_descriptors,
       pending_receiver<SharedMemoryVirtualDevice> virtual_device_receiver);
 
   // Similar to AddSharedMemoryVirtualDevice() but for virtual devices that

@@ -88,9 +88,6 @@ struct VideoCaptureImpl::BufferContext
         InitializeFromReadOnlyShmemRegion(
             std::move(buffer_handle->get_read_only_shmem_region()));
         break;
-      case VideoFrameBufferHandleType::kSharedMemoryViaRawFileDescriptor:
-        NOTREACHED();
-        break;
       case VideoFrameBufferHandleType::kMailboxHandles:
         InitializeFromMailbox(std::move(buffer_handle->get_mailbox_handles()));
         break;
@@ -340,9 +337,6 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
           const_cast<uint8_t*>(buffer_context_->data()),
           buffer_context_->data_size(), frame_info_->timestamp);
       frame_->BackWithSharedMemory(buffer_context_->read_only_shmem_region());
-      break;
-    case VideoFrameBufferHandleType::kSharedMemoryViaRawFileDescriptor:
-      NOTREACHED();
       break;
     case VideoFrameBufferHandleType::kMailboxHandles: {
       gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];

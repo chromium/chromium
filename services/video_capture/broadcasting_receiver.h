@@ -45,12 +45,6 @@ class BroadcastingReceiver : public mojom::VideoFrameHandler {
         media::VideoCaptureBufferType target_buffer_type);
 
    private:
-    // If the source handle is shared_memory_via_raw_file_descriptor, we first
-    // have to unwrap it before we can clone it. Instead of unwrapping, cloning,
-    // and than wrapping back each time we need to clone it, we convert it to
-    // a regular shared memory and keep it in this form.
-    void ConvertRawFileDescriptorToUnsafeShmemRegion();
-
     int32_t buffer_context_id_;
     int32_t buffer_id_;
     scoped_refptr<VideoFrameAccessHandlerRemote> frame_access_handler_remote_;

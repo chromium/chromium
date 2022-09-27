@@ -581,12 +581,6 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
         buffer_handle = media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
             buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
         break;
-      case VideoCaptureBufferType::kSharedMemoryViaRawFileDescriptor:
-        buffer_handle = media::mojom::VideoBufferHandle::
-            NewSharedMemoryViaRawFileDescriptor(
-                buffer_pool_->CreateSharedMemoryViaRawFileDescriptorStruct(
-                    buffer_id));
-        break;
       case VideoCaptureBufferType::kMailboxHolder:
         NOTREACHED();
         break;

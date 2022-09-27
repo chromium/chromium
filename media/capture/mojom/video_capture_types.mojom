@@ -95,15 +95,8 @@ enum VideoCaptureTransportType {
 [Stable, Extensible]
 enum VideoCaptureBufferType {
   kSharedMemory,
-
-  // Warning: This case is a workaround for compatibility with an older version
-  // of Mojo only and will be deleted as soon as the Mojo version of ChromiumOS
-  // becomes compatible with the |kSharedMemory|.
-  // TODO(chfremer): Remove this when https://crbug.com/857537 is resolved.
-  kSharedMemoryViaRawFileDescriptor,
-
+  kSharedMemoryViaRawFileDescriptor_DEPRECATED,  // DEPRECATED, DO NOT USE
   kMailboxHolder,
-
   kGpuMemoryBuffer
 };
 

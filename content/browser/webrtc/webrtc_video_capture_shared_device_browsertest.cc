@@ -47,9 +47,6 @@ struct TestParams {
     switch (buffer_type_to_request) {
       case media::VideoCaptureBufferType::kSharedMemory:
         return media::mojom::VideoBufferHandle::Tag::kUnsafeShmemRegion;
-      case media::VideoCaptureBufferType::kSharedMemoryViaRawFileDescriptor:
-        return media::mojom::VideoBufferHandle::Tag::
-            kSharedMemoryViaRawFileDescriptor;
       case media::VideoCaptureBufferType::kMailboxHolder:
         NOTREACHED();
         return media::mojom::VideoBufferHandle::Tag::kUnsafeShmemRegion;
@@ -278,22 +275,10 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebRtcVideoCaptureSharedDeviceBrowserTest,
-    ::testing::Values(
-        TestParams{ServiceApi::kSingleClient,
-                   media::VideoCaptureBufferType::kSharedMemory},
-        TestParams {
-          ServiceApi::kMultiClient, media::VideoCaptureBufferType::kSharedMemory
-        }
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-        ,
-        TestParams{
-            ServiceApi::kSingleClient,
-            media::VideoCaptureBufferType::kSharedMemoryViaRawFileDescriptor},
-        TestParams {
-          ServiceApi::kMultiClient,
-              media::VideoCaptureBufferType::kSharedMemoryViaRawFileDescriptor
-        }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-        ));
+    ::testing::Values(TestParams{ServiceApi::kSingleClient,
+                                 media::VideoCaptureBufferType::kSharedMemory},
+                      TestParams{
+                          ServiceApi::kMultiClient,
+                          media::VideoCaptureBufferType::kSharedMemory}));
 
 }  // namespace content

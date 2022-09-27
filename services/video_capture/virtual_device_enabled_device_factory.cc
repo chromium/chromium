@@ -158,7 +158,6 @@ void VirtualDeviceEnabledDeviceFactory::CreateDevice(
 void VirtualDeviceEnabledDeviceFactory::AddSharedMemoryVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingRemote<mojom::Producer> producer_pending_remote,
-    bool send_buffer_handles_to_producer_as_raw_file_descriptors,
     mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
         virtual_device_receiver) {
   auto device_id = device_info.descriptor.device_id;
@@ -175,8 +174,7 @@ void VirtualDeviceEnabledDeviceFactory::AddSharedMemoryVirtualDevice(
                          OnVirtualDeviceProducerConnectionErrorOrClose,
                      base::Unretained(this), device_id));
   auto device = std::make_unique<SharedMemoryVirtualDeviceMojoAdapter>(
-      std::move(producer),
-      send_buffer_handles_to_producer_as_raw_file_descriptors);
+      std::move(producer));
   auto producer_receiver =
       std::make_unique<mojo::Receiver<mojom::SharedMemoryVirtualDevice>>(
           device.get(), std::move(virtual_device_receiver));

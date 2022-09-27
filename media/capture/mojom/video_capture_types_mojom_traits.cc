@@ -291,9 +291,6 @@ EnumTraits<media::mojom::VideoCaptureBufferType,
   switch (input) {
     case media::VideoCaptureBufferType::kSharedMemory:
       return media::mojom::VideoCaptureBufferType::kSharedMemory;
-    case media::VideoCaptureBufferType::kSharedMemoryViaRawFileDescriptor:
-      return media::mojom::VideoCaptureBufferType::
-          kSharedMemoryViaRawFileDescriptor;
     case media::VideoCaptureBufferType::kMailboxHolder:
       return media::mojom::VideoCaptureBufferType::kMailboxHolder;
     case media::VideoCaptureBufferType::kGpuMemoryBuffer:
@@ -313,10 +310,9 @@ bool EnumTraits<media::mojom::VideoCaptureBufferType,
       *output = media::VideoCaptureBufferType::kSharedMemory;
       return true;
     case media::mojom::VideoCaptureBufferType::
-        kSharedMemoryViaRawFileDescriptor:
-      *output =
-          media::VideoCaptureBufferType::kSharedMemoryViaRawFileDescriptor;
-      return true;
+        kSharedMemoryViaRawFileDescriptor_DEPRECATED:
+      NOTREACHED();
+      return false;
     case media::mojom::VideoCaptureBufferType::kMailboxHolder:
       *output = media::VideoCaptureBufferType::kMailboxHolder;
       return true;

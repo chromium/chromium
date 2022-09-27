@@ -107,9 +107,7 @@ void DeviceMediaToMojoAdapter::Start(
   if (requested_settings.buffer_type !=
           media::VideoCaptureBufferType::kSharedMemory &&
       requested_settings.buffer_type !=
-          media::VideoCaptureBufferType::kGpuMemoryBuffer &&
-      requested_settings.buffer_type !=
-          media::VideoCaptureBufferType::kSharedMemoryViaRawFileDescriptor) {
+          media::VideoCaptureBufferType::kGpuMemoryBuffer) {
     // Buffer types other than shared memory are not supported.
     media_receiver->OnError(
         media::VideoCaptureError::

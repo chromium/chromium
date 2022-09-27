@@ -53,7 +53,6 @@ VideoCaptureServiceTest::AddSharedMemoryVirtualDevice(
       producer.InitWithNewPipeAndPassReceiver());
   factory_->AddSharedMemoryVirtualDevice(
       device_info, std::move(producer),
-      false /* send_buffer_handles_to_producer_as_raw_file_descriptors */,
       result->device.BindNewPipeAndPassReceiver());
   return result;
 }

@@ -48,8 +48,6 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion(
       int buffer_id) override;
   mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer(int buffer_id) override;
-  mojom::SharedMemoryViaRawFileDescriptorPtr
-  CreateSharedMemoryViaRawFileDescriptorStruct(int buffer_id) override;
   std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess(
       int buffer_id) override;
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle(int buffer_id) override;

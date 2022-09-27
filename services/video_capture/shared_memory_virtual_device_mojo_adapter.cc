@@ -34,11 +34,8 @@ void OnNewBufferAcknowleged(
 namespace video_capture {
 
 SharedMemoryVirtualDeviceMojoAdapter::SharedMemoryVirtualDeviceMojoAdapter(
-    mojo::Remote<mojom::Producer> producer,
-    bool send_buffer_handles_to_producer_as_raw_file_descriptors)
+    mojo::Remote<mojom::Producer> producer)
     : producer_(std::move(producer)),
-      send_buffer_handles_to_producer_as_raw_file_descriptors_(
-          send_buffer_handles_to_producer_as_raw_file_descriptors),
       buffer_pool_(new media::VideoCaptureBufferPoolImpl(
           media::VideoCaptureBufferType::kSharedMemory,
           max_buffer_pool_buffer_count())) {}
@@ -95,15 +92,8 @@ void SharedMemoryVirtualDeviceMojoAdapter::RequestFrameBuffer(
 
     // Share buffer handle with producer.
     media::mojom::VideoBufferHandlePtr buffer_handle;
-    if (send_buffer_handles_to_producer_as_raw_file_descriptors_) {
-      buffer_handle =
-          media::mojom::VideoBufferHandle::NewSharedMemoryViaRawFileDescriptor(
-              buffer_pool_->CreateSharedMemoryViaRawFileDescriptorStruct(
-                  buffer_id));
-    } else {
-      buffer_handle = media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
-          buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
-    }
+    buffer_handle = media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+        buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
     // Invoke the response back only after the producer have acked
     // that it has received the newly created buffer. This is need
     // because the |producer_| and the |callback| are bound to different
