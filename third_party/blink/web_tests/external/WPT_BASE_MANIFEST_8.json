@@ -161481,6 +161481,19 @@
         {}
        ]
       ],
+      "flex-aspect-ratio-042.html": [
+       "6f71a73194b0981bd69af6b0fd4cc6f5fb555b0d",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "floats-aspect-ratio-001.html": [
        "53627d2134aacff311142d5513a5a662264143de",
        [
@@ -186574,6 +186587,19 @@
        {}
       ]
      ],
+     "change-perspective-property.html": [
+      "b66cccbdac28944d2d9a6f7bf3973ca410587a8a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "change-scale-wide-range.html": [
       "ec41946cfdd1ea65352f75a3ae11371070b507fa",
       [
@@ -186581,6 +186607,19 @@
        [
         [
          "/css/css-transforms/change-scale-wide-range-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "change-transform-origin-property.html": [
+      "2a623eb711d57e5f77cdb14d571d6639022de724",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -188030,6 +188069,45 @@
         ]
        ]
       },
+      "change-rotate-property.html": [
+       "e5a8046effc6226a1b5ac9e152cc08a1db73a4b7",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "change-scale-property.html": [
+       "62814a6114441e6c8fa44c47f7568ecd63428f22",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "change-translate-property.html": [
+       "d2d57abb9ad5b658de9b8d769a7568a612999823",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "individual-transform-1.html": [
        "f21954e01dfc0f8f70c9dd43262d40b3374010b5",
        [
@@ -229830,6 +229908,19 @@
        ]
       }
      },
+     "change-offset-path.html": [
+      "bdc01a857bd9cdc66320143bc36ba5ebec002e81",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "offset-anchor-transform-box-fill-box-001.html": [
       "ac893bae6525992ce1c7b93e52bbb13b1d702bc5",
       [
@@ -233219,6 +233310,71 @@
        [
         [
          "/fetch/corb/img-png-mislabeled-as-html.sub-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "img-svg-doctype-html-mimetype-empty.sub.html": [
+      "3219feda1711b007a6ddb6a8438a69b1ce7de84d",
+      [
+       null,
+       [
+        [
+         "/fetch/corb/img-svg-invalid.sub-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "img-svg-doctype-html-mimetype-svg.sub.html": [
+      "efcfaa2737493f622567e015ac5c529595636dd8",
+      [
+       null,
+       [
+        [
+         "/fetch/corb/img-svg.sub-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "img-svg-labeled-as-dash.sub.html": [
+      "0578b835fe511c063d920537039696b8b5b0aad8",
+      [
+       null,
+       [
+        [
+         "/fetch/corb/img-svg-invalid.sub-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "img-svg-labeled-as-svg-xml.sub.html": [
+      "30a2eb3246c0f77647b5cf3f654f0be42784b8f4",
+      [
+       null,
+       [
+        [
+         "/fetch/corb/img-svg.sub-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "img-svg-xml-decl.sub.html": [
+      "0d3aeafb25867a2af84b60001002becbbce3b29a",
+      [
+       null,
+       [
+        [
+         "/fetch/corb/img-svg.sub-ref.html",
          "=="
         ]
        ],
@@ -248252,12 +248408,12 @@
     "struct": {
      "reftests": {
       "currentScale-change-repaint.html": [
-       "bd2773b5902bb5e8ab5383526412337eaf45a31a",
+       "7014a4974fb43b9f490c425761854341c7a38f87",
        [
         null,
         [
          [
-          "/svg/struct/reftests/reference/green-100x100.svg",
+          "/svg/struct/reftests/reference/green-100x100.html",
           "=="
          ]
         ],
@@ -268515,7 +268671,7 @@
        []
       ],
       "color-valid-expected.txt": [
-       "c940877fec21bd79248e0be639ff6a4d2c252e04",
+       "d6b235ce840aded338c8ddc19e0cec47eeabd9b4",
        []
       ],
       "relative-color-computed-expected.txt": [
@@ -268931,7 +269087,7 @@
      ],
      "js": {
       "CSS-supports-CSSStyleDeclaration-expected.txt": [
-       "2e621a2f0ec3509e414ecdf7693d621c4de5c361",
+       "1ab42afe9ea4ae7fd528bdaff30199d6236c2340",
        []
       ],
       "supports-conditionText-expected.txt": [
@@ -281816,7 +281972,7 @@
       ]
      },
      "grid-layout-properties-expected.txt": [
-      "5bf8ac7dfdd6866889d0d958700a887e74a675bc",
+      "163cda70a606a8a0c87c22e69ea6cfa987b35093",
       []
      ],
      "grid-model": {
@@ -282093,7 +282249,7 @@
      ],
      "parsing": {
       "grid-area-computed-expected.txt": [
-       "d430e28749c700497338a813d56b68d87fc29bf9",
+       "0187c622a6d8a611ed22d67a381a8d49e8f77862",
        []
       ],
       "grid-area-valid-expected.txt": [
@@ -304496,11 +304652,11 @@
       []
      ],
      "testdriver.md": [
-      "37ceb1ca4776235d4abaacb97b99f04190e7bcc2",
+      "8c694facfc4d651ef21a88ad45878c3058788d05",
       []
      ],
      "testharness-api.md": [
-      "b3d6553dcb477c64e7f72df4ca89bb32ece33abe",
+      "38e6813b1a2d108ebfacce26add318456dd9f57c",
       []
      ],
      "testharness-tutorial.md": [
@@ -309083,19 +309239,19 @@
        []
       ],
       "request-structure.any-expected.txt": [
-       "fcdfb85ec7bb34c6866aa96509ddccbb85786864",
+       "70e536c1a7a7f0dfa5d8684633afdde81f651630",
        []
       ],
       "request-structure.any.serviceworker-expected.txt": [
-       "fcdfb85ec7bb34c6866aa96509ddccbb85786864",
+       "70e536c1a7a7f0dfa5d8684633afdde81f651630",
        []
       ],
       "request-structure.any.sharedworker-expected.txt": [
-       "fcdfb85ec7bb34c6866aa96509ddccbb85786864",
+       "70e536c1a7a7f0dfa5d8684633afdde81f651630",
        []
       ],
       "request-structure.any.worker-expected.txt": [
-       "fcdfb85ec7bb34c6866aa96509ddccbb85786864",
+       "70e536c1a7a7f0dfa5d8684633afdde81f651630",
        []
       ],
       "resources": {
@@ -309447,6 +309603,14 @@
       "ebb337dba8056034689b0effb5fdfc8d7f7661bf",
       []
      ],
+     "img-svg-invalid.sub-ref.html": [
+      "484cd0a4fde1dcd0a98b099b87f5df774dd8ce17",
+      []
+     ],
+     "img-svg.sub-ref.html": [
+      "5462f685a0e2d5141d6ef2cacc7a82c56663dc69",
+      []
+     ],
      "resources": {
       "css-mislabeled-as-html-nosniff.css": [
        "afd2b92975dc8aeab6fca469fa694cbf63ae4ce3",
@@ -309554,6 +309718,50 @@
       ],
       "subframe-that-posts-html-containing-blob-url-to-parent.html": [
        "67b3ad5a600bdaf201953cc18b9687e9314673a9",
+       []
+      ],
+      "svg-doctype-html-mimetype-empty.svg": [
+       "fa2d29b3b0f9531cbb8daae500ab1920ca70c926",
+       []
+      ],
+      "svg-doctype-html-mimetype-empty.svg.headers": [
+       "29515ee7d4a27e99542a72ab7d990b852341e1ec",
+       []
+      ],
+      "svg-doctype-html-mimetype-svg.svg": [
+       "fa2d29b3b0f9531cbb8daae500ab1920ca70c926",
+       []
+      ],
+      "svg-doctype-html-mimetype-svg.svg.headers": [
+       "070de35fbe96585b9cf1b7da4ce8e4ff08a8f3ba",
+       []
+      ],
+      "svg-labeled-as-dash.svg": [
+       "2b7d1016b1ea239cef1ead2372b05b18f5e28d25",
+       []
+      ],
+      "svg-labeled-as-dash.svg.headers": [
+       "43ce612c9fdf0f430214ac9aedd8bbb810107c88",
+       []
+      ],
+      "svg-labeled-as-svg-xml.svg": [
+       "2b7d1016b1ea239cef1ead2372b05b18f5e28d25",
+       []
+      ],
+      "svg-labeled-as-svg-xml.svg.headers": [
+       "070de35fbe96585b9cf1b7da4ce8e4ff08a8f3ba",
+       []
+      ],
+      "svg-xml-decl.svg": [
+       "3b39aff8e5c8db30cf7b325ca7c84f811ee477c6",
+       []
+      ],
+      "svg.svg": [
+       "2b7d1016b1ea239cef1ead2372b05b18f5e28d25",
+       []
+      ],
+      "svg.svg.headers": [
+       "070de35fbe96585b9cf1b7da4ce8e4ff08a8f3ba",
        []
       ]
      },
@@ -316509,6 +316717,10 @@
      }
     },
     "cross-origin-embedder-policy": {
+     "DIR_METADATA": [
+      "02e1e27f9856a51cbb836be0da5c94a024c9f96b",
+      []
+     ],
      "META.yml": [
       "dc7010880b61d455c7ecdc43cbc2a4e00081bd19",
       []
@@ -316895,6 +317107,10 @@
      ]
     },
     "cross-origin-opener-policy": {
+     "DIR_METADATA": [
+      "0fbc9925cf1cba4a314fee38b2e76026cf021657",
+      []
+     ],
      "META.yml": [
       "b9d578d22f005fd46b503da335202abae340c54c",
       []
@@ -335306,6 +335522,10 @@
      "f1ff6c25e6edf1c7fd257b10601469a02cc87288",
      []
     ],
+    "pointerevent_hit_test_scroll_visible_descendant-expected.txt": [
+     "3ccab14a1e5fd06863380941f46a9fb0e5e46d12",
+     []
+    ],
     "pointerevent_pointercapture-not-lost-in-chorded-buttons.html.ini": [
      "6b81a4d1d7d37235727f321f0f07f3a4f58b1614",
      []
@@ -338215,7 +338435,7 @@
      []
     ],
     "channel.sub.js": [
-     "7385a65f6e4abb5cd559c9df524f886d86419a0f",
+     "370d4f5905e3fa9868669f913c0984b673408fec",
      []
     ],
     "check-layout-th.js": [
@@ -338413,7 +338633,7 @@
      []
     ],
     "testharness.js": [
-     "c3072c2936bf37259257c59a98cfa5d1e9622c74",
+     "9ec328222097e070ab46490b28aeed3016026008",
      []
     ],
     "testharness.js.headers": [
@@ -338940,10 +339160,6 @@
    "selection": {
     "DIR_METADATA": [
      "c8c1b8eba51e7469644730155ce541a27776cbfe",
-     []
-    ],
-    "Document-open-expected.txt": [
-     "eaa85d4992385b5f5265eff529ceaedff9ed7c84",
      []
     ],
     "META.yml": [
@@ -370280,7 +370496,7 @@
     },
     "idl": {
      "idl-Bluetooth.https.window.js": [
-      "461e36439285d2eec1c3fc96cbeb91576cdb34cc",
+      "2b40eaff4900f5385b19d27115626fafe386a1cb",
       [
        "bluetooth/idl/idl-Bluetooth.https.window.html",
        {
@@ -370291,26 +370507,18 @@
          ],
          [
           "script",
-          "/resources/testharnessreport.js"
+          "/resources/testdriver-vendor.js"
          ]
         ]
        }
       ]
      ],
      "idl-BluetoothDevice.https.window.js": [
-      "c4e3314e2492078a9c931f04bd4e529bab380b7e",
+      "c715926df3be6615f4b34aa3383b057347325f25",
       [
        "bluetooth/idl/idl-BluetoothDevice.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -370332,7 +370540,7 @@
       ]
      ],
      "idl-BluetoothUUID.window.js": [
-      "fa4a4dd9e2259000225cbd7e98ea91703ecde389",
+      "cf9c14bb2c5c80d2e693401eb916423f9ca33b98",
       [
        "bluetooth/idl/idl-BluetoothUUID.window.html",
        {
@@ -370343,14 +370551,14 @@
          ],
          [
           "script",
-          "/resources/testharnessreport.js"
+          "/resources/testdriver-vendor.js"
          ]
         ]
        }
       ]
      ],
      "idl-NavigatorBluetooth.https.window.js": [
-      "2cd33c707897352e3357ad734a75779cde50dffc",
+      "a087d308962074acb52057f229ff4c31bb6f8f42",
       [
        "bluetooth/idl/idl-NavigatorBluetooth.https.window.html",
        {
@@ -370361,14 +370569,14 @@
          ],
          [
           "script",
-          "/resources/testharnessreport.js"
+          "/resources/testdriver-vendor.js"
          ]
         ]
        }
       ]
      ],
      "idl-NavigatorBluetooth.window.js": [
-      "de512200ad919418cf552313d7e30180dbececdf",
+      "db6bf89f9f3396243a2acfdd68cbdb0cb09d6901",
       [
        "bluetooth/idl/idl-NavigatorBluetooth.window.html",
        {
@@ -370379,7 +370587,7 @@
          ],
          [
           "script",
-          "/resources/testharnessreport.js"
+          "/resources/testdriver-vendor.js"
          ]
         ]
        }
@@ -370412,19 +370620,11 @@
     "requestDevice": {
      "acceptAllDevices": {
       "device-with-empty-name.https.window.js": [
-       "df168797bf7f3f08dd3063b6cd9b33a5965dd9a5",
+       "15bde6a9336c9e4cb7a13e6cc3864fc3000d2fbc",
        [
         "bluetooth/requestDevice/acceptAllDevices/device-with-empty-name.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -370446,19 +370646,11 @@
        ]
       ],
       "device-with-name.https.window.js": [
-       "bde64a9bc9707722f2221fbac57c81e8c0356ecd",
+       "f3373a6bb64f517c57c7a1decd2c3c553478a55e",
        [
         "bluetooth/requestDevice/acceptAllDevices/device-with-name.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -370480,19 +370672,11 @@
        ]
       ],
       "optional-services-missing.https.window.js": [
-       "3eb338663799279e1790ff298199a2da92cbbb23",
+       "5226a645a868df080da1a71dcb1305fbbb59158a",
        [
         "bluetooth/requestDevice/acceptAllDevices/optional-services-missing.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -370514,19 +370698,11 @@
        ]
       ],
       "optional-services-present.https.window.js": [
-       "0edf3a2d85818996ff08647748a80ee968f20f85",
+       "7c200d03f181e7f4593dabb01f30c485e6cbea27",
        [
         "bluetooth/requestDevice/acceptAllDevices/optional-services-present.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -370549,19 +370725,11 @@
       ]
      },
      "blocklisted-manufacturer-data-in-filter.https.window.js": [
-      "21ae2f1e7ad9b61c261d225469ade9f69ef9f743",
+      "2dae7f4cc654ab0bb3b6093826bf3e4d643755a1",
       [
        "bluetooth/requestDevice/blocklisted-manufacturer-data-in-filter.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -370583,19 +370751,11 @@
       ]
      ],
      "blocklisted-service-in-filter.https.window.js": [
-      "beb80f42c396b1589413431f5a57e49cd8f32f97",
+      "80eaf14447fba398897bc4ee1530a8afe3de6d5d",
       [
        "bluetooth/requestDevice/blocklisted-service-in-filter.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -370617,19 +370777,11 @@
       ]
      ],
      "blocklisted-service-in-optionalServices.https.window.js": [
-      "bd99088a339aa6a903fa04f19bed078cbafe949d",
+      "4c01974e557b2f359d12e27e68d0949a22111994",
       [
        "bluetooth/requestDevice/blocklisted-service-in-optionalServices.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -370652,19 +370804,11 @@
      ],
      "canonicalizeFilter": {
       "data-prefix-and-mask-size.https.window.js": [
-       "49cf41ce9eb0772c35b5643ac5e8c9f3ae0d7bb1",
+       "fa2645093a6adec4e21da973df84f419a45fca8d",
        [
         "bluetooth/requestDevice/canonicalizeFilter/data-prefix-and-mask-size.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -370712,19 +370856,11 @@
        ]
       ],
       "device-name-longer-than-29-bytes.https.window.js": [
-       "5e61d641eed10893418659fc7856f02b7034cb50",
+       "20ed383d397046ece557f6698cf29fe15a874e7c",
        [
         "bluetooth/requestDevice/canonicalizeFilter/device-name-longer-than-29-bytes.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -370772,19 +370908,11 @@
        ]
       ],
       "empty-filter.https.window.js": [
-       "da16e04db53438204474d8e2bd3bf4ad93f81795",
+       "bfe94f2721d9542bd75cb46b4557fc40db41443d",
        [
         "bluetooth/requestDevice/canonicalizeFilter/empty-filter.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -370806,19 +370934,11 @@
        ]
       ],
       "empty-filters-member.https.window.js": [
-       "23210f034e13e79f12adacefcfdcdaec94239c60",
+       "3265e54fd880bdf900d73332c74499a81f923015",
        [
         "bluetooth/requestDevice/canonicalizeFilter/empty-filters-member.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -370840,19 +370960,11 @@
        ]
       ],
       "empty-manufacturerData-member.https.window.js": [
-       "af3118a48580dd1ef2b897ccbabc4e3e9e08e6a1",
+       "0996137f517d8ef167e86efcec11d5952a52b187",
        [
         "bluetooth/requestDevice/canonicalizeFilter/empty-manufacturerData-member.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -370874,19 +370986,11 @@
        ]
       ],
       "empty-namePrefix.https.window.js": [
-       "89520c2a2863237a5ae928b80dca84da5425d096",
+       "8ce2e649676ee0161c00c61449ed9e9d8ecceca5",
        [
         "bluetooth/requestDevice/canonicalizeFilter/empty-namePrefix.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -370908,19 +371012,11 @@
        ]
       ],
       "empty-services-member.https.window.js": [
-       "a2ee410ea597bc3ca6a2f4ba8ce61cb98b92e388",
+       "a24611631d360d6ec6ef65648f25d41f7ba916f2",
        [
         "bluetooth/requestDevice/canonicalizeFilter/empty-services-member.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -370942,19 +371038,11 @@
        ]
       ],
       "filters-xor-acceptAllDevices.https.window.js": [
-       "6c200796c1b8815e664771f28cdad76e6623b505",
+       "a6c48f2962a321ccf08c8ad9e3d9bbea2d014f7c",
        [
         "bluetooth/requestDevice/canonicalizeFilter/filters-xor-acceptAllDevices.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371028,19 +371116,11 @@
        ]
       ],
       "max-length-exceeded-name-unicode.https.window.js": [
-       "34cd3532d1e9cbda55149068968476dc11004b42",
+       "23de63d293f667db98533ae8533ee3c5df57205f",
        [
         "bluetooth/requestDevice/canonicalizeFilter/max-length-exceeded-name-unicode.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371062,19 +371142,11 @@
        ]
       ],
       "max-length-exceeded-name.https.window.js": [
-       "892484e9d9d7b32895aecd533b1d441e8cd860eb",
+       "f14f78fe7d7ecc8d68ecbd1175c1719c311c0483",
        [
         "bluetooth/requestDevice/canonicalizeFilter/max-length-exceeded-name.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371096,19 +371168,11 @@
        ]
       ],
       "max-length-exceeded-namePrefix-unicode.https.window.js": [
-       "1b48485f9450d0a14122bed07497ba7842eeb1da",
+       "aa832b2e764d5f897cf5d6114efa6c62ce630993",
        [
         "bluetooth/requestDevice/canonicalizeFilter/max-length-exceeded-namePrefix-unicode.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371130,19 +371194,11 @@
        ]
       ],
       "max-length-exceeded-namePrefix.https.window.js": [
-       "8aee40fcd3b9d5d9b840101856c8f23805214815",
+       "5d27629eaa14744e6bb436472b734d3f80cd0a0f",
        [
         "bluetooth/requestDevice/canonicalizeFilter/max-length-exceeded-namePrefix.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371164,19 +371220,11 @@
        ]
       ],
       "max-length-name-unicode.https.window.js": [
-       "d4e8fe533014a10e6dbc5cbaaeffb34dbccfa2b2",
+       "1232a030e9d52435d0b96923484228b9a2fc4fcc",
        [
         "bluetooth/requestDevice/canonicalizeFilter/max-length-name-unicode.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371198,19 +371246,11 @@
        ]
       ],
       "max-length-name.https.window.js": [
-       "ca0211da84958f3373885b393087afa706700270",
+       "7ede93ce72166a177fa8f1db693bd49c1f7ccc2d",
        [
         "bluetooth/requestDevice/canonicalizeFilter/max-length-name.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371232,19 +371272,11 @@
        ]
       ],
       "max-length-namePrefix-unicode.https.window.js": [
-       "541ca48bb786cf8660e3b16e006b0009346b6d7e",
+       "2932dc1cde5c9b78191f04da5787c4c3fbf67b7b",
        [
         "bluetooth/requestDevice/canonicalizeFilter/max-length-namePrefix-unicode.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371266,19 +371298,11 @@
        ]
       ],
       "max-length-namePrefix.https.window.js": [
-       "07a2db52a812fe4a6255e754f375969330d5a82c",
+       "f922bb2f0d0579ed5db7012e58d961fccd9dd7c9",
        [
         "bluetooth/requestDevice/canonicalizeFilter/max-length-namePrefix.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371300,23 +371324,11 @@
        ]
       ],
       "no-arguments.https.window.js": [
-       "15765738550dc4f4cebdff6f53ff6ca5f647f8bd",
+       "075a97f1a9478a23dc693c169bea9cef9433f8ed",
        [
         "bluetooth/requestDevice/canonicalizeFilter/no-arguments.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharness-helpers.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371338,19 +371350,11 @@
        ]
       ],
       "same-company-identifier.https.window.js": [
-       "7416202d3d5f2172c3bdb6d3fd038c00eeb7cc11",
+       "41f851adc5ee046eab4a98be19ff8f4ebea5da27",
        [
         "bluetooth/requestDevice/canonicalizeFilter/same-company-identifier.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371372,19 +371376,11 @@
        ]
       ],
       "unicode-valid-length-name-name.https.window.js": [
-       "0ad4c2979d4ad86ca1890d3f9f34492986c204ac",
+       "cd10288ddb72f2cb2989bdf96f640853d29b61ee",
        [
         "bluetooth/requestDevice/canonicalizeFilter/unicode-valid-length-name-name.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371406,19 +371402,11 @@
        ]
       ],
       "unicode-valid-length-name-namePrefix.https.window.js": [
-       "ffd57b902150ae15640c0e92abb0389877c11125",
+       "494f324ee2480e40d22fe3dc05030955a2f84e83",
        [
         "bluetooth/requestDevice/canonicalizeFilter/unicode-valid-length-name-namePrefix.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371440,19 +371428,11 @@
        ]
       ],
       "wrong-service-in-optionalServices-member.https.window.js": [
-       "0a7491e347de87ab8c7b6218df5f631cbb330e13",
+       "bfba220f4799db5ac19700df083cd8896d1fa356",
        [
         "bluetooth/requestDevice/canonicalizeFilter/wrong-service-in-optionalServices-member.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371474,19 +371454,11 @@
        ]
       ],
       "wrong-service-in-services-member.https.window.js": [
-       "cd3b963b38842fd149c4c72f825765fd2ee8e64c",
+       "352437d0e5a48f56572c78296ef65b7fcc73dc32",
        [
         "bluetooth/requestDevice/canonicalizeFilter/wrong-service-in-services-member.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -371509,19 +371481,11 @@
       ]
      },
      "cross-origin-iframe.sub.https.window.js": [
-      "c8d4dc1c5a1fe4d1f6ec1673a155f704431b23e2",
+      "a5e6fac25e3bf2156002c21fac7bd2d46f6983f5",
       [
        "bluetooth/requestDevice/cross-origin-iframe.sub.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371543,19 +371507,11 @@
       ]
      ],
      "discovery-succeeds.https.window.js": [
-      "494ebbbe45199923338473691a2a06222bf9d2ed",
+      "4941d185cad0508069184bc19c0ad81871e2a301",
       [
        "bluetooth/requestDevice/discovery-succeeds.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371577,19 +371533,11 @@
       ]
      ],
      "doesnt-consume-user-gesture.https.window.js": [
-      "c9b7bc9d66cc028af3d21d12341b2e672d87a3a3",
+      "9c742733e1d793d9becda42d8afd245f7c9b633d",
       [
        "bluetooth/requestDevice/doesnt-consume-user-gesture.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371611,19 +371559,11 @@
       ]
      ],
      "filter-matches.https.window.js": [
-      "a0606423f1a8af194cd765e84f782775ad27d579",
+      "1a0f52ac309b1ff116297ae86c27fc3008060cdb",
       [
        "bluetooth/requestDevice/filter-matches.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371645,19 +371585,11 @@
       ]
      ],
      "le-not-supported.https.window.js": [
-      "ffb70209bd415f88e3018ea7f26b5740d96711b0",
+      "c961ab4492c42e0d62c599580b07e87c3f336040",
       [
        "bluetooth/requestDevice/le-not-supported.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371679,19 +371611,11 @@
       ]
      ],
      "manufacturer-data-filter-matches.https.window.js": [
-      "548b5d0b3fc7b1920499a204df4e98f1b3d7a39f",
+      "c4c0e805328a5aa52ff21025e0ad56e0517cce7e",
       [
        "bluetooth/requestDevice/manufacturer-data-filter-matches.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371713,19 +371637,11 @@
       ]
      ],
      "name-empty-device-from-name-empty-filter.https.window.js": [
-      "86e98bb643de0a5346ecc0d48c0d6a7eb583ef87",
+      "2ff22cb70200809e5cbaf7dc8ac63bbf4f2f3c92",
       [
        "bluetooth/requestDevice/name-empty-device-from-name-empty-filter.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371747,19 +371663,11 @@
       ]
      ],
      "not-processing-user-gesture.https.window.js": [
-      "9c35f11062b0b8b51ae0c2e578666237f10edeaf",
+      "a063b61163019336cfe3e776ed14b8dc54aea227",
       [
        "bluetooth/requestDevice/not-processing-user-gesture.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371781,19 +371689,11 @@
       ]
      ],
      "radio-not-present.https.window.js": [
-      "ba86b36f43d59b6414622018bcad2c6f8a4905b5",
+      "b55d63c6ff45fa30f973facc43de58f560a2f28c",
       [
        "bluetooth/requestDevice/radio-not-present.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371815,19 +371715,11 @@
       ]
      ],
      "request-from-iframe.https.window.js": [
-      "67aef5d4721d0c90e82ef61e104a96eeaa25dca6",
+      "d3f3cf897ff6f4eb97253f63843db888824a54fa",
       [
        "bluetooth/requestDevice/request-from-iframe.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371849,19 +371741,11 @@
       ]
      ],
      "request-from-sandboxed-iframe.https.window.js": [
-      "c486162a58bb9fbd41ab54c42a63d1df31133095",
+      "17a9da333a5d5c8f4f5af2932ad76f01e0408475",
       [
        "bluetooth/requestDevice/request-from-sandboxed-iframe.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371883,19 +371767,11 @@
       ]
      ],
      "same-device.https.window.js": [
-      "46bb9036a629c8c1ffdbe091d0336f86882ca1a5",
+      "41a42cf4c8fd70c10c096c50733d9a517b77f54b",
       [
        "bluetooth/requestDevice/same-device.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371917,19 +371793,11 @@
       ]
      ],
      "single-filter-single-service.https.window.js": [
-      "3fd50d8a0ef85c6a86eab23b1398bd78151698a6",
+      "67afad0b930c7930614f3ed17a0db78e1aa20d69",
       [
        "bluetooth/requestDevice/single-filter-single-service.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -371954,19 +371822,11 @@
     "server": {
      "connect": {
       "connection-succeeds.https.window.js": [
-       "d78d261338c526bf6e6af44e053321dc8055a01f",
+       "90b62b9265b1c337f05993f7169c9bd33cf6e962",
        [
         "bluetooth/server/connect/connection-succeeds.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -372014,19 +371874,11 @@
        ]
       ],
       "garbage-collection-ran-during-success.https.window.js": [
-       "1a4ad4711edc550038e01ddc942e0f69756d0165",
+       "bae9ff78f342832c77975a297ca358fb249333ba",
        [
         "bluetooth/server/connect/garbage-collection-ran-during-success.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -372048,19 +371900,11 @@
        ]
       ],
       "get-same-gatt-server.https.window.js": [
-       "a962d9d28afc4fb3623afa63a34c4b0e30cdeae1",
+       "59d7243a65382cd3509f425bcf6db9087c49c74f",
        [
         "bluetooth/server/connect/get-same-gatt-server.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -372083,19 +371927,11 @@
       ]
      },
      "device-same-object.https.window.js": [
-      "1c10a34488bfa1a785cc957c95ae9e452b0c16ae",
+      "f9a66d9b6915cf9b093ffafb6cb7fe11b3febf88",
       [
        "bluetooth/server/device-same-object.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -372118,19 +371954,11 @@
      ],
      "disconnect": {
       "connect-disconnect-twice.https.window.js": [
-       "4d832f2ecd84921a79623b519da292ed403b4eff",
+       "5d9908df4c8ac20d5fbea9966ff56b13a3b19de9",
        [
         "bluetooth/server/disconnect/connect-disconnect-twice.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -372152,19 +371980,11 @@
        ]
       ],
       "detach-gc.https.window.js": [
-       "7495c9deae62473f1f3ff14bf1f46518b39cfaf5",
+       "4951fd07c5e92dced89408ba4b859d00951244d4",
        [
         "bluetooth/server/disconnect/detach-gc.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -372212,19 +372032,11 @@
        ]
       ],
       "disconnect-twice-in-a-row.https.window.js": [
-       "6f40bf3bc4eb44950bda2191e80d8de37d0214f5",
+       "acca9796d5751d2e5c3fa73e2cd32bcd8ba31bda",
        [
         "bluetooth/server/disconnect/disconnect-twice-in-a-row.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -372246,19 +372058,11 @@
        ]
       ],
       "gc-detach.https.window.js": [
-       "cb0899bbe2f3f07b59f7de00d56cc7f42baeb95b",
+       "6f9055a73acf1ccce9365aaa7be7736ff20a9a61",
        [
         "bluetooth/server/disconnect/gc-detach.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -372724,19 +372528,11 @@
        ]
       ],
       "service-found.https.window.js": [
-       "fe700d6ef61021075b81a81a8389591448587998",
+       "b8a930d10c79b345f7a0c6c6ec9d89b095dccec4",
        [
         "bluetooth/server/getPrimaryService/service-found.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -372758,19 +372554,11 @@
        ]
       ],
       "two-iframes-from-same-origin.https.window.js": [
-       "cbb3c19a049337ae17752576ebf420b8595b799b",
+       "b7f23a14913914d3e3bc2f57b98b2b1cc91a185c",
        [
         "bluetooth/server/getPrimaryService/two-iframes-from-same-origin.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -372794,19 +372582,11 @@
      },
      "getPrimaryServices": {
       "blocklisted-services-with-uuid.https.window.js": [
-       "5d57e9dc9570c4b63b0ebdfe8b621c22c3f3761e",
+       "ccc913e5bfdc7df6efe6627dc97899e12f981660",
        [
         "bluetooth/server/getPrimaryServices/blocklisted-services-with-uuid.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -372828,19 +372608,11 @@
        ]
       ],
       "blocklisted-services.https.window.js": [
-       "4dc78bfdd7bf3a015ed777a258ece7d9fc11e9b5",
+       "ae6be9099466b725521e54bec72013bcf175762a",
        [
         "bluetooth/server/getPrimaryServices/blocklisted-services.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -372862,19 +372634,11 @@
        ]
       ],
       "correct-services.https.window.js": [
-       "4debf5dea4ed3cb274c15e8ffde46c5498d27ab4",
+       "f3d883dd2ef181ca7c7a88999a9620056a42f046",
        [
         "bluetooth/server/getPrimaryServices/correct-services.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -373624,19 +373388,11 @@
        ]
       ],
       "services-found-with-uuid.https.window.js": [
-       "b18bda8247a327ea3bd4c695460fa109e491fa31",
+       "972e6a75caa3f21935abe9b504d0bccf5249c6a1",
        [
         "bluetooth/server/getPrimaryServices/services-found-with-uuid.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -373658,19 +373414,11 @@
        ]
       ],
       "services-found.https.window.js": [
-       "8098e8e8bebb95703b38d437d4eda8b8d2cdad58",
+       "46861175c605d4e2d966df8751d709530f411f02",
        [
         "bluetooth/server/getPrimaryServices/services-found.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -373692,19 +373440,11 @@
        ]
       ],
       "services-not-found.https.window.js": [
-       "6dda95ed4307048c2ec9278ffefa89fc39ffa25d",
+       "63503282411b80eba908b91e72ea7a0946945019",
        [
         "bluetooth/server/getPrimaryServices/services-not-found.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -373755,19 +373495,11 @@
       ]
      ],
      "device-same-from-2-services.https.window.js": [
-      "4870105d5cf221c42c985a6015b17422aa6a0043",
+      "5b2ba310d356d3eb4f7c0f76ac992bb2f8056034",
       [
        "bluetooth/service/device-same-from-2-services.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -373789,19 +373521,11 @@
       ]
      ],
      "device-same-object.https.window.js": [
-      "cca0b344eae86ca5d2b09bee168eff58ebfddb7b",
+      "97da769a9eac25b55e72ac9e44d6c3cf1442ec3a",
       [
        "bluetooth/service/device-same-object.https.window.html",
        {
         "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
          [
           "script",
           "/resources/testdriver.js"
@@ -373824,19 +373548,11 @@
      ],
      "getCharacteristic": {
       "characteristic-found.https.window.js": [
-       "699f9938a5e118a73fe53e5b4519ab085ad5b6d6",
+       "807852ae133c0f024925faaee88309b9f585ea47",
        [
         "bluetooth/service/getCharacteristic/characteristic-found.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -374068,19 +373784,11 @@
      },
      "getCharacteristics": {
       "blocklisted-characteristics.https.window.js": [
-       "7458c56a1755556793996bbeb81f13f276d31ec9",
+       "408943585ab86eb3ed73454f82b862820a469aa8",
        [
         "bluetooth/service/getCharacteristics/blocklisted-characteristics.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -374102,19 +373810,11 @@
        ]
       ],
       "characteristics-found-with-uuid.https.window.js": [
-       "8778807b93b2cd9599ed49bfcd838a5ac53b3dcd",
+       "05680cc8e4f3f3e67a9749ffb8babf40124f4e2e",
        [
         "bluetooth/service/getCharacteristics/characteristics-found-with-uuid.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -374136,19 +373836,11 @@
        ]
       ],
       "characteristics-found.https.window.js": [
-       "f1b9ecd176a91c99f7d89aeae33cde16eefdd45f",
+       "6e20a31ce645fbc17b79a85b578caba163aac3ab",
        [
         "bluetooth/service/getCharacteristics/characteristics-found.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -374170,19 +373862,11 @@
        ]
       ],
       "characteristics-not-found.https.window.js": [
-       "93048fce2a5e64cd357683391266e194972a81d6",
+       "5b0c1896d64f01b83349a9152cc561ac0b435438",
        [
         "bluetooth/service/getCharacteristics/characteristics-not-found.https.window.html",
         {
          "script_metadata": [
-          [
-           "script",
-           "/resources/testharness.js"
-          ],
-          [
-           "script",
-           "/resources/testharnessreport.js"
-          ],
           [
            "script",
            "/resources/testdriver.js"
@@ -389532,7 +389216,7 @@
        ]
       ],
       "color-valid.html": [
-       "ab9272ce032c038feeb6fd35a7e41a315ebceb33",
+       "c3e3e41acecb9557785176a0cb5bc6c5e5fe6468",
        [
         null,
         {}
@@ -403301,7 +402985,7 @@
         ]
        ],
        "shape-outside-shape-none-000.html": [
-        "d27c2b20becaceb6295ba1e5ce186aaa80b4c870",
+        "de1437517783414348930181080b9c79da5f0c2a",
         [
          null,
          {}
@@ -440730,7 +440414,7 @@
        ]
       ],
       "request-upload.h2.any.js": [
-       "aee0ea34fdeb70c2c5c76ce03fd2bc24ba13eba5",
+       "eedc2bf6a769d0ba84171eeecac659ba5ea2b501",
        [
         "fetch/api/basic/request-upload.h2.any.html",
         {
@@ -445519,7 +445203,7 @@
        ]
       ],
       "request-structure.any.js": [
-       "65f1b96b2b9042cd9f9656f125c756e9b4e5ff87",
+       "3d55c70ac1e667fcc7f2b6f886ad022d310faa19",
        [
         "fetch/api/request/request-structure.any.html",
         {
@@ -455107,39 +454791,17 @@
         ]
        ],
        "cross-origin-top-navigation-with-user-activation-in-parent.window.js": [
-        "8dbe667348a00a3c00122a50cc2adc619e6ccb9f",
+        "42b4b208ee077f0e6f4dcedf70e69d57af9fc067",
         [
          "html/browsers/browsing-the-web/navigating-across-documents/cross-origin-top-navigation-with-user-activation-in-parent.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ]
-          ]
-         }
+         {}
         ]
        ],
        "cross-origin-top-navigation-without-user-activation.window.js": [
-        "bd7140f459770e5dc48f1dc6ac1e37877a03f4fc",
+        "57f0bce247ec3b30dea2cdcb6fe6459269852116",
         [
          "html/browsers/browsing-the-web/navigating-across-documents/cross-origin-top-navigation-without-user-activation.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ]
-          ]
-         }
+         {}
         ]
        ],
        "empty-iframe-load-event.html": [
@@ -456012,7 +455674,7 @@
       },
       "remote-context-helper-tests": {
        "addHTML.window.js": [
-        "df461b0ec74220a6f6277d49dce40cbcf923f8ae",
+        "0c093cc462572f985a5b080e67d4f8232c9aef9d",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/addHTML.window.html",
          {
@@ -456035,14 +455697,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456054,7 +455708,7 @@
         ]
        ],
        "addIframe.window.js": [
-        "71de0e5e1782fcf22d4df8422e215217eb26f570",
+        "c1630e46800ea37dcd0d961776b2bc467c82be5a",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/addIframe.window.html",
          {
@@ -456077,14 +455731,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456096,7 +455742,7 @@
         ]
        ],
        "addScripts.window.js": [
-        "ae3e61502e6607c3cac78e8b20b4ea2b3398b8fb",
+        "01cf06c65d52ec6d6208dce339dcf6cf07e89680",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/addScripts.window.html",
          {
@@ -456119,14 +455765,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456138,7 +455776,7 @@
         ]
        ],
        "addWindow-defaults.window.js": [
-        "9b5a42149bbac382a4562cfdc1a23c30e9142d99",
+        "34fa9cd39a2d8536c759447d56262b19d55dd33e",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/addWindow-defaults.window.html",
          {
@@ -456161,14 +455799,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456180,7 +455810,7 @@
         ]
        ],
        "addWindow-extra-config.window.js": [
-        "fcc382c2190773fbe938abcdd9ba6b2e4eec74d0",
+        "112d2d726ee0ea0f2b1df5b2ccdaee970d00f3e6",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/addWindow-extra-config.window.html",
          {
@@ -456203,14 +455833,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456222,7 +455844,7 @@
         ]
        ],
        "addWindow-features.window.js": [
-        "40cf248ee7058a46623ccf580abaa4b348098acf",
+        "329c55e62622d65090d64b67557eb8b29968b319",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/addWindow-features.window.html",
          {
@@ -456245,14 +455867,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456264,7 +455878,7 @@
         ]
        ],
        "addWindow-invalid-origin.window.js": [
-        "08867a0976b7f39b77375ec645d77c816a629a63",
+        "58aee312cc211275ca138968747f7fdc32fbcdc8",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/addWindow-invalid-origin.window.html",
          {
@@ -456287,14 +455901,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456306,7 +455912,7 @@
         ]
        ],
        "addWindow-startOn.window.js": [
-        "c0d783fd62e64dd1427a50d8fb648b690e4a2058",
+        "0f57a87638a2e2881b8a472d788725633c2d10a4",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/addWindow-startOn.window.html",
          {
@@ -456329,14 +455935,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456348,7 +455946,7 @@
         ]
        ],
        "addWindow-target.window.js": [
-        "3a32e9e95a99ac787b824858bb8694e1de4af84c",
+        "3f742048b418eb2e0fe55b5eef05ed75941e7926",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/addWindow-target.window.html",
          {
@@ -456371,14 +455969,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456390,7 +455980,7 @@
         ]
        ],
        "addWorker.window.js": [
-        "e5a582d30b74495121ac8d6ed14f07ce6f99c1d1",
+        "d4ba8b031270e241abbb792367eb8511b4444546",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/addWorker.window.html",
          {
@@ -456413,14 +456003,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456432,7 +456014,7 @@
         ]
        ],
        "constructor.window.js": [
-        "4e1293cca0eaa18ce2d878a07742bffe6054f209",
+        "dcbb3dabbc1d345e6eaa424a2f167e29b4f05ac0",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/constructor.window.html",
          {
@@ -456455,14 +456037,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456474,7 +456048,7 @@
         ]
        ],
        "createContext-bad-executorCreator.window.js": [
-        "52acc0e204cbbf2d5724de47fefad35778837a58",
+        "bf245811737edfbc7bce29f1600767f31702eef4",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/createContext-bad-executorCreator.window.html",
          {
@@ -456497,14 +456071,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ]
           ]
@@ -456512,7 +456078,7 @@
         ]
        ],
        "navigateToNew.window.js": [
-        "f9428a030ef8219ab0db8a27d6031335d382a733",
+        "f7dd3f8325a5fcbd9feffc191b4d97ffcef625b1",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/navigateToNew.window.html",
          {
@@ -456535,14 +456101,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456554,7 +456112,7 @@
         ]
        ],
        "navigation-bfcache.window.js": [
-        "9c94fc7b595dbd9411abc3951270ee917910506f",
+        "1fa90a90642ad39e32404350ebed36306ebb8233",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/navigation-bfcache.window.html",
          {
@@ -456577,14 +456135,6 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
@@ -456596,7 +456146,7 @@
         ]
        ],
        "navigation-helpers.window.js": [
-        "c4cb3b259e0eb856ecfa4ce0f2cd61f9bd2df119",
+        "079e20661eac42e5662c43c1a0b746c2cf5ca1f1",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/navigation-helpers.window.html",
          {
@@ -456619,26 +456169,23 @@
            ],
            [
             "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
-           ],
-           [
-            "script",
             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
            ],
            [
             "script",
             "./resources/test-helper.js"
+           ],
+           [
+            "timeout",
+            "long"
            ]
-          ]
+          ],
+          "timeout": "long"
          }
         ]
        ],
        "navigation-same-document.window.js": [
-        "e2b6711eabf70dfc1bd98b8c7318cb0c8df433ae",
+        "6f637e2b907549a7ef6546b7b0aa21e0278a37ae",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/navigation-same-document.window.html",
          {
@@ -456658,14 +456205,6 @@
            [
             "script",
             "/common/utils.js"
-           ],
-           [
-            "script",
-            "/resources/testharness.js"
-           ],
-           [
-            "script",
-            "/resources/testharnessreport.js"
            ],
            [
             "script",
@@ -457016,7 +456555,7 @@
          ]
         ],
         "unload-main-frame-cross-origin.window.js": [
-         "dd80405ce7745842daef15e3359291e4fa609fe1",
+         "65b4e533f644333acc0f2bd5a492202cf7625a7a",
          [
           "html/browsers/browsing-the-web/unloading-documents/unload/unload-main-frame-cross-origin.window.html",
           {
@@ -457040,21 +456579,13 @@
             [
              "script",
              "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-            ],
-            [
-             "script",
-             "/resources/testharness.js"
-            ],
-            [
-             "script",
-             "/resources/testharnessreport.js"
             ]
            ]
           }
          ]
         ],
         "unload-main-frame-same-origin.window.js": [
-         "1735fc2286b81de4f22b8f8b493f4a06d55450a6",
+         "5a95455c4ced0b1dfe40869fa6bc043e334191cb",
          [
           "html/browsers/browsing-the-web/unloading-documents/unload/unload-main-frame-same-origin.window.html",
           {
@@ -457078,14 +456609,6 @@
             [
              "script",
              "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-            ],
-            [
-             "script",
-             "/resources/testharness.js"
-            ],
-            [
-             "script",
-             "/resources/testharnessreport.js"
             ]
            ]
           }
@@ -481718,7 +481241,7 @@
         ]
        ],
        "reporting-coop-navigated-opener.https.html": [
-        "1ee64f9fbea1d0211f28c7adf320b87021ba9e9a",
+        "f909819fdfcf9549f66825c7316d011039aad79f",
         [
          null,
          {
@@ -507752,21 +507275,10 @@
       ]
      ],
      "invalid-headers-in-early-hints.h2.window.js": [
-      "6c5161dc8bf72d193c843860f24024f753075314",
+      "55181877df1b3f338294eecb0a076996a5e16cde",
       [
        "loading/early-hints/invalid-headers-in-early-hints.h2.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ]
-        ]
-       }
+       {}
       ]
      ],
      "modulepreload-in-early-hints.h2.window.js": [
@@ -510869,21 +510381,10 @@
      ]
     ],
     "takePhoto-without-PhotoCapabilities.https.window.js": [
-     "1886dd92f3ed8eb26d9d57808977b891c56baddc",
+     "96eb253ccd37fb126a3790fd964e15c583724f38",
      [
       "mediacapture-image/takePhoto-without-PhotoCapabilities.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/testharness.js"
-        ],
-        [
-         "script",
-         "/resources/testharnessreport.js"
-        ]
-       ]
-      }
+      {}
      ]
     ],
     "takePhoto.html": [
@@ -520172,19 +519673,11 @@
    },
    "pending_beacon": {
     "pending_beacon-basic.tentative.window.js": [
-     "08369c886a0b8738f9be1167e749da50efee42e0",
+     "efc9ed2617e3b90b90302b06826ca729f60eb763",
      [
       "pending_beacon/pending_beacon-basic.tentative.window.html",
       {
        "script_metadata": [
-        [
-         "script",
-         "/resources/testharness.js"
-        ],
-        [
-         "script",
-         "/resources/testharnessreport.js"
-        ],
         [
          "script",
          "./resources/pending_beacon-helper.js"
@@ -520194,19 +519687,11 @@
      ]
     ],
     "pending_beacon-deactivate.tentative.window.js": [
-     "c499d32b98b272c3362561d68671f4d8d6a8f797",
+     "74c0852adc322a7194ab0bc3aca83a358572d462",
      [
       "pending_beacon/pending_beacon-deactivate.tentative.window.html",
       {
        "script_metadata": [
-        [
-         "script",
-         "/resources/testharness.js"
-        ],
-        [
-         "script",
-         "/resources/testharnessreport.js"
-        ],
         [
          "script",
          "./resources/pending_beacon-helper.js"
@@ -520216,19 +519701,11 @@
      ]
     ],
     "pending_beacon-sendnow.tentative.window.js": [
-     "cd3360aeecf29e4080228c2b6854b4c4c31cd3c9",
+     "00baccd0c1ab42c0dfa08def5f23ad6ba21eed9b",
      [
       "pending_beacon/pending_beacon-sendnow.tentative.window.html",
       {
        "script_metadata": [
-        [
-         "script",
-         "/resources/testharness.js"
-        ],
-        [
-         "script",
-         "/resources/testharnessreport.js"
-        ],
         [
          "script",
          "/common/utils.js"
@@ -520242,19 +519719,11 @@
      ]
     ],
     "pending_get_beacon-cors.tentative.https.window.js": [
-     "4e711bb7fcc3433cddf3b51fdfd0a9f18e57a456",
+     "10bb3a0bed7f4888aaab7c7f6551f4a9a447c60e",
      [
       "pending_beacon/pending_get_beacon-cors.tentative.https.window.html",
       {
        "script_metadata": [
-        [
-         "script",
-         "/resources/testharness.js"
-        ],
-        [
-         "script",
-         "/resources/testharnessreport.js"
-        ],
         [
          "script",
          "/common/get-host-info.sub.js"
@@ -520272,19 +519741,11 @@
      ]
     ],
     "pending_get_beacon-send.tentative.window.js": [
-     "7f52c082800cea4a4cac2dc57c0c99f727bbe98e",
+     "8c6e826af5b578b5893babb5e0ee90e37b37cc09",
      [
       "pending_beacon/pending_get_beacon-send.tentative.window.html",
       {
        "script_metadata": [
-        [
-         "script",
-         "/resources/testharness.js"
-        ],
-        [
-         "script",
-         "/resources/testharnessreport.js"
-        ],
         [
          "script",
          "/common/utils.js"
@@ -520298,19 +519759,11 @@
      ]
     ],
     "pending_post_beacon-cors.tentative.https.window.js": [
-     "7bdfc3be532531e65750382f7b53167f47766d7a",
+     "01511d22c1b7bc58cfd86ca3725b0514f292d058",
      [
       "pending_beacon/pending_post_beacon-cors.tentative.https.window.html",
       {
        "script_metadata": [
-        [
-         "script",
-         "/resources/testharness.js"
-        ],
-        [
-         "script",
-         "/resources/testharnessreport.js"
-        ],
         [
          "script",
          "/common/get-host-info.sub.js"
@@ -520328,19 +519781,11 @@
      ]
     ],
     "pending_post_beacon-sendwithdata.tentative.window.js": [
-     "081e1d4d62e3673756db53d4bc5d2d20ef56a57c",
+     "77e91479e8b990b2b8240dc3fd6853e4d25ab980",
      [
       "pending_beacon/pending_post_beacon-sendwithdata.tentative.window.html",
       {
        "script_metadata": [
-        [
-         "script",
-         "/resources/testharness.js"
-        ],
-        [
-         "script",
-         "/resources/testharnessreport.js"
-        ],
         [
          "script",
          "/common/utils.js"
@@ -521101,7 +520546,7 @@
       ]
      ],
      "unload-allowed-by-default.tentative.window.js": [
-      "68ce11befdfc512e17ae9aaa7b4bf427cbae08c6",
+      "6db5291ebb65562e2fe2f32f29ebf250f871ccb3",
       [
        "permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.html",
        {
@@ -521120,26 +520565,23 @@
          ],
          [
           "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
-         [
-          "script",
           "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
          ],
          [
           "script",
           "./resources/unload-helper.js"
+         ],
+         [
+          "timeout",
+          "long"
          ]
-        ]
+        ],
+        "timeout": "long"
        }
       ]
      ],
      "unload-disallowed-subframe.tentative.window.js": [
-      "d7eb3d4d736b4ed74104c5785de4a2a46297a608",
+      "b2fb19ae1295d5750c656834f37a2e7ab64b9f50",
       [
        "permissions-policy/experimental-features/unload-disallowed-subframe.tentative.window.html",
        {
@@ -521158,26 +520600,23 @@
          ],
          [
           "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
-         [
-          "script",
           "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
          ],
          [
           "script",
           "./resources/unload-helper.js"
+         ],
+         [
+          "timeout",
+          "long"
          ]
-        ]
+        ],
+        "timeout": "long"
        }
       ]
      ],
      "unload-disallowed.tentative.window.js": [
-      "2eb14d4a1e6b631825cc6d42bb14b4d18bd59fa8",
+      "c93443c1010d51216feb8e54098f66084ea4bd05",
       [
        "permissions-policy/experimental-features/unload-disallowed.tentative.window.html",
        {
@@ -521196,21 +520635,18 @@
          ],
          [
           "script",
-          "/resources/testharness.js"
-         ],
-         [
-          "script",
-          "/resources/testharnessreport.js"
-         ],
-         [
-          "script",
           "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
          ],
          [
           "script",
           "./resources/unload-helper.js"
+         ],
+         [
+          "timeout",
+          "long"
          ]
-        ]
+        ],
+        "timeout": "long"
        }
       ]
      ],
@@ -522323,6 +521759,24 @@
      ],
      [
       "pointerevents/pointerevent_fractional_coordinates.html?touch",
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerevent_hit_test_scroll.html": [
+     "6465349849fba5257a6c08f785a78c181165805d",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerevent_hit_test_scroll_visible_descendant.html": [
+     "0a09137e76dcc092f28d70759240e66c01ec8f8e",
+     [
+      null,
       {
        "testdriver": true
       }
@@ -539372,28 +538826,28 @@
      ]
     ],
     "wakelock-disabled-by-feature-policy.https.sub.html": [
-     "821ec62885d61b214f766b4c8e173f8b67855f38",
+     "ba26028ca3514d2a7045a845b720785163cd565f",
      [
       null,
       {}
      ]
     ],
     "wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html": [
-     "2b2e0c94cc744ff6c19f70397e4383fa2d809cff",
+     "14e549e77d36d0e115432b5be02e6b678f83cd3c",
      [
       null,
       {}
      ]
     ],
     "wakelock-enabled-by-feature-policy-attribute.https.sub.html": [
-     "b8ab3b0301798bc7ceaed025e89b0a36dfa5b58c",
+     "f4ba6f4475a7e7afc2dc9cee9d9b870b8eddc5cc",
      [
       null,
       {}
      ]
     ],
     "wakelock-enabled-by-feature-policy.https.sub.html": [
-     "6e522cc52882dcff7e179c7e046eedd41cc65c5f",
+     "a73851e955892d1eed33978b21ad93bef30ca648",
      [
       null,
       {
@@ -539402,7 +538856,7 @@
      ]
     ],
     "wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html": [
-     "e74436a76cf6b3f312a042a5525ecfb051de3a8e",
+     "277c291204902d93418cf20bec7962259d9010a7",
      [
       null,
       {
@@ -566179,19 +565633,11 @@
      ]
     ],
     "NDEFReader_make-read-only.https.window.js": [
-     "244dd6369fd1bd7088682907dd10968ca827e0f5",
+     "64cc935d302add8aa69646da5c00fcb80fad9f70",
      [
       "web-nfc/NDEFReader_make-read-only.https.window.html",
       {
        "script_metadata": [
-        [
-         "script",
-         "/resources/testharness.js"
-        ],
-        [
-         "script",
-         "/resources/testharnessreport.js"
-        ],
         [
          "script",
          "resources/nfc-helpers.js"
@@ -566236,19 +565682,11 @@
      ]
     ],
     "NDEFRecord_constructor.https.window.js": [
-     "f803b121e83a4a3f9cf49b8d65d8399db2ec11bb",
+     "57c5bf021268735418e63e2b40559d5861ee45c1",
      [
       "web-nfc/NDEFRecord_constructor.https.window.html",
       {
        "script_metadata": [
-        [
-         "script",
-         "/resources/testharness.js"
-        ],
-        [
-         "script",
-         "/resources/testharnessreport.js"
-        ],
         [
          "script",
          "resources/nfc-helpers.js"
@@ -584120,7 +583558,7 @@
       ]
      ],
      "003.html": [
-      "ceed0e91e3cba54e83b32f73eca607dda2376429",
+      "2af47354028362cf05222702975b969a51ea2e44",
       [
        null,
        {}

@@ -1127,7 +1127,7 @@
      *
      * Typically this function is called implicitly on page load; it's
      * only necessary for users to call this when either the
-     * ``explict_done`` or ``single_page`` properties have been set
+     * ``explicit_done`` or ``single_page`` properties have been set
      * via the :js:func:`setup` function.
      *
      * For single page tests this marks the test as complete and sets its status.
@@ -3883,7 +3883,7 @@
     /**
      * Timeout the tests.
      *
-     * This only has an effect when ``explict_timeout`` has been set
+     * This only has an effect when ``explicit_timeout`` has been set
      * in :js:func:`setup`. In other cases any call is a no-op.
      *
      */
