@@ -45,8 +45,6 @@ ImportDataRequest DailyUseCaseImpl::GenerateImportRequestBody() {
   // Generate Fresnel PSM import request body.
   device_activity::ImportDataRequest import_request;
   import_request.set_window_identifier(window_id_str);
-  import_request.set_plaintext_identifier(psm_id_str);
-  import_request.set_use_case(GetPsmUseCase());
 
   // Create fresh |DeviceMetadata| object.
   // Note every dimension added to this proto must be approved by privacy.
@@ -58,6 +56,9 @@ ImportDataRequest DailyUseCaseImpl::GenerateImportRequestBody() {
   // TODO(hirthanan): This is used for debugging purposes until crbug/1289722
   // has launched.
   device_metadata->set_hardware_id(GetFullHardwareClass());
+
+  import_request.set_use_case(GetPsmUseCase());
+  import_request.set_plaintext_identifier(psm_id_str);
 
   return import_request;
 }

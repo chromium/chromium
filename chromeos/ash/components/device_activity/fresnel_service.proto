@@ -83,6 +83,9 @@ message ImportDataRequest {
 
   // The plaintext identifier.
   optional string plaintext_identifier = 4;
+
+  // The plaintext identifiers - value pair to be imported.
+  optional bytes value = 5;
 }
 
 // The request of PsmRlweOprf sent by the client for checking PSM membership.

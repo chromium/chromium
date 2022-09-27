@@ -195,6 +195,7 @@ DeviceActiveUseCase::GeneratePsmIdentifier(
   if (!psm_id_hex.empty()) {
     psm_rlwe::RlwePlaintextId psm_rlwe_id;
     psm_rlwe_id.set_sensitive_id(psm_id_hex);
+
     return psm_rlwe_id;
   }
 
