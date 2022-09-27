@@ -12,13 +12,16 @@ namespace ntp_tiles {
 
 const char kPopularSitesFieldTrialName[] = "NTPPopularSites";
 
-const base::Feature kPopularSitesBakedInContentFeature{
-    "NTPPopularSitesBakedInContent", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPopularSitesBakedInContentFeature,
+             "NTPPopularSitesBakedInContent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kNtpMostLikelyFaviconsFromServerFeature{
-    "NTPMostLikelyFaviconsFromServer", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kNtpMostLikelyFaviconsFromServerFeature,
+             "NTPMostLikelyFaviconsFromServer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kUsePopularSitesSuggestions{
-    "UsePopularSitesSuggestions", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUsePopularSitesSuggestions,
+             "UsePopularSitesSuggestions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace ntp_tiles

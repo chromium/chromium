@@ -15,14 +15,14 @@ extern const char kPopularSitesFieldTrialName[];
 // This feature is enabled by default. Otherwise, users who need it would not
 // get the right configuration timely enough. The configuration affects only
 // Android or iOS users.
-extern const base::Feature kPopularSitesBakedInContentFeature;
+BASE_DECLARE_FEATURE(kPopularSitesBakedInContentFeature);
 
 // Feature to allow the new Google favicon server for fetching favicons for Most
 // Likely tiles on the New Tab Page.
-extern const base::Feature kNtpMostLikelyFaviconsFromServerFeature;
+BASE_DECLARE_FEATURE(kNtpMostLikelyFaviconsFromServerFeature);
 
 // If this feature is enabled, we enable popular sites in the suggestions UI.
-extern const base::Feature kUsePopularSitesSuggestions;
+BASE_DECLARE_FEATURE(kUsePopularSitesSuggestions);
 
 }  // namespace ntp_tiles
 
