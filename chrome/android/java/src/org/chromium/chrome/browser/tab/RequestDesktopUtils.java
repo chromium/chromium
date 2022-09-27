@@ -5,7 +5,6 @@ package org.chromium.chrome.browser.tab;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -34,7 +33,6 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -61,7 +59,6 @@ import java.util.HashSet;
  * Utilities for requesting desktop sites support.
  */
 public class RequestDesktopUtils {
-    private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
     private static final String SITE_WILDCARD = "*";
 
     static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES =
@@ -150,20 +147,13 @@ public class RequestDesktopUtils {
             Profile profile, GURL url, boolean useDesktopUserAgent) {
         boolean isIncognito =
                 Profile.getBrowserProfileTypeFromProfile(profile) == BrowserProfileType.INCOGNITO;
-        String domainAndRegistry =
-                UrlUtilities.getDomainAndRegistry(url.getSpec(), /*includePrivateRegistries*/ true);
-        // Use host only (no scheme/port/path) for ContentSettings to ensure consistency.
-        String hostPattern;
-        if (TextUtils.isEmpty(domainAndRegistry)) {
-            // Use host directly if fails to extract domain from url (e.g. ip address).
-            hostPattern = url.getHost();
-        } else {
-            hostPattern = ANY_SUBDOMAIN_PATTERN + domainAndRegistry;
-            // Clear subdomain level exception if any.
-            WebsitePreferenceBridge.setContentSettingCustomScope(profile,
-                    ContentSettingsType.REQUEST_DESKTOP_SITE, url.getHost(),
-                    /*secondaryPattern*/ SITE_WILDCARD, ContentSettingValues.DEFAULT);
-        }
+        String domainWildcardPattern =
+                WebsitePreferenceBridge.toDomainWildcardPattern(url.getSpec());
+        // Clear subdomain level exception if any.
+        WebsitePreferenceBridge.setContentSettingCustomScope(profile,
+                ContentSettingsType.REQUEST_DESKTOP_SITE, url.getHost(),
+                /*secondaryPattern*/ SITE_WILDCARD, ContentSettingValues.DEFAULT);
+
         @ContentSettingValues
         int defaultValue = WebsitePreferenceBridge.getDefaultContentSetting(
                 profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
@@ -182,7 +172,7 @@ public class RequestDesktopUtils {
 
         // Set or remove a domain level exception.
         WebsitePreferenceBridge.setContentSettingCustomScope(profile,
-                ContentSettingsType.REQUEST_DESKTOP_SITE, hostPattern,
+                ContentSettingsType.REQUEST_DESKTOP_SITE, domainWildcardPattern,
                 /*secondaryPattern*/ SITE_WILDCARD, contentSettingValue);
     }
 

@@ -62,8 +62,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -101,8 +99,6 @@ public class RequestDesktopUtilsUnitTest {
     public JniMocker mJniMocker = new JniMocker();
     @Mock
     private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
-    @Mock
-    private UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock
     private MessageDispatcher mMessageDispatcher;
     @Mock
@@ -175,6 +171,7 @@ public class RequestDesktopUtilsUnitTest {
         }
     }
 
+    private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
     private static final String GOOGLE_COM = "[*.]google.com/";
     private static String sGlobalDefaultsExperimentTrialName;
     private static String sGlobalDefaultsExperimentGroupName;
@@ -184,7 +181,6 @@ public class RequestDesktopUtilsUnitTest {
         MockitoAnnotations.initMocks(this);
 
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
-        mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         ShadowCriticalPersistedTabData.setCriticalPersistedTabData(mCriticalPersistedTabData);
         ShadowProfile.setProfile(mProfile);
         ShadowUmaSessionStats.setMetricsServiceAvailable(true);
@@ -212,9 +208,9 @@ public class RequestDesktopUtilsUnitTest {
                 .when(mWebsitePreferenceBridgeJniMock)
                 .setContentSettingCustomScope(any(), eq(ContentSettingsType.REQUEST_DESKTOP_SITE),
                         anyString(), anyString(), anyInt());
-        doAnswer(invocation -> getDomainAndRegistry(invocation.getArgument(0)))
-                .when(mUrlUtilitiesJniMock)
-                .getDomainAndRegistry(anyString(), anyBoolean());
+        doAnswer(invocation -> toDomainWildcardPattern(invocation.getArgument(0)))
+                .when(mWebsitePreferenceBridgeJniMock)
+                .toDomainWildcardPattern(anyString());
 
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
         mSharedPreferencesManager.disableKeyCheckerForTesting();
@@ -359,14 +355,13 @@ public class RequestDesktopUtilsUnitTest {
     }
 
     /**
-     * Helper to get organization-identifying host from URLs. The real implementation calls
-     * {@link UrlUtilities}. It's not useful to actually reimplement it, so just return a string in
-     * a trivial way.
+     * Helper to get domain wildcard pattern from URL. The real implementation calls
+     * {@link WebsitePreferenceBridge}.
      * @param origin A URL.
-     * @return The organization-identifying host from the given URL.
+     * @return The domain wildcard pattern from the given URL.
      */
-    private String getDomainAndRegistry(String origin) {
-        return origin.replaceAll(".*\\.(.+\\.[^.]+$)", "$1");
+    private String toDomainWildcardPattern(String origin) {
+        return ANY_SUBDOMAIN_PATTERN + origin.replaceAll(".*\\.(.+\\.[^.]+$)", "$1");
     }
 
     @Test
