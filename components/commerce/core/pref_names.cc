@@ -9,6 +9,8 @@
 
 namespace commerce {
 
+const char kCommerceDailyMetricsLastUpdateTime[] =
+    "commerce_daily_metrics_last_update_time";
 const char kShoppingListBookmarkLastUpdateTime[] =
     "shopping_list_bookmark_last_update_time";
 const char kShoppingListEnabledPrefName[] = "shopping_list_enabled";
@@ -26,6 +28,7 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
       kPriceEmailNotificationsEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
+  registry->RegisterTimePref(kCommerceDailyMetricsLastUpdateTime, base::Time());
   registry->RegisterTimePref(kShoppingListBookmarkLastUpdateTime, base::Time());
 
   registry->RegisterBooleanPref(kShoppingListEnabledPrefName, true);

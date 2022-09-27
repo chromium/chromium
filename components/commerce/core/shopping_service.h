@@ -87,6 +87,10 @@ enum class ProductInfoFallback {
   kMaxValue = kPrice,
 };
 
+namespace metrics {
+class ScheduledMetricsManager;
+}  // namespace metrics
+
 class BookmarkUpdateManager;
 class ShoppingPowerBookmarkDataProvider;
 class ShoppingBookmarkModelObserver;
@@ -360,6 +364,10 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       product_info_cache_;
 
   std::unique_ptr<BookmarkUpdateManager> bookmark_update_manager_;
+
+  // The object tracking metrics that are recorded at specific intervals.
+  std::unique_ptr<commerce::metrics::ScheduledMetricsManager>
+      scheduled_metrics_manager_;
 
   // Ensure certain functions are being executed on the same thread.
   SEQUENCE_CHECKER(sequence_checker_);

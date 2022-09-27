@@ -9,6 +9,7 @@ class PrefRegistrySimple;
 
 namespace commerce {
 
+extern const char kCommerceDailyMetricsLastUpdateTime[];
 extern const char kShoppingListBookmarkLastUpdateTime[];
 
 // This setting is primarily for enabling or disabling the shopping list feature
