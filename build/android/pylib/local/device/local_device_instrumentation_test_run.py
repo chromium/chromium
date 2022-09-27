@@ -142,13 +142,14 @@ def _LogTestEndpoints(device, test_name):
 @contextlib.contextmanager
 def _VoiceInteractionService(device, use_voice_interaction_service):
   def set_voice_interaction_service(service):
-    device.RunShellCommand('settings put secure voice_interaction_service %s' %
-                           service)
+    device.RunShellCommand(
+        ['settings', 'put', 'secure', 'voice_interaction_service', service])
 
   default_voice_interaction_service = None
   try:
     default_voice_interaction_service = device.RunShellCommand(
-        'settings get secure voice_interaction_service', single_line=True)
+        ['settings', 'get', 'secure', 'voice_interaction_service'],
+        single_line=True)
 
     set_voice_interaction_service(use_voice_interaction_service)
     yield
