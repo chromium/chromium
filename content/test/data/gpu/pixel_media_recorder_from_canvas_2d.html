@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<meta name="viewport" content="initial-scale=1">
+<script src="pixel_video_from_canvas.js"></script>
+<script>
+
+function sendResult(status) {
+  if (window.domAutomationController) {
+    window.domAutomationController.send(status);
+  } else {
+    console.log(status);
+  }
+}
+
+function checkPixel(ctx, x, y, expected_rgba) {
+  let settings = {colorSpaceConversion: 'none'};
+  let rgba = ctx.getImageData(x, y, 1, 1, settings).data;
+  const tolerance = 30;
+  for (let i = 0; i < 4; i++) {
+    if (Math.abs(rgba[i] - expected_rgba[i]) > tolerance) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// This is a very basic test for 4 corner pixels, with large tolerance.
+function checkFourColorsFrame(ctx, width, height) {
+  const kYellow = [0xFF, 0xFF, 0x00, 0xFF];
+  const kRed = [0xFF, 0x00, 0x00, 0xFF];
+  const kBlue = [0x00, 0x00, 0xFF, 0xFF];
+  const kGreen = [0x00, 0xFF, 0x00, 0xFF];
+
+  let m = 10; // margin from the frame's edge
+  if (!checkPixel(ctx, m, m, kYellow)) {
+    logOutput('top left corner is not yellow');
+    return false;
+  }
+  if (!checkPixel(ctx, width - m, m, kRed)) {
+    logOutput('top right corner is not red');
+    return false;
+  }
+  if (!checkPixel(ctx, m, height - m, kBlue)) {
+    logOutput('bottom left corner is not blue');
+    return false;
+  }
+  if (!checkPixel(ctx, width - m, height - m, kGreen)) {
+    logOutput('bottom right corner is not green');
+    return false;
+  }
+  return true;
+}
+
+async function main() {
+  const canvas = document.getElementById('cnv');
+  const video = document.getElementById('result');
+  const ctx = canvas.getContext('2d');
+  fourColorsFrame(ctx);
+  video.width = canvas.width;
+  video.height = canvas.height;
+  let capturing = false;
+
+  const stream = canvas.captureStream(60);
+  const recorder = new MediaRecorder(stream);
+
+  let time_base = 0;
+  let data_chunks = [];
+  const video_duration_ms = 300;
+
+  const test_video_output = (e) => {
+    let test_cnv = new OffscreenCanvas(video.width, video.height);
+    let test_ctx = test_cnv.getContext('2d');
+    test_ctx.drawImage(video, 0, 0, video.width, video.height);
+    if (checkFourColorsFrame(test_ctx, video.width, video.height)) {
+      logOutput('Test completed');
+      sendResult('SUCCESS');
+    } else {
+      logOutput('Test failed');
+      sendResult('FAILED');
+    }
+  }
+
+  recorder.error = (e) => {
+    capturing = false;
+    logOutput('Test failed with an error');
+    logOutput(e);
+    sendResult('FAILED');
+  }
+
+  recorder.ondataavailable = (e) => {
+    data_chunks.push(e.data);
+    if (time_base == 0) {
+      time_base = e.timecode;
+    } else if ((e.timecode - time_base > video_duration_ms) && capturing) {
+      capturing = false;
+      recorder.stop();
+    }
+  }
+
+  recorder.onstop = (e) => {
+    const blob = new Blob(data_chunks, { 'type': 'video/webm' });
+    const videoURL = URL.createObjectURL(blob);
+    video.src = videoURL;
+    video.onended = test_video_output;
+    video.play();
+  }
+
+  capturing = true;
+  recorder.start(video_duration_ms);
+  while(capturing) {
+    await waitForNextFrame();
+    fourColorsFrame(ctx);
+  }
+}
+</script>
+<body onload="main()">
+<canvas id='cnv' width='128' height='128'></canvas>
+<video id='result' muted></video>
+</body>
