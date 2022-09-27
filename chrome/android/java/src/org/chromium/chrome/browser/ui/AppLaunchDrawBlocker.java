@@ -89,6 +89,7 @@ public class AppLaunchDrawBlocker {
     private boolean mBlockDrawForOverviewPage;
     private boolean mBlockDrawForIncognitoRestore;
     private long mTimeStartedBlockingDrawForInitialTab;
+    private long mTimeStartedBlockingDrawForIncognitoRestore;
 
     /**
      * Constructor for AppLaunchDrawBlocker.
@@ -179,10 +180,13 @@ public class AppLaunchDrawBlocker {
      * This gets fired when all the conditions needed to unblock the draw from the Incognito restore
      * are fired.
      */
-    private void onIncognitoRestoreUnblockConditionsFired() {
+    @VisibleForTesting
+    public void onIncognitoRestoreUnblockConditionsFired() {
         if (mBlockDrawForIncognitoRestore) {
-            recordBlockDrawForIncognitoRestoreHistograms();
             mBlockDrawForIncognitoRestore = false;
+            RecordHistogram.recordTimesHistogram(
+                    "Android.AppLaunch.DurationDrawWasBlocked.OnIncognitoReauth",
+                    SystemClock.elapsedRealtime() - mTimeStartedBlockingDrawForIncognitoRestore);
         }
     }
 
@@ -200,6 +204,7 @@ public class AppLaunchDrawBlocker {
     private void maybeBlockDrawForIncognitoRestore() {
         if (!mIncognitoRestoreAppLaunchDrawBlocker.shouldBlockDraw()) return;
         mBlockDrawForIncognitoRestore = true;
+        mTimeStartedBlockingDrawForIncognitoRestore = SystemClock.elapsedRealtime();
         ViewDrawBlocker.blockViewDrawUntilReady(
                 mViewSupplier.get(), () -> !mBlockDrawForIncognitoRestore);
     }
@@ -316,18 +321,5 @@ public class AppLaunchDrawBlocker {
         }
         RecordHistogram.recordEnumeratedHistogram(APP_LAUNCH_BLOCK_DRAW_ACCURACY_UMA, enumEntry,
                 BlockDrawForInitialTabAccuracy.COUNT);
-    }
-
-    /**
-     * TODO(crbug.com/1227656): Add the histogram to record the time we blocked the draw.
-     */
-    private void recordBlockDrawForIncognitoRestoreHistograms() {}
-
-    /**
-     * A test only method. Don't use in production code.
-     */
-    @VisibleForTesting
-    public void setBlockDrawForIncognitoRestore(boolean blockDraw) {
-        mBlockDrawForIncognitoRestore = blockDraw;
     }
 }

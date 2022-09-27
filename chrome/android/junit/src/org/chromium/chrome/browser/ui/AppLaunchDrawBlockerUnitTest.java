@@ -415,7 +415,8 @@ public class AppLaunchDrawBlockerUnitTest {
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
 
         // No longer need to block draw.
-        mAppLaunchDrawBlocker.setBlockDrawForIncognitoRestore(/*blockDraw=*/false);
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 10);
+        mAppLaunchDrawBlocker.onIncognitoRestoreUnblockConditionsFired();
         mAppLaunchDrawBlocker.onActiveTabAvailable(true);
 
         for (OnPreDrawListener listener : mOnPreDrawListenerArgumentCaptor.getAllValues()) {
@@ -424,6 +425,9 @@ public class AppLaunchDrawBlockerUnitTest {
         }
 
         verify(mIncognitoRestoreAppLaunchDrawBlockerMock, times(1)).shouldBlockDraw();
+        assertEquals("Duration not recorded.", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.AppLaunch.DurationDrawWasBlocked.OnIncognitoReauth", 10));
     }
 
     private void validateConstructorAndCaptureObservers() {
