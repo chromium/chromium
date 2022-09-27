@@ -15,8 +15,7 @@
 
 namespace dom_distiller {
 
-const base::Feature kReaderMode{"ReaderMode",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kReaderMode, "ReaderMode", base::FEATURE_DISABLED_BY_DEFAULT);
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Whether the reader mode option should be shown on distillable pages.

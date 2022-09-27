@@ -15,7 +15,7 @@ class PrefRegistrySyncable;
 
 namespace dom_distiller {
 
-extern const base::Feature kReaderMode;
+BASE_DECLARE_FEATURE(kReaderMode);
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
