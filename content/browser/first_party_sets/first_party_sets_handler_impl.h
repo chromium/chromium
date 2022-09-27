@@ -9,8 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
@@ -26,8 +24,6 @@
 #include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/first_party_sets_handler.h"
-#include "net/base/schemeful_site.h"
-#include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/public_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -85,7 +81,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   void SetPublicFirstPartySets(const base::Version& version,
                                base::File sets_file) override;
   void ResetForTesting() override;
-  void GetCustomizationForPolicy(
+  void GetContextConfigForPolicy(
       const base::Value::Dict& policy,
       base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback)
       override;
@@ -114,7 +110,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Computes information needed by the FirstPartySetsAccessDelegate in order
   // to update the browser's list of First-Party Sets to respect a profile's
   // setting for the per-profile FirstPartySetsOverrides policy.
-  static net::FirstPartySetsContextConfig ComputeEnterpriseCustomizations(
+  static net::FirstPartySetsContextConfig ComputeEnterpriseContextConfig(
       const net::PublicSets& public_sets,
       const FirstPartySetParser::ParsedPolicySetLists& policy);
 
@@ -138,7 +134,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // data.
   //
   // Must be called after the list has been initialized.
-  net::PublicSets GetSetsSync() const;
+  net::PublicSets GetPublicSetsSync() const;
 
   // An adaptor to kick off the state clearing process from a
   // asynchronously-invoked callback.
@@ -157,8 +153,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       base::OnceClosure callback);
 
   // Parses the policy and computes the config that represents the changes
-  // needed to apply `policy` to `sets_`.
-  net::FirstPartySetsContextConfig GetCustomizationForPolicyInternal(
+  // needed to apply `policy` to `public_sets_`.
+  net::FirstPartySetsContextConfig GetContextConfigForPolicyInternal(
       const base::Value::Dict& policy) const;
 
   // Whether Init has been called already or not.

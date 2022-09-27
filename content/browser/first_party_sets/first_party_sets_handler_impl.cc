@@ -63,19 +63,19 @@ FirstPartySetsHandler::ValidateEnterprisePolicy(
   return {absl::nullopt, parsed_or_error.value().second};
 }
 
-void FirstPartySetsHandlerImpl::GetCustomizationForPolicy(
+void FirstPartySetsHandlerImpl::GetContextConfigForPolicy(
     const base::Value::Dict& policy,
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (public_sets_.has_value()) {
-    std::move(callback).Run(GetCustomizationForPolicyInternal(policy));
+    std::move(callback).Run(GetContextConfigForPolicyInternal(policy));
     return;
   }
   // Add to the deque of callbacks that will be processed once the list
   // of First-Party Sets has been fully initialized.
   on_sets_ready_callbacks_.push_back(
       base::BindOnce(
-          &FirstPartySetsHandlerImpl::GetCustomizationForPolicyInternal,
+          &FirstPartySetsHandlerImpl::GetContextConfigForPolicyInternal,
           // base::Unretained(this) is safe here because this is a static
           // singleton.
           base::Unretained(this), policy.Clone())
@@ -83,7 +83,7 @@ void FirstPartySetsHandlerImpl::GetCustomizationForPolicy(
 }
 
 net::FirstPartySetsContextConfig
-FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+FirstPartySetsHandlerImpl::ComputeEnterpriseContextConfig(
     const net::PublicSets& public_sets,
     const FirstPartySetParser::ParsedPolicySetLists& policy) {
   return public_sets.ComputeConfig(
@@ -117,7 +117,7 @@ absl::optional<net::PublicSets> FirstPartySetsHandlerImpl::GetSets(
   if (!callback.is_null()) {
     // base::Unretained(this) is safe here because this is a static singleton.
     on_sets_ready_callbacks_.push_back(
-        base::BindOnce(&FirstPartySetsHandlerImpl::GetSetsSync,
+        base::BindOnce(&FirstPartySetsHandlerImpl::GetPublicSetsSync,
                        base::Unretained(this))
             .Then(std::move(callback)));
   }
@@ -228,7 +228,7 @@ void FirstPartySetsHandlerImpl::InvokePendingQueries() {
   on_sets_ready_callbacks_.shrink_to_fit();
 }
 
-net::PublicSets FirstPartySetsHandlerImpl::GetSetsSync() const {
+net::PublicSets FirstPartySetsHandlerImpl::GetPublicSetsSync() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(public_sets_.has_value());
   return public_sets_->Clone();
@@ -291,14 +291,14 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
 }
 
 net::FirstPartySetsContextConfig
-FirstPartySetsHandlerImpl::GetCustomizationForPolicyInternal(
+FirstPartySetsHandlerImpl::GetContextConfigForPolicyInternal(
     const base::Value::Dict& policy) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   FirstPartySetParser::PolicyParseResult parsed_or_error =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
   // Provide empty customization if the policy is malformed.
   return parsed_or_error.has_value()
-             ? FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+             ? FirstPartySetsHandlerImpl::ComputeEnterpriseContextConfig(
                    public_sets_.value(), parsed_or_error.value().first)
              : net::FirstPartySetsContextConfig();
 }

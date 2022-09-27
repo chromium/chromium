@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "content/common/content_export.h"
-#include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -135,10 +134,10 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // browser's list of First-Party Sets to respect the `policy` value of the
   // First-Party Sets Overrides enterprise policy.
   //
-  // The customization is will be returned via `callback` since the
-  // customization must be computed after the list of First-Party Sets is
-  // initialized, which occurs asynchronously.
-  virtual void GetCustomizationForPolicy(
+  // The context config will be returned via `callback` since the context config
+  // must be computed after the list of First-Party Sets is initialized which
+  // occurs asynchronously.
+  virtual void GetContextConfigForPolicy(
       const base::Value::Dict& policy,
       base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) = 0;
 
@@ -148,10 +147,9 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   //
   // `browser_context_getter` is needed to get a BrowsingDataRemover to handle
   // the clearing work. `context_config` should be the return value from
-  // `GetCustomizationForPolicy` if an Overrides enterprise policy is provided,
+  // `GetContextConfigForPolicy` if an Overrides enterprise policy is provided,
   // or null if one is not provided. `callback` will be invoked once the
-  // clearing is done. If non-null, `policy_customization` must live until
-  // callback is called.
+  // clearing is done.
   //
   // Embedder must call this before First-Party Sets queries can be answered.
   virtual void ClearSiteDataOnChangedSetsForContext(

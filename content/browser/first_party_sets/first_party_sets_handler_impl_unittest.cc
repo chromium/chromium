@@ -400,17 +400,17 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                                example, net::SiteType::kAssociated, 0))));
 }
 
-class FirstPartySetsHandlerGetCustomizationForPolicyTest
+class FirstPartySetsHandlerGetContextConfigForPolicyTest
     : public FirstPartySetsHandlerImplEnabledTest {
  public:
-  FirstPartySetsHandlerGetCustomizationForPolicyTest() {
+  FirstPartySetsHandlerGetContextConfigForPolicyTest() {
     FirstPartySetsHandlerImpl::GetInstance()
         ->SetEmbedderWillProvidePublicSetsForTesting(true);
     FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                    LocalSetDeclaration());
   }
 
-  // Writes the public list of First-Party Sets which GetCustomizationForPolicy
+  // Writes the public list of First-Party Sets which GetContextConfigForPolicy
   // awaits.
   //
   // Initializes the First-Party Sets with the following relationship:
@@ -451,32 +451,32 @@ class FirstPartySetsHandlerGetCustomizationForPolicyTest
   base::test::TestFuture<net::FirstPartySetsContextConfig> future_;
 };
 
-TEST_F(FirstPartySetsHandlerGetCustomizationForPolicyTest,
-       DefaultOverridesPolicy_DefaultCustomizations) {
+TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
+       DefaultOverridesPolicy_DefaultContextConfigs) {
   base::Value policy = base::JSONReader::Read(R"({})").value();
-  FirstPartySetsHandlerImpl::GetInstance()->GetCustomizationForPolicy(
+  FirstPartySetsHandlerImpl::GetInstance()->GetContextConfigForPolicy(
       policy.GetDict(), GetConfigCallback());
 
   InitPublicFirstPartySets();
   EXPECT_EQ(GetConfig(), net::FirstPartySetsContextConfig());
 }
 
-TEST_F(FirstPartySetsHandlerGetCustomizationForPolicyTest,
-       MalformedOverridesPolicy_DefaultCustomizations) {
+TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
+       MalformedOverridesPolicy_DefaultContextConfigs) {
   base::Value policy = base::JSONReader::Read(R"({
     "replacements": 123,
     "additions": true
   })")
                            .value();
-  FirstPartySetsHandlerImpl::GetInstance()->GetCustomizationForPolicy(
+  FirstPartySetsHandlerImpl::GetInstance()->GetContextConfigForPolicy(
       policy.GetDict(), GetConfigCallback());
 
   InitPublicFirstPartySets();
   EXPECT_EQ(GetConfig(), net::FirstPartySetsContextConfig());
 }
 
-TEST_F(FirstPartySetsHandlerGetCustomizationForPolicyTest,
-       NonDefaultOverridesPolicy_NonDefaultCustomizations) {
+TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
+       NonDefaultOverridesPolicy_NonDefaultContextConfigs) {
   base::Value policy = base::JSONReader::Read(R"(
                 {
                 "replacements": [
@@ -494,7 +494,7 @@ TEST_F(FirstPartySetsHandlerGetCustomizationForPolicyTest,
               }
             )")
                            .value();
-  FirstPartySetsHandlerImpl::GetInstance()->GetCustomizationForPolicy(
+  FirstPartySetsHandlerImpl::GetInstance()->GetContextConfigForPolicy(
       policy.GetDict(), GetConfigCallback());
 
   InitPublicFirstPartySets();

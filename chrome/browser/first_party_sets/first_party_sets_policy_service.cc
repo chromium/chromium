@@ -30,11 +30,11 @@ FirstPartySetsPolicyService::FirstPartySetsPolicyService(
     : browser_context_(browser_context) {
   policy_ = policy.Clone();
   // Immediately send `policy` to the FirstPartySetsHandler to retrieve its
-  // associated "ProfileCustomization". We can do this since the value of the
-  // FirstPartySets Overrides policy doesn't dynamically refresh, and all
+  // associated FirstPartySetsContextConfig. We can do this since the value of
+  // the FirstPartySets Overrides policy doesn't dynamically refresh, and all
   // delegates for `context` will have the same `policy` and thus the same
   // customizations.
-  content::FirstPartySetsHandler::GetInstance()->GetCustomizationForPolicy(
+  content::FirstPartySetsHandler::GetInstance()->GetContextConfigForPolicy(
       policy_,
       base::BindOnce(&FirstPartySetsPolicyService::OnCustomizationsReady,
                      weak_factory_.GetWeakPtr()));
