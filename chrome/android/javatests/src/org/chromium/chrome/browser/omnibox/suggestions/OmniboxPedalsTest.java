@@ -557,6 +557,7 @@ public class OmniboxPedalsTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.HISTORY_JOURNEYS})
     public void testHistoryClustersAction() {
+        if (mIncognito) return;
         mOmniboxUtils.requestFocus();
         List<AutocompleteMatch> suggestionsList = buildDummySuggestionsList(2, "Suggestion");
         suggestionsList.add(createDummyHistoryClustersAction("query"));
