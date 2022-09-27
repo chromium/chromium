@@ -32,6 +32,7 @@
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_test.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/url_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -185,6 +186,8 @@ class CertNetFetcherURLLoaderTest : public PlatformTest {
   }
 
   void TeardownOnNetworkThread() {
+    network::URLLoader::ResetPervasivePayloadsListForTesting();
+
     if (!test_util_)
       return;
     test_util_->fetcher()->Shutdown();
