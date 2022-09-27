@@ -390,12 +390,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="LanguageUsage.ULP.Initiation.AcceptLanguagesPageLanguageOverlap.Base"
+    units="%" expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The ratio of page languages in the user's Accept Languages over the total
+    number of languages in their LanguageProfile. This answers the question:
+    &quot;What percentage of Accept Languages are page languages?&quot;.
+
+    Only base languages are compared (e.g. pt-BR == pt-MZ).
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
 <histogram name="LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap"
     units="%" expires_after="2022-07-22">
   <obsolete>
     Replaced by LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap.Base
   </obsolete>
-  <owner>jds@google.com</owner>
+  <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The ratio of ULP languages in the user's Accept Languages over the total
@@ -409,13 +425,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap.Base"
     units="%" expires_after="2023-03-19">
-  <owner>jds@google.com</owner>
+  <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The ratio of ULP languages in the user's Accept Languages over the total
-    number of languages in their LanguageProfile. This answers the question of
-    &quot;How many of the predicted ULP languages have already been added by the
-    user?&quot;.
+    number of languages in their LanguageProfile. This answers the question:
+    &quot;What percentage of Accept Languages are ULP languages?&quot;.
 
     Only base languages are compared (e.g. pt-BR == pt-MZ).
 
@@ -425,7 +440,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LanguageUsage.ULP.Initiation.ChromeUILanguageInULP"
     enum="ULPLanguageStatus" expires_after="2023-03-19">
-  <owner>jds@google.com</owner>
+  <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Records whether Chrome's UI language exists in the user's ULP
@@ -438,7 +453,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LanguageUsage.ULP.Initiation.Count" units="count"
     expires_after="2023-03-19">
-  <owner>jds@google.com</owner>
+  <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of unique languages present in the user's LanguageProfile.
@@ -471,9 +486,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LanguageUsage.ULP.Initiation.PageLanguagesMissingFromULP"
+    enum="LocaleCodeISO639" expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The language code of each page language that is not in a users ULP.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram
+    name="LanguageUsage.ULP.Initiation.PageLanguagesMissingFromULP.Count"
+    units="count" expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Count of page languages that are not in a users ULP.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
 <histogram name="LanguageUsage.ULP.Initiation.Status{AccountType}"
     enum="ULPInitiationStatus" expires_after="2023-08-31">
-  <owner>jds@google.com</owner>
+  <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The result of initializing ULP, including {AccountType}.
@@ -489,7 +527,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LanguageUsage.ULP.Initiation.TopAcceptLanguageInULP"
     enum="ULPLanguageStatus" expires_after="2023-03-19">
-  <owner>jds@google.com</owner>
+  <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Records whether the first accept language exists in the user's ULP
@@ -502,7 +540,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LanguageUsage.ULP.Initiation.TranslateTargetInULP"
     enum="ULPLanguageStatus" expires_after="2023-03-19">
-  <owner>jds@google.com</owner>
+  <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Records whether the current translate target language exists in the user's

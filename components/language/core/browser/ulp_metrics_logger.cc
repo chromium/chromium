@@ -50,6 +50,24 @@ void ULPMetricsLogger::RecordInitiationNeverLanguagesMissingFromULPCount(
   UMA_HISTOGRAM_COUNTS_100(kInitiationNeverLanguagesMissingFromULPCount, count);
 }
 
+void ULPMetricsLogger::RecordInitiationAcceptLanguagesPageLanguageOverlap(
+    int overlap_ratio) {
+  UMA_HISTOGRAM_PERCENTAGE(
+      kInitiationAcceptLanguagesPageLanguageOverlapHistogram, overlap_ratio);
+}
+void ULPMetricsLogger::RecordInitiationPageLanguagesMissingFromULP(
+    const std::vector<std::string>& page_languages) {
+  for (const auto& language : page_languages) {
+    base::UmaHistogramSparse(kInitiationPageLanguagesMissingFromULPHistogram,
+                             base::HashMetricName(language));
+  }
+}
+void ULPMetricsLogger::RecordInitiationPageLanguagesMissingFromULPCount(
+    int count) {
+  UMA_HISTOGRAM_COUNTS_100(kInitiationPageLanguagesMissingFromULPCountHistogram,
+                           count);
+}
+
 ULPLanguageStatus ULPMetricsLogger::DetermineLanguageStatus(
     const std::string& language,
     const std::vector<std::string>& ulp_languages) {
@@ -80,29 +98,27 @@ ULPLanguageStatus ULPMetricsLogger::DetermineLanguageStatus(
   return ULPLanguageStatus::kLanguageNotInULP;
 }
 
-int ULPMetricsLogger::ULPLanguagesInAcceptLanguagesRatio(
-    const std::vector<std::string> accept_languages,
-    const std::vector<std::string> ulp_languages) {
-  if (ulp_languages.size() <= 0) {
+int ULPMetricsLogger::LanguagesOverlapRatio(
+    const std::vector<std::string> languages,
+    const std::vector<std::string> compare_languages) {
+  if (languages.size() <= 0) {
     return 0;
   }
 
-  int num_ulp_languages_also_in_accept_languages = 0;
-  for (const std::string& ulp_language : ulp_languages) {
-    // Search for base matches of ulp_language in accept_languages (e.g. pt-BR
-    // == pt-MZ).
-    const std::string base_ulp_language = l10n_util::GetLanguage(ulp_language);
+  int num_overlap_languages = 0;
+  for (const std::string& language : languages) {
+    // Search for base matches of language (e.g. pt-BR == pt-MZ).
+    const std::string base_language = l10n_util::GetLanguage(language);
     if (base::ranges::any_of(
-            accept_languages,
-            [&base_ulp_language](const std::string& accept_language) {
-              return base_ulp_language.compare(
-                         l10n_util::GetLanguage(accept_language)) == 0;
+            compare_languages,
+            [&base_language](const std::string& compare_language) {
+              return base_language.compare(
+                         l10n_util::GetLanguage(compare_language)) == 0;
             })) {
-      ++num_ulp_languages_also_in_accept_languages;
+      ++num_overlap_languages;
     }
   }
-  return (100 * num_ulp_languages_also_in_accept_languages) /
-         ulp_languages.size();
+  return (100 * num_overlap_languages) / languages.size();
 }
 
 std::vector<std::string> ULPMetricsLogger::RemoveULPLanguages(

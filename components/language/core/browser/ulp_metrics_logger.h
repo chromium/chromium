@@ -24,6 +24,12 @@ const char kInitiationNeverLanguagesMissingFromULP[] =
     "LanguageUsage.ULP.Initiation.NeverLanguagesMissingFromULP";
 const char kInitiationNeverLanguagesMissingFromULPCount[] =
     "LanguageUsage.ULP.Initiation.NeverLanguagesMissingFromULP.Count";
+const char kInitiationAcceptLanguagesPageLanguageOverlapHistogram[] =
+    "LanguagesUsage.ULP.Initiation.AcceptLanguagesPageLanguageOverlap.Base";
+const char kInitiationPageLanguagesMissingFromULPHistogram[] =
+    "LanguagesUsage.ULP.Initiation.PageLanguagesMissingFromULP";
+const char kInitiationPageLanguagesMissingFromULPCountHistogram[] =
+    "LanguagesUsage.ULP.Initiation.PageLanguagesMissingFromULP.Count";
 
 // Keep up to date with ULPLanguageStatus in
 // //tools/metrics/histograms/enums.xml.
@@ -73,6 +79,12 @@ class ULPMetricsLogger {
   // with a ULP language.
   virtual void RecordInitiationNeverLanguagesMissingFromULPCount(int count);
 
+  virtual void RecordInitiationAcceptLanguagesPageLanguageOverlap(
+      int overlap_ratio_percent);
+  virtual void RecordInitiationPageLanguagesMissingFromULP(
+      const std::vector<std::string>& page_languages);
+  virtual void RecordInitiationPageLanguagesMissingFromULPCount(int count);
+
   // Returns an enum that indicates whether `language` is present in
   // `ulp_languages` and, if so, whether it was the first entry.
   static ULPLanguageStatus DetermineLanguageStatus(
@@ -82,7 +94,7 @@ class ULPMetricsLogger {
   // Returns a number from 0-100 that indicates the ratio of ulp_languages that
   // are present in accept_languages. Only language bases are compared (e.g
   // pt-BR == pt-MZ).
-  static int ULPLanguagesInAcceptLanguagesRatio(
+  static int LanguagesOverlapRatio(
       const std::vector<std::string> accept_languages,
       const std::vector<std::string> ulp_languages);
 
