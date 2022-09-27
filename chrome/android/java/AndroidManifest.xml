@@ -658,6 +658,14 @@ by a child template that "extends" this file.
             </intent-filter>
         </activity>
 
+        <!-- Activities for creator. -->
+        <activity android:name="org.chromium.chrome.browser.app.creator.CreatorActivity"
+            android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
+        </activity>
+
         <!-- Activities for video tutorials. -->
         <activity android:name="org.chromium.chrome.browser.app.video_tutorials.VideoPlayerActivity"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"

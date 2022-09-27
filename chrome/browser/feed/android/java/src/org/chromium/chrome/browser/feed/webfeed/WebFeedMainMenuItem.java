@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.feed.webfeed;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
@@ -63,6 +64,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private String mTitle;
     private AppMenuHandler mAppMenuHandler;
     private CrowButtonDelegate mCrowButtonDelegate;
+    private Class<?> mCreatorActivityClass;
 
     // Points to the currently shown chip: null, mFollowingChipView, mFollowChipView,
     private ChipView mChipView;
@@ -114,11 +116,12 @@ public class WebFeedMainMenuItem extends FrameLayout {
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to display snackbars.
      * @param crowButtonDelegate {@link CrowButtonDelegate} for managing a footer chip.
+     * @param creatorActivityClass {@link CreatorActivity} for launching the Creator Activity.
      */
     public void initialize(Tab tab, AppMenuHandler appMenuHandler,
             WebFeedFaviconFetcher faviconFetcher, FeedLauncher feedLauncher,
             ModalDialogManager dialogManager, SnackbarManager snackbarManager,
-            CrowButtonDelegate crowButtonDelegate) {
+            CrowButtonDelegate crowButtonDelegate, Class<?> creatorActivityClass) {
         mUrl = tab.getOriginalUrl();
         mTab = tab;
         mAppMenuHandler = appMenuHandler;
@@ -126,6 +129,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mWebFeedSnackbarController = new WebFeedSnackbarController(
                 mContext, feedLauncher, dialogManager, snackbarManager);
         mCrowButtonDelegate = crowButtonDelegate;
+        mCreatorActivityClass = creatorActivityClass;
         Callback<WebFeedMetadata> metadata_callback = result -> {
             initializeFavicon(result);
             initializeText(result);
@@ -156,10 +160,15 @@ public class WebFeedMainMenuItem extends FrameLayout {
         }
         mItemText.setText(mTitle);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CORMORANT)) {
-            // This will act as a Cormorant Activity entry point
-            // TODO(crbug/1362743): Configure the Cormorant Activity to launch on click once ready
-            mItemText.setOnClickListener(
-                    (view) -> { Log.d(TAG, "Cormorant entry point click caught."); });
+            mItemText.setOnClickListener((view) -> {
+                try {
+                    // Launch a new activity for the creator page.
+                    Intent intent = new Intent(mContext, mCreatorActivityClass);
+                    mContext.startActivity(intent);
+                } catch (Exception e) {
+                    Log.d(TAG, "Failed to launch CreatorActivity " + e);
+                }
+            });
         }
     }
 

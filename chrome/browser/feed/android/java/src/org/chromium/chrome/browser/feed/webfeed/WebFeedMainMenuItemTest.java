@@ -98,6 +98,7 @@ public final class WebFeedMainMenuItemTest {
     private TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
     @Mock
     private CrowButtonDelegate mCrowButtonDelegate;
+    private Class<?> mCreatorActivityClass;
 
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
     private ArrayList<Callback<WebFeedBridge.WebFeedMetadata>> mWaitingMetadataCallbacks =
@@ -163,7 +164,7 @@ public final class WebFeedMainMenuItemTest {
     public void initialize_emptyUrl_removesIcon() {
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
         mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
-                mDialogManager, mSnackBarManager, mCrowButtonDelegate);
+                mDialogManager, mSnackBarManager, mCrowButtonDelegate, mCreatorActivityClass);
         respondWithFeedMetadata(null);
         mFaviconFetcher.answerWithNull();
 
@@ -386,7 +387,7 @@ public final class WebFeedMainMenuItemTest {
     private void initializeWebFeedMainMenuItem() {
         doReturn(TEST_URL).when(mTab).getOriginalUrl();
         mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
-                mDialogManager, mSnackBarManager, mCrowButtonDelegate);
+                mDialogManager, mSnackBarManager, mCrowButtonDelegate, mCreatorActivityClass);
     }
 
     /**

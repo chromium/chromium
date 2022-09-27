@@ -14,6 +14,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
+import org.chromium.chrome.browser.app.creator.CreatorActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.feed.FeedFeatures;
@@ -92,7 +93,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             ((WebFeedMainMenuItem) view)
                     .initialize(mActivityTabProvider.get(), appMenuHandler,
                             WebFeedFaviconFetcher.createDefault(), mFeedLauncher,
-                            mModalDialogManager, mSnackbarManager, new CrowButtonDelegateImpl());
+                            mModalDialogManager, mSnackbarManager, new CrowButtonDelegateImpl(),
+                            CreatorActivity.class);
         }
     }
 

@@ -384,6 +384,7 @@ android_library("chrome_java") {
     "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
     "//chrome/browser/consent_auditor/android:java",
     "//chrome/browser/contextmenu:java",
+    "//chrome/browser/creator/android:java",
     "//chrome/browser/dependency_injection:java",
     "//chrome/browser/device:java",
     "//chrome/browser/download/android:factory_java",
@@ -2561,6 +2562,7 @@ if (add_unwind_tables_in_chrome_32bit_apk) {
   chrome_unwind_assets("libmonochrome_unwind_table_assets") {
     libname = "libmonochrome"
   }
+
   # We create fat apks only with libmonochrome.
   if (target_cpu == "arm") {
     chrome_unwind_assets("libchrome_unwind_table_assets") {
