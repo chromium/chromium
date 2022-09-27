@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_browsing_topic.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_browsing_topics_options.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
@@ -43,7 +44,19 @@ ScriptPromise BrowsingTopicsDocumentSupplement::browsingTopics(
     Document& document,
     ExceptionState& exception_state) {
   auto* supplement = From(document);
-  return supplement->GetBrowsingTopics(script_state, document, exception_state);
+  return supplement->GetBrowsingTopics(
+      script_state, document, BrowsingTopicsOptions::Create(), exception_state);
+}
+
+// static
+ScriptPromise BrowsingTopicsDocumentSupplement::browsingTopics(
+    ScriptState* script_state,
+    Document& document,
+    const BrowsingTopicsOptions* options,
+    ExceptionState& exception_state) {
+  auto* supplement = From(document);
+  return supplement->GetBrowsingTopics(script_state, document, options,
+                                       exception_state);
 }
 
 BrowsingTopicsDocumentSupplement::BrowsingTopicsDocumentSupplement(
@@ -54,6 +67,7 @@ BrowsingTopicsDocumentSupplement::BrowsingTopicsDocumentSupplement(
 ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
     ScriptState* script_state,
     Document& document,
+    const BrowsingTopicsOptions* options,
     ExceptionState& exception_state) {
   if (!document.GetFrame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
@@ -131,44 +145,49 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
             execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 
-  document_host_->GetBrowsingTopics(WTF::BindOnce(
-      [](ScriptPromiseResolver* resolver,
-         BrowsingTopicsDocumentSupplement* supplement,
-         base::TimeTicks start_time,
-         mojom::blink::GetBrowsingTopicsResultPtr result) {
-        DCHECK(resolver);
-        DCHECK(supplement);
+  document_host_->GetBrowsingTopics(
+      options->observe(),
+      WTF::BindOnce(
+          [](ScriptPromiseResolver* resolver,
+             BrowsingTopicsDocumentSupplement* supplement,
+             base::TimeTicks start_time,
+             mojom::blink::GetBrowsingTopicsResultPtr result) {
+            DCHECK(resolver);
+            DCHECK(supplement);
 
-        if (result->is_error_message()) {
-          ScriptState* script_state = resolver->GetScriptState();
-          ScriptState::Scope scope(script_state);
+            if (result->is_error_message()) {
+              ScriptState* script_state = resolver->GetScriptState();
+              ScriptState::Scope scope(script_state);
 
-          resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-              script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-              result->get_error_message()));
-          return;
-        }
+              resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                  script_state->GetIsolate(),
+                  DOMExceptionCode::kInvalidAccessError,
+                  result->get_error_message()));
+              return;
+            }
 
-        DCHECK(result->is_browsing_topics());
+            DCHECK(result->is_browsing_topics());
 
-        HeapVector<Member<BrowsingTopic>> result_array;
-        for (const auto& topic : result->get_browsing_topics()) {
-          BrowsingTopic* result_topic = BrowsingTopic::Create();
-          result_topic->setTopic(topic->topic);
-          result_topic->setVersion(topic->version);
-          result_topic->setConfigVersion(topic->config_version);
-          result_topic->setModelVersion(topic->model_version);
-          result_topic->setTaxonomyVersion(topic->taxonomy_version);
-          result_array.push_back(result_topic);
-        }
+            HeapVector<Member<BrowsingTopic>> result_array;
+            for (const auto& topic : result->get_browsing_topics()) {
+              BrowsingTopic* result_topic = BrowsingTopic::Create();
+              result_topic->setTopic(topic->topic);
+              result_topic->setVersion(topic->version);
+              result_topic->setConfigVersion(topic->config_version);
+              result_topic->setModelVersion(topic->model_version);
+              result_topic->setTaxonomyVersion(topic->taxonomy_version);
+              result_array.push_back(result_topic);
+            }
 
-        base::TimeDelta time_to_resolve = base::TimeTicks::Now() - start_time;
-        base::UmaHistogramTimes("BrowsingTopics.JavaScriptAPI.TimeToResolve",
-                                time_to_resolve);
+            base::TimeDelta time_to_resolve =
+                base::TimeTicks::Now() - start_time;
+            base::UmaHistogramTimes(
+                "BrowsingTopics.JavaScriptAPI.TimeToResolve", time_to_resolve);
 
-        resolver->Resolve(result_array);
-      },
-      WrapPersistent(resolver), WrapPersistent(this), base::TimeTicks::Now()));
+            resolver->Resolve(result_array);
+          },
+          WrapPersistent(resolver), WrapPersistent(this),
+          base::TimeTicks::Now()));
 
   return promise;
 }

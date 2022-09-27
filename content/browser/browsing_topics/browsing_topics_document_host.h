@@ -31,7 +31,8 @@ class CONTENT_EXPORT BrowsingTopicsDocumentHost final
           receiver);
 
   // blink::mojom::BrowsingTopicsDocumentService.
-  void GetBrowsingTopics(GetBrowsingTopicsCallback callback) override;
+  void GetBrowsingTopics(bool observe,
+                         GetBrowsingTopicsCallback callback) override;
 
  private:
   BrowsingTopicsDocumentHost(

@@ -14,6 +14,8 @@
 
 namespace blink {
 
+class BrowsingTopicsOptions;
+
 // Provides the implementation for the Topics API.
 // Explainer: https://github.com/jkarlin/topics
 class MODULES_EXPORT BrowsingTopicsDocumentSupplement
@@ -27,12 +29,17 @@ class MODULES_EXPORT BrowsingTopicsDocumentSupplement
   static ScriptPromise browsingTopics(ScriptState* script_state,
                                       Document& document,
                                       ExceptionState& exception_state);
+  static ScriptPromise browsingTopics(ScriptState* script_state,
+                                      Document& document,
+                                      const BrowsingTopicsOptions* options,
+                                      ExceptionState& exception_state);
 
   explicit BrowsingTopicsDocumentSupplement(Document&);
 
   // Implements the document.browsingTopics().
   ScriptPromise GetBrowsingTopics(ScriptState* script_state,
                                   Document& document,
+                                  const BrowsingTopicsOptions* options,
                                   ExceptionState& exception_state);
 
   // GC functionality.

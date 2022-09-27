@@ -6382,7 +6382,8 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
 std::vector<blink::mojom::EpochTopicPtr>
 ChromeContentBrowserClient::GetBrowsingTopicsForJsApi(
     const url::Origin& context_origin,
-    content::RenderFrameHost* main_frame) {
+    content::RenderFrameHost* main_frame,
+    bool observe) {
   browsing_topics::BrowsingTopicsService* browsing_topics_service =
       browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(
           Profile::FromBrowserContext(
@@ -6393,7 +6394,7 @@ ChromeContentBrowserClient::GetBrowsingTopicsForJsApi(
     return {};
 
   auto topics = browsing_topics_service->GetBrowsingTopicsForJsApi(
-      context_origin, main_frame);
+      context_origin, main_frame, observe);
 
   // Compare the provided topics to the real (i.e. non random) topics available
   // for the site, this allows filtering out of the randomly generated topics

@@ -22,10 +22,13 @@ class BrowsingTopicsService : public KeyedService {
   // Return the browsing topics for a particular requesting context. The
   // calling context and top context information will also be used for the
   // access permission check, and for the `BrowsingTopicsPageLoadDataTracker` to
-  // track the API usage.
+  // track the API usage. If `observe` is true, record the observation
+  // (i.e. the <calling context site, top level site> pair) to the
+  // `BrowsingTopicsSiteDataStorage` database.
   virtual std::vector<blink::mojom::EpochTopicPtr> GetBrowsingTopicsForJsApi(
       const url::Origin& context_origin,
-      content::RenderFrameHost* main_frame) = 0;
+      content::RenderFrameHost* main_frame,
+      bool observe) = 0;
 
   // Get the topics state to show in the chrome://topics-internals page. If
   // `calculate_now` is true, this will first trigger a calculation before

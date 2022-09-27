@@ -45,6 +45,10 @@ interface BrowsingTopicsDocumentService {
   // requesting context won't be returned - this could happen if the topics
   // calculation for that epoch failed, or if the topics were later cleared, or
   // if the candidate topic was filtered for the requesting context and epoch.
-  // Duplicate `EpochTopic`s are removed and their ordering is random.
-  GetBrowsingTopics() => (GetBrowsingTopicsResult result);
+  // Duplicate `EpochTopic`s are removed and their ordering is random. If
+  // `observe` is true, record the observation
+  // (i.e. the <calling context site, top level site> pair) to the
+  // `BrowsingTopicsSiteDataStorage` database, which determines the caller's
+  // eligibility to receive the topic from future calls of the API.
+  GetBrowsingTopics(bool observe) => (GetBrowsingTopicsResult result);
 };

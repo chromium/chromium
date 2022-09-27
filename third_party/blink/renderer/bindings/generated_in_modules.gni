@@ -203,6 +203,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_manufacturer_data_filter_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_browsing_topic.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_browsing_topic.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_browsing_topics_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_browsing_topics_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_cable_registration_data.cc",

@@ -1,0 +1,3 @@
+dictionary BrowsingTopicsOptions {
+  boolean observe = true;
+};

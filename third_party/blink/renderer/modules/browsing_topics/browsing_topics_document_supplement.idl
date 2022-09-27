@@ -15,5 +15,5 @@
         SecureContext,
         MeasureAs=TopicsAPI_BrowsingTopics_Method
     ]
-    Promise<sequence<BrowsingTopic>> browsingTopics();
+    Promise<sequence<BrowsingTopic>> browsingTopics(optional BrowsingTopicsOptions options);
 };

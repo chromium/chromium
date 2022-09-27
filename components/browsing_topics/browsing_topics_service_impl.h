@@ -46,7 +46,8 @@ class BrowsingTopicsServiceImpl
 
   std::vector<blink::mojom::EpochTopicPtr> GetBrowsingTopicsForJsApi(
       const url::Origin& context_origin,
-      content::RenderFrameHost* main_frame) override;
+      content::RenderFrameHost* main_frame,
+      bool observe) override;
 
   void GetBrowsingTopicsStateForWebUi(
       bool calculate_now,

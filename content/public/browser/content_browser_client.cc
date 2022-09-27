@@ -1219,7 +1219,8 @@ void ContentBrowserClient::AugmentNavigationDownloadPolicy(
 std::vector<blink::mojom::EpochTopicPtr>
 ContentBrowserClient::GetBrowsingTopicsForJsApi(
     const url::Origin& context_origin,
-    RenderFrameHost* main_frame) {
+    RenderFrameHost* main_frame,
+    bool observe) {
   return {};
 }
 

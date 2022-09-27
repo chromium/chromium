@@ -58,6 +58,7 @@ void BrowsingTopicsDocumentHost::CreateMojoService(
 }
 
 void BrowsingTopicsDocumentHost::GetBrowsingTopics(
+    bool observe,
     GetBrowsingTopicsCallback callback) {
   // IPCs may race with navigation events, so:
   // - Ignore non-active frames, e.g. a frame placed into bfcache, or a
@@ -83,7 +84,7 @@ void BrowsingTopicsDocumentHost::GetBrowsingTopics(
       blink::mojom::GetBrowsingTopicsResult::NewBrowsingTopics(
           GetContentClient()->browser()->GetBrowsingTopicsForJsApi(
               render_frame_host().GetLastCommittedOrigin(),
-              render_frame_host().GetMainFrame())));
+              render_frame_host().GetMainFrame(), observe)));
 }
 
 BrowsingTopicsDocumentHost::~BrowsingTopicsDocumentHost() = default;
