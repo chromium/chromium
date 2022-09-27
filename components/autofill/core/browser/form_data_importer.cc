@@ -301,7 +301,8 @@ bool FormDataImporter::ImportFormData(
         submitted_form, &imported_form_data->address_profile_import_candidates);
   }
 
-  if (base::FeatureList::IsEnabled(features::kAutofillAssociateForms)) {
+  if (profile_autofill_enabled && credit_card_autofill_enabled &&
+      base::FeatureList::IsEnabled(features::kAutofillAssociateForms)) {
     auto origin = url::Origin::Create(submitted_form.source_url());
     FormSignature form_signature = submitted_form.form_signature();
     // If multiple complete address profiles were extracted, this most likely
@@ -313,8 +314,7 @@ bool FormDataImporter::ImportFormData(
     // Checking for `cc_import` doesn't suffice. The variable won't be true when
     // the form contains a known server card, but this server card does not have
     // a corresponding local card.
-    if (credit_card_autofill_enabled &&
-        imported_form_data->credit_card_import_candidate) {
+    if (imported_form_data->credit_card_import_candidate) {
       form_associator_.TrackFormAssociations(
           origin, form_signature, FormAssociator::FormType::kCreditCardForm);
     }

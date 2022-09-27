@@ -4426,8 +4426,8 @@ TEST_P(FormDataImporterTest, FormAssociator) {
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       *form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/false,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
+      /*credit_card_autofill_enabled=*/true,
+      /*should_return_local_card=*/true, &credit_card_import_candidate,
       &imported_upi_id));
 
   absl::optional<FormStructure::FormAssociations> associations =
