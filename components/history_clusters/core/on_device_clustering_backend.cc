@@ -206,8 +206,7 @@ void OnDeviceClusteringBackend::ProcessVisits(
 
   std::vector<history::ClusterVisit> cluster_visits;
   base::flat_map<std::string, optimization_guide::EntityMetadata>
-      human_readable_entity_name_to_metadata_map;
-
+      entity_id_to_metadata_map;
   for (auto& visit : annotated_visits) {
     // Skip visits that should not be clustered.
     if (optimization_guide_decider_) {
@@ -265,9 +264,7 @@ void OnDeviceClusteringBackend::ProcessVisits(
           continue;
         }
 
-        entity_it->id = entity_metadata_it->second.human_readable_name;
-        human_readable_entity_name_to_metadata_map[entity_it->id] =
-            entity_metadata_it->second;
+        entity_id_to_metadata_map[entity_it->id] = entity_metadata_it->second;
         entity_it++;
       }
     }
@@ -279,8 +276,7 @@ void OnDeviceClusteringBackend::ProcessVisits(
   RecordBatchUpdateProcessingTime(process_batch_timer.Elapsed());
   OnAllVisitsFinishedProcessing(
       clustering_request_source, completed_task, std::move(cluster_visits),
-      std::move(human_readable_entity_name_to_metadata_map),
-      std::move(callback));
+      std::move(entity_id_to_metadata_map), std::move(callback));
 }
 
 void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
@@ -288,7 +284,7 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
     optimization_guide::BatchEntityMetadataTask* completed_task,
     std::vector<history::ClusterVisit> cluster_visits,
     base::flat_map<std::string, optimization_guide::EntityMetadata>
-        human_readable_entity_name_to_entity_metadata_map,
+        entity_id_to_metadata_map,
     ClustersCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -308,8 +304,7 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
       base::BindOnce(
           &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
           clustering_request_source, engagement_score_provider_ != nullptr,
-          std::move(cluster_visits),
-          std::move(human_readable_entity_name_to_entity_metadata_map));
+          std::move(cluster_visits), std::move(entity_id_to_metadata_map));
 
   switch (clustering_request_source) {
     case ClusteringRequestSource::kJourneysPage:
@@ -330,7 +325,7 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
     bool engagement_score_provider_is_valid,
     std::vector<history::ClusterVisit> visits,
     base::flat_map<std::string, optimization_guide::EntityMetadata>
-        human_readable_entity_name_to_entity_metadata_map) {
+        entity_id_to_entity_metadata_map) {
   base::ElapsedThreadTimer cluster_visits_timer;
 
   // TODO(crbug.com/1260145): All of these objects are "stateless" between
@@ -372,7 +367,7 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
     cluster_finalizers.push_back(std::make_unique<CategoryClusterFinalizer>());
   }
   cluster_finalizers.push_back(std::make_unique<KeywordClusterFinalizer>(
-      human_readable_entity_name_to_entity_metadata_map));
+      entity_id_to_entity_metadata_map));
   if (GetConfig().should_label_clusters) {
     cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>());
   }

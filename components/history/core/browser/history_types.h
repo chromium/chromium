@@ -924,6 +924,7 @@ struct ClusterKeywordData {
   ClusterKeywordData& operator=(ClusterKeywordData&&);
   ~ClusterKeywordData();
   bool operator==(const ClusterKeywordData& data) const;
+  std::string ToString() const;
 
   // Updates cluster keyword type if a new type is preferred over the existing
   // type.
@@ -944,6 +945,9 @@ struct ClusterKeywordData {
 
   // Entity collections associated with the keyword this is attached to.
   std::vector<std::string> entity_collections;
+
+  friend std::ostream& operator<<(std::ostream& out,
+                                  const ClusterKeywordData& data);
 };
 
 // A cluster of `ClusterVisit`s with associated metadata (i.e. `keywords` and

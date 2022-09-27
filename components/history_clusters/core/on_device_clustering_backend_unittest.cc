@@ -227,17 +227,11 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
               ElementsAre(ElementsAre(testing::VisitResult(2, 1.0),
                                       testing::VisitResult(1, 1.0))));
   ASSERT_EQ(result_clusters.size(), 1u);
-  EXPECT_THAT(result_clusters.at(0).GetKeywords(),
-              UnorderedElementsAre(u"google-entity", u"com"));
   EXPECT_FALSE(result_clusters[0].label.has_value());
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 2, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Max", 2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.NumKeywordsPerCluster.Min", 2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.NumKeywordsPerCluster.Max", 2, 1);
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest,
@@ -578,10 +572,6 @@ TEST_F(OnDeviceClusteringWithContentBackendTest,
       "History.Clusters.Backend.ClusterSize.Min", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Max", 2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.NumKeywordsPerCluster.Min", 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.NumKeywordsPerCluster.Max", 1, 1);
 }
 
 class OnDeviceClusteringWithAllTheBackendsTest
@@ -715,8 +705,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
 
   history::Cluster cluster2 = result_clusters.at(1);
   ASSERT_EQ(cluster2.visits.size(), 1u);
-  // The first visit should have its original URL as the normalized URL and
-  // also have its entities rewritten.
+  // The first visit should have its original URL as the normalized URL.
   history::ClusterVisit better_visit = cluster2.visits.at(0);
   EXPECT_EQ(better_visit.normalized_url,
             GURL("http://default-engine.com/?q=foo"));
@@ -724,7 +713,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
       better_visit.annotated_visit.content_annotations.model_annotations
           .entities;
   ASSERT_EQ(entities.size(), 1u);
-  EXPECT_EQ(entities.at(0).id, "rewritten-foo");
+  EXPECT_EQ(entities.at(0).id, "foo");
   std::vector<history::VisitContentModelAnnotations::Category> categories =
       better_visit.annotated_visit.content_annotations.model_annotations
           .categories;
@@ -735,7 +724,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   // The second visit should have a URL.
   EXPECT_EQ(cluster2.visits.at(0).duplicate_visits.at(0).url,
             GURL("http://default-engine.com/?q=foo&otherstuff"));
-  // Cluster should have 3 keywords.
+  // Cluster should have 2 keywords.
   EXPECT_THAT(cluster2.GetKeywords(),
               UnorderedElementsAre(u"rewritten-foo", u"alias-foo"));
 

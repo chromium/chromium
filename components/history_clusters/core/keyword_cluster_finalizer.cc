@@ -124,14 +124,17 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
       continue;
     }
 
-    std::vector<std::u16string> lowercase_host_parts = base::SplitString(
-        base::ToLowerASCII(
-            base::UTF8ToUTF16(visit.annotated_visit.url_row.url().host())),
-        u".", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     for (const auto& entity :
          visit.annotated_visit.content_annotations.model_annotations.entities) {
+      auto entity_metadata_it = entity_metadata_map_.find(entity.id);
+      if (entity_metadata_it == entity_metadata_map_.end()) {
+        continue;
+      }
+      const auto& entity_metadata = entity_metadata_it->second;
+
       base::flat_set<std::u16string> entity_keywords;
-      const std::u16string keyword_u16str = base::UTF8ToUTF16(entity.id);
+      const std::u16string keyword_u16str =
+          base::UTF8ToUTF16(entity_metadata.human_readable_name);
       entity_keywords.insert(keyword_u16str);
 
       // Add an entity to keyword data.
@@ -150,38 +153,39 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
       }
 
       // Add the top one entity collection to keyword data.
-      const auto it = entity_metadata_map_.find(entity.id);
-      if (it != entity_metadata_map_.end() && !it->second.collections.empty()) {
+      if (!entity_metadata.collections.empty()) {
         keyword_to_data_map[keyword_u16str].entity_collections = {
-            it->second.collections[0]};
+            entity_metadata.collections[0]};
       }
 
       if (GetConfig().keyword_filter_on_entity_aliases) {
-        if (it != entity_metadata_map_.end()) {
-          for (size_t i = 0; i < it->second.human_readable_aliases.size() &&
-                             i < GetConfig().max_entity_aliases_in_keywords;
-               i++) {
-            const auto alias =
-                base::UTF8ToUTF16(it->second.human_readable_aliases[i]);
-            entity_keywords.insert(alias);
-            // Use the same score and collections of an entity for its aliases
-            // as well.
-            auto alias_it = keyword_to_data_map.find(alias);
-            if (alias_it == keyword_to_data_map.end()) {
-              keyword_to_data_map[alias] = history::ClusterKeywordData(
-                  history::ClusterKeywordData::kEntityAlias, entity_score, {});
-            } else {
-              alias_it->second.score += entity_score;
-              alias_it->second.MaybeUpdateKeywordType(
-                  history::ClusterKeywordData::kEntityAlias);
-            }
-            keyword_to_data_map[alias].entity_collections =
-                keyword_to_data_map[keyword_u16str].entity_collections;
+        for (size_t i = 0; i < entity_metadata.human_readable_aliases.size() &&
+                           i < GetConfig().max_entity_aliases_in_keywords;
+             i++) {
+          const auto alias =
+              base::UTF8ToUTF16(entity_metadata.human_readable_aliases[i]);
+          entity_keywords.insert(alias);
+          // Use the same score and collections of an entity for its aliases
+          // as well.
+          auto alias_it = keyword_to_data_map.find(alias);
+          if (alias_it == keyword_to_data_map.end()) {
+            keyword_to_data_map[alias] = history::ClusterKeywordData(
+                history::ClusterKeywordData::kEntityAlias, entity_score, {});
+          } else {
+            alias_it->second.score += entity_score;
+            alias_it->second.MaybeUpdateKeywordType(
+                history::ClusterKeywordData::kEntityAlias);
           }
+          keyword_to_data_map[alias].entity_collections =
+              keyword_to_data_map[keyword_u16str].entity_collections;
         }
       }
 
       if (!GetConfig().keyword_filter_on_visit_hosts) {
+        std::vector<std::u16string> lowercase_host_parts = base::SplitString(
+            base::ToLowerASCII(
+                base::UTF8ToUTF16(visit.annotated_visit.url_row.url().host())),
+            u".", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
         // If we do not want any keywords associated with the visit host, make
         // sure that none of the keywords associated with the entity look like
         // they are for the visit host.
