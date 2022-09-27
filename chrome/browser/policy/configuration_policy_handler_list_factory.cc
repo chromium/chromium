@@ -2187,6 +2187,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(base::WrapUnique(
       NetworkConfigurationPolicyHandler::CreateForUserPolicy()));
   handlers->AddHandler(std::make_unique<PinnedLauncherAppsPolicyHandler>());
+
+  handlers->AddHandler(
+      std::make_unique<DefaultHandlersForFileExtensionsPolicyHandler>(
+          chrome_schema));
+
   handlers->AddHandler(std::make_unique<ScreenMagnifierPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<LoginScreenPowerManagementPolicyHandler>(chrome_schema));

@@ -33528,6 +33528,48 @@ This policy has no effect if the option to keep existing browsing data is not av
       'caption': '''Enable Desk API for third-party ChromeOS control''',
       'tags': [],
       'desc': '''Setting the policy to Enabled allows third-party web applications to use Desk API to control ChromeOS desks. If the policy is not set or disabled, the Desk API will be unavailable.'''
+    },
+    {
+      'name': 'DefaultHandlersForFileExtensions',
+      'owners': ['greengrape@google.com', 'file://ui/file_manager/OWNERS'],
+      'type': 'dict',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'policy_id': { 'type': 'string' },
+            'file_extensions': {
+              'type': 'array',
+              'items' : { 'type': 'string' }
+            }
+          },
+          'required': ['policy_id', 'file_extensions']
+        }
+      },
+      'future_on': ['chrome_os'],
+      'features': {
+        'can_be_recommended': True,
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': [
+        {'policy_id': 'https://google.com/maps',          'file_extensions': ['maps']},
+        {'policy_id': 'pnomlkjighijklmnopabcdefghijklff', 'file_extensions': ['xslx']},
+        {'policy_id': 'abcdefghijklmnopabcdefghijklmnop', 'file_extensions': ['docx', 'pdf']}
+      ],
+      'id': 1021,
+      'tags': [],
+      'caption': '''Assigns apps as default handlers for specified file extensions''',
+      'desc': '''This policy allows the admins to specify apps that act as default handlers for the respective file extensions on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> that users can't change.
+      For all file extensions not specified in the policy, users are free to set their own defaults with respect to the usual workflow.
+
+      Specify Chrome apps by their ID, such as <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE">pjkljhegncpnkpknbcohdijeoejaedia</ph> and web apps by the URL used in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME">WebAppInstallForceList</ph>, such as <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE">https://google.com/maps</ph>.
+
+      Note that apps MUST declare themselves as a file handlers for specified file extensions in the manifest in order for that policy item to take effect (i.e. the policy does NOT extend existing app capabilities).
+
+      Leaving the policy unset allows <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> to select default handlers according to the internal logic.
+      '''
     }
   ],
   'messages': {
@@ -34540,6 +34582,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1020,
+  'highest_id_currently_used': 1021,
   'highest_atomic_group_id_currently_used': 43
 }

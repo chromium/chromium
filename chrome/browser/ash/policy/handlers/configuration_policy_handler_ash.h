@@ -13,6 +13,7 @@
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/prefs/pref_registry_simple.h"
 
 namespace policy {
 
@@ -106,6 +107,19 @@ class PinnedLauncherAppsPolicyHandler : public ListPolicyHandler {
   // Converts the list of strings |filtered_list| to a list of dictionaries and
   // sets the pref.
   void ApplyList(base::Value filtered_list, PrefValueMap* prefs) override;
+};
+
+// Maps the DefaultHandlersForFileExtensions policy to the corresponding pref.
+class DefaultHandlersForFileExtensionsPolicyHandler
+    : public SchemaValidatingPolicyHandler {
+ public:
+  explicit DefaultHandlersForFileExtensionsPolicyHandler(const policy::Schema&);
+
+  // SchemaValidatingPolicyHandler:
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
 };
 
 class ScreenMagnifierPolicyHandler : public IntRangePolicyHandlerBase {

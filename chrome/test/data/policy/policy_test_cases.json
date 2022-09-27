@@ -20116,5 +20116,39 @@
         }
       }
     ]
+  },
+  "DefaultHandlersForFileExtensions": {
+    "os": ["chromeos_ash"],
+    "can_be_recommended": true,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "filebrowser.default_handlers_for_file_extensions": {
+            "default_value": {}
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultHandlersForFileExtensions": [{
+            "policy_id": "https://google.com/maps",
+            "file_extensions": ["maps"]
+          }, {
+            "policy_id": "pnomlkjighijklmnopabcdefghijklff",
+            "file_extensions": ["docx", "pdf"]
+          }]
+        },
+        "prefs": {
+          "filebrowser.default_handlers_for_file_extensions": {
+            "value": {
+              ".maps": "https://google.com/maps",
+              ".docx": "pnomlkjighijklmnopabcdefghijklff",
+              ".pdf": "pnomlkjighijklmnopabcdefghijklff"
+            }
+          }
+        }
+      }
+    ]
   }
 }

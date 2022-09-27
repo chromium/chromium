@@ -193,6 +193,11 @@
   <message name="IDS_POLICY_EMPTY_ORIGIN_LIST_ERROR" desc="The text displayed in the status column for the policy AutoLaunchProtocolsFromOrigins when the origin list is empty">
     Origin list is empty.
   </message>
+  <if expr="chromeos_ash">
+    <message name="IDS_POLICY_DUPLICATE_FILE_EXTENSION_ERROR" desc="The text displayed in the status column for the policy DefaultHandlersForFileExtensions when a file extension is assigned to more than one handler.">
+      Duplicate handlers for file_extension "<ph name="FILE_EXTENSION">$1<ex>txt</ex></ph>" referenced by apps "<ph name="POLICY_IDS_LIST">$2<ex>https://google.com/maps, pnomlkjighijklmnopabcdefghijklff</ex></ph>".
+    </message>
+  </if>
   <message name="IDS_POLICY_INVALID_EXTENSION_ERROR" desc="The text displayed in the status column when the extension doesn't match the expected format.">
     Invalid Extension: Expected the value to be of one of the following forms: &lt;extension_id&gt; or &lt;extension_id&gt;;&lt;update_url&gt;.
   </message>

@@ -623,8 +623,13 @@ extern const char kSaveFileDefaultDirectory[];
 extern const char kSaveFileType[];
 
 extern const char kAllowFileSelectionDialogs[];
+
 extern const char kDefaultTasksByMimeType[];
 extern const char kDefaultTasksBySuffix[];
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kDefaultHandlersForFileExtensions[];
+#endif
 
 extern const char kSharedClipboardEnabled[];
 

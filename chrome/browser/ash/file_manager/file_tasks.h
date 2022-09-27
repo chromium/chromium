@@ -100,6 +100,7 @@
 
 #include "base/callback_forward.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
 #include "url/gurl.h"
 
@@ -114,8 +115,7 @@ namespace storage {
 class FileSystemURL;
 }
 
-namespace file_manager {
-namespace file_tasks {
+namespace file_manager::file_tasks {
 
 extern const char kActionIdView[];
 extern const char kActionIdSend[];
@@ -250,6 +250,9 @@ struct FullTaskDescriptor {
   bool is_file_extension_match;
 };
 
+// Registers profile prefs related to file_manager.
+void RegisterProfilePrefs(PrefRegistrySimple*);
+
 // Update the default file handler for the given sets of suffixes and MIME
 // types.
 void UpdateDefaultTask(Profile* profile,
@@ -343,7 +346,6 @@ bool IsHtmlFile(const base::FilePath& path);
 // Returns whether |path| is a MS Office file according to its extension.
 bool IsOfficeFile(const base::FilePath& path);
 
-}  // namespace file_tasks
-}  // namespace file_manager
+}  // namespace file_manager::file_tasks
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_FILE_TASKS_H_

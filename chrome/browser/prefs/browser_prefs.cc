@@ -331,6 +331,7 @@
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 #include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider_impl.h"
 #include "chrome/browser/ash/customization/customization_document.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_system_provider/registry.h"
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
@@ -1515,6 +1516,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::floating_workspace_util::RegisterProfilePrefs(registry);
   policy::RebootNotificationsScheduler::RegisterProfilePrefs(registry);
   ash::KioskAppManager::RegisterProfilePrefs(registry);
+  file_manager::file_tasks::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

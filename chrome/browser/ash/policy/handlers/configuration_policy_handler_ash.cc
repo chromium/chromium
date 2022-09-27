@@ -13,9 +13,11 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -30,6 +32,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
+#include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/schema.h"
@@ -46,8 +49,11 @@ namespace {
 
 using ::ash::MagnifierType;
 
-const char kSubkeyURL[] = "url";
-const char kSubkeyHash[] = "hash";
+constexpr char kPolicyEntryPolicyIdKey[] = "policy_id";
+constexpr char kPolicyEntryFileExtensionsKey[] = "file_extensions";
+
+constexpr char kSubkeyURL[] = "url";
+constexpr char kSubkeyHash[] = "hash";
 
 absl::optional<std::string> GetSubkeyString(const base::Value& dict,
                                             PolicyErrorMap* errors,
@@ -359,6 +365,85 @@ void PinnedLauncherAppsPolicyHandler::ApplyList(base::Value filtered_list,
   }
   prefs->SetValue(prefs::kPolicyPinnedLauncherApps,
                   base::Value(std::move(pinned_apps_list)));
+}
+
+DefaultHandlersForFileExtensionsPolicyHandler::
+    DefaultHandlersForFileExtensionsPolicyHandler(
+        const policy::Schema& chrome_schema)
+    : SchemaValidatingPolicyHandler(
+          key::kDefaultHandlersForFileExtensions,
+          chrome_schema.GetKnownProperty(
+              key::kDefaultHandlersForFileExtensions),
+          policy::SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY) {}
+
+// Verifies that each file extension is handler by no more that one app.
+bool DefaultHandlersForFileExtensionsPolicyHandler::CheckPolicySettings(
+    const PolicyMap& policies,
+    PolicyErrorMap* errors) {
+  std::unique_ptr<base::Value> policy_value;
+  if (!CheckAndGetValue(policies, errors, &policy_value) || !policy_value) {
+    return false;
+  }
+
+  base::flat_map<std::string, std::string> file_extension_to_policy_id;
+
+  for (const auto& policy_entry : policy_value->GetList()) {
+    const auto& policy_entry_dict = policy_entry.GetDict();
+
+    const std::string* policy_id =
+        policy_entry_dict.FindString(kPolicyEntryPolicyIdKey);
+    DCHECK(policy_id);
+
+    const auto* file_extensions =
+        policy_entry_dict.FindList(kPolicyEntryFileExtensionsKey);
+    DCHECK(file_extensions);
+
+    for (const auto& file_extension_entry : *file_extensions) {
+      const std::string& file_extension = file_extension_entry.GetString();
+
+      if (auto it = file_extension_to_policy_id.find(file_extension);
+          it != file_extension_to_policy_id.end()) {
+        errors->AddError(
+            policy_name(), IDS_POLICY_DUPLICATE_FILE_EXTENSION_ERROR,
+            /*replacement_a=*/file_extension,
+            /*replacement_b=*/base::JoinString({*policy_id, it->second}, ", "),
+            /*error_path=*/{},
+            /*error_level=*/PolicyMap::MessageType::kWarning);
+        continue;
+      }
+
+      file_extension_to_policy_id[file_extension] = *policy_id;
+    }
+  }
+
+  return true;
+}
+
+// Applies an inverse mapping to `prefs::kDefaultHandlersForFileExtensions`:
+// file_extension -> id.
+void DefaultHandlersForFileExtensionsPolicyHandler::ApplyPolicySettings(
+    const PolicyMap& policies,
+    PrefValueMap* prefs) {
+  std::unique_ptr<base::Value> policy_value;
+  CheckAndGetValue(policies, nullptr, &policy_value);
+
+  base::Value::Dict pref_mapping;
+  for (const auto& policy_entry : policy_value->GetList()) {
+    const auto& policy_entry_dict = policy_entry.GetDict();
+
+    const std::string* policy_id =
+        policy_entry_dict.FindString(kPolicyEntryPolicyIdKey);
+    const auto* file_extensions =
+        policy_entry_dict.FindList(kPolicyEntryFileExtensionsKey);
+
+    for (const auto& file_extension_entry : *file_extensions) {
+      pref_mapping.Set(base::StrCat({".", file_extension_entry.GetString()}),
+                       *policy_id);
+    }
+  }
+
+  prefs->SetValue(prefs::kDefaultHandlersForFileExtensions,
+                  base::Value(std::move(pref_mapping)));
 }
 
 ScreenMagnifierPolicyHandler::ScreenMagnifierPolicyHandler()

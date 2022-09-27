@@ -1924,6 +1924,13 @@ const char kDefaultTasksByMimeType[] = "filebrowser.tasks.default_by_mime_type";
 // Map of default tasks, associated by file suffix.
 const char kDefaultTasksBySuffix[] = "filebrowser.tasks.default_by_suffix";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Maps file extensions to handlers according to the
+// DefaultHandlersForFileExtensions policy.
+const char kDefaultHandlersForFileExtensions[] =
+    "filebrowser.default_handlers_for_file_extensions";
+#endif
+
 // A flag to enable/disable the Shared Clipboard feature which enables users to
 // send text across devices.
 const char kSharedClipboardEnabled[] = "browser.shared_clipboard_enabled";

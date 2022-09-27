@@ -61,6 +61,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/drive/drive_api_util.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -92,8 +93,7 @@ using extensions::Extension;
 using extensions::api::file_manager_private::Verb;
 using storage::FileSystemURL;
 
-namespace file_manager {
-namespace file_tasks {
+namespace file_manager::file_tasks {
 
 const char kActionIdView[] = "view";
 const char kActionIdSend[] = "send";
@@ -559,6 +559,10 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
 }
 
 }  // namespace
+
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(prefs::kDefaultHandlersForFileExtensions);
+}
 
 // Converts a string to a TaskType. Returns TASK_TYPE_UNKNOWN on error.
 TaskType StringToTaskType(const std::string& str) {
@@ -1115,5 +1119,4 @@ bool IsOfficeFile(const base::FilePath& path) {
   return false;
 }
 
-}  // namespace file_tasks
-}  // namespace file_manager
+}  // namespace file_manager::file_tasks
