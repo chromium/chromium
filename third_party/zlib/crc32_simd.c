@@ -202,6 +202,7 @@ uint32_t ZLIB_INTERNAL crc32_sse42_simd_(  /* SSE4.2+PCLMUL */
  * allowed. We can just include arm_acle.h.
  */
 #include <arm_acle.h>
+#include <arm_neon.h>
 #define TARGET_ARMV8_WITH_CRC
 #else  // !defined(__GNUC__) && !defined(_aarch64__)
 #error ARM CRC32 SIMD extensions only supported for Clang and GCC
