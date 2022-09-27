@@ -409,21 +409,21 @@ group("web_engine_archives_with_symbols") {
   ]
 }
 
+# TODO(zijiehe): Revisit the naming in this file.
+# E.g. web_engine_archives_with_symbols and web_engine_debug_symbols look
+# similar and it's unclear if the previous one covers the later one from only
+# the name.
 group("cipd") {
   testonly = true  # Some archives are testonly.
   deps = [
+    ":chrome${_archive_suffix}",
+    ":chrome_debug_symbols",
     ":web_engine_archives_with_symbols",
 
     # Symbols are not uploaded for the following.
     ":chromedriver${_archive_suffix}",
     ":web_engine_debug_symbols",
   ]
-  if (!is_chrome_branded) {
-    deps += [
-      ":chrome${_archive_suffix}",
-      ":chrome_debug_symbols",
-    ]
-  }
   visibility = []  # Required to replace the file default.
   visibility = [ "//:gn_all" ]
 }
