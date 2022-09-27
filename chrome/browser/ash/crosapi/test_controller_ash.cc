@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -266,6 +267,11 @@ void TestControllerAsh::GetWindowPositionInScreen(
     return;
   }
   std::move(cb).Run(window->GetBoundsInScreen().origin());
+}
+
+void TestControllerAsh::LaunchAppFromAppList(const std::string& app_id) {
+  ash::Shell::Get()->app_list_controller()->ActivateItem(
+      app_id, /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromGrid);
 }
 
 void TestControllerAsh::PinOrUnpinItemInShelf(

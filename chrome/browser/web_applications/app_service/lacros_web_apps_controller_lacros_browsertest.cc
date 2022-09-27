@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
@@ -103,6 +104,35 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppManagement) {
 
   // Close app window.
   browser->window()->Close();
+
+  // Wait for item to stop existing in shelf.
+  browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppList) {
+  // If ash is does not contain the relevant test controller functionality,
+  // then there's nothing to do for this test.
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::TestController::Uuid_) <
+      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                           kLaunchAppFromAppListMinVersion)) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+
+  InstallTestWebApp();
+  const AppId app_id = test_web_app_id();
+
+  // No item should exist in the shelf before the web app is launched.
+  browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
+
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::TestController>()
+      ->LaunchAppFromAppList(app_id);
+
+  // Wait for item to exist in shelf.
+  browser_test_util::WaitForShelfItem(app_id, /*exists=*/true);
+
+  web_app::UninstallWebApp(profile(), app_id);
 
   // Wait for item to stop existing in shelf.
   browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
