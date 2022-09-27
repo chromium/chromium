@@ -104,6 +104,10 @@ class MODULES_EXPORT ImageDecoderCore {
  private:
   void MaybeDecodeToYuv();
 
+  // Retrieves the timestamp for |index| from |decoder_| if supported, otherwise
+  // uses |timestamp_cache_| to generate a synthetic timestamp.
+  base::TimeDelta GetTimestampForFrame(uint32_t index) const;
+
   const String mime_type_;
   const ColorBehavior color_behavior_;
   const SkISize desired_size_;
@@ -143,6 +147,10 @@ class MODULES_EXPORT ImageDecoderCore {
   // only when platform memory limits are exceeded.
   bool is_decoding_in_order_ = true;
   uint32_t last_decoded_frame_ = 0u;
+
+  // Used to generate synthetic timestamps for decoders which don't provide
+  // native timestamps. The 0 position is initialized to zero at construction.
+  mutable Vector<base::TimeDelta> timestamp_cache_;
 };
 
 }  // namespace blink

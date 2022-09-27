@@ -32,6 +32,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
@@ -340,6 +341,13 @@ class PLATFORM_EXPORT ImageDecoder {
 
   // Returns true if a cached complete decode is available.
   bool FrameIsDecodedAtIndex(wtf_size_t) const;
+
+  // Timestamp for displaying a frame. This method is only used by animated
+  // images. Only formats with timestamps (like AVIF) should implement this.
+  virtual absl::optional<base::TimeDelta> FrameTimestampAtIndex(
+      wtf_size_t) const {
+    return absl::nullopt;
+  }
 
   // Duration for displaying a frame. This method is only used by animated
   // images.

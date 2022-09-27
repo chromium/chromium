@@ -30,6 +30,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -134,6 +135,7 @@ class PLATFORM_EXPORT ImageFrame final {
   PixelFormat GetPixelFormat() const { return pixel_format_; }
   const gfx::Rect& OriginalFrameRect() const { return original_frame_rect_; }
   Status GetStatus() const { return status_; }
+  absl::optional<base::TimeDelta> Timestamp() const { return timestamp_; }
   base::TimeDelta Duration() const { return duration_; }
   DisposalMethod GetDisposalMethod() const { return disposal_method_; }
   AlphaBlendSource GetAlphaBlendSource() const { return alpha_blend_source_; }
@@ -158,6 +160,7 @@ class PLATFORM_EXPORT ImageFrame final {
   void SetPixelFormat(PixelFormat format) { pixel_format_ = format; }
   void SetOriginalFrameRect(const gfx::Rect& r) { original_frame_rect_ = r; }
   void SetStatus(Status);
+  void SetTimestamp(base::TimeDelta timestamp) { timestamp_ = timestamp; }
   void SetDuration(base::TimeDelta duration) { duration_ = duration; }
   void SetDisposalMethod(DisposalMethod disposal_method) {
     disposal_method_ = disposal_method;
@@ -308,25 +311,26 @@ class PLATFORM_EXPORT ImageFrame final {
   SkAlphaType ComputeAlphaType() const;
 
   SkBitmap bitmap_;
-  SkBitmap::Allocator* allocator_;
-  bool has_alpha_;
-  PixelFormat pixel_format_;
+  SkBitmap::Allocator* allocator_ = nullptr;
+  bool has_alpha_ = true;
+  PixelFormat pixel_format_ = kN32;
   // This will always just be the entire buffer except for GIF or WebP
   // frames whose original rect was smaller than the overall image size.
   gfx::Rect original_frame_rect_;
-  Status status_;
+  Status status_ = kFrameEmpty;
+  absl::optional<base::TimeDelta> timestamp_;
   base::TimeDelta duration_;
-  DisposalMethod disposal_method_;
-  AlphaBlendSource alpha_blend_source_;
-  bool premultiply_alpha_;
+  DisposalMethod disposal_method_ = kDisposeNotSpecified;
+  AlphaBlendSource alpha_blend_source_ = kBlendAtopPreviousFrame;
+  bool premultiply_alpha_ = true;
   // True if the pixels changed, but the bitmap has not yet been notified.
-  bool pixels_changed_;
+  bool pixels_changed_ = false;
 
   // The frame that must be decoded before this frame can be decoded.
   // WTF::kNotFound if this frame doesn't require any previous frame.
   // This is used by ImageDecoder::ClearCacheExceptFrame(), and will never
   // be read for image formats that do not have multiple frames.
-  wtf_size_t required_previous_frame_index_;
+  wtf_size_t required_previous_frame_index_ = kNotFound;
 };
 
 }  // namespace blink

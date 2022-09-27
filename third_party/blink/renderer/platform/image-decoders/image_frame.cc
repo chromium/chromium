@@ -36,16 +36,7 @@
 
 namespace blink {
 
-ImageFrame::ImageFrame()
-    : allocator_(nullptr),
-      has_alpha_(true),
-      pixel_format_(kN32),
-      status_(kFrameEmpty),
-      disposal_method_(kDisposeNotSpecified),
-      alpha_blend_source_(kBlendAtopPreviousFrame),
-      premultiply_alpha_(true),
-      pixels_changed_(false),
-      required_previous_frame_index_(kNotFound) {}
+ImageFrame::ImageFrame() = default;
 
 ImageFrame& ImageFrame::operator=(const ImageFrame& other) {
   if (this == &other)
@@ -58,6 +49,10 @@ ImageFrame& ImageFrame::operator=(const ImageFrame& other) {
   SetMemoryAllocator(other.GetAllocator());
   SetOriginalFrameRect(other.OriginalFrameRect());
   SetStatus(other.GetStatus());
+  if (other.Timestamp())
+    SetTimestamp(*other.Timestamp());
+  else
+    timestamp_.reset();
   SetDuration(other.Duration());
   SetDisposalMethod(other.GetDisposalMethod());
   SetAlphaBlendSource(other.GetAlphaBlendSource());

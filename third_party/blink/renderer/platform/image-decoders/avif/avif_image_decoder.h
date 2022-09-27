@@ -40,6 +40,8 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   void DecodeToYUV() override;
   int RepetitionCount() const override;
   bool FrameIsReceivedAtIndex(wtf_size_t) const override;
+  absl::optional<base::TimeDelta> FrameTimestampAtIndex(
+      wtf_size_t) const override;
   base::TimeDelta FrameDurationAtIndex(wtf_size_t) const override;
   bool ImageHasBothStillAndAnimatedSubImages() const override;
 

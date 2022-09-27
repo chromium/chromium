@@ -293,6 +293,7 @@ promise_test(t => {
         .then(result => {
           assert_equals(result.image.displayWidth, 320);
           assert_equals(result.image.displayHeight, 240);
+          assert_equals(result.image.timestamp, 0);
 
           // Swap to the the other track.
           let newIndex = (decoder.tracks.selectedIndex + 1) % 2;
@@ -302,12 +303,19 @@ promise_test(t => {
         .then(result => {
           assert_equals(result.image.displayWidth, 320);
           assert_equals(result.image.displayHeight, 240);
+          assert_equals(result.image.timestamp, 0);
+          assert_equals(result.image.duration, 10000);
 
           assert_equals(decoder.tracks.length, 2);
           assert_true(decoder.tracks[decoder.tracks.selectedIndex].animated)
           assert_true(decoder.tracks.selectedTrack.animated);
           assert_equals(decoder.tracks.selectedTrack.frameCount, 7);
           assert_equals(decoder.tracks.selectedTrack.repetitionCount, Infinity);
+          return decoder.decode({frameIndex: 1});
+        })
+        .then(result => {
+          assert_equals(result.image.timestamp, 10000);
+          assert_equals(result.image.duration, 10000);
         });
   });
 }, 'Test track selection in multi track image.');
@@ -366,6 +374,10 @@ promise_test(async t => {
         assert_equals(decoder.tracks.selectedTrack.frameCount, 3);
         assert_equals(result.image.displayWidth, 320);
         assert_equals(result.image.displayHeight, 240);
+
+        // Note: The stream has an alternating duration of 30ms, 40ms per frame.
+        assert_equals(result.image.timestamp, 70000, "timestamp frame 2");
+        assert_equals(result.image.duration, 30000, "duration frame 2");
         source.addFrame();
         return decoder.decode({frameIndex: 3});
       })
@@ -373,6 +385,8 @@ promise_test(async t => {
         assert_equals(decoder.tracks.selectedTrack.frameCount, 4);
         assert_equals(result.image.displayWidth, 320);
         assert_equals(result.image.displayHeight, 240);
+        assert_equals(result.image.timestamp, 100000, "timestamp frame 3");
+        assert_equals(result.image.duration, 40000, "duration frame 3");
 
         // Decode frame not yet available then reset before it comes in.
         let p = decoder.decode({frameIndex: 5});
@@ -388,6 +402,8 @@ promise_test(async t => {
         assert_equals(decoder.tracks.selectedTrack.frameCount, 4);
         assert_equals(result.image.displayWidth, 320);
         assert_equals(result.image.displayHeight, 240);
+        assert_equals(result.image.timestamp, 100000, "timestamp frame 3");
+        assert_equals(result.image.duration, 40000, "duration frame 3");
 
         // Decode frame not yet available then close before it comes in.
         let p = decoder.decode({frameIndex: 5});

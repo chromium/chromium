@@ -468,6 +468,13 @@ bool AVIFImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
          data_extent.offset + data_extent.size <= data_->size();
 }
 
+absl::optional<base::TimeDelta> AVIFImageDecoder::FrameTimestampAtIndex(
+    wtf_size_t index) const {
+  return index < frame_buffer_cache_.size()
+             ? frame_buffer_cache_[index].Timestamp()
+             : absl::nullopt;
+}
+
 base::TimeDelta AVIFImageDecoder::FrameDurationAtIndex(wtf_size_t index) const {
   return index < frame_buffer_cache_.size()
              ? frame_buffer_cache_[index].Duration()
@@ -548,6 +555,7 @@ void AVIFImageDecoder::InitializeNewFrame(wtf_size_t index) {
   avifImageTiming timing;
   auto ret = avifDecoderNthImageTiming(decoder_.get(), index, &timing);
   DCHECK_EQ(ret, AVIF_RESULT_OK);
+  buffer.SetTimestamp(base::Seconds(timing.pts));
   buffer.SetDuration(base::Seconds(timing.duration));
 }
 
