@@ -8,6 +8,14 @@
 
 namespace mojo {
 
+bool StructTraits<blink::mojom::OriginWithPossibleWildcardsDataView,
+                  blink::OriginWithPossibleWildcards>::
+    Read(blink::mojom::OriginWithPossibleWildcardsDataView in,
+         blink::OriginWithPossibleWildcards* out) {
+  out->has_subdomain_wildcard = in.has_subdomain_wildcard();
+  return in.ReadOrigin(&out->origin);
+}
+
 bool StructTraits<blink::mojom::ParsedPermissionsPolicyDeclarationDataView,
                   blink::ParsedPermissionsPolicyDeclaration>::
     Read(blink::mojom::ParsedPermissionsPolicyDeclarationDataView in,

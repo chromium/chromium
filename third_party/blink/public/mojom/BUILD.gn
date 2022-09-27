@@ -352,11 +352,18 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.OriginWithPossibleWildcards"
+          cpp = "::blink::OriginWithPossibleWildcards"
+        },
+        {
           mojom = "blink.mojom.ParsedPermissionsPolicyDeclaration"
           cpp = "::blink::ParsedPermissionsPolicyDeclaration"
         },
       ]
-      traits_headers = [ "//third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h" ]
+      traits_headers = [
+        "//third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h",
+        "//third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h",
+      ]
       traits_private_headers = [ "//third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h" ]
     },
     {

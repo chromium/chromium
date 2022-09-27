@@ -866,6 +866,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 // applied directly instead of using the property tree builder.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFastPathPaintPropertyUpdates);
 
+// If enabled, wildcard subdomains are supported in permissions policies.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kWildcardSubdomainsInPermissionsPolicy);
+
 }  // namespace features
 }  // namespace blink
 

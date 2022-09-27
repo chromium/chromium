@@ -10,11 +10,30 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "third_party/blink/common/permissions_policy/policy_value_mojom_traits.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 #include "url/mojom/origin_mojom_traits.h"
 
 namespace mojo {
+
+template <>
+class BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::OriginWithPossibleWildcardsDataView,
+                 blink::OriginWithPossibleWildcards> {
+ public:
+  static const url::Origin& origin(const blink::OriginWithPossibleWildcards&
+                                       origin_with_possible_wildcards) {
+    return origin_with_possible_wildcards.origin;
+  }
+  static bool has_subdomain_wildcard(const blink::OriginWithPossibleWildcards&
+                                         origin_with_possible_wildcards) {
+    return origin_with_possible_wildcards.has_subdomain_wildcard;
+  }
+
+  static bool Read(blink::mojom::OriginWithPossibleWildcardsDataView in,
+                   blink::OriginWithPossibleWildcards* out);
+};
 
 template <>
 class BLINK_COMMON_EXPORT
