@@ -488,6 +488,17 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     UpdateRendererIDs();
   }
 
+  void UpdateOnlyUsernameElement() {
+    WebDocument document = GetMainFrame()->GetDocument();
+    WebElement element =
+        document.GetElementById(WebString::FromUTF16(kUsernameName16));
+    EXPECT_FALSE(element.IsNull());
+    username_element_ = element.To<WebInputElement>();
+    EXPECT_FALSE(username_element_.IsNull());
+    fill_data_.username_field.unique_renderer_id = autofill::FieldRendererId(
+        username_element_.UniqueRendererFormControlId());
+  }
+
   void UpdateOnlyPasswordElement() {
     WebDocument document = GetMainFrame()->GetDocument();
     WebElement element =
@@ -2326,6 +2337,28 @@ TEST_F(PasswordAutofillAgentTest,
   ExpectFormSubmittedWithUsernameAndPasswords(
       FormRendererId(username_element_.Form().UniqueRendererFormId()), u"temp",
       u"", u"random");
+}
+
+// Similar to RememberLastNonEmptyUsernameAndPasswordOnSubmit_New, but uses
+// no password fields on single username form
+TEST_F(PasswordAutofillAgentTest, RememberLastNonEmptySingleUsername) {
+  const char kSingleUsernameFormHTML[] =
+      "<FORM name='LoginTestForm' action='http://www.bidule.com'>"
+      "  <INPUT type='text' id='username' autocomplete='username'/>"
+      "  <INPUT type='submit' value='Login'/>"
+      "</FORM>";
+  LoadHTML(kSingleUsernameFormHTML);
+  UpdateOnlyUsernameElement();
+
+  SimulateUsernameTyping("temp");
+
+  SubmitForm();
+
+  // Observe that the PasswordAutofillAgent still remembered the last non-empty
+  // password and sent that to the browser.
+  ExpectFormSubmittedWithUsernameAndPasswords(
+      FormRendererId(username_element_.Form().UniqueRendererFormId()), u"temp",
+      u"", u"");
 }
 
 // The user first accepts a suggestion, but then overwrites the password. This

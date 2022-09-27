@@ -38,6 +38,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_frame.h"
@@ -380,11 +381,20 @@ bool IsInCrossOriginIframeOrEmbeddedFrame(const WebInputElement& element) {
   return false;
 }
 
-// Whether any of the fields in |form| is a password field.
-bool FormHasPasswordField(const FormData& form) {
+// Whether field has an autocomplete="username" attribute.
+bool FieldHasUsernameAutocompleteAttribute(const FormFieldData& field) {
+  return field.autocomplete_attribute.find(
+             password_manager::constants::kAutocompleteUsername) !=
+         std::string::npos;
+}
+
+// Whether any of the fields in |form| is a password or username field.
+bool FormHasPasswordOrUsernameField(const FormData& form) {
   for (const auto& field : form.fields) {
-    if (field.IsPasswordInputElement())
+    if (field.IsPasswordInputElement() ||
+        FieldHasUsernameAutocompleteAttribute(field)) {
       return true;
+    }
   }
   return false;
 }
@@ -1277,7 +1287,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     }
 
     std::unique_ptr<FormData> form_data(GetFormDataFromWebForm(form));
-    if (!form_data || !FormHasPasswordField(*form_data))
+    if (!form_data || !FormHasPasswordOrUsernameField(*form_data))
       continue;
 
     if (logger)
@@ -1317,7 +1327,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
 
   if (add_unowned_inputs) {
     std::unique_ptr<FormData> form_data(GetFormDataFromUnownedInputElements());
-    if (form_data && FormHasPasswordField(*form_data)) {
+    if (form_data && FormHasPasswordOrUsernameField(*form_data)) {
       if (logger) {
         logger->LogFormData(Logger::STRING_FORM_IS_PASSWORD, *form_data);
       }
@@ -1764,7 +1774,7 @@ void PasswordAutofillAgent::InformBrowserAboutUserInput(
   if (!form_data)
     return;
 
-  if (!FormHasPasswordField(*form_data))
+  if (!FormHasPasswordOrUsernameField(*form_data))
     return;
 
   GetPasswordManagerDriver().InformAboutUserInput(*form_data);

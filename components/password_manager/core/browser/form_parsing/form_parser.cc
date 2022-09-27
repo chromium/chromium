@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
 using autofill::FieldPropertiesFlags;
@@ -35,13 +36,6 @@ using autofill::FormFieldData;
 namespace password_manager {
 
 namespace {
-
-constexpr char kAutocompleteUsername[] = "username";
-constexpr char kAutocompleteCurrentPassword[] = "current-password";
-constexpr char kAutocompleteNewPassword[] = "new-password";
-constexpr char kAutocompleteCreditCardPrefix[] = "cc-";
-constexpr char kAutocompleteOneTimePassword[] = "one-time-code";
-constexpr char kAutocompleteWebAuthn[] = "webauthn";
 
 struct AutocompleteParsing {
   AutocompleteFlag flag = AutocompleteFlag::kNone;
@@ -68,7 +62,8 @@ AutocompleteParsing ParseAutocomplete(const std::string& attribute) {
   if (tokens.empty())
     return result;
 
-  if (base::EqualsCaseInsensitiveASCII(tokens.back(), kAutocompleteWebAuthn)) {
+  if (base::EqualsCaseInsensitiveASCII(tokens.back(),
+                                       constants::kAutocompleteWebAuthn)) {
     result.accepts_webauthn_credentials = true;
     tokens.pop_back();
   }
@@ -77,17 +72,19 @@ AutocompleteParsing ParseAutocomplete(const std::string& attribute) {
     return result;
 
   const base::StringPiece& field_type = tokens.back();
-  if (base::EqualsCaseInsensitiveASCII(field_type, kAutocompleteUsername)) {
+  if (base::EqualsCaseInsensitiveASCII(field_type,
+                                       constants::kAutocompleteUsername)) {
     result.flag = AutocompleteFlag::kUsername;
-  } else if (base::EqualsCaseInsensitiveASCII(field_type,
-                                              kAutocompleteCurrentPassword)) {
+  } else if (base::EqualsCaseInsensitiveASCII(
+                 field_type, constants::kAutocompleteCurrentPassword)) {
     result.flag = AutocompleteFlag::kCurrentPassword;
-  } else if (base::EqualsCaseInsensitiveASCII(field_type,
-                                              kAutocompleteNewPassword)) {
+  } else if (base::EqualsCaseInsensitiveASCII(
+                 field_type, constants::kAutocompleteNewPassword)) {
     result.flag = AutocompleteFlag::kNewPassword;
-  } else if (base::EqualsCaseInsensitiveASCII(field_type,
-                                              kAutocompleteOneTimePassword) ||
-             base::StartsWith(field_type, kAutocompleteCreditCardPrefix,
+  } else if (base::EqualsCaseInsensitiveASCII(
+                 field_type, constants::kAutocompleteOneTimePassword) ||
+             base::StartsWith(field_type,
+                              constants::kAutocompleteCreditCardPrefix,
                               base::CompareCase::SENSITIVE)) {
     result.flag = AutocompleteFlag::kNonPassword;
   }
@@ -1090,6 +1087,13 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
       significant_fields.confirmation_password = FindConfirmationPasswordField(
           processed_fields, *significant_fields.new_password);
     }
+  }
+
+  // If no password is found, check if the form is UFF. For now, only consider
+  // the case when username is found using autocomplete attribute.
+  if (!significant_fields.HasPasswords() &&
+      method == UsernameDetectionMethod::kAutocompleteAttribute) {
+    significant_fields.is_single_username = true;
   }
 
   // Pass the "reliability" information to mark the new-password fields as
