@@ -227,18 +227,20 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
         [CreateNSWindow(create_window_params.get()) retain]);
     ns_window_host_->CreateInProcessNSWindowBridge(std::move(window));
   }
-  ns_window_host_->SetParent(parent_host);
-  ns_window_host_->InitWindow(params,
-                              ConvertBoundsToScreenIfNeeded(params.bounds));
 
   // In immersive fullscreen, bubbles will be shown under the toolbar by
-  // default. Fix it by explicitly StackAbove() its parent.
+  // default. Fix it by using a higher z-order level.
   // TODO(mek): Figure out how to make this work with remote remote_cocoa
   // windows.
   if (params.parent && remote_cocoa::IsNSToolbarFullScreenWindow(
                            params.parent.GetNativeNSView().window)) {
-    StackAbove(params.parent);
+    if (!params.z_order || params.z_order == ui::ZOrderLevel::kNormal)
+      params.z_order = ui::ZOrderLevel::kFloatingWindow;
   }
+
+  ns_window_host_->SetParent(parent_host);
+  ns_window_host_->InitWindow(params,
+                              ConvertBoundsToScreenIfNeeded(params.bounds));
 
   OnWindowInitialized();
 
