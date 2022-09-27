@@ -61,7 +61,7 @@ class MessageBundleTest : public testing::Test {
     if (create_placeholder_subtree)
       CreatePlaceholdersTree(message_tree.get());
     message_tree->SetStringKey(MessageBundle::kMessageKey, message);
-    dict->Set(name, std::move(message_tree->GetDict()));
+    dict->Set(name, std::move(*message_tree).TakeDict());
   }
 
   std::unique_ptr<base::DictionaryValue> CreateGoodDictionary() {

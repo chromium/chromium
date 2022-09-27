@@ -47,7 +47,7 @@ base::Value::Dict LoadSchemaDictionary(const std::string& name,
   CHECK(result.has_value())
       << result.error().message << " for schema " << schema;
   CHECK(result->is_dict()) << " for schema " << schema;
-  return std::move(result->GetDict());
+  return std::move(*result).TakeDict();
 }
 
 const base::Value::Dict* FindListItem(const base::Value::List& list,

@@ -62,7 +62,7 @@ std::unique_ptr<base::Value::Dict> LoadMessageFile(
         messages_deserializer.Deserialize(nullptr, error);
     if (value) {
       dictionary =
-          std::make_unique<base::Value::Dict>(std::move(value->GetDict()));
+          std::make_unique<base::Value::Dict>(std::move(*value).TakeDict());
     }
   } else if (gzip_permission == extension_l10n_util::GzippedMessagesPermission::
                                     kAllowForTrustedSource ||
@@ -88,7 +88,7 @@ std::unique_ptr<base::Value::Dict> LoadMessageFile(
           messages_deserializer.Deserialize(nullptr, error);
       if (value) {
         dictionary =
-            std::make_unique<base::Value::Dict>(std::move(value->GetDict()));
+            std::make_unique<base::Value::Dict>(std::move(*value).TakeDict());
       }
     }
   } else {

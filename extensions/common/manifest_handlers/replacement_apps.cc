@@ -107,7 +107,7 @@ bool ReplacementAppsInfo::LoadAndroidApp(const Extension* extension,
     return false;
   }
 
-  replacement_android_app = std::move(app_value->GetString());
+  replacement_android_app = app_value->GetString();
   return true;
 }
 
