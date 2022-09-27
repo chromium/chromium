@@ -31,8 +31,10 @@ ts_library("build_ts") {
     "test_tabs_api_proxy.ts",
   ]
   definitions = [ "//tools/typescript/definitions/tabs.d.ts" ]
-  deps = [ "//chrome/browser/resources/tab_strip:build_ts" ]
-  extra_deps = [ "..:generate_definitions" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/tab_strip:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {

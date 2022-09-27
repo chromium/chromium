@@ -10,7 +10,7 @@
 import {emptyState, PersonalizationState, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/js/personalization_app.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestAmbientProvider} from './test_ambient_interface_provider.js';
 import {TestKeyboardBacklightProvider} from './test_keyboard_backlight_interface_provider.js';

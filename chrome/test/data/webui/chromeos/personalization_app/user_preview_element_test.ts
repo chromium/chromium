@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {DefaultUserImage, Paths, UserImage, UserPreview} from 'chrome://personalization/js/personalization_app.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement, toString16} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';

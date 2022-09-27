@@ -7,7 +7,7 @@ import 'chrome://app-settings/web_app_settings.js';
 
 import {App, AppManagementPermissionItemElement, AppManagementToggleRowElement, AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, OptionalBool, PermissionType, PermissionTypeIndex, RunOnOsLoginMode, TriState, WebAppSettingsAppElement, WindowMode} from 'chrome://app-settings/web_app_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestAppManagementBrowserProxy} from './test_app_management_browser_proxy.js';
 

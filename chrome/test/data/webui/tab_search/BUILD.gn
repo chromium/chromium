@@ -34,10 +34,10 @@ ts_library("build_ts") {
     "test_tab_search_api_proxy.ts",
   ]
   deps = [
+    "..:build_ts",
     "../metrics_reporter:build_ts",
     "//chrome/browser/resources/tab_search:build_ts",
   ]
-  extra_deps = [ "..:generate_definitions" ]
 }
 
 generate_grd("build_grdp") {

@@ -9,8 +9,8 @@ import {BrowserProxyImpl} from 'chrome://resources/cr_components/history_cluster
 import {HistoryClustersElement} from 'chrome://resources/cr_components/history_clusters/clusters.js';
 import {Cluster, PageCallbackRouter, PageHandlerRemote, QueryResult, RawVisitData, URLVisit} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 let handler: PageHandlerRemote&TestBrowserProxy;
 let callbackRouterRemote: PageCallbackRouter;

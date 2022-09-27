@@ -9,7 +9,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {WallpaperPreview, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';

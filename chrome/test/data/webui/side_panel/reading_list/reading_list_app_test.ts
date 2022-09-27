@@ -11,7 +11,7 @@ import {ReadingListApiProxyImpl} from 'chrome://read-later.top-chrome/reading_li
 import {ReadingListItemElement} from 'chrome://read-later.top-chrome/reading_list/reading_list_item.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestReadingListApiProxy} from './test_reading_list_api_proxy.js';
 

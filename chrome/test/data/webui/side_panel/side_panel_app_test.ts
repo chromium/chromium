@@ -7,7 +7,7 @@ import 'chrome://read-later.top-chrome/app.js';
 
 import {LOCAL_STORAGE_TAB_ID_KEY, SidePanelAppElement} from 'chrome://read-later.top-chrome/app.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('SidePanelAppElementTest', () => {
   let sidePanelApp: SidePanelAppElement;

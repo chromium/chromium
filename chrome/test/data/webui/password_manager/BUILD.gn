@@ -37,8 +37,10 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/settings_private.d.ts",
   ]
 
-  deps = [ "//chrome/browser/resources/password_manager:build_ts" ]
-  extra_deps = [ "..:generate_definitions" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/password_manager:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {

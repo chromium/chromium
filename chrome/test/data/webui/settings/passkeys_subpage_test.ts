@@ -10,8 +10,8 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl, SettingsPasskeysDeleteConfirmationDialogElement, SettingsPasskeysSubpageElement} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 class TestPasskeysBrowserProxy extends TestBrowserProxy implements
     PasskeysBrowserProxy {

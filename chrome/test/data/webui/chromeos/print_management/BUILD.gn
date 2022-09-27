@@ -19,10 +19,10 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   deps = [
+    "../..:build_ts",
     "//ash/webui/print_management/resources:build_ts",
     "//ui/webui/resources:library",
   ]
-  extra_deps = [ "../..:generate_definitions" ]
 }
 
 generate_grd("build_grdp") {

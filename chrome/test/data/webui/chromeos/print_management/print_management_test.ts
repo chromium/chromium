@@ -13,7 +13,7 @@ import {ActivePrintJobInfo, ActivePrintJobState, CompletedPrintJobInfo, PrinterE
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 export function initPrintJobEntryElement(): PrintJobEntryElement {
   const element = document.createElement('print-job-entry');

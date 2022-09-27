@@ -29,8 +29,10 @@ ts_library("build_ts") {
     "shortcut_customization_test.ts",
     "shortcut_customization_test_util.ts",
   ]
-  deps = [ "//ash/webui/shortcut_customization_ui/resources:build_ts" ]
-  extra_deps = [ "../..:generate_definitions" ]
+  deps = [
+    "../..:build_ts",
+    "//ash/webui/shortcut_customization_ui/resources:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {

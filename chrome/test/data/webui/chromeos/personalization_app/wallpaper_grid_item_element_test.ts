@@ -8,7 +8,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createSvgDataUrl, initElement, teardownElement} from './personalization_app_test_utils.js';
 

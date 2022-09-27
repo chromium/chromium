@@ -24,8 +24,10 @@ ts_library("build_ts") {
     "test_app_management_browser_proxy.ts",
   ]
   definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
-  deps = [ "//chrome/browser/resources/app_settings:build_ts" ]
-  extra_deps = [ "..:generate_definitions" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/app_settings:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {

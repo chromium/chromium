@@ -9,7 +9,7 @@ import {AppInfo} from 'chrome://apps/app_home.mojom-webui.js';
 import {AppListElement} from 'chrome://apps/app_list.js';
 import {BrowserProxy} from 'chrome://apps/browser_proxy.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestAppHomeBrowserProxy} from './test_app_home_browser_proxy.js';
 

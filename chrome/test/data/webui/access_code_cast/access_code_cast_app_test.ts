@@ -10,7 +10,7 @@ import {AddSinkResultCode, CastDiscoveryMethod} from 'chrome://access-code-cast/
 import {BrowserProxy} from 'chrome://access-code-cast/browser_proxy.js';
 import {RouteRequestResultCode} from 'chrome://access-code-cast/route_request_result_code.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createTestProxy} from './test_access_code_cast_browser_proxy.js';
 

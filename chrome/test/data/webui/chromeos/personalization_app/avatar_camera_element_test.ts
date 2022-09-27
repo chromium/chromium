@@ -8,8 +8,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {AvatarCamera, AvatarCameraMode, GetUserMediaProxy, setWebcamUtilsForTesting} from 'chrome://personalization/js/personalization_app.js';
 import * as webcamUtils from 'chrome://resources/ash/common/cr_picture/webcam_utils.js';
 import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestUserProvider} from './test_user_interface_provider';

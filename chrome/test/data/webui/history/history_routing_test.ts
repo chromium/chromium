@@ -8,7 +8,7 @@ import {BrowserProxyImpl, BrowserServiceImpl, HistoryAppElement, HistorySideBarE
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestBrowserProxy, TestMetricsProxy} from './history_clusters/utils.js';
 import {TestBrowserService} from './test_browser_service.js';

@@ -5,9 +5,8 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {RecentlyClosedTab, Tab, TabAlertState, TabData, TabGroup, TabGroupColor, TabItemType, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
-
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createTab, sampleToken} from './tab_search_test_data.js';
 

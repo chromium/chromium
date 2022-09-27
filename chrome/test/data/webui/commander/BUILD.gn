@@ -21,8 +21,10 @@ ts_library("build_ts") {
     "commander_app_test.ts",
     "test_commander_browser_proxy.ts",
   ]
-  deps = [ "//chrome/browser/resources/commander:build_ts" ]
-  extra_deps = [ "..:generate_definitions" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/commander:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {

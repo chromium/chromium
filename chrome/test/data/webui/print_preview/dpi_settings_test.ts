@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://print/print_preview.js';
+
 import {LabelledDpiCapability, PrintPreviewDpiSettingsElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.js';
-
 import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/test_util.js';
+import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 

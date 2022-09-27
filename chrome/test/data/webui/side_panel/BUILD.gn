@@ -37,8 +37,10 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
-  deps = [ "//chrome/browser/resources/side_panel:build_ts" ]
-  extra_deps = [ "..:generate_definitions" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/side_panel:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {

@@ -11,12 +11,10 @@ import {CustomizeThemesBrowserProxy, CustomizeThemesBrowserProxyImpl} from 'chro
 import {CustomizeThemesElement} from 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 import {ChromeTheme, CustomizeThemesClientCallbackRouter, CustomizeThemesHandlerInterface, ThemeType} from 'chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js';
 import {ThemeIconElement} from 'chrome://resources/cr_components/customize_themes/theme_icon.js';
-
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
-
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 /**
  * Asserts the computed style value for an element.

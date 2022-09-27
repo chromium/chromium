@@ -8,7 +8,7 @@ import {ensureLazyLoaded, HistorySyncedDeviceManagerElement} from 'chrome://hist
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createSession, createWindow} from './test_util.js';
 

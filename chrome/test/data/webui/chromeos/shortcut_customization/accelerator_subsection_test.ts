@@ -11,7 +11,7 @@ import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/a
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createUserAccelerator} from './shortcut_customization_test_util.js';
 

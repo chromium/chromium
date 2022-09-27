@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {createScrollBorders, decodeString16, mojoString16} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('scroll borders', () => {
   let container: HTMLElement;

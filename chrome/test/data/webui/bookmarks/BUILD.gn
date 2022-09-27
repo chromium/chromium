@@ -55,7 +55,6 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
   ]
-  extra_deps = [ "..:generate_definitions" ]
 }
 
 generate_grd("build_grdp") {

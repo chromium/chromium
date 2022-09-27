@@ -6,9 +6,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {InfiniteList, TabData, TabItemType, TabSearchItem, TitleItem} from 'chrome://tab-search.top-chrome/tab_search.js';
-
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {generateSampleTabsFromSiteNames, sampleSiteNames} from './tab_search_test_data.js';
 import {assertTabItemAndNeighborsInViewBounds, disableAnimationBehavior} from './tab_search_test_helper.js';

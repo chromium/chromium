@@ -10,7 +10,7 @@ import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelera
 import {InputKeyElement} from 'chrome://shortcut-customization/js/input_key.js';
 import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createUserAccelerator} from './shortcut_customization_test_util.js';
 

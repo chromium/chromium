@@ -54,8 +54,10 @@ ts_library("build_ts") {
     "wallpaper_preview_element_test.ts",
     "wallpaper_selected_element_test.ts",
   ]
-  deps = [ "//ash/webui/personalization_app/resources:build_ts" ]
-  extra_deps = [ "../..:generate_definitions" ]
+  deps = [
+    "../..:build_ts",
+    "//ash/webui/personalization_app/resources:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {
