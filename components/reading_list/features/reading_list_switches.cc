@@ -17,7 +17,7 @@ namespace switches {
 // android: https://crbug.com/1123087
 // desktop: https://crbug.com/1109316
 // ios: https://crbug.com/577659
-const base::Feature kReadLater{"ReadLater", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kReadLater, "ReadLater", base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsReadingListEnabled() {
 #if BUILDFLAG(IS_IOS)
@@ -27,13 +27,15 @@ bool IsReadingListEnabled() {
 #endif
 }
 
-const base::Feature kReadLaterBackendMigration{
-    "ReadLaterBackendMigration", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kReadLaterBackendMigration,
+             "ReadLaterBackendMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Feature flag used for enabling read later reminder notification.
-const base::Feature kReadLaterReminderNotification{
-    "ReadLaterReminderNotification", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kReadLaterReminderNotification,
+             "ReadLaterReminderNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace switches
