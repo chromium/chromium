@@ -415,6 +415,46 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
   EXPECT_EQ(filtered_uploads, future.Take());
 }
 
+TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_ErrorResponse) {
+  AddFilesToDlpClient();
+
+  std::vector<FileChooserFileInfoPtr> uploaded_files;
+  uploaded_files.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+  uploaded_files.push_back(FileChooserFileInfo::NewNativeFile(
+      NativeFileInfo::New(file_url1_.path(), std::u16string())));
+  uploaded_files.push_back(FileChooserFileInfo::NewNativeFile(
+      NativeFileInfo::New(file_url2_.path(), std::u16string())));
+  uploaded_files.push_back(FileChooserFileInfo::NewNativeFile(
+      NativeFileInfo::New(file_url3_.path(), std::u16string())));
+  uploaded_files.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(file_url1_.path().value());
+  check_files_transfer_response.add_files_paths(file_url3_.path().value());
+  check_files_transfer_response.set_error_message("Did not receive a reply.");
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  base::test::TestFuture<std::vector<FileChooserFileInfoPtr>> future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->FilterDisallowedUploads(std::move(uploaded_files),
+                                             GURL("https://example.com"),
+                                             future.GetCallback());
+
+  std::vector<FileChooserFileInfoPtr> filtered_uploads;
+  filtered_uploads.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+  filtered_uploads.push_back(FileChooserFileInfo::NewNativeFile(
+      NativeFileInfo::New(file_url2_.path(), std::u16string())));
+  filtered_uploads.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+
+  ASSERT_EQ(0u, future.Get().size());
+}
+
 TEST_F(DlpFilesControllerTest, GetDlpMetadata) {
   AddFilesToDlpClient();
 

@@ -51,7 +51,8 @@ class DlpWarnNotifier : public views::WidgetObserver {
   // |dst_component| or |destination_pattern| on selected
   // |confidential_contents| files is not recommended. Calls |callback| and
   // passes user's choice of whether to proceed or not.
-  void ShowDlpFilesWarningDialog(
+  // Returns a pointer to the widget that owns the created dialog.
+  base::WeakPtr<views::Widget> ShowDlpFilesWarningDialog(
       OnDlpRestrictionCheckedCallback callback,
       const DlpConfidentialContents& confidential_contents,
       absl::optional<DlpRulesManager::Component> dst_component,

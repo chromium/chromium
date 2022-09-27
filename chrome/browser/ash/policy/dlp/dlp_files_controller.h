@@ -22,6 +22,10 @@ namespace storage {
 class FileSystemURL;
 }  // namespace storage
 
+namespace views {
+class Widget;
+}  // namespace views
+
 namespace policy {
 
 class DlpWarnNotifier;
@@ -234,6 +238,9 @@ class DlpFilesController {
 
   // Is used for creating and showing the warning dialog.
   std::unique_ptr<DlpWarnNotifier> warn_notifier_;
+  // Pointer to the associated DlpWarnDialog widget.
+  // Not null only while the dialog is opened.
+  base::WeakPtr<views::Widget> warn_dialog_widget_ = nullptr;
 
   base::WeakPtrFactory<DlpFilesController> weak_ptr_factory_{this};
 };

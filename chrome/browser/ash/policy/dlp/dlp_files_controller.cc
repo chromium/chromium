@@ -34,6 +34,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -401,7 +402,8 @@ void DlpFilesController::IsFilesTransferRestricted(
       dst_component.has_value() ? DlpFileDestination(dst_component.value())
                                 : DlpFileDestination(*destination.url_or_path);
 
-  warn_notifier_->ShowDlpFilesWarningDialog(
+  // TODO(crbug.com/1368520): Add check for closed |warn_dialog_widget_|.
+  warn_dialog_widget_ = warn_notifier_->ShowDlpFilesWarningDialog(
       base::BindOnce(
           &DlpFilesController::OnDlpWarnDialogReply,
           weak_ptr_factory_.GetWeakPtr(), std::move(restricted_files),
@@ -528,6 +530,8 @@ void DlpFilesController::ReturnDisallowedTransfers(
     base::flat_map<std::string, storage::FileSystemURL> files_map,
     GetDisallowedTransfersCallback result_callback,
     ::dlp::CheckFilesTransferResponse response) {
+  // TODO(crbug.com/1368520): Close |warn_dialog_widget_| and block all file
+  // transfers if response has error.
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
                << response.error_message();
@@ -548,6 +552,13 @@ void DlpFilesController::ReturnAllowedUploads(
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
                << response.error_message();
+    if (warn_dialog_widget_ && !warn_dialog_widget_->IsClosed()) {
+      warn_dialog_widget_->CloseWithReason(
+          views::Widget::ClosedReason::kUnspecified);
+    }
+    std::move(result_callback)
+        .Run(std::vector<blink::mojom::FileChooserFileInfoPtr>());
+    return;
   }
   std::set<std::string> restricted_files(response.files_paths().begin(),
                                          response.files_paths().end());
