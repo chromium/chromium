@@ -8,10 +8,10 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_file_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -75,9 +75,8 @@ class DiceSignedInProfileCreatorTest : public testing::Test,
  public:
   DiceSignedInProfileCreatorTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    auto profile_manager_unique =
-        std::make_unique<UnittestProfileManager>(temp_dir_.GetPath());
+    auto profile_manager_unique = std::make_unique<UnittestProfileManager>(
+        base::CreateUniqueTempDirectoryScopedToTest());
     profile_manager_ = profile_manager_unique.get();
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         std::move(profile_manager_unique));
@@ -146,7 +145,6 @@ class DiceSignedInProfileCreatorTest : public testing::Test,
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  base::ScopedTempDir temp_dir_;
   ScopedTestingLocalState local_state_;
   raw_ptr<UnittestProfileManager> profile_manager_ = nullptr;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
