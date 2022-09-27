@@ -292,15 +292,12 @@ class DeepScanningRequestTest : public testing::Test {
 
   void EnableAllFeatures() {
     SetFeatures({enterprise_connectors::kEnterpriseConnectorsEnabled},
-                {extensions::SafeBrowsingPrivateEventRouter::
-                     kRealtimeReportingFeature});
+                {enterprise_connectors::kSafeBrowsingRealtimeReporting});
   }
 
   void DisableAllFeatures() {
-    SetFeatures(
-        {},
-        {extensions::SafeBrowsingPrivateEventRouter::kRealtimeReportingFeature,
-         enterprise_connectors::kEnterpriseConnectorsEnabled});
+    SetFeatures({}, {enterprise_connectors::kSafeBrowsingRealtimeReporting,
+                     enterprise_connectors::kEnterpriseConnectorsEnabled});
   }
 
   void ValidateDefaultSettings(

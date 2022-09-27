@@ -47,9 +47,6 @@ namespace extensions {
 // the kRealtimeReportingFeature feature is enabled.
 class SafeBrowsingPrivateEventRouter : public KeyedService {
  public:
-  // Feature that controls whether real-time reports are sent.
-  static const base::Feature kRealtimeReportingFeature;
-
   // Key names used with when building the dictionary to pass to the real-time
   // reporting API.
   static const char kKeyUrl[];

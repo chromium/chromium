@@ -112,13 +112,11 @@ class RealtimeReportingClientIsRealtimeReportingEnabledTest
     if (is_feature_flag_enabled_) {
       scoped_feature_list_.InitWithFeatures(
           {enterprise_connectors::kEnterpriseConnectorsEnabled},
-          {enterprise_connectors::RealtimeReportingClient::
-               kRealtimeReportingFeature});
+          {enterprise_connectors::kSafeBrowsingRealtimeReporting});
     } else {
       scoped_feature_list_.InitWithFeatures(
           {}, {enterprise_connectors::kEnterpriseConnectorsEnabled,
-               enterprise_connectors::RealtimeReportingClient::
-                   kRealtimeReportingFeature});
+               enterprise_connectors::kSafeBrowsingRealtimeReporting});
     }
 
     // In chrome branded desktop builds, the browser is always manageable.

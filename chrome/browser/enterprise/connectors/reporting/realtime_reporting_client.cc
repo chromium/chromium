@@ -68,8 +68,9 @@ bool IsClientValid(const std::string& dm_token,
 
 namespace enterprise_connectors {
 
-const base::Feature RealtimeReportingClient::kRealtimeReportingFeature{
-    "SafeBrowsingRealtimeReporting", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSafeBrowsingRealtimeReporting,
+             "SafeBrowsingRealtimeReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 RealtimeReportingClient::RealtimeReportingClient(
     content::BrowserContext* context)
@@ -99,7 +100,7 @@ std::string RealtimeReportingClient::GetBaseName(const std::string& filename) {
 
 // static
 bool RealtimeReportingClient::ShouldInitRealtimeReportingClient() {
-  if (!base::FeatureList::IsEnabled(kRealtimeReportingFeature) &&
+  if (!base::FeatureList::IsEnabled(kSafeBrowsingRealtimeReporting) &&
       !base::FeatureList::IsEnabled(
           enterprise_connectors::kEnterpriseConnectorsEnabled)) {
     DVLOG(2) << "Safe browsing real-time reporting is not enabled.";

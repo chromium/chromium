@@ -161,9 +161,6 @@ bool IsOptInEventEnabled(url_matcher::URLMatcher* matcher, const GURL& url) {
 
 namespace extensions {
 
-const base::Feature SafeBrowsingPrivateEventRouter::kRealtimeReportingFeature{
-    "SafeBrowsingRealtimeReporting", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Key names used with when building the dictionary to pass to the real-time
 // reporting API.
 const char SafeBrowsingPrivateEventRouter::kKeyUrl[] = "url";
