@@ -13,6 +13,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -20,7 +21,7 @@ namespace {
 
 int FindIndex(const std::vector<aura::Window*>& windows,
               const aura::Window* target) {
-  auto iter = std::find(windows.begin(), windows.end(), target);
+  auto iter = base::ranges::find(windows, target);
   return iter != windows.end() ? iter - windows.begin() : -1;
 }
 

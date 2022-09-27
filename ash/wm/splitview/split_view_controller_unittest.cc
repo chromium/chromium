@@ -4,7 +4,6 @@
 
 #include "ash/wm/splitview/split_view_controller.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -60,6 +59,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -4835,8 +4835,8 @@ TEST_F(SplitViewTabDraggingTest, OverviewEndedOnWindowDrag) {
   EXPECT_FALSE(window_state2->IsActive());
   // |window1| should above |window2|.
   const aura::Window::Windows windows = window1->parent()->children();
-  auto window1_layer = std::find(windows.begin(), windows.end(), window1.get());
-  auto window2_layer = std::find(windows.begin(), windows.end(), window2.get());
+  auto window1_layer = base::ranges::find(windows, window1.get());
+  auto window2_layer = base::ranges::find(windows, window2.get());
   EXPECT_TRUE(window1_layer > window2_layer);
 }
 
@@ -5704,7 +5704,7 @@ TEST_F(SplitViewAppDraggingTest, BackdropBoundsDuringDrag) {
   wm::ActivateWindow(window());
 
   aura::Window::Windows windows = active_desk_container->children();
-  auto it = std::find(windows.begin(), windows.end(), window2.get());
+  auto it = base::ranges::find(windows, window2.get());
   // Backdrop window should be the window that just below the snapped |window2|
   // and its bounds should be the same as the snapped window during drag.
   aura::Window* backdrop_window = nullptr;
@@ -5717,7 +5717,7 @@ TEST_F(SplitViewAppDraggingTest, BackdropBoundsDuringDrag) {
   EndScrollSequence();
   EXPECT_EQ(window(), window_util::GetActiveWindow());
   windows = active_desk_container->children();
-  it = std::find(windows.begin(), windows.end(), window2.get());
+  it = base::ranges::find(windows, window2.get());
   if (it != windows.begin())
     backdrop_window = *(--it);
   DCHECK(backdrop_window);

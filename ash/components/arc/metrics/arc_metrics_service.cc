@@ -21,6 +21,7 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -899,7 +900,7 @@ void ArcMetricsService::OnTaskCreated(int32_t task_id,
 }
 
 void ArcMetricsService::OnTaskDestroyed(int32_t task_id) {
-  auto it = std::find(task_ids_.begin(), task_ids_.end(), task_id);
+  auto it = base::ranges::find(task_ids_, task_id);
   if (it == task_ids_.end()) {
     LOG(WARNING) << "unknown task_id, background time might be undermeasured";
     return;

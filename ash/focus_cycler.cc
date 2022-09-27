@@ -8,6 +8,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/ranges/algorithm.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/widget/widget.h"
@@ -36,7 +37,7 @@ void FocusCycler::AddWidget(views::Widget* widget) {
 }
 
 void FocusCycler::RemoveWidget(views::Widget* widget) {
-  auto iter = std::find(widgets_.begin(), widgets_.end(), widget);
+  auto iter = base::ranges::find(widgets_, widget);
   if (iter != widgets_.end())
     widgets_.erase(iter);
 }

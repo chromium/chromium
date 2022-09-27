@@ -12,6 +12,7 @@
 #include "ash/services/secure_channel/register_payload_file_request.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 
 namespace ash::secure_channel {
 
@@ -92,8 +93,7 @@ void FakeSecureChannelConnection::AddObserver(Observer* observer) {
 }
 
 void FakeSecureChannelConnection::RemoveObserver(Observer* observer) {
-  observers_.erase(std::find(observers_.begin(), observers_.end(), observer),
-                   observers_.end());
+  observers_.erase(base::ranges::find(observers_, observer), observers_.end());
 }
 
 void FakeSecureChannelConnection::GetConnectionRssi(

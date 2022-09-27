@@ -33,6 +33,7 @@
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -54,7 +55,7 @@ namespace {
 // |parent|.
 int IndexOf(aura::Window* child, aura::Window* parent) {
   aura::Window::Windows children = parent->children();
-  auto it = std::find(children.begin(), children.end(), child);
+  auto it = base::ranges::find(children, child);
   DCHECK(it != children.end());
 
   return static_cast<int>(std::distance(children.begin(), it));

@@ -11,6 +11,7 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/ranges/algorithm.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -164,7 +165,7 @@ aura::Window* GetReferenceWindow(const aura::Window* root_window,
   int index = 0;
   // Find the index of the current active window.
   if (active)
-    index = std::find(windows.begin(), windows.end(), active) - windows.begin();
+    index = base::ranges::find(windows, active) - windows.begin();
 
   // Scan the cycle list backwards to see which is the second topmost window
   // (and so on). Note that we might cycle a few indices twice if there is no

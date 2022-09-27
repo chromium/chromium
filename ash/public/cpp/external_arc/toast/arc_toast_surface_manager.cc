@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/external_arc/toast/arc_toast_surface_manager.h"
 
+#include "base/ranges/algorithm.h"
 #include "components/exo/toast_surface.h"
 
 namespace ash {
@@ -21,7 +22,7 @@ void ArcToastSurfaceManager::AddSurface(exo::ToastSurface* surface) {
 }
 
 void ArcToastSurfaceManager::RemoveSurface(exo::ToastSurface* surface) {
-  auto it = std::find(toast_surfaces_.begin(), toast_surfaces_.end(), surface);
+  auto it = base::ranges::find(toast_surfaces_, surface);
   DLOG_IF(ERROR, it == toast_surfaces_.end())
       << "Can't remove not registered surface";
 

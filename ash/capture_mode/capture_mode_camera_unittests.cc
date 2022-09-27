@@ -36,6 +36,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/system_monitor.h"
@@ -100,7 +101,7 @@ bool IsWindowStackedRightBelow(aura::Window* window, aura::Window* sibling) {
   DCHECK_EQ(window->parent(), sibling->parent());
   const auto& children = window->parent()->children();
   const int sibling_index =
-      std::find(children.begin(), children.end(), sibling) - children.begin();
+      base::ranges::find(children, sibling) - children.begin();
   return sibling_index > 0 && children[sibling_index - 1] == window;
 }
 

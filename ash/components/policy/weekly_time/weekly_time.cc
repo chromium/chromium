@@ -4,9 +4,8 @@
 
 #include "ash/components/policy/weekly_time/weekly_time.h"
 
-#include <algorithm>
-
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 
 namespace em = enterprise_management;
@@ -148,8 +147,7 @@ std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromDict(
     return nullptr;
   }
   int day_of_week_value =
-      std::find(kWeekDays.begin(), kWeekDays.end(), *day_of_week) -
-      kWeekDays.begin();
+      base::ranges::find(kWeekDays, *day_of_week) - kWeekDays.begin();
   if (day_of_week_value <= 0 || day_of_week_value > 7) {
     LOG(ERROR) << "Invalid day_of_week: " << day_of_week;
     return nullptr;

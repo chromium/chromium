@@ -28,6 +28,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
+#include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
@@ -131,8 +132,7 @@ void AppendVisibleOnAllDesksWindowsToDeskLayer(
     if (layer_data.should_skip_layer)
       continue;
 
-    auto window_iter =
-        std::find(mru_windows.begin(), mru_windows.end(), window);
+    auto window_iter = base::ranges::find(mru_windows, window);
     if (window_iter == mru_windows.end())
       continue;
 
@@ -150,9 +150,9 @@ void AppendVisibleOnAllDesksWindowsToDeskLayer(
     auto insertion_point_iter =
         closest_window_below_iter == mru_windows.end()
             ? out_desk_container_children->begin()
-            : std::next(std::find(out_desk_container_children->begin(),
-                                  out_desk_container_children->end(),
-                                  (*closest_window_below_iter)->layer()));
+            : std::next(
+                  base::ranges::find(*out_desk_container_children,
+                                     (*closest_window_below_iter)->layer()));
     out_desk_container_children->insert(insertion_point_iter, window->layer());
   }
 }

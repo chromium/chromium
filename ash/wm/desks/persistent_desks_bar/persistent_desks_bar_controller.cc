@@ -18,6 +18,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -285,7 +286,7 @@ void PersistentDesksBarController::UpdateBarOnWindowStateChanges(
 
   MruWindowTracker::WindowList windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  if (std::find(windows.begin(), windows.end(), window) == windows.end())
+  if (!base::Contains(windows, window))
     return;
 
   if (WindowState::Get(window)->IsFullscreen())

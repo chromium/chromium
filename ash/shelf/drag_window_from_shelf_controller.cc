@@ -139,8 +139,7 @@ class DragWindowFromShelfController::WindowsHider
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     window->RemoveObserver(this);
-    hidden_windows_.erase(
-        std::find(hidden_windows_.begin(), hidden_windows_.end(), window));
+    hidden_windows_.erase(base::ranges::find(hidden_windows_, window));
   }
 
  private:

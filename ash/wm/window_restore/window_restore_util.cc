@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
+#include "base/ranges/algorithm.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -53,7 +54,7 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
   if (activation_index) {
     window_activation_index = *activation_index;
   } else {
-    auto it = std::find(mru_windows.begin(), mru_windows.end(), window);
+    auto it = base::ranges::find(mru_windows, window);
     if (it != mru_windows.end())
       window_activation_index = it - mru_windows.begin();
   }

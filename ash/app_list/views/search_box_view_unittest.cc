@@ -36,6 +36,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -78,8 +79,7 @@ bool IsValidSearchBoxAccessibilityHint(const std::u16string& hint) {
           l10n_util::GetStringUTF16(IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS))};
   // Check if the current accessibility text is one of the possible
   // options.
-  return std::find(begin(possible_a11y_text), end(possible_a11y_text), hint) !=
-         possible_a11y_text.end();
+  return base::Contains(possible_a11y_text, hint);
 }
 
 }  // namespace

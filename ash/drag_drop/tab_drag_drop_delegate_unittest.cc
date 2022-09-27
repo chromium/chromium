@@ -19,6 +19,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -334,9 +335,7 @@ TEST_F(TabDragDropDelegateTest, DropTabInSplitViewMode) {
   auto windows_list = Shell::Get()
                           ->overview_controller()
                           ->GetWindowsListInOverviewGridsForTest();
-  EXPECT_NE(
-      std::end(windows_list),
-      std::find(windows_list.begin(), windows_list.end(), source_window.get()));
+  EXPECT_TRUE(base::Contains(windows_list, source_window.get()));
 }
 
 TEST_F(TabDragDropDelegateTest, DropTabToOverviewMode) {
@@ -374,9 +373,7 @@ TEST_F(TabDragDropDelegateTest, DropTabToOverviewMode) {
   auto windows_list = Shell::Get()
                           ->overview_controller()
                           ->GetWindowsListInOverviewGridsForTest();
-  EXPECT_NE(
-      std::end(windows_list),
-      std::find(windows_list.begin(), windows_list.end(), new_window.get()));
+  EXPECT_TRUE(base::Contains(windows_list, new_window.get()));
 }
 
 TEST_F(TabDragDropDelegateTest, WillNotDropTabToOverviewModeInSnappingZone) {
@@ -450,9 +447,7 @@ TEST_F(TabDragDropDelegateTest, WillNotDropTabToOverviewMode) {
   auto windows_list = Shell::Get()
                           ->overview_controller()
                           ->GetWindowsListInOverviewGridsForTest();
-  EXPECT_EQ(
-      std::end(windows_list),
-      std::find(windows_list.begin(), windows_list.end(), new_window.get()));
+  EXPECT_FALSE(base::Contains(windows_list, new_window.get()));
 }
 
 TEST_F(TabDragDropDelegateTest, SourceWindowBoundsUpdatedWhileDragging) {

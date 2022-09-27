@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/window_user_data.h"
 #include "ash/wm/window_dimmer.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/compositor/layer.h"
 
@@ -93,8 +94,7 @@ TEST_F(ScreenDimmerTest, DimAtBottom) {
       aura::test::CreateTestWindowWithId(1, root_window));
   dimmer_->SetDimming(true);
   std::vector<aura::Window*>::const_iterator dim_iter =
-      std::find(root_window->children().begin(), root_window->children().end(),
-                GetDimWindow());
+      base::ranges::find(root_window->children(), GetDimWindow());
   ASSERT_TRUE(dim_iter != root_window->children().end());
   // Dim layer is at top.
   EXPECT_EQ(*dim_iter, *root_window->children().rbegin());
@@ -103,8 +103,7 @@ TEST_F(ScreenDimmerTest, DimAtBottom) {
   dimmer_->set_at_bottom(true);
   dimmer_->SetDimming(true);
 
-  dim_iter = std::find(root_window->children().begin(),
-                       root_window->children().end(), GetDimWindow());
+  dim_iter = base::ranges::find(root_window->children(), GetDimWindow());
   ASSERT_TRUE(dim_iter != root_window->children().end());
   // Dom layer is at the bottom.
   EXPECT_EQ(*dim_iter, *root_window->children().begin());

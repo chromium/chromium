@@ -31,6 +31,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -330,8 +331,7 @@ bool PaletteTray::ShouldShowOnDisplay() {
 
   for (const ui::TouchscreenDevice& device :
        ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
-    if (device.has_stylus && std::find(ids.begin(), ids.end(),
-                                       device.target_display_id) != ids.end()) {
+    if (device.has_stylus && base::Contains(ids, device.target_display_id)) {
       return true;
     }
   }

@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/overview_session.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -74,6 +73,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -123,7 +123,7 @@ constexpr const char kActiveWindowChangedFromOverview[] =
 // |parent|.
 int IndexOf(aura::Window* child, aura::Window* parent) {
   aura::Window::Windows children = parent->children();
-  auto it = std::find(children.begin(), children.end(), child);
+  auto it = base::ranges::find(children, child);
   DCHECK(it != children.end());
 
   return static_cast<int>(std::distance(children.begin(), it));

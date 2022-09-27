@@ -27,6 +27,8 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/view.h"
 
@@ -62,8 +64,7 @@ void OverviewHighlightController::MoveHighlight(bool reverse) {
       index = count - 1;
     }
   } else {
-    auto it = std::find(traversable_views.begin(), traversable_views.end(),
-                        highlighted_view_);
+    auto it = base::ranges::find(traversable_views, highlighted_view_);
     DCHECK(it != traversable_views.end());
     const int current_index = std::distance(traversable_views.begin(), it);
     DCHECK_GE(current_index, 0);
@@ -97,9 +98,7 @@ void OverviewHighlightController::MoveHighlightToView(
     bool suppress_accessibility_event) {
   const std::vector<OverviewHighlightableView*> traversable_views =
       GetTraversableViews();
-  auto it = std::find(traversable_views.begin(), traversable_views.end(),
-                      target_view);
-  DCHECK(it != traversable_views.end());
+  DCHECK(base::Contains(traversable_views, target_view));
 
   UpdateHighlight(target_view, suppress_accessibility_event);
 }
@@ -111,8 +110,7 @@ void OverviewHighlightController::OnViewDestroyingOrDisabling(
   // TODO(afakhry): Refactor this code.
   const std::vector<OverviewHighlightableView*> traversable_views =
       GetTraversableViews();
-  const auto it =
-      std::find(traversable_views.begin(), traversable_views.end(), view);
+  const auto it = base::ranges::find(traversable_views, view);
   if (it == traversable_views.end())
     return;
 

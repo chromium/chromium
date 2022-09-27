@@ -21,6 +21,7 @@
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
@@ -275,7 +276,7 @@ void WindowCycleList::SetDisableInitialDelayForTesting(bool disabled) {
 void WindowCycleList::OnWindowDestroying(aura::Window* window) {
   window->RemoveObserver(this);
 
-  WindowList::iterator i = std::find(windows_.begin(), windows_.end(), window);
+  WindowList::iterator i = base::ranges::find(windows_, window);
   // TODO(oshima): Change this back to DCHECK once crbug.com/483491 is fixed.
   CHECK(i != windows_.end());
   int removed_index = static_cast<int>(i - windows_.begin());
@@ -449,7 +450,7 @@ int WindowCycleList::GetOffsettedWindowIndex(int offset) const {
 }
 
 int WindowCycleList::GetIndexOfWindow(aura::Window* window) const {
-  auto target_window = std::find(windows_.begin(), windows_.end(), window);
+  auto target_window = base::ranges::find(windows_, window);
   DCHECK(target_window != windows_.end());
   return std::distance(windows_.begin(), target_window);
 }

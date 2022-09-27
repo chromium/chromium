@@ -21,6 +21,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/window_info.h"
@@ -556,8 +557,7 @@ void SplitViewMetricsController::AddOrStackWindowOnTop(aura::Window* window) {
   if (!CanIncludeWindowInMruList(window))
     return;
 
-  auto iter =
-      std::find(observed_windows_.begin(), observed_windows_.end(), window);
+  auto iter = base::ranges::find(observed_windows_, window);
   if (iter == observed_windows_.end()) {
     AddObservedWindow(window);
   } else {

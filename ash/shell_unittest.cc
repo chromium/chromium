@@ -4,7 +4,6 @@
 
 #include "ash/shell.h"
 
-#include <algorithm>
 #include <memory>
 #include <queue>
 #include <vector>
@@ -36,6 +35,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/account_id/account_id.h"
@@ -436,9 +436,9 @@ TEST_F(ShellTest, TestPreTargetHandlerOrder) {
 
   ui::EventHandlerList handlers = test_api.GetPreTargetHandlers();
   ui::EventHandlerList::const_iterator cursor_filter =
-      std::find(handlers.begin(), handlers.end(), shell->mouse_cursor_filter());
-  ui::EventHandlerList::const_iterator drag_drop = std::find(
-      handlers.begin(), handlers.end(), shell_test_api.drag_drop_controller());
+      base::ranges::find(handlers, shell->mouse_cursor_filter());
+  ui::EventHandlerList::const_iterator drag_drop =
+      base::ranges::find(handlers, shell_test_api.drag_drop_controller());
   EXPECT_NE(handlers.end(), cursor_filter);
   EXPECT_NE(handlers.end(), drag_drop);
   EXPECT_GT(drag_drop, cursor_filter);

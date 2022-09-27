@@ -10,6 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -84,8 +85,7 @@ size_t FilePathToExtension(const base::FilePath& file_path) {
   if (extension.empty())
     return kEmptyExtension;
 
-  auto* const* it =
-      std::find(kKnownExtensions.begin(), kKnownExtensions.end(), extension);
+  auto* const* it = base::ranges::find(kKnownExtensions, extension);
   if (it == kKnownExtensions.end())
     return kOtherExtension;
 

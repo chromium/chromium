@@ -29,6 +29,7 @@
 #include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
@@ -562,8 +563,7 @@ void BackdropController::Hide(bool destroy, bool animate) {
 
   DCHECK(backdrop_window_);
   const aura::Window::Windows windows = container_->children();
-  auto window_iter =
-      std::find(windows.begin(), windows.end(), backdrop_window_);
+  auto window_iter = base::ranges::find(windows, backdrop_window_);
   ++window_iter;
   if (window_iter != windows.end()) {
     aura::Window* window_above_backdrop = *window_iter;

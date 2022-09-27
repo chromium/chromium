@@ -4,9 +4,8 @@
 
 #include "ash/wm/window_transient_descendant_iterator.h"
 
-#include <algorithm>
-
 #include "ash/wm/window_util.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 
@@ -29,8 +28,7 @@ aura::Window* GetNextWindow(aura::Window* current_window) {
       }
       const aura::Window::Windows transient_siblings =
           ::wm::GetTransientChildren(parent);
-      auto iter = std::find(transient_siblings.begin(),
-                            transient_siblings.end(), current_window);
+      auto iter = base::ranges::find(transient_siblings, current_window);
       ++iter;
       if (iter != transient_siblings.end()) {
         current_window = *iter;

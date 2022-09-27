@@ -79,6 +79,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -234,8 +235,8 @@ bool IsStackedBelow(aura::Window* win1, aura::Window* win2) {
   DCHECK_EQ(win1->parent(), win2->parent());
 
   const auto& children = win1->parent()->children();
-  auto win1_iter = std::find(children.begin(), children.end(), win1);
-  auto win2_iter = std::find(children.begin(), children.end(), win2);
+  auto win1_iter = base::ranges::find(children, win1);
+  auto win2_iter = base::ranges::find(children, win2);
   DCHECK(win1_iter != children.end());
   DCHECK(win2_iter != children.end());
   return win1_iter < win2_iter;
