@@ -713,7 +713,6 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
 
   NavigateToPageWithFrame(kHostA);
 
-  // Asserting very basic behavior while the extension is being implemented.
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
       GetFrame(), "https://asdf.example"));
   EXPECT_FALSE(
@@ -722,6 +721,15 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
       GetPrimaryMainFrame(), base::StrCat({"https://", kHostA})));
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
       GetFrame(), base::StrCat({"https://", kHostA})));
+}
+
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
+                       TopLevelOpaqueOriginRejected) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("data:,Hello%2C%20World%21")));
+
+  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), base::StrCat({"https://", kHostA})));
 }
 
 // Validate that if an iframe requests access that cookies become unblocked for
