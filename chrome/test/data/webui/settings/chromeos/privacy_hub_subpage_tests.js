@@ -318,6 +318,10 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     const getMicrophoneList = () =>
         privacyHubSubpage.shadowRoot.querySelector('#micList');
 
+    const getCameraCrToggle = () =>
+        privacyHubSubpage.shadowRoot.querySelector('#cameraToggle')
+            .shadowRoot.querySelector('cr-toggle');
+
     // Initially, the lists of media devices should be hidden and `#noMic` and
     // `#noCamera` should be displayed.
     assertFalse(!!getCameraList());
@@ -413,8 +417,10 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
       if (cams) {
         assertTrue(!!getCameraList());
         assertEquals(getCameraList().items.length, cams);
+        assertFalse(getCameraCrToggle().disabled);
       } else {
         assertFalse(!!getCameraList());
+        assertTrue(getCameraCrToggle().disabled);
       }
 
       if (mics) {
@@ -440,8 +446,10 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
       if (cams) {
         assertTrue(!!getCameraList());
         assertEquals(getCameraList().items.length, cams);
+        assertFalse(getCameraCrToggle().disabled);
       } else {
         assertFalse(!!getCameraList());
+        assertTrue(getCameraCrToggle().disabled);
       }
 
       if (mics) {
