@@ -92,8 +92,8 @@ bool ParseScaleFactor(const base::StringPiece& identifier,
     DLOG(WARNING) << "Invalid scale factor format: " << identifier;
     return false;
   }
-  if (scale < 0) {
-    DLOG(WARNING) << "Invalid negative scale factor: " << identifier;
+  if (scale <= 0) {
+    DLOG(WARNING) << "Invalid non-positive scale factor: " << identifier;
     return false;
   }
   if (scale > kMaxScaleFactor) {

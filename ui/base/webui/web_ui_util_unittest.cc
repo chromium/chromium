@@ -107,12 +107,14 @@ TEST(WebUIUtilTest, ParseScaleFactor) {
 
   // Invalid input.
   EXPECT_FALSE(webui::ParseScaleFactor("", &scale_factor));
+  EXPECT_FALSE(webui::ParseScaleFactor("0", &scale_factor));
   EXPECT_FALSE(webui::ParseScaleFactor("a", &scale_factor));
   EXPECT_FALSE(webui::ParseScaleFactor("x", &scale_factor));
   EXPECT_FALSE(webui::ParseScaleFactor("ax", &scale_factor));
   EXPECT_FALSE(webui::ParseScaleFactor("5", &scale_factor));
   EXPECT_FALSE(webui::ParseScaleFactor("-5", &scale_factor));
   EXPECT_FALSE(webui::ParseScaleFactor("-5x", &scale_factor));
+  EXPECT_FALSE(webui::ParseScaleFactor("0x", &scale_factor));
   EXPECT_FALSE(webui::ParseScaleFactor("2000x", &scale_factor));
 
   // Valid input.

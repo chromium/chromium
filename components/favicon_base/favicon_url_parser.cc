@@ -23,6 +23,18 @@ bool HasSubstringAt(const std::string& path,
   return path.compare(start_index, search.length(), search) == 0;
 }
 
+// Same as base::StringToInt() but guarantees that the output number is positive
+// (greater than zero), returns false in all other cases.
+bool StringToPositiveInt(base::StringPiece input, int* output) {
+  int result;
+  if (!base::StringToInt(input, &result))
+    return false;
+  if (result <= 0)
+    return false;
+  *output = result;
+  return result;
+}
+
 // Parse with legacy FaviconUrlFormat::kFavicon format.
 bool ParseFaviconPathWithLegacyFormat(const std::string& path,
                                       chrome::ParsedFaviconPath* parsed) {
@@ -57,11 +69,13 @@ bool ParseFaviconPathWithLegacyFormat(const std::string& path,
                               slash - scale_delimiter - 1);
     }
 
-    if (!base::StringToInt(size_str, &parsed->size_in_dip))
+    if (!StringToPositiveInt(size_str, &parsed->size_in_dip))
       return false;
 
-    if (!scale_str.empty())
-      webui::ParseScaleFactor(scale_str, &parsed->device_scale_factor);
+    if (!scale_str.empty() &&
+        !webui::ParseScaleFactor(scale_str, &parsed->device_scale_factor)) {
+      return false;
+    }
 
     parsed_index = slash + 1;
   }
@@ -112,8 +126,8 @@ bool ParseFaviconPathWithFavicon2Format(const std::string& path,
                !webui::ParseScaleFactor(it.GetUnescapedValue(),
                                         &parsed->device_scale_factor)) {
       return false;
-    } else if (key == "size" && !base::StringToInt(it.GetUnescapedValue(),
-                                                   &parsed->size_in_dip)) {
+    } else if (key == "size" && !StringToPositiveInt(it.GetUnescapedValue(),
+                                                     &parsed->size_in_dip)) {
       return false;
     }
   }

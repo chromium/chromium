@@ -224,6 +224,19 @@ TEST_F(FaviconSourceTestWithLegacyFormat, ShouldNotQueryIfDesiredSizeTooLarge) {
       test_web_contents_getter_, base::DoNothing());
 }
 
+TEST_F(FaviconSourceTestWithLegacyFormat, ShouldNotQueryIfInvalidScaleFactor) {
+  EXPECT_CALL(*mock_history_ui_favicon_request_handler_,
+              GetRawFaviconForPageURL)
+      .Times(0);
+  EXPECT_CALL(*mock_favicon_service_, GetRawFavicon).Times(0);
+  EXPECT_CALL(*mock_favicon_service_, GetRawFaviconForPageURL).Times(0);
+
+  // A negative scale factor cannot be parsed.
+  source()->StartDataRequest(
+      GURL(base::StrCat({kDummyPrefix, "size/16@-2x/https://www.google.com"})),
+      test_web_contents_getter_, base::DoNothing());
+}
+
 TEST_F(FaviconSourceTestWithLegacyFormat,
        ShouldRecordFaviconResourceHistogram_ExtensionOrigin) {
   scoped_refptr<const extensions::Extension> extension =

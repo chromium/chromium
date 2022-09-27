@@ -85,6 +85,26 @@ TEST_F(FaviconUrlParserTest, LegacyParsingSizeParam) {
   EXPECT_EQ(path8, parsed.page_url);
   EXPECT_EQ(16, parsed.size_in_dip);
   EXPECT_EQ(1.0f, parsed.device_scale_factor);
+
+  // Test that negative sizes lead to parsing errors.
+  const std::string path9 = "size/-32/" + url;
+  EXPECT_FALSE(chrome::ParseFaviconPath(
+      path9, chrome::FaviconUrlFormat::kFaviconLegacy, &parsed));
+
+  // Test that size zero leads to parsing errors.
+  const std::string path10 = "size/0/" + url;
+  EXPECT_FALSE(chrome::ParseFaviconPath(
+      path10, chrome::FaviconUrlFormat::kFaviconLegacy, &parsed));
+
+  // Test that negative scale factors lead to parsing errors.
+  const std::string path11 = "size/32@-1.4x/" + url;
+  EXPECT_FALSE(chrome::ParseFaviconPath(
+      path11, chrome::FaviconUrlFormat::kFaviconLegacy, &parsed));
+
+  // Test that scale factor zero leads to parsing errors.
+  const std::string path12 = "size/32@0x/" + url;
+  EXPECT_FALSE(chrome::ParseFaviconPath(
+      path12, chrome::FaviconUrlFormat::kFaviconLegacy, &parsed));
 }
 
 // Test parsing path with 'iconurl' parameter.
@@ -127,6 +147,10 @@ TEST_F(FaviconUrlParserTest, Favicon2ParsingSizeParam) {
   EXPECT_FALSE(chrome::ParseFaviconPath("?size=abc&pageUrl=https%3A%2F%2Fg.com",
                                         chrome::FaviconUrlFormat::kFavicon2,
                                         &parsed));
+
+  EXPECT_FALSE(chrome::ParseFaviconPath("?size=-32&pageUrl=https%3A%2F%2Fg.com",
+                                        chrome::FaviconUrlFormat::kFavicon2,
+                                        &parsed));
 }
 
 TEST_F(FaviconUrlParserTest, Favicon2ParsingScaleFactorParam) {
@@ -145,6 +169,11 @@ TEST_F(FaviconUrlParserTest, Favicon2ParsingScaleFactorParam) {
   // Negative scale factor (parsing error).
   EXPECT_FALSE(
       chrome::ParseFaviconPath("?scaleFactor=-2.1x&pageUrl=https%3A%2F%2Fg.com",
+                               chrome::FaviconUrlFormat::kFavicon2, &parsed));
+
+  // Scale factor zero (parsing error).
+  EXPECT_FALSE(
+      chrome::ParseFaviconPath("?scaleFactor=0x&pageUrl=https%3A%2F%2Fg.com",
                                chrome::FaviconUrlFormat::kFavicon2, &parsed));
 }
 
