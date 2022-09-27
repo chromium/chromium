@@ -100,6 +100,10 @@ base::span<const MatchPatternRef> GetMatchPatterns(
                           pattern_source);
 }
 
+bool IsSupportedLanguageCode(LanguageCode language_code) {
+  return kLanguages.contains(*language_code);
+}
+
 // The dereferencing operator implements the distinction between ordinary and
 // supplementary patterns (see the header). This is why it must return a copy,
 // rather than a const reference.

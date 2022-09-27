@@ -173,6 +173,14 @@ TEST_F(RegexPatternsTest, MatchPatternRefDereference) {
   EXPECT_THAT((*b).match_field_attributes, ElementsAre(MatchAttribute::kName));
 }
 
+TEST_F(RegexPatternsTest, IsSupportedLanguageCode) {
+  EXPECT_TRUE(IsSupportedLanguageCode(LanguageCode("en")));
+  EXPECT_TRUE(IsSupportedLanguageCode(LanguageCode("de")));
+  EXPECT_TRUE(IsSupportedLanguageCode(LanguageCode("fr")));
+  EXPECT_TRUE(IsSupportedLanguageCode(LanguageCode("zh-CN")));
+  EXPECT_TRUE(IsSupportedLanguageCode(LanguageCode("zh-TW")));
+}
+
 // Tests that for a given pattern name, the pseudo-language-code "" contains the
 // patterns of all real languages.
 TEST_P(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {

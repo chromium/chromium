@@ -32,6 +32,8 @@ import sys
 # - kPatternMap is a fixed flat map from (pattern name, language code) tuples
 #   to arrays of spans of MatchPatternRefs; the indices of the array correspond
 #   to the pattern sources.
+# - kLanguages is a fixed flat set of language codes across all pattern source
+#   ids and all pattern names.
 #
 # This representation has larger binary size on Android than using nested
 # lookup pattern name -> language code -> span of MatchPatternRefs, but it's
@@ -246,6 +248,17 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
       ]
       yield f'  {{{{"{name}", "{lang}"}}, {{{", ".join(pattern_array)}}}}},'
   yield '}, NameAndLanguageComparator());'
+  yield ''
+
+  language_array = sorted(
+      set(f'"{lang}"' for lang_to_id_to_patternrefs in
+          name_to_lang_to_id_to_patternrefs.values()
+          for lang in lang_to_id_to_patternrefs.keys() if lang != ''))
+  yield '// The set of language codes across all language source ids and'
+  yield '// pattern names.'
+  yield 'constexpr auto kLanguages = base::MakeFixedFlatSet<const char*>({'
+  yield f'  {", ".join(language_array)}'
+  yield '}, LanguageComparator());'
 
 def generate_cpp_lines(id_to_name_to_lang_to_patterns):
   yield """// Copyright 2022 The Chromium Authors
@@ -258,6 +271,7 @@ def generate_cpp_lines(id_to_name_to_lang_to_patterns):
 #include <array>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 
@@ -310,6 +324,21 @@ struct NameAndLanguageComparator {
       NameAndLanguage::StringPiecePair b) const {
     int cmp = a.first.compare(b.first);
     return cmp < 0 || (cmp == 0 && a.second.compare(b.second) < 0);
+  }
+};
+
+// A less-than relation on const char* and base::StringPiece, in particular for
+// language codes.
+struct LanguageComparator {
+  using is_transparent = void;
+
+  // This function also accepts const char* by implicit conversion to
+  // base::StringPiece.
+  //
+  // This comparator facilitates constexpr comparison among const char*
+  // similarly to the above NameAndLanguageComparator.
+  constexpr bool operator()(base::StringPiece a, base::StringPiece b) const {
+    return a.compare(b) < 0;
   }
 };
 """
