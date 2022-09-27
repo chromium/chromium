@@ -84,7 +84,8 @@ class RTCRtpSenderImplTest : public ::testing::Test {
   }
 
   std::unique_ptr<RTCRtpSenderImpl> CreateSender(
-      MediaStreamComponent* component) {
+      MediaStreamComponent* component,
+      bool encoded_insertable_streams = false) {
     std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>
         track_ref;
     if (component) {
@@ -97,7 +98,7 @@ class RTCRtpSenderImplTest : public ::testing::Test {
     sender_state.Initialize();
     return std::make_unique<RTCRtpSenderImpl>(
         peer_connection_.get(), track_map_, std::move(sender_state),
-        /*encoded_insertable_streams=*/false);
+        encoded_insertable_streams);
   }
 
   // Calls replaceTrack(), which is asynchronous, returning a callback that when
@@ -258,6 +259,15 @@ TEST_F(RTCRtpSenderImplTest, CopiedSenderSharesInternalStates) {
   // Both original and copy shows a modified state.
   EXPECT_FALSE(sender_->Track());
   EXPECT_FALSE(copy->Track());
+}
+
+TEST_F(RTCRtpSenderImplTest, CreateReceiverWithInsertableStreams) {
+  auto* component = CreateTrack("track_id");
+  sender_ = CreateSender(component,
+                         /*encoded_insertable_streams=*/true);
+  EXPECT_TRUE(sender_->GetEncodedAudioStreamTransformer());
+  // There should be no video transformer in audio receivers.
+  EXPECT_FALSE(sender_->GetEncodedVideoStreamTransformer());
 }
 
 }  // namespace blink
