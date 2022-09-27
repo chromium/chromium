@@ -79,6 +79,16 @@ GURL AddAndVerifyFencedFrameURL(
   return urn_uuid.value();
 }
 
+GURL GenerateAndVerifyPendingMappedURN(
+    FencedFrameURLMapping* fenced_frame_url_mapping) {
+  absl::optional<GURL> pending_urn =
+      fenced_frame_url_mapping->GeneratePendingMappedURN();
+  EXPECT_TRUE(pending_urn.has_value());
+  EXPECT_TRUE(pending_urn->is_valid());
+
+  return pending_urn.value();
+}
+
 }  // namespace
 
 class FencedFrameBrowserTestBase : public ContentBrowserTest {
@@ -2280,7 +2290,7 @@ IN_PROC_BROWSER_TEST_P(
 
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
-  const GURL urn_uuid = url_mapping.GeneratePendingMappedURN();
+  auto urn_uuid = GenerateAndVerifyPendingMappedURN(&url_mapping);
   const GURL mapped_url =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
   SimulateSharedStorageURNMappingComplete(
@@ -2338,7 +2348,7 @@ IN_PROC_BROWSER_TEST_P(
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
 
-  const GURL urn_uuid = url_mapping.GeneratePendingMappedURN();
+  auto urn_uuid = GenerateAndVerifyPendingMappedURN(&url_mapping);
   const GURL mapped_url =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
@@ -2416,7 +2426,7 @@ IN_PROC_BROWSER_TEST_P(
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
 
-  const GURL urn_uuid = url_mapping.GeneratePendingMappedURN();
+  auto urn_uuid = GenerateAndVerifyPendingMappedURN(&url_mapping);
   const GURL mapped_url =
       https_server()->GetURL("a.test", "/fenced_frames/nonexistent-url.html");
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
@@ -2485,7 +2495,7 @@ IN_PROC_BROWSER_TEST_P(
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
 
-  const GURL urn_uuid = url_mapping.GeneratePendingMappedURN();
+  auto urn_uuid = GenerateAndVerifyPendingMappedURN(&url_mapping);
   const GURL mapped_url =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);

@@ -260,10 +260,15 @@ absl::optional<GURL> FencedFrameURLMapping::GeneratePlaceholderURN() {
   return urn_uuid;
 }
 
-GURL FencedFrameURLMapping::GeneratePendingMappedURN() {
+absl::optional<GURL> FencedFrameURLMapping::GeneratePendingMappedURN() {
   GURL urn_uuid = GenerateURN();
   DCHECK(!IsMapped(urn_uuid));
   DCHECK(!IsPendingMapped(urn_uuid));
+
+  if (IsFull()) {
+    return absl::nullopt;
+  }
+
   pending_urn_uuid_to_url_map_.emplace(
       urn_uuid, std::set<raw_ptr<MappingResultObserver>>());
   return urn_uuid;
@@ -419,7 +424,8 @@ bool FencedFrameURLMapping::IsPendingMapped(const GURL& urn_uuid) const {
 }
 
 bool FencedFrameURLMapping::IsFull() const {
-  return urn_uuid_to_url_map_.size() == kMaxUrnMappingSize;
+  return urn_uuid_to_url_map_.size() + pending_urn_uuid_to_url_map_.size() >=
+         kMaxUrnMappingSize;
 }
 
 }  // namespace content

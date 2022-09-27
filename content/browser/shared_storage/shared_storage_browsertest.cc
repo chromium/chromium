@@ -2822,6 +2822,57 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                                      2);
 }
 
+// When number of urn mappings limit has been reached, subsequent `selectURL()`
+// calls will fail.
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
+                       SelectURL_Fails_ExceedNumOfUrnMappingsLimit) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // `selectURL()` succeeds when map is not full.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+    )"));
+
+  EvalJsResult result = EvalJs(shell(), R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"}], {data: {'mockResult': 0}});
+    )");
+  EXPECT_TRUE(result.error.empty());
+
+  // Wait for the `addModule()` and `selectURL()` to finish.
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->WaitForWorkletResponsesCount(2);
+
+  FencedFrameURLMapping& fenced_frame_url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  FencedFrameURLMappingTestPeer fenced_frame_url_mapping_test_peer(
+      &fenced_frame_url_mapping);
+
+  // Fill the map until its size reaches the limit.
+  GURL url("https://a.test");
+  fenced_frame_url_mapping_test_peer.FillMap(url);
+
+  EvalJsResult extra_result = EvalJs(shell(), R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title1.html"}], {data: {'mockResult': 0}});
+    )");
+
+  // `selectURL()` fails when map is full.
+  std::string expected_error = base::StrCat(
+      {"a JavaScript error: \"Error: ",
+       "sharedStorage.selectURL() failed because number of urn::uuid to url ",
+       "mappings has reached the limit.\"\n"});
+  EXPECT_EQ(expected_error, extra_result.error);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     SharedStorageFencedFrameInteractionBrowserTest,

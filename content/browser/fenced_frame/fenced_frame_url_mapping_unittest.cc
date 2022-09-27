@@ -115,6 +115,16 @@ GURL GenerateAndVerifyPlaceholderURN(
   return placeholder_urn.value();
 }
 
+GURL GenerateAndVerifyPendingMappedURN(
+    FencedFrameURLMapping* fenced_frame_url_mapping) {
+  absl::optional<GURL> pending_urn =
+      fenced_frame_url_mapping->GeneratePendingMappedURN();
+  EXPECT_TRUE(pending_urn.has_value());
+  EXPECT_TRUE(pending_urn->is_valid());
+
+  return pending_urn.value();
+}
+
 }  // namespace
 
 TEST(FencedFrameURLMappingTest, AddAndConvert) {
@@ -145,8 +155,10 @@ TEST(FencedFrameURLMappingTest, NonExistentUUID) {
 
 TEST(FencedFrameURLMappingTest, PendingMappedUUID) {
   FencedFrameURLMapping fenced_frame_url_mapping;
-  const GURL urn_uuid1 = fenced_frame_url_mapping.GeneratePendingMappedURN();
-  const GURL urn_uuid2 = fenced_frame_url_mapping.GeneratePendingMappedURN();
+  const GURL urn_uuid1 =
+      GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
+  const GURL urn_uuid2 =
+      GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   TestFencedFrameURLMappingResultObserver observer1;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid1, &observer1);
@@ -197,7 +209,8 @@ TEST(FencedFrameURLMappingTest, PendingMappedUUID) {
 
 TEST(FencedFrameURLMappingTest, RemoveObserverOnPendingMappedUUID) {
   FencedFrameURLMapping fenced_frame_url_mapping;
-  const GURL urn_uuid = fenced_frame_url_mapping.GeneratePendingMappedURN();
+  const GURL urn_uuid =
+      GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   TestFencedFrameURLMappingResultObserver observer;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
@@ -216,7 +229,8 @@ TEST(FencedFrameURLMappingTest, RemoveObserverOnPendingMappedUUID) {
 
 TEST(FencedFrameURLMappingTest, RegisterTwoObservers) {
   FencedFrameURLMapping fenced_frame_url_mapping;
-  const GURL urn_uuid = fenced_frame_url_mapping.GeneratePendingMappedURN();
+  const GURL urn_uuid =
+      GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   TestFencedFrameURLMappingResultObserver observer1;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer1);
@@ -538,35 +552,52 @@ TEST(FencedFrameURLMappingTest, ReportingMetadataSuccessWithInterestGroupInfo) {
                          ["mouse interaction"]);
 }
 
-// Test that number of urn mappings limit is enforced.
+// Test that number of urn mappings limit is enforced for FLEDGE use cases.
 TEST(FencedFrameURLMappingTest, ExceedNumOfUrnMappingsLimitFailsAddURL) {
   FencedFrameURLMapping fenced_frame_url_mapping;
 
-  // Map is empty initially.
-  EXPECT_FALSE(fenced_frame_url_mapping.IsFull());
+  // Able to generate placeholder URN when map is not full.
+  EXPECT_TRUE(fenced_frame_url_mapping.GeneratePlaceholderURN().has_value());
 
-  // Fill the map until its size reaches limit.
-  for (size_t i = 0; i < FencedFrameURLMapping::kMaxUrnMappingSize; ++i) {
-    const GURL test_url("https://" + base::NumberToString(i) + ".test");
-    absl::optional<GURL> urn_uuid =
-        fenced_frame_url_mapping.AddFencedFrameURL(test_url);
-    ASSERT_TRUE(urn_uuid.has_value());
-    ASSERT_TRUE(fenced_frame_url_mapping.IsMapped(urn_uuid.value()));
-  }
+  // Able to add urn mapping when map is not full.
+  const GURL test_url("https://test.test");
+  absl::optional<GURL> urn_uuid =
+      fenced_frame_url_mapping.AddFencedFrameURL(test_url);
+  EXPECT_TRUE(urn_uuid.has_value());
 
-  // Map is full.
-  EXPECT_TRUE(fenced_frame_url_mapping.IsFull());
+  // Fill the map until its size reaches the limit.
+  FencedFrameURLMappingTestPeer fenced_frame_url_mapping_test_peer(
+      &fenced_frame_url_mapping);
+  GURL url("https://a.test");
+  fenced_frame_url_mapping_test_peer.FillMap(url);
 
   // Cannot generate placeholder URN when map is full.
   EXPECT_FALSE(fenced_frame_url_mapping.GeneratePlaceholderURN().has_value());
 
-  // Subsequent insertion of urn mapping should fail.
+  // Subsequent additions of urn mapping should fail when map is full.
   const GURL extra_url("https://extra.test");
-  absl::optional<GURL> urn_uuid =
+  absl::optional<GURL> extra_urn_uuid =
       fenced_frame_url_mapping.AddFencedFrameURL(extra_url);
-  EXPECT_FALSE(urn_uuid.has_value());
-  EXPECT_EQ(fenced_frame_url_mapping.urn_uuid_to_url_map_.size(),
-            FencedFrameURLMapping::kMaxUrnMappingSize);
+  EXPECT_FALSE(extra_urn_uuid.has_value());
+}
+
+// Test that number of urn mappings limit is enforced for shared storage use
+// cases.
+TEST(FencedFrameURLMappingTest,
+     ExceedNumOfUrnMappingsLimitFailsGeneratePendingMappedURN) {
+  FencedFrameURLMapping fenced_frame_url_mapping;
+
+  // Able to insert pending mapped URN when map is not full.
+  EXPECT_TRUE(fenced_frame_url_mapping.GeneratePendingMappedURN().has_value());
+
+  // Fill the map until its size reaches the limit.
+  FencedFrameURLMappingTestPeer fenced_frame_url_mapping_test_peer(
+      &fenced_frame_url_mapping);
+  GURL url("https://a.test");
+  fenced_frame_url_mapping_test_peer.FillMap(url);
+
+  // Subsequent insertions of pending mapped URN should fail when map is full.
+  EXPECT_FALSE(fenced_frame_url_mapping.GeneratePendingMappedURN().has_value());
 }
 
 }  // namespace content

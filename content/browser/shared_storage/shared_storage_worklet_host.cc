@@ -216,9 +216,23 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
   // `document_service_` should be valid.
   DCHECK(page_);
   DCHECK(document_service_);
-  IncrementPendingOperationsCount();
 
-  GURL urn_uuid = page_->fenced_frame_urls_map().GeneratePendingMappedURN();
+  auto pending_urn_uuid =
+      page_->fenced_frame_urls_map().GeneratePendingMappedURN();
+
+  if (!pending_urn_uuid.has_value()) {
+    // Pending urn::uuid cannot be inserted to pending urn map because number of
+    // urn mappings has reached limit.
+    std::move(callback).Run(
+        /*success=*/false, /*error_message=*/
+        "sharedStorage.selectURL() failed because number of urn::uuid to url "
+        "mappings has reached the limit.",
+        /*opaque_url=*/{});
+    return;
+  }
+
+  GURL urn_uuid = pending_urn_uuid.value();
+  IncrementPendingOperationsCount();
 
   std::vector<GURL> urls;
   for (const auto& url_with_metadata : urls_with_metadata)

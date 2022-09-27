@@ -67,4 +67,13 @@ void TestFencedFrameURLMappingResultObserver::OnFencedFrameURLMappingComplete(
   }
 }
 
+void FencedFrameURLMappingTestPeer::FillMap(const GURL& url) {
+  while (!fenced_frame_url_mapping_->IsFull()) {
+    auto it = fenced_frame_url_mapping_->AddMappingForUrl(url);
+    DCHECK(it.has_value());
+  }
+
+  DCHECK(fenced_frame_url_mapping_->IsFull());
+}
+
 }  // namespace content

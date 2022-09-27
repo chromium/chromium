@@ -11,6 +11,7 @@
 namespace content {
 
 class FrameTreeNode;
+class MappingResultObserver;
 
 // `node` is expected to be the child FrameTreeNode created in response to a
 // <fencedframe> element being created. This method:
@@ -61,6 +62,20 @@ class TestFencedFrameURLMappingResultObserver
       pending_ad_components_map_;
   absl::optional<AdAuctionData> ad_auction_data_;
   ReportingMetadata reporting_metadata_;
+};
+
+class FencedFrameURLMappingTestPeer {
+ public:
+  FencedFrameURLMappingTestPeer() = delete;
+  explicit FencedFrameURLMappingTestPeer(
+      FencedFrameURLMapping* fenced_frame_url_mapping)
+      : fenced_frame_url_mapping_(fenced_frame_url_mapping) {}
+
+  // Insert urn mappings until it reaches the limit.
+  void FillMap(const GURL& url);
+
+ private:
+  FencedFrameURLMapping* fenced_frame_url_mapping_;
 };
 
 }  // namespace content

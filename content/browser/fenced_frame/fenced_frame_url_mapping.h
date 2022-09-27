@@ -21,6 +21,8 @@
 
 namespace content {
 
+class FencedFrameURLMappingTestPeer;
+
 extern const char kURNUUIDprefix[];
 
 struct AdAuctionData {
@@ -259,8 +261,10 @@ class CONTENT_EXPORT FencedFrameURLMapping {
 
   // Generate a URN that is not yet mapped to a URL. Used by the Shared Storage
   // API to return the URN for `sharedStorage.runURLSelectionOperation` before
-  // the URL selection decision is made.
-  GURL GeneratePendingMappedURN();
+  // the URL selection decision is made. This method will fail and return
+  // absl::nullopt if number of mappings has reached limit. As a result,
+  // `selectURL()` will be terminated up front and an error is reported.
+  absl::optional<GURL> GeneratePendingMappedURN();
 
   // Register an observer for `urn_uuid`. The observer will be notified with the
   // mapping result and will be auto unregistered. If `urn_uuid` already exists
@@ -323,12 +327,7 @@ class CONTENT_EXPORT FencedFrameURLMapping {
       SharedStorageReportingMap* out_reporting_map);
 
  private:
-  // Declare tests as friend of `FencedFrameURLMapping` for access to private
-  // member `kMaxUrnMappingSize`.
-  FRIEND_TEST_ALL_PREFIXES(FencedFrameURLMappingTest,
-                           ExceedNumOfUrnMappingsLimitFailsAddURL);
-  FRIEND_TEST_ALL_PREFIXES(AdAuctionServiceImplTest,
-                           RunAdAuctionExceedNumOfUrnMappingsLimitFailsAuction);
+  friend class FencedFrameURLMappingTestPeer;
 
   using UrnUuidToUrlMap = std::map<GURL, MapInfo>;
 
@@ -341,7 +340,8 @@ class CONTENT_EXPORT FencedFrameURLMapping {
 
   bool IsMapped(const GURL& urn_uuid) const;
   bool IsPendingMapped(const GURL& urn_uuid) const;
-  // Return true if number of mappings has reached the limit specified as
+  // Return true if number of mappings in `urn_uuid_to_url_map_` and
+  // `pending_urn_uuid_to_url_map_` has reached the limit specified as
   // `kMaxUrnMappingSize`.
   bool IsFull() const;
 

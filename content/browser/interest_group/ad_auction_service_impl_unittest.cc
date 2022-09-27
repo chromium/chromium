@@ -3687,21 +3687,12 @@ function scoreAd(
       static_cast<RenderFrameHostImpl*>(main_rfh())
           ->GetPage()
           .fenced_frame_urls_map();
+  FencedFrameURLMappingTestPeer fenced_frame_url_mapping_test_peer(
+      &fenced_frame_urls_map);
 
-  // The map is not full initially.
-  EXPECT_FALSE(fenced_frame_urls_map.IsFull());
-
-  // Fill the map until its size reaches limit.
-  for (size_t i = 0; i < FencedFrameURLMapping::kMaxUrnMappingSize; ++i) {
-    const GURL test_url("https://" + base::NumberToString(i) + ".test");
-    absl::optional<GURL> urn_uuid =
-        fenced_frame_urls_map.AddFencedFrameURL(test_url);
-    ASSERT_TRUE(urn_uuid.has_value());
-    ASSERT_TRUE(fenced_frame_urls_map.IsMapped(urn_uuid.value()));
-  }
-
-  // Number of urn mapping has reached limit.
-  EXPECT_TRUE(fenced_frame_urls_map.IsFull());
+  // Fill the map until its size reaches the limit.
+  GURL url("https://a.test");
+  fenced_frame_url_mapping_test_peer.FillMap(url);
 
   absl::optional<GURL> auction_result =
       RunAdAuctionAndFlush(std::move(auction_config));
