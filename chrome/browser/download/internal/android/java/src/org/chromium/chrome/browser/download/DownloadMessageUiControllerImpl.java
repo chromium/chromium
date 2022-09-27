@@ -150,7 +150,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             IncognitoMessageEvent.DISMISSED_WITH_GESTURE,
             IncognitoMessageEvent.DISMISSED_WITH_TIMER, IncognitoMessageEvent.NUM_ENTRIES,
             IncognitoMessageEvent.DISMISSED_WITH_DIFFERENT_REASON,
-            IncognitoMessageEvent.DISMISSED_INTERNAL_ERROR})
+            IncognitoMessageEvent.NOT_SHOWN_NULL_MESSAGE_DISPATCHER})
     @Retention(RetentionPolicy.SOURCE)
     private @interface IncognitoMessageEvent {
         int SHOWN = 0;
@@ -158,7 +158,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         int DISMISSED_WITH_GESTURE = 2;
         int DISMISSED_WITH_TIMER = 3;
         int DISMISSED_WITH_DIFFERENT_REASON = 4;
-        int DISMISSED_INTERNAL_ERROR = 5;
+        int NOT_SHOWN_NULL_MESSAGE_DISPATCHER = 5;
 
         int NUM_ENTRIES = 6;
     }
@@ -346,27 +346,45 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     public void showIncognitoDownloadMessage(Callback<Boolean> callback) {
         Context context = ContextUtils.getApplicationContext();
 
-        PropertyModel mPropertyModel =
-                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS).build();
+        MessageDispatcher dispatcher = getMessageDispatcher();
+        // TODO(https://crbug.com/1350110): Fix the issue with dispatcher
+        //                                  being Null and remove the following if clause
+        if (dispatcher == null) {
+            // When the message dispatcher is null we don't want to block the download, hence
+            // we mimic the accepted workflow.
+            callback.onResult(/*accepted=*/true);
+            recordIncognitoDownloadMessage(IncognitoMessageEvent.NOT_SHOWN_NULL_MESSAGE_DISPATCHER);
+            return;
+        }
 
-        mPropertyModel.set(MessageBannerProperties.TITLE,
+        PropertyModel propertyModel = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                              .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                                      MessageIdentifier.DOWNLOAD_INCOGNITO_WARNING)
+                                              .build();
+
+        propertyModel.set(MessageBannerProperties.TITLE,
                 context.getString(R.string.incognito_download_message_title));
-        mPropertyModel.set(MessageBannerProperties.DESCRIPTION,
+        propertyModel.set(MessageBannerProperties.DESCRIPTION,
                 context.getString(R.string.incognito_download_message_detail));
-        mPropertyModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+        propertyModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                 context.getString(R.string.incognito_download_message_button));
-        mPropertyModel.set(MessageBannerProperties.ICON,
+        propertyModel.set(MessageBannerProperties.ICON,
                 AppCompatResources.getDrawable(context, R.drawable.ic_incognito_download_message));
-        mPropertyModel.set(MessageBannerProperties.ON_PRIMARY_ACTION, () -> {
+        propertyModel.set(MessageBannerProperties.ON_PRIMARY_ACTION, () -> {
             callback.onResult(/*accepted=*/true);
             recordIncognitoDownloadMessage(IncognitoMessageEvent.ACCEPTED);
             return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
         });
-        mPropertyModel.set(MessageBannerProperties.ON_DISMISSED, (dismissReason) -> {
+        propertyModel.set(MessageBannerProperties.ON_DISMISSED, (dismissReason) -> {
             if (dismissReason == DismissReason.TIMER) {
                 recordIncognitoDownloadMessage(IncognitoMessageEvent.DISMISSED_WITH_TIMER);
             } else if (dismissReason == DismissReason.GESTURE) {
                 recordIncognitoDownloadMessage(IncognitoMessageEvent.DISMISSED_WITH_GESTURE);
+            } else if (dismissReason == DismissReason.PRIMARY_ACTION) {
+                // Dismissal triggered by ON_PRIMARY_ACTION handler, which is already running the
+                // download callback. Here we need to not record this action into the dismiss
+                // reasons buckets.
+                return;
             } else {
                 recordIncognitoDownloadMessage(
                         IncognitoMessageEvent.DISMISSED_WITH_DIFFERENT_REASON);
@@ -374,18 +392,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             callback.onResult(/*accepted=*/false);
         });
 
-        MessageDispatcher dispatcher = getMessageDispatcher();
-      
-      	// TODO(https://crbug.com/1350110): Fix the issue with dispatcher 
-      	//                                  being Null and remove the following if clause
-        if (dispatcher == null) {
-            callback.onResult(/*accepted=*/false);
-            recordIncognitoDownloadMessage(IncognitoMessageEvent.DISMISSED_INTERNAL_ERROR);
-
-            return;
-        }
-
-        dispatcher.enqueueWindowScopedMessage(mPropertyModel, /*highPriority=*/true);
+        dispatcher.enqueueWindowScopedMessage(propertyModel, /*highPriority=*/true);
         recordIncognitoDownloadMessage(IncognitoMessageEvent.SHOWN);
     }
 

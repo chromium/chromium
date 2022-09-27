@@ -113,6 +113,7 @@ enum class MessageIdentifier {
   DESKTOP_SITE_GLOBAL_DEFAULT_OPT_OUT = 33,
   DESKTOP_SITE_GLOBAL_OPT_IN = 34,
   PASSWORD_MANAGER_ERROR = 35,
+  DOWNLOAD_INCOGNITO_WARNING = 36,
 
   // Insert new values before this line.
   COUNT
