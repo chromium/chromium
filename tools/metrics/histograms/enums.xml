@@ -1416,6 +1416,8 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="New tab"/>
   <int value="3" label="Share"/>
   <int value="4" label="Voice"/>
+  <int value="5" label="Auto"/>
+  <int value="6" label="Price tracking"/>
 </enum>
 
 <enum name="AdaptiveToolbarRadioButtonState">
