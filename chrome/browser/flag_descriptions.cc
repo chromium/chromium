@@ -2427,11 +2427,6 @@ const char kPrivacySandboxAdsAPIsOverrideDescription[] =
     "Fenced Frames, Shared Storage, Private Aggregation, and their associated "
     "features.";
 
-const char kPrivacySandboxV3Name[] = "Privacy Sandbox V3";
-const char kPrivacySandboxV3Description[] =
-    "Enables an updated Privacy Sandbox UI. Also enables some related "
-    "features.";
-
 const char kPrivateAggregationDebugModeName[] =
     "Private Aggregation debug mode";
 const char kPrivateAggregationDebugModeDescription[] =
