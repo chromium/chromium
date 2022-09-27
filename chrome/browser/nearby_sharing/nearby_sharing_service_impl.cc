@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
@@ -940,9 +941,9 @@ void NearbySharingServiceImpl::Open(const ShareTarget& share_target,
 
 void NearbySharingServiceImpl::OpenURL(GURL url) {
   DCHECK(profile_);
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
-  chrome::AddSelectedTabWithURL(displayer.browser(), url,
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void NearbySharingServiceImpl::SetArcTransferCleanupCallback(
