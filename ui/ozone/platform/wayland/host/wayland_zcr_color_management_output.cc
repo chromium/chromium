@@ -7,6 +7,7 @@
 #include <chrome-color-management-client-protocol.h>
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
@@ -38,7 +39,7 @@ void WaylandZcrColorManagementOutput::OnColorSpaceChanged(
 
   // request new color space
   zcr_color_management_output->color_space_ =
-      std::make_unique<WaylandZcrColorSpace>(
+      base::MakeRefCounted<WaylandZcrColorSpace>(
           zcr_color_management_output_v1_get_color_space(
               zcr_color_management_output->zcr_color_management_output_.get()));
 

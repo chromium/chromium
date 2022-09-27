@@ -10,23 +10,24 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/ref_counted.h"
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
+class WaylandZcrColorSpace;
 
 // ZcrColorSpace is used to send color space information over wayland protocol.
 // its requests and events are specified in chrome-color-management.xml.
 // The ui::gfx::ColorSpace equivalent of ZcrColorSpace can be gotten with
 // gfx_color_space().
-class WaylandZcrColorSpace {
+class WaylandZcrColorSpace : public base::RefCounted<WaylandZcrColorSpace> {
  public:
   using WaylandZcrColorSpaceDoneCallback =
       base::OnceCallback<void(const gfx::ColorSpace&)>;
   explicit WaylandZcrColorSpace(zcr_color_space_v1* color_space);
   WaylandZcrColorSpace(const WaylandZcrColorSpace&) = delete;
   WaylandZcrColorSpace& operator=(const WaylandZcrColorSpace&) = delete;
-  ~WaylandZcrColorSpace();
 
   zcr_color_space_v1* zcr_color_space() const { return zcr_color_space_.get(); }
   bool HasColorSpaceDoneCallback() const {
@@ -37,6 +38,9 @@ class WaylandZcrColorSpace {
   }
 
  private:
+  friend class base::RefCounted<WaylandZcrColorSpace>;
+  ~WaylandZcrColorSpace();
+
   // InformationType is an enumeration of the possible events following a
   // get_information request in order of their priority (0 is highest).
   enum class InformationType : uint8_t {

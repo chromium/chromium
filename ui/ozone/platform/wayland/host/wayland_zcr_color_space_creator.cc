@@ -5,24 +5,26 @@
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_space_creator.h"
 
 #include <chrome-color-management-client-protocol.h>
+#include <cstddef>
 #include <memory>
 
 #include "base/check.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "ui/ozone/platform/wayland/host/wayland_zcr_color_space.h"
 
 namespace ui {
 
 WaylandZcrColorSpaceCreator::WaylandZcrColorSpaceCreator(
-    struct zcr_color_space_creator_v1* color_space_creator,
-    struct zcr_color_management_surface_v1* management_surface)
-    : zcr_color_space_creator_(color_space_creator),
-      zcr_color_management_surface_(management_surface) {
-  DCHECK(color_space_creator);
+    wl::Object<zcr_color_space_creator_v1> color_space_creator,
+    CreatorResultCallback on_creation)
+    : zcr_color_space_creator_(std::move(color_space_creator)),
+      on_creation_(std::move(on_creation)) {
+  DCHECK(zcr_color_space_creator_);
   static const zcr_color_space_creator_v1_listener listener = {
       &WaylandZcrColorSpaceCreator::OnCreated,
       &WaylandZcrColorSpaceCreator::OnError,
   };
-  DCHECK(zcr_color_management_surface_);
   zcr_color_space_creator_v1_add_listener(zcr_color_space_creator_.get(),
                                           &listener, this);
 }
@@ -34,7 +36,11 @@ void WaylandZcrColorSpaceCreator::OnCreated(
     void* data,
     struct zcr_color_space_creator_v1* css,
     struct zcr_color_space_v1* color_space) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  WaylandZcrColorSpaceCreator* zcr_color_space_creator =
+      static_cast<WaylandZcrColorSpaceCreator*>(data);
+  DCHECK(zcr_color_space_creator);
+  std::move(zcr_color_space_creator->on_creation_)
+      .Run(base::MakeRefCounted<WaylandZcrColorSpace>(color_space), {});
 }
 
 // static
@@ -42,7 +48,10 @@ void WaylandZcrColorSpaceCreator::OnError(
     void* data,
     struct zcr_color_space_creator_v1* css,
     uint32_t error) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  WaylandZcrColorSpaceCreator* zcr_color_space_creator =
+      static_cast<WaylandZcrColorSpaceCreator*>(data);
+  DCHECK(zcr_color_space_creator);
+  std::move(zcr_color_space_creator->on_creation_).Run(nullptr, error);
 }
 
 }  // namespace ui

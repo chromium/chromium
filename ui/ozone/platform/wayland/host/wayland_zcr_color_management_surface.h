@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZCR_COLOR_MANAGEMENT_SURFACE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZCR_COLOR_MANAGEMENT_SURFACE_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_space.h"
 
@@ -26,7 +27,8 @@ class WaylandZcrColorManagementSurface {
   ~WaylandZcrColorManagementSurface();
 
   void SetDefaultColorSpace();
-  void SetColorSpace(gfx::ColorSpace color_space);
+  void SetColorSpace(
+      scoped_refptr<WaylandZcrColorSpace> wayland_zcr_color_space);
 
  private:
   // zcr_color_management_surface_v1_listener

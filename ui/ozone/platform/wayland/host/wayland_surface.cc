@@ -5,13 +5,15 @@
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
+#include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <keyboard-shortcuts-inhibit-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
 #include <surface-augmenter-client-protocol.h>
 #include <viewporter-client-protocol.h>
-
+#include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/check_op.h"
@@ -30,12 +32,16 @@
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
+#include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_surface.h"
+#include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
 
 namespace ui {
 
@@ -166,6 +172,21 @@ bool WaylandSurface::Initialize() {
     }
   } else {
     LOG(WARNING) << "Server doesn't support wp_content_type_v1";
+  }
+
+  if (auto* zcr_color_manager = connection_->zcr_color_manager()) {
+    zcr_color_management_surface_ =
+        std::make_unique<WaylandZcrColorManagementSurface>(
+            zcr_color_manager->CreateColorManagementSurface(surface())
+                .release(),
+            connection_);
+    if (!zcr_color_management_surface_) {
+      LOG(ERROR) << "Failed to create zcr_color_management_surface.";
+      return false;
+    }
+    zcr_color_management_surface_->SetDefaultColorSpace();
+  } else {
+    LOG(WARNING) << "Server doesn't support zcr_color_management_surface.";
   }
 
   return true;
@@ -332,6 +353,13 @@ wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(
 void WaylandSurface::ApplyPendingState() {
   DCHECK(!apply_state_immediately_);
   if (pending_state_.buffer_id != state_.buffer_id) {
+    // Setting Color Space of surface.
+    // Should be called infrequently: only when color space is changing to a
+    // a different one.
+    if (pending_state_.color_space != state_.color_space) {
+      zcr_color_management_surface_->SetColorSpace(pending_state_.color_space);
+    }
+
     // The logic in DamageBuffer currently relies on attachment coordinates of
     // (0, 0). If this changes, then the calculation in DamageBuffer will also
     // need to be updated.
@@ -689,6 +717,7 @@ WaylandSurface::State& WaylandSurface::State::operator=(
   damage_px = other.damage_px;
   opaque_region_px = other.opaque_region_px;
   input_region_px = other.input_region_px;
+  color_space = other.color_space;
   buffer_id = other.buffer_id;
   buffer = other.buffer;
   buffer_size_px = other.buffer_size_px;
@@ -769,6 +798,23 @@ void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
 
 bool WaylandSurface::SurfaceSubmissionInPixelCoordinates() const {
   return connection_->surface_submission_in_pixel_coordinates();
+}
+
+void WaylandSurface::set_color_space(gfx::ColorSpace color_space) {
+  if (!connection_->zcr_color_manager())
+    return;
+
+  if (color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::INVALID ||
+      color_space.GetTransferID() == gfx::ColorSpace::TransferID::INVALID ||
+      color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::INVALID ||
+      color_space.GetRangeID() == gfx::ColorSpace::RangeID::INVALID) {
+    LOG(ERROR) << "WaylandSurface::SetColorSpace: Encountered invalid surface.";
+    return;
+  }
+  auto wayland_zcr_color_space =
+      connection_->zcr_color_manager()->GetColorSpace(color_space);
+  if (wayland_zcr_color_space != nullptr)
+    pending_state_.color_space = wayland_zcr_color_space;
 }
 
 // static
