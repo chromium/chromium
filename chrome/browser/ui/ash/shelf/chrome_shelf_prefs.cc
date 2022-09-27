@@ -196,37 +196,20 @@ bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
   // If App sync is not yet started, don't apply default pin apps once synced
   // apps is likely override it. There is a case when App sync is disabled and
   // in last case local cache is available immediately.
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    if (sync_service->IsSyncFeatureEnabled() &&
-        settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps) &&
-        !app_list::AppListSyncableServiceFactory::GetForProfile(profile)
-             ->IsSyncing()) {
-      return false;
-    }
-  } else {
-    if (sync_service->IsSyncFeatureEnabled() &&
-        settings->GetSelectedTypes().Has(UserSelectableType::kApps) &&
-        !app_list::AppListSyncableServiceFactory::GetForProfile(profile)
-             ->IsSyncing()) {
-      return false;
-    }
+  if (sync_service->IsSyncFeatureEnabled() &&
+      settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps) &&
+      !app_list::AppListSyncableServiceFactory::GetForProfile(profile)
+           ->IsSyncing()) {
+    return false;
   }
 
   // If shelf pin layout rolls preference is not started yet then we cannot say
   // if we rolled layout or not.
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    if (sync_service->IsSyncFeatureEnabled() &&
-        settings->GetSelectedOsTypes().Has(
-            UserSelectableOsType::kOsPreferences) &&
-        !PrefServiceSyncableFromProfile(profile)->AreOsPrefsSyncing()) {
-      return false;
-    }
-  } else {
-    if (sync_service->IsSyncFeatureEnabled() &&
-        settings->GetSelectedTypes().Has(UserSelectableType::kPreferences) &&
-        !PrefServiceSyncableFromProfile(profile)->IsSyncing()) {
-      return false;
-    }
+  if (sync_service->IsSyncFeatureEnabled() &&
+      settings->GetSelectedOsTypes().Has(
+          UserSelectableOsType::kOsPreferences) &&
+      !PrefServiceSyncableFromProfile(profile)->AreOsPrefsSyncing()) {
+    return false;
   }
   return true;
 }

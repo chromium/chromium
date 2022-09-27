@@ -12,7 +12,6 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/app_types.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_item.h"
@@ -1206,9 +1205,7 @@ void ChromeShelfController::OnIsSyncingChanged() {
 
   // Wait until the initial sync happens.
   auto* pref_service = PrefServiceSyncableFromProfile(profile());
-  bool is_syncing = chromeos::features::IsSyncSettingsCategorizationEnabled()
-                        ? pref_service->AreOsPrefsSyncing()
-                        : pref_service->IsSyncing();
+  bool is_syncing = pref_service->AreOsPrefsSyncing();
   if (!is_syncing)
     return;
   // Initialize the local prefs if this is the first time sync has occurred.
