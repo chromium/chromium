@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
+#include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
@@ -18,7 +19,6 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/services/app_service/public/cpp/features.h"
-#include "components/services/app_service/public/cpp/preferred_apps_test_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,8 +30,6 @@ class SupportedLinksInfoBarDelegateBrowserTest
     web_app::WebAppNavigationBrowserTest::SetUpOnMainThread();
 
     InstallTestWebApp();
-    update_waiter_ = std::make_unique<apps_util::PreferredAppUpdateWaiter>(
-        app_service_proxy()->PreferredAppsList());
   }
 
   void TearDownOnMainThread() override {
@@ -54,14 +52,6 @@ class SupportedLinksInfoBarDelegateBrowserTest
   apps::AppServiceProxy* app_service_proxy() {
     return apps::AppServiceProxyFactory::GetForProfile(profile());
   }
-
-  // apps::PreferredAppsListHandle::Observer:
-  void WaitForPreferredAppUpdate() {
-    update_waiter_->WaitForPreferredAppUpdate(test_web_app_id());
-  }
-
- private:
-  std::unique_ptr<apps_util::PreferredAppUpdateWaiter> update_waiter_;
 };
 
 IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
@@ -72,15 +62,14 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
   apps::SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
       contents, test_web_app_id());
 
+  apps_util::PreferredAppUpdateWaiter update_waiter(
+      app_service_proxy()->PreferredAppsList(), test_web_app_id());
+
   auto* infobar = GetInfoBar(contents);
   EXPECT_TRUE(infobar);
   GetDelegate(infobar)->Accept();
 
-  if (web_app::IsWebAppsCrosapiEnabled() ||
-      !base::FeatureList::IsEnabled(
-          apps::kAppServicePreferredAppsWithoutMojom)) {
-    WaitForPreferredAppUpdate();
-  }
+  update_waiter.Wait();
 
   ASSERT_TRUE(
       app_service_proxy()->PreferredAppsList().IsPreferredAppForSupportedLinks(
@@ -96,12 +85,7 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
                        InfoBarNotShownForPreferredApp) {
-  app_service_proxy()->SetSupportedLinksPreference(test_web_app_id());
-  if (web_app::IsWebAppsCrosapiEnabled() ||
-      !base::FeatureList::IsEnabled(
-          apps::kAppServicePreferredAppsWithoutMojom)) {
-    WaitForPreferredAppUpdate();
-  }
+  apps_util::SetSupportedLinksPreferenceAndWait(profile(), test_web_app_id());
 
   Browser* browser = OpenTestWebApp();
   auto* contents = browser->tab_strip_model()->GetActiveWebContents();

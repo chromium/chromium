@@ -8258,6 +8258,8 @@ static_library("test_support") {
     deps += [ "//chrome/android:test_support_jni_headers" ]
   } else {
     sources += [
+      "apps/intent_helper/preferred_apps_test_util.cc",
+      "apps/intent_helper/preferred_apps_test_util.h",
       "autofill_assistant/password_change/mock_apc_onboarding_coordinator.cc",
       "autofill_assistant/password_change/mock_apc_onboarding_coordinator.h",
       "download/test_download_shelf.cc",
@@ -8289,6 +8291,7 @@ static_library("test_support") {
       "ui/tabs/tab_activity_simulator.cc",
       "ui/tabs/tab_activity_simulator.h",
     ]
+    deps += [ "//components/services/app_service/public/cpp:preferred_apps" ]
   }
 
   if (is_chromeos_ash) {

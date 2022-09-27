@@ -39,12 +39,12 @@
 #include "ui/views/widget/any_widget_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/services/app_service/public/cpp/features.h"
-#include "components/services/app_service/public/cpp/preferred_apps_test_util.h"
 #endif
 
 namespace {
@@ -138,22 +138,6 @@ class IntentChipButtonBrowserTest
     web_app::AppReadinessWaiter(profile(), overlapping_app_id_).Await();
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void SetSupportedLinksPreference() {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->SetSupportedLinksPreference(test_web_app_id());
-
-    // Wait for asynchronous preferred apps changes with lacros web apps and/or
-    // mojo app service.
-    if (web_app::IsWebAppsCrosapiEnabled() ||
-        !base::FeatureList::IsEnabled(
-            apps::kAppServicePreferredAppsWithoutMojom)) {
-      apps_util::PreferredAppUpdateWaiter waiter(proxy->PreferredAppsList());
-      waiter.WaitForPreferredAppUpdate(test_web_app_id());
-    }
-  }
-#endif
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   web_app::AppId overlapping_app_id_;
@@ -209,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 // Using the Intent Chip for an app which is set as preferred should launch
 // directly into the app. Preferred apps are only available on ChromeOS.
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
-  SetSupportedLinksPreference();
+  apps_util::SetSupportedLinksPreferenceAndWait(profile(), test_web_app_id());
 
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
@@ -224,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        ShowsIntentChipExpandedForPreferredApp) {
-  SetSupportedLinksPreference();
+  apps_util::SetSupportedLinksPreferenceAndWait(profile(), test_web_app_id());
 
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());

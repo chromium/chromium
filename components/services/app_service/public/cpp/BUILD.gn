@@ -287,14 +287,11 @@ source_set("test_support") {
   sources = [
     "intent_test_util.cc",
     "intent_test_util.h",
-    "preferred_apps_test_util.cc",
-    "preferred_apps_test_util.h",
   ]
 
   deps = [
     ":app_types",
     ":intents",
-    ":preferred_apps",
     "//components/services/app_service/public/mojom",
   ]
 }
