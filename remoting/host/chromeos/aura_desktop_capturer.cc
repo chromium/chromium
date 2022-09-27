@@ -8,9 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/feature_list.h"
+#include "base/logging.h"
 #include "remoting/host/chromeos/ash_proxy.h"
-#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/skia_bitmap_desktop_frame.h"
 
 namespace remoting {
@@ -92,9 +91,6 @@ bool AuraDesktopCapturer::GetSourceList(SourceList* sources) {
 }
 
 bool AuraDesktopCapturer::SelectSource(SourceId id) {
-  if (!base::FeatureList::IsEnabled(features::kEnableMultiMonitorsInCrd))
-    return false;
-
   if (!ash_.GetDisplayForId(id))
     return false;
 

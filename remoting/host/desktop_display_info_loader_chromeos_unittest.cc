@@ -4,9 +4,7 @@
 
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/scoped_fake_ash_proxy.h"
 #include "remoting/host/desktop_display_info_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -74,23 +72,11 @@ class DesktopDisplayInfoLoaderChromeOsTest : public ::testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
-  base::test::ScopedFeatureList features_{features::kEnableMultiMonitorsInCrd};
   test::ScopedFakeAshProxy ash_proxy_;
 
   std::unique_ptr<DesktopDisplayInfoLoader> display_info_loader_ =
       DesktopDisplayInfoLoader::Create();
 };
-
-TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
-       ShouldReturnNothingIfFeatureIsDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kEnableMultiMonitorsInCrd);
-
-  ash_proxy().AddPrimaryDisplay();
-  ash_proxy().AddDisplayWithId(111);
-
-  EXPECT_THAT(CalculateDisplayInfo(), ElementsAre());
-}
 
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest, ShouldReturnDisplayId) {
   constexpr int64_t kFirstDisplayId = (0xFFl << 40);

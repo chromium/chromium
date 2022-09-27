@@ -4,9 +4,7 @@
 
 #include "remoting/host/desktop_display_info_loader.h"
 
-#include "base/feature_list.h"
 #include "remoting/host/chromeos/ash_proxy.h"
-#include "remoting/host/chromeos/features.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace remoting {
@@ -55,9 +53,6 @@ class DesktopDisplayInfoLoaderChromeOs : public DesktopDisplayInfoLoader {
 };
 
 DesktopDisplayInfo DesktopDisplayInfoLoaderChromeOs::GetCurrentDisplayInfo() {
-  if (!base::FeatureList::IsEnabled(features::kEnableMultiMonitorsInCrd))
-    return DesktopDisplayInfo();
-
   const DisplayId primary_display_id = AshProxy::Get().GetPrimaryDisplayId();
 
   auto result = DesktopDisplayInfo();

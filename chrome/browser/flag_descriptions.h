@@ -2951,9 +2951,6 @@ extern const char kGetDisplayMediaSetDescription[];
 extern const char kGetDisplayMediaSetAutoSelectAllScreensName[];
 extern const char kGetDisplayMediaSetAutoSelectAllScreensDescription[];
 
-extern const char kMultiMonitorsInCrdName[];
-extern const char kMultiMonitorsInCrdDescription[];
-
 extern const char kUseHDRTransferFunctionName[];
 extern const char kUseHDRTransferFunctionDescription[];
 extern const char kDoubleTapToZoomInTabletModeName[];

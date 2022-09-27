@@ -5177,11 +5177,6 @@ const char kGetDisplayMediaSetAutoSelectAllScreensDescription[] =
     "When enabled, the autoSelectAllScreens attribute is available for usage "
     "with the GetDisplayMediaSet API.";
 
-const char kMultiMonitorsInCrdName[] = "Multi monitor in CRD";
-const char kMultiMonitorsInCrdDescription[] =
-    "Enables support for viewing multiple monitors connected to this ChromeOS "
-    "device through CRD.";
-
 const char kUseHDRTransferFunctionName[] =
     "Monitor/Display HDR transfer function";
 const char kUseHDRTransferFunctionDescription[] =

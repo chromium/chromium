@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "remoting/host/chromeos/ash_proxy.h"
@@ -225,21 +224,7 @@ TEST_F(AuraDesktopCapturerTest, ShouldReturnTemporaryErrorIfScreenshotFails) {
   EXPECT_THAT(result.frame, IsNull());
 }
 
-TEST_F(AuraDesktopCapturerTest,
-       ShouldNotAllowSwitchingToSecondaryMonitorIfFeatureFlagIsDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kEnableMultiMonitorsInCrd);
-
-  ash_proxy().AddDisplayWithId(111);
-
-  capturer_.Start(&desktop_capturer_callback());
-  EXPECT_FALSE(capturer_.SelectSource(111));
-}
-
-TEST_F(AuraDesktopCapturerTest,
-       ShouldAllowSwitchingToSecondaryMonitorIfFeatureFlagIsEnabled) {
-  base::test::ScopedFeatureList features{features::kEnableMultiMonitorsInCrd};
-
+TEST_F(AuraDesktopCapturerTest, ShouldAllowSwitchingToSecondaryMonitor) {
   // We're using a value bigger than 32 bit to ensure nothing gets truncated.
   constexpr int64_t display_id = 123456789123456789;
 
@@ -256,15 +241,11 @@ TEST_F(AuraDesktopCapturerTest,
 }
 
 TEST_F(AuraDesktopCapturerTest, ShouldFailSwitchingToNonExistingMonitor) {
-  base::test::ScopedFeatureList features{features::kEnableMultiMonitorsInCrd};
-
   capturer_.Start(&desktop_capturer_callback());
   EXPECT_FALSE(capturer_.SelectSource(222));
 }
 
 TEST_F(AuraDesktopCapturerTest, ShouldUseCorrectDisplayAfterSwitching) {
-  base::test::ScopedFeatureList features{features::kEnableMultiMonitorsInCrd};
-
   ash_proxy().AddPrimaryDisplay();
   ash_proxy().AddDisplayWithId(222);
   ash_proxy().AddDisplayWithId(333);

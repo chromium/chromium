@@ -6756,10 +6756,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kGetDisplayMediaSetAutoSelectAllScreens)},
 
-    {"multi-monitors-in-crd", flag_descriptions::kMultiMonitorsInCrdName,
-     flag_descriptions::kMultiMonitorsInCrdDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(remoting::features::kEnableMultiMonitorsInCrd)},
-
     {"fast-pair-software-scanning",
      flag_descriptions::kFastPairSoftwareScanningName,
      flag_descriptions::kFastPairSoftwareScanningDescription, kOsCrOS,
