@@ -528,6 +528,41 @@ void MigratePinyinAndZhuyinSettings(PrefService* prefs,
   }
 }
 
+void UpdateCandidatesWindowSync(ime::mojom::CandidatesWindowPtr window) {
+  IMECandidateWindowHandlerInterface* candidate_window_handler =
+      ui::IMEBridge::Get()->GetCandidateWindowHandler();
+  if (!candidate_window_handler) {
+    return;
+  }
+
+  if (!window) {
+    candidate_window_handler->HideLookupTable();
+    return;
+  }
+
+  ui::CandidateWindow candidate_window;
+  for (const auto& candidate : window->candidates) {
+    ui::CandidateWindow::Entry entry;
+    entry.value = base::UTF8ToUTF16(candidate->text);
+    entry.label = base::UTF8ToUTF16(candidate->label.value_or(""));
+    entry.annotation = base::UTF8ToUTF16(candidate->annotation.value_or(""));
+    candidate_window.mutable_candidates()->push_back(entry);
+  }
+
+  ui::CandidateWindow::CandidateWindowProperty property;
+  property.is_cursor_visible = !window->highlighted_candidate.is_null();
+  property.cursor_position =
+      window->highlighted_candidate ? window->highlighted_candidate->index : 0;
+  property.page_size = window->candidates.size();
+  property.is_vertical = true;
+  property.is_auxiliary_text_visible =
+      window->auxiliary_text.value_or("") != "";
+  property.auxiliary_text = window->auxiliary_text.value_or("");
+  candidate_window.SetProperty(property);
+
+  candidate_window_handler->UpdateLookupTable(candidate_window);
+}
+
 }  // namespace
 
 bool CanRouteToNativeMojoEngine(const std::string& engine_id) {
@@ -633,7 +668,7 @@ void NativeInputMethodEngineObserver::ActivateTextClient(
 void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
   // Always hide the candidates window and clear the quick settings menu when
   // switching input methods.
-  UpdateCandidatesWindow(nullptr);
+  UpdateCandidatesWindowSync(nullptr);
   ui::ime::InputMethodMenuManager::GetInstance()
       ->SetCurrentInputMethodMenuItemList({});
   assistive_suggester_->OnActivate(engine_id);
@@ -763,7 +798,7 @@ void NativeInputMethodEngineObserver::OnTouch(
 void NativeInputMethodEngineObserver::OnBlur(const std::string& engine_id,
                                              int context_id) {
   // Always hide the candidates window when there's no focus.
-  UpdateCandidatesWindow(nullptr);
+  UpdateCandidatesWindowSync(nullptr);
 
   text_client_ = absl::nullopt;
 
@@ -1142,41 +1177,9 @@ void NativeInputMethodEngineObserver::DisplaySuggestions(
 
 void NativeInputMethodEngineObserver::UpdateCandidatesWindow(
     mojom::CandidatesWindowPtr window) {
-  if (!IsTextClientActive())
-    return;
-
-  IMECandidateWindowHandlerInterface* candidate_window_handler =
-      ui::IMEBridge::Get()->GetCandidateWindowHandler();
-  if (!candidate_window_handler) {
-    return;
-  }
-
-  if (!window) {
-    candidate_window_handler->HideLookupTable();
-    return;
-  }
-
-  ui::CandidateWindow candidate_window;
-  for (const auto& candidate : window->candidates) {
-    ui::CandidateWindow::Entry entry;
-    entry.value = base::UTF8ToUTF16(candidate->text);
-    entry.label = base::UTF8ToUTF16(candidate->label.value_or(""));
-    entry.annotation = base::UTF8ToUTF16(candidate->annotation.value_or(""));
-    candidate_window.mutable_candidates()->push_back(entry);
-  }
-
-  ui::CandidateWindow::CandidateWindowProperty property;
-  property.is_cursor_visible = !window->highlighted_candidate.is_null();
-  property.cursor_position =
-      window->highlighted_candidate ? window->highlighted_candidate->index : 0;
-  property.page_size = window->candidates.size();
-  property.is_vertical = true;
-  property.is_auxiliary_text_visible =
-      window->auxiliary_text.value_or("") != "";
-  property.auxiliary_text = window->auxiliary_text.value_or("");
-  candidate_window.SetProperty(property);
-
-  candidate_window_handler->UpdateLookupTable(candidate_window);
+  update_candidates_timer_.Start(
+      FROM_HERE, base::Seconds(0),
+      base::BindOnce(UpdateCandidatesWindowSync, std::move(window)));
 }
 
 void NativeInputMethodEngineObserver::RecordUkm(mojom::UkmEntryPtr entry) {

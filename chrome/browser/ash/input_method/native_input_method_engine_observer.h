@@ -194,6 +194,10 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   // to e2e Tast tests and unit tests, then dismantle this for-test-only flag.
   bool use_ime_service_ = true;
 
+  // Timer used to show candidates with a delay. As rendering candidates is
+  // slow, it is better to do it asynchronously.
+  base::OneShotTimer update_candidates_timer_;
+
   base::WeakPtrFactory<NativeInputMethodEngineObserver> weak_ptr_factory_{this};
 };
 
