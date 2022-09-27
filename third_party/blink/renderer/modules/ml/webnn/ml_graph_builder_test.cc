@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -123,7 +124,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     EXPECT_EQ(input, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
-    EXPECT_EQ("The name is empty.", scope.GetExceptionState().Message());
+    EXPECT_EQ(scope.GetExceptionState().Message(), "The name is empty.");
   }
   {
     // Test throwing exception if a dimension size is 0.
@@ -134,8 +135,8 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     EXPECT_EQ(input, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
-    EXPECT_EQ("Invalid operand descriptor: All dimensions should be positive",
-              scope.GetExceptionState().Message());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Invalid operand descriptor: All dimensions should be positive");
   }
   {
     // Test throwing exception if the dimensions is empty.
@@ -146,8 +147,8 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     EXPECT_EQ(input, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
-    EXPECT_EQ("Invalid operand descriptor: The dimensions is empty.",
-              scope.GetExceptionState().Message());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Invalid operand descriptor: The dimensions is empty.");
   }
   {
     // Test throwing exception if the dimensions is too large.
@@ -159,9 +160,9 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
+        scope.GetExceptionState().Message(),
         "Invalid operand descriptor: The elements number of the dimensions is "
-        "too large.",
-        scope.GetExceptionState().Message());
+        "too large.");
   }
 }
 
@@ -193,8 +194,8 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     EXPECT_EQ(constant, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
-    EXPECT_EQ("Invalid operand descriptor: All dimensions should be positive",
-              scope.GetExceptionState().Message());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Invalid operand descriptor: All dimensions should be positive");
   }
   {
     // Test throwing exception if buffer view type doesn't match the operand
@@ -209,8 +210,8 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     EXPECT_EQ(constant, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
-    EXPECT_EQ("The buffer view type doesn't match the operand type.",
-              scope.GetExceptionState().Message());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The buffer view type doesn't match the operand type.");
   }
   {
     // Test throwing exception if buffer view size is not expected.
@@ -224,10 +225,9 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     EXPECT_EQ(constant, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
-    String msg = String("The buffer view byte length") + String(" (32) ") +
-                 String("doesn't match the expected byte length") +
-                 String(" (16).");
-    EXPECT_EQ(msg, scope.GetExceptionState().Message());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The buffer view byte length (32) doesn't match the expected "
+              "byte length (16).");
   }
 }
 
@@ -731,4 +731,233 @@ TEST_F(MLGraphBuilderTest, HardSwishTest) {
   }
 }
 
+MLOperand* BuildGemm(V8TestingScope& scope,
+                     MLGraphBuilder* builder,
+                     const MLOperand* a,
+                     const MLOperand* b,
+                     const MLGemmOptions* options = MLGemmOptions::Create()) {
+  auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Type(), a->Type());
+  auto* gemm = output->Operator();
+  EXPECT_NE(gemm, nullptr);
+  EXPECT_EQ(gemm->Kind(), MLOperator::OperatorKind::kGemm);
+  EXPECT_EQ(gemm->IsConnected(), true);
+  EXPECT_NE(gemm->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, GemmTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder = CreateMLGraphBuilder(scope);
+  ASSERT_NE(nullptr, builder);
+  {
+    // Test building gemm with default option.
+    auto* a = BuildInput(scope, builder, "a", {2, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {3, 4},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* options = MLGemmOptions::Create();
+    EXPECT_FALSE(options->hasC());
+    EXPECT_TRUE(options->hasAlpha());
+    EXPECT_EQ(options->alpha(), 1);
+    EXPECT_TRUE(options->hasBeta());
+    EXPECT_EQ(options->beta(), 1);
+    EXPECT_TRUE(options->hasATranspose());
+    EXPECT_EQ(options->aTranspose(), false);
+    EXPECT_TRUE(options->hasBTranspose());
+    EXPECT_EQ(options->bTranspose(), false);
+    auto* output = BuildGemm(scope, builder, a, b, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 4}));
+  }
+  {
+    // Test building gemm with two matrices - {2, 3} and {2, 4} that can't be
+    // multiplied together due to incompatible dimensions.
+    auto* a = BuildInput(scope, builder, "a", {2, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {2, 4},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* options = MLGemmOptions::Create();
+    auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "The number of columns (3) in the first matrix isn't equal to the "
+        "number of rows (2) in the second matrix.");
+  }
+  {
+    // Test building gemm with aTranspose = true.
+    // Transposed a_dimensions would be {3, 2} and it's compatible with
+    // b_dimensions {2, 4}.
+    auto* a = BuildInput(scope, builder, "a", {2, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {2, 4},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* options = MLGemmOptions::Create();
+    options->setATranspose(true);
+    auto* output = BuildGemm(scope, builder, a, b, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({3, 4}));
+  }
+  {
+    // Test building gemm with aTranspose = true.
+    // Transposed a_dimensions would be {3, 2} and it can't be multiplied with
+    // b_dimensions {3, 4}.
+    auto* a = BuildInput(scope, builder, "a", {2, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {3, 4},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* options = MLGemmOptions::Create();
+    options->setATranspose(true);
+    auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "The number of columns (2) in the transposed first matrix isn't equal "
+        "to the number of rows (3) in the second matrix.");
+  }
+  {
+    // Test building gemm with bTranspose = true.
+    // Transposed b_dimensions would be {3, 4} and it's compatible with
+    // a_dimensions {2, 3}.
+    auto* a = BuildInput(scope, builder, "a", {2, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {4, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* options = MLGemmOptions::Create();
+    options->setBTranspose(true);
+    auto* output = BuildGemm(scope, builder, a, b, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 4}));
+  }
+  {
+    // Test building gemm with bTranspose = true.
+    // Transposed b_dimensions would be {4, 3} and it's incompatible with
+    // a_dimensions {2, 3}.
+    auto* a = BuildInput(scope, builder, "a", {2, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {3, 4},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* options = MLGemmOptions::Create();
+    options->setBTranspose(true);
+    auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "The number of columns (3) in the first matrix isn't equal to the "
+        "number of rows (4) in the transposed second matrix.");
+  }
+  {
+    // Test building gemm with a_dimensions = {2, 3, 1}.
+    // Test throwing an error due to input_a is not a 2-D tensor.
+    auto* a = BuildInput(scope, builder, "a", {2, 3, 1},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {2, 4},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* options = MLGemmOptions::Create();
+    auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The first input must be a 2-D tensor.");
+  }
+  {
+    // Test building gemm with two mismatching input types.
+    auto* a = BuildInput(scope, builder, "a", {2, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b =
+        BuildInput(scope, builder, "b", {3, 4}, V8MLOperandType::Enum::kInt32);
+    auto* options = MLGemmOptions::Create();
+    auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The types of first two inputs don't match.");
+  }
+  {
+    // Test building gemm with setting optional input C.
+    // The output dimensions of a * b would be {2, 4} and
+    // c_dimensions {4} is able to broadcast to {2, 4}.
+    auto* a = BuildInput(scope, builder, "a", {2, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {3, 4},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* options = MLGemmOptions::Create();
+    auto* c =
+        BuildInput(scope, builder, "c", {4}, V8MLOperandType::Enum::kFloat32);
+    options->setC(c);
+    auto* output = BuildGemm(scope, builder, a, b, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 4}));
+  }
+  {
+    // Test building gemm with aTranspose = true, bTranspose = true.
+    // The output dimensions of a * b would be {2, 4} and
+    // c_dimension {2, 3} is incompatible with {2, 4}.
+    auto* a = BuildInput(scope, builder, "a", {2, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {3, 4},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* options = MLGemmOptions::Create();
+    auto* c = BuildInput(scope, builder, "a", {2, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    options->setC(c);
+    auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The third input tensor isn't unidirectionally broadcastable to "
+              "the output tensor.");
+  }
+  {
+    // Test building gemm with aTranspose = true, bTranspose = true.
+    // Set optional input C with type = int32 and it mismatches with input
+    // type float32.
+    auto* a = BuildInput(scope, builder, "a", {3, 2},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {4, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* options = MLGemmOptions::Create();
+    auto* c =
+        BuildInput(scope, builder, "c", {2, 4}, V8MLOperandType::Enum::kInt32);
+    options->setC(c);
+    options->setATranspose(true);
+    options->setBTranspose(true);
+    auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The third input type doesn't match other inputs' type.");
+  }
+  {
+    // Test building gemm with aTranspose = true, bTranspose = true.
+    // Set optional input C with dimensions = {2, 3, 4} and an error should be
+    // thrown since c_dimensions is not a 2-D tensor.
+    auto* a = BuildInput(scope, builder, "a", {3, 2},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {4, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* options = MLGemmOptions::Create();
+    auto* c = BuildInput(scope, builder, "c", {2, 3, 4},
+                         V8MLOperandType::Enum::kFloat32);
+    options->setC(c);
+    options->setATranspose(true);
+    options->setBTranspose(true);
+    auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
+              scope.GetExceptionState().Code());
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "The third input tensor should be either a scalar or a 2-D tensor.");
+  }
+}
 }  // namespace blink
