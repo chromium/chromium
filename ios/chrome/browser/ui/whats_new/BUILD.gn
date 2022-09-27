@@ -12,9 +12,9 @@ source_set("whats_new") {
   ]
   deps = [
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/chrome/browser/ui/table_view:table_view",
+    "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",
-    "//ios/chrome/browser/ui/whats_new/cells:cells",
+    "//ios/chrome/browser/ui/whats_new/cells",
   ]
 }
 
