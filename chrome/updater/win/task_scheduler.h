@@ -146,6 +146,10 @@ class TaskScheduler {
   // successfully or is currently running.
   virtual bool StartTask(const wchar_t* task_name) = 0;
 
+  // Name of the sub-folder that the scheduled tasks are created in, prefixed
+  // with the company folder `GetTaskCompanyFolder`.
+  virtual std::wstring GetTaskSubfolderName(UpdaterScope scope) = 0;
+
  protected:
   TaskScheduler();
 };
