@@ -897,6 +897,7 @@
         },
       },
       'Linux ASan LSan Tests (1)': {
+        'ci_only': True,
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/1257927
         'swarming': {

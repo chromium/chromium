@@ -2058,6 +2058,7 @@
         "args": [
           "--test-launcher-print-test-stdio=always"
         ],
+        "ci_only": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
