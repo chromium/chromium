@@ -175,6 +175,7 @@
 <translation id="2500392669976258912">古吉拉特文 (拼音)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">掃瞄</translation>
+<translation id="252641322760726369">按住檔案並輕觸 <ph name="ICON" /> 圖示，然後選取「<ph name="PIN_COMMAND" />」，即可快速存取檔案櫃中的檔案。</translation>
 <translation id="2534460670861217804">安全的 HTTP Proxy</translation>
 <translation id="2541377937973966830">此資料夾中的內容是唯讀格式，因此不支援部份活動。</translation>
 <translation id="2542049655219295786">Google 表格</translation>
@@ -347,6 +348,7 @@
 <translation id="4092890906744441904">愛爾蘭文</translation>
 <translation id="4124935795427217608">獨角獸</translation>
 <translation id="4131235941541910880">將不需要的項目移至垃圾桶</translation>
+<translation id="4153015322587141338">在檔案上按一下滑鼠右鍵，然後選取「<ph name="PIN_COMMAND" />」，即可快速存取檔案櫃中的檔案。</translation>
 <translation id="4157569377477607576">管理員政策不建議：</translation>
 <translation id="4159731583141908892">已移動 <ph name="FILE_NAME" />。</translation>
 <translation id="4176286497474237543">立即清空垃圾桶</translation>

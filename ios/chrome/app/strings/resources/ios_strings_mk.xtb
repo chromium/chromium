@@ -424,6 +424,7 @@
 <translation id="4536418791685807335">Обидете се да се најавите повторно.</translation>
 <translation id="4540780316273593836">Нешто тргна наопаку</translation>
 <translation id="457386861538956877">Повеќе…</translation>
+<translation id="4588014171431912783">Поставките за синхронизација ќе се вратат според последниот бекап. <ph name="BEGIN_LINK" />Видете што може да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Тастатура</translation>
 <translation id="4606247758155004938">Вашата организација управува со прелистувачот.</translation>
 <translation id="461440297010471931">Се пребарува со Google</translation>
@@ -703,6 +704,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="661266467055912436">Ја подобрува безбедноста за вас и сите останати на интернет.</translation>
 <translation id="6620279676667515405">Откажи</translation>
 <translation id="6624219055418309072">Блокирај во „Инкогнито“</translation>
+<translation id="6625830436658400045">Поставките за синхронизација ќе се вратат според последниот бекап. Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="6628106477656132239">Погрешен рок на важност</translation>
 <translation id="6634432609054530164">Вашата организација го исклучи режимот „Инкогнито“</translation>
 <translation id="6638511529934826365">Зумирај текст…</translation>

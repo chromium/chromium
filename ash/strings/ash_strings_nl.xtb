@@ -225,6 +225,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2227179592712503583">Suggestie verwijderen</translation>
 <translation id="225680501294068881">Zoeken naar apparaten...</translation>
 <translation id="2257486738914982088">Er is iets misgegaan tijdens het downloaden van <ph name="FILENAME" /></translation>
+<translation id="2258734398699965611">Voorgestelde bestanden</translation>
 <translation id="2268130516524549846">Bluetooth staat uit</translation>
 <translation id="2268813581635650749">Iedereen uitloggen</translation>
 <translation id="2269016722240250274">Een app gebruikt je microfoon</translation>
@@ -507,7 +508,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Zet het apparaat binnen 1 minuut terug naar een oudere versie}other{Zet het apparaat binnen # minuten terug naar een oudere versie}}</translation>
 <translation id="3923494859158167397">Geen mobiele netwerken ingesteld</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, afspraken laden.</translation>
-<translation id="392627956579011934">Start opnieuw op om spraakbestanden te installeren.</translation>
 <translation id="3932043219784172185">Geen apparaat aangesloten</translation>
 <translation id="3934456833412894880">Aangepast opladen staat aan. Je batterij blijft op 80% om de batterijduur te verlengen en wordt volledig opgeladen wanneer je dat nodig hebt.</translation>
 <translation id="3943857333388298514">Plak</translation>
@@ -900,6 +900,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6099678161144790572">In de afgelopen maand bewerkt</translation>
 <translation id="6103838137565245112">systeem</translation>
 <translation id="6114505516289286752">Spraakbestanden in het <ph name="LANGUAGE" /> gedownload</translation>
+<translation id="6116825164611323644">Cameratoegang staat uit op dit apparaat</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Downloaden van <ph name="FILENAME" /> bevestigen</translation>
 <translation id="612734058257491180">De Google Assistent is niet beschikbaar in een gastsessie.</translation>
@@ -1123,6 +1124,7 @@ Nieuwe installatie</translation>
 <translation id="746232733191930409">Schermopnamemodus</translation>
 <translation id="7466449121337984263">Raak de sensor aan</translation>
 <translation id="7477793887173910789">Je muziek, video's en meer bedienen</translation>
+<translation id="7490360161041035804">Je kunt belangrijke bestanden vastzetten, waaronder Google Drive-bestanden. Als je een item wilt vastzetten, plaats je de muisaanwijzer op het item of open je Bestanden en klik je met de rechtermuisknop op het item.</translation>
 <translation id="7497767806359279797">Taal en toetsenbord kiezen</translation>
 <translation id="7508690557411636492">Geopend in de afgelopen maand</translation>
 <translation id="7509246181739783082">Je identiteit verifiëren</translation>
@@ -1219,6 +1221,7 @@ Nieuwe installatie</translation>
 <translation id="7982789257301363584">Netwerk</translation>
 <translation id="7984197416080286869">Te veel vingerafdrukpogingen</translation>
 <translation id="798779949890829624">Deze instelling wordt beheerd door je beheerder</translation>
+<translation id="799296642788192631">Je kunt belangrijke bestanden vastzetten. Als je een item wilt vastzetten, plaats je de muisaanwijzer op het item of open je Bestanden en klik je met de rechtermuisknop op het item.</translation>
 <translation id="7994370417837006925">Toegang tot meerdere accounts</translation>
 <translation id="7995804128062002838">Schermopname mislukt</translation>
 <translation id="8000066093800657092">Geen netwerk</translation>
@@ -1346,6 +1349,7 @@ Nieuwe installatie</translation>
 <translation id="8734991477317290293">Mogelijk wordt geprobeerd om je toetsaanslagen te stelen</translation>
 <translation id="8735678380411481005">Achtergrondverlichtingskleur van het toetsenbord</translation>
 <translation id="8735953464173050365">Toetsenbordinstellingen bekijken. <ph name="KEYBOARD_NAME" /> is geselecteerd</translation>
+<translation id="8752416742247198423">Zet cameratoegang aan om apps en webpagina's met camerarechten toe te staan de camera('s) te gebruiken die zijn verbonden met dit apparaat.</translation>
 <translation id="8755498163081687682">Je identiteit verifiëren: <ph name="ORIGIN_NAME" /> wil bevestigen dat jij het bent</translation>
 <translation id="875593634123171288">VPN-instellingen bekijken</translation>
 <translation id="8759408218731716181">Kan toegang tot meerdere accounts niet instellen</translation>
@@ -1360,6 +1364,7 @@ Nieuwe installatie</translation>
 <translation id="8819728065740986820">Aangepast opladen staat aan</translation>
 <translation id="8825863694328519386">Swipe vanaf de linkerkant om terug te gaan</translation>
 <translation id="8834539327799336565">Momenteel verbonden</translation>
+<translation id="8834657930627018205">Cameratoegang aanzetten</translation>
 <translation id="8841375032071747811">Knop Terug</translation>
 <translation id="8843682306134542540">Draaivergrendeling aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Zoeken+Esc</translation>

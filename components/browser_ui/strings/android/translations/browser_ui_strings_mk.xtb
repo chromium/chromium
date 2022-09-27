@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="1005794457625275818">Колачиња дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајтови во групата <ph name="FPS_OWNER" />, вклучително <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Отвори онлајн</translation>
 <translation id="1044891598689252897">Сајтовите ќе работат нормално</translation>
 <translation id="1124090076051167250">Овa ќе ги избрише податоците и колачињата (<ph name="DATASIZE" />) складирани од сајтови или апликации на почетниот екран.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Да</translation>
 <translation id="1446450296470737166">Дозволи контрола над MIDI-уреди</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1633720957382884102">Поврзани сајтови</translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1647582022260550163">Дали сигурно сакате да ги ресетирате дозволите и да ги избришете колачињата и податоците од сајтот?</translation>
 <translation id="1660204651932907780">Дозволи сајтовите да пуштаат звук (се препорачува)</translation>

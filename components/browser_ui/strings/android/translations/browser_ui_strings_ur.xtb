@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="1005794457625275818"><ph name="FPS_MEMBER" /> سمیت <ph name="FPS_OWNER" /> گروپ میں <ph name="FPS_MEMBERS_COUNT" /> سائٹس کے لیے کوکیز کی اجازت ہے</translation>
 <translation id="1006017844123154345">آن لائن کھولیں</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
 <translation id="1124090076051167250">اس سے آپ کی ہوم اسکرین پر موجود سائٹس یا ایپس کے ذریعے اسٹور کردہ <ph name="DATASIZE" /> ڈیٹا اور کوکیز صاف ہو جائیں گی۔</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="1446450296470737166">‏MIDI آلات کے مکمل کنٹرول کی اجازت دیں</translation>
 <translation id="1620510694547887537">کیمرا</translation>
+<translation id="1633720957382884102">متعلقہ سائٹس</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
 <translation id="1647582022260550163">کیا آپ واقعی اجازتوں کو ری سیٹ کرنا اور کوکیز اور سائٹ ڈیٹا کو صاف کرنا چاہتے ہیں؟</translation>
 <translation id="1660204651932907780">سائٹس کو آواز چلانے کی اجازت دیں (تجویز کردہ)</translation>

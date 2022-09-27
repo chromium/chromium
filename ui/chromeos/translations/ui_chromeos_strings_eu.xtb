@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> kopiatzen…</translation>
 <translation id="1178581264944972037">Pausatu</translation>
 <translation id="1190144681599273207">Fitxategi hau eskuratzeko datu-konexioaren <ph name="FILE_SIZE" /> beharko dira gutxi gorabehera.</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> URLak atzi dezake fitxategia</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
 <translation id="1209796539517632982">Izen-zerbitzari automatikoak</translation>
 <translation id="1210831758834677569">Laostarra</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome darabilten gailuak</translation>
 <translation id="1572585716423026576">Ezarri horma-paper gisa</translation>
 <translation id="1576937952766665062">Bengaleraren transliterazioa</translation>
+<translation id="1577977504532381335">Berrikusi administratzailearen gidalerroak</translation>
 <translation id="158849752021629804">Sare lokala behar da</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Irudiaren bereizmena</translation>
 <translation id="1972984168337863910">Zabaldu fitxategien oharren panelak</translation>
 <translation id="1995337122023280937">Joan fitxategiaren kokapenera</translation>
+<translation id="1999709132469742660">URL guztiek atzi dezakete fitxategia</translation>
 <translation id="2001796770603320721">Kudeatu Drive-n</translation>
 <translation id="2009067268969781306">Unitatea formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza hori.</translation>
 <translation id="2025955442973426285">Tigrinyarra</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Kafe-kikara bati eusten ari dion pertsona</translation>
 <translation id="2251368349685848079">Leheneratu zaborrontzitik</translation>
 <translation id="2282155092769082568">Konfigurazio automatikoaren URLa:</translation>
+<translation id="2284767815536050991">memoria aldagarria</translation>
 <translation id="2288278176040912387">Disko-jogailua</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fitxategi irekitzen.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> fitxategia irekitzen.</translation>
@@ -224,6 +228,7 @@
 <translation id="3016566519832145558">Kontuz: fitxategi hauek aldi baterakoak dira eta agian automatikoki ezabatuko dira diskoan tokia egiteko.</translation>
 <translation id="3029114385395636667">Dokumentuak, Kalkulu-orriak eta Aurkezpenak konexiorik gabe erabili ahal izateko, gaitu Google Dokumentuak konexiorik gabe erabiltzeko luzapena.</translation>
 <translation id="303198083543495566">Geografia</translation>
+<translation id="3044404008258011032">Elementuak leheneratzeko, arrasta itzazu zaborrontzitik kanpoko beste karpeta batera. Elementu horien jatorrizko karpeta (<ph name="PARENT_FOLDER_NAME" />) ezabatu egin da.</translation>
 <translation id="3047197340186497470">Txinatarra (dayi)</translation>
 <translation id="3067790092342515856">Windows-en fitxategiak</translation>
 <translation id="3083975830683400843">Chromebit-ak</translation>
@@ -341,6 +346,8 @@
 <translation id="4057991113334098539">Aktibatzen…</translation>
 <translation id="4092890906744441904">Irlandarra</translation>
 <translation id="4124935795427217608">Adarbakarra</translation>
+<translation id="4131235941541910880">Eraman zaborrontzira behar ez dituzun elementuak</translation>
+<translation id="4157569377477607576">Administratzailearen gidalerroek ez dituzte hauek gomendatzen:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> mugitu da.</translation>
 <translation id="4176286497474237543">Hustu zaborrontzia</translation>
 <translation id="4186579485882418952">Gaitu konexiorik gabe erabiltzeko luzapena</translation>
@@ -435,8 +442,10 @@
 <translation id="485316830061041779">Alemana</translation>
 <translation id="4867079195717347957">Egin klik zutabea beheranzko ordenan ezartzeko.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
+<translation id="4874569719830985133">Ezabatu betiko</translation>
 <translation id="4880214202172289027">Bolumen-graduatzailea</translation>
 <translation id="4881695831933465202">Ireki</translation>
+<translation id="4891091358278567964">Elementuak leheneratzeko, arrasta itzazu zaborrontzitik kanpoko beste karpeta batera. Elementu horien jatorrizko karpetak ezabatu egin dira.</translation>
 <translation id="4900532980794411603">Partekatu Parallels Desktop aplikazioarekin</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="SECURITY_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Konektatu.</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="PHONE_NAME" />. <ph name="PROVIDER_NAME" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Xehetasunak.</translation>
@@ -493,6 +502,7 @@
     <ph name="MARKUP_7" />Partekatu eta sortu fitxategiak, eta jardun elkarlanean<ph name="MARKUP_8" />
     beste erabiltzaile batzuekin. Toki bakarrean egin dezakezu hori guztia.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive-tik berreskuratutako fitxategiak</translation>
+<translation id="5278111733643988471">Elementua leheneratzeko, arrasta ezazu zaborrontzitik kanpoko beste karpeta batera. Elementu horren jatorrizko karpeta (<ph name="PARENT_FOLDER_NAME" />) ezabatu egin da.</translation>
 <translation id="5286194356314741248">Bilatzen</translation>
 <translation id="5288441970121584418">Hanburgesa</translation>
 <translation id="5305688511332277257">Ez dago ziurtagiririk instalatuta</translation>
@@ -501,9 +511,11 @@
 <translation id="5323213332664049067">Latinoamerikarra</translation>
 <translation id="5330145655348521461">Fitxategi hauek beste profil bateko mahaigainean ireki dira. Ikusteko, joan <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) profilera.</translation>
 <translation id="5330512191124428349">Lortu informazioa</translation>
+<translation id="5337538975554986899">URL guztiek atzi dezakete fitxategia, <ph name="NON_RESTRICTED_DESTINATIONS" /> izan ezik</translation>
 <translation id="535792325654997756">Pertsona bat katuekin</translation>
 <translation id="5358764674931277">Irudi-abiadura</translation>
 <translation id="5363339716524495120">Idazteko hizkuntza txinera da</translation>
+<translation id="5364067326287025678">Zaborrontzia hutsik dago</translation>
 <translation id="5368191757080475556">Partekatu karpeta Linux erabilita</translation>
 <translation id="5402367795255837559">Braillea</translation>
 <translation id="5411472733320185105">Ez erabili proxy-ezarpenak ostalari eta domeinu hauetan:</translation>
@@ -525,6 +537,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> irudia</translation>
 <translation id="5534520101572674276">Tamaina kalkulatzen</translation>
 <translation id="554153475311314364">Grezieraren transliterazioa</translation>
+<translation id="5580591966435005537">makina birtuala</translation>
 <translation id="5583640892426849032">Atzera tekla</translation>
 <translation id="5583664733673201137">Puntuazio-zabalera osoa da</translation>
 <translation id="5602622065581044566">Bulgariarra, teklatu fonetikoarekin</translation>
@@ -585,6 +598,7 @@
 <translation id="61118516107968648">CSVko testua</translation>
 <translation id="6129953537138746214">Zuriunea</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> mugitzen…</translation>
+<translation id="6133877453787250710">Administratzaileak hauek gainbegiratzen ditu:</translation>
 <translation id="613750717151263950">Japoniarra, teklatu estatubatuarrarekin</translation>
 <translation id="6138894911715675297">Ez dago sarerik (<ph name="NETWORK_TYPE" />)</translation>
 <translation id="6146563240635539929">Bideoak</translation>
@@ -605,6 +619,7 @@
 <translation id="6287852322318138013">Hautatu fitxategia irekitzeko aplikazioa</translation>
 <translation id="6295542640242147836">Blokeatu SIMa</translation>
 <translation id="6296410173147755564">PUKak ez du balio</translation>
+<translation id="6308243004861726558">Fitxategia isilpekoa da, eta administratzailearen gidalerroen mende dago. Fitxategi-sarbide eta transferentzia-ekintza hauek aplikatzen dira.</translation>
 <translation id="6312403991423642364">Sareko errore ezezaguna</translation>
 <translation id="6317608858038767920">Izenen zerbitzari pertsonalizatua: <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> artxiboa</translation>
@@ -770,6 +785,7 @@
 <translation id="7711920809702896782">Irudiari buruzko informazioa</translation>
 <translation id="7724603315864178912">Ebaki</translation>
 <translation id="7732111077498238432">Gidalerroen bidez dago kontrolatuta sarea</translation>
+<translation id="7736003208887389532">Fitxategiak betiko ezabatu nahi dituzu?</translation>
 <translation id="7748626145866214022">Ekintza-barran aukera gehiago dituzu eskuragarri. Ekintza-barra fokuratzeko, sakatu Alt + A.</translation>
 <translation id="7760449188139285140">Txinatarra (wubi)</translation>
 <translation id="7765158879357617694">Eraman</translation>
@@ -831,8 +847,10 @@
 <translation id="8249296373107784235">Utzi bertan behera</translation>
 <translation id="8250690786522693009">Latindarra</translation>
 <translation id="8250920743982581267">Dokumentuak</translation>
+<translation id="8255595130163158297">Zaborrontziko elementu guztiak ezabatuko dira, eta ezingo dituzu leheneratu.</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8261561378965667560">Txinatarra (matriziala)</translation>
+<translation id="8262872909443689080">Administratzailearen gidalerroak</translation>
 <translation id="8264024885325823677">Administratzaileak kudeatzen du ezarpen hau.</translation>
 <translation id="8269755669432358899">Tolestu fitxategien oharren panelak</translation>
 <translation id="8280151743281770066">Armeniar fonetikoa</translation>
@@ -907,6 +925,7 @@
 <translation id="8857149712089373752">Nepaldarra, teklatu fonetikoarekin</translation>
 <translation id="8860454412039442620">Excel-eko kalkulu-orria</translation>
 <translation id="8866284467018526531">Arabieraren transliterazioa</translation>
+<translation id="8873014196523807561">Elementuak leheneratzeko, arrasta itzazu beste karpeta batera. Elementu horietako batzuen jatorrizko karpetak ezabatu egin dira.</translation>
 <translation id="8874184842967597500">Konektatu gabe</translation>
 <translation id="8900820606136623064">Hungariarra</translation>
 <translation id="8903931173357132290">Graduduna</translation>
@@ -928,6 +947,7 @@
 <translation id="9100610230175265781">Pasaesaldia behar da</translation>
 <translation id="9110990317705400362">Arakatzea geroz eta seguruagoa izan dadin saiatzen gara etengabe. Lehen, edozein webgunek eskain ziezazukeen arakatzailean gehitzeko luzapen bat. Google Chrome-ren azken bertsioetan, ordea, luzapen horiek Luzapenak orrian gehituta instalatu nahi dituzula berariaz esan behar diozu Chrome-ri. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Desblokeatu</translation>
+<translation id="9116909380156770361">Fitxategi-transferentzia hona: <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Kodeka</translation>
 <translation id="9130775360844693113">Elementu hauetarako sarbidea izango dute "<ph name="DESTINATION_NAME" />" unitateko kideek.</translation>
 <translation id="9131598836763251128">Hautatu fitxategi bat edo gehiago</translation>
@@ -949,6 +969,7 @@
 <translation id="943972244133411984">Aldaketaren egilea:</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="947144732524271678">Hautatu da <ph name="ENTRY_COUNT" /> sarrerako barruti bat, <ph name="FROM_ENTRY_NAME" /> sarreratik <ph name="TO_ENTRY_NAME" /> sarrerara.</translation>
+<translation id="954194396377670556">Administratzailearen gidalerroek hauek galarazten dituzte:</translation>
 <translation id="965477715979482472">Ingelesa (Hegoafrika)</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>
 <translation id="988685240266037636">Badago "<ph name="FILE_NAME" />" izeneko fitxategi bat. Ordeztu egin nahi duzu?</translation>

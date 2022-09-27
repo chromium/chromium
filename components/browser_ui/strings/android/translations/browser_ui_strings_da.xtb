@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1005794457625275818">Cookies, der er tilladt for <ph name="FPS_MEMBERS_COUNT" /> websites i <ph name="FPS_OWNER" />-gruppen, bl.a. <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Åbn på nettet</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
 <translation id="1124090076051167250">Dette rydder <ph name="DATASIZE" /> data og cookies, som er gemt af websites eller apps på din startskærm.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1446450296470737166">Tillad fuld kontrol over MIDI-enheder</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1633720957382884102">Relaterede websites</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1647582022260550163">Er du sikker på, at du vil nulstille tilladelser og rydde cookies og websitedata?</translation>
 <translation id="1660204651932907780">Tillad, at websites afspiller lyd (anbefales)</translation>

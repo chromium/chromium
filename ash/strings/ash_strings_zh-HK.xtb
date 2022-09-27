@@ -225,6 +225,7 @@
 <translation id="2227179592712503583">移除建議</translation>
 <translation id="225680501294068881">正在掃描裝置…</translation>
 <translation id="2257486738914982088">下載「<ph name="FILENAME" />」時發生錯誤</translation>
+<translation id="2258734398699965611">建議檔案</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2268813581635650749">登出所有使用者</translation>
 <translation id="2269016722240250274">某個應用程式正在使用麥克風</translation>
@@ -370,6 +371,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (藍牙)</translation>
 <translation id="3120421559657122717">要將裝置關機嗎？</translation>
 <translation id="3126069444801937830">重新啟動即可更新</translation>
+<translation id="3139382871451988441">關閉相機存取權。</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">流動數據</translation>
 <translation id="3151786313568798007">方向</translation>
@@ -507,7 +509,6 @@
 <translation id="3922427723338465344">{0,plural, =1{在 1 分鐘內將裝置回復為先前的版本}other{在 # 分鐘內將裝置回復為先前的版本}}</translation>
 <translation id="3923494859158167397">未設定流動網絡</translation>
 <translation id="3925540965556789199"><ph name="DATE" />，正在載入活動。</translation>
-<translation id="392627956579011934">需要重新啟動才能安裝語音檔案。</translation>
 <translation id="3932043219784172185">未連接任何裝置</translation>
 <translation id="3934456833412894880">自動調節充電速度功能已開啟。裝置電量會維持在 80% 以延長電池壽命，並在您需要時將電池完全充滿。</translation>
 <translation id="3943857333388298514">貼上</translation>
@@ -648,6 +649,7 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">已啟用 ChromeVox</translation>
 <translation id="4665114317261903604">切換「請勿騷擾」模式。<ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">關閉這部裝置的相機存取權，一律封鎖所有相機。</translation>
 <translation id="4667099493359681081">下載緊 <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">捷徑列喺螢幕個底度</translation>
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
@@ -666,6 +668,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
 <translation id="4777825441726637019">Play 商店</translation>
 <translation id="4778095205580009397">「Google 助理」不適用於示範工作階段。</translation>
+<translation id="4789348252524569426">無法安裝語音檔案，必須更新裝置。請重新啟動裝置，然後再試一次。</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">中斷連線</translation>
 <translation id="4814539958450445987">登入畫面</translation>
@@ -899,6 +902,7 @@
 <translation id="6099678161144790572">上個月編輯過</translation>
 <translation id="6103838137565245112">系統</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
+<translation id="6116825164611323644">這部裝置的相機存取權已關閉</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">確認下載 <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">「Google 助理」不適用於訪客工作階段。</translation>
@@ -1142,6 +1146,7 @@
 <translation id="7557816257942363084">「<ph name="APP_NAME" />」目前正在使用您的麥克風</translation>
 <translation id="7561982940498449837">關閉選單</translation>
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致非預期的行為。後續的通知、視窗和對話框可能會在不同的桌面上分開顯示。</translation>
+<translation id="7567076708801803118">要關閉這部裝置的相機存取權嗎？</translation>
 <translation id="7569509451529460200">已啟用點字和 ChromeVox</translation>
 <translation id="7573585051776738856">用緊嘅視固定咗喺畫面右邊。</translation>
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
@@ -1349,6 +1354,7 @@
 <translation id="8734991477317290293">鍵盤可能會嘗試盜取您的按鍵操作</translation>
 <translation id="8735678380411481005">鍵盤背光顏色</translation>
 <translation id="8735953464173050365">顯示鍵盤設定。已選擇<ph name="KEYBOARD_NAME" /></translation>
+<translation id="8752416742247198423">開啟相機存取權，允許任何具有相機權限的應用程式和網頁使用連結至這部裝置的相機。</translation>
 <translation id="8755498163081687682">驗證你嘅身份：<ph name="ORIGIN_NAME" /> 要求確認你嘅身分</translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>
 <translation id="8759408218731716181">無法設定多重登入</translation>
@@ -1363,6 +1369,7 @@
 <translation id="8819728065740986820">自動調節充電速度功能已開啟</translation>
 <translation id="8825863694328519386">從螢幕左側向右滑動即可返回</translation>
 <translation id="8834539327799336565">目前已連接的裝置</translation>
+<translation id="8834657930627018205">開啟相機存取權。</translation>
 <translation id="8841375032071747811">[返回] 按鈕</translation>
 <translation id="8843682306134542540">切換旋轉鎖定。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">搜尋鍵 + Esc 鍵</translation>

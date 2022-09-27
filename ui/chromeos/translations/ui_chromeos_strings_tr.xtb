@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> kopyalanıyor...</translation>
 <translation id="1178581264944972037">Duraklat</translation>
 <translation id="1190144681599273207">Bu dosyayı getirmek için yaklaşık olarak <ph name="FILE_SIZE" /> mobil veri kullanılacak.</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> tarafından dosya erişimi</translation>
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1209796539517632982">Otomatik ad sunucuları</translation>
 <translation id="1210831758834677569">Laoca</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome cihazlar</translation>
 <translation id="1572585716423026576">Duvar kağıdı yap</translation>
 <translation id="1576937952766665062">Bengalce Harf çevirisi</translation>
+<translation id="1577977504532381335">Yönetici politikasını inceleyin</translation>
 <translation id="158849752021629804">Ev ağı gerekli</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Resim çözünürlüğü</translation>
 <translation id="1972984168337863910">Dosyalar geri bildirim panellerini genişlet</translation>
 <translation id="1995337122023280937">Dosya konumuna git</translation>
+<translation id="1999709132469742660">Tüm URL'ler tarafından dosya erişimi</translation>
 <translation id="2001796770603320721">Drive'da Yönet</translation>
 <translation id="2009067268969781306">Bir sürücünün biçimlendirilmesi, üzerinde depolanan tüm verileri siler. Bu işlem geri alınamaz.</translation>
 <translation id="2025955442973426285">Tigrinya dili</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Elinde kahve tutan bir kişi</translation>
 <translation id="2251368349685848079">Çöp kutusundan geri yükle</translation>
 <translation id="2282155092769082568">Otomatik yapılandırma URL'si:</translation>
+<translation id="2284767815536050991">çıkarılabilir depolama alanı</translation>
 <translation id="2288278176040912387">Plak çalar</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> dosya açılıyor.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> dosyası açılıyor.</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">İrlandaca</translation>
 <translation id="4124935795427217608">Tek boynuzlu at</translation>
 <translation id="4131235941541910880">İhtiyacınız olmayan öğeleri Çöp Kutusu'na taşıyın</translation>
+<translation id="4157569377477607576">Yönetici politikası şunları önermez:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> öğe taşındı.</translation>
 <translation id="4176286497474237543">Çöp kutusunu şimdi boşalt</translation>
 <translation id="4186579485882418952">Offline'ı etkinleştir</translation>
@@ -507,6 +512,7 @@
 <translation id="5323213332664049067">Latin Amerika</translation>
 <translation id="5330145655348521461">Bu dosyalar farklı bir masaüstünde açıldı. Görüntülemek için <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) adlı kullanıcıya geçin.</translation>
 <translation id="5330512191124428349">Bilgi al</translation>
+<translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> dışındaki tüm URL'ler tarafından dosya erişimi</translation>
 <translation id="535792325654997756">Kediler ve insan</translation>
 <translation id="5358764674931277">Kare hızı</translation>
 <translation id="5363339716524495120">Giriş dili Çince</translation>
@@ -532,6 +538,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> resmi</translation>
 <translation id="5534520101572674276">Boyut hesaplanıyor</translation>
 <translation id="554153475311314364">Yunanca Harf Çevirisi</translation>
+<translation id="5580591966435005537">sanal makine</translation>
 <translation id="5583640892426849032">Geri al tuşu</translation>
 <translation id="5583664733673201137">Noktalama genişliği Tam</translation>
 <translation id="5602622065581044566">Fonetik klavye ile Bulgarca</translation>
@@ -592,6 +599,7 @@
 <translation id="61118516107968648">CSV metni</translation>
 <translation id="6129953537138746214">Boşluk</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> taşınıyor...</translation>
+<translation id="6133877453787250710">Yönetici şunları izler:</translation>
 <translation id="613750717151263950">Japonca (ABD klavye)</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ağ yok</translation>
 <translation id="6146563240635539929">Videolar</translation>
@@ -612,6 +620,7 @@
 <translation id="6287852322318138013">Bu dosyayı açmak için bir uygulama seçin</translation>
 <translation id="6295542640242147836">SIM kilidi</translation>
 <translation id="6296410173147755564">Geçersiz PUK</translation>
+<translation id="6308243004861726558">Bu dosya gizli olup yönetici politikasına tabidir. Aşağıdaki dosya erişimi ve aktarım işlemleri geçerlidir.</translation>
 <translation id="6312403991423642364">Bilinmeyen ağ hatası</translation>
 <translation id="6317608858038767920">Özel alan adı sunucusu <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> arşiv dosyası</translation>
@@ -842,6 +851,7 @@
 <translation id="8255595130163158297">Çöp kutusundaki tüm öğeler silinir ve geri yüklenemez.</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8261561378965667560">Çince Dizi</translation>
+<translation id="8262872909443689080">Yönetici politikası</translation>
 <translation id="8264024885325823677">Bu ayar, yöneticiniz tarafından yönetilir.</translation>
 <translation id="8269755669432358899">Dosyalar geri bildirim panellerini daralt</translation>
 <translation id="8280151743281770066">Ermenice Fonetik</translation>
@@ -938,6 +948,7 @@
 <translation id="9100610230175265781">Parola gerekli</translation>
 <translation id="9110990317705400362">Sürekli olarak, web'e daha güvenli göz atabilmenizi sağlamanın yollarını aramaktayız. Önceden, herhangi bir web sitesi, tarayıcınıza uzantı eklemeniz için istekte bulunabiliyordu. Google Chrome'un son sürümlerinde bu uzantıları yüklemek istediğinizi Chrome'a açıkça söylemelisiniz. Bunu yapmak için uzantıları Uzantılar sayfası üzerinden eklemeniz gerekiyor. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Kilidi Aç</translation>
+<translation id="9116909380156770361"><ph name="RESTRICTED_COMPONENTS" /> içine dosya aktarımı</translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">"<ph name="DESTINATION_NAME" />" hedefinin üyeleri, bu öğelere erişim hakkı kazanacaktır.</translation>
 <translation id="9131598836763251128">Bir veya daha fazla dosya seçin</translation>
@@ -959,6 +970,7 @@
 <translation id="943972244133411984">Değiştiren:</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> - <ph name="TO_ENTRY_NAME" /> arasında <ph name="ENTRY_COUNT" /> giriş seçildi.</translation>
+<translation id="954194396377670556">Yönetici politikası şunları önler:</translation>
 <translation id="965477715979482472">İngilizce (Güney Afrika)</translation>
 <translation id="981121421437150478">Çevrimdışı</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" adlı bir dosya zaten var. Değiştirmek istiyor musunuz?</translation>

@@ -228,6 +228,7 @@
 <translation id="3016566519832145558">Attention : Ces fichiers sont temporaires et ils peuvent être automatiquement supprimés pour libérer de l'espace disque.</translation>
 <translation id="3029114385395636667">Activez Google Documents hors ligne pour rendre vos fichiers Documents, Feuilles de calcul et Présentations accessibles hors ligne.</translation>
 <translation id="303198083543495566">Géographie</translation>
+<translation id="3044404008258011032">Pour restaurer ces éléments, faites-les glisser vers un nouveau dossier en dehors de la corbeille. Le dossier d'origine « <ph name="PARENT_FOLDER_NAME" /> » pour ces éléments a été supprimé.</translation>
 <translation id="3047197340186497470">Chinois (Dayi)</translation>
 <translation id="3067790092342515856">Fichiers Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -345,6 +346,7 @@
 <translation id="4057991113334098539">Activation en cours…</translation>
 <translation id="4092890906744441904">Irlandais</translation>
 <translation id="4124935795427217608">Licorne</translation>
+<translation id="4131235941541910880">Mettre les éléments inutiles dans la corbeille.</translation>
 <translation id="4157569377477607576">La politique de l'administrateur ne recommande pas :</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> déplacé.</translation>
 <translation id="4176286497474237543">Vider la corbeille maintenant</translation>
@@ -440,8 +442,10 @@
 <translation id="485316830061041779">Allemand</translation>
 <translation id="4867079195717347957">Cliquez ici pour trier la colonne par ordre décroissant.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> octets</translation>
+<translation id="4874569719830985133">Supprimer définitivement</translation>
 <translation id="4880214202172289027">Curseur de volume</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
+<translation id="4891091358278567964">Pour restaurer ces éléments, faites-les glisser vers un nouveau dossier en dehors de la corbeille. Les dossiers d'origine de ces éléments ont été supprimés.</translation>
 <translation id="4900532980794411603">Partager avec Parallels Desktop</translation>
 <translation id="4902546322522096650">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
 <translation id="4906580650526544301">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, puissance du signal : <ph name="SIGNAL_STRENGTH" /> %, pile du téléphone : <ph name="BATTERY_STATUS" /> %, renseignements</translation>
@@ -500,6 +504,7 @@
     <ph name="MARKUP_7" />Partagez, créez et collaborez<ph name="MARKUP_8" />
     sur les mêmes fichiers pour tout le monde, à un seul endroit.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Fichiers récupérés de Google Disque</translation>
+<translation id="5278111733643988471">Pour restaurer cet élément, faites-le glisser vers un nouveau dossier en dehors de la corbeille. Le dossier d'origine « <ph name="PARENT_FOLDER_NAME" /> » de cet élément a été supprimé.</translation>
 <translation id="5286194356314741248">Recherche en cours…</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5305688511332277257">Aucun certificat installé</translation>
@@ -512,6 +517,7 @@
 <translation id="535792325654997756">Personne avec des chats</translation>
 <translation id="5358764674931277">Fréquence d'images</translation>
 <translation id="5363339716524495120">La langue d'entrée définie est le chinois</translation>
+<translation id="5364067326287025678">Corbeille vide</translation>
 <translation id="5368191757080475556">Partager le dossier avec Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Ne pas utiliser les paramètres de mandataire pour ces hôtes et domaines :</translation>
@@ -781,6 +787,7 @@
 <translation id="7711920809702896782">Renseignements sur le fichier image</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7732111077498238432">Le réseau est contrôlé par une politique</translation>
+<translation id="7736003208887389532">Supprimer définitivement ces fichiers?</translation>
 <translation id="7748626145866214022">Vous trouverez d'autres options dans la barre d'action. Appuyez sur Alt + A pour mettre en évidence la barre d'action.</translation>
 <translation id="7760449188139285140">Chinois (Wubi)</translation>
 <translation id="7765158879357617694">Déplacer</translation>
@@ -842,6 +849,7 @@
 <translation id="8249296373107784235">Interrompre</translation>
 <translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Documents</translation>
+<translation id="8255595130163158297">Tous les éléments de la corbeille seront supprimés et vous ne pourrez pas les restaurer.</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8261561378965667560">Chinois (tableau)</translation>
 <translation id="8262872909443689080">Politique de l'administrateur</translation>
@@ -919,6 +927,7 @@
 <translation id="8857149712089373752">Népalais avec clavier phonétique</translation>
 <translation id="8860454412039442620">Feuille de calcul Excel</translation>
 <translation id="8866284467018526531">Arabe (translittération)</translation>
+<translation id="8873014196523807561">Pour restaurer ces éléments, faites-les glisser vers un nouveau dossier. Les dossiers d'origine de certains de ces éléments ont été supprimés.</translation>
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8900820606136623064">Hongrois</translation>
 <translation id="8903931173357132290">Diplômé</translation>

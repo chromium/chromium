@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Afritar <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Gera hlé</translation>
 <translation id="1190144681599273207">Um það bil <ph name="FILE_SIZE" /> af farsímagögnum verða notuð til að sækja þessar skrá.</translation>
+<translation id="1194390763418645112">Aðgangur að skrá í gegnum <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Áfram</translation>
 <translation id="1209796539517632982">Sjálfvirkir nafnaþjónar</translation>
 <translation id="1210831758834677569">Laoska</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome tæki</translation>
 <translation id="1572585716423026576">Nota sem veggfóður</translation>
 <translation id="1576937952766665062">Bengalska umritun</translation>
+<translation id="1577977504532381335">Skoða stjórnandareglu</translation>
 <translation id="158849752021629804">Heimanet nauðsynlegt</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Myndavél</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Upplausn myndar</translation>
 <translation id="1972984168337863910">Stækka svæði með ábendingum fyrir skrár</translation>
 <translation id="1995337122023280937">Fara í staðsetningu skráar</translation>
+<translation id="1999709132469742660">Aðgangur að skrá í gegnum allar vefslóðir</translation>
 <translation id="2001796770603320721">Stjórna á Drive</translation>
 <translation id="2009067268969781306">Þegar drif er forsniðið eyðast öll gögn af því. Ekki er hægt að afturkalla þessa aðgerð.</translation>
 <translation id="2025955442973426285">Tigriníska</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Einstaklingur með kaffi</translation>
 <translation id="2251368349685848079">Endurheimta úr rusli</translation>
 <translation id="2282155092769082568">Sjálfvirk stilling vefslóðar:</translation>
+<translation id="2284767815536050991">laus geymsla</translation>
 <translation id="2288278176040912387">Grammófónn</translation>
 <translation id="2291538123825441971">Opnar <ph name="NUMBER_OF_FILES" /> skrár.</translation>
 <translation id="2303301624314357662">Opnar skrána <ph name="FILE_NAME" />.</translation>
@@ -224,6 +228,7 @@
 <translation id="3016566519832145558">Varúð: Þessar skrár eru til bráðabirgða og þeim kann að verða eytt sjálfkrafa til að losa um diskpláss.</translation>
 <translation id="3029114385395636667">Kveiktu á Google skjölum án nettengingar til að fá aðgang að Skjölum, Töflureiknum og Skyggnum án nettengingar.</translation>
 <translation id="303198083543495566">Landafræði</translation>
+<translation id="3044404008258011032">Til að endurheimta atriðin skaltu draga þau úr ruslinu yfir í nýja möppu. Upprunalegu möppunni „<ph name="PARENT_FOLDER_NAME" />“ fyrir atriðin hefur verið eytt.</translation>
 <translation id="3047197340186497470">Kínverska Dayi</translation>
 <translation id="3067790092342515856">Windows-skrár</translation>
 <translation id="3083975830683400843">Chromebit tæki</translation>
@@ -341,6 +346,8 @@
 <translation id="4057991113334098539">Virkjar...</translation>
 <translation id="4092890906744441904">Írska</translation>
 <translation id="4124935795427217608">Einhyrningur</translation>
+<translation id="4131235941541910880">Færðu óþörf atriði í ruslið</translation>
+<translation id="4157569377477607576">Stjórnandaregla mælir ekki með:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> flutt.</translation>
 <translation id="4176286497474237543">Tæma ruslið núna</translation>
 <translation id="4186579485882418952">Virkja ónettengdan aðgang</translation>
@@ -435,8 +442,10 @@
 <translation id="485316830061041779">Þýskt</translation>
 <translation id="4867079195717347957">Smelltu til að raða dálkinum í lækkandi röð.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bæti</translation>
+<translation id="4874569719830985133">Eyða endanlega</translation>
 <translation id="4880214202172289027">Sleði fyrir hljóð</translation>
 <translation id="4881695831933465202">Opna</translation>
+<translation id="4891091358278567964">Til að endurheimta atriðin skaltu draga þau úr ruslinu yfir í nýja möppu. Upprunalegum möppum fyrir atriðin hefur verið eytt.</translation>
 <translation id="4900532980794411603">Deila með Parallels Desktop</translation>
 <translation id="4902546322522096650">Net <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, tengjast</translation>
 <translation id="4906580650526544301">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />% rafhlaða síma <ph name="BATTERY_STATUS" />%, upplýsingar</translation>
@@ -493,6 +502,7 @@
     <ph name="MARKUP_7" />Þú getur deilt, búið til og<ph name="MARKUP_8" />
     unnið í skrám ásamt öðrum, allt á einum stað.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Endurheimtar skrár af Google Drive</translation>
+<translation id="5278111733643988471">Til að endurheimta atriðið skaltu draga það úr ruslinu yfir í nýja möppu. Upprunalegu möppunni „<ph name="PARENT_FOLDER_NAME" />“ fyrir atriðið hefur verið eytt.</translation>
 <translation id="5286194356314741248">Leit</translation>
 <translation id="5288441970121584418">Hamborgari</translation>
 <translation id="5305688511332277257">Engin uppsett</translation>
@@ -501,9 +511,11 @@
 <translation id="5323213332664049067">Rómansk-amerískt</translation>
 <translation id="5330145655348521461">Þessar skrár voru opnaðar á öðru skjáborði. Skiptu yfir í <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) til að skoða þær.</translation>
 <translation id="5330512191124428349">Fá upplýsingar</translation>
+<translation id="5337538975554986899">Aðgangur að skrá í gegnum allar vefslóðir nema<ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Einstaklingur með ketti</translation>
 <translation id="5358764674931277">Rammatíðni</translation>
 <translation id="5363339716524495120">Inntakstungumál er kínverska</translation>
+<translation id="5364067326287025678">Ekkert í ruslinu</translation>
 <translation id="5368191757080475556">Deila möppu með Linux</translation>
 <translation id="5402367795255837559">Blindraletur</translation>
 <translation id="5411472733320185105">Nota ekki proxy-stillingarnar fyrir þessa hýsla og lén:</translation>
@@ -525,6 +537,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-mynd</translation>
 <translation id="5534520101572674276">Reiknar stærð</translation>
 <translation id="554153475311314364">Gríska umritun</translation>
+<translation id="5580591966435005537">sýndarvél</translation>
 <translation id="5583640892426849032">Bakklykill</translation>
 <translation id="5583664733673201137">Greinarmerki eru í fullri breidd</translation>
 <translation id="5602622065581044566">Búlgarska með hljóðritunarlyklaborði</translation>
@@ -585,6 +598,7 @@
 <translation id="61118516107968648">CSV-texti</translation>
 <translation id="6129953537138746214">Bil</translation>
 <translation id="6133173853026656527">Færir <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Stjórnandi fylgist með:</translation>
 <translation id="613750717151263950">Japanska með bandarísku lyklaborði</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ekkert net</translation>
 <translation id="6146563240635539929">Myndskeið</translation>
@@ -605,6 +619,7 @@
 <translation id="6287852322318138013">Veldu forrit til að opna þessa skrá</translation>
 <translation id="6295542640242147836">Læsa SIM-korti</translation>
 <translation id="6296410173147755564">Ógilt PUK-númer</translation>
+<translation id="6308243004861726558">Skráin inniheldur trúnaðarmál og er háð stjórnandareglu. Eftirfarandi skráaraðgangur og flutningsaðgerðir gilda.</translation>
 <translation id="6312403991423642364">Óþekkt netvilla</translation>
 <translation id="6317608858038767920">Sérstilltur nafnaþjónn <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-geymsla</translation>
@@ -770,6 +785,7 @@
 <translation id="7711920809702896782">Myndupplýsingar</translation>
 <translation id="7724603315864178912">Klippa</translation>
 <translation id="7732111077498238432">Netkerfinu er stjórnað af reglu</translation>
+<translation id="7736003208887389532">Eyða þessum skrám endanlega?</translation>
 <translation id="7748626145866214022">Fleiri valkosti er að finna á aðgerðastikunni. Ýttu á Alt + A til að setja aðgerðastikuna í fókus.</translation>
 <translation id="7760449188139285140">Kínverska Wubi</translation>
 <translation id="7765158879357617694">Færa</translation>
@@ -831,8 +847,10 @@
 <translation id="8249296373107784235">Hætta</translation>
 <translation id="8250690786522693009">Latneskt</translation>
 <translation id="8250920743982581267">Skjöl</translation>
+<translation id="8255595130163158297">Öllum atriðum í ruslinu verður eytt og ekki verður hægt að endurheimta þau.</translation>
 <translation id="8261506727792406068">Eyða</translation>
 <translation id="8261561378965667560">Kínverska Array</translation>
+<translation id="8262872909443689080">Stjórnandaregla</translation>
 <translation id="8264024885325823677">Kerfisstjórinn þinn stjórnar þessari stillingu.</translation>
 <translation id="8269755669432358899">Draga saman svæði með ábendingum fyrir skrár</translation>
 <translation id="8280151743281770066">Armensk hljóðritun</translation>
@@ -907,6 +925,7 @@
 <translation id="8857149712089373752">Nepalska með hljóðritunarlyklaborði</translation>
 <translation id="8860454412039442620">Excel-töflureiknir</translation>
 <translation id="8866284467018526531">Arabíska umritun</translation>
+<translation id="8873014196523807561">Til að endurheimta atriðin skaltu draga þau yfir í nýja möppu. Upprunalegum möppum fyrir sum þessara atriða hefur verið eytt.</translation>
 <translation id="8874184842967597500">Ekki tengt</translation>
 <translation id="8900820606136623064">Ungverskt</translation>
 <translation id="8903931173357132290">Útskrifaður nemandi</translation>
@@ -928,6 +947,7 @@
 <translation id="9100610230175265781">Aðgangsorðs krafist</translation>
 <translation id="9110990317705400362">Við erum sífellt að leita leiða við að gera vefnotkun öruggari fyrir þig. Áður var það þannig að hvaða vefsvæði sem var gat birt kvaðningu um að þú bættir viðbót við vafrann. Í nýjustu útgáfum Google Chrome þarf notandinn að taka sérstaklega fram að Chrome eigi að setja upp viðbætur með því að bæta þeim við í gegnum síðuna Viðbætur. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Taka úr lás</translation>
+<translation id="9116909380156770361">Skráarflutningur í: <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Kóðari</translation>
 <translation id="9130775360844693113">Meðlimir „<ph name="DESTINATION_NAME" />“ fá aðgang að þessum atriðum.</translation>
 <translation id="9131598836763251128">Veldu eina eða fleiri skrár</translation>
@@ -949,6 +969,7 @@
 <translation id="943972244133411984">Breytt af</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="947144732524271678">Valdi <ph name="ENTRY_COUNT" /> færslur, <ph name="FROM_ENTRY_NAME" />–<ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Stjórnandaregla kemur í veg fyrir:</translation>
 <translation id="965477715979482472">Enska (Suður-Afríka)</translation>
 <translation id="981121421437150478">Ónettengt</translation>
 <translation id="988685240266037636">Skrá með heitið „<ph name="FILE_NAME" />“ er þegar fyrir hendi. Viltu skipta henni út?</translation>

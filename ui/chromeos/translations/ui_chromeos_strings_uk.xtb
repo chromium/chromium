@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Копіювання файлу <ph name="FILE_NAME" />…</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1190144681599273207">Для отримання цього файлу буде використано приблизно <ph name="FILE_SIZE" /> мобільного передавання даних.</translation>
+<translation id="1194390763418645112">Доступ до файлу з розташування <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Далі</translation>
 <translation id="1209796539517632982">Імена серверів – автоматично</translation>
 <translation id="1210831758834677569">Лаоська</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome</translation>
 <translation id="1572585716423026576">Зробити фоновим малюнком</translation>
 <translation id="1576937952766665062">Бенгальська, транслітерація</translation>
+<translation id="1577977504532381335">Переглянути правило адміністратора</translation>
 <translation id="158849752021629804">Потрібна домашня мережа</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Роздільна здатність зображення</translation>
 <translation id="1972984168337863910">Розгортаються панелі відгуків про файли</translation>
 <translation id="1995337122023280937">Відкрити місце розташування файлу</translation>
+<translation id="1999709132469742660">Доступ до файлу за всіма URL-адресами</translation>
 <translation id="2001796770603320721">Керувати на Диску</translation>
 <translation id="2009067268969781306">Якщо відформатувати диск, усі збережені на ньому дані буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Людина з кавою</translation>
 <translation id="2251368349685848079">Відновити з кошика</translation>
 <translation id="2282155092769082568">URL-адреса автоконфігурації:</translation>
+<translation id="2284767815536050991">знімний носій</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Відкриваються файли (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Відкривається файл "<ph name="FILE_NAME" />".</translation>
@@ -224,6 +228,7 @@
 <translation id="3016566519832145558">Зверніть увагу: ці файли тимчасові й можуть автоматично видалятися, щоб звільнити місце на диску.</translation>
 <translation id="3029114385395636667">Увімкніть Google Документи офлайн, щоб переглядати Документи, Таблиці й Презентації без підключення до Інтернету.</translation>
 <translation id="303198083543495566">Координати</translation>
+<translation id="3044404008258011032">Щоб відновити ці файли, перетягніть їх із кошика в нову папку. Оригінальну папку "<ph name="PARENT_FOLDER_NAME" />", у якій вони містилися, видалено.</translation>
 <translation id="3047197340186497470">Китайська, даї</translation>
 <translation id="3067790092342515856">Файли Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -341,6 +346,8 @@
 <translation id="4057991113334098539">Активація...</translation>
 <translation id="4092890906744441904">Ірландська</translation>
 <translation id="4124935795427217608">Єдиноріг</translation>
+<translation id="4131235941541910880">Перемістіть непотрібні файли в кошик</translation>
+<translation id="4157569377477607576">Згідно з правилом адміністратора не рекомендовано:</translation>
 <translation id="4159731583141908892">Файл "<ph name="FILE_NAME" />" переміщено.</translation>
 <translation id="4176286497474237543">Очистити кошик зараз</translation>
 <translation id="4186579485882418952">Увімкнути режим офлайн</translation>
@@ -435,8 +442,10 @@
 <translation id="485316830061041779">Німецька</translation>
 <translation id="4867079195717347957">Натисніть, щоб відсортувати стовпці в порядку спадання.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> Б</translation>
+<translation id="4874569719830985133">Видалити назавжди</translation>
 <translation id="4880214202172289027">Регулятор гучності</translation>
 <translation id="4881695831933465202">Відкрити</translation>
+<translation id="4891091358278567964">Щоб відновити ці файли, перетягніть їх із кошика в нову папку. Оригінальні папки, у яких вони містилися, видалено.</translation>
 <translation id="4900532980794411603">Надати доступ додатку Parallels Desktop</translation>
 <translation id="4902546322522096650">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Підключитися</translation>
 <translation id="4906580650526544301">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва пристрою: <ph name="PHONE_NAME" />, оператор: <ph name="PROVIDER_NAME" />, стан з'єднання: <ph name="CONNECTION_STATUS" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона: <ph name="BATTERY_STATUS" />%, відомості</translation>
@@ -493,6 +502,7 @@
     <ph name="MARKUP_7" />Надсилайте та створюйте файли, а також працюйте<ph name="MARKUP_8" />
     над ними разом з іншими – усе в одному місці.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Відновлені файли з Google Диска</translation>
+<translation id="5278111733643988471">Щоб відновити цей файл, перетягніть його з кошика в нову папку. Оригінальну папку "<ph name="PARENT_FOLDER_NAME" />", у якій він містився, видалено.</translation>
 <translation id="5286194356314741248">Сканування</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -502,9 +512,11 @@
 <translation id="5323213332664049067">латиноамериканська</translation>
 <translation id="5330145655348521461">Ці файли відкрито на іншому комп’ютері. Перейдіть до <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), щоб переглянути їх.</translation>
 <translation id="5330512191124428349">Отримати інформацію</translation>
+<translation id="5337538975554986899">Доступ до файлу за всіма URL-адресами, крім <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Людина з котами</translation>
 <translation id="5358764674931277">Частота кадрів</translation>
 <translation id="5363339716524495120">Мова введення – китайська</translation>
+<translation id="5364067326287025678">Кошик порожній</translation>
 <translation id="5368191757080475556">Надати Linux доступ до папки</translation>
 <translation id="5402367795255837559">Команди Брайля</translation>
 <translation id="5411472733320185105">Не використовуйте налаштування проксі-сервера для таких хостів і доменів:</translation>
@@ -526,6 +538,7 @@
 <translation id="5533102081734025921">Зображення <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Обчислення розміру</translation>
 <translation id="554153475311314364">Грецька, транслітерація</translation>
+<translation id="5580591966435005537">віртуальна машина</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Ширина розділових знаків – повна</translation>
 <translation id="5602622065581044566">Болгарська, фонетична розкладка</translation>
@@ -586,6 +599,7 @@
 <translation id="61118516107968648">Текстовий файл CSV</translation>
 <translation id="6129953537138746214">Пробіл</translation>
 <translation id="6133173853026656527">Переміщення файлу <ph name="FILE_NAME" />…</translation>
+<translation id="6133877453787250710">Адміністратор відстежує:</translation>
 <translation id="613750717151263950">Японська, розкладка США</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, немає мережі</translation>
 <translation id="6146563240635539929">Відео</translation>
@@ -606,6 +620,7 @@
 <translation id="6287852322318138013">Вибрати програму, щоб відкрити цей файл</translation>
 <translation id="6295542640242147836">Заблокувати SIM-карту</translation>
 <translation id="6296410173147755564">Недійсний PUK-код</translation>
+<translation id="6308243004861726558">Цей файл конфіденційний і регулюється правилом адміністратора, що застосовується до вказаних нижче дій.</translation>
 <translation id="6312403991423642364">Невідома помилка мережі</translation>
 <translation id="6317608858038767920">Власний сервер імен <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Архів .<ph name="ARCHIVE_TYPE" /></translation>
@@ -771,6 +786,7 @@
 <translation id="7711920809702896782">Інформація про зображення</translation>
 <translation id="7724603315864178912">Вирізати</translation>
 <translation id="7732111077498238432">Мережа контролюється правилами</translation>
+<translation id="7736003208887389532">Видалити ці файли назавжди?</translation>
 <translation id="7748626145866214022">На панелі дій доступно більше параметрів. Натисніть Alt + A, щоб відкрити її.</translation>
 <translation id="7760449188139285140">Китайська, вубі</translation>
 <translation id="7765158879357617694">Перемістити</translation>
@@ -832,8 +848,10 @@
 <translation id="8249296373107784235">Скасувати</translation>
 <translation id="8250690786522693009">Латиниця</translation>
 <translation id="8250920743982581267">Документи</translation>
+<translation id="8255595130163158297">Усі об’єкти в кошику буде видалено, і ви не зможете їх відновити.</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="8261561378965667560">Китайська, Array</translation>
+<translation id="8262872909443689080">Правило адміністратора</translation>
 <translation id="8264024885325823677">Цим налаштуванням керує адміністратор.</translation>
 <translation id="8269755669432358899">Згортаються панелі відгуків про файли</translation>
 <translation id="8280151743281770066">Вірменська (фонетична)</translation>
@@ -908,6 +926,7 @@
 <translation id="8857149712089373752">Непальська, фонетична розкладка</translation>
 <translation id="8860454412039442620">Таблиця Excel</translation>
 <translation id="8866284467018526531">Арабська, транслітерація</translation>
+<translation id="8873014196523807561">Щоб відновити ці файли, перетягніть їх у нову папку. Оригінальні папки, у яких містилися деякі з цих файлів, видалено.</translation>
 <translation id="8874184842967597500">Не під’єднано</translation>
 <translation id="8900820606136623064">Угорська</translation>
 <translation id="8903931173357132290">Випускник</translation>
@@ -929,6 +948,7 @@
 <translation id="9100610230175265781">Потрібно вказати парольну фразу</translation>
 <translation id="9110990317705400362">Ми постійно шукаємо способи зробити перегляд веб-сторінок безпечнішим. Раніше будь-який веб-сайт міг пропонувати вам додати розширення у веб-переглядач. В останніх версіях Google Chrome ви маєте чітко вказати, що хочете встановити ці розширення, додавши їх на сторінці "Розширення". <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Розблокувати</translation>
+<translation id="9116909380156770361">Перенесення файлу в розташування <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Кодек</translation>
 <translation id="9130775360844693113">Учасники, які мають доступ до розташування "<ph name="DESTINATION_NAME" />", отримають доступ до цих елементів.</translation>
 <translation id="9131598836763251128">Виберіть один або декілька файлів</translation>
@@ -950,6 +970,7 @@
 <translation id="943972244133411984">Змінено користувачем</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>
 <translation id="947144732524271678">Вибрано елементи (<ph name="ENTRY_COUNT" />): від <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Згідно з правилом адміністратора заборонено:</translation>
 <translation id="965477715979482472">Англійська (Південна Африка)</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Файл із назвою "<ph name="FILE_NAME" />" уже існує. Замінити його?</translation>

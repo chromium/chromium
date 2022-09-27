@@ -228,6 +228,7 @@
 <translation id="3016566519832145558">Tahadhari: Faili hizi ni za muda na huenda zikafutwa kiotomatiki ili upate nafasi zaidi ya hifadhi kwenye diski.</translation>
 <translation id="3029114385395636667">Washa kipengele cha Hati za Google Nje ya Mtandao ili Hati, Majedwali na Slaidi za Google zipatikane nje ya mtandao.</translation>
 <translation id="303198083543495566">Jiografia</translation>
+<translation id="3044404008258011032">Ili urejeshe vipengee hivi, buruta uvipeleke kwenye folda mpya iliyo nje ya tupio. Folda ya awali " <ph name="PARENT_FOLDER_NAME" />" ya vipengee hivi imefutwa.</translation>
 <translation id="3047197340186497470">Mbinu ya Dayi ya kuingiza data ya Kichina</translation>
 <translation id="3067790092342515856">Faili za Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -345,6 +346,7 @@
 <translation id="4057991113334098539">Inawashwa...</translation>
 <translation id="4092890906744441904">Kiayalandi</translation>
 <translation id="4124935795427217608">Farasi mwenye pembe</translation>
+<translation id="4131235941541910880">Hamishia kwenye tupio vipengee ambavyo huvihitaji</translation>
 <translation id="4157569377477607576">Sera ya msimamizi haipendekezi:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> imehamishwa.</translation>
 <translation id="4176286497474237543">Safisha tupio sasa</translation>
@@ -440,8 +442,10 @@
 <translation id="485316830061041779">Kijerumani</translation>
 <translation id="4867079195717347957">Bofya ili upange safu wima katika mpangilio wa kushuka.</translation>
 <translation id="4873265419374180291">Baiti <ph name="NUMBER_OF_BYTES" /></translation>
+<translation id="4874569719830985133">Futa kabisa</translation>
 <translation id="4880214202172289027">Kitelezi cha sauti</translation>
 <translation id="4881695831933465202">Fungua</translation>
+<translation id="4891091358278567964">Ili urejeshe vipengee hivi, buruta uvipeleke kwenye folda mpya iliyo nje ya tupio. Folda za awali za vipengee hivi zimefutwa.</translation>
 <translation id="4900532980794411603">Shiriki na Parallels Desktop</translation>
 <translation id="4902546322522096650">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Unganisha</translation>
 <translation id="4906580650526544301">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Betri ya Simu <ph name="BATTERY_STATUS" />%, Maelezo</translation>
@@ -498,6 +502,7 @@
         <ph name="MARKUP_7" />Shiriki, unda na ushirikiane<ph name="MARKUP_8" />
         kwenye faili na wengine, vyote mahali pamoja.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Faili zilizorejeshwa kutoka Hifadhi ya Google</translation>
+<translation id="5278111733643988471">Ili urejeshe kipengee hiki, buruta ukipeleke kwenye folda iliyo nje ya tupio. Folda ya awali "<ph name="PARENT_FOLDER_NAME" />" ya kipengee hiki imefutwa.</translation>
 <translation id="5286194356314741248">Inachanganua</translation>
 <translation id="5288441970121584418">Baga</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -511,6 +516,7 @@
 <translation id="535792325654997756">Mtu aliye na paka</translation>
 <translation id="5358764674931277">Kasi ya picha</translation>
 <translation id="5363339716524495120">Lugha ya kuweka data ni Kichina</translation>
+<translation id="5364067326287025678">Hakuna kipengee chochote kwenye tupio</translation>
 <translation id="5368191757080475556">Shiriki folda na Linux</translation>
 <translation id="5402367795255837559">Breli</translation>
 <translation id="5411472733320185105">Usitumie mipangilio ya proksi kwa watumiaji na vikoa hivi:</translation>
@@ -780,6 +786,7 @@
 <translation id="7711920809702896782">Maelezo ya picha</translation>
 <translation id="7724603315864178912">Kata</translation>
 <translation id="7732111077498238432">Mtandao unadhibitiwa na sera</translation>
+<translation id="7736003208887389532">Ungependa kufuta kabisa faili hizi?</translation>
 <translation id="7748626145866214022">Chaguo zaidi zinapatikana kwenye upau wa shughuli. Bonyeza Alt + A ili uangazie upau wa shughuli.</translation>
 <translation id="7760449188139285140">Mbinu ya Wubi ya kuingiza data ya Kichina</translation>
 <translation id="7765158879357617694">Sogeza</translation>
@@ -841,6 +848,7 @@
 <translation id="8249296373107784235">Ghairi</translation>
 <translation id="8250690786522693009">Kilatini</translation>
 <translation id="8250920743982581267">Hati</translation>
+<translation id="8255595130163158297">Vipengee vyote vilivyopo kwenye tupio vitafutwa na hutaweza kuvirejesha.</translation>
 <translation id="8261506727792406068">Futa</translation>
 <translation id="8261561378965667560">Mbinu ya Array ya kuingiza data ya Kichina</translation>
 <translation id="8262872909443689080">Sera ya msimamizi</translation>
@@ -918,6 +926,7 @@
 <translation id="8857149712089373752">Kinepali kwenye kibodi ya Fonetiki</translation>
 <translation id="8860454412039442620">Lahajedwali la Excel</translation>
 <translation id="8866284467018526531">Unukuzi wa mfumo wa kuandika Kiarabu</translation>
+<translation id="8873014196523807561">Ili urejeshe vipengee hivi, buruta uvipeleke kwenye folda mpya. Folda za awali za baadhi ya vipengee hivi zimefutwa.</translation>
 <translation id="8874184842967597500">Hujaunganishwa</translation>
 <translation id="8900820606136623064">Kihungari</translation>
 <translation id="8903931173357132290">Kuhitimu</translation>

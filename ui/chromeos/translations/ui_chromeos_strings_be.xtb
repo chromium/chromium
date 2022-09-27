@@ -228,6 +228,7 @@
 <translation id="3016566519832145558">Увага! Гэта часовыя файлы, і яны могуць быць аўтаматычна выдалены для вызвалення месца на дыску.</translation>
 <translation id="3029114385395636667">Каб працаваць з файламі Дакументаў, Табліц і Прэзентацый без падключэння да інтэрнэту, уключыце пашырэнне "Дакументы Google у пазасеткавым рэжыме".</translation>
 <translation id="303198083543495566">Геаграфія</translation>
+<translation id="3044404008258011032">Каб аднавіць гэтыя элементы, перацягніце іх са сметніцы ў новую папку. Папка "<ph name="PARENT_FOLDER_NAME" />", у якім гэтыя элементы знаходзіліся раней, была выдалена.</translation>
 <translation id="3047197340186497470">Кітайская (метад уводу Dayi)</translation>
 <translation id="3067790092342515856">Файлы Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -345,6 +346,7 @@
 <translation id="4057991113334098539">Ідзе актывацыя...</translation>
 <translation id="4092890906744441904">Ірландская</translation>
 <translation id="4124935795427217608">Аднарог</translation>
+<translation id="4131235941541910880">Перамяшчайце непатрэбныя элементы ў сметніцу</translation>
 <translation id="4157569377477607576">Палітыка адміністратара не рэкамендуе наступнае:</translation>
 <translation id="4159731583141908892">Элемент "<ph name="FILE_NAME" />" перамешчаны.</translation>
 <translation id="4176286497474237543">Ачысціць сметніцу</translation>
@@ -440,8 +442,10 @@
 <translation id="485316830061041779">Нямецкая</translation>
 <translation id="4867079195717347957">Каб адсартаваць слупок па ўбыванні, націсніце тут.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> Б</translation>
+<translation id="4874569719830985133">Выдаліць назаўсёды</translation>
 <translation id="4880214202172289027">Рэгулятар гучнасці</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
+<translation id="4891091358278567964">Каб аднавіць гэтыя элементы, перацягніце іх са сметніцы ў новую папку. Папкі, у якіх гэтыя элементы знаходзіліся раней, былі выдалены.</translation>
 <translation id="4900532980794411603">Абагуліць з Parallels Desktop</translation>
 <translation id="4902546322522096650">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцца</translation>
 <translation id="4906580650526544301">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падрабязныя звесткі</translation>
@@ -498,6 +502,7 @@
     <ph name="MARKUP_7" />Стварайце, абагульвайце файлы і працуйце<ph name="MARKUP_8" />
     над імі разам з іншымі – усё ў адным сэрвісе.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Адноўленыя файлы з Google Дыска</translation>
+<translation id="5278111733643988471">Каб аднавіць гэты элемент, перацягніце яго са сметніцы ў новую папку. Папка "<ph name="PARENT_FOLDER_NAME" />", у якім гэты элемент знаходзіўся раней, была выдалена.</translation>
 <translation id="5286194356314741248">Праверка</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5305688511332277257">Нічога не ўсталявана</translation>
@@ -510,6 +515,7 @@
 <translation id="535792325654997756">Чалавек з катамі</translation>
 <translation id="5358764674931277">Частата кадраў</translation>
 <translation id="5363339716524495120">Мова ўводу – кітайская</translation>
+<translation id="5364067326287025678">Сметніца пустая</translation>
 <translation id="5368191757080475556">Абагульванне папкі з сістэмай Linux</translation>
 <translation id="5402367795255837559">Шрыфт Брайля</translation>
 <translation id="5411472733320185105">Не выкарыстоўваць налады проксі-сервера для гэтых хостаў і даменаў:</translation>
@@ -779,6 +785,7 @@
 <translation id="7711920809702896782">Звесткі пра відарыс</translation>
 <translation id="7724603315864178912">Выразаць</translation>
 <translation id="7732111077498238432">Сетка кантралюецца палітыкай</translation>
+<translation id="7736003208887389532">Выдаліць гэтыя файлы назаўсёды?</translation>
 <translation id="7748626145866214022">Дадатковыя варыянты даступныя ў радку дзеянняў. Каб перайсці да радка дзеянняў, націсніце спалучэнне клавіш "Alt + A".</translation>
 <translation id="7760449188139285140">Кітайская (раскладка Wubi)</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
@@ -840,6 +847,7 @@
 <translation id="8249296373107784235">Скасаваць</translation>
 <translation id="8250690786522693009">Лацініца</translation>
 <translation id="8250920743982581267">Дакументы</translation>
+<translation id="8255595130163158297">Усе элементы, якія знаходзяцца ў сметніцы, будуць выдалены без магчымасці аднаўлення.</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8261561378965667560">Кітайская (структурны метад уводу)</translation>
 <translation id="8262872909443689080">Палітыка адміністратара</translation>
@@ -917,6 +925,7 @@
 <translation id="8857149712089373752">Непальская (фанетычная раскладка)</translation>
 <translation id="8860454412039442620">Электронная табліца Excel</translation>
 <translation id="8866284467018526531">Арабская (транслітарацыя)</translation>
+<translation id="8873014196523807561">Каб аднавіць гэтыя элементы, перацягніце іх у новую папку. Папкі, у якіх некаторыя з гэтых элементаў знаходзіліся раней, былі выдалены.</translation>
 <translation id="8874184842967597500">Не падключана</translation>
 <translation id="8900820606136623064">Венгерская</translation>
 <translation id="8903931173357132290">Выпускнік</translation>

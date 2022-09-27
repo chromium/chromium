@@ -175,6 +175,7 @@
 <translation id="2500392669976258912">Gujarati (phonetic)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Scan</translation>
+<translation id="252641322760726369">Touch &amp; hold a file and tap <ph name="ICON" />, and select '<ph name="PIN_COMMAND" />' for quick access to your files in shelf.</translation>
 <translation id="2534460670861217804">Secure HTTP Proxy</translation>
 <translation id="2541377937973966830">The contents of this folder are read-only. Some activities are not supported.</translation>
 <translation id="2542049655219295786">Google table</translation>
@@ -347,6 +348,7 @@
 <translation id="4092890906744441904">Irish</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Move items that you don't need to the bin</translation>
+<translation id="4153015322587141338">Right-click a file, and select '<ph name="PIN_COMMAND" />' for quick access to your files in shelf.</translation>
 <translation id="4157569377477607576">Administrator policy doesn't recommend:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> moved.</translation>
 <translation id="4176286497474237543">Empty bin now</translation>

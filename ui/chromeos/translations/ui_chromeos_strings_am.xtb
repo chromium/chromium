@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" />ን በመቅዳት ላይ</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="1190144681599273207">ይህን ፋይል ማምጣት <ph name="FILE_SIZE" /> አካባቢ የተንቀሳቃሽ ውሂብ ይጠቀማል።</translation>
+<translation id="1194390763418645112">በ<ph name="RESTRICTED_DESTINATIONS" /> የፋይል መዳረሻ</translation>
 <translation id="1201402288615127009">ቀጣይ</translation>
 <translation id="1209796539517632982">የራስ-ሰር ስም አገልጋዮች</translation>
 <translation id="1210831758834677569">ላኦኛ</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome መሣሪያዎች</translation>
 <translation id="1572585716423026576">እንደ ልጣፍ አዘጋጅ</translation>
 <translation id="1576937952766665062">በባንግላ ቋንቋ ፊደል መጻፍ</translation>
+<translation id="1577977504532381335">የአስተዳዳሪ መመሪያን ይገምግሙ</translation>
 <translation id="158849752021629804">የቤት አውታረ መረብ ያስፈልጋል</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ፔባ</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">የምስል ጥራት</translation>
 <translation id="1972984168337863910">የፋይሎች ግብረመልስ ፓነሎችን ዘርጋ</translation>
 <translation id="1995337122023280937">ወደ የፋይል ቦታ ሂድ</translation>
+<translation id="1999709132469742660">በሁሉም ዩአርኤሎች የፋይል መዳረሻ</translation>
 <translation id="2001796770603320721">በDrive ውስጥ ያስተዳድሩ</translation>
 <translation id="2009067268969781306">አንጻፊን መቅረጽ በላዩ ላይ ያለን ሁሉንም ውሂብ ይሰርዛል። ይህ እርምጃ ሊቀለበስ አይችልም።</translation>
 <translation id="2025955442973426285">ትግርኛ</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">ቡና የያዘ ሰው</translation>
 <translation id="2251368349685848079">ከመጣያ ወደነበረበት መልስ</translation>
 <translation id="2282155092769082568">የራስ-ውቅር ዩአርኤል፦</translation>
+<translation id="2284767815536050991">መወገድ የሚችል ማከማቻ</translation>
 <translation id="2288278176040912387">የሙዚቃ ማጫወቻ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ፋይሎችን በመክፈት ላይ።</translation>
 <translation id="2303301624314357662">ፋይል <ph name="FILE_NAME" />ን በመክፈት ላይ።</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">አይርላንድኛ</translation>
 <translation id="4124935795427217608">ዩኒኮርን</translation>
 <translation id="4131235941541910880">የማያስፈልጉዎትን ንጥሎች ወደ መጣያ ይውሰዷቸው</translation>
+<translation id="4157569377477607576">የአስተዳዳሪ መመሪያ የሚከተሉትን አይመክርም፦</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ተወስደዋል።</translation>
 <translation id="4176286497474237543">የቆሻሻ ማጠራቀሚያውን አሁኑኑ አጽዳ</translation>
 <translation id="4186579485882418952">ከመስመር ውጭን አንቃ</translation>
@@ -507,6 +512,7 @@
 <translation id="5323213332664049067">የላቲን አሜሪካ</translation>
 <translation id="5330145655348521461">እነዚህ ፋይሎች በተለየ ዴስክቶፕ ላይ ተከፍተዋል። ለማየት ወደ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ይውሰዱት።</translation>
 <translation id="5330512191124428349">መረጃ ያግኙ</translation>
+<translation id="5337538975554986899">ከ<ph name="NON_RESTRICTED_DESTINATIONS" /> ውጪ በሁሉም ዩአርኤሎች የፋይል መዳረሻ</translation>
 <translation id="535792325654997756">ድመቶች ያሉት ሰው</translation>
 <translation id="5358764674931277">የክፈፍ ፍጥነት</translation>
 <translation id="5363339716524495120">የግቤት ቋንቋ ቻይንኛ ነው</translation>
@@ -532,6 +538,7 @@
 <translation id="5533102081734025921">የ<ph name="IMAGE_TYPE" /> ምስል</translation>
 <translation id="5534520101572674276">መጠንን በማስላት ላይ</translation>
 <translation id="554153475311314364">በግሪክ ቋንቋ ፊደል መጻፍ</translation>
+<translation id="5580591966435005537">ምናባዊ ማሽን</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">የሥርዓተ ነጥብ ስፋት ሙሉ ነው</translation>
 <translation id="5602622065581044566">ቡልጋሪያኛ በፎነቲክ ቁልፍ ሰሌዳ</translation>
@@ -592,6 +599,7 @@
 <translation id="61118516107968648">የCSV ጽሁፍ</translation>
 <translation id="6129953537138746214">ባዶ ቦታ</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" />ን በመውሰድ ላይ...</translation>
+<translation id="6133877453787250710">አስተዳዳሪ የሚከተሉትን ይከታተላል፦</translation>
 <translation id="613750717151263950">ጃፓንኛ በአሜሪካ ቁልፍ ሰሌዳ</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />፣ ምንም አውታረ መረብ የለም</translation>
 <translation id="6146563240635539929">ቪዲዮዎች</translation>
@@ -612,6 +620,7 @@
 <translation id="6287852322318138013">ይህን ፋይል የሚከፍቱበት መተግበሪያ ይምረጡ</translation>
 <translation id="6295542640242147836">ሲም ቆልፍ</translation>
 <translation id="6296410173147755564">ልክ ያልኾነ PUK</translation>
+<translation id="6308243004861726558">ይህ ፋይል ምስጢራዊ ነው እና ለአስተዳዳሪ መመሪያ ተገዢ ነው። የሚከተሉት የፋይል መዳረሻ እና የማስተላለፍ እርምጃዎች ይተገበራሉ።</translation>
 <translation id="6312403991423642364">ያልታወቀ የአውታረ መረብ ስህተት</translation>
 <translation id="6317608858038767920">ብጁ የስም አገልጋይ <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">የ<ph name="ARCHIVE_TYPE" /> ማህደር</translation>
@@ -842,6 +851,7 @@
 <translation id="8255595130163158297">መጣያ ውስጥ ያሉ ሁሉም ንጥሎች ይሰረዛሉ እና እነሱን ወደነበሩበት መመለስ አይችሉም።</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8261561378965667560">የቻይንኛ ድርድር</translation>
+<translation id="8262872909443689080">የአስተዳዳሪ መመሪያ</translation>
 <translation id="8264024885325823677">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
 <translation id="8269755669432358899">የፋይሎች ግብረመልስ ፓነሎችን ሰብስብ</translation>
 <translation id="8280151743281770066">የአርሜኒያ ፎነቲክ</translation>
@@ -938,6 +948,7 @@
 <translation id="9100610230175265781">የይለፍ ሐረግ ያስፈልጋል</translation>
 <translation id="9110990317705400362">የእርስዎን አሰሳ ይበልጥ ደህንነቱ የተጠበቀ የሚሆንባቸው መንገዶችን በቋሚነት እየፈለግን ነው። ከዚህ ቀደም ማንኛውም ድር ጣቢያ ቅጥያ በአሳሽዎ ላይ እንዲያክሉ ሊጠይቅዎ ይችል ነበር። በቅርቦቹ የGoogle Chrome ስሪቶች ላይ እነዚህን ቅጥያዎች በቅጥያዎች ገጹ በኩል በማከል እንደሚፈልጓቸው በግልጽ ለChrome መንገር አለብዎት። <ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ክፈት</translation>
+<translation id="9116909380156770361">ወደ <ph name="RESTRICTED_COMPONENTS" /> የፋይል ዝውውር</translation>
 <translation id="912419004897138677">ኮዴክ</translation>
 <translation id="9130775360844693113">የ«<ph name="DESTINATION_NAME" />» አባላት የእነዚህ ንጥሎች መዳረሻ ያገኛሉ።</translation>
 <translation id="9131598836763251128">አንድ ወይም ተጨማሪ ፋይሎችን ይምረጡ</translation>
@@ -959,6 +970,7 @@
 <translation id="943972244133411984">የተቀየረው በ</translation>
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>
 <translation id="947144732524271678">ከ<ph name="FROM_ENTRY_NAME" /> እስከ <ph name="TO_ENTRY_NAME" /> ያሉ የ<ph name="ENTRY_COUNT" /> ግቤቶች ክልል ተመርጧል።</translation>
+<translation id="954194396377670556">የአስተዳዳሪ መመሪያ የሚከተሉትን ይከላከላል፦</translation>
 <translation id="965477715979482472">እንግሊዝኛ (ደቡብ አፍሪካ)</translation>
 <translation id="981121421437150478">ከመስመር ውጭ</translation>
 <translation id="988685240266037636">«<ph name="FILE_NAME" />» ፋይል አስቀድሞ አለ። ሊተኩት ይፈልጋሉ?</translation>

@@ -371,6 +371,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Qurilma oʻchirilsinmi?</translation>
 <translation id="3126069444801937830">Yangilash uchun qayta ishga tushiring</translation>
+<translation id="3139382871451988441">Kameraga ruxsatni faolsizlantirish.</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Mobil internet</translation>
 <translation id="3151786313568798007">Joylashuv</translation>
@@ -508,7 +509,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Qurilma tizimini 1 daqiqa ichida eski versiyaga qaytaring}other{Qurilma tizimini # daqiqa ichida eski versiyaga qaytaring}}</translation>
 <translation id="3923494859158167397">Mobil tarmoqlar sozlanmagan</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Tadbirlar yuklanmoqda.</translation>
-<translation id="392627956579011934">Nutq fayllarini oʻrnatish uchun qayta ishga tushirish kerak boʻladi.</translation>
 <translation id="3932043219784172185">Hech qaysi qurilma ulanmagan!</translation>
 <translation id="3934456833412894880">Moslashuvchan quvvatlash yoniq. Batareyaning xizmat muddatini uzaytirish maqsadida batareya 80% gacha quvvatlang hamda zarur boʻlganda uni toʻliq quvvatlashingiz mumkin.</translation>
 <translation id="3943857333388298514">Joylash</translation>
@@ -649,6 +649,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox yoqildi</translation>
 <translation id="4665114317261903604">“Bezovta qilinmasin” tugmasi. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Kameraga ruxsat faolsizlantirilganda bu qurilmadagi barcha kameralar butunlay bloklanadi.</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> yuklab olinmoqda</translation>
 <translation id="4690510401873698237">Javon pastda</translation>
 <translation id="4696813013609194136">Ota-ona kodi bilan qurilmani qulfdan chiqarish</translation>
@@ -667,6 +668,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> e-pochtasi paroli</translation>
 <translation id="4777825441726637019">Play Market</translation>
 <translation id="4778095205580009397">Google Assistenti demo seansda ishlamaydi</translation>
+<translation id="4789348252524569426">Nutq fayllari oʻrnatilmadi. Qurilma yangilanishi lozim. Qurilmani qayta ishga tushirib, yana urining.</translation>
 <translation id="479989351350248267">qidiruv</translation>
 <translation id="4804818685124855865">Uzilish</translation>
 <translation id="4814539958450445987">Kirish ekrani</translation>
@@ -1146,6 +1148,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> hozir mikrofondan foydalanmoqda</translation>
 <translation id="7561982940498449837">Menyuni yopish</translation>
 <translation id="7564874036684306347">Oynalarni boshqa ish stoliga ko‘chirish oqibatida kutilmagan xatti-harakatlar sodir bo‘lishi mumkin. Bildirishnomalar va muloqot oynalari turli ekranlarda ko‘rsatiladi.</translation>
+<translation id="7567076708801803118">Bu qurilmada kameraga ruxsat faolsizlantirilsinmi?</translation>
 <translation id="7569509451529460200">Brayl yozuvi va ChromeVox yoqildi</translation>
 <translation id="7573585051776738856">Faol oyna oʻngga mahkamlandi.</translation>
 <translation id="7579778809502851308">Ekranni suratga olish</translation>

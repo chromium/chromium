@@ -371,6 +371,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Shut down device?</translation>
 <translation id="3126069444801937830">Restart to update</translation>
+<translation id="3139382871451988441">Turn off camera access.</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Mobile data</translation>
 <translation id="3151786313568798007">Orientation</translation>
@@ -508,7 +509,6 @@ Connect your device to power.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Change device to previous version within 1 minute}other{Change device to previous version within # minutes}}</translation>
 <translation id="3923494859158167397">No mobile networks set up</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Loading events.</translation>
-<translation id="392627956579011934">Restart needed to install speech files.</translation>
 <translation id="3932043219784172185">No device connected</translation>
 <translation id="3934456833412894880">Adaptive charging is on. Your battery will stay at 80% to extend battery life, and fully charge when you need it.</translation>
 <translation id="3943857333388298514">Paste</translation>
@@ -649,6 +649,7 @@ Connect your device to power.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox enabled</translation>
 <translation id="4665114317261903604">Toggle Do Not Disturb. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Turn off the camera access on this device to block all cameras all the time.</translation>
 <translation id="4667099493359681081">Downloading <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Shelf on bottom</translation>
 <translation id="4696813013609194136">Unlock device with parent code</translation>
@@ -667,6 +668,7 @@ Connect your device to power.</translation>
 <translation id="4776917500594043016">Password for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">The Google Assistant is not available in a demo session.</translation>
+<translation id="4789348252524569426">Can't install speech files. Your device needs to be updated. Restart your device and try again.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Disconnect</translation>
 <translation id="4814539958450445987">Login Screen</translation>
@@ -1146,6 +1148,7 @@ New install</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> is currently using your microphone</translation>
 <translation id="7561982940498449837">Close menu</translation>
 <translation id="7564874036684306347">Moving windows to another desktop may result in unexpected behaviour. Subsequent notifications, windows and dialogues may be split between desktops.</translation>
+<translation id="7567076708801803118">Do you want to turn off the camera access on this device?</translation>
 <translation id="7569509451529460200">Braille and ChromeVox are enabled</translation>
 <translation id="7573585051776738856">Active window docked on right.</translation>
 <translation id="7579778809502851308">Screen capture</translation>

@@ -1615,6 +1615,7 @@
 <translation id="2468178265280335214">Сенсорлық тақтаны айналдыруды жылдамдату</translation>
 <translation id="2468205691404969808">Бұл беттерді ашпасаңыз да, cookie файлдарын пайдаланып, параметрлерді сақтап қалады</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
+<translation id="2468470085922875120">Сенімді құпия сөздерді пайдаланып жатырсыз.</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 қойынды}other{<ph name="GROUP_TITLE" /> – # қойынды}}</translation>
 <translation id="2469141124738294431">Виртуалдық машина күйі</translation>
 <translation id="2469259292033957819">Ешқандай принтер сақталмаған.</translation>
@@ -1953,6 +1954,7 @@
 <translation id="2783321960289401138">Таңбаша жасау…</translation>
 <translation id="2783829359200813069">Шифрлау түрлерін таңдаңыз</translation>
 <translation id="2783952358106015700">Қауіпсіздік кілтін <ph name="APP_NAME" /> қолданбасымен пайдаланыңыз</translation>
+<translation id="2785267875302712148">Құпия сөздерді тексеру</translation>
 <translation id="2785873697295365461">Файл сипаттауыштары</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Браузерді пайдаланудың жергілікті деректері (бетбелгілер, құпия сөздер, браузерді пайдалану тарихы және т.б.) тұра берсін.</translation>
@@ -2028,6 +2030,7 @@
 <translation id="2844169650293029770">USB-C құрылғысы (сол жақ алдыңғы порты)</translation>
 <translation id="2844809857160214557">Баспа жұмыстарын көру және басқару</translation>
 <translation id="2845382757467349449">Әрқашан бетбелгілер жолағын көрсету</translation>
+<translation id="284581348330507117">Бірегей құпия сөздер жасаңыз.</translation>
 <translation id="284805635805850872">Зиян бағдарламалық құрал өшірілсін бе?</translation>
 <translation id="2849035674501872372">Іздеу</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2179,6 +2182,7 @@
 <translation id="2985348301114641460">Әкімшіңізге "<ph name="EXTENSION_NAME" />" орнату туралы сұрау жіберу керек пе?</translation>
 <translation id="2987620471460279764">Басқа құрылғылардан келген мәтін</translation>
 <translation id="2988018669686457659">Қосалқы рендеринг құралы</translation>
+<translation id="2988328607561082373">Ешқандай құпия сөзді қайта пайдаланып жатқан жоқсыз.</translation>
 <translation id="2989123969927553766">Тінтуірдің айналдыруын жылдамдату</translation>
 <translation id="2989474696604907455">тіркелмеген</translation>
 <translation id="2989786307324390836">DER кодталған екілік, бір сертификат</translation>
@@ -2207,6 +2211,7 @@
 <translation id="3009178788565917040">Шығыс</translation>
 <translation id="3009300415590184725">Ұялы деректер қызметін орнату процесінен бас тарту қажет пе?</translation>
 <translation id="3009779501245596802">Индекстелген дерекқорлар</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Құпия сөздеріңіз сенімді.}=1{{COUNT} оңай құпия сөз бар.}other{{COUNT} оңай құпия сөз бар.}}</translation>
 <translation id="3010279545267083280">Құпия сөз жойылды</translation>
 <translation id="3010389206479238935">Күштеп ашу</translation>
 <translation id="3011384993885886186">Жылы сұр</translation>
@@ -3160,7 +3165,6 @@
 <translation id="3924487862883651986">Оларды тексеру үшін URL сілтемелерін "Қауіпсіз шолу" функциясына жібереді. Сонымен қатар жаңа қауіптерді анықтауға көмектесу үшін беттердің шағын үлгісін, жүктеп алынған файлдарды, кеңейтім әрекетін және жүйе туралы ақпаратты жібереді. Google қолданбаларында сізді қорғау үшін, аккаунтқа кірген кезде, деректердің сілтемелерін уақытша байланыстырады.</translation>
 <translation id="3925573269917483990">Камера:</translation>
 <translation id="3926002189479431949">Smart Lock телефоны өзгертілді</translation>
-<translation id="392627956579011934">Сөз файлдарын орнату үшін құрылығыны өшіріп қосу керек.</translation>
 <translation id="3927932062596804919">Тыйым салу</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" /> өзгерістері сақталсын ба?</translation>
 <translation id="3928659086758780856">Сия азайды.</translation>
@@ -4413,6 +4417,7 @@
 <translation id="5153234146675181447">Телефонды ұмыту</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> кеңейтілген параметрлері</translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Ешқандай құпия сөз сақталмаған.}=1{{COUNT} сайттың құпия сөздері тексерілген.}other{{COUNT} сайт пен қолданбаның құпия сөздері тексерілген.}}</translation>
 <translation id="5154702632169343078">Тақырыбы</translation>
 <translation id="5155327081870541046">Мекенжай жолағына іздегіңіз келген сайттың жылдам пәрменін (мысалы, "@bookmarks") енгізіңіз. Содан кейін қажетті перне тіркесімін басып, ізделетін сөзді енгізіңіз.</translation>
 <translation id="5156638757840305347">Курсор шыққанда не жылжығанда ерекшеленіп тұрады.</translation>
@@ -4993,6 +4998,7 @@
 <translation id="5713158217420111469"><ph name="DEVICE" /> құрылғысына жалғанған</translation>
 <translation id="5713960379473463904">Бос орын енгізу стилі</translation>
 <translation id="5715711091495208045">Плагин делдалы: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Оларды тез арада өзгертіп тастауыңыз керек.</translation>
 <translation id="5719603411793408026">Әдепкі іздеу жүйелері</translation>
 <translation id="5719854774000914513">Сайттар HID құрылғыларына қосылуға рұқсат сұрайды</translation>
 <translation id="572155275267014074">Android параметрлері</translation>
@@ -6450,6 +6456,7 @@
 <translation id="7098447629416471489">Басқа сақталған іздеу жүйелері осында шығады</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Қолданбаны жою}other{Қолданбаларды жою}}</translation>
 <translation id="7099337801055912064">Үлкен PPD файлын жүктеу мүмкін емес. Көлемі 250 Кб-тан аспауы керек.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Ұрланған құпия сөздер жоқ.}=1{{COUNT} құпия сөз ұрланған.}other{{COUNT} құпия сөз ұрланған.}}</translation>
 <translation id="7102687220333134671">Автоматты жаңарту қосулы</translation>
 <translation id="7102832101143475489">Сұрау уақыты өтіп кетті</translation>
 <translation id="710640343305609397">Желі параметрлерін ашу</translation>
@@ -7394,6 +7401,7 @@
 Негізгі файлыңызды қауіпсіз жерде сақтаңыз. Ол кеңейтімнің жаңа нұсқаларын жасау үшін қажет.</translation>
 <translation id="8002274832045662704">Принтердің қосымша конфигурациясы</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> бұдан былай қолжетімді емес.</translation>
+<translation id="8004092996156083991">Құпия сөздеріңіз ұрланса, сізге хабарлаймыз.</translation>
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> хостына буферді көруге әрқашан рұқсат беру</translation>
 <translation id="8006630792898017994">Бос орын немесе Tab пернесі</translation>
@@ -7892,6 +7900,7 @@
 <translation id="8470513973197838199"><ph name="ORIGIN" /> сайты үшін құпия сөздер сақталды</translation>
 <translation id="8471525937465764768">Сайттар әдетте құжатты басып шығару немесе жад құрылғысына сақтау сияқты функциялар үшін USB құрылғыларына қосылады</translation>
 <translation id="8471959340398751476">Жеңілдіктер өшірулі. Оларды арнаулы мәзірден қосуыңызға болады.</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Құпия сөздеріңіз қайталанбайды}=1{{COUNT} құпия сөз бұрын қолданылған}other{{COUNT} құпия сөз бұрын қолданылған}}</translation>
 <translation id="8472623782143987204">жабдық қажет</translation>
 <translation id="8473863474539038330">Мекенжайлар және басқа ақпарат</translation>
 <translation id="8475313423285172237">Компьютеріңіздегі басқа бір бағдарлама кеңейтім қосты, ол Chrome жұмысын өзгертуі мүмкін.</translation>
@@ -8371,6 +8380,7 @@
 <translation id="8940081510938872932">Компьютеріңіз қазір тым көп әрекетті орындауда. Кейінірек қайталап көріңіз.</translation>
 <translation id="8940381019874223173">Google Photos-дан</translation>
 <translation id="8941173171815156065">"<ph name="PERMISSION" />" рұқсатын қайтарып алу</translation>
+<translation id="894191600409472540">Күрделі құпия сөздер жасаңыз.</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Батарея жылдамырақ пайдаланылады (қазір: <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Белгіше өлшемі</translation>
@@ -8594,6 +8604,7 @@
 <translation id="9140067245205650184">Қолдау көрсетілмеген элемент жалаушасы қолданылуда: <ph name="BAD_FLAG" />. Тұрақтылық пен қауіпсіздікке зиян келеді.</translation>
 <translation id="9142637293078737510">Сурет атауы</translation>
 <translation id="9143298529634201539">Ұсынысты өшіру керек пе?</translation>
+<translation id="9143922477019434797">Құпия сөздеріңізді қорғаңыз</translation>
 <translation id="9147392381910171771">&amp;Опциялар</translation>
 <translation id="9148058034647219655">Шығу</translation>
 <translation id="9148126808321036104">Қайта кіру</translation>

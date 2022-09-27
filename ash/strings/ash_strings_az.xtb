@@ -507,7 +507,6 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="3922427723338465344">{0,plural, =1{1 dəqiqə ərzində cihazı əvvəlki versiyaya dəyişdirin}other{# dəqiqə ərzində cihazı əvvəlki versiyaya dəyişdirin}}</translation>
 <translation id="3923494859158167397">Mobil şəbəkələr ayarlanmayıb</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Tədbirlər yüklənir.</translation>
-<translation id="392627956579011934">Nitq fayllarını quraşdırmaq üçün yenidən başlatmaq tələb olunur.</translation>
 <translation id="3932043219784172185">Qoşulmuş cihaz yoxdur</translation>
 <translation id="3934456833412894880">Uyğunlaşan şarj aktivdir. Batareyanın ömrünü uzatmaq üçün batareyanız 80% olaraq qalacaq və ehtiyac duyduğunuz zaman tam şarj ediləcək.</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
@@ -1126,6 +1125,7 @@ Yeni quraşdırma</translation>
 <translation id="746232733191930409">Ekran yazılması rejimi</translation>
 <translation id="7466449121337984263">Sensora toxunun</translation>
 <translation id="7477793887173910789">Musiqi, video və daha çoxuna nəzarət edin</translation>
+<translation id="7490360161041035804">Önəmli faylları, o cümlədən Google Disk fayllarını bərkidə bilərsiniz. Bərkitmək üçün kursoru elementin üzərinə gətirin və ya Faylları açın və elementi sağ düymə ilə klikləyin.</translation>
 <translation id="7497767806359279797">Dil və klaviatura seçin</translation>
 <translation id="7508690557411636492">Keçən ay açılıb</translation>
 <translation id="7509246181739783082">Kimliyinizi doğrulayın</translation>
@@ -1222,6 +1222,7 @@ Yeni quraşdırma</translation>
 <translation id="7982789257301363584">Şəbəkə</translation>
 <translation id="7984197416080286869">Həddindən çox barmaq izi cəhdi</translation>
 <translation id="798779949890829624">Bu ayar admininiz tərəfindən idarə olunur</translation>
+<translation id="799296642788192631">Önəmli faylları bərkidə bilərsiniz. Bərkitmək üçün kursoru elementin üzərinə gətirin və ya Faylları açın və elementi sağ düymə ilə klikləyin.</translation>
 <translation id="7994370417837006925">Çoxsaylı giriş</translation>
 <translation id="7995804128062002838">Skrinşot çəkmək alınmadı</translation>
 <translation id="8000066093800657092">Şəbəkə yoxdur</translation>

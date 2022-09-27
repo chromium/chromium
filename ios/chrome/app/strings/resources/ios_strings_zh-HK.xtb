@@ -424,6 +424,7 @@
 <translation id="4536418791685807335">請嘗試再次登入。</translation>
 <translation id="4540780316273593836">發生錯誤</translation>
 <translation id="457386861538956877">更多語言…</translation>
+<translation id="4588014171431912783">系統會根據上次的備份記錄還原同步處理設定。<ph name="BEGIN_LINK" />查看可以同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">鍵盤</translation>
 <translation id="4606247758155004938">您的瀏覽器由機構管理。</translation>
 <translation id="461440297010471931">目前嘅搜尋引擎係 Google</translation>
@@ -701,6 +702,7 @@
 <translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>
 <translation id="6620279676667515405">取消</translation>
 <translation id="6624219055418309072">在無痕模式中封鎖</translation>
+<translation id="6625830436658400045">系統會根據上次的備份記錄還原同步處理設定。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />選擇要同步的資料。</translation>
 <translation id="6628106477656132239">到期日無效</translation>
 <translation id="6634432609054530164">您的機構已關閉無痕模式</translation>
 <translation id="6638511529934826365">縮放文字…</translation>

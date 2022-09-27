@@ -228,6 +228,7 @@
 <translation id="3016566519832145558">सावधान: या फाइल तात्पुरत्या आहेत आणि डिस्कवरील जागा मोकळी करण्यासाठी त्या आपोआप हटवल्या जाऊ शकतात.</translation>
 <translation id="3029114385395636667">Docs, Sheets आणि Slides ऑफलाइन उपलब्ध होण्यासाठी Google Docs Offline हे सुरू करा.</translation>
 <translation id="303198083543495566">भूगोल</translation>
+<translation id="3044404008258011032">हे आयटम रिस्टोअर करण्यासाठी, ते ट्रॅशच्या बाहेरील नवीन फोल्डरमध्ये ड्रॅग करा. या आयटमसाठीचे मूळ फोल्डर "<ph name="PARENT_FOLDER_NAME" />" हटवले गेले आहे.</translation>
 <translation id="3047197340186497470">चीनी दाई</translation>
 <translation id="3067790092342515856">Windows फाइल</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -345,6 +346,7 @@
 <translation id="4057991113334098539">सक्रिय करीत आहे...</translation>
 <translation id="4092890906744441904">आयरिश</translation>
 <translation id="4124935795427217608">युनिकॉर्न</translation>
+<translation id="4131235941541910880">तुम्हाला नको असलेले आयटम हे ट्रॅश मध्ये हलवा</translation>
 <translation id="4157569377477607576">अ‍ॅडमिनिस्ट्रेटर धोरणाची शिफारस केली जात नाही:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> हलवला.</translation>
 <translation id="4176286497474237543">आता ट्रॅश रिकामा करा</translation>
@@ -440,8 +442,10 @@
 <translation id="485316830061041779">जर्मन</translation>
 <translation id="4867079195717347957">स्तंभाची उतरत्या क्रमाने क्रमवारी लावण्यासाठी क्लिक करा.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> बाइट</translation>
+<translation id="4874569719830985133">कायमस्वरूपी हटवा</translation>
 <translation id="4880214202172289027">व्हॉल्यूम स्लायडर</translation>
 <translation id="4881695831933465202">उघडा</translation>
+<translation id="4891091358278567964">हे आयटम रिस्टोअर करण्यासाठी, ते ट्रॅशच्या बाहेरील नवीन फोल्डरमध्ये ड्रॅग करा. या आयटमसाठीची मूळ फोल्डर ही हटवली गेली आहेत.</translation>
 <translation id="4900532980794411603">Parallels Desktop सोबत शेअर करा</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करा</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, फोन बॅटरी <ph name="BATTERY_STATUS" />%, तपशील</translation>
@@ -498,6 +502,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <ph name="MARKUP_7" />फाइलवर इतरांसह सर्व एकाच ठिकाणी<ph name="MARKUP_8" />
 शेअर करा, तयार करा आणि सहयोग करा.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ड्राइव्ह वरून पुनर्प्राप्त केलेल्‍या फाइल</translation>
+<translation id="5278111733643988471">हा आयटम रिस्टोअर करण्यासाठी, तो ट्रॅशच्या बाहेरील नवीन फोल्डरमध्ये ड्रॅग करा. या आयटमसाठीचे मूळ फोल्डर "<ph name="PARENT_FOLDER_NAME" />" हटवले गेले आहे.</translation>
 <translation id="5286194356314741248">स्‍कॅन करीत आहे</translation>
 <translation id="5288441970121584418">बर्गर</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -511,6 +516,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="535792325654997756">मांजरींसह व्यक्ती</translation>
 <translation id="5358764674931277">फ्रेम दर</translation>
 <translation id="5363339716524495120">इनपुट भाषा चीनी आहे</translation>
+<translation id="5364067326287025678">ट्रॅशमध्ये काहीही नाही</translation>
 <translation id="5368191757080475556">Linux सह फोल्डर शेअर करा</translation>
 <translation id="5402367795255837559">ब्रेल</translation>
 <translation id="5411472733320185105">या होस्ट आणि डोमेनसाठी प्रॉक्सी सेटिंग्ज वापरू नका:</translation>
@@ -780,6 +786,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7711920809702896782">इमेज माहिती</translation>
 <translation id="7724603315864178912">कट करा</translation>
 <translation id="7732111077498238432">नेटवर्क धोरण-नियंत्रित आहे</translation>
+<translation id="7736003208887389532">या फाइल कायमस्वरूपी हटवायच्या आहेत का?</translation>
 <translation id="7748626145866214022">ॲक्शन बारवर आणखी पर्याय उपलब्ध आहेत. ॲक्शन बारवर फोकस करण्यासाठी Alt + A दाबा.</translation>
 <translation id="7760449188139285140">चीनी वुबी</translation>
 <translation id="7765158879357617694">हलवा</translation>
@@ -841,6 +848,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8249296373107784235">रद्द करा</translation>
 <translation id="8250690786522693009">लॅटिन</translation>
 <translation id="8250920743982581267">दस्तऐवज</translation>
+<translation id="8255595130163158297">ट्रॅशमधील सर्व आयटम हे हटवले जातील आणि तुम्हाला ते रिस्टोअर करता येणार नाहीत.</translation>
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8261561378965667560">चीनी ॲरे</translation>
 <translation id="8262872909443689080">अ‍ॅडमिनिस्ट्रेटर धोरण</translation>
@@ -918,6 +926,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8857149712089373752">फोनेटिक कीबोर्डसह नेपाळी</translation>
 <translation id="8860454412039442620">Excel स्प्रेडशीट</translation>
 <translation id="8866284467018526531">अरबी लिप्यंतरण</translation>
+<translation id="8873014196523807561">हे आयटम रिस्टोअर करण्यासाठी, ते नवीन फोल्डरमध्ये ड्रॅग करा. यापैकी काही आयटमची मूळ फोल्डर ही हटवली गेली आहेत.</translation>
 <translation id="8874184842967597500">कनेक्ट नाही</translation>
 <translation id="8900820606136623064">हंगेरियन</translation>
 <translation id="8903931173357132290">पदवीधर</translation>

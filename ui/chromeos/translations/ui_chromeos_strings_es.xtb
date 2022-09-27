@@ -228,6 +228,7 @@
 <translation id="3016566519832145558">Aviso: Estos archivos son temporales y es posible que se eliminen automáticamente para liberar espacio en el disco.</translation>
 <translation id="3029114385395636667">Habilita Documentos de Google sin conexión para que Documentos, Hojas de cálculo y Presentaciones de Google estén disponibles sin conexión.</translation>
 <translation id="303198083543495566">Geografía</translation>
+<translation id="3044404008258011032">Para restaurar estos elementos, arrástralos a una nueva carpeta fuera de la papelera. Se ha eliminado la carpeta original "<ph name="PARENT_FOLDER_NAME" />" de estos elementos.</translation>
 <translation id="3047197340186497470">Chino (Dayi)</translation>
 <translation id="3067790092342515856">Archivos de Windows</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -345,6 +346,7 @@
 <translation id="4057991113334098539">Activando...</translation>
 <translation id="4092890906744441904">Irlandés</translation>
 <translation id="4124935795427217608">Unicornio</translation>
+<translation id="4131235941541910880">Mueve los elementos que no necesites a la papelera</translation>
 <translation id="4157569377477607576">La política del administrador no recomienda:</translation>
 <translation id="4159731583141908892">Se ha movido <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Vaciar la papelera ahora</translation>
@@ -440,8 +442,10 @@
 <translation id="485316830061041779">Alemán</translation>
 <translation id="4867079195717347957">Haz clic para mostrar la columna en orden descendente.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
+<translation id="4874569719830985133">Eliminar definitivamente</translation>
 <translation id="4880214202172289027">Control deslizante de volumen</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4891091358278567964">Para restaurar estos elementos, arrástralos a una nueva carpeta fuera de la papelera. Se han eliminado las carpetas originales de estos elementos.</translation>
 <translation id="4900532980794411603">Compartir con Parallels Desktop</translation>
 <translation id="4902546322522096650">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
 <translation id="4906580650526544301">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, batería del teléfono: <ph name="BATTERY_STATUS" /> %, detalles</translation>
@@ -498,6 +502,7 @@
     <ph name="MARKUP_7" />Comparte y crea archivos<ph name="MARKUP_8" />
     y colabora en archivos con otros usuarios desde un único lugar.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Archivos recuperados de Google Drive</translation>
+<translation id="5278111733643988471">Para restaurar este elemento, arrástralo a una nueva carpeta fuera de la papelera. Se ha eliminado la carpeta original "<ph name="PARENT_FOLDER_NAME" />" de este elemento.</translation>
 <translation id="5286194356314741248">Buscando</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -511,6 +516,7 @@
 <translation id="535792325654997756">Persona con gatos</translation>
 <translation id="5358764674931277">Velocidad de fotogramas</translation>
 <translation id="5363339716524495120">El idioma de entrada es chino</translation>
+<translation id="5364067326287025678">La papelera está vacía</translation>
 <translation id="5368191757080475556">Compartir carpeta con Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">No utilizar la configuración de proxy para estos hosts y dominios:</translation>
@@ -780,6 +786,7 @@
 <translation id="7711920809702896782">Información de la imagen</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7732111077498238432">La red está controlada por políticas</translation>
+<translation id="7736003208887389532">¿Eliminar permanentemente estos archivos?</translation>
 <translation id="7748626145866214022">Hay más opciones disponibles en la barra de acciones. Pulsa Alt + A para seleccionarla.</translation>
 <translation id="7760449188139285140">Chino (Wubi)</translation>
 <translation id="7765158879357617694">Mover</translation>
@@ -841,6 +848,7 @@
 <translation id="8249296373107784235">Anular</translation>
 <translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Documentos</translation>
+<translation id="8255595130163158297">Se eliminarán todos los elementos de la papelera y no podrás restaurarlos.</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8261561378965667560">Chino (conjunto)</translation>
 <translation id="8262872909443689080">Política del administrador</translation>
@@ -918,6 +926,7 @@
 <translation id="8857149712089373752">Nepalí con teclado fonético</translation>
 <translation id="8860454412039442620">Hoja de cálculo de Excel</translation>
 <translation id="8866284467018526531">Árabe (transliteración)</translation>
+<translation id="8873014196523807561">Para restaurar estos elementos, arrástralos a una nueva carpeta. Se han eliminado las carpetas originales de algunos de estos elementos.</translation>
 <translation id="8874184842967597500">No conectado</translation>
 <translation id="8900820606136623064">Húngaro</translation>
 <translation id="8903931173357132290">Graduado</translation>

@@ -228,6 +228,7 @@
 <translation id="3016566519832145558">Vorsicht: Dies sind temporäre Dateien, die möglicherweise automatisch gelöscht werden, um Speicherplatz freizugeben.</translation>
 <translation id="3029114385395636667">Wenn du Google Docs Offline aktivierst, kannst du Dokumente, Tabellen und Präsentationen offline nutzen.</translation>
 <translation id="303198083543495566">Längen- und Breitengrad</translation>
+<translation id="3044404008258011032">Wenn du diese Elemente wiederherstellen möchtest, ziehe sie in einen neuen Ordner außerhalb des Papierkorbs. Der ursprüngliche Ordner „<ph name="PARENT_FOLDER_NAME" />“ für dieses Element wurde gelöscht.</translation>
 <translation id="3047197340186497470">Chinesisch (Dayi)</translation>
 <translation id="3067790092342515856">Windows-Dateien</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -345,6 +346,7 @@
 <translation id="4057991113334098539">Wird aktiviert...</translation>
 <translation id="4092890906744441904">Irisch</translation>
 <translation id="4124935795427217608">Einhorn</translation>
+<translation id="4131235941541910880">Verschiebe nicht benötigte Elemente in den Papierkorb</translation>
 <translation id="4157569377477607576">Gemäß der Administratorrichtlinie wird Folgendes nicht empfohlen:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verschoben.</translation>
 <translation id="4176286497474237543">Papierkorb jetzt leeren</translation>
@@ -440,8 +442,10 @@
 <translation id="485316830061041779">Deutsch</translation>
 <translation id="4867079195717347957">Klicken, um die Spalte in absteigender Reihenfolge zu sortieren.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> Byte</translation>
+<translation id="4874569719830985133">Endgültig löschen</translation>
 <translation id="4880214202172289027">Schieberegler für die Lautstärke</translation>
 <translation id="4881695831933465202">Öffnen</translation>
+<translation id="4891091358278567964">Wenn du diese Elemente wiederherstellen möchtest, ziehe sie in einen neuen Ordner außerhalb des Papierkorbs. Die ursprünglichen Ordner für diese Elemente wurden gelöscht.</translation>
 <translation id="4900532980794411603">Für Parallels Desktop freigeben</translation>
 <translation id="4902546322522096650">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Verbinden</translation>
 <translation id="4906580650526544301">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Details</translation>
@@ -498,6 +502,7 @@
     <ph name="MARKUP_7" />Teile, erstelle und bearbeite<ph name="MARKUP_8" />
     deine Dateien mit anderen an einem zentralen Ort.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Wiederhergestellte Dateien von Google Drive</translation>
+<translation id="5278111733643988471">Wenn du dieses Element wiederherstellen möchtest, ziehe es in einen neuen Ordner außerhalb des Papierkorbs. Der ursprüngliche Ordner „<ph name="PARENT_FOLDER_NAME" />“ für dieses Element wurde gelöscht.</translation>
 <translation id="5286194356314741248">Durchsuchen</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -511,6 +516,7 @@
 <translation id="535792325654997756">Person mit Katzen</translation>
 <translation id="5358764674931277">Framerate</translation>
 <translation id="5363339716524495120">Eingabesprache ist Chinesisch</translation>
+<translation id="5364067326287025678">Der Papierkorb ist leer</translation>
 <translation id="5368191757080475556">Ordner für Linux freigeben</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Proxy-Einstellungen nicht für diese Hosts und Domains verwenden:</translation>
@@ -780,6 +786,7 @@
 <translation id="7711920809702896782">Bildinformationen</translation>
 <translation id="7724603315864178912">Ausschneiden</translation>
 <translation id="7732111077498238432">Das Netzwerk ist richtliniengesteuert</translation>
+<translation id="7736003208887389532">Diese Dateien endgültig löschen?</translation>
 <translation id="7748626145866214022">Auf der Aktionsleiste sind weitere Optionen verfügbar. Drücke Alt + A, um den Fokus auf die Aktionsleiste zu setzen.</translation>
 <translation id="7760449188139285140">Chinesisch (Wubi)</translation>
 <translation id="7765158879357617694">Verschieben</translation>
@@ -841,6 +848,7 @@
 <translation id="8249296373107784235">Abbrechen</translation>
 <translation id="8250690786522693009">Latein</translation>
 <translation id="8250920743982581267">Dokumente</translation>
+<translation id="8255595130163158297">Alle Elemente im Papierkorb werden gelöscht und können nicht wiederhergestellt werden.</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8261561378965667560">Chinesisch (Array)</translation>
 <translation id="8262872909443689080">Administratorrichtlinie</translation>
@@ -918,6 +926,7 @@
 <translation id="8857149712089373752">Nepalesisch mit phonetischer Tastatur</translation>
 <translation id="8860454412039442620">Excel-Tabelle</translation>
 <translation id="8866284467018526531">Arabisch (Transliteration)</translation>
+<translation id="8873014196523807561">Wenn du diese Elemente wiederherstellen möchtest, ziehe sie in einen neuen Ordner. Die ursprünglichen Ordner für einige dieser Elemente wurden gelöscht.</translation>
 <translation id="8874184842967597500">Nicht verbunden</translation>
 <translation id="8900820606136623064">Ungarisch</translation>
 <translation id="8903931173357132290">Absolvent</translation>

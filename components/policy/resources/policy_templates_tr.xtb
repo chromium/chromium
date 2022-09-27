@@ -4958,6 +4958,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Chrome uygulamalarını kimliklerine göre (ör. pjkljhegncpnkpknbcohdijeoejaedia); Android uygulamalarını paket adlarına göre (ör. com.google.android.gm); web uygulamalarını <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> öğesinde kullanılan URL'lerine göre (ör. https://google.com/maps) belirtir.
 
       Ayarlanmadan bırakılması, kullanıcıların başlatıcıdaki sabitlenmiş uygulamalar listesini değiştirmesine izin verir.</translation>
+<translation id="6184385589352532028">Üçüncü taraf Chrome OS kontrolü için Desk API'yi etkinleştirme</translation>
 <translation id="6190367314942602985">Kullanıcı Kimlik bilgilerini bildir</translation>
 <translation id="6191963383731098056">Bu politika, yöneticilere <ph name="PRODUCT_NAME" /> temasının rengini yapılandırma imkanı tanır. Giriş dizesi, "#RRGGBB" biçimine uygun geçerli bir onaltılık renk dizesi olmalıdır.
 
@@ -6811,6 +6812,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Bu politika Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcı <ph name="LACROS_NAME" /> tarayıcıyı kullanamaz.
 
       Bu politika Etkin değerine ayarlanırsa kullanıcı <ph name="LACROS_NAME" /> tarayıcıyı kullanabilir.</translation>
+<translation id="8020222525161221827">Üçüncü taraf Chrome OS kontrolü için Desk API'yi etkinleştirme</translation>
 <translation id="802147957407376460">Ekranı 0 derece döndür</translation>
 <translation id="80243978433618492">URL parametreleriyle ilgili hiçbir filtrelemeye izin verme.</translation>
 <translation id="8025620823136567878">Uluslararası klavye kısayolları, tuşların glifiyle değil klavyedeki yeriyle eşleştirilir.</translation>
@@ -7834,6 +7836,7 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 
       Politika, Devre Dışı değerine ayarlanırsa kayıtlı cihazlar, ses durumunu kaydetmez veya bildirmez.
       İstisna: M95 ve önceki sürümlerde sisteme ait ses seviyesi bilgileri <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> tarafından kontrol edilir.</translation>
+<translation id="9071527533179676468">Politika, Etkin değerine ayarlanırsa üçüncü taraf web uygulamaları, Chrome OS masalarını kontrol etmek için Desk API'yi kullanabilir. Politika ayarlanmaz veya devre dışı bırakılırsa Desk API kullanılamaz.</translation>
 <translation id="9072475476775217730">Politika, Devre Dışı değerine ayarlanırsa <ph name="BLANK_PAGE_NAME" /> sayfasını hedefleyen pop-up'lara, pop-up'ın açılmasını isteyen sayfaya erişim (JavaScript aracılığıyla) izni verilir.
 
       Politika, Etkin değerine ayarlanırsa veya ayarlanmadan bırakılırsa, anchor'da <ph name="REL_OPENER_ATTRIBUTE" /> belirtilmediği sürece <ph name="WINDOW_OPENER_PROPERTY" /> özelliğinin <ph name="NULL_VALUE" /> değerine ayarlanmasına neden olur.

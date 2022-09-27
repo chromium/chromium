@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1005794457625275818">已允許 <ph name="FPS_OWNER" /> 群組中 <ph name="FPS_MEMBERS_COUNT" /> 個網站的 Cookie，包括 <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">在網路上開啟</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="1124090076051167250">這會清除網站或主畫面上的應用程式所儲存的資料和 Cookie (共 <ph name="DATASIZE" />)。</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">是</translation>
 <translation id="1446450296470737166">允許完整控制 MIDI 裝置</translation>
 <translation id="1620510694547887537">攝影機</translation>
+<translation id="1633720957382884102">相關網站</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="1647582022260550163">確定要重設權限，並且清除 Cookie 和網站資料嗎？</translation>
 <translation id="1660204651932907780">允許網站播放音訊 (建議)</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
+<translation id="1005794457625275818">Επιτρέπονται τα cookie για <ph name="FPS_MEMBERS_COUNT" /> ιστοτόπους στην ομάδα <ph name="FPS_OWNER" />, συμπεριλαμβανομένου του <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Άνοιγμα στο διαδίκτυο</translation>
 <translation id="1044891598689252897">Οι ιστότοποι θα λειτουργούν κανονικά</translation>
 <translation id="1124090076051167250">Αυτή η ενέργεια θα διαγράψει <ph name="DATASIZE" /> δεδομένων και cookie που έχουν αποθηκευτεί από ιστοτόπους ή εφαρμογές στην αρχική σας οθόνη.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Ναι</translation>
 <translation id="1446450296470737166">Να επιτρέπεται πλήρης έλεγχος σε MIDI</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
+<translation id="1633720957382884102">Σχετικοί ιστότοποι</translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
 <translation id="1647582022260550163">Είστε βέβαιοι ότι θέλετε να επαναφέρετε τις άδειες και να διαγράψετε τα cookie και τα δεδομένα ιστοτόπου;</translation>
 <translation id="1660204651932907780">Να επιτρέπεται στους ιστοτόπους να αναπαράγουν ήχο (συνιστάται)</translation>

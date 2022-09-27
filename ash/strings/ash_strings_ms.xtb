@@ -508,7 +508,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Tukar peranti kepada versi sebelumnya dalam masa 1 minit}other{Tukar peranti kepada versi sebelumnya dalam masa # minit}}</translation>
 <translation id="3923494859158167397">Tiada rangkaian mudah alih disediakan</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Memuatkan acara.</translation>
-<translation id="392627956579011934">Mulakan semula untuk memasang fail pertuturan.</translation>
 <translation id="3932043219784172185">Tiada peranti disambungkan</translation>
 <translation id="3934456833412894880">Pengecasan mudah suai dihidupkan. Bateri anda akan kekal pada 80% untuk memanjangkan hayat bateri dan mengecas sepenuhnya apabila anda memerlukannya.</translation>
 <translation id="3943857333388298514">Tampal</translation>
@@ -1127,6 +1126,7 @@ Pemasangan baharu</translation>
 <translation id="746232733191930409">Mod rakaman skrin</translation>
 <translation id="7466449121337984263">Sila sentuh penderia</translation>
 <translation id="7477793887173910789">Kawal muzik, video anda dan banyak lagi</translation>
+<translation id="7490360161041035804">Anda boleh menyematkan fail penting, termasuk fail Google Drive. Untuk menyemat, tuding pada item atau buka Fail dan klik kanan item.</translation>
 <translation id="7497767806359279797">Pilih bahasa dan papan kekunci</translation>
 <translation id="7508690557411636492">Dibuka pada bulan lalu</translation>
 <translation id="7509246181739783082">Sahkan identiti anda</translation>
@@ -1223,6 +1223,7 @@ Pemasangan baharu</translation>
 <translation id="7982789257301363584">Rangkaian</translation>
 <translation id="7984197416080286869">Terlalu banyak percubaan cap jari</translation>
 <translation id="798779949890829624">Tetapan ini diurus oleh pentadbir anda</translation>
+<translation id="799296642788192631">Anda boleh menyemat fail penting. Untuk menyemat, tuding pada item atau buka Fail dan klik kanan item.</translation>
 <translation id="7994370417837006925">Log masuk berbilang</translation>
 <translation id="7995804128062002838">Gagal untuk menangkap skrin</translation>
 <translation id="8000066093800657092">Tiada rangkaian</translation>

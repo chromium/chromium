@@ -287,6 +287,7 @@
 <translation id="1291880496936992484">警告：自 <ph name="PRODUCT_NAME" /> 52 版 (將於 2016 年 9 月左右推出) 起，系統將全面移除 RC4，屆時這項政策將停止運作。
 
       如果未設定這項政策或將其設為 False，系統就不會在 TLS 中啟用 RC4 加密套件。您也可以將這項政策設為 True，以保持與過舊伺服器的相容性。這種方法是權宜之計，伺服器應重新設定，才是正確的做法。</translation>
+<translation id="129206366270737897">停用 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 的任何非同步方法。</translation>
 <translation id="1294263471858445589">在無痕模式工作階段和一般工作階段中啟用背景驗證。</translation>
 <translation id="1295737447968372331">在登入畫面上啟用語音輸入功能</translation>
 <translation id="1297182715641689552">使用 .pac Proxy 指令碼</translation>
@@ -1189,6 +1190,7 @@
       如果設定這項政策，使用者將無法變更。如果不設定或將其設為 False，這項政策將不會生效。</translation>
 <translation id="2200698565850397198">設定內建訊息傳遞封鎖清單</translation>
 <translation id="2201555246697292490">設定內建訊息傳遞許可清單</translation>
+<translation id="220157212534775145">在 File System Access API 中重新啟用 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 已淘汰的非同步介面</translation>
 <translation id="2202787915587511214">啟用 NTLMv2</translation>
 <translation id="2204379573346866896">在這個小時內經過的分鐘數。</translation>
 <translation id="2204753382813641270">控制檔案櫃自動隱藏功能</translation>
@@ -1823,6 +1825,10 @@
       如果將這項政策設為停用，系統就不會顯示提示，而且只有列在 AudioCaptureAllowedUrls 清單內的網址才能存取音訊擷取裝置。
 
       注意：這項政策不只影響內建麥克風，也會影響所有音訊輸出裝置。</translation>
+<translation id="2822539450620588684">自 M107 起，系統會同步叫用所有 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法。
+      在 M110 之前，這項政策會重新啟用非同步叫用 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法。
+      如果將這項政策設為啟用，系統會以非同步方式叫用 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法。
+      如果將這項政策設為停用或不予設定，系統會同步叫用所有 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法。</translation>
 <translation id="2823870601012066791"><ph name="PRODUCT_OS_NAME" />用戶端的 Windows 登錄檔位置：</translation>
 <translation id="2824715612115726353">啟用無痕模式</translation>
 <translation id="282870810415075521">允許 JavaScript 在這些網站上使用 JIT</translation>
@@ -2287,6 +2293,7 @@
       如果未設定這項政策，則系統無法更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體。</translation>
 <translation id="3232563711929146405">停用網路服務沙箱</translation>
 <translation id="3232691106293445015">不安全的 HTTP 連線無法使用<ph name="BASIC_AUTH" />驗證；必須採用 HTTPS 連線</translation>
+<translation id="3234863952320884611">啟用非同步叫用 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法</translation>
 <translation id="3235085623859932253"> 如果停用這項政策，使用者將無法透過 PCIe 通道完全連結 Thunderbolt/USB4 周邊裝置。
 
       如果啟用這項政策，使用者便可透過 PCIe 通道完全連結 Thunderbolt/USB4 周邊裝置。

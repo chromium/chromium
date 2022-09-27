@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1005794457625275818">Cookies toegestaan voor <ph name="FPS_MEMBERS_COUNT" /> sites in de groep van <ph name="FPS_OWNER" />, waaronder <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Online openen</translation>
 <translation id="1044891598689252897">Sites werken naar behoren</translation>
 <translation id="1124090076051167250">Hiermee wis je <ph name="DATASIZE" /> aan gegevens en cookies die zijn opgeslagen door sites of apps op je startscherm.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1446450296470737166">Volledig beheer van MIDI-apparaten toestaan</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1633720957382884102">Gerelateerde sites</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1647582022260550163">Weet je zeker dat je de rechten wilt resetten en de cookies en sitegegevens wilt wissen?</translation>
 <translation id="1660204651932907780">Toestaan dat sites geluid afspelen (aanbevolen)</translation>

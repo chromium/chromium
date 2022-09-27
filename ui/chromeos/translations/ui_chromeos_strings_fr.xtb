@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Copie de <ph name="FILE_NAME" /> en cours…</translation>
 <translation id="1178581264944972037">Suspendre</translation>
 <translation id="1190144681599273207">L'opération de récupération de ce fichier consommera environ <ph name="FILE_SIZE" /> de données mobiles.</translation>
+<translation id="1194390763418645112">Accès au fichier pour <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1209796539517632982">Serveurs de noms automatiques</translation>
 <translation id="1210831758834677569">Laotien</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Appareils Chrome</translation>
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1576937952766665062">Bangla (translittération)</translation>
+<translation id="1577977504532381335">Consulter la règle de l'administrateur</translation>
 <translation id="158849752021629804">Réseau domestique requis</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> Po</translation>
 <translation id="1620510694547887537">Caméra</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Résolution de l'image</translation>
 <translation id="1972984168337863910">Développer les panneaux de commentaires sur les fichiers</translation>
 <translation id="1995337122023280937">Accéder à l'emplacement du fichier</translation>
+<translation id="1999709132469742660">Accès au fichier pour toutes les URL</translation>
 <translation id="2001796770603320721">Gérer dans Drive</translation>
 <translation id="2009067268969781306">Le formatage d'une clé entraîne la suppression de toutes les données qui y sont stockées. Cette action est irréversible.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Personne avec un café</translation>
 <translation id="2251368349685848079">Restaurer à partir de la corbeille</translation>
 <translation id="2282155092769082568">URL de configuration automatique :</translation>
+<translation id="2284767815536050991">espace de stockage amovible</translation>
 <translation id="2288278176040912387">Tourne-disque</translation>
 <translation id="2291538123825441971">Ouverture de <ph name="NUMBER_OF_FILES" /> fichiers.</translation>
 <translation id="2303301624314357662">Ouverture du fichier <ph name="FILE_NAME" />.</translation>
@@ -224,6 +228,7 @@
 <translation id="3016566519832145558">Attention : Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque.</translation>
 <translation id="3029114385395636667">Activez Google Docs hors connexion pour rendre vos documents Google Docs, Sheets et Slides disponibles hors connexion.</translation>
 <translation id="303198083543495566">Géographie</translation>
+<translation id="3044404008258011032">Pour restaurer ces éléments, faites-les glisser dans un nouveau dossier hors de la corbeille. Le dossier d'origine de ces éléments, "<ph name="PARENT_FOLDER_NAME" />", a été supprimé.</translation>
 <translation id="3047197340186497470">Chinois (Dayi)</translation>
 <translation id="3067790092342515856">Fichiers Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -341,6 +346,8 @@
 <translation id="4057991113334098539">Activation...</translation>
 <translation id="4092890906744441904">Irlandais</translation>
 <translation id="4124935795427217608">Licorne</translation>
+<translation id="4131235941541910880">Placez dans la corbeille les éléments dont vous n'avez pas besoin</translation>
+<translation id="4157569377477607576">Une règle de l'administrateur déconseille :</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> déplacé.</translation>
 <translation id="4176286497474237543">Vider la corbeille</translation>
 <translation id="4186579485882418952">Activer le mode hors connexion</translation>
@@ -435,8 +442,10 @@
 <translation id="485316830061041779">Allemand</translation>
 <translation id="4867079195717347957">Cliquez pour trier la colonne par ordre décroissant.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> octets</translation>
+<translation id="4874569719830985133">Supprimer définitivement</translation>
 <translation id="4880214202172289027">Curseur de volume</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
+<translation id="4891091358278567964">Pour restaurer ces éléments, faites-les glisser dans un nouveau dossier hors de la corbeille. Les dossiers d'origine de ces éléments ont été supprimés.</translation>
 <translation id="4900532980794411603">Partager avec Parallels Desktop</translation>
 <translation id="4902546322522096650">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
 <translation id="4906580650526544301">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, batterie du téléphone à <ph name="BATTERY_STATUS" /> %, détails</translation>
@@ -493,6 +502,7 @@
     <ph name="MARKUP_7" />Travaillez en groupe, et créez et partagez<ph name="MARKUP_8" />
     des fichiers depuis une seule et même interface.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Fichiers récupérés sur Google Drive</translation>
+<translation id="5278111733643988471">Pour restaurer cet élément, faites-le glisser vers un nouveau dossier hors de la corbeille. Le dossier d'origine de cet élément, "<ph name="PARENT_FOLDER_NAME" />", a été supprimé.</translation>
 <translation id="5286194356314741248">Recherche…</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -502,9 +512,11 @@
 <translation id="5323213332664049067">Espagnol d'Amérique latine</translation>
 <translation id="5330145655348521461">Ces fichiers sont ouverts sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour les afficher.</translation>
 <translation id="5330512191124428349">Lire les informations</translation>
+<translation id="5337538975554986899">Accès au fichier pour toutes les URL, sauf <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Personne avec des chats</translation>
 <translation id="5358764674931277">Fréquence d'images</translation>
 <translation id="5363339716524495120">Langue de saisie : chinois</translation>
+<translation id="5364067326287025678">Corbeille vide</translation>
 <translation id="5368191757080475556">Partager le dossier avec Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Ne pas utiliser les paramètres du proxy pour les hôtes et domaines suivants :</translation>
@@ -526,6 +538,7 @@
 <translation id="5533102081734025921">Fichier image <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Calcul de la taille en cours…</translation>
 <translation id="554153475311314364">Grec (translittération)</translation>
+<translation id="5580591966435005537">machine virtuelle</translation>
 <translation id="5583640892426849032">Retour</translation>
 <translation id="5583664733673201137">Largeur de ponctuation : pleine</translation>
 <translation id="5602622065581044566">Bulgare avec clavier phonétique</translation>
@@ -586,6 +599,7 @@
 <translation id="61118516107968648">Texte CSV</translation>
 <translation id="6129953537138746214">Espace</translation>
 <translation id="6133173853026656527">Transfert du fichier <ph name="FILE_NAME" /> en cours…</translation>
+<translation id="6133877453787250710">L'administrateur surveille :</translation>
 <translation id="613750717151263950">Japonais avec clavier américain</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, aucun réseau disponible</translation>
 <translation id="6146563240635539929">Vidéos</translation>
@@ -606,6 +620,7 @@
 <translation id="6287852322318138013">Sélectionner une application pour ouvrir ce fichier</translation>
 <translation id="6295542640242147836">Verrouiller la carte SIM</translation>
 <translation id="6296410173147755564">PUK incorrect</translation>
+<translation id="6308243004861726558">Ce fichier est confidentiel et soumis à une règle de l'administrateur. Les actions d'accès et de transfert suivantes s'appliquent.</translation>
 <translation id="6312403991423642364">Erreur de réseau inconnue.</translation>
 <translation id="6317608858038767920">Serveur de noms personnalisé <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Archive <ph name="ARCHIVE_TYPE" /></translation>
@@ -771,6 +786,7 @@
 <translation id="7711920809702896782">Informations sur les fichiers image</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7732111077498238432">Le réseau est soumis à des règles</translation>
+<translation id="7736003208887389532">Supprimer définitivement ces fichiers ?</translation>
 <translation id="7748626145866214022">D'autres options sont disponibles dans la barre d'action. Appuyez sur Alt+A pour la sélectionner.</translation>
 <translation id="7760449188139285140">Chinois (Wubi)</translation>
 <translation id="7765158879357617694">Déplacer</translation>
@@ -832,8 +848,10 @@
 <translation id="8249296373107784235">Annuler</translation>
 <translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Documents</translation>
+<translation id="8255595130163158297">Tous les éléments présents dans la corbeille seront supprimés. Vous ne pourrez pas les restaurer.</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8261561378965667560">Chinois (tableau)</translation>
+<translation id="8262872909443689080">Règle de l'administrateur</translation>
 <translation id="8264024885325823677">Ce paramètre est géré par votre administrateur.</translation>
 <translation id="8269755669432358899">Réduire les panneaux de commentaires sur les fichiers</translation>
 <translation id="8280151743281770066">Arménien phonétique</translation>
@@ -908,6 +926,7 @@
 <translation id="8857149712089373752">Népalais avec clavier phonétique</translation>
 <translation id="8860454412039442620">Feuille de calcul Excel</translation>
 <translation id="8866284467018526531">Arabe (translittération)</translation>
+<translation id="8873014196523807561">Pour restaurer ces éléments, faites-les glisser dans un nouveau dossier. Les dossiers d'origine de certains de ces éléments ont été supprimés.</translation>
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8900820606136623064">Hongrois</translation>
 <translation id="8903931173357132290">Diplômé</translation>
@@ -929,6 +948,7 @@
 <translation id="9100610230175265781">Veuillez saisir la phrase secrète.</translation>
 <translation id="9110990317705400362">Nous recherchons constamment à rendre votre navigation plus sûre. Auparavant, vous pouviez être invité à ajouter une extension dans votre navigateur par n'importe quel site Web. Dans les dernières versions de Google Chrome, vous devez explicitement indiquer que vous souhaitez installer une extension en l'ajoutant via la page "Extensions". <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
+<translation id="9116909380156770361">Transfert de fichier vers l'<ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">Les membres de "<ph name="DESTINATION_NAME" />" auront accès à ces éléments.</translation>
 <translation id="9131598836763251128">Sélectionnez un ou plusieurs fichiers</translation>
@@ -950,6 +970,7 @@
 <translation id="943972244133411984">Modifié par</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> éléments sélectionnés, de <ph name="FROM_ENTRY_NAME" /> à <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">La règle de l'administrateur empêche :</translation>
 <translation id="965477715979482472">Anglais (Afrique du Sud)</translation>
 <translation id="981121421437150478">Hors connexion</translation>
 <translation id="988685240266037636">Un fichier intitulé "<ph name="FILE_NAME" />" existe déjà. Voulez-vous le remplacer ?</translation>

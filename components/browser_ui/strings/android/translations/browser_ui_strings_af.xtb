@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1005794457625275818">Webkoekies toegelaat vir <ph name="FPS_MEMBERS_COUNT" /> werwe in die <ph name="FPS_OWNER" />-groep, insluitend <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Maak aanlyn oop</translation>
 <translation id="1044891598689252897">Werwe sal normaalweg werk</translation>
 <translation id="1124090076051167250">Dit sal <ph name="DATASIZE" /> se data en webkoekies uitvee wat deur werwe of deur programme op jou tuisskerm geberg is.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1446450296470737166">Laat vol MIDI-toestelbeheer toe</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1633720957382884102">Verwante werwe</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="1647582022260550163">Is jy seker jy wil toestemmings terugstel en webkoekies en werfdata uitvee?</translation>
 <translation id="1660204651932907780">Laat werwe toe om klank te speel (aanbeveel)</translation>

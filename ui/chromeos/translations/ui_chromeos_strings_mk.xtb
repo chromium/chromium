@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Се копира <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1190144681599273207">Земањето на оваа датотека ќе искористи приближно <ph name="FILE_SIZE" /> од мобилните податоци.</translation>
+<translation id="1194390763418645112">Пристап до датотека од <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Следно</translation>
 <translation id="1209796539517632982">Сервери за автоматско име</translation>
 <translation id="1210831758834677569">лаошки</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Уреди со Chrome</translation>
 <translation id="1572585716423026576">Постави како тапет</translation>
 <translation id="1576937952766665062">транслитерација на бенгалски</translation>
+<translation id="1577977504532381335">Прегледајте го администраторското правило</translation>
 <translation id="158849752021629804">Потребна е домашна мрежа</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Резолуција на слика</translation>
 <translation id="1972984168337863910">Проширете ги таблите со повратни информации за датотеките</translation>
 <translation id="1995337122023280937">Оди на локацијата на датотеката</translation>
+<translation id="1999709132469742660">Пристап до датотека од сите URL-адреси</translation>
 <translation id="2001796770603320721">Управување во Drive</translation>
 <translation id="2009067268969781306">Форматирањето на USB-дискот ќе ги избрише сите податоци складирани во него. Дејството не може да се врати.</translation>
 <translation id="2025955442973426285">тигрејски</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Човек со шолја кафе</translation>
 <translation id="2251368349685848079">Врати од корпа</translation>
 <translation id="2282155092769082568">Линк за автоматско конфигурирање:</translation>
+<translation id="2284767815536050991">пренослива меморија</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Се отвораат <ph name="NUMBER_OF_FILES" /> датотеки.</translation>
 <translation id="2303301624314357662">Се отвора датотеката <ph name="FILE_NAME" />.</translation>
@@ -171,6 +175,7 @@
 <translation id="2500392669976258912">фонетски гуџарати</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Скенирај</translation>
+<translation id="252641322760726369">Допрете и задржете датотека и допрете <ph name="ICON" />, па изберете „<ph name="PIN_COMMAND" />“ за брз пристап до вашите датотеки на полицата.</translation>
 <translation id="2534460670861217804">Безбеден HTTP прокси</translation>
 <translation id="2541377937973966830">Содржините во папкава се само за читање. Некои активности не се поддржани.</translation>
 <translation id="2542049655219295786">Табела на Google</translation>
@@ -224,6 +229,7 @@
 <translation id="3016566519832145558">Внимание: датотекиве се привремени и може автоматски да се избришат за да се ослободи простор на дискот.</translation>
 <translation id="3029114385395636667">Овозможете офлајн „Документи на Google“ за да бидат документите табелите и слајдовите достапни офлајн.</translation>
 <translation id="303198083543495566">Географија</translation>
+<translation id="3044404008258011032">За да ги вратите ставкиве, повлечете ги во нова папка надвор од корпата. Оригиналната папка „<ph name="PARENT_FOLDER_NAME" />“ за ставкава е избришана.</translation>
 <translation id="3047197340186497470">кинески даји</translation>
 <translation id="3067790092342515856">Датотеки на Windows</translation>
 <translation id="3083975830683400843">Уреди Chromebit</translation>
@@ -341,6 +347,9 @@
 <translation id="4057991113334098539">Се активира…</translation>
 <translation id="4092890906744441904">ирски</translation>
 <translation id="4124935795427217608">Еднорог</translation>
+<translation id="4131235941541910880">Преместете ги ставките што не ви требаат во корпата.</translation>
+<translation id="4153015322587141338">Кликнете со десно копче на датотека и изберете „<ph name="PIN_COMMAND" />“ за брз пристап до вашите датотеки на полицата.</translation>
+<translation id="4157569377477607576">Администраторското правило не препорачува:</translation>
 <translation id="4159731583141908892">Преместено: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Испразни ја корпата веднаш</translation>
 <translation id="4186579485882418952">Овозможи офлајн</translation>
@@ -435,8 +444,10 @@
 <translation id="485316830061041779">германски</translation>
 <translation id="4867079195717347957">Кликнете за подредување на колоната по опаѓачки редослед.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> бајти</translation>
+<translation id="4874569719830985133">Избриши засекогаш</translation>
 <translation id="4880214202172289027">Лизгач за јачина на звук</translation>
 <translation id="4881695831933465202">Отвори</translation>
+<translation id="4891091358278567964">За да ги вратите ставкиве, повлечете ги во нова папка надвор од корпата. Оригиналните папки за ставкиве се избришани.</translation>
 <translation id="4900532980794411603">Сподели со Parallels Desktop</translation>
 <translation id="4902546322522096650">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, поврзи</translation>
 <translation id="4906580650526544301">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, детали</translation>
@@ -493,6 +504,7 @@
     <ph name="MARKUP_7" />Споделувајте, создавајте и соработувајте<ph name="MARKUP_8" />
     на датотеки со други, сѐ на едно место.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Повратени датотеки од Google Диск</translation>
+<translation id="5278111733643988471">За да ја вратите ставкава, повлечете ја во нова папка надвор од корпата. Оригиналната папка „<ph name="PARENT_FOLDER_NAME" />“ за ставкава е избришана.</translation>
 <translation id="5286194356314741248">Скенирање</translation>
 <translation id="5288441970121584418">Хамбургер</translation>
 <translation id="5305688511332277257">Нема инсталирано</translation>
@@ -501,9 +513,11 @@
 <translation id="5323213332664049067">Латиноамерикански</translation>
 <translation id="5330145655348521461">Датотеките се отворија на друга работна површина. Поместете ја на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) за да се прикаже.</translation>
 <translation id="5330512191124428349">Земете информации</translation>
+<translation id="5337538975554986899">Пристап до датотеки од сите URL-адреси, освен <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Човек со мачки</translation>
 <translation id="5358764674931277">Стапка на слики</translation>
 <translation id="5363339716524495120">Јазикот за внесување е кинески</translation>
+<translation id="5364067326287025678">Нема ништо во корпата</translation>
 <translation id="5368191757080475556">Споделување папка со Linux</translation>
 <translation id="5402367795255837559">Браилово писмо</translation>
 <translation id="5411472733320185105">Не користете ги поставките за прокси на овие домаќини и домени:</translation>
@@ -525,6 +539,7 @@
 <translation id="5533102081734025921">Слика: <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Се пресметува големината</translation>
 <translation id="554153475311314364">транслитерација на грчки</translation>
+<translation id="5580591966435005537">виртуелна машина</translation>
 <translation id="5583640892426849032">Backspace-копче</translation>
 <translation id="5583664733673201137">Ширината на интерпункцијата е полна</translation>
 <translation id="5602622065581044566">бугарски со фонетска тастатура</translation>
@@ -585,6 +600,7 @@
 <translation id="61118516107968648">Текстуална CSV-датотека</translation>
 <translation id="6129953537138746214">Празно место</translation>
 <translation id="6133173853026656527">Се поместува <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Администраторот надгледува:</translation>
 <translation id="613750717151263950">јапонски со американска тастатура</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, нема мрежа</translation>
 <translation id="6146563240635539929">Видеа</translation>
@@ -605,6 +621,7 @@
 <translation id="6287852322318138013">Изберете апликација за да ја отворите оваа датотека</translation>
 <translation id="6295542640242147836">Заклучи SIM</translation>
 <translation id="6296410173147755564">Погрешен PUK</translation>
+<translation id="6308243004861726558">Датотекава е доверлива и подлежи на администраторско правило. Важат следниве дејства за пристап до датотеки и префрлување.</translation>
 <translation id="6312403991423642364">Непозната мрежна грешка</translation>
 <translation id="6317608858038767920">Приспособен DNS-сервер <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-архива</translation>
@@ -770,6 +787,7 @@
 <translation id="7711920809702896782">Информации за сликата</translation>
 <translation id="7724603315864178912">Исечи</translation>
 <translation id="7732111077498238432">Мрежата се контролира со правило</translation>
+<translation id="7736003208887389532">Трајно да се избришат датотекиве?</translation>
 <translation id="7748626145866214022">Повеќе опции се достапни на лентата со дејства. Притиснете Alt + A за да се нагласи лентата со дејства.</translation>
 <translation id="7760449188139285140">кинески вуби</translation>
 <translation id="7765158879357617694">Премести</translation>
@@ -831,8 +849,10 @@
 <translation id="8249296373107784235">Прекини</translation>
 <translation id="8250690786522693009">латиница</translation>
 <translation id="8250920743982581267">Документи</translation>
+<translation id="8255595130163158297">Сите ставки во корпата ќе бидат избришани и нема да можете да ги вратите.</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8261561378965667560">кинески со низа</translation>
+<translation id="8262872909443689080">Администраторско правило</translation>
 <translation id="8264024885325823677">Администраторот управува со поставкава.</translation>
 <translation id="8269755669432358899">Соберете ги таблите со повратни информации за датотеките</translation>
 <translation id="8280151743281770066">ерменска фонетска</translation>
@@ -907,6 +927,7 @@
 <translation id="8857149712089373752">непалски со фонетска тастатура</translation>
 <translation id="8860454412039442620">Табела во Excel</translation>
 <translation id="8866284467018526531">транслитерација на арапски</translation>
+<translation id="8873014196523807561">За да ги вратите ставкиве, повлечете ги во нова папка. Оригиналните папки за некои од ставкиве се избришани.</translation>
 <translation id="8874184842967597500">Не е поврзано</translation>
 <translation id="8900820606136623064">унгарски</translation>
 <translation id="8903931173357132290">Дипломец</translation>
@@ -928,6 +949,7 @@
 <translation id="9100610230175265781">Потребна е лозинка-фраза</translation>
 <translation id="9110990317705400362">Ние постојано бараме начини да го направиме вашето прелистување побезбедно. Порано, која било веб-локација можеше да побара од вас да додадете наставка на прелистувачот. Во најновите верзии на Google Chrome, мора јасно да му кажете на Chrome дека сакате да ги инсталирате овие наставки со нивно додавање преку страницата Наставки. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Отклучи</translation>
+<translation id="9116909380156770361">Префрлување датотека на <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Кодек</translation>
 <translation id="9130775360844693113">Членовите на „<ph name="DESTINATION_NAME" />“ ќе добијат пристап до ставкиве.</translation>
 <translation id="9131598836763251128">Изберете една или повеќе датотеки</translation>
@@ -949,6 +971,7 @@
 <translation id="943972244133411984">Изменето од</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="947144732524271678">Избравте опсег од <ph name="ENTRY_COUNT" /> записи од <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Администраторското правило спречува:</translation>
 <translation id="965477715979482472">англиски (Јужна Африка)</translation>
 <translation id="981121421437150478">Без мрежа</translation>
 <translation id="988685240266037636">Веќе постои датотека со име „<ph name="FILE_NAME" />“. Дали сакате да ја замените?</translation>

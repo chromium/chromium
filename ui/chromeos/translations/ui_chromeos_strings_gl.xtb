@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Copiando <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1190144681599273207">A descarga deste ficheiro ocupará aproximadamente <ph name="FILE_SIZE" /> de datos móbiles.</translation>
+<translation id="1194390763418645112">O acceso aos ficheiros por parte de <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1209796539517632982">Servidores de nomes automáticos</translation>
 <translation id="1210831758834677569">Laosiano</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Dispositivos Chrome</translation>
 <translation id="1572585716423026576">Definir como fondo de pantalla</translation>
 <translation id="1576937952766665062">Bengalí (transliteración)</translation>
+<translation id="1577977504532381335">Revisar política do administrador</translation>
 <translation id="158849752021629804">É necesaria unha rede doméstica</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Cámara</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Resolución da imaxe</translation>
 <translation id="1972984168337863910">Despregar paneis de comentarios de ficheiros</translation>
 <translation id="1995337122023280937">Ir á localización do ficheiro</translation>
+<translation id="1999709132469742660">O acceso aos ficheiros por parte de todos os URL</translation>
 <translation id="2001796770603320721">Xestionar contido en Drive</translation>
 <translation id="2009067268969781306">Ao formatar unha unidade, eliminaranse todos os datos que conteña. Esta acción non se pode desfacer.</translation>
 <translation id="2025955442973426285">Tigriña</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Persoa con café</translation>
 <translation id="2251368349685848079">Restaurar desde a papeleira</translation>
 <translation id="2282155092769082568">URL de configuración automática:</translation>
+<translation id="2284767815536050991">almacenamento extraíble</translation>
 <translation id="2288278176040912387">Tocadiscos</translation>
 <translation id="2291538123825441971">Abrindo <ph name="NUMBER_OF_FILES" /> ficheiros.</translation>
 <translation id="2303301624314357662">Abrindo o ficheiro <ph name="FILE_NAME" />.</translation>
@@ -224,6 +228,7 @@
 <translation id="3016566519832145558">Precaución: Estes ficheiros son temporais e pódense eliminar automaticamente para liberar espazo no disco.</translation>
 <translation id="3029114385395636667">Para poder utilizar Documentos, Follas de cálculo e Presentacións sen conexión, activa Documentos de Google sen conexión.</translation>
 <translation id="303198083543495566">Xeografía</translation>
+<translation id="3044404008258011032">Para restaurar estes elementos, arrástraos a un cartafol novo fóra da papeleira. Eliminouse o cartafol orixinal "<ph name="PARENT_FOLDER_NAME" />" destes elementos.</translation>
 <translation id="3047197340186497470">Chinés (Dayi)</translation>
 <translation id="3067790092342515856">Ficheiros de Windows</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -341,6 +346,8 @@
 <translation id="4057991113334098539">Activando...</translation>
 <translation id="4092890906744441904">Irlandés</translation>
 <translation id="4124935795427217608">Unicornio</translation>
+<translation id="4131235941541910880">Envía á papeleira os elementos que non necesites</translation>
+<translation id="4157569377477607576">A política do administrador non recomenda o seguinte:</translation>
 <translation id="4159731583141908892">Moveuse <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Baleirar papeleira agora</translation>
 <translation id="4186579485882418952">Activar modo sen conexión</translation>
@@ -435,8 +442,10 @@
 <translation id="485316830061041779">Alemán</translation>
 <translation id="4867079195717347957">Fai clic para organizar a columna en orde descendente.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
+<translation id="4874569719830985133">Eliminar para sempre</translation>
 <translation id="4880214202172289027">Control desprazable de volume</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4891091358278567964">Para restaurar estes elementos, arrástraos a un cartafol novo fóra da papeleira. Elimináronse os cartafoles orixinais destes elementos.</translation>
 <translation id="4900532980794411603">Compartir con Parallels Desktop</translation>
 <translation id="4902546322522096650">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
 <translation id="4906580650526544301">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, batería do teléfono ao <ph name="BATTERY_STATUS" /> %, detalles</translation>
@@ -493,6 +502,7 @@
     <ph name="MARKUP_7" />Crea ficheiros, compárteos e traballa en grupo<ph name="MARKUP_8" />
     desde un único lugar.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Ficheiros recuperados de Google Drive</translation>
+<translation id="5278111733643988471">Para restaurar este elemento, arrástrao a un cartafol novo fóra da papeleira. Eliminouse o cartafol orixinal "<ph name="PARENT_FOLDER_NAME" />" deste elemento.</translation>
 <translation id="5286194356314741248">Buscando</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
 <translation id="5305688511332277257">Ningún instalado</translation>
@@ -501,9 +511,11 @@
 <translation id="5323213332664049067">Latinoamericano</translation>
 <translation id="5330145655348521461">Estes ficheiros abríronse nun ordenador diferente. Diríxete a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para velo.</translation>
 <translation id="5330512191124428349">Obter información</translation>
+<translation id="5337538975554986899">O acceso aos ficheiros por parte de todos os URL excepto <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Persoa con gatos</translation>
 <translation id="5358764674931277">Fotogramas por segundo</translation>
 <translation id="5363339716524495120">O idioma de escritura é o chinés</translation>
+<translation id="5364067326287025678">Non hai nada na papeleira</translation>
 <translation id="5368191757080475556">Compartir cartafol con Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Non utilizar a configuración de proxy para estes servidores e dominios:</translation>
@@ -525,6 +537,7 @@
 <translation id="5533102081734025921">Imaxe <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Calculando tamaño</translation>
 <translation id="554153475311314364">Grego (transliteración)</translation>
+<translation id="5580591966435005537">máquina virtual</translation>
 <translation id="5583640892426849032">Retroceso</translation>
 <translation id="5583664733673201137">A largura da puntuación é completa</translation>
 <translation id="5602622065581044566">Búlgaro con teclado fonético</translation>
@@ -585,6 +598,7 @@
 <translation id="61118516107968648">Texto en formato CSV</translation>
 <translation id="6129953537138746214">Espazo</translation>
 <translation id="6133173853026656527">Movendo <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Monitores de administración:</translation>
 <translation id="613750717151263950">Xaponés con teclado estadounidense</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, sen rede dispoñible</translation>
 <translation id="6146563240635539929">Vídeos</translation>
@@ -605,6 +619,7 @@
 <translation id="6287852322318138013">Selecciona unha aplicación para abrir este ficheiro</translation>
 <translation id="6295542640242147836">Bloquear SIM</translation>
 <translation id="6296410173147755564">O PUK non é válido</translation>
+<translation id="6308243004861726558">Este ficheiro é confidencial e está suxeito á política do administrador. Aplícanse as seguintes accións de transferencia e acceso ao ficheiro.</translation>
 <translation id="6312403991423642364">Erro de rede descoñecido</translation>
 <translation id="6317608858038767920">Servidor de nomes personalizado <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Arquivo <ph name="ARCHIVE_TYPE" /></translation>
@@ -770,6 +785,7 @@
 <translation id="7711920809702896782">Información da imaxe</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7732111077498238432">A rede está controlada pola política</translation>
+<translation id="7736003208887389532">Queres eliminar permanentemente estes ficheiros?</translation>
 <translation id="7748626145866214022">Hai máis opcións dispoñibles na barra de accións. Preme Alt + A para enfocar a barra de accións.</translation>
 <translation id="7760449188139285140">Chinés (Wubi)</translation>
 <translation id="7765158879357617694">Mover</translation>
@@ -831,8 +847,10 @@
 <translation id="8249296373107784235">Cancelar</translation>
 <translation id="8250690786522693009">Alfabeto latino</translation>
 <translation id="8250920743982581267">Documentos</translation>
+<translation id="8255595130163158297">Eliminaranse todos os elementos da papeleira e non poderás restauralos.</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8261561378965667560">Chinés (matriz)</translation>
+<translation id="8262872909443689080">Política do administrador</translation>
 <translation id="8264024885325823677">O teu administrador xestiona esta opción de configuración.</translation>
 <translation id="8269755669432358899">Contraer paneis de comentarios de ficheiros</translation>
 <translation id="8280151743281770066">Fonética armenia</translation>
@@ -907,6 +925,7 @@
 <translation id="8857149712089373752">Nepalí con teclado fonético</translation>
 <translation id="8860454412039442620">Folla de cálculo de Excel</translation>
 <translation id="8866284467018526531">Árabe (transliteración)</translation>
+<translation id="8873014196523807561">Para restaurar estes elementos, arrástraos a un cartafol novo. Elimináronse os cartafoles orixinais dalgúns destes elementos.</translation>
 <translation id="8874184842967597500">Non conectada</translation>
 <translation id="8900820606136623064">Húngaro</translation>
 <translation id="8903931173357132290">Persoa graduada</translation>
@@ -928,6 +947,7 @@
 <translation id="9100610230175265781">Contrasinal obrigatorio</translation>
 <translation id="9110990317705400362">Estamos buscando constantemente maneiras de navegar de xeito máis seguro. Anteriormente calquera sitio web podía solicitarche engadir unha extensión ao teu navegador. Nas versións máis recentes de Google Chrome, debes indicar explicitamente a Chrome que queres instalar estas extensións engadíndoas a través da páxina Extensións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
+<translation id="9116909380156770361">A transferencia de ficheiros a: <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Códec</translation>
 <translation id="9130775360844693113">Os membros de "<ph name="DESTINATION_NAME" />" terán acceso a estes elementos.</translation>
 <translation id="9131598836763251128">Seleccionar un ou máis ficheiros</translation>
@@ -949,6 +969,7 @@
 <translation id="943972244133411984">Modificado por</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947144732524271678">Seleccionouse un intervalo de <ph name="ENTRY_COUNT" /> entradas desde <ph name="FROM_ENTRY_NAME" /> ata <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">A política do administrador impide o seguinte:</translation>
 <translation id="965477715979482472">Inglés (Suráfrica)</translation>
 <translation id="981121421437150478">Sen conexión</translation>
 <translation id="988685240266037636">Xa existe un ficheiro co nome "<ph name="FILE_NAME" />". Queres substituílo?</translation>

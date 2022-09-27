@@ -287,6 +287,7 @@
 <translation id="1291880496936992484">Atenção: o RC4 será completamente removido de <ph name="PRODUCT_NAME" /> após a versão 52 (por volta de setembro de 2016), e esta política parará de funcionar.
 
       Se a política ainda não estiver configurada ou estiver configurada como "false", os pacotes de criptografia RC4 em TLS não serão ativados. Caso contrário, ela poderá ser configurada como "true" para manter a compatibilidade com um servidor desatualizado. Esta é uma medida temporária, e o servidor deve ser reconfigurado.</translation>
+<translation id="129206366270737897">Desativa qualquer método assíncrono de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
 <translation id="1294263471858445589">Ativar a autenticação pelo SO em sessões normais e anônimas.</translation>
 <translation id="1295737447968372331">Ativa o ditado na tela de login</translation>
 <translation id="1297182715641689552">Usar um script de proxy .pac</translation>
@@ -1213,6 +1214,7 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
       Se você definir a política, os usuários não poderão mudá-la. Se não for definida ou for definida como falsa, não terá efeito.</translation>
 <translation id="2200698565850397198">Configurar a lista de bloqueio de mensagens nativas</translation>
 <translation id="2201555246697292490">Configurar a lista de permissões de mensagens nativas</translation>
+<translation id="220157212534775145">Reativar a interface assíncrona descontinuada de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> na API File System Access</translation>
 <translation id="2202787915587511214">Ativar NTLMv2</translation>
 <translation id="2204379573346866896">Minutos decorridos da hora atual.</translation>
 <translation id="2204753382813641270">Controlar a ocultação automática da estante</translation>
@@ -1869,6 +1871,10 @@ Web e PWAs. No momento, com suporte apenas no
       Se a política for definida como desativada as solicitações serão desativadas e a captura de áudio só estará disponível para URLs configurados na lista AudioCaptureAllowedUrls.
 
       Observação: a política afeta todos os tipos de entradas de áudio, não apenas o microfone integrado.</translation>
+<translation id="2822539450620588684">Da versão M107 em diante, todos os métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> vão ser invocados de maneira síncrona.
+      Até a versão M110, esta política reativa a invocação assíncrona de métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.
+      Se a política for ativada, os métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> vão ser invocados de maneira assíncrona.
+      Se for desativada ou deixada sem definição, todos os métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> vão ser invocados de maneira síncrona.</translation>
 <translation id="2823870601012066791">Local de registro do Windows para clientes do <ph name="PRODUCT_OS_NAME" />:</translation>
 <translation id="2824715612115726353">Ativar o modo de navegação anônima</translation>
 <translation id="282870810415075521">Permitir o uso do JIT pelo JavaScript nestes sites</translation>
@@ -2337,6 +2343,7 @@ Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EX
       Deixar a política sem definição tornará indisponíveis as atualizações de firmware do <ph name="TPM_FIRMWARE_UPDATE_TPM" />.</translation>
 <translation id="3232563711929146405">Desativar o sandbox de serviço de rede</translation>
 <translation id="3232691106293445015">Conexões HTTP não seguras não têm permissão para usar autenticação <ph name="BASIC_AUTH" />. O uso de HTTPS é obrigatório</translation>
+<translation id="3234863952320884611">Permite que os métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> sejam invocados de maneira assíncrona.</translation>
 <translation id="3235085623859932253"> Se esta política for desativada, não será possível conectar completamente um dispositivo periférico Thunderbolt/USB4 usando o encapsulamento de PCIe.
 
       Se esta política for ativada, será possível conectar completamente um dispositivo periférico Thunderbolt/USB4 usando o encapsulamento de PCIe.
@@ -4989,6 +4996,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Especifique apps do Chrome pelos IDs deles (como pjkljhegncpnkpknbcohdijeoejaedia), apps Android pelos nomes de pacote deles (como com.google.android.gm) e apps da Web pelo URL usado em <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (como https://google.com/maps).
 
       Se a política não for definida, os usuários poderão mudar a lista de apps fixados no acesso rápido.</translation>
+<translation id="6184385589352532028">Não ativar a API Desk para o controle do Chrome OS de terceiros</translation>
 <translation id="6190367314942602985">Reportar informações de identificação do usuário</translation>
 <translation id="6191963383731098056">Esta política permite que os administradores configurem a cor do tema do <ph name="PRODUCT_NAME" />. Para isso, a string de entrada precisa ser de uma cor hexadecimal válida compatível com o formato "#RRGGBB".
 
@@ -6830,6 +6838,7 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
       Se essa política for desativada ou deixada sem definição, o usuário não poderá usar o <ph name="LACROS_NAME" />.
 
       Se ela for ativada, o usuário poderá usar o <ph name="LACROS_NAME" />.</translation>
+<translation id="8020222525161221827">Ativar a API Desk para o controle do Chrome OS de terceiros</translation>
 <translation id="802147957407376460">Girar tela em 0 graus</translation>
 <translation id="80243978433618492">Não permite que parâmetros de URL sejam filtrados.</translation>
 <translation id="8025620823136567878">Os atalhos de teclados internacionais são associados o local das teclas, não ao glifo delas.</translation>
@@ -7866,6 +7875,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Se ela for desativada, os dispositivos registrados não vão gravar nem informar o status do áudio.
       Exceção: no M95 e em versões anteriores, as informações do nível de volume do sistema são controladas por <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
+<translation id="9071527533179676468">Se a política for definida como "Ativada", os apps da Web de terceiros vão poder usar a API Desk para controlar os espaços de trabalho do Chrome OS. Se a política não for definida ou for desativada, a API Desk não vai estar disponível.</translation>
 <translation id="9072475476775217730">Se a política for desativada, os pop-ups direcionados a <ph name="BLANK_PAGE_NAME" /> vão poder acessar (via JavaScript) a página que solicitou a abertura do pop-up.
 
       Se ela for ativada ou deixada sem definição, a propriedade <ph name="WINDOW_OPENER_PROPERTY" /> será <ph name="NULL_VALUE" />, a menos que a âncora especifique <ph name="REL_OPENER_ATTRIBUTE" />.

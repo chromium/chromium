@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1005794457625275818"><ph name="FPS_OWNER" /> ग्रुप में <ph name="FPS_MEMBERS_COUNT" /> साइटों के लिए कुकी का इस्तेमाल किया जा सकता है. इसमें <ph name="FPS_MEMBER" /> भी शामिल है</translation>
 <translation id="1006017844123154345">ऑनलाइन खोलें</translation>
 <translation id="1044891598689252897">साइटें सामान्य रूप से काम करेंगी</translation>
 <translation id="1124090076051167250">इससे वे <ph name="DATASIZE" /> डेटा और कुकी मिट जाएंगे जिन्हें साइटों या ऐप्लिकेशन ने आपकी होम स्क्रीन पर सेव किया है.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">हां</translation>
 <translation id="1446450296470737166">MIDI डिवाइस के पूरे नियंत्रण की अनुमति दें</translation>
 <translation id="1620510694547887537">कैमरा</translation>
+<translation id="1633720957382884102">मिलती-जुलती साइटें</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1647582022260550163">क्या आप वाकई में कुकी और साइट डेटा मिटाना चाहते हैं और अनुमतियों को रीसेट करना चाहते हैं?</translation>
 <translation id="1660204651932907780">साइटों को आवाज़ चलाने दें (सुझाया गया)</translation>
