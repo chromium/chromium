@@ -18,6 +18,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
 #include "chrome/grit/chromium_strings.h"
@@ -43,6 +44,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -269,6 +271,9 @@ bool ShouldSelectTab(DesktopMediaList::Type type,
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DesktopMediaPickerDialogView,
+                                      kDesktopMediaPickerDialogViewIdentifier);
+
 bool DesktopMediaPickerDialogView::AudioSupported(DesktopMediaList::Type type) {
   switch (type) {
     case DesktopMediaList::Type::kScreen:
@@ -321,6 +326,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   DCHECK(!params.force_audio_checkboxes_to_default_checked ||
          !params.exclude_system_audio);
 
+  SetProperty(views::kElementIdentifierKey,
+              kDesktopMediaPickerDialogViewIdentifier);
   SetModalType(params.modality);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SHARE));
@@ -534,6 +541,12 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
                       !params.web_contents->GetDelegate()->IsNeverComposited(
                           params.web_contents);
   if (modal_dialog) {
+    Browser* browser = chrome::FindBrowserWithWebContents(params.web_contents);
+    // Close the extension popup to prevent spoofing.
+    if (browser && browser->window() &&
+        browser->window()->GetExtensionsContainer()) {
+      browser->window()->GetExtensionsContainer()->HideActivePopup();
+    }
     widget =
         constrained_window::ShowWebModalDialogViews(this, params.web_contents);
   } else {

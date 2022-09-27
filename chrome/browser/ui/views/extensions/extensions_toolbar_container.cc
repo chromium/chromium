@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
@@ -35,6 +36,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -47,6 +49,22 @@ using ::ui::mojom::DragOperation;
 base::OnceClosure& GetOnVisibleCallbackForTesting() {
   static base::NoDestructor<base::OnceClosure> callback;
   return *callback;
+}
+
+// Check if there's any security UI that might be spoofable because of
+// overlapping with the extension popup. The media picker dialog has been
+// identified to be susceptible. See crbug.com/1300006.
+bool HasPossiblyOverlappingSecurityUI(Browser* browser) {
+  views::ElementTrackerViews::ViewList media_picker_dialogs =
+      views::ElementTrackerViews::GetInstance()->GetAllMatchingViews(
+          DesktopMediaPickerDialogView::kDesktopMediaPickerDialogViewIdentifier,
+          browser->window()->GetElementContext());
+
+  return std::any_of(media_picker_dialogs.begin(), media_picker_dialogs.end(),
+                     [](views::View* dialog_view) {
+                       views::Widget* dialog_widget = dialog_view->GetWidget();
+                       return dialog_widget && dialog_widget->IsVisible();
+                     });
 }
 
 }  // namespace
@@ -456,6 +474,10 @@ bool ExtensionsToolbarContainer::ShowToolbarActionPopupForAPICall(
     ShowPopupCallback callback) {
   // Don't override another popup, and only show in the active window.
   if (popped_out_action_ || !browser_->window()->IsActive())
+    return false;
+
+  // Don't draw over security UIs.
+  if (HasPossiblyOverlappingSecurityUI(browser_))
     return false;
 
   ToolbarActionViewController* action = GetActionForId(action_id);
