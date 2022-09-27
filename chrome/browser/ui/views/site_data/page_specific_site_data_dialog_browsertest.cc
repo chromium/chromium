@@ -14,20 +14,35 @@
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/page_info/core/features.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 namespace {
 
 const char kCookiesDialogHistogramName[] = "Privacy.CookiesInUseDialog.Action";
+
+void ClickButton(views::Button* button) {
+  views::test::ButtonTestApi test_api(button);
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  test_api.NotifyClick(e);
+}
 
 }  // namespace
 
@@ -36,8 +51,24 @@ class PageSpecificSiteDataDialogBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   PageSpecificSiteDataDialogBrowserTest() {
-    feature_list_.InitWithFeatureState(page_info::kPageSpecificSiteDataDialog,
-                                       GetParam());
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        enabled_features = {
+            {net::features::kPartitionedCookies, {}},
+            {net::features::kPartitionedCookiesBypassOriginTrial, {}}};
+
+    std::vector<base::Feature> disabled_features;
+    if (GetParam()) {
+      enabled_features.emplace_back(page_info::kPageSpecificSiteDataDialog,
+                                    base::FieldTrialParams());
+    } else {
+      disabled_features.emplace_back(page_info::kPageSpecificSiteDataDialog);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
   }
 
   PageSpecificSiteDataDialogBrowserTest(
@@ -49,13 +80,19 @@ class PageSpecificSiteDataDialogBrowserTest
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server()->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+
     host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
+    content::SetupCrossSiteRedirector(https_server());
+    ASSERT_TRUE(https_server()->Start());
 
     // Load a page with cookies.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("a.test", "/cookie1.html")));
+        browser(), https_server()->GetURL("a.test", "/cookie1.html")));
   }
+
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
   views::Widget* OpenDialog() {
     std::string widget_name =
@@ -73,7 +110,18 @@ class PageSpecificSiteDataDialogBrowserTest
     auto* element_tracker = ui::ElementTracker::GetElementTracker();
     auto* tracked_element =
         element_tracker->GetFirstMatchingElement(id, context);
+    DCHECK(tracked_element);
     return tracked_element->AsA<views::TrackedElementViews>()->view();
+  }
+
+  views::View* GetViewByIdentifierAtIndex(ui::ElementContext context,
+                                          ui::ElementIdentifier id,
+                                          size_t index) {
+    auto* element_tracker = ui::ElementTracker::GetElementTracker();
+    auto tracked_elements =
+        element_tracker->GetAllMatchingElements(id, context);
+    DCHECK(tracked_elements.size() > index);
+    return tracked_elements[index]->AsA<views::TrackedElementViews>()->view();
   }
 
   void ClickDeleteMenuItem(SiteDataRowView* row_view) {
@@ -111,6 +159,7 @@ class PageSpecificSiteDataDialogBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -149,7 +198,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   // Navigating to the another page with the same origin won't close dialog.
   auto* dialog = OpenDialog();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.test", "/cookie2.html")));
+      browser(), https_server()->GetURL("a.test", "/cookie2.html")));
   EXPECT_FALSE(dialog->IsClosed());
 }
 
@@ -161,7 +210,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   // Navigation in the owning tab will close dialog.
   auto* dialog = OpenDialog();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("b.test", "/cookie2.html")));
+      browser(), https_server()->GetURL("b.test", "/cookie2.html")));
 
   browser()->tab_strip_model()->GetActiveWebContents()->Close();
   EXPECT_TRUE(dialog->IsClosed());
@@ -236,6 +285,9 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
       GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
   auto* row_view = static_cast<SiteDataRowView*>(view);
   EXPECT_TRUE(row_view->GetVisible());
+  ClickButton(row_view->menu_button_for_testing());
+  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // correct menu item are displayed.
   ClickDeleteMenuItem(row_view);
   EXPECT_FALSE(row_view->GetVisible());
 
@@ -271,6 +323,9 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
   auto* row_view = static_cast<SiteDataRowView*>(view);
   // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
   // returns true. It's not actually visible because it has size 0.
+  ClickButton(row_view->menu_button_for_testing());
+  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // correct menu item are displayed.
   ClickBlockMenuItem(row_view);
   histograms.ExpectBucketCount(
       kCookiesDialogHistogramName,
@@ -309,6 +364,9 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
   // returns true. It's not actually visible because it has size 0.
   // TODO(crbug.com/1344787): Setup a site with blocked cookies to start with
   // blocked state here.
+  ClickButton(row_view->menu_button_for_testing());
+  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // correct menu item are displayed.
   ClickBlockMenuItem(row_view);
 
   histograms.ExpectBucketCount(
@@ -354,6 +412,9 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   auto* row_view = static_cast<SiteDataRowView*>(view);
   // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
   // returns true. It's not actually visible because it has size 0.
+  ClickButton(row_view->menu_button_for_testing());
+  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // correct menu item are displayed.
   ClickClearOnExitMenuItem(row_view);
   histograms.ExpectBucketCount(
       kCookiesDialogHistogramName,
