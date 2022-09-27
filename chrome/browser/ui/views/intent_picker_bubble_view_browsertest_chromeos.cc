@@ -27,6 +27,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -132,11 +134,17 @@ class WidgetDestroyedWaiter : public views::WidgetObserver {
 
 }  // namespace
 
-class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
+class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest,
+                                                  public BrowserListObserver {
  public:
   IntentPickerBubbleViewBrowserTestChromeOS() {
     // TODO(crbug.com/1357905): Run relevant tests against the updated UI.
     feature_list_.InitAndDisableFeature(apps::features::kLinkCapturingUiUpdate);
+    BrowserList::AddObserver(this);
+  }
+
+  ~IntentPickerBubbleViewBrowserTestChromeOS() override {
+    BrowserList::RemoveObserver(this);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -282,6 +290,19 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
             base::Unretained(this)));
   }
 
+  void WaitForBrowserAdded() {
+    base::RunLoop run_loop;
+    on_browser_added_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {
+    if (on_browser_added_callback_) {
+      std::move(on_browser_added_callback_).Run();
+    }
+  }
+
   bool bubble_closed() { return bubble_closed_; }
 
   void CheckStayInChrome() {
@@ -333,6 +354,7 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   FakeIconLoader icon_loader_;
   bool bubble_closed_ = false;
+  base::OnceClosure on_browser_added_callback_;
 };
 
 // Test that the intent picker bubble will pop out for ARC apps.
@@ -1169,9 +1191,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 //
 // TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
 // TODO(https://crbug.com/1367375): Fix timeouts under ASAN.
-// TODO(crbug.com/1367375): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) ||                            \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
+#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
     defined(MEMORY_SANITIZER)
 #define MAYBE_RememberOpenPWA DISABLED_RememberOpenPWA
 #else
@@ -1220,7 +1240,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 
   NavigateParams params_new(browser(), test_url,
                             ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params_new);
+  Navigate(&params_new);
+  WaitForBrowserAdded();
 
   EXPECT_TRUE(VerifyPWALaunched(app_id));
 
@@ -1261,9 +1282,7 @@ class IntentPickerBubbleViewPrerenderingBrowserTestChromeOS
 //
 // TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
 // TODO(https://crbug.com/1367375): Fix timeouts under ASAN.
-// TODO(crbug.com/1367375): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) ||                            \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
+#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
     defined(MEMORY_SANITIZER)
 #define MAYBE_AppLaunchURLCancelsPrerendering \
   DISABLED_AppLaunchURLCancelsPrerendering
@@ -1325,6 +1344,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewPrerenderingBrowserTestChromeOS,
   // However, a standard user navigation should launch the app as usual.
   NavigateParams params_new(browser(), kAppUrl,
                             ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params_new);
+  Navigate(&params_new);
+  WaitForBrowserAdded();
   EXPECT_TRUE(VerifyPWALaunched(kAppId));
 }
