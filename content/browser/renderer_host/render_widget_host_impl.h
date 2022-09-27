@@ -1302,6 +1302,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // This is true if the renderer is currently unresponsive.
   bool is_unresponsive_ = false;
 
+  // We access this value quite a lot, so we cache switches::kDisableHangMonitor
+  // here.
+  const bool should_disable_hang_monitor_;
+
   // This value denotes the number of input events yet to be acknowledged
   // by the renderer.
   int in_flight_event_count_ = 0;

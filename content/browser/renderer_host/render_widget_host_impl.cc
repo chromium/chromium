@@ -180,11 +180,6 @@ constexpr gfx::Rect kInvalidScreenRect(std::numeric_limits<int>::max(),
 
 bool g_check_for_pending_visual_properties_ack = true;
 
-bool ShouldDisableHangMonitor() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableHangMonitor);
-}
-
 // <process id, routing id>
 using RenderWidgetHostID = std::pair<int32_t, int32_t>;
 using RoutingIDWidgetMap =
@@ -437,6 +432,9 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       is_hidden_(hidden),
       last_view_screen_rect_(kInvalidScreenRect),
       last_window_screen_rect_(kInvalidScreenRect),
+      should_disable_hang_monitor_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kDisableHangMonitor)),
       latency_tracker_(delegate_),
       hung_renderer_delay_(kHungRendererDelay),
       new_content_rendering_delay_(kNewContentRenderingDelay),
@@ -1429,7 +1427,7 @@ void RenderWidgetHostImpl::RenderProcessBlockedStateChanged(bool blocked) {
 }
 
 void RenderWidgetHostImpl::StartInputEventAckTimeout() {
-  if (ShouldDisableHangMonitor())
+  if (should_disable_hang_monitor_)
     return;
 
   if (!input_event_ack_timeout_.IsRunning()) {
@@ -1441,7 +1439,7 @@ void RenderWidgetHostImpl::StartInputEventAckTimeout() {
 }
 
 void RenderWidgetHostImpl::RestartInputEventAckTimeoutIfNecessary() {
-  if (!GetProcess()->IsBlocked() && !ShouldDisableHangMonitor() &&
+  if (!GetProcess()->IsBlocked() && !should_disable_hang_monitor_ &&
       in_flight_event_count_ > 0 && !is_hidden_) {
     input_event_ack_timeout_.Start(
         FROM_HERE, hung_renderer_delay_,
