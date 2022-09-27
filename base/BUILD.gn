@@ -3384,6 +3384,7 @@ test("base_unittests") {
     "test/test_mock_time_task_runner_unittest.cc",
     "test/test_pending_task_unittest.cc",
     "test/test_waitable_event_unittest.cc",
+    "third_party/dynamic_annotations/dynamic_annotations_compiletest.cc",
     "thread_annotations_unittest.cc",
     "threading/hang_watcher_unittest.cc",
     "threading/platform_thread_unittest.cc",
