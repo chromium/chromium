@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -243,6 +244,18 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
     return nullptr;
   }
 
+  // We update web application launch stats (e.g. last launch time), but don't
+  // record web app launch metrics.
+  //
+  // Web app launch metrics reflect user's preference about app launch behavior
+  // (e.g. open in a tab or open in a window). This information used to make
+  // decisions about web application UI flow.
+  //
+  // Since users can't configure SWA launch behavior, we don't report these
+  // metrics to avoid skewing web app metrics.
+  web_app::UpdateLaunchStats(browser->tab_strip_model()->GetActiveWebContents(),
+                             params.app_id, url);
+
   // LaunchSystemWebAppImpl may be called with a profile associated with an
   // inactive (background) desktop (e.g. when multiple users are logged in).
   // Here we move the newly created browser window (or the existing one on the
@@ -285,9 +298,8 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
 
     if (!url.is_empty()) {
       // In case a URL is provided, only allow a browser which shows it.
-      TabStripModel* tab_strip = browser->tab_strip_model();
       content::WebContents* content =
-          tab_strip->GetWebContentsAt(tab_strip->active_index());
+          browser->tab_strip_model()->GetActiveWebContents();
       if (!content->GetVisibleURL().EqualsIgnoringRef(url))
         continue;
     }

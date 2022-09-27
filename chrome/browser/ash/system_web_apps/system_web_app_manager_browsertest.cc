@@ -236,6 +236,30 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   histograms.ExpectUniqueSample("Apps.DefaultAppLaunch.FromAppListGrid", 39, 1);
 }
 
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, UpdatesLaunchStats) {
+  WaitForTestSystemAppInstall();
+
+  content::TestNavigationObserver navigation_observer(
+      maybe_installation_->GetAppUrl());
+  navigation_observer.StartWatchingNewWebContents();
+
+  base::Time launch_start_time = base::Time::Now();
+
+  ash::SystemAppLaunchParams params;
+  params.launch_source = apps::LaunchSource::kFromAppListGrid;
+  LaunchSystemWebAppAsync(browser()->profile(), GetMockAppType(), params);
+
+  navigation_observer.Wait();
+
+  auto* proxy = GetAppServiceProxy(browser()->profile());
+  EXPECT_TRUE(proxy->AppRegistryCache().ForOneApp(
+      maybe_installation_->GetAppId(),
+      [&](const apps::AppUpdate& update) {
+        EXPECT_GE(update.LastLaunchTime(), launch_start_time);
+      }))
+      << "Expect app to exist";
+}
+
 // The helper methods in this class uses ExecuteScriptXXX instead of ExecJs and
 // EvalJs because of some quirks surrounding origin trials and content security
 // policies.

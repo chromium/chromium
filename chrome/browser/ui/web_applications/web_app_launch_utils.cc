@@ -214,9 +214,10 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   }
 
   auto launch_url = contents->GetLastCommittedURL();
-  RecordMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
-                extensions::AppLaunchSource::kSourceReparenting, launch_url,
-                contents);
+  UpdateLaunchStats(contents, app_id, launch_url);
+  RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
+                      extensions::AppLaunchSource::kSourceReparenting,
+                      launch_url, contents);
 
   bool as_pinned_home_tab = IsPinnedHomeTabUrl(registrar, app_id, launch_url);
 
@@ -462,7 +463,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
   return web_contents;
 }
 
-void RecordAppWindowLaunch(Profile* profile, const std::string& app_id) {
+void RecordAppWindowLaunchMetric(Profile* profile, const std::string& app_id) {
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return;
@@ -477,27 +478,53 @@ void RecordAppWindowLaunch(Profile* profile, const std::string& app_id) {
   UMA_HISTOGRAM_ENUMERATION("Launch.WebAppDisplayMode", display);
 }
 
-void RecordMetrics(const AppId& app_id,
-                   apps::LaunchContainer container,
-                   extensions::AppLaunchSource launch_source,
-                   const GURL& launch_url,
-                   content::WebContents* web_contents) {
+void RecordLaunchMetrics(const AppId& app_id,
+                         apps::LaunchContainer container,
+                         extensions::AppLaunchSource launch_source,
+                         const GURL& launch_url,
+                         content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // System web apps have different launch paths compared with web apps, and
+  // those paths aren't configurable. So their launch metrics shouldn't be
+  // reported to avoid skewing web app metrics.
+  DCHECK(!ash::GetSystemWebAppTypeForAppId(profile, app_id))
+      << "System web apps shouldn't be included in web app launch metrics";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   if (container == apps::LaunchContainer::kLaunchContainerWindow)
-    RecordAppWindowLaunch(profile, app_id);
+    RecordAppWindowLaunchMetric(profile, app_id);
 
   // TODO(crbug.com/1014328): Populate WebApp metrics instead of Extensions.
   UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchSource",
                             launch_source);
   UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchContainer", container);
+}
 
-  // Record the launch time in the site engagement service. A recent web
+void UpdateLaunchStats(content::WebContents* web_contents,
+                       const AppId& app_id,
+                       const GURL& launch_url) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+  WebAppProvider::GetForLocalAppsUnchecked(profile)
+      ->sync_bridge()
+      .SetAppLastLaunchTime(app_id, base::Time::Now());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::GetSystemWebAppTypeForAppId(profile, app_id)) {
+    // System web apps doesn't use the rest of the stats.
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Update the launch time in the site engagement service. A recent web
   // app launch will provide an engagement boost to the origin.
   site_engagement::SiteEngagementService::Get(profile)
       ->SetLastShortcutLaunchTime(web_contents, launch_url);
-  WebAppProvider::GetForWebApps(profile)->sync_bridge().SetAppLastLaunchTime(
-      app_id, base::Time::Now());
+
   // Refresh the app banner added to homescreen event. The user may have
   // cleared their browsing data since installing the app, which removes the
   // event and will potentially permit a banner to be shown for the site.

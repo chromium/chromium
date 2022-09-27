@@ -83,13 +83,19 @@ content::WebContents* NavigateWebApplicationWindow(
 content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
                                                 NavigateParams& nav_params);
 
-void RecordAppWindowLaunch(Profile* profile, const std::string& app_id);
+// RecordLaunchMetrics methods report UMA metrics. It shouldn't have other
+// side-effects (e.g. updating app launch time).
+void RecordLaunchMetrics(const AppId& app_id,
+                         apps::LaunchContainer container,
+                         extensions::AppLaunchSource launch_source,
+                         const GURL& launch_url,
+                         content::WebContents* web_contents);
 
-void RecordMetrics(const AppId& app_id,
-                   apps::LaunchContainer container,
-                   extensions::AppLaunchSource launch_source,
-                   const GURL& launch_url,
-                   content::WebContents* web_contents);
+// Updates statistics about web app launch. For example, app's last launch time
+// (populates recently launched app list) and site engagement stats.
+void UpdateLaunchStats(content::WebContents* web_contents,
+                       const AppId& app_id,
+                       const GURL& launch_url);
 
 }  // namespace web_app
 
