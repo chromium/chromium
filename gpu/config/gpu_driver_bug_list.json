@@ -4120,7 +4120,7 @@
       },
       "gpu_count": {
         "op": ">",
-        "value": "1"
+        "value": "2"
       },
       "features": [
         "disable_accelerated_av1_encode"
