@@ -20,61 +20,36 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/metrics_util.h"
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
-#include "ui/accessibility/ax_node.h"
-#include "ui/accessibility/ax_node_data.h"
-#include "ui/aura/window.h"
-#include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/interpolated_transform.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/ime_util_chromeos.h"
-#include "ui/wm/core/shadow_types.h"
 
 namespace ash {
 
 namespace {
-
-// Default color for classic, unthemed app list.
-constexpr SkColor kAppListBackgroundColor = gfx::kGoogleGrey900;
 
 // The height of the peeking app list, measured from the bottom of the screen.
 constexpr int kPeekingHeight = 284;
@@ -95,30 +70,6 @@ constexpr int kAppListPageResetTimeLimitMinutes = 20;
 
 // When true, immdeidately fires the page reset timer upon starting.
 bool skip_page_reset_timer_for_testing = false;
-
-// Returns whether AppList's rounded corners should be hidden based on
-// the app list view state and app list view bounds.
-bool ShouldHideRoundedCorners(ash::AppListViewState app_list_state,
-                              const gfx::Rect& bounds) {
-  switch (app_list_state) {
-    case ash::AppListViewState::kClosed:
-      return false;
-    case ash::AppListViewState::kFullscreenAllApps:
-    case ash::AppListViewState::kFullscreenSearch:
-      // Hide rounded corners in fullscreen state.
-      return true;
-
-    case ash::AppListViewState::kPeeking:
-    case ash::AppListViewState::kHalf:
-      // When the virtual keyboard shows, the AppListView is moved upward to
-      // avoid the overlapping area with the virtual keyboard. As a result, its
-      // bottom side may be on the display edge. Stop showing the rounded
-      // corners under this circumstance.
-      return bounds.y() == 0;
-  }
-  NOTREACHED();
-  return false;
-}
 
 // This view forwards the focus to the search box widget by providing it as a
 // FocusTraversable when a focus search is provided.
@@ -144,33 +95,6 @@ class SearchBoxFocusHost : public views::View {
  private:
   views::Widget* search_box_widget_;
 };
-
-SkColor GetBackgroundShieldColor(const std::vector<SkColor>& colors,
-                                 float color_opacity,
-                                 bool is_tablet_mode,
-                                 views::Widget* app_list_widget) {
-  const U8CPU sk_opacity_value = static_cast<U8CPU>(255 * color_opacity);
-  SkColor default_color =
-      SkColorSetA(kAppListBackgroundColor, sk_opacity_value);
-
-  if (!colors.empty()) {
-    DCHECK_EQ(static_cast<size_t>(ColorProfileType::NUM_OF_COLOR_PROFILES),
-              colors.size());
-    const SkColor dark_muted =
-        colors[static_cast<int>(ColorProfileType::DARK_MUTED)];
-    if (SK_ColorTRANSPARENT != dark_muted) {
-      default_color = SkColorSetA(
-          color_utils::GetResultingPaintColor(
-              SkColorSetA(SK_ColorBLACK, AppListView::kAppListColorDarkenAlpha),
-              dark_muted),
-          sk_opacity_value);
-    }
-  }
-
-  return SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(
-                         is_tablet_mode, default_color, app_list_widget),
-                     sk_opacity_value);
-}
 
 float ComputeSubpixelOffset(const display::Display& display, float value) {
   float pixel_position = std::round(display.device_scale_factor() * value);
@@ -433,105 +357,6 @@ class StateTransitionNotifier : public ui::ImplicitAnimationObserver {
   absl::optional<AppListViewState> target_app_list_view_state_;
 };
 
-// The view for the app list background shield which changes color and radius.
-class AppListBackgroundShieldView : public views::View {
- public:
-  explicit AppListBackgroundShieldView(int shelf_background_corner_radius)
-      : shelf_background_corner_radius_(shelf_background_corner_radius) {
-    SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    layer()->SetFillsBoundsOpaquely(false);
-    SetBackgroundRadius(shelf_background_corner_radius_);
-    layer()->SetColor(color_);
-    layer()->SetName("launcher/BackgroundShield");
-  }
-
-  AppListBackgroundShieldView(const AppListBackgroundShieldView&) = delete;
-  AppListBackgroundShieldView& operator=(const AppListBackgroundShieldView&) =
-      delete;
-
-  ~AppListBackgroundShieldView() override = default;
-
-  void UpdateBackground(bool use_blur) {
-    if (use_blur_ == use_blur)
-      return;
-    use_blur_ = use_blur;
-
-    if (use_blur) {
-      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-    } else {
-      layer()->SetBackgroundBlur(0);
-    }
-  }
-
-  void UpdateBackgroundRadius(
-      AppListViewState state,
-      bool shelf_has_rounded_corners,
-      absl::optional<base::TimeTicks> animation_end_timestamp) {
-    const float target_corner_radius =
-        (state == AppListViewState::kClosed && !shelf_has_rounded_corners)
-            ? 0
-            : shelf_background_corner_radius_;
-    if (corner_radius_ == target_corner_radius)
-      return;
-
-    layer()->GetAnimator()->StopAnimatingProperty(
-        ui::LayerAnimationElement::ROUNDED_CORNERS);
-
-    std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
-    if (animation_end_timestamp.has_value()) {
-      settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
-          layer()->GetAnimator());
-      settings->SetTransitionDuration((*animation_end_timestamp) -
-                                      base::TimeTicks::Now());
-      settings->SetTweenType(gfx::Tween::EASE_OUT);
-      settings->SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
-    }
-    SetBackgroundRadius(target_corner_radius);
-  }
-
-  void SetBackgroundRadius(float corner_radius) {
-    corner_radius_ = corner_radius;
-    layer()->SetRoundedCornerRadius({corner_radius, corner_radius, 0, 0});
-  }
-
-  void UpdateColor(SkColor color) {
-    if (color_ == color)
-      return;
-
-    color_ = color;
-    layer()->SetColor(color);
-  }
-
-  void UpdateBounds(const gfx::Rect& bounds) {
-    // Inset bottom by 2 * the background radius to account for the rounded
-    // corners on the top and bottom of the |app_list_background_shield_|. Only
-    // add the inset to the bottom to keep padding at the top of the AppList the
-    // same.
-    gfx::Rect new_bounds = bounds;
-    new_bounds.Inset(
-        gfx::Insets::TLBR(0, 0, -shelf_background_corner_radius_ * 2, 0));
-    SetBoundsRect(new_bounds);
-  }
-
-  SkColor GetColorForTest() const { return color_; }
-
-  const char* GetClassName() const override {
-    return "AppListBackgroundShieldView";
-  }
-
- private:
-  // Whether the background blur has been set on the background shield.
-  bool use_blur_ = false;
-
-  float corner_radius_ = 0.0f;
-
-  SkColor color_ = gfx::kPlaceholderColor;
-
-  int shelf_background_corner_radius_ = 0;
-};
-
 ////////////////////////////////////////////////////////////////////////////////
 // AppListView::TestApi
 
@@ -550,7 +375,6 @@ PagedAppsGridView* AppListView::TestApi::GetRootAppsGridView() {
 
 AppListView::AppListView(AppListViewDelegate* delegate)
     : delegate_(delegate),
-      is_background_blur_enabled_(features::IsBackgroundBlurEnabled()),
       state_transition_notifier_(
           std::make_unique<StateTransitionNotifier>(this)),
       state_animation_metrics_reporter_(
@@ -586,17 +410,8 @@ void AppListView::InitView(gfx::NativeView parent) {
 }
 
 void AppListView::InitContents() {
-  DCHECK(!app_list_background_shield_);
   DCHECK(!app_list_main_view_);
   DCHECK(!search_box_view_);
-
-  auto app_list_background_shield =
-      std::make_unique<AppListBackgroundShieldView>(delegate_->GetShelfSize() /
-                                                    2);
-  app_list_background_shield->UpdateBackground(
-      /*use_blur*/ !delegate_->IsInTabletMode() && is_background_blur_enabled_);
-  app_list_background_shield_ =
-      AddChildView(std::move(app_list_background_shield));
 
   a11y_announcer_ = std::make_unique<AppListA11yAnnouncer>(
       AddChildView(std::make_unique<views::View>()));
@@ -813,23 +628,6 @@ void AppListView::Layout() {
   main_bounds.Inset(GetMainViewInsetsForShelf());
 
   app_list_main_view_->SetBoundsRect(main_bounds);
-
-  app_list_background_shield_->UpdateBounds(contents_bounds);
-
-  UpdateAppListBackgroundYPosition(target_app_list_state_);
-}
-
-void AppListView::OnThemeChanged() {
-  views::WidgetDelegateView::OnThemeChanged();
-  SetBackgroundShieldColor();
-}
-
-views::View* AppListView::GetAppListBackgroundShieldForTest() {
-  return app_list_background_shield_;
-}
-
-SkColor AppListView::GetAppListBackgroundShieldColorForTest() {
-  return app_list_background_shield_->GetColorForTest();
 }
 
 bool AppListView::IsShowingEmbeddedAssistantUI() const {
@@ -1197,16 +995,9 @@ void AppListView::OnTabletModeChanged(bool started) {
   // Refresh the state if the view is not in a fullscreen state.
   if (started && !is_fullscreen())
     SetState(app_list_state_);
-
-  app_list_background_shield_->UpdateBackground(
-      /*use_blur*/ is_background_blur_enabled_ && !started);
-
-  // Update background color opacity.
-  SetBackgroundShieldColor();
 }
 
 void AppListView::OnWallpaperColorsChanged() {
-  SetBackgroundShieldColor();
   search_box_view_->OnWallpaperColorsChanged();
 }
 
@@ -1446,7 +1237,6 @@ void AppListView::ApplyBoundsAnimation(AppListViewState target_state,
                                        base::TimeDelta duration_ms) {
   if (is_side_shelf_) {
     // There is no animation in side shelf.
-    UpdateAppListBackgroundYPosition(target_state);
     // Mark the state transition as complete directly, as no animations that
     // for `state_transition_notifier_` to observe are run in this case.
     state_transition_notifier_->SetTransitionDone();
@@ -1473,9 +1263,6 @@ void AppListView::ApplyBoundsAnimation(AppListViewState target_state,
                                    : layer->bounds().y();
   const int current_y_with_transform =
       current_bounds_y + GetRemainingBoundsAnimationDistance();
-
-  const gfx::Transform current_shield_transform =
-      app_list_background_shield_->layer()->transform();
 
   // Only report animation throughput for full state transitions - i.e. when the
   // starting app list view position matches the expected position for the
@@ -1528,38 +1315,9 @@ void AppListView::ApplyBoundsAnimation(AppListViewState target_state,
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "AppList::StateTransitionAnimations",
                                     state_transition_notifier_.get());
   animation.AddObserver(state_transition_notifier_.get());
-
-  // In fullscreen state, or peeking state with restricted vertical space, the
-  // background shield is translated upwards to ensure background radius is not
-  // visible.
-  // NOTE: layer->SetBounds() changes shield transform, so reset the transform
-  // to the value before the |layer| bounds are set before starting the
-  // animation.
-  app_list_background_shield_->SetTransform(current_shield_transform);
-  ui::ScopedLayerAnimationSettings shield_animation(
-      app_list_background_shield_->layer()->GetAnimator());
-  shield_animation.SetTransitionDuration(duration_ms);
-  shield_animation.SetTweenType(gfx::Tween::EASE_OUT);
-  shield_animation.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
-
-  gfx::Transform shield_transform;
-  if (ShouldHideRoundedCorners(target_state, target_bounds)) {
-    shield_transform.Translate(0, -(delegate_->GetShelfSize() / 2));
-  }
-  app_list_background_shield_->SetTransform(shield_transform);
-
   animation.SetTransitionDuration(duration_ms);
   animation.SetTweenType(gfx::Tween::EASE_OUT);
   layer->SetTransform(gfx::Transform());
-
-  // Schedule animations of the rounded corners. When running on linux
-  // workstation, the rounded corner animation sometimes looks out-of-sync. This
-  // does not happen on actual devices.
-
-  // TODO(mukai): fix the out-of-sync problem.
-  app_list_background_shield_->UpdateBackgroundRadius(
-      target_state, shelf_has_rounded_corners_, animation_end_timestamp_);
 }
 
 void AppListView::SetStateFromSearchBoxView(bool search_box_is_empty,
@@ -1676,24 +1434,6 @@ void AppListView::OnWindowDestroying(aura::Window* window) {
   window->RemoveObserver(this);
 }
 
-void AppListView::OnWindowBoundsChanged(aura::Window* window,
-                                        const gfx::Rect& old_bounds,
-                                        const gfx::Rect& new_bounds,
-                                        ui::PropertyChangeReason reason) {
-  DCHECK_EQ(GetWidget()->GetNativeView(), window);
-
-  gfx::Transform transform;
-  if (ShouldHideRoundedCorners(target_app_list_state_, new_bounds))
-    transform.Translate(0, -(delegate_->GetShelfSize() / 2));
-
-  // Avoid setting new transform if the shield is animating to (or already has)
-  // the target value.
-  if (app_list_background_shield_->layer()->GetTargetTransform() != transform) {
-    app_list_background_shield_->SetTransform(transform);
-    app_list_background_shield_->SchedulePaint();
-  }
-}
-
 void AppListView::OnBoundsAnimationCompleted(AppListViewState target_state) {
   const bool was_animation_interrupted =
       GetRemainingBoundsAnimationDistance() != 0;
@@ -1730,9 +1470,6 @@ void AppListView::SetShelfHasRoundedCorners(bool shelf_has_rounded_corners) {
   if (GetWidget() && GetWidget()->GetLayer()->GetAnimator()->is_animating()) {
     animation_end_timestamp = animation_end_timestamp_;
   }
-  app_list_background_shield_->UpdateBackgroundRadius(
-      target_app_list_state_, shelf_has_rounded_corners_,
-      animation_end_timestamp);
 }
 
 void AppListView::RedirectKeyEventToSearchBox(ui::KeyEvent* event) {
@@ -1822,30 +1559,6 @@ void AppListView::OnParentWindowBoundsChanged() {
   EnsureWidgetBoundsMatchCurrentState();
 }
 
-void AppListView::SetBackgroundShieldColor() {
-  // There is a chance when AppListView::OnWallpaperColorsChanged is called
-  // from AppListViewDelegate, the |app_list_background_shield_| is not
-  // initialized.
-  if (!app_list_background_shield_)
-    return;
-
-  // Opacity is set on the color instead of the layer because changing opacity
-  // of the layer changes opacity of the blur effect, which is not desired.
-  float color_opacity = kAppListOpacity;
-
-  if (delegate_->IsInTabletMode()) {
-    // The Homecher background should have an opacity of 0.
-    color_opacity = 0;
-  } else if (is_background_blur_enabled_) {
-    color_opacity = kAppListOpacityWithBlur;
-  }
-
-  DCHECK(GetWidget());
-  app_list_background_shield_->UpdateColor(GetBackgroundShieldColor(
-      delegate_->GetWallpaperProminentColors(), color_opacity,
-      delegate_->IsInTabletMode(), GetWidget()));
-}
-
 bool AppListView::ShouldIgnoreScrollEvents() {
   if (app_list_state_ != AppListViewState::kPeeking &&
       app_list_state_ != AppListViewState::kFullscreenAllApps)
@@ -1899,21 +1612,6 @@ gfx::Rect AppListView::GetPreferredWidgetBoundsForState(
   return delegate_->SnapBoundsToDisplayEdge(
       gfx::Rect(0, GetPreferredWidgetYForState(state), parent->bounds().width(),
                 GetFullscreenStateHeight()));
-}
-
-void AppListView::UpdateAppListBackgroundYPosition(AppListViewState state) {
-  const int app_list_background_corner_radius = delegate_->GetShelfSize() / 2;
-
-  // Update the y position of the background shield.
-  gfx::Transform transform;
-  if (ShouldHideRoundedCorners(state, GetBoundsInScreen())) {
-    transform.Translate(0, -app_list_background_corner_radius);
-  }
-
-  // Avoid setting new transform if the shield is animating to (or already has)
-  // the target value.
-  if (app_list_background_shield_->layer()->GetTargetTransform() != transform)
-    app_list_background_shield_->SetTransform(transform);
 }
 
 void AppListView::OnTabletModeAnimationTransitionNotified(

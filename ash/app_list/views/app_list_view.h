@@ -22,7 +22,6 @@
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/events/event.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -42,7 +41,6 @@ namespace ash {
 class AppListA11yAnnouncer;
 class AppsContainerView;
 class ApplicationDragAndDropHost;
-class AppListBackgroundShieldView;
 class AppListMainView;
 class AppsGridView;
 class PagedAppsGridView;
@@ -193,7 +191,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void Layout() override;
-  void OnThemeChanged() override;
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
@@ -274,10 +271,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // WindowObserver overrides:
   void OnWindowDestroying(aura::Window* window) override;
-  void OnWindowBoundsChanged(aura::Window* window,
-                             const gfx::Rect& old_bounds,
-                             const gfx::Rect& new_bounds,
-                             ui::PropertyChangeReason reason) override;
 
   void OnTabletModeAnimationTransitionNotified(
       TabletModeAnimationTransition animation_transition);
@@ -311,10 +304,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void set_onscreen_keyboard_shown(bool onscreen_keyboard_shown) {
     onscreen_keyboard_shown_ = onscreen_keyboard_shown;
   }
-
-  views::View* GetAppListBackgroundShieldForTest();
-
-  SkColor GetAppListBackgroundShieldColorForTest();
 
   // Returns true if the Embedded Assistant UI is currently being shown.
   bool IsShowingEmbeddedAssistantUI() const;
@@ -412,7 +401,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   views::View* GetInitiallyFocusedView() override;
 
   const std::vector<SkColor>& GetWallpaperProminentColors();
-  void SetBackgroundShieldColor();
 
   // Returns true if scroll events should be ignored.
   bool ShouldIgnoreScrollEvents();
@@ -435,10 +423,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // widget is initialized.
   gfx::Rect GetPreferredWidgetBoundsForState(AppListViewState state);
 
-  // Updates y position of |app_list_background_shield_| based on the
-  // |state|.
-  void UpdateAppListBackgroundYPosition(AppListViewState state);
-
   // Reset the subpixel position offset of the |layer| so that it's DP origin
   // is snapped.
   void ResetSubpixelPositionOffset(ui::Layer* layer);
@@ -453,9 +437,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   gfx::NativeView parent_window_ = nullptr;
 
   SearchBoxView* search_box_view_ = nullptr;  // Owned by views hierarchy.
-  // Owned by the app list's widget. Used to show the darkened AppList
-  // background.
-  AppListBackgroundShieldView* app_list_background_shield_ = nullptr;
 
   // The time the AppListView was requested to be shown. Used for metrics.
   absl::optional<base::Time> time_shown_;
@@ -471,8 +452,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // The velocity of the gesture event.
   float last_fling_velocity_ = 0;
-  // Whether the background blur is enabled.
-  const bool is_background_blur_enabled_;
+
   // The state of the app list, controlled via SetState().
   AppListViewState app_list_state_ = AppListViewState::kClosed;
   // Set to target app list state while `SetState()` is being handled.

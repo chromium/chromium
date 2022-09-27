@@ -3886,35 +3886,6 @@ TEST_F(AppListPresenterHomeLauncherTest, ParentWindowContainer) {
                   ->Contains(window2));
 }
 
-// Tests that the background opacity change for app list.
-TEST_F(AppListPresenterHomeLauncherTest, BackgroundOpacity) {
-  // Turn on tablet mode. The background shield should be transparent.
-  EnableTabletMode(true);
-
-  const U8CPU tablet_background_opacity = static_cast<U8CPU>(0);
-  EXPECT_EQ(SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(
-                            /*is_tablet_mode*/
-                            true, /*default_color*/ gfx::kGoogleGrey900,
-                            GetAppListView()->GetWidget()),
-                        tablet_background_opacity),
-            GetAppListView()->GetAppListBackgroundShieldColorForTest());
-  EXPECT_EQ(1, GetAppListView()
-                   ->GetAppListBackgroundShieldForTest()
-                   ->layer()
-                   ->opacity());
-}
-
-// Tests that the background blur which is present in clamshell mode does not
-// show in tablet mode.
-TEST_F(AppListPresenterHomeLauncherTest, BackgroundBlur) {
-  // Turn on tablet mode. The background blur should be disabled.
-  EnableTabletMode(true);
-  EXPECT_EQ(0.0f, GetAppListView()
-                      ->GetAppListBackgroundShieldForTest()
-                      ->layer()
-                      ->background_blur());
-}
-
 // Tests that tapping or clicking on background cannot dismiss the app list.
 TEST_F(AppListPresenterHomeLauncherTest, TapOrClickToDismiss) {
   // Show app list in non-tablet mode. Click outside search box.

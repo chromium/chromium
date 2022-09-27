@@ -1654,23 +1654,6 @@ TEST_F(AppListViewPeekingTest, ShowFullscreenByDefault) {
   ASSERT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
 }
 
-// Tests that in side shelf mode, the app list opens in fullscreen by default
-// and verifies that the top rounded corners of the app list background are
-// hidden (see https://crbug.com/920082). ProductivityLauncher does not change
-// shelf corners.
-TEST_F(AppListViewPeekingTest, ShowFullscreenWhenInSideShelfMode) {
-  Initialize(false /*is_tablet_mode*/);
-
-  Show(true /*is_side_shelf*/);
-  EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
-  // The rounded corners should be off screen in side shelf.
-  gfx::Transform translation;
-  translation.Translate(0, -(delegate_->GetShelfSize() / 2));
-  // The rounded corners should be off screen in side shelf.
-  EXPECT_EQ(translation,
-            view_->GetAppListBackgroundShieldForTest()->GetTransform());
-}
-
 // Tests that in tablet mode, the app list opens in fullscreen by default.
 TEST_F(AppListViewTest, ShowFullscreenWhenInTabletMode) {
   Initialize(true /*is_tablet_mode*/);
