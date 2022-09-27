@@ -169,13 +169,13 @@ void FirstPartySetsAccessDelegate::InvokePendingQueries() {
   if (!pending_queries_)
     return;
 
-  while (!pending_queries_->empty()) {
-    base::OnceClosure query_task = std::move(pending_queries_->front());
-    pending_queries_->pop_front();
+  std::unique_ptr<base::circular_deque<base::OnceClosure>> queries;
+  queries.swap(pending_queries_);
+  while (!queries->empty()) {
+    base::OnceClosure query_task = std::move(queries->front());
+    queries->pop_front();
     std::move(query_task).Run();
   }
-
-  pending_queries_ = nullptr;
 }
 
 void FirstPartySetsAccessDelegate::EnqueuePendingQuery(
