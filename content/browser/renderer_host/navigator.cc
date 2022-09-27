@@ -867,7 +867,8 @@ void Navigator::NavigateFromFrameProxy(
     const absl::optional<blink::Impression>& impression,
     base::TimeTicks navigation_start_time,
     bool is_embedder_initiated_fenced_frame_navigation,
-    bool is_unfenced_top_navigation) {
+    bool is_unfenced_top_navigation,
+    bool force_new_browsing_instance) {
   // |method != "POST"| should imply absence of |post_body|.
   if (method != "POST" && post_body) {
     NOTREACHED();
@@ -910,8 +911,8 @@ void Navigator::NavigateFromFrameProxy(
       download_policy, method, post_body, extra_headers,
       std::move(source_location), std::move(blob_url_loader_factory),
       is_form_submission, impression, navigation_start_time,
-      is_embedder_initiated_fenced_frame_navigation,
-      is_unfenced_top_navigation);
+      is_embedder_initiated_fenced_frame_navigation, is_unfenced_top_navigation,
+      force_new_browsing_instance);
 }
 
 void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,

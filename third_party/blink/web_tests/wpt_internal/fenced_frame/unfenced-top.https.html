@@ -79,14 +79,10 @@ async function createAndValidateWindow() {
 
 async function checkNavigationSucceeded(
     new_window, expected_history_length) {
-  message_received = new Promise(resolve => window.onmessage = () => resolve());
-
-  // Check that the navigation happened in the correct frame.
   await new_window.execute((expected_history_length) => {
-    assert_not_equals(window.opener, null,
-                      `The browsing context has a window.opener, because it
-                       is the top-level frame in the opened window.`);
-    window.opener.postMessage('This should reach the original opener', '*');
+    assert_equals(window.opener, null,
+                  `The frame has no window.opener anymore, because _unfencedTop
+                   forces a new browsing context group.`);
     assert_equals(document.referrer, "",
                   `The new document.referrer should be empty.`);
     assert_equals(window.fenced_frame, undefined,
@@ -96,9 +92,9 @@ async function checkNavigationSucceeded(
                   `The history length should be as expected.`);
   }, [expected_history_length]);
 
-  // Await the postMessage from inside the frame to confirm that the opener
-  // is unchanged.
-  await message_received;
+  assert_true(new_window.closed,
+              `The popup's handle is now closed, because _unfencedTop forces
+               a new browsing context group.`);
 }
 
 // Test successful top-level navigation (non-refresh) from an opaque-ads

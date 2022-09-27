@@ -164,7 +164,8 @@ class CONTENT_EXPORT Navigator {
       const absl::optional<blink::Impression>& impression,
       base::TimeTicks navigation_start_time,
       bool is_embedder_initiated_fenced_frame_navigation = false,
-      bool is_unfenced_top_navigation = false);
+      bool is_unfenced_top_navigation = false,
+      bool force_new_browsing_instance = false);
 
   // Called after BeforeUnloadCompleted callback is invoked from the renderer.
   // If |frame_tree_node| has a NavigationRequest waiting for the renderer

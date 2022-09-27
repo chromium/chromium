@@ -2753,7 +2753,8 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     const absl::optional<blink::Impression>& impression,
     base::TimeTicks navigation_start_time,
     bool is_embedder_initiated_fenced_frame_navigation,
-    bool is_unfenced_top_navigation) {
+    bool is_unfenced_top_navigation,
+    bool force_new_browsing_instance) {
   if (is_renderer_initiated)
     DCHECK(initiator_origin.has_value());
 
@@ -2894,6 +2895,13 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
 
   if (!request)
     return;
+
+  // Force the navigation to take place in a new browsing instance.
+  // This is used by _unfencedTop in fenced frames to ensure that navigations
+  // leaving the fenced context create a new browsing instance.
+  if (force_new_browsing_instance) {
+    request->coop_status().ForceBrowsingInstanceSwap();
+  }
 
   // At this stage we are proceeding with this navigation. If this was renderer
   // initiated with user gesture, we need to make sure we clear up potential

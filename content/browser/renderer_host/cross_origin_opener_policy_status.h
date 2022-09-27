@@ -62,6 +62,14 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
                    const url::Origin& response_origin,
                    const net::NetworkIsolationKey& network_isolation_key);
 
+  // Force a browsing instance swap, even if the COOP rules do not require it.
+  // Calling this function is safe because it can only tighten security.
+  // This is used by _unfencedTop in fenced frames to ensure that navigations
+  // leaving the fenced context create a new browsing instance.
+  void ForceBrowsingInstanceSwap() {
+    require_browsing_instance_swap_ = CoopSwapResult::kSwap;
+  }
+
   // Set to true whenever the Cross-Origin-Opener-Policy spec requires a
   // "BrowsingContext group" swap:
   // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e

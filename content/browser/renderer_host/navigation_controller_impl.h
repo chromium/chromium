@@ -214,7 +214,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const absl::optional<blink::Impression>& impression,
       base::TimeTicks navigation_start_time,
       bool is_embedder_initiated_fenced_frame_navigation = false,
-      bool is_unfenced_top_navigation = false);
+      bool is_unfenced_top_navigation = false,
+      bool force_new_browsing_instance = false);
 
   // Navigates to the history entry associated with the given navigation API
   // |key|. Searches |entries_| for a FrameNavigationEntry associated with
