@@ -70,7 +70,8 @@ class FeatureProcessorState {
   void OnFinishProcessing();
 
   // Sets an error to the current feature processor state.
-  void SetError(stats::FeatureProcessingError error);
+  void SetError(stats::FeatureProcessingError error,
+                const std::string& message = {});
 
   // For testing only.
   void set_input_context_for_testing(

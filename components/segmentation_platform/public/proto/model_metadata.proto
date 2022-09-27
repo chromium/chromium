@@ -117,7 +117,7 @@ message CustomInput {
     PRICE_TRACKING_HINTS = 3;
 
     // This type of custom input is used directly to fill the input tensor to
-    // the model.
+    // the model or to another query.
     // Output type: ProcessedValue
     // Output length: 1
     // Additional arg:

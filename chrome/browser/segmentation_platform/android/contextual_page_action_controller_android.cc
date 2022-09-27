@@ -37,7 +37,8 @@ void OnProductInfoReceived(
 
   scoped_refptr<segmentation_platform::InputContext> input_context =
       base::MakeRefCounted<segmentation_platform::InputContext>();
-  input_context->metadata_args.emplace("is_price_tracking", can_track_price);
+  input_context->metadata_args.emplace("is_price_tracking",
+                                       static_cast<float>(can_track_price));
   input_context->metadata_args.emplace("url", url);
   segmentation_platform::SegmentationPlatformService*
       segmentation_platform_service = segmentation_platform::

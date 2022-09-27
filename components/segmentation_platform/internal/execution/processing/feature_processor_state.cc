@@ -32,11 +32,13 @@ FeatureProcessorState::~FeatureProcessorState() {
   DCHECK(callback_.is_null());
 }
 
-void FeatureProcessorState::SetError(stats::FeatureProcessingError error) {
+void FeatureProcessorState::SetError(stats::FeatureProcessingError error,
+                                     const std::string& message) {
   stats::RecordFeatureProcessingError(segment_id_, error);
-  DVLOG(1) << "Processing error occured: model "
-           << SegmentIdToHistogramVariant(segment_id_) << " failed with "
-           << stats::FeatureProcessingErrorToString(error);
+  LOG(ERROR) << "Processing error occured: model "
+             << SegmentIdToHistogramVariant(segment_id_) << " failed with "
+             << stats::FeatureProcessingErrorToString(error)
+             << ", message: " << message;
   error_ = true;
   input_tensor_.clear();
 }
@@ -110,7 +112,9 @@ std::vector<float> FeatureProcessorState::MergeTensors(
         if (value.type == ProcessedValue::Type::FLOAT) {
           result.push_back(value.float_val);
         } else {
-          SetError(stats::FeatureProcessingError::kResultTensorError);
+          SetError(stats::FeatureProcessingError::kResultTensorError,
+                   "Expected ProcessedValue::Type::FLOAT but found " +
+                       base::NumberToString(static_cast<int>(value.type)));
           return result;
         }
       }
