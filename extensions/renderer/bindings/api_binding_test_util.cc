@@ -74,7 +74,7 @@ base::Value::List ListValueFromString(base::StringPiece str) {
     return base::Value::List();
   }
 
-  return std::move(value.GetList());
+  return std::move(value).TakeList();
 }
 
 base::Value::Dict DictValueFromString(base::StringPiece str) {
@@ -88,7 +88,7 @@ base::Value::Dict DictValueFromString(base::StringPiece str) {
     return base::Value::Dict();
   }
 
-  return std::move(value.GetDict());
+  return std::move(value).TakeDict();
 }
 
 std::unique_ptr<base::Value> DeprecatedValueFromString(base::StringPiece str) {
