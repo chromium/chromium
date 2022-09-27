@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,7 +13,7 @@ module_basename = os.path.basename(__file__)
 module_pyname = os.path.splitext(module_basename)[0] + '.py'
 
 CPP_TEMPLATE = """
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 

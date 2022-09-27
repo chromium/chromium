@@ -1,6 +1,6 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.sy
+// found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_SIMULATED_EVENT_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_SIMULATED_EVENT_UTIL_H_

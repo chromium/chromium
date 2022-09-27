@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_CONTENT_VISIBILITY_AUTO_STATE_CHANGED_EVENT_H_

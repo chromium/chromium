@@ -35,7 +35,7 @@ ResourceReceiveResponse {
     }
 }
 ResourceFinish {
-    decodedBodyLength : 620
+    decodedBodyLength : 598
     didFail : false
     encodedDataLength : 229
     finishTime : <number>
@@ -76,7 +76,7 @@ ResourceReceiveResponse {
     }
 }
 ResourceFinish {
-    decodedBodyLength : 620
+    decodedBodyLength : 598
     didFail : false
     encodedDataLength : 229
     finishTime : <number>
@@ -117,7 +117,7 @@ ResourceReceiveResponse {
     }
 }
 ResourceFinish {
-    decodedBodyLength : 544
+    decodedBodyLength : 522
     didFail : false
     encodedDataLength : 229
     finishTime : <number>

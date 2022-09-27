@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Generate constants derived from the Sanitizer API spec."""
@@ -22,7 +22,7 @@ def lstrip(string):
 def prolog(out):
     """Print the beginning of the source file."""
     print(lstrip("""
-        // Copyright 2021 The Chromium Authors. All rights reserved.
+        // Copyright 2021 The Chromium Authors
         // Use of this source code is governed by a BSD-style license that can be
         // found in the LICENSE file.
 
