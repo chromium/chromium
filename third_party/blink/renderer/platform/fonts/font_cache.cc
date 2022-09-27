@@ -64,10 +64,6 @@
 
 namespace blink {
 
-BASE_FEATURE(kAsyncFontAccess,
-             "AsyncFontAccess",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char kColorEmojiLocale[] = "und-Zsye";
 
 #if BUILDFLAG(IS_ANDROID)

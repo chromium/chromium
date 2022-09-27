@@ -35,7 +35,6 @@
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -86,8 +85,6 @@ class FontPlatformData;
 class FontPlatformDataCache;
 class SimpleFontData;
 class WebFontPrewarmer;
-
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kAsyncFontAccess);
 
 enum class AlternateFontName {
   kAllowAlternate,
