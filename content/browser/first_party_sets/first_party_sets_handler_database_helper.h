@@ -80,10 +80,11 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   // `browser_context_id`.
   void UpdateClearStatusForContext(const std::string& browser_context_id);
 
-  // Wraps FirstPartySetsDatabase::SetPublicSets.
-  void PersistPublicSets(const std::string& browser_context_id,
-                         const base::Version& version,
-                         const net::PublicSets& sets);
+  // Wraps FirstPartySetsDatabase::PersistSets.
+  void PersistSets(const std::string& browser_context_id,
+                   const base::Version& version,
+                   const net::PublicSets& sets,
+                   const net::FirstPartySetsContextConfig& config);
 
   // Wraps FirstPartySetsDatabase::GetPublicSets.
   net::PublicSets GetPersistedPublicSets(const std::string& browser_context_id);

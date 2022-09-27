@@ -293,37 +293,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
-       ClearSiteDataOnChangedSetsForContext_InvalidPublicSetsVersion) {
-  net::SchemefulSite foo(GURL("https://foo.test"));
-  net::SchemefulSite associated(GURL("https://associatedsite.test"));
-  FirstPartySetsHandlerImpl::GetInstance()
-      ->SetEmbedderWillProvidePublicSetsForTesting(true);
-  const std::string browser_context_id = "profile";
-  const base::Version invalid_version = base::Version();
-  DCHECK(!invalid_version.IsValid());
-
-  const std::string input =
-      R"({"primary": "https://foo.test", )"
-      R"("associatedSites": ["https://associatedsite.test"]})";
-  FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
-      invalid_version, WritePublicSetsFile(input));
-
-  FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
-                                                 LocalSetDeclaration());
-
-  base::RunLoop run_loop;
-  FirstPartySetsHandlerImpl::GetInstance()
-      ->ClearSiteDataOnChangedSetsForContext(
-          base::BindRepeating(&FakeBrowserContextGetter), browser_context_id,
-          /*context_config=*/nullptr, run_loop.QuitClosure());
-  run_loop.Run();
-
-  // Public sets with invalid version was not persisted.
-  EXPECT_TRUE(
-      GetPersistedPublicSetsAndWait(browser_context_id).value().empty());
-}
-
-TEST_F(FirstPartySetsHandlerImplEnabledTest,
        GetSetsIfEnabledAndReady_AfterSetsReady) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite associated(GURL("https://associatedsite.test"));
