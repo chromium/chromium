@@ -59,9 +59,7 @@ class TestTargetConfig : public TargetConfig {
     return SBOX_ALL_OK;
   }
   JobLevel GetJobLevel() const override { return sandbox::JobLevel{}; }
-  ResultCode SetJobMemoryLimit(size_t memory_limit) override {
-    return SBOX_ALL_OK;
-  }
+  void SetJobMemoryLimit(size_t memory_limit) override {}
   void SetAllowNoSandboxJob() override { NOTREACHED(); }
   bool GetAllowNoSandboxJob() override { return false; }
   ResultCode AddRule(SubSystem subsystem,
@@ -69,9 +67,8 @@ class TestTargetConfig : public TargetConfig {
                      const wchar_t* pattern) override {
     return SBOX_ALL_OK;
   }
-  ResultCode AddDllToUnload(const wchar_t* dll_name) override {
+  void AddDllToUnload(const wchar_t* dll_name) override {
     blocklisted_dlls_.push_back(dll_name);
-    return SBOX_ALL_OK;
   }
   const std::vector<std::wstring>& blocklisted_dlls() const {
     return blocklisted_dlls_;
@@ -80,9 +77,7 @@ class TestTargetConfig : public TargetConfig {
     return SBOX_ALL_OK;
   }
   IntegrityLevel GetIntegrityLevel() const override { return IntegrityLevel{}; }
-  ResultCode SetDelayedIntegrityLevel(IntegrityLevel level) override {
-    return SBOX_ALL_OK;
-  }
+  void SetDelayedIntegrityLevel(IntegrityLevel level) override {}
   ResultCode SetLowBox(const wchar_t* sid) override { return SBOX_ALL_OK; }
   ResultCode SetProcessMitigations(MitigationFlags flags) override {
     return SBOX_ALL_OK;

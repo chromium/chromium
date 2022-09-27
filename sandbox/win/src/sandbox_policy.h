@@ -142,7 +142,7 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // Sets a hard limit on the size of the commit set for the sandboxed process.
   // If the limit is reached, the process will be terminated with
   // SBOX_FATAL_MEMORY_EXCEEDED (7012).
-  virtual ResultCode SetJobMemoryLimit(size_t memory_limit) = 0;
+  virtual void SetJobMemoryLimit(size_t memory_limit) = 0;
 
   // Adds a policy rule effective for processes spawned using this policy.
   // subsystem: One of the above enumerated windows subsystems.
@@ -162,7 +162,7 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // Adds a dll that will be unloaded in the target process before it gets
   // a chance to initialize itself. Typically, dlls that cause the target
   // to crash go here.
-  virtual ResultCode AddDllToUnload(const wchar_t* dll_name) = 0;
+  virtual void AddDllToUnload(const wchar_t* dll_name) = 0;
 
   // Sets the integrity level of the process in the sandbox. Both the initial
   // token and the main token will be affected by this. If the integrity level
@@ -178,7 +178,7 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // Isolation is not affected by this setting and will remain off for the
   // process in the sandbox. If the integrity level is set to a level higher
   // than the current level, the sandbox will fail to start.
-  virtual ResultCode SetDelayedIntegrityLevel(IntegrityLevel level) = 0;
+  virtual void SetDelayedIntegrityLevel(IntegrityLevel level) = 0;
 
   // Sets the LowBox token for sandboxed process. This is mutually exclusive
   // with SetAppContainer method.

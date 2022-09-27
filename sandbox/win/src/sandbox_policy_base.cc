@@ -319,9 +319,8 @@ ResultCode ConfigBase::AddRuleInternal(SubSystem subsystem,
   return SBOX_ALL_OK;
 }
 
-ResultCode ConfigBase::AddDllToUnload(const wchar_t* dll_name) {
+void ConfigBase::AddDllToUnload(const wchar_t* dll_name) {
   blocklisted_dlls_.push_back(dll_name);
-  return SBOX_ALL_OK;
 }
 
 ResultCode ConfigBase::SetIntegrityLevel(IntegrityLevel integrity_level) {
@@ -335,10 +334,8 @@ IntegrityLevel ConfigBase::GetIntegrityLevel() const {
   return integrity_level_;
 }
 
-ResultCode ConfigBase::SetDelayedIntegrityLevel(
-    IntegrityLevel integrity_level) {
+void ConfigBase::SetDelayedIntegrityLevel(IntegrityLevel integrity_level) {
   delayed_integrity_level_ = integrity_level;
-  return SBOX_ALL_OK;
 }
 
 ResultCode ConfigBase::SetLowBox(const wchar_t* sid) {
@@ -463,9 +460,8 @@ JobLevel ConfigBase::GetJobLevel() const {
   return job_level_;
 }
 
-ResultCode ConfigBase::SetJobMemoryLimit(size_t memory_limit) {
+void ConfigBase::SetJobMemoryLimit(size_t memory_limit) {
   memory_limit_ = memory_limit;
-  return SBOX_ALL_OK;
 }
 
 void ConfigBase::SetAllowNoSandboxJob() {

@@ -70,9 +70,7 @@ std::unique_ptr<sandbox::TargetPolicy> GetSandboxPolicy(
   sandbox_result = config->SetJobLevel(sandbox::JobLevel::kLockdown, 0);
   CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
 
-  sandbox_result =
-      config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_UNTRUSTED);
-  CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
+  config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_UNTRUSTED);
 
   // This is all the mitigations from security_level.h, except those that need
   // to be enabled later (set in SetDelayedProcessMitigations below).

@@ -389,11 +389,8 @@ void LogLaunchWarning(ResultCode last_warning, DWORD last_error) {
 
 ResultCode AddDefaultConfigForSandboxedProcess(TargetConfig* config) {
   // Prevents the renderers from manipulating low-integrity processes.
-  ResultCode result =
-      config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED);
-  if (result != SBOX_ALL_OK)
-    return result;
-  result = config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED);
+  ResultCode result = config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
   if (result != SBOX_ALL_OK)
     return result;
 
@@ -525,7 +522,7 @@ bool IsAppContainerEnabled() {
   return base::FeatureList::IsEnabled(features::kRendererAppContainer);
 }
 
-ResultCode SetJobMemoryLimit(Sandbox sandbox_type, TargetConfig* config) {
+void SetJobMemoryLimit(Sandbox sandbox_type, TargetConfig* config) {
   DCHECK_NE(config->GetJobLevel(), JobLevel::kNone);
 
 #ifdef _WIN64
@@ -549,9 +546,9 @@ ResultCode SetJobMemoryLimit(Sandbox sandbox_type, TargetConfig* config) {
       memory_limit = 8 * GB;
     }
   }
-  return config->SetJobMemoryLimit(memory_limit);
+  config->SetJobMemoryLimit(memory_limit);
 #else
-  return SBOX_ALL_OK;
+  return;
 #endif
 }
 
@@ -926,7 +923,8 @@ ResultCode SandboxWin::SetJobLevel(Sandbox sandbox_type,
   if (ret != SBOX_ALL_OK)
     return ret;
 
-  return SetJobMemoryLimit(sandbox_type, config);
+  SetJobMemoryLimit(sandbox_type, config);
+  return SBOX_ALL_OK;
 }
 
 // TODO(jschuh): Need get these restrictions applied to NaCl and Pepper.

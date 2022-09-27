@@ -97,7 +97,7 @@ bool NetworkPreSpawnTarget(sandbox::TargetConfig* config) {
 }
 
 // Sets the sandbox policy for the print backend service process.
-bool PrintBackendPreSpawnTarget(sandbox::TargetConfig* config) {
+void PrintBackendPreSpawnTarget(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   // Print Backend policy lockdown level must be at least USER_LIMITED and
   // delayed integrity level INTEGRITY_LEVEL_LOW, otherwise ::OpenPrinter()
@@ -105,7 +105,6 @@ bool PrintBackendPreSpawnTarget(sandbox::TargetConfig* config) {
   config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                         sandbox::USER_LIMITED);
   config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
-  return true;
 }
 
 std::string UtilityAppContainerId(base::CommandLine& cmd_line) {
@@ -124,7 +123,7 @@ bool IconReaderPreSpawnTarget(sandbox::TargetConfig* config) {
 
   sandbox::MitigationFlags flags = config->GetDelayedProcessMitigations();
   flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
-  if (sandbox::SBOX_ALL_OK != config->SetDelayedProcessMitigations(flags))
+  if (config->SetDelayedProcessMitigations(flags) != sandbox::SBOX_ALL_OK)
     return false;
 
   // Allow file read. These should match IconLoader::GroupForFilepath().
@@ -264,8 +263,7 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     }
 #if BUILDFLAG(ENABLE_PRINTING)
     if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend) {
-      if (!PrintBackendPreSpawnTarget(config))
-        return false;
+      PrintBackendPreSpawnTarget(config);
     }
 #endif
   }
