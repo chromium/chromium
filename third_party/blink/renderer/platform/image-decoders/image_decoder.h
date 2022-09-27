@@ -597,6 +597,10 @@ class PLATFORM_EXPORT ImageDecoder {
 
   bool purge_aggressively_;
 
+  // Update `sk_image_color_space_` and `embedded_to_sk_image_transform_`, if
+  // needed.
+  void UpdateSkImageColorSpaceAndTransform();
+
   // This methods gets called at the end of InitFrameBuffer. Subclasses can do
   // format specific initialization, for e.g. alpha settings, here.
   virtual void OnInitFrameBuffer(wtf_size_t) {}
@@ -610,11 +614,19 @@ class PLATFORM_EXPORT ImageDecoder {
   bool is_all_data_received_ = false;
   bool failed_ = false;
 
+  // The precise color profile of the image.
   std::unique_ptr<ColorProfile> embedded_color_profile_;
-  sk_sp<SkColorSpace> color_space_for_sk_images_;
 
-  bool source_to_target_color_transform_needs_update_ = false;
-  std::unique_ptr<ColorProfileTransform> source_to_target_color_transform_;
+  // The color space for the SkImage that will be produced.  If
+  // `color_behavior_` is tag, then this is the SkColorSpace representation of
+  // `embedded_color_profile_`. If `color_behavior_` is convert to sRGB, then
+  // this is sRGB.
+  sk_sp<SkColorSpace> sk_image_color_space_;
+
+  // Transforms `embedded_color_profile_` to `sk_image_color_space_`. This
+  // is needed if `sk_image_color_space_` is not an exact representation of
+  // `embedded_color_profile_`.
+  std::unique_ptr<ColorProfileTransform> embedded_to_sk_image_transform_;
 
   wtf_size_t metrics_frame_index_ = kNotFound;
   base::TimeDelta metrics_time_delta_;

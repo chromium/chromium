@@ -62,7 +62,7 @@ bool CICPGetPrimaries(uint8_t primaries, SkColorSpacePrimaries& sk_primaries) {
 }
 
 bool CICPGetTransferFn(uint8_t transfer_characteristics,
-                       bool prefer_srgb,
+                       bool prefer_srgb_trfn,
                        skcms_TransferFunction& trfn) {
   // Rec. ITU-T H.273, Table 3.
   switch (transfer_characteristics) {
@@ -70,8 +70,8 @@ bool CICPGetTransferFn(uint8_t transfer_characteristics,
       // Reserved.
       break;
     case 1:
-      trfn = prefer_srgb ? SkNamedTransferFnExt::kSRGB
-                         : SkNamedTransferFnExt::kRec709;
+      trfn = prefer_srgb_trfn ? SkNamedTransferFnExt::kSRGB
+                              : SkNamedTransferFnExt::kRec709;
       return true;
     case 2:
       // Unspecified.
@@ -86,8 +86,8 @@ bool CICPGetTransferFn(uint8_t transfer_characteristics,
       trfn = SkNamedTransferFnExt::kRec470SystemBG;
       return true;
     case 6:
-      trfn = prefer_srgb ? SkNamedTransferFnExt::kSRGB
-                         : SkNamedTransferFnExt::kRec601;
+      trfn = prefer_srgb_trfn ? SkNamedTransferFnExt::kSRGB
+                              : SkNamedTransferFnExt::kRec601;
       return true;
     case 7:
       trfn = SkNamedTransferFnExt::kSMPTE_ST_240;
@@ -102,8 +102,8 @@ bool CICPGetTransferFn(uint8_t transfer_characteristics,
       // Logarithmic transfer characteristic (100 * Sqrt( 10 ) : 1 range).
       break;
     case 11:
-      trfn = prefer_srgb ? SkNamedTransferFnExt::kSRGB
-                         : SkNamedTransferFnExt::kIEC61966_2_4;
+      trfn = prefer_srgb_trfn ? SkNamedTransferFnExt::kSRGB
+                              : SkNamedTransferFnExt::kIEC61966_2_4;
       break;
     case 12:
       // Rec. ITU-R BT.1361-0 extended colour gamut system (historical).
@@ -135,6 +135,32 @@ bool CICPGetTransferFn(uint8_t transfer_characteristics,
 
   trfn = SkNamedTransferFnExt::kInvalid;
   return false;
+}
+
+sk_sp<SkColorSpace> CICPGetSkColorSpace(uint8_t color_primaries,
+                                        uint8_t transfer_characteristics,
+                                        uint8_t matrix_coefficients,
+                                        uint8_t full_range_flag,
+                                        bool prefer_srgb_trfn) {
+  if (matrix_coefficients != 0)
+    return nullptr;
+
+  if (full_range_flag != 1)
+    return nullptr;
+
+  skcms_TransferFunction trfn;
+  if (!CICPGetTransferFn(transfer_characteristics, prefer_srgb_trfn, trfn))
+    return nullptr;
+
+  SkColorSpacePrimaries primaries;
+  if (!CICPGetPrimaries(color_primaries, primaries))
+    return nullptr;
+
+  skcms_Matrix3x3 primaries_matrix;
+  if (!primaries.toXYZD50(&primaries_matrix))
+    return nullptr;
+
+  return SkColorSpace::MakeRGB(trfn, primaries_matrix);
 }
 
 bool CICPGetSkYUVColorSpace(uint8_t matrix_coefficients,

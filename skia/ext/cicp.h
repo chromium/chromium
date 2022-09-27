@@ -21,11 +21,21 @@ SK_API bool CICPGetPrimaries(uint8_t primaries,
 // Convert from a CICP transfer value listed in Rec. ITU-T H.273, Table 3 to an
 // skcms_TransferFunction. Return true if `transfer_characteristics` is valid
 // and can be represented using an skcms_TransferFunction (several valid values
-// cannot). If `prefer_srgb` is set to true, then use the sRGB transfer function
-// for all Rec709-like content.
+// cannot). If `prefer_srgb_trfn` is set to true, then use the sRGB transfer
+// function for all Rec709-like content.
 SK_API bool CICPGetTransferFn(uint8_t transfer_characteristics,
-                              bool prefer_srgb,
+                              bool prefer_srgb_trfn,
                               skcms_TransferFunction& sk_trfn);
+
+// Return the SkColorSpace resulting from the CICPGetPrimaries and
+// CICPGetTransferFn. This function does not populate an SkYUVColorSpace, so
+// return nullptr if `matrix_coefficients` is not the identity or
+// `full_range_flag` is not full range.
+SK_API sk_sp<SkColorSpace> CICPGetSkColorSpace(uint8_t color_primaries,
+                                               uint8_t transfer_characteristics,
+                                               uint8_t matrix_coefficients,
+                                               uint8_t full_range_flag,
+                                               bool prefer_srgb_trfn);
 
 // Convert from a CICP matrix value listed in Rec. ITU-T H.273, Table 4 to an
 // SkYUVColorSpace. The result depends on full or limited range as well as
