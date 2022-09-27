@@ -523,14 +523,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.DeviceRemoteCommand.CRD.Result"
+<histogram name="Enterprise.DeviceRemoteCommand.Crd.Result"
     enum="EnterpriseCrdSessionResultCode" expires_after="2023-01-01">
   <owner>macinashutosh@google.com</owner>
   <owner>chromeos-commercial-crd@google.com</owner>
   <summary>Reports success/failure when a session is attempted.</summary>
 </histogram>
 
-<histogram name="Enterprise.DeviceRemoteCommand.CRD.SessionType"
+<histogram name="Enterprise.DeviceRemoteCommand.Crd.SessionType"
     enum="EnterpriseCrdUserType" expires_after="2023-01-01">
   <owner>macinashutosh@google.com</owner>
   <owner>chromeos-commercial-crd@google.com</owner>
