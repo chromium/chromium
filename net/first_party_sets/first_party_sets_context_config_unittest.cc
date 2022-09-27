@@ -67,30 +67,10 @@ TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntry_FullIteration) {
       {{example, absl::nullopt}, {foo, absl::nullopt}});
 
   int count = 0;
-  EXPECT_TRUE(config.ForEachCustomizationEntry(
+  config.ForEachCustomizationEntry(
       [&](const SchemefulSite& site,
-          const absl::optional<FirstPartySetEntry>& entry) {
-        ++count;
-        return true;
-      }));
+          const absl::optional<FirstPartySetEntry>& entry) { ++count; });
   EXPECT_EQ(count, 2);
-}
-
-TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntry_EarlyReturn) {
-  SchemefulSite example(GURL("https://example.test"));
-  SchemefulSite foo(GURL("https://foo.test"));
-
-  FirstPartySetsContextConfig config(
-      {{example, absl::nullopt}, {foo, absl::nullopt}});
-
-  int count = 0;
-  EXPECT_FALSE(config.ForEachCustomizationEntry(
-      [&](const SchemefulSite& site,
-          const absl::optional<FirstPartySetEntry>& entry) {
-        ++count;
-        return count < 1;
-      }));
-  EXPECT_EQ(count, 1);
 }
 
 }  // namespace net
