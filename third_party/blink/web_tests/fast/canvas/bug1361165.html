@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+Regression test for crbug.com/1361165
+There should be a solid green rectangle below this line of text.
+<canvas id='c' style="background-color:red"></canvas>
+<script>
+const c = document.getElementById('c')
+const ctx = c.getContext("2d");
+var imgd = ctx.createImageData(c.width,c.height);
+for (let p = 0; p < imgd.data.length;) {
+  imgd.data[p++] = 0;
+  imgd.data[p++] = 255;
+  imgd.data[p++] = 0;
+  imgd.data[p++] = 255;
+}
+ctx.fillStyle = '#0f0';
+
+if (window.testRunner) {
+  testRunner.waitUntilDone();
+}
+
+function phase1(){
+  ctx.fillRect(0,0,50,50);
+  requestAnimationFrame(phase2);
+}
+
+function phase2(){
+  ctx.putImageData(imgd, 0, 0);	
+  ctx.fillRect(0,0,50,50);
+  if (window.testRunner) {
+    testRunner.notifyDone();
+  }
+}
+
+requestAnimationFrame(phase1);
+</script>
