@@ -10,9 +10,10 @@ static_library("shopping_list") {
 
   deps = [
     "//chrome/common:constants",
+    "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
     "//components/image_fetcher/core",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//content/public/browser",
     "//net/traffic_annotation",
     "//ui/gfx",
