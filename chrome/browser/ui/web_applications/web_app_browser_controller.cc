@@ -161,9 +161,9 @@ bool WebAppBrowserController::IsIsolatedWebApp() const {
   if (!web_contents())
     return false;
 
-  return content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
-      web_contents()->GetPrimaryMainFrame()->GetBrowserContext(),
-      web_contents()->GetVisibleURL());
+  return web_contents()->GetPrimaryMainFrame()->GetWebExposedIsolationLevel() >=
+         content::RenderFrameHost::WebExposedIsolationLevel::
+             kMaybeIsolatedApplication;
 }
 
 gfx::Rect WebAppBrowserController::GetDefaultBounds() const {

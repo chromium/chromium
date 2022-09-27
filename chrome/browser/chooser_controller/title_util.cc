@@ -46,7 +46,8 @@ std::u16string CreateExtensionAwareChooserTitle(
   }
 
   // Isolated Web Apps should show the app's name instead of the origin.
-  Browser* browser = chrome::FindBrowserWithProfile(profile);
+  Browser* browser = chrome::FindBrowserWithWebContents(
+      content::WebContents::FromRenderFrameHost(render_frame_host));
   if (browser && browser->app_controller() &&
       browser->app_controller()->IsIsolatedWebApp()) {
     return l10n_util::GetStringFUTF16(

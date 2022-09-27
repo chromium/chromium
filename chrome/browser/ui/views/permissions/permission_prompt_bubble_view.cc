@@ -170,11 +170,21 @@ bool GetDisplayNameIsOrigin(Browser* browser,
                             permissions::PermissionPrompt::Delegate& delegate) {
   DCHECK(!delegate.Requests().empty());
   GURL origin_url = delegate.GetRequestingOrigin();
-  return (!origin_url.SchemeIs(extensions::kExtensionScheme) ||
-          extensions::ui_util::GetEnabledExtensionNameForUrl(origin_url,
-                                                             browser->profile())
-              .empty()) &&
-         !origin_url.SchemeIsFile();
+
+  if (origin_url.SchemeIsFile()) {
+    return false;
+  }
+  if (origin_url.SchemeIs(extensions::kExtensionScheme) &&
+      !extensions::ui_util::GetEnabledExtensionNameForUrl(origin_url,
+                                                          browser->profile())
+           .empty()) {
+    return false;
+  }
+  if (browser && browser->app_controller() &&
+      browser->app_controller()->IsIsolatedWebApp()) {
+    return false;
+  }
+  return true;
 }
 
 // Get extra information to display for the permission, if any.
