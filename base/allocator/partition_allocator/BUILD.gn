@@ -368,6 +368,10 @@ buildflag_header("partition_alloc_buildflags") {
 
   _enable_gwp_asan_support = _enable_backup_ref_ptr_support
 
+  # Shadow metadata only supports Linux now.
+  _enable_shadow_metadata_for_64_bits_pointers =
+      enable_shadow_metadata && is_linux
+
   # The only BRP mode that GWP-ASan supports is the "previous slot" mode.
   # This is because it requires out-of-line ref count storage for system
   # page aligned allocations.
@@ -393,7 +397,7 @@ buildflag_header("partition_alloc_buildflags") {
 
     "RECORD_ALLOC_INFO=$_record_alloc_info",
     "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
-    "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
+    "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$_enable_shadow_metadata_for_64_bits_pointers",
 
     # *Scan is currently only used by Chromium.
     "STARSCAN=$build_with_chromium",

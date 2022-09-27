@@ -72,10 +72,12 @@ constexpr bool kHintIsAdvisory = false;
 
 std::atomic<int32_t> s_allocPageErrorCode{0};
 
-uintptr_t SystemAllocPagesInternal(uintptr_t hint,
-                                   size_t length,
-                                   PageAccessibilityConfiguration accessibility,
-                                   PageTag page_tag) {
+uintptr_t SystemAllocPagesInternal(
+    uintptr_t hint,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageTag page_tag,
+    [[maybe_unused]] int file_descriptor_for_shared_alloc) {
   zx::vmo vmo;
   zx_status_t status = zx::vmo::create(length, 0, &vmo);
   if (status != ZX_OK) {

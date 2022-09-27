@@ -28,6 +28,10 @@
 #include <windows.h>
 #endif  // BUILDFLAG(IS_WIN)
 
+#if defined(PA_ENABLE_SHADOW_GIGACAGE)
+#include <sys/mman.h>
+#endif
+
 namespace partition_alloc::internal {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -164,9 +168,15 @@ void PartitionAddressSpace::Init() {
     return;
 
   size_t regular_pool_size = RegularPoolSize();
-  setup_.regular_pool_base_address_ = AllocPages(
-      regular_pool_size, regular_pool_size,
-      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc);
+#if defined(PA_ENABLE_SHADOW_GIGACAGE)
+  int regular_pool_fd = memfd_create("/regular_pool", MFD_CLOEXEC);
+#else
+  int regular_pool_fd = -1;
+#endif
+  setup_.regular_pool_base_address_ =
+      AllocPages(regular_pool_size, regular_pool_size,
+                 PageAccessibilityConfiguration::kInaccessible,
+                 PageTag::kPartitionAlloc, regular_pool_fd);
   if (!setup_.regular_pool_base_address_)
     HandleGigaCageAllocFailure();
 #if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
@@ -184,6 +194,11 @@ void PartitionAddressSpace::Init() {
       !IsInRegularPool(setup_.regular_pool_base_address_ + regular_pool_size));
 
   size_t brp_pool_size = BRPPoolSize();
+#if defined(PA_ENABLE_SHADOW_GIGACAGE)
+  int brp_pool_fd = memfd_create("/brp_pool", MFD_CLOEXEC);
+#else
+  int brp_pool_fd = -1;
+#endif
   // Reserve an extra allocation granularity unit before the BRP pool, but keep
   // the pool aligned at BRPPoolSize(). A pointer immediately past an allocation
   // is a valid pointer, and having a "forbidden zone" before the BRP pool
@@ -192,7 +207,8 @@ void PartitionAddressSpace::Init() {
   uintptr_t base_address = AllocPagesWithAlignOffset(
       0, brp_pool_size + kForbiddenZoneSize, brp_pool_size,
       brp_pool_size - kForbiddenZoneSize,
-      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc);
+      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc,
+      brp_pool_fd);
   if (!base_address)
     HandleGigaCageAllocFailure();
   setup_.brp_pool_base_address_ = base_address + kForbiddenZoneSize;
@@ -220,16 +236,18 @@ void PartitionAddressSpace::Init() {
 
 #if defined(PA_ENABLE_SHADOW_METADATA)
   // Reserve memory for the shadow GigaCage
-  uintptr_t regular_pool_shadow_address = AllocPages(
-      regular_pool_size, regular_pool_size,
-      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc);
+  uintptr_t regular_pool_shadow_address =
+      AllocPages(regular_pool_size, regular_pool_size,
+                 PageAccessibilityConfiguration::kInaccessible,
+                 PageTag::kPartitionAlloc, regular_pool_fd);
   regular_pool_shadow_offset_ =
       regular_pool_shadow_address - setup_.regular_pool_base_address_;
 
   uintptr_t brp_pool_shadow_address = AllocPagesWithAlignOffset(
       0, brp_pool_size + kForbiddenZoneSize, brp_pool_size,
       brp_pool_size - kForbiddenZoneSize,
-      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc);
+      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc,
+      brp_pool_fd);
   brp_pool_shadow_offset_ =
       brp_pool_shadow_address - setup_.brp_pool_base_address_;
 #endif

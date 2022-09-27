@@ -148,15 +148,18 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility);
 uintptr_t SystemAllocPagesInternal(uintptr_t hint,
                                    size_t length,
                                    PageAccessibilityConfiguration accessibility,
-                                   PageTag page_tag) {
+                                   PageTag page_tag,
+                                   int file_descriptor_for_shared_alloc) {
 #if BUILDFLAG(IS_APPLE)
   // Use a custom tag to make it easier to distinguish Partition Alloc regions
   // in vmmap(1). Tags between 240-255 are supported.
   PA_DCHECK(PageTag::kFirst <= page_tag);
   PA_DCHECK(PageTag::kLast >= page_tag);
-  int fd = VM_MAKE_TAG(static_cast<int>(page_tag));
+  int fd = file_descriptor_for_shared_alloc == -1
+               ? VM_MAKE_TAG(static_cast<int>(page_tag))
+               : file_descriptor_for_shared_alloc;
 #else
-  int fd = -1;
+  int fd = file_descriptor_for_shared_alloc;
 #endif
 
   int access_flag = GetAccessFlags(accessibility);

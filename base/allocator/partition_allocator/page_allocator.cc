@@ -50,17 +50,19 @@ uintptr_t AllocPagesIncludingReserved(
     uintptr_t address,
     size_t length,
     PageAccessibilityConfiguration accessibility,
-    PageTag page_tag) {
+    PageTag page_tag,
+    int file_descriptor_for_shared_alloc = -1) {
   uintptr_t ret =
-      internal::SystemAllocPages(address, length, accessibility, page_tag);
+      internal::SystemAllocPages(address, length, accessibility, page_tag,
+                                 file_descriptor_for_shared_alloc);
   if (!ret) {
     const bool cant_alloc_length = internal::kHintIsAdvisory || !address;
     if (cant_alloc_length) {
       // The system cannot allocate |length| bytes. Release any reserved address
       // space and try once more.
       ReleaseReservation();
-      ret =
-          internal::SystemAllocPages(address, length, accessibility, page_tag);
+      ret = internal::SystemAllocPages(address, length, accessibility, page_tag,
+                                       file_descriptor_for_shared_alloc);
     }
   }
   return ret;
@@ -127,11 +129,12 @@ namespace internal {
 uintptr_t SystemAllocPages(uintptr_t hint,
                            size_t length,
                            PageAccessibilityConfiguration accessibility,
-                           PageTag page_tag) {
+                           PageTag page_tag,
+                           int file_descriptor_for_shared_alloc) {
   PA_DCHECK(!(length & internal::PageAllocationGranularityOffsetMask()));
   PA_DCHECK(!(hint & internal::PageAllocationGranularityOffsetMask()));
-  uintptr_t ret =
-      internal::SystemAllocPagesInternal(hint, length, accessibility, page_tag);
+  uintptr_t ret = internal::SystemAllocPagesInternal(
+      hint, length, accessibility, page_tag, file_descriptor_for_shared_alloc);
   if (ret)
     g_total_mapped_address_space.fetch_add(length, std::memory_order_relaxed);
 
@@ -143,9 +146,10 @@ uintptr_t SystemAllocPages(uintptr_t hint,
 uintptr_t AllocPages(size_t length,
                      size_t align,
                      PageAccessibilityConfiguration accessibility,
-                     PageTag page_tag) {
-  return AllocPagesWithAlignOffset(0, length, align, 0, accessibility,
-                                   page_tag);
+                     PageTag page_tag,
+                     int file_descriptor_for_shared_alloc) {
+  return AllocPagesWithAlignOffset(0, length, align, 0, accessibility, page_tag,
+                                   file_descriptor_for_shared_alloc);
 }
 uintptr_t AllocPages(uintptr_t address,
                      size_t length,
@@ -171,7 +175,8 @@ uintptr_t AllocPagesWithAlignOffset(
     size_t align,
     size_t align_offset,
     PageAccessibilityConfiguration accessibility,
-    PageTag page_tag) {
+    PageTag page_tag,
+    int file_descriptor_for_shared_alloc) {
   PA_DCHECK(length >= internal::PageAllocationGranularity());
   PA_DCHECK(!(length & internal::PageAllocationGranularityOffsetMask()));
   PA_DCHECK(align >= internal::PageAllocationGranularity());
@@ -201,7 +206,8 @@ uintptr_t AllocPagesWithAlignOffset(
 
   for (int i = 0; i < kExactSizeTries; ++i) {
     uintptr_t ret =
-        AllocPagesIncludingReserved(address, length, accessibility, page_tag);
+        AllocPagesIncludingReserved(address, length, accessibility, page_tag,
+                                    file_descriptor_for_shared_alloc);
     if (ret) {
       // If the alignment is to our liking, we're done.
       if ((ret & align_offset_mask) == align_offset)
@@ -234,8 +240,9 @@ uintptr_t AllocPagesWithAlignOffset(
   do {
     // Continue randomizing only on POSIX.
     address = internal::kHintIsAdvisory ? GetRandomPageBase() : 0;
-    ret = AllocPagesIncludingReserved(address, try_length, accessibility,
-                                      page_tag);
+    ret =
+        AllocPagesIncludingReserved(address, try_length, accessibility,
+                                    page_tag, file_descriptor_for_shared_alloc);
     // The retries are for Windows, where a race can steal our mapping on
     // resize.
   } while (ret && (ret = TrimMapping(ret, try_length, length, align,

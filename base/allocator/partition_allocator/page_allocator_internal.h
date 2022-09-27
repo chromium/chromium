@@ -15,7 +15,8 @@ namespace partition_alloc::internal {
 uintptr_t SystemAllocPages(uintptr_t hint,
                            size_t length,
                            PageAccessibilityConfiguration accessibility,
-                           PageTag page_tag);
+                           PageTag page_tag,
+                           int file_descriptor_for_shared_alloc = -1);
 
 }  // namespace partition_alloc::internal
 
