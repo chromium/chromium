@@ -1191,14 +1191,6 @@ const FeatureEntry::FeatureVariation kJourneysLabelsVariations[] = {
      kJourneysLabelsWithEntitiesNoHostnamesParams,
      std::size(kJourneysLabelsWithEntitiesNoHostnamesParams), nullptr},
 };
-const FeatureEntry::FeatureParam
-    kJourneysOnDeviceClusteringNoContentClusteringParams[] = {
-        {"content_clustering_enabled", "false"},
-};
-const FeatureEntry::FeatureParam
-    kJourneysOnDeviceClusteringContentClusteringParams[] = {
-        {"content_clustering_enabled", "true"},
-};
 const FeatureEntry::FeatureParam kJourneysShowSingleDomainClustersParams[] = {
     {"hide_single_domain_clusters_on_prominent_ui_surfaces", "false"},
 };
@@ -1206,11 +1198,6 @@ const FeatureEntry::FeatureParam kJourneysHideSingleDomainClustersParams[] = {
     {"hide_single_domain_clusters_on_prominent_ui_surfaces", "true"},
 };
 const FeatureEntry::FeatureVariation kJourneysOnDeviceClusteringVariations[] = {
-    {"No Content Clustering",
-     kJourneysOnDeviceClusteringNoContentClusteringParams,
-     std::size(kJourneysOnDeviceClusteringNoContentClusteringParams), nullptr},
-    {"Content Clustering", kJourneysOnDeviceClusteringContentClusteringParams,
-     std::size(kJourneysOnDeviceClusteringContentClusteringParams), nullptr},
     {"Show Single Domain Journeys", kJourneysShowSingleDomainClustersParams,
      std::size(kJourneysShowSingleDomainClustersParams), nullptr},
     {"Hide Single Domain Journeys", kJourneysHideSingleDomainClustersParams,

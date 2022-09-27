@@ -456,13 +456,28 @@ class OnDeviceClusteringWithContentBackendTest
  public:
   OnDeviceClusteringWithContentBackendTest() {
     config_.content_clustering_enabled = true;
+    config_.exclude_entities_that_have_no_collections_from_content_clustering =
+        false;
+    config_.collections_to_block_from_content_clustering = {};
     config_.keyword_filter_on_noisy_visits = true;
     config_.keyword_filter_on_entity_aliases = true;
     config_.should_check_hosts_to_skip_clustering_for = false;
     SetConfigForTesting(config_);
   }
 
+  void SetUp() override {
+    entity_metadata_provider_ = std::make_unique<TestEntityMetadataProvider>(
+        task_environment_.GetMainThreadTaskRunner());
+
+    clustering_backend_ = std::make_unique<OnDeviceClusteringBackend>(
+        entity_metadata_provider_.get(),
+        /*engagement_score_provider=*/nullptr,
+        /*optimization_guide_decider=*/nullptr,
+        /*mid_blocklist_=*/base::flat_set<std::string>({"blockedentity"}));
+  }
+
  private:
+  std::unique_ptr<TestEntityMetadataProvider> entity_metadata_provider_;
   Config config_;
 };
 
@@ -477,13 +492,11 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
       1, GURL("https://github.com/"), base::Time::FromTimeT(1));
   visit.content_annotations.model_annotations.entities = {{"github", 100}};
-  visit.content_annotations.model_annotations.categories = {{"category", 100}};
   visits.push_back(visit);
 
   history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
       2, GURL("https://google.com/"), base::Time::FromTimeT(2));
   visit2.content_annotations.model_annotations.entities = {{"github", 100}};
-  visit2.content_annotations.model_annotations.categories = {{"category", 100}};
   visit2.referring_visit_of_redirect_chain_start = 1;
   // Set the visit duration to be 2x the default so it has the same duration
   // after |visit| and |visit4| are deduped.
@@ -493,21 +506,17 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   history::AnnotatedVisit visit4 = testing::CreateDefaultAnnotatedVisit(
       4, GURL("https://github.com/"), base::Time::FromTimeT(4));
   visit4.content_annotations.model_annotations.entities = {{"github", 100}};
-  visit4.content_annotations.model_annotations.categories = {
-      {"category", 100}, {"category2", 100}};
   visits.push_back(visit4);
 
   // After the context clustering, visit5 will not be in the same cluster as
   // visit, visit2, and visit4 but all of the visits have the same entities
-  // and categories so they will be clustered in the content pass.
+  // so they will be clustered in the content pass.
   history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
       10,
       GURL("https://shouldskip.com/butnotsincehostcheckingisfalse/"
            "andhasnonexistentreferrer"),
       base::Time::FromTimeT(10));
   visit5.content_annotations.model_annotations.entities = {{"github", 100}};
-  visit5.content_annotations.model_annotations.categories = {
-      {"category", 100}, {"category2", 100}};
   visit5.referring_visit_of_redirect_chain_start = 6;
   visits.push_back(visit5);
 

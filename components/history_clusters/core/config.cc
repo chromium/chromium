@@ -204,47 +204,11 @@ Config::Config() {
     DCHECK_GE(entity_relevance_threshold, 0);
     DCHECK_LE(entity_relevance_threshold, 100);
 
-    category_relevance_threshold = GetFieldTrialParamByFeatureAsInt(
-        features::kOnDeviceClustering, "category_relevance_threshold",
-        category_relevance_threshold);
-    // Ensure that the value is [0 and 100].
-    DCHECK_GE(category_relevance_threshold, 0);
-    DCHECK_LE(category_relevance_threshold, 100);
-
-    content_clustering_enabled = GetFieldTrialParamByFeatureAsBool(
-        features::kOnDeviceClustering, "content_clustering_enabled",
-        content_clustering_enabled);
-
-    content_clustering_entity_similarity_weight =
-        GetFieldTrialParamByFeatureAsDouble(
-            features::kOnDeviceClustering,
-            "content_clustering_entity_similarity_weight",
-            content_clustering_entity_similarity_weight);
-
-    content_clustering_category_similarity_weight =
-        GetFieldTrialParamByFeatureAsDouble(
-            features::kOnDeviceClustering,
-            "content_clustering_category_similarity_weight",
-            content_clustering_category_similarity_weight);
-
-    content_clustering_similarity_threshold =
-        GetFieldTrialParamByFeatureAsDouble(
-            features::kOnDeviceClustering,
-            "content_clustering_similarity_threshold",
-            content_clustering_similarity_threshold);
-    // Ensure that the value is [0.0 and 1.0].
-    DCHECK_GE(content_clustering_similarity_threshold, 0.0f);
-    DCHECK_LE(content_clustering_similarity_threshold, 1.0f);
-
     content_visibility_threshold = GetFieldTrialParamByFeatureAsDouble(
         features::kOnDeviceClustering, "content_visibility_threshold", 0.7);
     // Ensure that the value is [0.0 and 1.0].
     DCHECK_GE(content_visibility_threshold, 0.0f);
     DCHECK_LE(content_visibility_threshold, 1.0f);
-
-    should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            kShouldShowAllClustersOnProminentUiSurfaces);
 
     should_hide_single_visit_clusters_on_prominent_ui_surfaces =
         GetFieldTrialParamByFeatureAsBool(
@@ -298,17 +262,6 @@ Config::Config() {
         features::kOnDeviceClustering, "has_page_title_ranking_weight",
         has_page_title_ranking_weight);
     DCHECK_GE(has_page_title_ranking_weight, 0.0f);
-
-    content_cluster_on_intersection_similarity =
-        GetFieldTrialParamByFeatureAsBool(
-            features::kOnDeviceClustering,
-            "use_content_clustering_intersection_similarity",
-            content_cluster_on_intersection_similarity);
-
-    cluster_interaction_threshold = GetFieldTrialParamByFeatureAsInt(
-        features::kOnDeviceClustering,
-        "content_clustering_intersection_threshold",
-        cluster_interaction_threshold);
   }
 
   // The `kJourneysCategoryFiltering` feature and child parans.
@@ -333,6 +286,47 @@ Config::Config() {
             engagement_score_cache_refresh_duration.InMinutes()));
   }
 
+  // The `kOnDeviceClusteringContentClustering` feature and child params.
+  {
+    content_clustering_enabled = base::FeatureList::IsEnabled(
+        features::kOnDeviceClusteringContentClustering);
+
+    content_clustering_entity_similarity_weight =
+        GetFieldTrialParamByFeatureAsDouble(
+            features::kOnDeviceClusteringContentClustering,
+            "content_clustering_entity_similarity_weight",
+            content_clustering_entity_similarity_weight);
+
+    content_clustering_similarity_threshold =
+        GetFieldTrialParamByFeatureAsDouble(
+            features::kOnDeviceClusteringContentClustering,
+            "content_clustering_similarity_threshold",
+            content_clustering_similarity_threshold);
+    // Ensure that the value is [0.0 and 1.0].
+    DCHECK_GE(content_clustering_similarity_threshold, 0.0f);
+    DCHECK_LE(content_clustering_similarity_threshold, 1.0f);
+
+    content_cluster_on_intersection_similarity =
+        GetFieldTrialParamByFeatureAsBool(
+            features::kOnDeviceClusteringContentClustering,
+            "use_content_clustering_intersection_similarity",
+            content_cluster_on_intersection_similarity);
+
+    cluster_interaction_threshold = GetFieldTrialParamByFeatureAsInt(
+        features::kOnDeviceClusteringContentClustering,
+        "content_clustering_intersection_threshold",
+        cluster_interaction_threshold);
+
+    exclude_entities_that_have_no_collections_from_content_clustering =
+        GetFieldTrialParamByFeatureAsBool(
+            features::kOnDeviceClusteringContentClustering,
+            "exclude_entities_that_have_no_collections",
+            exclude_entities_that_have_no_collections_from_content_clustering);
+
+    collections_to_block_from_content_clustering =
+        JourneysCollectionContentClusteringBlocklist();
+  }
+
   // Lonely features without child params.
   {
     non_user_visible_debug =
@@ -352,6 +346,10 @@ Config::Config() {
 
     use_continue_on_shutdown = base::FeatureList::IsEnabled(
         internal::kHistoryClustersUseContinueOnShutdown);
+
+    should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            kShouldShowAllClustersOnProminentUiSurfaces);
   }
 }
 
@@ -360,6 +358,25 @@ Config::~Config() = default;
 
 void SetConfigForTesting(const Config& config) {
   GetConfigInternal() = config;
+}
+
+base::flat_set<std::string> JourneysCollectionContentClusteringBlocklist() {
+  const base::FeatureParam<std::string>
+      kJourneysCollectionContentClusteringBlocklist{
+          &features::kOnDeviceClusteringContentClustering,
+          "collections_blocklist", ""};
+  std::string blocklist_string =
+      kJourneysCollectionContentClusteringBlocklist.Get();
+  if (blocklist_string.empty())
+    return {};
+
+  auto blocklist = base::SplitString(blocklist_string, ",",
+                                     base::WhitespaceHandling::TRIM_WHITESPACE,
+                                     base::SplitResult::SPLIT_WANT_NONEMPTY);
+
+  return blocklist.empty()
+             ? base::flat_set<std::string>()
+             : base::flat_set<std::string>(blocklist.begin(), blocklist.end());
 }
 
 base::flat_set<std::string> JourneysCategoryFilteringAllowlist() {

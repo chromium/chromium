@@ -342,7 +342,8 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
 
   if (GetConfig().content_clustering_enabled) {
     cluster_processors.push_back(
-        std::make_unique<ContentAnnotationsClusterProcessor>());
+        std::make_unique<ContentAnnotationsClusterProcessor>(
+            entity_id_to_entity_metadata_map));
   }
 
   cluster_finalizers.push_back(

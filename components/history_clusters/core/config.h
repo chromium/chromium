@@ -203,36 +203,6 @@ struct Config {
   // visit.
   int entity_relevance_threshold = 60;
 
-  // The minimum threshold for whether a category is considered relevant to the
-  // visit.
-  int category_relevance_threshold = 36;  // 60 * 0.6 = 36.
-
-  // Returns whether content clustering is enabled and
-  // should be performed by the clustering backend.
-  bool content_clustering_enabled = false;
-
-  // Returns the weight that should be placed on entity similarity for
-  // determining if two clusters are similar enough to be combined into one.
-  float content_clustering_entity_similarity_weight = 1.0;
-
-  // Returns the weight that should be placed on category similarity for
-  // determining if two clusters are similar enough to be combined into one.
-  float content_clustering_category_similarity_weight = 1.0;
-
-  // Returns the similarity threshold, between 0 and 1, used to determine if
-  // two clusters are similar enough to be combined into
-  // a single cluster.
-  float content_clustering_similarity_threshold = 0.2;
-
-  // Returns the threshold for which we should mark a cluster as being able to
-  // show on prominent UI surfaces.
-  float content_visibility_threshold = 0.7;
-
-  // Whether to show all clusters on prominent UI surfaces unconditionally. This
-  // should only be set to true via command line.
-  bool should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
-      false;
-
   // Whether to hide single-visit clusters on prominent UI surfaces.
   bool should_hide_single_visit_clusters_on_prominent_ui_surfaces = true;
 
@@ -273,17 +243,6 @@ struct Config {
   // within a cluster. Will always be greater than or equal to 0.
   float has_page_title_ranking_weight = 2.0;
 
-  // Returns true if content clustering should use the intersection similarity
-  // score. Note, if this is used, the threshold used for clustering by content
-  // score should be < .5 (see ContentClusteringSimilarityThreshold above) or
-  // the weightings between entity and category content similarity scores should
-  // be adjusted.
-  bool content_cluster_on_intersection_similarity = true;
-
-  // Returns the threshold, in terms of the number of overlapping keywords, to
-  // use when clustering based on intersection score.
-  int cluster_interaction_threshold = 2;
-
   // Whether to determine whether to show/hide clusters on prominent UI surfaces
   // based on categories annotated for a visit.
   bool should_use_categories_to_filter_on_prominent_ui_surfaces = false;
@@ -292,6 +251,44 @@ struct Config {
   // are repesentatitive of Journeys that we think the user is likely to want to
   // re-engage with.
   base::flat_set<std::string> categories_for_filtering;
+
+  // The `kOnDeviceClusteringContentClustering` feature and child params.
+
+  // Returns whether content clustering is enabled and
+  // should be performed by the clustering backend.
+  bool content_clustering_enabled = false;
+
+  // Returns the weight that should be placed on entity similarity for
+  // determining if two clusters are similar enough to be combined into one.
+  float content_clustering_entity_similarity_weight = 1.0;
+
+  // Returns the similarity threshold, between 0 and 1, used to determine if
+  // two clusters are similar enough to be combined into
+  // a single cluster.
+  float content_clustering_similarity_threshold = 0.2;
+
+  // Returns the threshold for which we should mark a cluster as being able to
+  // show on prominent UI surfaces.
+  float content_visibility_threshold = 0.7;
+
+  // Returns true if content clustering should use the intersection similarity
+  // score. Note, if this is used, the threshold used for clustering by content
+  // score should be < .5 (see ContentClusteringSimilarityThreshold above) or
+  // the weightings between entity and category content similarity scores should
+  // be adjusted.
+  bool content_cluster_on_intersection_similarity = false;
+
+  // Returns the threshold, in terms of the number of overlapping keywords, to
+  // use when clustering based on intersection score.
+  int cluster_interaction_threshold = 2;
+
+  // Returns whether we should exclude entities that do not have associated
+  // collections from content clustering.
+  bool exclude_entities_that_have_no_collections_from_content_clustering =
+      false;
+
+  // The set of collections to block from being content clustered.
+  base::flat_set<std::string> collections_to_block_from_content_clustering;
 
   // The `kUseEngagementScoreCache` feature and child params.
 
@@ -330,12 +327,21 @@ struct Config {
   // True if the task runner should use trait CONTINUE_ON_SHUTDOWN.
   bool use_continue_on_shutdown = true;
 
+  // Whether to show all clusters on prominent UI surfaces unconditionally. This
+  // should only be set to true via command line.
+  bool should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
+      false;
+
   // Order consistently with features.h.
 
   Config();
   Config(const Config& other);
   ~Config();
 };
+
+// Returns the set of collections that should not be included for content
+// clustering.
+base::flat_set<std::string> JourneysCollectionContentClusteringBlocklist();
 
 // Returns the set of categories that should be used to filter for whether a
 // user is likely to re-engage with a cluster.

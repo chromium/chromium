@@ -8,47 +8,19 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_clusters/core/config.h"
-#include "components/history_clusters/core/on_device_clustering_features.h"
+#include "components/optimization_guide/core/entity_metadata.h"
 
 namespace history_clusters {
 
 namespace {
-
-// Populates |entities_bows| and |categories_bows| from cluster index to the set
-// of unique entities and categories, respectively, from each visit, a
-// bag-of-words for each cluster.
-void CreateBoWsForClusters(
-    const std::vector<history::Cluster>& clusters,
-    base::flat_map<int, base::flat_set<std::u16string>>* entities_bows,
-    base::flat_map<int, base::flat_set<std::u16string>>* categories_bows) {
-  // Create the BoWs for each cluster from the individual clusters.
-  for (size_t cluster_idx = 0; cluster_idx < clusters.size(); cluster_idx++) {
-    auto& cluster = clusters.at(cluster_idx);
-    base::flat_set<std::u16string> entity_bag_of_words;
-    base::flat_set<std::u16string> category_bag_of_words;
-    for (const auto& visit : cluster.visits) {
-      for (const auto& entity : visit.annotated_visit.content_annotations
-                                    .model_annotations.entities) {
-        entity_bag_of_words.insert(base::UTF8ToUTF16(entity.id));
-      }
-      for (const auto& category : visit.annotated_visit.content_annotations
-                                      .model_annotations.categories) {
-        category_bag_of_words.insert(base::UTF8ToUTF16(category.id));
-      }
-    }
-    entities_bows->insert({cluster_idx, entity_bag_of_words});
-    categories_bows->insert({cluster_idx, category_bag_of_words});
-  }
-}
 
 // Return the Jaccard Similarity between two sets of
 // strings.
 float CalculateJaccardSimilarity(
     const base::flat_set<std::u16string>& cluster1,
     const base::flat_set<std::u16string>& cluster2) {
-  // If both clusters are empty, we don't know if they're the same so just say
-  // they're completely different.
-  if (cluster1.empty() && cluster2.empty())
+  // If either cluster is empty, just say that they are different.
+  if (cluster1.empty() || cluster2.empty())
     return 0.0;
 
   base::flat_set<std::u16string> cluster_union;
@@ -72,9 +44,8 @@ float CalculateJaccardSimilarity(
 float CalculateIntersectionSimilarity(
     const base::flat_set<std::u16string>& cluster1,
     const base::flat_set<std::u16string>& cluster2) {
-  // If both clusters are empty, we don't know if they're the same so just say
-  // they're completely different.
-  if (cluster1.empty() && cluster2.empty())
+  // If either clusters is empty, just say that they're different.
+  if (cluster1.empty() || cluster2.empty())
     return 0.0;
 
   int intersection_size = 0;
@@ -95,44 +66,22 @@ float CalculateSimilarityScore(const base::flat_set<std::u16string>& cluster1,
   return CalculateJaccardSimilarity(cluster1, cluster2);
 }
 
-// Returns whether two clusters should be merged together based on their
-// |entity_similarity| and |category_similarity|. Both |entity_similarity| and
-// |category_similarity| are expected to be between 0 and 1, inclusive.
-bool ShouldMergeClusters(float entity_similarity, float category_similarity) {
-  float max_score = GetConfig().content_clustering_entity_similarity_weight +
-                    GetConfig().content_clustering_category_similarity_weight;
-  if (max_score == 0)
-    return 0.0;
-
-  float cluster_similarity_score =
-      (GetConfig().content_clustering_entity_similarity_weight *
-           entity_similarity +
-       GetConfig().content_clustering_category_similarity_weight *
-           category_similarity) /
-      max_score;
-  float normalized_similarity_score =
-      cluster_similarity_score >
-      GetConfig().content_clustering_similarity_threshold;
-  DCHECK(normalized_similarity_score >= 0 && normalized_similarity_score <= 1);
-  return normalized_similarity_score;
-}
-
 }  // namespace
 
-ContentAnnotationsClusterProcessor::ContentAnnotationsClusterProcessor() =
-    default;
+ContentAnnotationsClusterProcessor::ContentAnnotationsClusterProcessor(
+    const base::flat_map<std::string, optimization_guide::EntityMetadata>&
+        entity_id_to_entity_metadata_map)
+    : entity_id_to_entity_metadata_map_(entity_id_to_entity_metadata_map) {}
 ContentAnnotationsClusterProcessor::~ContentAnnotationsClusterProcessor() =
     default;
 
 std::vector<history::Cluster>
 ContentAnnotationsClusterProcessor::ProcessClusters(
     const std::vector<history::Cluster>& clusters) {
-  base::flat_map<int, base::flat_set<std::u16string>>
-      cluster_idx_to_entity_bows;
-  base::flat_map<int, base::flat_set<std::u16string>>
-      cluster_idx_to_category_bows;
-  CreateBoWsForClusters(clusters, &cluster_idx_to_entity_bows,
-                        &cluster_idx_to_category_bows);
+  std::vector<base::flat_set<std::u16string>> bows(clusters.size());
+  for (size_t i = 0; i < clusters.size(); i++) {
+    bows[i] = CreateBoWForCluster(clusters.at(i));
+  }
 
   // Now cluster on the entries in each BoW between clusters.
   std::vector<history::Cluster> aggregated_clusters;
@@ -148,11 +97,9 @@ ContentAnnotationsClusterProcessor::ProcessClusters(
       if (merged_cluster_indices.find(j) != merged_cluster_indices.end()) {
         continue;
       }
-      float entity_similarity = CalculateSimilarityScore(
-          cluster_idx_to_entity_bows[i], cluster_idx_to_entity_bows[j]);
-      float category_similarity = CalculateSimilarityScore(
-          cluster_idx_to_category_bows[i], cluster_idx_to_category_bows[j]);
-      if (ShouldMergeClusters(entity_similarity, category_similarity)) {
+      float entity_similarity = CalculateSimilarityScore(bows[i], bows[j]);
+      if (entity_similarity >
+          GetConfig().content_clustering_similarity_threshold) {
         // Add the visits to the aggregated cluster.
         merged_cluster_indices.insert(j);
         aggregated_cluster.visits.insert(aggregated_cluster.visits.end(),
@@ -163,6 +110,49 @@ ContentAnnotationsClusterProcessor::ProcessClusters(
     aggregated_clusters.push_back(std::move(aggregated_cluster));
   }
   return aggregated_clusters;
+}
+
+base::flat_set<std::u16string>
+ContentAnnotationsClusterProcessor::CreateBoWForCluster(
+    const history::Cluster& cluster) {
+  base::flat_set<std::u16string> bag_of_words;
+  for (const auto& visit : cluster.visits) {
+    for (const auto& entity :
+         visit.annotated_visit.content_annotations.model_annotations.entities) {
+      auto entity_metadata_it =
+          entity_id_to_entity_metadata_map_.find(entity.id);
+      if (entity_metadata_it == entity_id_to_entity_metadata_map_.end()) {
+        continue;
+      }
+      auto& entity_metadata = entity_metadata_it->second;
+
+      // Check whether the entity has any collections.
+      if (GetConfig()
+              .exclude_entities_that_have_no_collections_from_content_clustering &&
+          entity_metadata.collections.empty()) {
+        continue;
+      }
+
+      // Check whether any of the tagged collections are part of the collection
+      // blocklist.
+      if (!GetConfig().collections_to_block_from_content_clustering.empty()) {
+        bool has_blocklisted_collection = false;
+        for (const auto& collection : entity_metadata.collections) {
+          if (GetConfig().collections_to_block_from_content_clustering.contains(
+                  collection)) {
+            has_blocklisted_collection = true;
+            break;
+          }
+        }
+        if (has_blocklisted_collection) {
+          continue;
+        }
+      }
+
+      bag_of_words.insert(base::UTF8ToUTF16(entity.id));
+    }
+  }
+  return bag_of_words;
 }
 
 }  // namespace history_clusters
