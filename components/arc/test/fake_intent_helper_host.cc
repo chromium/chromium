@@ -50,7 +50,7 @@ void FakeIntentHelperHost::OnSupportedLinksChanged(
     std::vector<arc::mojom::SupportedLinksPackagePtr> added_packages,
     std::vector<arc::mojom::SupportedLinksPackagePtr> removed_packages,
     arc::mojom::SupportedLinkChangeSource source) {}
-void FakeIntentHelperHost::OnDownloadAdded(
+void FakeIntentHelperHost::OnDownloadAddedDeprecated(
     const std::string& relative_path,
     const std::string& owner_package_name) {}
 void FakeIntentHelperHost::OnOpenAppWithIntent(

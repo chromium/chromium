@@ -12,16 +12,11 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
 #include "chrome/browser/download/notification/multi_profile_download_notifier.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom-forward.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/intent_helper/arc_intent_helper_observer.h"
-
-namespace base {
-class FilePath;
-}  // namespace base
 
 namespace content {
 class DownloadManager;
@@ -34,7 +29,7 @@ namespace ash {
 class HoldingSpaceDownloadsDelegate
     : public HoldingSpaceKeyedServiceDelegate,
       public MultiProfileDownloadNotifier::Client,
-      public arc::ArcIntentHelperObserver,
+      public arc::ArcFileSystemBridge::Observer,
       public crosapi::DownloadControllerAsh::DownloadControllerObserver {
  public:
   HoldingSpaceDownloadsDelegate(HoldingSpaceKeyedService* service,
@@ -68,9 +63,10 @@ class HoldingSpaceDownloadsDelegate
   void OnDownloadUpdated(content::DownloadManager* manager,
                          download::DownloadItem* item) override;
 
-  // arc::ArcIntentHelperObserver:
-  void OnArcDownloadAdded(const base::FilePath& relative_path,
-                          const std::string& owner_package_name) override;
+  // arc::ArcFileSystemBridge::Observer:
+  void OnMediaStoreUriAdded(
+      const GURL& uri,
+      const arc::mojom::MediaStoreMetadata& metadata) override;
 
   // crosapi::DownloadControllerAsh::DownloadControllerObserver:
   void OnLacrosDownloadCreated(
@@ -119,9 +115,9 @@ class HoldingSpaceDownloadsDelegate
   std::set<std::unique_ptr<InProgressDownload>, base::UniquePtrComparator>
       in_progress_downloads_;
 
-  base::ScopedObservation<arc::ArcIntentHelperBridge,
-                          arc::ArcIntentHelperObserver>
-      arc_intent_helper_observation_{this};
+  base::ScopedObservation<arc::ArcFileSystemBridge,
+                          arc::ArcFileSystemBridge::Observer>
+      arc_file_system_bridge_observation_{this};
 
   // Notifies this delegate of download events created for the profile
   // associated with this delegate's service. If the incognito profile

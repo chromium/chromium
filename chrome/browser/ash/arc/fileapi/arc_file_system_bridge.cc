@@ -66,6 +66,22 @@ bool IsTestImageBuild() {
          track.find(kTestImageRelease) != std::string::npos;
 }
 
+// Returns true if `download` passes validation.
+bool IsMediaStoreDownloadMetadataValid(
+    const mojom::MediaStoreDownloadMetadataPtr& download) {
+  // Download should have non-empty display name and owner package name.
+  if (download->display_name.empty() || download->owner_package_name.empty())
+    return false;
+
+  // Download should have path relative to "Download/" which is the download
+  // directory for the associated profile.
+  const base::FilePath download_path("Download/");
+  return download_path == download->relative_path ||
+         (!download->relative_path.IsAbsolute() &&
+          !download->relative_path.ReferencesParent() &&
+          download_path.IsParent(download->relative_path));
+}
+
 // Returns FileSystemContext.
 scoped_refptr<storage::FileSystemContext> GetFileSystemContext(
     content::BrowserContext* context) {
@@ -388,6 +404,26 @@ void ArcFileSystemBridge::GetFileSelectorElements(
   }
   select_files_handlers_manager_->GetFileSelectorElements(std::move(request),
                                                           std::move(callback));
+}
+
+void ArcFileSystemBridge::OnMediaStoreUriAdded(
+    const GURL& uri,
+    mojom::MediaStoreMetadataPtr metadata) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Validate `metadata`.
+  bool is_valid = false;
+  if (metadata->is_download())
+    is_valid = IsMediaStoreDownloadMetadataValid(metadata->get_download());
+
+  if (!is_valid) {
+    LOG(ERROR) << "`OnMediaStoreUriAdded()` called with invalid payload.";
+    NOTREACHED();
+    return;
+  }
+
+  for (auto& observer : observer_list_)
+    observer.OnMediaStoreUriAdded(uri, *metadata);
 }
 
 void ArcFileSystemBridge::GenerateVirtualFileId(

@@ -642,12 +642,12 @@ HoldingSpaceDownloadsDelegate::OpenWhenComplete(const HoldingSpaceItem* item) {
 
 void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
   // ARC downloads.
-  // NOTE: The `arc_intent_helper_bridge` may be `nullptr` if the `profile()`
+  // NOTE: The `arc_file_system_bridge` may be `nullptr` if the `profile()`
   // is not allowed to use ARC, e.g. if the `profile()` is OTR.
-  auto* const arc_intent_helper_bridge =
-      arc::ArcIntentHelperBridge::GetForBrowserContext(profile());
-  if (arc_intent_helper_bridge)
-    arc_intent_helper_observation_.Observe(arc_intent_helper_bridge);
+  auto* const arc_file_system_bridge =
+      arc::ArcFileSystemBridge::GetForBrowserContext(profile());
+  if (arc_file_system_bridge)
+    arc_file_system_bridge_observation_.Observe(arc_file_system_bridge);
 
   // Ash Chrome downloads.
   download_notifier_.AddProfile(profile());
@@ -733,25 +733,26 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
       std::make_unique<InProgressAshDownload>(this, manager, download_item));
 }
 
-void HoldingSpaceDownloadsDelegate::OnArcDownloadAdded(
-    const base::FilePath& relative_path,
-    const std::string& owner_package_name) {
+void HoldingSpaceDownloadsDelegate::OnMediaStoreUriAdded(
+    const GURL& uri,
+    const arc::mojom::MediaStoreMetadata& metadata) {
   if (is_restoring_persistence())
     return;
 
-  // It is expected that `owner_package_name` be non-empty. Media files from
-  // Chrome are synced to ARC via media scan and have `NULL` owning packages but
-  // are expected *not* to have generated `OnArcDownloadAdded()` events.
-  if (owner_package_name.empty()) {
-    NOTREACHED();
+  // Holding space is only interested in download added events.
+  if (!metadata.is_download())
     return;
-  }
+
+  const auto& download = metadata.get_download();
+  const base::FilePath& relative_path = download->relative_path;
+  const std::string& display_name = download->display_name;
 
   // It is expected that `relative_path` always be contained within `Download/`
-  // which refers to the public downloads folder for the current `profile()`.
+  // which refers to the public downloads folder for the associated `profile()`.
   base::FilePath path(
       file_manager::util::GetDownloadsFolderForProfile(profile()));
-  if (!base::FilePath("Download/").AppendRelativePath(relative_path, &path)) {
+  if (!base::FilePath("Download/")
+           .AppendRelativePath(relative_path.Append(display_name), &path)) {
     NOTREACHED();
     return;
   }

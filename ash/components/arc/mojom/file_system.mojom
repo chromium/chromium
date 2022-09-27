@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 23
+// Next MinVersion: 24
 
 module arc.mojom;
 
@@ -11,6 +11,7 @@ import "ash/components/arc/mojom/bitmap.mojom";
 import "ash/components/arc/mojom/gfx.mojom";
 import "ash/components/arc/mojom/intent_common.mojom";
 import "ash/components/arc/mojom/video_common.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
@@ -284,7 +285,29 @@ struct FileSession {
   handle fd;
 };
 
-// Next method ID: 12
+// Representation of an entry in the MediaStore downloads collection.
+struct MediaStoreDownloadMetadata {
+  // The display name of the download including its extension (e.g. "foo.pdf").
+  string display_name;
+
+  // The package name that contributed the download (e.g. "com.bar.foo").
+  string owner_package_name;
+
+  // The relative path of the download within the Download/ directory (e.g.
+  // "Download/foo/bar/"). The method implementation must verify that the
+  // `relative_path` is in fact within the Download/ directory, treating ARC as
+  // an untrusted source.
+  mojo_base.mojom.FilePath relative_path;
+};
+
+// Representation of an entry in a MediaStore collection.
+[Extensible]
+union MediaStoreMetadata {
+  [Default] uint8 unknown; // Actual value is ignored and is just a placeholder.
+  MediaStoreDownloadMetadata download;
+};
+
+// Next method ID: 13
 interface FileSystemHost {
   // Returns the name of the file specified by the URL.
   // When an error occurs, returns null value.
@@ -336,6 +359,11 @@ interface FileSystemHost {
   [MinVersion=11] GetFileSelectorElements@8(
       GetFileSelectorElementsRequest request) =>
       (FileSelectorElements elements);
+
+  // Invoked when the specified |uri| has been added to a MediaStore collection
+  // with the given |metadata|.
+  [MinVersion=23] OnMediaStoreUriAdded@12(
+      url.mojom.Url uri, MediaStoreMetadata metadata);
 };
 
 // The browser process is using this interface in ArcFileSystemOperationRunner,

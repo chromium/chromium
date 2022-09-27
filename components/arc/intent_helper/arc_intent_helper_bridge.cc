@@ -330,22 +330,13 @@ void ArcIntentHelperBridge::OnSupportedLinksChanged(
                                         source);
 }
 
-void ArcIntentHelperBridge::OnDownloadAdded(
+void ArcIntentHelperBridge::OnDownloadAddedDeprecated(
     const std::string& relative_path_as_string,
     const std::string& owner_package_name) {
-  const base::FilePath download_folder("Download/");
-  const base::FilePath relative_path(relative_path_as_string);
-
-  // Observers should *not* be called when a download is added outside of the
-  // Download/ folder. This would be an unexpected event coming from ARC but
-  // we protect against it because ARC is treated as an untrusted source.
-  if (!download_folder.IsParent(relative_path) ||
-      relative_path.ReferencesParent()) {
-    return;
-  }
-
-  for (auto& observer : observer_list_)
-    observer.OnArcDownloadAdded(relative_path, owner_package_name);
+  // The `OnDownloadAdded()` event has been broken since at least 01/2022
+  // (see crbug.com/1291882). It is being fixed and replaced with a new API,
+  // `mojom::FileSystemHost::OnMediaStoreUriAdded()`.
+  LOG(ERROR) << "`OnDownloadAdded()` is deprecated.";
 }
 
 void ArcIntentHelperBridge::OnOpenAppWithIntent(

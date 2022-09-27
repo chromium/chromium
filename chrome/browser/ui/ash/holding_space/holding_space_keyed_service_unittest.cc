@@ -23,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time_override.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -41,7 +42,6 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -89,11 +89,11 @@ std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
   return types;
 }
 
-std::unique_ptr<KeyedService> BuildArcIntentHelperBridge(
+std::unique_ptr<KeyedService> BuildArcFileSystemBridge(
     content::BrowserContext* context) {
   EXPECT_TRUE(arc::ArcServiceManager::Get());
   EXPECT_TRUE(arc::ArcServiceManager::Get()->arc_bridge_service());
-  return std::make_unique<arc::ArcIntentHelperBridge>(
+  return std::make_unique<arc::ArcFileSystemBridge>(
       context, arc::ArcServiceManager::Get()->arc_bridge_service());
 }
 
@@ -354,8 +354,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         kPrimaryProfileName,
         /*testing_factories=*/{
-            {arc::ArcIntentHelperBridge::GetFactory(),
-             base::BindRepeating(&BuildArcIntentHelperBridge)},
+            {arc::ArcFileSystemBridge::GetFactory(),
+             base::BindRepeating(&BuildArcFileSystemBridge)},
             {file_manager::VolumeManagerFactory::GetInstance(),
              base::BindRepeating(&BuildVolumeManager)}});
     SetUpDownloadManager(profile);
@@ -372,8 +372,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
         kSecondaryProfileName, std::move(prefs), u"Test profile",
         1 /*avatar_id*/,
         /*testing_factories=*/
-        {{arc::ArcIntentHelperBridge::GetFactory(),
-          base::BindRepeating(&BuildArcIntentHelperBridge)},
+        {{arc::ArcFileSystemBridge::GetFactory(),
+          base::BindRepeating(&BuildArcFileSystemBridge)},
          {file_manager::VolumeManagerFactory::GetInstance(),
           base::BindRepeating(&BuildVolumeManager)}});
     SetUpDownloadManager(profile);
@@ -536,8 +536,8 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest, GuestUserProfile) {
   guest_profile_builder.SetGuestSession();
   guest_profile_builder.SetProfileName("guest_profile");
   guest_profile_builder.AddTestingFactories(
-      {{arc::ArcIntentHelperBridge::GetFactory(),
-        base::BindRepeating(&BuildArcIntentHelperBridge)},
+      {{arc::ArcFileSystemBridge::GetFactory(),
+        base::BindRepeating(&BuildArcFileSystemBridge)},
        {file_manager::VolumeManagerFactory::GetInstance(),
         base::BindRepeating(&BuildVolumeManager)}});
   std::unique_ptr<TestingProfile> guest_profile = guest_profile_builder.Build();
@@ -1864,16 +1864,19 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 
   // Create a fake download file on the local file system.
   const base::FilePath file_path = downloads_mount->CreateFile(
-      /*relative_path=*/base::FilePath("Download.png"), /*content=*/"foo");
+      /*relative_path=*/base::FilePath("Download.png"),
+      /*content=*/"foo");
 
-  // Simulate an event from ARC to indicate that the Android application with
-  // package `com.bar.foo` added a download at `file_path`.
-  auto* arc_intent_helper_bridge =
-      arc::ArcIntentHelperBridge::GetForBrowserContext(profile);
-  ASSERT_TRUE(arc_intent_helper_bridge);
-  arc_intent_helper_bridge->OnDownloadAdded(
-      /*relative_path=*/"Download/Download.png",
-      /*owner_package_name=*/"com.bar.foo");
+  // Simulate an `OnMediaStoreUriAdded()` event from ARC.
+  auto* arc_file_system_bridge =
+      arc::ArcFileSystemBridge::GetForBrowserContext(profile);
+  ASSERT_TRUE(arc_file_system_bridge);
+  arc_file_system_bridge->OnMediaStoreUriAdded(
+      GURL("uri"), arc::mojom::MediaStoreMetadata::NewDownload(
+                       arc::mojom::MediaStoreDownloadMetadata::New(
+                           /*display_name=*/file_path.BaseName().value(),
+                           /*owner_package_name=*/"com.bar.foo",
+                           /*relative_path=*/base::FilePath("Download/"))));
 
   // Verify that an item of type `kArcDownload` was added to holding space.
   ASSERT_EQ(1u, model->items().size());

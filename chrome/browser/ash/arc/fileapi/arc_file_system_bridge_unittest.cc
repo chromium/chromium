@@ -7,9 +7,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_file_system_instance.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -32,6 +34,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -349,6 +352,38 @@ TEST_F(ArcFileSystemBridgeTest, GetLinuxVFSPathForPathOnFileSystemType) {
           profile_, unsupported_filesystem_path,
           storage::kFileSystemTypeProvided);
   EXPECT_EQ(empty_path, unsupported_filesystem_vfs_path);
+}
+
+TEST_F(ArcFileSystemBridgeTest, PropagatesOnMediaStoreUriAddedEvents) {
+  class MockObserver : public ArcFileSystemBridge::Observer {
+   public:
+    MOCK_METHOD(void,
+                OnMediaStoreUriAdded,
+                (const GURL& uri, const mojom::MediaStoreMetadata& metadata),
+                (override));
+  };
+
+  // Register a mock observer.
+  testing::NiceMock<MockObserver> observer;
+  base::ScopedObservation<ArcFileSystemBridge, ArcFileSystemBridge::Observer>
+      observation{&observer};
+  observation.Observe(arc_file_system_bridge_.get());
+
+  // Prepare data for an `OnMediaStoreUriAdded()` event.
+  const GURL uri("uri");
+  auto metadata = mojom::MediaStoreMetadata::NewDownload(
+      mojom::MediaStoreDownloadMetadata::New(
+          /*display_name=*/"foo.pdf",
+          /*owner_package_name=*/"com.android.documentsui",
+          /*relative_path=*/base::FilePath("Download/")));
+
+  // Expect observer to be notified of an `OnMediaStoreUriAdded()` event.
+  EXPECT_CALL(observer,
+              OnMediaStoreUriAdded(testing::Eq(uri),
+                                   testing::Eq(testing::ByRef(*metadata))));
+
+  // Simulate an `OnMediaStoreUriAdded()` event from ARC.
+  arc_file_system_bridge_->OnMediaStoreUriAdded(uri, mojo::Clone(metadata));
 }
 
 }  // namespace arc

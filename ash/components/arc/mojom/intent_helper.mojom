@@ -279,7 +279,7 @@ interface CustomTabSession {
 };
 
 // Handles intents from ARC in Chrome.
-// Deprecated method ID: 4, 9, 10, 16
+// Deprecated method ID: 4, 9, 10, 16, 18
 // Next method ID: 23
 interface IntentHelperHost {
   // Called when icons associated with the package are no longer up to date.
@@ -358,6 +358,7 @@ interface IntentHelperHost {
       array<SupportedLinksPackage> removed_packages,
       [MinVersion=48] SupportedLinkChangeSource source);
 
+  // DEPRECATED: Replaced by `FileSystemHost::OnMediaStoreUriAdded()`.
   // Called when a new entry has been added to the MediaStore.Downloads
   // collection of downloaded items with the specified metadata.
   // |relative_path|      relative path of the download within the Download/
@@ -367,7 +368,7 @@ interface IntentHelperHost {
   //                      treating ARC as an untrusted source.
   // |owner_package_name| package name that contributed the download (e.g.
   //                      "com.bar.foo").
-  [MinVersion=44] OnDownloadAdded@18(
+  [MinVersion=44] OnDownloadAddedDeprecated@18(
       string relative_path, string owner_package_name);
 
   // Opens the web app for a specified URL, if it is installed, and delivers
