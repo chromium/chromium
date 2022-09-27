@@ -9,15 +9,10 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/passwords/settings/password_manager_porter_interface.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
-#include "components/password_manager/core/browser/ui/export_progress_status.h"
-#include "components/password_manager/core/browser/ui/import_results.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
-
-namespace content {
-class WebContents;
-}
 
 namespace password_manager {
 class PasswordManagerExporter;
@@ -27,10 +22,9 @@ class Profile;
 
 // Handles the exporting of passwords to a file, and the importing of such a
 // file to the Password Manager.
-class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
+class PasswordManagerPorter : public PasswordManagerPorterInterface,
+                              public ui::SelectFileDialog::Listener {
  public:
-  using ImportResultsCallback =
-      base::OnceCallback<void(const password_manager::ImportResults&)>;
   using ProgressCallback =
       base::RepeatingCallback<void(password_manager::ExportProgressStatus,
                                    const std::string&)>;
@@ -48,11 +42,13 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
 
   ~PasswordManagerPorter() override;
 
-  // Triggers passwords export flow for the given |web_contents|.
-  bool Export(content::WebContents* web_contents);
-
-  void CancelExport();
-  password_manager::ExportProgressStatus GetExportProgressStatus();
+  // PasswordManagerPorterInterface:
+  bool Export(content::WebContents* web_contents) override;
+  void CancelExport() override;
+  password_manager::ExportProgressStatus GetExportProgressStatus() override;
+  void Import(content::WebContents* web_contents,
+              password_manager::PasswordForm::Store to_store,
+              ImportResultsCallback results_callback) override;
 
   // The next export will use |exporter|, instead of creating a new instance.
   void SetExporterForTesting(
@@ -61,14 +57,6 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
   // The next import will use |importer|, instead of creating a new instance.
   void SetImporterForTesting(
       std::unique_ptr<password_manager::PasswordImporter> importer);
-
-  // Triggers passwords import flow for the given |web_contents|.
-  // Passwords will be imported into the |to_store|.
-  // |results_callback| is used to return import summary back to the user. It is
-  // run on the completion of import flow.
-  void Import(content::WebContents* web_contents,
-              password_manager::PasswordForm::Store to_store,
-              ImportResultsCallback results_callback);
 
  private:
   enum Type {

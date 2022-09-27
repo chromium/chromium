@@ -141,6 +141,7 @@ static_library("ui") {
     "passwords/password_manager_navigation_throttle.h",
     "passwords/settings/password_manager_porter.cc",
     "passwords/settings/password_manager_porter.h",
+    "passwords/settings/password_manager_porter_interface.h",
     "passwords/ui_utils.cc",
     "passwords/ui_utils.h",
     "passwords/well_known_change_password_navigation_throttle.cc",

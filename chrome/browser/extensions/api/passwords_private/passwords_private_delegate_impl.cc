@@ -586,9 +586,18 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
   DCHECK_NE(api::passwords_private::PasswordStoreSet::
                 PASSWORD_STORE_SET_DEVICE_AND_ACCOUNT,
             to_store);
+  password_manager::PasswordForm::Store store_to_use =
+      *ConvertToPasswordFormStores(to_store).begin();
   password_manager_porter_->Import(
-      web_contents, *ConvertToPasswordFormStores(to_store).begin(),
+      web_contents, store_to_use,
       base::BindOnce(&ConvertImportResults).Then(std::move(results_callback)));
+
+  auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
+  DCHECK(client);
+  // Update the default store to the last used one.
+  if (client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
+    client->GetPasswordFeatureManager()->SetDefaultPasswordStore(store_to_use);
+  }
 }
 
 void PasswordsPrivateDelegateImpl::ExportPasswords(

@@ -134,6 +134,11 @@ class PasswordsPrivateDelegateImpl
     password_access_authenticator_.set_os_reauth_call(
         std::move(os_reauth_call));
   }
+
+  void SetPorterForTesting(
+      std::unique_ptr<PasswordManagerPorterInterface> porter) {
+    password_manager_porter_ = std::move(porter);
+  }
 #endif  // defined(UNIT_TEST)
 
  private:
@@ -211,7 +216,7 @@ class PasswordsPrivateDelegateImpl
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_;
 
   // Used to control the export and import flows.
-  std::unique_ptr<PasswordManagerPorter> password_manager_porter_;
+  std::unique_ptr<PasswordManagerPorterInterface> password_manager_porter_;
 
   password_manager::PasswordAccessAuthenticator password_access_authenticator_;
 

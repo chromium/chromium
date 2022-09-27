@@ -26,6 +26,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/passwords/settings/password_manager_porter_interface.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
@@ -69,6 +70,22 @@ using MockPlaintextPasswordCallback =
     base::MockCallback<PasswordsPrivateDelegate::PlaintextPasswordCallback>;
 using MockRequestCredentialDetailsCallback = base::MockCallback<
     PasswordsPrivateDelegate::RequestCredentialDetailsCallback>;
+
+class MockPasswordManagerPorter : public PasswordManagerPorterInterface {
+ public:
+  MOCK_METHOD(bool, Export, (content::WebContents * web_contents), (override));
+  MOCK_METHOD(void, CancelExport, (), (override));
+  MOCK_METHOD(password_manager::ExportProgressStatus,
+              GetExportProgressStatus,
+              (),
+              (override));
+  MOCK_METHOD(void,
+              Import,
+              (content::WebContents * web_contents,
+               password_manager::PasswordForm::Store to_store,
+               ImportResultsCallback results_callback),
+              (override));
+};
 
 class MockPasswordManagerClient : public ChromePasswordManagerClient {
  public:
@@ -430,6 +447,58 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
   EXPECT_FALSE(delegate.AddPassword("", u"", u"", u"",
                                     /*use_account_store=*/false,
                                     web_contents.get()));
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       ImportPasswordsDoesNotUpdateDefaultStore) {
+  // This enables uses of TestWebContents.
+  content::RenderViewHostTestEnabler test_render_host_factories;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  auto* client =
+      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+
+  auto mock_porter = std::make_unique<MockPasswordManagerPorter>();
+  auto* mock_porter_ptr = mock_porter.get();
+
+  delegate.SetPorterForTesting(std::move(mock_porter));
+
+  // NOT update default store if not opted-in for account storage.
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
+      .Times(0);
+  EXPECT_CALL(*mock_porter_ptr, Import).Times(1);
+  delegate.ImportPasswords(
+      api::passwords_private::PasswordStoreSet::PASSWORD_STORE_SET_DEVICE,
+      base::DoNothing(), web_contents.get());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, ImportPasswordsUpdatesDefaultStore) {
+  // This enables uses of TestWebContents.
+  content::RenderViewHostTestEnabler test_render_host_factories;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  auto* client =
+      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+
+  auto mock_porter = std::make_unique<MockPasswordManagerPorter>();
+  auto* mock_porter_ptr = mock_porter.get();
+
+  delegate.SetPorterForTesting(std::move(mock_porter));
+
+  // Updates the default store if opted-in and operation succeeded.
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(*(client->GetPasswordFeatureManager()),
+              SetDefaultPasswordStore(
+                  password_manager::PasswordForm::Store::kAccountStore));
+  EXPECT_CALL(*mock_porter_ptr, Import).Times(1);
+  delegate.ImportPasswords(
+      api::passwords_private::PasswordStoreSet::PASSWORD_STORE_SET_ACCOUNT,
+      base::DoNothing(), web_contents.get());
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
