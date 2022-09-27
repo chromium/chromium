@@ -59,8 +59,7 @@ END_METADATA
 // ExpandableContainerView -----------------------------------------------------
 
 ExpandableContainerView::ExpandableContainerView(
-    const std::vector<std::u16string>& details,
-    int available_width) {
+    const std::vector<std::u16string>& details) {
   DCHECK(!details.empty());
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));

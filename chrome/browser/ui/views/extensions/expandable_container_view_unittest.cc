@@ -15,9 +15,7 @@ TEST_F(ExpandableContainerViewTest, DetailLevelVisibility) {
   details.push_back(u"Detail 2");
   details.push_back(u"Detail 2");
 
-  int content_width = 100;
-  auto container =
-      std::make_unique<ExpandableContainerView>(details, content_width);
+  auto container = std::make_unique<ExpandableContainerView>(details);
 
   // Initially the details view should not be expanded or visible.
   EXPECT_FALSE(container->details_view()->GetVisible());

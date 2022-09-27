@@ -21,8 +21,7 @@ class Link;
 class ExpandableContainerView : public views::View {
  public:
   METADATA_HEADER(ExpandableContainerView);
-  ExpandableContainerView(const std::vector<std::u16string>& details,
-                          int available_width);
+  explicit ExpandableContainerView(const std::vector<std::u16string>& details);
   ExpandableContainerView(const ExpandableContainerView&) = delete;
   ExpandableContainerView& operator=(const ExpandableContainerView&) = delete;
   ~ExpandableContainerView() override;
