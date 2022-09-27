@@ -38,10 +38,6 @@ class LaunchedConfigsTest : public testing::Test {
 };
 
 TEST_F(LaunchedConfigsTest, ShoppingAndCouponsLaunchedForCct) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillAssistantInCCTTriggering);
-
   fake_platform_delegate_.is_custom_tab_ = true;
   fake_platform_delegate_.is_web_layer_ = false;
   fake_platform_delegate_.is_tab_created_by_gsa_ = true;
@@ -116,10 +112,6 @@ class LaunchedConfigsParametrizedTest
 
 TEST_P(LaunchedConfigsParametrizedTest,
        ShoppingAndCouponsSupportedClientStatesUnitedStates) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillAssistantInCCTTriggering);
-
   fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
       "us";
 
@@ -141,10 +133,6 @@ TEST_P(LaunchedConfigsParametrizedTest,
 
 TEST_P(LaunchedConfigsParametrizedTest,
        ShoppingAndCouponsSupportedClientStatesGreatBritain) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillAssistantInCCTTriggering);
-
   fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
       "gb";
 
@@ -167,10 +155,6 @@ TEST_P(LaunchedConfigsParametrizedTest,
 
 TEST_P(LaunchedConfigsParametrizedTest,
        ShoppingAndCouponsNotSupportedInOtherCountries) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillAssistantInCCTTriggering);
-
   fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
       "ch";
   EXPECT_THAT(GetOrCreateShoppingConfig()->GetConditionSetsForClientState(

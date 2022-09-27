@@ -23,7 +23,6 @@
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/starter_heuristic.h"
-#include "components/autofill_assistant/browser/starter_heuristic_configs/legacy_starter_heuristic_config.h"
 #include "components/autofill_assistant/browser/starter_heuristic_configs/starter_heuristic_config.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/startup_util.h"

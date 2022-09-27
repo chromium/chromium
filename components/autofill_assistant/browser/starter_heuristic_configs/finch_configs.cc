@@ -6,7 +6,6 @@
 #include "base/no_destructor.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/starter_heuristic_configs/finch_starter_heuristic_config.h"
-#include "components/autofill_assistant/browser/starter_heuristic_configs/legacy_starter_heuristic_config.h"
 
 namespace autofill_assistant {
 
@@ -29,13 +28,6 @@ constexpr base::FeatureParam<std::string> kUrlHeuristicParams5{
 }  // namespace
 
 namespace finch_configs {
-
-// static
-const LegacyStarterHeuristicConfig* GetOrCreateLegacyConfig() {
-  static base::NoDestructor<LegacyStarterHeuristicConfig>
-      legacy_starter_heuristic_config;
-  return legacy_starter_heuristic_config.get();
-}
 
 // static
 const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic1() {

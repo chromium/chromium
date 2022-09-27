@@ -86,7 +86,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool is_supervised_user_ = false;
   bool is_allowed_for_machine_learning_ = true;
   bool is_custom_tab_ = true;
-  bool is_web_layer_ = true;
+  bool is_web_layer_ = false;
   bool is_tab_created_by_gsa_ = true;
   std::unique_ptr<AssistantFieldTrialUtil> field_trial_util_;
   bool is_attached_ = true;

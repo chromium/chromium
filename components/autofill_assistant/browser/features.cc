@@ -103,15 +103,7 @@ BASE_FEATURE(kAutofillAssistantGetTriggerScriptsByHashPrefix,
 // |kAutofillAssistantUrlHeuristics| to take effect.
 BASE_FEATURE(kAutofillAssistantInCCTTriggering,
              "AutofillAssistantInCctTriggering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Whether Autofill Assistant should enable in-tab triggering, i.e., requesting
-// and showing trigger scripts in regular tabs without explicit user request.
-// This requires also specifying valid URL heuristics via
-// |kAutofillAssistantUrlHeuristics| to take effect.
-BASE_FEATURE(kAutofillAssistantInTabTriggering,
-             "AutofillAssistantInTabTriggering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to show the "Send feedback" chip while in an error state.
 BASE_FEATURE(kAutofillAssistantFeedbackChip,
@@ -155,13 +147,6 @@ BASE_FEATURE(kAutofillAssistantUrlHeuristic4,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillAssistantUrlHeuristic5,
              "AutofillAssistantUrlHeuristic5",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Legacy URL heuristics. Used to configure the start heuristics for
-// |kAutofillAssistantInCctTriggering| and/or
-// |kAutofillAssistantInTabTriggering|.
-BASE_FEATURE(kAutofillAssistantUrlHeuristics,
-             "AutofillAssistantUrlHeuristics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether Autofill Assistant is enabled on desktop.

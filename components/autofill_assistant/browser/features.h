@@ -25,7 +25,6 @@ BASE_DECLARE_FEATURE(kAutofillAssistantFullJsSnippetStackTraces);
 BASE_DECLARE_FEATURE(kAutofillAssistantGetPaymentsClientToken);
 BASE_DECLARE_FEATURE(kAutofillAssistantGetTriggerScriptsByHashPrefix);
 BASE_DECLARE_FEATURE(kAutofillAssistantInCCTTriggering);
-BASE_DECLARE_FEATURE(kAutofillAssistantInTabTriggering);
 BASE_DECLARE_FEATURE(kAutofillAssistantLoadDFMForTriggerScripts);
 BASE_DECLARE_FEATURE(kAutofillAssistantProactiveHelp);
 BASE_DECLARE_FEATURE(kAutofillAssistantRemoteAssistantUi);
@@ -37,7 +36,6 @@ BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic2);
 BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic3);
 BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic4);
 BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic5);
-BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristics);
 BASE_DECLARE_FEATURE(kAutofillAssistantUseDidFinishNavigation);
 BASE_DECLARE_FEATURE(kAutofillAssistantVerifyGetActionsResponses);
 BASE_DECLARE_FEATURE(

@@ -66,11 +66,11 @@ class LaunchedStarterHeuristicConfigTest : public testing::Test {
 TEST_F(LaunchedStarterHeuristicConfigTest, NoConfigsIfEmptyParameters) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
-      features::kAutofillAssistantInCCTTriggering);
-  std::string empty_parameters;
+      features::kAutofillAssistantUrlHeuristic1);
 
+  std::string empty_parameters;
   LaunchedStarterHeuristicConfig config{
-      features::kAutofillAssistantInCCTTriggering, empty_parameters, {"us"}};
+      features::kAutofillAssistantUrlHeuristic1, empty_parameters, {"us"}};
   SetupForRegularConfig(&fake_platform_delegate_);
   EXPECT_THAT(config.GetDenylistedDomains(), IsEmpty());
   EXPECT_THAT(config.GetIntent(), IsEmpty());
@@ -82,11 +82,11 @@ TEST_F(LaunchedStarterHeuristicConfigTest, NoConfigsIfEmptyParameters) {
 TEST_F(LaunchedStarterHeuristicConfigTest, NoConfigsIfInvalidParameters) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
-      features::kAutofillAssistantInCCTTriggering);
+      features::kAutofillAssistantUrlHeuristic1);
   std::string parameters = "not valid json";
 
   LaunchedStarterHeuristicConfig config{
-      features::kAutofillAssistantInCCTTriggering, parameters, {"us"}};
+      features::kAutofillAssistantUrlHeuristic1, parameters, {"us"}};
   SetupForRegularConfig(&fake_platform_delegate_);
   EXPECT_THAT(config.GetDenylistedDomains(), IsEmpty());
   EXPECT_THAT(config.GetIntent(), IsEmpty());
@@ -98,9 +98,9 @@ TEST_F(LaunchedStarterHeuristicConfigTest, NoConfigsIfInvalidParameters) {
 TEST_F(LaunchedStarterHeuristicConfigTest, RegularConfigWorksIfFeatureEnabled) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
-      features::kAutofillAssistantInCCTTriggering);
+      features::kAutofillAssistantUrlHeuristic1);
   LaunchedStarterHeuristicConfig config{
-      features::kAutofillAssistantInCCTTriggering, kRegularConfig, {"us"}};
+      features::kAutofillAssistantUrlHeuristic1, kRegularConfig, {"us"}};
 
   SetupForRegularConfig(&fake_platform_delegate_);
   fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
@@ -125,9 +125,9 @@ TEST_F(LaunchedStarterHeuristicConfigTest,
        RegularConfigDoesNotWorkIfFeatureDisabled) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndDisableFeature(
-      features::kAutofillAssistantInCCTTriggering);
+      features::kAutofillAssistantUrlHeuristic1);
   LaunchedStarterHeuristicConfig config{
-      features::kAutofillAssistantInCCTTriggering, kRegularConfig, {"us"}};
+      features::kAutofillAssistantUrlHeuristic1, kRegularConfig, {"us"}};
 
   SetupForRegularConfig(&fake_platform_delegate_);
   fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
@@ -144,11 +144,9 @@ TEST_F(LaunchedStarterHeuristicConfigTest,
        RegularConfigDoesNotWorkIfCountryNotLaunched) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
-      features::kAutofillAssistantInCCTTriggering);
+      features::kAutofillAssistantUrlHeuristic1);
   LaunchedStarterHeuristicConfig config{
-      features::kAutofillAssistantInCCTTriggering,
-      kRegularConfig,
-      {"us", "gb"}};
+      features::kAutofillAssistantUrlHeuristic1, kRegularConfig, {"us", "gb"}};
 
   SetupForRegularConfig(&fake_platform_delegate_);
   fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
@@ -159,6 +157,47 @@ TEST_F(LaunchedStarterHeuristicConfigTest,
 
   fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
       "gb";
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
+              SizeIs(1));
+}
+
+TEST_F(LaunchedStarterHeuristicConfigTest, PreferPermanentCountry) {
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeature(
+      features::kAutofillAssistantUrlHeuristic1);
+  LaunchedStarterHeuristicConfig config{
+      features::kAutofillAssistantUrlHeuristic1, kRegularConfig, {"us"}};
+
+  SetupForRegularConfig(&fake_platform_delegate_);
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "us";
+  fake_platform_delegate_.fake_common_dependencies_->latest_country_code_ =
+      "zz";
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
+              SizeIs(1));
+}
+
+TEST_F(LaunchedStarterHeuristicConfigTest,
+       FallbackToLatestCountryIfNoPermanentCountry) {
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeature(
+      features::kAutofillAssistantUrlHeuristic1);
+  LaunchedStarterHeuristicConfig config{
+      features::kAutofillAssistantUrlHeuristic1, kRegularConfig, {"us"}};
+
+  SetupForRegularConfig(&fake_platform_delegate_);
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "zz";
+  fake_platform_delegate_.fake_common_dependencies_->latest_country_code_ =
+      "us";
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
+              SizeIs(1));
+
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "";
   EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
                                                     &context_),
               SizeIs(1));

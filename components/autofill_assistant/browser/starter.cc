@@ -29,6 +29,8 @@
 #include "components/autofill_assistant/browser/service/simple_url_loader_factory.h"
 #include "components/autofill_assistant/browser/starter_heuristic_configs/finch_configs.h"
 #include "components/autofill_assistant/browser/starter_heuristic_configs/finch_starter_heuristic_config.h"
+#include "components/autofill_assistant/browser/starter_heuristic_configs/launched_configs.h"
+#include "components/autofill_assistant/browser/starter_heuristic_configs/launched_starter_heuristic_config.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
@@ -170,7 +172,9 @@ Starter::Starter(content::WebContents* web_contents,
       runtime_manager_(runtime_manager),
       starter_heuristic_(base::MakeRefCounted<StarterHeuristic>()),
       tick_clock_(tick_clock) {
-  heuristic_configs_.emplace_back(finch_configs::GetOrCreateLegacyConfig());
+  heuristic_configs_.emplace_back(
+      launched_configs::GetOrCreateShoppingConfig());
+  heuristic_configs_.emplace_back(launched_configs::GetOrCreateCouponsConfig());
   heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic1());
   heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic2());
   heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic3());
