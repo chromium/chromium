@@ -1072,8 +1072,9 @@ int QuicStreamRequest::Request(
 
   session_key_ =
       QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, socket_tag,
-                     NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-                         network_isolation_key),
+                     NetworkAnonymizationKey::
+                         CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                             network_isolation_key),
                      secure_dns_policy, require_dns_https_alpn);
 
   int rv = factory_->Create(session_key_, std::move(destination), quic_version,
@@ -1156,8 +1157,9 @@ bool QuicStreamRequest::CanUseExistingSession(
     const url::SchemeHostPort& destination) const {
   return factory_->CanUseExistingSession(
       QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, socket_tag,
-                     NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-                         network_isolation_key),
+                     NetworkAnonymizationKey::
+                         CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                             network_isolation_key),
                      secure_dns_policy, require_dns_https_alpn),
       destination);
 }

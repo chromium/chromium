@@ -3282,7 +3282,7 @@ base::Value QuicChromiumClientSession::GetInfoAsValue(
 
   dict.Set("total_streams", static_cast<int>(num_total_streams_));
   dict.Set("peer_address", peer_address().ToString());
-  // TODO(https://crbug.com/1343856): Upddate "network_isolation_key" to
+  // TODO(https://crbug.com/1343856): Update "network_isolation_key" to
   // "network_anonymization_key" and change NetLog viewer.
   dict.Set("network_isolation_key",
            session_key_.network_anonymization_key().ToDebugString());

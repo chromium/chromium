@@ -1823,9 +1823,10 @@ EVENT_TYPE(QUIC_STREAM_FACTORY_JOB_STALE_HOST_RESOLUTION_MATCHED)
 //     "port": <The origin port>,
 //     "privacy_mode": <The privacy mode of the session>,
 //     "network_anonymization_key": <The NetworkAnonymizationKey of the
-//     session>, "require_confirmation": <True if the session will wait for a
-//     successful
-//                              QUIC handshake before vending streams>,
+//                                   session>,
+//     "require_confirmation": <True if the session will wait for a
+//                              successful QUIC handshake before vending
+//                              streams>,
 //     "cert_verify_flags": <The certificate verification flags for the
 //                           session>,
 //   }
