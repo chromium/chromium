@@ -151,7 +151,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     private boolean mIsInitPending;
 
     private boolean mIsSecondaryTaskInitPending;
-    private FeedPlaceholderCoordinator mFeedPlaceholderCoordinator;
 
     // Listeners used by the contained surfaces (e.g., Explore) to listen to the scroll changes on
     // the main scrollable container of the start surface.
@@ -294,21 +293,17 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         TabSwitcher.Controller controller =
                 mTabSwitcher != null ? mTabSwitcher.getController() : mTasksSurface.getController();
+        ViewGroup feedPlaceholderParentView =
+                mTasksSurface == null ? null : mTasksSurface.getBodyViewContainer();
         mStartSurfaceMediator = new StartSurfaceMediator(controller, containerView,
                 mTabModelSelector, mPropertyModel,
                 mIsStartSurfaceEnabled ? this::initializeSecondaryTasksSurface : null,
                 mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
                 this::isActivityFinishingOrDestroyed, excludeMVTiles, excludeQueryTiles,
                 startSurfaceOneshotSupplier, hadWarmStart, jankTracker,
-                mTasksSurface != null ? mTasksSurface::initializeMVTiles : null, backPressManager);
+                mTasksSurface != null ? mTasksSurface::initializeMVTiles : null, backPressManager,
+                feedPlaceholderParentView);
 
-        // Show feed loading image.
-        if (mStartSurfaceMediator.shouldShowFeedPlaceholder()) {
-            mFeedPlaceholderCoordinator = new FeedPlaceholderCoordinator(
-                    mActivity, mTasksSurface.getBodyViewContainer(), false);
-            mFeedPlaceholderCoordinator.setUpPlaceholderView();
-            mStartSurfaceMediator.setFeedPlaceholderHasShown();
-        }
         startSurfaceOneshotSupplier.set(this);
     }
 
@@ -347,10 +342,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mSecondaryTasksSurface.onHide();
             }
         }
-        if (mFeedPlaceholderCoordinator != null) {
-            mFeedPlaceholderCoordinator.destroy();
-            mFeedPlaceholderCoordinator = null;
-        }
+        mStartSurfaceMediator.maybeDestroyFeedPlaceholder();
     }
 
     @Override
@@ -573,9 +565,6 @@ public class StartSurfaceCoordinator implements StartSurface {
             boolean isOverviewShownOnStartup, long activityCreationTimeMs) {
         if (isOverviewShownOnStartup) {
             mStartSurfaceMediator.onOverviewShownAtLaunch(activityCreationTimeMs);
-            if (mFeedPlaceholderCoordinator != null) {
-                mFeedPlaceholderCoordinator.onOverviewShownAtLaunch(activityCreationTimeMs);
-            }
         }
         if (ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)) {
             Log.i(TAG, "Recorded %s = %b", START_SHOWN_AT_STARTUP_UMA, isOverviewShownOnStartup);

@@ -1570,7 +1570,8 @@ public class StartSurfaceMediatorUnitTest {
                         isStartSurfaceEnabled, ContextUtils.getApplicationContext(),
                         mBrowserControlsStateProvider, mActivityStateChecker, excludeMVTiles,
                         true /* excludeQueryTiles */, mStartSurfaceSupplier, hadWarmStart,
-                        new DummyJankTracker(), mInitializeMVTilesRunnable, mBackPressManager);
+                        new DummyJankTracker(), mInitializeMVTilesRunnable, mBackPressManager,
+                        null /* feedPlaceholderParentView */);
         return mediator;
     }
 

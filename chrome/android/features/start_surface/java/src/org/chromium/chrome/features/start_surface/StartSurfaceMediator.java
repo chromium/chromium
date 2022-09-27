@@ -166,6 +166,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
      */
     @Nullable
     private Boolean mFeedVisibilityInSharedPreferenceOnStartUp;
+    private FeedPlaceholderCoordinator mFeedPlaceholderCoordinator;
     private boolean mHasFeedPlaceholderShown;
     private final JankTracker mJankTracker;
     private boolean mHideOverviewOnTabSelecting = true;
@@ -183,7 +184,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             ActivityStateChecker activityStateChecker, boolean excludeMVTiles,
             boolean excludeQueryTiles, OneshotSupplier<StartSurface> startSurfaceSupplier,
             boolean hadWarmStart, JankTracker jankTracker, Runnable initializeMVTilesRunnable,
-            BackPressManager backPressManager) {
+            BackPressManager backPressManager, ViewGroup feedPlaceholderParentView) {
         mController = controller;
         mTabSwitcherContainer = tabSwitcherContainer;
         mTabModelSelector = tabModelSelector;
@@ -203,6 +204,14 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;
+
+            // Show feed loading image if necessary.
+            if (shouldShowFeedPlaceholder()) {
+                assert feedPlaceholderParentView != null;
+                mFeedPlaceholderCoordinator =
+                        new FeedPlaceholderCoordinator(context, feedPlaceholderParentView, false);
+                mHasFeedPlaceholderShown = true;
+            }
 
             mIsIncognito = mTabModelSelector.isIncognitoSelected();
 
@@ -587,6 +596,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
 
         } else if (mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER) {
+            maybeDestroyFeedPlaceholder();
             // Set secondary surface visible to make sure tab list recyclerview is updated in time
             // (before GTS animations start). We need to skip
             // mSecondaryTasksSurfaceController#showOverview here since it will hide GTS animations.
@@ -671,7 +681,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mController.hideTabSwitcherView(animate);
     }
 
-    public void beforeHideTabSwitcherView() {
+    void beforeHideTabSwitcherView() {
         mController.prepareHideTabSwitcherView();
     }
 
@@ -766,6 +776,13 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         return mController.onBackPressed(isOnHomepage);
     }
 
+    void maybeDestroyFeedPlaceholder() {
+        if (mFeedPlaceholderCoordinator != null) {
+            mFeedPlaceholderCoordinator.destroy();
+            mFeedPlaceholderCoordinator = null;
+        }
+    }
+
     @Override
     public void handleBackPress() {
         boolean ret = onBackPressedInternal();
@@ -791,17 +808,15 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             }
         }
 
-        assert mFeedVisibilityInSharedPreferenceOnStartUp != null;
+        assert mPropertyModel == null || mFeedVisibilityInSharedPreferenceOnStartUp != null;
         if (mFeedVisibilityPrefOnStartUp != null) {
             RecordHistogram.recordBooleanHistogram(FEED_VISIBILITY_CONSISTENCY,
                     mFeedVisibilityPrefOnStartUp.equals(
                             mFeedVisibilityInSharedPreferenceOnStartUp));
         }
-    }
-
-    boolean inShowState() {
-        return mStartSurfaceState != StartSurfaceState.NOT_SHOWN
-                && mStartSurfaceState != StartSurfaceState.DISABLED;
+        if (mFeedPlaceholderCoordinator != null) {
+            mFeedPlaceholderCoordinator.onOverviewShownAtLaunch(activityCreationTimeMs);
+        }
     }
 
     boolean isShowingStartSurfaceHomepage() {
@@ -906,6 +921,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mOnTabSelectingListener.onTabSelecting(time, tabId);
     }
 
+    @VisibleForTesting
     public boolean shouldShowFeedPlaceholder() {
         if (mFeedVisibilityInSharedPreferenceOnStartUp == null) {
             mFeedVisibilityInSharedPreferenceOnStartUp =
@@ -917,17 +933,13 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 && !mHasFeedPlaceholderShown;
     }
 
-    public void setSecondaryTasksSurfaceController(
+    void setSecondaryTasksSurfaceController(
             TabSwitcher.Controller secondaryTasksSurfaceController) {
         mSecondaryTasksSurfaceController = secondaryTasksSurfaceController;
         mSecondaryTasksSurfaceController.isDialogVisibleSupplier().addObserver(
                 (v) -> notifyBackPressStateChanged());
         mSecondaryTasksSurfaceController.getHandleBackPressChangedSupplier().addObserver(
                 (v) -> notifyBackPressStateChanged());
-    }
-
-    void setFeedPlaceholderHasShown() {
-        mHasFeedPlaceholderShown = true;
     }
 
     /** This interface builds the feed surface coordinator when showing if needed. */
