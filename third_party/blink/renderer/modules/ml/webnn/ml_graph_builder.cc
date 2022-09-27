@@ -925,8 +925,8 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
       return nullptr;
     }
   }
-  auto* gemm =
-      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kGemm);
+  auto* gemm = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kGemm, options);
   HeapVector<Member<const MLOperand>> inputs = {a, b};
   if (options->hasC()) {
     inputs.push_back(options->c());
