@@ -844,7 +844,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
        url.host_piece() == chrome::kChromeUIHistoryHost ||
        url.host_piece() == chrome::kChromeUIExtensionsHost ||
        url.host_piece() == chrome::kChromeUINewTabPageHost ||
-       url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost)) {
+       url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost ||
+       url.host_piece() == chrome::kChromeUIPasswordManagerHost)) {
     return &NewWebUI<PageNotAvailableForGuestUI>;
   }
   if (url.host_piece() == chrome::kChromeUIAppServiceInternalsHost)
