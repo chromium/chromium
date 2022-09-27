@@ -86,6 +86,7 @@ class CORE_EXPORT History final : public ScriptWrappable,
                         const String& title,
                         const String& url,
                         WebFrameLoadType,
+                        ScriptState*,
                         ExceptionState&);
   SerializedScriptValue* StateInternal() const;
   mojom::blink::ScrollRestorationType ScrollRestorationInternal() const;

@@ -3,10 +3,10 @@ var clicked;
 const max_clicks = 50;
 const url = "/foobar.html";
 const test_soft_navigation = (add_content, button, push_state, clicks,
-                              extra_validations, test_name) => {
+                              extra_validations, test_name, push_url = true) => {
   promise_test(async t => {
     const pre_click_lcp = await get_lcp_entries();
-    setClickEvent(t, button, push_state, add_content);
+    setClickEvent(t, button, push_state, add_content, push_url);
     for (let i = 0; i < clicks; ++i) {
       clicked = false;
       click(button);
@@ -17,14 +17,14 @@ const test_soft_navigation = (add_content, button, push_state, clicks,
     }
     assert_equals(document.softNavigations, clicks,
       "Soft Navigations detected are the same as the number of clicks");
-    await validate_soft_navigation_entry(clicks, extra_validations);
+    await validate_soft_navigation_entry(clicks, extra_validations, push_url);
 
     await double_raf();
 
     validate_paint_entries("first-contentful-paint");
     validate_paint_entries("first-paint");
     const post_click_lcp = await get_lcp_entries();
-    assert_greater_than(post_click_lcp.length, pre_click_lcp.length);
+    assert_greater_than(post_click_lcp.length, pre_click_lcp.length, "Soft navigation should have triggered at least an LCP entry");
 
    }, test_name);
 }
@@ -41,7 +41,7 @@ const double_raf = () => {
   });
 };
 
-const setClickEvent = (t, button, push_state, add_content) => {
+const setClickEvent = (t, button, push_state, add_content, push_url) => {
   button.addEventListener("click", async e => {
     // Jump through a task, to ensure task tracking is working properly.
     await new Promise(r => t.step_timeout(r, 0));
@@ -52,7 +52,11 @@ const setClickEvent = (t, button, push_state, add_content) => {
 
     if (push_state) {
       // Change the URL
-      history.pushState({}, '', url + "?" + counter);
+      if (push_url) {
+        history.pushState({}, '', url + "?" + counter);
+      } else {
+        history.pushState({}, '');
+      }
     }
 
     await add_content(json);
@@ -62,7 +66,7 @@ const setClickEvent = (t, button, push_state, add_content) => {
   });
 };
 
-const validate_soft_navigation_entry = async (clicks, extra_validations) => {
+const validate_soft_navigation_entry = async (clicks, extra_validations, push_url) => {
   const [entries, options] = await new Promise(resolve => {
     (new PerformanceObserver((list, obs, options) => resolve(
       [list.getEntries(), options]))).observe(
@@ -72,7 +76,7 @@ const validate_soft_navigation_entry = async (clicks, extra_validations) => {
 
   assert_equals(entries.length, expected_clicks,
                 "Performance observer got an entry");
-  assert_true(entries[0].name.includes(url),
+  assert_true(entries[0].name.includes(push_url ? url : document.location.href),
               "The soft navigation name is properly set");
   assert_not_equals(entries[0].navigationId,
                     performance.getEntriesByType("navigation")[0].navigationId,

@@ -245,7 +245,6 @@ void History::pushState(ScriptState* script_state,
           /* discard_duplicates */ true);
       load_type = WebFrameLoadType::kReplaceCurrentItem;
     }
-    ReportURLChange(window, script_state, url);
   }
 
   scoped_refptr<SerializedScriptValue> serialized_data =
@@ -257,7 +256,7 @@ void History::pushState(ScriptState* script_state,
     return;
 
   StateObjectAdded(std::move(serialized_data), title, url, load_type,
-                   exception_state);
+                   script_state, exception_state);
 }
 
 void History::replaceState(ScriptState* script_state,
@@ -274,12 +273,9 @@ void History::replaceState(ScriptState* script_state,
   if (exception_state.HadException())
     return;
 
-  if (LocalDOMWindow* window = DomWindow()) {
-    ReportURLChange(window, script_state, url);
-  }
-
   StateObjectAdded(std::move(serialized_data), title, url,
-                   WebFrameLoadType::kReplaceCurrentItem, exception_state);
+                   WebFrameLoadType::kReplaceCurrentItem, script_state,
+                   exception_state);
 }
 
 KURL History::UrlForState(const String& url_string) {
@@ -295,8 +291,10 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
                                const String& /* title */,
                                const String& url_string,
                                WebFrameLoadType type,
+                               ScriptState* script_state,
                                ExceptionState& exception_state) {
-  if (!DomWindow()) {
+  LocalDOMWindow* window = DomWindow();
+  if (!window) {
     exception_state.ThrowSecurityError(
         "May not use a History object associated with a Document that is not "
         "fully active");
@@ -304,10 +302,11 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
   }
 
   KURL full_url = UrlForState(url_string);
+  ReportURLChange(window, script_state, full_url);
   bool can_change = CanChangeToUrlForHistoryApi(
-      full_url, DomWindow()->GetSecurityOrigin(), DomWindow()->Url());
+      full_url, window->GetSecurityOrigin(), window->Url());
 
-  if (DomWindow()->GetSecurityOrigin()->IsGrantedUniversalAccess()) {
+  if (window->GetSecurityOrigin()->IsGrantedUniversalAccess()) {
     // Log the case when 'pushState'/'replaceState' is allowed only because
     // of IsGrantedUniversalAccess ie there is no other condition which should
     // allow the change (!can_change).
@@ -324,12 +323,12 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
     exception_state.ThrowSecurityError(
         "A history state object with URL '" + full_url.ElidedString() +
         "' cannot be created in a document with origin '" +
-        DomWindow()->GetSecurityOrigin()->ToString() + "' and URL '" +
-        DomWindow()->Url().ElidedString() + "'.");
+        window->GetSecurityOrigin()->ToString() + "' and URL '" +
+        window->Url().ElidedString() + "'.");
     return;
   }
 
-  if (!DomWindow()->GetFrame()->navigation_rate_limiter().CanProceed()) {
+  if (!window->GetFrame()->navigation_rate_limiter().CanProceed()) {
     // TODO(769592): Get an API spec change so that we can throw an exception:
     //
     //  exception_state.ThrowDOMException(DOMExceptionCode::kQuotaExceededError,
@@ -340,7 +339,7 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
     return;
   }
 
-  if (auto* navigation_api = NavigationApi::navigation(*DomWindow())) {
+  if (auto* navigation_api = NavigationApi::navigation(*window)) {
     auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
         full_url, NavigateEventType::kHistoryApi, type);
     params->state_object = data.get();
@@ -350,7 +349,7 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
     }
   }
 
-  DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
+  window->document()->Loader()->RunURLAndHistoryUpdateSteps(
       full_url, nullptr, mojom::blink::SameDocumentNavigationType::kHistoryApi,
       std::move(data), type);
 }

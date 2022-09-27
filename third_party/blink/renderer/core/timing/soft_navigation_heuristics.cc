@@ -164,9 +164,7 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
   frame->IncrementNavigationId();
   if (LocalDOMWindow* window = frame->DomWindow()) {
     auto* performance = DOMWindowPerformance::performance(*window);
-    // TODO(yoav): url_ can be NULL here, if it wasn't passed to pushState by
-    // the developer. That's not great, and it'd be better to pass the
-    // post-resolution URL when calling this.
+    DCHECK(!url_.IsNull());
     performance->AddSoftNavigationEntry(AtomicString(url_));
 
     if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled()) {
