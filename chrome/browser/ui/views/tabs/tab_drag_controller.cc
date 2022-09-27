@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -57,6 +58,7 @@
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_tracker.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/root_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2069,7 +2071,8 @@ void TabDragController::BringWindowUnderPointToFront(
   if (!CanAttachTo(window))
     return;
 
-  if (window) {
+  if (window &&
+      !base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
     views::Widget* widget_window =
         views::Widget::GetWidgetForNativeWindow(window);
     if (!widget_window)
