@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Matcher" summary="to run the matcher"/>
     <variant name="Overall"
         summary="between the detection of the finger and the match/no-match
-                 event being sent to the Application Processor(AP)."/>
+                 event being sent to the Application Processor(AP)"/>
   </token>
 </histogram>
 
