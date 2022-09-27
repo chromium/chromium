@@ -93,18 +93,12 @@ class SettingsMultideviceTaskContinuationDisabledLinkElement extends
    */
   onChromeSyncLinkClick_(event) {
     event.preventDefault();
-    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      // If syncSettingsCategorization is enabled, then syncing of tabs is
-      // controlled by the browser sync settings, not OS sync settings.
-      window.open('chrome://settings/syncSetup/advanced');
+    window.open('chrome://settings/syncSetup/advanced');
 
-      const openedBrowserAdvancedSyncSettingsEvent = new CustomEvent(
-          'opened-browser-advanced-sync-settings',
-          {bubbles: true, composed: true});
-      this.dispatchEvent(openedBrowserAdvancedSyncSettingsEvent);
-    } else {
-      Router.getInstance().navigateTo(routes.SYNC_ADVANCED);
-    }
+    const openedBrowserAdvancedSyncSettingsEvent = new CustomEvent(
+        'opened-browser-advanced-sync-settings',
+        {bubbles: true, composed: true});
+    this.dispatchEvent(openedBrowserAdvancedSyncSettingsEvent);
   }
 }
 

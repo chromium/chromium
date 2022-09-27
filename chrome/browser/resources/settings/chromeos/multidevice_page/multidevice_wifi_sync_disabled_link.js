@@ -89,13 +89,7 @@ class SettingsMultideviceWifiSyncDisabledLinkElement extends
    */
   onChromeSyncLinkClick_(event) {
     event.preventDefault();
-    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      // If syncSettingsCategorization is enabled, then WiFi sync is controlled
-      // by the OS sync settings, not the browser sync settings.
-      Router.getInstance().navigateTo(routes.OS_SYNC);
-    } else {
-      Router.getInstance().navigateTo(routes.SYNC_ADVANCED);
-    }
+    Router.getInstance().navigateTo(routes.OS_SYNC);
   }
 }
 
