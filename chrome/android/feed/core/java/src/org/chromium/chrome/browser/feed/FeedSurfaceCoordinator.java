@@ -737,8 +737,7 @@ public class FeedSurfaceCoordinator
         if (mSigninPromoView == null) {
             LayoutInflater inflater = LayoutInflater.from(mRootView.getContext());
             mSigninPromoView = inflater.inflate(
-                    R.layout.personalized_signin_promo_view_modern_content_suggestions, mRootView,
-                    false);
+                    R.layout.sync_promo_view_content_suggestions, mRootView, false);
         }
         return mSigninPromoView;
     }
