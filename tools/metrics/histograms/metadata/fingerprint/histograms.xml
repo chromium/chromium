@@ -253,17 +253,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Fingerprint.Updater.NoUpdate.Duration.Overall" units="ms"
-    expires_after="2023-04-05">
-  <owner>tomhughes@chromium.org</owner>
-  <owner>hesling@chromium.org</owner>
-  <owner>chromeos-fingerprint@google.com</owner>
-  <summary>
-    Measures the total time it takes to run the fingerprint firmware updater
-    when an update was not necessary.
-  </summary>
-</histogram>
-
 <histogram name="Fingerprint.Updater.Reason" enum="FingerprintUpdaterReason"
     expires_after="2023-04-05">
   <owner>tomhughes@chromium.org</owner>
@@ -282,15 +271,19 @@ chromium-metrics-reviews@google.com.
   <summary>Tracks the fingerprint firmware updater's overall status.</summary>
 </histogram>
 
-<histogram name="Fingerprint.Updater.Update.Duration.Overall" units="ms"
+<histogram name="Fingerprint.Updater.{Outcome}.Duration.Overall" units="ms"
     expires_after="2023-04-05">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Measures the total time it takes to run the fingerprint firmware updater
-    when an update was necessary.
+    when an update was {Outcome}.
   </summary>
+  <token key="Outcome">
+    <variant name="NoUpdate" summary="not necessary"/>
+    <variant name="Update" summary="necessary"/>
+  </token>
 </histogram>
 
 </histograms>
