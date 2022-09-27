@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tasks;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS;
-import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START;
+import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE;
 
 import android.content.Context;
 import android.content.Intent;
@@ -255,7 +255,7 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     public void testShouldShowStartSurfaceAsTheHomePage() {
-        START_SURFACE_OPEN_NTP_INSTEAD_OF_START.setForTesting(true);
+        START_SURFACE_OPEN_START_AS_HOMEPAGE.setForTesting(true);
         Assert.assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
 
         // Sets main intent from launcher:

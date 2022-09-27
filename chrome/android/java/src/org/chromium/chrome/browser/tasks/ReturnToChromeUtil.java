@@ -380,7 +380,7 @@ public final class ReturnToChromeUtil {
      */
     public static boolean shouldShowStartSurfaceAsTheHomePage(Context context) {
         return isStartSurfaceEnabled(context)
-                && !StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START.getValue();
+                && StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE.getValue();
     }
 
     /**

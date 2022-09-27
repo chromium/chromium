@@ -260,7 +260,8 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.
     Add({START_SURFACE_TEST_BASE_PARAMS + "exclude_mv_tiles/true/show_last_active_tab_only/false"
-            + "/open_ntp_instead_of_start/false/tab_count_button_on_start_surface/false"})
+            + "/open_ntp_instead_of_start/false/tab_count_button_on_start_surface/false"
+            + "/open_start_as_homepage/true"})
     // clang-format off
     public void testShow_SingleAsHomepage_NoMVTiles() {
         // clang-format on
@@ -305,8 +306,8 @@ public class StartSurfaceTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.
-    Add({START_SURFACE_TEST_BASE_PARAMS + "exclude_mv_tiles/true/open_ntp_instead_of_start/false"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
+            + "exclude_mv_tiles/true/open_ntp_instead_of_start/false/open_start_as_homepage/true"})
     // clang-format off
     public void testShow_SingleAsHomepage_SingleTabNoMVTiles() {
         // clang-format on
@@ -500,7 +501,8 @@ public class StartSurfaceTest {
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study",
             ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "open_ntp_instead_of_start/false",
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
+                    + "open_ntp_instead_of_start/false/open_start_as_homepage/true",
             // Disable feed placeholder animation because it causes waitForDeferredStartup() to time
             // out.
             FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH})

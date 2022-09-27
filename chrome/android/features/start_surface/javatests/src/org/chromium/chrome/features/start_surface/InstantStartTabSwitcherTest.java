@@ -404,8 +404,8 @@ public class InstantStartTabSwitcherTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-            INSTANT_START_TEST_BASE_PARAMS
-                    + "/show_last_active_tab_only/false/open_ntp_instead_of_start/false"})
+            INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"
+                    + "/open_ntp_instead_of_start/false/open_start_as_homepage/true"})
     // clang-format off
     public void testSingleAsHomepage_Landscape_TabSize() {
         // clang-format on
