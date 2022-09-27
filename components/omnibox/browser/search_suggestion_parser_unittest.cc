@@ -129,6 +129,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
             "a": "American author",
             "dc": "#424242",
             "i": "http://example.com/a.png",
+            "zae": "/m/065xxm",
             "q": "gs_ssp=abc",
             "t": "Christopher Doe"
           }],
@@ -161,6 +162,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
     const auto& suggestion_result = results.suggest_results[0];
     ASSERT_EQ(u"christmas", suggestion_result.suggestion());
     ASSERT_EQ(u"", suggestion_result.annotation());
+    ASSERT_EQ("", suggestion_result.entity_id());
     // This entry has no image.
     ASSERT_EQ("", suggestion_result.image_dominant_color());
     ASSERT_EQ(GURL(), suggestion_result.image_url());
@@ -169,6 +171,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
     const auto& suggestion_result = results.suggest_results[1];
     ASSERT_EQ(u"christopher doe", suggestion_result.suggestion());
     ASSERT_EQ(u"American author", suggestion_result.annotation());
+    ASSERT_EQ("/m/065xxm", suggestion_result.entity_id());
     ASSERT_EQ("#424242", suggestion_result.image_dominant_color());
     ASSERT_EQ(GURL("http://example.com/a.png"), suggestion_result.image_url());
   }

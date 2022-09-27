@@ -144,6 +144,7 @@ class SearchSuggestionParser {
                   const std::u16string& match_contents_prefix,
                   const std::u16string& annotation,
                   const std::string& additional_query_params,
+                  const std::string& entity_id,
                   const std::string& deletion_url,
                   const std::string& image_dominant_color,
                   const std::string& image_url,
@@ -166,6 +167,7 @@ class SearchSuggestionParser {
     const std::string& additional_query_params() const {
       return additional_query_params_;
     }
+    const std::string& entity_id() const { return entity_id_; }
 
     void set_suggestion_group_id(
         absl::optional<omnibox::GroupId> suggestion_group_id) {
@@ -214,6 +216,10 @@ class SearchSuggestionParser {
 
     // Optional additional parameters to be added to the search URL.
     std::string additional_query_params_;
+
+    // Optional entity id for entity suggestions. Empty string means no entity
+    // ID.
+    std::string entity_id_;
 
     // The optional suggestion group ID used to look up the suggestion group
     // config for the group this suggestion belongs to from the server response.

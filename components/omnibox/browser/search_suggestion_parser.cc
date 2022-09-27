@@ -215,7 +215,8 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
                     suggestion,
                     /*match_contents_prefix=*/std::u16string(),
                     /*annotation=*/std::u16string(),
-                    /*suggest_query_params=*/"",
+                    /*additional_query_params=*/"",
+                    /*entity_id=*/"",
                     /*deletion_url=*/"",
                     /*image_dominant_color=*/"",
                     /*image_url=*/"",
@@ -234,6 +235,7 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
     const std::u16string& match_contents_prefix,
     const std::u16string& annotation,
     const std::string& additional_query_params,
+    const std::string& entity_id,
     const std::string& deletion_url,
     const std::string& image_dominant_color,
     const std::string& image_url,
@@ -253,6 +255,7 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
       match_contents_prefix_(match_contents_prefix),
       annotation_(annotation),
       additional_query_params_(additional_query_params),
+      entity_id_(entity_id),
       image_dominant_color_(image_dominant_color),
       image_url_(GURL(image_url)),
       should_prefetch_(should_prefetch),
@@ -779,6 +782,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::string image_dominant_color;
       std::string image_url;
       std::string additional_query_params;
+      std::string entity_id;
       absl::optional<int> suggestion_group_id;
 
       if (suggestion_details &&
@@ -798,6 +802,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         image_dominant_color = FindStringKeyOrEmpty(suggestion_detail, "dc");
         image_url = FindStringKeyOrEmpty(suggestion_detail, "i");
         additional_query_params = FindStringKeyOrEmpty(suggestion_detail, "q");
+        entity_id = FindStringKeyOrEmpty(suggestion_detail, "zae");
 
         // Suggestion group Id.
         suggestion_group_id = suggestion_detail.FindIntKey("zl");
@@ -824,7 +829,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       results->suggest_results.push_back(SuggestResult(
           suggestion, match_type, subtypes[index],
           base::CollapseWhitespace(match_contents, false),
-          match_contents_prefix, annotation, additional_query_params,
+          match_contents_prefix, annotation, additional_query_params, entity_id,
           deletion_url, image_dominant_color, image_url, is_keyword_result,
           relevance, relevances != nullptr, should_prefetch, should_prerender,
           trimmed_input));

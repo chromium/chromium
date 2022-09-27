@@ -661,6 +661,9 @@ struct AutocompleteMatch {
   std::string image_dominant_color;
   GURL image_url;
 
+  // Optional entity id for entity suggestions. Empty string means no entity ID.
+  std::string entity_id;
+
   // Optional override to use for types that specify an icon sub-type.
   DocumentType document_type = DocumentType::NONE;
 
