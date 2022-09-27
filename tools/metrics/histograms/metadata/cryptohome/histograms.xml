@@ -731,6 +731,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.TimeToAuthSessionRemoveAuthFactorUSS" units="ms"
+    expires_after="2023-05-01">
+  <owner>thomascedeno@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    AuthSession is a DBus API for various operations dealing with credential
+    storage, processing, and authentication. This metrics record the time an
+    RemoveAuthFactor takes to complete for USS. The metric is emitted when the
+    respective RemoveAuthFactor is requested through the DBus API.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.TimeToAuthSessionRemoveAuthFactorVK" units="ms"
+    expires_after="2023-05-01">
+  <owner>thomascedeno@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    AuthSession is a DBus API for various operations dealing with credential
+    storage, processing, and authentication. This metrics record the time an
+    RemoveAuthFactor takes to complete for VK. The metric is emitted when the
+    respective RemoveAuthFactor is requested through the DBus API.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.TimeToCompleteDircryptoMigration" units="ms"
     expires_after="M81">
   <owner>dspaid@chromium.org</owner>
@@ -1039,8 +1063,6 @@ chromium-metrics-reviews@google.com.
     <variant name="TimeToAuthSessionAuthenticate"/>
     <variant name="TimeToAuthSessionAuthenticateAuthFactorUSS"/>
     <variant name="TimeToAuthSessionAuthenticateAuthFactorVK"/>
-    <variant name="TimeToAuthSessionRemoveAuthFactorUSS"/>
-    <variant name="TimeToAuthSessionRemoveAuthFactorVK"/>
     <variant name="TimeToAuthSessionUpdateAuthFactorUSS"/>
     <variant name="TimeToAuthSessionUpdateAuthFactorVK"/>
     <variant name="TimeToAuthSessionUpdateCredentials"/>
