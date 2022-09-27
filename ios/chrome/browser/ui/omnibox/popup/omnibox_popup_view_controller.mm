@@ -496,7 +496,7 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
-  return FLT_MIN;
+  return self.currentResult[section].title ? 29.0f : FLT_MIN;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -599,6 +599,11 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
 - (CGFloat)tableView:(UITableView*)tableView
     heightForRowAtIndexPath:(NSIndexPath*)indexPath {
   return UITableViewAutomaticDimension;
+}
+
+- (NSString*)tableView:(UITableView*)tableView
+    titleForHeaderInSection:(NSInteger)section {
+  return self.currentResult[section].title;
 }
 
 // Customize the appearance of table view cells.

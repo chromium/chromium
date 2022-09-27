@@ -330,8 +330,14 @@ const CGFloat kOmniboxIconSize = 16;
 - (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches {
   id<AutocompleteSuggestionGroup> tileGroup = nil;
 
-  NSMutableArray<id<AutocompleteSuggestion>>* wrappedSuggestions =
+  NSMutableArray<id<AutocompleteSuggestionGroup>>* groups =
       [[NSMutableArray alloc] init];
+  NSMutableArray<id<AutocompleteSuggestion>>* currentGroup =
+      [[NSMutableArray alloc] init];
+  NSMutableArray<id<AutocompleteSuggestion>>* allSuggestions =
+      [[NSMutableArray alloc] init];
+
+  absl::optional<omnibox::GroupId> currentGroupId = absl::nullopt;
 
   size_t size = _currentResult.size();
   for (size_t i = 0; i < size; i++) {
@@ -340,31 +346,57 @@ const CGFloat kOmniboxIconSize = 16;
     if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
       DCHECK(!tileGroup) << "There should be only one TILE_NAVSUGGEST";
       tileGroup = [self extractTiles:match];
-    } else {
-      [wrappedSuggestions addObject:[self wrapMatch:match]];
+      continue;
     }
+
+    if (match.suggestion_group_id != currentGroupId) {
+      if (currentGroup.count > 0) {
+        NSString* groupTitle =
+            currentGroupId.has_value()
+                ? base::SysUTF16ToNSString(
+                      _currentResult.GetHeaderForSuggestionGroup(
+                          currentGroupId.value()))
+                : nil;
+        id<AutocompleteSuggestionGroup> suggestionGroup =
+            [AutocompleteSuggestionGroupImpl groupWithTitle:groupTitle
+                                                suggestions:currentGroup];
+
+        [groups addObject:suggestionGroup];
+        currentGroup = [[NSMutableArray alloc] init];
+      }
+
+      currentGroupId = match.suggestion_group_id;
+    }
+
+    id<AutocompleteSuggestion> wrappedMatch = [self wrapMatch:match];
+    [currentGroup addObject:wrappedMatch];
+    [allSuggestions addObject:wrappedMatch];
   }
 
-  id<AutocompleteSuggestionGroup> pedalGroup =
-      [self.pedalSectionExtractor extractPedals:wrappedSuggestions];
+  NSString* groupTitle =
+      currentGroupId.has_value()
+          ? base::SysUTF16ToNSString(_currentResult.GetHeaderForSuggestionGroup(
+                currentGroupId.value()))
+          : nil;
   id<AutocompleteSuggestionGroup> suggestionGroup =
-      [AutocompleteSuggestionGroupImpl groupWithTitle:nil
-                                          suggestions:wrappedSuggestions];
+      [AutocompleteSuggestionGroupImpl groupWithTitle:groupTitle
+                                          suggestions:currentGroup];
+
+  [groups addObject:suggestionGroup];
+  if (tileGroup) {
+    [groups insertObject:tileGroup atIndex:0];
+  }
 
   NSMutableArray<id<AutocompleteSuggestionGroup>>* nonPedalGroups =
-      [[NSMutableArray alloc] init];
-
-  [nonPedalGroups addObject:suggestionGroup];
-  if (tileGroup) {
-    [nonPedalGroups addObject:tileGroup];
-  }
+      [groups copy];
   self.nonPedalSuggestions = nonPedalGroups;
-  NSArray<id<AutocompleteSuggestionGroup>>* groups;
+  id<AutocompleteSuggestionGroup> pedalGroup =
+      [self.pedalSectionExtractor extractPedals:allSuggestions];
+
   if (pedalGroup) {
-    groups = [@[ pedalGroup ] arrayByAddingObjectsFromArray:nonPedalGroups];
-  } else {
-    groups = nonPedalGroups;
+    [groups insertObject:pedalGroup atIndex:0];
   }
+
   self.preselectedGroupIndex = [groups indexOfObject:suggestionGroup];
   return groups;
 }
