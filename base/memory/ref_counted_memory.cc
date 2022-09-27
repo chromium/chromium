@@ -13,9 +13,8 @@ namespace base {
 
 bool RefCountedMemory::Equals(
     const scoped_refptr<RefCountedMemory>& other) const {
-  return other.get() &&
-         size() == other->size() &&
-         (memcmp(front(), other->front(), size()) == 0);
+  return other.get() && size() == other->size() &&
+         (size() == 0 || (memcmp(front(), other->front(), size()) == 0));
 }
 
 RefCountedMemory::RefCountedMemory() = default;
