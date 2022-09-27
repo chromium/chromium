@@ -23,12 +23,6 @@ class POLICY_EXPORT PlatformManagementService : public ManagementService {
   // Returns the singleton instance of PlatformManagementService.
   static PlatformManagementService* GetInstance();
 
-  void AddLocalBrowserManagementStatusProvider(
-      std::unique_ptr<ManagementStatusProvider> provider);
-  bool has_local_browser_managment_status_provider() const {
-    return has_local_browser_managment_status_provider_;
-  }
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void AddChromeOsStatusProvider(
       std::unique_ptr<ManagementStatusProvider> provider);
@@ -56,7 +50,6 @@ class POLICY_EXPORT PlatformManagementService : public ManagementService {
   PlatformManagementService();
   ~PlatformManagementService() override;
 
-  bool has_local_browser_managment_status_provider_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool has_cros_status_provider_;
 #endif
