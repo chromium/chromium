@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -25,8 +24,6 @@ struct NetworkTrafficAnnotationTag;
 namespace favicon {
 
 class FaviconService;
-
-extern const base::Feature kLargeIconServiceFetchingFeature;
 
 // Implementation class for LargeIconService.
 class LargeIconServiceImpl : public LargeIconService {
