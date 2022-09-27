@@ -127,6 +127,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // identifier is constant.
   virtual bool IsDevicePingRequired(base::Time new_ping_ts) const;
 
+  // Generates the AES-256 encrypted ciphertext, which is used to store
+  // the timestamp for only the first active use case.
+  // The device stable secret (only known to the chromebook itself) is needed to
+  // encrypt/decrypt this value. This ensures the first active timestamp is
+  // reversible by only the device itself.
+  virtual bool EncryptPsmValueAsCiphertext(base::Time ts);
+
+  // Retrieves and decrypts the AES-256 encrypted psm value to a timestamp.
+  virtual base::Time DecryptPsmValueAsTimestamp(std::string ciphertext) const;
+
  protected:
   // Retrieve full hardware class from MachineStatistics.
   // |DeviceActivityController| waits for object to finish loading, to avoid
@@ -141,6 +151,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   // Retrieve the ChromeOS device market segment.
   MarketSegment GetMarketSegment() const;
+
+  // Retrieve |psm_device_active_secret_|.
+  const std::string& GetPsmDeviceActiveSecret() const;
 
  private:
   // Uniquely identifies a window of time for device active counting.

@@ -30,9 +30,11 @@ namespace {
 // Initialize the constant used to represent the first active window identifier.
 constexpr char kFirstActiveWindowIdentifier[] = "FIRST_ACTIVE";
 
-// Initialize the fake values used shared by the device active use case
-// test classes.
-constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
+// Initialize fake value used by the FirstActiveUseCaseImpl.
+// This secret should be of exactly length 64, since it is a 256 bit string
+// encoded as a hexadecimal.
+constexpr char kFakePsmDeviceActiveSecret[] =
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
 constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
     version_info::Channel::STABLE /* chromeos_channel */,

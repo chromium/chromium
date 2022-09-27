@@ -139,6 +139,19 @@ bool DeviceActiveUseCase::IsDevicePingRequired(base::Time new_ping_ts) const {
          prev_ping_window_id != new_ping_window_id;
 }
 
+bool DeviceActiveUseCase::EncryptPsmValueAsCiphertext(base::Time ts) {
+  (void)ts;
+  NOTREACHED();
+  return false;
+}
+
+base::Time DeviceActiveUseCase::DecryptPsmValueAsTimestamp(
+    std::string ciphertext) const {
+  (void)ciphertext;
+  NOTREACHED();
+  return base::Time::UnixEpoch();
+}
+
 std::string DeviceActiveUseCase::GetFullHardwareClass() const {
   // Retrieve full hardware class from machine statistics object.
   // Default |full_hardware_class| to kHardwareClassKeyNotFound if retrieval
@@ -173,6 +186,14 @@ MarketSegment DeviceActiveUseCase::GetMarketSegment() const {
   return chrome_passed_device_params_.market_segment;
 }
 
+const std::string& DeviceActiveUseCase::GetPsmDeviceActiveSecret() const {
+  if (psm_device_active_secret_.empty()) {
+    VLOG(1) << "PSM Device Active Secret is not defined.";
+  }
+
+  return psm_device_active_secret_;
+}
+
 absl::optional<psm_rlwe::RlwePlaintextId>
 DeviceActiveUseCase::GeneratePsmIdentifier(
     absl::optional<std::string> window_id) const {
@@ -187,14 +208,14 @@ DeviceActiveUseCase::GeneratePsmIdentifier(
   std::string unhashed_psm_id =
       base::JoinString({psm_use_case, window_id.value()}, "|");
 
-  // Convert bytes to hex to avoid encoding/decoding proto issues across
-  // client/server.
-  std::string psm_id_hex =
+  // |psm_id_str| represents a 64 byte hex encoded value by default.
+  // However for the first active use case, this value is a 32 byte string.
+  std::string psm_id_str =
       GetDigestString(psm_device_active_secret_, unhashed_psm_id);
 
-  if (!psm_id_hex.empty()) {
+  if (!psm_id_str.empty()) {
     psm_rlwe::RlwePlaintextId psm_rlwe_id;
-    psm_rlwe_id.set_sensitive_id(psm_id_hex);
+    psm_rlwe_id.set_sensitive_id(psm_id_str);
 
     return psm_rlwe_id;
   }

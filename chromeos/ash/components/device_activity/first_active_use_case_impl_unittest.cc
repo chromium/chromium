@@ -23,8 +23,11 @@ namespace psm_rlwe = private_membership::rlwe;
 
 namespace {
 
-// Initialize fake values used by the FirstActiveUseCaseImpl.
-constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
+// Initialize fake value used by the FirstActiveUseCaseImpl.
+// This secret should be of exactly length 64, since it is a 256 bit string
+// encoded as a hexadecimal.
+constexpr char kFakePsmDeviceActiveSecret[] =
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
 // TODO(hirthanan): Enable when rolling out check membership requests for the
 // first active use case.
@@ -119,6 +122,29 @@ TEST_F(FirstActiveUseCaseImplTest, DevicePingIsAlwaysRequired) {
       first_active_use_case_impl_->IsDevicePingRequired(first_active_ts_1));
   EXPECT_TRUE(
       first_active_use_case_impl_->IsDevicePingRequired(first_active_ts_2));
+}
+
+TEST_F(FirstActiveUseCaseImplTest, EncryptAndDecryptTimestampPsmValue) {
+  base::Time first_active_ts;
+
+  EXPECT_TRUE(
+      base::Time::FromUTCString("2022-01-01 00:00:00 UTC", &first_active_ts));
+
+  // Check that we can successfully encrypt the |first_active_ts| using AES-256.
+  EXPECT_TRUE(first_active_use_case_impl_->EncryptPsmValueAsCiphertext(
+      first_active_ts));
+
+  std::string first_active_ts_ciphertext =
+      first_active_use_case_impl_->GetTsCiphertext();
+
+  EXPECT_GT(first_active_ts_ciphertext.size(), 0);
+
+  // Try decrypting the stored ciphertext.
+  base::Time decrypt_ts =
+      first_active_use_case_impl_->DecryptPsmValueAsTimestamp(
+          first_active_ts_ciphertext);
+
+  EXPECT_EQ(decrypt_ts, first_active_ts);
 }
 
 }  // namespace device_activity

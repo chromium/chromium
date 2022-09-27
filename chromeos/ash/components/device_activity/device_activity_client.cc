@@ -769,6 +769,7 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
       rlwe_membership_responses.membership_responses(0).membership_response();
 
   bool is_psm_id_member = membership_response.is_member();
+  std::string timestamp_ciphertext = membership_response.value();
 
   // Record the query membership result to UMA histogram.
   RecordQueryMembershipResultBoolean(is_psm_id_member);
@@ -777,15 +778,26 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToCheckIn(current_use_case);
     return;
+  }
+
+  if (current_use_case->GetPsmUseCase() ==
+      psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE) {
+    // The first active use case stores the first active ts ciphertext
+    // in the psm serverside.
+    // This allows us to retrieve and decrypt the timestamp since the
+    // membership is true.
+    current_use_case->SetLastKnownPingTimestamp(
+        current_use_case->DecryptPsmValueAsTimestamp(timestamp_ciphertext));
   } else {
     // Update local state to signal ping has already been sent for use case
     // window.
     current_use_case->SetLastKnownPingTimestamp(
         last_transition_out_of_idle_time_);
-    RecordDurationStateMetric(state_, state_timer_.Elapsed());
-    TransitionToIdle(current_use_case);
-    return;
   }
+
+  RecordDurationStateMetric(state_, state_timer_.Elapsed());
+  TransitionToIdle(current_use_case);
+  return;
 }
 
 void DeviceActivityClient::TransitionToCheckIn(
@@ -830,6 +842,17 @@ void DeviceActivityClient::TransitionToCheckIn(
 
   // Report UMA histogram for transitioning state to |kCheckingIn|.
   RecordStateCountMetric(state_);
+
+  if (current_use_case->GetPsmUseCase() ==
+          psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE &&
+      !current_use_case->EncryptPsmValueAsCiphertext(
+          last_transition_out_of_idle_time_)) {
+    VLOG(1) << "Failed to encrypt and store psm value as ciphertext for the "
+               "first active use case.";
+    TransitionToIdle(current_use_case);
+    RecordDurationStateMetric(state_, state_timer_.Elapsed());
+    return;
+  }
 
   // Generate Fresnel PSM import request body.
   device_activity::ImportDataRequest import_request =

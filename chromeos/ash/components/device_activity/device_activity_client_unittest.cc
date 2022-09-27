@@ -71,8 +71,12 @@ const char kPsmImportRequestEndpoint[] = "/v1/fresnel/psmRlweImport";
 const char kPsmOprfRequestEndpoint[] = "/v1/fresnel/psmRlweOprf";
 const char kPsmQueryRequestEndpoint[] = "/v1/fresnel/psmRlweQuery";
 
-// Create fake secrets used by the |DeviceActivityClient|.
-constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
+// Initialize fake value used by the FirstActiveUseCaseImpl.
+// This secret should be of exactly length 64, since it is a 256 bit string
+// encoded as a hexadecimal.
+constexpr char kFakePsmDeviceActiveSecret[] =
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
 constexpr char kFakeFresnelApiKey[] = "FAKE_FRESNEL_API_KEY";
 
 constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
