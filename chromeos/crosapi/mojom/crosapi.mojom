@@ -1456,6 +1456,9 @@ interface BrowserService {
   // This is designed to be equivalent of CTRL+T behavior. By default, this
   // opens a new-tab-page, but extensions may override the behavior.
   // Added in M91.
+  // The `should_trigger_session_restore` parameter is deprecated in M108. Do
+  // not add new uses that pass `true` (see Launch for something similar).
+  // TODO(neis): Remove parameter in M110.
   [MinVersion=10]
   NewTab@7([MinVersion=68] bool should_trigger_session_restore) => ();
 
@@ -1540,6 +1543,7 @@ interface BrowserService {
   // Opens a new tab in the browser with, currently, the main profile.
   // If a new window needs to be created, it will open with the profile's
   // session startup pref and no new tab will be added.
+  // Added in M108.
   [MinVersion=70]
   Launch@19() => ();
 };
