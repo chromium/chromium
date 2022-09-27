@@ -435,26 +435,16 @@ class SettingsInternetDetailPageElement extends
     /** @private {?SyncBrowserProxy} */
     this.syncBrowserProxy_ = null;
 
-    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      this.osSyncBrowserProxy_ = OsSyncBrowserProxyImpl.getInstance();
-    } else {
-      this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
-    }
+    this.osSyncBrowserProxy_ = OsSyncBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
 
-    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      this.addWebUIListener(
-          'os-sync-prefs-changed', this.handleOsSyncPrefsChanged_.bind(this));
-      this.osSyncBrowserProxy_.sendOsSyncPrefsChanged();
-    } else {
-      this.addWebUIListener(
-          'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
-      this.syncBrowserProxy_.sendSyncPrefsChanged();
-    }
+    this.addWebUIListener(
+        'os-sync-prefs-changed', this.handleOsSyncPrefsChanged_.bind(this));
+    this.osSyncBrowserProxy_.sendOsSyncPrefsChanged();
   }
 
   /**
