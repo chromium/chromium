@@ -20,6 +20,7 @@
 #include <fuchsia/memorypressure/cpp/fidl.h>
 #include <fuchsia/net/interfaces/cpp/fidl.h>
 #include <fuchsia/sysmem/cpp/fidl.h>
+#include <fuchsia/tracing/perfetto/cpp/fidl.h>
 #include <fuchsia/tracing/provider/cpp/fidl.h>
 #include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
@@ -90,6 +91,7 @@ constexpr auto kMinimalServices = base::make_span((const char* const[]){
 
     fuchsia::intl::PropertyProvider::Name_,
     fuchsia::logger::LogSink::Name_,
+    fuchsia::tracing::perfetto::ProducerConnector::Name_,
 });
 // clang-format on
 

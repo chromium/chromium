@@ -27,7 +27,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"
 
-#if BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // As per 'gn help check':
 /*
   If you have conditional includes, make sure the build conditions and the
@@ -42,26 +42,30 @@
 
 namespace tracing {
 namespace {
-#if BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // Set to use the dummy producer for Chrome OS browser_tests and
 // content_browsertests to keep the system producer from causing flakes.
 static bool g_system_producer_enabled = true;
-#endif
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 std::unique_ptr<SystemProducer> NewSystemProducer(
     base::tracing::PerfettoTaskRunner* runner,
     const char* socket_name) {
-#if BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   DCHECK(socket_name);
   if (g_system_producer_enabled)
     return std::make_unique<PosixSystemProducer>(socket_name, runner);
-#endif  // BUILDFLAG(IS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return std::make_unique<DummyProducer>(runner);
 }
 
 const char* MaybeSocket() {
 #if BUILDFLAG(IS_POSIX)
   return perfetto::GetProducerSocket();
+#elif BUILDFLAG(IS_FUCHSIA)
+  // The socket is connected via a socket pair passed over IPC, which is not
+  // accessible via an address.
+  return "";
 #else
   return nullptr;
 #endif  // BUILDFLAG(IS_POSIX)

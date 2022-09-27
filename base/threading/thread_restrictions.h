@@ -328,6 +328,10 @@ namespace shell_integration_linux {
 class LaunchXdgUtilityScopedAllowBaseSyncPrimitives;
 }
 
+namespace tracing {
+class FuchsiaPerfettoProducerConnector;
+}
+
 namespace ui {
 class WindowResizeHelperMac;
 }
@@ -598,6 +602,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class syncer::HttpBridge;
   friend class syncer::GetLocalChangesRequest;
   friend class webrtc::DesktopConfigurationMonitor;
+  friend class ::tracing::FuchsiaPerfettoProducerConnector;
 
   // Usage that should be fixed:
   friend class ::NativeBackendKWallet;  // http://crbug.com/125331

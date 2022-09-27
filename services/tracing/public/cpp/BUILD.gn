@@ -148,12 +148,27 @@ target(tracing_lib_type, "cpp") {
     ]
 
     # Add the SystemProducer implementations.
-    if (is_posix) {
+    if (is_posix || is_fuchsia) {
       sources += [
         "perfetto/posix_system_producer.cc",
         "perfetto/posix_system_producer.h",
       ]
-      if (!is_android) {
+
+      deps += [ "//third_party/perfetto/include/perfetto/ext/ipc:ipc" ]
+
+      if (is_fuchsia) {
+        sources += [
+          "perfetto/fuchsia_perfetto_producer_connector.cc",
+          "perfetto/fuchsia_perfetto_producer_connector.h",
+        ]
+
+        deps += [
+          "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp_base",
+          "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+        ]
+        public_deps +=
+            [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.perfetto" ]
+      } else if (!is_android) {
         sources += [
           "system_tracing_service.cc",
           "system_tracing_service.h",

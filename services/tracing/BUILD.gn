@@ -95,23 +95,6 @@ source_set("tests") {
     "public/cpp/stack_sampling/tracing_sampler_profiler_unittest.cc",
   ]
 
-  if (is_android) {
-    sources += [
-      "public/cpp/perfetto/java_heap_profiler/hprof_buffer_android_unittest.cc",
-      "public/cpp/perfetto/java_heap_profiler/hprof_parser_android_unittest.cc",
-      "public/cpp/stack_sampling/reached_code_data_source_android_unittest.cc",
-    ]
-    if (current_cpu == "arm64") {
-      sources += [
-        "public/cpp/stack_sampling/stack_unwinder_arm64_android_unittest.cc",
-      ]
-    }
-  }
-
-  if (!is_android) {
-    sources += [ "tracing_service_unittest.cc" ]
-  }
-
   deps = [
     ":lib",
     ":privacy_check",
@@ -134,6 +117,32 @@ source_set("tests") {
     "//third_party/perfetto/protos/perfetto/trace/profiling:lite",
     "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
   ]
+
+  if (is_android) {
+    sources += [
+      "public/cpp/perfetto/java_heap_profiler/hprof_buffer_android_unittest.cc",
+      "public/cpp/perfetto/java_heap_profiler/hprof_parser_android_unittest.cc",
+      "public/cpp/stack_sampling/reached_code_data_source_android_unittest.cc",
+    ]
+    if (current_cpu == "arm64") {
+      sources += [
+        "public/cpp/stack_sampling/stack_unwinder_arm64_android_unittest.cc",
+      ]
+    }
+  }
+
+  if (!is_android) {
+    sources += [ "tracing_service_unittest.cc" ]
+  }
+
+  if (is_fuchsia) {
+    sources += [ "public/cpp/fuchsia_perfetto_producer_connector_unittest.cc" ]
+    deps += [
+      "//net",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.perfetto",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    ]
+  }
 
   if (is_posix) {
     # TODO(crbug.com/1184180): System perfetto tests are flaky on Mac.

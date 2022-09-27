@@ -4,6 +4,8 @@
 
 #include "services/tracing/public/cpp/perfetto/posix_system_producer.h"
 
+#include <functional>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -31,6 +33,10 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/cpp/system_tracing_service.h"
+#endif
+
+#if BUILDFLAG(IS_FUCHSIA)
+#include "base/files/scoped_file.h"
 #endif
 
 namespace tracing {
@@ -415,8 +421,22 @@ void PosixSystemProducer::ConnectSocket() {
   // socket directly. Otherwise, use Mojo to open the socket in the browser
   // process.
   if (!SandboxForbidsSocketConnection()) {
+#if BUILDFLAG(IS_FUCHSIA)
+    fuchsia_connector_ = std::make_unique<FuchsiaPerfettoProducerConnector>(
+        task_runner()->GetOrCreateTaskRunner());
+    auto maybe_conn_args = fuchsia_connector_->Connect();
+    if (!maybe_conn_args) {
+      state_ = State::kDisconnected;
+      fuchsia_connector_.reset();
+      return;
+    }
+    perfetto::ipc::Client::ConnArgs conn_args = std::move(*maybe_conn_args);
+#else
+    perfetto::ipc::Client::ConnArgs conn_args(socket_name_.c_str(), false);
+#endif
+
     auto service = perfetto::ProducerIPCClient::Connect(
-        socket_name_.c_str(), this, std::move(producer_name), task_runner(),
+        std::move(conn_args), this, std::move(producer_name), task_runner(),
         perfetto::TracingService::ProducerSMBScrapingMode::kEnabled,
         GetPreferredSmbSizeBytes(), kSMBPageSizeBytes);
 
@@ -425,7 +445,7 @@ void PosixSystemProducer::ConnectSocket() {
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
   // If the child process hasn't received the Mojo remote, try again later.
   auto& remote = TracedProcessImpl::GetInstance()->system_tracing_service();
   if (!remote.is_bound()) {
@@ -467,7 +487,7 @@ void PosixSystemProducer::ConnectSocket() {
 
   // Open the socket remotely using Mojo.
   remote->OpenProducerSocket(std::move(callback));
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 }
 
 bool PosixSystemProducer::SkipIfOnAndroidAndPreAndroidPie() const {
@@ -515,8 +535,8 @@ void PosixSystemProducer::Connect() {
 }
 
 bool PosixSystemProducer::SandboxForbidsSocketConnection() {
-#if BUILDFLAG(IS_ANDROID)
-  // Android renderer can connect to the producer socket directly.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  // All process types can connect directly to the system tracing service.
   return false;
 #else
   // Connect to the system tracing service using Mojo from non-browser
@@ -525,7 +545,7 @@ bool PosixSystemProducer::SandboxForbidsSocketConnection() {
   auto type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("type");
   return !type.empty();
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 }
 
 void PosixSystemProducer::DelayedReconnect() {

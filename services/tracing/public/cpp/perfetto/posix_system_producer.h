@@ -21,10 +21,10 @@
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/system_producer.h"
 
-namespace perfetto {
-class SharedMemoryArbiter;
-class SharedMemory;
-}  // namespace perfetto
+#if BUILDFLAG(IS_FUCHSIA)
+#include "services/tracing/public/cpp/perfetto/fuchsia_perfetto_producer_connector.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif
 
 namespace tracing {
 
@@ -124,6 +124,12 @@ class COMPONENT_EXPORT(TRACING_CPP) PosixSystemProducer
   void NotifyDataSourceFlushComplete(perfetto::FlushRequestID id);
 
   perfetto::TracingService::ProducerEndpoint* GetService();
+
+#if BUILDFLAG(IS_FUCHSIA)
+  // Client object for establishing connections with the system tracing
+  // service on Fuchsia.
+  std::unique_ptr<FuchsiaPerfettoProducerConnector> fuchsia_connector_;
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   bool retrying_ = false;
   std::string socket_name_;

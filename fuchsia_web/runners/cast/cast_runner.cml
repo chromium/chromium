@@ -74,9 +74,10 @@
       // Optional capabilities to be passed to WebEngine instances.
       protocol: [
         "fuchsia.camera3.DeviceWatcher",
+        "fuchsia.media.Audio",
         "fuchsia.media.drm.PlayReady",
         "fuchsia.media.drm.Widevine",
-        "fuchsia.media.Audio",
+        "fuchsia.tracing.perfetto.ProducerConnector",
       ],
       availability: "optional"
     },
