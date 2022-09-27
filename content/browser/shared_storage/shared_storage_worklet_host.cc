@@ -524,6 +524,38 @@ void SharedStorageWorkletHost::SharedStorageLength(
                                   std::move(operation_completed_callback));
 }
 
+void SharedStorageWorkletHost::SharedStorageRemainingBudget(
+    SharedStorageRemainingBudgetCallback callback) {
+  DCHECK(add_module_state_ == AddModuleState::kInitiated);
+
+  if (!IsSharedStorageAllowed()) {
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/kSharedStorageDisabledMessage, /*bits=*/0.0);
+    return;
+  }
+
+  auto operation_completed_callback = base::BindOnce(
+      [](SharedStorageRemainingBudgetCallback callback, BudgetResult result) {
+        if (result.result != OperationResult::kSuccess) {
+          std::move(callback).Run(
+              /*success=*/false,
+              /*error_message=*/"sharedStorage.remainingBudget() failed",
+              /*bits=*/0.0);
+          return;
+        }
+
+        std::move(callback).Run(
+            /*success=*/true,
+            /*error_message=*/{},
+            /*bits=*/result.bits);
+      },
+      std::move(callback));
+
+  shared_storage_manager_->GetRemainingBudget(
+      shared_storage_origin_, std::move(operation_completed_callback));
+}
+
 void SharedStorageWorkletHost::ConsoleLog(const std::string& message) {
   if (!document_service_) {
     DCHECK(IsInKeepAlivePhase());

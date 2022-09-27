@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cmath>
 #include <map>
 #include <string>
 #include <vector>
@@ -17,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -31,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/shared_storage_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,7 +50,9 @@ namespace {
 constexpr char kSimpleTestHost[] = "a.test";
 constexpr char kSimplePagePath[] = "/simple.html";
 constexpr char kCrossOriginHost[] = "b.test";
-constexpr char kNestedIframeHost[] = "c.test";
+constexpr char kThirdOriginHost[] = "c.test";
+constexpr char kFourthOriginHost[] = "d.test";
+constexpr char kRemainingBudgetPrefix[] = "remaining budget: ";
 constexpr char kErrorTypeHistogram[] =
     "Storage.SharedStorage.Worklet.Error.Type";
 constexpr char kEntriesQueuedCountHistogram[] =
@@ -88,6 +93,16 @@ constexpr char kTimingWorkletEntriesHistogram[] =
     "Storage.SharedStorage.Worklet.Timing.Entries.Next";
 constexpr char kWorkletNumPerPageHistogram[] =
     "Storage.SharedStorage.Worklet.NumPerPage";
+constexpr char kTimingRemainingBudgetHistogram[] =
+    "Storage.SharedStorage.Worklet.Timing.RemainingBudget";
+
+const double kBudgetAllowed = 5.0;
+
+#if BUILDFLAG(IS_ANDROID)
+base::FilePath GetChromeTestDataDir() {
+  return base::FilePath(FILE_PATH_LITERAL("chrome/test/data"));
+}
+#endif
 
 // With `WebContentsConsoleObserver`, we can only wait for the last message in a
 // group.
@@ -218,6 +233,36 @@ class SharedStorageChromeBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  void AddSimpleModule(const content::ToRenderFrameHost& execution_target) {
+    content::WebContentsConsoleObserver add_module_console_observer(
+        GetActiveWebContents());
+    add_module_console_observer.SetFilter(
+        MakeFilter({"Finish executing simple_module.js"}));
+
+    std::string host =
+        execution_target.render_frame_host()->GetLastCommittedOrigin().host();
+    GURL module_script_url =
+        https_server()->GetURL(host, "/shared_storage/simple_module.js");
+
+    EXPECT_TRUE(content::ExecJs(
+        execution_target,
+        content::JsReplace("sharedStorage.worklet.addModule($1)",
+                           module_script_url)));
+
+    add_module_console_observer.Wait();
+
+    EXPECT_LE(1u,
+              content::GetAttachedSharedStorageWorkletHostsCount(
+                  execution_target.render_frame_host()->GetStoragePartition()));
+    EXPECT_EQ(0u,
+              content::GetKeepAliveSharedStorageWorkletHostsCount(
+                  execution_target.render_frame_host()->GetStoragePartition()));
+    EXPECT_EQ(1u, add_module_console_observer.messages().size());
+    EXPECT_EQ(
+        "Finish executing simple_module.js",
+        base::UTF16ToUTF8(add_module_console_observer.messages()[0].message));
+  }
+
   bool ExecuteScriptInWorklet(
       const content::ToRenderFrameHost& execution_target,
       const std::string& script,
@@ -273,6 +318,38 @@ class SharedStorageChromeBrowserTest : public InProcessBrowserTest {
               base::UTF16ToUTF8(script_console_observer.messages()[0].message));
 
     return result.error.empty();
+  }
+
+  double RemainingBudget(const content::ToRenderFrameHost& execution_target,
+                         bool should_add_module = false) {
+    if (should_add_module)
+      AddSimpleModule(execution_target);
+
+    content::WebContentsConsoleObserver budget_console_observer(
+        GetActiveWebContents());
+    const std::string kRemainingBudgetPrefixStr(kRemainingBudgetPrefix);
+    budget_console_observer.SetPattern(
+        base::StrCat({kRemainingBudgetPrefixStr, "*"}));
+
+    EXPECT_TRUE(ExecJs(execution_target, R"(
+      sharedStorage.run('remaining-budget-operation', {data: {}});
+    )"));
+
+    budget_console_observer.Wait();
+
+    EXPECT_EQ(1u, budget_console_observer.messages().size());
+    std::string console_message =
+        base::UTF16ToUTF8(budget_console_observer.messages()[0].message);
+    EXPECT_TRUE(base::StartsWith(console_message, kRemainingBudgetPrefixStr));
+
+    std::string result_string = console_message.substr(
+        kRemainingBudgetPrefixStr.size(),
+        console_message.size() - kRemainingBudgetPrefixStr.size());
+
+    double result = 0.0;
+    EXPECT_TRUE(base::StringToDouble(result_string, &result));
+
+    return result;
   }
 
  protected:
@@ -932,6 +1009,34 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletLength) {
   if (SuccessExpected()) {
     WaitForHistograms({kTimingWorkletLengthHistogram});
     histogram_tester_.ExpectTotalCount(kTimingWorkletLengthHistogram, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletRemainingBudget) {
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
+
+  // If `remainingBudget()` fails due to Shared Storage being disabled, there
+  // will be a console message verified in the helper
+  // `ExecuteScriptInWorkletWithOuterPermissionsBypassed()` rather than an error
+  // message since it is wrapped in a `console.log()` call.
+  EXPECT_TRUE(ExecuteScriptInWorkletWithOuterPermissionsBypassed(
+      GetActiveWebContents(), R"(
+      console.log(await sharedStorage.remainingBudget());
+      console.log('Finished script');
+    )",
+      "Finished script"));
+
+  // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+  EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
+  WaitForHistograms({kWorkletNumPerPageHistogram});
+  histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+
+  if (SuccessExpected()) {
+    WaitForHistograms({kTimingRemainingBudgetHistogram});
+    histogram_tester_.ExpectTotalCount(kTimingRemainingBudgetHistogram, 1);
   }
 }
 
@@ -2102,7 +2207,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                                      "Finished script"));
 
   content::RenderFrameHost* nested_iframe = CreateIframe(
-      iframe, https_server()->GetURL(kNestedIframeHost, kSimplePagePath));
+      iframe, https_server()->GetURL(kThirdOriginHost, kSimplePagePath));
 
   EXPECT_TRUE(ExecuteScriptInWorklet(nested_iframe,
                                      R"(
@@ -2122,6 +2227,217 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 3, 1);
   EXPECT_LE(1u,
             histogram_tester_.GetAllSamples(kTimingWorkletSetHistogram).size());
+}
+
+struct SharedStorageFencedFrameChromeBrowserParams {
+  blink::features::FencedFramesImplementationType impl_type;
+};
+
+// Used by `testing::PrintToStringParamName()`.
+std::string PrintToString(
+    const SharedStorageFencedFrameChromeBrowserParams& p) {
+  return (p.impl_type ==
+          blink::features::FencedFramesImplementationType::kShadowDOM)
+             ? "ShadowDOM"
+             : "MPArch";
+}
+
+std::vector<SharedStorageFencedFrameChromeBrowserParams>
+GetSharedStorageFencedFrameChromeBrowserParams() {
+  return std::vector<SharedStorageFencedFrameChromeBrowserParams>(
+      {{blink::features::FencedFramesImplementationType::kShadowDOM},
+       {blink::features::FencedFramesImplementationType::kMPArch}});
+}
+
+class SharedStorageFencedFrameChromeBrowserTest
+    : public SharedStorageChromeBrowserTest,
+      public testing::WithParamInterface<
+          SharedStorageFencedFrameChromeBrowserParams> {
+ public:
+  SharedStorageFencedFrameChromeBrowserTest() {
+    base::test::TaskEnvironment task_environment;
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{blink::features::kSharedStorageAPI,
+          {{"SharedStorageBitBudget", base::NumberToString(kBudgetAllowed)}}},
+         {blink::features::kFencedFrames,
+          {{"implementation_type",
+            GetParam().impl_type ==
+                    blink::features::FencedFramesImplementationType::kShadowDOM
+                ? "shadow_dom"
+                : "mparch"}}},
+         {privacy_sandbox::kPrivacySandboxSettings3, {}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        /*disabled_features=*/{});
+  }
+
+  ~SharedStorageFencedFrameChromeBrowserTest() override = default;
+
+  content::RenderFrameHost* SelectURLAndCreateFencedFrame(
+      content::RenderFrameHost* render_frame_host,
+      bool should_add_module = true) {
+    if (should_add_module)
+      AddSimpleModule(render_frame_host);
+
+    content::WebContentsConsoleObserver run_url_op_console_observer(
+        GetActiveWebContents());
+    run_url_op_console_observer.SetFilter(
+        MakeFilter({"Finish executing \'test-url-selection-operation\'"}));
+
+    content::EvalJsResult run_url_op_result =
+        content::EvalJs(render_frame_host, R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"},
+           {url: "fenced_frames/title1.html",
+            reportingMetadata: {"click": "fenced_frames/report1.html"}},
+           {url: "fenced_frames/title2.html"}],
+          {data: {'mockResult': 1}});
+    )");
+
+    run_url_op_console_observer.Wait();
+
+    EXPECT_TRUE(run_url_op_result.error.empty());
+    EXPECT_TRUE(
+        blink::IsValidUrnUuidURL(GURL(run_url_op_result.ExtractString())));
+    EXPECT_EQ(1u, run_url_op_console_observer.messages().size());
+    EXPECT_EQ(
+        "Finish executing \'test-url-selection-operation\'",
+        base::UTF16ToUTF8(run_url_op_console_observer.messages()[0].message));
+
+    return content::CreateFencedFrame(render_frame_host,
+                                      GURL(run_url_op_result.ExtractString()));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SharedStorageFencedFrameChromeBrowserTest,
+    testing::ValuesIn(GetSharedStorageFencedFrameChromeBrowserParams()),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameChromeBrowserTest,
+                       FencedFrameNavigateTop_BudgetWithdrawal) {
+  GURL main_url = https_server()->GetURL(kSimpleTestHost, kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url));
+
+  GURL iframe_url = https_server()->GetURL(kCrossOriginHost, kSimplePagePath);
+  content::RenderFrameHost* iframe =
+      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url);
+
+  content::RenderFrameHost* fenced_frame_root_node =
+      SelectURLAndCreateFencedFrame(iframe);
+  EXPECT_DOUBLE_EQ(RemainingBudget(iframe), kBudgetAllowed);
+
+  GURL new_page_url = https_server()->GetURL(kThirdOriginHost, kSimplePagePath);
+
+  content::TestNavigationObserver top_navigation_observer(
+      GetActiveWebContents());
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node,
+                     content::JsReplace("window.open($1, '_unfencedTop')",
+                                        new_page_url.spec())));
+  top_navigation_observer.Wait();
+
+  content::RenderFrameHost* new_iframe =
+      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url);
+
+  // After the top navigation, log(3) bits should have been withdrawn from the
+  // original shared storage origin.
+  EXPECT_DOUBLE_EQ(RemainingBudget(new_iframe, /*should_add_module=*/true),
+                   kBudgetAllowed - std::log2(3));
+
+  // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+  EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
+  WaitForHistograms(
+      {kTimingDocumentAddModuleHistogram, kTimingDocumentSelectUrlHistogram,
+       kTimingDocumentRunHistogram, kTimingRemainingBudgetHistogram,
+       kWorkletNumPerPageHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 2);
+  histogram_tester_.ExpectTotalCount(kTimingDocumentSelectUrlHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 2);
+  histogram_tester_.ExpectTotalCount(kTimingRemainingBudgetHistogram, 2);
+
+  // In the MPArch case, some additional pageloads with worklet count 0 are
+  // recorded, so we do not use `ExpectUniqueSample()` here.
+  histogram_tester_.ExpectBucketCount(kWorkletNumPerPageHistogram, 1, 2);
+  EXPECT_EQ(2, histogram_tester_.GetTotalSum(kWorkletNumPerPageHistogram));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageFencedFrameChromeBrowserTest,
+    TwoFencedFrames_DifferentURNs_EachNavigateOnce_BudgetWithdrawalTwice) {
+  GURL main_url = https_server()->GetURL(kSimpleTestHost, kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url));
+
+  GURL iframe_url = https_server()->GetURL(kCrossOriginHost, kSimplePagePath);
+  content::RenderFrameHost* iframe1 =
+      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url);
+
+  content::RenderFrameHost* fenced_frame_root_node1 =
+      SelectURLAndCreateFencedFrame(iframe1);
+  EXPECT_DOUBLE_EQ(RemainingBudget(iframe1), kBudgetAllowed);
+
+  GURL new_page_url1 =
+      https_server()->GetURL(kThirdOriginHost, kSimplePagePath);
+
+  content::TestNavigationObserver top_navigation_observer1(
+      GetActiveWebContents());
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node1,
+                     content::JsReplace("window.open($1, '_unfencedTop')",
+                                        new_page_url1.spec())));
+  top_navigation_observer1.Wait();
+
+  content::RenderFrameHost* iframe2 =
+      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url);
+
+  // After the top navigation, log(3) bits should have been withdrawn from the
+  // original shared storage origin.
+  EXPECT_DOUBLE_EQ(RemainingBudget(iframe2, /*should_add_module=*/true),
+                   kBudgetAllowed - std::log2(3));
+
+  content::RenderFrameHost* fenced_frame_root_node2 =
+      SelectURLAndCreateFencedFrame(iframe2, /*should_add_module=*/false);
+  EXPECT_DOUBLE_EQ(RemainingBudget(iframe2), kBudgetAllowed - std::log2(3));
+
+  GURL new_page_url2 =
+      https_server()->GetURL(kFourthOriginHost, kSimplePagePath);
+
+  content::TestNavigationObserver top_navigation_observer2(
+      GetActiveWebContents());
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node2,
+                     content::JsReplace("window.open($1, '_unfencedTop')",
+                                        new_page_url2.spec())));
+  top_navigation_observer2.Wait();
+
+  content::RenderFrameHost* iframe3 =
+      CreateIframe(GetActiveWebContents()->GetPrimaryMainFrame(), iframe_url);
+
+  // After the top navigation, another log(3) bits should have been withdrawn
+  // from the original shared storage origin.
+  EXPECT_DOUBLE_EQ(RemainingBudget(iframe3, /*should_add_module=*/true),
+                   kBudgetAllowed - std::log2(3) - std::log2(3));
+
+  // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+  EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
+  WaitForHistograms(
+      {kTimingDocumentAddModuleHistogram, kTimingDocumentSelectUrlHistogram,
+       kTimingDocumentRunHistogram, kTimingRemainingBudgetHistogram,
+       kWorkletNumPerPageHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 3);
+  histogram_tester_.ExpectTotalCount(kTimingDocumentSelectUrlHistogram, 2);
+  histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 4);
+  histogram_tester_.ExpectTotalCount(kTimingRemainingBudgetHistogram, 4);
+
+  // In the MPArch case, some additional pageloads with worklet count 0 are
+  // recorded, so we do not use `ExpectUniqueSample()` here.
+  histogram_tester_.ExpectBucketCount(kWorkletNumPerPageHistogram, 1, 3);
+  EXPECT_EQ(3, histogram_tester_.GetTotalSum(kWorkletNumPerPageHistogram));
 }
 
 }  // namespace storage

@@ -27,7 +27,15 @@ class TestURLSelectionOperation {
   }
 }
 
+class RemainingBudgetOperation {
+  async run(data) {
+    console.log('remaining budget: ' +
+                (await sharedStorage.remainingBudget()).toString());
+  }
+}
+
 register("test-operation", TestOperation);
 register("test-url-selection-operation", TestURLSelectionOperation);
+register("remaining-budget-operation", RemainingBudgetOperation);
 
 console.log('Finish executing simple_module.js')

@@ -1027,6 +1027,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Worklet.Timing.RemainingBudget"
+    units="ms" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::RemainingBudget()` to when the
+    callback has successfully completed. Does not measure the timing of calls
+    that end in an error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Worklet.Timing.Set" units="ms"
     expires_after="2023-07-31">
   <owner>cammie@chromium.org</owner>

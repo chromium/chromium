@@ -8,8 +8,11 @@
 #include <stddef.h>
 #include <string>
 
+class GURL;
+
 namespace content {
 
+class RenderFrameHost;
 class StoragePartition;
 
 std::string GetSharedStorageDisabledMessage();
@@ -21,6 +24,9 @@ size_t GetAttachedSharedStorageWorkletHostsCount(
 
 size_t GetKeepAliveSharedStorageWorkletHostsCount(
     StoragePartition* storage_partition);
+
+RenderFrameHost* CreateFencedFrame(RenderFrameHost* root, const GURL& url);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_SHARED_STORAGE_TEST_UTILS_H_

@@ -63,6 +63,11 @@ interface SharedStorageWorkletServiceClient {
   SharedStorageLength()
     => (bool success, string error_message, uint32 length);
 
+  // Handle sharedStorage.remainingBudget(): get the number of bits remaining
+  // in the privacy budget.
+  SharedStorageRemainingBudget()
+    => (bool success, string error_message, double bits);
+
   // Handle console.log(): log the message to the DevTools console.
   ConsoleLog(string message);
 

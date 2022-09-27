@@ -80,7 +80,8 @@ gin::ObjectTemplateBuilder SharedStorage::GetObjectTemplateBuilder(
       .SetMethod("get", &SharedStorage::Get)
       .SetMethod("keys", &SharedStorage::Keys)
       .SetMethod("entries", &SharedStorage::Entries)
-      .SetMethod("length", &SharedStorage::Length);
+      .SetMethod("length", &SharedStorage::Length)
+      .SetMethod("remainingBudget", &SharedStorage::RemainingBudget);
 }
 
 const char* SharedStorage::GetTypeName() {
@@ -315,6 +316,24 @@ v8::Local<v8::Promise> SharedStorage::Length(gin::Arguments* args) {
   return promise;
 }
 
+v8::Local<v8::Promise> SharedStorage::RemainingBudget(gin::Arguments* args) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  v8::Isolate* isolate = args->isolate();
+
+  v8::Local<v8::Promise::Resolver> resolver =
+      v8::Promise::Resolver::New(args->GetHolderCreationContext())
+          .ToLocalChecked();
+
+  v8::Local<v8::Promise> promise = resolver->GetPromise();
+
+  client_->SharedStorageRemainingBudget(base::BindOnce(
+      &SharedStorage::OnBudgetOperationFinished, weak_ptr_factory_.GetWeakPtr(),
+      isolate, v8::Global<v8::Promise::Resolver>(isolate, resolver),
+      start_time));
+
+  return promise;
+}
+
 void SharedStorage::OnVoidOperationFinished(
     v8::Isolate* isolate,
     v8::Global<v8::Promise::Resolver> global_resolver,
@@ -384,6 +403,30 @@ void SharedStorage::OnLengthOperationFinished(
         .ToChecked();
     base::UmaHistogramMediumTimes("Storage.SharedStorage.Worklet.Timing.Length",
                                   base::TimeTicks::Now() - start_time);
+    return;
+  }
+
+  resolver->Reject(context, gin::StringToV8(isolate, error_message))
+      .ToChecked();
+}
+
+void SharedStorage::OnBudgetOperationFinished(
+    v8::Isolate* isolate,
+    v8::Global<v8::Promise::Resolver> global_resolver,
+    base::TimeTicks start_time,
+    bool success,
+    const std::string& error_message,
+    double bits) {
+  WorkletV8Helper::HandleScope scope(isolate);
+  v8::Local<v8::Promise::Resolver> resolver = global_resolver.Get(isolate);
+  v8::Local<v8::Context> context = resolver->GetCreationContextChecked();
+
+  if (success) {
+    resolver->Resolve(context, gin::Converter<double>::ToV8(isolate, bits))
+        .ToChecked();
+    base::UmaHistogramMediumTimes(
+        "Storage.SharedStorage.Worklet.Timing.RemainingBudget",
+        base::TimeTicks::Now() - start_time);
     return;
   }
 

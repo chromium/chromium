@@ -39,6 +39,7 @@ class SharedStorage final : public gin::Wrappable<SharedStorage> {
   v8::Local<v8::Object> Keys(gin::Arguments* args);
   v8::Local<v8::Object> Entries(gin::Arguments* args);
   v8::Local<v8::Promise> Length(gin::Arguments* args);
+  v8::Local<v8::Promise> RemainingBudget(gin::Arguments* args);
 
   void OnVoidOperationFinished(
       v8::Isolate* isolate,
@@ -63,6 +64,14 @@ class SharedStorage final : public gin::Wrappable<SharedStorage> {
       bool success,
       const std::string& error_message,
       uint32_t length);
+
+  void OnBudgetOperationFinished(
+      v8::Isolate* isolate,
+      v8::Global<v8::Promise::Resolver> global_resolver,
+      base::TimeTicks start_time,
+      bool success,
+      const std::string& error_message,
+      double bits);
 
   raw_ptr<mojom::SharedStorageWorkletServiceClient> client_;
 

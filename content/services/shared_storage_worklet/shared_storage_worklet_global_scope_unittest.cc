@@ -152,6 +152,18 @@ class TestClient
         }));
   }
 
+  void SharedStorageRemainingBudget(
+      SharedStorageRemainingBudgetCallback callback) override {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindLambdaForTesting([callback = std::move(callback)]() mutable {
+          std::move(callback).Run(
+              /*success=*/true,
+              /*error_message=*/{},
+              /*bits=*/2.5);
+        }));
+  }
+
   void ConsoleLog(const std::string& message) override {
     observed_console_log_messages_.push_back(message);
   }
@@ -432,6 +444,7 @@ TEST_F(SharedStorageWorkletGlobalScopeTest, OnModuleScriptDownloadedSuccess) {
   EXPECT_EQ(GetTypeOf("sharedStorage.keys"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage.entries"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage.length"), "function");
+  EXPECT_EQ(GetTypeOf("sharedStorage.remainingBudget"), "function");
   EXPECT_EQ(GetTypeOf("privateAggregation"), "object");
   EXPECT_EQ(GetTypeOf("privateAggregation.sendHistogramReport"), "function");
 }
@@ -1907,6 +1920,22 @@ TEST_F(SharedStorageObjectMethodTest, LengthOperation_FulfilledAsynchronously) {
   uint32_t n = 0;
   gin::Converter<uint32_t>::FromV8(Isolate(), v8_resolved_value(), &n);
   EXPECT_EQ(n, 1u);
+}
+
+TEST_F(SharedStorageObjectMethodTest,
+       RemainingBudgetOperation_FulfilledAsynchronously) {
+  ExecuteScript("sharedStorage.remainingBudget()");
+  EXPECT_FALSE(finished());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(finished());
+  EXPECT_TRUE(fulfilled());
+
+  WorkletV8Helper::HandleScope scope(Isolate());
+  EXPECT_TRUE(v8_resolved_value()->IsNumber());
+
+  double bits = 0.0;
+  gin::Converter<double>::FromV8(Isolate(), v8_resolved_value(), &bits);
+  EXPECT_EQ(bits, 2.5);
 }
 
 TEST_F(SharedStorageObjectMethodTest,
