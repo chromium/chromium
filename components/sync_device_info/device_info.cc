@@ -66,6 +66,8 @@ DeviceInfo::DeviceInfo(
     const std::string& chrome_version,
     const std::string& sync_user_agent,
     const sync_pb::SyncEnums::DeviceType device_type,
+    const OsType os_type,
+    const FormFactor form_factor,
     const std::string& signin_scoped_device_id,
     const std::string& manufacturer_name,
     const std::string& model_name,
@@ -82,6 +84,8 @@ DeviceInfo::DeviceInfo(
       chrome_version_(chrome_version),
       sync_user_agent_(sync_user_agent),
       device_type_(device_type),
+      os_type_(os_type),
+      form_factor_(form_factor),
       signin_scoped_device_id_(signin_scoped_device_id),
       manufacturer_name_(manufacturer_name),
       model_name_(model_name),
@@ -118,6 +122,14 @@ const std::string& DeviceInfo::public_id() const {
 
 sync_pb::SyncEnums::DeviceType DeviceInfo::device_type() const {
   return device_type_;
+}
+
+DeviceInfo::OsType DeviceInfo::os_type() const {
+  return os_type_;
+}
+
+DeviceInfo::FormFactor DeviceInfo::form_factor() const {
+  return form_factor_;
 }
 
 const std::string& DeviceInfo::signin_scoped_device_id() const {

@@ -24,6 +24,9 @@ std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
         absl::nullopt,
     sync_pb::SyncEnums_DeviceType device_type =
         sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+    syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kLinux,
+    syncer::DeviceInfo::FormFactor form_factor =
+        syncer::DeviceInfo::FormFactor::kDesktop,
     const std::string& manufacturer_name = "manufacturer",
     const std::string& model_name = "model",
     const std::string& full_hardware_class = std::string(),

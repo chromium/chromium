@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 
 namespace syncer {
 
@@ -35,6 +36,10 @@ struct LocalDeviceNameInfo {
 };
 
 sync_pb::SyncEnums::DeviceType GetLocalDeviceType();
+
+DeviceInfo::OsType GetLocalDeviceOSType();
+
+DeviceInfo::FormFactor GetLocalDeviceFormFactor();
 
 // Returns the personalizable device name. This may contain
 // personally-identifiable information - e.g. Alex's MacbookPro.

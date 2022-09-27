@@ -93,6 +93,43 @@ sync_pb::SyncEnums::DeviceType GetLocalDeviceType() {
 #endif
 }
 
+DeviceInfo::OsType GetLocalDeviceOSType() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return DeviceInfo::OsType::kChromeOsAsh;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return DeviceInfo::OsType::kChromeOsLacros;
+#elif BUILDFLAG(IS_LINUX)
+  return DeviceInfo::OsType::kLinux;
+#elif BUILDFLAG(IS_ANDROID)
+  return DeviceInfo::OsType::kAndroid;
+#elif BUILDFLAG(IS_IOS)
+  return DeviceInfo::OsType::kIOS;
+#elif BUILDFLAG(IS_MAC)
+  return DeviceInfo::OsType::kMac;
+#elif BUILDFLAG(IS_WIN)
+  return DeviceInfo::OsType::kWindows;
+#elif BUILDFLAG(IS_FUCHSIA)
+  return DeviceInfo::OsType::kFuchsia;
+#else
+#error Please handle your new device OS here.
+#endif
+}
+
+DeviceInfo::FormFactor GetLocalDeviceFormFactor() {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  return DeviceInfo::FormFactor::kDesktop;
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+             ? DeviceInfo::FormFactor::kTablet
+             : DeviceInfo::FormFactor::kPhone;
+#elif BUILDFLAG(IS_FUCHSIA)
+  return DeviceInfo::FormFactor::kUnknown;
+#else
+#error Please handle your new device OS here.
+#endif
+}
+
 std::string GetPersonalizableDeviceNameBlocking() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);

@@ -91,11 +91,27 @@ class DeviceInfo {
     std::array<uint8_t, 65> peer_public_key_x962;
   };
 
+  enum class OsType {
+    kUnknown = 0,
+    kWindows = 1,
+    kMac = 2,
+    kLinux = 3,
+    kChromeOsAsh = 4,
+    kAndroid = 5,
+    kIOS = 6,
+    kChromeOsLacros = 7,
+    kFuchsia = 8
+  };
+
+  enum class FormFactor { kUnknown = 0, kDesktop = 1, kPhone = 2, kTablet = 3 };
+
   DeviceInfo(const std::string& guid,
              const std::string& client_name,
              const std::string& chrome_version,
              const std::string& sync_user_agent,
              const sync_pb::SyncEnums_DeviceType device_type,
+             const OsType os_type,
+             const FormFactor form_factor,
              const std::string& signin_scoped_device_id,
              const std::string& manufacturer_name,
              const std::string& model_name,
@@ -135,6 +151,12 @@ class DeviceInfo {
 
   // Device Type.
   sync_pb::SyncEnums_DeviceType device_type() const;
+
+  // Returns the OS of this device.
+  OsType os_type() const;
+
+  // Returns the device type (form-factor).
+  FormFactor form_factor() const;
 
   // Device_id that is stable until user signs out. This device_id is used for
   // annotating login scoped refresh token.
@@ -203,6 +225,10 @@ class DeviceInfo {
   const std::string sync_user_agent_;
 
   const sync_pb::SyncEnums_DeviceType device_type_;
+
+  const OsType os_type_;
+
+  const FormFactor form_factor_;
 
   const std::string signin_scoped_device_id_;
 

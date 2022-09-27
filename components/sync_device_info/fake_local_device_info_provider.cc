@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_util.h"
 
 namespace syncer {
@@ -17,6 +18,8 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
                    "chrome_version",
                    "user_agent",
                    sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+                   DeviceInfo::OsType::kLinux,
+                   DeviceInfo::FormFactor::kDesktop,
                    "device_id",
                    "fake_manufacturer",
                    "fake_model",

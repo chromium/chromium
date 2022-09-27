@@ -30,11 +30,13 @@ static std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
     const std::string& id,
     const std::string& name,
     sync_pb::SyncEnums_DeviceType device_type,
+    syncer::DeviceInfo::OsType os_type,
+    syncer::DeviceInfo::FormFactor form_factor,
     const std::string& manufacturer_name,
     const std::string& model_name) {
   return std::make_unique<syncer::DeviceInfo>(
-      id, name, "chrome_version", "user_agent", device_type, "device_id",
-      manufacturer_name, model_name,
+      id, name, "chrome_version", "user_agent", device_type, os_type,
+      form_factor, "device_id", manufacturer_name, model_name,
       /*full_hardware_class=*/std::string(),
       /*last_updated_timestamp=*/base::Time::Now(),
       syncer::DeviceInfoUtil::GetPulseInterval(),
@@ -54,7 +56,8 @@ static std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
 TEST_F(SharingUtilsTest, GetSharingDeviceNames_AppleDevices_SigninOnly) {
   std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
       "guid", "MacbookPro1,1", sync_pb::SyncEnums_DeviceType_TYPE_MAC,
-      "Apple Inc.", "MacbookPro1,1");
+      syncer::DeviceInfo::OsType::kMac,
+      syncer::DeviceInfo::FormFactor::kDesktop, "Apple Inc.", "MacbookPro1,1");
   SharingDeviceNames names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("MacbookPro1,1", names.full_name);
@@ -63,8 +66,9 @@ TEST_F(SharingUtilsTest, GetSharingDeviceNames_AppleDevices_SigninOnly) {
 
 TEST_F(SharingUtilsTest, GetSharingDeviceNames_AppleDevices_FullySynced) {
   std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "Bobs-iMac", sync_pb::SyncEnums_DeviceType_TYPE_MAC, "Apple Inc.",
-      "MacbookPro1,1");
+      "guid", "Bobs-iMac", sync_pb::SyncEnums_DeviceType_TYPE_MAC,
+      syncer::DeviceInfo::OsType::kMac,
+      syncer::DeviceInfo::FormFactor::kDesktop, "Apple Inc.", "MacbookPro1,1");
   SharingDeviceNames names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("Bobs-iMac", names.full_name);
@@ -73,8 +77,9 @@ TEST_F(SharingUtilsTest, GetSharingDeviceNames_AppleDevices_FullySynced) {
 
 TEST_F(SharingUtilsTest, GetSharingDeviceNames_ChromeOSDevices) {
   std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "Chromebook", sync_pb::SyncEnums_DeviceType_TYPE_CROS, "Google",
-      "Chromebook");
+      "guid", "Chromebook", sync_pb::SyncEnums_DeviceType_TYPE_CROS,
+      syncer::DeviceInfo::OsType::kChromeOsAsh,
+      syncer::DeviceInfo::FormFactor::kDesktop, "Google", "Chromebook");
   SharingDeviceNames names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("Google Chromebook", names.full_name);
@@ -83,8 +88,9 @@ TEST_F(SharingUtilsTest, GetSharingDeviceNames_ChromeOSDevices) {
 
 TEST_F(SharingUtilsTest, GetSharingDeviceNames_AndroidPhones) {
   std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "Pixel 2", sync_pb::SyncEnums_DeviceType_TYPE_PHONE, "Google",
-      "Pixel 2");
+      "guid", "Pixel 2", sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+      syncer::DeviceInfo::OsType::kAndroid,
+      syncer::DeviceInfo::FormFactor::kPhone, "Google", "Pixel 2");
   SharingDeviceNames names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("Google Phone Pixel 2", names.full_name);
@@ -93,8 +99,9 @@ TEST_F(SharingUtilsTest, GetSharingDeviceNames_AndroidPhones) {
 
 TEST_F(SharingUtilsTest, GetSharingDeviceNames_AndroidTablets) {
   std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "Pixel C", sync_pb::SyncEnums_DeviceType_TYPE_TABLET, "Google",
-      "Pixel C");
+      "guid", "Pixel C", sync_pb::SyncEnums_DeviceType_TYPE_TABLET,
+      syncer::DeviceInfo::OsType::kAndroid,
+      syncer::DeviceInfo::FormFactor::kTablet, "Google", "Pixel C");
   SharingDeviceNames names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("Google Tablet Pixel C", names.full_name);
@@ -103,7 +110,9 @@ TEST_F(SharingUtilsTest, GetSharingDeviceNames_AndroidTablets) {
 
 TEST_F(SharingUtilsTest, GetSharingDeviceNames_Windows_SigninOnly) {
   std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "BX123", sync_pb::SyncEnums_DeviceType_TYPE_WIN, "Dell", "BX123");
+      "guid", "BX123", sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+      syncer::DeviceInfo::OsType::kWindows,
+      syncer::DeviceInfo::FormFactor::kDesktop, "Dell", "BX123");
   SharingDeviceNames names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("Dell Computer BX123", names.full_name);
@@ -112,8 +121,9 @@ TEST_F(SharingUtilsTest, GetSharingDeviceNames_Windows_SigninOnly) {
 
 TEST_F(SharingUtilsTest, GetSharingDeviceNames_Windows_FullySynced) {
   std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "BOBS-WINDOWS-1", sync_pb::SyncEnums_DeviceType_TYPE_WIN, "Dell",
-      "BX123");
+      "guid", "BOBS-WINDOWS-1", sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+      syncer::DeviceInfo::OsType::kWindows,
+      syncer::DeviceInfo::FormFactor::kDesktop, "Dell", "BX123");
   SharingDeviceNames names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("BOBS-WINDOWS-1", names.full_name);
@@ -122,8 +132,9 @@ TEST_F(SharingUtilsTest, GetSharingDeviceNames_Windows_FullySynced) {
 
 TEST_F(SharingUtilsTest, GetSharingDeviceNames_Linux_SigninOnly) {
   std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "30BDS0RA0G", sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "LENOVO",
-      "30BDS0RA0G");
+      "guid", "30BDS0RA0G", sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+      syncer::DeviceInfo::OsType::kLinux,
+      syncer::DeviceInfo::FormFactor::kDesktop, "LENOVO", "30BDS0RA0G");
   SharingDeviceNames names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("LENOVO Computer 30BDS0RA0G", names.full_name);
@@ -133,7 +144,8 @@ TEST_F(SharingUtilsTest, GetSharingDeviceNames_Linux_SigninOnly) {
 TEST_F(SharingUtilsTest, GetSharingDeviceNames_Linux_FullySynced) {
   std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
       "guid", "bob.chromium.org", sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
-      "LENOVO", "30BDS0RA0G");
+      syncer::DeviceInfo::OsType::kLinux,
+      syncer::DeviceInfo::FormFactor::kDesktop, "LENOVO", "30BDS0RA0G");
   SharingDeviceNames names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("bob.chromium.org", names.full_name);
@@ -142,32 +154,36 @@ TEST_F(SharingUtilsTest, GetSharingDeviceNames_Linux_FullySynced) {
 
 TEST_F(SharingUtilsTest, CheckManufacturerNameCapitalization) {
   std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "model", sync_pb::SyncEnums_DeviceType_TYPE_WIN, "foo bar",
-      "model");
+      "guid", "model", sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+      syncer::DeviceInfo::OsType::kWindows,
+      syncer::DeviceInfo::FormFactor::kDesktop, "foo bar", "model");
   SharingDeviceNames names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("Foo Bar Computer model", names.full_name);
   EXPECT_EQ("Foo Bar Computer", names.short_name);
 
-  device = CreateFakeDeviceInfo("guid", "model",
-                                sync_pb::SyncEnums_DeviceType_TYPE_WIN,
-                                "foo1bar", "model");
+  device = CreateFakeDeviceInfo(
+      "guid", "model", sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+      syncer::DeviceInfo::OsType::kWindows,
+      syncer::DeviceInfo::FormFactor::kDesktop, "foo1bar", "model");
   names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("Foo1Bar Computer model", names.full_name);
   EXPECT_EQ("Foo1Bar Computer", names.short_name);
 
-  device = CreateFakeDeviceInfo("guid", "model",
-                                sync_pb::SyncEnums_DeviceType_TYPE_WIN,
-                                "foo_bar-FOO", "model");
+  device = CreateFakeDeviceInfo(
+      "guid", "model", sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+      syncer::DeviceInfo::OsType::kWindows,
+      syncer::DeviceInfo::FormFactor::kDesktop, "foo_bar-FOO", "model");
   names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("Foo_Bar-FOO Computer model", names.full_name);
   EXPECT_EQ("Foo_Bar-FOO Computer", names.short_name);
 
-  device = CreateFakeDeviceInfo("guid", "model",
-                                sync_pb::SyncEnums_DeviceType_TYPE_WIN,
-                                "foo&bar foo", "model");
+  device = CreateFakeDeviceInfo(
+      "guid", "model", sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+      syncer::DeviceInfo::OsType::kWindows,
+      syncer::DeviceInfo::FormFactor::kDesktop, "foo&bar foo", "model");
   names = GetSharingDeviceNames(device.get());
 
   EXPECT_EQ("Foo&Bar Foo Computer model", names.full_name);
