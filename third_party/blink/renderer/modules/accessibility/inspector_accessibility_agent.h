@@ -188,6 +188,8 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   LocalFrame* FrameFromIdOrRoot(const protocol::Maybe<String>& frame_id);
   void ScheduleAXChangeNotification(Document* document);
   void RetainAXContextForDocument(Document* document);
+  AXObjectCacheImpl& GetAXObjectCacheImplForDocument(Document*);
+  AXObjectCacheImpl& AttachToAXObjectCache(Document*);
   void ProcessPendingQueries(Document&);
   void ProcessPendingDirtyNodes(Document&);
 

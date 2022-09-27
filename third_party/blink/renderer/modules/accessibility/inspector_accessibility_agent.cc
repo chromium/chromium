@@ -544,10 +544,7 @@ Response InspectorAccessibilityAgent::getPartialAXTree(
   if (!local_frame)
     return Response::ServerError("Frame is detached.");
 
-  RetainAXContextForDocument(&document);
-
-  AXContext ax_context(document, ui::kAXModeComplete);
-  auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
+  auto& cache = AttachToAXObjectCache(&document);
 
   AXObject* inspected_ax_object = cache.GetOrCreate(dom_node);
   *nodes = std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
@@ -799,9 +796,7 @@ InspectorAccessibilityAgent::WalkAXNodesToDepth(Document* document,
   std::unique_ptr<protocol::Array<AXNode>> nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
 
-  RetainAXContextForDocument(document);
-  AXContext ax_context(*document, ui::kAXModeComplete);
-  auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
+  auto& cache = AttachToAXObjectCache(document);
 
   Deque<std::pair<AXID, int>> id_depths;
   id_depths.emplace_back(cache.Root()->AXObjectID(), 1);
@@ -844,10 +839,8 @@ Response InspectorAccessibilityAgent::getRootAXNode(
   if (document->View()->NeedsLayout() || document->NeedsLayoutTreeUpdate())
     document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
 
-  RetainAXContextForDocument(document);
-  AXContext ax_context(*document, ui::kAXModeComplete);
+  auto& cache = AttachToAXObjectCache(document);
 
-  auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
   auto& root = *cache.Root();
   *node = BuildProtocolAXNodeForAXObject(root);
   nodes_requested_.insert(root.AXObjectID());
@@ -878,10 +871,7 @@ protocol::Response InspectorAccessibilityAgent::getAXNodeAndAncestors(
   if (!local_frame)
     return Response::ServerError("Frame is detached.");
 
-  RetainAXContextForDocument(&document);
-
-  AXContext ax_context(document, ui::kAXModeComplete);
-  auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
+  auto& cache = AttachToAXObjectCache(&document);
 
   AXObject* ax_object = cache.GetOrCreate(dom_node);
 
@@ -927,10 +917,7 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
   if (document->View()->NeedsLayout() || document->NeedsLayoutTreeUpdate())
     document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
 
-  RetainAXContextForDocument(document);
-  AXContext ax_context(*document, ui::kAXModeComplete);
-
-  auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
+  auto& cache = AttachToAXObjectCache(document);
 
   AXID ax_id = in_id.ToUInt();
   AXObject* ax_object = cache.ObjectFromAXID(ax_id);
@@ -1032,10 +1019,8 @@ void InspectorAccessibilityAgent::queryAXTree(
   }
 
   Document& document = root_dom_node->GetDocument();
-  RetainAXContextForDocument(&document);
-  AXContext ax_context(document, ui::kAXModeComplete);
+  auto& cache = AttachToAXObjectCache(&document);
 
-  auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
   AXQuery query = {std::move(dom_node_id), std::move(backend_node_id),
                    std::move(object_id),   std::move(accessible_name),
                    std::move(role),        std::move(callback)};
@@ -1079,12 +1064,10 @@ void InspectorAccessibilityAgent::CompleteQuery(AXQuery& query) {
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       document.Lifecycle());
 
-  RetainAXContextForDocument(&document);
-  AXContext ax_context(document, ui::kAXModeComplete);
+  auto& cache = AttachToAXObjectCache(&document);
 
   std::unique_ptr<protocol::Array<AXNode>> nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
-  auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
   AXObject* root_ax_node = cache.GetOrCreate(root_dom_node);
 
   HeapVector<Member<AXObject>> reachable;
@@ -1308,18 +1291,32 @@ void InspectorAccessibilityAgent::Restore() {
 void InspectorAccessibilityAgent::ProvideTo(LocalFrame* frame) {
   if (!EnabledAgents().Contains(frame))
     return;
-  for (InspectorAccessibilityAgent* agent : *EnabledAgents().find(frame)->value)
-    agent->RetainAXContextForDocument(frame->GetDocument());
+  for (InspectorAccessibilityAgent* agent :
+       *EnabledAgents().find(frame)->value) {
+    agent->AttachToAXObjectCache(frame->GetDocument());
+  }
 }
 
 void InspectorAccessibilityAgent::RetainAXContextForDocument(
     Document* document) {
   if (!document_to_context_map_.Contains(document)) {
     auto context = std::make_unique<AXContext>(*document, ui::kAXModeComplete);
-    auto& cache = To<AXObjectCacheImpl>(context->GetAXObjectCache());
-    cache.AddInspectorAgent(this);
     document_to_context_map_.insert(document, std::move(context));
   }
+}
+
+AXObjectCacheImpl& InspectorAccessibilityAgent::GetAXObjectCacheImplForDocument(
+    Document* document) {
+  AXContext ax_context(*document, ui::kAXModeComplete);
+  return To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
+}
+
+AXObjectCacheImpl& InspectorAccessibilityAgent::AttachToAXObjectCache(
+    Document* document) {
+  RetainAXContextForDocument(document);
+  auto& cache = GetAXObjectCacheImplForDocument(document);
+  cache.AddInspectorAgent(this);
+  return cache;
 }
 
 void InspectorAccessibilityAgent::Trace(Visitor* visitor) const {
