@@ -416,6 +416,20 @@ class TabletWindowFloatTest : public WindowFloatTest {
         ::switches::kUseFirstDisplayAsInternal);
     WindowFloatTest::SetUp();
   }
+
+  // Flings a window to the top left or top right of the work area.
+  void FlingWindow(aura::Window* window, bool left) {
+    NonClientFrameViewAsh* frame = SetUpAndGetFrame(window);
+    const gfx::Point header_center =
+        frame->GetHeaderView()->GetBoundsInScreen().CenterPoint();
+    const gfx::Rect work_area =
+        WorkAreaInsets::ForWindow(window->GetRootWindow())
+            ->user_work_area_bounds();
+    GetEventGenerator()->GestureScrollSequence(
+        header_center,
+        left ? header_center - gfx::Vector2d(10, 10) : work_area.top_right(),
+        base::Milliseconds(10), /*steps=*/2);
+  }
 };
 
 TEST_F(TabletWindowFloatTest, TabletClamshellTransition) {
@@ -681,28 +695,22 @@ TEST_F(TabletWindowFloatTest, DraggingSnapping) {
   EXPECT_EQ(split_view_controller->primary_window(), window.get());
 }
 
-// Tests the functionality of tucking a window in tablet mode. Tucking a window
-// is hiding partially offscreen to the side.
+// Tests the functionality of tucking a window in tablet mode.
 TEST_F(TabletWindowFloatTest, TuckedWindowTopLeft) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
-  NonClientFrameViewAsh* frame = SetUpAndGetFrame(window.get());
 
-  // Generate a fling to the top left corner. Tests that the window is tucked,
-  // and 100 pixels are visible to the user.
-  const gfx::Point header_center =
-      frame->GetHeaderView()->GetBoundsInScreen().CenterPoint();
-  GetEventGenerator()->GestureScrollSequence(
-      header_center, header_center - gfx::Vector2d(10, 10),
-      base::Milliseconds(10), /*steps=*/2);
+  // Fling the window to the top left. Tests that the window is tucked.
+  FlingWindow(window.get(), /*left=*/true);
+
   auto* float_controller = Shell::Get()->float_controller();
   EXPECT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
-  EXPECT_EQ(100, window->bounds().right());
+  EXPECT_EQ(0, window->bounds().right());
 
   // Verify that the handle is aligned with the tucked window.
   views::Widget* tuck_handle_widget =
-      float_controller->GetTuckHandleWidgetForTesting(window.get());
+      float_controller->GetTuckHandleWidget(window.get());
   ASSERT_TRUE(tuck_handle_widget);
   EXPECT_EQ(window->bounds().right(),
             tuck_handle_widget->GetWindowBoundsInScreen().x());
@@ -721,30 +729,55 @@ TEST_F(TabletWindowFloatTest, TuckedWindowTopRight) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
-  NonClientFrameViewAsh* frame = SetUpAndGetFrame(window.get());
 
-  // Generate a fling to the top right corner. Tests that the window is tucked,
-  // and 100 pixels are visible to the user.
-  const gfx::Point header_center =
-      frame->GetHeaderView()->GetBoundsInScreen().CenterPoint();
-  const gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
-                                  ->user_work_area_bounds();
-  GetEventGenerator()->GestureScrollSequence(
-      header_center, work_area.top_right(), base::Milliseconds(10),
-      /*steps=*/2);
+  // Fling the window to the top right. Tests that the window is tucked.
+  FlingWindow(window.get(), /*left=*/false);
+
   auto* float_controller = Shell::Get()->float_controller();
   EXPECT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
 
-  EXPECT_EQ(work_area.right() - 100, window->bounds().x());
+  const gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
+                                  ->user_work_area_bounds();
+  EXPECT_EQ(work_area.right(), window->bounds().x());
 
   // Verify that the handle is aligned with the tucked window.
   views::Widget* tuck_handle_widget =
-      float_controller->GetTuckHandleWidgetForTesting(window.get());
+      float_controller->GetTuckHandleWidget(window.get());
   ASSERT_TRUE(tuck_handle_widget);
   EXPECT_EQ(window->bounds().x(),
             tuck_handle_widget->GetWindowBoundsInScreen().right());
   EXPECT_EQ(window->bounds().CenterPoint().y(),
             tuck_handle_widget->GetWindowBoundsInScreen().CenterPoint().y());
+}
+
+// Tests the functionality of untucking a window in tablet mode.
+TEST_F(TabletWindowFloatTest, UntuckWindow) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  FlingWindow(window.get(), /*left=*/true);
+
+  // Tuck the window to the top left.
+  auto* float_controller = Shell::Get()->float_controller();
+  ASSERT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+  views::Widget* tuck_handle_widget =
+      float_controller->GetTuckHandleWidget(window.get());
+  ASSERT_TRUE(tuck_handle_widget);
+
+  // Tap on the tuck handle. Verify that the window is untucked.
+  GestureTapOn(tuck_handle_widget->GetContentsView());
+  EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+
+  // Tuck the window to the top right.
+  FlingWindow(window.get(), /*left=*/false);
+  ASSERT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+  tuck_handle_widget = float_controller->GetTuckHandleWidget(window.get());
+  ASSERT_TRUE(tuck_handle_widget);
+
+  // Tap on the tuck handle. Verify that the window is untucked.
+  GestureTapOn(tuck_handle_widget->GetContentsView());
+  EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
 }
 
 using TabletWindowFloatSplitviewTest = TabletWindowFloatTest;

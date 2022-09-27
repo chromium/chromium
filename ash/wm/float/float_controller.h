@@ -62,8 +62,8 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   // Checks if `floated_window` is tucked.
   bool IsFloatedWindowTuckedForTablet(const aura::Window* floated_window) const;
 
-  views::Widget* GetTuckHandleWidgetForTesting(
-      const aura::Window* floated_window) const;
+  // Gets the tuck handle for a floated and tucked window.
+  views::Widget* GetTuckHandleWidget(const aura::Window* floated_window) const;
 
   // Called by the resizer when a drag is completed. Updates the bounds
   // and magnetism of the `floated_window`.
@@ -123,8 +123,9 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   void ToggleFloat(aura::Window* window) override;
 
  private:
-  class ScopedWindowTucker;
   class FloatedWindowInfo;
+  class ScopedWindowTucker;
+  class TuckHandle;
   friend class DefaultState;
   friend class TabletModeWindowState;
   friend class WindowFloatTest;

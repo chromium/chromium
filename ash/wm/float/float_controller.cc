@@ -5,6 +5,7 @@
 #include "ash/wm/float/float_controller.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -33,16 +34,13 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
 namespace {
 
-// TODO(sophiewen): Remove this once the untuck window widget is implemented. It
-// is temporarily here to give users a way to untuck the window.
-constexpr int kTuckedFloatWindowVisibleWidth = 100;
-constexpr int kTuckHandleCornerRadius = 8;
 constexpr int kTuckHandleWidth = 20;
 constexpr int kTuckHandleHeight = 116;
 
@@ -88,11 +86,34 @@ void ShowFloatedWindow(aura::Window* floated_window) {
 
 }  // namespace
 
-// -----------------------------------------------------------------------------
-// ScopedWindowTucker:
+// The handle that allows users to bring tucked windows back onscreen.
+class FloatController::TuckHandle : public views::Button {
+ public:
+  explicit TuckHandle(aura::Window* window)
+      : views::Button(base::BindRepeating(&TuckHandle::OnButtonPressed,
+                                          base::Unretained(this))),
+        window_(window) {
+    // TODO(sophiewen): Update with UI specs.
+    SetBackground(views::CreateSolidBackground(SK_ColorRED));
+    SetFocusBehavior(FocusBehavior::NEVER);
+  }
+  TuckHandle(const TuckHandle&) = delete;
+  ~TuckHandle() override = default;
+
+ private:
+  void OnButtonPressed() {
+    // Untuck the window, which sets the window bounds back onscreen.
+    // Destroys `this`.
+    Shell::Get()->float_controller()->MaybeUntuckFloatedWindowForTablet(
+        window_);
+  }
+
+  // The window that the handle is attached to. Must be floated and tucked.
+  aura::Window* window_;
+};
 
 // Scoped class which makes modifications while a window is tucked. It owns a
-// handle widget which is used to untuck the window.
+// tuck handle widget that will bring the hidden window back onscreen.
 class FloatController::ScopedWindowTucker {
  public:
   explicit ScopedWindowTucker(aura::Window* window) : window_(window) {
@@ -102,20 +123,20 @@ class FloatController::ScopedWindowTucker {
   ScopedWindowTucker& operator=(const ScopedWindowTucker&) = delete;
   ~ScopedWindowTucker() = default;
 
+  views::Widget* tuck_handle_widget() { return tuck_handle_widget_.get(); }
+
   void ShowTuckHandle(const MagnetismCorner magnetism_corner) {
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+    params.activatable = views::Widget::InitParams::Activatable::kYes;
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-    params.parent = window_->parent();
+    params.parent =
+        window_->GetRootWindow()->GetChildById(kShellWindowId_FloatContainer);
     params.init_properties_container.SetProperty(kHideInOverviewKey, true);
     params.init_properties_container.SetProperty(kForceVisibleInMiniViewKey,
                                                  false);
     params.name = "TuckHandleWidget";
     tuck_handle_widget_->Init(std::move(params));
-    tuck_handle_widget_->SetContentsView(
-        views::Builder<views::View>()
-            .SetBackground(views::CreateThemedRoundedRectBackground(
-                kColorAshShieldAndBase80, kTuckHandleCornerRadius))
-            .Build());
+    tuck_handle_widget_->SetContentsView(std::make_unique<TuckHandle>(window_));
     tuck_handle_widget_->Show();
 
     // The window should already be tucked offscreen.
@@ -138,12 +159,11 @@ class FloatController::ScopedWindowTucker {
         tuck_handle_origin, gfx::Size(kTuckHandleWidth, kTuckHandleHeight)));
   }
 
-  views::Widget* tuck_handle_widget_for_testing() {
-    return tuck_handle_widget_.get();
-  }
-
  private:
+  // The window that is being tucked. Will be tucked and untucked by the tuck
+  // handle.
   aura::Window* window_;
+
   views::UniqueWidgetPtr tuck_handle_widget_ =
       std::make_unique<views::Widget>();
 };
@@ -195,8 +215,9 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
 
   void MaybeUntuckWindow() { scoped_window_tucker_.reset(); }
 
-  views::Widget* GetTuckHandleWidgetForTesting() {
-    return scoped_window_tucker_->tuck_handle_widget_for_testing();  // IN-TEST
+  views::Widget* GetTuckHandleWidget() {
+    DCHECK(scoped_window_tucker_);
+    return scoped_window_tucker_->tuck_handle_widget();
   }
 
   // aura::WindowObserver:
@@ -320,18 +341,17 @@ gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
       break;
   }
 
-  // If the window is tucked, shift it so `kTuckedFloatWindowVisibleWidth` is
-  // visible on one side, depending on `corner`.
+  // If the window is tucked, shift it so the window is offscreen.
   if (floated_window_info->is_tucked_for_tablet()) {
     int x_offset;
     switch (magnetism_corner) {
       case MagnetismCorner::kTopLeft:
       case MagnetismCorner::kBottomLeft:
-        x_offset = -width - padding_dp + kTuckedFloatWindowVisibleWidth;
+        x_offset = -width - padding_dp;
         break;
       case MagnetismCorner::kTopRight:
       case MagnetismCorner::kBottomRight:
-        x_offset = width + padding_dp - kTuckedFloatWindowVisibleWidth;
+        x_offset = width + padding_dp;
         break;
     }
     origin.Offset(x_offset, 0);
@@ -345,6 +365,7 @@ void FloatController::MaybeUntuckFloatedWindowForTablet(
   auto* floated_window_info = MaybeGetFloatedWindowInfo(floated_window);
   DCHECK(floated_window_info);
   floated_window_info->MaybeUntuckWindow();
+  UpdateWindowBoundsForTablet(floated_window);
 }
 
 bool FloatController::IsFloatedWindowTuckedForTablet(
@@ -354,11 +375,11 @@ bool FloatController::IsFloatedWindowTuckedForTablet(
   return floated_window_info->is_tucked_for_tablet();
 }
 
-views::Widget* FloatController::GetTuckHandleWidgetForTesting(
+views::Widget* FloatController::GetTuckHandleWidget(
     const aura::Window* floated_window) const {
   auto* floated_window_info = MaybeGetFloatedWindowInfo(floated_window);
   DCHECK(floated_window_info);
-  return floated_window_info->GetTuckHandleWidgetForTesting();  // IN-TEST
+  return floated_window_info->GetTuckHandleWidget();
 }
 
 void FloatController::OnDragCompletedForTablet(

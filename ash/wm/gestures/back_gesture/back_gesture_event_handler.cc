@@ -16,6 +16,8 @@
 #include "ash/shell_delegate.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/virtual_keyboard_model.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_affordance.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_contextual_nudge_controller_impl.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -28,6 +30,7 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -448,6 +451,24 @@ bool BackGestureEventHandler::CanStartGoingBack(
     return false;
   }
 
+  // Do not enable back gesture if `screen_location` is inside the tuck handle,
+  // let `FloatController` handle the event instead.
+  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+    auto* float_controller = Shell::Get()->float_controller();
+    auto* floated_window = float_controller->FindFloatedWindowOfDesk(
+        DesksController::Get()->GetTargetActiveDesk());
+    if (floated_window &&
+        float_controller->IsFloatedWindowTuckedForTablet(floated_window)) {
+      auto* tuck_handle_widget =
+          float_controller->GetTuckHandleWidget(floated_window);
+      if (tuck_handle_widget &&
+          tuck_handle_widget->GetWindowBoundsInScreen().Contains(
+              screen_location)) {
+        return false;
+      }
+    }
+  }
+
   gfx::Rect hit_bounds_in_screen(
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(
@@ -457,6 +478,7 @@ bool BackGestureEventHandler::CanStartGoingBack(
     hit_bounds_in_screen.set_x(hit_bounds_in_screen.right() -
                                kStartGoingBackLeftEdgeInset);
   }
+
   hit_bounds_in_screen.set_width(kStartGoingBackLeftEdgeInset);
   const bool hit_in_limited_area =
       hit_bounds_in_screen.Contains(screen_location);
