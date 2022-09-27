@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/device_activity/device_activity_controller.h"
 #include "chromeos/ash/components/device_activity/fake_psm_delegate.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
+#include "chromeos/system/fake_statistics_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -44,6 +45,9 @@ class DailyUseCaseImplTest : public testing::Test {
   void SetUp() override {
     DeviceActivityController::RegisterPrefs(local_state_.registry());
 
+    chromeos::system::StatisticsProvider::SetTestProvider(
+        &statistics_provider_);
+
     const std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids;
     daily_use_case_impl_ = std::make_unique<DailyUseCaseImpl>(
         kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_,
@@ -59,26 +63,10 @@ class DailyUseCaseImplTest : public testing::Test {
 
   // Fake pref service for unit testing the local state.
   TestingPrefServiceSimple local_state_;
+  chromeos::system::FakeStatisticsProvider statistics_provider_;
 };
 
-TEST_F(DailyUseCaseImplTest, CheckIfLastKnownPingTimestampNotSet) {
-  EXPECT_FALSE(daily_use_case_impl_->IsLastKnownPingTimestampSet());
-}
-
-TEST_F(DailyUseCaseImplTest, CheckIfLastKnownPingTimestampSet) {
-  // Create fixed timestamp to see if local state updates value correctly.
-  base::Time new_daily_ts;
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 23:59:59 GMT", &new_daily_ts));
-
-  // Update local state with fixed timestamp.
-  daily_use_case_impl_->SetLastKnownPingTimestamp(new_daily_ts);
-
-  EXPECT_EQ(daily_use_case_impl_->GetLastKnownPingTimestamp(), new_daily_ts);
-  EXPECT_TRUE(daily_use_case_impl_->IsLastKnownPingTimestampSet());
-}
-
-TEST_F(DailyUseCaseImplTest, CheckGenerateUTCWindowIdentifierHasValidFormat) {
+TEST_F(DailyUseCaseImplTest, ValidateWindowIdFormattedCorrectly) {
   // Create fixed timestamp used to generate a fixed window identifier.
   base::Time new_daily_ts;
   EXPECT_TRUE(
@@ -89,93 +77,6 @@ TEST_F(DailyUseCaseImplTest, CheckGenerateUTCWindowIdentifierHasValidFormat) {
 
   EXPECT_EQ(window_id.size(), 8);
   EXPECT_EQ(window_id, "20220101");
-}
-
-TEST_F(DailyUseCaseImplTest, CheckPsmIdEmptyIfWindowIdIsNotSet) {
-  // |daily_use_case_impl_| must set the window id before generating the psm id.
-  EXPECT_THAT(daily_use_case_impl_->GetPsmIdentifier(),
-              testing::Eq(absl::nullopt));
-}
-
-TEST_F(DailyUseCaseImplTest, CheckPsmIdGeneratedCorrectly) {
-  // Create fixed timestamp used to generate a fixed window identifier.
-  // The window id must be set before generating the psm id.
-  base::Time new_daily_ts;
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 23:59:59 GMT", &new_daily_ts));
-
-  std::string window_id =
-      daily_use_case_impl_->GenerateUTCWindowIdentifier(new_daily_ts);
-
-  daily_use_case_impl_->SetWindowIdentifier(window_id);
-
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_id =
-      daily_use_case_impl_->GetPsmIdentifier();
-
-  EXPECT_TRUE(psm_id.has_value());
-
-  // Verify the PSM value is correct for parameters supplied by the unit tests.
-  std::string unhashed_psm_id = base::JoinString(
-      {psm_rlwe::RlweUseCase_Name(daily_use_case_impl_->GetPsmUseCase()),
-       window_id},
-      "|");
-  std::string expected_psm_id_hex = daily_use_case_impl_->GetDigestString(
-      kFakePsmDeviceActiveSecret, unhashed_psm_id);
-  EXPECT_EQ(psm_id.value().sensitive_id(), expected_psm_id_hex);
-}
-
-TEST_F(DailyUseCaseImplTest, PingRequiredInNonOverlappingUTCWindows) {
-  base::Time last_daily_ts;
-  base::Time current_daily_ts;
-
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 00:00:00 GMT", &last_daily_ts));
-  daily_use_case_impl_->SetLastKnownPingTimestamp(last_daily_ts);
-
-  EXPECT_TRUE(
-      base::Time::FromString("05 Jan 2022 00:00:00 GMT", &current_daily_ts));
-
-  EXPECT_TRUE(daily_use_case_impl_->IsDevicePingRequired(current_daily_ts));
-}
-
-TEST_F(DailyUseCaseImplTest, PingNotRequiredInOverlappingUTCWindows) {
-  base::Time last_daily_ts;
-  base::Time current_daily_ts;
-
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 12:59:59 GMT", &last_daily_ts));
-  daily_use_case_impl_->SetLastKnownPingTimestamp(last_daily_ts);
-
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 15:59:59 GMT", &current_daily_ts));
-
-  EXPECT_FALSE(daily_use_case_impl_->IsDevicePingRequired(current_daily_ts));
-}
-
-TEST_F(DailyUseCaseImplTest, CheckIfPingRequiredInUTCBoundaryCases) {
-  base::Time last_daily_ts;
-  base::Time current_daily_ts;
-
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 23:59:59 GMT", &last_daily_ts));
-  daily_use_case_impl_->SetLastKnownPingTimestamp(last_daily_ts);
-
-  EXPECT_TRUE(
-      base::Time::FromString("02 Jan 2022 00:00:00 GMT", &current_daily_ts));
-
-  EXPECT_TRUE(daily_use_case_impl_->IsDevicePingRequired(current_daily_ts));
-
-  // Set last_daily_ts as a date after current_daily_ts.
-  EXPECT_TRUE(
-      base::Time::FromString("02 Jan 2022 00:00:00 GMT", &last_daily_ts));
-  daily_use_case_impl_->SetLastKnownPingTimestamp(last_daily_ts);
-
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 23:59:59 GMT", &current_daily_ts));
-
-  // Since the current_daily_ts is prior to the last_daily_ts, the function
-  // should return false.
-  EXPECT_FALSE(daily_use_case_impl_->IsDevicePingRequired(current_daily_ts));
 }
 
 TEST_F(DailyUseCaseImplTest, SameDayTimestampsHaveSameWindowId) {
@@ -189,27 +90,15 @@ TEST_F(DailyUseCaseImplTest, SameDayTimestampsHaveSameWindowId) {
             daily_use_case_impl_->GenerateUTCWindowIdentifier(daily_ts_2));
 }
 
-TEST_F(DailyUseCaseImplTest, DifferentWindowIdGeneratesDifferentPsmId) {
+TEST_F(DailyUseCaseImplTest, DifferentDayTimestampsHaveDifferentWindowId) {
   base::Time daily_ts_1;
   base::Time daily_ts_2;
 
   EXPECT_TRUE(base::Time::FromString("01 Jan 2022 00:00:00 GMT", &daily_ts_1));
   EXPECT_TRUE(base::Time::FromString("02 Jan 2022 00:00:00 GMT", &daily_ts_2));
 
-  std::string window_id_1 =
-      daily_use_case_impl_->GenerateUTCWindowIdentifier(daily_ts_1);
-  std::string window_id_2 =
-      daily_use_case_impl_->GenerateUTCWindowIdentifier(daily_ts_2);
-
-  daily_use_case_impl_->SetWindowIdentifier(window_id_1);
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_id_1 =
-      daily_use_case_impl_->GetPsmIdentifier();
-
-  daily_use_case_impl_->SetWindowIdentifier(window_id_2);
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_id_2 =
-      daily_use_case_impl_->GetPsmIdentifier();
-
-  EXPECT_NE(psm_id_1.value().sensitive_id(), psm_id_2.value().sensitive_id());
+  EXPECT_NE(daily_use_case_impl_->GenerateUTCWindowIdentifier(daily_ts_1),
+            daily_use_case_impl_->GenerateUTCWindowIdentifier(daily_ts_2));
 }
 
 }  // namespace device_activity

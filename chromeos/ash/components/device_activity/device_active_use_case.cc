@@ -119,46 +119,8 @@ std::string DeviceActiveUseCase::GetDigestString(
   return base::HexEncode(&digest[0], digest.size());
 }
 
-absl::optional<psm_rlwe::RlwePlaintextId>
-DeviceActiveUseCase::GeneratePsmIdentifier(
-    absl::optional<std::string> window_id) const {
-  const std::string psm_use_case = psm_rlwe::RlweUseCase_Name(GetPsmUseCase());
-  if (psm_device_active_secret_.empty() || psm_use_case.empty() ||
-      !window_id.has_value()) {
-    VLOG(1) << "Can not generate PSM id without the psm device secret, use "
-               "case, and window id being defined.";
-    return absl::nullopt;
-  }
-
-  std::string unhashed_psm_id =
-      base::JoinString({psm_use_case, window_id.value()}, "|");
-
-  // Convert bytes to hex to avoid encoding/decoding proto issues across
-  // client/server.
-  std::string psm_id_hex =
-      GetDigestString(psm_device_active_secret_, unhashed_psm_id);
-
-  if (!psm_id_hex.empty()) {
-    psm_rlwe::RlwePlaintextId psm_rlwe_id;
-    psm_rlwe_id.set_sensitive_id(psm_id_hex);
-    return psm_rlwe_id;
-  }
-
-  // Failed HMAC-SHA256 hash on PSM id.
-  VLOG(1) << "Failed to calculate HMAC-256 has on PSM id.";
-  return absl::nullopt;
-}
-
 psm_rlwe::PrivateMembershipRlweClient* DeviceActiveUseCase::GetPsmRlweClient() {
   return psm_rlwe_client_.get();
-}
-
-void DeviceActiveUseCase::SetPsmRlweClient(
-    std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client) {
-  DCHECK(psm_rlwe_client);
-
-  // Re-assigning the unique_ptr will reset the old unique_ptr.
-  psm_rlwe_client_ = std::move(psm_rlwe_client);
 }
 
 bool DeviceActiveUseCase::IsDevicePingRequired(base::Time new_ping_ts) const {
@@ -209,6 +171,44 @@ Channel DeviceActiveUseCase::GetChromeOSChannel() const {
 
 MarketSegment DeviceActiveUseCase::GetMarketSegment() const {
   return chrome_passed_device_params_.market_segment;
+}
+
+absl::optional<psm_rlwe::RlwePlaintextId>
+DeviceActiveUseCase::GeneratePsmIdentifier(
+    absl::optional<std::string> window_id) const {
+  const std::string psm_use_case = psm_rlwe::RlweUseCase_Name(GetPsmUseCase());
+  if (psm_device_active_secret_.empty() || psm_use_case.empty() ||
+      !window_id.has_value()) {
+    VLOG(1) << "Can not generate PSM id without the psm device secret, use "
+               "case, and window id being defined.";
+    return absl::nullopt;
+  }
+
+  std::string unhashed_psm_id =
+      base::JoinString({psm_use_case, window_id.value()}, "|");
+
+  // Convert bytes to hex to avoid encoding/decoding proto issues across
+  // client/server.
+  std::string psm_id_hex =
+      GetDigestString(psm_device_active_secret_, unhashed_psm_id);
+
+  if (!psm_id_hex.empty()) {
+    psm_rlwe::RlwePlaintextId psm_rlwe_id;
+    psm_rlwe_id.set_sensitive_id(psm_id_hex);
+    return psm_rlwe_id;
+  }
+
+  // Failed HMAC-SHA256 hash on PSM id.
+  VLOG(1) << "Failed to calculate HMAC-256 has on PSM id.";
+  return absl::nullopt;
+}
+
+void DeviceActiveUseCase::SetPsmRlweClient(
+    std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client) {
+  DCHECK(psm_rlwe_client);
+
+  // Re-assigning the unique_ptr will reset the old unique_ptr.
+  psm_rlwe_client_ = std::move(psm_rlwe_client);
 }
 
 }  // namespace device_activity

@@ -59,6 +59,7 @@ source_set("unit_tests") {
 
   sources = [
     "daily_use_case_impl_unittest.cc",
+    "device_active_use_case_unittest.cc",
     "device_activity_client_unittest.cc",
     "device_activity_controller_unittest.cc",
     "first_active_use_case_impl_unittest.cc",

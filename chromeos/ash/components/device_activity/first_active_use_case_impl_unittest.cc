@@ -71,26 +71,7 @@ class FirstActiveUseCaseImplTest : public testing::Test {
   chromeos::system::FakeStatisticsProvider statistics_provider_;
 };
 
-TEST_F(FirstActiveUseCaseImplTest, CheckIfLastKnownPingTimestampNotSet) {
-  EXPECT_FALSE(first_active_use_case_impl_->IsLastKnownPingTimestampSet());
-}
-
-TEST_F(FirstActiveUseCaseImplTest, CheckIfLastKnownPingTimestampSet) {
-  // Create fixed timestamp to see if local state updates value correctly.
-  base::Time new_first_active_ts;
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 23:59:59 GMT", &new_first_active_ts));
-
-  // Update local state with fixed timestamp.
-  first_active_use_case_impl_->SetLastKnownPingTimestamp(new_first_active_ts);
-
-  EXPECT_EQ(first_active_use_case_impl_->GetLastKnownPingTimestamp(),
-            new_first_active_ts);
-  EXPECT_TRUE(first_active_use_case_impl_->IsLastKnownPingTimestampSet());
-}
-
-TEST_F(FirstActiveUseCaseImplTest,
-       CheckGenerateUTCWindowIdentifierHasValidFormat) {
+TEST_F(FirstActiveUseCaseImplTest, ValidateWindowIdFormattedCorrectly) {
   // Create fixed timestamp used to generate a fixed window identifier.
   base::Time new_first_active_ts;
   EXPECT_TRUE(
@@ -102,100 +83,6 @@ TEST_F(FirstActiveUseCaseImplTest,
 
   EXPECT_EQ(window_id.size(), 8);
   EXPECT_EQ(window_id, "20220101");
-}
-
-TEST_F(FirstActiveUseCaseImplTest, CheckPsmIdEmptyIfWindowIdIsNotSet) {
-  // |first_active_use_case_impl_| must set the window id before generating the
-  // psm id.
-  EXPECT_THAT(first_active_use_case_impl_->GetPsmIdentifier(),
-              testing::Eq(absl::nullopt));
-}
-
-TEST_F(FirstActiveUseCaseImplTest, CheckPsmIdGeneratedCorrectly) {
-  // Create fixed timestamp used to generate a fixed window identifier.
-  // The window id must be set before generating the psm id.
-  base::Time new_first_active_ts;
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 23:59:59 GMT", &new_first_active_ts));
-
-  std::string window_id =
-      first_active_use_case_impl_->GenerateUTCWindowIdentifier(
-          new_first_active_ts);
-
-  first_active_use_case_impl_->SetWindowIdentifier(window_id);
-
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_id =
-      first_active_use_case_impl_->GetPsmIdentifier();
-
-  EXPECT_TRUE(psm_id.has_value());
-
-  // Verify the PSM value is correct for parameters supplied by the unit tests.
-  std::string unhashed_psm_id = base::JoinString(
-      {psm_rlwe::RlweUseCase_Name(first_active_use_case_impl_->GetPsmUseCase()),
-       window_id},
-      "|");
-  std::string expected_psm_id_hex =
-      first_active_use_case_impl_->GetDigestString(kFakePsmDeviceActiveSecret,
-                                                   unhashed_psm_id);
-  EXPECT_EQ(psm_id.value().sensitive_id(), expected_psm_id_hex);
-}
-
-TEST_F(FirstActiveUseCaseImplTest, PingRequiredInNonOverlappingUTCWindows) {
-  base::Time last_first_active_ts;
-  base::Time current_first_active_ts;
-
-  EXPECT_TRUE(base::Time::FromString("01 Jan 2022 00:00:00 GMT",
-                                     &last_first_active_ts));
-  first_active_use_case_impl_->SetLastKnownPingTimestamp(last_first_active_ts);
-
-  EXPECT_TRUE(base::Time::FromString("05 Jan 2022 00:00:00 GMT",
-                                     &current_first_active_ts));
-
-  EXPECT_TRUE(first_active_use_case_impl_->IsDevicePingRequired(
-      current_first_active_ts));
-}
-
-TEST_F(FirstActiveUseCaseImplTest, PingNotRequiredInOverlappingUTCWindows) {
-  base::Time last_first_active_ts;
-  base::Time current_first_active_ts;
-
-  EXPECT_TRUE(base::Time::FromString("01 Jan 2022 12:59:59 GMT",
-                                     &last_first_active_ts));
-  first_active_use_case_impl_->SetLastKnownPingTimestamp(last_first_active_ts);
-
-  EXPECT_TRUE(base::Time::FromString("01 Jan 2022 15:59:59 GMT",
-                                     &current_first_active_ts));
-
-  EXPECT_FALSE(first_active_use_case_impl_->IsDevicePingRequired(
-      current_first_active_ts));
-}
-
-TEST_F(FirstActiveUseCaseImplTest, CheckIfPingRequiredInUTCBoundaryCases) {
-  base::Time last_first_active_ts;
-  base::Time current_first_active_ts;
-
-  EXPECT_TRUE(base::Time::FromString("01 Jan 2022 23:59:59 GMT",
-                                     &last_first_active_ts));
-  first_active_use_case_impl_->SetLastKnownPingTimestamp(last_first_active_ts);
-
-  EXPECT_TRUE(base::Time::FromString("02 Jan 2022 00:00:00 GMT",
-                                     &current_first_active_ts));
-
-  EXPECT_TRUE(first_active_use_case_impl_->IsDevicePingRequired(
-      current_first_active_ts));
-
-  // Set last_first_active_ts as a date after current_first_active_ts.
-  EXPECT_TRUE(base::Time::FromString("02 Jan 2022 00:00:00 GMT",
-                                     &last_first_active_ts));
-  first_active_use_case_impl_->SetLastKnownPingTimestamp(last_first_active_ts);
-
-  EXPECT_TRUE(base::Time::FromString("01 Jan 2022 23:59:59 GMT",
-                                     &current_first_active_ts));
-
-  // Since the current_first_active_ts is prior to the last_first_active_ts, the
-  // function should return false.
-  EXPECT_FALSE(first_active_use_case_impl_->IsDevicePingRequired(
-      current_first_active_ts));
 }
 
 TEST_F(FirstActiveUseCaseImplTest, SameDayTimestampsHaveSameWindowId) {
@@ -213,7 +100,8 @@ TEST_F(FirstActiveUseCaseImplTest, SameDayTimestampsHaveSameWindowId) {
                 first_active_ts_2));
 }
 
-TEST_F(FirstActiveUseCaseImplTest, DifferentWindowIdGeneratesDifferentPsmId) {
+TEST_F(FirstActiveUseCaseImplTest,
+       DifferentDayTimestampsHaveDifferentWindowId) {
   base::Time first_active_ts_1;
   base::Time first_active_ts_2;
 
@@ -229,26 +117,10 @@ TEST_F(FirstActiveUseCaseImplTest, DifferentWindowIdGeneratesDifferentPsmId) {
       first_active_use_case_impl_->GenerateUTCWindowIdentifier(
           first_active_ts_2);
 
-  first_active_use_case_impl_->SetWindowIdentifier(window_id_1);
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_id_1 =
-      first_active_use_case_impl_->GetPsmIdentifier();
-
-  first_active_use_case_impl_->SetWindowIdentifier(window_id_2);
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_id_2 =
-      first_active_use_case_impl_->GetPsmIdentifier();
-
-  EXPECT_NE(psm_id_1.value().sensitive_id(), psm_id_2.value().sensitive_id());
-}
-
-TEST_F(FirstActiveUseCaseImplTest, ValidateWindowIdFormattedCorrectly) {
-  base::Time new_first_active_ts;
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 23:59:59 GMT", &new_first_active_ts));
-
-  // Validate UTC window identifier follows format YYYYMMDD.
-  EXPECT_EQ(first_active_use_case_impl_->GenerateUTCWindowIdentifier(
-                new_first_active_ts),
-            "20220101");
+  EXPECT_NE(first_active_use_case_impl_->GenerateUTCWindowIdentifier(
+                first_active_ts_1),
+            first_active_use_case_impl_->GenerateUTCWindowIdentifier(
+                first_active_ts_2));
 }
 
 }  // namespace device_activity
