@@ -92,11 +92,7 @@ void InstallablePaymentAppCrawler::Start(
 
   if (manifests_to_download.empty()) {
     // Post the result back asynchronously.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &InstallablePaymentAppCrawler::FinishCrawlingPaymentAppsIfReady,
-            weak_ptr_factory_.GetWeakPtr()));
+    PostTaskToFinishCrawlingPaymentAppsIfReady();
     return;
   }
 
@@ -167,6 +163,17 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed(
       rfh->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
 
+  // If there are no valid entries in default_applications, this task will
+  // finish the crawling.
+  PostTaskToFinishCrawlingPaymentAppsIfReady();
+
+  // The `DownloadWebAppManifest()` method may synchronously call
+  // `OnPaymentWebAppManifestDownloaded()`, e.g., if the owning page has gone
+  // away already. This may result in this InstallablePaymentAppCrawler object
+  // to be deleted, so no code should be run after this loop.
+  //
+  // Note that only the last iteration of the loop can result in a deletion, as
+  // `number_of_web_app_manifest_to_download_` must be zero.
   for (const auto& web_app_manifest_url : default_applications) {
     if (downloaded_web_app_manifests_.find(web_app_manifest_url) !=
         downloaded_web_app_manifests_.end()) {
@@ -205,6 +212,8 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed(
       continue;
     }
 
+    // May cause this InstallablePaymentAppCrawler object to be synchronously
+    // deleted.
     downloader_->DownloadWebAppManifest(
         url::Origin::Create(method_manifest_url_after_redirects),
         web_app_manifest_url,
@@ -213,7 +222,6 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed(
             weak_ptr_factory_.GetWeakPtr(), method_manifest_url,
             web_app_manifest_url));
   }
-  FinishCrawlingPaymentAppsIfReady();
 }
 
 void InstallablePaymentAppCrawler::OnPaymentWebAppManifestDownloaded(
@@ -434,11 +442,7 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
         web_app_manifest_url.spec() + "\" for payment handler manifest \"" +
         method_manifest_url.spec() + "\").");
     // Post the result back asynchronously.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &InstallablePaymentAppCrawler::FinishCrawlingPaymentAppsIfReady,
-            weak_ptr_factory_.GetWeakPtr()));
+    PostTaskToFinishCrawlingPaymentAppsIfReady();
     return false;
   }
 
@@ -516,6 +520,15 @@ void InstallablePaymentAppCrawler::OnPaymentWebAppIconDownloadAndDecoded(
   }
 
   FinishCrawlingPaymentAppsIfReady();
+}
+
+void InstallablePaymentAppCrawler::
+    PostTaskToFinishCrawlingPaymentAppsIfReady() {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &InstallablePaymentAppCrawler::FinishCrawlingPaymentAppsIfReady,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void InstallablePaymentAppCrawler::FinishCrawlingPaymentAppsIfReady() {

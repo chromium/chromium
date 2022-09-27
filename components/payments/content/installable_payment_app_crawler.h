@@ -130,6 +130,7 @@ class InstallablePaymentAppCrawler {
   void OnPaymentWebAppIconDownloadAndDecoded(const GURL& method_manifest_url,
                                              const GURL& web_app_manifest_url,
                                              const SkBitmap& icon);
+  void PostTaskToFinishCrawlingPaymentAppsIfReady();
   void FinishCrawlingPaymentAppsIfReady();
   void SetFirstError(const std::string& error_message);
 

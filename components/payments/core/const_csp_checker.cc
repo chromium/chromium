@@ -24,4 +24,8 @@ base::WeakPtr<ConstCSPChecker> ConstCSPChecker::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void ConstCSPChecker::InvalidateWeakPtrsForTesting() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 }  // namespace payments

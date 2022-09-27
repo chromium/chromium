@@ -29,6 +29,8 @@ class ConstCSPChecker : public CSPChecker {
 
   base::WeakPtr<ConstCSPChecker> GetWeakPtr();
 
+  void InvalidateWeakPtrsForTesting();
+
  private:
   bool allow_ = false;
   base::WeakPtrFactory<ConstCSPChecker> weak_ptr_factory_{this};

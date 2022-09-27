@@ -141,11 +141,9 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::BrowserContext* context = web_contents->GetBrowserContext();
-    ConstCSPChecker const_csp_checker(/*allow=*/true);
     auto downloader = std::make_unique<TestDownloader>(
-        const_csp_checker.GetWeakPtr(),
-        context->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess());
+        GetCSPChecker(), context->GetDefaultStoragePartition()
+                             ->GetURLLoaderFactoryForBrowserProcess());
     downloader->AddTestServerURL("https://alicepay.com/",
                                  alicepay_.GetURL("alicepay.com", "/"));
     downloader->AddTestServerURL("https://bobpay.com/",
@@ -206,7 +204,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
         webdata_services::WebDataServiceWrapperFactory::
             GetPaymentManifestWebDataServiceForBrowserContext(
                 context, ServiceAccessType::EXPLICIT_ACCESS),
-        std::move(method_data), const_csp_checker.GetWeakPtr(),
+        std::move(method_data), GetCSPChecker(),
         base::BindOnce(
             &ServiceWorkerPaymentAppFinderBrowserTest::OnGotAllPaymentApps,
             base::Unretained(this)),
@@ -272,6 +270,10 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
       }
     }
     ASSERT_NE(nullptr, app) << "No installable app found in scope " << scope;
+  }
+
+  virtual base::WeakPtr<CSPChecker> GetCSPChecker() {
+    return const_csp_checker_.GetWeakPtr();
   }
 
  private:
@@ -366,6 +368,8 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
 
   // The error message returned by the service worker factory.
   std::string error_message_;
+
+  ConstCSPChecker const_csp_checker_{/*allow=*/true};
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -835,5 +839,87 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
     EXPECT_EQ(expected_error_message, error_message());
   }
 }
+
+// The parameterized test fixture that resets the CSP checker after N=GetParam()
+// calls to AllowConnectToSource().
+class ServiceWorkerPaymentAppFinderCSPCheckerBrowserTest
+    : public ServiceWorkerPaymentAppFinderBrowserTest,
+      public ConstCSPChecker,
+      public testing::WithParamInterface<int> {
+ public:
+  ServiceWorkerPaymentAppFinderCSPCheckerBrowserTest()
+      : ConstCSPChecker(/*allow=*/true) {
+    MaybeInvalidateCSPCheckerWeakPtrs();
+  }
+
+  ~ServiceWorkerPaymentAppFinderCSPCheckerBrowserTest() override = default;
+
+  int GetNumberOfLookupsBeforeCSPCheckerReset() { return GetParam(); }
+
+  void reset_number_of_lookups() { number_of_lookups_ = 0; }
+
+ private:
+  // ConstCSPChecker:
+  void AllowConnectToSource(
+      const GURL& url,
+      const GURL& url_before_redirects,
+      bool did_follow_redirect,
+      base::OnceCallback<void(bool)> result_callback) override {
+    ConstCSPChecker::AllowConnectToSource(url, url_before_redirects,
+                                          did_follow_redirect,
+                                          std::move(result_callback));
+    number_of_lookups_++;
+    MaybeInvalidateCSPCheckerWeakPtrs();
+  }
+
+  // ServiceWorkerPaymentAppFinderBrowserTest:
+  base::WeakPtr<CSPChecker> GetCSPChecker() override {
+    return number_of_lookups_ >= GetNumberOfLookupsBeforeCSPCheckerReset()
+               ? base::WeakPtr<ConstCSPChecker>()
+               : ConstCSPChecker::GetWeakPtr();
+  }
+
+  void MaybeInvalidateCSPCheckerWeakPtrs() {
+    if (number_of_lookups_ >= GetNumberOfLookupsBeforeCSPCheckerReset())
+      ConstCSPChecker::InvalidateWeakPtrsForTesting();
+  }
+
+  int number_of_lookups_ = 0;
+};
+
+// A CSP checker reset during the download flow should not cause a crash.
+IN_PROC_BROWSER_TEST_P(ServiceWorkerPaymentAppFinderCSPCheckerBrowserTest,
+                       CSPCheckerResetDoesNotCrash) {
+  // The lookups for finding the app are:
+  // 1) Payment method identifier.
+  // 2) Payment method manifest.
+  // 3) Web app manifest.
+  constexpr int kNumLookupsToFindTheApp = 3;
+
+  // Repeat lookups should have identical results, regardless of manifest cache
+  // state. To ensure that the cache has no effect, we repeat the test twice.
+  for (int i = 0; i < 2; ++i) {
+    reset_number_of_lookups();
+
+    GetAllPaymentAppsForMethods({"https://kylepay.com/webpay"});
+
+    EXPECT_TRUE(apps().empty());
+    if (GetNumberOfLookupsBeforeCSPCheckerReset() >= kNumLookupsToFindTheApp) {
+      EXPECT_EQ(1U, installable_apps().size());
+    } else {
+      EXPECT_TRUE(installable_apps().empty());
+    }
+  }
+}
+
+// A range from 0 (inclusive) to 5 (exclusive) will test CSP checker reset:
+// 0: Before any CSP lookups.
+// 1: After CSP lookup for https://kylepay.com/webpay.
+// 2: After CSP lookup for https://kylepay.com/payment-method.json.
+// 3: After CSP lookup for https://kylepay.com/app.json
+// 4: No CSP checker reset at all, tested just in case.
+INSTANTIATE_TEST_SUITE_P(Test,
+                         ServiceWorkerPaymentAppFinderCSPCheckerBrowserTest,
+                         testing::Range(0, 5));
 
 }  // namespace payments
