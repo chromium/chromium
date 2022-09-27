@@ -8472,6 +8472,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          password_manager::features::kUnifiedPasswordManagerErrorMessages)},
+
+    {"google-mobile-services-passwords-reenrollment",
+     flag_descriptions::kUnifiedPasswordManagerAndroidReenrollmentName,
+     flag_descriptions::kUnifiedPasswordManagerAndroidReenrollmentDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kUnifiedPasswordManagerReenrollment)},
 #endif
 
     {"extension-workflow-justification",

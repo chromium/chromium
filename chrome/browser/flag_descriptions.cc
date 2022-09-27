@@ -2985,6 +2985,14 @@ const char kUnifiedPasswordManagerErrorMessagesDescription[] =
     "Enables showing error messages that offer signing in again to fix the "
     "auth errors.";
 
+const char kUnifiedPasswordManagerAndroidReenrollmentName[] =
+    "Automatic reenrollement of users who were evicted from using Google "
+    "Mobile Services after experiencing errors.";
+const char kUnifiedPasswordManagerAndroidReenrollmentDescription[] =
+    "Requires UnifiedPasswordManagerAndroid flag enabled. Allows automatic "
+    "reenrollment into Google Mobile Services if sync and backend "
+    "communication work.";
+
 const char kUnsafeWebGPUName[] = "Unsafe WebGPU";
 const char kUnsafeWebGPUDescription[] =
     "Enables access to the experimental WebGPU API. Warning: As GPU sandboxing "
