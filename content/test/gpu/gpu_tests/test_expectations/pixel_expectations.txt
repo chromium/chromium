@@ -198,7 +198,9 @@ crbug.com/1307787 [ win ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1356246 [ android android-nexus-5 ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ android android-nexus-5x ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac amd debug ] Pixel_SVGHuge [ Skip ]
-crbug.com/1356246 [ mac nvidia debug ] Pixel_SVGHuge [ Skip ]
+# Mac Nvidia laptops are quite old and the test times out on release builds too.
+crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
+
 
 ###############################
 # Temporary Skip Expectations #
