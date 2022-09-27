@@ -9,7 +9,6 @@
 
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
-#include "url/gurl.h"
 
 // An infobar to inform users if their browser is being controlled by an
 // automated test.
