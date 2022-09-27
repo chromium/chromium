@@ -328,6 +328,10 @@ void AppServiceProxyAsh::LaunchAppWithIntent(
       std::move(window_info), std::move(callback));
 }
 
+base::WeakPtr<AppServiceProxyAsh> AppServiceProxyAsh::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void AppServiceProxyAsh::FlushMojoCallsForTesting() {
   app_service_mojom_impl_->FlushMojoCallsForTesting();
 

@@ -11,6 +11,7 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/containers/contains.h"
 #include "base/memory/values_equivalent.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -247,26 +248,6 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   if (handle->IsInPrerenderedMainFrame())
     return true;
 
-  auto launch_source = navigate_from_link() ? LaunchSource::kFromLink
-                                            : LaunchSource::kFromOmnibox;
-  GURL redirected_url =
-      RedirectUrlIfSwa(profile, preferred_app_id.value(), url, clock_);
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    proxy->LaunchAppWithUrl(
-        preferred_app_id.value(),
-        GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                      /*prefer_container=*/true),
-        redirected_url, launch_source,
-        std::make_unique<WindowInfo>(display::kDefaultDisplayId));
-  } else {
-    proxy->LaunchAppWithUrl(
-        preferred_app_id.value(),
-        GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                      /*prefer_container=*/true),
-        redirected_url, ConvertLaunchSourceToMojomLaunchSource(launch_source),
-        apps::MakeWindowInfo(display::kDefaultDisplayId));
-  }
-
   const GURL& last_committed_url = web_contents->GetLastCommittedURL();
   if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank() ||
       // After clicking a link in various apps (eg gchat), a blank redirect page
@@ -274,6 +255,33 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
       // returns false for links clicked from apps.
       !handle->WasInitiatedByLinkClick()) {
     web_contents->ClosePage();
+  }
+
+  auto launch_source = navigate_from_link() ? LaunchSource::kFromLink
+                                            : LaunchSource::kFromOmnibox;
+  GURL redirected_url =
+      RedirectUrlIfSwa(profile, preferred_app_id.value(), url, clock_);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    // The tab may have been closed, which runs async and causes the browser
+    // window to be refocused. Post a task to launch the app to ensure launching
+    // happens after the tab closed, otherwise the opened app window might be
+    // inactivated.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AppServiceProxy::LaunchAppWithUrlForBind, proxy->GetWeakPtr(),
+            preferred_app_id.value(),
+            GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                          /*prefer_container=*/true),
+            redirected_url, launch_source,
+            std::make_unique<WindowInfo>(display::kDefaultDisplayId)));
+  } else {
+    proxy->LaunchAppWithUrl(
+        preferred_app_id.value(),
+        GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                      /*prefer_container=*/true),
+        redirected_url, ConvertLaunchSourceToMojomLaunchSource(launch_source),
+        apps::MakeWindowInfo(display::kDefaultDisplayId));
   }
 
   IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(

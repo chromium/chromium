@@ -48,6 +48,8 @@ class AppServiceProxy : public AppServiceProxyBase {
   void SetRunOnOsLoginMode(const std::string& app_id,
                            apps::mojom::RunOnOsLoginMode run_on_os_login_mode);
 
+  base::WeakPtr<AppServiceProxy> GetWeakPtr();
+
  private:
   // For access to Initialize.
   friend class AppServiceProxyFactory;

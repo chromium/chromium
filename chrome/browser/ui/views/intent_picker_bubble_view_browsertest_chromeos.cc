@@ -1169,7 +1169,10 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 // Test that remember by choice checkbox works for open PWA option.
 //
 // TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1367375): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) ||                            \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
+    defined(MEMORY_SANITIZER)
 #define MAYBE_RememberOpenPWA DISABLED_RememberOpenPWA
 #else
 #define MAYBE_RememberOpenPWA RememberOpenPWA
@@ -1257,7 +1260,10 @@ class IntentPickerBubbleViewPrerenderingBrowserTestChromeOS
 // and the app shouldn't be opened.
 //
 // TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1367375): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) ||                            \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
+    defined(MEMORY_SANITIZER)
 #define MAYBE_AppLaunchURLCancelsPrerendering \
   DISABLED_AppLaunchURLCancelsPrerendering
 #else
