@@ -669,6 +669,18 @@
      =1 {To keep your passwords safe, Google Password Manager locks after 1 minute of inactivity}
      other {To keep your passwords safe, Google Password Manager locks after {NUM_MINS} minutes of inactivity}}
   </message>
+  <message name="IDS_SETTINGS_PASSKEYS_LENGTH_ERROR" desc="Error message in the passkey edit dialog when the user inputs an empty username.">
+    Enter your username
+  </message>
+  <message name="IDS_SETTINGS_PASSKEYS_SITE_LABEL" desc="Label for the website URL in the passkey edit dialog.">
+    Site
+  </message>
+  <message name="IDS_SETTINGS_PASSKEYS_DIALOG_TITLE" desc="Title for the passkey edit dialog.">
+    Edit passkey
+  </message>
+  <message name="IDS_SETTINGS_PASSKEYS_EDIT_DIALOG_FOOTNOTE" desc="Footnote for the passkey edit dialog.">
+    When you edit your passkey, your <ph name="RP_ID">$1<ex>relyingPartyId</ex></ph> account won't change
+  </message>
   <message name="IDS_SETTINGS_GOT_IT" desc="Label for the button to acknowledge the information in a dialog and dismiss it.">
     Got it
   </message>
