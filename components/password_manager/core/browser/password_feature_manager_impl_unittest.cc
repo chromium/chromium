@@ -29,10 +29,10 @@ class PasswordFeatureManagerImplTest : public ::testing::Test {
     account_.gaia = "account";
     account_.account_id = CoreAccountId::FromGaiaId(account_.gaia);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
     pref_service_.registry()->RegisterBooleanPref(
         autofill_assistant::prefs::kAutofillAssistantEnabled, true);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
   }
 
   ~PasswordFeatureManagerImplTest() override = default;
@@ -158,7 +158,7 @@ TEST_F(PasswordFeatureManagerImplTest,
                    .AreRequirementsForAutomatedPasswordChangeFulfilled());
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 TEST_F(PasswordFeatureManagerImplTest,
        RequirementsForAutomatedPasswordChangeRespectAssistantPref) {
   sync_service_.SetAccountInfo(account_);
@@ -176,4 +176,4 @@ TEST_F(PasswordFeatureManagerImplTest,
   EXPECT_FALSE(password_feature_manager_
                    .AreRequirementsForAutomatedPasswordChangeFulfilled());
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)

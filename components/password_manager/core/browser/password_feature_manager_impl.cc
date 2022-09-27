@@ -12,9 +12,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/autofill_assistant/browser/public/prefs.h"
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace password_manager {
 
@@ -38,14 +38,12 @@ bool PasswordFeatureManagerImpl::
     AreRequirementsForAutomatedPasswordChangeFulfilled() const {
   // Only offer APC if Autofill Assistant is not disabled (by user choice
   // or by enterprise policy).
-  // TODO(crbug.com/1359959): Also enable for Android once prefs are migrated to
-  // profile prefs.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   if (!pref_service_->GetBoolean(
           autofill_assistant::prefs::kAutofillAssistantEnabled)) {
     return false;
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   // TODO(crbug.com/1349782): Re-enable for account store users once
   // adjustments to script fetchers and WebsiteLoginManager are made.
