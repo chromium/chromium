@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -14,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
@@ -160,13 +162,22 @@ void AuthenticationDialog::ValidateAuthFactor() {
 
   SetUIDisabled(true);
 
+  cryptohome::KeyLabel key_label;
+
+  if (features::IsUseAuthFactorsEnabled()) {
+    key_label = user_context_->GetAuthFactorsData()
+                    .FindOnlinePasswordFactor()
+                    ->ref()
+                    .label();
+  } else {
+    key_label =
+        user_context_->GetAuthFactorsData().FindOnlinePasswordKey()->label;
+  }
+
   // Create a copy of `user_context_` so that we don't lose it to std::move
   // for future auth attempts
   auth_performer_->AuthenticateWithPassword(
-      user_context_->GetAuthFactorsData()
-          .FindOnlinePasswordKey()
-          ->label.value(),
-      base::UTF16ToUTF8(password_field_->GetText()),
+      key_label.value(), base::UTF16ToUTF8(password_field_->GetText()),
       std::make_unique<UserContext>(*user_context_),
       base::BindOnce(&AuthenticationDialog::OnAuthFactorValidityChecked,
                      weak_factory_.GetWeakPtr()));
