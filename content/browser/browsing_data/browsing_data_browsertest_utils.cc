@@ -92,7 +92,7 @@ void SetIgnoreCertificateErrors(base::CommandLine* command_line) {
   }
 }
 
-void AddServiceWorker(const std::string& origin,
+GURL AddServiceWorker(const std::string& origin,
                       StoragePartition* storage_partition,
                       net::EmbeddedTestServer* https_server) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -116,6 +116,7 @@ void AddServiceWorker(const std::string& origin,
   ServiceWorkerActivationObserver::SignalActivation(service_worker_context,
                                                     run_loop.QuitClosure());
   run_loop.Run();
+  return scope_url;
 }
 
 std::vector<StorageUsageInfo> GetServiceWorkers(

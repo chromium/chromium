@@ -4,23 +4,18 @@
 
 #include "chrome/browser/browsing_data/third_party_data_remover.h"
 
+#include <set>
+#include <utility>
+
 #include "base/metrics/user_metrics.h"
 #include "cc/base/features.h"
 #include "chrome/browser/browsing_data/access_context_audit_service.h"
 #include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/same_site_data_remover.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace {
-
-bool DoesOriginHaveThirdPartyAccessRecord(
-    const std::set<url::Origin>& third_party_storage_origins,
-    const blink::StorageKey& storage_key,
-    storage::SpecialStoragePolicy* policy) {
-  return third_party_storage_origins.find(storage_key.origin()) !=
-         third_party_storage_origins.end();
-}
 
 void OnGetStorageAccessRecords(
     base::OnceClosure closure,
@@ -31,9 +26,7 @@ void OnGetStorageAccessRecords(
     origins.insert(std::move(record.origin));
   }
   content::ClearSameSiteNoneCookiesAndStorageForOrigins(
-      std::move(closure), context,
-      base::BindRepeating(&DoesOriginHaveThirdPartyAccessRecord,
-                          std::move(origins)));
+      std::move(closure), context, std::move(origins));
 }
 
 }  // namespace

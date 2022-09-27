@@ -59,8 +59,8 @@ void SetIgnoreCertificateErrors(base::CommandLine* command_line);
 
 // Adds a service worker for the given |origin|. The EmbeddedTestServer
 // |https_server| is required to retrieve a URL to the server based on the
-// |origin|.
-void AddServiceWorker(const std::string& origin,
+// |origin|. Returns the scope url with port number.
+GURL AddServiceWorker(const std::string& origin,
                       StoragePartition* storage_partition,
                       net::EmbeddedTestServer* https_server);
 

@@ -5,9 +5,14 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SAME_SITE_DATA_REMOVER_H_
 #define CONTENT_PUBLIC_BROWSER_SAME_SITE_DATA_REMOVER_H_
 
+#include <set>
+
 #include "base/callback.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/storage_partition.h"
+
+namespace url {
+class Origin;
+}
 
 namespace content {
 class BrowserContext;
@@ -18,11 +23,11 @@ CONTENT_EXPORT void ClearSameSiteNoneData(base::OnceClosure closure,
                                           BrowserContext* context);
 
 // Clears cookies available in third-party contexts where SameSite=None. Also
-// removes storage for StorageKeys that match the storage_key_matcher predicate.
+// removes storage for origins in the provided set.
 CONTENT_EXPORT void ClearSameSiteNoneCookiesAndStorageForOrigins(
     base::OnceClosure closure,
     BrowserContext* context,
-    StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher);
+    std::set<url::Origin> origins);
 
 }  // namespace content
 

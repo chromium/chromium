@@ -5,12 +5,13 @@
 #include "content/browser/browsing_data/same_site_data_remover_impl.h"
 
 #include <memory>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "content/browser/browsing_data/browsing_data_browsertest_utils.h"
 #include "content/browser/browsing_data/browsing_data_test_utils.h"
 #include "content/public/browser/same_site_data_remover.h"
@@ -25,6 +26,8 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using testing::IsEmpty;
 
@@ -78,16 +81,11 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
     run_loop.Run();
   }
 
-  void ClearData(std::set<std::string>& clear_storage_hosts) {
+  void ClearData(std::set<url::Origin> clear_storage_origins) {
     base::RunLoop run_loop;
     ClearSameSiteNoneCookiesAndStorageForOrigins(
         run_loop.QuitClosure(), GetBrowserContext(),
-        base::BindLambdaForTesting(
-            [&clear_storage_hosts](const blink::StorageKey& storage_key,
-                                   storage::SpecialStoragePolicy* policy) {
-              return clear_storage_hosts.find(storage_key.origin().host()) !=
-                     clear_storage_hosts.end();
-            }));
+        std::move(clear_storage_origins));
     run_loop.Run();
   }
 
@@ -134,20 +132,20 @@ IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest, TestClearData) {
 }
 
 IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest,
-                       TestClearDataWithDomains) {
+                       TestClearDataWithOrigins) {
   StoragePartition* storage_partition = GetStoragePartition();
   CreateCookieForTest(
       "TestCookie", "www.google.com", net::CookieSameSite::NO_RESTRICTION,
       net::CookieOptions::SameSiteCookieContext(
           net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
       true /* is_cookie_secure */, GetBrowserContext());
-  browsing_data_browsertest_utils::AddServiceWorker(
+  GURL google_url = browsing_data_browsertest_utils::AddServiceWorker(
       "google.com", storage_partition, GetHttpsServer());
   browsing_data_browsertest_utils::AddServiceWorker(
       "foo.bar.com", storage_partition, GetHttpsServer());
 
-  std::set<std::string> clear_hosts = {"google.com"};
-  ClearData(clear_hosts);
+  std::set<url::Origin> clear_origins = {url::Origin::Create(google_url)};
+  ClearData(std::move(clear_origins));
 
   // Check that cookies were deleted.
   const std::vector<net::CanonicalCookie>& cookies =

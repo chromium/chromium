@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,6 +25,8 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using testing::IsEmpty;
 using testing::SizeIs;
@@ -106,16 +109,15 @@ class SameSiteDataRemoverImplTest : public testing::Test {
     run_loop.Run();
   }
 
-  void ClearStoragePartitionForOrigins(std::set<std::string>& origins) {
+  void ClearStoragePartitionForOrigins(
+      const std::set<std::string>& serialized_origins) {
+    std::set<url::Origin> origins;
+    for (const std::string& serialized_origin : serialized_origins) {
+      origins.insert(url::Origin::Create(GURL(serialized_origin)));
+    }
     base::RunLoop run_loop;
     GetSameSiteDataRemoverImpl()->ClearStoragePartitionForOrigins(
-        run_loop.QuitClosure(),
-        base::BindLambdaForTesting(
-            [&origins](const blink::StorageKey& storage_key,
-                       storage::SpecialStoragePolicy* policy) {
-              return origins.find(storage_key.origin().Serialize()) !=
-                     origins.end();
-            }));
+        run_loop.QuitClosure(), std::move(origins));
     run_loop.Run();
   }
 
