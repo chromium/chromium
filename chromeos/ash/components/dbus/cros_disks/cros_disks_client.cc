@@ -411,8 +411,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
 
     const char kUnmountHistogramName[] = "CrosDisksClient.UnmountError";
     if (!response) {
-      UMA_HISTOGRAM_ENUMERATION(kUnmountHistogramName, MountError::kUnknown,
-                                MountError::kCount);
+      UMA_HISTOGRAM_ENUMERATION(kUnmountHistogramName, MountError::kUnknown);
       std::move(callback).Run(MountError::kUnknown);
       return;
     }
@@ -427,8 +426,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
       LOG(ERROR) << "Invalid response: " << response->ToString();
       mount_error = MountError::kUnknown;
     }
-    UMA_HISTOGRAM_ENUMERATION(kUnmountHistogramName, mount_error,
-                              MountError::kCount);
+    UMA_HISTOGRAM_ENUMERATION(kUnmountHistogramName, mount_error);
     std::move(callback).Run(mount_error);
   }
 
@@ -521,11 +519,11 @@ class CrosDisksClientImpl : public CrosDisksClient {
     }
 
     UMA_HISTOGRAM_ENUMERATION("CrosDisksClient.MountCompletedError",
-                              entry.error_code, MountError::kCount);
+                              entry.error_code);
     // Flatten MountType and MountError into a single dimension.
     constexpr int kMaxMountErrors = 100;
     static_assert(
-        static_cast<int>(MountError::kCount) <= kMaxMountErrors,
+        static_cast<int>(MountError::kMaxValue) < kMaxMountErrors,
         "CrosDisksClient.MountErrorMountType histogram must be updated");
     base::UmaHistogramSparse(
         "CrosDisksClient.MountErrorMountType",
@@ -569,8 +567,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
     }
 
     base::UmaHistogramEnumeration("CrosDisksClient.FormatCompletedError",
-                                  static_cast<FormatError>(error_code),
-                                  FormatError::kCount);
+                                  static_cast<FormatError>(error_code));
 
     for (Observer& observer : observer_list_) {
       observer.OnFormatCompleted(static_cast<FormatError>(error_code),
@@ -689,7 +686,6 @@ std::ostream& operator<<(std::ostream& out, const MountError error) {
     PRINT_ERROR(kNeedPassword)
     PRINT_ERROR(kInProgress)
     PRINT_ERROR(kCancelled)
-    PRINT_ERROR(kCount)
 #undef PRINT_ERROR
   }
 
@@ -735,7 +731,6 @@ std::ostream& operator<<(std::ostream& out, const FormatError error) {
     PRINT_ERROR(kInvalidOptions)
     PRINT_ERROR(kLongName)
     PRINT_ERROR(kInvalidCharacter)
-    PRINT_ERROR(kCount)
 #undef PRINT_ERROR
   }
 

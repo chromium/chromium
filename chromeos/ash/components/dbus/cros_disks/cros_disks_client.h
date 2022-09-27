@@ -26,10 +26,9 @@ namespace dbus {
 class Response;
 }
 
-// TODO(tbarzic): We should move these enums inside CrosDisksClient,
-// to be clearer where they come from. Also, most of these are partially or
-// completely duplicated in third_party/dbus/service_constants.h. We should
-// probably use enums from service_contstants directly.
+// TODO(crbug.com/1368408): Most of these are partially or completely duplicated
+// in third_party/dbus/service_constants.h. We should probably use enums from
+// service_contstants directly.
 namespace ash {
 
 // Enum describing types of mount used by cros-disks.
@@ -83,7 +82,7 @@ enum class MountError {
   kNeedPassword = 17,
   kInProgress = 18,
   kCancelled = 19,
-  kCount,
+  kMaxValue = 19,
 };
 
 // Output operator for logging.
@@ -126,7 +125,7 @@ enum class FormatError {
   kInvalidOptions = 9,
   kLongName = 10,
   kInvalidCharacter = 11,
-  kCount = 12,
+  kMaxValue = 11,
 };
 
 // Output operator for logging.
