@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -33,10 +34,15 @@ class ProxyImplBase {
   static void Destroy(scoped_refptr<Derived>& impl) {
     scoped_refptr<Derived> this_impl;
     this_impl.swap(impl);
-    this_impl->task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce([](scoped_refptr<Derived> impl) { impl = nullptr; },
-                       this_impl));
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        this_impl->task_runner_;
+    task_runner->PostTask(FROM_HERE, base::BindOnce(
+                                         [](scoped_refptr<Derived> impl) {
+                                           CHECK(impl);
+                                           impl = nullptr;
+                                         },
+                                         std::move(this_impl)));
+    CHECK(!this_impl);
   }
 
  protected:
@@ -45,6 +51,8 @@ class ProxyImplBase {
     CHECK(absl::holds_alternative<HRESULT>(interface_));
     WRLModuleInitializer::Get();
   }
+
+  ~ProxyImplBase() { VLOG(2) << __func__; }
 
   void PostRPCTask(base::OnceClosure task) {
     task_runner_->PostTask(FROM_HERE, std::move(task));
