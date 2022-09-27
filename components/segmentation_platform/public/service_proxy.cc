@@ -16,7 +16,7 @@ ServiceProxy::SegmentStatus::SegmentStatus(SegmentId segment_id,
       can_execute_segment(can_execute_segment) {}
 
 ServiceProxy::ClientInfo::ClientInfo(const std::string& segmentation_key,
-                                     SegmentId selected_segment)
+                                     absl::optional<SegmentId> selected_segment)
     : segmentation_key(segmentation_key), selected_segment(selected_segment) {}
 
 ServiceProxy::ClientInfo::~ClientInfo() = default;

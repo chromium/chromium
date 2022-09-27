@@ -198,7 +198,7 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
 
   std::vector<ServiceProxy::ClientInfo> result;
   for (const auto& config : *configs_) {
-    SegmentId selected = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
+    absl::optional<SegmentId> selected;
     absl::optional<float> selected_segment_rank;
     if (segment_selectors_ &&
         segment_selectors_->find(config->segmentation_key) !=
