@@ -4511,6 +4511,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_NO_MICROPHONE_CONNECTED_SUBTEXT" desc="Sub-label to indicate that the microphone toggle in the privacy hub page is disabled as no microphone is connected to the device.">
     No microphone connected
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_MICROPHONE_CONNECTED_TEXT" desc="Text to display in the Privacy Hub subpage when no microphone is connected to the device.">
+    No microphone is connected
+  </message>
   <message name="IDS_OS_SETTINGS_GEOLOCATION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable geolocation from the privacy hub.">
     Geolocation
   </message>

@@ -70,6 +70,7 @@ js_library("smart_privacy_page") {
 
 js_library("privacy_hub_page") {
   deps = [
+    ":media_devices_proxy",
     ":metrics_consent_toggle_button",
     ":privacy_hub_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -80,6 +81,12 @@ js_library("privacy_hub_page") {
 js_library("metrics_consent_toggle_button") {
   deps = [
     ":metrics_consent_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("media_devices_proxy") {
+  deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

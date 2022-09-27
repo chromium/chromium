@@ -4,7 +4,7 @@
 
 import '../../chai.js';
 
-import {PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {MetricsConsentBrowserProxyImpl, Router, routes, SecureDnsMode} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
@@ -13,9 +13,10 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertNotReached} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
+import {FakeMediaDevices} from './fake_media_devices.js';
 import {DEVICE_METRICS_CONSENT_PREF_NAME, TestMetricsConsentBrowserProxy} from './test_metrics_consent_browser_proxy.js';
 
 const USER_METRICS_CONSENT_PREF_NAME = 'metrics.user_consent';
@@ -94,16 +95,24 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
   /** @type {?TestPrivacyHubBrowserProxy} */
   let privacyHubBrowserProxy = null;
 
+  /** @type {?FakeMediaDevices} */
+  let mediaDevices = null;
+
   setup(async () => {
     loadTimeData.overrideValues(overridedValues(privacyHubVersion));
 
     privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
     PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
     privacyHubBrowserProxy.resetResolver('getInitialCameraHardwareToggleState');
+    mediaDevices = new FakeMediaDevices();
+    MediaDevicesProxy.setMediaDevicesForTesting(mediaDevices);
+
 
     PolymerTest.clearBody();
     privacyHubSubpage = document.createElement('settings-privacy-hub-page');
     document.body.appendChild(privacyHubSubpage);
+    await waitAfterNextRender(privacyHubSubpage);
+    flush();
   });
 
   teardown(function() {
@@ -296,6 +305,45 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
           deepLinkElement, getDeepActiveElement(),
           'Geolocation toggle should be focused for settingId=1118.');
     }
+  });
+
+  test('Microphone list in the Privacy Hub subpage', async () => {
+    const getNoMicText = () =>
+        privacyHubSubpage.shadowRoot.querySelector('#noMic');
+    const getMicrophoneList = () =>
+        privacyHubSubpage.shadowRoot.querySelector('#micList');
+
+    // Initially, the microphone list should be empty and `#noMic` text should
+    // be displayed.
+    assertTrue(!!getNoMicText());
+    assertEquals(
+        getNoMicText().textContent.trim(),
+        privacyHubSubpage.i18n('noMicrophoneConnectedText'));
+    assertFalse(!!getMicrophoneList());
+
+    // Adding a fake microphone.
+    mediaDevices.addDevice('audioinput', 'Fake microphone 1');
+    await waitAfterNextRender(privacyHubSubpage);
+    assertTrue(!!getMicrophoneList());
+    assertEquals(getMicrophoneList().items.length, 1);
+
+    // Adding another fake microphone.
+    mediaDevices.addDevice('audioinput', 'Fake microphone 2');
+    await waitAfterNextRender(privacyHubSubpage);
+    assertTrue(!!getMicrophoneList());
+    assertEquals(getMicrophoneList().items.length, 2);
+
+    // Removing a microphone.
+    mediaDevices.popDevice();
+    await waitAfterNextRender(privacyHubSubpage);
+    assertTrue(!!getMicrophoneList());
+    assertEquals(getMicrophoneList().items.length, 1);
+
+    // Removing a microphone. The list of microphones should now be hidden as it
+    // is empty.
+    mediaDevices.popDevice();
+    await waitAfterNextRender(privacyHubSubpage);
+    assertFalse(!!getMicrophoneList());
   });
 }
 
