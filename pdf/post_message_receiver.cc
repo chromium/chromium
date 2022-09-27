@@ -129,7 +129,7 @@ void PostMessageReceiver::PostMessage(v8::Local<v8::Value> message) {
 
   client_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Client::OnMessage, client_,
-                                std::move(converted_message->GetDict())));
+                                std::move(*converted_message).TakeDict()));
 }
 
 }  // namespace chrome_pdf
