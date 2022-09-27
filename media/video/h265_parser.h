@@ -95,6 +95,7 @@ struct MEDIA_EXPORT H265StRefPicSet {
 
   // Calculated fields.
   int num_delta_pocs;
+  int rps_idx_num_delta_pocs;
 };
 
 struct MEDIA_EXPORT H265VUIParameters {
@@ -492,7 +493,8 @@ class MEDIA_EXPORT H265Parser : public H265NaluParser {
   Result ParseScalingListData(H265ScalingListData* scaling_list_data);
   Result ParseStRefPicSet(int st_rps_idx,
                           const H265SPS& sps,
-                          H265StRefPicSet* st_ref_pic_set);
+                          H265StRefPicSet* st_ref_pic_set,
+                          bool is_slice_hdr = false);
   Result ParseVuiParameters(const H265SPS& sps, H265VUIParameters* vui);
   Result ParseAndIgnoreHrdParameters(bool common_inf_present_flag,
                                      int max_num_sub_layers_minus1);

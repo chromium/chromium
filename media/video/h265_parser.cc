@@ -1016,7 +1016,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
         off_t bits_left_prior = br_.NumBitsLeft();
         size_t num_epb_prior = br_.NumEmulationPreventionBytesRead();
         res = ParseStRefPicSet(sps->num_short_term_ref_pic_sets, *sps,
-                               &shdr->st_ref_pic_set);
+                               &shdr->st_ref_pic_set, true);
         if (res != kOk)
           return res;
         shdr->st_rps_bits =
@@ -1463,10 +1463,10 @@ H265Parser::Result H265Parser::ParseScalingListData(
   return kOk;
 }
 
-H265Parser::Result H265Parser::ParseStRefPicSet(
-    int st_rps_idx,
-    const H265SPS& sps,
-    H265StRefPicSet* st_ref_pic_set) {
+H265Parser::Result H265Parser::ParseStRefPicSet(int st_rps_idx,
+                                                const H265SPS& sps,
+                                                H265StRefPicSet* st_ref_pic_set,
+                                                bool is_slice_hdr) {
   // 7.4.8
   bool inter_ref_pic_set_prediction_flag = false;
   if (st_rps_idx != 0) {
@@ -1486,6 +1486,9 @@ H265Parser::Result H265Parser::ParseStRefPicSet(
     IN_RANGE_OR_RETURN(abs_delta_rps_minus1, 0, 0x7FFF);
     int delta_rps = (1 - 2 * delta_rps_sign) * (abs_delta_rps_minus1 + 1);
     const H265StRefPicSet& ref_set = sps.st_ref_pic_set[ref_rps_idx];
+    if (is_slice_hdr) {
+      st_ref_pic_set->rps_idx_num_delta_pocs = ref_set.num_delta_pocs;
+    }
     bool used_by_curr_pic_flag[kMaxShortTermRefPicSets];
     bool use_delta_flag[kMaxShortTermRefPicSets];
     // 7.4.8 - use_delta_flag defaults to 1 if not present.
