@@ -97,7 +97,6 @@ source_set("xnnpack") {
     ":subgraph",
     ":tables",
     ":u8-lut32norm",
-    ":x32-depthtospace2d-chw2hwc",
     ":x8-lut",
     ":xx-copy",
     ":xx-transpose",
@@ -332,13 +331,12 @@ source_set("operators") {
     "src/src/operators/convolution-nchw.c",
     "src/src/operators/convolution-nhwc.c",
     "src/src/operators/deconvolution-nhwc.c",
-    "src/src/operators/depth-to-space-nchw2nhwc.c",
-    "src/src/operators/depth-to-space-nhwc.c",
     "src/src/operators/fully-connected-nc.c",
     "src/src/operators/global-average-pooling-ncw.c",
     "src/src/operators/global-average-pooling-nwc.c",
     "src/src/operators/lut-elementwise-nc.c",
     "src/src/operators/max-pooling-nhwc.c",
+    "src/src/operators/post-operation.c",
     "src/src/operators/prelu-nc.c",
     "src/src/operators/resize-bilinear-nchw.c",
     "src/src/operators/resize-bilinear-nhwc.c",
@@ -651,6 +649,7 @@ source_set("subgraph") {
     "src/src/subgraph/concatenate.c",
     "src/src/subgraph/convert.c",
     "src/src/subgraph/convolution-2d.c",
+    "src/src/subgraph/copy.c",
     "src/src/subgraph/deconvolution-2d.c",
     "src/src/subgraph/depth-to-space.c",
     "src/src/subgraph/depthwise-convolution-2d.c",
@@ -707,6 +706,7 @@ source_set("tables") {
     "src/src/tables/exp2minus-k-over-4.c",
     "src/src/tables/exp2minus-k-over-64.c",
     "src/src/tables/exp2minus-k-over-8.c",
+    "src/src/tables/vlog.c",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -727,25 +727,6 @@ source_set("u8-lut32norm") {
   cflags = []
 
   sources = [ "src/src/u8-lut32norm/scalar.c" ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-  deps = [
-    "//third_party/cpuinfo",
-    "//third_party/fp16",
-    "//third_party/fxdiv",
-    "//third_party/pthreadpool",
-  ]
-
-  public_configs = [ ":xnnpack_config" ]
-}
-
-source_set("x32-depthtospace2d-chw2hwc") {
-  cflags = []
-
-  sources = [ "src/src/x32-depthtospace2d-chw2hwc/scalar.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
