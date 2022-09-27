@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//media/media_options.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("lib") {
   sources = [
@@ -62,4 +63,13 @@ if (is_android) {
       "//testing/gtest",
     ]
   }
+}
+
+fuzzer_test("media_metadata_parser_fuzzer") {
+  sources = [ "media_metadata_parser_fuzzer.cc" ]
+  deps = [
+    ":lib",
+    "//base",
+    "//content/test:test_support",
+  ]
 }
