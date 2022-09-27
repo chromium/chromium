@@ -4,9 +4,8 @@
 
 #include "chrome/common/safe_browsing/seven_zip_analyzer.h"
 
-#include "base/logging.h"
-
 #include "base/files/memory_mapped_file.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,6 +71,9 @@ class SevenZipDelegate : public seven_zip::Delegate {
 
   bool EntryDone(seven_zip::Result result,
                  const seven_zip::EntryInfo& entry) override {
+    base::UmaHistogramEnumeration("SBClientDownload.SevenZipEntryResult",
+                                  result);
+
     if (base::Time::Now() - start_time_ >
         base::Milliseconds(kSevenZipAnalysisTimeoutMs)) {
       results_->success = false;

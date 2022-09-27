@@ -89284,6 +89284,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Creation of the exit event mutex failed."/>
 </enum>
 
+<enum name="SevenZipResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Allocation failure"/>
+  <int value="3" label="CRC failure"/>
+  <int value="4" label="Memory mapping failure"/>
+  <int value="5" label="Malformed archive"/>
+  <int value="6" label="IO error"/>
+  <int value="7" label="Disk full"/>
+</enum>
+
 <enum name="SHA1Status">
   <summary>
     Whether or not SHA-1 was present in a certificate chain and, if it was, when
