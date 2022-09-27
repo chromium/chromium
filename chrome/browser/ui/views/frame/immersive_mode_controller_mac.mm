@@ -224,12 +224,12 @@ bool ImmersiveModeControllerMac::ShouldHideTopViews() const {
 }
 
 bool ImmersiveModeControllerMac::IsRevealed() const {
-  return enabled_ && revealed_lock_count_ > 0;
+  return enabled_;
 }
 
 int ImmersiveModeControllerMac::GetTopContainerVerticalOffset(
     const gfx::Size& top_container_size) const {
-  return (enabled_ && !IsRevealed()) ? -top_container_size.height() : 0;
+  return 0;
 }
 
 std::unique_ptr<ImmersiveRevealedLock>

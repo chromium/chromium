@@ -42,14 +42,9 @@
 - (void)viewWillAppear {
   [super viewWillAppear];
 
-  // TODO(bur): Get the updated width from OnViewBoundsChanged
-  NSView* tab_view = self.view;
-  NSRect f = tab_view.frame;
-  f.size.width = 2400;
-  tab_view.frame = f;
-  for (NSView* view in tab_view.subviews) {
+  for (NSView* view in self.view.subviews) {
     if ([view isKindOfClass:[BridgedContentView class]]) {
-      view.frame = tab_view.frame;
+      [view setFrameSize:self.view.frame.size];
     }
   }
 
@@ -225,8 +220,19 @@ void ImmersiveModeController::Enable() {
 }
 
 void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
-  [immersive_mode_titlebar_view_controller_.get().view
-      setFrameSize:bounds.size().ToCGSize()];
+  // Move the overlay_widget_ off screen to avoid input masking. Its view has
+  // been moved to the AppKit fullscreen window however the overlay_widget_'s
+  // compositor is still responsible for drawing. The frame size needs to be at
+  // least as big as top chrome, overwise clipping will occur.
+  NSRect frame = NSRectFromCGRect(bounds.ToCGRect());
+  frame.origin.y = -frame.size.height;
+  [overlay_widget_ setFrame:frame display:NO];
+
+  // Set the height of the AppKit fullscreen view. The width will be
+  // automatically handled by AppKit.
+  NSSize size = immersive_mode_titlebar_view_controller_.get().view.frame.size;
+  size.height = frame.size.height;
+  [immersive_mode_titlebar_view_controller_.get().view setFrameSize:size];
 }
 
 void ImmersiveModeController::UpdateToolbarVisibility(bool always_show) {
