@@ -130,8 +130,9 @@ class RenderViewContextMenu
  protected:
   Profile* GetProfile() const;
 
-  // This may return nullptr (e.g. for WebUI dialogs).
-  Browser* GetBrowser() const;
+  // This may return nullptr (e.g. for WebUI dialogs). Virtual to allow tests to
+  // override.
+  virtual Browser* GetBrowser() const;
 
   // Returns a (possibly truncated) version of the current selection text
   // suitable for putting in the title of a menu item.

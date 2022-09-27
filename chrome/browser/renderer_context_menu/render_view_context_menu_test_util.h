@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -98,15 +99,29 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
 
   using RenderViewContextMenu::AppendImageItems;
 
+  // RenderViewContextMenu:
   void Show() override;
-
 #if BUILDFLAG(IS_CHROMEOS)
   const policy::DlpRulesManager* GetDlpRulesManager() const override;
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS)
   void set_dlp_rules_manager(policy::DlpRulesManager* dlp_rules_manager);
 #endif
 
+  // If `browser` is not null, sets it as the return value of GetBrowser(),
+  // overriding the base class behavior. If the Browser object is destroyed
+  // before this class is, then SetBrowser(nullptr) should be called. If
+  // `browser` is null, restores the base class behavior of GetBrowser().
+  void SetBrowser(Browser* browser);
+
+ protected:
+  // RenderViewContextMenu:
+  Browser* GetBrowser() const override;
+
  private:
+  raw_ptr<Browser> browser_ = nullptr;
+
 #if BUILDFLAG(IS_CHROMEOS)
   policy::DlpRulesManager* dlp_rules_manager_ = nullptr;
 #endif

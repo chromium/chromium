@@ -26,12 +26,14 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/search_test_utils.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -473,6 +475,7 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    browser_.reset();
     registry_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
     testing_local_state_.reset();
@@ -514,10 +517,21 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
 
   PrefService* local_state() { return testing_local_state_->Get(); }
 
+  Browser* GetBrowser() {
+    if (!browser_) {
+      Browser::CreateParams create_params(profile(), true);
+      auto test_window = std::make_unique<TestBrowserWindow>();
+      create_params.window = test_window.get();
+      browser_.reset(Browser::Create(create_params));
+    }
+    return browser_.get();
+  }
+
  private:
   std::unique_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
   raw_ptr<TemplateURLService> template_url_service_;
+  std::unique_ptr<Browser> browser_;
 };
 
 // Verifies when Incognito Mode is not available (disabled by policy),
@@ -1044,6 +1058,7 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearch) {
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
                                  params);
+  menu.SetBrowser(GetBrowser());
   menu.Init();
 
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
@@ -1063,18 +1078,13 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchPdfDisabled) {
           GURL("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai")));
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
   TestRenderViewContextMenu menu(*render_frame_host, params);
+  menu.SetBrowser(GetBrowser());
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LensRegionSearchPdfEnabled DISABLED_LensRegionSearchPdfEnabled
-#else
-#define MAYBE_LensRegionSearchPdfEnabled LensRegionSearchPdfEnabled
-#endif
-// TODO(https://crbug.com/1354637): Re-enable on ChromeOS.
-TEST_F(RenderViewContextMenuPrefsTest, MAYBE_LensRegionSearchPdfEnabled) {
+TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchPdfEnabled) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures({lens::features::kLensStandalone,
                              lens::features::kEnableRegionSearchOnPdfViewer},
@@ -1089,6 +1099,7 @@ TEST_F(RenderViewContextMenuPrefsTest, MAYBE_LensRegionSearchPdfEnabled) {
           GURL("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai")));
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
   TestRenderViewContextMenu menu(*render_frame_host, params);
+  menu.SetBrowser(GetBrowser());
   menu.Init();
 
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
@@ -1107,6 +1118,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
                                  params);
+  menu.SetBrowser(GetBrowser());
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
@@ -1123,7 +1135,31 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchDisabledOnImage) {
   params.has_image_contents = true;
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
                                  params);
+  menu.SetBrowser(GetBrowser());
   AppendImageItems(&menu);
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH));
+}
+
+// Verify that the Lens Region Search menu item is disabled when there is no
+// browser.
+TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchPdfDisabledNoBrowser) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({lens::features::kLensStandalone,
+                             lens::features::kEnableRegionSearchOnPdfViewer},
+                            {});
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::RenderFrameHost* render_frame_host =
+      web_contents()->GetPrimaryMainFrame();
+  OverrideLastCommittedOrigin(
+      render_frame_host,
+      url::Origin::Create(
+          GURL("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai")));
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  TestRenderViewContextMenu menu(*render_frame_host, params);
+  menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH));
@@ -1140,6 +1176,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
                                  params);
+  menu.SetBrowser(GetBrowser());
   menu.Init();
 
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH));
@@ -1157,6 +1194,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
                                  params);
+  menu.SetBrowser(GetBrowser());
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH));
@@ -1173,6 +1211,7 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchExperimentDisabled) {
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
                                  params);
+  menu.SetBrowser(GetBrowser());
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
@@ -1189,6 +1228,7 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchChromeUIScheme) {
   params.page_url = GURL(chrome::kChromeUISettingsURL);
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
                                  params);
+  menu.SetBrowser(GetBrowser());
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));

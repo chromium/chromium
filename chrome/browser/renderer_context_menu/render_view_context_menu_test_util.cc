@@ -106,6 +106,16 @@ int TestRenderViewContextMenu::GetCommandIDByProfilePath(
   return -1;
 }
 
+void TestRenderViewContextMenu::SetBrowser(Browser* browser) {
+  browser_ = browser;
+}
+
+Browser* TestRenderViewContextMenu::GetBrowser() const {
+  if (browser_)
+    return browser_;
+  return RenderViewContextMenu::GetBrowser();
+}
+
 void TestRenderViewContextMenu::Show() {
 }
 
