@@ -80,7 +80,6 @@ class MockGaiaConsumer : public GaiaAuthConsumer {
   ~MockGaiaConsumer() override {}
 
   MOCK_METHOD1(OnMergeSessionSuccess, void(const std::string& data));
-  MOCK_METHOD1(OnClientLoginFailure, void(const GoogleServiceAuthError& error));
   MOCK_METHOD1(OnLogOutFailure, void(const GoogleServiceAuthError& error));
   MOCK_METHOD1(OnGetCheckConnectionInfoSuccess, void(const std::string& data));
 };
@@ -114,21 +113,6 @@ class GaiaAuthFetcherIOSTest : public PlatformTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<GaiaAuthFetcherIOS> gaia_auth_fetcher_;
 };
-
-// Tests that the cancel mechanism works properly by cancelling an OAuthLogin
-// request and controlling that the consumer is properly called.
-TEST_F(GaiaAuthFetcherIOSTest, StartOAuthLoginCancelled) {
-  gaia_auth_fetcher_->StartOAuthLogin("fake_token", "gaia");
-  EXPECT_TRUE(GetBridge()->fetch_called());
-
-  gaia_auth_fetcher_->CancelRequest();
-  EXPECT_TRUE(GetBridge()->cancel_called());
-
-  GoogleServiceAuthError expected_error =
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
-  EXPECT_CALL(consumer_, OnClientLoginFailure(expected_error));
-  GetBridge()->NotifyDelegateFetchAborted();
-}
 
 // Tests that the successful case works properly by starting a MergeSession
 // request, making it succeed and controlling that the consumer is properly

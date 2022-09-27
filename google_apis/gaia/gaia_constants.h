@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Constants used by IssueAuthToken and ClientLogin
+// Google Authentication service constants.
 
 #ifndef GOOGLE_APIS_GAIA_GAIA_CONSTANTS_H_
 #define GOOGLE_APIS_GAIA_GAIA_CONSTANTS_H_
@@ -15,9 +15,6 @@ extern const char kChromeSource[];
 // Used as Gaia source suffix to detect retry requests because of
 // |GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE|.
 extern const char kUnexpectedServiceResponse[];
-
-// Gaia services for requesting
-extern const char kGaiaService[];  // uber token
 
 // OAuth2 scopes.
 extern const char kOAuth1LoginScope[];
@@ -62,16 +59,6 @@ extern const char kPhotosModuleImageOAuth2Scope[];
 extern const char kSecureConnectOAuth2Scope[];
 extern const char kFeedOAuth2Scope[];
 extern const char kKAnonymityServiceOAuth2Scope[];
-
-// Used with uber auth tokens when needed.
-extern const char kGaiaSid[];
-extern const char kGaiaLsid[];
-extern const char kGaiaOAuthToken[];
-extern const char kGaiaOAuthSecret[];
-extern const char kGaiaOAuthDuration[];
-
-// Used to construct a channel ID for push messaging.
-extern const char kObfuscatedGaiaId[];
 
 // Used by wallet sign in helper.
 extern const char kClientOAuthEmailKey[];

@@ -16,24 +16,6 @@ class OAuthMultiloginResult;
 // GaiaAuthFetcher can return data to.
 class GaiaAuthConsumer {
  public:
-  struct ClientLoginResult {
-    ClientLoginResult();
-    ClientLoginResult(const std::string& new_sid,
-                      const std::string& new_lsid,
-                      const std::string& new_token,
-                      const std::string& new_data);
-    ClientLoginResult(const ClientLoginResult& other);
-    ~ClientLoginResult();
-
-    bool operator==(const ClientLoginResult &b) const;
-
-    std::string sid;
-    std::string lsid;
-    std::string token;
-    // TODO(chron): Remove the data field later. Don't use it if possible.
-    std::string data;  // Full contents of ClientLogin return.
-  };
-
   struct ClientOAuthResult {
     ClientOAuthResult(const std::string& new_refresh_token,
                       const std::string& new_access_token,
@@ -102,9 +84,6 @@ class GaiaAuthConsumer {
   };
 
   virtual ~GaiaAuthConsumer() {}
-
-  virtual void OnClientLoginSuccess(const ClientLoginResult& result) {}
-  virtual void OnClientLoginFailure(const GoogleServiceAuthError& error) {}
 
   virtual void OnClientOAuthCode(const std::string& auth_code) {}
   virtual void OnClientOAuthSuccess(const ClientOAuthResult& result) {}

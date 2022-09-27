@@ -57,14 +57,6 @@ void GaiaAuthFetcherIOS::CreateAndStartGaiaFetcher(
   bridge_->Fetch(gaia_gurl, headers, body, should_use_xml_http_request);
 }
 
-void GaiaAuthFetcherIOS::CancelRequest() {
-  if (!HasPendingFetch()) {
-    return;
-  }
-  bridge_->Cancel();
-  GaiaAuthFetcher::CancelRequest();
-}
-
 void GaiaAuthFetcherIOS::OnFetchComplete(const GURL& url,
                                          const std::string& data,
                                          net::Error net_error,

@@ -13,9 +13,6 @@ const char kChromeOSSource[] = "chromeos";
 const char kChromeSource[] = "ChromiumBrowser";
 const char kUnexpectedServiceResponse[] = "UnexpectedServiceResponse";
 
-// Service name for Gaia.  Used to convert to cookie auth.
-const char kGaiaService[] = "gaia";
-
 // OAuth scopes.
 const char kOAuth1LoginScope[] = "https://www.google.com/accounts/OAuthLogin";
 
@@ -167,16 +164,6 @@ const char kFeedOAuth2Scope[] = "https://www.googleapis.com/auth/googlenow";
 // OAuth 2 scope for the k-Anonymity Service API.
 const char kKAnonymityServiceOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromekanonymity";
-
-// Used to mint uber auth tokens when needed.
-const char kGaiaSid[] = "sid";
-const char kGaiaLsid[] = "lsid";
-const char kGaiaOAuthToken[] = "oauthToken";
-const char kGaiaOAuthSecret[] = "oauthSecret";
-const char kGaiaOAuthDuration[] = "3600";
-
-// Used to construct a channel ID for push messaging.
-const char kObfuscatedGaiaId[] = "obfuscatedGaiaId";
 
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up

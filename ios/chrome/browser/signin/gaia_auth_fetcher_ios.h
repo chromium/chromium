@@ -44,8 +44,6 @@ class GaiaAuthFetcherIOS
 
   ~GaiaAuthFetcherIOS() override;
 
-  void CancelRequest() override;
-
  private:
   friend class GaiaAuthFetcherIOSBridge;
   friend class GaiaAuthFetcherIOSTest;
