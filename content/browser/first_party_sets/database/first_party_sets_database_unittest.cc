@@ -138,9 +138,9 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
   // [browser_context_sites_to_clear], [browser_contexts_cleared], and [meta].
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
   EXPECT_EQ(1, VersionFromMetaTable(db));
-  // [idx_marked_at_run_sites], [idx_cleared_at_run_browser_contexts], and
-  // [sqlite_autoindex_meta_1].
-  EXPECT_EQ(3u, sql::test::CountSQLIndices(&db));
+  // [idx_public_sets_version_browser_contexts], [idx_marked_at_run_sites],
+  // [idx_cleared_at_run_browser_contexts], and [sqlite_autoindex_meta_1].
+  EXPECT_EQ(4u, sql::test::CountSQLIndices(&db));
   // `version`, `site`, `primary`, `site_type`.
   EXPECT_EQ(4u, sql::test::CountTableColumns(&db, "public_sets"));
   // `browser_context_id`, `public_sets_version`.
@@ -387,6 +387,70 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingDB) {
   EXPECT_EQ(version, s_version.ColumnString(0));
 
   EXPECT_FALSE(s_version.Step());
+}
+
+TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingVersion) {
+  ASSERT_TRUE(
+      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+
+  const std::string version = "0.0.1";
+  const std::string aaa = "https://aaa.test";
+  const std::string bbb = "https://bbb.test";
+  // Verify data in the pre-existing DB.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+    ASSERT_EQ(kTableCount, sql::test::CountSQLTables(&db));
+    ASSERT_EQ(2u, CountPublicSetsEntries(&db));
+
+    static constexpr char kSelectSql[] =
+        "SELECT 1 FROM public_sets WHERE version=?";
+    sql::Statement s(db.GetUniqueStatement(kSelectSql));
+    s.BindString(0, version);
+    ASSERT_TRUE(s.Step());
+  }
+
+  const std::string browser_context_id = "b";
+  const std::string site = "https://site1.test";
+  const std::string primary = "https://site2.test";
+
+  net::PublicSets input(
+      /*entries=*/{{net::SchemefulSite(GURL(site)),
+                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                            net::SiteType::kAssociated,
+                                            absl::nullopt)},
+                   {net::SchemefulSite(GURL(primary)),
+                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                            net::SiteType::kPrimary,
+                                            absl::nullopt)}},
+      /*aliases=*/{});
+
+  OpenDatabase();
+  // Trigger the lazy-initialization.
+  ASSERT_TRUE(db()->SetPublicSets(browser_context_id, version, input));
+  CloseDatabase();
+
+  // Verify data is not overwritten with the same version.
+  sql::Database db;
+  ASSERT_TRUE(db.Open(db_path()));
+  EXPECT_EQ(2u, CountPublicSetsEntries(&db));
+
+  static constexpr char kSelectSql[] =
+      "SELECT version,site,primary_site,site_type FROM public_sets";
+  sql::Statement s(db.GetUniqueStatement(kSelectSql));
+  ASSERT_TRUE(s.Step());
+  ASSERT_EQ(version, s.ColumnString(0));
+  ASSERT_EQ(aaa, s.ColumnString(1));
+  ASSERT_EQ(bbb, s.ColumnString(2));
+  ASSERT_EQ(1, s.ColumnInt(3));
+
+  ASSERT_TRUE(s.Step());
+  ASSERT_EQ(version, s.ColumnString(0));
+  ASSERT_EQ(bbb, s.ColumnString(1));
+  ASSERT_EQ(bbb, s.ColumnString(2));
+  ASSERT_EQ(0, s.ColumnInt(3));
+
+  EXPECT_FALSE(s.Step());
 }
 
 TEST_F(FirstPartySetsDatabaseTest, InsertSitesToClear_NoPreExistingDB) {
