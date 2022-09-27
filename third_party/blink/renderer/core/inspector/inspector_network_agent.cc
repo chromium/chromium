@@ -1242,7 +1242,7 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
 
   // Capture the record replay bookmark for the network request here,
   // where the devtools stack id is taken.
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying() && v8::IsMainThread()) {
     ScriptForbiddenScope::AllowUserAgentScript allow_script;
     request.SetRecordReplayBookmark(recordreplay::NewBookmark());
   }
