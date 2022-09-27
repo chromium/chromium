@@ -10,7 +10,7 @@
 namespace policy {
 
 // Enables User Policy.
-extern const base::Feature kUserPolicy;
+BASE_DECLARE_FEATURE(kUserPolicy);
 
 }  // namespace policy
 

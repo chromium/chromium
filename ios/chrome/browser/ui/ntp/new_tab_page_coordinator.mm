@@ -96,8 +96,9 @@
 
 namespace {
 // Flag to enable the checking of new content for the Follow Feed.
-const base::Feature kEnableCheckForNewFollowContent{
-    "EnableCheckForNewFollowContent", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableCheckForNewFollowContent,
+             "EnableCheckForNewFollowContent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 @interface NewTabPageCoordinator () <AppStateObserver,

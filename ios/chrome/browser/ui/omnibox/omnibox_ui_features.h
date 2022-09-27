@@ -9,10 +9,10 @@
 
 // Feature flag to enable omnibox suggestions scrolling on iPad. This will also
 // disable suggestions hiding on keyboard dismissal.
-extern const base::Feature kEnableSuggestionsScrollingOnIPad;
+BASE_DECLARE_FEATURE(kEnableSuggestionsScrollingOnIPad);
 
 // Feature flag to enable omnibox suggestions with iOS 16 `PasteButton`.
-extern const base::Feature kOmniboxPasteButton;
+BASE_DECLARE_FEATURE(kOmniboxPasteButton);
 
 // Feature parameter for kOmniboxPasteButton.
 extern const char kOmniboxPasteButtonParameterName[];
@@ -22,7 +22,7 @@ extern const char kOmniboxPasteButtonParameterBlueIconCapsule[];
 extern const char kOmniboxPasteButtonParameterBlueFullCapsule[];
 
 // Feature flag to enable paste button on the omnibox keyboard accessories.
-extern const base::Feature kOmniboxKeyboardPasteButton;
+BASE_DECLARE_FEATURE(kOmniboxKeyboardPasteButton);
 
 // Simply returns if kIOSOmniboxUpdatedPopupUI is enabled.
 bool IsOmniboxActionsEnabled();

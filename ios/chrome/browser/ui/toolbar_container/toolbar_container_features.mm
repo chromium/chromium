@@ -10,7 +10,8 @@
 
 namespace toolbar_container {
 
-const base::Feature kToolbarContainerEnabled{"ToolbarContainerEnabled",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kToolbarContainerEnabled,
+             "ToolbarContainerEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace toolbar_container

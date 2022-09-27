@@ -10,7 +10,7 @@
 namespace toolbar_container {
 
 // Used to move toolbar layout management to a container view.
-extern const base::Feature kToolbarContainerEnabled;
+BASE_DECLARE_FEATURE(kToolbarContainerEnabled);
 
 }  // namespace toolbar_container
 

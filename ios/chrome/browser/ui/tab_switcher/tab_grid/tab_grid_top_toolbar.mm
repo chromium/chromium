@@ -32,14 +32,16 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 // Kill switch guarding a workaround for broken UI around the dynamic island,
 // see crbug.com/1364629. This workaround makes the UIToolbar background
 // transparent and correctly frames a UIVisualEffectView.
-const base::Feature kDynamicIslandToolbarBlurFix{
-    "DynamicIslandToolbarBlurFix", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDynamicIslandToolbarBlurFix,
+             "DynamicIslandToolbarBlurFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch guarding a workaround for broken UI around the dynamic island,
 // see crbug.com/1364629. This workaround manually resizes the incorrectly
 // framed UIVisualEffectView.
-const base::Feature kDynamicIslandToolbarManualOffsetFix{
-    "DynamicIslandToolbarManualOffsetFix", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDynamicIslandToolbarManualOffsetFix,
+             "DynamicIslandToolbarManualOffsetFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
 bool ShouldUseToolbarBlurFix() {

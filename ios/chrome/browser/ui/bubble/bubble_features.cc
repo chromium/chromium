@@ -4,8 +4,9 @@
 
 #include "ios/chrome/browser/ui/bubble/bubble_features.h"
 
-const base::Feature kBubbleRichIPH{"BubbleRichIPH",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBubbleRichIPH,
+             "BubbleRichIPH",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kBubbleRichIPHParameterName[] = "BubbleVariant";
 

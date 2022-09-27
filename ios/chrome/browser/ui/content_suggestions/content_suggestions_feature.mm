@@ -24,18 +24,20 @@ const char kTrialPrefName[] = "trending_queries.trial_version";
 const int kCurrentTrialVersion = 2;
 
 // Feature disabled by default to keep showing old Zine feed.
-const base::Feature kDiscoverFeedInNtp{"DiscoverFeedInNtp",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDiscoverFeedInNtp,
+             "DiscoverFeedInNtp",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature disabled by default.
-const base::Feature kSingleNtp{"SingleNTP", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSingleNtp, "SingleNTP", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature disabled by default.
-const base::Feature kContentSuggestionsUIModuleRefresh{
-    "ContentSuggestionsUIModuleRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kContentSuggestionsUIModuleRefreshNewUser{
-    "ContentSuggestionsUIModuleRefreshNewUser",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kContentSuggestionsUIModuleRefresh,
+             "ContentSuggestionsUIModuleRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kContentSuggestionsUIModuleRefreshNewUser,
+             "ContentSuggestionsUIModuleRefreshNewUser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kContentSuggestionsUIModuleRefreshFlagOverrideFieldTrialName[] =
     "ContentSuggestionsUIModuleRefreshFlagOverrideFieldTria";
@@ -46,10 +48,12 @@ const char kContentSuggestionsUIModuleRefreshRemoveHeadersParam[] =
     "remove_headers";
 
 // Feature disabled by default.
-const base::Feature kTrendingQueriesModule{"TrendingQueriesModule",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTrendingQueriesModuleNewUser{
-    "TrendingQueriesModuleNewUser", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTrendingQueriesModule,
+             "TrendingQueriesModule",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrendingQueriesModuleNewUser,
+             "TrendingQueriesModuleNewUser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kTrendingQueriesHideShortcutsParam[] = "hide_shortcuts";
 const char kTrendingQueriesDisabledFeedParam[] = "disabled_feed_only";

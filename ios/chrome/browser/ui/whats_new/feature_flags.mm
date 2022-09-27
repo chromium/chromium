@@ -8,5 +8,4 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kWhatsNewIOS{"WhatsNewIOS",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kWhatsNewIOS, "WhatsNewIOS", base::FEATURE_DISABLED_BY_DEFAULT);

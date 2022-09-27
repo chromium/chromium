@@ -4,44 +4,53 @@
 
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 
-const base::Feature kExpandedTabStrip{"ExpandedTabStrip",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kExpandedTabStrip,
+             "ExpandedTabStrip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kTestFeature{"TestFeature",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSharedHighlightingIOS{"SharedHighlightingIOS",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSharedHighlightingIOS,
+             "SharedHighlightingIOS",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kEnableFREDefaultBrowserPromoScreen{
-    "EnableFREDefaultBrowserPromoScreen", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableFREDefaultBrowserPromoScreen,
+             "EnableFREDefaultBrowserPromoScreen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableFREUIModuleIOS{"EnableFREUIModuleIOSV3",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableFREUIModuleIOS,
+             "EnableFREUIModuleIOSV3",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished.
-const base::Feature kModernTabStrip{"ModernTabStrip",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kModernTabStrip,
+             "ModernTabStrip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kIncognitoNtpRevamp,
+             "IncognitoNtpRevamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kIOS3PIntentsInIncognito{"IOS3pIntentsInIncognito",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kIOS3PIntentsInIncognito,
+             "IOS3pIntentsInIncognito",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kDefaultBrowserFullscreenPromoExperiment{
-    "DefaultBrowserFullscreenPromoExperiment",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDefaultBrowserFullscreenPromoExperiment,
+             "DefaultBrowserFullscreenPromoExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kDefaultBrowserIntentsShowSettings{
-    "DefaultBrowserIntentsShowSettings", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDefaultBrowserIntentsShowSettings,
+             "DefaultBrowserIntentsShowSettings",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kIOSNewOmniboxImplementation{
-    "kIOSNewOmniboxImplementation", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kIOSNewOmniboxImplementation,
+             "kIOSNewOmniboxImplementation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kIOSOmniboxUpdatedPopupUI{
-    "IOSOmniboxUpdatedPopupUI", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kIOSOmniboxUpdatedPopupUI,
+             "IOSOmniboxUpdatedPopupUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kIOSOmniboxUpdatedPopupUIVariationName[] = "PopupUIVariant";
 
@@ -52,45 +61,56 @@ extern const char kIOSOmniboxUpdatedPopupUIVariation1UIKit[] =
 extern const char kIOSOmniboxUpdatedPopupUIVariation2UIKit[] =
     "variant-two-UIKit";
 
-const base::Feature kIOSLocationBarUseNativeContextMenu{
-    "IOSLocationBarUseNativeContextMenu", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kIOSLocationBarUseNativeContextMenu,
+             "IOSLocationBarUseNativeContextMenu",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kUpdateHistoryEntryPointsInIncognito{
-    "UpdateHistoryEntryPointsInIncognito", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUpdateHistoryEntryPointsInIncognito,
+             "UpdateHistoryEntryPointsInIncognito",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kUseLensToSearchForImage{"UseLensToSearchForImage",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseLensToSearchForImage,
+             "UseLensToSearchForImage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableLensInHomeScreenWidget{
-    "EnableLensInHomeScreenWidget", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableLensInHomeScreenWidget,
+             "EnableLensInHomeScreenWidget",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableLensInKeyboard{"EnableLensInKeyboard",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableLensInKeyboard,
+             "EnableLensInKeyboard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableLensInNTP{"EnableLensInNTP",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableLensInNTP,
+             "EnableLensInNTP",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kRemoveExcessNTPs{"RemoveExcessNTPs",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kRemoveExcessNTPs,
+             "RemoveExcessNTPs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kEnableShortenedPasswordAutoFillInstruction{
-    "EnableShortenedPasswordAutoFillInstruction",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableShortenedPasswordAutoFillInstruction,
+             "EnableShortenedPasswordAutoFillInstruction",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kUseSFSymbols{"UseSFSymbols",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseSFSymbols, "UseSFSymbols", base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kCalendarExperienceKit{"CalendarExperienceKit",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCalendarExperienceKit,
+             "CalendarExperienceKit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableExpKitAppleCalendar{
-    "EnableExpKitAppleCalendar", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableExpKitAppleCalendar,
+             "EnableExpKitAppleCalendar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnablePhoneNumbers{"EnablePhoneNumbers",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnablePhoneNumbers,
+             "EnablePhoneNumbers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kMapsExperienceKit{"MapsExperienceKit",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMapsExperienceKit,
+             "MapsExperienceKit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableMiniMap{"EnableMiniMap",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableMiniMap,
+             "EnableMiniMap",
+             base::FEATURE_DISABLED_BY_DEFAULT);

@@ -7,8 +7,9 @@
 namespace security_interstitials {
 namespace features {
 
-const base::Feature kHttpsOnlyMode{"HttpsOnlyMode",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kHttpsOnlyMode,
+             "HttpsOnlyMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace security_interstitials

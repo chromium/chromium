@@ -10,7 +10,7 @@
 // Feature flag to enable the Fullscreen Promos Manager.
 // For more information, please see here:
 // go/bling-fullscreen-promos-manager-design-doc.
-extern const base::Feature kFullscreenPromosManager;
+BASE_DECLARE_FEATURE(kFullscreenPromosManager);
 
 // Returns true if the Fullscreen Promos Manager is enabled.
 bool IsFullscreenPromosManagerEnabled();

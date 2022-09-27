@@ -8,11 +8,14 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kCalendarKillSwitch{"DownloadKillSwitchCalendar",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCalendarKillSwitch,
+             "DownloadKillSwitchCalendar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kARKillSwitch{"DownloadKillSwitchAR",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kARKillSwitch,
+             "DownloadKillSwitchAR",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kVCardKillSwitch{"DownloadKillSwitchVcard",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVCardKillSwitch,
+             "DownloadKillSwitchVcard",
+             base::FEATURE_DISABLED_BY_DEFAULT);

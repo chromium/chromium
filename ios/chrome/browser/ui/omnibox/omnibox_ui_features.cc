@@ -7,18 +7,21 @@
 #include "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 
-const base::Feature kEnableSuggestionsScrollingOnIPad{
-    "EnableSuggestionsScrollingOnIPad", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableSuggestionsScrollingOnIPad,
+             "EnableSuggestionsScrollingOnIPad",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kOmniboxPasteButton{"OmniboxPasteButton",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOmniboxPasteButton,
+             "OmniboxPasteButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kOmniboxPasteButtonParameterName[] = "PasteButtonVariant";
 const char kOmniboxPasteButtonParameterBlueIconCapsule[] = "SuggestionIcon";
 const char kOmniboxPasteButtonParameterBlueFullCapsule[] = "SuggestionTextIcon";
 
-const base::Feature kOmniboxKeyboardPasteButton{
-    "OmniboxKeyboardPasteButton", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOmniboxKeyboardPasteButton,
+             "OmniboxKeyboardPasteButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsOmniboxActionsEnabled() {
   return base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI);

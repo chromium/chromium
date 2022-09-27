@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 
 // Feature flag to enable ScreenTime integration.
-extern const base::Feature kScreenTimeIntegration;
+BASE_DECLARE_FEATURE(kScreenTimeIntegration);
 
 // Returns true if ScreenTime integration is enabled.
 bool IsScreenTimeIntegrationEnabled();

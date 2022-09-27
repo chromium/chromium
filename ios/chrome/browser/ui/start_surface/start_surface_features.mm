@@ -9,8 +9,7 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kStartSurface{"StartSurface",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kStartSurface, "StartSurface", base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kReturnToStartSurfaceInactiveDurationInSeconds[] =
     "ReturnToStartSurfaceInactiveDurationInSeconds";

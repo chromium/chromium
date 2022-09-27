@@ -8,5 +8,6 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kEnableExpKitCalendarTextClassifier{
-    "EnableExpKitCalendarTextClassifier", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableExpKitCalendarTextClassifier,
+             "EnableExpKitCalendarTextClassifier",
+             base::FEATURE_DISABLED_BY_DEFAULT);

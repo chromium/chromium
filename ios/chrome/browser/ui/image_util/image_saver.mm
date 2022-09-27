@@ -32,8 +32,9 @@ namespace {
 
 // Kill switch guarding a workaround for TCC violations before iOS14.  In case
 // iOS14 starts triggering violations too.  See crbug.com/1159431 for details.
-const base::Feature kPhotoLibrarySaveImage{"PhotoLibrarySaveImage",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPhotoLibrarySaveImage,
+             "PhotoLibrarySaveImage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

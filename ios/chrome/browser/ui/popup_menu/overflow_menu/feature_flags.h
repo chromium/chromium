@@ -8,25 +8,25 @@
 #include "base/feature_list.h"
 
 // Feature to enable the new overflow menu.
-extern const base::Feature kNewOverflowMenu;
+BASE_DECLARE_FEATURE(kNewOverflowMenu);
 
 // Feature to add a Clear Browsing Data action to the new overflow menu.
-extern const base::Feature kNewOverflowMenuCBDAction;
+BASE_DECLARE_FEATURE(kNewOverflowMenuCBDAction);
 
 // Feature to add a Settings action to the new overflow menu.
-extern const base::Feature kNewOverflowMenuSettingsAction;
+BASE_DECLARE_FEATURE(kNewOverflowMenuSettingsAction);
 
 // Feature to use simple icons for new overflow menu destinations.
-extern const base::Feature kNewOverflowMenuSimpleDestinationIcons;
+BASE_DECLARE_FEATURE(kNewOverflowMenuSimpleDestinationIcons);
 
 // Feature to enable smart sorting the new overflow menu.
-extern const base::Feature kSmartSortingNewOverflowMenu;
+BASE_DECLARE_FEATURE(kSmartSortingNewOverflowMenu);
 
 // Feature to add a "Share Chrome App" action to the overflow menu
-extern const base::Feature kNewOverflowMenuShareChromeAction;
+BASE_DECLARE_FEATURE(kNewOverflowMenuShareChromeAction);
 
 // Feature to use the alternate overflow IPH flow.
-extern const base::Feature kNewOverflowMenuAlternateIPH;
+BASE_DECLARE_FEATURE(kNewOverflowMenuAlternateIPH);
 
 // Whether the NewOverflowMenu feature is enabled.
 bool IsNewOverflowMenuEnabled();

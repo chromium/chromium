@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 
 // Feature flag to enable rich IPH on bubbles.
-extern const base::Feature kBubbleRichIPH;
+BASE_DECLARE_FEATURE(kBubbleRichIPH);
 
 // Feature parameters for rich IPH on bubbles. If no parameter is set, the
 // default bubble style will be used.

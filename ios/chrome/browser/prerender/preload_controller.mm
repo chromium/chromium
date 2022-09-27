@@ -167,8 +167,9 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
 static const size_t kMaximumCancelledWebStateDelay = 2;
 
 // Kill switch guarding a workaround for a WebKit crash, see crbug.com/1032928.
-const base::Feature kPreloadDelayWebStateReset{
-    "PreloadDelayWebStateReset", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPreloadDelayWebStateReset,
+             "PreloadDelayWebStateReset",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Helper function to destroy a pre-rendering WebState. This is a free function
 // so that the code does not accidently try to access to PreloadController's

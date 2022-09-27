@@ -10,17 +10,21 @@
 // is the name of the feature that eventually enables the latter synthetic flag
 // via NSUserDefault syncing.  This is needed to start CrashpadiOS immediately
 // after startup.
-const base::Feature kCrashpadIOS{"CrashpadIOSEnabler",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrashpadIOS,
+             "CrashpadIOSEnabler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kMetrickitCrashReport{"MetrickitCrashReport",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kMetrickitCrashReport,
+             "MetrickitCrashReport",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kMetrickitNonCrashReport{"MetrickitNonCrashReport",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMetrickitNonCrashReport,
+             "MetrickitNonCrashReport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSyntheticCrashReportsForUte{
-    "SyntheticCrashReportsForUte", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSyntheticCrashReportsForUte,
+             "SyntheticCrashReportsForUte",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool EnableSyntheticCrashReportsForUte() {
   return base::FeatureList::IsEnabled(kSyntheticCrashReportsForUte) &&

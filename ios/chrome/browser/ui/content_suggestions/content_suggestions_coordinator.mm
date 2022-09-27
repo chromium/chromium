@@ -76,9 +76,9 @@
 
 namespace {
 // Kill-switch for quick fix of crbug.com/1204507
-const base::Feature kNoRecentTabIfNullWebState(
-    "NoRecentTabIfNullWebState",
-    base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNoRecentTabIfNullWebState,
+             "NoRecentTabIfNullWebState",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

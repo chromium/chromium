@@ -10,7 +10,6 @@
 
 namespace policy {
 
-const base::Feature kUserPolicy{"UserPolicy",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUserPolicy, "UserPolicy", base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace policy

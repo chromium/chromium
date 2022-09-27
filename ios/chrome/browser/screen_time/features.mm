@@ -8,8 +8,9 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kScreenTimeIntegration{"ScreenTimeIntegration",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kScreenTimeIntegration,
+             "ScreenTimeIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsScreenTimeIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kScreenTimeIntegration);

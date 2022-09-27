@@ -157,9 +157,9 @@ namespace {
 // Feature to control whether Search Intents (Widgets, Application
 // Shortcuts menu) forcibly open a new tab, rather than reusing an
 // existing NTP. See http://crbug.com/1363375 for details.
-const base::Feature kForceNewTabForIntentSearch(
-    "ForceNewTabForIntentSearch",
-    base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kForceNewTabForIntentSearch,
+             "ForceNewTabForIntentSearch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A rough estimate of the expected duration of a view controller transition
 // animation. It's used to temporarily disable mutally exclusive chrome

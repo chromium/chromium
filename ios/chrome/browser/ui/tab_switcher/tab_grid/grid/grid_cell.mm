@@ -58,8 +58,9 @@ void PositionView(UIView* view, CGPoint point) {
 }
 
 // Kill switch guarding a workaround for crash, see crbug.com/1350976
-const base::Feature kPreviousTabViewWidthCrash{
-    "PreviousTabViewWidthCrash", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPreviousTabViewWidthCrash,
+             "PreviousTabViewWidthCrash",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

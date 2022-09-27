@@ -34,8 +34,9 @@ NSString* const kFirstRunForceEnabled = @"FirstRunForceEnabled";
 NSString* const kOriginServerHost = @"AlternateOriginServerHost";
 NSString* const kWhatsNewPromoStatus = @"WhatsNewPromoStatus";
 NSString* const kClearApplicationGroup = @"ClearApplicationGroup";
-const base::Feature kEnableThirdPartyKeyboardWorkaround{
-    "EnableThirdPartyKeyboardWorkaround", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
+             "EnableThirdPartyKeyboardWorkaround",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

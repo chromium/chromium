@@ -12,8 +12,9 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kEnableOpenInDownload = {
-    "EnableFREDefaultBrowserScreenTesting", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableOpenInDownload,
+             "EnableFREDefaultBrowserScreenTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kOpenInDownloadWithWKDownloadParam[] = "variant_with_wkdownload";
 const char kOpenInDownloadWithV2Param[] = "variant_with_v2";

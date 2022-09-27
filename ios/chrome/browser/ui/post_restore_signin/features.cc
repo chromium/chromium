@@ -10,8 +10,9 @@
 namespace post_restore_signin {
 namespace features {
 
-const base::Feature kIOSNewPostRestoreExperience{
-    "IOSNewPostRestoreExperience", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kIOSNewPostRestoreExperience,
+             "IOSNewPostRestoreExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const char kIOSNewPostRestoreExperienceParam[] =
     "ios-new-post-restore-experience";
 

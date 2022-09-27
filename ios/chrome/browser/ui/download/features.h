@@ -8,12 +8,12 @@
 #include "base/feature_list.h"
 
 // Kill switch for Calendar support.
-extern const base::Feature kCalendarKillSwitch;
+BASE_DECLARE_FEATURE(kCalendarKillSwitch);
 
 // Kill switch for Vcard support.
-extern const base::Feature kVCardKillSwitch;
+BASE_DECLARE_FEATURE(kVCardKillSwitch);
 
 // Kill switch for AR support.
-extern const base::Feature kARKillSwitch;
+BASE_DECLARE_FEATURE(kARKillSwitch);
 
 #endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_FEATURES_H_

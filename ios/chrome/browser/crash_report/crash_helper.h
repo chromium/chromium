@@ -12,7 +12,7 @@ namespace crash_helper {
 
 // Kill switch guarding a workaround for too many calls to SetUploadConsent
 // see crbug.com/1361334 for details.
-extern const base::Feature kLimitSetUploadConsentCalls;
+BASE_DECLARE_FEATURE(kLimitSetUploadConsentCalls);
 
 // Sync the kCrashpadIOS feature to kCrashpadStartOnNextRun NSUserDefault.
 void SyncCrashpadEnabledOnNextRun();

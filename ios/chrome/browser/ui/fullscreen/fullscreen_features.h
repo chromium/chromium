@@ -13,7 +13,7 @@ namespace features {
 
 // Feature used by finch config to enable smooth scrolling when the default
 // viewport adjustment experiment is selected via command line switches.
-extern const base::Feature kSmoothScrollingDefault;
+BASE_DECLARE_FEATURE(kSmoothScrollingDefault);
 
 }  // namespace features
 }  // namespace fullscreen

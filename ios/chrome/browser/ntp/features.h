@@ -11,11 +11,11 @@
 
 // Feature flag to enable feed background refresh.
 // Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
-extern const base::Feature kEnableFeedBackgroundRefresh;
+BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);
 
 // Feature flag to enable the Following feed in the NTP.
 // Use IsWebChannelsEnabled() instead of this constant directly.
-extern const base::Feature kEnableWebChannels;
+BASE_DECLARE_FEATURE(kEnableWebChannels);
 
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.

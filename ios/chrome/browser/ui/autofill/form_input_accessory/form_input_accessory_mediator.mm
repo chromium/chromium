@@ -56,8 +56,9 @@ using base::UmaHistogramEnumeration;
 namespace {
 
 // Kill switch guarding a workaround for keyboard flicker, see crbug.com/1253561
-const base::Feature kFormInputKeyboardReloadInputViews{
-    "FormInputKeyboardReloadInputViews", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kFormInputKeyboardReloadInputViews,
+             "FormInputKeyboardReloadInputViews",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

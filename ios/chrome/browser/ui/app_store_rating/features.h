@@ -8,7 +8,7 @@
 #import "base/feature_list.h"
 
 // Feature flag to enable the App Store Rating feature.
-extern const base::Feature kAppStoreRating;
+BASE_DECLARE_FEATURE(kAppStoreRating);
 
 // Returns true if App Store Rating feature is enabled.
 bool IsAppStoreRatingEnabled();

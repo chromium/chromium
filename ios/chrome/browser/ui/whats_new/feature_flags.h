@@ -8,6 +8,6 @@
 #include "base/feature_list.h"
 
 // Feature to enable What's New feature.
-extern const base::Feature kWhatsNewIOS;
+BASE_DECLARE_FEATURE(kWhatsNewIOS);
 
 #endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_FEATURE_FLAGS_H_

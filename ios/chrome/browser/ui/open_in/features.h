@@ -8,7 +8,7 @@
 #import "base/feature_list.h"
 
 // Feature flag that enables Open In download.
-extern const base::Feature kEnableOpenInDownload;
+BASE_DECLARE_FEATURE(kEnableOpenInDownload);
 
 // Indicates which Open In download variant to use.
 extern const char kOpenInDownloadWithWKDownloadParam[];

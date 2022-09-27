@@ -15,8 +15,9 @@
 namespace fullscreen {
 namespace features {
 
-const base::Feature kSmoothScrollingDefault{"FullscreenSmoothScrollingDefault",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSmoothScrollingDefault,
+             "FullscreenSmoothScrollingDefault",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace fullscreen

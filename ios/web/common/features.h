@@ -12,62 +12,62 @@ namespace features {
 
 // Used to crash the browser if unexpected URL change is detected.
 // https://crbug.com/841105.
-extern const base::Feature kCrashOnUnexpectedURLChange;
+BASE_DECLARE_FEATURE(kCrashOnUnexpectedURLChange);
 
 // Used to prevent native apps from being opened when a universal link is tapped
 // and the user is browsing in off the record mode.
-extern const base::Feature kBlockUniversalLinksInOffTheRecordMode;
+BASE_DECLARE_FEATURE(kBlockUniversalLinksInOffTheRecordMode);
 
 // Used to ensure that the render is not suspended.
-extern const base::Feature kKeepsRenderProcessAlive;
+BASE_DECLARE_FEATURE(kKeepsRenderProcessAlive);
 
 // Used to enable the workaround for a WKWebView WKNavigation leak.
 // (crbug.com/1010765).  Clear older pending navigation records when a
 // navigation finishes.
-extern const base::Feature kClearOldNavigationRecordsWorkaround;
+BASE_DECLARE_FEATURE(kClearOldNavigationRecordsWorkaround);
 
 // Feature flag enabling persistent downloads.
-extern const base::Feature kEnablePersistentDownloads;
+BASE_DECLARE_FEATURE(kEnablePersistentDownloads);
 
 // When enabled, preserves properties of the UIScrollView using CRWPropertyStore
 // when the scroll view is recreated. When disabled, only preserve a small set
 // of properties using hard coded logic.
-extern const base::Feature kPreserveScrollViewProperties;
+BASE_DECLARE_FEATURE(kPreserveScrollViewProperties);
 
 // Records snapshot size of image (IOS.Snapshots.ImageSize histogram) and PDF
 // (IOS.Snapshots.PDFSize histogram) if enabled. Enabling this flag will
 // generate PDF when Page Snapshot is taken just to record PDF size.
-extern const base::Feature kRecordSnapshotSize;
+BASE_DECLARE_FEATURE(kRecordSnapshotSize);
 
 // When enabled, the `attribution` property of NSMutableURLRequests passed to
 // WKWebView is set as NSURLRequestAttributionUser on iOS 15.
-extern const base::Feature kSetRequestAttribution;
+BASE_DECLARE_FEATURE(kSetRequestAttribution);
 
 // Feature flag that enable Shared Highlighting color change in iOS.
-extern const base::Feature kIOSSharedHighlightingColorChange;
+BASE_DECLARE_FEATURE(kIOSSharedHighlightingColorChange);
 
 // Feature flag that enables native session restoration with a synthesized
 // interaction state.
-extern const base::Feature kSynthesizedRestoreSession;
+BASE_DECLARE_FEATURE(kSynthesizedRestoreSession);
 
 // Enables user control for camera and/or microphone access for a specific site
 // through site settings during its lifespan. When enabled, each web state will
 // keep track of whether camera and/or microphone access is granted by the user
 // for its current site.
-extern const base::Feature kMediaPermissionsControl;
+BASE_DECLARE_FEATURE(kMediaPermissionsControl);
 
 // Enables the Fullscreen API in WebKit (supported on iOS 16.0+). This API
 // allows web sites to enter fullscreen mode, with all browser UI hidden.
-extern const base::Feature kEnableFullscreenAPI;
+BASE_DECLARE_FEATURE(kEnableFullscreenAPI);
 
 // Feature flag enabling use of new iOS 15
 // loadSimulatedRequest:responseHTMLString: API to display error pages in
 // CRWWKNavigationHandler. The helper method IsLoadSimulatedRequestAPIEnabled()
 // should be used instead of directly checking this feature.
-extern const base::Feature kUseLoadSimulatedRequestForOfflinePage;
+BASE_DECLARE_FEATURE(kUseLoadSimulatedRequestForOfflinePage);
 
 // Feature flag that enable web page detected intents annotations.
-extern const base::Feature kEnableWebPageAnnotations;
+BASE_DECLARE_FEATURE(kEnableWebPageAnnotations);
 
 // When true, user control for camera and/or microphone access should be
 // enabled.

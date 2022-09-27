@@ -49,8 +49,9 @@ namespace crash_helper {
 
 // Kill switch guarding a workaround for too many calls to SetUploadConsent
 // see crbug.com/1361334 for details.
-const base::Feature kLimitSetUploadConsentCalls{
-    "LimitSetUploadConsentCalls", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kLimitSetUploadConsentCalls,
+             "LimitSetUploadConsentCalls",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -81,8 +82,9 @@ void DeleteOldReportsInDirectory(base::FilePath directory) {
 
 // Kill switch guarding a workaround for stability shutdown metric, see
 // crbug.com/1365765
-const base::Feature kCorrectMobileSessionShutdownType{
-    "CorrectMobileSessionShutdownType", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCorrectMobileSessionShutdownType,
+             "CorrectMobileSessionShutdownType",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This mirrors the logic in MobileSessionShutdownMetricsProvider to avoid a
 // dependency loop.

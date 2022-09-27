@@ -10,8 +10,9 @@
 
 namespace sessions {
 
-const base::Feature kSaveSessionTabsToSeparateFiles{
-    "SaveSessionTabsToSeparateFiles", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSaveSessionTabsToSeparateFiles,
+             "SaveSessionTabsToSeparateFiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool ShouldSaveSessionTabsToSeparateFiles() {
   return base::FeatureList::IsEnabled(kSaveSessionTabsToSeparateFiles);

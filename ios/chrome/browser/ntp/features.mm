@@ -16,11 +16,13 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kEnableWebChannels{"EnableWebChannels",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableWebChannels,
+             "EnableWebChannels",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableFeedBackgroundRefresh{
-    "EnableFeedBackgroundRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableFeedBackgroundRefresh,
+             "EnableFeedBackgroundRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable feed backround refresh. This is used because registering for

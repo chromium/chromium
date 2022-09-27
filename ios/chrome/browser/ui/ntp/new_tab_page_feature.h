@@ -10,22 +10,22 @@
 
 // Feature flag to enable showing a live preview for Discover feed when opening
 // the feed context menu.
-extern const base::Feature kEnableDiscoverFeedPreview;
+BASE_DECLARE_FEATURE(kEnableDiscoverFeedPreview);
 
 // Feature flag to show ghost cards when refreshing the discover feed.
-extern const base::Feature kDiscoverFeedGhostCardsEnabled;
+BASE_DECLARE_FEATURE(kDiscoverFeedGhostCardsEnabled);
 
 // Feature flag to enable static resource serving for the Discover feed.
-extern const base::Feature kEnableDiscoverFeedStaticResourceServing;
+BASE_DECLARE_FEATURE(kEnableDiscoverFeedStaticResourceServing);
 
 // Feature flag to enable discofeed endpoint for the Discover feed.
-extern const base::Feature kEnableDiscoverFeedDiscoFeedEndpoint;
+BASE_DECLARE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint);
 
 // Feature flag to enable static resource serving for the Discover feed.
-extern const base::Feature kEnableDiscoverFeedStaticResourceServing;
+BASE_DECLARE_FEATURE(kEnableDiscoverFeedStaticResourceServing);
 
 // Feature flag to enable the sync promo on top of the discover feed.
-extern const base::Feature kEnableDiscoverFeedTopSyncPromo;
+BASE_DECLARE_FEATURE(kEnableDiscoverFeedTopSyncPromo);
 
 // A parameter to indicate whether Reconstructed Templates is enabled for static
 // resource serving.
@@ -47,10 +47,10 @@ extern const char kDiscoverFeedTopSyncPromoStyleCompact[];
 // Feature flag to fix the NTP view hierarchy if it is broken before applying
 // constraints.
 // TODO(crbug.com/1262536): Remove this when it is fixed.
-extern const base::Feature kNTPViewHierarchyRepair;
+BASE_DECLARE_FEATURE(kNTPViewHierarchyRepair);
 
 // Feature flag to remove the Feed from the NTP.
-extern const base::Feature kEnableFeedAblation;
+BASE_DECLARE_FEATURE(kEnableFeedAblation);
 
 // Whether the Discover feed content preview is shown in the context menu.
 bool IsDiscoverFeedPreviewEnabled();

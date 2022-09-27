@@ -10,8 +10,9 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kFullscreenPromosManager{"FullscreenPromosManager",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kFullscreenPromosManager,
+             "FullscreenPromosManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsFullscreenPromosManagerEnabled() {
   return base::FeatureList::IsEnabled(kFullscreenPromosManager);

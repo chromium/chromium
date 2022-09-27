@@ -12,21 +12,25 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kEnableDiscoverFeedPreview{
-    "EnableDiscoverFeedPreview", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableDiscoverFeedPreview,
+             "EnableDiscoverFeedPreview",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kDiscoverFeedGhostCardsEnabled{
-    "DiscoverFeedGhostCardsEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDiscoverFeedGhostCardsEnabled,
+             "DiscoverFeedGhostCardsEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableDiscoverFeedDiscoFeedEndpoint{
-    "EnableDiscoFeedEndpoint", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint,
+             "EnableDiscoFeedEndpoint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableDiscoverFeedStaticResourceServing{
-    "EnableDiscoverFeedStaticResourceServing",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableDiscoverFeedStaticResourceServing,
+             "EnableDiscoverFeedStaticResourceServing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kEnableDiscoverFeedTopSyncPromo{
-    "EnableDiscoverFeedTopSyncPromo", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableDiscoverFeedTopSyncPromo,
+             "EnableDiscoverFeedTopSyncPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
     "DiscoverFeedSRSReconstructedTemplatesEnabled";
@@ -34,14 +38,16 @@ const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
 const char kDiscoverFeedSRSPreloadTemplatesEnabled[] =
     "DiscoverFeedSRSPreloadTemplatesEnabled";
 
-const base::Feature kNTPViewHierarchyRepair{"NTPViewHierarchyRepair",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kNTPViewHierarchyRepair,
+             "NTPViewHierarchyRepair",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kDiscoverFeedTopSyncPromoStyleParam[] = "FeedTopPromoStyle";
 const char kDiscoverFeedTopSyncPromoStyleFullWithTitle[] = "fullWithTitle";
 const char kDiscoverFeedTopSyncPromoStyleCompact[] = "compact";
-const base::Feature kEnableFeedAblation{"FeedAblationEnabled",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableFeedAblation,
+             "FeedAblationEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);

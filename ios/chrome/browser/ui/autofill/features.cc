@@ -7,10 +7,12 @@
 
 namespace autofill::features {
 
-const base::Feature kAutofillEnableNewCardUnmaskPromptView{
-    "AutofillEnableNewCardUnmaskPromptView", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kAutofillBrandingIOS{"AutofillBrandingIOS",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAutofillEnableNewCardUnmaskPromptView,
+             "AutofillEnableNewCardUnmaskPromptView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillBrandingIOS,
+             "AutofillBrandingIOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const char kAutofillBrandingIOSParam[] = "ios-autofill-branding-monotones";
 
 AutofillBrandingType GetAutofillBrandingType() {

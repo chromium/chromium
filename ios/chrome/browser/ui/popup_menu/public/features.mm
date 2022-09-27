@@ -20,8 +20,9 @@ const char kPopupMenuBookmarkStringParamAddToBookmarks[] =
 const char kPopupMenuBookmarkStringParamBookmarkThisPage[] =
     "PopupMenuBookmarkStringParamBookmarkThisPage";
 
-const base::Feature kBookmarkString{"BookmarkString",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBookmarkString,
+             "BookmarkString",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 int GetBookmarkStringID() {
   std::string label_variant = base::GetFieldTrialParamValueByFeature(

@@ -12,16 +12,16 @@ namespace web {
 
 // Feature flag to tie the default zoom level for webpages to the current
 // dynamic type setting.
-extern const base::Feature kWebPageDefaultZoomFromDynamicType;
+BASE_DECLARE_FEATURE(kWebPageDefaultZoomFromDynamicType);
 
 // Used to enable a different method of zooming web pages.
-extern const base::Feature kWebPageAlternativeTextZoom;
+BASE_DECLARE_FEATURE(kWebPageAlternativeTextZoom);
 
 // Reneables text zoom on iPad.
-extern const base::Feature kWebPageTextZoomIPad;
+BASE_DECLARE_FEATURE(kWebPageTextZoomIPad);
 
 // Feature flag for to use native session restoration.
-extern const base::Feature kRestoreSessionFromCache;
+BASE_DECLARE_FEATURE(kRestoreSessionFromCache);
 
 }  // namespace web
 

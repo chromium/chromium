@@ -13,7 +13,7 @@ extern const char kStartSurfaceShrinkLogoParam[];
 extern const char kStartSurfaceReturnToRecentTabParam[];
 
 // The feature to enable or disable the Start Surface.
-extern const base::Feature kStartSurface;
+BASE_DECLARE_FEATURE(kStartSurface);
 
 // The feature parameter to indicate inactive duration to return to the Start
 // Surface in seconds.

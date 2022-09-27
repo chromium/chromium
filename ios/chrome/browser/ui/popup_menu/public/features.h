@@ -15,7 +15,7 @@ extern const char kPopupMenuBookmarkStringParamBookmarkThisPage[];
 
 // Feature flag to change the string of the "bookmark" option in the overflow
 // menu.
-extern const base::Feature kBookmarkString;
+BASE_DECLARE_FEATURE(kBookmarkString);
 
 // Returns the bookmark string ID based on the `kBookmarkString` feature.
 int GetBookmarkStringID();

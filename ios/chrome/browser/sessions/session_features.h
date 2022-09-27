@@ -10,7 +10,7 @@
 namespace sessions {
 
 // If enabled, save each tab content to a separate file.
-extern const base::Feature kSaveSessionTabsToSeparateFiles;
+BASE_DECLARE_FEATURE(kSaveSessionTabsToSeparateFiles);
 
 // If enabled, save each tab content to a separate file.
 bool ShouldSaveSessionTabsToSeparateFiles();

@@ -19,16 +19,16 @@ extern const int kCurrentTrialVersion;
 // Feature to choose between the old Zine feed or the new Discover feed in the
 // Bling new tab page.
 // Use IsDiscoverFeedEnabled() instead of this constant directly.
-extern const base::Feature kDiscoverFeedInNtp;
+BASE_DECLARE_FEATURE(kDiscoverFeedInNtp);
 
 // Feature to use one NTP for all tabs in a Browser.
-extern const base::Feature kSingleNtp;
+BASE_DECLARE_FEATURE(kSingleNtp);
 
 // Feature to section the Content Suggestions into modules.
-extern const base::Feature kContentSuggestionsUIModuleRefresh;
+BASE_DECLARE_FEATURE(kContentSuggestionsUIModuleRefresh);
 // Feature version of kContentSuggestionsUIModuleRefresh used for client-side
 // study.
-extern const base::Feature kContentSuggestionsUIModuleRefreshNewUser;
+BASE_DECLARE_FEATURE(kContentSuggestionsUIModuleRefreshNewUser);
 
 // Name of the field trial for when kContentSuggestionsUIModuleRefresh is
 // enabled in about_flags.
@@ -40,9 +40,9 @@ extern const char kContentSuggestionsUIModuleRefreshMinimizeSpacingParam[];
 extern const char kContentSuggestionsUIModuleRefreshRemoveHeadersParam[];
 
 // Feature to show the Trending Queries module.
-extern const base::Feature kTrendingQueriesModule;
+BASE_DECLARE_FEATURE(kTrendingQueriesModule);
 // Feature version of kTrendingQueriesModule used for client-side study.
-extern const base::Feature kTrendingQueriesModuleNewUser;
+BASE_DECLARE_FEATURE(kTrendingQueriesModuleNewUser);
 
 // Feature params for kTrendingQueriesModule.
 extern const char kTrendingQueriesHideShortcutsParam[];

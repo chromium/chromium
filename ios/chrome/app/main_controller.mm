@@ -150,8 +150,9 @@ namespace {
 
 #if BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 // Skip chromeMain.reset() on shutdown, see crbug.com/1328891 for details.
-const base::Feature kFastApplicationWillTerminate{
-    "FastApplicationWillTerminate", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kFastApplicationWillTerminate,
+             "FastApplicationWillTerminate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 
 // Constants for deferring resetting the startup attempt count (to give the app

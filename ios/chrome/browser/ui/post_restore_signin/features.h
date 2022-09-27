@@ -12,7 +12,7 @@ namespace features {
 
 // Feature flag and param that enables the new post device restore experience
 // which will prompt the user to sign-in again.
-extern const base::Feature kIOSNewPostRestoreExperience;
+BASE_DECLARE_FEATURE(kIOSNewPostRestoreExperience);
 extern const char kIOSNewPostRestoreExperienceParam[];
 
 // Post Restore Sign-in Options.
