@@ -1,6 +1,6 @@
-<style include="shortcut-customization-fonts">
+<style include="shortcut-customization-fonts shortcut-customization-shared">
   :host {
-    @apply --shortcut-customization-default-font;
+    @apply --shortcuts-default-font;
   }
 
   #navigationPanel::part(title) {
@@ -10,15 +10,46 @@
   #navigationPanel::part(navigation-item) {
     padding-inline-start: 28px;
   }
+
+  #restoreAllButton {
+    border-radius: 999px;
+  }
+
+  #keyboardSettingsLinkContainer {
+    margin-top: 12px;
+  }
+
+  #keyboardSettingsLinkContainer a {
+    align-items: center;
+    color: var(--cros-text-color-secondary);
+    display: flex;
+    font-weight: var(--shortcuts-font-weight-medium);
+    text-decoration: none;
+  }
+
+  #keyboardSettingsLinkContainer a iron-icon {
+    fill: var(--cros-text-color-secondary);
+    margin-inline-start: 4px;
+  }
+
+  #bottomNavContentPanel {
+    margin-inline-start: 12px;
+  }
 </style>
 <!-- TODO(jimmyxgong): Localize this title -->
 <navigation-view-panel id="navigationPanel" title="[[i18n('appTitle')]]"
     show-tool-bar>
-  <div slot="bottom-nav-content-panel">
+  <div slot="bottom-nav-content-panel" id="bottomNavContentPanel">
     <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked_">
       <!-- TODO(jimmyxgong): i18n this string-->
       Reset all shortcuts
     </cr-button>
+    <div id="keyboardSettingsLinkContainer">
+      <a href="chrome://os-settings/keyboard-overlay">
+        <span>[[i18n('keyboardSettings')]]</span>
+        <iron-icon icon="shortcut-customization:open-in-new"></iron-icon>
+      </a>
+    </div>
   </div>
 </navigation-view-panel>
 

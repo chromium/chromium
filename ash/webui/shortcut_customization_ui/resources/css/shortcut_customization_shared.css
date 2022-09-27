@@ -8,5 +8,10 @@
  * #css_wrapper_metadata_end */
 
 html {
-    background-color: var(--cros-bg-color);
-  }
+  background-color: var(--cros-bg-color);
+}
+
+:host {
+  --shortcuts-font-weight-regular: 400;
+  --shortcuts-font-weight-medium: 500;
+}

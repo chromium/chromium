@@ -7,8 +7,10 @@ import './shortcut_input.js';
 import './shortcuts_page.js';
 import '../strings.m.js';
 import '../css/shortcut_customization_fonts.css.js';
+import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

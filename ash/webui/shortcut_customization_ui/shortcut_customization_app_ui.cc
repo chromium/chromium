@@ -39,6 +39,7 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 void AddLocalizedStrings(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"appTitle", IDS_SHORTCUT_CUSTOMIZATION_APP_TITLE},
+      {"keyboardSettings", IDS_SHORTCUT_CUSTOMIZATION_KEYBOARD_SETTINGS},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);
