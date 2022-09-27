@@ -61,6 +61,8 @@ source_set("unit_tests") {
   deps = [
     ":profiler",
     "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//chrome/common:channel_info",
     "//chrome/common:non_code_constants",
     "//components/metrics",
     "//components/metrics:call_stack_profile_builder",

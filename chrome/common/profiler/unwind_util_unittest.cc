@@ -5,19 +5,78 @@
 #include "chrome/common/profiler/unwind_util.h"
 
 #include "base/command_line.h"
+#include "base/profiler/profiler_buildflags.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
+#include "components/version_info/channel.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(UnwindPrerequisitesDeathTest, CannotInstallOutsideBrowser) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kProcessType, switches::kRendererProcess);
-  ASSERT_DEATH_IF_SUPPORTED(RequestUnwindPrerequisitesInstallation(), "");
-}
+namespace {
 
-TEST(UnwindPrerequisitesTest, CanInstallInsideBrowser) {
+using ::testing::_;
+
+// For `RequestUnwindPrerequisitesInstallation`-related unit tests below.
+class MockModuleUnwindPrerequisitesDelegate
+    : public UnwindPrerequisitesDelegate {
+ public:
+  MOCK_METHOD(void,
+              RequestInstallation,
+              (version_info::Channel channel),
+              (override));
+};
+
+TEST(UnwindPrerequisitesTest, RequestInstall) {
   // No process type switch implies browser process.
   *base::CommandLine::ForCurrentProcess() =
       base::CommandLine(base::CommandLine::NO_PROGRAM);
-  RequestUnwindPrerequisitesInstallation();
+  {
+    MockModuleUnwindPrerequisitesDelegate mock_delegate;
+
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL) &&           \
+    BUILDFLAG(ENABLE_ARM_CFI_TABLE) && defined(OFFICIAL_BUILD) && \
+    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    EXPECT_CALL(mock_delegate,
+                RequestInstallation(version_info::Channel::CANARY))
+        .Times(1);
+    EXPECT_CALL(mock_delegate, RequestInstallation(version_info::Channel::DEV))
+        .Times(1);
+
+    RequestUnwindPrerequisitesInstallation(version_info::Channel::CANARY,
+                                           &mock_delegate);
+    RequestUnwindPrerequisitesInstallation(version_info::Channel::DEV,
+                                           &mock_delegate);
+#else
+    EXPECT_CALL(mock_delegate, RequestInstallation(_)).Times(0);
+
+    RequestUnwindPrerequisitesInstallation(version_info::Channel::CANARY,
+                                           &mock_delegate);
+    RequestUnwindPrerequisitesInstallation(version_info::Channel::DEV,
+                                           &mock_delegate);
+#endif
+  }
+  MockModuleUnwindPrerequisitesDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, RequestInstallation(_)).Times(0);
+
+  RequestUnwindPrerequisitesInstallation(version_info::Channel::BETA,
+                                         &mock_delegate);
+  RequestUnwindPrerequisitesInstallation(version_info::Channel::STABLE,
+                                         &mock_delegate);
+  RequestUnwindPrerequisitesInstallation(version_info::Channel::UNKNOWN,
+                                         &mock_delegate);
 }
+
+TEST(UnwindPrerequisitesDeathTest, CannotRequestInstallOutsideBrowser) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kProcessType, switches::kRendererProcess);
+  MockModuleUnwindPrerequisitesDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, RequestInstallation(_)).Times(0);
+
+  ASSERT_DEATH_IF_SUPPORTED(RequestUnwindPrerequisitesInstallation(
+                                version_info::Channel::UNKNOWN, &mock_delegate),
+                            "");
+}
+
+}  // namespace
