@@ -189,8 +189,9 @@ BASE_FEATURE(kNtpFeedModule,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, Google Lens image search will be shown in the NTP Realbox.
-const base::Feature kNtpRealboxLensSearch{"NtpRealboxLensSearch",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNtpRealboxLensSearch,
+             "NtpRealboxLensSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, recipe tasks module will be shown.
 BASE_FEATURE(kNtpRecipeTasksModule,
