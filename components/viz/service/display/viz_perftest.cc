@@ -86,6 +86,9 @@ absl::optional<base::FilePath> UnzipFrameData(const std::string& group,
                  .AppendASCII(group)
                  .AppendASCII(name);
 
+  // We are dumping the contents of the zip into a folder so we need to clean
+  // out this folder.
+  base::DeletePathRecursively(out_path);
   if (!zip::Unzip(zip_path, out_path)) {
     LOG(ERROR) << "Failed to unzip frame data from: " << zip_path;
     return absl::nullopt;
