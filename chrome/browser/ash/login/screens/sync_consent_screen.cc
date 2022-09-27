@@ -436,10 +436,8 @@ void SyncConsentScreen::SetSyncEverythingEnabled(bool enabled) {
     syncer::UserSelectableTypeSet empty_set;
     sync_settings->SetSelectedTypes(enabled, empty_set);
 
-    if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-      syncer::UserSelectableOsTypeSet os_empty_set;
-      sync_settings->SetSelectedOsTypes(enabled, os_empty_set);
-    }
+    syncer::UserSelectableOsTypeSet os_empty_set;
+    sync_settings->SetSelectedOsTypes(enabled, os_empty_set);
   }
 }
 

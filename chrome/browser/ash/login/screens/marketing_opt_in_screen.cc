@@ -291,10 +291,8 @@ bool MarketingOptInScreen::ShouldShowOptionToSubscribe() {
   // we need to know whether the prefs have been loaded.
   sync_preferences::PrefServiceSyncable* prefs =
       PrefServiceSyncableFromProfile(ProfileManager::GetActiveUserProfile());
-  const bool sync_complete = ignore_pref_sync_for_testing_ ||
-                             (features::IsSyncSettingsCategorizationEnabled()
-                                  ? prefs->AreOsPrefsSyncing()
-                                  : prefs->IsSyncing());
+  const bool sync_complete =
+      ignore_pref_sync_for_testing_ || prefs->AreOsPrefsSyncing();
   // Do not show if the preferences cannot be synced
   if (!sync_complete)
     return false;
