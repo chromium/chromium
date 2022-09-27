@@ -175,7 +175,8 @@ void ValidateAndAddUsageFromPath(
     storage::mojom::CacheStorageOwner owner,
     const base::FilePath& profile_path,
     std::vector<std::tuple<storage::BucketLocator,
-                           storage::mojom::StorageUsageInfoPtr>>& usage_tuples,
+                           storage::mojom::StorageUsageInfoV2Ptr>>&
+        usage_tuples,
     bool is_origin_path = false) {
   if (!base::PathExists(index_file_directory_path)) {
     return;
@@ -277,16 +278,15 @@ void ValidateAndAddUsageFromPath(
                                              index_last_modified, index);
 
   usage_tuples.emplace_back(
-      bucket_locator,
-      storage::mojom::StorageUsageInfo::New(storage_key.origin(), storage_size,
-                                            file_info.last_modified));
+      bucket_locator, storage::mojom::StorageUsageInfoV2::New(
+                          storage_key, storage_size, file_info.last_modified));
   RecordIndexValidationResult(IndexResult::kOk);
 }
 
 void GetStorageKeyAndLastModifiedGotBucket(
-    storage::mojom::StorageUsageInfoPtr info,
+    storage::mojom::StorageUsageInfoV2Ptr info,
     base::OnceCallback<void(std::tuple<storage::BucketLocator,
-                                       storage::mojom::StorageUsageInfoPtr>)>
+                                       storage::mojom::StorageUsageInfoV2Ptr>)>
         callback,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
   storage::BucketLocator bucket_locator{};
@@ -295,11 +295,12 @@ void GetStorageKeyAndLastModifiedGotBucket(
   }
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     std::make_tuple(bucket_locator,
-                                     storage::mojom::StorageUsageInfo::New(
-                                         info->origin, info->total_size_bytes,
-                                         info->last_modified))));
+      base::BindOnce(
+          std::move(callback),
+          std::make_tuple(bucket_locator,
+                          storage::mojom::StorageUsageInfoV2::New(
+                              info->storage_key, info->total_size_bytes,
+                              info->last_modified))));
 }
 
 // Open the various cache directories' index files and extract their bucket
@@ -308,13 +309,13 @@ void GetStorageKeysAndLastModifiedOnTaskRunner(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
     std::vector<std::tuple<storage::BucketLocator,
-                           storage::mojom::StorageUsageInfoPtr>> usage_tuples,
+                           storage::mojom::StorageUsageInfoV2Ptr>> usage_tuples,
 
     base::FilePath profile_path,
     storage::mojom::CacheStorageOwner owner,
     base::OnceCallback<
         void(std::vector<std::tuple<storage::BucketLocator,
-                                    storage::mojom::StorageUsageInfoPtr>>)>
+                                    storage::mojom::StorageUsageInfoV2Ptr>>)>
         callback) {
   // Add entries to `usage_tuples` from the directory for default buckets
   // corresponding to first-party contexts.
@@ -374,21 +375,23 @@ void GetStorageKeysAndLastModifiedOnTaskRunner(
 
   // For any index file that didn't have bucket information, ensure that a
   // bucket exists for it and then populate the bucket ID in our structure.
-  const auto barrier_callback = base::BarrierCallback<
-      std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoPtr>>(
-      usage_tuples.size(), std::move(callback));
+  const auto barrier_callback =
+      base::BarrierCallback<std::tuple<storage::BucketLocator,
+                                       storage::mojom::StorageUsageInfoV2Ptr>>(
+          usage_tuples.size(), std::move(callback));
 
   for (const auto& usage_tuple : usage_tuples) {
     const storage::BucketLocator& bucket_locator = std::get<0>(usage_tuple);
-    const storage::mojom::StorageUsageInfoPtr& info = std::get<1>(usage_tuple);
+    const storage::mojom::StorageUsageInfoV2Ptr& info =
+        std::get<1>(usage_tuple);
     if (bucket_locator.id) {
       scheduler_task_runner->PostTask(
           FROM_HERE,
           base::BindOnce(
               barrier_callback,
               std::make_tuple(std::move(bucket_locator),
-                              storage::mojom::StorageUsageInfo::New(
-                                  info->origin, info->total_size_bytes,
+                              storage::mojom::StorageUsageInfoV2::New(
+                                  info->storage_key, info->total_size_bytes,
                                   info->last_modified))));
       continue;
     }
@@ -401,38 +404,40 @@ void GetStorageKeysAndLastModifiedOnTaskRunner(
         scheduler_task_runner,
         base::BindOnce(
             &GetStorageKeyAndLastModifiedGotBucket,
-            storage::mojom::StorageUsageInfo::New(
-                info->origin, info->total_size_bytes, info->last_modified),
+            storage::mojom::StorageUsageInfoV2::New(
+                info->storage_key, info->total_size_bytes, info->last_modified),
             barrier_callback));
   }
 }
 
-void AllOriginSizesReported(
+void AllStorageKeySizesReported(
     storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback callback,
-    std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
-  // We should return only one entry per origin, so condense down all results
-  // before passing them to the callback. We condense by adding total size
-  // bytes and using the latest last_modified value.
-  std::map<url::Origin, int64_t> origin_to_total_size_bytes;
-  std::map<url::Origin, base::Time> origin_to_last_modified;
+    std::vector<storage::mojom::StorageUsageInfoV2Ptr> usages) {
+  // We should return only one entry per StorageKey, so condense down all
+  // results before passing them to the callback. We condense by adding total
+  // size bytes and using the latest last_modified value.
+  std::map<blink::StorageKey, int64_t> storage_key_to_total_size_bytes;
+  std::map<blink::StorageKey, base::Time> storage_key_to_last_modified;
   for (const auto& usage : usages) {
-    origin_to_total_size_bytes[usage->origin] += usage->total_size_bytes;
+    storage_key_to_total_size_bytes[usage->storage_key] +=
+        usage->total_size_bytes;
     // Save off the most recent valid last modified time.
-    if (origin_to_last_modified.count(usage->origin) == 0 ||
+    if (storage_key_to_last_modified.count(usage->storage_key) == 0 ||
         (!usage->last_modified.is_null() &&
-         (origin_to_last_modified[usage->origin].is_null() ||
-          usage->last_modified > origin_to_last_modified[usage->origin]))) {
-      origin_to_last_modified[usage->origin] = usage->last_modified;
+         (storage_key_to_last_modified[usage->storage_key].is_null() ||
+          usage->last_modified >
+              storage_key_to_last_modified[usage->storage_key]))) {
+      storage_key_to_last_modified[usage->storage_key] = usage->last_modified;
     }
   }
 
-  std::vector<storage::mojom::StorageUsageInfoPtr> new_usages;
-  new_usages.reserve(origin_to_total_size_bytes.size());
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> new_usages;
+  new_usages.reserve(storage_key_to_total_size_bytes.size());
 
-  for (const auto& origin_usage_info : origin_to_total_size_bytes) {
-    new_usages.emplace_back(storage::mojom::StorageUsageInfo::New(
-        origin_usage_info.first, origin_usage_info.second,
-        origin_to_last_modified[origin_usage_info.first]));
+  for (const auto& storage_key_usage_info : storage_key_to_total_size_bytes) {
+    new_usages.emplace_back(storage::mojom::StorageUsageInfoV2::New(
+        storage_key_usage_info.first, storage_key_usage_info.second,
+        storage_key_to_last_modified[storage_key_usage_info.first]));
   }
 
   // On scheduler sequence.
@@ -440,17 +445,17 @@ void AllOriginSizesReported(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(new_usages)));
 }
 
-void OneOriginSizeReported(
-    base::OnceCallback<void(storage::mojom::StorageUsageInfoPtr)> callback,
-    const url::Origin origin,
+void OneStorageKeySizeReported(
+    base::OnceCallback<void(storage::mojom::StorageUsageInfoV2Ptr)> callback,
+    const blink::StorageKey storage_key,
     const base::Time last_modified,
     int64_t size) {
   // On scheduler sequence.
   DCHECK_NE(size, CacheStorage::kSizeUnknown);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), storage::mojom::StorageUsageInfo::New(
-                                              origin, size, last_modified)));
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                storage::mojom::StorageUsageInfoV2::New(
+                                    storage_key, size, last_modified)));
 }
 
 }  // namespace
@@ -589,7 +594,7 @@ void CacheStorageManager::GetAllStorageKeysUsage(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<
-      std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoPtr>>
+      std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoV2Ptr>>
       usages;
 
   if (IsMemoryBacked()) {
@@ -598,8 +603,8 @@ void CacheStorageManager::GetAllStorageKeysUsage(
         continue;
       const storage::BucketLocator& bucket_locator = bucket_details.first.first;
       usages.emplace_back(bucket_locator,
-                          storage::mojom::StorageUsageInfo::New(
-                              bucket_locator.storage_key.origin(),
+                          storage::mojom::StorageUsageInfoV2::New(
+                              bucket_locator.storage_key,
                               /*total_size_bytes=*/0,
                               /*last_modified=*/base::Time()));
     }
@@ -624,12 +629,13 @@ void CacheStorageManager::GetAllStorageKeysUsageGetSizes(
     storage::mojom::CacheStorageOwner owner,
     storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback callback,
     std::vector<std::tuple<storage::BucketLocator,
-                           storage::mojom::StorageUsageInfoPtr>> usage_tuples) {
+                           storage::mojom::StorageUsageInfoV2Ptr>>
+        usage_tuples) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The origin GURL and last modified times are set in |usages| but not the
   // size in bytes. Call each CacheStorage's Size() function to fill that out.
-  std::vector<storage::mojom::StorageUsageInfoPtr> usages;
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usages;
   if (usage_tuples.empty()) {
     scheduler_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(usages)));
@@ -637,26 +643,28 @@ void CacheStorageManager::GetAllStorageKeysUsageGetSizes(
   }
 
   const auto barrier_callback =
-      base::BarrierCallback<storage::mojom::StorageUsageInfoPtr>(
+      base::BarrierCallback<storage::mojom::StorageUsageInfoV2Ptr>(
           usage_tuples.size(),
-          base::BindOnce(&AllOriginSizesReported, std::move(callback)));
+          base::BindOnce(&AllStorageKeySizesReported, std::move(callback)));
 
   for (const auto& usage_tuple : usage_tuples) {
     const storage::BucketLocator& bucket_locator = std::get<0>(usage_tuple);
-    const storage::mojom::StorageUsageInfoPtr& info = std::get<1>(usage_tuple);
+    const storage::mojom::StorageUsageInfoV2Ptr& info =
+        std::get<1>(usage_tuple);
     if (info->total_size_bytes != CacheStorage::kSizeUnknown ||
         !IsValidQuotaStorageKey(bucket_locator.storage_key)) {
       scheduler_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(barrier_callback,
-                                    storage::mojom::StorageUsageInfo::New(
-                                        info->origin, info->total_size_bytes,
-                                        info->last_modified)));
+          FROM_HERE,
+          base::BindOnce(barrier_callback,
+                         storage::mojom::StorageUsageInfoV2::New(
+                             info->storage_key, info->total_size_bytes,
+                             info->last_modified)));
       continue;
     }
     CacheStorageHandle cache_storage = OpenCacheStorage(bucket_locator, owner);
     CacheStorage::From(cache_storage)
-        ->Size(base::BindOnce(&OneOriginSizeReported, barrier_callback,
-                              info->origin, info->last_modified));
+        ->Size(base::BindOnce(&OneStorageKeySizeReported, barrier_callback,
+                              info->storage_key, info->last_modified));
   }
 }
 
@@ -730,7 +738,7 @@ void CacheStorageManager::GetStorageKeys(
   }
 
   std::vector<
-      std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoPtr>>
+      std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoV2Ptr>>
       usage_tuples;
 
   cache_task_runner_->PostTask(
@@ -750,7 +758,8 @@ void CacheStorageManager::DeleteStorageKeyDataGotAllBucketInfo(
     base::OnceCallback<void(std::vector<blink::mojom::QuotaStatusCode>)>
         callback,
     std::vector<std::tuple<storage::BucketLocator,
-                           storage::mojom::StorageUsageInfoPtr>> usage_tuples) {
+                           storage::mojom::StorageUsageInfoV2Ptr>>
+        usage_tuples) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (usage_tuples.empty()) {
     std::vector<blink::mojom::QuotaStatusCode> results{
@@ -762,7 +771,7 @@ void CacheStorageManager::DeleteStorageKeyDataGotAllBucketInfo(
 
   int instance_count = 0;
   for (const std::tuple<storage::BucketLocator,
-                        storage::mojom::StorageUsageInfoPtr>& usage_tuple :
+                        storage::mojom::StorageUsageInfoV2Ptr>& usage_tuple :
        usage_tuples) {
     const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
     if (!bucket_locator.is_default ||
@@ -777,7 +786,7 @@ void CacheStorageManager::DeleteStorageKeyDataGotAllBucketInfo(
                                                            std::move(callback));
 
   for (const std::tuple<storage::BucketLocator,
-                        storage::mojom::StorageUsageInfoPtr>& usage_tuple :
+                        storage::mojom::StorageUsageInfoV2Ptr>& usage_tuple :
        usage_tuples) {
     const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
     if (!bucket_locator.is_default ||
@@ -834,7 +843,7 @@ void CacheStorageManager::DeleteStorageKeyData(
   // and either use the bucket locators from index files or directly delete any
   // unmigrated cache storage origin paths.
   std::vector<
-      std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoPtr>>
+      std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoV2Ptr>>
       usage_tuples;
   cache_task_runner_->PostTask(
       FROM_HERE,
@@ -936,7 +945,7 @@ void CacheStorageManager::DeleteBucketDidClose(
     storage::mojom::CacheStorageOwner owner,
     storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
     std::unique_ptr<CacheStorage> cache_storage,
-    int64_t origin_size) {
+    int64_t bucket_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(jkarlin): Deleting the storage leaves any unfinished operations
   // hanging, resulting in unresolved promises. Fix this by returning early from
@@ -945,7 +954,7 @@ void CacheStorageManager::DeleteBucketDidClose(
 
   quota_manager_proxy_->NotifyBucketModified(
       CacheStorageQuotaClient::GetClientTypeFromOwner(owner), bucket_locator.id,
-      -origin_size, base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+      -bucket_size, base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
       base::DoNothing());
 
   if (owner == storage::mojom::CacheStorageOwner::kCacheAPI)
@@ -1050,10 +1059,11 @@ base::FilePath CacheStorageManager::ConstructThirdPartyAndNonDefaultRootPath(
 void CacheStorageManager::ListStorageKeysOnTaskRunner(
     storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
     std::vector<std::tuple<storage::BucketLocator,
-                           storage::mojom::StorageUsageInfoPtr>> usage_tuples) {
+                           storage::mojom::StorageUsageInfoV2Ptr>>
+        usage_tuples) {
   std::vector<blink::StorageKey> out_storage_keys;
   for (const std::tuple<storage::BucketLocator,
-                        storage::mojom::StorageUsageInfoPtr>& usage_tuple :
+                        storage::mojom::StorageUsageInfoV2Ptr>& usage_tuple :
        usage_tuples) {
     const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
     if (!bucket_locator.id || !bucket_locator.is_default) {

@@ -741,17 +741,18 @@ class CacheStorageManagerTest : public testing::Test {
     run_loop->Quit();
   }
 
-  std::vector<storage::mojom::StorageUsageInfoPtr> GetAllStorageKeysUsage(
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> GetAllStorageKeysUsage(
       storage::mojom::CacheStorageOwner owner =
           storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::RunLoop loop;
-    std::vector<storage::mojom::StorageUsageInfoPtr> usage;
+    std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage;
     cache_manager_->GetAllStorageKeysUsage(
-        owner, base::BindLambdaForTesting(
-                   [&](std::vector<storage::mojom::StorageUsageInfoPtr> inner) {
-                     usage = std::move(inner);
-                     loop.Quit();
-                   }));
+        owner,
+        base::BindLambdaForTesting(
+            [&](std::vector<storage::mojom::StorageUsageInfoV2Ptr> inner) {
+              usage = std::move(inner);
+              loop.Quit();
+            }));
     loop.Run();
     return usage;
   }
@@ -1780,12 +1781,12 @@ TEST_F(CacheStorageManagerMemoryOnlyTest, GetAllStorageKeysUsage) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bar")));
 
-  std::vector<storage::mojom::StorageUsageInfoPtr> usage =
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage =
       GetAllStorageKeysUsage();
   ASSERT_EQ(2ULL, usage.size());
 
-  int storage_key1_index = usage[0]->origin == storage_key1_.origin() ? 0 : 1;
-  int storage_key2_index = usage[1]->origin == storage_key2_.origin() ? 1 : 0;
+  int storage_key1_index = usage[0]->storage_key == storage_key1_ ? 0 : 1;
+  int storage_key2_index = usage[1]->storage_key == storage_key2_ ? 1 : 0;
   EXPECT_NE(storage_key1_index, storage_key2_index);
 
   int64_t storage_key1_size = usage[storage_key1_index]->total_size_bytes;
@@ -1810,12 +1811,12 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, GetAllStorageKeysUsage) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bar")));
 
-  std::vector<storage::mojom::StorageUsageInfoPtr> usage =
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage =
       GetAllStorageKeysUsage();
   ASSERT_EQ(2ULL, usage.size());
 
-  int storage_key1_index = usage[0]->origin == storage_key1_.origin() ? 0 : 1;
-  int storage_key2_index = usage[1]->origin == storage_key2_.origin() ? 1 : 0;
+  int storage_key1_index = usage[0]->storage_key == storage_key1_ ? 0 : 1;
+  int storage_key2_index = usage[1]->storage_key == storage_key2_ ? 1 : 0;
   EXPECT_NE(storage_key1_index, storage_key2_index);
 
   int64_t storage_key1_size = usage[storage_key1_index]->total_size_bytes;
@@ -1889,23 +1890,21 @@ TEST_P(CacheStorageManagerTestP, GetAllStorageKeysUsageDifferentOwners) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bar")));
 
-  std::vector<storage::mojom::StorageUsageInfoPtr> usage_cache =
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_cache =
       GetAllStorageKeysUsage(storage::mojom::CacheStorageOwner::kCacheAPI);
   EXPECT_EQ(1ULL, usage_cache.size());
-  std::vector<storage::mojom::StorageUsageInfoPtr> usage_bgf =
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_bgf =
       GetAllStorageKeysUsage(
           storage::mojom::CacheStorageOwner::kBackgroundFetch);
   ASSERT_EQ(2ULL, usage_bgf.size());
 
-  int storage_key1_index =
-      blink::StorageKey(usage_bgf[0]->origin) == storage_key1_ ? 0 : 1;
-  int storage_key2_index =
-      blink::StorageKey(usage_bgf[1]->origin) == storage_key2_ ? 1 : 0;
+  int storage_key1_index = usage_bgf[0]->storage_key == storage_key1_ ? 0 : 1;
+  int storage_key2_index = usage_bgf[1]->storage_key == storage_key2_ ? 1 : 0;
   EXPECT_NE(storage_key1_index, storage_key2_index);
 
-  EXPECT_EQ(usage_cache[0]->origin, storage_key1_.origin());
-  EXPECT_EQ(usage_bgf[storage_key1_index]->origin, storage_key1_.origin());
-  EXPECT_EQ(usage_bgf[storage_key2_index]->origin, storage_key2_.origin());
+  EXPECT_EQ(usage_cache[0]->storage_key, storage_key1_);
+  EXPECT_EQ(usage_bgf[storage_key1_index]->storage_key, storage_key1_);
+  EXPECT_EQ(usage_bgf[storage_key2_index]->storage_key, storage_key2_);
 
   EXPECT_EQ(usage_cache[0]->total_size_bytes,
             usage_bgf[storage_key1_index]->total_size_bytes);
@@ -1958,7 +1957,7 @@ TEST_F(CacheStorageManagerTest, GetAllStorageKeysUsageWithOldIndex) {
   original_handle = CacheStorageCacheHandle();
 
   // Capture the size before the index has necessarily flushed to disk.
-  std::vector<storage::mojom::StorageUsageInfoPtr> usage =
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage =
       GetAllStorageKeysUsage();
   ASSERT_EQ(1ULL, usage.size());
   int64_t usage_before_close = usage[0]->total_size_bytes;
@@ -2017,14 +2016,14 @@ TEST_P(CacheStorageManagerTestP, GetAllStorageKeysUsageAggregateBucketUsages) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
 
-  std::vector<storage::mojom::StorageUsageInfoPtr> original_usage =
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> original_usage =
       GetAllStorageKeysUsage();
   ASSERT_EQ(2ULL, original_usage.size());
 
   int original_storage_key1_index =
-      blink::StorageKey(original_usage[0]->origin) == storage_key1_ ? 0 : 1;
+      original_usage[0]->storage_key == storage_key1_ ? 0 : 1;
   int original_storage_key2_index =
-      blink::StorageKey(original_usage[1]->origin) == storage_key2_ ? 1 : 0;
+      original_usage[1]->storage_key == storage_key2_ ? 1 : 0;
   EXPECT_NE(original_storage_key1_index, original_storage_key2_index);
 
   EXPECT_EQ(original_usage[original_storage_key1_index]->total_size_bytes,
@@ -2041,14 +2040,14 @@ TEST_P(CacheStorageManagerTestP, GetAllStorageKeysUsageAggregateBucketUsages) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
 
-  std::vector<storage::mojom::StorageUsageInfoPtr> new_usage =
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> new_usage =
       GetAllStorageKeysUsage();
   ASSERT_EQ(2ULL, new_usage.size());
 
   int new_storage_key1_index =
-      blink::StorageKey(new_usage[0]->origin) == storage_key1_ ? 0 : 1;
+      new_usage[0]->storage_key == storage_key1_ ? 0 : 1;
   int new_storage_key2_index =
-      blink::StorageKey(new_usage[1]->origin) == storage_key2_ ? 1 : 0;
+      new_usage[1]->storage_key == storage_key2_ ? 1 : 0;
   EXPECT_NE(new_storage_key1_index, new_storage_key2_index);
 
   EXPECT_EQ(new_usage[new_storage_key1_index]->total_size_bytes,
@@ -2063,10 +2062,10 @@ TEST_P(CacheStorageManagerTestP, GetStorageKeysIgnoresKeysFromNamedBuckets) {
   // `GetStorageKeys()` should only return storage keys associated with
   // default buckets, so create separate storage keys that we expect to not find
   // in the list returned by `GetStorageKeys()`.
-  for (const bool toggle : {false, true}) {
+  for (const bool partitioning_enabled : {false, true}) {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatureState(
-        net::features::kThirdPartyStoragePartitioning, toggle);
+        net::features::kThirdPartyStoragePartitioning, partitioning_enabled);
 
     url::Origin test_origin = url::Origin::Create(GURL("http://example4.com"));
 
@@ -2101,7 +2100,8 @@ TEST_P(CacheStorageManagerTestP, GetStorageKeysIgnoresKeysFromNamedBuckets) {
     ASSERT_EQ(2ULL, storage_keys.size());
     EXPECT_NE(storage_keys[0].origin(), test_origin);
     EXPECT_NE(storage_keys[1].origin(), test_origin);
-    ASSERT_EQ(3ULL, GetAllStorageKeysUsage().size());
+    ASSERT_EQ(partitioning_enabled ? 4ULL : 3ULL,
+              GetAllStorageKeysUsage().size());
 
     EXPECT_EQ(DeleteBucketData(bucket_locator1_),
               blink::mojom::QuotaStatusCode::kOk);
@@ -2753,14 +2753,26 @@ TEST_P(CacheStorageManagerTestP, DeleteStorageKeyData) {
     // buckets. The latter returns results aggregated by origin, but we can use
     // the sizes to know whether data was deleted.
     auto usages = GetAllStorageKeysUsage(owner);
-    EXPECT_EQ(2ULL, usages.size());
+    EXPECT_EQ(3ULL, usages.size());
 
-    int origin1_index = usages[0]->origin == storage_key1_.origin() ? 0 : 1;
-    int origin2_index = usages[1]->origin == storage_key2_.origin() ? 1 : 0;
-    EXPECT_NE(origin1_index, origin2_index);
+    int storage_key1_index = usages[0]->storage_key == storage_key1_   ? 0
+                             : usages[1]->storage_key == storage_key1_ ? 1
+                                                                       : 2;
+    int storage_key2_index = usages[0]->storage_key == storage_key2_   ? 0
+                             : usages[1]->storage_key == storage_key2_ ? 1
+                                                                       : 2;
+    int partitioned_storage_key1_index =
+        usages[0]->storage_key == partitioned_storage_key1   ? 0
+        : usages[1]->storage_key == partitioned_storage_key1 ? 1
+                                                             : 2;
+    EXPECT_NE(storage_key1_index, storage_key2_index);
+    EXPECT_NE(storage_key2_index, partitioned_storage_key1_index);
+    EXPECT_NE(partitioned_storage_key1_index, storage_key1_index);
 
-    EXPECT_EQ(2 * usages[origin2_index]->total_size_bytes,
-              usages[origin1_index]->total_size_bytes);
+    EXPECT_EQ(usages[storage_key2_index]->total_size_bytes,
+              usages[storage_key1_index]->total_size_bytes);
+    EXPECT_EQ(usages[partitioned_storage_key1_index]->total_size_bytes,
+              usages[storage_key2_index]->total_size_bytes);
 
     EXPECT_EQ(DeleteStorageKeyData(storage_key1_, owner),
               blink::mojom::QuotaStatusCode::kOk);
@@ -2772,19 +2784,31 @@ TEST_P(CacheStorageManagerTestP, DeleteStorageKeyData) {
     // data when `DeleteStorageKeyData()` is called, but when we do, update this
     // test condition.
     usages = GetAllStorageKeysUsage(owner);
-    EXPECT_EQ(2ULL, usages.size());
+    EXPECT_EQ(3ULL, usages.size());
 
-    origin1_index = usages[0]->origin == storage_key1_.origin() ? 0 : 1;
-    origin2_index = usages[1]->origin == storage_key2_.origin() ? 1 : 0;
-    EXPECT_NE(origin1_index, origin2_index);
+    storage_key1_index = usages[0]->storage_key == storage_key1_   ? 0
+                         : usages[1]->storage_key == storage_key1_ ? 1
+                                                                   : 2;
+    storage_key2_index = usages[0]->storage_key == storage_key2_   ? 0
+                         : usages[1]->storage_key == storage_key2_ ? 1
+                                                                   : 2;
+    partitioned_storage_key1_index =
+        usages[0]->storage_key == partitioned_storage_key1   ? 0
+        : usages[1]->storage_key == partitioned_storage_key1 ? 1
+                                                             : 2;
+    EXPECT_NE(storage_key1_index, storage_key2_index);
+    EXPECT_NE(storage_key2_index, partitioned_storage_key1_index);
+    EXPECT_NE(partitioned_storage_key1_index, storage_key1_index);
 
-    EXPECT_EQ(2 * usages[origin2_index]->total_size_bytes,
-              usages[origin1_index]->total_size_bytes);
+    EXPECT_EQ(usages[storage_key2_index]->total_size_bytes,
+              usages[storage_key1_index]->total_size_bytes);
+    EXPECT_EQ(usages[partitioned_storage_key1_index]->total_size_bytes,
+              usages[storage_key2_index]->total_size_bytes);
 
     EXPECT_EQ(DeleteStorageKeyData(storage_key2_, owner),
               blink::mojom::QuotaStatusCode::kOk);
 
-    EXPECT_EQ(1ULL, GetAllStorageKeysUsage(owner).size());
+    EXPECT_EQ(2ULL, GetAllStorageKeysUsage(owner).size());
 
     if (!MemoryOnly()) {
       auto* legacy_manager =
@@ -2997,7 +3021,7 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
               base::RepeatingCallback<void(const proto::CacheStorageIndex&,
                                            const proto::CacheStorageIndex&,
                                            int64_t)> test_logic) {
-    std::vector<storage::mojom::StorageUsageInfoPtr> usages =
+    std::vector<storage::mojom::StorageUsageInfoV2Ptr> usages =
         GetAllStorageKeysUsage();
     ASSERT_TRUE(usages.empty());
 
@@ -3047,7 +3071,7 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
     int64_t total_usage = -1;
     usages = GetAllStorageKeysUsage();
     for (auto& usage : usages) {
-      if (usage->origin == bucket_locator1_.storage_key.origin()) {
+      if (usage->storage_key == bucket_locator1_.storage_key) {
         total_usage = usage->total_size_bytes;
         break;
       }

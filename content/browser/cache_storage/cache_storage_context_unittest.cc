@@ -106,7 +106,7 @@ TEST_F(CacheStorageContextTest, DefaultBucketCreatedOnAddReceiver) {
   // completed.
   base::RunLoop loop;
   cache_storage_context_->GetAllStorageKeysInfo(base::BindLambdaForTesting(
-      [&](std::vector<storage::mojom::StorageUsageInfoPtr> inner) {
+      [&](std::vector<storage::mojom::StorageUsageInfoV2Ptr> inner) {
         loop.Quit();
       }));
   loop.Run();

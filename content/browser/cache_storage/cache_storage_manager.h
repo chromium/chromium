@@ -156,7 +156,7 @@ class CONTENT_EXPORT CacheStorageManager
       storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
           callback,
       std::vector<std::tuple<storage::BucketLocator,
-                             storage::mojom::StorageUsageInfoPtr>>
+                             storage::mojom::StorageUsageInfoV2Ptr>>
           usage_tuples);
 
   void DeleteStorageKeyDataGotAllBucketInfo(
@@ -165,7 +165,7 @@ class CONTENT_EXPORT CacheStorageManager
       base::OnceCallback<void(std::vector<blink::mojom::QuotaStatusCode>)>
           callback,
       std::vector<std::tuple<storage::BucketLocator,
-                             storage::mojom::StorageUsageInfoPtr>>
+                             storage::mojom::StorageUsageInfoV2Ptr>>
           usage_tuples);
 
   void GetBucketUsageDidGetExists(
@@ -185,7 +185,7 @@ class CONTENT_EXPORT CacheStorageManager
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
       std::unique_ptr<CacheStorage> cache_storage,
-      int64_t origin_size);
+      int64_t bucket_size);
 
   scoped_refptr<base::SequencedTaskRunner> cache_task_runner() const {
     return cache_task_runner_;
@@ -198,7 +198,7 @@ class CONTENT_EXPORT CacheStorageManager
   void ListStorageKeysOnTaskRunner(
       storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
       std::vector<std::tuple<storage::BucketLocator,
-                             storage::mojom::StorageUsageInfoPtr>>
+                             storage::mojom::StorageUsageInfoV2Ptr>>
           usage_tuples);
 
   bool IsMemoryBacked() const { return profile_path_.empty(); }
