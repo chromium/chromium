@@ -2203,25 +2203,6 @@ TEST_F(TemplateURLServiceTest, LastModifiedTimeUpdate) {
   EXPECT_EQ(update_last_modified, reloaded_last_modified);
 }
 
-// Tests checks that Search.DefaultSearchChangeOrigin histogram is correctly
-// emitted when TemplateURLService is not yet loaded.
-TEST_F(TemplateURLServiceTest, ChangeDefaultEngineBeforeLoad) {
-  TemplateURL* search_engine1 = model()->Add(
-      std::make_unique<TemplateURL>(*GenerateDummyTemplateURLData("keyword1")));
-  DCHECK(search_engine1);
-  TemplateURL* search_engine2 = model()->Add(
-      std::make_unique<TemplateURL>(*GenerateDummyTemplateURLData("keyword2")));
-  DCHECK(search_engine2);
-
-  base::HistogramTester histogram_tester;
-  model()->SetUserSelectedDefaultSearchProvider(search_engine1);
-  histogram_tester.ExpectTotalCount("Search.DefaultSearchChangeOrigin", 1);
-  model()->SetUserSelectedDefaultSearchProvider(search_engine1);
-  histogram_tester.ExpectTotalCount("Search.DefaultSearchChangeOrigin", 1);
-  model()->SetUserSelectedDefaultSearchProvider(search_engine2);
-  histogram_tester.ExpectTotalCount("Search.DefaultSearchChangeOrigin", 2);
-}
-
 TEST_F(TemplateURLServiceTest, GetDefaultSearchProviderIgnoringExtensions) {
   test_util()->VerifyLoad();
 

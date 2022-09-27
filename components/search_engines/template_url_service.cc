@@ -1904,9 +1904,6 @@ void TemplateURLService::ApplyDefaultSearchChange(
   if (!ApplyDefaultSearchChangeNoMetrics(data, source))
     return;
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Search.DefaultSearchChangeOrigin", dsp_change_origin_, DSP_CHANGE_MAX);
-
   if (GetDefaultSearchProvider() &&
       GetDefaultSearchProvider()->HasGoogleBaseURLs(search_terms_data()) &&
       !dsp_change_callback_.is_null())
