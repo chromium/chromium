@@ -16,10 +16,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace syncer {
 namespace {
 
@@ -33,16 +29,14 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    // Check for OS types. This includes types that used to be browser types,
-    // like "apps" and "preferences".
-    absl::optional<UserSelectableOsType> os_type =
-        GetUserSelectableOsTypeFromString(type_name);
-    if (os_type.has_value()) {
-      const char* os_pref = SyncPrefs::GetPrefNameForOsType(*os_type);
-      if (os_pref)
-        prefs->SetValue(os_pref, base::Value(false));
-    }
+  // Check for OS types. This includes types that used to be browser types,
+  // like "apps" and "preferences".
+  absl::optional<UserSelectableOsType> os_type =
+      GetUserSelectableOsTypeFromString(type_name);
+  if (os_type.has_value()) {
+    const char* os_pref = SyncPrefs::GetPrefNameForOsType(*os_type);
+    if (os_pref)
+      prefs->SetValue(os_pref, base::Value(false));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

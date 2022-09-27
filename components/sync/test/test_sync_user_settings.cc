@@ -98,9 +98,7 @@ ModelTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
   types.PutAll(AlwaysPreferredUserTypes());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    types.PutAll(UserSelectableOsTypesToModelTypes(GetSelectedOsTypes()));
-  }
+  types.PutAll(UserSelectableOsTypesToModelTypes(GetSelectedOsTypes()));
 #endif
   types.PutAll(ControlTypes());
   return types;
