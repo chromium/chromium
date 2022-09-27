@@ -85,14 +85,14 @@ class COMPONENT_EXPORT(ASH_POLICY) WeeklyTime {
       const enterprise_management::WeeklyTimeProto& container,
       absl::optional<int> timezone_offset);
 
-  // Return WeeklyTime structure from Value in format:
+  // Return WeeklyTime structure from Value::Dict in format:
   // { "day_of_week" : int # value is from 1 to 7 (1 = Monday, 2 = Tuesday,
   // etc.)
   //   "time" : int # in milliseconds from the beginning of the day.
   // }.
   // Return nullptr if WeeklyTime structure isn't correct.
-  static std::unique_ptr<WeeklyTime> ExtractFromValue(
-      const base::Value* value,
+  static std::unique_ptr<WeeklyTime> ExtractFromDict(
+      const base::Value::Dict& dict,
       absl::optional<int> timezone_offset);
 
   // Return the |time| in GMT in WeeklyTime structure.

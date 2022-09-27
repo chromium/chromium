@@ -28,9 +28,9 @@ WeeklyTimeInterval& WeeklyTimeInterval::operator=(
     const WeeklyTimeInterval& rhs) = default;
 
 base::Value WeeklyTimeInterval::ToValue() const {
-  base::Value interval(base::Value::Type::DICTIONARY);
-  interval.SetKey(kStart, start_.ToValue());
-  interval.SetKey(kEnd, end_.ToValue());
+  base::Value interval(base::Value::Type::DICT);
+  interval.GetDict().Set(kStart, start_.ToValue());
+  interval.GetDict().Set(kEnd, end_.ToValue());
   return interval;
 }
 
@@ -59,17 +59,23 @@ std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromProto(
 }
 
 // static
-std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromValue(
-    const base::Value* value,
+std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromDict(
+    const base::Value::Dict& dict,
     absl::optional<int> timezone_offset) {
-  if (!value || !value->FindDictKey(kStart) || !value->FindDictKey(kEnd)) {
-    LOG(WARNING) << "Interval without start or/and end.";
+  const base::Value* start_value = dict.Find(kStart);
+  if (!start_value) {
+    LOG(WARNING) << "Interval without start.";
     return nullptr;
   }
+  const base::Value* end_value = dict.Find(kEnd);
+  if (!end_value) {
+    LOG(WARNING) << "Interval without end.";
+    return nullptr;
+  }
+
   auto start =
-      WeeklyTime::ExtractFromValue(value->FindDictKey(kStart), timezone_offset);
-  auto end =
-      WeeklyTime::ExtractFromValue(value->FindDictKey(kEnd), timezone_offset);
+      WeeklyTime::ExtractFromDict(start_value->GetDict(), timezone_offset);
+  auto end = WeeklyTime::ExtractFromDict(end_value->GetDict(), timezone_offset);
   if (!start || !end)
     return nullptr;
   return std::make_unique<WeeklyTimeInterval>(*start, *end);

@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(ASH_POLICY) WeeklyTimeInterval {
       const enterprise_management::WeeklyTimeIntervalProto& container,
       absl::optional<int> timezone_offset);
 
-  // Return time interval made from Value in format:
+  // Return time interval made from Value::Dict in format:
   // { "start" : WeeklyTime,
   //   "end" : WeeklyTime }
   // WeeklyTime dictionary format:
@@ -73,9 +73,9 @@ class COMPONENT_EXPORT(ASH_POLICY) WeeklyTimeInterval {
   //   "time" : int # in milliseconds from the beginning of the day.
   //   "timezone_offset" : int # in milliseconds, how much time ahead of GMT.
   // }
-  // Return nullptr if value contains an invalid interval.
-  static std::unique_ptr<WeeklyTimeInterval> ExtractFromValue(
-      const base::Value* value,
+  // Return nullptr if `dict` contains an invalid interval.
+  static std::unique_ptr<WeeklyTimeInterval> ExtractFromDict(
+      const base::Value::Dict& dict,
       absl::optional<int> timezone_offset);
 
   WeeklyTime start() const { return start_; }

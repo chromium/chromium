@@ -118,7 +118,7 @@ void SnapshotHoursPolicyService::UpdatePolicy() {
     if (!entry.is_dict())
       continue;
     auto interval =
-        policy::WeeklyTimeInterval::ExtractFromValue(&entry, -offset);
+        policy::WeeklyTimeInterval::ExtractFromDict(entry.GetDict(), -offset);
     if (interval)
       intervals_.push_back(*interval);
   }
