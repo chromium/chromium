@@ -454,8 +454,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-                convertView = layoutInflater.inflate(
-                        R.layout.personalized_signin_promo_view_recent_tabs, parent, false);
+                convertView =
+                        layoutInflater.inflate(R.layout.sync_promo_view_recent_tabs, parent, false);
             }
             mRecentTabsManager.setUpSyncPromoView(
                     convertView.findViewById(R.id.signin_promo_view_container));
