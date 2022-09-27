@@ -58,6 +58,12 @@ declare_args() {
   # action("keystone_registration_framework") below).  There are some tests
   # where we'd like for it to be disabled. (https://crbug.com/909080)
   enable_keystone_registration_framework = true
+
+  # On macOS, `is_chrome_branded` builds that have been signed locally will not
+  # launch because certain entitlements are tied to the official Google code
+  # signing identity. If `include_branded_entitlements` is set to false, these
+  # entitlements will be skipped.
+  include_branded_entitlements = true
 }
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
@@ -692,7 +698,7 @@ if (is_win) {
 
   compile_entitlements("entitlements") {
     entitlements_templates = [ "app/app-entitlements.plist" ]
-    if (is_chrome_branded) {
+    if (is_chrome_branded && include_branded_entitlements) {
       # These entitlements are bound to the official Google Chrome signing
       # certificate and will not necessarily work in any other build.
       entitlements_templates += [ "app/app-entitlements-chrome.plist" ]

@@ -77,9 +77,9 @@ release system.
 If you attempt to sign an `is_chrome_branded=true` build locally, the app will
 fail to launch because certain entitlements are tied to the official Google code
 signing identity/certificate. To test an `is_chrome_branded=true` build locally,
-replace the contents of
-[`app-entitlements-chrome.plist`](../../../app/app-entitlements-chrome.plist) with
-an empty plist.
+build with `include_branded_entitlements=false` or replace the contents of
+[`app-entitlements-chrome.plist`](../../../app/app-entitlements-chrome.plist)
+with an empty plist.
 
 ### System Detached Signatures
 
