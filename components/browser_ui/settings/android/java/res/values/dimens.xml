@@ -7,4 +7,5 @@ found in the LICENSE file.
 
 <resources>
     <dimen name="pref_spinner_padding_end">8dp</dimen>
+    <dimen name="long_summary_text_message_preference_padding_bottom">16sp</dimen>
 </resources>
