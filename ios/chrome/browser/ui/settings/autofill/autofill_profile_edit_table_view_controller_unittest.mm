@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -63,8 +64,10 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
  protected:
   AutofillProfileEditTableViewControllerTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
+    test_cbs_builder.AddTestingFactory(
+        ios::WebDataServiceFactory::GetInstance(),
+        ios::WebDataServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = test_cbs_builder.Build();
-    chrome_browser_state_->CreateWebDataService();
     personal_data_manager_ =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             chrome_browser_state_.get());

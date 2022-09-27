@@ -21,6 +21,7 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
+#include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -38,12 +39,11 @@ class SyncServiceFactoryTest : public PlatformTest {
     browser_state_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = browser_state_builder.Build();
-  }
-
-  void SetUp() override {
     // Some services will only be created if there is a WebDataService.
-    chrome_browser_state_->CreateWebDataService();
+    browser_state_builder.AddTestingFactory(
+        ios::WebDataServiceFactory::GetInstance(),
+        ios::WebDataServiceFactory::GetDefaultFactory());
+    chrome_browser_state_ = browser_state_builder.Build();
   }
 
   void TearDown() override {

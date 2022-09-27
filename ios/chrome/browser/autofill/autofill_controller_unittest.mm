@@ -206,6 +206,11 @@ class AutofillControllerTest : public PlatformTest {
         base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
                             web::BrowserState,
                             password_manager::MockPasswordStoreInterface>));
+    // Profile import requires a PersonalDataManager which itself needs the
+    // WebDataService; this is not initialized on a TestChromeBrowserState by
+    // default.
+    builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
+                              ios::WebDataServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
 
     web::WebState::CreateParams params(browser_state_.get());
@@ -301,11 +306,6 @@ class AutofillControllerTest : public PlatformTest {
 
 void AutofillControllerTest::SetUp() {
   PlatformTest::SetUp();
-
-  // Profile import requires a PersonalDataManager which itself needs the
-  // WebDataService; this is not initialized on a TestChromeBrowserState by
-  // default.
-  browser_state_->CreateWebDataService();
 
   // Create a PasswordController instance that will handle set up for renderer
   // ids.

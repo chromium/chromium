@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -31,12 +32,14 @@ class AutofillCreditCardTableViewControllerTest
  protected:
   AutofillCreditCardTableViewControllerTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = test_cbs_builder.Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     // Credit card import requires a PersonalDataManager which itself needs the
     // WebDataService; this is not initialized on a TestChromeBrowserState by
     // default.
-    chrome_browser_state_->CreateWebDataService();
+    test_cbs_builder.AddTestingFactory(
+        ios::WebDataServiceFactory::GetInstance(),
+        ios::WebDataServiceFactory::GetDefaultFactory());
+    chrome_browser_state_ = test_cbs_builder.Build();
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 
     // Set circular SyncService dependency to null.
     autofill::PersonalDataManagerFactory::GetForBrowserState(

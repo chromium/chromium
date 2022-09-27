@@ -7,14 +7,12 @@
 #import <tuple>
 
 #import "base/base_paths.h"
-#import "base/bind.h"
 #import "base/callback_helpers.h"
 #import "base/files/file_util.h"
 #import "base/location.h"
 #import "base/logging.h"
 #import "base/memory/ptr_util.h"
 #import "base/path_service.h"
-#import "base/run_loop.h"
 #import "base/task/thread_pool.h"
 #import "base/test/test_file_util.h"
 #import "base/threading/thread_task_runner_handle.h"
@@ -25,12 +23,9 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/user_prefs/user_prefs.h"
-#import "components/webdata_services/web_data_service_wrapper.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
-#import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "net/url_request/url_request_test_util.h"
@@ -38,17 +33,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
-  const base::FilePath& browser_state_path = context->GetStatePath();
-  return std::make_unique<WebDataServiceWrapper>(
-      browser_state_path, GetApplicationContext()->GetApplicationLocale(),
-      web::GetUIThreadTaskRunner({}), base::DoNothing());
-}
-
-}  // namespace
 
 TestChromeBrowserState::TestChromeBrowserState(
     TestChromeBrowserState* original_browser_state,
@@ -250,18 +234,6 @@ void TestChromeBrowserState::ClearNetworkingHistorySince(
 net::URLRequestContextGetter* TestChromeBrowserState::CreateRequestContext(
     ProtocolHandlerMap* protocol_handlers) {
   return new net::TestURLRequestContextGetter(web::GetIOThreadTaskRunner({}));
-}
-
-void TestChromeBrowserState::CreateWebDataService() {
-  std::ignore =
-      ios::WebDataServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          this, base::BindRepeating(&BuildWebDataService));
-
-  // Wait a bit after creating the WebDataService to allow the initialisation
-  // to complete (otherwise the TestChromeBrowserState may be destroyed before
-  // initialisation of the database is complete which leads to SQL init errors).
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
 }
 
 sync_preferences::TestingPrefServiceSyncable*

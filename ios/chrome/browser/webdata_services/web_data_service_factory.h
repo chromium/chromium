@@ -57,6 +57,9 @@ class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
 
   static WebDataServiceFactory* GetInstance();
 
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
   WebDataServiceFactory(const WebDataServiceFactory&) = delete;
   WebDataServiceFactory& operator=(const WebDataServiceFactory&) = delete;
 

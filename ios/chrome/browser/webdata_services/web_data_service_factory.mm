@@ -27,6 +27,17 @@
 
 namespace ios {
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
+  const base::FilePath& browser_state_path = context->GetStatePath();
+  return std::make_unique<WebDataServiceWrapper>(
+      browser_state_path, GetApplicationContext()->GetApplicationLocale(),
+      web::GetUIThreadTaskRunner({}), base::DoNothing());
+}
+
+}  // namespace
+
 // static
 WebDataServiceWrapper* WebDataServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state,
@@ -93,6 +104,12 @@ WebDataServiceFactory* WebDataServiceFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+BrowserStateKeyedServiceFactory::TestingFactory
+WebDataServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildWebDataService);
+}
+
 WebDataServiceFactory::WebDataServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "WebDataService",
@@ -102,10 +119,7 @@ WebDataServiceFactory::~WebDataServiceFactory() {}
 
 std::unique_ptr<KeyedService> WebDataServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  const base::FilePath& browser_state_path = context->GetStatePath();
-  return std::make_unique<WebDataServiceWrapper>(
-      browser_state_path, GetApplicationContext()->GetApplicationLocale(),
-      web::GetUIThreadTaskRunner({}), base::DoNothing());
+  return BuildWebDataService(context);
 }
 
 web::BrowserState* WebDataServiceFactory::GetBrowserStateToUse(
