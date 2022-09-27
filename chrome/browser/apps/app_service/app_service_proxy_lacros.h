@@ -82,7 +82,7 @@ class AppServiceProxyLacros : public KeyedService,
   AppServiceProxyLacros& operator=(const AppServiceProxyLacros&) = delete;
   ~AppServiceProxyLacros() override;
 
-  void ReInitializeForTesting(Profile* profile);
+  void ReinitializeForTesting(Profile* profile);
 
   Profile* profile() const { return profile_; }
 
@@ -421,6 +421,9 @@ class AppServiceProxyLacros : public KeyedService,
  private:
   // For access to Initialize.
   friend class AppServiceProxyFactory;
+
+  // For test access to OnApps.
+  FRIEND_TEST_ALL_PREFIXES(AppServiceProxyTest, ReinitializeClearsCache);
 };
 
 }  // namespace apps

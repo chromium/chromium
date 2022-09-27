@@ -296,10 +296,11 @@ class AppContextMenuTest : public AppListTestBase {
                         bool platform_app,
                         AppListControllerDelegate::Pinnable pinnable,
                         extensions::LaunchType launch_type) {
+    app_service_test_.SetUp(profile());
+
     scoped_refptr<extensions::Extension> store = MakeApp(app_id, platform_app);
     service_->AddExtension(store.get());
     service_->EnableExtension(app_id);
-    app_service_test_.SetUp(profile());
 
     controller_ = std::make_unique<FakeAppListControllerDelegate>();
     controller_->SetAppPinnable(app_id, pinnable);
@@ -344,9 +345,10 @@ class AppContextMenuTest : public AppListTestBase {
   }
 
   void TestChromeApp() {
+    app_service_test_.SetUp(profile());
+
     scoped_refptr<extensions::Extension> store = MakeChromeApp();
     service_->AddExtension(store.get());
-    app_service_test_.SetUp(profile());
 
     controller_ = std::make_unique<FakeAppListControllerDelegate>();
     AppServiceContextMenu menu(menu_delegate(), profile(),
@@ -406,9 +408,10 @@ TEST_F(AppContextMenuTest, ChromeAppInRecentAppsList) {
   base::test::ScopedFeatureList feature_list(
       ash::features::kProductivityLauncher);
 
+  app_service_test().SetUp(profile());
+
   scoped_refptr<extensions::Extension> app = MakeChromeApp();
   service_->AddExtension(app.get());
-  app_service_test().SetUp(profile());
 
   // Simulate a context menu in the recent apps row.
   AppServiceContextMenu menu(menu_delegate(), profile(),

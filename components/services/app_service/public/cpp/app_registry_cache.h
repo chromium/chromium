@@ -198,6 +198,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
   bool IsAppTypeInitialized(AppType app_type) const;
 
+  // Clears all apps from the cache.
+  void ReinitializeForTesting();
+
  private:
   friend class AppRegistryCacheTest;
   friend class PublisherTest;

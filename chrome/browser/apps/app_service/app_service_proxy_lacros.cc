@@ -66,7 +66,7 @@ AppServiceProxyLacros::AppServiceProxyLacros(Profile* profile)
 
 AppServiceProxyLacros::~AppServiceProxyLacros() = default;
 
-void AppServiceProxyLacros::ReInitializeForTesting(Profile* profile) {
+void AppServiceProxyLacros::ReinitializeForTesting(Profile* profile) {
   // Some test code creates a profile and profile-linked services, like the App
   // Service, before the profile is fully initialized. Such tests can call this
   // after full profile initialization to ensure the App Service implementation
@@ -74,6 +74,8 @@ void AppServiceProxyLacros::ReInitializeForTesting(Profile* profile) {
   crosapi_receiver_.reset();
   profile_ = profile;
   is_using_testing_profile_ = true;
+  app_registry_cache_.ReinitializeForTesting();  // IN-TEST
+
   Initialize();
 }
 

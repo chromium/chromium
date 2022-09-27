@@ -118,7 +118,7 @@ ExtensionAppsChromeOs::ExtensionAppsChromeOs(AppServiceProxy* proxy,
 ExtensionAppsChromeOs::~ExtensionAppsChromeOs() {
   app_window_registry_.Reset();
 
-  // In unit tests, AppServiceProxy might be ReInitializeForTesting, so
+  // In unit tests, AppServiceProxy might be ReinitializeForTesting, so
   // ExtensionApps might be destroyed without calling Shutdown, so arc_prefs_
   // needs to be removed from observer in the destructor function.
   if (arc_prefs_) {

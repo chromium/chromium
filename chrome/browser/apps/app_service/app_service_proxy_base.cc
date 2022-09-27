@@ -115,7 +115,7 @@ AppServiceProxyBase::AppServiceProxyBase(Profile* profile)
 
 AppServiceProxyBase::~AppServiceProxyBase() = default;
 
-void AppServiceProxyBase::ReInitializeForTesting(
+void AppServiceProxyBase::ReinitializeForTesting(
     Profile* profile,
     base::OnceClosure read_completed_for_testing,
     base::OnceClosure write_completed_for_testing) {
@@ -126,6 +126,8 @@ void AppServiceProxyBase::ReInitializeForTesting(
   app_service_.reset();
   profile_ = profile;
   is_using_testing_profile_ = true;
+  app_registry_cache_.ReinitializeForTesting();  // IN-TEST
+
   if (base::FeatureList::IsEnabled(kAppServicePreferredAppsWithoutMojom)) {
     preferred_apps_impl_ = std::make_unique<apps::PreferredAppsImpl>(
         this, profile ? profile->GetPath() : base::FilePath(),

@@ -23,7 +23,7 @@ AppServiceTest::~AppServiceTest() = default;
 
 void AppServiceTest::SetUp(Profile* profile) {
   app_service_proxy_ = AppServiceProxyFactory::GetForProfile(profile);
-  app_service_proxy_->ReInitializeForTesting(profile);
+  app_service_proxy_->ReinitializeForTesting(profile);
 }
 
 void AppServiceTest::UninstallAllApps(Profile* profile) {

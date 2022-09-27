@@ -439,13 +439,13 @@ TEST_F(ExtensionAppTest, Build) {
 }
 
 TEST_F(ExtensionAppTest, HideWebStore) {
+  app_service_test_.SetUp(profile());
+
   // Install a "web store" app.
   scoped_refptr<extensions::Extension> store =
       MakeApp("webstore", "0.0", "http://google.com",
               std::string(extensions::kWebStoreAppId));
   service_->AddExtension(store.get());
-
-  app_service_test_.SetUp(profile());
 
   // Web store should be present in the model.
   FakeAppListModelUpdater model_updater1(/*profile=*/nullptr,

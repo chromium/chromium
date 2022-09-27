@@ -286,6 +286,19 @@ bool AppRegistryCache::IsAppTypeInitialized(apps::AppType app_type) const {
   return base::Contains(initialized_app_types_, app_type);
 }
 
+void AppRegistryCache::ReinitializeForTesting() {
+  mojom_states_.clear();
+  states_.clear();
+  mojom_deltas_in_progress_.clear();
+  mojom_deltas_pending_.clear();
+  deltas_in_progress_.clear();
+  deltas_pending_.clear();
+  in_progress_initialized_app_types_.clear();
+
+  // We can't clear initialized_app_types_ here as observers may expect each
+  // type to be initialized only once.
+}
+
 void AppRegistryCache::OnAppTypeInitialized() {
   if (in_progress_initialized_app_types_.empty()) {
     return;

@@ -84,7 +84,7 @@ class AppServiceProxyBase : public KeyedService,
   AppServiceProxyBase& operator=(const AppServiceProxyBase&) = delete;
   ~AppServiceProxyBase() override;
 
-  void ReInitializeForTesting(
+  void ReinitializeForTesting(
       Profile* profile,
       base::OnceClosure read_completed_for_testing = base::OnceClosure(),
       base::OnceClosure write_completed_for_testing = base::OnceClosure());

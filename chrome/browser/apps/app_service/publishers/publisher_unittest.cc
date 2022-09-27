@@ -1066,15 +1066,16 @@ TEST_F(BorealisPublisherTest, BorealisAppsAllowed) {
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(PublisherTest, ExtensionAppsOnApps) {
+  // Re-init AppService to verify the init process.
+  AppServiceTest app_service_test;
+  app_service_test.SetUp(profile());
+
   // Install a "web store" app.
   scoped_refptr<extensions::Extension> store =
       MakeExtensionApp("webstore", "0.0", "http://google.com",
                        std::string(extensions::kWebStoreAppId));
   service_->AddExtension(store.get());
 
-  // Re-init AppService to verify the init process.
-  AppServiceTest app_service_test;
-  app_service_test.SetUp(profile());
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
             base::Time(), base::Time(), apps::Permissions(),
@@ -1123,9 +1124,9 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
 
 TEST_F(PublisherTest, WebAppsOnApps) {
   const std::string kAppName = "Web App";
-  auto app_id = CreateWebApp(kAppName);
   AppServiceTest app_service_test_;
   app_service_test_.SetUp(profile());
+  auto app_id = CreateWebApp(kAppName);
 
   VerifyApp(AppType::kWeb, app_id, kAppName, Readiness::kReady,
             InstallReason::kSync, InstallSource::kBrowser, {}, base::Time(),
