@@ -2364,6 +2364,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicMultiPort.AltPortFailureWhenPathDegradingVsGeneral"
+    units="%" expires_after="2023-05-11">
+  <owner>renjietang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The percentage comparison between alternative port probe failure when
+    default path is degrading and in general.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicMultiPort.AltPortRttWhenPathDegradingVsGeneral"
+    units="%" expires_after="2023-05-11">
+  <owner>renjietang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The percentage comparison between alternative port response time when
+    default path is degrading and response time in general.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicMultiPort.NumDefaultPathDegrading" units="times"
+    expires_after="2023-05-11">
+  <owner>renjietang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The number of time that a session which has multi-port enabled enters
+    path-degrading state on the default path.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicMultiPort.NumMultiPortFailureWhenPathDegrading"
+    units="times" expires_after="2023-05-11">
+  <owner>renjietang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The number of alternative port probing failure when the default path is
+    degrading.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicMultiPort.NumMultiPortFailureWhenPathNotDegrading"
+    units="times" expires_after="2023-05-11">
+  <owner>renjietang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The number of alternative port probing failure when the default path is
+    healthy.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicNetworkDegradingDurationTillConnected" units="ms"
     expires_after="2023-05-11">
   <owner>dschinazi@chromium.org</owner>
