@@ -46,4 +46,18 @@ message ModelTypeState {
 
   // Syncing account ID, representing the user.
   optional string authenticated_account_id = 6;
+
+  message Invalidation {
+    // Opaque field, which has to be provided as part of resulting GetUpdates
+    // back to the server.
+    optional bytes hint = 1;
+
+    // Version of invalidation, used to order incoming invalidations.
+    optional int64 version = 2;
+  }
+
+  // The latest unprocessed invalidations received from the server.
+  // All incoming invalidations are stored in this message and persist until
+  // they are used in GetUpdate() message.
+  repeated Invalidation invalidations = 7;
 }

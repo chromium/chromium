@@ -672,6 +672,13 @@ VISIT_PROTO_FIELDS(const sync_pb::ModelTypeState& proto) {
   VISIT(initial_sync_done);
   VISIT(cache_guid);
   VISIT(authenticated_account_id);
+  VISIT_REP(invalidations);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::ModelTypeState::Invalidation& proto) {
+  VISIT(hint);
+  VISIT(version);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::NavigationRedirect& proto) {
