@@ -38,6 +38,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   std::string GenerateUTCWindowIdentifier(base::Time ts) const override;
 
   // DeviceActiveUseCase:
+  bool IsDevicePingRequired(base::Time new_ping_ts) const override;
+
+  // DeviceActiveUseCase:
   ImportDataRequest GenerateImportRequestBody() override;
 };
 

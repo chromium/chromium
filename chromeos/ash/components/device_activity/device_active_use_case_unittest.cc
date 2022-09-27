@@ -15,6 +15,7 @@
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/channel.h"
+#include "private_membership_rlwe.pb.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
@@ -25,6 +26,9 @@ namespace device_activity {
 namespace psm_rlwe = private_membership::rlwe;
 
 namespace {
+
+// Initialize the constant used to represent the first active window identifier.
+constexpr char kFirstActiveWindowIdentifier[] = "FIRST_ACTIVE";
 
 // Initialize the fake values used shared by the device active use case
 // test classes.
@@ -257,7 +261,15 @@ TEST_F(DeviceActiveUseCaseTest, PingNotRequiredInOverlappingUTCWindows) {
         NOTREACHED() << "Unsupported PSM use case";
     }
 
-    EXPECT_FALSE(use_case->IsDevicePingRequired(current_ts));
+    // The first active use case ping is always required. This is because the
+    // window identifier is constant, and does not depend on any timestamp,
+    // meaning the default behaviour would result in |IsDevicePingRequired|
+    // always returning false..
+    if (use_case->GetPsmUseCase() ==
+        psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE)
+      EXPECT_TRUE(use_case->IsDevicePingRequired(current_ts));
+    else
+      EXPECT_FALSE(use_case->IsDevicePingRequired(current_ts));
   }
 }
 
@@ -343,7 +355,15 @@ TEST_F(DeviceActiveUseCaseTest, PingNotRequiredWhenLastTimeAheadOfCurrentTime) {
         NOTREACHED() << "Unsupported PSM use case";
     }
 
-    EXPECT_FALSE(use_case->IsDevicePingRequired(current_ts));
+    // The first active use case ping is always required. This is because the
+    // window identifier is constant, and does not depend on any timestamp,
+    // meaning the default behaviour would result in |IsDevicePingRequired|
+    // always returning false..
+    if (use_case->GetPsmUseCase() ==
+        psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE)
+      EXPECT_TRUE(use_case->IsDevicePingRequired(current_ts));
+    else
+      EXPECT_FALSE(use_case->IsDevicePingRequired(current_ts));
   }
 }
 
@@ -406,7 +426,70 @@ TEST_F(DeviceActiveUseCaseTest, DifferentWindowIdGeneratesDifferentPsmId) {
     absl::optional<psm_rlwe::RlwePlaintextId> psm_id_2 =
         use_case->GetPsmIdentifier();
 
-    EXPECT_NE(psm_id_1.value().sensitive_id(), psm_id_2.value().sensitive_id());
+    // The first active use case always generates a single PSM ID.
+    if (use_case->GetPsmUseCase() ==
+        psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE)
+      EXPECT_EQ(psm_id_1.value().sensitive_id(),
+                psm_id_2.value().sensitive_id());
+    else
+      EXPECT_NE(psm_id_1.value().sensitive_id(),
+                psm_id_2.value().sensitive_id());
+  }
+}
+
+TEST_F(DeviceActiveUseCaseTest, NonFirstActiveWindowIdsDependOnTimestamp) {
+  base::Time ts_1;
+  EXPECT_TRUE(base::Time::FromString("01 Jan 2023 00:00:00 GMT", &ts_1));
+
+  for (auto& use_case : use_cases_) {
+    if (use_case->GetPsmUseCase() !=
+        psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE) {
+      SCOPED_TRACE(testing::Message()
+                   << "PSM use case: "
+                   << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+      // For use cases other than first active, the generated window identifier
+      // depends on the timestamp passed to the method.
+      EXPECT_NE(use_case->GenerateUTCWindowIdentifier(base::Time::UnixEpoch()),
+                use_case->GenerateUTCWindowIdentifier(ts_1));
+    }
+  }
+}
+
+TEST_F(DeviceActiveUseCaseTest, FirstActiveWindowIdIsAlwaysConstant) {
+  base::Time ts_1;
+  EXPECT_TRUE(base::Time::FromString("01 Jan 2023 00:00:00 GMT", &ts_1));
+
+  for (auto& use_case : use_cases_) {
+    if (use_case->GetPsmUseCase() ==
+        psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE) {
+      SCOPED_TRACE(testing::Message()
+                   << "PSM use case: "
+                   << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+      // Different timestamps passed to first active use case
+      // |GenerateUTCWindowIdentifier| method output the same constant string.
+      EXPECT_EQ(use_case->GenerateUTCWindowIdentifier(base::Time::UnixEpoch()),
+                kFirstActiveWindowIdentifier);
+      EXPECT_EQ(use_case->GenerateUTCWindowIdentifier(ts_1),
+                kFirstActiveWindowIdentifier);
+    }
+  }
+}
+
+TEST_F(DeviceActiveUseCaseTest, FirstActiveDevicePingIsAlwaysRequired) {
+  base::Time ts_1;
+  EXPECT_TRUE(base::Time::FromString("01 Jan 2023 00:00:00 GMT", &ts_1));
+
+  for (auto& use_case : use_cases_) {
+    if (use_case->GetPsmUseCase() ==
+        psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE) {
+      SCOPED_TRACE(testing::Message()
+                   << "PSM use case: "
+                   << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+      EXPECT_TRUE(use_case->IsDevicePingRequired(ts_1));
+    }
   }
 }
 

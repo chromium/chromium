@@ -81,27 +81,10 @@ TEST_F(FirstActiveUseCaseImplTest, ValidateWindowIdFormattedCorrectly) {
       first_active_use_case_impl_->GenerateUTCWindowIdentifier(
           new_first_active_ts);
 
-  EXPECT_EQ(window_id.size(), 8);
-  EXPECT_EQ(window_id, "20220101");
+  EXPECT_EQ(window_id, "FIRST_ACTIVE");
 }
 
-TEST_F(FirstActiveUseCaseImplTest, SameDayTimestampsHaveSameWindowId) {
-  base::Time first_active_ts_1;
-  base::Time first_active_ts_2;
-
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 00:00:00 GMT", &first_active_ts_1));
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 23:59:59 GMT", &first_active_ts_2));
-
-  EXPECT_EQ(first_active_use_case_impl_->GenerateUTCWindowIdentifier(
-                first_active_ts_1),
-            first_active_use_case_impl_->GenerateUTCWindowIdentifier(
-                first_active_ts_2));
-}
-
-TEST_F(FirstActiveUseCaseImplTest,
-       DifferentDayTimestampsHaveDifferentWindowId) {
+TEST_F(FirstActiveUseCaseImplTest, DifferentDayTimestampsHaveSameWindowId) {
   base::Time first_active_ts_1;
   base::Time first_active_ts_2;
 
@@ -117,10 +100,25 @@ TEST_F(FirstActiveUseCaseImplTest,
       first_active_use_case_impl_->GenerateUTCWindowIdentifier(
           first_active_ts_2);
 
-  EXPECT_NE(first_active_use_case_impl_->GenerateUTCWindowIdentifier(
+  EXPECT_EQ(first_active_use_case_impl_->GenerateUTCWindowIdentifier(
                 first_active_ts_1),
             first_active_use_case_impl_->GenerateUTCWindowIdentifier(
                 first_active_ts_2));
+}
+
+TEST_F(FirstActiveUseCaseImplTest, DevicePingIsAlwaysRequired) {
+  base::Time first_active_ts_1;
+  base::Time first_active_ts_2;
+
+  EXPECT_TRUE(
+      base::Time::FromString("01 Jan 2022 00:00:00 GMT", &first_active_ts_1));
+  EXPECT_TRUE(
+      base::Time::FromString("01 Jan 2023 00:00:00 GMT", &first_active_ts_2));
+
+  EXPECT_TRUE(
+      first_active_use_case_impl_->IsDevicePingRequired(first_active_ts_1));
+  EXPECT_TRUE(
+      first_active_use_case_impl_->IsDevicePingRequired(first_active_ts_2));
 }
 
 }  // namespace device_activity

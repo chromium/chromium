@@ -33,19 +33,21 @@ FirstActiveUseCaseImpl::~FirstActiveUseCaseImpl() = default;
 
 std::string FirstActiveUseCaseImpl::GenerateUTCWindowIdentifier(
     base::Time ts) const {
-  base::Time::Exploded exploded;
-  ts.UTCExplode(&exploded);
-  return base::StringPrintf("%04d%02d%02d", exploded.year, exploded.month,
-                            exploded.day_of_month);
+  (void)ts;
+  return "FIRST_ACTIVE";
+}
+
+bool FirstActiveUseCaseImpl::IsDevicePingRequired(
+    base::Time new_ping_ts) const {
+  (void)new_ping_ts;
+  return true;
 }
 
 ImportDataRequest FirstActiveUseCaseImpl::GenerateImportRequestBody() {
   std::string psm_id_str = GetPsmIdentifier().value().sensitive_id();
-  std::string window_id_str = GetWindowIdentifier().value();
 
   // Generate Fresnel PSM import request body.
   device_activity::ImportDataRequest import_request;
-  import_request.set_window_identifier(window_id_str);
 
   // Create fresh |DeviceMetadata| object.
   // Note every dimension added to this proto must be approved by privacy.
@@ -59,6 +61,11 @@ ImportDataRequest FirstActiveUseCaseImpl::GenerateImportRequestBody() {
   // device_metadata->set_market_segment(GetMarketSegment());
 
   import_request.set_use_case(GetPsmUseCase());
+
+  // TODO(hirthanan): Store the first active timestamp as an encrypted value in
+  // PSM.
+  import_request.set_value("");
+
   import_request.set_plaintext_identifier(psm_id_str);
 
   return import_request;

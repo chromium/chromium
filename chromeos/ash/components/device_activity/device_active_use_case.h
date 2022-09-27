@@ -122,7 +122,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Determine if a device ping is needed for a given device window.
   // Performing this check helps reduce QPS to the |CheckingMembership|
   // network requests.
-  bool IsDevicePingRequired(base::Time new_ping_ts) const;
+  //
+  // The first active use case will always return true since the window
+  // identifier is constant.
+  virtual bool IsDevicePingRequired(base::Time new_ping_ts) const;
 
  protected:
   // Retrieve full hardware class from MachineStatistics.

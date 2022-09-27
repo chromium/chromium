@@ -466,6 +466,16 @@ void DeviceActivityClient::TransitionOutOfIdle(
           TransitionToCheckMembershipOprf(current_use_case);
           return;
         }
+
+        // |TransitionToCheckIn| if the local state pref is set.
+        if (base::FeatureList::IsEnabled(
+                features::kDeviceActiveClientFirstActiveCheckIn)) {
+          // During rollout, we perform CheckIn without CheckMembership for
+          // powerwash, recovery, or RMA devices.
+          TransitionToCheckIn(current_use_case);
+          return;
+        }
+
         break;
       default:
         VLOG(1) << "Use case is not supported yet. "
