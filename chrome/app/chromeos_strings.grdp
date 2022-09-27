@@ -557,6 +557,12 @@
   <message name="IDS_HID_DETECTION_CONTINUE_BUTTON" desc="Text shown on continue button" meaning="Continue button label of HID detection screen.">
     Continue
   </message>
+   <message name="IDS_HID_DETECTION_A11Y_CONTINUE_BUTTON_ENABLED" desc="Accessibility label for enabled continue button in HID detection screen">
+    Continue button enabled
+  </message>
+   <message name="IDS_HID_DETECTION_A11Y_CONTINUE_BUTTON_DISABLED" desc="Accessibility label for disabled continue button in HID detection screen">
+    Continue button disabled
+  </message>
   <message name="IDS_WELCOME_SELECTION_CONTINUE_BUTTON" desc="Text shown on continue button" meaning="Continue button label of welcome screen.">
     Continue
   </message>

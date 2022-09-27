@@ -18,6 +18,7 @@ import '../../components/dialogs/oobe_modal_dialog.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
@@ -193,6 +194,7 @@ class HidDetectionScreen extends HidDetectionScreenBase {
   ready() {
     super.ready();
     this.initializeLoginScreen('HIDDetectionScreen');
+    IronA11yAnnouncer.requestAvailability();
   }
 
   getPrerequisitesText_(locale, touchscreenDetected) {
@@ -392,6 +394,20 @@ class HidDetectionScreen extends HidDetectionScreenBase {
   setContinueButtonEnabled(enabled) {
     this.continueButtonEnabled = enabled;
     afterNextRender(this, () => this.$['hid-continue-button'].focus());
+    this.announceCancelButtonUpdates_();
+  }
+
+  /** @protected */
+  announceCancelButtonUpdates_() {
+    this.dispatchEvent(new CustomEvent('iron-announce', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        text: this.continueButtonEnabled ?
+            this.i18n('hidDetectionA11yContinueEnabled') :
+            this.i18n('hidDetectionA11yContinueDisabled'),
+      },
+    }));
   }
 }
 

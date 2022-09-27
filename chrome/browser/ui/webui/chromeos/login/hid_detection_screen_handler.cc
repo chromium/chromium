@@ -112,6 +112,10 @@ void HIDDetectionScreenHandler::DeclareLocalizedValues(
   builder->Add("bluetoothPairNewDevice",
                IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES);
   builder->Add("bluetoothPair", IDS_BLUETOOTH_PAIRING_PAIR);
+  builder->Add("hidDetectionA11yContinueEnabled",
+               IDS_HID_DETECTION_A11Y_CONTINUE_BUTTON_ENABLED);
+  builder->Add("hidDetectionA11yContinueDisabled",
+               IDS_HID_DETECTION_A11Y_CONTINUE_BUTTON_DISABLED);
 }
 
 void HIDDetectionScreenHandler::GetAdditionalParameters(
