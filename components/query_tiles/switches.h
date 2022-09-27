@@ -13,28 +13,28 @@ namespace features {
 
 // Main feature flag for the query tiles feature. All other flags are
 // effective only when this flag is enabled.
-extern const base::Feature kQueryTiles;
+BASE_DECLARE_FEATURE(kQueryTiles);
 
 // Feature flag to determine whether query tiles should be shown on NTP.
-extern const base::Feature kQueryTilesInNTP;
+BASE_DECLARE_FEATURE(kQueryTilesInNTP);
 
 // Feature flag to determine whether the user will have a chance to edit the
 // query before in the omnibox sumbitting the search. In this mode only one
 // level of tiles will be displayed.
-extern const base::Feature kQueryTilesEnableQueryEditing;
+BASE_DECLARE_FEATURE(kQueryTilesEnableQueryEditing);
 
 // Feature flag to determine whether trending tiles should disapear after
 // some time of inactivity.
-extern const base::Feature kQueryTilesRemoveTrendingTilesAfterInactivity;
+BASE_DECLARE_FEATURE(kQueryTilesRemoveTrendingTilesAfterInactivity);
 
 // Whether segmentation rules are applied to query tiles.
-extern const base::Feature kQueryTilesSegmentation;
+BASE_DECLARE_FEATURE(kQueryTilesSegmentation);
 
 // Whether to disable the override rules introduced for countries.
-extern const base::Feature kQueryTilesDisableCountryOverride;
+BASE_DECLARE_FEATURE(kQueryTilesDisableCountryOverride);
 
 // Feature flag to determine whether query tiles should be shown on start surface.
-extern const base::Feature kQueryTilesOnStart;
+BASE_DECLARE_FEATURE(kQueryTilesOnStart);
 
 // Returns whether query tiles are enabled for the country.
 bool IsQueryTilesEnabledForCountry(const std::string& country_code);
