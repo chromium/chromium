@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -82,6 +83,9 @@ public class PasswordManagerErrorMessageHelperBridge {
         assert primaryAccountInfo != null;
         final Activity activity = windowAndroid.getActivity().get();
         AccountManagerFacadeProvider.getInstance().updateCredentials(
-                CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
+                CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, (success) -> {
+                    RecordHistogram.recordBooleanHistogram(
+                            "PasswordManager.UPMUpdateSignInCredentialsSucces", success);
+                });
     }
 }
