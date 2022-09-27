@@ -55,6 +55,12 @@ const char kRunCountKey[] = "run_count";
   if (!db.Execute(kBrowserContextSetsVersionSql))
     return false;
 
+  static constexpr char kPublicSetsVersionBrowserContextsSql[] =
+      "CREATE INDEX IF NOT EXISTS idx_public_sets_version_browser_contexts "
+      "ON browser_context_sets_version(public_sets_version)";
+  if (!db.Execute(kPublicSetsVersionBrowserContextsSql))
+    return false;
+
   static constexpr char kBrowserContextSitesToClearSql[] =
       "CREATE TABLE IF NOT EXISTS browser_context_sites_to_clear("
       "browser_context_id TEXT NOT NULL,"
@@ -136,28 +142,45 @@ bool FirstPartySetsDatabase::SetPublicSets(
   if (!transaction.Begin())
     return false;
 
-  if (!public_sets.ForEachPublicSetEntry(
-          [&](const net::SchemefulSite& site,
-              const net::FirstPartySetEntry& entry) -> bool {
-            DCHECK(!site.opaque());
-            DCHECK(!entry.primary().opaque());
-            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-            static constexpr char kInsertSql[] =
-                "INSERT INTO public_sets(version,site,primary_site,site_type)"
-                "VALUES(?,?,?,?)";
-            sql::Statement insert_statement(
-                db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
-            insert_statement.BindString(0, version);
-            insert_statement.BindString(1, site.Serialize());
-            insert_statement.BindString(2, entry.primary().Serialize());
-            insert_statement.BindInt(3, static_cast<int>(entry.site_type()));
-
-            return insert_statement.Run();
-          })) {
+  // Checks if the version of the current public sets is referenced by *any*
+  // browser context in the public_sets_version table. If so, that means the
+  // sets already exist in public_sets table and we don't need to write them to
+  // public_sets table again.
+  static constexpr char kCheckSql[] =
+      "SELECT 1 FROM browser_context_sets_version WHERE public_sets_version=?"
+      "LIMIT 1";
+  sql::Statement check_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kCheckSql));
+  check_statement.BindString(0, version);
+  const bool has_matching_version = check_statement.Step();
+  if (!check_statement.Succeeded())
     return false;
+
+  if (!has_matching_version) {
+    if (!public_sets.ForEachPublicSetEntry(
+            [&](const net::SchemefulSite& site,
+                const net::FirstPartySetEntry& entry) -> bool {
+              DCHECK(!site.opaque());
+              DCHECK(!entry.primary().opaque());
+              DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+              static constexpr char kInsertSql[] =
+                  "INSERT INTO public_sets(version,site,primary_site,site_type)"
+                  "VALUES(?,?,?,?)";
+              sql::Statement insert_statement(
+                  db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
+              insert_statement.BindString(0, version);
+              insert_statement.BindString(1, site.Serialize());
+              insert_statement.BindString(2, entry.primary().Serialize());
+              insert_statement.BindInt(3, static_cast<int>(entry.site_type()));
+
+              return insert_statement.Run();
+            })) {
+      return false;
+    }
   }
 
-  // Keeps track of the version used by the given `browser_context_id`.
+  // Keeps track of the version used by the given `browser_context_id` in
+  // browser_context_sets_version table.
   static constexpr char kInsertSql[] =
       "INSERT OR REPLACE INTO browser_context_sets_version"
       "(browser_context_id,public_sets_version)VALUES(?,?)";

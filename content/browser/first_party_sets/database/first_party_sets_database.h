@@ -66,8 +66,8 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   FirstPartySetsDatabase& operator=(const FirstPartySetsDatabase&&) = delete;
   ~FirstPartySetsDatabase();
 
-  // Stores the public First-Party Sets into database, and updates the sets
-  // version used by `browser_context_id`. Returns true on success.
+  // Stores the public First-Party Sets into database, and keeps track of the
+  // the sets version used by `browser_context_id`. Returns true on success.
   [[nodiscard]] bool SetPublicSets(const std::string& browser_context_id,
                                    const std::string& version,
                                    const net::PublicSets& sets);
