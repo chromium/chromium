@@ -108,4 +108,40 @@ bool WebAppScopeWaiter::ContainsExpectedIntentFilter(
   return false;
 }
 
+AppWindowModeWaiter::AppWindowModeWaiter(Profile* profile,
+                                         const std::string& app_id,
+                                         apps::WindowMode window_mode)
+    : app_id_(app_id), window_mode_(window_mode) {
+  DCHECK_NE(window_mode_, apps::WindowMode::kUnknown);
+  apps::AppRegistryCache& cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  Observe(&cache);
+  cache.ForOneApp(app_id, [this](const apps::AppUpdate& update) {
+    if (HasExpectedWindowMode(update))
+      run_loop_.Quit();
+  });
+}
+
+AppWindowModeWaiter::~AppWindowModeWaiter() = default;
+
+void AppWindowModeWaiter::Await() {
+  run_loop_.Run();
+}
+
+void AppWindowModeWaiter::OnAppUpdate(const apps::AppUpdate& update) {
+  if (update.AppId() == app_id_ && HasExpectedWindowMode(update)) {
+    run_loop_.Quit();
+  }
+}
+
+void AppWindowModeWaiter::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  Observe(nullptr);
+}
+
+bool AppWindowModeWaiter::HasExpectedWindowMode(
+    const apps::AppUpdate& update) const {
+  return update.WindowMode() == window_mode_;
+}
+
 }  // namespace web_app

@@ -1602,6 +1602,7 @@ void WebAppIntegrationTestDriver::SetOpenInTab(Site site) {
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
   sync_bridge.SetAppUserDisplayMode(app_id, UserDisplayMode::kBrowser, true);
+  AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kBrowser).Await();
 #else
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
   app_management_page_handler.SetWindowMode(app_id, apps::WindowMode::kBrowser);
@@ -1620,6 +1621,7 @@ void WebAppIntegrationTestDriver::SetOpenInWindow(Site site) {
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
   sync_bridge.SetAppUserDisplayMode(app_id, UserDisplayMode::kStandalone, true);
+  AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow).Await();
 #else
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
   app_management_page_handler.SetWindowMode(app_id, apps::WindowMode::kWindow);
