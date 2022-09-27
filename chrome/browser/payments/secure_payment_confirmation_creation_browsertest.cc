@@ -83,39 +83,6 @@ class SecurePaymentConfirmationCreationTest
     return merchant_origin;
   }
 
-  void ExpectNoEnrollDialogShown() {
-    histogram_tester_.ExpectTotalCount(
-        "PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollDialogShown", 0);
-  }
-
-  void ExpectEnrollDialogShown(
-      SecurePaymentConfirmationEnrollDialogShown result,
-      int count) {
-    histogram_tester_.ExpectTotalCount(
-        "PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollDialogShown",
-        count);
-    histogram_tester_.ExpectBucketCount(
-        "PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollDialogShown",
-        result, count);
-  }
-
-  void ExpectNoEnrollDialogResult() {
-    histogram_tester_.ExpectTotalCount(
-        "PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollDialogResult",
-        0);
-  }
-
-  void ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult result,
-      int count) {
-    histogram_tester_.ExpectTotalCount(
-        "PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollDialogResult",
-        count);
-    histogram_tester_.ExpectBucketCount(
-        "PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollDialogResult",
-        result, count);
-  }
-
   void ExpectNoEnrollSystemPromptResult() {
     histogram_tester_.ExpectTotalCount(
         "PaymentRequest.SecurePaymentConfirmation.Funnel."
@@ -196,10 +163,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                             content::JsReplace("createPaymentCredential($1)",
                                                GetDefaultIconURL())));
 
-  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          0);
-  ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kCanceled, 0);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectNoFunnelCount();
@@ -231,12 +194,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   // Verify that credential id size gets recorded.
   histogram_tester_.ExpectTotalCount(
       "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes", 1U);
-  int expected_enroll_histogram_value_ = 0;
-  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          expected_enroll_histogram_value_);
-  ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
-      expected_enroll_histogram_value_);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectNoFunnelCount();
@@ -296,12 +253,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   EXPECT_EQ("display_name_for_instrument",
             test_controller()->app_descriptions().front().label);
 
-  int expected_enroll_histogram_value = 0;
-  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          expected_enroll_histogram_value);
-  ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
-      expected_enroll_histogram_value);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectNoFunnelCount();
@@ -429,12 +380,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ASSERT_NE(nullptr, rp) << response;
   EXPECT_EQ("a.com", *rp);
 
-  int expected_enroll_histogram_value = 0;
-  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          expected_enroll_histogram_value);
-  ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
-      expected_enroll_histogram_value);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
@@ -484,12 +429,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   std::string* payee_origin = value->FindStringPath("payment.payeeOrigin");
   ASSERT_EQ(nullptr, payee_origin) << response;
 
-  int expected_enroll_histogram_value = 0;
-  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          expected_enroll_histogram_value);
-  ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
-      expected_enroll_histogram_value);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
@@ -541,12 +480,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(nullptr, payee_origin) << response;
   EXPECT_EQ(GURL("https://example-payee-origin.test"), GURL(*payee_origin));
 
-  int expected_enroll_histogram_value = 0;
-  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          expected_enroll_histogram_value);
-  ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
-      expected_enroll_histogram_value);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
@@ -602,12 +535,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
               "getTotalAmountFromClientDataWithModifierAndShowPromise($1, $2);",
               credentialIdentifier, "0.04")));
 
-  int expected_enroll_histogram_value = 0;
-  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          expected_enroll_histogram_value);
-  ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
-      expected_enroll_histogram_value);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 4);
@@ -640,12 +567,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
           content::JsReplace("getTotalAmountFromClientData($1, $2);",
                              credentialIdentifier, "0.01")));
 
-  int expected_enroll_histogram_value = 0;
-  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          expected_enroll_histogram_value);
-  ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
-      expected_enroll_histogram_value);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kCanceled, 1);
@@ -671,12 +592,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   histogram_tester_.ExpectTotalCount(
       "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes", 2U);
 
-  int expected_enroll_histogram_value = 0;
-  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          expected_enroll_histogram_value);
-  ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
-      expected_enroll_histogram_value);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 2);
   ExpectNoFunnelCount();
@@ -703,12 +618,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   GetActiveWebContents()->Close();
   event_waiter_->Wait();
 
-  int expected_enroll_histogram_value = 0;
-  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          expected_enroll_histogram_value);
-  ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
-      expected_enroll_histogram_value);
   ExpectNoFunnelCount();
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
@@ -735,12 +644,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                                         "getTotalAmountFromClientData($1, $2);",
                                         credentialIdentifier, "0.01")));
 
-  int expected_enroll_histogram_value = 0;
-  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          expected_enroll_histogram_value);
-  ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
-      expected_enroll_histogram_value);
   histogram_tester_.ExpectTotalCount(
       "PaymentRequest.SecurePaymentConfirmation.Funnel."
       "EnrollSystemPromptResult",

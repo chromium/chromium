@@ -242,37 +242,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollDialogResult"
-    enum="SecurePaymentConfirmationEnrollDialogResult"
-    expires_after="2022-11-22">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the result of the Secure Payment Confirmation enrollment dialog. The
-    result is Accepted if the user has clicked to confirm the enrollment, such
-    as via the &quot;Use Touch ID&quot; button, Canceled if the user has clicked
-    the button to cancel the enrollment, or Closed if the user has closed the
-    dialog in any way, such as by closing the tab. Logged when the enrollment
-    dialog closes.
-  </summary>
-</histogram>
-
-<histogram
-    name="PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollDialogShown"
-    enum="SecurePaymentConfirmationEnrollDialogShown"
-    expires_after="2022-11-22">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records whether the website was able to display the Secure Payment
-    Confirmation enrollment dialog. The result is Shown if the dialog was
-    displayed to the user or CouldNotShow if the dialog could not be displayed,
-    e.g., if another enrollment dialog was already displaying. Logged in the
-    browser process when a website attempts to display the enrollment dialog.
-  </summary>
-</histogram>
-
-<histogram
     name="PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollSystemPromptResult"
     enum="SecurePaymentConfirmationEnrollSystemPromptResult"
     expires_after="2023-03-05">

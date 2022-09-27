@@ -10,30 +10,6 @@ namespace payments {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Keep in sync with
 // tools/metrics/histograms/enums.xml.
-enum class SecurePaymentConfirmationEnrollDialogShown {
-  kCouldNotShow = 0,
-  kShown = 1,
-  kMaxValue = kShown,
-};
-
-void RecordEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown shown);
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with
-// tools/metrics/histograms/enums.xml.
-enum class SecurePaymentConfirmationEnrollDialogResult {
-  kClosed = 0,
-  kCanceled = 1,
-  kAccepted = 2,
-  kMaxValue = kAccepted,
-};
-
-void RecordEnrollDialogResult(
-    SecurePaymentConfirmationEnrollDialogResult result);
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with
-// tools/metrics/histograms/enums.xml.
 enum class SecurePaymentConfirmationEnrollSystemPromptResult {
   kCanceled = 0,
   kAccepted = 1,
