@@ -201,6 +201,13 @@ void RecordPodResizeAnimationSmoothness(int smoothness) {
                                smoothness);
 }
 
+void RecordUserPreferences(UserPreferences preferences) {
+  base::UmaHistogramBoolean("HoldingSpace.UserPreferences.PreviewsEnabled",
+                            preferences.previews_enabled);
+  base::UmaHistogramBoolean("HoldingSpace.UserPreferences.SuggestionsExpanded",
+                            preferences.suggestions_expanded);
+}
+
 void RecordVisibleItemCounts(
     const std::vector<const HoldingSpaceItem*>& items) {
   RecordItemCounts(items, /*visible=*/true);

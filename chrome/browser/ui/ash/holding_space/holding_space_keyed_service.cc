@@ -387,6 +387,13 @@ void HoldingSpaceKeyedService::OnProfileAdded(Profile* profile) {
 }
 
 void HoldingSpaceKeyedService::OnProfileReady() {
+  // Record user preferences at start up.
+  PrefService* const prefs = profile_->GetPrefs();
+  holding_space_metrics::RecordUserPreferences({
+      .previews_enabled = holding_space_prefs::IsPreviewsEnabled(prefs),
+      .suggestions_expanded = holding_space_prefs::IsSuggestionsExpanded(prefs),
+  });
+
   // Observe suspend status - the delegates will be shutdown during suspend.
   if (chromeos::PowerManagerClient::Get())
     chromeos::PowerManagerClient::Get()->AddObserver(this);

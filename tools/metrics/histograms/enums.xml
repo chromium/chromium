@@ -12283,6 +12283,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Exists"/>
 </enum>
 
+<enum name="BooleanExpanded">
+  <int value="0" label="Collapsed"/>
+  <int value="1" label="Expanded"/>
+</enum>
+
 <enum name="BooleanExpected">
   <int value="0" label="Unexpected"/>
   <int value="1" label="Expected"/>

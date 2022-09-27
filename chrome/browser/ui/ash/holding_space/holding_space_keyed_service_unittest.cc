@@ -634,6 +634,48 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
             secondary_holding_space_service->model_for_testing());
 }
 
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
+       RecordsUserPreferencesAtStartUp) {
+  // Initially expect no user preferences recorded.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "HoldingSpace.UserPreferences.PreviewsEnabled", /*count=*/0u);
+  histogram_tester.ExpectTotalCount(
+      "HoldingSpace.UserPreferences.SuggestionsExpanded", /*count=*/0u);
+
+  constexpr bool kPreviewsEnabled = false;
+  constexpr bool kSuggestionsExpanded = false;
+
+  // Create a profile with explicitly set user preferences.
+  TestingProfile* const secondary_profile = CreateSecondaryProfile(
+      base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
+        pref_store->SetValueSilently(
+            "ash.holding_space.previews_enabled",
+            std::make_unique<base::Value>(kPreviewsEnabled),
+            PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
+        pref_store->SetValueSilently(
+            "ash.holding_space.suggestions_expanded",
+            std::make_unique<base::Value>(kSuggestionsExpanded),
+            PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
+      }));
+
+  // Ensure service creation for the created profile.
+  HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(secondary_profile);
+
+  // Expect user preferences recorded.
+  histogram_tester.ExpectTotalCount(
+      "HoldingSpace.UserPreferences.PreviewsEnabled", /*count=*/1u);
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.UserPreferences.PreviewsEnabled",
+      /*sample=*/kPreviewsEnabled, /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "HoldingSpace.UserPreferences.SuggestionsExpanded", /*count=*/1u);
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.UserPreferences.SuggestionsExpanded",
+      /*sample=*/kSuggestionsExpanded,
+      /*expected_count=*/1u);
+}
+
 // Verifies that updates to the holding space model are persisted.
 TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        UpdatePersistentStorage) {

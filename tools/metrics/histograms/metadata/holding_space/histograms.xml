@@ -241,6 +241,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HoldingSpace.UserPreferences.PreviewsEnabled"
+    enum="BooleanEnabled" expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records whether the user has previews enabled. Note that this histogram is
+    emitted once per user session at start up.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.UserPreferences.SuggestionsExpanded"
+    enum="BooleanExpanded" expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records whether the user has suggestions expanded. Note that this histogram
+    is emitted once per user session at start up.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
