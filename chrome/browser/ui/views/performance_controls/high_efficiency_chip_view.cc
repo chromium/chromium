@@ -106,6 +106,10 @@ void HighEfficiencyChipView::UpdateImpl() {
 
 void HighEfficiencyChipView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
+  if (IsBubbleShowing()) {
+    bubble_->Close();
+    return;
+  }
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
   View* anchor_view = browser_view->toolbar_button_provider()->GetAnchorView(
       PageActionIconType::kHighEfficiency);

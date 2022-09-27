@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
+
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -16,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/test/button_test_api.h"
 
 class DiscardMockNavigationHandle : public content::MockNavigationHandle {
@@ -72,6 +76,8 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
         ->GetIconView(PageActionIconType::kHighEfficiency);
   }
 
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple local_state_;
@@ -111,6 +117,26 @@ TEST_F(HighEfficiencyChipViewTest, ShouldOpenDialogOnClick) {
   test_api.NotifyClick(e);
 
   EXPECT_NE(view->GetBubble(), nullptr);
+}
+
+// When the dialog is closed, UMA metrics should be logged.
+TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsOnDialogDismiss) {
+  SetTabDiscardState(true);
+
+  PageActionIconView* view = GetPageActionIconView();
+  EXPECT_EQ(view->GetBubble(), nullptr);
+
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(view);
+  // Open bubble
+  test_api.NotifyClick(e);
+  // Close bubble
+  test_api.NotifyClick(e);
+
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceControls.HighEfficiency.BubbleAction",
+      HighEfficiencyBubbleActionType::kDismiss, 1);
 }
 
 // A link should be rendered within the dialog.

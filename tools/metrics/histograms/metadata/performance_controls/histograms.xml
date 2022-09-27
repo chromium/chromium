@@ -27,6 +27,18 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
+<histogram name="PerformanceControls.HighEfficiency.BubbleAction"
+    enum="HighEfficiencyBubbleActionType" expires_after="2023-03-01">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logged on each high efficiency mode dialog close indicating whether the user
+    opened the settings page or dismissed the dialog. This will be used to
+    measure the efficacy of the dialog message and the number of users that
+    interact with the high efficiency page action chip.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

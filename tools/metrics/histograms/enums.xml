@@ -48226,6 +48226,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="Unknown Pointer"/>
 </enum>
 
+<enum name="HighEfficiencyBubbleActionType">
+  <int value="0" label="Open settings"/>
+  <int value="1" label="Dismiss dialog"/>
+</enum>
+
 <enum name="HintCacheStoreEntryType">
   <summary>
     Possible store entry types contained within the HintCacheStore.

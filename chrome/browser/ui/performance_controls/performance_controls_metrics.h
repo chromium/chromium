@@ -13,8 +13,15 @@ enum class BatterySaverBubbleActionType {
   kDismiss = 1,
   kMaxValue = kDismiss
 };
+
+enum class HighEfficiencyBubbleActionType {
+  kOpenSettings = 0,
+  kDismiss = 1,
+  kMaxValue = kDismiss
+};
 // End of enums for histograms.
 
 void RecordBatterySaverBubbleAction(BatterySaverBubbleActionType type);
+void RecordHighEfficiencyBubbleAction(HighEfficiencyBubbleActionType type);
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_METRICS_H_

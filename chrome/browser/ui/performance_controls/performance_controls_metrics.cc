@@ -10,3 +10,8 @@ void RecordBatterySaverBubbleAction(BatterySaverBubbleActionType type) {
   base::UmaHistogramEnumeration("PerformanceControls.BatterySaver.BubbleAction",
                                 type);
 }
+
+void RecordHighEfficiencyBubbleAction(HighEfficiencyBubbleActionType type) {
+  base::UmaHistogramEnumeration(
+      "PerformanceControls.HighEfficiency.BubbleAction", type);
+}
