@@ -170,11 +170,6 @@ bool IsDomainJoined() {
 // Collects stats about the enterprise environment that can be used to decide
 // how to parse the existing policy information.
 void CollectEnterpriseUMAs() {
-  // Collect statistics about the windows suite.
-  UMA_HISTOGRAM_ENUMERATION("EnterpriseCheck.OSType",
-                            base::win::OSInfo::GetInstance()->version_type(),
-                            base::win::SUITE_LAST);
-
   base::UmaHistogramBoolean("EnterpriseCheck.IsManagedOrEnterpriseDevice",
                             base::IsManagedOrEnterpriseDevice());
   base::UmaHistogramBoolean("EnterpriseCheck.IsDomainJoined", IsDomainJoined());
