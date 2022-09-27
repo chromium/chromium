@@ -316,8 +316,10 @@ extern const base::FeatureParam<int> kGmsApiErrorListVersion = {
 
 // Current list of the GMS Core API error codes that should be ignored and not
 // result in user eviction.
+// Codes DEVELOPER_ERROR=10, BAD_REQUEST=11008 are ignored to keep the default
+// pre-M107 behaviour.
 extern const base::FeatureParam<std::string> kIgnoredGmsApiErrors = {
-    &kUnifiedPasswordManagerAndroid, "ignored_api_errors", ""};
+    &kUnifiedPasswordManagerAndroid, "ignored_api_errors", "10,11008"};
 
 // Current list of the GMS Core API error codes considered retriable.
 // User could still be evicted if retries do not resolve the error.

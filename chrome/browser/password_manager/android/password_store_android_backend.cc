@@ -282,19 +282,29 @@ bool IsAuthenticationError(AndroidBackendAPIErrorCode api_error_code) {
 }
 
 bool IsUnrecoverableBackendError(AndroidBackendAPIErrorCode api_error_code) {
-  switch (api_error_code) {
-    case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
-    case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
-      // Error messages encourage users to fix any auth errors. Therefore, treat
-      // them as recoverable errors.
-      return !base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerErrorMessages);
-    case AndroidBackendAPIErrorCode::kDeveloperError:
-    case AndroidBackendAPIErrorCode::kBadRequest:
-      return false;
-    default:
-      return true;
+  if (password_manager_upm_eviction::ShouldRetryOnApiError(
+          static_cast<int>(api_error_code))) {
+    // If the error is retriable, it does not require any error-specific support
+    // and could be recovered.
+    return false;
   }
+
+  if (!password_manager_upm_eviction::ShouldIgnoreOnApiError(
+          static_cast<int>(api_error_code))) {
+    // If the error should not be ignored, it will immediately evict the user
+    // with no possibility to recover.
+    return true;
+  }
+
+  // Auth errors require explicit handling and are not recoverable if this
+  // handling is disabled.
+  if (IsAuthenticationError(api_error_code) &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerErrorMessages)) {
+    return true;
+  }
+
+  return false;
 }
 
 PasswordStoreBackendError BackendErrorFromAndroidBackendError(
@@ -312,6 +322,14 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
         PasswordStoreBackendErrorType::kUncategorized,
         PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
   }
+
+  if (password_manager_upm_eviction::ShouldRetryOnApiError(
+          error.api_error_code.value())) {
+    return PasswordStoreBackendError(
+        PasswordStoreBackendErrorType::kUncategorized,
+        PasswordStoreBackendErrorRecoveryType::kRetriable);
+  }
+
   PasswordStoreBackendErrorRecoveryType recovery_type =
       IsUnrecoverableBackendError(
           static_cast<AndroidBackendAPIErrorCode>(error.api_error_code.value()))
@@ -801,11 +819,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     // user, unenroll the user from the UPM experience.
     int api_error = error.api_error_code.value();
     auto api_error_code = static_cast<AndroidBackendAPIErrorCode>(api_error);
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kUnifiedPasswordManagerErrorMessages) &&
-        IsAuthenticationError(api_error_code)) {
-      prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
-    }
     if (password_manager::IsUnrecoverableBackendError(api_error_code)) {
       if (!password_manager_upm_eviction::IsCurrentUserEvicted(prefs_)) {
         if (base::FeatureList::IsEnabled(
@@ -814,6 +827,13 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         }
         password_manager_upm_eviction::EvictCurrentUser(api_error, prefs_);
       }
+    } else if (IsAuthenticationError(api_error_code) &&
+               base::FeatureList::IsEnabled(
+                   password_manager::features::
+                       kUnifiedPasswordManagerErrorMessages)) {
+      // Auth error specific handling is only triggered if the error is
+      // considered recoverable.
+      prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
     }
 
     // TODO(crbug.com/1349276): Remove this after analyzing metrics
