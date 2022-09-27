@@ -133,10 +133,11 @@ FrameTreeNode* FrameTreeNode::From(RenderFrameHost* rfh) {
   return static_cast<RenderFrameHostImpl*>(rfh)->frame_tree_node();
 }
 
-FencedFrameStatus ComputeFencedFrameStatus(
+FrameTreeNode::FencedFrameStatus ComputeFencedFrameStatus(
     FrameTree* frame_tree,
     RenderFrameHostImpl* parent,
     const blink::FramePolicy& frame_policy) {
+  using FencedFrameStatus = FrameTreeNode::FencedFrameStatus;
   if (blink::features::IsFencedFramesEnabled()) {
     switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
       case blink::features::FencedFramesImplementationType::kMPArch: {

@@ -41,8 +41,6 @@ class NavigationRequest;
 class RenderFrameHostImpl;
 class NavigationEntryImpl;
 
-using FencedFrameStatus = RenderFrameHostImpl::FencedFrameStatus;
-
 // When a page contains iframes, its renderer process maintains a tree structure
 // of those frames. We are mirroring this tree in the browser process. This
 // class represents a node in this tree and is a wrapper for all objects that
@@ -434,6 +432,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // will never be reused - this saves memory.
   void PruneChildFrameNavigationEntries(NavigationEntryImpl* entry);
 
+  using FencedFrameStatus = RenderFrameHostImpl::FencedFrameStatus;
   FencedFrameStatus fenced_frame_status() const { return fenced_frame_status_; }
 
   blink::FrameOwnerElementType frame_owner_element_type() const {
