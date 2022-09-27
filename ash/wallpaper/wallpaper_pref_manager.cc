@@ -16,6 +16,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_ephemeral_user.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/adapters.h"
@@ -275,15 +276,7 @@ class WallpaperProfileHelperImpl : public WallpaperProfileHelper {
   }
 
   bool IsEphemeral(const AccountId& account_id) const override {
-    const UserSession* user_session =
-        Shell::Get()->session_controller()->GetUserSessionByAccountId(
-            account_id);
-    if (!user_session) {
-      // User is not logged in. Thus, they are not ephemeral.
-      return false;
-    }
-
-    return user_session->user_info.is_ephemeral;
+    return IsEphemeralUser(account_id);
   }
 
  private:

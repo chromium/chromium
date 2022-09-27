@@ -1727,6 +1727,18 @@ TEST_F(WallpaperControllerTest,
             GetDecodeFilePaths()[0]);
 }
 
+TEST_F(WallpaperControllerTest, SetDefaultWallpaperForGuestSessionAndPreview) {
+  CreateDefaultWallpapers();
+
+  const AccountId guest_id =
+      AccountId::FromUserEmail(user_manager::kGuestUserName);
+  controller_->ShowUserWallpaper(guest_id);
+  SimulateUserLogin(guest_id, user_manager::USER_TYPE_GUEST);
+  WallpaperInfo wallpaper_info;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(guest_id, &wallpaper_info));
+  EXPECT_EQ(wallpaper_info.type, WallpaperType::kDefault);
+}
+
 TEST_F(WallpaperControllerTest, SetDefaultWallpaperForGuestSession) {
   CreateDefaultWallpapers();
 

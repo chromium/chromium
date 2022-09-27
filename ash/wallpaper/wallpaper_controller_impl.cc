@@ -32,6 +32,7 @@
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_ephemeral_user.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
@@ -523,18 +524,6 @@ std::vector<std::string> GetOfflineWallpaperListImpl() {
     }
   }
   return url_list;
-}
-
-// Returns true if the user's wallpaper is to be treated as ephemeral.
-bool IsEphemeralUser(const AccountId& id) {
-  const UserSession* user_session =
-      Shell::Get()->session_controller()->GetUserSessionByAccountId(id);
-  if (!user_session) {
-    // If we don't know if a user is logged in, assume there is a user.
-    return false;
-  }
-
-  return user_session->user_info.is_ephemeral;
 }
 
 // Returns the type of the user with the specified |id| or USER_TYPE_REGULAR.
