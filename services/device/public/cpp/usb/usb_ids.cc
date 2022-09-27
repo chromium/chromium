@@ -42,7 +42,7 @@ const char* UsbIds::GetVendorName(uint16_t vendor_id) {
 
 const char* UsbIds::GetProductName(uint16_t vendor_id, uint16_t product_id) {
   const UsbVendor* vendor = FindVendor(vendor_id);
-  if (!vendor)
+  if (!vendor || !vendor->products)
     return NULL;
 
   const UsbProduct key = {product_id, nullptr};
