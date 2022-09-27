@@ -27,6 +27,8 @@
   display: flex;
   flex-basis: 45vh;
   flex-direction: column;
+  /* Put the text above the onboarding-background. */
+  z-index: 1;
 }
 
 .header {
