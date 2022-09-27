@@ -29,8 +29,8 @@ void ChildActivityStorage::AddActivityPeriod(base::Time start,
                                              base::Time now) {
   DCHECK(start <= end);
 
-  DictionaryPrefUpdate update(pref_service_, pref_name_);
-  base::Value* activity_times = update.Get();
+  ScopedDictPrefUpdate update(pref_service_, pref_name_);
+  base::Value::Dict& activity_times = update.Get();
 
   // Assign the period to day buckets in local time.
   base::Time day_start = GetBeginningOfDay(start);
@@ -41,8 +41,8 @@ void ChildActivityStorage::AddActivityPeriod(base::Time start,
     int64_t activity = (std::min(end, day_start) - start).InMilliseconds();
     const std::string key = MakeActivityPeriodPrefKey(
         LocalTimeToUtcDayStart(start), /*activity_id=*/"");
-    int previous_activity = activity_times->FindIntKey(key).value_or(0);
-    activity_times->SetIntKey(key, previous_activity + activity);
+    int previous_activity = activity_times.FindInt(key).value_or(0);
+    activity_times.Set(key, static_cast<int>(previous_activity + activity));
 
     StoreChildScreenTime(day_start - base::Days(1),
                          base::Milliseconds(activity), now);

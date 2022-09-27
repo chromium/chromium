@@ -803,13 +803,13 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PRE_DataIsRemoved) {
 
   // Data for the account is normally added after successful authentication.
   // Shortcut that here.
-  DictionaryPrefUpdate given_name_update(g_browser_process->local_state(),
+  ScopedDictPrefUpdate given_name_update(g_browser_process->local_state(),
                                          "UserGivenName");
-  given_name_update->SetStringKey(account_id_1_.GetUserEmail(), "Elaine");
+  given_name_update->Set(account_id_1_.GetUserEmail(), "Elaine");
 
   // Add some arbitrary data to make sure the "UserGivenName" dictionary isn't
   // cleaning up itself.
-  given_name_update->SetStringKey("sanity.check@example.com", "Anne");
+  given_name_update->Set("sanity.check@example.com", "Anne");
 }
 
 // Disabled on ASan and LSAn builds due to a consistent failure. See

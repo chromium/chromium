@@ -161,8 +161,8 @@ void ActivityStorage::AddActivityPeriod(base::Time start,
   DCHECK(!start.is_max());
   DCHECK(!end.is_max());
 
-  DictionaryPrefUpdate update(pref_service_, pref_name_);
-  base::Value* activity_times = update.Get();
+  ScopedDictPrefUpdate update(pref_service_, pref_name_);
+  base::Value::Dict& activity_times = update.Get();
 
   // Assign the period to day buckets in local time.
   base::Time midnight = GetBeginningOfDay(start);
@@ -174,11 +174,11 @@ void ActivityStorage::AddActivityPeriod(base::Time start,
     const std::string key = MakeActivityPeriodPrefKey(day_key, activity_id);
     VLOG(1) << "Add Activity: " << base::Time::FromJavaTime(day_key) << " to "
             << base::Time::FromJavaTime(day_key + activity);
-    const auto previous_activity = activity_times->FindIntPath(key);
+    const auto previous_activity = activity_times.FindIntByDottedPath(key);
     if (previous_activity.has_value()) {
       activity += previous_activity.value();
     }
-    activity_times->SetIntKey(key, activity);
+    activity_times.Set(key, static_cast<int>(activity));
     start = midnight;
   }
 }
