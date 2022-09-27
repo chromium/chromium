@@ -45,12 +45,10 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
                               public ::testing::WithParamInterface<bool> {
  public:
   HttpCookieBrowserTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    std::vector<base::Feature> enabled(
-        {net::features::kSamePartyAttributeEnabled});
     if (DoesSameSiteConsiderRedirectChain()) {
-      enabled.push_back(net::features::kCookieSameSiteConsidersRedirectChain);
+      feature_list_.InitAndEnableFeature(
+          net::features::kCookieSameSiteConsidersRedirectChain);
     }
-    feature_list_.InitWithFeatures(enabled, {});
   }
 
   ~HttpCookieBrowserTest() override = default;
@@ -82,9 +80,6 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
   const char* kSameSiteLaxCookieName = "samesite_lax_cookie";
   const char* kSameSiteNoneCookieName = "samesite_none_cookie";
   const char* kSameSiteUnspecifiedCookieName = "samesite_unspecified_cookie";
-  const char* kSamePartyLaxCookieName = "sameparty_lax_cookie";
-  const char* kSamePartyNoneCookieName = "sameparty_none_cookie";
-  const char* kSamePartyUnspecifiedCookieName = "sameparty_unspecified_cookie";
   const std::string kSetSameSiteCookiesURL = base::StrCat({
       "/set-cookie?",
       kSameSiteStrictCookieName,
@@ -95,15 +90,6 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
       "=1&",
       kSameSiteNoneCookieName,
       "=1;Secure;SameSite=None",
-  });
-  const std::string kSetSamePartyCookiesURL = base::StrCat({
-      "/set-cookie?",
-      kSamePartyLaxCookieName,
-      "=1;SameParty;Secure;SameSite=Lax&",
-      kSamePartyNoneCookieName,
-      "=1;SameParty;Secure;SameSite=None&",
-      kSamePartyUnspecifiedCookieName,
-      "=1;SameParty;Secure",
   });
 
   void SetSameSiteCookies(const std::string& host) {
@@ -122,21 +108,6 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
                   base::StrCat({kSameSiteUnspecifiedCookieName, "=1"})));
   }
 
-  void SetSamePartyCookies(const std::string& host) {
-    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    EXPECT_TRUE(
-        SetCookie(context, https_server()->GetURL(host, "/"),
-                  base::StrCat({kSamePartyLaxCookieName,
-                                "=1; samesite=lax; secure; sameparty"})));
-    EXPECT_TRUE(
-        SetCookie(context, https_server()->GetURL(host, "/"),
-                  base::StrCat({kSamePartyNoneCookieName,
-                                "=1; samesite=none; secure; sameparty"})));
-    EXPECT_TRUE(SetCookie(context, https_server()->GetURL(host, "/"),
-                          base::StrCat({kSamePartyUnspecifiedCookieName,
-                                        "=1; secure; sameparty"})));
-  }
-
   GURL EchoCookiesUrl(net::EmbeddedTestServer* test_server,
                       const std::string& host) {
     return test_server->GetURL(host, "/echoheader?Cookie");
@@ -145,11 +116,6 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
   GURL SetSameSiteCookiesUrl(net::EmbeddedTestServer* test_server,
                              const std::string& host) {
     return test_server->GetURL(host, kSetSameSiteCookiesURL);
-  }
-
-  GURL SetSamePartyCookiesUrl(net::EmbeddedTestServer* test_server,
-                              const std::string& host) {
-    return test_server->GetURL(host, kSetSamePartyCookiesURL);
   }
 
   GURL RedirectUrl(net::EmbeddedTestServer* test_server,
@@ -494,184 +460,6 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SetSameSiteCookies_Redirect) {
             net::MatchesCookieWithName(kSameSiteUnspecifiedCookieName)));
     ASSERT_EQ(4U, ClearCookies());
   }
-}
-
-IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendSamePartyCookies) {
-  SetSamePartyCookies(kHostA);
-  SetSamePartyCookies(kHostD);
-
-  // No embedded frame. The top-level site has access to its cookies.
-  ASSERT_TRUE(NavigateToURL(
-      web_contents(), https_server()->GetURL(kHostA, "/echoheader?Cookie")));
-  EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
-              net::CookieStringIs(UnorderedElementsAre(
-                  Key(kSamePartyLaxCookieName), Key(kSamePartyNoneCookieName),
-                  Key(kSamePartyUnspecifiedCookieName))));
-
-  // Same-site FPS-member iframe (A embedded in A) sends A's SameParty cookies.
-  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
-                  web_contents(), https_server(), "a.test(%s)", {0},
-                  EchoCookiesUrl(https_server(), kHostA)),
-              net::CookieStringIs(UnorderedElementsAre(
-                  Key(kSamePartyLaxCookieName), Key(kSamePartyNoneCookieName),
-                  Key(kSamePartyUnspecifiedCookieName))));
-
-  // Cross-site, same-party iframe (B embedded in A) does not send A's SameParty
-  // cookies (since it's the wrong domain).
-  EXPECT_EQ(content::ArrangeFramesAndGetContentFromLeaf(
-                web_contents(), https_server(), "a.test(%s)", {0},
-                EchoCookiesUrl(https_server(), kHostB)),
-            "None");
-
-  // Cross-site, same-party iframe (A embedded in B) sends A's SameParty
-  // cookies.
-  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
-                  web_contents(), https_server(), "b.test(%s)", {0},
-                  EchoCookiesUrl(https_server(), kHostA)),
-              net::CookieStringIs(UnorderedElementsAre(
-                  Key(kSamePartyLaxCookieName), Key(kSamePartyNoneCookieName),
-                  Key(kSamePartyUnspecifiedCookieName))));
-
-  // Cross-site, same-party nested iframe (A embedded in B embedded in A) sends
-  // A's SameParty cookies.
-  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
-                  web_contents(), https_server(), "a.test(b.test(%s))", {0, 0},
-                  EchoCookiesUrl(https_server(), kHostA)),
-              net::CookieStringIs(UnorderedElementsAre(
-                  Key(kSamePartyLaxCookieName), Key(kSamePartyNoneCookieName),
-                  Key(kSamePartyUnspecifiedCookieName))));
-
-  // Cross-site, same-party nested iframe (A embedded in B embedded in C
-  // embedded in A) sends A's SameParty cookies.
-  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
-                  web_contents(), https_server(), "a.test(c.test(b.test(%s)))",
-                  {0, 0, 0}, EchoCookiesUrl(https_server(), kHostA)),
-              net::CookieStringIs(UnorderedElementsAre(
-                  Key(kSamePartyLaxCookieName), Key(kSamePartyNoneCookieName),
-                  Key(kSamePartyUnspecifiedCookieName))));
-
-  // Cross-site, cross-party iframe (D embedded in A) sends only D's
-  // SameSite=None cookie, since D is not in A's First-Party Set.
-  EXPECT_THAT(
-      content::ArrangeFramesAndGetContentFromLeaf(
-          web_contents(), https_server(), "a.test(%s)", {0},
-          EchoCookiesUrl(https_server(), kHostD)),
-      net::CookieStringIs(UnorderedElementsAre(Key(kSamePartyNoneCookieName))));
-
-  // Cross-site, cross-party iframe (A embedded in D) doesn't send A's SameParty
-  // cookies.
-  EXPECT_EQ(content::ArrangeFramesAndGetContentFromLeaf(
-                web_contents(), https_server(), "d.test(%s)", {0},
-                EchoCookiesUrl(https_server(), kHostA)),
-            "None");
-
-  // Cross-site, cross-party nested iframe (A embedded in B embedded in D)
-  // doesn't send A's SameParty cookies.
-  EXPECT_EQ(content::ArrangeFramesAndGetContentFromLeaf(
-                web_contents(), https_server(), "d.test(b.test(%s))", {0, 0},
-                EchoCookiesUrl(https_server(), kHostA)),
-            "None");
-
-  // No embedded frame. The top-level site has access to its cookies, regardless
-  // of whether the site is in an FPS, or whether the cookies are SameParty.
-  ASSERT_TRUE(NavigateToURL(
-      web_contents(), https_server()->GetURL(kHostD, "/echoheader?Cookie")));
-  EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
-              net::CookieStringIs(UnorderedElementsAre(
-                  Key(kSamePartyLaxCookieName), Key(kSamePartyNoneCookieName),
-                  Key(kSamePartyUnspecifiedCookieName))));
-}
-
-IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SetSamePartyCookies) {
-  // No embedded frame, FPS member. The top-level FPS site can set its cookies.
-  ASSERT_TRUE(NavigateToURL(
-      web_contents(), https_server()->GetURL(kHostA, kSetSamePartyCookiesURL)));
-  EXPECT_THAT(GetCanonicalCookies(web_contents()->GetBrowserContext(),
-                                  https_server()->GetURL(kHostA, "/")),
-              UnorderedElementsAre(
-                  net::MatchesCookieWithName(kSamePartyLaxCookieName),
-                  net::MatchesCookieWithName(kSamePartyNoneCookieName),
-                  net::MatchesCookieWithName(kSamePartyUnspecifiedCookieName)));
-  ASSERT_EQ(3U, ClearCookies());
-
-  // Same-site FPS-member iframe (A embedded in A) sets A's SameParty cookies.
-  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
-                  web_contents(), https_server(), "a.test(%s)",
-                  SetSamePartyCookiesUrl(https_server(), kHostA)),
-              UnorderedElementsAre(
-                  net::MatchesCookieWithName(kSamePartyLaxCookieName),
-                  net::MatchesCookieWithName(kSamePartyNoneCookieName),
-                  net::MatchesCookieWithName(kSamePartyUnspecifiedCookieName)));
-  ASSERT_EQ(3U, ClearCookies());
-
-  // Cross-site, same-party iframe (A embedded in B) sets A's SameParty
-  // cookies.
-  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
-                  web_contents(), https_server(), "b.test(%s)",
-                  SetSamePartyCookiesUrl(https_server(), kHostA)),
-              UnorderedElementsAre(
-                  net::MatchesCookieWithName(kSamePartyLaxCookieName),
-                  net::MatchesCookieWithName(kSamePartyNoneCookieName),
-                  net::MatchesCookieWithName(kSamePartyUnspecifiedCookieName)));
-  ASSERT_EQ(3U, ClearCookies());
-
-  // Cross-site, same-party nested iframe (A embedded in B embedded in A) sets
-  // A's SameParty cookies.
-  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
-                  web_contents(), https_server(), "a.test(b.test(%s))",
-                  SetSamePartyCookiesUrl(https_server(), kHostA)),
-              UnorderedElementsAre(
-                  net::MatchesCookieWithName(kSamePartyLaxCookieName),
-                  net::MatchesCookieWithName(kSamePartyNoneCookieName),
-                  net::MatchesCookieWithName(kSamePartyUnspecifiedCookieName)));
-  ASSERT_EQ(3U, ClearCookies());
-
-  // Cross-site, same-party nested iframe (A embedded in B embedded in C
-  // embedded in A) sets A's SameParty cookies.
-  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
-                  web_contents(), https_server(), "a.test(c.test(b.test(%s)))",
-                  SetSamePartyCookiesUrl(https_server(), kHostA)),
-              UnorderedElementsAre(
-                  net::MatchesCookieWithName(kSamePartyLaxCookieName),
-                  net::MatchesCookieWithName(kSamePartyNoneCookieName),
-                  net::MatchesCookieWithName(kSamePartyUnspecifiedCookieName)));
-  ASSERT_EQ(3U, ClearCookies());
-
-  // Cross-site, cross-party iframe (D embedded in A) sets D's SameSite=None
-  // cookie, since it's not an FPS member (and SameParty is ignored).
-  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
-                  web_contents(), https_server(), "a.test(%s)",
-                  SetSamePartyCookiesUrl(https_server(), kHostD)),
-              UnorderedElementsAre(
-                  net::MatchesCookieWithName(kSamePartyNoneCookieName)));
-  ASSERT_EQ(1U, ClearCookies());
-
-  // Cross-site, cross-party iframe (A embedded in D) doesn't set A's SameParty
-  // cookies, since A is an FPS member and SameParty is not ignored..
-  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
-                  web_contents(), https_server(), "d.test(%s)",
-                  SetSamePartyCookiesUrl(https_server(), kHostA)),
-              IsEmpty());
-  ASSERT_EQ(0U, ClearCookies());
-
-  // Cross-site, cross-party nested iframe (A embedded in B embedded in D)
-  // doesn't set A's SameParty cookies.
-  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
-                  web_contents(), https_server(), "d.test(b.test(%s))",
-                  SetSamePartyCookiesUrl(https_server(), kHostA)),
-              IsEmpty());
-  ASSERT_EQ(0U, ClearCookies());
-
-  // No embedded frame, non-FPS member. The top-level site can set its cookies.
-  ASSERT_TRUE(NavigateToURL(
-      web_contents(), https_server()->GetURL(kHostD, kSetSamePartyCookiesURL)));
-  EXPECT_THAT(GetCanonicalCookies(web_contents()->GetBrowserContext(),
-                                  https_server()->GetURL(kHostD, "/")),
-              UnorderedElementsAre(
-                  net::MatchesCookieWithName(kSamePartyLaxCookieName),
-                  net::MatchesCookieWithName(kSamePartyNoneCookieName),
-                  net::MatchesCookieWithName(kSamePartyUnspecifiedCookieName)));
-  ASSERT_EQ(3U, ClearCookies());
 }
 
 IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
