@@ -5,11 +5,11 @@
 <script>
 promise_test(async t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve(), { focusReset: "after-transition" });
+    e.intercept({ focusReset: "after-transition" });
   }, { once: true });
 
   await navigation.navigate("#1").finished;
@@ -17,11 +17,11 @@ promise_test(async t => {
 
 promise_test(async t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve(), { focusReset: "manual" });
+    e.intercept({ focusReset: "manual" });
   }, { once: true });
 
   await navigation.navigate("#2").finished;
@@ -29,11 +29,11 @@ promise_test(async t => {
 
 promise_test(async t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve(), { focusReset: "after-transition" });
+    e.intercept({ focusReset: "after-transition" });
   }, { once: true });
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve(), { focusReset: "manual" });
+    e.intercept({ focusReset: "manual" });
   }, { once: true });
 
   await navigation.navigate("#3").finished;
@@ -41,11 +41,11 @@ promise_test(async t => {
 
 promise_test(async t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve(), { focusReset: "after-transition" });
+    e.intercept({ focusReset: "after-transition" });
   }, { once: true });
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 
   await navigation.navigate("#4").finished;
@@ -53,11 +53,11 @@ promise_test(async t => {
 
 promise_test(async t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve(), { focusReset: "manual" });
+    e.intercept({ focusReset: "manual" });
   }, { once: true });
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve(), { focusReset: "after-transition" });
+    e.intercept({ focusReset: "after-transition" });
   }, { once: true });
 
   await navigation.navigate("#5").finished;
@@ -65,11 +65,11 @@ promise_test(async t => {
 
 promise_test(async t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve(), { focusReset: "manual" });
+    e.intercept({ focusReset: "manual" });
   }, { once: true });
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 
   await navigation.navigate("#6").finished;

@@ -711,9 +711,8 @@ static SinglePageAppNavigationType CategorizeSinglePageAppNavigation(
       // WebFrameLoadType::kBackForward.
       DCHECK(frame_load_type != WebFrameLoadType::kBackForward);
       return kSPANavTypeHistoryPushStateOrReplaceState;
-    case mojom::blink::SameDocumentNavigationType::
-        kNavigationApiTransitionWhile:
-      return kSPANavTypeNavigationApiTransitionWhile;
+    case mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept:
+      return kSPANavTypeNavigationApiIntercept;
   }
   NOTREACHED();
   return kSPANavTypeSameDocumentBackwardOrForward;
@@ -826,13 +825,13 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       same_document_navigation_type, is_client_redirect_, is_browser_initiated);
   probe::DidNavigateWithinDocument(frame_);
 
-  // If transitionWhile() was called during this same-document navigation's
+  // If intercept() was called during this same-document navigation's
   // NavigateEvent, the navigation will finish asynchronously, so
   // don't immediately call DidStopLoading() in that case.
   bool should_send_stop_notification =
-      !was_loading && same_document_navigation_type !=
-                          mojom::blink::SameDocumentNavigationType::
-                              kNavigationApiTransitionWhile;
+      !was_loading &&
+      same_document_navigation_type !=
+          mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept;
   if (should_send_stop_notification)
     GetFrameLoader().Progress().ProgressCompleted();
 
@@ -1348,7 +1347,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     auto dispatch_result = navigation_api->DispatchNavigateEvent(params);
     if (dispatch_result == NavigationApi::DispatchResult::kAbort)
       return mojom::blink::CommitResult::Aborted;
-    if (dispatch_result == NavigationApi::DispatchResult::kTransitionWhile)
+    if (dispatch_result == NavigationApi::DispatchResult::kIntercept)
       return mojom::blink::CommitResult::Ok;
   }
 

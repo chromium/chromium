@@ -41387,8 +41387,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4300" label="CookieDomainNonASCII"/>
   <int value="4301" label="ClientHintsMetaEquivDelegateCH"/>
   <int value="4302" label="ExpectCTHeader"/>
-  <int value="4303" label="NavigateEventTransitionWhile"/>
-  <int value="4304" label="NavigateEventRestoreScroll"/>
+  <int value="4303" label="OBSOLETE_kNavigateEventTransitionWhile"/>
+  <int value="4304" label="OBSOLETE_kNavigateEventRestoreScroll"/>
   <int value="4305" label="SendBeaconWithArrayBuffer"/>
   <int value="4306" label="SendBeaconWithArrayBufferView"/>
   <int value="4307" label="SendBeaconWithBlob"/>
@@ -91285,7 +91285,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="History push state or replace state"/>
   <int value="1" label="Same document backward or forward"/>
   <int value="2" label="Other fragment navigation"/>
-  <int value="3" label="AppHistory navigate event transitionWhile"/>
+  <int value="3" label="Navigation API intercept"/>
 </enum>
 
 <enum name="SiteEngagementLevel">

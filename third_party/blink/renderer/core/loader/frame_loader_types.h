@@ -53,7 +53,7 @@ enum SinglePageAppNavigationType {
   kSPANavTypeHistoryPushStateOrReplaceState = 0,
   kSPANavTypeSameDocumentBackwardOrForward = 1,
   kSPANavTypeOtherFragmentNavigation = 2,
-  kSPANavTypeNavigationApiTransitionWhile = 3,
+  kSPANavTypeNavigationApiIntercept = 3,
   kSPANavTypeCount
 };
 

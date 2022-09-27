@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_transition_while_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -43,21 +42,19 @@ NavigateEvent::NavigateEvent(ExecutionContext* context,
   DCHECK(IsA<LocalDOMWindow>(context));
 }
 
-bool NavigateEvent::PerformSharedInteceptChecksAndSetup(
-    NavigationInterceptOrTransitionWhileOptions* options,
-    const String& function_name,
-    ExceptionState& exception_state) {
+void NavigateEvent::intercept(NavigationInterceptOptions* options,
+                              ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        function_name + "() may not be called in a detached window.");
-    return false;
+        "intercept() may not be called in a detached window.");
+    return;
   }
 
   if (!isTrusted()) {
     exception_state.ThrowSecurityError(
-        function_name + "() may only be called on a trusted event.");
-    return false;
+        "intercept() may only be called on a trusted event.");
+    return;
   }
 
   if (!can_intercept_) {
@@ -66,23 +63,22 @@ bool NavigateEvent::PerformSharedInteceptChecksAndSetup(
         "' cannot be intercepted by in a window with origin '" +
         DomWindow()->GetSecurityOrigin()->ToString() + "' and URL '" +
         DomWindow()->Url().ElidedString() + "'.");
-    return false;
+    return;
   }
 
   if (!IsBeingDispatched()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        function_name +
-            "() may only be called while the navigate event is "
-            "being dispatched.");
-    return false;
+        "intercept() may only be called while the navigate event is being "
+        "dispatched.");
+    return;
   }
 
   if (defaultPrevented()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        function_name + "() may not be called if the event has been canceled.");
-    return false;
+        "intercept() may not be called if the event has been canceled.");
+    return;
   }
 
   if (!HasNavigationActions()) {
@@ -97,67 +93,31 @@ bool NavigateEvent::PerformSharedInteceptChecksAndSetup(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,
               "The \"" + options->focusReset().AsString() + "\" value for " +
-                  function_name +
-                  "()'s focusReset option "
+                  "intercept()'s focusReset option "
                   "will override the previously-passed value of \"" +
                   focus_reset_behavior_->AsString() + "\"."));
     }
     focus_reset_behavior_ = options->focusReset();
   }
-  return true;
-}
 
-void NavigateEvent::transitionWhile(ScriptPromise newNavigationAction,
-                                    NavigationTransitionWhileOptions* options,
-                                    ExceptionState& exception_state) {
-  if (DomWindow()) {
-    Deprecation::CountDeprecation(DomWindow(),
-                                  WebFeature::kNavigateEventTransitionWhile);
-  }
-
-  if (PerformSharedInteceptChecksAndSetup(options, "transitionWhile",
-                                          exception_state)) {
-    if (options->hasScrollRestoration()) {
-      if (scroll_behavior_ &&
-          scroll_behavior_->AsEnum() != options->scrollRestoration().AsEnum()) {
-        GetExecutionContext()->AddConsoleMessage(
-            MakeGarbageCollected<ConsoleMessage>(
-                mojom::blink::ConsoleMessageSource::kJavaScript,
-                mojom::blink::ConsoleMessageLevel::kWarning,
-                "The \"" + options->scrollRestoration().AsString() +
-                    "\" value for transitionWhile()'s scrollRestoration option "
-                    "will override the previously-passed value of \"" +
-                    scroll_behavior_->AsString() + "\"."));
-      }
-      scroll_behavior_ = options->scrollRestoration();
+  if (options->hasScroll()) {
+    if (scroll_behavior_ &&
+        scroll_behavior_->AsEnum() != options->scroll().AsEnum()) {
+      GetExecutionContext()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "The \"" + options->scroll().AsString() + "\" value for " +
+                  "intercept()'s scroll option "
+                  "will override the previously-passed value of \"" +
+                  scroll_behavior_->AsString() + "\"."));
     }
-    has_navigation_actions_ = true;
-    navigation_action_promises_list_.push_back(newNavigationAction);
+    scroll_behavior_ = options->scroll();
   }
-}
 
-void NavigateEvent::intercept(NavigationInterceptOptions* options,
-                              ExceptionState& exception_state) {
-  if (PerformSharedInteceptChecksAndSetup(options, "intercept",
-                                          exception_state)) {
-    if (options->hasScroll()) {
-      if (scroll_behavior_ &&
-          scroll_behavior_->AsEnum() != options->scroll().AsEnum()) {
-        GetExecutionContext()->AddConsoleMessage(
-            MakeGarbageCollected<ConsoleMessage>(
-                mojom::blink::ConsoleMessageSource::kJavaScript,
-                mojom::blink::ConsoleMessageLevel::kWarning,
-                "The \"" + options->scroll().AsString() + "\" value for " +
-                    "intercept()'s scroll option "
-                    "will override the previously-passed value of \"" +
-                    scroll_behavior_->AsString() + "\"."));
-      }
-      scroll_behavior_ = options->scroll();
-    }
-    has_navigation_actions_ = true;
-    if (options->hasHandler())
-      navigation_action_handlers_list_.push_back(options->handler());
-  }
+  has_navigation_actions_ = true;
+  if (options->hasHandler())
+    navigation_action_handlers_list_.push_back(options->handler());
 }
 
 void NavigateEvent::FinalizeNavigationActionPromisesList() {
@@ -170,16 +130,16 @@ void NavigateEvent::FinalizeNavigationActionPromisesList() {
 }
 
 void NavigateEvent::ResetFocusIfNeeded() {
-  // We only do focus reset if transitionWhile() was called, opting us into the
+  // We only do focus reset if intercept() was called, opting us into the
   // new default behavior which the navigation API provides.
   if (!HasNavigationActions())
     return;
   auto* document = DomWindow()->document();
   document->RemoveFocusedElementChangeObserver(this);
 
-  // If focus has changed since transitionWhile() was invoked, don't reset
+  // If focus has changed since intercept() was invoked, don't reset
   // focus.
-  if (did_change_focus_during_transition_while_)
+  if (did_change_focus_during_intercept_)
     return;
 
   // If we're in "navigation API mode" per the above, then either leaving focus
@@ -201,34 +161,11 @@ void NavigateEvent::ResetFocusIfNeeded() {
 
 void NavigateEvent::DidChangeFocus() {
   DCHECK(HasNavigationActions());
-  did_change_focus_during_transition_while_ = true;
+  did_change_focus_during_intercept_ = true;
 }
 
 bool NavigateEvent::ShouldSendAxEvents() const {
   return HasNavigationActions();
-}
-
-void NavigateEvent::restoreScroll(ExceptionState& exception_state) {
-  if (DomWindow()) {
-    Deprecation::CountDeprecation(DomWindow(),
-                                  WebFeature::kNavigateEventRestoreScroll);
-  }
-
-  if (navigation_type_ != "traverse") {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "restoreScroll() may only be used for \"traverse\" navigations");
-    return;
-  }
-  if (!scroll_behavior_ ||
-      scroll_behavior_->AsEnum() != V8NavigationScrollBehavior::Enum::kManual) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "restoreScroll() may only be used when in manual scroll restoration "
-        "mode");
-    return;
-  }
-  scroll(exception_state);
 }
 
 void NavigateEvent::scroll(ExceptionState& exception_state) {

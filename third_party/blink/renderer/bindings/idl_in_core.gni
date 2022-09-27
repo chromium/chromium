@@ -521,7 +521,6 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/navigation_api/navigation_options.idl",
           "//third_party/blink/renderer/core/navigation_api/navigation_reload_options.idl",
           "//third_party/blink/renderer/core/navigation_api/navigation_result.idl",
-          "//third_party/blink/renderer/core/navigation_api/navigation_transition_while_options.idl",
           "//third_party/blink/renderer/core/navigation_api/navigation_transition.idl",
           "//third_party/blink/renderer/core/navigation_api/navigation_update_current_entry_options.idl",
           "//third_party/blink/renderer/core/navigation_api/navigation.idl",

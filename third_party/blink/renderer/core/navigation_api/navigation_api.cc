@@ -49,7 +49,7 @@ namespace blink {
 class NavigateReaction final : public ScriptFunction::Callable {
  public:
   enum class ResolveType { kFulfill, kReject };
-  enum class ReactType { kImmediate, kTransitionWhile };
+  enum class ReactType { kImmediate, kIntercept };
   static void React(ScriptState* script_state,
                     ScriptPromise promise,
                     NavigationApiNavigation* navigation,
@@ -97,7 +97,7 @@ class NavigateReaction final : public ScriptFunction::Callable {
     navigation_api->ongoing_navigate_event_ = nullptr;
 
     if (resolve_type_ == ResolveType::kFulfill) {
-      if (react_type_ == ReactType::kTransitionWhile)
+      if (react_type_ == ReactType::kIntercept)
         navigate_event_->PotentiallyProcessScrollBehavior();
       navigation_api->ResolvePromisesAndFireNavigateSuccessEvent(navigation_);
     } else {
@@ -107,7 +107,7 @@ class NavigateReaction final : public ScriptFunction::Callable {
 
     navigate_event_->ResetFocusIfNeeded();
 
-    if (react_type_ == ReactType::kTransitionWhile && window->GetFrame()) {
+    if (react_type_ == ReactType::kIntercept && window->GetFrame()) {
       window->GetFrame()->Loader().DidFinishNavigation(
           resolve_type_ == ResolveType::kFulfill
               ? FrameLoader::NavigationFinishState::kSuccess
@@ -868,7 +868,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // steps. Instead it does stuff like the loading spinner and use counters.
     GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
         params->url, params->destination_item,
-        mojom::blink::SameDocumentNavigationType::kNavigationApiTransitionWhile,
+        mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept,
         state_object, params->frame_load_type, params->is_browser_initiated,
         params->is_synchronously_committed_same_document);
   }
@@ -877,7 +877,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       params->event_type != NavigateEventType::kCrossDocument) {
     NavigateReaction::ReactType react_type =
         navigate_event->HasNavigationActions()
-            ? NavigateReaction::ReactType::kTransitionWhile
+            ? NavigateReaction::ReactType::kIntercept
             : NavigateReaction::ReactType::kImmediate;
 
     // There is a subtle timing difference between the fast-path for zero
@@ -903,9 +903,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   // navigations, because they might later get interrupted by another
   // navigation, in which case we need to reject the promises and so on.
 
-  return navigate_event->HasNavigationActions()
-             ? DispatchResult::kTransitionWhile
-             : DispatchResult::kContinue;
+  return navigate_event->HasNavigationActions() ? DispatchResult::kIntercept
+                                                : DispatchResult::kContinue;
 }
 
 void NavigationApi::InformAboutCanceledNavigation(
@@ -978,10 +977,9 @@ void NavigationApi::ContextDestroyed() {
 }
 
 bool NavigationApi::HasNonDroppedOngoingNavigation() const {
-  bool has_ongoing_transition_while =
-      ongoing_navigate_event_ &&
-      ongoing_navigate_event_->HasNavigationActions();
-  return has_ongoing_transition_while && !has_dropped_navigation_;
+  bool has_ongoing_intercept = ongoing_navigate_event_ &&
+                               ongoing_navigate_event_->HasNavigationActions();
+  return has_ongoing_intercept && !has_dropped_navigation_;
 }
 
 void NavigationApi::RejectPromisesAndFireNavigateErrorEvent(

@@ -13,7 +13,7 @@
 window.startSecondPass = undefined;
 
 navigation.addEventListener("navigate", ev => {
-  ev.transitionWhile(doTransition());
+  ev.intercept({ handler: doTransition });
 });
 
 async function doTransition() {

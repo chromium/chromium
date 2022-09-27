@@ -112,7 +112,7 @@ class CORE_EXPORT NavigationApi final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigateerror, kNavigateerror)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(currententrychange, kCurrententrychange)
 
-  enum class DispatchResult { kContinue, kAbort, kTransitionWhile };
+  enum class DispatchResult { kContinue, kAbort, kIntercept };
   DispatchResult DispatchNavigateEvent(NavigateEventDispatchParams*);
 
   // In the spec, we are only informed about canceled navigations. But in the

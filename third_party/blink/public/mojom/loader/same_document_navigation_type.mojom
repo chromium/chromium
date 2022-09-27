@@ -11,6 +11,6 @@ enum SameDocumentNavigationType {
   kFragment = 0,
   // Navigating with window.history
   kHistoryApi = 1,
-  // Navigating with the navigation API NavigateEvent's transitionWhile()
-  kNavigationApiTransitionWhile = 2,
+  // Navigating with the navigation API's NavigateEvent's intercept()
+  kNavigationApiIntercept = 2,
 };

@@ -236,12 +236,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kIdentityInCanMakePaymentEvent:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kIdentityInCanMakePaymentEvent);
-    case WebFeature::kNavigateEventTransitionWhile:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kNavigateEventTransitionWhile);
-    case WebFeature::kNavigateEventRestoreScroll:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kNavigateEventRestoreScroll);
     case WebFeature::kExplicitOverflowVisibleOnReplacedElement:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kOverflowVisibleOnReplacedElement);

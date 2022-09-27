@@ -514,14 +514,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           MediaSourceDurationTruncatingBuffered;
       break;
-    case DeprecationIssueType::kNavigateEventRestoreScroll:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          NavigateEventRestoreScroll;
-      break;
-    case DeprecationIssueType::kNavigateEventTransitionWhile:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          NavigateEventTransitionWhile;
-      break;
     case DeprecationIssueType::kNoSysexWebMIDIWithoutPermission:
       type = protocol::Audits::DeprecationIssueTypeEnum::
           NoSysexWebMIDIWithoutPermission;

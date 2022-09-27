@@ -26,8 +26,6 @@ class AbortSignal;
 class NavigationDestination;
 class NavigateEventInit;
 class NavigationInterceptOptions;
-class NavigationInterceptOrTransitionWhileOptions;
-class NavigationTransitionWhileOptions;
 class ExceptionState;
 class FormData;
 class ScriptPromise;
@@ -61,13 +59,9 @@ class NavigateEvent final : public Event,
   String downloadRequest() const { return download_request_; }
   ScriptValue info() const { return info_; }
 
-  void transitionWhile(ScriptPromise newNavigationAction,
-                       NavigationTransitionWhileOptions*,
-                       ExceptionState&);
   void intercept(NavigationInterceptOptions*, ExceptionState&);
 
   void scroll(ExceptionState&);
-  void restoreScroll(ExceptionState&);
   void PotentiallyProcessScrollBehavior();
 
   const HeapVector<ScriptPromise>& GetNavigationActionPromisesList() {
@@ -88,10 +82,6 @@ class NavigateEvent final : public Event,
   void Trace(Visitor*) const final;
 
  private:
-  bool PerformSharedInteceptChecksAndSetup(
-      NavigationInterceptOrTransitionWhileOptions*,
-      const String& function_name,
-      ExceptionState&);
   void DefinitelyProcessScrollBehavior();
 
   String navigation_type_;
@@ -115,7 +105,7 @@ class NavigateEvent final : public Event,
 
   bool did_process_scroll_behavior_ = false;
   bool did_finish_ = false;
-  bool did_change_focus_during_transition_while_ = false;
+  bool did_change_focus_during_intercept_ = false;
 };
 
 }  // namespace blink

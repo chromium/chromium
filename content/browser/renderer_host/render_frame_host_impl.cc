@@ -11688,14 +11688,13 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // In general, loading ui is only shown for cross-document navigations,
     // because same-document navigations are already complete by the time the
     // renderer notifies the browser process of the navigation.
-    // The navigation API's transitionWhile(), however, is an asynchronous
+    // The navigation API's intercept(), however, is an asynchronous
     // same-document navigation, and should therefore show loading UI until load
     // completion.
     bool should_show_loading_ui =
         !is_same_document_navigation ||
         same_document_params->same_document_navigation_type ==
-            blink::mojom::SameDocumentNavigationType::
-                kNavigationApiTransitionWhile;
+            blink::mojom::SameDocumentNavigationType::kNavigationApiIntercept;
 
     bool was_loading =
         frame_tree()->LoadingTree()->IsLoadingIncludingInnerFrameTrees();

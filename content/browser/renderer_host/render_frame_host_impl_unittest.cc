@@ -513,7 +513,7 @@ class LoadingStateChangedDelegate : public WebContentsDelegate {
   bool should_show_loading_ui_ = false;
 };
 
-TEST_F(RenderFrameHostImplTest, TransitionWhileShowLoadingUi) {
+TEST_F(RenderFrameHostImplTest, NavigationApiInterceptShowLoadingUi) {
   // Initial commit.
   const GURL url1("http://foo");
   NavigationSimulator::NavigateAndCommitFromDocument(url1, main_test_rfh());
@@ -525,7 +525,7 @@ TEST_F(RenderFrameHostImplTest, TransitionWhileShowLoadingUi) {
   ASSERT_FALSE(contents()->IsLoading());
   ASSERT_FALSE(contents()->ShouldShowLoadingUI());
 
-  // Emulate navigateEvent.transitionWhile().
+  // Emulate navigateEvent.intercept().
   const GURL url2("http://foo#a");
   auto params = mojom::DidCommitProvisionalLoadParams::New();
   params->did_create_new_entry = false;
@@ -540,9 +540,9 @@ TEST_F(RenderFrameHostImplTest, TransitionWhileShowLoadingUi) {
   params->post_id = -1;
   main_test_rfh()->SendDidCommitSameDocumentNavigation(
       std::move(params),
-      blink::mojom::SameDocumentNavigationType::kNavigationApiTransitionWhile);
+      blink::mojom::SameDocumentNavigationType::kNavigationApiIntercept);
 
-  // navigateEvent.transitionWhile() should leave WebContents in the loading
+  // navigateEvent.intercept() should leave WebContents in the loading
   // state and showing loading UI, unlike other same-document navigations.
   EXPECT_TRUE(delegate->should_show_loading_ui());
   EXPECT_TRUE(contents()->IsLoading());

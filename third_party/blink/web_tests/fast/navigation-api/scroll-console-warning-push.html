@@ -5,11 +5,11 @@
 <script>
 promise_test(async t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve(), { scroll: "after-transition" });
+    e.intercept({ scroll: "after-transition" });
   }, { once: true });
 
   await navigation.navigate("#1").finished;
@@ -21,7 +21,7 @@ promise_test(async t => {
   }, { once: true });
 
   navigation.addEventListener("navigate", e => {
-    e.intercept({scroll: "manual" });
+    e.intercept({ scroll: "manual" });
   }, { once: true });
 
   await navigation.navigate("#2").finished;
