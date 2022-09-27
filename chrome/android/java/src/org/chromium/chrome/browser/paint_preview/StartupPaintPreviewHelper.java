@@ -175,7 +175,7 @@ public class StartupPaintPreviewHelper {
                 startupPaintPreview.onWebContentsFirstMeaningfulPaint(webContents);
             }
         };
-        PageLoadMetrics.addObserver(observer);
+        PageLoadMetrics.addObserver(observer, true);
         startupPaintPreview.show(() -> PageLoadMetrics.removeObserver(observer));
     }
 

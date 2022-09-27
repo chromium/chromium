@@ -133,6 +133,9 @@ void MetricsWebContentsObserver::BindPageLoadMetrics(
 MetricsWebContentsObserver::~MetricsWebContentsObserver() {}
 
 void MetricsWebContentsObserver::WebContentsWillSoonBeDestroyed() {
+  // TODO(https://crbug.com/1363952): Should not rely on this call.
+  // This method is called only in a certain situation, and most embedders
+  // doesn't support to call this method before WebContentsDestroyed().
   web_contents_will_soon_be_destroyed_ = true;
 }
 

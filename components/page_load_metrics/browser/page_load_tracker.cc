@@ -303,7 +303,8 @@ PageLoadTracker::~PageLoadTracker() {
   for (const auto& observer : observers_) {
     if (failed_provisional_load_info_) {
       observer->OnFailedProvisionalLoad(*failed_provisional_load_info_);
-    } else if (did_commit_) {
+    } else {
+      DCHECK(did_commit_);
       observer->OnComplete(metrics_update_dispatcher_.timing());
     }
   }

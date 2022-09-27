@@ -36,8 +36,12 @@ class AndroidPageLoadMetricsObserver
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
 
   // PageLoadMetricsObserver lifecycle callbacks
+  void DidActivatePrerenderedPage(
+      content::NavigationHandle* navigation_handle) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnHidden(
@@ -62,7 +66,9 @@ class AndroidPageLoadMetricsObserver
       network::NetworkQualityTracker* network_quality_tracker)
       : network_quality_tracker_(network_quality_tracker) {}
 
-  virtual void ReportNewNavigation();
+  virtual void ReportNewNavigation(int64_t navigation_id);
+  virtual void ReportActivation(int64_t activating_navigation_id,
+                                base::TimeTicks activation_start_tick);
 
   virtual void ReportBufferedMetrics(
       const page_load_metrics::mojom::PageLoadTiming& timing);
@@ -94,6 +100,8 @@ class AndroidPageLoadMetricsObserver
   virtual void ReportFirstInputDelay(base::TimeDelta first_input_delay);
 
  private:
+  bool IsPrerendering();
+
   bool did_dispatch_on_main_resource_ = false;
   bool reported_buffered_metrics_ = false;
   int64_t navigation_id_ = -1;

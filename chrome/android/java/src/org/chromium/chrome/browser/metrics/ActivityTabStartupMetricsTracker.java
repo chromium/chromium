@@ -186,7 +186,7 @@ public class ActivityTabStartupMetricsTracker {
                     }
                 };
         mPageLoadMetricsObserver = new PageLoadMetricsObserverImpl();
-        PageLoadMetrics.addObserver(mPageLoadMetricsObserver);
+        PageLoadMetrics.addObserver(mPageLoadMetricsObserver, false);
         mUmaUtilsObserver = new UmaUtils.Observer() {
             @Override
             public void onHasComeToForeground() {

@@ -147,7 +147,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
 
     private void addPageLoadMetricsObservers() {
         for (PageLoadMetrics.Observer observer : mPageLoadMetricsObservers) {
-            PageLoadMetrics.addObserver(observer);
+            PageLoadMetrics.addObserver(observer, false);
         }
     }
 
