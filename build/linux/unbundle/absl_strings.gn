@@ -61,6 +61,8 @@ source_set("str_format") {
 
 source_set("ascii_test") {
 }
+source_set("cord_buffer_test") {
+}
 source_set("cord_data_edge_test") {
 }
 source_set("cord_rep_btree_navigator_test") {

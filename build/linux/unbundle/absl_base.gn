@@ -62,3 +62,6 @@ source_set("core_headers") {
 
 source_set("config_test") {
 }
+
+source_set("prefetch_test") {
+}

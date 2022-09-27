@@ -33,7 +33,7 @@ REPLACEMENTS = {
   'absl_synchronization': 'third_party/abseil-cpp/absl/synchronization/BUILD.gn',
   'absl_time': 'third_party/abseil-cpp/absl/time/BUILD.gn',
   'absl_types': 'third_party/abseil-cpp/absl/types/BUILD.gn',
-  'absl_utility': 'third_party/abseil-cpp/absl/types/BUILD.gn',
+  'absl_utility': 'third_party/abseil-cpp/absl/utility/BUILD.gn',
   #
   'brotli': 'third_party/brotli/BUILD.gn',
   'crc32c': 'third_party/crc32c/BUILD.gn',
