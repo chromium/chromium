@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
@@ -30,7 +29,6 @@ AppSettingsModelTypeController::AppSettingsModelTypeController(
           /*allow_transport_mode=*/true),
       profile_(profile),
       sync_service_(sync_service) {
-  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   DCHECK(profile_);
   DCHECK(sync_service_);
 }
