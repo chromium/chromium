@@ -43,12 +43,12 @@ Status JavaScriptDialogManager::HandleDialog(bool accept,
   if (!IsDialogOpen())
     return Status(kNoSuchAlert);
 
-  base::DictionaryValue params;
-  params.GetDict().Set("accept", accept);
+  base::Value::Dict params;
+  params.Set("accept", accept);
   if (text)
-    params.GetDict().Set("promptText", *text);
+    params.Set("promptText", *text);
   else
-    params.GetDict().Set("promptText", prompt_text_);
+    params.Set("promptText", prompt_text_);
   Status status = client_->SendCommand("Page.handleJavaScriptDialog", params);
   if (status.IsError()) {
     // Retry once to work around
@@ -72,7 +72,7 @@ Status JavaScriptDialogManager::HandleDialog(bool accept,
 Status JavaScriptDialogManager::OnConnected(DevToolsClient* client) {
   unhandled_dialog_queue_.clear();
   dialog_type_queue_.clear();
-  base::DictionaryValue params;
+  base::Value::Dict params;
   return client_->SendCommand("Page.enable", params);
 }
 

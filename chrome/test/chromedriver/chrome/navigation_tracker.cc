@@ -118,8 +118,8 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
   // navigation. We need to call Runtime.evaluate to force a roundtrip to the
   // renderer process, and make sure that we notice any pending navigations
   // (see crbug.com/524079).
-  base::DictionaryValue params;
-  params.SetString("expression", "1");
+  base::Value::Dict params;
+  params.Set("expression", "1");
   base::Value result;
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Runtime.evaluate", params, timeout, &result);
@@ -155,7 +155,7 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
     // In the case that a http request is sent to server to fetch the page
     // content and the server hasn't responded at all, a dummy page is created
     // for the new window. In such case, the baseURL will be 'about:blank'.
-    base::DictionaryValue empty_params;
+    base::Value::Dict empty_params;
     status = client_->SendCommandAndGetResultWithTimeout(
         "DOM.getDocument", empty_params, timeout, &result);
     if (status.IsError())
@@ -191,8 +191,8 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
 
 Status NavigationTracker::CheckFunctionExists(const Timeout* timeout,
                                               bool* exists) {
-  base::DictionaryValue params;
-  params.SetString("expression", "typeof(getWindowInfo)");
+  base::Value::Dict params;
+  params.Set("expression", "typeof(getWindowInfo)");
   base::Value result;
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Runtime.evaluate", params, timeout, &result);
@@ -217,7 +217,7 @@ Status NavigationTracker::OnConnected(DevToolsClient* client) {
   clearFrameStates();
   initCurrentFrame(kUnknown);
   // Enable page domain notifications to allow tracking navigation state.
-  base::DictionaryValue empty_params;
+  base::Value::Dict empty_params;
   return client_->SendCommand("Page.enable", empty_params);
 }
 
@@ -368,8 +368,8 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
     // If case #3, the URL will be blank if the navigation hasn't been started
     // yet. In that case, expect a load to happen in the future.
     *loading_state_ = kUnknown;
-    base::DictionaryValue params;
-    params.SetString("expression", "document.URL");
+    base::Value::Dict params;
+    params.Set("expression", "document.URL");
     base::Value result_dict;
     Status status(kOk);
     for (int attempt = 0; attempt < 3; attempt++) {

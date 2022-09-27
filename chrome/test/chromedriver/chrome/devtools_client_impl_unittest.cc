@@ -159,8 +159,8 @@ TEST_F(DevToolsClientImplTest, SendCommand) {
       base::BindRepeating(&CreateMockSyncWebSocket<MockSyncWebSocket>);
   DevToolsClientImpl client("id", "", "http://url", factory);
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
-  base::DictionaryValue params;
-  params.GetDict().Set("param", 1);
+  base::Value::Dict params;
+  params.Set("param", 1);
   ASSERT_EQ(kOk, client.SendCommand("method", params).code());
 }
 
@@ -169,8 +169,8 @@ TEST_F(DevToolsClientImplTest, SendCommandAndGetResult) {
       base::BindRepeating(&CreateMockSyncWebSocket<MockSyncWebSocket>);
   DevToolsClientImpl client("id", "", "http://url", factory);
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
-  base::DictionaryValue params;
-  params.GetDict().Set("param", 1);
+  base::Value::Dict params;
+  params.Set("param", 1);
   base::Value result;
   Status status = client.SendCommandAndGetResult("method", params, &result);
   ASSERT_EQ(kOk, status.code());
@@ -267,7 +267,7 @@ TEST_F(DevToolsClientImplTest, SendCommandSendFails) {
       &CreateMockSyncWebSocket_B<MockSyncWebSocket3>, false);
   DevToolsClientImpl client("id", "", "http://url", factory);
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
-  base::DictionaryValue params;
+  base::Value::Dict params;
   ASSERT_TRUE(client.SendCommand("method", params).IsError());
 }
 
@@ -276,7 +276,7 @@ TEST_F(DevToolsClientImplTest, SendCommandReceiveNextMessageFails) {
       base::BindRepeating(&CreateMockSyncWebSocket_B<MockSyncWebSocket3>, true);
   DevToolsClientImpl client("id", "", "http://url", factory);
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
-  base::DictionaryValue params;
+  base::Value::Dict params;
   ASSERT_TRUE(client.SendCommand("method", params).IsError());
 }
 
@@ -459,8 +459,8 @@ bool ReturnOutOfOrderResponses(
     internal::InspectorEvent* event,
     internal::InspectorCommandResponse* command_response) {
   int key = 0;
-  base::DictionaryValue params;
-  params.GetDict().Set("param", 1);
+  base::Value::Dict params;
+  params.Set("param", 1);
   switch ((*recurse_count)++) {
     case 0:
       client->SendCommand("method", params);
@@ -510,7 +510,7 @@ TEST_F(DevToolsClientImplTest, SendCommandOnlyConnectsOnce) {
   DevToolsClientImpl client("id", "", "http://url", factory);
   client.SetParserFuncForTesting(base::BindRepeating(&ReturnCommand));
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
-  base::DictionaryValue params;
+  base::Value::Dict params;
   ASSERT_TRUE(client.SendCommand("method", params).IsOk());
   ASSERT_TRUE(client.SendCommand("method", params).IsOk());
 }
@@ -521,7 +521,7 @@ TEST_F(DevToolsClientImplTest, SendCommandBadResponse) {
   DevToolsClientImpl client("id", "", "http://url", factory);
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   client.SetParserFuncForTesting(base::BindRepeating(&ReturnBadResponse));
-  base::DictionaryValue params;
+  base::Value::Dict params;
   ASSERT_TRUE(client.SendCommand("method", params).IsError());
 }
 
@@ -531,7 +531,7 @@ TEST_F(DevToolsClientImplTest, SendCommandBadId) {
   DevToolsClientImpl client("id", "", "http://url", factory);
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   client.SetParserFuncForTesting(base::BindRepeating(&ReturnCommandBadId));
-  base::DictionaryValue params;
+  base::Value::Dict params;
   ASSERT_TRUE(client.SendCommand("method", params).IsError());
 }
 
@@ -543,7 +543,7 @@ TEST_F(DevToolsClientImplTest, SendCommandUnexpectedId) {
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   client.SetParserFuncForTesting(
       base::BindRepeating(&ReturnUnexpectedIdThenResponse, &first));
-  base::DictionaryValue params;
+  base::Value::Dict params;
   ASSERT_TRUE(client.SendCommand("method", params).IsOk());
 }
 
@@ -553,7 +553,7 @@ TEST_F(DevToolsClientImplTest, SendCommandResponseError) {
   DevToolsClientImpl client("id", "", "http://url", factory);
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   client.SetParserFuncForTesting(base::BindRepeating(&ReturnCommandError));
-  base::DictionaryValue params;
+  base::Value::Dict params;
   ASSERT_TRUE(client.SendCommand("method", params).IsError());
 }
 
@@ -567,7 +567,7 @@ TEST_F(DevToolsClientImplTest, SendCommandEventBeforeResponse) {
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   client.SetParserFuncForTesting(
       base::BindRepeating(&ReturnEventThenResponse, &first));
-  base::DictionaryValue params;
+  base::Value::Dict params;
   base::Value result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
   ASSERT_TRUE(result.is_dict());
@@ -808,8 +808,8 @@ TEST_F(DevToolsClientImplTest, NestedCommandsWithOutOfOrderResults) {
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   client.SetParserFuncForTesting(
       base::BindRepeating(&ReturnOutOfOrderResponses, &recurse_count, &client));
-  base::DictionaryValue params;
-  params.GetDict().Set("param", 1);
+  base::Value::Dict params;
+  params.Set("param", 1);
   base::Value result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
   ASSERT_TRUE(result.is_dict());
@@ -842,7 +842,7 @@ class OnConnectedListener : public DevToolsEventListener {
     EXPECT_FALSE(on_connected_called_);
     EXPECT_FALSE(on_event_called_);
     on_connected_called_ = true;
-    base::DictionaryValue params;
+    base::Value::Dict params;
     return client_->SendCommand(method_, params);
   }
 
@@ -927,7 +927,7 @@ TEST_F(DevToolsClientImplTest, ProcessOnConnectedFirstOnCommand) {
   OnConnectedListener listener2("Runtime.enable", &client);
   OnConnectedListener listener3("Page.enable", &client);
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
-  base::DictionaryValue params;
+  base::Value::Dict params;
   EXPECT_EQ(kOk, client.SendCommand("Runtime.execute", params).code());
   listener1.VerifyCalled();
   listener2.VerifyCalled();
@@ -1017,7 +1017,7 @@ class OnEventListener : public DevToolsEventListener {
                  const std::string& method,
                  const base::DictionaryValue& params) override {
     EXPECT_EQ(client_, client);
-    client_->SendCommand("method", params);
+    client_->SendCommand("method", params.GetDict());
     EXPECT_TRUE(other_listener_->received_event_);
     return Status(kOk);
   }
@@ -1039,7 +1039,7 @@ TEST_F(DevToolsClientImplTest, ProcessOnEventFirst) {
   client.AddListener(&listener2);
   Status status = client.ConnectIfNecessary();
   ASSERT_EQ(kOk, status.code()) << status.message();
-  base::DictionaryValue params;
+  base::Value::Dict params;
   EXPECT_EQ(kOk, client.SendCommand("method", params).code());
 }
 
@@ -1095,8 +1095,8 @@ TEST_F(DevToolsClientImplTest, Reconnect) {
   ASSERT_FALSE(is_called);
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   ASSERT_FALSE(is_called);
-  base::DictionaryValue params;
-  params.GetDict().Set("param", 1);
+  base::Value::Dict params;
+  params.Set("param", 1);
   is_called = false;
   ASSERT_EQ(kDisconnected, client.SendCommand("method", params).code());
   ASSERT_FALSE(is_called);
@@ -1156,7 +1156,7 @@ class MockDevToolsEventListener : public DevToolsEventListener {
     DevToolsClientImpl* client_impl = static_cast<DevToolsClientImpl*>(client);
     int msg_id = client_impl->NextMessageId();
 
-    Status status = client->SendCommand("hello", params);
+    Status status = client->SendCommand("hello", params.GetDict());
 
     if (msg_id == expected_blocked_id_) {
       EXPECT_EQ(kUnexpectedAlertOpen, status.code());
@@ -1189,7 +1189,7 @@ TEST_F(DevToolsClientImplTest, BlockedByAlert) {
   msgs.push_back(
       "{\"method\": \"Page.javascriptDialogOpening\", \"params\": {}}");
   msgs.push_back("{\"id\": 2, \"result\": {}}");
-  base::DictionaryValue params;
+  base::Value::Dict params;
   ASSERT_EQ(kUnexpectedAlertOpen,
             client.SendCommand("first", params).code());
 }
@@ -1297,7 +1297,7 @@ TEST_F(DevToolsClientImplTest, ReceivesCommandResponse) {
                   << "{\"id\": " << next_msg_id++ << ", \"result\": {}}")
                      .str());
   msgs.push_back("{\"method\": \"event\", \"params\": {}}");
-  base::DictionaryValue params;
+  base::Value::Dict params;
   ASSERT_EQ(kOk, client.SendCommand("cmd", params).code());
   ASSERT_EQ(2u, listener2.msgs_.size());
   ASSERT_EQ("cmd", listener2.msgs_.front());
@@ -1367,8 +1367,8 @@ TEST_F(DevToolsClientImplTest, SendCommandAndIgnoreResponse) {
       base::BindRepeating(&CreateMockSyncWebSocket<MockSyncWebSocket7>);
   DevToolsClientImpl client("id", "", "http://url", factory);
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
-  base::DictionaryValue params;
-  params.GetDict().Set("param", 1);
+  base::Value::Dict params;
+  params.Set("param", 1);
   ASSERT_EQ(kOk, client.SendCommandAndIgnoreResponse("method", params).code());
   ASSERT_EQ(kOk, client.SendCommand("method", params).code());
 }

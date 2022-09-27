@@ -49,13 +49,11 @@ Status NetworkConditionsOverrideManager::ApplyOverrideIfNeeded() {
 
 Status NetworkConditionsOverrideManager::ApplyOverride(
     const NetworkConditions* network_conditions) {
-  base::DictionaryValue params, empty_params;
-  params.GetDict().Set("offline", network_conditions->offline);
-  params.GetDict().Set("latency", network_conditions->latency);
-  params.GetDict().Set("downloadThroughput",
-                       network_conditions->download_throughput);
-  params.GetDict().Set("uploadThroughput",
-                       network_conditions->upload_throughput);
+  base::Value::Dict params, empty_params;
+  params.Set("offline", network_conditions->offline);
+  params.Set("latency", network_conditions->latency);
+  params.Set("downloadThroughput", network_conditions->download_throughput);
+  params.Set("uploadThroughput", network_conditions->upload_throughput);
 
   Status status = client_->SendCommand("Network.enable", empty_params);
   if (status.IsError())

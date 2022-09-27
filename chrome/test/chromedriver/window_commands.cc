@@ -1985,8 +1985,7 @@ Status ExecuteSendCommand(Session* session,
   if (!cmdParams) {
     return Status(kInvalidArgument, "params not passed");
   }
-  return web_view->SendCommand(
-      *cmd, base::Value::AsDictionaryValue(base::Value(cmdParams->Clone())));
+  return web_view->SendCommand(*cmd, *cmdParams);
 }
 
 Status ExecuteSendCommandFromWebSocket(Session* session,
@@ -2007,9 +2006,7 @@ Status ExecuteSendCommandFromWebSocket(Session* session,
     return Status(kInvalidArgument, "command id must be negative");
   }
 
-  return web_view->SendCommandFromWebSocket(
-      *cmd, base::Value::AsDictionaryValue(base::Value(cmdParams->Clone())),
-      *client_cmd_id);
+  return web_view->SendCommandFromWebSocket(*cmd, *cmdParams, *client_cmd_id);
 }
 
 Status ExecuteSendCommandAndGetResult(Session* session,
@@ -2025,9 +2022,7 @@ Status ExecuteSendCommandAndGetResult(Session* session,
   if (!cmdParams) {
     return Status(kInvalidArgument, "params not passed");
   }
-  return web_view->SendCommandAndGetResult(
-      *cmd, base::Value::AsDictionaryValue(base::Value(cmdParams->Clone())),
-      value);
+  return web_view->SendCommandAndGetResult(*cmd, *cmdParams, value);
 }
 
 Status ExecuteGetActiveElement(Session* session,
@@ -2155,7 +2150,7 @@ Status ExecuteScreenshot(Session* session,
     return status;
 
   std::string screenshot;
-  status = web_view->CaptureScreenshot(&screenshot, base::DictionaryValue());
+  status = web_view->CaptureScreenshot(&screenshot, base::Value::Dict());
   if (status.IsError()) {
     if (status.code() == kUnexpectedAlertOpen) {
       LOG(WARNING) << status.message() << ", cancelling screenshot";
@@ -2165,7 +2160,7 @@ Status ExecuteScreenshot(Session* session,
       return Status(kUnexpectedAlertOpen_Keep);
     }
     LOG(WARNING) << "screenshot failed, retrying " << status.message();
-    status = web_view->CaptureScreenshot(&screenshot, base::DictionaryValue());
+    status = web_view->CaptureScreenshot(&screenshot, base::Value::Dict());
   }
   if (status.IsError())
     return status;
@@ -2185,7 +2180,7 @@ Status ExecuteFullPageScreenshot(Session* session,
 
   std::unique_ptr<base::Value> layoutMetrics;
   status = web_view->SendCommandAndGetResult(
-      "Page.getLayoutMetrics", base::DictionaryValue(), &layoutMetrics);
+      "Page.getLayoutMetrics", base::Value::Dict(), &layoutMetrics);
   if (status.IsError())
     return status;
 
@@ -2206,16 +2201,16 @@ Status ExecuteFullPageScreenshot(Session* session,
   auto* meom = web_view->GetMobileEmulationOverrideManager();
   bool hasOverrideMetrics = meom->HasOverrideMetrics();
 
-  base::DictionaryValue deviceMetrics;
-  deviceMetrics.GetDict().Set("width", w);
-  deviceMetrics.GetDict().Set("height", h);
+  base::Value::Dict deviceMetrics;
+  deviceMetrics.Set("width", w);
+  deviceMetrics.Set("height", h);
   if (hasOverrideMetrics) {
     const auto* dm = meom->GetDeviceMetrics();
-    deviceMetrics.GetDict().Set("deviceScaleFactor", dm->device_scale_factor);
-    deviceMetrics.GetDict().Set("mobile", dm->mobile);
+    deviceMetrics.Set("deviceScaleFactor", dm->device_scale_factor);
+    deviceMetrics.Set("mobile", dm->mobile);
   } else {
-    deviceMetrics.GetDict().Set("deviceScaleFactor", 1);
-    deviceMetrics.GetDict().Set("mobile", false);
+    deviceMetrics.Set("deviceScaleFactor", 1);
+    deviceMetrics.Set("mobile", false);
   }
   std::unique_ptr<base::Value> ignore;
   status = web_view->SendCommandAndGetResult(
@@ -2226,7 +2221,7 @@ Status ExecuteFullPageScreenshot(Session* session,
   std::string screenshot;
   // No need to supply clip as it would be default to the device metrics
   // parameters
-  status = web_view->CaptureScreenshot(&screenshot, base::DictionaryValue());
+  status = web_view->CaptureScreenshot(&screenshot, base::Value::Dict());
   if (status.IsError()) {
     if (status.code() == kUnexpectedAlertOpen) {
       LOG(WARNING) << status.message() << ", cancelling screenshot";
@@ -2236,7 +2231,7 @@ Status ExecuteFullPageScreenshot(Session* session,
       return Status(kUnexpectedAlertOpen_Keep);
     }
     LOG(WARNING) << "screenshot failed, retrying " << status.message();
-    status = web_view->CaptureScreenshot(&screenshot, base::DictionaryValue());
+    status = web_view->CaptureScreenshot(&screenshot, base::Value::Dict());
   }
   if (status.IsError())
     return status;
@@ -2252,8 +2247,7 @@ Status ExecuteFullPageScreenshot(Session* session,
     // width and height, this is to clear device metrics and restore
     // scroll bars
     status = web_view->SendCommandAndGetResult(
-        "Emulation.clearDeviceMetricsOverride", base::DictionaryValue(),
-        &ignore);
+        "Emulation.clearDeviceMetricsOverride", base::Value::Dict(), &ignore);
   }
   return status;
 }
@@ -2298,20 +2292,19 @@ Status ExecutePrint(Session* session,
   if (status.IsError())
     return status;
 
-  base::DictionaryValue printParams;
-  base::Value::Dict& print_params_dict = printParams.GetDict();
-  print_params_dict.Set(kLandscape, orientation == kLandscape);
-  print_params_dict.Set("scale", scale);
-  print_params_dict.Set("printBackground", background);
-  print_params_dict.Set("paperWidth", page.width);
-  print_params_dict.Set("paperHeight", page.height);
-  print_params_dict.Set("marginTop", margin.top);
-  print_params_dict.Set("marginBottom", margin.bottom);
-  print_params_dict.Set("marginLeft", margin.left);
-  print_params_dict.Set("marginRight", margin.right);
-  print_params_dict.Set("preferCSSPageSize", !shrinkToFit);
-  print_params_dict.Set("pageRanges", pageRanges);
-  print_params_dict.Set("transferMode", "ReturnAsBase64");
+  base::Value::Dict printParams;
+  printParams.Set(kLandscape, orientation == kLandscape);
+  printParams.Set("scale", scale);
+  printParams.Set("printBackground", background);
+  printParams.Set("paperWidth", page.width);
+  printParams.Set("paperHeight", page.height);
+  printParams.Set("marginTop", margin.top);
+  printParams.Set("marginBottom", margin.bottom);
+  printParams.Set("marginLeft", margin.left);
+  printParams.Set("marginRight", margin.right);
+  printParams.Set("preferCSSPageSize", !shrinkToFit);
+  printParams.Set("pageRanges", pageRanges);
+  printParams.Set("transferMode", "ReturnAsBase64");
 
   std::string pdf;
   status = web_view->PrintToPDF(printParams, &pdf);
@@ -2772,9 +2765,7 @@ Status ExecuteSetSinkToUse(Session* session,
                            const base::Value::Dict& params,
                            std::unique_ptr<base::Value>* value,
                            Timeout* timeout) {
-  return web_view->SendCommand(
-      "Cast.setSinkToUse",
-      base::Value::AsDictionaryValue(base::Value(params.Clone())));
+  return web_view->SendCommand("Cast.setSinkToUse", params);
 }
 
 Status ExecuteStartDesktopMirroring(Session* session,
@@ -2782,9 +2773,7 @@ Status ExecuteStartDesktopMirroring(Session* session,
                                     const base::Value::Dict& params,
                                     std::unique_ptr<base::Value>* value,
                                     Timeout* timeout) {
-  return web_view->SendCommand(
-      "Cast.startDesktopMirroring",
-      base::Value::AsDictionaryValue(base::Value(params.Clone())));
+  return web_view->SendCommand("Cast.startDesktopMirroring", params);
 }
 
 Status ExecuteStartTabMirroring(Session* session,
@@ -2792,9 +2781,7 @@ Status ExecuteStartTabMirroring(Session* session,
                                 const base::Value::Dict& params,
                                 std::unique_ptr<base::Value>* value,
                                 Timeout* timeout) {
-  return web_view->SendCommand(
-      "Cast.startTabMirroring",
-      base::Value::AsDictionaryValue(base::Value(params.Clone())));
+  return web_view->SendCommand("Cast.startTabMirroring", params);
 }
 
 Status ExecuteStopCasting(Session* session,
@@ -2802,9 +2789,7 @@ Status ExecuteStopCasting(Session* session,
                           const base::Value::Dict& params,
                           std::unique_ptr<base::Value>* value,
                           Timeout* timeout) {
-  return web_view->SendCommand(
-      "Cast.stopCasting",
-      base::Value::AsDictionaryValue(base::Value(params.Clone())));
+  return web_view->SendCommand("Cast.stopCasting", params);
 }
 
 Status ExecuteGetSinks(Session* session,

@@ -33,8 +33,8 @@ Status DownloadDirectoryOverrideManager::OnConnected(DevToolsClient* client) {
 }
 
 Status DownloadDirectoryOverrideManager::ApplyOverride() {
-  base::DictionaryValue params;
-  params.SetString("behavior", "allow");
-  params.SetString("downloadPath", *download_directory_);
+  base::Value::Dict params;
+  params.Set("behavior", "allow");
+  params.Set("downloadPath", *download_directory_);
   return client_->SendCommand("Browser.setDownloadBehavior", params);
 }

@@ -50,7 +50,7 @@ class DummyDevToolsClient : public StubDevToolsClient {
 
   // Overridden from DevToolsClient:
   Status SendCommand(const std::string& method,
-                     const base::DictionaryValue& params) override {
+                     const base::Value::Dict& params) override {
     if (!disabled_)
       disabled_ = method == "Debugger.disable";
     if (method == method_ && !error_after_events_)

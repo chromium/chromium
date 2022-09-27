@@ -1158,8 +1158,8 @@ Status ExecuteElementScreenshot(Session* session,
   if (!clip->is_dict())
     return Status(kUnknownError, "Element Rect is not a dictionary");
 
-  base::DictionaryValue screenshot_params;
-  base::Value* clip_dict = screenshot_params.SetKey(
+  base::Value::Dict screenshot_params;
+  base::Value* clip_dict = screenshot_params.Set(
       "clip", base::Value::FromUniquePtrValue(std::move(clip)));
   // |clip_dict| already contains the right width and height of the target
   // element, but its x and y are relative to containing frame. We replace them

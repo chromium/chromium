@@ -22,7 +22,7 @@ HeapSnapshotTaker::~HeapSnapshotTaker() {}
 
 Status HeapSnapshotTaker::TakeSnapshot(std::unique_ptr<base::Value>* snapshot) {
   Status status1 = TakeSnapshotInternal();
-  base::DictionaryValue params;
+  base::Value::Dict params;
   Status status2 = client_->SendCommand("Debugger.disable", params);
 
   Status status3(kOk);
@@ -40,7 +40,7 @@ Status HeapSnapshotTaker::TakeSnapshot(std::unique_ptr<base::Value>* snapshot) {
 }
 
 Status HeapSnapshotTaker::TakeSnapshotInternal() {
-  base::DictionaryValue params;
+  base::Value::Dict params;
   const char* const kMethods[] = {
       "Debugger.enable",
       "HeapProfiler.collectGarbage",

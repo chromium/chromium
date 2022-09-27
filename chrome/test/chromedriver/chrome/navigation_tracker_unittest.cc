@@ -44,7 +44,7 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
   ~DeterminingLoadStateDevToolsClient() override {}
 
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::DictionaryValue& params,
+                                 const base::Value::Dict& params,
                                  base::Value* result) override {
     if (method == "DOM.getDocument") {
       base::Value result_dict(base::Value::Type::DICTIONARY);
@@ -60,12 +60,12 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
       *result = std::move(result_dict);
       return Status(kOk);
     } else if (method == "Runtime.evaluate") {
-      std::string expression;
-      if (params.GetString("expression", &expression)) {
+      const std::string* expression = params.FindString("expression");
+      if (expression) {
         base::Value result_dict(base::Value::Type::DICTIONARY);
-        if (expression == "1")
+        if (*expression == "1")
           result_dict.GetDict().SetByDottedPath("result.value", 1);
-        else if (expression == "document.readyState")
+        else if (*expression == "document.readyState")
           result_dict.GetDict().SetByDottedPath("result.value", "loading");
         *result = std::move(result_dict);
         return Status(kOk);
@@ -399,7 +399,7 @@ class FailToEvalScriptDevToolsClient : public StubDevToolsClient {
   ~FailToEvalScriptDevToolsClient() override {}
 
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::DictionaryValue& params,
+                                 const base::Value::Dict& params,
                                  base::Value* result) override {
     if (!is_dom_getDocument_requested_ && method == "DOM.getDocument") {
       is_dom_getDocument_requested_ = true;
@@ -583,7 +583,7 @@ class TargetClosedDevToolsClient : public StubDevToolsClient {
   ~TargetClosedDevToolsClient() override {}
 
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::DictionaryValue& params,
+                                 const base::Value::Dict& params,
                                  base::Value* result) override {
     *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kUnknownError, "Inspected target navigated or closed");

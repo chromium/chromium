@@ -368,20 +368,18 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     DevToolsClient* client = chrome->Client();
 
     {
-      base::Value body(base::Value::Type::DICTIONARY);
-      body.SetStringKey("bindingName", "cdp");
-      body.SetStringKey("targetId", session->window);
-      client->SendCommandAndIgnoreResponse(
-          "Target.exposeDevToolsProtocol",
-          base::Value::AsDictionaryValue(body));
+      base::Value::Dict body;
+      body.Set("bindingName", "cdp");
+      body.Set("targetId", session->window);
+      client->SendCommandAndIgnoreResponse("Target.exposeDevToolsProtocol",
+                                           body);
     }
 
     {
       std::unique_ptr<base::Value> result;
-      base::Value body(base::Value::Type::DICTIONARY);
-      body.SetStringKey("name", "sendBidiResponse");
-      web_view->SendCommandAndGetResult(
-          "Runtime.addBinding", base::Value::AsDictionaryValue(body), &result);
+      base::Value::Dict body;
+      body.Set("name", "sendBidiResponse");
+      web_view->SendCommandAndGetResult("Runtime.addBinding", body, &result);
     }
 
     status = EvaluateScriptAndIgnoreResult(session, kMapperScript);
@@ -390,16 +388,15 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
 
     {
       std::unique_ptr<base::Value> result;
-      base::Value body(base::Value::Type::DICTIONARY);
+      base::Value::Dict body;
       std::string window_id;
       if (!base::JSONWriter::Write(session->window, &window_id)) {
         return Status(kUnknownError,
                       "cannot serialize be window id: " + session->window);
       }
-      body.SetStringKey("expression",
-                        "window.setSelfTargetId(" + window_id + ")");
-      status = web_view->SendCommandAndGetResult(
-          "Runtime.evaluate", base::Value::AsDictionaryValue(body), &result);
+      body.Set("expression", "window.setSelfTargetId(" + window_id + ")");
+      status =
+          web_view->SendCommandAndGetResult("Runtime.evaluate", body, &result);
       if (status.IsError())
         return status;
     }
@@ -1385,11 +1382,10 @@ Status ExecuteSetSPCTransactionMode(Session* session,
   if (!mode)
     return Status(kInvalidArgument, "missing parameter 'mode'");
 
-  base::Value body(base::Value::Type::DICTIONARY);
-  body.SetStringKey("mode", *mode);
+  base::Value::Dict body;
+  body.Set("mode", *mode);
 
-  return web_view->SendCommandAndGetResult("Page.setSPCTransactionMode",
-                                           base::Value::AsDictionaryValue(body),
+  return web_view->SendCommandAndGetResult("Page.setSPCTransactionMode", body,
                                            value);
 }
 
@@ -1406,12 +1402,11 @@ Status ExecuteGenerateTestReport(Session* session,
     return Status(kInvalidArgument, "missing parameter 'message'");
   const std::string* group = params.FindString("group");
 
-  base::Value body(base::Value::Type::DICTIONARY);
-  body.SetStringKey("message", *message);
-  body.SetStringKey("group", group ? *group : "default");
+  base::Value::Dict body;
+  body.Set("message", *message);
+  body.Set("group", group ? *group : "default");
 
-  web_view->SendCommandAndGetResult(
-      "Page.generateTestReport", base::Value::AsDictionaryValue(body), value);
+  web_view->SendCommandAndGetResult("Page.generateTestReport", body, value);
   return Status(kOk);
 }
 
@@ -1427,11 +1422,10 @@ Status ExecuteSetTimeZone(Session* session,
   if (!time_zone)
     return Status(kInvalidArgument, "missing parameter 'time_zone'");
 
-  base::Value body(base::Value::Type::DICTIONARY);
-  body.SetStringKey("timezoneId", *time_zone);
+  base::Value::Dict body;
+  body.Set("timezoneId", *time_zone);
 
-  web_view->SendCommandAndGetResult("Emulation.setTimezoneOverride",
-                                    base::Value::AsDictionaryValue(body),
+  web_view->SendCommandAndGetResult("Emulation.setTimezoneOverride", body,
                                     value);
   return Status(kOk);
 }

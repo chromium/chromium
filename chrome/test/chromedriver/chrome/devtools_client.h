@@ -9,11 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-
-namespace base {
-class Value;
-class DictionaryValue;
-}
+#include "base/values.h"
 
 class DevToolsEventListener;
 class Timeout;
@@ -37,38 +33,35 @@ class DevToolsClient {
   // Connect to DevTools if the DevToolsClient is disconnected.
   virtual Status ConnectIfNecessary() = 0;
 
-  virtual Status SendCommand(
-      const std::string& method,
-      const base::DictionaryValue& params) = 0;
+  virtual Status SendCommand(const std::string& method,
+                             const base::Value::Dict& params) = 0;
 
   virtual Status SendCommandFromWebSocket(const std::string& method,
-                                          const base::DictionaryValue& params,
+                                          const base::Value::Dict& params,
                                           const int client_command_id) = 0;
 
-  virtual Status SendCommandWithTimeout(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      const Timeout* timeout) = 0;
+  virtual Status SendCommandWithTimeout(const std::string& method,
+                                        const base::Value::Dict& params,
+                                        const Timeout* timeout) = 0;
 
-  virtual Status SendAsyncCommand(
-      const std::string& method,
-      const base::DictionaryValue& params) = 0;
+  virtual Status SendAsyncCommand(const std::string& method,
+                                  const base::Value::Dict& params) = 0;
 
   // A base::Value(base::Value::Type::DICTIONARY) gets assigned to |result|.
   virtual Status SendCommandAndGetResult(const std::string& method,
-                                         const base::DictionaryValue& params,
+                                         const base::Value::Dict& params,
                                          base::Value* result) = 0;
 
   // A base::Value(base::Value::Type::DICTIONARY) gets assigned to |result|.
   virtual Status SendCommandAndGetResultWithTimeout(
       const std::string& method,
-      const base::DictionaryValue& params,
+      const base::Value::Dict& params,
       const Timeout* timeout,
       base::Value* result) = 0;
 
   virtual Status SendCommandAndIgnoreResponse(
       const std::string& method,
-      const base::DictionaryValue& params) = 0;
+      const base::Value::Dict& params) = 0;
 
   // Adds a listener. This must only be done when the client is disconnected.
   virtual void AddListener(DevToolsEventListener* listener) = 0;

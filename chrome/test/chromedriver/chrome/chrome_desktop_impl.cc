@@ -217,7 +217,7 @@ Status ChromeDesktopImpl::QuitImpl() {
     Status status = devtools_websocket_client_->ConnectIfNecessary();
     if (status.IsOk()) {
       status = devtools_websocket_client_->SendCommandAndIgnoreResponse(
-          "Browser.close", base::DictionaryValue());
+          "Browser.close", base::Value::Dict());
       // If status is not okay, we will try the old method of KillProcess
       if (status.IsOk() &&
           process_.WaitForExitWithTimeout(base::Seconds(10), nullptr))

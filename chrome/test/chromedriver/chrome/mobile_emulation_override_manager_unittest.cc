@@ -17,23 +17,23 @@ using ::testing::Optional;
 void AssertDeviceMetricsCommand(const Command& command,
                                 const DeviceMetrics& device_metrics) {
   ASSERT_EQ("Page.setDeviceMetricsOverride", command.method);
-  absl::optional<int> width = command.params.FindIntKey("width");
+  absl::optional<int> width = command.params.FindInt("width");
 
-  absl::optional<int> height = command.params.FindIntKey("height");
+  absl::optional<int> height = command.params.FindInt("height");
   ASSERT_TRUE(width);
   ASSERT_TRUE(height);
-  ASSERT_THAT(command.params.FindBoolKey("mobile"),
+  ASSERT_THAT(command.params.FindBool("mobile"),
               Optional(device_metrics.mobile));
-  ASSERT_THAT(command.params.FindBoolKey("fitWindow"),
+  ASSERT_THAT(command.params.FindBool("fitWindow"),
               Optional(device_metrics.fit_window));
-  ASSERT_THAT(command.params.FindBoolKey("textAutosizing"),
+  ASSERT_THAT(command.params.FindBool("textAutosizing"),
               Optional(device_metrics.text_autosizing));
   ASSERT_EQ(device_metrics.width, *width);
   ASSERT_EQ(device_metrics.height, *height);
   ASSERT_EQ(device_metrics.device_scale_factor,
-            command.params.FindDoubleKey("deviceScaleFactor").value());
+            command.params.FindDouble("deviceScaleFactor").value());
   ASSERT_EQ(device_metrics.font_scale_factor,
-            command.params.FindDoubleKey("fontScaleFactor").value());
+            command.params.FindDouble("fontScaleFactor").value());
 }
 
 }  // namespace

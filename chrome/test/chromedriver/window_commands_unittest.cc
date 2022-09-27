@@ -371,9 +371,9 @@ class StorePrintParamsWebView : public StubWebView {
   StorePrintParamsWebView() : StubWebView("1") {}
   ~StorePrintParamsWebView() override = default;
 
-  Status PrintToPDF(const base::DictionaryValue& params,
+  Status PrintToPDF(const base::Value::Dict& params,
                     std::string* pdf) override {
-    params_ = params.Clone();
+    params_ = base::Value(params.Clone());
     return Status(kOk);
   }
 
@@ -789,7 +789,7 @@ class StoreScreenshotParamsWebView : public StubWebView {
   ~StoreScreenshotParamsWebView() override = default;
 
   Status SendCommandAndGetResult(const std::string& cmd,
-                                 const base::DictionaryValue& params,
+                                 const base::Value::Dict& params,
                                  std::unique_ptr<base::Value>* value) override {
     if (cmd == "Page.getLayoutMetrics") {
       std::unique_ptr<base::DictionaryValue> res =
@@ -800,15 +800,15 @@ class StoreScreenshotParamsWebView : public StubWebView {
       d->GetDict().Set("height", hd);
       *value = std::move(res);
     } else if (cmd == "Emulation.setDeviceMetricsOverride") {
-      base::DictionaryValue expect;
-      expect.GetDict().Set("width", wi);
-      expect.GetDict().Set("height", hi);
+      base::Value::Dict expect;
+      expect.Set("width", wi);
+      expect.Set("height", hi);
       if (meom_->HasOverrideMetrics()) {
-        expect.GetDict().Set("deviceScaleFactor", device_scale_factor);
-        expect.GetDict().Set("mobile", mobile);
+        expect.Set("deviceScaleFactor", device_scale_factor);
+        expect.Set("mobile", mobile);
       } else {
-        expect.GetDict().Set("deviceScaleFactor", 1);
-        expect.GetDict().Set("mobile", false);
+        expect.Set("deviceScaleFactor", 1);
+        expect.Set("mobile", false);
       }
       if (expect != params)
         return Status(kInvalidArgument);
@@ -818,8 +818,8 @@ class StoreScreenshotParamsWebView : public StubWebView {
   }
 
   Status CaptureScreenshot(std::string* screenshot,
-                           const base::DictionaryValue& params) override {
-    params_ = params.Clone();
+                           const base::Value::Dict& params) override {
+    params_ = base::Value(params.Clone());
     return Status(kOk);
   }
 

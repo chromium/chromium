@@ -18,15 +18,15 @@ void AssertNetworkConditionsCommand(
     const Command& command,
     const NetworkConditions& network_conditions) {
   ASSERT_EQ("Network.emulateNetworkConditions", command.method);
-  ASSERT_THAT(command.params.FindBoolKey("offline"),
+  ASSERT_THAT(command.params.FindBool("offline"),
               Optional(network_conditions.offline));
 
   ASSERT_EQ(network_conditions.latency,
-            command.params.FindDoubleKey("latency").value());
+            command.params.FindDouble("latency").value());
   ASSERT_EQ(network_conditions.download_throughput,
-            command.params.FindDoubleKey("downloadThroughput").value());
+            command.params.FindDouble("downloadThroughput").value());
   ASSERT_EQ(network_conditions.upload_throughput,
-            command.params.FindDoubleKey("uploadThroughput").value());
+            command.params.FindDouble("uploadThroughput").value());
 }
 
 }  // namespace

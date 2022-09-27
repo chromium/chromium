@@ -300,21 +300,21 @@ Status DevToolsClientImpl::SetUpDevTools() {
   if (id_ != kBrowserwideDevToolsClientId &&
       (GetOwner() == nullptr || !GetOwner()->IsServiceWorker())) {
     // This is a page or frame level DevToolsClient
-    base::DictionaryValue params;
+    base::Value::Dict params;
     std::string script =
         "(function () {"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Array = window.Array;"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Promise = window.Promise;"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol = window.Symbol;"
         "}) ();";
-    params.SetString("source", script);
+    params.Set("source", script);
     Status status = SendCommandAndIgnoreResponse(
         "Page.addScriptToEvaluateOnNewDocument", params);
     if (status.IsError())
       return status;
 
-    params.DictClear();
-    params.SetString("expression", script);
+    params.clear();
+    params.Set("expression", script);
     status = SendCommandAndIgnoreResponse("Runtime.evaluate", params);
     if (status.IsError())
       return status;
@@ -324,15 +324,14 @@ Status DevToolsClientImpl::SetUpDevTools() {
   return Status{kOk};
 }
 
-Status DevToolsClientImpl::SendCommand(
-    const std::string& method,
-    const base::DictionaryValue& params) {
+Status DevToolsClientImpl::SendCommand(const std::string& method,
+                                       const base::Value::Dict& params) {
   return SendCommandWithTimeout(method, params, nullptr);
 }
 
 Status DevToolsClientImpl::SendCommandFromWebSocket(
     const std::string& method,
-    const base::DictionaryValue& params,
+    const base::Value::Dict& params,
     int client_command_id) {
   return SendCommandInternal(method, params, nullptr, false, false,
                              client_command_id, nullptr);
@@ -340,29 +339,28 @@ Status DevToolsClientImpl::SendCommandFromWebSocket(
 
 Status DevToolsClientImpl::SendCommandWithTimeout(
     const std::string& method,
-    const base::DictionaryValue& params,
+    const base::Value::Dict& params,
     const Timeout* timeout) {
   base::Value result;
   return SendCommandInternal(method, params, &result, true, true, 0, timeout);
 }
 
-Status DevToolsClientImpl::SendAsyncCommand(
-    const std::string& method,
-    const base::DictionaryValue& params) {
+Status DevToolsClientImpl::SendAsyncCommand(const std::string& method,
+                                            const base::Value::Dict& params) {
   base::Value result;
   return SendCommandInternal(method, params, &result, false, false, 0, nullptr);
 }
 
 Status DevToolsClientImpl::SendCommandAndGetResult(
     const std::string& method,
-    const base::DictionaryValue& params,
+    const base::Value::Dict& params,
     base::Value* result) {
   return SendCommandAndGetResultWithTimeout(method, params, nullptr, result);
 }
 
 Status DevToolsClientImpl::SendCommandAndGetResultWithTimeout(
     const std::string& method,
-    const base::DictionaryValue& params,
+    const base::Value::Dict& params,
     const Timeout* timeout,
     base::Value* result) {
   base::Value intermediate_result;
@@ -378,7 +376,7 @@ Status DevToolsClientImpl::SendCommandAndGetResultWithTimeout(
 
 Status DevToolsClientImpl::SendCommandAndIgnoreResponse(
     const std::string& method,
-    const base::DictionaryValue& params) {
+    const base::Value::Dict& params) {
   return SendCommandInternal(method, params, nullptr, true, false, 0, nullptr);
 }
 
@@ -477,14 +475,13 @@ int DevToolsClientImpl::NextMessageId() const {
   return next_id_;
 }
 
-Status DevToolsClientImpl::SendCommandInternal(
-    const std::string& method,
-    const base::DictionaryValue& params,
-    base::Value* result,
-    bool expect_response,
-    bool wait_for_response,
-    const int client_command_id,
-    const Timeout* timeout) {
+Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
+                                               const base::Value::Dict& params,
+                                               base::Value* result,
+                                               bool expect_response,
+                                               bool wait_for_response,
+                                               const int client_command_id,
+                                               const Timeout* timeout) {
   DCHECK(IsConnected());
   if (parent_ == nullptr && !socket_->IsConnected())
     return Status(kDisconnected, "not connected to DevTools");
@@ -494,7 +491,7 @@ Status DevToolsClientImpl::SendCommandInternal(
   base::DictionaryValue command;
   command.SetInteger("id", command_id);
   command.SetString("method", method);
-  command.SetKey("params", params.Clone());
+  command.SetKey("params", base::Value(params.Clone()));
   if (!session_id_.empty()) {
     command.SetString("sessionId", session_id_);
   }
@@ -505,7 +502,7 @@ Status DevToolsClientImpl::SendCommandInternal(
     // see chromedriver/log_replay/devtools_log_reader.cc.
     VLOG(1) << "DevTools WebSocket Command: " << method << " (id=" << command_id
             << ")" << SessionId(session_id_) << " " << id_ << " "
-            << FormatValueForDisplay(params);
+            << FormatValueForDisplay(base::Value(params.Clone()));
   }
   SyncWebSocket* socket =
       static_cast<DevToolsClientImpl*>(GetRootClient())->socket_.get();
@@ -719,8 +716,8 @@ Status DevToolsClientImpl::ProcessEvent(const internal::InspectorEvent& event) {
     // commands as blocked and return the error. This is better than risking
     // a hang.
     int max_id = next_id_;
-    base::DictionaryValue enable_params;
-    enable_params.SetString("purpose", "detect if alert blocked any cmds");
+    base::Value::Dict enable_params;
+    enable_params.Set("purpose", "detect if alert blocked any cmds");
     Status enable_status = SendCommand("Inspector.enable", enable_params);
     for (auto iter = response_info_map_.begin();
          iter != response_info_map_.end(); ++iter) {

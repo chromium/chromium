@@ -38,7 +38,7 @@ ConsoleLogger::ConsoleLogger(Log* log)
     : log_(log) {}
 
 Status ConsoleLogger::OnConnected(DevToolsClient* client) {
-  base::DictionaryValue params;
+  base::Value::Dict params;
   Status status = client->SendCommand("Log.enable", params);
   if (status.IsError()) {
     return status;

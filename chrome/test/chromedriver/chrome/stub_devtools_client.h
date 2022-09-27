@@ -11,11 +11,6 @@
 
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 
-namespace base {
-class Value;
-class DictionaryValue;
-}
-
 class Status;
 
 class StubDevToolsClient : public DevToolsClient {
@@ -29,29 +24,25 @@ class StubDevToolsClient : public DevToolsClient {
   bool IsNull() const override;
   bool WasCrashed() override;
   Status ConnectIfNecessary() override;
-  Status SendCommand(
-      const std::string& method,
-      const base::DictionaryValue& params) override;
+  Status SendCommand(const std::string& method,
+                     const base::Value::Dict& params) override;
   Status SendCommandFromWebSocket(const std::string& method,
-                                  const base::DictionaryValue& params,
+                                  const base::Value::Dict& params,
                                   const int client_command_id) override;
-  Status SendCommandWithTimeout(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      const Timeout* timeout) override;
-  Status SendAsyncCommand(
-      const std::string& method,
-      const base::DictionaryValue& params) override;
+  Status SendCommandWithTimeout(const std::string& method,
+                                const base::Value::Dict& params,
+                                const Timeout* timeout) override;
+  Status SendAsyncCommand(const std::string& method,
+                          const base::Value::Dict& params) override;
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::DictionaryValue& params,
+                                 const base::Value::Dict& params,
                                  base::Value* result) override;
   Status SendCommandAndGetResultWithTimeout(const std::string& method,
-                                            const base::DictionaryValue& params,
+                                            const base::Value::Dict& params,
                                             const Timeout* timeout,
                                             base::Value* result) override;
-  Status SendCommandAndIgnoreResponse(
-      const std::string& method,
-      const base::DictionaryValue& params) override;
+  Status SendCommandAndIgnoreResponse(const std::string& method,
+                                      const base::Value::Dict& params) override;
   void AddListener(DevToolsEventListener* listener) override;
   Status HandleEventsUntil(const ConditionalFunc& conditional_func,
                            const Timeout& timeout) override;

@@ -998,9 +998,9 @@ Status GetAXNodeByElementId(Session* session,
   if (status.IsError())
     return status;
 
-  base::DictionaryValue body;
-  body.GetIfDict()->Set("backendNodeId", backend_node_id);
-  body.GetIfDict()->Set("fetchRelatives", false);
+  base::Value::Dict body;
+  body.Set("backendNodeId", backend_node_id);
+  body.Set("fetchRelatives", false);
 
   std::unique_ptr<base::Value> result;
 

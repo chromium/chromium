@@ -27,7 +27,7 @@ class MockDevToolsClient : public StubDevToolsClient {
  public:
   MOCK_METHOD2(SendCommand,
                Status(const std::string& method,
-                      const base::DictionaryValue& params));
+                      const base::Value::Dict& params));
   MOCK_METHOD1(AddListener, void(DevToolsEventListener* listener));
 };
 

@@ -45,7 +45,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
   Status ConnectIfNecessary() override { return listener_->OnConnected(this); }
 
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::DictionaryValue& params,
+                                 const base::Value::Dict& params,
                                  base::Value* result) override {
     sent_command_queue_.push(method);
     *result = base::Value(base::Value::Type::DICTIONARY);

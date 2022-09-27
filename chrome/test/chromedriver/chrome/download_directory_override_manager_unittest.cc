@@ -11,13 +11,13 @@
 namespace {
 void AssertDownloadDirectoryCommand(const Command& command,
                                     const std::string& download_directory) {
-  std::string behavior;
-  std::string download_path;
+  const std::string* behavior = command.params.FindString("behavior");
+  const std::string* download_path = command.params.FindString("downloadPath");
   ASSERT_EQ("Browser.setDownloadBehavior", command.method);
-  ASSERT_TRUE(command.params.GetString("behavior", &behavior));
-  ASSERT_TRUE(command.params.GetString("downloadPath", &download_path));
-  ASSERT_EQ(download_directory, download_path);
-  ASSERT_EQ(behavior, "allow");
+  ASSERT_TRUE(behavior);
+  ASSERT_TRUE(download_path);
+  ASSERT_EQ(download_directory, *download_path);
+  ASSERT_EQ(*behavior, "allow");
 }
 }  // namespace
 

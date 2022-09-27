@@ -39,10 +39,10 @@ TEST(JavaScriptDialogManager, HandleDialogPassesParams) {
       manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
   std::string given_text("text");
   ASSERT_EQ(kOk, manager.HandleDialog(false, &given_text).code());
-  std::string text;
-  ASSERT_TRUE(client.commands_[0].params.GetString("promptText", &text));
-  ASSERT_EQ(given_text, text);
-  ASSERT_TRUE(client.commands_[0].params.FindKey("accept"));
+  const std::string* text = client.commands_[0].params.FindString("promptText");
+  ASSERT_TRUE(text);
+  ASSERT_EQ(given_text, *text);
+  ASSERT_TRUE(client.commands_[0].params.contains("accept"));
 }
 
 TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
@@ -57,8 +57,8 @@ TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
       kOk,
       manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
   ASSERT_EQ(kOk, manager.HandleDialog(false, nullptr).code());
-  ASSERT_TRUE(client.commands_[0].params.FindKey("promptText"));
-  ASSERT_TRUE(client.commands_[0].params.FindKey("accept"));
+  ASSERT_TRUE(client.commands_[0].params.contains("promptText"));
+  ASSERT_TRUE(client.commands_[0].params.contains("accept"));
 }
 
 TEST(JavaScriptDialogManager, ReconnectClearsStateAndSendsEnable) {
@@ -96,7 +96,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
 
   // Overridden from StubDevToolsClient:
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::DictionaryValue& params,
+                                 const base::Value::Dict& params,
                                  base::Value* result) override {
     while (closing_count_ > 0) {
       base::DictionaryValue empty;
