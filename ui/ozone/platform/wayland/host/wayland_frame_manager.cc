@@ -6,9 +6,11 @@
 
 #include <presentation-time-client-protocol.h>
 #include <sync/sync.h>
+#include <cstdint>
 
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/time/time.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/overlay_priority_hint.h"
@@ -20,15 +22,19 @@
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 namespace ui {
 
 namespace {
 
 constexpr uint32_t kMaxNumberOfFrames = 20u;
+constexpr uint32_t kMaxFramesInFlight = 3u;
 
 constexpr char kBoundsRectNanOrInf[] =
     "Overlay bounds_rect is invalid (NaN or infinity).";
+
+bool potential_compositor_buffer_lock = true;
 
 bool ValidateRect(const gfx::RectF& rect) {
   return !std::isnan(rect.x()) && !std::isnan(rect.y()) &&
@@ -84,7 +90,12 @@ WaylandFrame::~WaylandFrame() = default;
 
 WaylandFrameManager::WaylandFrameManager(WaylandWindow* window,
                                          WaylandConnection* connection)
-    : window_(window), connection_(connection), weak_factory_(this) {}
+    : window_(window), connection_(connection), weak_factory_(this) {
+  if (!connection->zaura_shell() ||
+      connection->zaura_shell()->HasBugFix(1358908)) {
+    potential_compositor_buffer_lock = false;
+  }
+}
 
 WaylandFrameManager::~WaylandFrameManager() {
   ClearStates(true /* closing */);
@@ -272,8 +283,18 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
   frame->subsurfaces_to_overlays.clear();
 
   // Empty frames do not expect feedbacks so don't push to |submitted_frames_|.
-  if (!empty_frame)
+  if (!empty_frame) {
+    if (potential_compositor_buffer_lock &&
+        ++frames_in_flight_ >= kMaxFramesInFlight) {
+      if (freeze_timeout_timer_.IsRunning()) {
+        freeze_timeout_timer_.Reset();
+      } else {
+        freeze_timeout_timer_.Start(FROM_HERE, base::Milliseconds(500), this,
+                                    &WaylandFrameManager::FreezeTimeout);
+      }
+    }
     submitted_frames_.push_back(std::move(frame));
+  }
 
   VerifyNumberOfSubmittedFrames();
 
@@ -480,8 +501,6 @@ void WaylandFrameManager::OnPresentation(
 }
 
 void WaylandFrameManager::VerifyNumberOfSubmittedFrames() {
-  static constexpr uint32_t kLastThreeFrames = 3u;
-
   // This queue should be small - if not it's likely a bug.
   //
   // Ideally this should be a DCHECK, but if the feedbacks are never sent (a bug
@@ -490,11 +509,11 @@ void WaylandFrameManager::VerifyNumberOfSubmittedFrames() {
     LOG(ERROR)
         << "The server has buggy presentation feedback. Discarding all "
            "presentation feedback requests in all frames except the last "
-        << kLastThreeFrames << ".";
+        << kMaxFramesInFlight << ".";
     // Leave three last frames in case if the server restores its behavior
     // (unlikely).
     for (auto it = submitted_frames_.begin();
-         it < (submitted_frames_.end() - kLastThreeFrames); it++) {
+         it < (submitted_frames_.end() - kMaxFramesInFlight); it++) {
       if (!(*it)->submission_acked || !(*it)->pending_feedback)
         break;
       DCHECK(!(*it)->feedback.has_value());
@@ -677,6 +696,12 @@ void WaylandFrameManager::ProcessOldSubmittedFrame(
          !connection_->presentation());
   frame->submission_acked = true;
 
+  if (potential_compositor_buffer_lock &&
+      frame != submitted_frames_.front().get()) {
+    --frames_in_flight_;
+    freeze_timeout_timer_.Stop();
+  }
+
   // We can now complete the latest submission. We had to wait for this
   // release because SwapCompletionCallback indicates to the client that the
   // buffers in previous frame is available for reuse.
@@ -692,6 +717,18 @@ void WaylandFrameManager::ProcessOldSubmittedFrame(
         gfx::PresentationFeedback(base::TimeTicks::Now(), base::TimeDelta(),
                                   GetPresentationKindFlags(0)));
   }
+}
+
+void WaylandFrameManager::FreezeTimeout() {
+  LOG(WARNING) << "Freeze detected, immediately release a frame";
+  for (auto& frame : submitted_frames_) {
+    if (frame->submitted_buffers.empty())
+      continue;
+    frame->submitted_buffers.clear();
+    MaybeProcessSubmittedFrames();
+    return;
+  }
+  NOTREACHED();
 }
 
 void WaylandFrameManager::Hide() {
