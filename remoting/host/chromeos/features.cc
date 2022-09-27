@@ -8,12 +8,15 @@
 
 namespace remoting::features {
 
-const base::Feature kEnableCrdAdminRemoteAccess{
-    "EnableCrdAdminRemoteAccess", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kForceCrdAdminRemoteAccess{
-    "ForceCrdAdminRemoteAccess", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableCrdAdminRemoteAccess,
+             "EnableCrdAdminRemoteAccess",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kForceCrdAdminRemoteAccess,
+             "ForceCrdAdminRemoteAccess",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableFrameSinkDesktopCapturerInCrd{
-    "EnableFrameSinkDesktopCapturerInCrd", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableFrameSinkDesktopCapturerInCrd,
+             "EnableFrameSinkDesktopCapturerInCrd",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace remoting::features
