@@ -88,16 +88,34 @@ void BrowserAppMenuButton::ShowMenu(int run_types) {
   // If the menu was opened while reopen tab in-product help was
   // showing, we continue the IPH into the menu. Notify the promo
   // controller we are taking control of the promo.
-  reopen_tab_promo_handle_ = browser->window()->CloseFeaturePromoAndContinue(
+  AlertMenuItem alert_item = CloseFeaturePromoAndContinue();
+
+  RunMenu(std::make_unique<AppMenuModel>(
+              toolbar_view_, browser, toolbar_view_->app_menu_icon_controller(),
+              alert_item),
+          browser, run_types);
+}
+
+AlertMenuItem BrowserAppMenuButton::CloseFeaturePromoAndContinue() {
+  Browser* browser = toolbar_view_->browser();
+  BrowserWindow* browser_window = browser->window();
+
+  if (browser_window == nullptr)
+    return AlertMenuItem::kNone;
+
+  promo_handle_ = browser_window->CloseFeaturePromoAndContinue(
       feature_engagement::kIPHReopenTabFeature);
 
-  RunMenu(
-      std::make_unique<AppMenuModel>(toolbar_view_, browser,
-                                     toolbar_view_->app_menu_icon_controller()),
-      browser, run_types, reopen_tab_promo_handle_.is_valid());
+  if (promo_handle_.is_valid())
+    return AlertMenuItem::kReopenTabs;
 
-  browser->window()->CloseFeaturePromo(
+  promo_handle_ = browser_window->CloseFeaturePromoAndContinue(
       feature_engagement::kIPHHighEfficiencyModeFeature);
+
+  if (promo_handle_.is_valid())
+    return AlertMenuItem::kPerformance;
+
+  return AlertMenuItem::kNone;
 }
 
 void BrowserAppMenuButton::OnThemeChanged() {
@@ -121,7 +139,7 @@ void BrowserAppMenuButton::HandleMenuClosed() {
   // If we were showing a promo in the menu, drop the handle to notify
   // FeaturePromoController we're done. This is a no-op if we weren't
   // showing the promo.
-  reopen_tab_promo_handle_.Release();
+  promo_handle_.Release();
 }
 
 void BrowserAppMenuButton::UpdateTextAndHighlightColor() {

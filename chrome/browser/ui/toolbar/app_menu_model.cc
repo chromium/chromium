@@ -282,12 +282,14 @@ const int AppMenuModel::kNumUnboundedMenuTypes;
 
 AppMenuModel::AppMenuModel(ui::AcceleratorProvider* provider,
                            Browser* browser,
-                           AppMenuIconController* app_menu_icon_controller)
+                           AppMenuIconController* app_menu_icon_controller,
+                           AlertMenuItem alert_item)
     : ui::SimpleMenuModel(this),
       uma_action_recorded_(false),
       provider_(provider),
       browser_(browser),
-      app_menu_icon_controller_(app_menu_icon_controller) {
+      app_menu_icon_controller_(app_menu_icon_controller),
+      alert_item_(alert_item) {
   DCHECK(browser_);
 }
 
@@ -789,6 +791,19 @@ bool AppMenuModel::IsCommandIdVisible(int command_id) const {
     default:
       return true;
   }
+}
+
+bool AppMenuModel::IsCommandIdAlerted(int command_id) const {
+  if ((command_id == IDC_RECENT_TABS_MENU) ||
+      (command_id == AppMenuModel::kMinRecentTabsCommandId)) {
+    return alert_item_ == AlertMenuItem::kReopenTabs;
+  }
+
+  if (command_id == IDC_PERFORMANCE) {
+    return alert_item_ == AlertMenuItem::kPerformance;
+  }
+
+  return false;
 }
 
 bool AppMenuModel::GetAcceleratorForCommandId(

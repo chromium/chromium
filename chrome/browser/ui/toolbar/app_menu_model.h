@@ -86,6 +86,8 @@ enum AppMenuAction {
   LIMIT_MENU_ACTION
 };
 
+enum class AlertMenuItem { kNone, kReopenTabs, kPerformance };
+
 // Function to record WrenchMenu.MenuAction histogram
 void LogWrenchMenuAction(AppMenuAction action_id);
 
@@ -145,7 +147,8 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // dialog.
   AppMenuModel(ui::AcceleratorProvider* provider,
                Browser* browser,
-               AppMenuIconController* app_menu_icon_controller = nullptr);
+               AppMenuIconController* app_menu_icon_controller = nullptr,
+               AlertMenuItem alert_item = AlertMenuItem::kNone);
 
   AppMenuModel(const AppMenuModel&) = delete;
   AppMenuModel& operator=(const AppMenuModel&) = delete;
@@ -166,6 +169,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
   bool IsCommandIdVisible(int command_id) const override;
+  bool IsCommandIdAlerted(int command_id) const override;
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
 
@@ -253,6 +257,8 @@ class AppMenuModel : public ui::SimpleMenuModel,
   base::CallbackListSubscription browser_zoom_subscription_;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
+
+  const AlertMenuItem alert_item_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_APP_MENU_MODEL_H_

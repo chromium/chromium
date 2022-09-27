@@ -798,10 +798,8 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
 
 // AppMenu ------------------------------------------------------------------
 
-AppMenu::AppMenu(Browser* browser, int run_types, bool alert_reopen_tab_items)
-    : browser_(browser),
-      run_types_(run_types),
-      alert_reopen_tab_items_(alert_reopen_tab_items) {
+AppMenu::AppMenu(Browser* browser, int run_types)
+    : browser_(browser), run_types_(run_types) {
   global_error_observation_.Observe(
       GlobalErrorServiceFactory::GetForProfile(browser->profile()));
 }
@@ -1212,14 +1210,6 @@ MenuItemView* AppMenu::AddMenuItem(MenuItemView* parent,
     if (menu_type == MenuModel::TYPE_COMMAND && model->HasIcons()) {
       menu_item->SetIcon(model->GetIconAt(model_index));
     }
-
-    // If we want to show items relating to reopening the last-closed tab as
-    // alerted, we specifically need to show alerts on the recent tabs submenu
-    // and the last closed tab menu item.
-    if (alert_reopen_tab_items_ &&
-        ((command_id == IDC_RECENT_TABS_MENU) ||
-         (command_id == AppMenuModel::kMinRecentTabsCommandId)))
-      menu_item->SetAlerted();
   }
 
   return menu_item;

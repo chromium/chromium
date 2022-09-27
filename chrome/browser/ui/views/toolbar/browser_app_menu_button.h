@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_handle.h"
@@ -55,6 +56,10 @@ class BrowserAppMenuButton : public AppMenuButton {
 
   void SetHasInProductHelpPromo(bool has_in_product_help_promo);
 
+  // Closes and continue the flow of an in-product help promo; Returns
+  // AlertMenuItem which indicates the app menu item that should be alerted.
+  AlertMenuItem CloseFeaturePromoAndContinue();
+
   AppMenuIconController::TypeAndSeverity type_and_severity_{
       AppMenuIconController::IconType::NONE,
       AppMenuIconController::Severity::NONE};
@@ -62,7 +67,7 @@ class BrowserAppMenuButton : public AppMenuButton {
   // Our owning toolbar view.
   const raw_ptr<ToolbarView> toolbar_view_;
 
-  user_education::FeaturePromoHandle reopen_tab_promo_handle_;
+  user_education::FeaturePromoHandle promo_handle_;
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
