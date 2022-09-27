@@ -188,8 +188,9 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
   ::wm::SetWindowVisibilityAnimationDuration(
       overlay_window, base::Milliseconds(kSlideAnimationDurationMs));
 
-  if (persist_on_hover) {
-    DCHECK_NE(duration_total_, ToastData::kInfiniteDuration);
+  // Only toasts that expire should be able to persist on hover (i.e. toasts
+  // with infinite duration persist regardless of hover).
+  if (persist_on_hover && (duration_total_ != ToastData::kInfiniteDuration)) {
     hover_observer_ = std::make_unique<ToastHoverObserver>(
         overlay_widget_->GetNativeWindow(),
         base::BindRepeating(&ToastOverlay::OnHoverStateChanged,
