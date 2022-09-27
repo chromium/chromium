@@ -826,4 +826,19 @@ TEST_F(MultitaskMenuTest, MultitaskMenuClosesOnTabletMode) {
   EXPECT_FALSE(multitask_menu());
 }
 
+// Verifies that long touch on the size button shows the multitask menu.
+// Regression test for https://crbug.com/1367376.
+TEST_F(MultitaskMenuTest, LongTouchShowsMultitaskMenu) {
+  ASSERT_TRUE(size_button());
+
+  // Touch until the multitask bubble shows up. This would time out if long
+  // touch was not working.
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "MultitaskMenuBubbleWidget");
+  GetEventGenerator()->PressTouch(
+      size_button()->GetBoundsInScreen().CenterPoint());
+  views::Widget* bubble_widget = waiter.WaitIfNeededAndGet();
+  EXPECT_TRUE(bubble_widget);
+}
+
 }  // namespace ash

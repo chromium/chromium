@@ -73,6 +73,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // Starts |set_buttons_to_snap_mode_timer_|.
   void StartSetButtonsToSnapModeTimer(const ui::LocatedEvent& event);
 
+  // Starts the pie animation, which gives a visual inidicator of when the
+  // multitask menu will show up on long press or long touch.
+  void StartPieAnimation(base::TimeDelta duration);
+
   // Animates the buttons adjacent to the size button to snap left and right.
   void AnimateButtonsToSnapMode();
 
