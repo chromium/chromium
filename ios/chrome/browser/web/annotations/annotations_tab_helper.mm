@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -143,7 +144,10 @@ void AnnotationsTabHelper::OnDecorated(web::WebState* web_state,
                                        int successes,
                                        int annotations) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1350974): Add metrics
+  if (annotations) {
+    int percentage = (100 * successes) / annotations;
+    base::UmaHistogramPercentage("IOS.Annotations.Percentage", percentage);
+  }
 }
 
 void AnnotationsTabHelper::OnClick(web::WebState* web_state,

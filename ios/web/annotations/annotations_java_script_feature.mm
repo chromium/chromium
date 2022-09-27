@@ -26,7 +26,6 @@ const char kScriptHandlerName[] = "annotations";
 
 namespace web {
 
-// TODO(crbug.com/1350973): Check using kReinjectOnDocumentRecreation instead.
 AnnotationsJavaScriptFeature::AnnotationsJavaScriptFeature()
     : JavaScriptFeature(
           ContentWorld::kAnyContentWorld,

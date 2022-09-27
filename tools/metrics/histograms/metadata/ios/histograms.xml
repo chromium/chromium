@@ -32,6 +32,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Annotations.Percentage" units="%"
+    expires_after="2023-07-04">
+  <owner>djean@google.com</owner>
+  <owner>bling-team@chromium.org</owner>
+  <summary>
+    The percentage of annotations the are decorated against the number of
+    annotations found.
+  </summary>
+</histogram>
+
 <histogram name="IOS.AppLauncher.AppURLHasChromeLaunchScheme" enum="Boolean"
     expires_after="2023-07-04">
   <owner>ajuma@chromium.org</owner>

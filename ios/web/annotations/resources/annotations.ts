@@ -105,7 +105,6 @@ const NON_TEXT_NODE_NAMES = new Set([
   'INPUT'
 ]);
 
-// TODO(crbug.com/1350973): dark mode
 const highlightTextColor = "#000";
 const highlightBackgroundColor = "rgba(20,111,225,0.25)";
 const decorationStyles = 'border-bottom-width: 1px; ' +

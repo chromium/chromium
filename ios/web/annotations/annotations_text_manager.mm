@@ -74,18 +74,6 @@ void AnnotationsTextManager::PageLoaded(
   }
 }
 
-void AnnotationsTextManager::DidFinishNavigation(
-    WebState* web_state,
-    NavigationContext* navigation_context) {
-  DCHECK(web_state_ == web_state);
-  // PageLoaded isn't called for same document navigation.
-  // TODO(crbug.com/1350973): investigate if text should be extracted at all in
-  // this case? Why navigating in the same page would require it?
-  if (navigation_context->IsSameDocument()) {
-    StartExtractingText();
-  }
-}
-
 void AnnotationsTextManager::WebStateDestroyed(WebState* web_state) {
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;

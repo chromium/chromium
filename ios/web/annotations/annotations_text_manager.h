@@ -54,8 +54,6 @@ class AnnotationsTextManager : public WebStateUserData<AnnotationsTextManager>,
   // WebStateObserver methods:
   void PageLoaded(WebState* web_state,
                   PageLoadCompletionStatus load_completion_status) override;
-  void DidFinishNavigation(WebState* web_state,
-                           NavigationContext* navigation_context) override;
   void WebStateDestroyed(WebState* web_state) override;
 
   void SetJSFeatureForTesting(AnnotationsJavaScriptFeature* feature);
