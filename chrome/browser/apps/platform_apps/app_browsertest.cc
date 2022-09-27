@@ -1136,12 +1136,11 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
   extensions::EventRouter::Get(browser()->profile())
       ->ClearRegisteredEventsForTest(extension->id());
 
-  DictionaryPrefUpdate update(extension_prefs->pref_service(),
+  ScopedDictPrefUpdate update(extension_prefs->pref_service(),
                               extensions::pref_names::kExtensions);
-  base::Value* dict = update.Get();
   std::string key(extension->id());
   key += ".manifest.version";
-  dict->SetStringPath(key, "1");
+  update->SetByDottedPath(key, "1");
 }
 
 // Component App Test 3 of 3: simulate a component extension upgrade that

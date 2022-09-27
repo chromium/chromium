@@ -346,11 +346,11 @@ void AppPlatformInputMetrics::RecordInputEventsUkm(
 }
 
 void AppPlatformInputMetrics::SaveInputEvents() {
-  DictionaryPrefUpdate input_events_update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate input_events_update(profile_->GetPrefs(),
                                            kAppInputEventsKey);
-  input_events_update->GetDict().clear();
+  input_events_update->clear();
   for (const auto& event_counts : app_id_to_event_count_per_two_hours_) {
-    input_events_update->SetPath(
+    input_events_update->SetByDottedPath(
         event_counts.first, ConvertEventCountsToValue(event_counts.second));
   }
 }
@@ -360,13 +360,10 @@ void AppPlatformInputMetrics::RecordInputEventsUkmFromPref() {
     return;
   }
 
-  DictionaryPrefUpdate input_events_update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate input_events_update(profile_->GetPrefs(),
                                            kAppInputEventsKey);
-  if (!input_events_update->is_dict()) {
-    return;
-  }
 
-  for (const auto [app_id, events] : input_events_update->GetDict()) {
+  for (const auto [app_id, events] : *input_events_update) {
     if (!ShouldRecordUkmForAppTypeName(GetAppType(profile_, app_id))) {
       continue;
     }

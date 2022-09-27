@@ -28,7 +28,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "services/preferences/public/cpp/dictionary_value_update.h"
 
 namespace apps {
 
@@ -185,9 +184,9 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
   void VerifyUrlInfoInPref(const GURL& url,
                            UrlContent url_content,
                            bool promotable) {
-    DictionaryPrefUpdate update(
-        ProfileManager::GetPrimaryUserProfile()->GetPrefs(), kWebsiteUsageTime);
-    auto& dict = update->GetDict();
+    const auto& dict =
+        ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetDict(
+            kWebsiteUsageTime);
 
     const auto* url_info = dict.FindDict(url.spec());
     ASSERT_TRUE(url_info);
@@ -201,9 +200,9 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   void VerifyNoUrlInfoInPref(const GURL& url) {
-    DictionaryPrefUpdate update(
-        ProfileManager::GetPrimaryUserProfile()->GetPrefs(), kWebsiteUsageTime);
-    auto& dict = update->GetDict();
+    const auto& dict =
+        ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetDict(
+            kWebsiteUsageTime);
 
     const auto* url_info = dict.FindDict(url.spec());
     ASSERT_FALSE(url_info);

@@ -225,10 +225,7 @@ void WebsiteMetrics::OnURLsDeleted(history::HistoryService* history_service,
   webcontents_to_ukm_key_.clear();
   url_infos_.clear();
 
-  DictionaryPrefUpdate usage_time_update(profile_->GetPrefs(),
-                                         kWebsiteUsageTime);
-  auto& dict = usage_time_update->GetDict();
-  dict.clear();
+  profile_->GetPrefs()->SetDict(kWebsiteUsageTime, base::Value::Dict());
 }
 
 void WebsiteMetrics::OnWindowDestroying(aura::Window* window) {
@@ -533,10 +530,7 @@ void WebsiteMetrics::SetTabInActivated(content::WebContents* web_contents) {
 }
 
 void WebsiteMetrics::SaveUsageTime() {
-  DictionaryPrefUpdate usage_time_update(profile_->GetPrefs(),
-                                         kWebsiteUsageTime);
-  auto& dict = usage_time_update->GetDict();
-  dict.clear();
+  base::Value::Dict dict;
   for (auto& it : url_infos_) {
     if (it.second.is_activated) {
       auto current_time = base::TimeTicks::Now();
@@ -556,6 +550,8 @@ void WebsiteMetrics::SaveUsageTime() {
       dict.Set(it.first.spec(), it.second.ConvertToValue());
     }
   }
+
+  profile_->GetPrefs()->SetDict(kWebsiteUsageTime, std::move(dict));
 }
 
 void WebsiteMetrics::RecordUsageTime() {
@@ -570,19 +566,14 @@ void WebsiteMetrics::RecordUsageTime() {
 
   // The app usage time AppKMs have been recorded, so clear the saved usage time
   // in the user pref.
-  DictionaryPrefUpdate usage_time_update(profile_->GetPrefs(),
-                                         kWebsiteUsageTime);
-  usage_time_update->GetDict().clear();
+  profile_->GetPrefs()->SetDict(kWebsiteUsageTime, base::Value::Dict());
 }
 
 void WebsiteMetrics::RecordUsageTimeFromPref() {
-  DictionaryPrefUpdate usage_time_update(profile_->GetPrefs(),
-                                         kWebsiteUsageTime);
-  if (!usage_time_update->is_dict()) {
-    return;
-  }
+  const base::Value::Dict& usage_time =
+      profile_->GetPrefs()->GetDict(kWebsiteUsageTime);
 
-  for (const auto [url, url_info_value] : usage_time_update->GetDict()) {
+  for (const auto [url, url_info_value] : usage_time) {
     auto url_info = std::make_unique<UrlInfo>(url_info_value);
     if (!url_info->running_time_in_two_hours.is_zero()) {
       EmitUkm(GURL(url), url_info->running_time_in_two_hours.InMilliseconds(),

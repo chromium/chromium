@@ -607,24 +607,24 @@ void AppPlatformMetrics::OnNewDay() {
 void AppPlatformMetrics::OnTenMinutes() {
   if (should_refresh_activated_count_pref) {
     should_refresh_activated_count_pref = false;
-    DictionaryPrefUpdate activated_count_update(profile_->GetPrefs(),
+    ScopedDictPrefUpdate activated_count_update(profile_->GetPrefs(),
                                                 kAppActivatedCount);
     for (auto it : activated_count_) {
       std::string app_type_name = GetAppTypeHistogramName(it.first);
       DCHECK(!app_type_name.empty());
-      activated_count_update->SetIntKey(app_type_name, it.second);
+      activated_count_update->Set(app_type_name, it.second);
     }
   }
 
   if (should_refresh_duration_pref) {
     should_refresh_duration_pref = false;
-    DictionaryPrefUpdate running_duration_update(profile_->GetPrefs(),
+    ScopedDictPrefUpdate running_duration_update(profile_->GetPrefs(),
                                                  kAppRunningDuration);
     for (auto it : running_duration_) {
       std::string app_type_name = GetAppTypeHistogramName(it.first);
       DCHECK(!app_type_name.empty());
-      running_duration_update->SetPath(app_type_name,
-                                       base::TimeDeltaToValue(it.second));
+      running_duration_update->SetByDottedPath(
+          app_type_name, base::TimeDeltaToValue(it.second));
     }
   }
 }
@@ -935,9 +935,9 @@ void AppPlatformMetrics::SetWindowInActivated(
 }
 
 void AppPlatformMetrics::InitRunningDuration() {
-  DictionaryPrefUpdate running_duration_update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate running_duration_update(profile_->GetPrefs(),
                                                kAppRunningDuration);
-  DictionaryPrefUpdate activated_count_update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate activated_count_update(profile_->GetPrefs(),
                                               kAppActivatedCount);
 
   for (auto app_type_name : GetAppTypeNameSet()) {
@@ -947,12 +947,13 @@ void AppPlatformMetrics::InitRunningDuration() {
     }
 
     absl::optional<base::TimeDelta> unreported_duration =
-        base::ValueToTimeDelta(running_duration_update->FindPath(key));
+        base::ValueToTimeDelta(running_duration_update->FindByDottedPath(key));
     if (unreported_duration.has_value()) {
       running_duration_[app_type_name] = unreported_duration.value();
     }
 
-    absl::optional<int> count = activated_count_update->FindIntPath(key);
+    absl::optional<int> count =
+        activated_count_update->FindIntByDottedPath(key);
     if (count.has_value()) {
       activated_count_[app_type_name] = count.value();
     }
@@ -963,12 +964,8 @@ void AppPlatformMetrics::ClearRunningDuration() {
   running_duration_.clear();
   activated_count_.clear();
 
-  DictionaryPrefUpdate running_duration_update(profile_->GetPrefs(),
-                                               kAppRunningDuration);
-  running_duration_update->DictClear();
-  DictionaryPrefUpdate activated_count_update(profile_->GetPrefs(),
-                                              kAppActivatedCount);
-  activated_count_update->DictClear();
+  profile_->GetPrefs()->SetDict(kAppRunningDuration, base::Value::Dict());
+  profile_->GetPrefs()->SetDict(kAppActivatedCount, base::Value::Dict());
 }
 
 void AppPlatformMetrics::RecordAppsCount(AppType app_type) {
@@ -1123,8 +1120,7 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
 
   // The app usage time AppKMs have been recorded, so clear the saved usage time
   // in the user pref.
-  DictionaryPrefUpdate usage_time_update(profile_->GetPrefs(), kAppUsageTime);
-  usage_time_update->GetDict().clear();
+  profile_->GetPrefs()->SetDict(kAppUsageTime, base::Value::Dict());
 }
 
 void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
@@ -1176,10 +1172,9 @@ void AppPlatformMetrics::UpdateUsageTime(
 }
 
 void AppPlatformMetrics::SaveUsageTime() {
-  DictionaryPrefUpdate usage_time_update(profile_->GetPrefs(), kAppUsageTime);
-  usage_time_update->GetDict().clear();
+  base::Value::Dict usage_time;
   for (auto it : usage_time_per_two_hours_) {
-    usage_time_update->SetPath(it.first.ToString(), it.second.ConvertToValue());
+    usage_time.SetByDottedPath(it.first.ToString(), it.second.ConvertToValue());
 
     // Also notify registered observers.
     for (auto& observer : observers_) {
@@ -1188,15 +1183,14 @@ void AppPlatformMetrics::SaveUsageTime() {
                           it.second.running_time);
     }
   }
+  profile_->GetPrefs()->SetDict(kAppUsageTime, std::move(usage_time));
 }
 
 void AppPlatformMetrics::LoadAppsUsageTimeUkmFromPref() {
-  DictionaryPrefUpdate usage_time_update(profile_->GetPrefs(), kAppUsageTime);
-  if (!usage_time_update->is_dict()) {
-    return;
-  }
+  const base::Value::Dict& usage_time_dict =
+      profile_->GetPrefs()->GetDict(kAppUsageTime);
 
-  for (auto it : usage_time_update->GetDict()) {
+  for (auto it : usage_time_dict) {
     std::unique_ptr<UsageTime> usage_time =
         std::make_unique<UsageTime>(it.second);
     if (!usage_time->running_time.is_zero()) {

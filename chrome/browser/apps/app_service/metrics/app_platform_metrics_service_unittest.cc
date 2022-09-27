@@ -596,11 +596,12 @@ class AppPlatformMetricsServiceTest : public testing::Test,
 
   void VerifyAppRunningDuration(const base::TimeDelta time_delta,
                                 AppTypeName app_type_name) {
-    DictionaryPrefUpdate update(GetPrefService(), kAppRunningDuration);
+    const base::Value::Dict& dict =
+        GetPrefService()->GetDict(kAppRunningDuration);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
     absl::optional<base::TimeDelta> unreported_duration =
-        base::ValueToTimeDelta(update->FindPath(key));
+        base::ValueToTimeDelta(dict.FindByDottedPath(key));
     if (time_delta.is_zero()) {
       EXPECT_FALSE(unreported_duration.has_value());
       return;
@@ -649,10 +650,11 @@ class AppPlatformMetricsServiceTest : public testing::Test,
   }
 
   void VerifyAppActivatedCount(int expected_count, AppTypeName app_type_name) {
-    DictionaryPrefUpdate update(GetPrefService(), kAppActivatedCount);
+    const base::Value::Dict& dict =
+        GetPrefService()->GetDict(kAppActivatedCount);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
-    absl::optional<int> activated_count = update->FindIntPath(key);
+    absl::optional<int> activated_count = dict.FindIntByDottedPath(key);
     if (expected_count == 0) {
       EXPECT_FALSE(activated_count.has_value());
       return;

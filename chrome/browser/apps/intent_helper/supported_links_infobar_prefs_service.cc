@@ -105,10 +105,10 @@ void SupportedLinksInfoBarPrefsService::MarkInfoBarDismissed(
   if (!AppIsInstalled(profile_, app_id))
     return;
 
-  DictionaryPrefUpdate infobar_prefs(profile_->GetPrefs(),
+  ScopedDictPrefUpdate infobar_prefs(profile_->GetPrefs(),
                                      kSupportedLinksAppPrefsKey);
 
-  infobar_prefs->GetDict().SetByDottedPath(
+  infobar_prefs->SetByDottedPath(
       base::JoinString({app_id, kInfoBarDismissedKey}, "."), true);
 }
 
@@ -117,22 +117,21 @@ void SupportedLinksInfoBarPrefsService::MarkInfoBarIgnored(
   if (!AppIsInstalled(profile_, app_id))
     return;
 
-  DictionaryPrefUpdate infobar_prefs(profile_->GetPrefs(),
+  ScopedDictPrefUpdate infobar_prefs(profile_->GetPrefs(),
                                      kSupportedLinksAppPrefsKey);
 
   auto path = base::JoinString({app_id, kInfoBarIgnoredCountKey}, ".");
-  absl::optional<int> ignore_count =
-      infobar_prefs->GetDict().FindIntByDottedPath(path);
-  infobar_prefs->GetDict().SetByDottedPath(path, ignore_count.value_or(0) + 1);
+  absl::optional<int> ignore_count = infobar_prefs->FindIntByDottedPath(path);
+  infobar_prefs->SetByDottedPath(path, ignore_count.value_or(0) + 1);
 }
 
 void SupportedLinksInfoBarPrefsService::OnAppUpdate(
     const apps::AppUpdate& update) {
   if (update.ReadinessChanged() &&
       !apps_util::IsInstalled(update.Readiness())) {
-    DictionaryPrefUpdate infobar_prefs(profile_->GetPrefs(),
+    ScopedDictPrefUpdate infobar_prefs(profile_->GetPrefs(),
                                        kSupportedLinksAppPrefsKey);
-    infobar_prefs->GetDict().Remove(update.AppId());
+    infobar_prefs->Remove(update.AppId());
   }
 }
 

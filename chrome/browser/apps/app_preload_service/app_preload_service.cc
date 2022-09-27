@@ -71,9 +71,8 @@ void AppPreloadService::StartAppInstallationForFirstLogin() {
 }
 
 void AppPreloadService::OnGetAppsForFirstLoginCompleted() {
-  DictionaryPrefUpdate(profile_->GetPrefs(), prefs::kApsStateManager)
-      ->GetDict()
-      .Set(kFirstLoginFlowCompletedKey, true);
+  ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kApsStateManager)
+      ->Set(kFirstLoginFlowCompletedKey, true);
 }
 
 const base::Value::Dict& AppPreloadService::GetStateManager() const {
