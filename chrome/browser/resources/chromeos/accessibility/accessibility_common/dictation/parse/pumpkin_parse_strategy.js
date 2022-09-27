@@ -19,20 +19,7 @@ import {ParseStrategy} from './parse_strategy.js';
 
 /** A parsing strategy that utilizes the Pumpkin semantic parser. */
 export class PumpkinParseStrategy extends ParseStrategy {
-  /**
-   * @param {!InputController} inputController
-   * @return {!Promise<!PumpkinParseStrategy>}
-   */
-  static async create(inputController) {
-    const locale = LocaleInfo.locale;
-    const instance = new PumpkinParseStrategy(inputController);
-    return instance;
-  }
-
-  /**
-   * @param {!InputController} inputController
-   * @private
-   */
+  /** @param {!InputController} inputController */
   constructor(inputController) {
     super(inputController);
 
