@@ -252,6 +252,7 @@ export class SimpleParseStrategy extends ParseStrategy {
      * @private {!Map<MacroName, !SimpleMacroFactory>}
      */
     this.macroFactoryMap_ = new Map();
+
     this.initialize_();
   }
 
@@ -267,17 +268,6 @@ export class SimpleParseStrategy extends ParseStrategy {
       this.macroFactoryMap_.set(
           name, new SimpleMacroFactory(name, this.getInputController()));
     }
-  }
-
-  /** @override */
-  refresh() {
-    this.enabled = LocaleInfo.areCommandsSupported();
-    if (!this.enabled) {
-      return;
-    }
-
-    this.macroFactoryMap_ = new Map();
-    this.initialize_();
   }
 
   /** @override */
