@@ -685,11 +685,9 @@ void PaymentRequest::AllowConnectToSource(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(::features::kWebPaymentAPICSP)) {
-    std::move(result_callback).Run(true);
-    return;
-  }
-
+  // Round-trip to the renderer, even if the CSP will be bypassed due to a
+  // feature flag, so the renderer can print a deprecation warning about CSP
+  // bypass.
   client_->AllowConnectToSource(url, url_before_redirects, did_follow_redirect,
                                 std::move(result_callback));
 }

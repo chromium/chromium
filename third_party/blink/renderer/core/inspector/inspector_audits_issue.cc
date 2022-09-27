@@ -544,6 +544,10 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
     case DeprecationIssueType::kPaymentInstruments:
       type = protocol::Audits::DeprecationIssueTypeEnum::PaymentInstruments;
       break;
+    case DeprecationIssueType::kPaymentRequestCSPViolation:
+      type = protocol::Audits::DeprecationIssueTypeEnum::
+          PaymentRequestCSPViolation;
+      break;
     case DeprecationIssueType::kPersistentQuotaType:
       type = protocol::Audits::DeprecationIssueTypeEnum::PersistentQuotaType;
       break;

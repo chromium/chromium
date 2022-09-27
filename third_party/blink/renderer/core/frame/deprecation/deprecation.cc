@@ -159,6 +159,9 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kPaymentInstruments:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kPaymentInstruments);
+    case WebFeature::kPaymentRequestCSPViolation:
+      return DeprecationInfo::WithTranslation(
+          feature, DeprecationIssueType::kPaymentRequestCSPViolation);
     case WebFeature::kPersistentQuotaType:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kPersistentQuotaType);

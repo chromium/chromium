@@ -69,6 +69,7 @@ enum class DeprecationIssueType {
   kOpenWebDatabaseInsecureContext,
   kOverflowVisibleOnReplacedElement,
   kPaymentInstruments,
+  kPaymentRequestCSPViolation,
   kPersistentQuotaType,
   kPictureSourceSrc,
   kPrefixedCancelAnimationFrame,

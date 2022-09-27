@@ -782,6 +782,7 @@ experimental domain Audits
       OpenWebDatabaseInsecureContext
       OverflowVisibleOnReplacedElement
       PaymentInstruments
+      PaymentRequestCSPViolation
       PersistentQuotaType
       PictureSourceSrc
       PrefixedCancelAnimationFrame

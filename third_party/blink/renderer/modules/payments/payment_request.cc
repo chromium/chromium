@@ -657,7 +657,10 @@ bool CSPAllowsConnectToSource(const KURL& url,
   if (enforce_csp)
     return false;  // Block request.
 
-  UseCounter::Count(context, WebFeature::kPaymentRequestCSPViolation);
+  // CSP has been bypassed, so warn web developers that CSP bypass has been
+  // deprecated and will be removed.
+  Deprecation::CountDeprecation(&context,
+                                WebFeature::kPaymentRequestCSPViolation);
   return true;  // Allow request.
 }
 
