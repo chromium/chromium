@@ -783,6 +783,7 @@ experimental domain Audits
       ObsoleteWebRtcCipherSuite
       OpenWebDatabaseInsecureContext
       OverflowVisibleOnReplacedElement
+      PaymentInstruments
       PersistentQuotaType
       PictureSourceSrc
       PrefixedCancelAnimationFrame

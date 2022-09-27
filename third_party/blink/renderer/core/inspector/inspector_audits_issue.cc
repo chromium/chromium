@@ -549,6 +549,9 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           OverflowVisibleOnReplacedElement;
       break;
+    case DeprecationIssueType::kPaymentInstruments:
+      type = protocol::Audits::DeprecationIssueTypeEnum::PaymentInstruments;
+      break;
     case DeprecationIssueType::kPersistentQuotaType:
       type = protocol::Audits::DeprecationIssueTypeEnum::PersistentQuotaType;
       break;
