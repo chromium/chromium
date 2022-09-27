@@ -12,3 +12,4 @@
 # TODO(crbug/1368355)
 -Service/GLTextureImageBackingFactoryTest.Basic/AllowPassthrough_BGRA_8888
 -Service/GLTextureImageBackingFactoryTest.Basic/DisallowPassthrough_BGRA_8888
+-GLTextureImageBackingFactoryTest.Basic/BGRA_8888

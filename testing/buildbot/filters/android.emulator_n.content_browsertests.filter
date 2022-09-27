@@ -11,6 +11,7 @@
 -SecurityExploitBrowserTest.PostMessageSourceOrigin
 
 # TODO(crbug.com/1349961)
+-PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginWithPreloadCredentialled/5
 -PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginWithPreloadCredentialled/7
 
 # TODO(crbug.com/1349978)
