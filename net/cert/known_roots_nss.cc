@@ -34,7 +34,7 @@ using PK11HasAttributeSetFunction = CK_BBOOL (*)(PK11SlotInfo* slot,
 
 // IsKnownRoot returns true if the given certificate is one that we believe
 // is a standard (as opposed to user-installed) root.
-NO_SANITIZE("cfi-icall")
+DISABLE_CFI_DLSYM
 bool IsKnownRoot(CERTCertificate* root) {
   if (!root || !root->slot)
     return false;
