@@ -892,7 +892,7 @@
     'creator': {
       'filepath': 'components/creator/|' \
                   'chrome/android/java/src/org/chromium/chrome/browser/app/creator/|' \
-                  'chrome/browser/creator/|'
+                  'chrome/browser/creator/',
     },
     'cros_commercial_policy': {
       'filepath': 'ash/components/policy/'\
