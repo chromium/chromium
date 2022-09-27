@@ -5149,6 +5149,7 @@ interface MLGraphBuilder
     method conv2d
     method div
     method gemm
+    method hardSwish
     method input
     method max
     method maxPool2d

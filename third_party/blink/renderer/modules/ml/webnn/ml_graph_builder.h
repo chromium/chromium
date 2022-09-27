@@ -87,6 +87,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                   const MLGemmOptions* options,
                   ExceptionState& exception_state);
 
+  MLOperand* hardSwish(const MLOperand* input, ExceptionState& exception_state);
+  MLOperator* hardSwish(ExceptionState& exception_state);
+
   // Pooling operations
   MLOperand* averagePool2d(const MLOperand* input,
                            const MLPool2dOptions* options,

@@ -32,6 +32,7 @@ class MODULES_EXPORT MLOperator final : public ScriptWrappable {
     kMax,
     kMin,
     kGemm,
+    kHardSwish,
     kAveragePool2d,
     kMaxPool2d,
     kRelu,

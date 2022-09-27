@@ -691,4 +691,44 @@ TEST_F(MLGraphBuilderTest, ReluTest) {
   }
 }
 
+TEST_F(MLGraphBuilderTest, HardSwishTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder = CreateMLGraphBuilder(scope);
+  ASSERT_NE(nullptr, builder);
+  {
+    // Test building hard-swish with float32 input.
+    auto* input = BuildInput(scope, builder, "input", {3, 4, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* output = builder->hardSwish(input, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({3, 4, 5}));
+    auto* hard_swish = output->Operator();
+    EXPECT_NE(hard_swish, nullptr);
+    EXPECT_EQ(hard_swish->Kind(), MLOperator::OperatorKind::kHardSwish);
+    EXPECT_EQ(hard_swish->IsConnected(), true);
+    EXPECT_EQ(hard_swish->Options(), nullptr);
+  }
+  {
+    // Test throwing exception when building hard-swish with int32 input.
+    auto* input = BuildInput(scope, builder, "input", {3, 4, 5},
+                             V8MLOperandType::Enum::kInt32);
+    auto* output = builder->hardSwish(input, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ("The input type must be one of the floating point types.",
+              scope.GetExceptionState().Message());
+  }
+  {
+    // Test building hard-swish as a standalone operator.
+    auto* hard_swish = builder->hardSwish(scope.GetExceptionState());
+    EXPECT_NE(hard_swish, nullptr);
+    EXPECT_EQ(hard_swish->Kind(), MLOperator::OperatorKind::kHardSwish);
+    EXPECT_EQ(hard_swish->IsConnected(), false);
+    EXPECT_EQ(hard_swish->Options(), nullptr);
+  }
+}
+
 }  // namespace blink

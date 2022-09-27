@@ -937,6 +937,35 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
   return output;
 }
 
+MLOperand* MLGraphBuilder::hardSwish(const MLOperand* input,
+                                     ExceptionState& exception_state) {
+  // The input type must be one of the floating point types. Although this
+  // constraint is not specified in current WebNN spec, there is a feature
+  // request for that: https://github.com/webmachinelearning/webnn/issues/283
+  if (!IsFloatingPointType(input->Type())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The input type must be one of the floating point types.");
+    return nullptr;
+  }
+  auto* hard_swish = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kHardSwish);
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-hard-swish, the output
+  // tensor of hard-swish has the same type and dimensions as its input.
+  auto* output = MLOperand::CreateOutput(this, input->Type(),
+                                         input->Dimensions(), hard_swish);
+  hard_swish->Connect({input}, {output});
+  return output;
+}
+
+MLOperator* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
+  // Create the hard-swish operator that would be used as an activation
+  // function.
+  return MakeGarbageCollected<MLOperator>(this,
+                                          MLOperator::OperatorKind::kHardSwish);
+}
+
 MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,
                                          const MLPool2dOptions* options,
                                          ExceptionState& exception_state) {

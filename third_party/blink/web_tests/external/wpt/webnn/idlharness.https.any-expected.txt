@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 389 tests; 156 PASS, 233 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 389 tests; 158 PASS, 231 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -193,8 +193,8 @@ FAIL MLGraphBuilder interface: operation gru(MLOperand, MLOperand, MLOperand, lo
 FAIL MLGraphBuilder interface: operation gruCell(MLOperand, MLOperand, MLOperand, MLOperand, long, optional MLGruCellOptions) assert_own_property: interface prototype object missing non-static operation expected property "gruCell" missing
 FAIL MLGraphBuilder interface: operation hardSigmoid(MLOperand, optional MLHardSigmoidOptions) assert_own_property: interface prototype object missing non-static operation expected property "hardSigmoid" missing
 FAIL MLGraphBuilder interface: operation hardSigmoid(optional MLHardSigmoidOptions) assert_own_property: interface prototype object missing non-static operation expected property "hardSigmoid" missing
-FAIL MLGraphBuilder interface: operation hardSwish(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "hardSwish" missing
-FAIL MLGraphBuilder interface: operation hardSwish() assert_own_property: interface prototype object missing non-static operation expected property "hardSwish" missing
+PASS MLGraphBuilder interface: operation hardSwish(MLOperand)
+PASS MLGraphBuilder interface: operation hardSwish()
 FAIL MLGraphBuilder interface: operation instanceNormalization(MLOperand, optional MLInstanceNormalizationOptions) assert_own_property: interface prototype object missing non-static operation expected property "instanceNormalization" missing
 FAIL MLGraphBuilder interface: operation leakyRelu(MLOperand, optional MLLeakyReluOptions) assert_own_property: interface prototype object missing non-static operation expected property "leakyRelu" missing
 FAIL MLGraphBuilder interface: operation leakyRelu(optional MLLeakyReluOptions) assert_own_property: interface prototype object missing non-static operation expected property "leakyRelu" missing
