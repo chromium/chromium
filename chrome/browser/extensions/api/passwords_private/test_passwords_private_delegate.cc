@@ -230,8 +230,8 @@ TestPasswordsPrivateDelegate::GetCompromisedCredentials() {
   credential.compromised_info->elapsed_time_since_compromise =
       base::UTF16ToUTF8(TimeFormat::Simple(
           TimeFormat::FORMAT_ELAPSED, TimeFormat::LENGTH_LONG, base::Days(3)));
-  credential.compromised_info->compromise_type =
-      api::passwords_private::COMPROMISE_TYPE_LEAKED;
+  credential.compromised_info->compromise_types = {
+      api::passwords_private::COMPROMISE_TYPE_LEAKED};
   credential.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   std::vector<api::passwords_private::PasswordUiEntry> credentials;
   credentials.push_back(std::move(credential));

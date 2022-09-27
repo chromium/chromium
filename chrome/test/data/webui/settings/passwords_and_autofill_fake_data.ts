@@ -195,15 +195,16 @@ export function makeInsecureCredential(
  * Creates a new compromised credential.
  */
 export function makeCompromisedCredential(
-    url: string, username: string, type: chrome.passwordsPrivate.CompromiseType,
-    id?: number, elapsedMinSinceCompromise?: number,
+    url: string, username: string,
+    types: chrome.passwordsPrivate.CompromiseType[], id?: number,
+    elapsedMinSinceCompromise?: number,
     isMuted?: boolean): chrome.passwordsPrivate.PasswordUiEntry {
   const credential = makeInsecureCredential(url, username, id);
   elapsedMinSinceCompromise = elapsedMinSinceCompromise || 0;
   credential.compromisedInfo = {
     compromiseTime: Date.now() - (elapsedMinSinceCompromise * 60000),
     elapsedTimeSinceCompromise: `${elapsedMinSinceCompromise} minutes ago`,
-    compromiseType: type,
+    compromiseTypes: types,
     isMuted: isMuted ?? false,
   };
   return credential;

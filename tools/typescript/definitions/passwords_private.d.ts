@@ -27,7 +27,8 @@ declare global {
       export enum CompromiseType {
         LEAKED = 'LEAKED',
         PHISHED = 'PHISHED',
-        PHISHED_AND_LEAKED = 'PHISHED_AND_LEAKED',
+        REUSED = 'REUSED',
+        WEAK = 'WEAK',
       }
 
       export enum PasswordStoreSet {
@@ -93,7 +94,7 @@ declare global {
       export interface CompromisedInfo {
         compromiseTime: number;
         elapsedTimeSinceCompromise: string;
-        compromiseType: CompromiseType;
+        compromiseTypes: CompromiseType[];
         isMuted: boolean;
       }
 

@@ -107,18 +107,22 @@ export class PasswordCheckListItemElement extends
   }
 
   private getCompromiseType_(): string {
-    switch (this.item.compromisedInfo!.compromiseType) {
-      case chrome.passwordsPrivate.CompromiseType.PHISHED:
-        return loadTimeData.getString('phishedPassword');
-      case chrome.passwordsPrivate.CompromiseType.LEAKED:
-        return loadTimeData.getString('leakedPassword');
-      case chrome.passwordsPrivate.CompromiseType.PHISHED_AND_LEAKED:
-        return loadTimeData.getString('phishedAndLeakedPassword');
-      default:
-        assertNotReached(
-            'Can\'t find a string for type: ' +
-            this.item.compromisedInfo!.compromiseType);
+    const isLeaked = this.item.compromisedInfo!.compromiseTypes.some(
+        type => type === chrome.passwordsPrivate.CompromiseType.LEAKED);
+    const isPhished = this.item.compromisedInfo!.compromiseTypes.some(
+        type => type === chrome.passwordsPrivate.CompromiseType.PHISHED);
+    if (isLeaked && isPhished) {
+      return loadTimeData.getString('phishedAndLeakedPassword');
     }
+    if (isPhished) {
+      return loadTimeData.getString('phishedPassword');
+    }
+    if (isLeaked) {
+      return loadTimeData.getString('leakedPassword');
+    }
+
+    assertNotReached(
+        'Can\'t find a string for type: ' + this.item.compromisedInfo!);
   }
 
   private fire_(eventName: string, detail?: any) {

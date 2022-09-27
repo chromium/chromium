@@ -348,7 +348,7 @@ suite('PasswordsUITest', function() {
     const leakedPasswords = [
       makeCompromisedCredential(
           'google.com', 'jdoerrie',
-          chrome.passwordsPrivate.CompromiseType.LEAKED),
+          [chrome.passwordsPrivate.CompromiseType.LEAKED]),
     ];
     passwordManager.data.leakedCredentials = leakedPasswords;
 

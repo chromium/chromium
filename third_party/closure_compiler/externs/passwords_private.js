@@ -40,7 +40,8 @@ chrome.passwordsPrivate.ExportProgressStatus = {
 chrome.passwordsPrivate.CompromiseType = {
   LEAKED: 'LEAKED',
   PHISHED: 'PHISHED',
-  PHISHED_AND_LEAKED: 'PHISHED_AND_LEAKED',
+  REUSED: 'REUSED',
+  WEAK: 'WEAK',
 };
 
 /**
@@ -128,7 +129,7 @@ chrome.passwordsPrivate.UrlCollection;
  * @typedef {{
  *   compromiseTime: number,
  *   elapsedTimeSinceCompromise: string,
- *   compromiseType: !chrome.passwordsPrivate.CompromiseType,
+ *   compromiseTypes: !Array<!chrome.passwordsPrivate.CompromiseType>,
  *   isMuted: boolean
  * }}
  */

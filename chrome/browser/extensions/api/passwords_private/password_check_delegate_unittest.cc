@@ -242,13 +242,14 @@ auto ExpectUrls(const std::string& formatted_origin,
 auto ExpectCompromisedInfo(
     base::TimeDelta elapsed_time_since_compromise,
     const std::string& elapsed_time_since_compromise_str,
-    api::passwords_private::CompromiseType compromise_type) {
+    std::vector<api::passwords_private::CompromiseType> compromise_types) {
   return AllOf(Field(&CompromisedInfo::compromise_time,
                      (base::Time::Now() - elapsed_time_since_compromise)
                          .ToJsTimeIgnoringNull()),
                Field(&CompromisedInfo::elapsed_time_since_compromise,
                      elapsed_time_since_compromise_str),
-               Field(&CompromisedInfo::compromise_type, compromise_type));
+               Field(&CompromisedInfo::compromise_types,
+                     testing::UnorderedElementsAreArray(compromise_types)));
 }
 
 // Creates matcher for a given compromised credential
@@ -270,21 +271,22 @@ auto ExpectCompromisedCredential(
     const std::u16string& username,
     base::TimeDelta elapsed_time_since_compromise,
     const std::string& elapsed_time_since_compromise_str,
-    api::passwords_private::CompromiseType compromise_type) {
+    std::vector<api::passwords_private::CompromiseType> compromise_types) {
   auto change_password_url_field_matcher =
       change_password_url.has_value()
           ? Field(&PasswordUiEntry::change_password_url,
                   change_password_url.value())
           : Field(&PasswordUiEntry::change_password_url,
                   testing::Eq(absl::nullopt));
-  return AllOf(Field(&PasswordUiEntry::username, base::UTF16ToASCII(username)),
-               change_password_url_field_matcher,
-               Field(&PasswordUiEntry::urls,
-                     ExpectUrls(formatted_origin, detailed_origin)),
-               Field(&PasswordUiEntry::compromised_info,
-                     Optional(ExpectCompromisedInfo(
-                         elapsed_time_since_compromise,
-                         elapsed_time_since_compromise_str, compromise_type))));
+  return AllOf(
+      Field(&PasswordUiEntry::username, base::UTF16ToASCII(username)),
+      change_password_url_field_matcher,
+      Field(&PasswordUiEntry::urls,
+            ExpectUrls(formatted_origin, detailed_origin)),
+      Field(&PasswordUiEntry::compromised_info,
+            Optional(ExpectCompromisedInfo(elapsed_time_since_compromise,
+                                          elapsed_time_since_compromise_str,
+                                          compromise_types))));
 }
 
 // Creates a simplified matcher that only checks the username name and
@@ -439,22 +441,22 @@ TEST_F(PasswordCheckDelegateTest, GetCompromisedCredentialsOrders) {
                       "example.com", "https://example.com/",
                       "https://example.com/.well-known/change-password",
                       kUsername2, base::Minutes(2), "2 minutes ago",
-                      api::passwords_private::COMPROMISE_TYPE_PHISHED),
+                      {api::passwords_private::COMPROMISE_TYPE_PHISHED}),
                   ExpectCompromisedCredential(
                       "example.org", "http://www.example.org/",
                       "http://www.example.org/.well-known/change-password",
                       kUsername1, base::Minutes(4), "4 minutes ago",
-                      api::passwords_private::COMPROMISE_TYPE_PHISHED),
+                      {api::passwords_private::COMPROMISE_TYPE_PHISHED}),
                   ExpectCompromisedCredential(
                       "example.com", "https://example.com/",
                       "https://example.com/.well-known/change-password",
                       kUsername1, base::Minutes(1), "1 minute ago",
-                      api::passwords_private::COMPROMISE_TYPE_LEAKED),
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED}),
                   ExpectCompromisedCredential(
                       "example.org", "http://www.example.org/",
                       "http://www.example.org/.well-known/change-password",
                       kUsername2, base::Minutes(3), "3 minutes ago",
-                      api::passwords_private::COMPROMISE_TYPE_LEAKED)));
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED})));
 }
 
 // Verifies that the formatted timestamp associated with a compromised
@@ -485,22 +487,22 @@ TEST_F(PasswordCheckDelegateTest, GetCompromisedCredentialsHandlesTimes) {
                       "example.com", "https://example.com/",
                       "https://example.com/.well-known/change-password",
                       kUsername1, base::Seconds(59), "Just now",
-                      api::passwords_private::COMPROMISE_TYPE_LEAKED),
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED}),
                   ExpectCompromisedCredential(
                       "example.com", "https://example.com/",
                       "https://example.com/.well-known/change-password",
                       kUsername2, base::Seconds(60), "1 minute ago",
-                      api::passwords_private::COMPROMISE_TYPE_LEAKED),
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED}),
                   ExpectCompromisedCredential(
                       "example.org", "http://www.example.org/",
                       "http://www.example.org/.well-known/change-password",
                       kUsername1, base::Days(100), "3 months ago",
-                      api::passwords_private::COMPROMISE_TYPE_LEAKED),
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED}),
                   ExpectCompromisedCredential(
                       "example.org", "http://www.example.org/",
                       "http://www.example.org/.well-known/change-password",
                       kUsername2, base::Days(800), "2 years ago",
-                      api::passwords_private::COMPROMISE_TYPE_LEAKED)));
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED})));
 }
 
 // Verifies that both leaked and phished credentials are ordered correctly
@@ -531,27 +533,28 @@ TEST_F(PasswordCheckDelegateTest,
 
   EXPECT_THAT(
       delegate().GetCompromisedCredentials(),
-      ElementsAre(
-          ExpectCompromisedCredential(
-              "example.com", "https://example.com/",
-              "https://example.com/.well-known/change-password", kUsername1,
-              base::Minutes(1), "1 minute ago",
-              api::passwords_private::COMPROMISE_TYPE_PHISHED_AND_LEAKED),
-          ExpectCompromisedCredential(
-              "example.org", "http://www.example.org/",
-              "http://www.example.org/.well-known/change-password", kUsername1,
-              base::Minutes(3), "3 minutes ago",
-              api::passwords_private::COMPROMISE_TYPE_PHISHED),
-          ExpectCompromisedCredential(
-              "example.org", "http://www.example.org/",
-              "http://www.example.org/.well-known/change-password", kUsername2,
-              base::Minutes(4), "4 minutes ago",
-              api::passwords_private::COMPROMISE_TYPE_PHISHED_AND_LEAKED),
-          ExpectCompromisedCredential(
-              "example.com", "https://example.com/",
-              "https://example.com/.well-known/change-password", kUsername2,
-              base::Minutes(2), "2 minutes ago",
-              api::passwords_private::COMPROMISE_TYPE_LEAKED)));
+      ElementsAre(ExpectCompromisedCredential(
+                      "example.com", "https://example.com/",
+                      "https://example.com/.well-known/change-password",
+                      kUsername1, base::Minutes(1), "1 minute ago",
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED,
+                       api::passwords_private::COMPROMISE_TYPE_PHISHED}),
+                  ExpectCompromisedCredential(
+                      "example.org", "http://www.example.org/",
+                      "http://www.example.org/.well-known/change-password",
+                      kUsername1, base::Minutes(3), "3 minutes ago",
+                      {api::passwords_private::COMPROMISE_TYPE_PHISHED}),
+                  ExpectCompromisedCredential(
+                      "example.org", "http://www.example.org/",
+                      "http://www.example.org/.well-known/change-password",
+                      kUsername2, base::Minutes(4), "4 minutes ago",
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED,
+                       api::passwords_private::COMPROMISE_TYPE_PHISHED}),
+                  ExpectCompromisedCredential(
+                      "example.com", "https://example.com/",
+                      "https://example.com/.well-known/change-password",
+                      kUsername2, base::Minutes(2), "2 minutes ago",
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED})));
 }
 
 TEST_F(PasswordCheckDelegateTest, GetCompromisedCredentialsInjectsAndroid) {
@@ -581,17 +584,17 @@ TEST_F(PasswordCheckDelegateTest, GetCompromisedCredentialsInjectsAndroid) {
               "https://play.google.com/store/apps/details?id=com.example.app",
               "https://example.com/.well-known/change-password", kUsername2,
               base::Days(3), "3 days ago",
-              api::passwords_private::COMPROMISE_TYPE_PHISHED),
+              {api::passwords_private::COMPROMISE_TYPE_PHISHED}),
           ExpectCompromisedCredential(
               "app.example.com",
               "https://play.google.com/store/apps/details?id=com.example.app",
               absl::nullopt, kUsername1, base::Days(4), "4 days ago",
-              api::passwords_private::COMPROMISE_TYPE_PHISHED),
+              {api::passwords_private::COMPROMISE_TYPE_PHISHED}),
           ExpectCompromisedCredential(
               "example.com", "https://example.com/",
               "https://example.com/.well-known/change-password", kUsername1,
               base::Minutes(5), "5 minutes ago",
-              api::passwords_private::COMPROMISE_TYPE_LEAKED)));
+              {api::passwords_private::COMPROMISE_TYPE_LEAKED})));
 }
 
 // Test that a change to compromised credential notifies observers.

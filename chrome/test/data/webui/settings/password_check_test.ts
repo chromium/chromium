@@ -128,17 +128,19 @@ function shuffleArray<T>(array: T[]): T[] {
  * Helper method to convert |CompromiseType| to string.
  */
 function getCompromiseType(
-    compromiseType: chrome.passwordsPrivate.CompromiseType): string {
-  switch (compromiseType) {
-    case chrome.passwordsPrivate.CompromiseType.PHISHED:
-      return loadTimeData.getString('phishedPassword');
-    case chrome.passwordsPrivate.CompromiseType.LEAKED:
-      return loadTimeData.getString('leakedPassword');
-    case chrome.passwordsPrivate.CompromiseType.PHISHED_AND_LEAKED:
-      return loadTimeData.getString('phishedAndLeakedPassword');
-    default:
-      assertNotReached();
+    compromiseTypes: chrome.passwordsPrivate.CompromiseType[]): string {
+  const isLeaked = compromiseTypes.some(
+      type => type === chrome.passwordsPrivate.CompromiseType.LEAKED);
+  const isPhished = compromiseTypes.some(
+      type => type === chrome.passwordsPrivate.CompromiseType.PHISHED);
+  if (isLeaked && isPhished) {
+    return loadTimeData.getString('phishedAndLeakedPassword');
+  } else if (isPhished) {
+    return loadTimeData.getString('phishedPassword');
+  } else if (isLeaked) {
+    return loadTimeData.getString('leakedPassword');
   }
+  assertNotReached();
 }
 
 /**
@@ -194,7 +196,7 @@ function validateInsecurePasswordsList(
       assertEquals(
           node.shadowRoot!.querySelector('#leakType')!.textContent!.trim(),
           getCompromiseType(
-              insecureCredentials[index]!.compromisedInfo!.compromiseType));
+              insecureCredentials[index]!.compromisedInfo!.compromiseTypes));
     }
   }
 }
@@ -452,11 +454,11 @@ suite('PasswordsCheckSection', function() {
     const leakedPasswords = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.PHISHED, /*id*/ 1,
+          /*type*/[CompromiseType.PHISHED], /*id*/ 1,
           /*elapsedMinSinceCompromise*/ 1),
       makeCompromisedCredential(
           /*url*/ 'two.com', /*username*/ 'test3',
-          /*type*/ CompromiseType.LEAKED, /*id*/ 2,
+          /*type*/[CompromiseType.LEAKED], /*id*/ 2,
           /*elapsedMinSinceCompromise*/ 2),
     ];
     passwordManager.data.leakedCredentials = leakedPasswords;
@@ -479,21 +481,21 @@ suite('PasswordsCheckSection', function() {
     const leakedPasswords = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.PHISHED, /*id*/ 1,
+          /*type*/[CompromiseType.PHISHED], /*id*/ 1,
           /*elapsedMinSinceCompromise*/ 1),
       makeCompromisedCredential(
           /*url*/ 'two.com', /*username*/ 'test3',
-          /*type*/ CompromiseType.LEAKED, /*id*/ 2,
+          /*type*/[CompromiseType.LEAKED], /*id*/ 2,
           /*elapsedMinSinceCompromise*/ 2),
     ];
     const mutedPasswords = [
       makeCompromisedCredential(
           /*url*/ 'three.com', /*username*/ 'test2',
-          /*type*/ CompromiseType.LEAKED,
+          /*type*/[CompromiseType.LEAKED],
           /*id*/ 3, /*elapsedMinSinceCompromise*/ 3, /*isMuted*/ true),
       makeCompromisedCredential(
           /*url*/ 'four.com', /*username*/ 'test1',
-          /*type*/ CompromiseType.LEAKED, /*id*/ 4,
+          /*type*/[CompromiseType.LEAKED], /*id*/ 4,
           /*elapsedMinSinceCompromise*/ 4, /*isMuted*/ true),
     ];
     passwordManager.data.leakedCredentials =
@@ -514,7 +516,7 @@ suite('PasswordsCheckSection', function() {
   test('someCompromisedCredentials', function() {
     const password = makeCompromisedCredential(
         /*url*/ 'one.com', /*username*/ 'test4',
-        /*type*/ CompromiseType.LEAKED);
+        /*type*/[CompromiseType.LEAKED]);
     password.changePasswordUrl = undefined;
 
     const checkPasswordSection = createLeakedPasswordItem(password);
@@ -533,7 +535,7 @@ suite('PasswordsCheckSection', function() {
 
     const password = makeCompromisedCredential(
         /*url*/ 'one.com', /*username*/ 'test4',
-        /*type*/ CompromiseType.LEAKED);
+        /*type*/[CompromiseType.LEAKED]);
     const passwordCheckListItem = createLeakedPasswordItem(password);
     const button = passwordCheckListItem.shadowRoot!.querySelector<HTMLElement>(
         '#changePasswordButton');
@@ -554,7 +556,7 @@ suite('PasswordsCheckSection', function() {
       async function() {
         const password = makeCompromisedCredential(
             /*url*/ 'one.com', /*username*/ 'test4',
-            /*type*/ CompromiseType.LEAKED);
+            /*type*/[CompromiseType.LEAKED]);
         password.hasStartableScript = true;
         const passwordCheckListItem = createLeakedPasswordItem(password);
         const button =
@@ -577,7 +579,7 @@ suite('PasswordsCheckSection', function() {
   test('iconIsCorrectForPasswordWithoutScript', async function() {
     const password = makeCompromisedCredential(
         /*url*/ 'one.com', /*username*/ 'test4',
-        /*type*/ CompromiseType.LEAKED);
+        /*type*/[CompromiseType.LEAKED]);
     password.hasStartableScript = false;
     const passwordCheckListItem = createLeakedPasswordItem(password);
 
@@ -596,7 +598,7 @@ suite('PasswordsCheckSection', function() {
   test('iconIsCorrectForPasswordWithScript', async function() {
     const password = makeCompromisedCredential(
         /*url*/ 'one.com', /*username*/ 'test4',
-        /*type*/ CompromiseType.LEAKED);
+        /*type*/[CompromiseType.LEAKED]);
     password.hasStartableScript = true;
     const passwordCheckListItem = createLeakedPasswordItem(password);
 
@@ -619,7 +621,7 @@ suite('PasswordsCheckSection', function() {
     passwordManager.data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'google.com', /*username*/ 'derinel',
-          /*type*/ CompromiseType.LEAKED,
+          /*type*/[CompromiseType.LEAKED],
           /*id*/ 1, /*elapsedMinSinceCompromise*/ 1, /*isMuted*/ false),
     ];
     const checkPasswordSection = createCheckPasswordSection();
@@ -650,7 +652,7 @@ suite('PasswordsCheckSection', function() {
     passwordManager.data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'google.com', /*username*/ 'derinel',
-          /*type*/ CompromiseType.LEAKED,
+          /*type*/[CompromiseType.LEAKED],
           /*id*/ 1, /*elapsedMinSinceCompromise*/ 1, /*isMuted*/ false),
     ];
     const checkPasswordSection = createCheckPasswordSection();
@@ -687,7 +689,7 @@ suite('PasswordsCheckSection', function() {
     passwordManager.data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'google.com', /*username*/ 'derinel',
-          /*type*/ CompromiseType.LEAKED, 1,
+          /*type*/[CompromiseType.LEAKED], 1,
           /*elapsedMinSinceCompromise*/ 1, /*isMuted*/ true),
     ];
     const checkPasswordSection = createCheckPasswordSection();
@@ -718,7 +720,7 @@ suite('PasswordsCheckSection', function() {
     passwordManager.data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'google.com', /*username*/ 'derinel',
-          /*type*/ CompromiseType.LEAKED, 1,
+          /*type*/[CompromiseType.LEAKED], 1,
           /*elapsedMinSinceCompromise*/ 1, /*isMuted*/ true),
     ];
     const checkPasswordSection = createCheckPasswordSection();
@@ -776,7 +778,8 @@ suite('PasswordsCheckSection', function() {
   // proxy function.
   test('removePasswordConfirmationDialog', async function() {
     const entry = makeCompromisedCredential(
-        /*url*/ 'one.com', /*username*/ 'test4', /*type*/ CompromiseType.LEAKED,
+        /*url*/ 'one.com', /*username*/ 'test4',
+        /*type*/[CompromiseType.LEAKED],
         /*id*/ 0);
     const removeDialog = createRemovePasswordDialog(entry);
     removeDialog.$.remove.click();
@@ -795,7 +798,7 @@ suite('PasswordsCheckSection', function() {
   test('mutePasswordButtonCallsBackend', async function() {
     passwordManager.data.leakedCredentials = [makeCompromisedCredential(
         /*url*/ 'google.com', /*username*/ 'username',
-        /*type*/ CompromiseType.LEAKED)];
+        /*type*/[CompromiseType.LEAKED])];
     const checkPasswordSection = createCheckPasswordSection();
 
     await passwordManager.whenCalled('getCompromisedCredentials');
@@ -821,7 +824,7 @@ suite('PasswordsCheckSection', function() {
   test('unmutePasswordButtonCallsBackend', async function() {
     passwordManager.data.leakedCredentials = [makeCompromisedCredential(
         /*url*/ 'google.com', /*username*/ 'username',
-        /*type*/ CompromiseType.LEAKED,
+        /*type*/[CompromiseType.LEAKED],
         /*id*/ 1, /*elapsedMinSinceCompromise*/ 1, /*isMuted*/ true)];
     const checkPasswordSection = createCheckPasswordSection();
 
@@ -848,7 +851,8 @@ suite('PasswordsCheckSection', function() {
   // password confirmation dialog.
   test('secureChangePasswordUrlInRemovePasswordConfirmationDialog', () => {
     const entry = makeCompromisedCredential(
-        /*url*/ 'one.com', /*username*/ 'test4', /*type*/ CompromiseType.LEAKED,
+        /*url*/ 'one.com', /*username*/ 'test4',
+        /*type*/[CompromiseType.LEAKED],
         /*id*/ 0);
     entry.changePasswordUrl = 'https://one.com';
     const removeDialog = createRemovePasswordDialog(entry);
@@ -860,7 +864,8 @@ suite('PasswordsCheckSection', function() {
   // remove password confirmation dialog.
   test('insecureChangePasswordUrlInRemovePasswordConfirmationDialog', () => {
     const entry = makeCompromisedCredential(
-        /*url*/ 'one.com', /*username*/ 'test4', /*type*/ CompromiseType.LEAKED,
+        /*url*/ 'one.com', /*username*/ 'test4',
+        /*type*/[CompromiseType.LEAKED],
         /*id*/ 0);
     entry.changePasswordUrl = 'http://one.com';
     const removeDialog = createRemovePasswordDialog(entry);
@@ -939,7 +944,7 @@ suite('PasswordsCheckSection', function() {
     data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.LEAKED),
+          /*type*/[CompromiseType.LEAKED]),
     ];
 
     const checkPasswordSection = createCheckPasswordSection();
@@ -980,7 +985,7 @@ suite('PasswordsCheckSection', function() {
     const passwordCheckListItem =
         createLeakedPasswordItem(makeCompromisedCredential(
             /*url*/ 'one.com', /*username*/ 'test6',
-            /*type*/ CompromiseType.LEAKED));
+            /*type*/[CompromiseType.LEAKED]));
     const shadowRoot = passwordCheckListItem.shadowRoot!;
     assertTrue(
         shadowRoot.querySelector('#changePasswordButton')!.classList.contains(
@@ -995,7 +1000,7 @@ suite('PasswordsCheckSection', function() {
     const passwordCheckListItem =
         createLeakedPasswordItem(makeCompromisedCredential(
             /*url*/ 'one.com', /*username*/ 'test6',
-            /*type*/ CompromiseType.LEAKED,
+            /*type*/[CompromiseType.LEAKED],
             /*id*/ 1, /*elapsedMinSinceCompromise*/ 1, /*isMuted*/ true));
     const shadowRoot = passwordCheckListItem.shadowRoot!;
     assertFalse(
@@ -1096,7 +1101,7 @@ suite('PasswordsCheckSection', function() {
     data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.LEAKED),
+          /*type*/[CompromiseType.LEAKED]),
     ];
 
     const section = createCheckPasswordSection();
@@ -1115,7 +1120,7 @@ suite('PasswordsCheckSection', function() {
     data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.LEAKED),
+          /*type*/[CompromiseType.LEAKED]),
     ];
     data.weakCredentials = [
       makeInsecureCredential(/*url*/ 'one.com', /*username*/ 'test4'),
@@ -1142,11 +1147,11 @@ suite('PasswordsCheckSection', function() {
     data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.LEAKED, /*id*/ 1,
+          /*type*/[CompromiseType.LEAKED], /*id*/ 1,
           /*elapsedMinSinceCompromise*/ 1, /*isMuted*/ true),
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test5',
-          /*type*/ CompromiseType.LEAKED, /*id*/ 2,
+          /*type*/[CompromiseType.LEAKED], /*id*/ 2,
           /*elapsedMinSinceCompromise*/ 2, /*isMuted*/ true),
     ];
     data.weakCredentials = [
@@ -1272,7 +1277,7 @@ suite('PasswordsCheckSection', function() {
     data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.LEAKED),
+          /*type*/[CompromiseType.LEAKED]),
     ];
 
     const section = createCheckPasswordSection();
@@ -1308,7 +1313,7 @@ suite('PasswordsCheckSection', function() {
     data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.LEAKED),
+          /*type*/[CompromiseType.LEAKED]),
     ];
 
     const section = createCheckPasswordSection();
@@ -1365,7 +1370,8 @@ suite('PasswordsCheckSection', function() {
     passwordManager.data.weakCredentials =
         [makeInsecureCredential(/*url*/ 'one.com', /*username*/ 'test1')];
     passwordManager.data.leakedCredentials = [makeCompromisedCredential(
-        /*url*/ 'one.com', /*username*/ 'test4', /*type*/ CompromiseType.LEAKED,
+        /*url*/ 'one.com', /*username*/ 'test4',
+        /*type*/[CompromiseType.LEAKED],
         /*id*/ 1)];
     const section = createCheckPasswordSection();
     await passwordManager.whenCalled('getPasswordCheckStatus');
@@ -1590,7 +1596,7 @@ suite('PasswordsCheckSection', function() {
     data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.LEAKED),
+          /*type*/[CompromiseType.LEAKED]),
     ];
 
     const checkPasswordSection = createCheckPasswordSection();
@@ -1609,7 +1615,7 @@ suite('PasswordsCheckSection', function() {
     data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.LEAKED),
+          /*type*/[CompromiseType.LEAKED]),
     ];
 
     const checkPasswordSection = createCheckPasswordSection();
@@ -1628,7 +1634,7 @@ suite('PasswordsCheckSection', function() {
     data.leakedCredentials = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.LEAKED),
+          /*type*/[CompromiseType.LEAKED]),
     ];
 
     const checkPasswordSection = createCheckPasswordSection();
@@ -1644,11 +1650,11 @@ suite('PasswordsCheckSection', function() {
     const leakedPasswords = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.LEAKED, /*id*/ 1,
+          /*type*/[CompromiseType.LEAKED], /*id*/ 1,
           /*elapsedMinSinceCompromise*/ 0),
       makeCompromisedCredential(
           /*url*/ 'two.com', /*username*/ 'test3',
-          /*type*/ CompromiseType.LEAKED, /*id*/ 2,
+          /*type*/[CompromiseType.LEAKED], /*id*/ 2,
           /*elapsedMinSinceCompromise*/ 0),
     ];
     const checkPasswordSection = createCheckPasswordSection();
@@ -1660,15 +1666,15 @@ suite('PasswordsCheckSection', function() {
 
     leakedPasswords.push(makeCompromisedCredential(
         /*url*/ 'three.com', /*username*/ 'test2',
-        /*type*/ CompromiseType.PHISHED, /*id*/ 3,
+        /*type*/[CompromiseType.PHISHED], /*id*/ 3,
         /*elapsedMinSinceCompromise*/ 6));
     leakedPasswords.push(makeCompromisedCredential(
         /*url*/ 'four.com', /*username*/ 'test1',
-        /*type*/ CompromiseType.LEAKED, /*id*/ 4,
+        /*type*/[CompromiseType.LEAKED], /*id*/ 4,
         /*elapsedMinSinceCompromise*/ 4));
     leakedPasswords.push(makeCompromisedCredential(
         /*url*/ 'five.com', /*username*/ 'test0',
-        /*type*/ CompromiseType.LEAKED, /*id*/ 5,
+        /*type*/[CompromiseType.LEAKED], /*id*/ 5,
         /*elapsedMinSinceCompromise*/ 5));
     checkPasswordSection.updateCompromisedPasswordList(
         shuffleArray(leakedPasswords));
@@ -1681,19 +1687,19 @@ suite('PasswordsCheckSection', function() {
     const leakedPasswords = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.PHISHED, /*id*/ 0,
+          /*type*/[CompromiseType.PHISHED], /*id*/ 0,
           /*elapsedMinSinceCompromise*/ 0),
       makeCompromisedCredential(
           /*url*/ '2two.com', /*username*/ 'test3',
-          /*type*/ CompromiseType.LEAKED, /*id*/ 1,
+          /*type*/[CompromiseType.LEAKED], /*id*/ 1,
           /*elapsedMinSinceCompromise*/ 2),
       makeCompromisedCredential(
           /*url*/ '3three.com', /*username*/ 'test2',
-          /*type*/ CompromiseType.LEAKED,
+          /*type*/[CompromiseType.LEAKED],
           /*id*/ 2, /*elapsedMinSinceCompromise*/ 2),
       makeCompromisedCredential(
           /*url*/ '4four.com', /*username*/ 'test2',
-          /*type*/ CompromiseType.LEAKED,
+          /*type*/[CompromiseType.LEAKED],
           /*id*/ 3, /*elapsedMinSinceCompromise*/ 2),
     ];
     const checkPasswordSection = createCheckPasswordSection();
@@ -1705,7 +1711,7 @@ suite('PasswordsCheckSection', function() {
     leakedPasswords.splice(1, 2);
     leakedPasswords.push(makeCompromisedCredential(
         /*url*/ 'five.com', /*username*/ 'test2',
-        /*type*/ CompromiseType.LEAKED, /*id*/ 4,
+        /*type*/[CompromiseType.LEAKED], /*id*/ 4,
         /*elapsedMinSinceCompromise*/ 5));
 
     checkPasswordSection.updateCompromisedPasswordList(
@@ -1720,27 +1726,27 @@ suite('PasswordsCheckSection', function() {
     const leakedPasswords = [
       makeCompromisedCredential(
           /*url*/ 'one.com', /*username*/ 'test6',
-          /*type*/ CompromiseType.PHISHED, /*id*/ 6,
+          /*type*/[CompromiseType.PHISHED], /*id*/ 6,
           /*elapsedMinSinceCompromise*/ 3),
       makeCompromisedCredential(
           /*url*/ 'two.com', /*username*/ 'test5',
-          /*type*/ CompromiseType.PHISHED_AND_LEAKED, /*id*/ 5,
+          /*type*/[CompromiseType.LEAKED, CompromiseType.PHISHED], /*id*/ 5,
           /*elapsedMinSinceCompromise*/ 4),
       makeCompromisedCredential(
           /*url*/ 'three.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.PHISHED,
+          /*type*/[CompromiseType.PHISHED],
           /*id*/ 4, /*elapsedMinSinceCompromise*/ 5),
       makeCompromisedCredential(
           /*url*/ 'four.com', /*username*/ 'test3',
-          /*type*/ CompromiseType.LEAKED, /*id*/ 3,
+          /*type*/[CompromiseType.LEAKED], /*id*/ 3,
           /*elapsedMinSinceCompromise*/ 0),
       makeCompromisedCredential(
           /*url*/ 'five.com', /*username*/ 'test2',
-          /*type*/ CompromiseType.LEAKED, /*id*/ 2,
+          /*type*/[CompromiseType.LEAKED], /*id*/ 2,
           /*elapsedMinSinceCompromise*/ 1),
       makeCompromisedCredential(
           /*url*/ 'six.com', /*username*/ 'test1',
-          /*type*/ CompromiseType.LEAKED, /*id*/ 1,
+          /*type*/[CompromiseType.LEAKED], /*id*/ 1,
           /*elapsedMinSinceCompromise*/ 2),
     ];
     const checkPasswordSection = createCheckPasswordSection();
@@ -1756,27 +1762,27 @@ suite('PasswordsCheckSection', function() {
     const leakedPasswords = [
       makeCompromisedCredential(
           /*url*/ 'example.com', /*username*/ 'test0',
-          /*type*/ CompromiseType.LEAKED,
+          /*type*/[CompromiseType.LEAKED],
           /*id*/ 0, /*elapsedMinSinceCompromise*/ 1),
       makeCompromisedCredential(
           /*url*/ 'example.com', /*username*/ 'test1',
-          /*type*/ CompromiseType.LEAKED,
+          /*type*/[CompromiseType.LEAKED],
           /*id*/ 1, /*elapsedMinSinceCompromise*/ 1),
       makeCompromisedCredential(
           /*url*/ 'example.com', /*username*/ 'test2',
-          /*type*/ CompromiseType.LEAKED,
+          /*type*/[CompromiseType.LEAKED],
           /*id*/ 2, /*elapsedMinSinceCompromise*/ 1),
       makeCompromisedCredential(
           /*url*/ 'example.com', /*username*/ 'test3',
-          /*type*/ CompromiseType.LEAKED,
+          /*type*/[CompromiseType.LEAKED],
           /*id*/ 3, /*elapsedMinSinceCompromise*/ 1),
       makeCompromisedCredential(
           /*url*/ 'example.com', /*username*/ 'test4',
-          /*type*/ CompromiseType.LEAKED,
+          /*type*/[CompromiseType.LEAKED],
           /*id*/ 4, /*elapsedMinSinceCompromise*/ 1),
       makeCompromisedCredential(
           /*url*/ 'example.com', /*username*/ 'test5',
-          /*type*/ CompromiseType.LEAKED,
+          /*type*/[CompromiseType.LEAKED],
           /*id*/ 5, /*elapsedMinSinceCompromise*/ 1),
     ];
     const checkPasswordSection = createCheckPasswordSection();
@@ -1802,7 +1808,7 @@ suite('PasswordsCheckSection', function() {
   test('showHidePasswordMenuItemSuccess', async function() {
     passwordManager.data.leakedCredentials = [makeCompromisedCredential(
         /*url*/ 'google.com', /*username*/ 'jdoerrie',
-        /*type*/ CompromiseType.LEAKED)];
+        /*type*/[CompromiseType.LEAKED])];
     passwordManager.setPlaintextPassword('test4');
     const checkPasswordSection = createCheckPasswordSection();
 
@@ -1841,7 +1847,7 @@ suite('PasswordsCheckSection', function() {
   test('showHidePasswordMenuItemFail', async function() {
     passwordManager.data.leakedCredentials = [makeCompromisedCredential(
         /*url*/ 'google.com', /*username*/ 'jdoerrie',
-        /*type*/ CompromiseType.LEAKED)];
+        /*type*/[CompromiseType.LEAKED])];
     const checkPasswordSection = createCheckPasswordSection();
     await passwordManager.whenCalled('getCompromisedCredentials');
 
@@ -1865,7 +1871,7 @@ suite('PasswordsCheckSection', function() {
   test('alreadyChangedPassword', async function() {
     passwordManager.data.leakedCredentials = [makeCompromisedCredential(
         /*url*/ 'google.com', /*username*/ 'jdoerrie',
-        /*type*/ CompromiseType.LEAKED)];
+        /*type*/[CompromiseType.LEAKED])];
     const checkPasswordSection = createCheckPasswordSection();
     await passwordManager.whenCalled('getCompromisedCredentials');
     flush();
@@ -1887,7 +1893,7 @@ suite('PasswordsCheckSection', function() {
   test('testEditDisclaimer', async function() {
     passwordManager.data.leakedCredentials = [makeCompromisedCredential(
         /*url*/ 'google.com', /*username*/ 'jdoerrie',
-        /*type*/ CompromiseType.LEAKED)];
+        /*type*/[CompromiseType.LEAKED])];
     passwordManager.setPlaintextPassword('password');
 
     const checkPasswordSection = createCheckPasswordSection();
@@ -1919,7 +1925,7 @@ suite('PasswordsCheckSection', function() {
   test('showHidePasswordMenuItemAuth', async function() {
     passwordManager.data.leakedCredentials = [makeCompromisedCredential(
         /*url*/ 'google.com', /*username*/ 'jdoerrie',
-        /*type*/ CompromiseType.LEAKED)];
+        /*type*/[CompromiseType.LEAKED])];
     const checkPasswordSection = createCheckPasswordSection();
     await passwordManager.whenCalled('getCompromisedCredentials');
 

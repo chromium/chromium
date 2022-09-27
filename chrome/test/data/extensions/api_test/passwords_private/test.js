@@ -367,7 +367,8 @@ var availableTests = [
               '3 days ago',
               compromisedCredential.compromisedInfo.elapsedTimeSinceCompromise);
           chrome.test.assertEq(
-              'LEAKED', compromisedCredential.compromisedInfo.compromiseType);
+              ['LEAKED'],
+              compromisedCredential.compromisedInfo.compromiseTypes);
           chrome.test.succeed();
         });
   },
@@ -403,7 +404,7 @@ var availableTests = [
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
             elapsedTimeSinceCompromise: '3 days ago',
-            compromiseType: 'LEAKED',
+            compromiseTypes: ['LEAKED'],
             isMuted: false,
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
@@ -431,7 +432,7 @@ var availableTests = [
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
             elapsedTimeSinceCompromise: '3 days ago',
-            compromiseType: 'LEAKED',
+            compromiseTypes: ['LEAKED'],
             isMuted: false,
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
@@ -461,7 +462,7 @@ var availableTests = [
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
             elapsedTimeSinceCompromise: '3 days ago',
-            compromiseType: 'LEAKED',
+            compromiseTypes: ['LEAKED'],
             isMuted: true,
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
@@ -489,7 +490,7 @@ var availableTests = [
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
             elapsedTimeSinceCompromise: '3 days ago',
-            compromiseType: 'LEAKED',
+            compromiseTypes: ['LEAKED'],
             isMuted: true,
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
@@ -520,7 +521,7 @@ var availableTests = [
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
             elapsedTimeSinceCompromise: '3 days ago',
-            compromiseType: 'LEAKED',
+            compromiseTypes: ['LEAKED'],
             isMuted: false,
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
@@ -548,7 +549,7 @@ var availableTests = [
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
             elapsedTimeSinceCompromise: '3 days ago',
-            compromiseType: 'LEAKED',
+            compromiseTypes: ['LEAKED'],
             isMuted: false,
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
@@ -575,7 +576,7 @@ var availableTests = [
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
             elapsedTimeSinceCompromise: '3 days ago',
-            compromiseType: 'LEAKED',
+            compromiseTypes: ['LEAKED'],
             isMuted: false,
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
@@ -641,7 +642,7 @@ var availableTests = [
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
             elapsedTimeSinceCompromise: '3 days ago',
-            compromiseType: 'LEAKED',
+            compromiseTypes: ['LEAKED'],
             isMuted: false,
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
@@ -669,7 +670,7 @@ var availableTests = [
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
             elapsedTimeSinceCompromise: '3 days ago',
-            compromiseType: 'LEAKED',
+            compromiseTypes: ['LEAKED'],
             isMuted: false,
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,

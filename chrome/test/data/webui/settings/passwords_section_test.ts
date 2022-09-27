@@ -1310,7 +1310,7 @@ suite('PasswordsSection', function() {
         passwordManager.data.leakedCredentials = [
           makeCompromisedCredential(
               'site1.com', 'luigi',
-              chrome.passwordsPrivate.CompromiseType.LEAKED),
+              [chrome.passwordsPrivate.CompromiseType.LEAKED]),
         ];
         pluralString.text = '1 compromised password';
 
@@ -1395,10 +1395,10 @@ suite('PasswordsSection', function() {
         passwordManager.data.leakedCredentials = [
           makeCompromisedCredential(
               'one.com', 'test4',
-              chrome.passwordsPrivate.CompromiseType.LEAKED),
+              [chrome.passwordsPrivate.CompromiseType.LEAKED]),
           makeCompromisedCredential(
               'two.com', 'test3',
-              chrome.passwordsPrivate.CompromiseType.PHISHED),
+              [chrome.passwordsPrivate.CompromiseType.PHISHED]),
         ];
         passwordManager.data.checkStatus.elapsedTimeSinceLastCheck =
             '5 min ago';
@@ -1442,9 +1442,11 @@ suite('PasswordsSection', function() {
       // Suppose two newly detected leaks come in.
       const leakedCredentials = [
         makeCompromisedCredential(
-            'one.com', 'test4', chrome.passwordsPrivate.CompromiseType.LEAKED),
+            'one.com', 'test4',
+            [chrome.passwordsPrivate.CompromiseType.LEAKED]),
         makeCompromisedCredential(
-            'two.com', 'test3', chrome.passwordsPrivate.CompromiseType.PHISHED),
+            'two.com', 'test3',
+            [chrome.passwordsPrivate.CompromiseType.PHISHED]),
       ];
       const elapsedTimeSinceLastCheck = 'just now';
       passwordManager.data.leakedCredentials = leakedCredentials;

@@ -192,17 +192,18 @@ std::string FormatElapsedTime(base::Time time) {
       TimeFormat::FORMAT_ELAPSED, TimeFormat::LENGTH_LONG, elapsed_time, true));
 }
 
-api::passwords_private::CompromiseType GetCompromiseType(
+std::vector<api::passwords_private::CompromiseType> GetCompromiseType(
     const CredentialUIEntry& entry) {
   if (entry.IsLeaked() && entry.IsPhished()) {
-    return api::passwords_private::COMPROMISE_TYPE_PHISHED_AND_LEAKED;
+    return {api::passwords_private::COMPROMISE_TYPE_LEAKED,
+            api::passwords_private::COMPROMISE_TYPE_PHISHED};
   } else if (entry.IsLeaked()) {
-    return api::passwords_private::COMPROMISE_TYPE_LEAKED;
+    return {api::passwords_private::COMPROMISE_TYPE_LEAKED};
   } else if (entry.IsPhished()) {
-    return api::passwords_private::COMPROMISE_TYPE_PHISHED;
+    return {api::passwords_private::COMPROMISE_TYPE_PHISHED};
   }
   NOTREACHED();
-  return api::passwords_private::COMPROMISE_TYPE_NONE;
+  return {api::passwords_private::COMPROMISE_TYPE_NONE};
 }
 
 bool IsCredentialMuted(const CredentialUIEntry& entry) {
@@ -247,7 +248,7 @@ api::passwords_private::CompromisedInfo CreateCompromiseInfo(
       form.GetLastLeakedOrPhishedTime().ToJsTimeIgnoringNull();
   compromise_info.elapsed_time_since_compromise =
       FormatElapsedTime(form.GetLastLeakedOrPhishedTime());
-  compromise_info.compromise_type = GetCompromiseType(form);
+  compromise_info.compromise_types = GetCompromiseType(form);
   compromise_info.is_muted = IsCredentialMuted(form);
   return compromise_info;
 }

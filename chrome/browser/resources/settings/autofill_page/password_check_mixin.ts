@@ -224,8 +224,10 @@ export const PasswordCheckMixin = dedupingMixin(
           addedResults.sort((lhs, rhs) => {
             // Phished passwords are always shown above leaked passwords.
             const isPhished = (cred: chrome.passwordsPrivate.PasswordUiEntry) =>
-                cred.compromisedInfo!.compromiseType !==
-                chrome.passwordsPrivate.CompromiseType.LEAKED;
+                cred.compromisedInfo!.compromiseTypes.some(
+                    type => type ===
+                        chrome.passwordsPrivate.CompromiseType.PHISHED);
+
             if (isPhished(lhs) !== isPhished(rhs)) {
               return isPhished(lhs) ? -1 : 1;
             }
