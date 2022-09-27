@@ -155,8 +155,9 @@ const wchar_t* const kTroublesomeDlls[] = {
 };
 
 // This is for finch. See also crbug.com/464430 for details.
-const base::Feature kEnableCsrssLockdownFeature{
-    "EnableCsrssLockdown", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableCsrssLockdownFeature,
+             "EnableCsrssLockdown",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !defined(NACL_WIN64)
 // Adds the policy rules for the path and path\ with the semantic |access|.
