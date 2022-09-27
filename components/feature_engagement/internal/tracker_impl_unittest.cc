@@ -37,16 +37,21 @@
 namespace feature_engagement {
 
 namespace {
-const base::Feature kTrackerTestFeatureFoo{"test_foo",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTrackerTestFeatureBar{"test_bar",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTrackerTestFeatureBaz{"test_baz",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTrackerTestFeatureQux{"test_qux",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTrackerTestFeatureSnooze{
-    "test_snooze", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTrackerTestFeatureFoo,
+             "test_foo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrackerTestFeatureBar,
+             "test_bar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrackerTestFeatureBaz,
+             "test_baz",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrackerTestFeatureQux,
+             "test_qux",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrackerTestFeatureSnooze,
+             "test_snooze",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 void RegisterFeatureConfig(EditableConfiguration* configuration,
                            const base::Feature& feature,

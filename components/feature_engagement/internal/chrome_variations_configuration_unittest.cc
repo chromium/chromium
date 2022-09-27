@@ -22,12 +22,15 @@ namespace feature_engagement {
 
 namespace {
 
-const base::Feature kChromeTestFeatureFoo{"test_foo",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kChromeTestFeatureBar{"test_bar",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kChromeTestFeatureQux{"test_qux",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kChromeTestFeatureFoo,
+             "test_foo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kChromeTestFeatureBar,
+             "test_bar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kChromeTestFeatureQux,
+             "test_qux",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kFooTrialName[] = "FooTrial";
 const char kBarTrialName[] = "BarTrial";

@@ -17,14 +17,10 @@ namespace feature_engagement {
 
 namespace {
 
-const base::Feature kTestFeatureFoo{"test_foo",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTestFeatureBar{"test_bar",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTestFeatureQux{"test_qux",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTestFeatureNop{"test_nop",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeatureFoo, "test_foo", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureBar, "test_bar", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureQux, "test_qux", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureNop, "test_nop", base::FEATURE_DISABLED_BY_DEFAULT);
 
 class AvailabilityModelImplTest : public testing::Test {
  public:

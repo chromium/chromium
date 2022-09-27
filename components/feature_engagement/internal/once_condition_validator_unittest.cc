@@ -18,10 +18,12 @@ namespace feature_engagement {
 
 namespace {
 
-const base::Feature kOnceTestFeatureFoo{"test_foo",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kOnceTestFeatureBar{"test_bar",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOnceTestFeatureFoo,
+             "test_foo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOnceTestFeatureBar,
+             "test_bar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 FeatureConfig kValidFeatureConfig;
 FeatureConfig kInvalidFeatureConfig;

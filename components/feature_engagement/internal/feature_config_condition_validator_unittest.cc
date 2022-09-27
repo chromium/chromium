@@ -25,14 +25,18 @@ namespace feature_engagement {
 
 namespace {
 
-const base::Feature kFeatureConfigTestFeatureFoo{
-    "test_foo", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kFeatureConfigTestFeatureBar{
-    "test_bar", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kFeatureConfigTestFeatureQux{
-    "test_qux", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kFeatureConfigTestFeatureXyz{
-    "test_xyz", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kFeatureConfigTestFeatureFoo,
+             "test_foo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFeatureConfigTestFeatureBar,
+             "test_bar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFeatureConfigTestFeatureQux,
+             "test_qux",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFeatureConfigTestFeatureXyz,
+             "test_xyz",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 FeatureConfig GetValidFeatureConfig() {
   FeatureConfig config;
