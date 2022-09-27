@@ -50,7 +50,7 @@ public final class TangibleSyncCoordinator implements AccountPickerCoordinator.L
     /** Implements {@link AccountPickerCoordinator.Listener}. */
     @Override
     public void onAccountSelected(String accountName) {
-        mSyncConsentActivityLauncher.launchActivityForPromoChooseAccountFlow(
+        mSyncConsentActivityLauncher.launchActivityForTangibleSyncFlow(
                 mContext, mAccessPoint, accountName);
         mAccountPickerDialogCoordinator.dismissDialog();
     }
@@ -60,7 +60,8 @@ public final class TangibleSyncCoordinator implements AccountPickerCoordinator.L
      */
     @Override
     public void addAccount() {
-        mSyncConsentActivityLauncher.launchActivityForPromoAddAccountFlow(mContext, mAccessPoint);
+        mSyncConsentActivityLauncher.launchActivityForTangibleSyncAddAccountFlow(
+                mContext, mAccessPoint);
         mAccountPickerDialogCoordinator.dismissDialog();
     }
 }

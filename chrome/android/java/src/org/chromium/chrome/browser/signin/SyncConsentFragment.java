@@ -11,7 +11,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase;
@@ -80,11 +79,6 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
         super.onCreate(savedInstanceState);
         mPromoAction = getArguments().getInt(ARGUMENT_PERSONALIZED_PROMO_ACTION, PromoAction.NONE);
         recordSigninStartedHistogramAccountInfo();
-    }
-
-    @Override
-    protected boolean showTangibleSyncConsentView() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC);
     }
 
     @Override

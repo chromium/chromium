@@ -209,7 +209,7 @@ public class SyncConsentFragmentTest {
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
                 });
@@ -226,7 +226,7 @@ public class SyncConsentFragmentTest {
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
                 });
@@ -243,7 +243,7 @@ public class SyncConsentFragmentTest {
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
                 });
@@ -296,7 +296,7 @@ public class SyncConsentFragmentTest {
         mSigninTestRule.addAccount(secondAccountName);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoChooseAccountFlow(
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER, secondAccountName);
                 });
@@ -563,7 +563,7 @@ public class SyncConsentFragmentTest {
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
                             mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
                             accountInfo.getEmail());
                 });
@@ -636,7 +636,7 @@ public class SyncConsentFragmentTest {
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoChooseAccountFlow(
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
                             mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
                             selectedAccountInfo.getEmail());
                 });
@@ -741,9 +741,10 @@ public class SyncConsentFragmentTest {
 
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoAddAccountFlow(
-                            mChromeActivityTestRule.getActivity(),
-                            SigninAccessPoint.BOOKMARK_MANAGER);
+                    SyncConsentActivityLauncherImpl.get()
+                            .launchActivityForTangibleSyncAddAccountFlow(
+                                    mChromeActivityTestRule.getActivity(),
+                                    SigninAccessPoint.BOOKMARK_MANAGER);
                 });
 
         // Wait for the added account to be visible.
@@ -792,9 +793,10 @@ public class SyncConsentFragmentTest {
 
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoAddAccountFlow(
-                            mChromeActivityTestRule.getActivity(),
-                            SigninAccessPoint.BOOKMARK_MANAGER);
+                    SyncConsentActivityLauncherImpl.get()
+                            .launchActivityForTangibleSyncAddAccountFlow(
+                                    mChromeActivityTestRule.getActivity(),
+                                    SigninAccessPoint.BOOKMARK_MANAGER);
                 });
 
         // SyncConsentActivity is destroyed if add account flow is cancelled.
@@ -838,9 +840,10 @@ public class SyncConsentFragmentTest {
     public void testTangibleSyncConsentFragmentAddAccountFlowFailed() {
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoAddAccountFlow(
-                            mChromeActivityTestRule.getActivity(),
-                            SigninAccessPoint.BOOKMARK_MANAGER);
+                    SyncConsentActivityLauncherImpl.get()
+                            .launchActivityForTangibleSyncAddAccountFlow(
+                                    mChromeActivityTestRule.getActivity(),
+                                    SigninAccessPoint.BOOKMARK_MANAGER);
                 });
 
         // SyncConsentActivity is destroyed if add account flow fails.
@@ -889,9 +892,10 @@ public class SyncConsentFragmentTest {
 
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoAddAccountFlow(
-                            mChromeActivityTestRule.getActivity(),
-                            SigninAccessPoint.BOOKMARK_MANAGER);
+                    SyncConsentActivityLauncherImpl.get()
+                            .launchActivityForTangibleSyncAddAccountFlow(
+                                    mChromeActivityTestRule.getActivity(),
+                                    SigninAccessPoint.BOOKMARK_MANAGER);
                 });
 
         // SyncConsentActivity is destroyed if the add account flow returns null account name.
@@ -917,7 +921,7 @@ public class SyncConsentFragmentTest {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER,
                             AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
@@ -940,7 +944,7 @@ public class SyncConsentFragmentTest {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER,
                             AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
@@ -963,7 +967,7 @@ public class SyncConsentFragmentTest {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER,
                             AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
@@ -986,7 +990,7 @@ public class SyncConsentFragmentTest {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER,
                             AccountManagerTestRule.TEST_ACCOUNT_EMAIL);

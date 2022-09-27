@@ -74,14 +74,9 @@ public abstract class SyncConsentFragmentBase
         extends Fragment implements AccountPickerCoordinator.Listener, AccountsChangeObserver,
                                     SigninManager.SignInStateObserver {
     private static final String ARGUMENT_ACCESS_POINT = "SyncConsentFragmentBase.AccessPoint";
-
-    private static final String SETTINGS_LINK_OPEN = "<LINK1>";
-    private static final String SETTINGS_LINK_CLOSE = "</LINK1>";
-
     private static final String ARGUMENT_ACCOUNT_NAME = "SyncConsentFragmentBase.AccountName";
-
-    /** Field trial group param for the tangible sync experiment. */
-    private static final String PARAM_TANGIBLE_SYNC_GROUP = "group_id";
+    private static final String ARGUMENT_SHOW_TANGIBLE_SYNC_CONSENT_VIEW =
+            "SyncConsentFragment.ShowTangibleSyncConsentView";
 
     // This bundle argument is optional; it is set only if the child status cannot be reliably
     // inferred by looking at the last used regular profile, because child sign auto sign in may
@@ -90,6 +85,12 @@ public abstract class SyncConsentFragmentBase
             "SyncConsentFragmentBase.ChildAccountStatus";
     private static final String ARGUMENT_SIGNIN_FLOW_TYPE =
             "SyncConsentFragmentBase.SigninFlowType";
+
+    private static final String SETTINGS_LINK_OPEN = "<LINK1>";
+    private static final String SETTINGS_LINK_CLOSE = "</LINK1>";
+
+    /** Field trial group param for the tangible sync experiment. */
+    private static final String PARAM_TANGIBLE_SYNC_GROUP = "group_id";
 
     private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
@@ -139,6 +140,7 @@ public abstract class SyncConsentFragmentBase
     // success. Instead, this member should be set to false to give the user a chance of clicking
     // "No, thanks".
     private boolean mIsSigninInProgress;
+    private boolean mShowTangibleSyncConsentView;
     // Set to true when the fragment is launched for add account flow. The value is only checked in
     // tangible sync flow where the activity would otherwise be terminated if selected account is
     // not provided.
@@ -209,14 +211,37 @@ public abstract class SyncConsentFragmentBase
         return result;
     }
 
+    /**
+     * Creates an argument bundle to start Tangible Sync flow.
+     * @param accessPoint The access point for starting sign-in flow.
+     * @param accountName The account to preselect or null to preselect the default account.
+     */
+    public static Bundle createArgumentsForTangibleSyncFlow(
+            @SigninAccessPoint int accessPoint, String accountName) {
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC);
+        Bundle result = SyncConsentFragmentBase.createArgumentsForChooseAccountFlow(
+                accessPoint, accountName);
+        result.putBoolean(ARGUMENT_SHOW_TANGIBLE_SYNC_CONSENT_VIEW, true);
+        return result;
+    }
+
+    /**
+     * Creates an argument bundle to start "New account" sign-in flow for Tangible Sync.
+     * @param accessPoint The access point for starting sign-in flow.
+     */
+    public static Bundle createArgumentsForTangibleSyncAddAccountFlow(
+            @SigninAccessPoint int accessPoint) {
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC);
+        Bundle result = SyncConsentFragmentBase.createArgumentsForAddAccountFlow(accessPoint);
+        result.putBoolean(ARGUMENT_SHOW_TANGIBLE_SYNC_CONSENT_VIEW, true);
+        return result;
+    }
+
     protected SyncConsentFragmentBase() {
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mProfileDataCacheObserver = this::updateProfileData;
         mCanUseGooglePlayServices = true;
     }
-
-    /** Returns whether tangible sync consent view should be shown. */
-    protected abstract boolean showTangibleSyncConsentView();
 
     /** The sync consent was refused. */
     protected abstract void onSyncRefused();
@@ -298,12 +323,14 @@ public abstract class SyncConsentFragmentBase
         @SigninFlowType
         int signinFlowType = arguments.getInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.DEFAULT);
 
+        mShowTangibleSyncConsentView =
+                getArguments().getBoolean(ARGUMENT_SHOW_TANGIBLE_SYNC_CONSENT_VIEW, false);
         if (savedInstanceState == null) {
             // If this fragment is being recreated from a saved state there's no need to show
             // account picked or starting AddAccount flow.
             if (signinFlowType == SigninFlowType.CHOOSE_ACCOUNT) {
                 // Only show the account picker for the old signin view.
-                if (!showTangibleSyncConsentView()) {
+                if (!mShowTangibleSyncConsentView) {
                     mAccountPickerDialogCoordinator = new AccountPickerDialogCoordinator(
                             requireContext(), this, mModalDialogManager);
                 }
@@ -349,7 +376,7 @@ public abstract class SyncConsentFragmentBase
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (showTangibleSyncConsentView()) {
+        if (mShowTangibleSyncConsentView) {
             createSyncConsentView(inflater, container);
         } else {
             createSigninView(inflater, container);
@@ -757,7 +784,7 @@ public abstract class SyncConsentFragmentBase
             SigninMetricsUtils.logAddAccountStateHistogram(State.FAILED);
             SigninUtils.openSettingsForAllAccounts(getActivity());
             mIsAccountAdditionInProgress = false;
-            if (showTangibleSyncConsentView()) {
+            if (mShowTangibleSyncConsentView) {
                 // For tangible sync flow this fragment should not be shown in the absence of a
                 // selected account when add account intent can't be created.
                 getActivity().finish();
@@ -784,7 +811,7 @@ public abstract class SyncConsentFragmentBase
             } else {
                 SigninMetricsUtils.logAddAccountStateHistogram(State.CANCELLED);
             }
-            if (showTangibleSyncConsentView()) {
+            if (mShowTangibleSyncConsentView) {
                 mIsAccountAdditionInProgress = false;
             }
             mAccountManagerFacade.getAccounts().then(this::updateAccounts);

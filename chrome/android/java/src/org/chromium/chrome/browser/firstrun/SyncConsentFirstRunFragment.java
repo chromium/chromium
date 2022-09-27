@@ -48,11 +48,6 @@ public class SyncConsentFirstRunFragment
     }
 
     @Override
-    protected boolean showTangibleSyncConsentView() {
-        return false;
-    }
-
-    @Override
     protected void onSyncRefused() {
         if (mIsChild
                 && !ChromeFeatureList.isEnabled(

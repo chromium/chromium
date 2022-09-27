@@ -74,7 +74,7 @@ public class TangibleSyncCoordinatorTest {
         onView(withText(R.string.signin_add_account_to_device)).inRoot(isDialog()).perform(click());
 
         verify(mSyncConsentActivityLauncher)
-                .launchActivityForPromoAddAccountFlow(
+                .launchActivityForTangibleSyncAddAccountFlow(
                         sActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS);
     }
 
@@ -89,7 +89,7 @@ public class TangibleSyncCoordinatorTest {
                 .perform(click());
 
         verify(mSyncConsentActivityLauncher)
-                .launchActivityForPromoChooseAccountFlow(sActivityTestRule.getActivity(),
+                .launchActivityForTangibleSyncFlow(sActivityTestRule.getActivity(),
                         SigninAccessPoint.SETTINGS, AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
     }
 }

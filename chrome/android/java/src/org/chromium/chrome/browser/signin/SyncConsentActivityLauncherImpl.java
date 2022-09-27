@@ -101,6 +101,30 @@ public final class SyncConsentActivityLauncherImpl implements SyncConsentActivit
         return false;
     }
 
+    /**
+     * Launches the {@link SyncConsentActivity} with Tangible Sync flow.
+     * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
+     * @param accountName The account to select.
+     */
+    @Override
+    public void launchActivityForTangibleSyncFlow(
+            Context context, @SigninAccessPoint int accessPoint, String accountName) {
+        launchInternal(context,
+                SyncConsentFragmentBase.createArgumentsForTangibleSyncFlow(
+                        accessPoint, accountName));
+    }
+
+    /**
+     * Launches the {@link SyncConsentActivity} with "New Account" sign-in flow for Tangible Sync.
+     * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
+     */
+    @Override
+    public void launchActivityForTangibleSyncAddAccountFlow(
+            Context context, @SigninAccessPoint int accessPoint) {
+        launchInternal(context,
+                SyncConsentFragmentBase.createArgumentsForTangibleSyncAddAccountFlow(accessPoint));
+    }
+
     private void launchInternal(Context context, Bundle fragmentArgs) {
         Intent intent = SyncConsentActivity.createIntent(context, fragmentArgs);
         context.startActivity(intent);
