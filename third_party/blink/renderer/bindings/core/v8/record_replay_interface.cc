@@ -45,6 +45,7 @@ const {
   setCommandCallback,
   setClearPauseDataCallback,
   getCurrentError,
+  getBrowserEvents,
   notifyDriverOnConsoleAPICall,
   dump,
   getRecordingId,
@@ -72,6 +73,14 @@ function assert(v) {
   if (!v) {
     log(`Assertion failed ${Error().stack}`);
     throw new Error("Assertion failed");
+  }
+}
+
+const gBrowserEvents = [];
+function syncBrowserEvents() {
+  for (const {name, payload} of getBrowserEvents()) {
+    const info = JSON.parse(payload);
+    gBrowserEvents.push({ name, info });
   }
 }
 
@@ -1018,23 +1027,12 @@ static void LogCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
 // Function to invoke on CDP responses and events.
 static v8::Eternal<v8::Function>* gCDPMessageCallback;
 
-// Function to invoke on incoming browser events.
-static v8::Eternal<v8::Function>* gBrowserEventsCallback;
-
 static void SetCDPMessageCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(!gCDPMessageCallback);
   v8::Isolate* isolate = args.GetIsolate();
   CHECK(args[0]->IsFunction());
   v8::Local<v8::Function> callback = args[0].As<v8::Function>();
   gCDPMessageCallback = new v8::Eternal<v8::Function>(isolate, callback);
-}
-
-static void SetBrowserEventsCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  CHECK(!gBrowserEventsCallback);
-  v8::Isolate* isolate = args.GetIsolate();
-  CHECK(args[0]->IsFunction());
-  v8::Local<v8::Function> callback = args[0].As<v8::Function>();
-  gBrowserEventsCallback = new v8::Eternal<v8::Function>(isolate, callback);
 }
 
 static void SendMessageToFrontend(const v8_inspector::StringView& message) {
@@ -1085,37 +1083,6 @@ void RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector) {
                                             new InspectorChannel(),
                                             v8_inspector::StringView()).release();
   }
-}
-
-void RecordReplayDispatchBrowserEvent(
-  const std::string& name, base::DictionaryValue* info) {
-  CHECK(v8::IsMainThread());
-
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  if (!isolate->InContext() || ScriptForbiddenScope::IsScriptForbidden()) {
-    // We're never interested in browser events sent at these times.
-    return;
-  }
-
-  // Convert name to v8 string
-  v8::HandleScope scope(isolate);
-  v8::Local<v8::Value> args[2];
-  args[0] = v8::String::NewFromUtf8(
-      isolate,
-      name.c_str(),
-      v8::NewStringType::kNormal,
-      name.length()
-  ).ToLocalChecked();
-
-  // Convert params to v8 json object
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  std::unique_ptr<content::V8ValueConverter> converter =
-      content::V8ValueConverter::Create();
-  args[1] = converter->ToV8Value(info, context);
-
-  v8::Local<v8::Function> callback = gBrowserEventsCallback->Get(isolate);
-  v8::MaybeLocal<v8::Value> rv = callback->Call(context, v8::Undefined(isolate), 2, args);
-  CHECK(!rv.IsEmpty());
 }
 
 static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -1243,10 +1210,59 @@ static int GetAPIObjectIdCallback(v8::Local<v8::Object> object) {
   return 0;
 }
 
+// C++ structure for keeping received events until being pulled into
+// javascript by controller protocol methods.  We cannot directly
+// call into JS code from this handler because the handler may be
+// called when script execution is forbidden.
+//
+// So instead we keep the received events in C++ as a vector, and
+// have the JS code reach out and pull these into javascript before
+// doing any event-related operations.
+struct BrowserEvent {
+  std::string name;
+  std::string payload;
+
+  BrowserEvent(std::string&& name, std::string&& payload)
+    : name(std::move(name)), payload(std::move(payload)) {}
+
+  // Disable assignment and copy-construction
+  BrowserEvent(const BrowserEvent&) = delete;
+  BrowserEvent& operator=(const BrowserEvent&) = delete;
+  BrowserEvent& operator=(BrowserEvent&&) = delete;
+
+  // Allow move-construction.
+  BrowserEvent(BrowserEvent&& other):
+      name(std::move(other.name)),
+      payload(std::move(other.payload))
+  {}
+};
+static std::vector<BrowserEvent> *gBrowserEvents = nullptr;
+
+// Store received browser events in a global vector until JS code
+// needs it.  We cannot directly call JS from this code as it may
+// be invoked when script execution is forbidden.  So we store the
+// data away until the javascript code can reach out and fetch it.
+// See: `GetBrowserEvents` (c++) and `syncBrowserEvents` (JS) in this
+// file.
+static void HandleBrowserEvent(const char* name, const char* payload) {
+  if (!gBrowserEvents) {
+    gBrowserEvents = new std::vector<BrowserEvent>();
+  }
+  gBrowserEvents->push_back(
+    BrowserEvent(std::string(name), std::string(payload))
+  );
+}
+
+static void GetBrowserEvents(const v8::FunctionCallbackInfo<v8::Value>& args);
+
 extern "C" void V8RecordReplaySetAPIObjectIdCallback(int (*callback)(v8::Local<v8::Object>));
+extern "C" void V8RecordReplayRegisterBrowserEventCallback(
+  void (*callback)(const char* name, const char* payload)
+);
 
 void SetupRecordReplayCommands(v8::Isolate* isolate) {
   V8RecordReplaySetAPIObjectIdCallback(GetAPIObjectIdCallback);
+  V8RecordReplayRegisterBrowserEventCallback(HandleBrowserEvent);
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
@@ -1260,8 +1276,6 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       LogCallback);
   SetFunctionProperty(isolate, args, "setCDPMessageCallback",
                       SetCDPMessageCallback);
-  SetFunctionProperty(isolate, args, "setBrowserEventsCallback",
-                      SetBrowserEventsCallback);
   SetFunctionProperty(isolate, args, "sendCDPMessage",
                       SendCDPMessage);
   SetFunctionProperty(isolate, args, "setCommandCallback",
@@ -1270,6 +1284,8 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       v8::FunctionCallbackRecordReplaySetClearPauseDataCallback);
   SetFunctionProperty(isolate, args, "getCurrentError",
                       GetCurrentError);
+  SetFunctionProperty(isolate, args, "getBrowserEvents",
+                      GetBrowserEvents);
   SetFunctionProperty(isolate, args, "notifyDriverOnConsoleAPICall",
                       NotifyDriverOnConsoleAPICall);
   SetFunctionProperty(isolate, args, "dump",
@@ -1314,6 +1330,11 @@ static void SetDataProperty(v8::Isolate* isolate, v8::Local<v8::Object> obj,
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   obj->Set(context, ToV8String(isolate, property), value).Check();
 }
+static void SetArrayProperty(v8::Isolate* isolate, v8::Local<v8::Array> arr,
+                            uint32_t idx, v8::Local<v8::Value> value) {
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  arr->CreateDataProperty(context, idx, value).Check();
+}
 
 static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (!gCurrentErrorEvent) {
@@ -1333,6 +1354,27 @@ static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args) {
                   v8::Number::New(isolate, gCurrentErrorEvent->Location()->ScriptId()));
 
   args.GetReturnValue().Set(rv);
+}
+
+static void GetBrowserEvents(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(v8::IsMainThread());
+  CHECK(gInspectorSession);
+  CHECK(args.Length() == 0 && "must be called with no arguments");
+  CHECK(gBrowserEvents && "gBrowserEvents should have been allocated before now");
+
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Local<v8::Array> result = v8::Array::New(isolate, gBrowserEvents->size());
+  uint32_t i = 0;
+  for (auto iter = gBrowserEvents->begin(); iter != gBrowserEvents->end(); iter++) {
+    v8::Local<v8::Object> obj = v8::Object::New(isolate);
+    SetDataProperty(isolate, obj, "name", ToV8String(isolate, iter->name.c_str()));
+    SetDataProperty(isolate, obj, "payload", ToV8String(isolate, iter->payload.c_str()));
+    SetArrayProperty(isolate, result, i, obj);
+    i += 1;
+  }
+  gBrowserEvents->clear();
+
+  args.GetReturnValue().Set(result);
 }
 
 } // namespace blink
