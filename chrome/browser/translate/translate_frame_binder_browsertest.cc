@@ -38,7 +38,7 @@ class TestTranslateDriverBindingContentBrowserClient
     // Override binding for translate::mojom::ContentTranslateDriver.
     map->Add<translate::mojom::ContentTranslateDriver>(base::BindRepeating(
         &TestTranslateDriverBindingContentBrowserClient::BindTest,
-        base::Unretained(this)));
+        weak_factory_.GetWeakPtr()));
   }
 
   void BindTest(content::RenderFrameHost* render_frame_host,
@@ -76,6 +76,8 @@ class TestTranslateDriverBindingContentBrowserClient
  private:
   base::OnceClosure quit_on_binding_;
   std::map<content::RenderFrameHost*, bool> render_frame_binding_map_;
+  base::WeakPtrFactory<TestTranslateDriverBindingContentBrowserClient>
+      weak_factory_{this};
 };
 
 }  // namespace
@@ -174,14 +176,8 @@ class TranslateFrameBinderFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-// TODO(crbug.com/1312008): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_NotBindingInFencedFrame DISABLED_NotBindingInFencedFrame
-#else
-#define MAYBE_NotBindingInFencedFrame NotBindingInFencedFrame
-#endif
 IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
-                       MAYBE_NotBindingInFencedFrame) {
+                       NotBindingInFencedFrame) {
   TestTranslateDriverBindingContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
 
