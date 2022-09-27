@@ -86,6 +86,16 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
   void HideView();
 
+  // Used to indicate if the underlying DesktopMediaList supports the notion of
+  // Reselecting a source.
+  bool SupportsReselectButton() const;
+
+  void OnReselectRequested();
+
+  // Returns whether or not the reselect button (if supported), should be
+  // enabled.
+  bool can_reselect() const { return can_reselect_; }
+
   // Returns the DesktopMediaID corresponding to the current selection in this
   // controller's view, if there is one.
   absl::optional<content::DesktopMediaID> GetSelection() const;
@@ -107,6 +117,10 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   void SetThumbnailSize(const gfx::Size& size);
   void SetPreviewedSource(const absl::optional<content::DesktopMediaID>& id);
 
+  // Returns a WeakPtr to the current DesktopMediaListController. Note that the
+  // weak pointer must only be used on the UI thread.
+  base::WeakPtr<DesktopMediaListController> GetWeakPtr() const;
+
  private:
   friend class DesktopMediaPickerViewsTestApi;
 
@@ -121,6 +135,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   void Reject();
 
   void StartUpdatingInternal();
+
+  void SetCanReselect(bool can_reselect);
 
   // DesktopMediaListObserver:
   void OnSourceAdded(int index) override;
@@ -145,6 +161,9 @@ class DesktopMediaListController : public DesktopMediaListObserver,
       view_observations_{this};
   bool is_updating_ = false;
   content::DesktopMediaID dialog_window_id_;
+
+  // Whether or not the reselect button (if supported), should be enabled.
+  bool can_reselect_ = false;
 
   // Auto-selection. Used only in tests.
   const std::string auto_select_tab_;        // Only tabs, by title.

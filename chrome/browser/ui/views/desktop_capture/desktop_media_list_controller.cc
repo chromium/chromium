@@ -93,6 +93,32 @@ void DesktopMediaListController::HideView() {
   media_list_->HideList();
 }
 
+bool DesktopMediaListController::SupportsReselectButton() const {
+  // Only DelegatedSourceLists support the notion of reslecting.
+  return media_list_->IsSourceListDelegated();
+}
+
+void DesktopMediaListController::SetCanReselect(bool can_reselect) {
+  if (can_reselect_ == can_reselect)
+    return;
+  can_reselect_ = can_reselect;
+  dialog_->OnCanReselectChanged(this);
+}
+
+void DesktopMediaListController::OnReselectRequested() {
+  // Before we clear the delegated source list selection (which may be async),
+  // clear our own selection.
+  ClearSelection();
+
+  // Clearing the selection is enough to force the list to reappear the next
+  // time that it is focused (or now if it is currently focused).
+  media_list_->ClearDelegatedSourceListSelection();
+
+  // Once we've called Reselect, we don't want to call it again until we get a
+  // new selection.
+  SetCanReselect(false);
+}
+
 absl::optional<content::DesktopMediaID>
 DesktopMediaListController::GetSelection() const {
   return view_ ? view_->GetSelection() : absl::nullopt;
@@ -141,6 +167,11 @@ void DesktopMediaListController::SetThumbnailSize(const gfx::Size& size) {
 void DesktopMediaListController::SetPreviewedSource(
     const absl::optional<content::DesktopMediaID>& id) {
   media_list_->SetPreviewedSource(id);
+}
+
+base::WeakPtr<DesktopMediaListController>
+DesktopMediaListController::GetWeakPtr() const {
+  return weak_factory_.GetWeakPtr();
 }
 
 void DesktopMediaListController::OnSourceAdded(int index) {
@@ -201,6 +232,8 @@ void DesktopMediaListController::OnDelegatedSourceListSelection() {
   if (view_) {
     view_->GetSourceListListener()->OnDelegatedSourceListSelection();
   }
+
+  SetCanReselect(true);
 }
 
 void DesktopMediaListController::OnDelegatedSourceListDismissed() {

@@ -99,6 +99,10 @@ bool DesktopMediaListBase::IsSourceListDelegated() const {
   return false;
 }
 
+void DesktopMediaListBase::ClearDelegatedSourceListSelection() {
+  NOTREACHED();
+}
+
 void DesktopMediaListBase::FocusList() {}
 void DesktopMediaListBase::HideList() {}
 

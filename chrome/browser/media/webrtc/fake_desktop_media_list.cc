@@ -103,6 +103,10 @@ bool FakeDesktopMediaList::IsSourceListDelegated() const {
   return is_source_list_delegated_;
 }
 
+void FakeDesktopMediaList::ClearDelegatedSourceListSelection() {
+  ++clear_delegated_source_list_selection_count_;
+}
+
 void FakeDesktopMediaList::FocusList() {
   is_focused_ = true;
 }

@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -511,125 +512,6 @@ TEST_F(NativeDesktopMediaListTest, ScreenOnly) {
   EXPECT_EQ(model_->GetSource(0).id.id, 0);
 }
 
-class DelegatedFakeScreenCapturer
-    : public FakeScreenCapturer,
-      public webrtc::DelegatedSourceListController {
- public:
-  webrtc::DelegatedSourceListController* GetDelegatedSourceListController()
-      override {
-    return this;
-  }
-
-  void Observe(
-      webrtc::DelegatedSourceListController::Observer* observer) override {
-    DCHECK(!observer_ || !observer);
-    observer_ = observer;
-  }
-
-  void SimulateSourceListSelection() {
-    DCHECK(observer_);
-    observer_->OnSelection();
-  }
-
-  void SimulateSourceListCancelled() {
-    DCHECK(observer_);
-    observer_->OnCancelled();
-  }
-
-  void SimulateSourceListError() {
-    DCHECK(observer_);
-    observer_->OnError();
-  }
-
-  void EnsureVisible() override {}
-  void EnsureHidden() override {}
-
- private:
-  webrtc::DelegatedSourceListController::Observer* observer_ = nullptr;
-};
-
-TEST_F(NativeDesktopMediaListTest, DelegatedScreenCapturerSelection) {
-  auto capturer = std::make_unique<DelegatedFakeScreenCapturer>();
-  auto* capturer_ptr = capturer.get();
-  model_ = std::make_unique<NativeDesktopMediaList>(
-      DesktopMediaList::Type::kScreen, std::move(capturer));
-
-  model_->SetUpdatePeriod(base::Milliseconds(20));
-
-  // We don't call SimulateSourceListSelection until we get notified that the
-  // source has been added so that we can guarantee that the Capturer has been
-  // started by the MediaList. Otherwise, the callback_ may be null, which would
-  // cause a crash.
-  EXPECT_CALL(observer_, OnSourceAdded(0)).WillOnce([capturer_ptr]() {
-    capturer_ptr->SimulateSourceListSelection();
-  });
-  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
-      .Times(testing::AnyNumber());
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer_, OnDelegatedSourceListSelection())
-      .WillOnce(QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
-  model_->StartUpdating(&observer_);
-
-  run_loop.Run();
-}
-
-TEST_F(NativeDesktopMediaListTest, DelegatedScreenCapturerCancelled) {
-  auto capturer = std::make_unique<DelegatedFakeScreenCapturer>();
-  auto* capturer_ptr = capturer.get();
-  model_ = std::make_unique<NativeDesktopMediaList>(
-      DesktopMediaList::Type::kScreen, std::move(capturer));
-
-  model_->SetUpdatePeriod(base::Milliseconds(20));
-
-  // We don't call SimulateSourceListCancelled until we get notified that the
-  // source has been added so that we can guarantee that the Capturer has been
-  // started by the MediaList. Otherwise, the callback_ may be null, which would
-  // cause a crash.
-  EXPECT_CALL(observer_, OnSourceAdded(0)).WillOnce([capturer_ptr]() {
-    capturer_ptr->SimulateSourceListCancelled();
-  });
-  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
-      .Times(testing::AnyNumber());
-
-  // We don't differentiate to the DesktopMediaListObserver *why* the list was
-  // dismissed, just that it was.
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer_, OnDelegatedSourceListDismissed())
-      .WillOnce(QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
-  model_->StartUpdating(&observer_);
-
-  run_loop.Run();
-}
-
-TEST_F(NativeDesktopMediaListTest, DelegatedScreenCapturerError) {
-  auto capturer = std::make_unique<DelegatedFakeScreenCapturer>();
-  auto* capturer_ptr = capturer.get();
-  model_ = std::make_unique<NativeDesktopMediaList>(
-      DesktopMediaList::Type::kScreen, std::move(capturer));
-
-  model_->SetUpdatePeriod(base::Milliseconds(20));
-
-  // We don't call SimulateSourceListError until we get notified that the source
-  // has been added so that we can guarantee that the Capturer has been started
-  // by the MediaList. Otherwise, the callback_ may be null, which would cause a
-  // crash.
-  EXPECT_CALL(observer_, OnSourceAdded(0)).WillOnce([capturer_ptr]() {
-    capturer_ptr->SimulateSourceListError();
-  });
-  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
-      .Times(testing::AnyNumber());
-
-  // We don't differentiate to the DesktopMediaListObserver *why* the list was
-  // dismissed, just that it was.
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer_, OnDelegatedSourceListDismissed())
-      .WillOnce(QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
-  model_->StartUpdating(&observer_);
-
-  run_loop.Run();
-}
-
 // Verifies that the window specified with SetViewDialogWindowId() is filtered
 // from the results.
 TEST_F(NativeDesktopMediaListTest, WindowFiltering) {
@@ -903,3 +785,230 @@ TEST_F(NativeDesktopMediaListTest, MinimizedCurrentProcessWindows) {
   EXPECT_EQ(source.id.id, content::DesktopMediaID::kNullId);
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+class DelegatedFakeScreenCapturer
+    : public FakeScreenCapturer,
+      public webrtc::DelegatedSourceListController {
+ public:
+  webrtc::DelegatedSourceListController* GetDelegatedSourceListController()
+      override {
+    return this;
+  }
+
+  void Observe(
+      webrtc::DelegatedSourceListController::Observer* observer) override {
+    DCHECK(!observer_ || !observer);
+    observer_ = observer;
+  }
+
+  void SimulateSourceListSelection() {
+    DCHECK(observer_);
+    observer_->OnSelection();
+  }
+
+  void SimulateSourceListCancelled() {
+    DCHECK(observer_);
+    observer_->OnCancelled();
+  }
+
+  void SimulateSourceListError() {
+    DCHECK(observer_);
+    observer_->OnError();
+  }
+
+  void EnsureVisible() override { ensure_visible_call_count_++; }
+
+  void EnsureHidden() override { ensure_hidden_call_count_++; }
+
+  int ensure_visible_call_count() const { return ensure_visible_call_count_; }
+
+  int ensure_hidden_call_count() const { return ensure_hidden_call_count_; }
+
+ private:
+  webrtc::DelegatedSourceListController::Observer* observer_ = nullptr;
+  int ensure_visible_call_count_ = 0;
+  int ensure_hidden_call_count_ = 0;
+};
+
+class NativeDesktopMediaListDelegatedTest : public ChromeViewsTestBase {
+ public:
+  NativeDesktopMediaListDelegatedTest() {
+    auto capturer = std::make_unique<DelegatedFakeScreenCapturer>();
+    capturer_ = capturer.get();
+    model_ = std::make_unique<NativeDesktopMediaList>(
+        DesktopMediaList::Type::kScreen, std::move(capturer));
+
+    model_->SetUpdatePeriod(base::Milliseconds(20));
+  }
+
+  ~NativeDesktopMediaListDelegatedTest() override = default;
+
+  void SetUp() override {
+    // We're not testing this behavior, but if we don't add an expectation, then
+    // the tests will complain about unexpected calls occurring.
+    EXPECT_CALL(observer_, OnSourceAdded(0)).Times(testing::AnyNumber());
+    EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
+        .Times(testing::AnyNumber());
+
+    // Start updating and then ensure that the capturer is ready before allowing
+    // the test to proceed.
+    model_->StartUpdating(&observer_);
+    WaitForCapturerTasks();
+    ChromeViewsTestBase::SetUp();
+  }
+
+  void WaitForCapturerTasks() {
+    base::RunLoop run_loop;
+    model_->GetCapturerTaskRunnerForTesting()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void TriggerAndWaitForSelection() {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_, OnDelegatedSourceListSelection())
+        .WillOnce(QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
+    capturer_->SimulateSourceListSelection();
+    run_loop.Run();
+  }
+
+  void TriggerAndWaitForError() {
+    base::RunLoop run_loop;
+    // We don't differentiate to the observer *why* the list is dismissed, just
+    // that it was.
+    EXPECT_CALL(observer_, OnDelegatedSourceListDismissed())
+        .WillOnce(QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
+    capturer_->SimulateSourceListError();
+    run_loop.Run();
+  }
+
+  void TriggerAndWaitForCancelled() {
+    base::RunLoop run_loop;
+    // We don't differentiate to the observer *why* the list is dismissed, just
+    // that it was.
+    EXPECT_CALL(observer_, OnDelegatedSourceListDismissed())
+        .WillOnce(QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
+    capturer_->SimulateSourceListCancelled();
+    run_loop.Run();
+  }
+
+ protected:
+  // The order is important here. Obsever must outlive model, and the capturer
+  // is owned by the model, so we should dispose of it's raw pointer before
+  // we dispose of the model which would invalidate it. Hence observer is listed
+  // first, followed by model, followed by the capturer.
+  MockObserver observer_;
+  std::unique_ptr<NativeDesktopMediaList> model_;
+  raw_ptr<DelegatedFakeScreenCapturer> capturer_;
+};
+
+TEST_F(NativeDesktopMediaListDelegatedTest, Selection) {
+  // This triggers a selection and waits for it to come through the Observer.
+  // This will time out if it fails.
+  TriggerAndWaitForSelection();
+}
+
+TEST_F(NativeDesktopMediaListDelegatedTest, Cancelled) {
+  // This triggers a cancellation and waits for it to come through the Observer.
+  // This will time out if it fails.
+  TriggerAndWaitForCancelled();
+}
+
+TEST_F(NativeDesktopMediaListDelegatedTest, Error) {
+  // This triggers an error and waits for it to come through the Observer.
+  // This will time out if it fails.
+  TriggerAndWaitForError();
+}
+
+// Verify that all calls to FocusList are passed on unless there is a selection.
+TEST_F(NativeDesktopMediaListDelegatedTest, ShowRepeatedlyNotForced) {
+  const int expected_call_times = 5;
+
+  for (int i = 0; i < expected_call_times; i++) {
+    model_->FocusList();
+  }
+
+  WaitForCapturerTasks();
+  EXPECT_EQ(expected_call_times, capturer_->ensure_visible_call_count());
+
+  TriggerAndWaitForSelection();
+
+  for (int i = 0; i < expected_call_times; i++) {
+    model_->FocusList();
+  }
+
+  // No new calls should've come in via FocusList after being notified of a
+  // selection.
+  WaitForCapturerTasks();
+  EXPECT_EQ(expected_call_times, capturer_->ensure_visible_call_count());
+}
+
+// Verify that all calls to HideList are passed on.
+TEST_F(NativeDesktopMediaListDelegatedTest, HideRepeatedly) {
+  const int expected_call_times = 5;
+
+  for (int i = 0; i < expected_call_times; i++) {
+    model_->HideList();
+  }
+
+  WaitForCapturerTasks();
+  EXPECT_EQ(expected_call_times, capturer_->ensure_hidden_call_count());
+
+  TriggerAndWaitForSelection();
+
+  for (int i = 0; i < expected_call_times; i++) {
+    model_->HideList();
+  }
+
+  // HideList may still be called after being notified of a selection.
+  WaitForCapturerTasks();
+  EXPECT_EQ(2 * expected_call_times, capturer_->ensure_hidden_call_count());
+}
+
+TEST_F(NativeDesktopMediaListDelegatedTest, FocusAfterSelect) {
+  TriggerAndWaitForSelection();
+
+  // Calling FocusList after a selection should not trigger an EnsureVisible
+  // call.
+  model_->FocusList();
+  WaitForCapturerTasks();
+  EXPECT_EQ(0, capturer_->ensure_visible_call_count());
+
+  // Clearing the selection while visible (a result of calling FocusList above),
+  // should trigger an EnsureVisible call.
+  model_->ClearDelegatedSourceListSelection();
+  WaitForCapturerTasks();
+  EXPECT_EQ(1, capturer_->ensure_visible_call_count());
+
+  // Calling FocusList after clearing the selection should again trigger an
+  // EnsureVisible call.
+  model_->FocusList();
+  WaitForCapturerTasks();
+  EXPECT_EQ(2, capturer_->ensure_visible_call_count());
+}
+
+// Verify that ClearSelection is a no-op if there is not a selection or if it is
+// not focused.
+TEST_F(NativeDesktopMediaListDelegatedTest, ClearSelectionNoOp) {
+  model_->ClearDelegatedSourceListSelection();
+
+  // Because we never triggered a selection, we should not have a call to
+  // EnsureVisible.
+  WaitForCapturerTasks();
+  EXPECT_EQ(0, capturer_->ensure_visible_call_count());
+
+  // Select and then clear the call.
+  TriggerAndWaitForSelection();
+  model_->ClearDelegatedSourceListSelection();
+
+  // Because we have never called |FocusList|, ensure visible shouldn't have
+  // been called.
+  WaitForCapturerTasks();
+  EXPECT_EQ(0, capturer_->ensure_visible_call_count());
+
+  // Because our selection has been cleared, we should become visible the next
+  // time that we are focused.
+  model_->FocusList();
+  WaitForCapturerTasks();
+  EXPECT_EQ(1, capturer_->ensure_visible_call_count());
+}

@@ -169,6 +169,7 @@ class NativeDesktopMediaList::Worker
                          const gfx::Size& thumbnail_size);
   void FocusList();
   void HideList();
+  void ClearDelegatedSourceListSelection();
 
  private:
   typedef std::map<DesktopMediaID, uint32_t> ImageHashesMap;
@@ -215,6 +216,9 @@ class NativeDesktopMediaList::Worker
   DesktopMediaList::Type type_;
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
   const bool add_current_process_windows_;
+
+  bool delegated_source_list_has_selection_ = false;
+  bool focused_ = false;
 
   // Stores hashes of snapshots previously captured.
   ImageHashesMap image_hashes_;
@@ -474,16 +478,32 @@ void NativeDesktopMediaList::Worker::OnCaptureResult(
                                 weak_factory_.GetWeakPtr()));
 }
 
+void NativeDesktopMediaList::Worker::ClearDelegatedSourceListSelection() {
+  DCHECK(capturer_->GetDelegatedSourceListController());
+  if (!delegated_source_list_has_selection_)
+    return;
+
+  delegated_source_list_has_selection_ = false;
+
+  // If we're currently focused and the selection has been cleared; ensure that
+  // the SourceList is visible.
+  if (focused_)
+    capturer_->GetDelegatedSourceListController()->EnsureVisible();
+}
+
 void NativeDesktopMediaList::Worker::FocusList() {
+  focused_ = true;
   // If the capturer uses a delegated source list, then we need to ensure that
-  // its source list is visible.
+  // its source list is visible, unless a selection has previously been made.
   // If the capturer doesn't use a delegated source list, there's nothing for us
   // to do as we're continually querying the list state ourselves.
-  if (capturer_->GetDelegatedSourceListController())
+  if (capturer_->GetDelegatedSourceListController() &&
+      !delegated_source_list_has_selection_)
     capturer_->GetDelegatedSourceListController()->EnsureVisible();
 }
 
 void NativeDesktopMediaList::Worker::HideList() {
+  focused_ = false;
   // If the capturer uses a delegated source list, then we need to ensure that
   // its source list is hidden.
   // If the capturer doesn't use a delegated source list, there's nothing for us
@@ -494,6 +514,7 @@ void NativeDesktopMediaList::Worker::HideList() {
 }
 
 void NativeDesktopMediaList::Worker::OnSelection() {
+  delegated_source_list_has_selection_ = true;
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeDesktopMediaList::OnDelegatedSourceListSelection,
@@ -589,6 +610,16 @@ void NativeDesktopMediaList::StartCapturer() {
       FROM_HERE,
       base::BindOnce(&Worker::Start, base::Unretained(worker_.get())));
   is_capturer_started_ = true;
+}
+
+void NativeDesktopMediaList::ClearDelegatedSourceListSelection() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // base::Unretained is safe here because we own the lifetime of both the
+  // worker and the thread and ensure that destroying the worker is the last
+  // thing the thread does before stopping.
+  thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&Worker::ClearDelegatedSourceListSelection,
+                                base::Unretained(worker_.get())));
 }
 
 void NativeDesktopMediaList::FocusList() {
@@ -822,3 +853,8 @@ void NativeDesktopMediaList::OnAuraThumbnailCaptured(const DesktopMediaID& id,
 }
 
 #endif  // defined(USE_AURA)
+
+scoped_refptr<base::SingleThreadTaskRunner>
+NativeDesktopMediaList::GetCapturerTaskRunnerForTesting() const {
+  return thread_.task_runner();
+}

@@ -31,6 +31,9 @@ class FakeDesktopMediaList : public DesktopMediaList {
   void OnDelegatedSourceListDismissed();
 
   bool is_focused() const { return is_focused_; }
+  int clear_delegated_source_list_selection_count() const {
+    return clear_delegated_source_list_selection_count_;
+  }
 
   // DesktopMediaList implementation:
   void SetUpdatePeriod(base::TimeDelta period) override;
@@ -44,6 +47,7 @@ class FakeDesktopMediaList : public DesktopMediaList {
   void SetPreviewedSource(
       const absl::optional<content::DesktopMediaID>& id) override;
   bool IsSourceListDelegated() const override;
+  void ClearDelegatedSourceListSelection() override;
   void FocusList() override;
   void HideList() override;
 
@@ -54,6 +58,7 @@ class FakeDesktopMediaList : public DesktopMediaList {
   const DesktopMediaList::Type type_;
   const bool is_source_list_delegated_;
   bool is_focused_ = false;
+  int clear_delegated_source_list_selection_count_ = 0;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_FAKE_DESKTOP_MEDIA_LIST_H_

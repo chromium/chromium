@@ -128,6 +128,11 @@ class DesktopMediaList {
   // source list.
   virtual bool IsSourceListDelegated() const = 0;
 
+  // May only be called if |IsSourceListDelegated| returns true. When called,
+  // clears any selection from the delegated source list and will cause the
+  // delegated source list to reappear if it is focused.
+  virtual void ClearDelegatedSourceListSelection() = 0;
+
   // Notifies the list that it is now focused. This is especially important
   // when IsSourceDelegated() returns true, as it helps to notify the delegated
   // source list when it should be visible.

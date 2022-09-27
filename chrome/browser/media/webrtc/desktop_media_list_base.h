@@ -44,6 +44,7 @@ class DesktopMediaListBase : public DesktopMediaList {
   const Source& GetSource(int index) const override;
   DesktopMediaList::Type GetMediaListType() const override;
   bool IsSourceListDelegated() const override;
+  void ClearDelegatedSourceListSelection() override;
   void FocusList() override;
   void HideList() override;
 

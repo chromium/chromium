@@ -55,6 +55,7 @@ class MockDesktopMediaList : public DesktopMediaList {
   MOCK_METHOD(Source&, GetSource, (int), (const));
   MOCK_METHOD(DesktopMediaList::Type, GetMediaListType, (), (const));
   MOCK_METHOD(bool, IsSourceListDelegated, (), (const));
+  MOCK_METHOD(void, ClearDelegatedSourceListSelection, ());
   MOCK_METHOD(void, FocusList, ());
   MOCK_METHOD(void, HideList, ());
 };

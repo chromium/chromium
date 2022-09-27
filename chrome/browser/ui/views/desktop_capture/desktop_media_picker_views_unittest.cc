@@ -30,7 +30,9 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/scoped_views_test_helper.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views/test/widget_test.h"
@@ -981,6 +983,107 @@ TEST_F(DelegatedSourceListTest, EnsureNoWebContentsSelected) {
   EXPECT_EQ(DesktopMediaList::Type::kWebContents,
             test_api_.GetSelectedSourceListType());
   ASSERT_FALSE(test_api_.GetSelectedSourceId().has_value());
+}
+
+// Verify that the reselect button is only present on the delegated source list
+// type panes.
+TEST_F(DelegatedSourceListTest, ReselectButtonPresence) {
+  SetSourceTypes(
+      {DesktopMediaList::Type::kWebContents},
+      {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
+  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true);
+
+  // Ensure that we don't have a reselect button for the non-delegated type.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
+  EXPECT_EQ(nullptr, test_api_.GetReselectButton());
+
+  // Ensure that we do have a reselect button for the screen delegated type, and
+  // that it is not enabled by default.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  ASSERT_NE(nullptr, test_api_.GetReselectButton());
+  EXPECT_FALSE(test_api_.GetReselectButton()->GetEnabled());
+
+  // Ensure that the reselect button is cleared by switching back to the non
+  // delegated type.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
+  EXPECT_EQ(nullptr, test_api_.GetReselectButton());
+
+  // Ensure that we do have a reselect button for the window delegated type, and
+  // that it is not enabled by default.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
+  ASSERT_NE(nullptr, test_api_.GetReselectButton());
+  EXPECT_FALSE(test_api_.GetReselectButton()->GetEnabled());
+}
+
+// Verifies that the reselect button is disabled until a selection has been
+// made in the delegated source list, and then disables itself again after a
+// click.
+TEST_F(DelegatedSourceListTest, ReselectButtonEnabledState) {
+  SetSourceTypes(
+      {DesktopMediaList::Type::kWebContents},
+      {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
+  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true);
+
+  // Ensure that we do have a reselect button for the screen delegated type, and
+  // that it is not enabled by default.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  ASSERT_NE(nullptr, test_api_.GetReselectButton());
+  EXPECT_FALSE(test_api_.GetReselectButton()->GetEnabled());
+
+  // Simulate a selection and verify that the reselect button gets enabled.
+  media_lists_[DesktopMediaList::Type::kScreen]
+      ->OnDelegatedSourceListSelection();
+  EXPECT_TRUE(test_api_.GetReselectButton()->GetEnabled());
+
+  // Verify that the other Reselect button remains disabled.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
+  ASSERT_NE(nullptr, test_api_.GetReselectButton());
+  EXPECT_FALSE(test_api_.GetReselectButton()->GetEnabled());
+
+  // Verify that clicking the button causes the button to become disabled.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi(test_api_.GetReselectButton()).NotifyClick(event);
+  EXPECT_FALSE(test_api_.GetReselectButton()->GetEnabled());
+
+  // Simulate a selection and verify that the reselect button can get re-enabled
+  // again.
+  media_lists_[DesktopMediaList::Type::kScreen]
+      ->OnDelegatedSourceListSelection();
+  EXPECT_TRUE(test_api_.GetReselectButton()->GetEnabled());
+}
+
+// Verifies that clicking the Reselect button will cause the delegated source
+// list to be triggered to show again.
+TEST_F(DelegatedSourceListTest, ReselectTriggersShowDelegatedSourceList) {
+  SetSourceTypes(
+      {DesktopMediaList::Type::kWebContents},
+      {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
+  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true);
+
+  // ClearSourceListSelection should not have been called on either list yet.
+  EXPECT_EQ(0, media_lists_[DesktopMediaList::Type::kScreen]
+                   ->clear_delegated_source_list_selection_count());
+  EXPECT_EQ(0, media_lists_[DesktopMediaList::Type::kWindow]
+                   ->clear_delegated_source_list_selection_count());
+
+  // Ensure that we have an enabled source list button.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  media_lists_[DesktopMediaList::Type::kScreen]
+      ->OnDelegatedSourceListSelection();
+  ASSERT_NE(nullptr, test_api_.GetReselectButton());
+  EXPECT_TRUE(test_api_.GetReselectButton()->GetEnabled());
+
+  // Verify that clicking the button causes the selection to be cleared on the
+  // current source list.
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi(test_api_.GetReselectButton()).NotifyClick(event);
+  EXPECT_EQ(1, media_lists_[DesktopMediaList::Type::kScreen]
+                   ->clear_delegated_source_list_selection_count());
+  EXPECT_EQ(0, media_lists_[DesktopMediaList::Type::kWindow]
+                   ->clear_delegated_source_list_selection_count());
 }
 
 }  // namespace views

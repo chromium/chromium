@@ -14,6 +14,9 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "ui/gfx/image/image.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
 namespace webrtc {
 class DesktopCapturer;
 }
@@ -36,8 +39,12 @@ class NativeDesktopMediaList final : public DesktopMediaListBase {
   ~NativeDesktopMediaList() override;
 
   bool IsSourceListDelegated() const override;
+  void ClearDelegatedSourceListSelection() override;
   void FocusList() override;
   void HideList() override;
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetCapturerTaskRunnerForTesting()
+      const;
 
  private:
   typedef std::map<content::DesktopMediaID, uint32_t> ImageHashesMap;
