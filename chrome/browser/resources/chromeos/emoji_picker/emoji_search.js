@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
+import './emoji_button.js';
+import './emoji_category_button.js';
+import './emoji_group.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EmojiButton} from './emoji_button.js';
-import {EmojiCategoryButton} from './emoji_category_button.js';
 import {getTemplate} from './emoji_search.html.js';
 import Fuse from './fuse.js';
 import {CategoryEnum, EmojiGroupData, EmojiVariants} from './types.js';

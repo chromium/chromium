@@ -87,6 +87,7 @@ suite('emoji-picker-extension', () => {
         const firstEmoticonTabInSecondPage = findInEmojiPicker(
             '.pagination + .pagination', 'text-group-button', 'cr-button');
         rightChevron.click();
+
         await flush();
         await waitForCondition(
             () => !isGroupButtonActive(firstEmoticonTabInFirstPage) &&
