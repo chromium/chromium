@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 
@@ -16,6 +17,9 @@ BASE_FEATURE(kSearchPrefetchServicePrefetching,
 BASE_FEATURE(kSearchPrefetchBlockBeforeHeaders,
              "SearchPrefetchBlockBeforeHeaders",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::Feature kSearchPrefetchSkipsCancel{
+    "SearchPrefetchSkipsCancel", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool SearchPrefetchBlockBeforeHeadersIsEnabled() {
   return base::FeatureList::IsEnabled(kSearchPrefetchBlockBeforeHeaders);
@@ -64,4 +68,8 @@ BASE_FEATURE(kSearchNavigationPrefetch,
 
 bool IsSearchNavigationPrefetchEnabled() {
   return base::FeatureList::IsEnabled(kSearchNavigationPrefetch);
+}
+
+bool SearchPrefetchSkipsCancel() {
+  return base::FeatureList::IsEnabled(kSearchPrefetchSkipsCancel);
 }

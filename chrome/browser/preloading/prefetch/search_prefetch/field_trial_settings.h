@@ -12,6 +12,8 @@ BASE_DECLARE_FEATURE(kSearchPrefetchServicePrefetching);
 
 BASE_DECLARE_FEATURE(kSearchPrefetchBlockBeforeHeaders);
 
+extern const base::Feature kSearchPrefetchSkipsCancel;
+
 // Whether matching prefetches can block navigation until they are determined to
 // be serve-able or not based on headers.
 bool SearchPrefetchBlockBeforeHeadersIsEnabled();
@@ -43,5 +45,9 @@ BASE_DECLARE_FEATURE(kSearchNavigationPrefetch);
 // An experimental feature to measure if starting search prefetches at
 // navigation start provides benefit over the typical navigation flow.
 bool IsSearchNavigationPrefetchEnabled();
+
+// An experimental feature that skips the cancellation logic in search prefetch
+// service.
+bool SearchPrefetchSkipsCancel();
 
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

@@ -408,6 +408,12 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(
       prefetch.current_status() != SearchPrefetchStatus::kPrerendered) {
     return;
   }
+  // If cancellation of prefetches is disabled, there is no need to keep track
+  // of whether the prefetched URL was clicked: tracking the click status of
+  // URLs is only useful to note clicked URLs as non-cancellable in
+  // ShouldBeCancelledOnResultChanges.
+  if (SearchPrefetchSkipsCancel())
+    return;
   prefetch.MarkPrefetchAsClicked();
 }
 
@@ -486,9 +492,15 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
     return nullptr;
   }
 
-  if (iter->second->current_status() != SearchPrefetchStatus::kComplete &&
-      iter->second->current_status() !=
-          SearchPrefetchStatus::kCanBeServedAndUserClicked) {
+  auto status = iter->second->current_status();
+
+  bool is_servable =
+      status == SearchPrefetchStatus::kComplete ||
+      status == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
+      (SearchPrefetchSkipsCancel() &&
+       status == SearchPrefetchStatus::kCanBeServed);
+
+  if (!is_servable) {
     recorder.reason_ = SearchPrefetchServingReason::kNotServedOtherReason;
     // Set the failure reason when prefetch is not served.
     iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(

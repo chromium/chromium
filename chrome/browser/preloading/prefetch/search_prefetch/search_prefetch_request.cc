@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -323,6 +324,8 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
 }
 
 bool SearchPrefetchRequest::ShouldBeCancelledOnResultChanges() const {
+  if (SearchPrefetchSkipsCancel())
+    return false;
   static constexpr auto CancelableStatus =
       base::MakeFixedFlatSet<SearchPrefetchStatus>({
           SearchPrefetchStatus::kInFlight,
@@ -540,7 +543,8 @@ void SearchPrefetchRequest::SetSearchPrefetchStatus(
             SearchPrefetchStatus::kComplete,
             SearchPrefetchStatus::kRequestFailed,
             SearchPrefetchStatus::kRequestCancelled,
-            SearchPrefetchStatus::kPrerendered}},
+            SearchPrefetchStatus::kPrerendered,
+            SearchPrefetchStatus::kPrefetchServedForRealNavigation}},
 
           {SearchPrefetchStatus::kCanBeServedAndUserClicked,
            {SearchPrefetchStatus::kComplete,
