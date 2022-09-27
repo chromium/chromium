@@ -7055,10 +7055,13 @@
                         "OmniboxDynamicMaxAutocompleteIncreasedLimit": "15",
                         "OmniboxLocalZeroSuggestAgeThreshold": "90",
                         "OmniboxMaxURLMatches": "8",
-                        "UIMaxAutocompleteMatches": "10"
+                        "PrefixSuggestIgnoreDuplicateVisits": "true",
+                        "UIMaxAutocompleteMatches": "10",
+                        "ZeroSuggestIgnoreDuplicateVisits": "false"
                     },
                     "enable_features": [
                         "AndroidAuxiliarySearch",
+                        "LocalHistorySuggestRevamp",
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxFocusTriggersSRPZeroSuggest",
                         "OmniboxHeaderPaddingUpdate",
@@ -7087,9 +7090,12 @@
                     "name": "IOSExperiments",
                     "params": {
                         "MaxZeroSuggestMatches": "20",
-                        "OmniboxLocalZeroSuggestAgeThreshold": "90"
+                        "OmniboxLocalZeroSuggestAgeThreshold": "90",
+                        "PrefixSuggestIgnoreDuplicateVisits": "true",
+                        "ZeroSuggestIgnoreDuplicateVisits": "false"
                     },
                     "enable_features": [
+                        "LocalHistorySuggestRevamp",
                         "OmniboxLocalZeroSuggestAgeThreshold",
                         "OmniboxMaxZeroSuggestMatches",
                         "ZeroSuggestPrefetching"
