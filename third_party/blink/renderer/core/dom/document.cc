@@ -6112,15 +6112,6 @@ ScriptPromise Document::requestStorageAccessForOrigin(
   }
 
   KURL origin_as_kurl{origin};
-  if (!origin_as_kurl.IsValid()) {
-    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccessForOrigin: Invalid origin parameter."));
-    resolver->Reject();
-    return promise;
-  }
-
   scoped_refptr<SecurityOrigin> supplied_origin =
       SecurityOrigin::Create(origin_as_kurl);
   if (supplied_origin->IsOpaque()) {
