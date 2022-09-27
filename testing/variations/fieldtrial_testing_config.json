@@ -3791,25 +3791,6 @@
             ]
         }
     ],
-    "DialEnforceUrlIPAddress": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DialEnforceUrlIPAddress",
-                    "enable_features": [
-                        "DialEnforceUrlIPAddress"
-                    ]
-                }
-            ]
-        }
-    ],
     "DifferentWorkQueueCapacities": [
         {
             "platforms": [
