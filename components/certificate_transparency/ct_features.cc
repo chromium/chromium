@@ -9,9 +9,9 @@
 namespace certificate_transparency {
 namespace features {
 
-const base::Feature kCertificateTransparencyComponentUpdater{
-    "CertificateTransparencyComponentUpdater",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCertificateTransparencyComponentUpdater,
+             "CertificateTransparencyComponentUpdater",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace certificate_transparency

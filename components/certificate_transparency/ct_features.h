@@ -12,7 +12,7 @@ namespace certificate_transparency {
 namespace features {
 
 COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY)
-extern const base::Feature kCertificateTransparencyComponentUpdater;
+BASE_DECLARE_FEATURE(kCertificateTransparencyComponentUpdater);
 
 }  // namespace features
 }  // namespace certificate_transparency
