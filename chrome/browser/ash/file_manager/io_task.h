@@ -13,9 +13,9 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace file_manager {
+class Profile;
 
-namespace io_task {
+namespace file_manager::io_task {
 
 enum class State {
   // Task has been queued, but not yet started.
@@ -92,6 +92,9 @@ struct ProgressStatus {
   // True if the task is in a terminal state and won't receive further updates.
   bool IsCompleted() const;
 
+  // Returns a default method for obtaining the source name.
+  std::string GetSourceName(Profile* profile) const;
+
   // Task state.
   State state;
 
@@ -100,6 +103,9 @@ struct ProgressStatus {
 
   // Files the operation processes.
   std::vector<EntryStatus> sources;
+
+  // The file name to use when reporting progress.
+  std::string source_name;
 
   // Entries created by the I/O task. These files aren't necessarily related to
   // |sources|.
@@ -189,8 +195,6 @@ class DummyIOTask : public IOTask {
   base::WeakPtrFactory<DummyIOTask> weak_ptr_factory_{this};
 };
 
-}  // namespace io_task
-
-}  // namespace file_manager
+}  // namespace file_manager::io_task
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_IO_TASK_H_

@@ -7,13 +7,12 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/task/bind_post_task.h"
+#include "base/files/file_path.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 
-namespace file_manager {
-
-namespace io_task {
+namespace file_manager::io_task {
 
 EntryStatus::EntryStatus(storage::FileSystemURL file_url,
                          absl::optional<base::File::Error> file_error)
@@ -32,6 +31,21 @@ ProgressStatus& ProgressStatus::operator=(ProgressStatus&& other) = default;
 bool ProgressStatus::IsCompleted() const {
   return state == State::kSuccess || state == State::kError ||
          state == State::kCancelled;
+}
+
+std::string ProgressStatus::GetSourceName(Profile* profile) const {
+  if (!source_name.empty()) {
+    return source_name;
+  }
+
+  if (sources.size() == 0) {
+    return {};
+  }
+
+  return util::GetDisplayablePath(profile, sources.front().url)
+      .value_or(base::FilePath())
+      .BaseName()
+      .value();
 }
 
 DummyIOTask::DummyIOTask(std::vector<storage::FileSystemURL> source_urls,
@@ -87,6 +101,4 @@ void DummyIOTask::Cancel() {
   progress_.state = State::kCancelled;
 }
 
-}  // namespace io_task
-
-}  // namespace file_manager
+}  // namespace file_manager::io_task

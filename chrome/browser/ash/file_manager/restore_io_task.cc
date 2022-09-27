@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -51,6 +52,19 @@ RestoreIOTask::RestoreIOTask(
 
   for (const auto& url : file_urls) {
     progress_.sources.emplace_back(url, absl::nullopt);
+  }
+
+  if (file_urls.size() > 0) {
+    base::FilePath source_path =
+        util::GetDisplayablePath(profile_, file_urls.front())
+            .value_or(base::FilePath())
+            .BaseName();
+
+    if (source_path.MatchesFinalExtension(trash::kTrashInfoExtension)) {
+      source_path = source_path.RemoveFinalExtension();
+    }
+
+    progress_.source_name = source_path.value();
   }
 }
 
