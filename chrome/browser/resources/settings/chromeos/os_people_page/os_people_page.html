@@ -93,27 +93,12 @@
       </settings-sync-page>
     </settings-subpage>
   </template>
-  <!-- Pre-SyncSettingsCategorization we show the browser's sync controls.
-  -->
-  <template is="dom-if" if="[[!syncSettingsCategorizationEnabled_]]">
-    <template is="dom-if" route-path="/syncSetup/advanced">
-      <settings-subpage page-title="$i18n{syncAdvancedPageTitle}"
-          learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
-        <settings-sync-controls sync-status="[[syncStatus]]">
-        </settings-sync-controls>
-      </settings-subpage>
-    </template>
-  </template>
-  <!-- Post-SyncSettingsCategorization we have separate OS sync controls.
-  -->
-  <template is="dom-if" if="[[syncSettingsCategorizationEnabled_]]">
-    <template is="dom-if" route-path="/osSync">
-      <settings-subpage page-title="$i18n{syncAdvancedPageTitle}"
-          learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
-        <os-sync-controls>
-        </os-sync-controls>
-      </settings-subpage>
-    </template>
+  <template is="dom-if" route-path="/osSync">
+    <settings-subpage page-title="$i18n{syncAdvancedPageTitle}"
+        learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
+      <os-sync-controls>
+      </os-sync-controls>
+    </settings-subpage>
   </template>
   <template is="dom-if" route-path="/accountManager">
     <settings-subpage page-title="$i18n{accountManagerPageTitle}">

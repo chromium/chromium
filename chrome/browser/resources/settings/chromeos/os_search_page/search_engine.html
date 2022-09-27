@@ -9,63 +9,8 @@
   }
 </style>
 
-<!-- Before SyncSettingsCategorization, OS settings show complete search engine
-     settings. -->
-<template is="dom-if" if="[[!syncSettingsCategorizationEnabled_]]" restamp>
-  <!-- Omnibox and launcher search engine. This shares the same pref with
-      browser search engine because users probably don't want one engine
-      in the omnibox and a different one in the launcher. -->
-  <div class="settings-box two-line first block">
-    <div id="search-wrapper">
-      <div class="start settings-box-text" aria-hidden="true">
-        <div id="searchExplanation">$i18n{osSearchEngineLabel}</div>
-        <div class="secondary" id="currentSearchEngine">
-          [[currentSearchEngine_.name]]
-        </div>
-      </div>
-      <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
-          prefs.default_search_provider_data.template_url_data)]]">
-        <cr-policy-pref-indicator pref="[[
-            prefs.default_search_provider_data.template_url_data]]">
-        </cr-policy-pref-indicator>
-      </template>
-      <div class="separator"></div>
-      <cr-button id="searchSelectionDialogButton"
-          aria-labelledby="searchExplanation"
-          aria-describedby="currentSearchEngine"
-          disabled$="[[isDefaultSearchEngineEnforced_(
-              prefs.default_search_provider_data.template_url_data)]]"
-          on-click="onShowSearchSelectionDialogClick_">
-        $i18n{osSearchEngineButtonLabel}
-      </cr-button>
-    </div>
-    <template is="dom-if"
-        if="[[prefs.default_search_provider_data.template_url_data.extensionId]]">
-      <extension-controlled-indicator
-          extension-id="[[
-              prefs.default_search_provider_data.template_url_data.extensionId]]"
-          extension-name="[[
-              prefs.default_search_provider_data.template_url_data.controlledByName]]"
-          extension-can-be-disabled="[[
-              prefs.default_search_provider_data.template_url_data.extensionCanBeDisabled]]"
-          on-disable-extension="onDisableExtension_">
-      </extension-controlled-indicator>
-    </template>
-  </div>
-
-  <template is="dom-if" if="[[showSearchSelectionDialog_]]" restamp>
-    <os-settings-search-selection-dialog
-        on-close="onSearchSelectionDialogClose_">
-    </os-settings-search-selection-dialog>
-  </template>
-</template>
-
-<!-- After SyncSettingsCategorization, OS settings show a link to the browser
-     settings instead. -->
-<template is="dom-if" if="[[syncSettingsCategorizationEnabled_]]" restamp>
-  <cr-link-row id="browserSearchSettingsLink" class="hr"
-      label="$i18n{osSearchEngineLabel}"
-      sub-label="[[currentSearchEngine_.name]]"
-      on-click="onSearchEngineLinkClick_" external>
-  </cr-link-row>
-</template>
+<cr-link-row id="browserSearchSettingsLink" class="hr"
+    label="$i18n{osSearchEngineLabel}"
+    sub-label="[[currentSearchEngine_.name]]"
+    on-click="onSearchEngineLinkClick_" external>
+</cr-link-row>

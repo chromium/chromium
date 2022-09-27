@@ -89,14 +89,6 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
         notify: true,
       },
 
-      /** @private */
-      syncSettingsCategorizationEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('syncSettingsCategorizationEnabled');
-        },
-      },
-
       /**
        * The current sync status, supplied by SyncBrowserProxy.
        * @type {?SyncStatus}

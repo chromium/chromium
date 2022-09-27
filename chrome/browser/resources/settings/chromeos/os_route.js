@@ -106,18 +106,11 @@ function createOSSettingsRoutes() {
     r.ACCOUNT_MANAGER = createSubpage(
         r.OS_PEOPLE, routesMojomWebui.MY_ACCOUNTS_SUBPAGE_PATH,
         Subpage.kMyAccounts);
-    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      r.OS_SYNC = createSubpage(
-          r.OS_PEOPLE, routesMojomWebui.SYNC_SUBPAGE_PATH, Subpage.kSync);
-    }
+    r.OS_SYNC = createSubpage(
+        r.OS_PEOPLE, routesMojomWebui.SYNC_SUBPAGE_PATH, Subpage.kSync);
     r.SYNC = createSubpage(
         r.OS_PEOPLE, routesMojomWebui.SYNC_SETUP_SUBPAGE_PATH,
         Subpage.kSyncSetup);
-    if (!loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      r.SYNC_ADVANCED = createSubpage(
-          r.SYNC, routesMojomWebui.SYNC_DEPRECATED_ADVANCED_SUBPAGE_PATH,
-          Subpage.kSyncDeprecatedAdvanced);
-    }
   }
 
   // Kerberos section.

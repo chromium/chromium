@@ -22,8 +22,6 @@ import '../../settings_vars.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink_js.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
@@ -49,22 +47,11 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
 
       /** The current selected search engine. */
       currentSearchEngine_: Object,
-
-      showSearchSelectionDialog_: Boolean,
-
-      syncSettingsCategorizationEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('syncSettingsCategorizationEnabled');
-        },
-      },
     };
   }
 
   private browserProxy_: SearchEnginesBrowserProxy;
   private currentSearchEngine_: SearchEngine;
-  private showSearchSelectionDialog_: boolean;
-  private syncSettingsCategorizationEnabled_: boolean;
 
   constructor() {
     super();
@@ -88,11 +75,7 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
   }
 
   override focus() {
-    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      this.getBrowserSearchSettingsLink_().focus();
-    } else {
-      this.getSearchSelectionDialogButton_().focus();
-    }
+    this.getBrowserSearchSettingsLink_().focus();
   }
 
   private onDisableExtension_() {
@@ -104,28 +87,8 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
     this.dispatchEvent(event);
   }
 
-  private onShowSearchSelectionDialogClick_() {
-    this.showSearchSelectionDialog_ = true;
-  }
-
-  private onSearchSelectionDialogClose_() {
-    this.showSearchSelectionDialog_ = false;
-    focusWithoutInk(this.getSearchSelectionDialogButton_());
-  }
-
   private onSearchEngineLinkClick_() {
     window.open('chrome://settings/search');
-  }
-
-  private isDefaultSearchControlledByPolicy_(
-      pref: chrome.settingsPrivate.PrefObject): boolean {
-    return pref.controlledBy ===
-        chrome.settingsPrivate.ControlledBy.USER_POLICY;
-  }
-
-  private isDefaultSearchEngineEnforced_(
-      pref: chrome.settingsPrivate.PrefObject): boolean {
-    return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 
   private getBrowserSearchSettingsLink_() {
