@@ -85,6 +85,8 @@ constexpr int kPrintSettingsCopies = 42;
 constexpr int kPrintSettingsDefaultDpi = 300;
 constexpr int kPrintSettingsOverrideDpi = 150;
 
+constexpr int32_t kTestDocumentCookie = 1;
+
 bool LoadMetafileDataFromFile(const std::string& file_name,
                               Metafile& metafile) {
   base::FilePath data_file;
@@ -171,7 +173,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     // Safe to use base::Unretained(this) since waiting locally on the callback
     // forces a shorter lifetime than `this`.
     GetPrintBackendService()->StartPrinting(
-        /*document_cookie=*/1, u"document name",
+        kTestDocumentCookie, u"document name",
         mojom::PrintTargetType::kDirectToDevice, print_settings,
         base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
                        base::Unretained(this), std::ref(result)));
@@ -195,7 +197,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     // forces a shorter lifetime than `this`.
     mojom::ResultCode result;
     GetPrintBackendService()->RenderPrintedPage(
-        /*document_cookie=*/1,
+        kTestDocumentCookie,
         /*page_index=*/0, metafile.GetDataType(),
         std::move(region_mapping.region),
         /*page_size=*/gfx::Size(200, 200),
@@ -225,7 +227,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     // forces a shorter lifetime than `this`.
     mojom::ResultCode result;
     GetPrintBackendService()->RenderPrintedDocument(
-        /*document_cookie=*/1, metafile.GetDataType(),
+        kTestDocumentCookie, metafile.GetDataType(),
         std::move(region_mapping.region),
         base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
                        base::Unretained(this), std::ref(result)));
@@ -240,7 +242,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     // Safe to use base::Unretained(this) since waiting locally on the callback
     // forces a shorter lifetime than `this`.
     GetPrintBackendService()->DocumentDone(
-        /*document_cookie=*/1,
+        kTestDocumentCookie,
         base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
                        base::Unretained(this), std::ref(result)));
     WaitUntilCallbackReceived();
