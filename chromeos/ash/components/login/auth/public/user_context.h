@@ -79,7 +79,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
 
   // TODO(b/241259026): rename this method.
   const SessionAuthFactors& GetAuthFactorsData() const;
-  const AuthFactorsConfiguration& GetAuthFactorsConfiguration() const;
+  // May only be called if AuthFactorsConfiguration has been set.
+  const AuthFactorsConfiguration& GetAuthFactorsConfiguration();
 
   const std::string& GetAuthCode() const;
   const std::string& GetRefreshToken() const;
@@ -179,7 +180,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   Key password_key_;
   absl::optional<Key> replacement_key_ = absl::nullopt;
   SessionAuthFactors session_auth_factors_;
-  AuthFactorsConfiguration auth_factors_configuration_;
+  absl::optional<AuthFactorsConfiguration> auth_factors_configuration_;
   std::vector<ChallengeResponseKey> challenge_response_keys_;
   std::string auth_code_;
   std::string refresh_token_;

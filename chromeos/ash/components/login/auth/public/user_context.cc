@@ -315,10 +315,17 @@ void UserContext::SetAuthFactorsConfiguration(
   auth_factors_configuration_ = std::move(auth_factors);
 }
 
-const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration()
-    const {
+const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration() {
   DCHECK(features::IsUseAuthFactorsEnabled());
-  return auth_factors_configuration_;
+  if (!auth_factors_configuration_.has_value()) {
+    // Crash with debug assertions, try to stay alive otherwise. This method
+    // could be const if we didn't set auth_factors_configuration_ if
+    // necessary.
+    DCHECK(false) << "AuthFactorsConfiguration has not been set";
+    auth_factors_configuration_ = AuthFactorsConfiguration();
+  }
+
+  return *auth_factors_configuration_;
 }
 
 const std::string& UserContext::GetAuthSessionId() const {
