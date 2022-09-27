@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/record_replay.h"
+#include "base/json/json_writer.h"
+#include "base/values.h"
 
 #include <stdarg.h>
 
@@ -45,6 +47,7 @@ extern "C" void V8RecordReplayRegisterPointer(const void* ptr);
 extern "C" void V8RecordReplayUnregisterPointer(const void* ptr);
 extern "C" int V8RecordReplayPointerId(const void* ptr);
 extern "C" void* V8RecordReplayIdPointer(int id);
+extern "C" void V8RecordReplayBrowserEvent(const char* name, const char* payload);
 
 bool IsRecordingOrReplaying() {
   return OP2(V8IsRecordingOrReplaying(), false);
@@ -151,6 +154,14 @@ void BeginPassThroughEvents() {
 
 void EndPassThroughEvents() {
   OP(V8RecordReplayEndPassThroughEvents());
+}
+
+void BrowserEvent(const char* name, const base::DictionaryValue& info) {
+  OP({
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    V8RecordReplayBrowserEvent(name, json.c_str());
+  });
 }
 
 bool HasDivergedFromRecording() {
