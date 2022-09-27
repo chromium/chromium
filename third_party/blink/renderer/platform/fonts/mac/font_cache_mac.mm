@@ -74,10 +74,13 @@ const AtomicString& FontCache::LegacySystemFontFamily() {
   return font_family_names::kBlinkMacSystemFont;
 }
 
-static void InvalidateFontCache() {
+// static
+void FontCache::InvalidateFromAnyThread() {
   if (!IsMainThread()) {
-    Thread::MainThread()->GetDeprecatedTaskRunner()->PostTask(
-        FROM_HERE, WTF::BindOnce(&InvalidateFontCache));
+    Thread::MainThread()
+        ->GetTaskRunner(MainThreadTaskRunnerRestricted())
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&FontCache::InvalidateFromAnyThread));
     return;
   }
   FontCache::Get().Invalidate();
@@ -91,7 +94,7 @@ static void FontCacheRegisteredFontsChangedNotificationCallback(
     CFDictionaryRef) {
   DCHECK_EQ(observer, &FontCache::Get());
   DCHECK(CFEqual(name, kCTFontManagerRegisteredFontsChangedNotification));
-  InvalidateFontCache();
+  FontCache::InvalidateFromAnyThread();
 }
 
 static bool UseHinting() {

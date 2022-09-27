@@ -15,8 +15,11 @@ namespace blink {
 class MainThreadTaskRunnerRestricted {
  private:
   // Permitted users of `MainThread::GetTaskRunner`.
+  friend class BlobBytesProvider;
   friend class CachedStorageArea;
   friend class CategorizedWorkerPoolImpl;
+  friend class FontCache;
+  friend class InspectorNetworkAgent;
   friend class MemoryCache;
   friend class ParkableImageManager;
   friend class RendererResourceCoordinatorImpl;

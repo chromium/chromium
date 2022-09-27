@@ -98,27 +98,6 @@ class BlobBytesStreamer {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-// This keeps the process alive while blobs are being transferred.
-void IncreaseChildProcessRefCount() {
-  if (!WTF::IsMainThread()) {
-    PostCrossThreadTask(*Thread::MainThread()->GetDeprecatedTaskRunner(),
-                        FROM_HERE,
-                        CrossThreadBindOnce(&IncreaseChildProcessRefCount));
-    return;
-  }
-  Platform::Current()->SuddenTerminationChanged(false);
-}
-
-void DecreaseChildProcessRefCount() {
-  if (!WTF::IsMainThread()) {
-    PostCrossThreadTask(*Thread::MainThread()->GetDeprecatedTaskRunner(),
-                        FROM_HERE,
-                        CrossThreadBindOnce(&DecreaseChildProcessRefCount));
-    return;
-  }
-  Platform::Current()->SuddenTerminationChanged(true);
-}
-
 }  // namespace
 
 constexpr size_t BlobBytesProvider::kMaxConsolidatedItemSizeInBytes;
@@ -262,6 +241,29 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
     return;
   }
   std::move(callback).Run(info.last_modified);
+}
+
+// This keeps the process alive while blobs are being transferred.
+void BlobBytesProvider::IncreaseChildProcessRefCount() {
+  if (!WTF::IsMainThread()) {
+    PostCrossThreadTask(
+        *Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()),
+        FROM_HERE,
+        CrossThreadBindOnce(&BlobBytesProvider::IncreaseChildProcessRefCount));
+    return;
+  }
+  Platform::Current()->SuddenTerminationChanged(false);
+}
+
+void BlobBytesProvider::DecreaseChildProcessRefCount() {
+  if (!WTF::IsMainThread()) {
+    PostCrossThreadTask(
+        *Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()),
+        FROM_HERE,
+        CrossThreadBindOnce(&BlobBytesProvider::DecreaseChildProcessRefCount));
+    return;
+  }
+  Platform::Current()->SuddenTerminationChanged(true);
 }
 
 }  // namespace blink

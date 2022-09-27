@@ -50,6 +50,9 @@ class PLATFORM_EXPORT BlobBytesProvider : public mojom::blink::BytesProvider {
  private:
   FRIEND_TEST_ALL_PREFIXES(BlobBytesProviderTest, Consolidation);
 
+  static void IncreaseChildProcessRefCount();
+  static void DecreaseChildProcessRefCount();
+
   Vector<scoped_refptr<RawData>> data_ GUARDED_BY_CONTEXT(sequence_checker_);
   // |offsets_| always contains exactly one fewer item than |data_| (except when
   // |data_| itself is empty).

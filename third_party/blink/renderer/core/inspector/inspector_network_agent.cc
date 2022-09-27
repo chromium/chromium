@@ -2062,7 +2062,9 @@ Response InspectorNetworkAgent::emulateNetworkConditions(
       // so we must post a task there to make it possible to use
       // NetworkStateNotifier.
       PostCrossThreadTask(
-          *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
+          *Thread::MainThread()->GetTaskRunner(
+              MainThreadTaskRunnerRestricted()),
+          FROM_HERE,
           CrossThreadBindOnce(SetNetworkStateOverride, offline, latency,
                               download_throughput, upload_throughput, type));
       return Response::Success();

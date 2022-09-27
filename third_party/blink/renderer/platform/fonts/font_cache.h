@@ -194,6 +194,7 @@ class PLATFORM_EXPORT FontCache final {
   static const AtomicString& SystemFontFamily();
 #else
   static const AtomicString& LegacySystemFontFamily();
+  static void InvalidateFromAnyThread();
 #endif
 
 #if !BUILDFLAG(IS_MAC)
