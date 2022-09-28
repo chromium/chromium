@@ -110,15 +110,6 @@ export class SettingsSyncControlsElement extends
   private shouldShowLacrosSideBySideWarning_(): boolean {
     return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
   }
-
-  private shouldShowOSSyncSettingsLink_(): boolean {
-    // <if expr="chromeos_ash">
-    return loadTimeData.getBoolean('syncSettingsCategorizationEnabled');
-    // </if>
-    // <if expr="chromeos_lacros">
-    return true;  // Should always be shown on Lacros.
-    // </if>
-  }
   // </if>
 
   /**

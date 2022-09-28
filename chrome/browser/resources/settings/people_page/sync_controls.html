@@ -20,14 +20,12 @@
         $i18n{syncSettingsLacrosSideBySideWarning}
       </div>
     </template>
-    <template is="dom-if" if="[[shouldShowOSSyncSettingsLink_()]]">
-      <div class="settings-box first">
-        <localized-link class="secondary"
-            localized-string="$i18n{browserSyncFeatureLabel}"
-            link-url="$i18n{osSyncSettingsUrl}">
-        </localized-link>
-      </div>
-    </template>
+    <div class="settings-box first">
+      <localized-link class="secondary"
+          localized-string="$i18n{browserSyncFeatureLabel}"
+          link-url="$i18n{osSyncSettingsUrl}">
+      </localized-link>
+    </div>
 </if>
 
     <div id="sync-data-radio" class="cr-row first">
