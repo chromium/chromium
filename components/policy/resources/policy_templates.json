@@ -13083,6 +13083,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Always send metrics to Google',
+        },
+        {
+          'value': False,
+          'caption': 'Never send metrics to Google',
+        },
+      ],
       'example_value': True,
       'id': 127,
       'caption': '''Enable metrics reporting''',
@@ -13143,6 +13153,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to change the release channel',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent users from changing the release channel',
+        },
+      ],
       'example_value': False,
       'id': 134,
       'caption': '''Users may configure the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> release channel''',
@@ -13222,6 +13242,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Erase all local user data',
+        },
+        {
+          'value': False,
+          'caption': 'Do not erase local user data',
+        },
+      ],
       'example_value': True,
       'id': 128,
       'caption': '''Wipe user data on sign-out''',
@@ -13366,6 +13396,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Block updates',
+        },
+        {
+          'value': False,
+          'caption': 'Allow updates',
+        },
+      ],
       'example_value': True,
       'id': 136,
       'caption': '''Disable Auto Update''',
@@ -13386,6 +13426,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow peer to peer auto update downloads',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow peer to peer auto update downloads',
+        },
+      ],
       'example_value': False,
       'default_for_managed_devices_doc_only': True,
       'id': 242,
@@ -13567,6 +13617,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use HTTP for update downloads',
+        },
+        {
+          'value': False,
+          'caption': 'Use HTTPS for update downloads',
+        },
+      ],
       'example_value': True,
       'id': 243,
       'caption': '''Allow autoupdate downloads via HTTP''',
@@ -13683,6 +13743,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable auto-login bailout',
+        },
+        {
+          'value': False,
+          'caption': 'Disable auto-login bailout',
+        },
+      ],
       'example_value': True,
       'id': 202,
       'caption': '''Enable bailout keyboard shortcut for auto-login''',
@@ -13702,6 +13772,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable network configuration prompt when offline',
+        },
+        {
+          'value': False,
+          'caption': 'Disable network configuration prompt when offline',
+        },
+      ],
       'example_value': True,
       'id': 250,
       'caption': '''Enable network configuration prompt when offline''',
@@ -13720,6 +13800,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Managed guest sessions behave like managed sessions',
+        },
+        {
+          'value': False,
+          'caption': 'Managed guest sessions behave like standard public sessions',
+        },
+      ],
       'deprecated': True,
       'example_value': True,
       'id': 463,
@@ -13743,6 +13833,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Block developer mode',
+        },
+        {
+          'value': False,
+          'caption': 'Allow developer mode',
+        },
+      ],
       'example_value': True,
       'id': 266,
       'caption': '''Block developer mode''',
