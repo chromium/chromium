@@ -362,24 +362,27 @@ ModelTypeSet EncryptableUserTypes();
 // Determine a model type from the field number of its associated
 // EntitySpecifics field.  Returns UNSPECIFIED if the field number is
 // not recognized.
-//
-// If you're putting the result in a ModelTypeSet, you should use the
-// following pattern:
-//
-//   ModelTypeSet model_types;
-//   // Say we're looping through a list of items, each of which has a
-//   // field number.
-//   for (...) {
-//     int field_number = ...;
-//     ModelType model_type =
-//         GetModelTypeFromSpecificsFieldNumber(field_number);
-//     if (!IsRealDataType(model_type)) {
-//       DLOG(WARNING) << "Unknown field number " << field_number;
-//       continue;
-//     }
-//     model_types.Put(model_type);
-//   }
 ModelType GetModelTypeFromSpecificsFieldNumber(int field_number);
+
+namespace internal {
+// Obtain model type from field_number and add to model_types if valid.
+void GetModelTypeSetFromSpecificsFieldNumberListHelper(
+    ModelTypeSet& model_types,
+    int field_number);
+}  // namespace internal
+
+// Build a ModelTypeSet from a list of field numbers. Any unknown field numbers
+// are ignored.
+template <typename ContainerT>
+ModelTypeSet GetModelTypeSetFromSpecificsFieldNumberList(
+    const ContainerT& field_numbers) {
+  ModelTypeSet model_types;
+  for (int field_number : field_numbers) {
+    internal::GetModelTypeSetFromSpecificsFieldNumberListHelper(model_types,
+                                                                field_number);
+  }
+  return model_types;
+}
 
 // Return the field number of the EntitySpecifics field associated with
 // a model type.

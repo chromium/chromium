@@ -122,11 +122,9 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
     }
   }
 
-  ModelTypeSet expected_data_types;
-  for (const int field_number :
-       expected_specifics.invalidation_fields().interested_data_type_ids()) {
-    expected_data_types.Put(GetModelTypeFromSpecificsFieldNumber(field_number));
-  }
+  ModelTypeSet expected_data_types =
+      GetModelTypeSetFromSpecificsFieldNumberList(
+          expected_specifics.invalidation_fields().interested_data_type_ids());
   if (expected_data_types != arg.interested_data_types()) {
     return false;
   }

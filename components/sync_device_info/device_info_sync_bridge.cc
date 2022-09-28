@@ -188,17 +188,6 @@ DeviceInfo::FormFactor DeriveFormFactorfromDeviceType(
 // Converts DeviceInfoSpecifics into a freshly allocated DeviceInfo.
 std::unique_ptr<DeviceInfo> SpecificsToModel(
     const DeviceInfoSpecifics& specifics) {
-  ModelTypeSet data_types;
-  for (const int field_number :
-       specifics.invalidation_fields().interested_data_type_ids()) {
-    ModelType data_type = GetModelTypeFromSpecificsFieldNumber(field_number);
-    if (!IsRealDataType(data_type)) {
-      DLOG(WARNING) << "Unknown field number " << field_number;
-      continue;
-    }
-    data_types.Put(data_type);
-  }
-
   return std::make_unique<DeviceInfo>(
       specifics.cache_guid(), specifics.client_name(),
       GetVersionNumberFromSpecifics(specifics), specifics.sync_user_agent(),
@@ -212,7 +201,9 @@ std::unique_ptr<DeviceInfo> SpecificsToModel(
       specifics.feature_fields().send_tab_to_self_receiving_enabled(),
       SpecificsToSharingInfo(specifics),
       SpecificsToPhoneAsASecurityKeyInfo(specifics),
-      specifics.invalidation_fields().instance_id_token(), data_types);
+      specifics.invalidation_fields().instance_id_token(),
+      GetModelTypeSetFromSpecificsFieldNumberList(
+          specifics.invalidation_fields().interested_data_type_ids()));
 }
 
 // Allocate a EntityData and copies |specifics| into it.

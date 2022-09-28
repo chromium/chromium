@@ -641,10 +641,8 @@ bool LoopbackServer::HandleCommitRequest(
   string guid = commit.cache_guid();
   ModelTypeSet committed_model_types;
 
-  ModelTypeSet enabled_types;
-  for (int field_number : commit.config_params().enabled_type_ids()) {
-    enabled_types.Put(GetModelTypeFromSpecificsFieldNumber(field_number));
-  }
+  ModelTypeSet enabled_types = GetModelTypeSetFromSpecificsFieldNumberList(
+      commit.config_params().enabled_type_ids());
 
   // TODO(pvalenzuela): Add validation of CommitMessage.entries.
   for (const sync_pb::SyncEntity& client_entity : commit.entries()) {

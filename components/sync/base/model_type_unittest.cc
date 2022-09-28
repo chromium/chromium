@@ -174,5 +174,15 @@ TEST_F(ModelTypeTest, ModelTypesSubsetsSanity) {
   EXPECT_TRUE(Intersection(CommitOnlyTypes(), EncryptableUserTypes()).Empty());
 }
 
+TEST_F(ModelTypeTest, ModelTypeSetFromSpecificsFieldNumberList) {
+  // Get field numbers corresponding to each model type in ProtocolTypes().
+  ::google::protobuf::RepeatedField<int> field_numbers;
+  for (auto model_type : ProtocolTypes()) {
+    field_numbers.Add(GetSpecificsFieldNumberFromModelType(model_type));
+  }
+  EXPECT_EQ(GetModelTypeSetFromSpecificsFieldNumberList(field_numbers),
+            ProtocolTypes());
+}
+
 }  // namespace
 }  // namespace syncer

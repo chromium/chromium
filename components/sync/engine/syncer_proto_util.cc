@@ -184,17 +184,8 @@ void SaveBagOfChipsFromResponse(const sync_pb::ClientToServerResponse& response,
 }  // namespace
 
 ModelTypeSet GetTypesToMigrate(const ClientToServerResponse& response) {
-  ModelTypeSet to_migrate;
-  for (int i = 0; i < response.migrated_data_type_id_size(); i++) {
-    int field_number = response.migrated_data_type_id(i);
-    ModelType model_type = GetModelTypeFromSpecificsFieldNumber(field_number);
-    if (!IsRealDataType(model_type)) {
-      DLOG(WARNING) << "Unknown field number " << field_number;
-      continue;
-    }
-    to_migrate.Put(model_type);
-  }
-  return to_migrate;
+  return GetModelTypeSetFromSpecificsFieldNumberList(
+      response.migrated_data_type_id());
 }
 
 SyncProtocolError ConvertErrorPBToSyncProtocolError(
@@ -209,15 +200,9 @@ SyncProtocolError ConvertErrorPBToSyncProtocolError(
     // THROTTLED and PARTIAL_FAILURE are currently the only error codes
     // that uses |error_data_types|.
     // In both cases, |error_data_types| are throttled.
-    for (int i = 0; i < error.error_data_type_ids_size(); ++i) {
-      int field_number = error.error_data_type_ids(i);
-      ModelType model_type = GetModelTypeFromSpecificsFieldNumber(field_number);
-      if (!IsRealDataType(model_type)) {
-        DLOG(WARNING) << "Unknown field number " << field_number;
-        continue;
-      }
-      sync_protocol_error.error_data_types.Put(model_type);
-    }
+    sync_protocol_error.error_data_types =
+        GetModelTypeSetFromSpecificsFieldNumberList(
+            error.error_data_type_ids());
   }
 
   return sync_protocol_error;
