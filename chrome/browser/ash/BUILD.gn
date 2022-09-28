@@ -1520,6 +1520,8 @@ source_set("ash") {
     "login/quick_unlock/quick_unlock_utils.h",
     "login/reauth_stats.cc",
     "login/reauth_stats.h",
+    "login/reporting/lock_unlock_reporter.cc",
+    "login/reporting/lock_unlock_reporter.h",
     "login/reporting/login_logout_reporter.cc",
     "login/reporting/login_logout_reporter.h",
     "login/saml/in_session_password_change_manager.cc",
@@ -3015,6 +3017,7 @@ source_set("ash") {
 
   public_deps = [
     ":device_configuration_proto",
+    ":lock_unlock_event_proto",
     ":login_logout_event_proto",
     ":print_job_info_proto",
     ":screen_brightness_event_proto",

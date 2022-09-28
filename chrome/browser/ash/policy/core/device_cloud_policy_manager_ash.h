@@ -31,6 +31,7 @@ class MachineCertificateUploader;
 }  // namespace attestation
 namespace reporting {
 class LoginLogoutReporter;
+class LockUnlockReporter;
 }
 class InstallAttributes;
 }  // namespace ash
@@ -173,6 +174,10 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   std::unique_ptr<reporting::UserAddedRemovedReporter>
       user_added_removed_reporter_;
 
+  // Object that reports user lock/unlock events to the server, protected for
+  // testing.
+  std::unique_ptr<ash::reporting::LockUnlockReporter> lock_unlock_reporter_;
+
  private:
   // Saves the state keys received from |session_manager_client_|.
   void OnStateKeysUpdated();
@@ -185,7 +190,8 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   void CreateStatusUploader(ManagedSessionService* managed_session_service);
 
   // Init |managed_session_service_| and reporting objects such as
-  // |login_logout_reporter_|, and |user_added_removed_reporter_|.
+  // |login_logout_reporter_|, |user_added_removed_reporter_| and
+  // |lock_unlock_reporter_|.
   void CreateManagedSessionServiceAndReporters();
 
   // Points to the same object as the base CloudPolicyManager::store(), but with

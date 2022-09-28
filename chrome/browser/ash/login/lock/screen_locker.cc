@@ -63,6 +63,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -252,6 +253,8 @@ void ScreenLocker::OnAuthFailure(const AuthFailure& error) {
 
   UMA_HISTOGRAM_ENUMERATION("ScreenLocker.AuthenticationFailure",
                             unlock_attempt_type_, UnlockType::AUTH_COUNT);
+  session_manager::SessionManager::Get()->NotifyUnlockAttempt(
+      /*success*/ false, TransformUnlockType());
 
   EnableInput();
   // Don't enable signout button here as we're showing
@@ -296,6 +299,8 @@ void ScreenLocker::OnAuthSuccess(const UserContext& user_context) {
 
   UMA_HISTOGRAM_ENUMERATION("ScreenLocker.AuthenticationSuccess",
                             unlock_attempt_type_, UnlockType::AUTH_COUNT);
+  session_manager::SessionManager::Get()->NotifyUnlockAttempt(
+      /*success*/ true, TransformUnlockType());
 
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(user_context.GetAccountId());
@@ -909,7 +914,7 @@ void ScreenLocker::OnAuthScanDone(
   quick_unlock_storage->fingerprint_storage()->RecordFingerprintUnlockResult(
       quick_unlock::FingerprintUnlockResult::kSuccess);
   LoginScreen::Get()->GetModel()->NotifyFingerprintAuthResult(
-      primary_user->GetAccountId(), true /*success*/);
+      primary_user->GetAccountId(), /*success*/ true);
   VLOG(1) << "Fingerprint unlock is successful.";
   OnAuthSuccess(user_context);
 }
@@ -928,7 +933,9 @@ void ScreenLocker::OnFingerprintAuthFailure(const user_manager::User& user) {
   UMA_HISTOGRAM_ENUMERATION("ScreenLocker.AuthenticationFailure",
                             unlock_attempt_type_, UnlockType::AUTH_COUNT);
   LoginScreen::Get()->GetModel()->NotifyFingerprintAuthResult(
-      user.GetAccountId(), false /*success*/);
+      user.GetAccountId(), /*success*/ false);
+  session_manager::SessionManager::Get()->NotifyUnlockAttempt(
+      /*success*/ false, TransformUnlockType());
 
   quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       quick_unlock::QuickUnlockFactory::GetForUser(&user);
@@ -1006,6 +1013,28 @@ void ScreenLocker::UpdateFingerprintStateForUser(
   LoginScreen::Get()->GetModel()->SetFingerprintState(
       user->GetAccountId(), quick_unlock::GetFingerprintStateForUser(
                                 user, quick_unlock::Purpose::kUnlock));
+}
+
+session_manager::UnlockType ScreenLocker::TransformUnlockType() {
+  session_manager::UnlockType unlock_type;
+  switch (unlock_attempt_type_) {
+    case AUTH_PASSWORD:
+      unlock_type = session_manager::UnlockType::PASSWORD;
+      break;
+    case AUTH_PIN:
+      unlock_type = session_manager::UnlockType::PIN;
+      break;
+    case AUTH_FINGERPRINT:
+      unlock_type = session_manager::UnlockType::FINGERPRINT;
+      break;
+    case AUTH_CHALLENGE_RESPONSE:
+      unlock_type = session_manager::UnlockType::CHALLENGE_RESPONSE;
+      break;
+    case AUTH_COUNT:
+      unlock_type = session_manager::UnlockType::UNKNOWN;
+      break;
+  }
+  return unlock_type;
 }
 
 }  // namespace ash

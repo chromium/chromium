@@ -105,6 +105,14 @@ void ManagedSessionService::OnUserProfileLoaded(const AccountId& account_id) {
   }
 }
 
+void ManagedSessionService::OnUnlockScreenAttempt(
+    const bool success,
+    const session_manager::UnlockType unlock_type) {
+  for (auto& observer : observers_) {
+    observer.OnUnlockAttempt(success, unlock_type);
+  }
+}
+
 void ManagedSessionService::OnProfileWillBeDestroyed(Profile* profile) {
   is_session_locked_ = false;
   for (auto& observer : observers_) {

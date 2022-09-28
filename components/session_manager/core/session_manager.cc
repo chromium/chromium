@@ -114,6 +114,12 @@ void SessionManager::NotifyLoginOrLockScreenVisible() {
     observer.OnLoginOrLockScreenVisible();
 }
 
+void SessionManager::NotifyUnlockAttempt(const bool success,
+                                         const UnlockType unlock_type) {
+  for (auto& observer : observers_)
+    observer.OnUnlockScreenAttempt(success, unlock_type);
+}
+
 void SessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
                                         const std::string& user_id_hash,
                                         bool browser_restart,

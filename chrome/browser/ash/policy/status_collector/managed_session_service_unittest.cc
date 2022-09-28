@@ -15,11 +15,14 @@
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
+
+using testing::Eq;
 
 namespace policy {
 
@@ -101,6 +104,8 @@ class ManagedSessionServiceTest : public ::testing::Test,
     return observed_kiosk_login_failure_count_;
   }
 
+  int ObservedUnlockFailureCount() { return observed_unlock_failure_count_; }
+
   void OnLoginFailure(const ash::AuthFailure& error) override {
     auth_failure_ = error;
   }
@@ -114,6 +119,19 @@ class ManagedSessionServiceTest : public ::testing::Test,
   }
   void OnLocked() override { locked_ = true; }
   void OnUnlocked() override { unlocked_ = true; }
+  void OnUnlockAttempt(const bool success,
+                       const session_manager::UnlockType unlock_type) override {
+    if (success) {
+      observed_unlock_failure_count_ = 0;
+      locked_ = false;
+      unlocked_ = true;
+    } else {
+      ++observed_unlock_failure_count_;
+      locked_ = true;
+      unlocked_ = false;
+    }
+    unlock_type_ = unlock_type;
+  }
   void OnResumeActive(base::Time time) override {
     suspend_time_ = std::make_unique<base::Time>(time);
   }
@@ -124,6 +142,8 @@ class ManagedSessionServiceTest : public ::testing::Test,
   Profile* logged_out_ = nullptr;
   bool locked_ = false;
   bool unlocked_ = false;
+  session_manager::UnlockType unlock_type_ =
+      session_manager::UnlockType::UNKNOWN;
   std::unique_ptr<base::Time> suspend_time_;
 
  private:
@@ -146,6 +166,8 @@ class ManagedSessionServiceTest : public ::testing::Test,
   int observed_session_termination_count_ = 0;
 
   int observed_kiosk_login_failure_count_ = 0;
+
+  int observed_unlock_failure_count_ = 0;
 };
 
 TEST_F(ManagedSessionServiceTest, OnSessionStateChanged) {
@@ -395,5 +417,26 @@ TEST_F(ManagedSessionServiceTest, KioskLoginFailure) {
   managed_session_service()->OnKioskProfileLoadFailed();
 
   ASSERT_EQ(ObservedKioskLoginFailureCount(), 1);
+}
+
+TEST_F(ManagedSessionServiceTest, OnUnlockScreenAttempt) {
+  managed_session_service()->AddObserver(this);
+  ASSERT_EQ(ObservedUnlockFailureCount(), 0);
+
+  managed_session_service()->OnUnlockScreenAttempt(
+      false, session_manager::UnlockType::PIN);
+
+  ASSERT_EQ(ObservedUnlockFailureCount(), 1);
+  EXPECT_TRUE(locked_);
+  EXPECT_FALSE(unlocked_);
+  EXPECT_THAT(unlock_type_, Eq(session_manager::UnlockType::PIN));
+
+  managed_session_service()->OnUnlockScreenAttempt(
+      true, session_manager::UnlockType::PASSWORD);
+
+  ASSERT_EQ(ObservedUnlockFailureCount(), 0);
+  EXPECT_FALSE(locked_);
+  EXPECT_TRUE(unlocked_);
+  EXPECT_THAT(unlock_type_, Eq(session_manager::UnlockType::PASSWORD));
 }
 }  // namespace policy

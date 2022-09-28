@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader_impl.h"
 #include "chrome/browser/ash/attestation/enrollment_id_upload_manager.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
+#include "chrome/browser/ash/login/reporting/lock_unlock_reporter.h"
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/policy_pref_names.h"
@@ -124,6 +125,7 @@ void DeviceCloudPolicyManagerAsh::RemoveDeviceCloudPolicyManagerObserver(
 // Keep clean up order as the reversed creation order.
 void DeviceCloudPolicyManagerAsh::Shutdown() {
   metric_reporting_manager_.reset();
+  lock_unlock_reporter_.reset();
   login_logout_reporter_.reset();
   user_added_removed_reporter_.reset();
   heartbeat_scheduler_.reset();
@@ -329,6 +331,8 @@ void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
   login_logout_reporter_ = ash::reporting::LoginLogoutReporter::Create(
       managed_session_service_.get());
   user_added_removed_reporter_ = ::reporting::UserAddedRemovedReporter::Create(
+      managed_session_service_.get());
+  lock_unlock_reporter_ = ash::reporting::LockUnlockReporter::Create(
       managed_session_service_.get());
 }
 

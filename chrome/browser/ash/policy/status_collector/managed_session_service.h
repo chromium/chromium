@@ -52,8 +52,14 @@ class ManagedSessionService
     // Occurs when the active user has locked the user session.
     virtual void OnLocked() {}
 
+    // TODO(b/247595531): Merge both Unlock functions into one.
     // Occurs when the active user has unlocked the user session.
     virtual void OnUnlocked() {}
+
+    // Occurs when the active user attempts to unlock the user session.
+    virtual void OnUnlockAttempt(
+        const bool success,
+        const session_manager::UnlockType unlock_type) {}
 
     // Occurs when the device recovers from a suspend state, where
     // |suspend_time| is the time when the suspend state
@@ -86,6 +92,9 @@ class ManagedSessionService
   // session_manager::SessionManagerObserver::Observer
   void OnSessionStateChanged() override;
   void OnUserProfileLoaded(const AccountId& account_id) override;
+  void OnUnlockScreenAttempt(
+      const bool success,
+      const session_manager::UnlockType unlock_type) override;
 
   // user_manager::Observer
   void OnUserToBeRemoved(const AccountId& account_id) override;

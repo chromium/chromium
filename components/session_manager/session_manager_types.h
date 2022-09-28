@@ -56,6 +56,16 @@ struct Session {
 // devices. See b/64593342 for some additional context.
 constexpr int kMaximumNumberOfUserSessions = 5;
 
+// Type of unlock method used.
+enum class UnlockType {
+  PASSWORD,
+  PIN,
+  FINGERPRINT,
+  CHALLENGE_RESPONSE,
+  EASY_UNLOCK,
+  UNKNOWN
+};
+
 }  // namespace session_manager
 
 #endif  // COMPONENTS_SESSION_MANAGER_SESSION_MANAGER_TYPES_H_

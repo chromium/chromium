@@ -69,6 +69,7 @@ class SESSION_EXPORT SessionManager {
   void NotifyUserProfileLoaded(const AccountId& account_id);
   void NotifyNetworkErrorScreenShown();
   void NotifyLoginOrLockScreenVisible();
+  void NotifyUnlockAttempt(const bool success, const UnlockType unlock_type);
 
   SessionState session_state() const { return session_state_; }
   const std::vector<Session>& sessions() const { return sessions_; }

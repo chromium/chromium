@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -273,6 +274,11 @@ class ScreenLocker
   void OnPinCanAuthenticate(const AccountId& account_id, bool can_authenticate);
 
   void UpdateFingerprintStateForUser(const user_manager::User* user);
+
+  // Helper to transform internal enum UnlockType to
+  // session_manager::UnlockType, used by the reporting team to report
+  // lock/unlock events.
+  session_manager::UnlockType TransformUnlockType();
 
   // Delegate used to talk to the view.
   Delegate* delegate_ = nullptr;

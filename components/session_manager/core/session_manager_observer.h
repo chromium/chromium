@@ -45,6 +45,12 @@ class SessionManagerObserver : public base::CheckedObserver {
   //    (`OnLoginOrLockScreenVisible()` + `OnNetworkErrorScreenShown()`).
   // 4. Boot into retail mode. `OnLoginOrLockScreenVisible()`.
   virtual void OnLoginOrLockScreenVisible() {}
+
+  // Invoked when the user attempts to unlock the lock screen, it reports the
+  // type of authentication method used and whether it was a successful or
+  // failed unlock attempt.
+  virtual void OnUnlockScreenAttempt(const bool success,
+                                     const UnlockType unlock_type) {}
 };
 
 }  // namespace session_manager
