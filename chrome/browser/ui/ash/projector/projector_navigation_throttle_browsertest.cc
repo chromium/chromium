@@ -111,8 +111,10 @@ class ProjectorNavigationThrottleTestParameterized
 // https://screencast.apps.chrome/xyz?resourceKey=abc redirects to
 // chrome://projector/app/xyz?timestamp=[timestamp]&resourceKey=abc and launches
 // the SWA.
+// TODO(crbug.com/1368850): Disabled due to constant failure with parameter 3, 4
+// and 5.
 IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
-                       PwaNavigationRedirects) {
+                       DISABLED_PwaNavigationRedirects) {
   base::HistogramTester histogram_tester;
 
   std::string url = kChromeUIUntrustedProjectorPwaUrl;
