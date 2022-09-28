@@ -21,7 +21,7 @@ namespace switches {
 extern const char kEnableChromeCart[];
 }
 
-extern const base::Feature kCommercePriceTracking;
+BASE_DECLARE_FEATURE(kCommercePriceTracking);
 
 // Price tracking variations for Android.
 constexpr flags_ui::FeatureEntry::FeatureParam
@@ -62,28 +62,28 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         {"Price Tracking Notifications", kCommercePriceTrackingNotifications,
          std::size(kCommercePriceTrackingNotifications), nullptr}};
 
-extern const base::Feature kCommerceAllowLocalImages;
-extern const base::Feature kCommerceAllowOnDemandBookmarkUpdates;
-extern const base::Feature kCommerceAllowServerImages;
-extern const base::Feature kCommerceCoupons;
-extern const base::Feature kCommerceMerchantViewer;
+BASE_DECLARE_FEATURE(kCommerceAllowLocalImages);
+BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates);
+BASE_DECLARE_FEATURE(kCommerceAllowServerImages);
+BASE_DECLARE_FEATURE(kCommerceCoupons);
+BASE_DECLARE_FEATURE(kCommerceMerchantViewer);
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
-extern const base::Feature kShoppingList;
-extern const base::Feature kShoppingListEnableDesyncResolution;
-extern const base::Feature kShoppingPDPMetrics;
-extern const base::Feature kRetailCoupons;
-extern const base::Feature kCommerceDeveloper;
+BASE_DECLARE_FEATURE(kShoppingList);
+BASE_DECLARE_FEATURE(kShoppingListEnableDesyncResolution);
+BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
+BASE_DECLARE_FEATURE(kRetailCoupons);
+BASE_DECLARE_FEATURE(kCommerceDeveloper);
 // Parameter for enabling feature variation of coupons with code.
 extern const char kRetailCouponsWithCodeParam[];
 
 // Feature flag for Discount user consent v2.
-extern const base::Feature kDiscountConsentV2;
+BASE_DECLARE_FEATURE(kDiscountConsentV2);
 
 // Feature flag for exposing commerce hint on Android.
-extern const base::Feature kCommerceHintAndroid;
+BASE_DECLARE_FEATURE(kCommerceHintAndroid);
 
 // Feature flag for Merchant Wide promotion.
-extern const base::Feature kMerchantWidePromotion;
+BASE_DECLARE_FEATURE(kMerchantWidePromotion);
 
 // Shopping list update interval.
 constexpr base::FeatureParam<base::TimeDelta>

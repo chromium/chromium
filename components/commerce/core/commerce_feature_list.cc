@@ -77,53 +77,63 @@ namespace switches {
 const char kEnableChromeCart[] = "enable-chrome-cart";
 }  // namespace switches
 
-const base::Feature kCommerceAllowLocalImages{
-    "CommerceAllowLocalImages", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCommerceAllowLocalImages,
+             "CommerceAllowLocalImages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kCommerceAllowOnDemandBookmarkUpdates{
-    "CommerceAllowOnDemandBookmarkUpdates", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates,
+             "CommerceAllowOnDemandBookmarkUpdates",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kCommerceAllowServerImages{
-    "CommerceAllowServerImages", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCommerceAllowServerImages,
+             "CommerceAllowServerImages",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kCommerceCoupons{"CommerceCoupons",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCommerceCoupons,
+             "CommerceCoupons",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kCommerceMerchantViewer{"CommerceMerchantViewer",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCommerceMerchantViewer,
+             "CommerceMerchantViewer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kCommercePriceTracking{"CommercePriceTracking",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCommercePriceTracking,
+             "CommercePriceTracking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory{
     &kCommerceMerchantViewer, "delete_all_merchants_on_clear_history", false};
 
-const base::Feature kShoppingList{"ShoppingList",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kShoppingList, "ShoppingList", base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kShoppingListEnableDesyncResolution{
-    "ShoppingListEnableDesyncResolution", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kShoppingListEnableDesyncResolution,
+             "ShoppingListEnableDesyncResolution",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kShoppingPDPMetrics{"ShoppingPDPMetrics",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kShoppingPDPMetrics,
+             "ShoppingPDPMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kRetailCoupons{"RetailCoupons",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kRetailCoupons, "RetailCoupons", base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kCommerceDeveloper{"CommerceDeveloper",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCommerceDeveloper,
+             "CommerceDeveloper",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kRetailCouponsWithCodeParam[] = "RetailCouponsWithCodeParam";
 
 // Params use for Discount Consent v2.
-const base::Feature kDiscountConsentV2{"DiscountConsentV2",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDiscountConsentV2,
+             "DiscountConsentV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kCommerceHintAndroid{"CommerceHintAndroid",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCommerceHintAndroid,
+             "CommerceHintAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kMerchantWidePromotion{"MerchantWidePromotion",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMerchantWidePromotion,
+             "MerchantWidePromotion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Params for Discount Consent V2 in the NTP Cart module.
 const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[] =
