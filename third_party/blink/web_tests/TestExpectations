@@ -7126,3 +7126,6 @@ crbug.com/1359788 virtual/orb-v02/external/wpt/fetch/corb/img-svg-doctype-html-m
 
 # Sheriff 2022-09-27
 crbug.com/1367599 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-redirect-with-same-origin-allow-popups.https.html [ Failure Pass ]
+
+# Sheriff 2022-09-28
+crbug.com/1368925 svg/animations/reinserting-svg-into-document.html [ Failure Pass ]
