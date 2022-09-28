@@ -98,16 +98,15 @@ void FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext(
   }
 }
 
-void FirstPartySetsHandlerDatabaseHelper::PersistPublicSets(
+void FirstPartySetsHandlerDatabaseHelper::PersistSets(
     const std::string& browser_context_id,
     const base::Version& version,
-    const net::PublicSets& sets) {
+    const net::PublicSets& sets,
+    const net::FirstPartySetsContextConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
-  DCHECK(version.IsValid());
-  if (!db_->SetPublicSets(browser_context_id, version.GetString(), sets)) {
+  if (!db_->PersistSets(browser_context_id, version, sets, config))
     DVLOG(1) << "Failed to write public sets into the database.";
-  }
 }
 
 net::PublicSets FirstPartySetsHandlerDatabaseHelper::GetPersistedPublicSets(

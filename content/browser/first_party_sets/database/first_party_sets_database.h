@@ -18,6 +18,10 @@
 #include "sql/meta_table.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Version;
+}  // namespace base
+
 namespace net {
 class FirstPartySetEntry;
 class PublicSets;
@@ -66,11 +70,15 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   FirstPartySetsDatabase& operator=(const FirstPartySetsDatabase&&) = delete;
   ~FirstPartySetsDatabase();
 
-  // Stores the public First-Party Sets into database, and keeps track of the
-  // the sets version used by `browser_context_id`. Returns true on success.
-  [[nodiscard]] bool SetPublicSets(const std::string& browser_context_id,
-                                   const std::string& version,
-                                   const net::PublicSets& sets);
+  // Stores the overall First-Party Sets for the given `browser_context_id` into
+  // database in one transaction.
+  // TODO(crbug.com/1219656): Currently only stores public sets. We should also
+  // store policy modifications and manual set in this method.
+  [[nodiscard]] bool PersistSets(
+      const std::string& browser_context_id,
+      const base::Version& public_sets_version,
+      const net::PublicSets& sets,
+      const net::FirstPartySetsContextConfig& config);
 
   // Stores the `sites` to be cleared for the `browser_context_id` into
   // database, and returns true on success.
@@ -116,6 +124,15 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   FetchPolicyModifications(const std::string& browser_context_id);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsDatabaseTest,
+                           SetPublicSets_InvalidVersion);
+
+  // Stores the public First-Party Sets into database, and keeps track of the
+  // the sets version used by `browser_context_id`. Returns true on success.
+  [[nodiscard]] bool SetPublicSets(const std::string& browser_context_id,
+                                   const base::Version& sets_version,
+                                   const net::PublicSets& sets);
+
   // Called at the start of each public operation, and initializes the database
   // if it isn't already initialized.
   [[nodiscard]] bool LazyInit() VALID_CONTEXT_REQUIRED(sequence_checker_);

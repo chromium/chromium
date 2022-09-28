@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/public_sets.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -255,8 +256,8 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_InvalidRunCount_Fail) {
                                 1);
 }
 
-TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_NoPreExistingDB) {
-  const std::string version = "0.0.1";
+TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
+  const base::Version version("0.0.1");
   const std::string browser_context_id = "b";
   const std::string site = "https://aaa.test";
   const std::string primary = "https://bbb.test";
@@ -274,7 +275,8 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_NoPreExistingDB) {
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(db()->SetPublicSets(browser_context_id, version, input));
+  EXPECT_TRUE(db()->PersistSets(browser_context_id, version, input,
+                                net::FirstPartySetsContextConfig()));
   CloseDatabase();
 
   sql::Database db;
@@ -285,13 +287,13 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_NoPreExistingDB) {
       "SELECT version,site,primary_site,site_type FROM public_sets";
   sql::Statement s(db.GetUniqueStatement(kSelectSql));
   EXPECT_TRUE(s.Step());
-  EXPECT_EQ(version, s.ColumnString(0));
+  EXPECT_EQ(version.GetString(), s.ColumnString(0));
   EXPECT_EQ(site, s.ColumnString(1));
   EXPECT_EQ(primary, s.ColumnString(2));
   EXPECT_EQ(1, s.ColumnInt(3));
 
   EXPECT_TRUE(s.Step());
-  EXPECT_EQ(version, s.ColumnString(0));
+  EXPECT_EQ(version.GetString(), s.ColumnString(0));
   EXPECT_EQ(primary, s.ColumnString(1));
   EXPECT_EQ(primary, s.ColumnString(2));
   EXPECT_EQ(0, s.ColumnInt(3));
@@ -304,12 +306,12 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_NoPreExistingDB) {
   sql::Statement s_version(db.GetUniqueStatement(kVersionSql));
   EXPECT_TRUE(s_version.Step());
   EXPECT_EQ(browser_context_id, s_version.ColumnString(0));
-  EXPECT_EQ(version, s_version.ColumnString(1));
+  EXPECT_EQ(version.GetString(), s_version.ColumnString(1));
 
   EXPECT_FALSE(s_version.Step());
 }
 
-TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingDB) {
+TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   ASSERT_TRUE(
       sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
 
@@ -335,7 +337,7 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingDB) {
     ASSERT_EQ("https://bbb.test", s.ColumnString(2));
     ASSERT_EQ(0, s.ColumnInt(3));
   }
-  const std::string version = "0.0.2";
+  const base::Version version("0.0.2");
   const std::string browser_context_id = "b";
   const std::string site = "https://site1.test";
   const std::string primary = "https://site2.test";
@@ -353,7 +355,8 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingDB) {
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(db()->SetPublicSets(browser_context_id, version, input));
+  EXPECT_TRUE(db()->PersistSets(browser_context_id, version, input,
+                                net::FirstPartySetsContextConfig()));
   CloseDatabase();
 
   // Verify data is inserted.
@@ -365,7 +368,7 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingDB) {
       "SELECT site,primary_site,site_type FROM public_sets "
       "WHERE version=?";
   sql::Statement s(db.GetUniqueStatement(kSelectSql));
-  s.BindString(0, version);
+  s.BindString(0, version.GetString());
   EXPECT_TRUE(s.Step());
   EXPECT_EQ(site, s.ColumnString(0));
   EXPECT_EQ(primary, s.ColumnString(1));
@@ -384,16 +387,16 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingDB) {
   sql::Statement s_version(db.GetUniqueStatement(kVersionSql));
   s_version.BindString(0, browser_context_id);
   EXPECT_TRUE(s_version.Step());
-  EXPECT_EQ(version, s_version.ColumnString(0));
+  EXPECT_EQ(version.GetString(), s_version.ColumnString(0));
 
   EXPECT_FALSE(s_version.Step());
 }
 
-TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingVersion) {
+TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingVersion) {
   ASSERT_TRUE(
       sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
 
-  const std::string version = "0.0.1";
+  const base::Version version("0.0.1");
   const std::string aaa = "https://aaa.test";
   const std::string bbb = "https://bbb.test";
   // Verify data in the pre-existing DB.
@@ -406,7 +409,7 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingVersion) {
     static constexpr char kSelectSql[] =
         "SELECT 1 FROM public_sets WHERE version=?";
     sql::Statement s(db.GetUniqueStatement(kSelectSql));
-    s.BindString(0, version);
+    s.BindString(0, version.GetString());
     ASSERT_TRUE(s.Step());
   }
 
@@ -427,7 +430,8 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingVersion) {
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  ASSERT_TRUE(db()->SetPublicSets(browser_context_id, version, input));
+  EXPECT_TRUE(db()->PersistSets(browser_context_id, version, input,
+                                net::FirstPartySetsContextConfig()));
   CloseDatabase();
 
   // Verify data is not overwritten with the same version.
@@ -439,18 +443,42 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingVersion) {
       "SELECT version,site,primary_site,site_type FROM public_sets";
   sql::Statement s(db.GetUniqueStatement(kSelectSql));
   ASSERT_TRUE(s.Step());
-  ASSERT_EQ(version, s.ColumnString(0));
+  ASSERT_EQ(version.GetString(), s.ColumnString(0));
   ASSERT_EQ(aaa, s.ColumnString(1));
   ASSERT_EQ(bbb, s.ColumnString(2));
   ASSERT_EQ(1, s.ColumnInt(3));
 
   ASSERT_TRUE(s.Step());
-  ASSERT_EQ(version, s.ColumnString(0));
+  ASSERT_EQ(version.GetString(), s.ColumnString(0));
   ASSERT_EQ(bbb, s.ColumnString(1));
   ASSERT_EQ(bbb, s.ColumnString(2));
   ASSERT_EQ(0, s.ColumnInt(3));
 
   EXPECT_FALSE(s.Step());
+}
+
+TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_InvalidVersion) {
+  ASSERT_TRUE(
+      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+
+  // Verify data in the pre-existing DB.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+    ASSERT_EQ(kTableCount, sql::test::CountSQLTables(&db));
+    ASSERT_EQ(2u, CountPublicSetsEntries(&db));
+  }
+  const std::string browser_context_id = "b";
+  const net::PublicSets input;
+  const base::Version invalid_version;
+
+  OpenDatabase();
+  // Trigger the lazy-initialization.
+  EXPECT_FALSE(db()->PersistSets(browser_context_id, invalid_version, input,
+                                 net::FirstPartySetsContextConfig()));
+  // Verify that it's `SetPublicSets()` that failed.
+  EXPECT_FALSE(db()->SetPublicSets(browser_context_id, invalid_version, input));
+  CloseDatabase();
 }
 
 TEST_F(FirstPartySetsDatabaseTest, InsertSitesToClear_NoPreExistingDB) {

@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/public_sets.h"
@@ -129,12 +130,12 @@ FirstPartySetsDatabase::~FirstPartySetsDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool FirstPartySetsDatabase::SetPublicSets(
+bool FirstPartySetsDatabase::PersistSets(
     const std::string& browser_context_id,
-    const std::string& version,
-    const net::PublicSets& public_sets) {
+    const base::Version& public_sets_version,
+    const net::PublicSets& sets,
+    const net::FirstPartySetsContextConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (!LazyInit())
     return false;
 
@@ -142,6 +143,23 @@ bool FirstPartySetsDatabase::SetPublicSets(
   if (!transaction.Begin())
     return false;
 
+  if (!SetPublicSets(browser_context_id, public_sets_version, sets)) {
+    return false;
+  }
+
+  return transaction.Commit();
+}
+
+bool FirstPartySetsDatabase::SetPublicSets(
+    const std::string& browser_context_id,
+    const base::Version& sets_version,
+    const net::PublicSets& sets) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(db_status_, InitStatus::kSuccess);
+
+  if (!sets_version.IsValid())
+    return false;
+  const std::string& version = sets_version.GetString();
   // Checks if the version of the current public sets is referenced by *any*
   // browser context in the public_sets_version table. If so, that means the
   // sets already exist in public_sets table and we don't need to write them to
@@ -157,7 +175,7 @@ bool FirstPartySetsDatabase::SetPublicSets(
     return false;
 
   if (!has_matching_version) {
-    if (!public_sets.ForEachPublicSetEntry(
+    if (!sets.ForEachPublicSetEntry(
             [&](const net::SchemefulSite& site,
                 const net::FirstPartySetEntry& entry) -> bool {
               DCHECK(!site.opaque());
@@ -195,7 +213,7 @@ bool FirstPartySetsDatabase::SetPublicSets(
   // TODO(shuuran): Garbage collect the public sets no longer used by any
   // browser_context_id.
 
-  return transaction.Commit();
+  return true;
 }
 
 bool FirstPartySetsDatabase::InsertSitesToClear(
