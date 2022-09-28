@@ -12,24 +12,7 @@ namespace {
 
 // Salt to separate otherwise identical string hashes so a class-selector like
 // .article won't match <article> elements.
-enum {
-  // Primitive identifier hashes.
-  kTagNameSalt = 13,
-  kIdSalt = 17,
-  kClassSalt = 19,
-  kAttributeSalt = 23,
-
-  // Salts for pseudo class compounding conditions.
-  // For pseudo classes whose state can be changed frequently, such as :hover,
-  // use additional hashes of compounding conditions to make the fast reject
-  // filter more accurate.
-  // We can get the compounding condition hashes by multiplying the each
-  // primitive identifier hash by the salt value for the pseudo class.
-  // Please note that, adding additional compounding condition salt has a risk
-  // of reducing the accuracy of the filter by increasing the number of hashes
-  // added to the bloom filter.
-  kHoverCompoundingSalt = 101
-};
+enum { kTagNameSalt = 13, kIdSalt = 17, kClassSalt = 19, kAttributeSalt = 23 };
 
 inline bool IsExcludedAttribute(const AtomicString& name) {
   return name == html_names::kClassAttr.LocalName() ||
@@ -53,53 +36,19 @@ inline unsigned GetAttributeHash(const AtomicString& attribute_name) {
   return attribute_name.Impl()->ExistingHash() * kAttributeSalt;
 }
 
-inline unsigned GetHoverCompoundedHash(unsigned hash) {
-  return hash * kHoverCompoundingSalt;
-}
-
-void AddHoverCompoundedPseudoHasArgumentHash(
-    Vector<unsigned>& pseudo_has_argument_hashes,
-    unsigned hash) {
-  pseudo_has_argument_hashes.push_back(GetHoverCompoundedHash(hash));
-}
-
-void AddPseudoHasArgumentHash(Vector<unsigned>& pseudo_has_argument_hashes,
-                              unsigned hash) {
-  pseudo_has_argument_hashes.push_back(hash);
-}
-
-void AddHashToFilter(CheckPseudoHasFastRejectFilter::FastRejectFilter& filter,
-                     unsigned hash) {
-  filter.Add(hash);
-}
-
-void AddHashAndHoverCompoundingHashToFilter(
-    CheckPseudoHasFastRejectFilter::FastRejectFilter& filter,
-    unsigned hash) {
-  filter.Add(hash);
-  filter.Add(GetHoverCompoundedHash(hash));
-}
-
 }  // namespace
 
 void CheckPseudoHasFastRejectFilter::AddElementIdentifierHashes(
     const Element& element) {
   DCHECK(filter_.get());
-
-  void (*add_hash)(FastRejectFilter&, unsigned) =
-      element.IsHovered() ? AddHashAndHoverCompoundingHashToFilter
-                          : AddHashToFilter;
-
-  add_hash(*filter_, GetTagHash(element.LocalNameForSelectorMatching()));
-
+  filter_->Add(GetTagHash(element.LocalNameForSelectorMatching()));
   if (element.HasID())
-    add_hash(*filter_, GetIdHash(element.IdForStyleResolution()));
-
+    filter_->Add(GetIdHash(element.IdForStyleResolution()));
   if (element.HasClass()) {
     const SpaceSplitString& class_names = element.ClassNames();
     wtf_size_t count = class_names.size();
     for (wtf_size_t i = 0; i < count; ++i)
-      add_hash(*filter_, GetClassHash(class_names[i]));
+      filter_->Add(GetClassHash(class_names[i]));
   }
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
@@ -108,7 +57,7 @@ void CheckPseudoHasFastRejectFilter::AddElementIdentifierHashes(
       continue;
     auto lower = attribute_name.IsLowerASCII() ? attribute_name
                                                : attribute_name.LowerASCII();
-    add_hash(*filter_, GetAttributeHash(lower));
+    filter_->Add(GetAttributeHash(lower));
   }
 }
 
@@ -124,23 +73,28 @@ bool CheckPseudoHasFastRejectFilter::FastReject(
   return false;
 }
 
-namespace {
-
-inline unsigned GetPseudoHasArgumentHash(const CSSSelector* simple_selector) {
+// static
+void CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashes(
+    Vector<unsigned>& pseudo_has_argument_hashes,
+    const CSSSelector* simple_selector) {
   DCHECK(simple_selector);
   switch (simple_selector->Match()) {
     case CSSSelector::kId:
       if (simple_selector->Value().empty())
         break;
-      return GetIdHash(simple_selector->Value());
+      pseudo_has_argument_hashes.push_back(GetIdHash(simple_selector->Value()));
+      break;
     case CSSSelector::kClass:
       if (simple_selector->Value().empty())
         break;
-      return GetClassHash(simple_selector->Value());
+      pseudo_has_argument_hashes.push_back(
+          GetClassHash(simple_selector->Value()));
+      break;
     case CSSSelector::kTag:
       if (simple_selector->TagQName().LocalName() !=
           CSSSelector::UniversalSelectorAtom()) {
-        return GetTagHash(simple_selector->TagQName().LocalName());
+        pseudo_has_argument_hashes.push_back(
+            GetTagHash(simple_selector->TagQName().LocalName()));
       }
       break;
     case CSSSelector::kAttributeExact:
@@ -156,30 +110,9 @@ inline unsigned GetPseudoHasArgumentHash(const CSSSelector* simple_selector) {
       auto lower_name = attribute_name.IsLowerASCII()
                             ? attribute_name
                             : attribute_name.LowerASCII();
-      return GetAttributeHash(lower_name);
-    }
+      pseudo_has_argument_hashes.push_back(GetAttributeHash(lower_name));
+    } break;
     default:
-      break;
-  }
-  return 0;
-}
-
-}  // namespace
-
-// static
-void CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashesFromCompound(
-    Vector<unsigned>& pseudo_has_argument_hashes,
-    const CSSSelector* compound_selector,
-    CompoundContext& compound_context) {
-  void (*add_hash)(Vector<unsigned>&, unsigned hash) =
-      compound_context.contains_hover ? AddHoverCompoundedPseudoHasArgumentHash
-                                      : AddPseudoHasArgumentHash;
-  for (const CSSSelector* simple_selector = compound_selector; simple_selector;
-       simple_selector = simple_selector->TagHistory()) {
-    if (unsigned hash = GetPseudoHasArgumentHash(simple_selector))
-      add_hash(pseudo_has_argument_hashes, hash);
-
-    if (simple_selector->Relation() != CSSSelector::kSubSelector)
       break;
   }
 }

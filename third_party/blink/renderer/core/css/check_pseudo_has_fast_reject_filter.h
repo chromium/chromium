@@ -44,14 +44,9 @@ class CORE_EXPORT CheckPseudoHasFastRejectFilter {
   CheckPseudoHasFastRejectFilter() = default;
   CheckPseudoHasFastRejectFilter(CheckPseudoHasFastRejectFilter&) = delete;
 
-  struct CompoundContext {
-    bool contains_hover = false;
-  };
-
-  static void CollectPseudoHasArgumentHashesFromCompound(
+  static void CollectPseudoHasArgumentHashes(
       Vector<unsigned>& pseudo_has_argument_hashes,
-      const CSSSelector* compound_selector,
-      CompoundContext&);
+      const CSSSelector* simple_selector);
 
   void AddElementIdentifierHashes(const Element& element);
 

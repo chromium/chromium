@@ -4423,4 +4423,53 @@ TEST_F(AffectedByPseudoTest, AffectedByLogicalCombinationsInHas) {
   EXPECT_EQ(0U, GetStyleEngine().StyleForElementCount() - start_count);
 }
 
+TEST_F(AffectedByPseudoTest,
+       AncestorsOrSiblingsAffectedByHoverInHasWithFastRejection) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .a:has(nonexistent), .a:has(.b:hover) { color: green }
+    </style>
+    <div id=div1 class='a'>
+      <div id=div11></div>
+      <div id=div12 class='b'></div>
+      <div id=div13></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  CheckAffectedByFlagsForHas(
+      "div1", {{kAffectedBySubjectHas, true},
+               {kAffectedByPseudoInHas, true},
+               {kAncestorsOrAncestorSiblingsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div11", {{kAffectedBySubjectHas, false},
+                {kAncestorsOrAncestorSiblingsAffectedByHas, true},
+                {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div12", {{kAffectedBySubjectHas, false},
+                {kAncestorsOrAncestorSiblingsAffectedByHas, true},
+                {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div13", {{kAffectedBySubjectHas, false},
+                {kAncestorsOrAncestorSiblingsAffectedByHas, true},
+                {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div13")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+  GetElementById("div13")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div12")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+  GetElementById("div12")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+}
+
 }  // namespace blink
