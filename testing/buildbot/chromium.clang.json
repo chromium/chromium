@@ -27912,7 +27912,7 @@
         "test_id_prefix": "ninja://chrome/test/mini_installer:mini_installer_tests/"
       },
       {
-        "experiment_percentage": 100,
+        "experiment_percentage": 0,
         "isolate_name": "polymer_tools_python_unittests",
         "merge": {
           "args": [],
@@ -30392,7 +30392,7 @@
         "test_id_prefix": "ninja://chrome/test/mini_installer:mini_installer_tests/"
       },
       {
-        "experiment_percentage": 100,
+        "experiment_percentage": 0,
         "isolate_name": "polymer_tools_python_unittests",
         "merge": {
           "args": [],
@@ -32226,7 +32226,7 @@
         "test_id_prefix": "ninja://chrome/test/mini_installer:mini_installer_tests/"
       },
       {
-        "experiment_percentage": 100,
+        "experiment_percentage": 0,
         "isolate_name": "polymer_tools_python_unittests",
         "merge": {
           "args": [],
@@ -34066,7 +34066,7 @@
         "test_id_prefix": "ninja://chrome/test/mini_installer:mini_installer_tests/"
       },
       {
-        "experiment_percentage": 100,
+        "experiment_percentage": 0,
         "isolate_name": "polymer_tools_python_unittests",
         "merge": {
           "args": [],
@@ -35906,7 +35906,7 @@
         "test_id_prefix": "ninja://chrome/test/mini_installer:mini_installer_tests/"
       },
       {
-        "experiment_percentage": 100,
+        "experiment_percentage": 0,
         "isolate_name": "polymer_tools_python_unittests",
         "merge": {
           "args": [],
@@ -38268,7 +38268,7 @@
         "test_id_prefix": "ninja://chrome/test/mini_installer:mini_installer_tests/"
       },
       {
-        "experiment_percentage": 100,
+        "experiment_percentage": 0,
         "isolate_name": "polymer_tools_python_unittests",
         "merge": {
           "args": [],
@@ -40108,7 +40108,7 @@
         "test_id_prefix": "ninja://chrome/test/mini_installer:mini_installer_tests/"
       },
       {
-        "experiment_percentage": 100,
+        "experiment_percentage": 0,
         "isolate_name": "polymer_tools_python_unittests",
         "merge": {
           "args": [],

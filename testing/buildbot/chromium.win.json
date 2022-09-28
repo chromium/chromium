@@ -1909,7 +1909,7 @@
         "test_id_prefix": "ninja://mojo/public/tools:mojo_python_unittests/"
       },
       {
-        "experiment_percentage": 100,
+        "experiment_percentage": 0,
         "isolate_name": "polymer_tools_python_unittests",
         "merge": {
           "args": [],
@@ -4383,7 +4383,7 @@
         "test_id_prefix": "ninja://mojo/public/tools:mojo_python_unittests/"
       },
       {
-        "experiment_percentage": 100,
+        "experiment_percentage": 0,
         "isolate_name": "polymer_tools_python_unittests",
         "isolate_profile_data": true,
         "merge": {
@@ -8783,7 +8783,7 @@
         "test_id_prefix": "ninja://mojo/public/tools:mojo_python_unittests/"
       },
       {
-        "experiment_percentage": 100,
+        "experiment_percentage": 0,
         "isolate_name": "polymer_tools_python_unittests",
         "isolate_profile_data": true,
         "merge": {
@@ -10306,7 +10306,7 @@
         "test_id_prefix": "ninja://mojo/public/tools:mojo_python_unittests/"
       },
       {
-        "experiment_percentage": 100,
+        "experiment_percentage": 0,
         "isolate_name": "polymer_tools_python_unittests",
         "merge": {
           "args": [],

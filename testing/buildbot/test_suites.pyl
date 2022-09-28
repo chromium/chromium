@@ -5192,7 +5192,7 @@
         },
       },
       'polymer_tools_python_unittests': {
-        'experiment_percentage': 100,
+        'experiment_percentage': 0,
       },
     },
 
