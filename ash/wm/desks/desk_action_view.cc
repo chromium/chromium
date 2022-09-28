@@ -28,7 +28,8 @@ DeskActionView::DeskActionView(
     base::RepeatingClosure close_all_callback)
     : combine_desks_button_(AddChildView(
           std::make_unique<CloseButton>(std::move(combine_desks_callback),
-                                        CloseButton::Type::kMediumFloating))),
+                                        CloseButton::Type::kMediumFloating,
+                                        &kCombineDesksIcon))),
       close_all_button_(AddChildView(
           std::make_unique<CloseButton>(std::move(close_all_callback),
                                         CloseButton::Type::kMediumFloating))) {
@@ -40,7 +41,6 @@ DeskActionView::DeskActionView(
 
   close_all_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION));
-  combine_desks_button_->SetVectorIcon(kCombineDesksIcon);
   UpdateCombineDesksTooltip(initial_combine_desks_target_name);
 
   SetPaintToLayer();

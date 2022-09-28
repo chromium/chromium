@@ -6,6 +6,7 @@
 
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -15,6 +16,7 @@
 #include "ui/views/animation/ink_drop.h"
 
 namespace ash {
+
 ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
     ClipboardHistoryItemView* listener)
     : CloseButton(
@@ -24,7 +26,9 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
               },
               base::Unretained(listener)),
           CloseButton::Type::kSmall,
-          /*use_light_colors=*/true),
+          /*icon=*/nullptr,
+          kColorAshShieldAndBase80Light,
+          kColorAshButtonIconColorLight),
       listener_(listener) {
   SetID(clipboard_history_util::kDeleteButtonViewID);
   SetAccessibleName(

@@ -5,7 +5,9 @@
 #ifndef ASH_STYLE_CLOSE_BUTTON_H_
 #define ASH_STYLE_CLOSE_BUTTON_H_
 
+#include "ash/style/ash_color_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view_targeter_delegate.h"
 
@@ -32,9 +34,16 @@ class CloseButton : public views::ImageButton,
     kLargeFloating,
   };
 
+  // Uses the default close icon according to the given `type` if `icon` is not
+  // set by the client explicitly. Also default background and icon color ids
+  // are used if they're not explicitly provided.
+  // If you want to keep the button in light mode, you can provide the color ids
+  // on light version.
   CloseButton(PressedCallback callback,
               Type type,
-              bool use_light_colors = false);
+              const gfx::VectorIcon* icon = nullptr,
+              ui::ColorId background_color_id = kColorAshShieldAndBase80,
+              ui::ColorId icon_color_id = kColorAshButtonIconColor);
   CloseButton(const CloseButton&) = delete;
   CloseButton& operator=(const CloseButton&) = delete;
   ~CloseButton() override;
@@ -47,17 +56,6 @@ class CloseButton : public views::ImageButton,
   // Resets the listener so that the listener can go out of scope.
   void ResetListener();
 
-  // Sets the vector icon of the button. Note, doing this only when the button
-  // wants to have different icons as the default close icon. E.g, the delete
-  // button inside desks template wants to have trash icon instead of close
-  // icon.
-  void SetVectorIcon(const gfx::VectorIcon& icon);
-
-  // Sets the button's background color or icon's color. Note, do this only when
-  // the button wants to have different colors from the default ones.
-  void SetBackgroundColor(const SkColor background_color);
-  void SetIconColor(const SkColor icon_color);
-
  private:
   // views::ImageButton:
   void OnThemeChanged() override;
@@ -67,18 +65,7 @@ class CloseButton : public views::ImageButton,
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
-  void UpdateVectorIcon();
-
   const Type type_;
-  const gfx::VectorIcon* icon_;
-
-  // True if the button wants to use light colors when the D/L mode feature is
-  // not enabled. Note, can be removed when D/L mode feature is fully launched.
-  const bool use_light_colors_;
-
-  // Customized value for the button's background color and icon's color.
-  absl::optional<SkColor> background_color_;
-  absl::optional<SkColor> icon_color_;
 };
 
 }  // namespace ash

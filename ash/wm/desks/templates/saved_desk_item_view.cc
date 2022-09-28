@@ -252,12 +252,10 @@ SavedDeskItemView::SavedDeskItemView(
         hover_container_->AddChildView(std::make_unique<CloseButton>(
             base::BindRepeating(&SavedDeskItemView::OnDeleteButtonPressed,
                                 weak_ptr_factory_.GetWeakPtr()),
-            CloseButton::Type::kMedium));
-    delete_button_->SetVectorIcon(kDeleteIcon);
+            CloseButton::Type::kMedium, &kDeleteIcon,
+            kColorAshControlBackgroundColorInactive));
     delete_button_->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON));
-    delete_button_->SetBackgroundColor(color_provider->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
   }
 
   // Use a border to create spacing between `name_view_`s background (set in

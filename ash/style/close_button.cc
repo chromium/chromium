@@ -4,14 +4,13 @@
 
 #include "ash/style/close_button.h"
 
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -56,55 +55,51 @@ int GetIconSize(CloseButton::Type type) {
   }
 }
 
-SkColor GetCloseButtonBackgroundColor(bool use_light_colors) {
-  auto* color_provider = AshColorProvider::Get();
-  if (use_light_colors) {
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
-    return color_provider->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80);
-  }
-  return color_provider->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-}
-
 bool IsFloatingCloseButton(CloseButton::Type type) {
   return type == CloseButton::Type::kSmallFloating ||
          type == CloseButton::Type::kMediumFloating ||
          type == CloseButton::Type::kLargeFloating;
 }
 
+const gfx::VectorIcon* GetCloseIconForType(CloseButton::Type type) {
+  return (type == CloseButton::Type::kSmall ||
+          type == CloseButton::Type::kSmallFloating)
+             ? &kSmallCloseButtonIcon
+             : &kMediumOrLargeCloseButtonIcon;
+}
+
 }  // namespace
 
 CloseButton::CloseButton(PressedCallback callback,
                          CloseButton::Type type,
-                         bool use_light_colors)
-    : ImageButton(std::move(callback)),
-      type_(type),
-      icon_((type == CloseButton::Type::kSmall ||
-             type == CloseButton::Type::kSmallFloating)
-                ? &kSmallCloseButtonIcon
-                : &kMediumOrLargeCloseButtonIcon),
-      use_light_colors_(use_light_colors) {
+                         const gfx::VectorIcon* icon,
+                         ui::ColorId background_color_id,
+                         ui::ColorId icon_color_id)
+    : ImageButton(std::move(callback)), type_(type) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
-  StyleUtil::SetUpInkDropForButton(
-      this, gfx::Insets(),
-      /*highlight_on_hover=*/true,
-      /*highlight_on_focus=*/false,
-      /*background_color=*/
-      use_light_colors ? SK_ColorBLACK : gfx::kPlaceholderColor);
+  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                   /*highlight_on_hover=*/true,
+                                   /*highlight_on_focus=*/false,
+                                   /*background_color=*/gfx::kPlaceholderColor);
 
   // Add a rounded rect background. The rounding will be half the button size so
   // it is a circle.
   if (!IsFloatingCloseButton(type_)) {
-    SetBackground(views::CreateRoundedRectBackground(
-        GetCloseButtonBackgroundColor(use_light_colors_),
-        GetCloseButtonSize(type_) / 2));
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        background_color_id, GetCloseButtonSize(type_) / 2));
   }
+
+  // Use the default close vector icon base on the given `type_` if the client
+  // doesn't explicitly provide one.
+  const gfx::VectorIcon* vector_icon = icon ? icon : GetCloseIconForType(type_);
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(*vector_icon, icon_color_id,
+                                               GetIconSize(type_)));
 
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
@@ -124,41 +119,12 @@ void CloseButton::ResetListener() {
   SetCallback(views::Button::PressedCallback());
 }
 
-void CloseButton::SetVectorIcon(const gfx::VectorIcon& icon) {
-  icon_ = &icon;
-  UpdateVectorIcon();
-}
-
-void CloseButton::SetBackgroundColor(const SkColor background_color) {
-  if (background_color_ == background_color)
-    return;
-
-  background_color_ = background_color;
-  DCHECK(background());
-  background()->SetNativeControlColor(background_color_.value());
-}
-
-void CloseButton::SetIconColor(const SkColor icon_color) {
-  if (icon_color_ == icon_color)
-    return;
-
-  icon_color_ = icon_color;
-  UpdateVectorIcon();
-}
-
 void CloseButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
-  if (background()) {
-    background()->SetNativeControlColor(background_color_.value_or(
-        GetCloseButtonBackgroundColor(use_light_colors_)));
-  }
-
-  UpdateVectorIcon();
 
   // TODO(minch): Add background blur as per spec. Background blur is quite
   // heavy, and we may have many close buttons showing at a time. They'll be
   // added separately so its easier to monitor performance.
-
   StyleUtil::ConfigureInkDropAttributes(
       this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
 }
@@ -178,24 +144,6 @@ bool CloseButton::DoesIntersectRect(const views::View* target,
   if (!views::UsePointBasedTargeting(rect))
     button_bounds.Inset(gfx::Insets::VH(-button_size / 2, -button_size / 2));
   return button_bounds.Intersects(rect);
-}
-
-void CloseButton::UpdateVectorIcon() {
-  DCHECK(icon_);
-
-  auto* color_provider = AshColorProvider::Get();
-  SkColor enabled_icon_color =
-      icon_color_.value_or(color_provider->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonIconColor));
-  if (use_light_colors_) {
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
-    enabled_icon_color =
-        icon_color_.value_or(color_provider->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kButtonIconColor));
-  }
-  SetImage(
-      views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(*icon_, GetIconSize(type_), enabled_icon_color));
 }
 
 BEGIN_METADATA(CloseButton, views::ImageButton)
