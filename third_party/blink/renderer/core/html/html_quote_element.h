@@ -34,6 +34,7 @@ class HTMLQuoteElement final : public HTMLElement {
 
  public:
   HTMLQuoteElement(const QualifiedName&, Document&);
+  void AdjustPseudoStyleLocale(scoped_refptr<ComputedStyle> pseudo_style);
 
  private:
   bool IsURLAttribute(const Attribute&) const override;
