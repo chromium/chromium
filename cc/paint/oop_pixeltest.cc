@@ -1653,14 +1653,15 @@ class OopTextBlobPixelTest
   void DrawExpectedOnGpuThread(const gfx::Size& image_size,
                                SkBitmap& expected,
                                base::WaitableEvent& waitable) {
-    auto* gpu_service = viz::TestGpuServiceHolder::GetInstance()->gpu_service();
+    auto* gpu_service_holder = viz::TestGpuServiceHolder::GetInstance();
 
     // Must make context current before drawing.
-    auto context_state = gpu_service->GetContextState();
+    auto context_state = gpu_service_holder->GetSharedContextState();
     ASSERT_TRUE(context_state->MakeCurrent(nullptr));
 
     gpu::raster::GrShaderCache::ScopedCacheUse cache_use(
-        gpu_service->gr_shader_cache(), gpu::kDisplayCompositorClientId);
+        gpu_service_holder->gpu_service()->gr_shader_cache(),
+        gpu::kDisplayCompositorClientId);
 
     // Setup a GPU accelerated SkSurface to draw to.
     SkImageInfo image_info =

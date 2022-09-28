@@ -99,9 +99,7 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
 
   ~TestGpuServiceHolder() override;
 
-  scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_task_runner() {
-    return gpu_thread_.task_runner();
-  }
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_task_runner();
 
   // Most of |gpu_service_| is not safe to use off of the GPU thread, be careful
   // when accessing this.

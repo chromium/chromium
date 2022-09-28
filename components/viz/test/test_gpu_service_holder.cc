@@ -181,9 +181,9 @@ TestGpuServiceHolder::TestGpuServiceHolder(
 
   base::Thread::Options gpu_thread_options;
 #if defined(USE_OZONE)
-    gpu_thread_options.message_pump_type = ui::OzonePlatform::GetInstance()
-                                               ->GetPlatformProperties()
-                                               .message_pump_type_for_gpu;
+  gpu_thread_options.message_pump_type = ui::OzonePlatform::GetInstance()
+                                             ->GetPlatformProperties()
+                                             .message_pump_type_for_gpu;
 #endif
 
   CHECK(gpu_thread_.StartWithOptions(std::move(gpu_thread_options)));
@@ -223,8 +223,20 @@ TestGpuServiceHolder::~TestGpuServiceHolder() {
   io_thread_.Stop();
 }
 
+scoped_refptr<base::SingleThreadTaskRunner>
+TestGpuServiceHolder::gpu_thread_task_runner() {
+  if (gpu_service_->compositor_gpu_thread()) {
+    // if compositor GPU thread is enabled, use its task runner
+    return gpu_service_->compositor_gpu_thread()->task_runner();
+  }
+  return gpu_thread_.task_runner();
+}
+
 scoped_refptr<gpu::SharedContextState>
 TestGpuServiceHolder::GetSharedContextState() {
+  if (gpu_service_->compositor_gpu_thread()) {
+    return gpu_service_->compositor_gpu_thread()->GetSharedContextState();
+  }
   return gpu_service_->GetContextState();
 }
 
@@ -271,9 +283,6 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
   gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
       gpu::kGpuFeatureStatusEnabled;
 
-  // Disable DrDC in viz unittests. https://crbug.com/1367780
-  gpu_feature_info.enabled_gpu_driver_bug_workarounds.push_back(DISABLE_DRDC);
-
   // On MacOS, the default texture target for native GpuMemoryBuffers is
   // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
   // a GL surface. However, when ANGLE is used on top of SwiftShader or Metal,
@@ -315,7 +324,7 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
       /*scheduler=*/nullptr, /*shutdown_event=*/nullptr);
 
   task_executor_ = std::make_unique<gpu::GpuInProcessThreadService>(
-      this, gpu_thread_.task_runner(), gpu_service_->GetGpuScheduler(),
+      this, gpu_thread_task_runner(), gpu_service_->GetGpuScheduler(),
       gpu_service_->sync_point_manager(), gpu_service_->mailbox_manager(),
       gpu_service_->gpu_channel_manager()
           ->default_offscreen_surface()
