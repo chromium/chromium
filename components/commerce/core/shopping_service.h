@@ -207,6 +207,9 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       base::OnceCallback<void(bool)> callback);
 
+  // Fetch users' pref from server on whether to receive price tracking emails.
+  void FetchPriceEmailPref();
+
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 
