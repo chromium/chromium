@@ -25890,6 +25890,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="SafeBrowsing.AccountIntegration.DisabledDialog.SettingsButtonClicked">
+  <owner>awado@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the settings button on the ESB disabled dialog.
+  </description>
+</action>
+
+<action
+    name="SafeBrowsing.AccountIntegration.EnabledDialog.SettingsButtonClicked">
+  <owner>awado@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the settings button on the ESB enabled dialog.
+  </description>
+</action>
+
 <action name="SafeBrowsing.Download.WarningBypassed">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>

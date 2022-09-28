@@ -9,6 +9,8 @@
 
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -36,8 +38,11 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBodyText);
 // the click behavior for the dialogs.
 class TailoredSecurityDialogModelDelegate : public ui::DialogModelDelegate {
  public:
-  explicit TailoredSecurityDialogModelDelegate(const char* kOutcomeMetricName)
-      : kOutcomeMetricName_(kOutcomeMetricName) {}
+  explicit TailoredSecurityDialogModelDelegate(
+      const char* kOutcomeMetricName,
+      base::UserMetricsAction settings_user_action)
+      : kOutcomeMetricName_(kOutcomeMetricName),
+        settings_user_action_(settings_user_action) {}
 
   void OnDialogAccepted() {
     // Just count the click.
@@ -49,24 +54,32 @@ class TailoredSecurityDialogModelDelegate : public ui::DialogModelDelegate {
     // Redirect to the Chrome safe browsing settings page.
     base::UmaHistogramEnumeration(kOutcomeMetricName_,
                                   TailoredSecurityOutcome::kSettings);
+    base::RecordAction(settings_user_action_);
 
     chrome::ShowSafeBrowsingEnhancedProtection(browser);
   }
 
  private:
   const std::string kOutcomeMetricName_;
+  const base::UserMetricsAction settings_user_action_;
 };
 
 class DisabledDialogModelDelegate : public TailoredSecurityDialogModelDelegate {
  public:
   DisabledDialogModelDelegate()
-      : TailoredSecurityDialogModelDelegate(kDisabledDialogOutcome) {}
+      : TailoredSecurityDialogModelDelegate(
+            kDisabledDialogOutcome,
+            base::UserMetricsAction("SafeBrowsing.AccountIntegration."
+                                    "DisabledDialog.SettingsButtonClicked")) {}
 };
 
 class EnabledDialogModelDelegate : public TailoredSecurityDialogModelDelegate {
  public:
   EnabledDialogModelDelegate()
-      : TailoredSecurityDialogModelDelegate(kEnabledDialogOutcome) {}
+      : TailoredSecurityDialogModelDelegate(
+            kEnabledDialogOutcome,
+            base::UserMetricsAction("SafeBrowsing.AccountIntegration."
+                                    "EnabledDialog.SettingsButtonClicked")) {}
 };
 
 void ShowEnabledDialogForBrowser(Browser* browser) {

@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -176,6 +177,21 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
 }
 
 IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
+                       EnabledDialogCancelButtonRecordsUserAction) {
+  base::UserActionTester uat;
+  auto* dialog = ShowTailoredSecurityEnabledDialog(browser());
+  auto* bubble_delegate = dialog->widget_delegate()->AsBubbleDialogDelegate();
+  EXPECT_EQ(uat.GetActionCount("SafeBrowsing.AccountIntegration.EnabledDialog."
+                               "SettingsButtonClicked"),
+            0);
+
+  ClickButton(bubble_delegate, bubble_delegate->GetCancelButton());
+  EXPECT_EQ(uat.GetActionCount("SafeBrowsing.AccountIntegration.EnabledDialog."
+                               "SettingsButtonClicked"),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
                        DisabledDialogOkButtonIncrementsAcknowledgedHistogram) {
   base::HistogramTester histograms;
   auto* dialog = ShowTailoredSecurityDisabledDialog(browser());
@@ -214,6 +230,21 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
                 ->GetActiveWebContents()
                 ->GetLastCommittedURL(),
             GURL(kEnhancedProtectionSettingsUrl));
+}
+
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
+                       DisabledDialogCancelButtonRecordsUserAction) {
+  base::UserActionTester uat;
+  auto* dialog = ShowTailoredSecurityDisabledDialog(browser());
+  auto* bubble_delegate = dialog->widget_delegate()->AsBubbleDialogDelegate();
+  EXPECT_EQ(uat.GetActionCount("SafeBrowsing.AccountIntegration.DisabledDialog."
+                               "SettingsButtonClicked"),
+            0);
+
+  ClickButton(bubble_delegate, bubble_delegate->GetCancelButton());
+  EXPECT_EQ(uat.GetActionCount("SafeBrowsing.AccountIntegration.DisabledDialog."
+                               "SettingsButtonClicked"),
+            1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
