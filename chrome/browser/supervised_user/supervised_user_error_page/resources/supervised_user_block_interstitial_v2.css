@@ -158,6 +158,7 @@ p {
 
 .avatar-img {
   border: none;
+  border-radius: 50%;
   content: -webkit-image-set(url(default_100_percent/logo_avatar_circle_blue_color.png) 1x,
       url(default_200_percent/logo_avatar_circle_blue_color.png) 2x);
   float: left;
