@@ -76,7 +76,6 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
 
   // content::WebContentsObserver:
   void DidStopLoading() override;
-  void WebContentsDestroyed() override;
 
   // Requests a distilled AXTree for the main frame of the currently active
   // web contents.
@@ -93,10 +92,6 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   // ReadAnythingController is owned by ReadAnythingCoordinator which is a
   // browser user data, so this pointer is always valid.
   raw_ptr<Browser> browser_;
-
-  // The active web contents whose distilled text is currently displayed in
-  // the Read Anything app.
-  raw_ptr<content::WebContents> active_contents_ = nullptr;
 
   // Whether the Read Anything feature is currently active. The feature is
   // active when it is currently shown in the Side Panel.
