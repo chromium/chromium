@@ -6,6 +6,7 @@ module network.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/alternate_protocol_usage.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -77,6 +78,10 @@ struct URLResponseHead {
 
   // ALPN protocol negotiated with the server.
   string alpn_negotiated_protocol;
+
+  // The reason why Chrome uses a specific transport protocol
+  // for HTTP semantics.
+  AlternateProtocolUsage alternate_protocol_usage;
 
   // Remote address of the socket which fetched this resource.
   IPEndPoint remote_endpoint;

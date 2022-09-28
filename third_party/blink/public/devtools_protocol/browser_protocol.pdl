@@ -5256,6 +5256,30 @@ domain Network
       # Type "send-redemption-record" in the Trust Token API.
       Signing
 
+  # The reason why Chrome uses a specific transport protocol for HTTP semantics.
+  experimental type AlternateProtocolUsage extends string
+    enum
+      # Alternate Protocol was used without racing a normal connection.
+      alternativeJobWonWithoutRace
+      # Alternate Protocol was used by winning a race with a normal connection.
+      alternativeJobWonRace
+      # Alternate Protocol was not used by losing a race with a normal connection.
+      mainJobWonRace
+      # Alternate Protocol was not used because no Alternate-Protocol information
+      # was available when the request was issued, but an Alternate-Protocol header
+      # was present in the response.
+      mappingMissing
+      # Alternate Protocol was not used because it was marked broken.
+      broken
+      # HTTPS DNS protocol upgrade job was used without racing with a normal
+      # connection and an Alternate Protocol job.
+      dnsAlpnH3JobWonWithoutRace
+      # HTTPS DNS protocol upgrade job won a race with a normal connection and
+      # an Alternate Protocol job.
+      dnsAlpnH3JobWonRace
+      # When the reason is unspecified.
+      unspecifiedReason
+
   # HTTP response data.
   type Response extends object
     properties
@@ -5301,6 +5325,8 @@ domain Network
       optional string cacheStorageCacheName
       # Protocol used to fetch this request.
       optional string protocol
+      # The reason why Chrome uses a specific transport protocol for HTTP semantics.
+      experimental optional AlternateProtocolUsage alternateProtocolUsage
       # Security state of the request resource.
       Security.SecurityState securityState
       # Security details for the request.

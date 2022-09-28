@@ -1307,6 +1307,7 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->was_fetched_via_spdy = response_info.was_fetched_via_spdy;
   response->was_alpn_negotiated = response_info.was_alpn_negotiated;
   response->alpn_negotiated_protocol = response_info.alpn_negotiated_protocol;
+  response->alternate_protocol_usage = response_info.alternate_protocol_usage;
   response->connection_info = response_info.connection_info;
   response->remote_endpoint = response_info.remote_endpoint;
   response->was_fetched_via_cache = url_request_->was_cached();

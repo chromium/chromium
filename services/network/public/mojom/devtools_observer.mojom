@@ -7,6 +7,7 @@ module network.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/alternate_protocol_usage.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/cors.mojom";
@@ -51,6 +52,7 @@ struct URLResponseHeadDevToolsInfo {
   bool was_fetched_via_service_worker;
   string cache_storage_cache_name;
   string alpn_negotiated_protocol;
+  AlternateProtocolUsage alternate_protocol_usage;
   bool was_fetched_via_spdy;
   FetchResponseSource service_worker_response_source;
   SSLInfo? ssl_info;

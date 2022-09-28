@@ -47,6 +47,7 @@
 
 namespace network {
 namespace mojom {
+enum class AlternateProtocolUsage;
 enum class FetchResponseSource;
 enum class FetchResponseType : int32_t;
 enum class IPAddressSpace : int32_t;
@@ -218,6 +219,7 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   void SetWasAlpnNegotiated(bool);
   WebString AlpnNegotiatedProtocol() const;
   void SetAlpnNegotiatedProtocol(const WebString&);
+  void SetAlternateProtocolUsage(net::AlternateProtocolUsage);
 
   bool HasAuthorizationCoveredByWildcardOnPreflight() const;
   void SetHasAuthorizationCoveredByWildcardOnPreflight(bool);
