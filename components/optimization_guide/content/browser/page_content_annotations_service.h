@@ -260,9 +260,6 @@ class PageContentAnnotationsService : public KeyedService,
                     PageContentAnnotationsType annotation_type,
                     history::QueryURLResult url_result);
 
-  // The allowlist of page categories that are allowed to be persisted.
-  const base::flat_set<std::string> page_categories_persistence_allowlist_;
-
   // The minimum score that an allowlisted page category must have for it to be
   // persisted.
   const int min_page_category_score_to_persist_;

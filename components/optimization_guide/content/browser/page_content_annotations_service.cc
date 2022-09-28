@@ -118,9 +118,7 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     const base::FilePath& database_dir,
     OptimizationGuideLogger* optimization_guide_logger,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-    : page_categories_persistence_allowlist_(
-          features::GetRemotePageCategoriesToPersist()),
-      min_page_category_score_to_persist_(
+    : min_page_category_score_to_persist_(
           features::GetMinimumPageCategoryScoreToPersist()),
       last_annotated_history_visits_(
           features::MaxContentAnnotationRequestsCached()),
@@ -575,10 +573,6 @@ void PageContentAnnotationsService::PersistRemotePageMetadata(
 
   std::vector<history::VisitContentModelAnnotations::Category> categories;
   for (const auto& category : page_entities_metadata.categories()) {
-    if (page_categories_persistence_allowlist_.find(category.category_id()) ==
-        page_categories_persistence_allowlist_.end()) {
-      continue;
-    }
     int category_score = static_cast<int>(100 * category.score());
     if (category_score < min_page_category_score_to_persist_) {
       continue;

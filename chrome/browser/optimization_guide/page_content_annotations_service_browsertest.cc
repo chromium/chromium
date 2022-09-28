@@ -699,8 +699,6 @@ class PageContentAnnotationsServiceRemoteMetadataBrowserTest
         {{features::kOptimizationHints, {}},
          {features::kRemotePageMetadata,
           {{"persist_page_metadata", "true"},
-           {"remote_page_categories_persistence_allowlist",
-            "category1,othercategory"},
            {"min_page_category_score", "80"}}}},
         /*disabled_features=*/{{features::kPageContentAnnotations}});
     set_load_model_on_startup(false);
@@ -727,9 +725,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   proto::Category* category2 = page_entities_metadata.add_categories();
   category2->set_category_id("othercategory");
   category2->set_score(0.75);
-  proto::Category* category3 = page_entities_metadata.add_categories();
-  category3->set_category_id("notallowlisted");
-  category3->set_score(0.9);
   page_entities_metadata.set_alternative_title("alternative title");
   OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(page_entities_metadata);
@@ -786,9 +781,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   proto::Category* category2 = page_entities_metadata.add_categories();
   category2->set_category_id("othercategory");
   category2->set_score(0.75);
-  proto::Category* category3 = page_entities_metadata.add_categories();
-  category3->set_category_id("notallowlisted");
-  category3->set_score(0.9);
   OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(page_entities_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
