@@ -7,6 +7,9 @@
 #include "base/memory/raw_ptr.h"
 
 #import <Foundation/Foundation.h>
+#include <Security/Security.h>
+
+#include <unistd.h>
 
 #include <string>
 #include <utility>
@@ -16,7 +19,11 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
+#include "base/mac/mac_util.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
@@ -126,6 +133,82 @@ constexpr int kSuccess = 0;
 constexpr int kFailedToInstall = -1;
 constexpr int kFailedToAlterBrowserOwnership = -2;
 constexpr int kFailedToConfirmPermissionChanges = -3;
+constexpr int kFailedToCreateTempDir = -4;
+constexpr int kFailedToCopyToTempDir = -5;
+constexpr int kFailedToVerifyUpdater = -6;
+
+int InstallUpdater(const base::FilePath& browser_path) {
+  std::string user_temp_dir(PATH_MAX, std::string::value_type());
+  size_t len = confstr(_CS_DARWIN_USER_TEMP_DIR, user_temp_dir.data(),
+                       user_temp_dir.size());
+  if (len > user_temp_dir.size() || len == 0) {
+    return kFailedToCreateTempDir;
+  }
+  user_temp_dir.resize(len);
+
+  base::ScopedTempDir temp_dir;
+  if (!temp_dir.CreateUniqueTempDirUnderPath(base::FilePath(user_temp_dir))) {
+    return kFailedToCreateTempDir;
+  }
+
+  if (!base::CopyDirectory(base::FilePath(browser_path)
+                               .Append(kFrameworksPath)
+                               .Append(kProductBundleName),
+                           temp_dir.GetPath(), true)) {
+    return kFailedToCopyToTempDir;
+  }
+
+  if (!VerifyUpdaterSignature(temp_dir.GetPath().Append(kProductBundleName))) {
+    return kFailedToVerifyUpdater;
+  }
+
+  base::CommandLine command(temp_dir.GetPath()
+                                .Append(kProductBundleName)
+                                .Append("Contents/MacOS")
+                                .Append(PRODUCT_FULLNAME_STRING));
+  command.AppendSwitch(kInstallSwitch);
+  command.AppendSwitch(kSystemSwitch);
+  command.AppendSwitch(
+      base::StrCat({kLoggingModuleSwitch, kLoggingModuleSwitchValue}));
+
+  std::string output;
+  int exit_code = 0;
+  if (!base::GetAppOutputWithExitCode(command, &output, &exit_code)) {
+    return kFailedToInstall;
+  }
+
+  if (exit_code) {
+    VLOG(0) << "Output from attempting to install system-level updater: "
+            << output;
+    VLOG(0) << "Exit code: " << exit_code;
+  }
+  return exit_code;
+}
+
+}  // namespace
+
+bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
+  base::ScopedCFTypeRef<SecRequirementRef> requirement;
+  base::ScopedCFTypeRef<SecStaticCodeRef> code;
+  base::ScopedCFTypeRef<CFErrorRef> errors;
+  if (SecStaticCodeCreateWithPath(
+          base::mac::NSToCFCast(base::mac::FilePathToNSURL(updater_app_bundle)),
+          kSecCSDefaultFlags, code.InitializeInto()) != errSecSuccess) {
+    return false;
+  }
+  if (SecRequirementCreateWithString(
+          CFSTR("identifier \"" MAC_BUNDLE_IDENTIFIER_STRING
+                "\" and certificate leaf[subject.OU] "
+                "= " MAC_TEAM_IDENTIFIER_STRING),
+          kSecCSDefaultFlags, requirement.InitializeInto()) != errSecSuccess) {
+    return false;
+  }
+  if (SecStaticCodeCheckValidityWithErrors(
+          code, kSecCSCheckAllArchitectures | kSecCSCheckNestedCode,
+          requirement, errors.InitializeInto()) != errSecSuccess) {
+    return false;
+  }
+  return true;
 }
 
 PrivilegedHelperService::PrivilegedHelperService()
@@ -137,34 +220,10 @@ void PrivilegedHelperService::SetupSystemUpdater(
     const std::string& browser_path,
     base::OnceCallback<void(int)> result) {
   // Get the updater path via the browser path.
-  base::FilePath updater_path_exec_path = base::FilePath(browser_path)
-                                              .Append(kFrameworksPath)
-                                              .Append(kProductBundleName)
-                                              .Append("Contents/MacOS")
-                                              .Append(PRODUCT_FULLNAME_STRING);
-
-  base::CommandLine command(updater_path_exec_path);
-  command.AppendSwitch(kInstallSwitch);
-  command.AppendSwitch(kSystemSwitch);
-  command.AppendSwitch(
-      base::StrCat({kLoggingModuleSwitch, kLoggingModuleSwitchValue}));
-
-  std::string output;
-  int exit_code = 0;
-  if (!base::GetAppOutputWithExitCode(command, &output, &exit_code)) {
-    VLOG(0) << "Something went wrong with installing the updater: "
-            << updater_path_exec_path;
+  const int install_result = InstallUpdater(base::FilePath(browser_path));
+  if (install_result != kSuccess) {
     main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(result), kFailedToInstall));
-    return;
-  }
-
-  if (exit_code) {
-    VLOG(0) << "Output from attempting to install system-level updater: "
-            << output;
-    VLOG(0) << "Exit code: " << exit_code;
-    main_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(std::move(result), exit_code));
+        FROM_HERE, base::BindOnce(std::move(result), install_result));
     return;
   }
 
@@ -173,6 +232,8 @@ void PrivilegedHelperService::SetupSystemUpdater(
   chown_cmd.AppendArg("root:wheel");
   chown_cmd.AppendArg(browser_path);
 
+  int exit_code = 0;
+  std::string output;
   if (!base::GetAppOutputWithExitCode(chown_cmd, &output, &exit_code)) {
     VLOG(0) << "Something went wrong with altering the browser ownership: "
             << browser_path;

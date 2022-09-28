@@ -20,6 +20,7 @@ if (is_chrome_branded) {
   updater_copyright =
       "Copyright 2020 The Chromium Authors. All rights reserved."
   updater_product_full_name = "GoogleUpdater"
+  mac_team_identifier = "EQHXZ8M8AV"
 } else {
   browser_name = "Chromium"
   browser_product_name = "Chromium"
@@ -36,6 +37,7 @@ if (is_chrome_branded) {
   updater_copyright =
       "Copyright 2020 The Chromium Authors. All rights reserved."
   updater_product_full_name = "ChromiumUpdater"
+  mac_team_identifier = "PLACEHOLDER"
 }
 
 # Chrome and Chromium share the same endpoints for now.

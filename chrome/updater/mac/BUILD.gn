@@ -81,7 +81,6 @@ source_set("privileged_helper_sources") {
     "//base",
     "//chrome/updater:base",
     "//chrome/updater:branding_header",
-    "//chrome/updater:constants_prod",
   ]
 }
 
@@ -126,9 +125,13 @@ executable("privileged_helper") {
     ":priviledged_launchd_plist",
     ":privileged_helper_sources",
     "//base",
+    "//chrome/updater:constants_prod",
   ]
 
-  frameworks = [ "Foundation.framework" ]
+  frameworks = [
+    "Foundation.framework",
+    "Security.framework",
+  ]
 
   inputs = [
     "$target_gen_dir/$privileged_helper_name-Info.plist",

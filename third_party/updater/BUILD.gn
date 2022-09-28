@@ -33,6 +33,19 @@ if (is_win || is_mac) {
         "chrome_mac_universal/GoogleUpdater_test.app/Contents/Info.plist",
         "chrome_mac_universal/GoogleUpdater_test.app/Contents/MacOS/GoogleUpdater_test",
         "chrome_mac_universal/GoogleUpdater_test.app/Contents/PkgInfo",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/CodeResources",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Info.plist",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/MacOS/GoogleSoftwareUpdate",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/Info.plist",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/MacOS/GoogleSoftwareUpdateAgent",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/_CodeSignature",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/_CodeSignature",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Info.plist",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/MacOS/GoogleUpdater",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/PkgInfo",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/_CodeSignature",
       ]
     }
 
