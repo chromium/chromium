@@ -128,16 +128,24 @@ class Av1Decoder : public VideoDecoder {
       const libgav1::ObuFrameHeader& frm_header);
 
   // Refreshes |ref_frames_| slots with the current |buffer| and refreshes
-  // |state_| with |current_frame|. Returns |reusable_buffer_slots| to indicate
-  // which CAPTURE buffers can be reused for VIDIOC_QBUF ioctl call.
+  // |state_| with |current_frame|. Updates |ref_order_hint_| using |order_hint|
+  // of current frame header, which is needed for the next frame decoding.
+  // Returns |reusable_buffer_slots| to indicate which CAPTURE buffers can be
+  // reused for VIDIOC_QBUF ioctl call.
   std::set<int> RefreshReferenceSlots(
-      uint8_t refresh_frame_flags,
-      libgav1::RefCountedBufferPtr current_frame,
-      scoped_refptr<MmapedBuffer> buffer,
-      uint32_t last_queued_buffer_index);
+      const uint8_t refresh_frame_flags,
+      const libgav1::RefCountedBufferPtr current_frame,
+      const scoped_refptr<MmapedBuffer> buffer,
+      const uint32_t last_queued_buffer_index,
+      const uint8_t order_hint);
 
   // Reference frames currently in use.
   std::array<scoped_refptr<MmapedBuffer>, kAv1NumRefFrames> ref_frames_;
+
+  // Represents the least significant bits of the expected output order of the
+  // frames. Corresponds to |RefOrderHint| in the AV1 spec.
+  // https://aomediacodec.github.io/av1-spec/#set-frame-refs-process
+  std::array<uint8_t, kAv1NumRefFrames> ref_order_hint_{0};
 
   // Parser for the IVF stream to decode.
   const std::unique_ptr<IvfParser> ivf_parser_;

@@ -827,18 +827,13 @@ void Av1Decoder::SetupFrameParams(
 
   // The first slot in |order_hints| is reserved for intra frame, so it is not
   // used and will always be 0.
-  // Please reference more details in the below comment for this algorithm to
-  // compute |order_hints|. In summary, we are trying to get frame number here
-  // given a specific reference frame type (L0, L1, L2, G, B, A1, A2) in
-  // the reference frames list.
-  // https://b.corp.google.com/issues/242337166#comment24
   static_assert(std::size(decltype(v4l2_frame_params->order_hints){}) ==
                     libgav1::kNumReferenceFrameTypes,
                 "Invalid size of |order_hints| array");
   if (frm_header.frame_type != libgav1::kFrameKey) {
     for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++) {
       v4l2_frame_params->order_hints[i + 1] =
-          ref_frames_[frm_header.reference_frame_index[i]]->frame_number();
+          ref_order_hint_[frm_header.reference_frame_index[i]];
     }
   }
 
@@ -881,10 +876,11 @@ void Av1Decoder::SetupFrameParams(
 }
 
 std::set<int> Av1Decoder::RefreshReferenceSlots(
-    uint8_t refresh_frame_flags,
-    libgav1::RefCountedBufferPtr current_frame,
-    scoped_refptr<MmapedBuffer> buffer,
-    uint32_t last_queued_buffer_index) {
+    const uint8_t refresh_frame_flags,
+    const libgav1::RefCountedBufferPtr current_frame,
+    const scoped_refptr<MmapedBuffer> buffer,
+    const uint32_t last_queued_buffer_index,
+    const uint8_t order_hint) {
   state_->UpdateReferenceFrames(current_frame,
                                 base::strict_cast<int>(refresh_frame_flags));
 
@@ -921,6 +917,9 @@ std::set<int> Av1Decoder::RefreshReferenceSlots(
     // reference frame slots in the reference frames list.
     ref_frames_.fill(buffer);
 
+    // TODO(b/249104479): Update |ref_order_hint_| as needed for all reference
+    // frame slots after finding relevant test vector
+
     return reusable_buffer_ids;
   }
 
@@ -951,6 +950,7 @@ std::set<int> Av1Decoder::RefreshReferenceSlots(
       }
     }
     ref_frames_[i] = buffer;
+    ref_order_hint_[i] = order_hint;
   }
 
   return reusable_buffer_ids;
@@ -1071,7 +1071,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   const std::set<int> reusable_buffer_ids =
       RefreshReferenceSlots(current_frame_header.refresh_frame_flags,
                             current_frame, CAPTURE_queue_->GetBuffer(index),
-                            CAPTURE_queue_->last_queued_buffer_index());
+                            CAPTURE_queue_->last_queued_buffer_index(),
+                            current_frame_header.order_hint);
 
   for (const auto reusable_buffer_id : reusable_buffer_ids) {
     if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_id))
