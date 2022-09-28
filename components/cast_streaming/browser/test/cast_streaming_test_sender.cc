@@ -35,11 +35,11 @@ openscreen::cast::EncodedFrame DecoderBufferToEncodedFrame(
   encoded_frame.frame_id = frame_id;
   if (decoder_buffer->is_key_frame()) {
     encoded_frame.dependency =
-        openscreen::cast::EncodedFrame::Dependency::KEY_FRAME;
+        openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
     *last_referenced_frame_id = encoded_frame.frame_id;
   } else {
     encoded_frame.dependency =
-        openscreen::cast::EncodedFrame::Dependency::DEPENDS_ON_ANOTHER;
+        openscreen::cast::EncodedFrame::Dependency::kDependent;
   }
   encoded_frame.referenced_frame_id = *last_referenced_frame_id;
 

@@ -53,14 +53,13 @@ openscreen::cast::EncodedFrame::Dependency ToOpenscreenDependency(
     media::cast::EncodedFrame::Dependency dependency) {
   switch (dependency) {
     case media::cast::EncodedFrame::Dependency::UNKNOWN_DEPENDENCY:
-      return openscreen::cast::EncodedFrame::Dependency::UNKNOWN_DEPENDENCY;
+      return openscreen::cast::EncodedFrame::Dependency::kUnknown;
     case media::cast::EncodedFrame::Dependency::DEPENDENT:
-      return openscreen::cast::EncodedFrame::Dependency::DEPENDS_ON_ANOTHER;
+      return openscreen::cast::EncodedFrame::Dependency::kDependent;
     case media::cast::EncodedFrame::Dependency::INDEPENDENT:
-      return openscreen::cast::EncodedFrame::Dependency::
-          INDEPENDENTLY_DECODABLE;
+      return openscreen::cast::EncodedFrame::Dependency::kIndependent;
     case media::cast::EncodedFrame::Dependency::KEY:
-      return openscreen::cast::EncodedFrame::Dependency::KEY_FRAME;
+      return openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
   }
   NOTREACHED();
 }

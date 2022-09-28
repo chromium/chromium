@@ -167,7 +167,7 @@ void StreamConsumer::MaybeSendNextFrame() {
 
   const bool is_key_frame =
       encoded_frame.dependency ==
-      openscreen::cast::EncodedFrame::Dependency::KEY_FRAME;
+      openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
 
   base::TimeDelta playout_time =
       base::Microseconds(std::chrono::duration_cast<std::chrono::microseconds>(

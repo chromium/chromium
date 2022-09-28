@@ -31,7 +31,7 @@ TEST(OpenscreenConversionHelpersTest, EncodedFrameConversions) {
 
   const openscreen::cast::EncodedFrame converted =
       ToOpenscreenEncodedFrame(original);
-  EXPECT_EQ(openscreen::cast::EncodedFrame::Dependency::INDEPENDENTLY_DECODABLE,
+  EXPECT_EQ(openscreen::cast::EncodedFrame::Dependency::kIndependent,
             converted.dependency);
   EXPECT_EQ(openscreen::cast::FrameId(0), converted.frame_id);
   EXPECT_EQ(openscreen::cast::RtpTimeTicks(27000), converted.rtp_timestamp);
