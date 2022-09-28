@@ -9,6 +9,7 @@ include_rules = [
   "+ui/base/x",
   "+ui/gfx",
   "+ui/ozone/buildflags.h",
+  "+third_party/angle/src/gpu_info_util/SystemInfo.h",
 ]
 
 specific_include_rules = {
