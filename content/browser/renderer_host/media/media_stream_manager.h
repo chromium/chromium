@@ -332,7 +332,8 @@ class CONTENT_EXPORT MediaStreamManager
   // FakeMediaStreamUIProxys to be used for generated streams.
   void UseFakeUIFactoryForTests(
       base::RepeatingCallback<std::unique_ptr<FakeMediaStreamUIProxy>(void)>
-          fake_ui_factory);
+          fake_ui_factory,
+      bool use_for_gum_desktop_capture = true);
 
   // Register and unregister a new callback for receiving native log entries.
   // Called on the IO thread.
@@ -732,6 +733,13 @@ class CONTENT_EXPORT MediaStreamManager
                              blink::mojom::MediaStreamType type,
                              media::mojom::CaptureHandlePtr capture_handle);
 
+  bool ShouldUseFakeUIProxy(blink::mojom::MediaStreamType stream_type) const;
+
+  std::unique_ptr<MediaStreamUIProxy> MakeFakeUIProxy(
+      const std::string& label,
+      const MediaDeviceEnumeration& enumeration,
+      DeviceRequest* request);
+
 #if !BUILDFLAG(IS_ANDROID)
   // Defines a window of opportunity for the Web-application to decide
   // whether a display-surface which it's capturing should be focused.
@@ -753,8 +761,19 @@ class CONTENT_EXPORT MediaStreamManager
   // All non-closed request. Must be accessed on IO thread.
   DeviceRequests requests_;
 
+  // A fake UI factory allows bypassing the user interaction with permission and
+  // capture selection dialogs, immediately starting capture with a default
+  // selection.
+  // Set in unit tests via UseFakeUIFactoryForTests(), and enabled in browser
+  // tests / web tests via the command line flag --use-fake-ui-for-media-stream.
   base::RepeatingCallback<std::unique_ptr<FakeMediaStreamUIProxy>(void)>
       fake_ui_factory_;
+  // The fake UI doesn't work for getUserMedia desktop captures, so in general
+  // we won't use it for them, even if fake_ui_factory_ is set (see
+  // crbug.com/919485).
+  // Some unittests do still require the fake ui to be used for all captures, so
+  // set this indicator to true.
+  bool use_fake_ui_for_gum_desktop_capture_ = false;
 
   // Observes changes of captured tabs' CaptureHandleConfig and reports
   // this changes back to their capturers. This object lives on the UI thread
