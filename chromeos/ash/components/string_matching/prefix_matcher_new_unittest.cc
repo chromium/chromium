@@ -188,4 +188,45 @@ TEST_F(PrefixMatcherNewTest, ExactPrefixMatchOrderVariationAndDiscrete) {
   EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
 }
 
+TEST_F(PrefixMatcherNewTest, SentencePrefixMatch) {
+  TokenizedString query(u"abcd");
+  TokenizedString text(u"a bcd e");
+
+  PrefixMatcherNew pm(query, text);
+  pm.Match();
+  double expected_score = kIsPrefixCharScore * 4;
+  EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
+}
+
+TEST_F(PrefixMatcherNewTest, SentencePrefixMatchNotInFront) {
+  TokenizedString query(u"abcd");
+  TokenizedString text(u"fgh a bcd e");
+
+  PrefixMatcherNew pm(query, text);
+  pm.Match();
+  double expected_score = (kIsFrontOfTokenCharScore + kIsWeakHitCharScore) * 2;
+  EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
+}
+
+TEST_F(PrefixMatcherNewTest, CaseSentencePrefixMatchPreferred) {
+  TokenizedString query(u"abc def");
+  TokenizedString text(u"abcdef abc def");
+
+  PrefixMatcherNew pm(query, text);
+  pm.Match();
+  double expected_score = kIsPrefixCharScore * 6;
+  EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
+}
+
+TEST_F(PrefixMatcherNewTest, CaseTokenPrefixMatchPreferred) {
+  TokenizedString query(u"abc def");
+  TokenizedString text(u"def abc abcdef");
+
+  PrefixMatcherNew pm(query, text);
+  pm.Match();
+  double expected_score =
+      kIsFrontOfTokenCharScore * 2 + kIsWeakHitCharScore * 4;
+  EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
+}
+
 }  // namespace ash::string_matching

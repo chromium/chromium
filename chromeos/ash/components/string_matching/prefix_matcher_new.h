@@ -20,6 +20,28 @@ constexpr double kNoMatchScore = 0.0;
 
 }  // namespace constants
 
+namespace {
+struct MatchInfo {
+ public:
+  typedef std::vector<gfx::Range> Hits;
+
+  MatchInfo();
+  ~MatchInfo();
+
+  MatchInfo(const MatchInfo&) = delete;
+  MatchInfo& operator=(const MatchInfo&) = delete;
+
+  double relevance = constants::kNoMatchScore;
+  Hits hits;
+  // The last query/text position that the relevance was updated.
+  size_t last_query_pos = SIZE_MAX;
+  size_t last_text_pos = SIZE_MAX;
+  // Flag to track if we are still matching the prefixes of both the query and
+  // text.
+  bool is_front = true;
+};
+}  // namespace
+
 // PrefixMatcher matches the chars of a given query as prefix of tokens in
 // a given text. We give some specific scoring examples in the .cc file.
 class PrefixMatcherNew {
@@ -32,18 +54,12 @@ class PrefixMatcherNew {
   PrefixMatcherNew(const PrefixMatcherNew&) = delete;
   PrefixMatcherNew& operator=(const PrefixMatcherNew&) = delete;
 
-  // Stops on the first full match and returns true. Otherwise,
-  // returns false to indicate no match.
-  //
-  // The time complexity of the match algorithm is `O(m+n)`, where m is the
-  // `num_query_token` and n is the `num_text_token`. O(m) to construct the
-  // `query_map` and O(n) to traverse the text tokens to find matches. Each text
-  // token will be compared at most twice (one for `query_map` and one for last
-  // query token).
+  // Return true if we found either sentence prefix matching or token prefix
+  // matching. If no full match is found, return false.
   bool Match();
 
   double relevance() const { return relevance_; }
-  // TODO(crbug.com/1336160): the hits_ has not yet been calculated. It will be
+  // TODO(crbug.com/1336160): The hits_ has not yet been calculated. It will be
   // implemented in the following CLs, and is not expected to be called at
   // current stage.
   const Hits& hits() const {
@@ -52,21 +68,53 @@ class PrefixMatcherNew {
   }
 
  private:
-  // update the relevance score based on the matched token.
-  void UpdateRelevance(size_t query_pos, size_t text_pos);
+  // Stops on the first full sentence prefix match and updates the relevance
+  // score. If no match found, set relevance as kNoMatchScore.
+  //
+  // We treat the following as sentence prefix match:
+  // query        |       text
+  // chromeos     | [chrome os] flex        (prefix)
+  // chrome os    | google [chromeos]       (non-prefix)
+  // google pixel | buy [google pixel]book  (unfinished)
+  //
+  // But not the following:
+  // query        |       text
+  // cof          | chrome os flex
+  // go chrome    | google chromeos
+  void SentencePrefixMatch(MatchInfo& sentence_match_info);
+
+  // Stops on the first full token prefix match and updates the relevance
+  // score. If no match found, set relevance as kNoMatchScore.
+  //
+  // We treat the following as token prefix match:
+  // query        |       text
+  // chrome store | my [chrome store]       (continuous)
+  // chrome store | [chrome] web [store]    (discrete)
+  // chrome google| [google chrome]         (unordered)
+  // google pixel | buy [google pixel]book  (unfinished)
+  //
+  // But not the following:
+  // query        |       text
+  // cof          | chrome os flex
+  // chrome flex  | chromeos flex
+  //
+  // The time complexity of the token prefix match algorithm is `O(m+n)`, where
+  // m is the `num_query_token` and n is the `num_text_token`. O(m) to construct
+  // the `query_map` and O(n) to traverse the text tokens to find matches. Each
+  // text token will be compared at most twice (one for `query_map` and one for
+  // last query token).
+  void TokenPrefixMatch(MatchInfo& token_match_info);
+
+  // update the relevance score of token prefix based on the matched token.
+  void UpdateInfoForTokenPrefixMatch(size_t query_pos,
+                                     size_t text_pos,
+                                     MatchInfo& token_match_info);
 
   const TokenizedString& query_;
   const TokenizedString& text_;
 
   double relevance_ = constants::kNoMatchScore;
   Hits hits_;
-
-  // The last query/text position that the relevance was updated.
-  size_t last_query_pos_ = SIZE_MAX;
-  size_t last_text_pos_ = SIZE_MAX;
-  // Flag to track if we are still matching the prefixes of both the query and
-  // text.
-  bool is_front_ = true;
 };
 
 }  // namespace ash::string_matching

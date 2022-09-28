@@ -8,10 +8,14 @@
 #include <queue>
 #include <string>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/strings/strcat.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 namespace ash::string_matching {
+MatchInfo::MatchInfo() = default;
+MatchInfo::~MatchInfo() = default;
 
 // TODO(crbug.com/1336160): Replace PrefixMatcher with PrefixMatcherNew
 //
@@ -48,18 +52,75 @@ PrefixMatcherNew::PrefixMatcherNew(const TokenizedString& query,
 PrefixMatcherNew::~PrefixMatcherNew() = default;
 
 bool PrefixMatcherNew::Match() {
+  MatchInfo sentence_match_info;
+  SentencePrefixMatch(sentence_match_info);
+  MatchInfo token_match_info;
+  TokenPrefixMatch(token_match_info);
+  relevance_ =
+      std::max(sentence_match_info.relevance, token_match_info.relevance);
+  return relevance_ > 0.0;
+}
+
+void PrefixMatcherNew::SentencePrefixMatch(MatchInfo& sentence_match_info) {
+  std::u16string query_sentence = base::StrCat(query_.tokens());
+  std::u16string text_sentence = base::StrCat(text_.tokens());
+
+  // Queue to store the starting index of each token in the `text_sentence`.
+  std::queue<size_t> text_token_indexes;
+  size_t token_index = 0;
+  for (auto text_token : text_.tokens()) {
+    text_token_indexes.push(token_index);
+    token_index += text_token.size();
+  }
+
+  while (!text_token_indexes.empty()) {
+    size_t start_index = text_token_indexes.front();
+    size_t matched_index = text_sentence.find(query_sentence, start_index);
+
+    while (!text_token_indexes.empty() &&
+           text_token_indexes.front() < matched_index) {
+      text_token_indexes.pop();
+    }
+
+    if (text_token_indexes.empty() ||
+        text_token_indexes.front() > matched_index) {
+      continue;
+    }
+
+    // Update the relevance score and break the loop if the found match begins
+    // from the starting index of a token.
+    DCHECK(text_token_indexes.front() == matched_index);
+    if (matched_index == 0)
+      sentence_match_info.relevance =
+          constants::kIsPrefixCharScore * query_sentence.size();
+    else {
+      sentence_match_info.relevance =
+          constants::kIsWeakHitCharScore * query_sentence.size();
+      while (!text_token_indexes.empty() &&
+             text_token_indexes.front() <
+                 matched_index + query_sentence.size()) {
+        text_token_indexes.pop();
+        sentence_match_info.relevance += constants::kIsFrontOfTokenCharScore -
+                                         constants::kIsWeakHitCharScore;
+      }
+    }
+    return;
+  }
+}
+
+void PrefixMatcherNew::TokenPrefixMatch(MatchInfo& token_match_info) {
   const size_t num_query_token = query_.tokens().size();
   const size_t num_text_token = text_.tokens().size();
 
-  // Not a prefix match if `query_`  contains more tokens than  `text_` , or if
-  // `query_`  is empty.
+  // Not a prefix match if `query_`  contains more tokens than  `text_` , or
+  // if `query_`  is empty.
   if (query_.tokens().empty() || num_query_token > num_text_token)
-    return false;
+    return;
 
   // We use `query_map` to allow fast match between query tokens and text
-  // tokens. Queue stores the query token index and ensures the tokens to match
-  // in sequence when multiple same tokens exists. It does not store the last
-  // query token as the last query token allows token prefix matching.
+  // tokens. Queue stores the query token index and ensures the tokens to
+  // match in sequence when multiple same tokens exists. It does not store the
+  // last query token as the last query token allows token prefix matching.
   base::flat_map<std::u16string, std::queue<size_t>> query_map;
   for (size_t i = 0; i < num_query_token - 1; ++i) {
     query_map[query_.tokens()[i]].emplace(i);
@@ -78,7 +139,7 @@ bool PrefixMatcherNew::Match() {
       if (query_map[text_token].empty())
         query_map.erase(text_token);
 
-      UpdateRelevance(query_pos, text_pos);
+      UpdateInfoForTokenPrefixMatch(query_pos, text_pos, token_match_info);
       ++matched_num;
     } else if (last_query_token.size() <= text_token.size() &&
                text_token.compare(0, last_query_token.size(),
@@ -89,35 +150,38 @@ bool PrefixMatcherNew::Match() {
       //
       //   Query 'Google Ch' is also a match as the query token 'ch' is the
       //   prefix of the text token 'chrome'.
-      UpdateRelevance(num_query_token - 1, text_pos);
+      UpdateInfoForTokenPrefixMatch(num_query_token - 1, text_pos,
+                                    token_match_info);
       ++matched_num;
     }
 
     if (matched_num == num_query_token)
-      return true;
+      return;
   }
-
-  relevance_ = constants::kNoMatchScore;
-  hits_.clear();
-  return false;
+  token_match_info.relevance = constants::kNoMatchScore;
 }
 
-void PrefixMatcherNew::UpdateRelevance(size_t query_pos, size_t text_pos) {
-  // TODO(crbug.com/1336160): Update the hits information. We concentrate on the
-  // correctness of the prefix matching and the relevance score in the first
-  // implement. The hits will be calculated and tested when prefix matcher is
-  // replaced in TokenizedStringMatch.
-  if (is_front_ &&
-      (query_pos != last_query_pos_ + 1 || text_pos != last_text_pos_ + 1)) {
-    is_front_ = false;
+void PrefixMatcherNew::UpdateInfoForTokenPrefixMatch(
+    size_t query_pos,
+    size_t text_pos,
+    MatchInfo& token_match_info) {
+  // TODO(crbug.com/1336160): Update the hits information. We concentrate on
+  // the correctness of the prefix matching and the relevance score in the
+  // first implement. The hits will be calculated and tested when prefix
+  // matcher is replaced in TokenizedStringMatch.
+  if (token_match_info.is_front &&
+      (query_pos != token_match_info.last_query_pos + 1 ||
+       text_pos != token_match_info.last_query_pos + 1)) {
+    token_match_info.is_front = false;
   }
-  relevance_ += is_front_ ? constants::kIsPrefixCharScore *
-                                query_.tokens().at(query_pos).size()
-                          : constants::kIsFrontOfTokenCharScore +
-                                constants::kIsWeakHitCharScore *
-                                    (query_.tokens().at(query_pos).size() - 1);
-  last_query_pos_ = query_pos;
-  last_text_pos_ = text_pos;
+  token_match_info.relevance +=
+      token_match_info.is_front
+          ? constants::kIsPrefixCharScore * query_.tokens().at(query_pos).size()
+          : constants::kIsFrontOfTokenCharScore +
+                constants::kIsWeakHitCharScore *
+                    (query_.tokens().at(query_pos).size() - 1);
+  token_match_info.last_query_pos = query_pos;
+  token_match_info.last_text_pos = text_pos;
 }
 
 }  // namespace ash::string_matching
