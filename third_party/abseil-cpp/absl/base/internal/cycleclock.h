@@ -47,6 +47,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
+#include "absl/base/internal/cycleclock_config.h"
 #include "absl/base/internal/unscaledcycleclock.h"
 
 namespace absl {
@@ -76,25 +77,9 @@ class CycleClock {
 #if ABSL_USE_UNSCALED_CYCLECLOCK
   static CycleClockSourceFunc LoadCycleClockSource();
 
-#ifdef NDEBUG
-#ifdef ABSL_INTERNAL_UNSCALED_CYCLECLOCK_FREQUENCY_IS_CPU_FREQUENCY
-  // Not debug mode and the UnscaledCycleClock frequency is the CPU
-  // frequency.  Scale the CycleClock to prevent overflow if someone
-  // tries to represent the time as cycles since the Unix epoch.
-  static constexpr int32_t kShift = 1;
-#else
-  // Not debug mode and the UnscaledCycleClock isn't operating at the
-  // raw CPU frequency. There is no need to do any scaling, so don't
-  // needlessly sacrifice precision.
-  static constexpr int32_t kShift = 0;
-#endif
-#else   // NDEBUG
-  // In debug mode use a different shift to discourage depending on a
-  // particular shift value.
-  static constexpr int32_t kShift = 2;
-#endif  // NDEBUG
+  static constexpr int32_t kShift = kCycleClockShift;
+  static constexpr double kFrequencyScale = kCycleClockFrequencyScale;
 
-  static constexpr double kFrequencyScale = 1.0 / (1 << kShift);
   ABSL_CONST_INIT static std::atomic<CycleClockSourceFunc> cycle_clock_source_;
 #endif  //  ABSL_USE_UNSCALED_CYCLECLOC
 

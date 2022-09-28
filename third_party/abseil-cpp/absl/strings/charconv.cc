@@ -68,6 +68,12 @@ template <>
 struct FloatTraits<double> {
   using mantissa_t = uint64_t;
 
+  // The number of bits in the given float type.
+  static constexpr int kTargetBits = 64;
+
+  // The number of exponent bits in the given float type.
+  static constexpr int kTargetExponentBits = 11;
+
   // The number of mantissa bits in the given float type.  This includes the
   // implied high bit.
   static constexpr int kTargetMantissaBits = 53;
@@ -85,6 +91,31 @@ struct FloatTraits<double> {
   // If `m` is the smallest possible int kTargetMantissaBits bits wide, then
   // m * 2**kMinNormalExponent is exactly equal to DBL_MIN.
   static constexpr int kMinNormalExponent = -1074;
+
+  // The IEEE exponent bias.  It equals ((1 << (kTargetExponentBits - 1)) - 1).
+  static constexpr int kExponentBias = 1023;
+
+  // The Eisel-Lemire "Shifting to 54/25 Bits" adjustment.  It equals (63 - 1 -
+  // kTargetMantissaBits).
+  static constexpr int kEiselLemireShift = 9;
+
+  // The Eisel-Lemire high64_mask.  It equals ((1 << kEiselLemireShift) - 1).
+  static constexpr uint64_t kEiselLemireMask = uint64_t{0x1FF};
+
+  // The smallest negative integer N (smallest negative means furthest from
+  // zero) such that parsing 9999999999999999999eN, with 19 nines, is still
+  // positive. Parsing a smaller (more negative) N will produce zero.
+  //
+  // Adjusting the decimal point and exponent, without adjusting the value,
+  // 9999999999999999999eN equals 9.999999999999999999eM where M = N + 18.
+  //
+  // 9999999999999999999, with 19 nines but no decimal point, is the largest
+  // "repeated nines" integer that fits in a uint64_t.
+  static constexpr int kEiselLemireMinInclExp10 = -324 - 18;
+
+  // The smallest positive integer N such that parsing 1eN produces infinity.
+  // Parsing a smaller N will produce something finite.
+  static constexpr int kEiselLemireMaxExclExp10 = 309;
 
   static double MakeNan(const char* tagp) {
     // Support nan no matter which namespace it's in.  Some platforms
@@ -141,9 +172,16 @@ template <>
 struct FloatTraits<float> {
   using mantissa_t = uint32_t;
 
+  static constexpr int kTargetBits = 32;
+  static constexpr int kTargetExponentBits = 8;
   static constexpr int kTargetMantissaBits = 24;
   static constexpr int kMaxExponent = 104;
   static constexpr int kMinNormalExponent = -149;
+  static constexpr int kExponentBias = 127;
+  static constexpr int kEiselLemireShift = 38;
+  static constexpr uint64_t kEiselLemireMask = uint64_t{0x3FFFFFFFFF};
+  static constexpr int kEiselLemireMinInclExp10 = -46 - 18;
+  static constexpr int kEiselLemireMaxExclExp10 = 39;
 
   static float MakeNan(const char* tagp) {
     // Support nanf no matter which namespace it's in.  Some platforms
@@ -615,20 +653,42 @@ CalculatedFloat CalculateFromParsedDecimal(
 // this function returns false) is both fast and correct.
 template <typename FloatType>
 bool EiselLemire(const strings_internal::ParsedFloat& input, bool negative,
-                 FloatType* value) {
-  // For now, implement Eisel-Lemire only for double, not float.
-  if (FloatTraits<FloatType>::kTargetMantissaBits != 53) {
-    return false;
-  }
-
+                 FloatType* value, std::errc* ec) {
   uint64_t man = input.mantissa;
   int exp10 = input.exponent;
-  if (Power10Underflow(exp10) || Power10Overflow(exp10)) {
-    return false;
+  if (exp10 < FloatTraits<FloatType>::kEiselLemireMinInclExp10) {
+    *value = negative ? -0.0 : 0.0;
+    *ec = std::errc::result_out_of_range;
+    return true;
+  } else if (exp10 >= FloatTraits<FloatType>::kEiselLemireMaxExclExp10) {
+    // Return max (a finite value) consistent with from_chars and DR 3081. For
+    // SimpleAtod and SimpleAtof, post-processing will return infinity.
+    *value = negative ? -std::numeric_limits<FloatType>::max()
+                      : std::numeric_limits<FloatType>::max();
+    *ec = std::errc::result_out_of_range;
+    return true;
   }
+
+  // Assert that (kPower10TableMin <= exp10) and (exp10 <= kPower10TableMax).
+  // Equivalently, !Power10Underflow(exp10) and !Power10Overflow(exp10).
+  //
+  // The +1 is because kEiselLemireMaxExclExp10 is an exclusive bound but
+  // kPower10TableMax is inclusive.
+  static_assert(
+      FloatTraits<FloatType>::kEiselLemireMinInclExp10 >= kPower10TableMin,
+      "(exp10 - kPower10TableMin) within kPower10MantissaHighTable bounds");
+  static_assert(
+      FloatTraits<FloatType>::kEiselLemireMaxExclExp10 <= kPower10TableMax + 1,
+      "(exp10 - kPower10TableMin) within kPower10MantissaHighTable bounds");
 
   // The terse (+) comments in this function body refer to sections of the
   // https://nigeltao.github.io/blog/2020/eisel-lemire.html blog post.
+  //
+  // That blog post discusses double precision (11 exponent bits with a -1023
+  // bias, 52 mantissa bits), but the same approach applies to single precision
+  // (8 exponent bits with a -127 bias, 23 mantissa bits). Either way, the
+  // computation here happens with 64-bit values (e.g. man) or 128-bit values
+  // (e.g. x) before finally converting to 64- or 32-bit floating point.
   //
   // See also "Number Parsing at a Gigabyte per Second, Software: Practice and
   // Experience 51 (8), 2021" (https://arxiv.org/abs/2101.11408) for detail.
@@ -636,12 +696,12 @@ bool EiselLemire(const strings_internal::ParsedFloat& input, bool negative,
   // (+) Normalization.
   int clz = countl_zero(man);
   man <<= static_cast<unsigned int>(clz);
-  static constexpr int exp2_bias = 1023;
   // The 217706 etc magic numbers encode the kPower10ExponentTable as a formula
   // instead of a table. Their equivalence is confirmed by
   // https://github.com/google/wuffs/blob/315b2e52625ebd7b02d8fac13e3cd85ea374fb80/script/print-mpb-powers-of-10.go
   uint64_t ret_exp2 =
-      static_cast<uint64_t>((217706 * exp10 >> 16) + 64 + exp2_bias - clz);
+      static_cast<uint64_t>((217706 * exp10 >> 16) + 64 +
+                            FloatTraits<FloatType>::kExponentBias - clz);
 
   // (+) Multiplication.
   uint128 x =
@@ -649,47 +709,62 @@ bool EiselLemire(const strings_internal::ParsedFloat& input, bool negative,
       static_cast<uint128>(kPower10MantissaHighTable[exp10 - kPower10TableMin]);
 
   // (+) Wider Approximation.
-  if (((Uint128High64(x) & 0x1FF) == 0x1FF) &&
+  static constexpr uint64_t high64_mask =
+      FloatTraits<FloatType>::kEiselLemireMask;
+  if (((Uint128High64(x) & high64_mask) == high64_mask) &&
       (man > (std::numeric_limits<uint64_t>::max() - Uint128Low64(x)))) {
     uint128 y = static_cast<uint128>(man) *
                 static_cast<uint128>(
                     kPower10MantissaLowTable[exp10 - kPower10TableMin]);
     x += Uint128High64(y);
     // For example, parsing "4503599627370497.5" will take the if-true
-    // branch here, since:
+    // branch here (for double precision), since:
     //  - x   = 0x8000000000000BFF_FFFFFFFFFFFFFFFF
     //  - y   = 0x8000000000000BFF_7FFFFFFFFFFFF400
     //  - man = 0xA000000000000F00
-    if (((Uint128High64(x) & 0x1FF) == 0x1FF) && ((Uint128Low64(x) + 1) == 0) &&
+    // Likewise, when parsing "0.0625" for single precision:
+    //  - x   = 0x7FFFFFFFFFFFFFFF_FFFFFFFFFFFFFFFF
+    //  - y   = 0x813FFFFFFFFFFFFF_8A00000000000000
+    //  - man = 0x9C40000000000000
+    if (((Uint128High64(x) & high64_mask) == high64_mask) &&
+        ((Uint128Low64(x) + 1) == 0) &&
         (man > (std::numeric_limits<uint64_t>::max() - Uint128Low64(y)))) {
       return false;
     }
   }
 
-  // (+) Shifting to 54 Bits.
+  // (+) Shifting to 54 Bits (or for single precision, to 25 bits).
   uint64_t msb = Uint128High64(x) >> 63;
-  uint64_t ret_man = Uint128High64(x) >> (msb + 9);
+  uint64_t ret_man =
+      Uint128High64(x) >> (msb + FloatTraits<FloatType>::kEiselLemireShift);
   ret_exp2 -= 1 ^ msb;
 
   // (+) Half-way Ambiguity.
   //
-  // For example, parsing "1e+23" will take the if-true branch here, since:
+  // For example, parsing "1e+23" will take the if-true branch here (for double
+  // precision), since:
   //  - x       = 0x54B40B1F852BDA00_0000000000000000
   //  - ret_man = 0x002A5A058FC295ED
-  if ((Uint128Low64(x) == 0) && ((Uint128High64(x) & 0x1FF) == 0) &&
+  // Likewise, when parsing "20040229.0" for single precision:
+  //  - x       = 0x4C72894000000000_0000000000000000
+  //  - ret_man = 0x000000000131CA25
+  if ((Uint128Low64(x) == 0) && ((Uint128High64(x) & high64_mask) == 0) &&
       ((ret_man & 3) == 1)) {
     return false;
   }
 
-  // (+) From 54 to 53 Bits.
+  // (+) From 54 to 53 Bits (or for single precision, from 25 to 24 bits).
   ret_man += ret_man & 1;  // Line From54a.
   ret_man >>= 1;           // Line From54b.
   // Incrementing ret_man (at line From54a) may have overflowed 54 bits (53
   // bits after the right shift by 1 at line From54b), so adjust for that.
   //
   // For example, parsing "9223372036854775807" will take the if-true branch
-  // here, since ret_man = 0x0020000000000000 = (1 << 53).
-  if ((ret_man >> 53) > 0) {
+  // here (for double precision), since:
+  //  - ret_man = 0x0020000000000000 = (1 << 53)
+  // Likewise, when parsing "2147483647.0" for single precision:
+  //  - ret_man = 0x0000000001000000 = (1 << 24)
+  if ((ret_man >> FloatTraits<FloatType>::kTargetMantissaBits) > 0) {
     ret_exp2 += 1;
     // Conceptually, we need a "ret_man >>= 1" in this if-block to balance
     // incrementing ret_exp2 in the line immediately above. However, we only
@@ -705,29 +780,51 @@ bool EiselLemire(const strings_internal::ParsedFloat& input, bool negative,
   }
 
   // ret_exp2 is a uint64_t. Zero or underflow means that we're in subnormal
-  // space. 0x7FF or above means that we're in Inf/NaN space.
+  // space. max_exp2 (0x7FF for double precision, 0xFF for single precision) or
+  // above means that we're in Inf/NaN space.
   //
   // The if block is equivalent to (but has fewer branches than):
-  //   if ((ret_exp2 <= 0) || (ret_exp2 >= 0x7FF)) { etc }
+  //   if ((ret_exp2 <= 0) || (ret_exp2 >= max_exp2)) { etc }
   //
   // For example, parsing "4.9406564584124654e-324" will take the if-true
   // branch here, since ret_exp2 = -51.
-  if ((ret_exp2 - 1) >= (0x7FF - 1)) {
+  static constexpr uint64_t max_exp2 =
+      (1 << FloatTraits<FloatType>::kTargetExponentBits) - 1;
+  if ((ret_exp2 - 1) >= (max_exp2 - 1)) {
     return false;
   }
 
 #ifndef ABSL_BIT_PACK_FLOATS
-  *value = FloatTraits<FloatType>::Make(
-      (ret_man & 0x000FFFFFFFFFFFFFu) | 0x0010000000000000u,
-      ret_exp2 - 1023 - 52, negative);
-#else
-  uint64_t ret_bits = (ret_exp2 << 52) | (ret_man & 0x000FFFFFFFFFFFFFu);
-  if (negative) {
-    ret_bits |= 0x8000000000000000u;
+  if (FloatTraits<FloatType>::kTargetBits == 64) {
+    *value = FloatTraits<FloatType>::Make(
+        (ret_man & 0x000FFFFFFFFFFFFFu) | 0x0010000000000000u,
+        static_cast<int>(ret_exp2) - 1023 - 52, negative);
+    return true;
+  } else if (FloatTraits<FloatType>::kTargetBits == 32) {
+    *value = FloatTraits<FloatType>::Make(
+        (static_cast<uint32_t>(ret_man) & 0x007FFFFFu) | 0x00800000u,
+        static_cast<int>(ret_exp2) - 127 - 23, negative);
+    return true;
   }
-  *value = absl::bit_cast<double>(ret_bits);
+#else
+  if (FloatTraits<FloatType>::kTargetBits == 64) {
+    uint64_t ret_bits = (ret_exp2 << 52) | (ret_man & 0x000FFFFFFFFFFFFFu);
+    if (negative) {
+      ret_bits |= 0x8000000000000000u;
+    }
+    *value = absl::bit_cast<double>(ret_bits);
+    return true;
+  } else if (FloatTraits<FloatType>::kTargetBits == 32) {
+    uint32_t ret_bits = (static_cast<uint32_t>(ret_exp2) << 23) |
+                        (static_cast<uint32_t>(ret_man) & 0x007FFFFFu);
+    if (negative) {
+      ret_bits |= 0x80000000u;
+    }
+    *value = absl::bit_cast<float>(ret_bits);
+    return true;
+  }
 #endif  // ABSL_BIT_PACK_FLOATS
-  return true;
+  return false;
 }
 
 template <typename FloatType>
@@ -806,7 +903,7 @@ from_chars_result FromCharsImpl(const char* first, const char* last,
     // A nullptr subrange_begin means that the decimal_parse.mantissa is exact
     // (not truncated), a precondition of the Eisel-Lemire algorithm.
     if ((decimal_parse.subrange_begin == nullptr) &&
-        EiselLemire<FloatType>(decimal_parse, negative, &value)) {
+        EiselLemire<FloatType>(decimal_parse, negative, &value, &result.ec)) {
       return result;
     }
     CalculatedFloat calculated =

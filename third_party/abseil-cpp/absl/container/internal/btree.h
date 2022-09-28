@@ -1335,7 +1335,7 @@ class btree {
   btree(btree &&other) noexcept
       : root_(absl::exchange(other.root_, EmptyNode())),
         rightmost_(std::move(other.rightmost_)),
-        size_(absl::exchange(other.size_, 0)) {
+        size_(absl::exchange(other.size_, 0u)) {
     other.mutable_rightmost() = EmptyNode();
   }
   btree(btree &&other, const allocator_type &alloc)
@@ -1761,11 +1761,11 @@ inline void btree_node<P>::remove_values(const field_type i,
 
   if (is_internal()) {
     // Delete all children between begin and end.
-    for (int j = 0; j < to_erase; ++j) {
+    for (field_type j = 0; j < to_erase; ++j) {
       clear_and_delete(child(i + j + 1), alloc);
     }
     // Rotate children after end into new positions.
-    for (int j = i + to_erase + 1; j <= orig_finish; ++j) {
+    for (field_type j = i + to_erase + 1; j <= orig_finish; ++j) {
       set_child(j - to_erase, child(j));
       clear_child(j);
     }
@@ -1912,7 +1912,8 @@ void btree_node<P>::merge(btree_node *src, allocator_type *alloc) {
 
   if (is_internal()) {
     // Move the child pointers from the right to the left node.
-    for (int i = src->start(), j = finish() + 1; i <= src->finish(); ++i, ++j) {
+    for (field_type i = src->start(), j = finish() + 1; i <= src->finish();
+         ++i, ++j) {
       init_child(j, src->child(i));
       src->clear_child(i);
     }
@@ -2301,7 +2302,8 @@ auto btree<P>::operator=(btree &&other) noexcept -> btree & {
 
 template <typename P>
 auto btree<P>::erase(iterator iter) -> iterator {
-  iter.node_->value_destroy(iter.position_, mutable_allocator());
+  iter.node_->value_destroy(static_cast<field_type>(iter.position_),
+                            mutable_allocator());
   iter.update_generation();
 
   const bool internal_delete = iter.node_->is_internal();
@@ -2312,15 +2314,19 @@ auto btree<P>::erase(iterator iter) -> iterator {
     iterator internal_iter(iter);
     --iter;
     assert(iter.node_->is_leaf());
-    internal_iter.node_->transfer(internal_iter.position_, iter.position_,
-                                  iter.node_, mutable_allocator());
+    internal_iter.node_->transfer(
+        static_cast<size_type>(internal_iter.position_),
+        static_cast<size_type>(iter.position_), iter.node_,
+        mutable_allocator());
   } else {
     // Shift values after erased position in leaf. In the internal case, we
     // don't need to do this because the leaf position is the end of the node.
-    const field_type transfer_from = iter.position_ + 1;
+    const field_type transfer_from =
+        static_cast<field_type>(iter.position_ + 1);
     const field_type num_to_transfer = iter.node_->finish() - transfer_from;
-    iter.node_->transfer_n(num_to_transfer, iter.position_, transfer_from,
-                           iter.node_, mutable_allocator());
+    iter.node_->transfer_n(num_to_transfer,
+                           static_cast<size_type>(iter.position_),
+                           transfer_from, iter.node_, mutable_allocator());
   }
   // Update node finish and container size.
   iter.node_->set_finish(iter.node_->finish() - 1);
@@ -2386,7 +2392,7 @@ auto btree<P>::rebalance_after_delete(iterator iter) -> iterator {
 template <typename P>
 auto btree<P>::erase_range(iterator begin, iterator end)
     -> std::pair<size_type, iterator> {
-  difference_type count = std::distance(begin, end);
+  size_type count = static_cast<size_type>(std::distance(begin, end));
   assert(count >= 0);
 
   if (count == 0) {
@@ -2400,8 +2406,10 @@ auto btree<P>::erase_range(iterator begin, iterator end)
 
   if (begin.node_ == end.node_) {
     assert(end.position_ > begin.position_);
-    begin.node_->remove_values(begin.position_, end.position_ - begin.position_,
-                               mutable_allocator());
+    begin.node_->remove_values(
+        static_cast<field_type>(begin.position_),
+        static_cast<field_type>(end.position_ - begin.position_),
+        mutable_allocator());
     size_ -= count;
     return {count, rebalance_after_delete(begin)};
   }
@@ -2411,11 +2419,11 @@ auto btree<P>::erase_range(iterator begin, iterator end)
     if (begin.node_->is_leaf()) {
       const size_type remaining_to_erase = size_ - target_size;
       const size_type remaining_in_node =
-          begin.node_->finish() - begin.position_;
-      const size_type to_erase =
-          (std::min)(remaining_to_erase, remaining_in_node);
-      begin.node_->remove_values(begin.position_, to_erase,
-                                 mutable_allocator());
+          static_cast<size_type>(begin.node_->finish() - begin.position_);
+      const field_type to_erase = static_cast<field_type>(
+          (std::min)(remaining_to_erase, remaining_in_node));
+      begin.node_->remove_values(static_cast<field_type>(begin.position_),
+                                 to_erase, mutable_allocator());
       size_ -= to_erase;
       begin = rebalance_after_delete(begin);
     } else {
