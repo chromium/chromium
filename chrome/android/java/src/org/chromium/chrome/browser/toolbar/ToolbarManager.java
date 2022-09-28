@@ -251,6 +251,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private MenuButtonCoordinator mOverviewModeMenuButtonCoordinator;
     private HomepageManager.HomepageStateListener mHomepageStateListener;
+    private String mHomepageUrl;
     private StatusBarColorController mStatusBarColorController;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -1121,6 +1122,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity));
         // clang-format on
         mHomepageStateListener = () -> {
+            mHomepageUrl = HomepageManager.getHomepageUri();
             Boolean wasHomepageEnabled = mHomepageEnabledSupplier.get();
             boolean isHomepageEnabled = HomepageManager.isHomepageEnabled();
             mHomepageEnabledSupplier.set(isHomepageEnabled);
@@ -1196,8 +1198,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             if (mIsStartSurfaceRefactorEnabled && mLayoutStateProvider != null
                     && mLayoutStateProvider.getActiveLayoutType() == LayoutType.START_SURFACE) {
                 return false;
-            } else if (ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)
-                    && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+            } else if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                    && ReturnToChromeUtil.isStartSurfaceEnabled(mActivity, mHomepageUrl)) {
                 return false;
             }
 

@@ -408,17 +408,28 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * Check whether Start Surface is enabled. It includes checks of:
+     * {@see isStartSurfaceEnabled(Context, String}. This version is if you don't have a
+     * precomputed Homepage Url.
+     */
+    public static boolean isStartSurfaceEnabled(Context context) {
+        String homePageUrl = HomepageManager.getHomepageUri();
+        return isStartSurfaceEnabled(context, homePageUrl);
+    }
+
+    /**
+     * Returns whether Start Surface is enabled in the given context.
+     * This includes checks of:
      * 1) whether home page is enabled and whether it is Chrome' home page url;
      * 2) whether Start surface is enabled with current accessibility settings;
      * 3) whether it is on phone.
      * @param context The activity context.
+     * @param homePageUrl The url of the app's home page.  {@see isStartSurfaceEnabled(Context} if
+     *         you don't have this.
      */
-    public static boolean isStartSurfaceEnabled(Context context) {
+    public static boolean isStartSurfaceEnabled(Context context, String homePageUrl) {
         // When creating initial tab, i.e. cold start without restored tabs, we should only show
         // StartSurface as the HomePage if Single Pane is enabled, HomePage is not customized, not
         // on tablet, accessibility is not enabled or the tab group continuation feature is enabled.
-        String homePageUrl = HomepageManager.getHomepageUri();
         return StartSurfaceConfiguration.isStartSurfaceFlagEnabled()
                 && HomepageManager.isHomepageEnabled()
                 && (TextUtils.isEmpty(homePageUrl)

@@ -993,6 +993,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         TraceEvent.begin("ToolbarPhone.updateLocationBarLayoutForExpansionAnimation");
         if (mOptimizationsEnabled && isInTabSwitcherMode()) return;
 
+        boolean isLocationBarShownInNTP = isLocationBarShownInNTP();
         FrameLayout.LayoutParams locationBarLayoutParams =
                 mLocationBar.getPhoneCoordinator().getFrameLayoutParams();
         int currentLeftMargin = locationBarLayoutParams.leftMargin;
@@ -1042,7 +1043,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         if (currentTab != null) {
             getToolbarDataProvider().getNewTabPageDelegate().setUrlFocusChangeAnimationPercent(
                     mUrlFocusChangeFraction);
-            if (isLocationBarShownInNTP()
+            if (isLocationBarShownInNTP
                     && !getToolbarDataProvider().isInOverviewAndShowingOmnibox()) {
                 updateNtpTransitionAnimation();
             } else {
@@ -1081,7 +1082,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             // But for the mShouldShowModernizeVisualUpdate, toolbar and locationbar will have
             // different color when they are focused than in NTP, so the color need to be updated in
             // this case.
-            if ((mShouldShowModernizeVisualUpdate || !isLocationBarShownInNTP())
+            if ((mShouldShowModernizeVisualUpdate || !isLocationBarShownInNTP)
                     && mTabSwitcherState == STATIC_TAB) {
                 int defaultColor = getToolbarDefaultColor();
                 int defaultLocationBarColor =
