@@ -39,6 +39,8 @@ namespace content {
 
 class MouseCursorOverlayController;
 
+class ContextProviderObserver;
+
 // A virtualized VideoCaptureDevice that captures the displayed contents of a
 // frame sink (see viz::CompositorFrameSink), such as the composited main view
 // of a WebContents instance, producing a stream of video frames.
@@ -55,8 +57,7 @@ class MouseCursorOverlayController;
 // capture, and to notify other components that capture is taking place.
 class CONTENT_EXPORT FrameSinkVideoCaptureDevice
     : public media::VideoCaptureDevice,
-      public viz::mojom::FrameSinkVideoConsumer,
-      public viz::ContextLostObserver {
+      public viz::mojom::FrameSinkVideoConsumer {
  public:
   FrameSinkVideoCaptureDevice();
 
@@ -131,9 +132,6 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   virtual void CreateCapturer(
       mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver);
 
-  // viz::ContextLostObserver implementation:
-  void OnContextLost() override;
-
   // Establishes connection to FrameSinkVideoCapturer using the global
   // viz::HostFrameSinkManager.
   static void CreateCapturerViaGlobalManager(
@@ -142,10 +140,9 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
  private:
   using BufferId = decltype(media::VideoCaptureDevice::Client::Buffer::id);
 
-  // Fetches |context_provider_| and starts observing it for context lost
-  // events. When a context provider is set, we will also set
-  // |gpu_capabilities_| and |gpu_capabilities_generation_| - they will be kept
-  // up to date for the lifetime of the device.
+  void AllocateAndStartWithReceiverInternal();
+
+  // Starts observing changes to context provider.
   void ObserveContextProvider();
 
   // Re-creates the |capturer_| if needed. The capturer will be recreated (and
@@ -184,6 +181,12 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   // capturing is going on.
   void RequestWakeLock();
 
+  // Helper to set `gpu_capabilities_` on the appropriate thread. Can be called
+  // from any thread, will hop to the sequence on which the device was created.
+  // This indirection is needed to support cancellation of handed out callbacks.
+  void SetGpuCapabilitiesOnDevice(
+      absl::optional<gpu::Capabilities> capabilities);
+
   // Current capture target. This is cached to resolve a race where
   // OnTargetChanged() can be called before the |capturer_| is created in
   // OnCapturerCreated().
@@ -203,11 +206,14 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
 
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> capturer_;
 
-  // Context provider that was used to query the GPU capabilities. May be null
-  // if the GPU capabilities were not needed to be known to start the capture.
-  scoped_refptr<viz::ContextProvider> context_provider_;
-  // Capabilities obtained from |context_provider_|.
-  absl::optional<gpu::Capabilities> gpu_capabilities_;
+  // Capabilities obtained from viz::ContextProvider.
+  absl::optional<gpu::Capabilities> gpu_capabilities_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Instance that is responsible for monitoring for context loss events on the
+  // `viz::ContextProvider`. May be null.
+  std::unique_ptr<ContextProviderObserver, BrowserThread::DeleteOnUIThread>
+      context_provider_observer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A vector that holds the "callbacks" mojo::Remote for each frame while the
   // frame is being processed by VideoFrameReceiver. The index corresponding to
