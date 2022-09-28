@@ -813,6 +813,13 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
     return false;
   }
 
+  // Do not publish legacy packaged apps in Ash if Lacros is user's primary
+  // browser. Legacy packaged apps are deprecated and not supported by Lacros.
+  if (extension->is_legacy_packaged_app() &&
+      crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    return false;
+  }
+
   //  Do not publish hosted apps in Ash if hosted apps should run in
   //  Lacros.
   if (extension->is_hosted_app() &&

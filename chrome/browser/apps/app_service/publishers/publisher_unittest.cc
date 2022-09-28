@@ -86,6 +86,25 @@ scoped_refptr<extensions::Extension> MakeExtensionApp(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kLegacyPackagedAppId[] = "mblemkccghnfkjignlmgngmopopifacf";
+
+scoped_refptr<extensions::Extension> MakeLegacyPackagedApp(
+    const std::string& name,
+    const std::string& version,
+    const std::string& url,
+    const std::string& id) {
+  std::string err;
+  base::DictionaryValue value;
+  value.SetStringKey("name", name);
+  value.SetStringKey("version", version);
+  value.SetStringPath("app.launch.local_path", "index.html");
+  scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
+      base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
+      extensions::Extension::WAS_INSTALLED_BY_DEFAULT, id, &err);
+  EXPECT_EQ(err, "");
+  return app;
+}
+
 void AddArcPackage(ArcAppTest& arc_test,
                    const std::vector<arc::mojom::AppInfoPtr>& fake_apps) {
   for (const auto& fake_app : fake_apps) {
@@ -310,6 +329,13 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     AppRegistryCache& cache =
         AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
     return cache.states_[app_id];
+  }
+
+  void VerifyNoApp(const std::string& app_id) {
+    AppRegistryCache& cache =
+        AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
+
+    ASSERT_EQ(cache.states_.end(), cache.states_.find(app_id));
   }
 
   void VerifyApp(AppType app_type,
@@ -611,6 +637,87 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
               internal_app.show_in_launcher, /*allow_uninstall=*/false);
   }
   VerifyAppTypeIsInitialized(AppType::kBuiltIn);
+}
+
+class LegacyPackagedAppLacorsNotPrimaryPublisherTest : public PublisherTest {
+ public:
+  LegacyPackagedAppLacorsNotPrimaryPublisherTest() {
+    crosapi::browser_util::SetLacrosEnabledForTest(true);
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kLacrosPrimary);
+  }
+
+  LegacyPackagedAppLacorsNotPrimaryPublisherTest(
+      const LegacyPackagedAppLacorsNotPrimaryPublisherTest&) = delete;
+  LegacyPackagedAppLacorsNotPrimaryPublisherTest& operator=(
+      const LegacyPackagedAppLacorsNotPrimaryPublisherTest&) = delete;
+  ~LegacyPackagedAppLacorsNotPrimaryPublisherTest() override = default;
+};
+
+TEST_F(LegacyPackagedAppLacorsNotPrimaryPublisherTest,
+       LegacyPackagedAppsOnApps) {
+  ASSERT_FALSE(crosapi::browser_util::IsLacrosPrimaryBrowser());
+
+  // Re-init AppService to verify the init process.
+  AppServiceTest app_service_test;
+  app_service_test.SetUp(profile());
+
+  // Install a legacy packaged app.
+  scoped_refptr<extensions::Extension> legacy_app =
+      MakeLegacyPackagedApp("legacy_app", "0.0", "http://google.com",
+                            std::string(kLegacyPackagedAppId));
+  ASSERT_TRUE(legacy_app->is_legacy_packaged_app());
+
+  service_->AddExtension(legacy_app.get());
+
+  // Verify the legacy packaged app is published.
+  VerifyApp(AppType::kChromeApp, legacy_app->id(), legacy_app->name(),
+            Readiness::kReady, InstallReason::kDefault,
+            InstallSource::kChromeWebStore, {}, base::Time(), base::Time(),
+            apps::Permissions(),
+            /*is_platform_app=*/false, /*recommendable=*/true,
+            /*searchable=*/true,
+            /*show_in_launcher=*/true, /*show_in_shelf=*/true,
+            /*show_in_search=*/true, /*show_in_management=*/true,
+            /*handles_intents=*/true, /*allow_uninstall=*/true,
+            /*has_badge=*/false, /*paused=*/false);
+  VerifyAppTypeIsInitialized(AppType::kChromeApp);
+}
+
+class LegacyPackagedAppLacorsPrimaryPublisherTest : public PublisherTest {
+ public:
+  LegacyPackagedAppLacorsPrimaryPublisherTest() {
+    crosapi::browser_util::SetLacrosEnabledForTest(true);
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kLacrosPrimary);
+  }
+
+  LegacyPackagedAppLacorsPrimaryPublisherTest(
+      const LegacyPackagedAppLacorsNotPrimaryPublisherTest&) = delete;
+  LegacyPackagedAppLacorsPrimaryPublisherTest& operator=(
+      const LegacyPackagedAppLacorsNotPrimaryPublisherTest&) = delete;
+  ~LegacyPackagedAppLacorsPrimaryPublisherTest() override = default;
+};
+
+TEST_F(LegacyPackagedAppLacorsPrimaryPublisherTest, LegacyPackagedAppsOnApps) {
+  ASSERT_TRUE(crosapi::browser_util::IsLacrosPrimaryBrowser());
+
+  // Re-init AppService to verify the init process.
+  AppServiceTest app_service_test;
+  app_service_test.SetUp(profile());
+
+  // Install a legacy packaged app.
+  scoped_refptr<extensions::Extension> legacy_app =
+      MakeLegacyPackagedApp("legacy_app", "0.0", "http://google.com",
+                            std::string(kLegacyPackagedAppId));
+  ASSERT_TRUE(legacy_app->is_legacy_packaged_app());
+
+  service_->AddExtension(legacy_app.get());
+
+  // Verify the legacy packaged app is not published.
+  VerifyNoApp(legacy_app->id());
 }
 
 class StandaloneBrowserPublisherTest : public PublisherTest {
