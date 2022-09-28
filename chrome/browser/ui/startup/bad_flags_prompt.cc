@@ -23,6 +23,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/history_clusters/core/file_clustering_backend.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -153,6 +154,11 @@ static const char* kBadFlags[] = {
     // behalf of other origins, if a corresponding Google-internal
     // platform-level enterprise policy is also applied.
     webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin,
+
+    // When a file is specified as part of this flag, this sideloads machine
+    // learning model output used by the History Clusters service and should
+    // only be used for testing purposes.
+    history_clusters::switches::kClustersOverrideFile,
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 

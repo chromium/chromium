@@ -21,7 +21,11 @@
 
 namespace history_clusters {
 
+namespace switches {
+
 const char kClustersOverrideFile[] = "history-clusters-cluster-override-file";
+
+}  // namespace switches
 
 namespace {
 
@@ -32,11 +36,11 @@ namespace {
 // requires opening the file.
 absl::optional<base::FilePath> GetClustersOverrideFilePath() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(kClustersOverrideFile)) {
+  if (!command_line->HasSwitch(switches::kClustersOverrideFile)) {
     return absl::nullopt;
   }
   base::FilePath file_path =
-      command_line->GetSwitchValuePath(kClustersOverrideFile);
+      command_line->GetSwitchValuePath(switches::kClustersOverrideFile);
   return file_path.empty() ? absl::nullopt : absl::make_optional(file_path);
 }
 

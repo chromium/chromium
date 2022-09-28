@@ -12,7 +12,11 @@
 
 namespace history_clusters {
 
+namespace switches {
+
 extern const char kClustersOverrideFile[];
+
+}  // namespace switches
 
 // A clustering backend that returns the clusters provided by a file specified
 // by the command line.

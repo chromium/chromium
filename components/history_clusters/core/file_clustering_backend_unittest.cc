@@ -44,7 +44,8 @@ TEST_F(FileClusteringBackendTest, NoCommandLine) {
 }
 
 TEST_F(FileClusteringBackendTest, EmptyCommandLine) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(kClustersOverrideFile);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kClustersOverrideFile);
 
   std::unique_ptr<FileClusteringBackend> backend =
       FileClusteringBackend::CreateIfEnabled();
@@ -107,7 +108,7 @@ TEST_F(FileClusteringBackendTest, Success) {
                             clusters_json_string.size()));
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
-      kClustersOverrideFile, file_path);
+      switches::kClustersOverrideFile, file_path);
 
   std::unique_ptr<FileClusteringBackend> backend =
       FileClusteringBackend::CreateIfEnabled();
