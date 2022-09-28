@@ -135,22 +135,19 @@ std::string DurationMetricName(const std::string& method_name) {
          ".Latency";
 }
 
-std::string SuccessMetricName(const std::string& method_name,
-                              bool for_unenrolled_clients = false) {
+std::string SuccessMetricName(const std::string& method_name) {
   return "PasswordManager.PasswordStoreAndroidBackend." + method_name +
-         (for_unenrolled_clients ? ".UnenrolledFromUPM" : "") + ".Success";
+         ".Success";
 }
 
-std::string PerMethodErrorCodeMetricName(const std::string& method_name,
-                                         bool for_unenrolled_clients = false) {
+std::string PerMethodErrorCodeMetricName(const std::string& method_name) {
   return "PasswordManager.PasswordStoreAndroidBackend." + method_name +
-         (for_unenrolled_clients ? ".UnenrolledFromUPM" : "") + ".ErrorCode";
+         ".ErrorCode";
 }
 
-std::string ApiErrorMetricName(const std::string& method_name,
-                               bool for_unenrolled_clients = false) {
+std::string ApiErrorMetricName(const std::string& method_name) {
   return "PasswordManager.PasswordStoreAndroidBackend." + method_name +
-         (for_unenrolled_clients ? ".UnenrolledFromUPM" : "") + ".APIError";
+         ".APIError";
 }
 
 class MockPasswordStoreAndroidBackendBridge
@@ -1654,26 +1651,11 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordInactiveStatusUnenrolled) {
       UnifiedPasswordManagerActiveStatus::kInactiveUnenrolledDueToErrors, 1);
 }
 
-struct TestForMetricsParam {
-  // Whether the backend call should complete successfully.
-  bool should_succeed = false;
-  // Whether the user was unenrolled from the UPM experiment after experiencing
-  // errors.
-  bool is_unenrolled_from_upm = false;
-};
-
 class PasswordStoreAndroidBackendTestForMetrics
     : public PasswordStoreAndroidBackendTest,
-      public testing::WithParamInterface<TestForMetricsParam> {
+      public testing::WithParamInterface<bool> {
  public:
-  PasswordStoreAndroidBackendTestForMetrics() {
-    if (IsUnenrolledFromUPM()) {
-      prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-                          true);
-    }
-  }
-  bool ShouldSucceed() const { return GetParam().should_succeed; }
-  bool IsUnenrolledFromUPM() const { return GetParam().is_unenrolled_from_upm; }
+  bool ShouldSucceed() const { return GetParam(); }
 };
 
 // Tests the PasswordManager.PasswordStore.GetAllLoginsAsync metric.
@@ -1719,31 +1701,6 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, GetAllLoginsAsyncMetrics) {
                                         kExternalErrorType, 1);
     histogram_tester.ExpectUniqueSample(kApiErrorMetric, kInternalApiErrorCode,
                                         1);
-  }
-
-  // Test metrics recorded specifically for users unenrolled from the UPM
-  // experiment after encountering backend errors.
-  const std::string kSuccessMetricUnenrolled = SuccessMetricName(
-      kGetAllLoginsMethodName, /*for_unenrolled_clients=*/true);
-  const std::string kPerMethodErrorCodeMetricUnenrolled =
-      PerMethodErrorCodeMetricName(kGetAllLoginsMethodName,
-                                   /*for_unenrolled_clients=*/true);
-  const std::string kApiErrorMetricUnenrolled = ApiErrorMetricName(
-      kGetAllLoginsMethodName, /*for_unenrolled_clients=*/true);
-
-  if (IsUnenrolledFromUPM()) {
-    histogram_tester.ExpectUniqueSample(kSuccessMetricUnenrolled,
-                                        ShouldSucceed(), 1);
-    if (!ShouldSucceed()) {
-      histogram_tester.ExpectUniqueSample(kPerMethodErrorCodeMetricUnenrolled,
-                                          kExternalErrorType, 1);
-      histogram_tester.ExpectUniqueSample(kApiErrorMetricUnenrolled,
-                                          kInternalApiErrorCode, 1);
-    }
-  } else {
-    histogram_tester.ExpectTotalCount(kSuccessMetricUnenrolled, 0);
-    histogram_tester.ExpectTotalCount(kPerMethodErrorCodeMetricUnenrolled, 0);
-    histogram_tester.ExpectTotalCount(kApiErrorMetricUnenrolled, 0);
   }
 }
 
@@ -1887,31 +1844,6 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, RemoveLoginAsyncMetrics) {
     histogram_tester.ExpectUniqueSample(kApiErrorMetric, kInternalApiErrorCode,
                                         1);
   }
-
-  // Test metrics recorded specifically for users unenrolled from the UPM
-  // experiment after encountering backend errors.
-  const std::string kSuccessMetricUnenrolled = SuccessMetricName(
-      kRemoveLoginMethodName, /*for_unenrolled_clients=*/true);
-  const std::string kPerMethodErrorCodeMetricUnenrolled =
-      PerMethodErrorCodeMetricName(kRemoveLoginMethodName,
-                                   /*for_unenrolled_clients=*/true);
-  const std::string kApiErrorMetricUnenrolled = ApiErrorMetricName(
-      kRemoveLoginMethodName, /*for_unenrolled_clients=*/true);
-
-  if (IsUnenrolledFromUPM()) {
-    histogram_tester.ExpectUniqueSample(kSuccessMetricUnenrolled,
-                                        ShouldSucceed(), 1);
-    if (!ShouldSucceed()) {
-      histogram_tester.ExpectUniqueSample(kPerMethodErrorCodeMetricUnenrolled,
-                                          kExternalErrorType, 1);
-      histogram_tester.ExpectUniqueSample(kApiErrorMetricUnenrolled,
-                                          kInternalApiErrorCode, 1);
-    }
-  } else {
-    histogram_tester.ExpectTotalCount(kSuccessMetricUnenrolled, 0);
-    histogram_tester.ExpectTotalCount(kPerMethodErrorCodeMetricUnenrolled, 0);
-    histogram_tester.ExpectTotalCount(kApiErrorMetricUnenrolled, 0);
-  }
 }
 
 TEST_P(PasswordStoreAndroidBackendTestForMetrics,
@@ -1959,51 +1891,10 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics,
     histogram_tester.ExpectUniqueSample(kApiErrorMetric, kInternalApiErrorCode,
                                         1);
   }
-
-  // Test metrics recorded specifically for users unenrolled from the UPM
-  // experiment after encountering backend errors.
-  const std::string kSuccessMetricUnenrolled = SuccessMetricName(
-      kGetAutofillableLoginsMethodName, /*for_unenrolled_clients=*/true);
-  const std::string kPerMethodErrorCodeMetricUnenrolled =
-      PerMethodErrorCodeMetricName(kGetAutofillableLoginsMethodName,
-                                   /*for_unenrolled_clients=*/true);
-  const std::string kApiErrorMetricUnenrolled = ApiErrorMetricName(
-      kGetAutofillableLoginsMethodName, /*for_unenrolled_clients=*/true);
-
-  if (IsUnenrolledFromUPM()) {
-    histogram_tester.ExpectUniqueSample(kSuccessMetricUnenrolled,
-                                        ShouldSucceed(), 1);
-    if (!ShouldSucceed()) {
-      histogram_tester.ExpectUniqueSample(kPerMethodErrorCodeMetricUnenrolled,
-                                          kExternalErrorType, 1);
-      histogram_tester.ExpectUniqueSample(kApiErrorMetricUnenrolled,
-                                          kInternalApiErrorCode, 1);
-    }
-  } else {
-    histogram_tester.ExpectTotalCount(kSuccessMetricUnenrolled, 0);
-    histogram_tester.ExpectTotalCount(kPerMethodErrorCodeMetricUnenrolled, 0);
-    histogram_tester.ExpectTotalCount(kApiErrorMetricUnenrolled, 0);
-  }
 }
 
 INSTANTIATE_TEST_SUITE_P(,
                          PasswordStoreAndroidBackendTestForMetrics,
-                         testing::Values(
-                             TestForMetricsParam{
-                                 .should_succeed = true,
-                                 .is_unenrolled_from_upm = true,
-                             },
-                             TestForMetricsParam{
-                                 .should_succeed = true,
-                                 .is_unenrolled_from_upm = false,
-                             },
-                             TestForMetricsParam{
-                                 .should_succeed = false,
-                                 .is_unenrolled_from_upm = true,
-                             },
-                             TestForMetricsParam{
-                                 .should_succeed = false,
-                                 .is_unenrolled_from_upm = false,
-                             }));
+                         testing::Bool());
 
 }  // namespace password_manager

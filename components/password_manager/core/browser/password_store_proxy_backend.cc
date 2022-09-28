@@ -57,11 +57,7 @@ bool ShouldExecuteReadOperationsOnShadowBackend(PrefService* prefs,
     case features::UpmExperimentVariation::kEnableForSyncingUsers:
     case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
     case features::UpmExperimentVariation::kEnableForAllUsers:
-      // Emit shadow list calls for clients unenrolled form the UPM
-      // experiment to source error data.
-      return (prefs->GetBoolean(
-          password_manager::prefs::
-              kUnenrolledFromGoogleMobileServicesDueToErrors));
+      return false;
     case features::UpmExperimentVariation::kShadowSyncingUsers:
       return true;
   }

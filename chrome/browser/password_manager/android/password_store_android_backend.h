@@ -78,11 +78,9 @@ class PasswordStoreAndroidBackend
     using ErrorReply = base::OnceClosure;
 
     JobReturnHandler(LoginsOrErrorReply callback,
-                     PasswordStoreBackendMetricsRecorder metrics_recorder,
-                     bool is_unenrolled_from_upm);
+                     PasswordStoreBackendMetricsRecorder metrics_recorder);
     JobReturnHandler(PasswordChangesOrErrorReply callback,
-                     PasswordStoreBackendMetricsRecorder metrics_recorder,
-                     bool is_unenrolled_from_upm);
+                     PasswordStoreBackendMetricsRecorder metrics_recorder);
     JobReturnHandler(JobReturnHandler&&);
     JobReturnHandler& operator=(JobReturnHandler&&) = delete;
     ~JobReturnHandler();
@@ -104,7 +102,6 @@ class PasswordStoreAndroidBackend
     absl::variant<LoginsOrErrorReply, PasswordChangesOrErrorReply>
         success_callback_;
     PasswordStoreBackendMetricsRecorder metrics_recorder_;
-    const bool is_unenrolled_from_upm_;
   };
 
   using JobId = PasswordStoreAndroidBackendBridge::JobId;

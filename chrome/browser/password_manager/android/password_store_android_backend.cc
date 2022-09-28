@@ -343,10 +343,6 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
   return PasswordStoreBackendError(error_type, recovery_type);
 }
 
-bool IsUnenrolledFromUPM(const PrefService* prefs) {
-  return password_manager_upm_eviction::IsCurrentUserEvicted(prefs);
-}
-
 bool ShouldRecordUptimeOnApiError(AndroidBackendAPIErrorCode api_error_code) {
   // These error codes are included in histogram name, update histograms.xml and
   // |GetUptimeHistogramSuffixForApiError| when changing this.
@@ -426,19 +422,15 @@ class PasswordStoreAndroidBackend::ClearAllLocalPasswordsMetricRecorder {
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     LoginsOrErrorReply callback,
-    PasswordStoreBackendMetricsRecorder metrics_recorder,
-    bool is_unenrolled_from_upm)
+    PasswordStoreBackendMetricsRecorder metrics_recorder)
     : success_callback_(std::move(callback)),
-      metrics_recorder_(std::move(metrics_recorder)),
-      is_unenrolled_from_upm_(is_unenrolled_from_upm) {}
+      metrics_recorder_(std::move(metrics_recorder)) {}
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     PasswordChangesOrErrorReply callback,
-    PasswordStoreBackendMetricsRecorder metrics_recorder,
-    bool is_unenrolled_from_upm)
+    PasswordStoreBackendMetricsRecorder metrics_recorder)
     : success_callback_(std::move(callback)),
-      metrics_recorder_(std::move(metrics_recorder)),
-      is_unenrolled_from_upm_(is_unenrolled_from_upm) {}
+      metrics_recorder_(std::move(metrics_recorder)) {}
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     JobReturnHandler&&) = default;
@@ -447,9 +439,6 @@ PasswordStoreAndroidBackend::JobReturnHandler::~JobReturnHandler() = default;
 
 void PasswordStoreAndroidBackend::JobReturnHandler::RecordMetrics(
     absl::optional<AndroidBackendError> error) const {
-  if (is_unenrolled_from_upm_)
-    metrics_recorder_.RecordMetricsForUnenrolledClients(error);
-
   SuccessStatus sucess_status = GetSuccessStatusFromError(error);
   metrics_recorder_.RecordMetrics(sucess_status, std::move(error));
 }
@@ -869,11 +858,10 @@ void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,
                                               MetricInfix metric_infix) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   request_for_job_.emplace(
-      job_id, JobReturnHandler(
-                  std::move(callback),
-                  PasswordStoreBackendMetricsRecorder(
-                      BackendInfix("AndroidBackend"), std::move(metric_infix)),
-                  IsUnenrolledFromUPM(prefs_)));
+      job_id,
+      JobReturnHandler(std::move(callback), PasswordStoreBackendMetricsRecorder(
+                                                BackendInfix("AndroidBackend"),
+                                                std::move(metric_infix))));
 }
 
 absl::optional<PasswordStoreAndroidBackend::JobReturnHandler>
