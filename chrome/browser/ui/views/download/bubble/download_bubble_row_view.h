@@ -83,6 +83,9 @@ class DownloadBubbleRowView : public views::View,
   DownloadUIModel* model() { return model_.get(); }
 
   DownloadUIModel::BubbleUIInfo& ui_info() { return ui_info_; }
+  void SetUIInfoForTesting(DownloadUIModel::BubbleUIInfo ui_info) {
+    ui_info_ = ui_info;
+  }
 
  protected:
   // Overrides ui::LayerDelegate:

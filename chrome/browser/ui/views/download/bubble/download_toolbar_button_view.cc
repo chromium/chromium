@@ -227,6 +227,7 @@ std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
 void DownloadToolbarButtonView::OpenPrimaryDialog() {
   primary_view_->SetVisible(true);
   security_view_->SetVisible(false);
+  bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
   ResizeDialog();
 }
 
@@ -264,9 +265,8 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
     std::unique_ptr<View> bubble_contents_view) {
   if (!bubble_contents_view)
     return;
-  std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
-      std::make_unique<views::BubbleDialogDelegate>(
-          this, views::BubbleBorder::TOP_RIGHT);
+  auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
+      this, views::BubbleBorder::TOP_RIGHT);
   bubble_delegate->SetTitle(
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_TEXT));
   bubble_delegate->SetShowTitle(false);
@@ -280,10 +280,11 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
   switcher_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   primary_view_ = switcher_view->AddChildView(std::move(bubble_contents_view));
-  // raw ptr for this is safe as Toolbar Button view owns the Bubble.
+  // raw ptr for this and member fields are safe as Toolbar Button view owns the
+  // Bubble.
   security_view_ =
       switcher_view->AddChildView(std::make_unique<DownloadBubbleSecurityView>(
-          bubble_controller_.get(), this));
+          bubble_controller_.get(), this, bubble_delegate.get()));
   security_view_->SetVisible(false);
   bubble_delegate->set_fixed_width(
       ChromeLayoutProvider::Get()->GetDistanceMetric(

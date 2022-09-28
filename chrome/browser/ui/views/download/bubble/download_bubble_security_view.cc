@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -30,15 +31,6 @@
 
 namespace {
 constexpr int kCheckboxHeight = 32;
-constexpr auto kCommandToButtons = base::MakeFixedFlatMap<
-    DownloadCommands::Command,
-    raw_ptr<views::MdTextButton> DownloadBubbleSecurityView::*>(
-    {{DownloadCommands::DISCARD, &DownloadBubbleSecurityView::discard_button_},
-     {DownloadCommands::KEEP, &DownloadBubbleSecurityView::keep_button_},
-     {DownloadCommands::DEEP_SCAN,
-      &DownloadBubbleSecurityView::deep_scan_button_},
-     {DownloadCommands::BYPASS_DEEP_SCANNING,
-      &DownloadBubbleSecurityView::bypass_deep_scan_button_}});
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -236,30 +228,33 @@ void DownloadBubbleSecurityView::ProcessButtonClick(
                           : DownloadBubbleSubpageAction::kPressedPrimaryButton);
 }
 
-views::MdTextButton* DownloadBubbleSecurityView::GetButtonForCommand(
-    DownloadCommands::Command command) {
-  auto* button_iter = kCommandToButtons.find(command);
-  return (button_iter != kCommandToButtons.end()) ? this->*(button_iter->second)
-                                                  : nullptr;
-}
-
 void DownloadBubbleSecurityView::UpdateButton(
     DownloadUIModel::BubbleUIInfo::SubpageButton button_info,
     bool is_secondary_button,
     bool has_checkbox,
     SkColor color) {
-  views::MdTextButton* button = GetButtonForCommand(button_info.command);
-  button->SetCallback(base::BindRepeating(
+  ui::DialogButton button_type =
+      is_secondary_button ? ui::DIALOG_BUTTON_CANCEL : ui::DIALOG_BUTTON_OK;
+
+  base::OnceCallback callback(base::BindOnce(
       &DownloadBubbleSecurityView::ProcessButtonClick, base::Unretained(this),
       button_info.command, is_secondary_button));
-  button->SetText(button_info.label);
-  button->SetProminent(button_info.is_prominent);
-  button->SetVisible(true);
-  if (is_secondary_button) {
+
+  if (button_type == ui::DIALOG_BUTTON_CANCEL) {
+    bubble_delegate_->SetCancelCallback(std::move(callback));
+    bubble_delegate_->SetButtonEnabled(button_type, !has_checkbox);
+    views::LabelButton* button = bubble_delegate_->GetCancelButton();
     button->SetEnabledTextColors(color);
-    button->SetEnabled(!has_checkbox);
     secondary_button_ = button;
+  } else {
+    bubble_delegate_->SetAcceptCallback(std::move(callback));
   }
+
+  bubble_delegate_->SetButtonLabel(button_type, button_info.label);
+  if (button_info.is_prominent) {
+    bubble_delegate_->SetDefaultButton(button_type);
+  }
+
   base::UmaHistogramEnumeration(
       kSubpageActionHistogram,
       is_secondary_button ? DownloadBubbleSubpageAction::kShownSecondaryButton
@@ -267,14 +262,13 @@ void DownloadBubbleSecurityView::UpdateButton(
 }
 
 void DownloadBubbleSecurityView::UpdateButtons() {
-  discard_button_->SetVisible(false);
-  keep_button_->SetVisible(false);
-  deep_scan_button_->SetVisible(false);
-  bypass_deep_scan_button_->SetVisible(false);
+  bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
+  bubble_delegate_->SetDefaultButton(ui::DIALOG_BUTTON_NONE);
   secondary_button_ = nullptr;
   DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
 
   if (ui_info.subpage_buttons.size() > 0) {
+    bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK);
     UpdateButton(ui_info.subpage_buttons[0], /*is_secondary_button=*/false,
                  ui_info.has_checkbox,
                  GetColorProvider()->GetColor(
@@ -282,6 +276,8 @@ void DownloadBubbleSecurityView::UpdateButtons() {
   }
 
   if (ui_info.subpage_buttons.size() > 1) {
+    bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK |
+                                 ui::DIALOG_BUTTON_CANCEL);
     UpdateButton(ui_info.subpage_buttons[1], /*is_secondary_button=*/true,
                  ui_info.has_checkbox,
                  GetColorProvider()->GetColor(
@@ -302,38 +298,6 @@ void DownloadBubbleSecurityView::RecordWarningActionTime(
   base::UmaHistogramMediumTimes(histogram,
                                 base::Time::Now() - (*warning_time_));
   warning_time_ = absl::nullopt;
-}
-
-void DownloadBubbleSecurityView::AddButtons() {
-  auto* button_row = AddChildView(std::make_unique<views::View>());
-  button_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(views::LayoutAlignment::kEnd);
-  button_row->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-
-  gfx::Insets button_margin =
-      gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
-                             views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-
-  auto add_button_for_command =
-      [button_row, button_margin](DownloadCommands::Command command) {
-        auto* button =
-            button_row->AddChildView(std::make_unique<views::MdTextButton>(
-                views::Button::PressedCallback(), std::u16string()));
-        button->SetProperty(views::kMarginsKey, button_margin);
-        return button;
-      };
-
-  // The buttons come in this order KEEP, DISCARD, BYPASS_DEEP_SCANNING,
-  // DEEP_SCAN. Reorder buttons in runtime if required.
-  keep_button_ = add_button_for_command(DownloadCommands::KEEP);
-  discard_button_ = add_button_for_command(DownloadCommands::DISCARD);
-  bypass_deep_scan_button_ =
-      add_button_for_command(DownloadCommands::BYPASS_DEEP_SCANNING);
-  deep_scan_button_ = add_button_for_command(DownloadCommands::DEEP_SCAN);
 }
 
 void DownloadBubbleSecurityView::UpdateSecurityView(
@@ -366,14 +330,15 @@ void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {
 
 DownloadBubbleSecurityView::DownloadBubbleSecurityView(
     DownloadBubbleUIController* bubble_controller,
-    DownloadBubbleNavigationHandler* navigation_handler)
+    DownloadBubbleNavigationHandler* navigation_handler,
+    views::BubbleDialogDelegate* bubble_delegate)
     : bubble_controller_(bubble_controller),
-      navigation_handler_(navigation_handler) {
+      navigation_handler_(navigation_handler),
+      bubble_delegate_(bubble_delegate) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   AddHeader();
   AddIconAndText();
-  AddButtons();
 }
 
 DownloadBubbleSecurityView::~DownloadBubbleSecurityView() = default;
