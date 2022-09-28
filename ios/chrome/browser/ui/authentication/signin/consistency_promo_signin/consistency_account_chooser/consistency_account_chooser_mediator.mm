@@ -16,14 +16,13 @@
 
 @interface ConsistencyAccountChooserMediator () <
     ChromeAccountManagerServiceObserver> {
+  ChromeAccountManagerService* _accountManagerService;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
 }
 
 // Configurators based on ChromeIdentity list.
 @property(nonatomic, strong) NSArray* sortedIdentityItemConfigurators;
-// Account manager service to retrieve Chrome identities.
-@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
 @end
 
@@ -45,11 +44,12 @@
 }
 
 - (void)dealloc {
-  DCHECK(!self.accountManagerService);
+  DCHECK(!_accountManagerService);
 }
 
 - (void)disconnect {
-  self.accountManagerService = nullptr;
+  _accountManagerServiceObserver.reset();
+  _accountManagerService = nullptr;
 }
 
 #pragma mark - Properties
@@ -69,12 +69,12 @@
 
 // Updates `self.sortedIdentityItemConfigurators` based on ChromeIdentity list.
 - (void)loadIdentityItemConfigurators {
-  if (!self.accountManagerService) {
+  if (!_accountManagerService) {
     return;
   }
 
   NSMutableArray* configurators = [NSMutableArray array];
-  NSArray* identities = self.accountManagerService->GetAllIdentities();
+  NSArray* identities = _accountManagerService->GetAllIdentities();
   BOOL hasSelectedIdentity = NO;
   for (ChromeIdentity* identity in identities) {
     IdentityItemConfigurator* configurator =
@@ -104,9 +104,8 @@
   configurator.gaiaID = identity.gaiaID;
   configurator.name = identity.userFullName;
   configurator.email = identity.userEmail;
-  configurator.avatar =
-      self.accountManagerService->GetIdentityAvatarWithIdentity(
-          identity, IdentityAvatarSize::TableViewIcon);
+  configurator.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
+      identity, IdentityAvatarSize::TableViewIcon);
   configurator.selected = [identity isEqual:self.selectedIdentity];
 }
 
