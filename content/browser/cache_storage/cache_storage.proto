@@ -20,6 +20,13 @@ message CacheStorageIndex {
   repeated Cache cache = 1;
   optional string origin = 2 [deprecated = true];
   optional string storage_key = 3;
+  // Note: The bucket ID is cached here for cases where we need it to
+  // build a Cache Storage directory path when a QuotaManagerProxy
+  // is not available, but otherwise it's safer to lookup the bucket
+  // ID using the storage_key since the value stored here might not
+  // always be reliable (for instance, if a crash occurred between the
+  // time that a bucket was deleted and instances had their index files
+  // deleted on disk).
   optional int64 bucket_id = 4;
   optional bool bucket_is_default = 5;
 }

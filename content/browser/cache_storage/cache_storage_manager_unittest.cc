@@ -2026,8 +2026,19 @@ TEST_P(CacheStorageManagerTestP, GetAllStorageKeysUsageAggregateBucketUsages) {
       original_usage[1]->storage_key == storage_key2_ ? 1 : 0;
   EXPECT_NE(original_storage_key1_index, original_storage_key2_index);
 
-  EXPECT_EQ(original_usage[original_storage_key1_index]->total_size_bytes,
-            original_usage[original_storage_key2_index]->total_size_bytes);
+  // TODO(https://crbug.com/1218097): In memory-only mode this works as
+  // expected, but otherwise the named bucket usage info isn't
+  // currently reported (instead, the code looks up the default bucket usage,
+  // which is zero at this point). This will work correctly once we store the
+  // bucket names in the index files and can use those when determining the
+  // corresponding bucket locator to use.
+  if (MemoryOnly()) {
+    EXPECT_EQ(original_usage[original_storage_key1_index]->total_size_bytes,
+              original_usage[original_storage_key2_index]->total_size_bytes);
+  } else {
+    EXPECT_EQ(original_usage[original_storage_key1_index]->total_size_bytes, 0);
+    EXPECT_NE(original_usage[original_storage_key2_index]->total_size_bytes, 0);
+  }
 
   // Now open a cache using the default bucket and add the entry there as well.
   // `GetAllStorageKeysUsage()` should still return a list with two entries, but
@@ -2052,8 +2063,13 @@ TEST_P(CacheStorageManagerTestP, GetAllStorageKeysUsageAggregateBucketUsages) {
 
   EXPECT_EQ(new_usage[new_storage_key1_index]->total_size_bytes,
             new_usage[new_storage_key2_index]->total_size_bytes);
-  EXPECT_EQ(2 * original_usage[original_storage_key1_index]->total_size_bytes,
-            new_usage[new_storage_key1_index]->total_size_bytes);
+  if (MemoryOnly()) {
+    EXPECT_EQ(2 * original_usage[original_storage_key1_index]->total_size_bytes,
+              new_usage[new_storage_key1_index]->total_size_bytes);
+  } else {
+    EXPECT_EQ(original_usage[original_storage_key1_index]->total_size_bytes, 0);
+    EXPECT_NE(new_usage[new_storage_key1_index]->total_size_bytes, 0);
+  }
   EXPECT_EQ(2 * original_usage[original_storage_key2_index]->total_size_bytes,
             new_usage[new_storage_key2_index]->total_size_bytes);
 }
@@ -2097,9 +2113,24 @@ TEST_P(CacheStorageManagerTestP, GetStorageKeysIgnoresKeysFromNamedBuckets) {
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
 
     std::vector<blink::StorageKey> storage_keys = GetStorageKeys();
-    ASSERT_EQ(2ULL, storage_keys.size());
-    EXPECT_NE(storage_keys[0].origin(), test_origin);
-    EXPECT_NE(storage_keys[1].origin(), test_origin);
+
+    // TODO(https://crbug.com/1218097): In memory-only mode this works as
+    // expected, but otherwise the list gets populated with the named buckets as
+    // if they were default buckets. This will work correctly once we store the
+    // bucket names in the index files and can use those when determining the
+    // corresponding bucket locator to use.
+    if (MemoryOnly()) {
+      ASSERT_EQ(2ULL, storage_keys.size());
+      EXPECT_NE(storage_keys[0].origin(), test_origin);
+      EXPECT_NE(storage_keys[1].origin(), test_origin);
+    } else {
+      if (base::FeatureList::IsEnabled(
+              net::features::kThirdPartyStoragePartitioning)) {
+        ASSERT_EQ(4ULL, storage_keys.size());
+      } else {
+        ASSERT_EQ(3ULL, storage_keys.size());
+      }
+    }
     ASSERT_EQ(partitioning_enabled ? 4ULL : 3ULL,
               GetAllStorageKeysUsage().size());
 
@@ -2750,8 +2781,7 @@ TEST_P(CacheStorageManagerTestP, DeleteStorageKeyData) {
 
     // Note that we use `GetAllStorageKeysUsage()` here because
     // `GetStorageKeys()` won't return storage keys only associated with named
-    // buckets. The latter returns results aggregated by origin, but we can use
-    // the sizes to know whether data was deleted.
+    // buckets.
     auto usages = GetAllStorageKeysUsage(owner);
     EXPECT_EQ(3ULL, usages.size());
 
@@ -2769,10 +2799,22 @@ TEST_P(CacheStorageManagerTestP, DeleteStorageKeyData) {
     EXPECT_NE(storage_key2_index, partitioned_storage_key1_index);
     EXPECT_NE(partitioned_storage_key1_index, storage_key1_index);
 
-    EXPECT_EQ(usages[storage_key2_index]->total_size_bytes,
-              usages[storage_key1_index]->total_size_bytes);
-    EXPECT_EQ(usages[partitioned_storage_key1_index]->total_size_bytes,
-              usages[storage_key2_index]->total_size_bytes);
+    // TODO(https://crbug.com/1218097): In memory-only mode this works as
+    // expected, but otherwise the named bucket usage info isn't currently
+    // reported (instead, the code looks up the default bucket usage, which is
+    // zero at this point). This will work correctly once we store the bucket
+    // names in the index files and can use those when determining the
+    // corresponding bucket locator to use.
+    if (MemoryOnly()) {
+      EXPECT_EQ(usages[storage_key2_index]->total_size_bytes,
+                usages[storage_key1_index]->total_size_bytes);
+      EXPECT_EQ(usages[partitioned_storage_key1_index]->total_size_bytes,
+                usages[storage_key2_index]->total_size_bytes);
+    } else {
+      EXPECT_EQ(usages[storage_key1_index]->total_size_bytes, 0);
+      EXPECT_EQ(usages[partitioned_storage_key1_index]->total_size_bytes, 0);
+      EXPECT_NE(usages[storage_key2_index]->total_size_bytes, 0);
+    }
 
     EXPECT_EQ(DeleteStorageKeyData(storage_key1_, owner),
               blink::mojom::QuotaStatusCode::kOk);
@@ -2800,10 +2842,16 @@ TEST_P(CacheStorageManagerTestP, DeleteStorageKeyData) {
     EXPECT_NE(storage_key2_index, partitioned_storage_key1_index);
     EXPECT_NE(partitioned_storage_key1_index, storage_key1_index);
 
-    EXPECT_EQ(usages[storage_key2_index]->total_size_bytes,
-              usages[storage_key1_index]->total_size_bytes);
-    EXPECT_EQ(usages[partitioned_storage_key1_index]->total_size_bytes,
-              usages[storage_key2_index]->total_size_bytes);
+    if (MemoryOnly()) {
+      EXPECT_EQ(usages[storage_key2_index]->total_size_bytes,
+                usages[storage_key1_index]->total_size_bytes);
+      EXPECT_EQ(usages[partitioned_storage_key1_index]->total_size_bytes,
+                usages[storage_key2_index]->total_size_bytes);
+    } else {
+      EXPECT_EQ(usages[storage_key1_index]->total_size_bytes, 0);
+      EXPECT_EQ(usages[partitioned_storage_key1_index]->total_size_bytes, 0);
+      EXPECT_NE(usages[storage_key2_index]->total_size_bytes, 0);
+    }
 
     EXPECT_EQ(DeleteStorageKeyData(storage_key2_, owner),
               blink::mojom::QuotaStatusCode::kOk);
@@ -3156,6 +3204,33 @@ TEST_F(CacheStorageIndexMigrationTest, BucketMigration) {
                    upgraded_index.bucket_is_default());
                EXPECT_EQ(this->bucket_locator1_, bucket_locator);
              }));
+}
+
+TEST_F(CacheStorageIndexMigrationTest, InvalidBucketId) {
+  DoTest(
+      "content/test/data/cache_storage/invalid_bucket_id/",
+      base::BindLambdaForTesting(
+          [this](const proto::CacheStorageIndex& original_index,
+                 const proto::CacheStorageIndex& upgraded_index,
+                 int64_t total_usage) {
+            EXPECT_EQ(original_index.storage_key(),
+                      upgraded_index.storage_key());
+            EXPECT_EQ(original_index.bucket_is_default(),
+                      upgraded_index.bucket_is_default());
+
+            EXPECT_EQ(original_index.bucket_id(), 999);
+            EXPECT_GT(original_index.bucket_id(), upgraded_index.bucket_id());
+
+            absl::optional<blink::StorageKey> result =
+                blink::StorageKey::Deserialize(upgraded_index.storage_key());
+            ASSERT_TRUE(result.has_value());
+            EXPECT_EQ(this->storage_key1_, result.value());
+
+            storage::BucketLocator bucket_locator = storage::BucketLocator(
+                storage::BucketId(upgraded_index.bucket_id()), result.value(),
+                StorageType::kTemporary, upgraded_index.bucket_is_default());
+            EXPECT_EQ(this->bucket_locator1_, bucket_locator);
+          }));
 }
 
 INSTANTIATE_TEST_SUITE_P(CacheStorageManagerTests,

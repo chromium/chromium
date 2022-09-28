@@ -224,11 +224,11 @@ void ValidateAndAddUsageFromPath(
   storage::BucketLocator bucket_locator{};
 
   if (index.has_bucket_id() && index.has_bucket_is_default()) {
+    // We'll populate the bucket locator using the information from the index
+    // file, but it's not guaranteed that this will be valid.
     bucket_locator = storage::BucketLocator(
         storage::BucketId(index.bucket_id()), storage_key,
         blink::mojom::StorageType::kTemporary, index.bucket_is_default());
-    // TODO(https://crbug.com/1218097): Is there a way to validate that this
-    // bucket information is valid?
   } else {
     // If the index file has no bucket information then it's from before we
     // had non-default buckets and third-party storage partitioning
@@ -237,6 +237,7 @@ void ValidateAndAddUsageFromPath(
     // data to construct the appropriate path from it below.
     bucket_locator.is_default = true;
     bucket_locator.storage_key = storage_key;
+    bucket_locator.type = blink::mojom::StorageType::kTemporary;
     // TODO(https://crbug.com/1218097): Once enough time has passed it should be
     // safe to treat this case as an index validation error.
   }
@@ -373,8 +374,12 @@ void GetStorageKeysAndLastModifiedOnTaskRunner(
     return;
   }
 
-  // For any index file that didn't have bucket information, ensure that a
-  // bucket exists for it and then populate the bucket ID in our structure.
+  // If the quota manager proxy is available, query it for the correct
+  // bucket information regardless of whether the index file has bucket
+  // information. If we recreate a stale bucket locator here, a side effect is
+  // that our CacheStorageCache instance map could get populated with entries
+  // that map to the same file path (for instances where the bucket ID isn't a
+  // part of the directory path), triggering an infinite hang.
   const auto barrier_callback =
       base::BarrierCallback<std::tuple<storage::BucketLocator,
                                        storage::mojom::StorageUsageInfoV2Ptr>>(
@@ -384,21 +389,9 @@ void GetStorageKeysAndLastModifiedOnTaskRunner(
     const storage::BucketLocator& bucket_locator = std::get<0>(usage_tuple);
     const storage::mojom::StorageUsageInfoV2Ptr& info =
         std::get<1>(usage_tuple);
-    if (bucket_locator.id) {
-      scheduler_task_runner->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              barrier_callback,
-              std::make_tuple(std::move(bucket_locator),
-                              storage::mojom::StorageUsageInfoV2::New(
-                                  info->storage_key, info->total_size_bytes,
-                                  info->last_modified))));
-      continue;
-    }
-    // Note: Since bucket_locator.id will only be empty for unmigrated
-    // CacheStorage indices, and since these predate non-default buckets,
-    // it's safe to assume that this CacheStorage instance should use the
-    // default bucket.
+    // TODO(https://crbug.com/1218097): To support named buckets, we'll need to
+    // store the bucket name in the index file and use that in the
+    // `QuotaManagerProxy::UpdateOrCreateBucket()` call below.
     quota_manager_proxy->UpdateOrCreateBucket(
         storage::BucketInitParams::ForDefaultBucket(bucket_locator.storage_key),
         scheduler_task_runner,
