@@ -95,3 +95,12 @@
     </cr-action-menu>
   </template>
 </cr-lazy-render>
+<cr-toast id="undoToast" duration="5000">
+  <div id="undoNotification">
+    [[getUndoNotificationText_(lastUserAction_, actionMenuSite_)]]
+  </div>
+  <cr-button aria-label="$i18n{undoDescription}"
+      on-click="onUndoButtonClick_">
+      $i18n{safetyCheckNotificationPermissionReviewUndo}
+  </cr-button>
+</cr-toast>

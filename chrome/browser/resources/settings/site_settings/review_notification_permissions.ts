@@ -4,13 +4,17 @@
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -24,11 +28,22 @@ export interface SettingsReviewNotificationPermissionsElement {
   $: {
     tooltip: PaperTooltipElement,
     actionMenu: CrLazyRenderElement<CrActionMenuElement>,
+    undoToast: CrToastElement,
   };
 }
 
+/**
+ * The list of actions that a user can take with regards to the permissions of
+ * notifications.
+ */
+enum ACTIONS {
+  BLOCK = 'block',
+  IGNORE = 'ignore',
+  RESET = 'reset'
+}
+
 const SettingsReviewNotificationPermissionsElementBase =
-    WebUIListenerMixin(BaseMixin(SiteSettingsMixin(PolymerElement)));
+    WebUIListenerMixin(BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement))));
 
 export class SettingsReviewNotificationPermissionsElement extends
     SettingsReviewNotificationPermissionsElementBase {
@@ -57,11 +72,8 @@ export class SettingsReviewNotificationPermissionsElement extends
   private browserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
   private actionMenuSite_: NotificationPermission|null;
+  private lastUserAction_: ACTIONS|null;
 
-  /**
-   * Load the review notification permission list whenever the page is
-   * loaded.
-   */
   override connectedCallback() {
     super.connectedCallback();
     // Register for review notification permission list updates.
@@ -90,28 +102,38 @@ export class SettingsReviewNotificationPermissionsElement extends
     return index === 0 ? 'first' : '';
   }
 
+  /* Show action menu when clicked to three dot menu. */
   private onShowActionMenuClick_(e: DomRepeatEvent<NotificationPermission>) {
-    this.actionMenuSite_ =
-        this.notificationPermissionReviewList_[e.model.index];
+    this.actionMenuSite_ = e.model.item;
     this.$.actionMenu.get().showAt(e.target as HTMLElement);
   }
 
   private onBlockNotificationPermissionClick_(
       event: DomRepeatEvent<NotificationPermission>) {
-    const item = this.notificationPermissionReviewList_[event.model.index];
+    event.stopPropagation();
+    const item = event.model.item;
     this.browserProxy_.blockNotificationPermissionForOrigin(item.origin);
+    this.lastUserAction_ = ACTIONS.BLOCK;
+    this.actionMenuSite_ = item;
+    this.showUndoToast_();
   }
 
-  private onIgnoreClick_() {
+  private onIgnoreClick_(e: DomRepeatEvent<NotificationPermission>) {
+    e.stopPropagation();
     this.browserProxy_.ignoreNotificationPermissionForOrigin(
         this.actionMenuSite_!.origin);
-    this.closeActionMenu_();
+    this.lastUserAction_ = ACTIONS.IGNORE;
+    this.showUndoToast_();
+    this.$.actionMenu.get().close();
   }
 
-  private onResetClick_() {
+  private onResetClick_(e: DomRepeatEvent<NotificationPermission>) {
+    e.stopPropagation();
     this.browserProxy_.resetNotificationPermissionForOrigin(
         this.actionMenuSite_!.origin);
-    this.closeActionMenu_();
+    this.lastUserAction_ = ACTIONS.RESET;
+    this.showUndoToast_();
+    this.$.actionMenu.get().close();
   }
 
   /* Repopulate the list when notification permission list is updated. */
@@ -140,12 +162,43 @@ export class SettingsReviewNotificationPermissionsElement extends
     tooltip.show();
   }
 
-  private closeActionMenu_() {
-    this.actionMenuSite_ = null;
-    const actionMenu = this.shadowRoot!.querySelector('cr-action-menu')!;
-    if (actionMenu.open) {
-      actionMenu.close();
+  private getUndoNotificationText_(): string {
+    if (!this.lastUserAction_ || !this.actionMenuSite_) {
+      return '';
     }
+    switch (this.lastUserAction_) {
+      case ACTIONS.BLOCK: {
+        return this.i18n(
+            'safetyCheckNotificationPermissionReviewBlockedToastLabel',
+            this.actionMenuSite_!.origin);
+      }
+      case ACTIONS.IGNORE: {
+        return this.i18n(
+            'safetyCheckNotificationPermissionReviewIgnoredToastLabel',
+            this.actionMenuSite_!.origin);
+      }
+      case ACTIONS.RESET: {
+        return this.i18n(
+            'safetyCheckNotificationPermissionReviewResetToastLabel',
+            this.actionMenuSite_!.origin);
+      }
+      default: {
+        assertNotReached();
+      }
+    }
+  }
+
+  private showUndoToast_(): void {
+    // Re-open the toast if one was already open; this resets the timer.
+    if (this.$.undoToast.open) {
+      this.$.undoToast.hide();
+    }
+    this.$.undoToast.show();
+  }
+
+  private onUndoButtonClick_(e: Event) {
+    e.stopPropagation();
+    // TODO(crbug/1345920) add functionality to undo user action
   }
 
   /**
