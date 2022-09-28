@@ -147,7 +147,7 @@ void CastSessionClientImpl::SendErrorToClient(int sequence_number,
 
 void CastSessionClientImpl::HandleParsedClientMessage(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
+  if (!result.has_value() || !result.value().is_dict()) {
     ReportClientMessageParseError(activity_->route().media_route_id(),
                                   result.error());
     return;
@@ -159,7 +159,7 @@ void CastSessionClientImpl::HandleParsedClientMessage(
   RemoveNullFields(*result);
 
   std::unique_ptr<CastInternalMessage> cast_message =
-      CastInternalMessage::From(std::move(*result));
+      CastInternalMessage::From(std::move(result.value().GetDict()));
   if (!cast_message) {
     ReportClientMessageParseError(activity_->route().media_route_id(),
                                   "Not a Cast message");

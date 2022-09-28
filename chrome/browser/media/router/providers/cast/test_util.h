@@ -18,7 +18,7 @@ std::ostream& operator<<(std::ostream&, const CastInternalMessage&);
 
 // Matcher for CastInternalMessage arguments.
 MATCHER_P(IsCastInternalMessage, json, "") {
-  auto message = CastInternalMessage::From(base::test::ParseJson(json));
+  auto message = CastInternalMessage::From(base::test::ParseJsonDict(json));
   DCHECK(message);
   if (arg.type() != message->type() ||
       arg.client_id() != message->client_id() ||

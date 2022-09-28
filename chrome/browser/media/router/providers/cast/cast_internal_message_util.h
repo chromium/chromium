@@ -81,7 +81,7 @@ class CastInternalMessage {
 
   // Returns a CastInternalMessage for |message|, or nullptr is |message| is not
   // a valid Cast internal message.
-  static std::unique_ptr<CastInternalMessage> From(base::Value message);
+  static std::unique_ptr<CastInternalMessage> From(base::Value::Dict message);
 
   CastInternalMessage(const CastInternalMessage&) = delete;
   CastInternalMessage& operator=(const CastInternalMessage&) = delete;

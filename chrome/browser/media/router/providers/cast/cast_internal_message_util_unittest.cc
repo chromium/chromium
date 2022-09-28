@@ -70,7 +70,7 @@ void ExpectNoCastSession(const MediaSinkInternal& sink,
 
 void ExpectInvalidCastInternalMessage(const std::string& message_str,
                                       const std::string& invalid_reason) {
-  EXPECT_FALSE(CastInternalMessage::From(ParseJson(message_str)))
+  EXPECT_FALSE(CastInternalMessage::From(ParseJsonDict(message_str)))
       << "message expected to be invlaid: " << invalid_reason;
 }
 
@@ -96,7 +96,7 @@ TEST_F(CastInternalMessageUtilDeathTest,
     }
   })";
 
-  auto message = CastInternalMessage::From(ParseJson(message_str));
+  auto message = CastInternalMessage::From(ParseJsonDict(message_str));
   ASSERT_TRUE(message);
   EXPECT_EQ(CastInternalMessage::Type::kAppMessage, message->type());
   EXPECT_EQ("12345", message->client_id());
@@ -124,7 +124,7 @@ TEST_F(CastInternalMessageUtilDeathTest,
     }
   })";
 
-  auto message = CastInternalMessage::From(ParseJson(message_str));
+  auto message = CastInternalMessage::From(ParseJsonDict(message_str));
   ASSERT_TRUE(message);
   EXPECT_EQ(CastInternalMessage::Type::kV2Message, message->type());
   EXPECT_EQ("12345", message->client_id());
@@ -150,7 +150,7 @@ TEST_F(CastInternalMessageUtilDeathTest,
       "message": {}
     })";
 
-  auto message = CastInternalMessage::From(ParseJson(message_str));
+  auto message = CastInternalMessage::From(ParseJsonDict(message_str));
   ASSERT_TRUE(message);
   EXPECT_EQ(CastInternalMessage::Type::kClientConnect, message->type());
   EXPECT_EQ("12345", message->client_id());

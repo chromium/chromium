@@ -31,7 +31,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::IsJson;
-using base::test::ParseJson;
+using base::test::ParseJsonDict;
 using blink::mojom::PresentationConnectionCloseReason;
 using blink::mojom::PresentationConnectionMessage;
 using blink::mojom::PresentationConnectionMessagePtr;
@@ -90,7 +90,7 @@ TEST_F(AppActivityTest, SendAppMessageToReceiver) {
       }));
 
   std::unique_ptr<CastInternalMessage> message =
-      CastInternalMessage::From(ParseJson(R"({
+      CastInternalMessage::From(ParseJsonDict(R"({
     "type": "app_message",
     "clientId": "theClientId",
     "sequenceNumber": 999,
@@ -124,7 +124,7 @@ TEST_F(AppActivityTest, SendMediaRequestToReceiver) {
       .WillOnce(Return(request_id));
 
   std::unique_ptr<CastInternalMessage> message =
-      CastInternalMessage::From(ParseJson(R"({
+      CastInternalMessage::From(ParseJsonDict(R"({
     "type": "v2_message",
     "clientId": "theClientId",
     "sequenceNumber": 999,
@@ -158,7 +158,7 @@ TEST_F(AppActivityTest, SendSetVolumeRequestToReceiver) {
 
   SetUpSession();
   std::unique_ptr<CastInternalMessage> message =
-      CastInternalMessage::From(ParseJson(R"({
+      CastInternalMessage::From(ParseJsonDict(R"({
     "type": "v2_message",
     "clientId": "theClientId",
     "sequenceNumber": 999,

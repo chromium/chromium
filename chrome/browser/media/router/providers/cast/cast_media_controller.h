@@ -75,8 +75,8 @@ class CastMediaController : public mojom::MediaController {
   const std::string& sender_id() const { return sender_id_; }
 
  private:
-  base::Value CreateMediaRequest(cast_channel::V2MessageType type);
-  base::Value CreateVolumeRequest();
+  base::Value::Dict CreateMediaRequest(cast_channel::V2MessageType type);
+  base::Value::Dict CreateVolumeRequest();
 
   void UpdateMediaStatus(const base::Value& message_value);
 
