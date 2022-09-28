@@ -107,10 +107,6 @@ void FeedbackServiceProvider::OpenSystemInfoDialog() {
   feedback_delegate_->OpenSystemInfoDialog();
 }
 
-void FeedbackServiceProvider::OpenBluetoothLogsInfoDialog() {
-  feedback_delegate_->OpenBluetoothLogsInfoDialog();
-}
-
 void FeedbackServiceProvider::RecordPostSubmitAction(
     os_feedback_ui::mojom::FeedbackAppPostSubmitAction action) {
   if (action ==

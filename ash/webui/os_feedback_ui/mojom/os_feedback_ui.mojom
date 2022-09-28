@@ -223,9 +223,6 @@ interface FeedbackServiceProvider {
   // Open system info dialog (which displays the system logs
   // to be sent with the report if the user has opted in).
   OpenSystemInfoDialog();
-  // Open bluetooth logs info dialog (which displays the bluetooth logs
-  // to be sent with the report if the user has opted in).
-  OpenBluetoothLogsInfoDialog();
   // Record the metrics of users' first action on confirmation page.
   RecordPostSubmitAction(FeedbackAppPostSubmitAction action);
   // Record metrics of users' action before sending the feedback.

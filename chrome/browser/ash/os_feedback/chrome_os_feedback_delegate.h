@@ -48,7 +48,6 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
   void OpenExploreApp() override;
   void OpenMetricsDialog() override;
   void OpenSystemInfoDialog() override;
-  void OpenBluetoothLogsInfoDialog() override;
 
  private:
   void OnSendFeedbackDone(SendReportCallback callback, bool status);

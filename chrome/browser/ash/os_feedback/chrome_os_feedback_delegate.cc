@@ -315,14 +315,6 @@ void ChromeOsFeedbackDelegate::OpenSystemInfoDialog() {
   OpenWebDialog(systemInfoUrl);
 }
 
-void ChromeOsFeedbackDelegate::OpenBluetoothLogsInfoDialog() {
-  // TODO(http://b/233079042): Make the bluetooth_logs_info.html page a separate
-  // WebUI. For now, use the old Feedback tool's bluetooth_logs_info.html.
-  GURL system_info_url = GURL(base::StrCat(
-      {chrome::kChromeUIFeedbackURL, "html/bluetooth_logs_info.html"}));
-  OpenWebDialog(system_info_url);
-}
-
 void ChromeOsFeedbackDelegate::OpenWebDialog(GURL url) {
   Browser* feedback_browser = ash::FindSystemWebAppBrowser(
       profile_, ash::SystemWebAppType::OS_FEEDBACK);
