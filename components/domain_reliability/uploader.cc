@@ -72,7 +72,7 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
       const std::string& report_json,
       int max_upload_depth,
       const GURL& upload_url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       DomainReliabilityUploader::UploadCallback callback) override {
     DVLOG(1) << "Uploading report to " << upload_url;
     DVLOG(2) << "Report JSON: " << report_json;
@@ -123,7 +123,7 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
     request->SetExtraRequestHeaderByName(net::HttpRequestHeaders::kContentType,
                                          kJsonMimeType, true /* overwrite */);
     request->set_isolation_info(net::IsolationInfo::CreatePartial(
-        net::IsolationInfo::RequestType::kOther, network_isolation_key));
+        net::IsolationInfo::RequestType::kOther, network_anonymization_key));
     std::vector<char> report_data(report_json.begin(), report_json.end());
     auto upload_reader =
         std::make_unique<net::UploadOwnedBytesElementReader>(&report_data);

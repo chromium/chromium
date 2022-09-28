@@ -19,7 +19,7 @@
 #include "url/gurl.h"
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace domain_reliability {
@@ -48,7 +48,7 @@ class MockUploader : public DomainReliabilityUploader {
       const std::string& report_json,
       int max_upload_depth,
       const GURL& upload_url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       UploadCallback upload_callback)>
       UploadRequestCallback;
 
@@ -59,11 +59,12 @@ class MockUploader : public DomainReliabilityUploader {
   virtual bool discard_uploads() const;
 
   // DomainReliabilityUploader implementation:
-  void UploadReport(const std::string& report_json,
-                    int max_upload_depth,
-                    const GURL& upload_url,
-                    const net::NetworkIsolationKey& network_isolation_key,
-                    UploadCallback callback) override;
+  void UploadReport(
+      const std::string& report_json,
+      int max_upload_depth,
+      const GURL& upload_url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      UploadCallback callback) override;
   void Shutdown() override;
   void SetDiscardUploads(bool discard_uploads) override;
   int GetDiscardedUploadCount() const override;
