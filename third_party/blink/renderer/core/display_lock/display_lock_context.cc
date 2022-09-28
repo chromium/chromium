@@ -855,6 +855,7 @@ void DisplayLockContext::WillStartLifecycleUpdate(const LocalFrameView& view) {
   if (has_pending_subtree_checks_ || has_pending_top_layer_check_) {
     DetermineIfSubtreeHasTopLayerElement();
     has_pending_top_layer_check_ = false;
+    update_registration = true;
   }
 
   if (has_pending_subtree_checks_) {
