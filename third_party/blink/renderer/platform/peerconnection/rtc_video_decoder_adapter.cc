@@ -125,6 +125,168 @@ void RecordReinitializationLatency(base::TimeDelta latency) {
 
 }  // namespace
 
+void RTCVideoDecoderAdapter::InitializeOnMediaThread(
+    const media::VideoDecoderConfig& config,
+    InitCB init_cb) {
+  DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+
+  // On ReinitializeSync() calls, |video_decoder_| may already be set.
+  if (!video_decoder_) {
+    // TODO(sandersd): Plumb a real log sink here so that we can contribute to
+    // the media-internals UI. The current log just discards all messages.
+    media_log_ = std::make_unique<media::NullMediaLog>();
+
+    video_decoder_ = gpu_factories_->CreateVideoDecoder(
+        media_log_.get(), WTF::BindRepeating(&OnRequestOverlayInfo));
+
+    if (!video_decoder_) {
+      PostCrossThreadTask(*media_task_runner_.get(), FROM_HERE,
+                          CrossThreadBindOnce(std::move(init_cb), false));
+      return;
+    }
+  }
+
+  // In practice this is ignored by hardware decoders.
+  bool low_delay = true;
+
+  // Encryption is not supported.
+  media::CdmContext* cdm_context = nullptr;
+
+  media::VideoDecoder::OutputCB output_cb = ConvertToBaseRepeatingCallback(
+      CrossThreadBindRepeating(&RTCVideoDecoderAdapter::OnOutput, weak_this_));
+  video_decoder_->Initialize(
+      config, low_delay, cdm_context,
+      base::BindOnce(&RTCVideoDecoderAdapter::OnInitializeDone,
+                     ConvertToBaseOnceCallback(std::move(init_cb))),
+      output_cb, base::DoNothing());
+}
+
+void RTCVideoDecoderAdapter::DecodeOnMediaThread() {
+  DVLOG(4) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+
+  int max_decode_requests = video_decoder_->GetMaxDecodeRequests();
+  while (outstanding_decode_requests_ < max_decode_requests) {
+    scoped_refptr<media::DecoderBuffer> buffer;
+    {
+      base::AutoLock auto_lock(lock_);
+
+      // Take the first pending buffer.
+      if (pending_buffers_.empty())
+        return;
+      buffer = pending_buffers_.front();
+      pending_buffers_.pop_front();
+
+      // Record the timestamp.
+      while (decode_timestamps_.size() >= kMaxDecodeHistory)
+        decode_timestamps_.pop_front();
+      decode_timestamps_.push_back(buffer->timestamp());
+    }
+
+    // Submit for decoding.
+    outstanding_decode_requests_++;
+    video_decoder_->Decode(
+        std::move(buffer),
+        WTF::BindRepeating(&RTCVideoDecoderAdapter::OnDecodeDone, weak_this_));
+  }
+}
+
+void RTCVideoDecoderAdapter::FlushOnMediaThread(FlushDoneCB flush_success_cb,
+                                                FlushDoneCB flush_fail_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+
+  // Remove any pending tasks.
+  {
+    base::AutoLock auto_lock(lock_);
+    pending_buffers_.clear();
+  }
+
+  // Send EOS frame for flush.
+  video_decoder_->Decode(
+      media::DecoderBuffer::CreateEOSBuffer(),
+      WTF::BindOnce(
+          [](FlushDoneCB flush_success, FlushDoneCB flush_fail,
+             media::DecoderStatus status) {
+            if (status.is_ok())
+              std::move(flush_success).Run();
+            else
+              std::move(flush_fail).Run();
+          },
+          std::move(flush_success_cb), std::move(flush_fail_cb)));
+}
+
+// static
+void RTCVideoDecoderAdapter::OnInitializeDone(base::OnceCallback<void(bool)> cb,
+                                              media::DecoderStatus status) {
+  std::move(cb).Run(status.is_ok());
+}
+
+void RTCVideoDecoderAdapter::OnDecodeDone(media::DecoderStatus status) {
+  DVLOG(3) << __func__ << "(" << status.group() << ":"
+           << static_cast<int>(status.code()) << ")";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+
+  outstanding_decode_requests_--;
+
+  if (!status.is_ok() &&
+      status.code() != media::DecoderStatus::Codes::kAborted) {
+    DVLOG(2) << "Entering permanent error state";
+    base::UmaHistogramSparse("Media.RTCVideoDecoderError",
+                             static_cast<int>(status.code()));
+
+    base::AutoLock auto_lock(lock_);
+    has_error_ = true;
+    pending_buffers_.clear();
+    decode_timestamps_.clear();
+    return;
+  }
+
+  DecodeOnMediaThread();
+}
+
+void RTCVideoDecoderAdapter::OnOutput(scoped_refptr<media::VideoFrame> frame) {
+  DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+
+  const base::TimeDelta timestamp = frame->timestamp();
+  webrtc::VideoFrame rtc_frame =
+      webrtc::VideoFrame::Builder()
+          .set_video_frame_buffer(rtc::scoped_refptr<WebRtcVideoFrameAdapter>(
+              new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+                  std::move(frame))))
+          .set_timestamp_rtp(static_cast<uint32_t>(timestamp.InMicroseconds()))
+          .set_timestamp_us(0)
+          .set_rotation(webrtc::kVideoRotation_0)
+          .build();
+
+  base::AutoLock auto_lock(lock_);
+
+  // Record time to first frame if we haven't yet.
+  if (start_time_) {
+    // We haven't recorded the first frame time yet, so do so now.
+    base::UmaHistogramTimes("Media.RTCVideoDecoderFirstFrameLatencyMs",
+                            base::TimeTicks::Now() - *start_time_);
+    start_time_.reset();
+  }
+
+  // Update `current_resolution_`, in case it's changed.  This lets us fall back
+  // to software, or avoid doing so, if we're over the decoder limit.
+  current_resolution_ =
+      static_cast<int32_t>(rtc_frame.width()) * rtc_frame.height();
+
+  if (!base::Contains(decode_timestamps_, timestamp)) {
+    DVLOG(2) << "Discarding frame with timestamp " << timestamp;
+    return;
+  }
+
+  // Assumes that Decoded() can be safely called with the lock held, which
+  // apparently it can be because RTCVideoDecoder does the same.
+  DCHECK(decode_complete_callback_);
+  decode_complete_callback_->Decoded(rtc_frame);
+  consecutive_error_count_ = 0;
+}
+
 // static
 std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
     media::GpuVideoAcceleratorFactories* gpu_factories,
@@ -442,144 +604,6 @@ webrtc::VideoDecoder::DecoderInfo RTCVideoDecoderAdapter::GetDecoderInfo()
   return info;
 }
 
-void RTCVideoDecoderAdapter::InitializeOnMediaThread(
-    const media::VideoDecoderConfig& config,
-    InitCB init_cb) {
-  DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-
-  // On ReinitializeSync() calls, |video_decoder_| may already be set.
-  if (!video_decoder_) {
-    // TODO(sandersd): Plumb a real log sink here so that we can contribute to
-    // the media-internals UI. The current log just discards all messages.
-    media_log_ = std::make_unique<media::NullMediaLog>();
-
-    video_decoder_ = gpu_factories_->CreateVideoDecoder(
-        media_log_.get(), WTF::BindRepeating(&OnRequestOverlayInfo));
-
-    if (!video_decoder_) {
-      PostCrossThreadTask(*media_task_runner_.get(), FROM_HERE,
-                          CrossThreadBindOnce(std::move(init_cb), false));
-      return;
-    }
-  }
-
-  // In practice this is ignored by hardware decoders.
-  bool low_delay = true;
-
-  // Encryption is not supported.
-  media::CdmContext* cdm_context = nullptr;
-
-  media::VideoDecoder::OutputCB output_cb = ConvertToBaseRepeatingCallback(
-      CrossThreadBindRepeating(&RTCVideoDecoderAdapter::OnOutput, weak_this_));
-  video_decoder_->Initialize(
-      config, low_delay, cdm_context,
-      base::BindOnce(&RTCVideoDecoderAdapter::OnInitializeDone,
-                     ConvertToBaseOnceCallback(std::move(init_cb))),
-      output_cb, base::DoNothing());
-}
-
-// static
-void RTCVideoDecoderAdapter::OnInitializeDone(base::OnceCallback<void(bool)> cb,
-                                              media::DecoderStatus status) {
-  std::move(cb).Run(status.is_ok());
-}
-
-void RTCVideoDecoderAdapter::DecodeOnMediaThread() {
-  DVLOG(4) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-
-  int max_decode_requests = video_decoder_->GetMaxDecodeRequests();
-  while (outstanding_decode_requests_ < max_decode_requests) {
-    scoped_refptr<media::DecoderBuffer> buffer;
-    {
-      base::AutoLock auto_lock(lock_);
-
-      // Take the first pending buffer.
-      if (pending_buffers_.empty())
-        return;
-      buffer = pending_buffers_.front();
-      pending_buffers_.pop_front();
-
-      // Record the timestamp.
-      while (decode_timestamps_.size() >= kMaxDecodeHistory)
-        decode_timestamps_.pop_front();
-      decode_timestamps_.push_back(buffer->timestamp());
-    }
-
-    // Submit for decoding.
-    outstanding_decode_requests_++;
-    video_decoder_->Decode(
-        std::move(buffer),
-        WTF::BindRepeating(&RTCVideoDecoderAdapter::OnDecodeDone, weak_this_));
-  }
-}
-
-void RTCVideoDecoderAdapter::OnDecodeDone(media::DecoderStatus status) {
-  DVLOG(3) << __func__ << "(" << status.group() << ":"
-           << static_cast<int>(status.code()) << ")";
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-
-  outstanding_decode_requests_--;
-
-  if (!status.is_ok() &&
-      status.code() != media::DecoderStatus::Codes::kAborted) {
-    DVLOG(2) << "Entering permanent error state";
-    base::UmaHistogramSparse("Media.RTCVideoDecoderError",
-                             static_cast<int>(status.code()));
-
-    base::AutoLock auto_lock(lock_);
-    has_error_ = true;
-    pending_buffers_.clear();
-    decode_timestamps_.clear();
-    return;
-  }
-
-  DecodeOnMediaThread();
-}
-
-void RTCVideoDecoderAdapter::OnOutput(scoped_refptr<media::VideoFrame> frame) {
-  DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-
-  const base::TimeDelta timestamp = frame->timestamp();
-  webrtc::VideoFrame rtc_frame =
-      webrtc::VideoFrame::Builder()
-          .set_video_frame_buffer(rtc::scoped_refptr<WebRtcVideoFrameAdapter>(
-              new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-                  std::move(frame))))
-          .set_timestamp_rtp(static_cast<uint32_t>(timestamp.InMicroseconds()))
-          .set_timestamp_us(0)
-          .set_rotation(webrtc::kVideoRotation_0)
-          .build();
-
-  base::AutoLock auto_lock(lock_);
-
-  // Record time to first frame if we haven't yet.
-  if (start_time_) {
-    // We haven't recorded the first frame time yet, so do so now.
-    base::UmaHistogramTimes("Media.RTCVideoDecoderFirstFrameLatencyMs",
-                            base::TimeTicks::Now() - *start_time_);
-    start_time_.reset();
-  }
-
-  // Update `current_resolution_`, in case it's changed.  This lets us fall back
-  // to software, or avoid doing so, if we're over the decoder limit.
-  current_resolution_ =
-      static_cast<int32_t>(rtc_frame.width()) * rtc_frame.height();
-
-  if (!base::Contains(decode_timestamps_, timestamp)) {
-    DVLOG(2) << "Discarding frame with timestamp " << timestamp;
-    return;
-  }
-
-  // Assumes that Decoded() can be safely called with the lock held, which
-  // apparently it can be because RTCVideoDecoder does the same.
-  DCHECK(decode_complete_callback_);
-  decode_complete_callback_->Decoded(rtc_frame);
-  consecutive_error_count_ = 0;
-}
-
 bool RTCVideoDecoderAdapter::ShouldReinitializeForSettingHDRColorSpace(
     const webrtc::EncodedImage& input_image) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
@@ -623,30 +647,6 @@ bool RTCVideoDecoderAdapter::ReinitializeSync(
     RecordReinitializationLatency(base::TimeTicks::Now() - start_time);
   }
   return result;
-}
-
-void RTCVideoDecoderAdapter::FlushOnMediaThread(FlushDoneCB flush_success_cb,
-                                                FlushDoneCB flush_fail_cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-
-  // Remove any pending tasks.
-  {
-    base::AutoLock auto_lock(lock_);
-    pending_buffers_.clear();
-  }
-
-  // Send EOS frame for flush.
-  video_decoder_->Decode(
-      media::DecoderBuffer::CreateEOSBuffer(),
-      WTF::BindOnce(
-          [](FlushDoneCB flush_success, FlushDoneCB flush_fail,
-             media::DecoderStatus status) {
-            if (status.is_ok())
-              std::move(flush_success).Run();
-            else
-              std::move(flush_fail).Run();
-          },
-          std::move(flush_success_cb), std::move(flush_fail_cb)));
 }
 
 // static
