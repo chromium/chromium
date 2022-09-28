@@ -10,8 +10,9 @@ namespace weblayer {
 
 #if BUILDFLAG(IS_ANDROID)
 // Used to disable browser-control animations.
-const base::Feature kImmediatelyHideBrowserControlsForTest{
-    "ImmediatelyHideBrowserControlsForTest", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kImmediatelyHideBrowserControlsForTest,
+             "ImmediatelyHideBrowserControlsForTest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace weblayer

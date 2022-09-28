@@ -11,7 +11,7 @@
 namespace weblayer {
 
 #if BUILDFLAG(IS_ANDROID)
-extern const base::Feature kImmediatelyHideBrowserControlsForTest;
+BASE_DECLARE_FEATURE(kImmediatelyHideBrowserControlsForTest);
 #endif
 
 }  // namespace weblayer
