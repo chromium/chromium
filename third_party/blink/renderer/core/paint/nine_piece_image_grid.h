@@ -108,6 +108,7 @@ class CORE_EXPORT NinePieceImageGrid {
   gfx::SizeF image_size_;
   ENinePieceImageRule horizontal_tile_rule_;
   ENinePieceImageRule vertical_tile_rule_;
+  float zoom_;
   bool fill_;
 
   Edge top_;

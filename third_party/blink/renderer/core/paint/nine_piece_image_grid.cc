@@ -66,6 +66,7 @@ NinePieceImageGrid::NinePieceImageGrid(const NinePieceImage& nine_piece_image,
       image_size_(image_size),
       horizontal_tile_rule_(nine_piece_image.HorizontalRule()),
       vertical_tile_rule_(nine_piece_image.VerticalRule()),
+      zoom_(zoom),
       fill_(nine_piece_image.Fill()) {
   const LengthBox& image_slices = nine_piece_image.ImageSlices();
   top_.slice = ComputeEdgeSlice(image_slices.Top(), slice_scale.y(),
@@ -307,7 +308,7 @@ void NinePieceImageGrid::SetDrawInfoMiddle(NinePieceDrawInfo& draw_info) const {
       Subrect(border_image_area_, left_.width, top_.width,
               destination_size.width(), destination_size.height());
 
-  gfx::Vector2dF middle_scale_factor(1, 1);
+  gfx::Vector2dF middle_scale_factor(zoom_, zoom_);
 
   if (top_.IsDrawable())
     middle_scale_factor.set_x(top_.Scale());

@@ -562,5 +562,33 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ZoomedNarrowSlices) {
   }
 }
 
+TEST_F(NinePieceImageGridTest,
+       NinePieceImagePainting_ZoomedMiddleNoLeftRightEdge) {
+  constexpr float zoom = 2;
+  // A border-image where the left and right edges are collapsed (zero-width),
+  // and thus not drawable, as well as zoomed.
+  NinePieceImage nine_piece;
+  nine_piece.SetImage(GeneratedImage());
+  nine_piece.SetImageSlices(LengthBox(32, 0, 32, 0));
+  nine_piece.SetBorderSlices(BorderImageLengthBox(32 * zoom, 0, 32 * zoom, 0));
+  nine_piece.SetHorizontalRule(kStretchImageRule);
+  nine_piece.SetVerticalRule(kRepeatImageRule);
+  nine_piece.SetFill(true);
+
+  gfx::SizeF image_size(32, 96);
+  gfx::Rect border_image_area(24, 8, 128, 464);
+  gfx::Outsets border_widths(0);
+
+  NinePieceImageGrid grid(nine_piece, image_size, gfx::Vector2dF(1, 1), zoom,
+                          border_image_area, border_widths);
+  NinePieceImageGrid::NinePieceDrawInfo draw_info =
+      grid.GetNinePieceDrawInfo(kMiddlePiece);
+  EXPECT_TRUE(draw_info.is_drawable);
+  // border-image-area-width / image-width (128 / 32)
+  EXPECT_FLOAT_EQ(draw_info.tile_scale.x(), 4);
+  // zoom (because no edges available to derive scale from)
+  EXPECT_FLOAT_EQ(draw_info.tile_scale.y(), zoom);
+}
+
 }  // namespace
 }  // namespace blink
