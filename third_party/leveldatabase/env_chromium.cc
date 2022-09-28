@@ -308,10 +308,12 @@ ChromiumWritableFile::ChromiumWritableFile(const std::string& fname,
 #endif
       file_type_(kOther) {
   FilePath path = FilePath::FromUTF8Unsafe(fname);
-  if (path.BaseName().AsUTF8Unsafe().find("MANIFEST") == 0)
+  if (path.BaseName().AsUTF8Unsafe().find("MANIFEST") == 0) {
     file_type_ = kManifest;
-  else if (path.MatchesExtension(table_extension))
+  } else if (base::EqualsCaseInsensitiveASCII(path.Extension().c_str(),
+                                              table_extension)) {
     file_type_ = kTable;
+  }
   parent_dir_ = FilePath::FromUTF8Unsafe(fname).DirName().AsUTF8Unsafe();
 }
 

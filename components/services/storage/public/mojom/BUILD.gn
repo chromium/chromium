@@ -40,8 +40,12 @@ mojom("mojom") {
   ]
   component_deps = [ "//third_party/blink/public/common" ]
 
+  enabled_features = []
+  if (is_linux || is_chromeos) {
+    enabled_features += [ "is_linux_or_chromeos" ]
+  }
   if (!is_android) {
-    enabled_features = [ "is_not_android" ]
+    enabled_features += [ "is_not_android" ]
   }
 }
 

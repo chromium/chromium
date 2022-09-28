@@ -11,9 +11,14 @@ import "sandbox/policy/mojom/sandbox.mojom";
 [EnableIf=is_not_android]
 import "components/services/storage/public/mojom/filesystem/directory.mojom";
 
+[EnableIf=is_linux_or_chromeos]
+const sandbox.mojom.Sandbox kStorageSandbox = sandbox.mojom.Sandbox.kUtility;
+[EnableIfNot=is_linux_or_chromeos]
+const sandbox.mojom.Sandbox kStorageSandbox = sandbox.mojom.Sandbox.kService;
+
 // The main interface into the Storage Service. The browser maintains a single
 // global connection to this interface.
-[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+[ServiceSandbox=kStorageSandbox]
 interface StorageService {
   // Enables more aggressive flushing of DOM Storage data to disk in order to
   // minimize chance of data loss.
