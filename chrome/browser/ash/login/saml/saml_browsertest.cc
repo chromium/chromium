@@ -2129,53 +2129,71 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, TimeoutError) {
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
 }
 
-class SAMLDeviceTrustTest : public SAMLDeviceAttestationTest {
+class SAMLDeviceTrustTest
+    : public SAMLDeviceAttestationTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   SAMLDeviceTrustTest() {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+    if (std::get<0>(GetParam())) {
+      enabled_features.push_back(
+          enterprise_connectors::kDeviceTrustConnectorEnabled);
+    } else {
+      disabled_features.push_back(
+          enterprise_connectors::kDeviceTrustConnectorEnabled);
+    }
+
+    if (std::get<1>(GetParam())) {
+      enabled_features.push_back(
+          ash::features::kLoginScreenDeviceTrustConnectorEnabled);
+    } else {
+      disabled_features.push_back(
+          ash::features::kLoginScreenDeviceTrustConnectorEnabled);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     device_state_.SetState(
         DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
-    scoped_feature_list_.InitAndEnableFeature(
-        enterprise_connectors::kDeviceTrustConnectorEnabled);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
     SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture();
-    stub_install_attributes_.Get()->SetCloudManaged("google.com", "device_id");
     // Enable device trust feature.
     settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
   }
 
+  void ExpectDeviceTrustSuccessful(bool expected) {
+    ASSERT_EQ(fake_saml_idp()->DeviceTrustHeaderRecieved(), expected);
+    ASSERT_EQ(fake_saml_idp()->IsLastChallengeResponseExists(), expected);
+
+    histogram_tester_.ExpectBucketCount(
+        kDeviceTrustAttestationFunnelStep,
+        enterprise_connectors::DTAttestationFunnelStep::kChallengeResponseSent,
+        expected ? 1 : 0);
+  }
+
+  bool login_screen_device_trust_enabled() {
+    return std::get<0>(GetParam()) && std::get<1>(GetParam());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
-// Verify that device trust is not available when
-// DeviceLoginScreenContextAwareAccessSignalsAllowlistPolicy policy is not set.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, DefaultPolicy) {
-  // Leave policy unset.
-
-  StartSamlAndWaitForIdpPageLoad(
-      saml_test_users::kSixthUserCorpExampleTestEmail);
-
-  ASSERT_FALSE(fake_saml_idp()->DeviceTrustHeaderRecieved());
-}
-
-// Verify that device trust is not available when
-// DeviceLoginScreenContextAwareAccessSignalsAllowlistPolicy policy is set to
-// empty list of allowed URLs.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, EmptyPolicy) {
-  SetAllowedUrlsPolicy({/* empty list */});
-
-  StartSamlAndWaitForIdpPageLoad(
-      saml_test_users::kSixthUserCorpExampleTestEmail);
-
-  ASSERT_FALSE(fake_saml_idp()->DeviceTrustHeaderRecieved());
-}
+class SAMLDeviceTrustEnrolledTest : public SAMLDeviceTrustTest {
+  void SetUpInProcessBrowserTestFixture() override {
+    SAMLDeviceTrustTest::SetUpInProcessBrowserTestFixture();
+    stub_install_attributes_.Get()->SetCloudManaged("google.com", "device_id");
+  }
+};
 
 // Verify that device trust is not available when device is not enterprise
 // enrolled.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, NotEnterpriseEnrolledError) {
-  SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
+IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustTest, NotEnterpriseEnrolledError) {
+  SetDeviceContextAwareAccessSignalsAllowlistPolicy(
+      {fake_saml_idp()->GetIdpHost()});
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kSixthUserCorpExampleTestEmail);
@@ -2187,10 +2205,35 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, NotEnterpriseEnrolledError) {
   ASSERT_FALSE(fake_saml_idp()->DeviceTrustHeaderRecieved());
 }
 
+// Verify that device trust is not available when
+// DeviceLoginScreenContextAwareAccessSignalsAllowlistPolicy policy is not set.
+IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest, DefaultPolicy) {
+  // Leave policy unset.
+
+  StartSamlAndWaitForIdpPageLoad(
+      saml_test_users::kSixthUserCorpExampleTestEmail);
+
+  ASSERT_FALSE(fake_saml_idp()->DeviceTrustHeaderRecieved());
+}
+
+// Verify that device trust is not available when
+// DeviceLoginScreenContextAwareAccessSignalsAllowlistPolicy policy is set to
+// empty list of allowed URLs.
+IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest, EmptyPolicy) {
+  SetDeviceContextAwareAccessSignalsAllowlistPolicy({/* empty list */});
+
+  StartSamlAndWaitForIdpPageLoad(
+      saml_test_users::kSixthUserCorpExampleTestEmail);
+
+  ASSERT_FALSE(fake_saml_idp()->DeviceTrustHeaderRecieved());
+}
+
 // Verify that device trust is not available when device trust is
 // not enabled.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, DeviceTrustNotEnabledError) {
-  SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
+IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest,
+                       DeviceTrustNotEnabledError) {
+  SetDeviceContextAwareAccessSignalsAllowlistPolicy(
+      {fake_saml_idp()->GetIdpHost()});
   settings_provider_->SetBoolean(kDeviceAttestationEnabled, false);
 
   StartSamlAndWaitForIdpPageLoad(
@@ -2205,8 +2248,11 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, DeviceTrustNotEnabledError) {
 
 // Verify that device trust is available for URLs that match a pattern
 // from allowed URLs list.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, PolicyRegexSuccess) {
-  SetAllowedUrlsPolicy({"[*.]" + fake_saml_idp()->GetIdpDomain()});
+// TODO(b:249437331): Fix regex compatibility for Device Trust
+IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest,
+                       DISABLED_PolicyRegexSuccess) {
+  SetDeviceContextAwareAccessSignalsAllowlistPolicy(
+      {"[*.]" + fake_saml_idp()->GetIdpDomain()});
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kSixthUserCorpExampleTestEmail);
@@ -2215,11 +2261,11 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, PolicyRegexSuccess) {
     return;
   }
 
-  ASSERT_TRUE(fake_saml_idp()->IsLastChallengeResponseExists());
+  ExpectDeviceTrustSuccessful(login_screen_device_trust_enabled());
 }
 
 // Verify that Device trust sends the header for a matching URL.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, SendHeaderForMatchingURL) {
+IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest, SendHeaderForMatchingURL) {
   SetDeviceContextAwareAccessSignalsAllowlistPolicy(
       {fake_saml_idp()->GetIdpHost()});
 
@@ -2230,11 +2276,13 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, SendHeaderForMatchingURL) {
     return;
   }
 
-  ASSERT_TRUE(fake_saml_idp()->DeviceTrustHeaderRecieved());
+  ASSERT_EQ(fake_saml_idp()->DeviceTrustHeaderRecieved(),
+            login_screen_device_trust_enabled());
 }
 
 // Verify that Device trust doesn't sends the header for a non matching URL.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, HeaderNotSentForNonMatchingURL) {
+IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest,
+                       HeaderNotSentForNonMatchingURL) {
   SetDeviceContextAwareAccessSignalsAllowlistPolicy({"example2.com"});
 
   StartSamlAndWaitForIdpPageLoad(
@@ -2248,7 +2296,7 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, HeaderNotSentForNonMatchingURL) {
 }
 
 // Verify that Device trust sends the challenge-response for a matching URL.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, Success) {
+IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest, Success) {
   SetDeviceContextAwareAccessSignalsAllowlistPolicy(
       {fake_saml_idp()->GetIdpHost()});
 
@@ -2259,12 +2307,12 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, Success) {
     return;
   }
 
-  ASSERT_TRUE(fake_saml_idp()->IsLastChallengeResponseExists());
+  ExpectDeviceTrustSuccessful(login_screen_device_trust_enabled());
 }
 
 // Verify that device trust works in case of multiple items in allowed
 // URLs list.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, PolicyTwoEntriesSuccess) {
+IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest, PolicyTwoEntriesSuccess) {
   SetDeviceContextAwareAccessSignalsAllowlistPolicy(
       {fake_saml_idp()->GetIdpHost()});
 
@@ -2275,7 +2323,7 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceTrustTest, PolicyTwoEntriesSuccess) {
     return;
   }
 
-  ASSERT_TRUE(fake_saml_idp()->IsLastChallengeResponseExists());
+  ExpectDeviceTrustSuccessful(login_screen_device_trust_enabled());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -2289,5 +2337,15 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          SamlTestWithoutImprovedScraping,
                          ::testing::Combine(::testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SAMLDeviceTrustTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SAMLDeviceTrustEnrolledTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 }  // namespace ash
