@@ -15,6 +15,8 @@ import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -81,6 +83,11 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
             params.onCheckedChangedCallback.onResult((Boolean) newValue);
             return true;
         });
+        boolean areAllCookiesBlocked = !WebsitePreferenceBridge.isCategoryEnabled(
+                getSiteSettingsDelegate().getBrowserContextHandle(), ContentSettingsType.COOKIES);
+        if (areAllCookiesBlocked) {
+            mCookieSwitch.setTitle(R.string.page_info_all_cookies_block);
+        }
 
         mCookieInUse.setIcon(
                 SettingsUtils.getTintedIcon(getContext(), R.drawable.permission_cookie));
