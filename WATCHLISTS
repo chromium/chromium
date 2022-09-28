@@ -895,15 +895,15 @@
                   'chrome/browser/creator/',
     },
     'cros_commercial_policy': {
-      'filepath': 'ash/components/arc/enterprise/'\
+      'filepath': 'ash/components/policy/'\
                   '|ash/policy/'\
-                  '|chrome/browser/ash/arc/enterprise/'\
+                  '|components/policy/'\
                   '|chrome/browser/ash/policy/'\
                   '|chrome/browser/policy/'\
                   '|chrome/test/enterprise'\
-                  '|chromeos/ash/components/policy'\
-                  '|components/policy/'\
-                  '|docs/website/site/administrators/',
+                  '|ash/components/arc/enterprise/'\
+                  '|chrome/browser/ash/arc/enterprise/'\
+                  '|docs/website/site/administrators/'
     },
     'cros_discovery': {
       'filepath': 'chrome/browser/apps/app_discovery_service/'\

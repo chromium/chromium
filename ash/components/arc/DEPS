@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/components/policy",
   "+ash/constants",
   "+ash/public/cpp",
   "+chromeos/ash/components/memory",
