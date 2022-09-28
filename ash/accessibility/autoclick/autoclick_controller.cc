@@ -452,8 +452,9 @@ void AutoclickController::OnActionCompleted(
   // No need to change to left click if the setting is not enabled or the
   // event that just executed already was a left click.
   if (!revert_to_left_click_ || event_type_ == AutoclickEventType::kLeftClick ||
-      completed_event_type == AutoclickEventType::kLeftClick)
+      completed_event_type == AutoclickEventType::kLeftClick) {
     return;
+  }
   // Change the preference, but set it locally so we do not reset any state when
   // AutoclickController::SetAutoclickEventType is called.
   event_type_ = AutoclickEventType::kLeftClick;
@@ -652,9 +653,9 @@ void AutoclickController::OnScrollEvent(ui::ScrollEvent* event) {
   // A single tap can create a scroll event, so ignore scroll starts and
   // cancels but cancel autoclicks when scrolls actually occur.
   if (event->type() == ui::EventType::ET_SCROLL_FLING_START ||
-      event->type() == ui::EventType::ET_SCROLL_FLING_CANCEL)
+      event->type() == ui::EventType::ET_SCROLL_FLING_CANCEL) {
     return;
-
+  }
   CancelAutoclickAction();
 }
 
