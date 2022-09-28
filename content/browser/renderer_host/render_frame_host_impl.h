@@ -243,6 +243,7 @@ class PushMessagingManager;
 class RenderAccessibilityHost;
 class RenderFrameHostDelegate;
 class RenderFrameHostImpl;
+class RenderFrameHostManager;
 class RenderFrameHostOrProxy;
 class RenderFrameProxyHost;
 class RenderProcessHost;
@@ -496,8 +497,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // document token at those times, so provide an escape hatch.
   const blink::DocumentToken& GetDocumentTokenIgnoringSafetyRestrictions()
       const {
-    return document_associated_data_->token;
+    return document_associated_data_->token();
   }
+
+  // Returns a non-null DocumentToken pointer if a cross-document navigation
+  // should reuse the DocumentToken. This is only ever the case for the first
+  // cross-document commit in a speculative RenderFrameHost. Otherwise, returns
+  // nullptr.
+  const blink::DocumentToken* GetDocumentTokenForCrossDocumentNavigationReuse(
+      base::PassKey<NavigationRequest>);
 
   // A RenderFrame was previously created but no longer exists, e.g. the
   // renderer process is gone due to a crash.
@@ -508,7 +516,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Immediately reinitializes DocumentUserData when the RenderFrameHost needs
   // to be immediately reused after a crash. Only usable for a main frame where
   // `is_render_frame_deleted()` is true.
-  void ReinitializeDocumentAssociatedDataForReuseAfterCrash();
+  void ReinitializeDocumentAssociatedDataForReuseAfterCrash(
+      base::PassKey<RenderFrameHostManager>);
 
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  The implementation delegates to
@@ -1307,7 +1316,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
-      const blink::DocumentToken& document_token,
+      const absl::optional<blink::DocumentToken>& document_token,
       const base::UnguessableToken& devtools_navigation_token,
       std::unique_ptr<WebBundleHandle> web_bundle_handle);
 
@@ -3270,6 +3279,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params);
 
+  // Whether or not to reset DocumentAssociatedData at commit. Normally, this
+  // data is reset with each cross-document navigation, but there are some
+  // exceptions involving speculative RenderFrameHosts.
+  bool ShouldResetDocumentAssociatedDataAtCommit() const;
+
   // Called when we received the confirmation a new document committed in the
   // renderer. It was created from the |navigation|.
   void DidCommitNewDocument(const mojom::DidCommitProvisionalLoadParams& params,
@@ -4156,7 +4170,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // directly while consumers of RenderFrameHostImpl should store data via
   // GetDocumentUserData(). Please refer to the description at
   // content/public/browser/document_user_data.h for more details.
-  struct DocumentAssociatedData : public base::SupportsUserData {
+  class DocumentAssociatedData : public base::SupportsUserData {
+   public:
     explicit DocumentAssociatedData(RenderFrameHostImpl& document,
                                     const blink::DocumentToken& token);
     ~DocumentAssociatedData() override;
@@ -4164,21 +4179,19 @@ class CONTENT_EXPORT RenderFrameHostImpl
     DocumentAssociatedData& operator=(const DocumentAssociatedData&) = delete;
 
     // An opaque token that uniquely identifies the document currently
-    // associated with this RenderFrameHost. In general, this token does not
-    // change for the lifetime of the DocumentAssociatedData, with one
-    // exception: a speculative RenderFrameHost is created with an initial
-    // DocumentAssociatedData. If the speculative RenderFrameHost commits, the
-    // DocumentAssociatedData is not reset, but a new DocumentToken is still
-    // assigned.
-    blink::DocumentToken token;
+    // associated with this RenderFrameHost. Note that in the case of
+    // speculative RenderFrameHost that has not yet committed, the renderer side
+    // will not have a document with a matching token!
+    const blink::DocumentToken& token() const { return token_; }
 
     // The Page object associated with the main document. It is nullptr for
     // subframes.
-    std::unique_ptr<PageImpl> owned_page;
+    PageImpl* owned_page() { return owned_page_.get(); }
 
     // Indicates whether `blink::mojom::DidDispatchDOMContentLoadedEvent` was
     // called for this document or not.
-    bool dom_content_loaded = false;
+    bool dom_content_loaded() const { return dom_content_loaded_; }
+    void MarkDomContentLoaded() { dom_content_loaded_ = true; }
 
     // Prerender2:
     //
@@ -4186,27 +4199,56 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // DidFinishLoad, nullopt if DidFinishLoad wasn't called for this document
     // or this document is not in prerendering. This is used to defer and
     // dispatch DidFinishLoad notification on prerender activation.
-    absl::optional<GURL> pending_did_finish_load_url_for_prerendering;
+    const absl::optional<GURL>& pending_did_finish_load_url_for_prerendering()
+        const {
+      return pending_did_finish_load_url_for_prerendering_;
+    }
+    void set_pending_did_finish_load_url_for_prerendering(const GURL& url) {
+      pending_did_finish_load_url_for_prerendering_.emplace(url);
+    }
+    void reset_pending_did_finish_load_url_for_prerendering() {
+      pending_did_finish_load_url_for_prerendering_.reset();
+    }
 
     // Reporting API:
     //
     // Contains the reporting source token for this document, which will be
     // associated with the reporting endpoint configuration in the network
     // service, as well as with any reports which are queued by this document.
-    base::UnguessableToken reporting_source;
+    const base::UnguessableToken& reporting_source() const {
+      return token_.value();
+    }
 
     // "Owned" but not with std::unique_ptr, as a DocumentServiceBase is
     // allowed to delete itself directly.
-    std::vector<internal::DocumentServiceBase*> services;
+    std::vector<internal::DocumentServiceBase*>& services() {
+      return services_;
+    }
 
     // This handle supports a seamless transfer from a navigation to a committed
     // document.
-    scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle;
+    const scoped_refptr<NavigationOrDocumentHandle>&
+    navigation_or_document_handle() const {
+      return navigation_or_document_handle_;
+    }
+    void set_navigation_or_document_handle(
+        scoped_refptr<NavigationOrDocumentHandle> handle);
 
     // Produces weak pointers to the hosting RenderFrameHostImpl. This is
     // invalidated whenever DocumentAssociatedData is destroyed, due to
     // RenderFrameHost deletion or cross-document navigation.
-    base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory;
+    base::WeakPtrFactory<RenderFrameHostImpl>& weak_factory() {
+      return weak_factory_;
+    }
+
+   private:
+    const blink::DocumentToken token_;
+    std::unique_ptr<PageImpl> owned_page_;
+    bool dom_content_loaded_ = false;
+    absl::optional<GURL> pending_did_finish_load_url_for_prerendering_;
+    std::vector<internal::DocumentServiceBase*> services_;
+    scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;
+    base::WeakPtrFactory<RenderFrameHostImpl> weak_factory_;
   };
 
   // Reset immediately before a RenderFrameHost is reused for hosting a new

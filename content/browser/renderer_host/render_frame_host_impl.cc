@@ -1950,8 +1950,8 @@ const blink::LocalFrameToken& RenderFrameHostImpl::GetFrameToken() {
 }
 
 const base::UnguessableToken& RenderFrameHostImpl::GetReportingSource() {
-  DCHECK(!document_associated_data_->reporting_source.is_empty());
-  return document_associated_data_->reporting_source;
+  DCHECK(!document_associated_data_->reporting_source().is_empty());
+  return document_associated_data_->reporting_source();
 }
 
 ui::AXTreeID RenderFrameHostImpl::GetAXTreeID() {
@@ -2160,7 +2160,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::GetParent() const {
 }
 
 PageImpl& RenderFrameHostImpl::GetPage() {
-  return *GetMainFrame()->document_associated_data_->owned_page.get();
+  return *GetMainFrame()->document_associated_data_->owned_page();
 }
 
 bool RenderFrameHostImpl::IsDescendantOfWithinFrameTree(
@@ -2446,12 +2446,12 @@ bool RenderFrameHostImpl::IsErrorDocument() {
 }
 
 DocumentRef RenderFrameHostImpl::GetDocumentRef() {
-  return DocumentRef(document_associated_data_->weak_ptr_factory.GetSafeRef());
+  return DocumentRef(document_associated_data_->weak_factory().GetSafeRef());
 }
 
 WeakDocumentPtr RenderFrameHostImpl::GetWeakDocumentPtr() {
   return WeakDocumentPtr(
-      document_associated_data_->weak_ptr_factory.GetWeakPtr());
+      document_associated_data_->weak_factory().GetWeakPtr());
 }
 
 void RenderFrameHostImpl::GetSerializedHtmlWithLocalLinks(
@@ -3279,7 +3279,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   BindAssociatedInterfaceProviderReceiver(
       params->associated_interface_provider_remote
           .InitWithNewEndpointAndPassReceiver());
-  params->document_token = document_associated_data_->token;
+  params->document_token = document_associated_data_->token();
 
   // If this is a new RenderFrameHost for a frame that has already committed a
   // document, we don't have a policy container yet. Indeed, in that case, this
@@ -4731,11 +4731,11 @@ void RenderFrameHostImpl::SetNavigationRequest(
 
 const scoped_refptr<NavigationOrDocumentHandle>&
 RenderFrameHostImpl::GetNavigationOrDocumentHandle() {
-  if (!document_associated_data_->navigation_or_document_handle) {
-    document_associated_data_->navigation_or_document_handle =
-        NavigationOrDocumentHandle::CreateForDocument(GetGlobalId());
+  if (!document_associated_data_->navigation_or_document_handle()) {
+    document_associated_data_->set_navigation_or_document_handle(
+        NavigationOrDocumentHandle::CreateForDocument(GetGlobalId()));
   }
-  return document_associated_data_->navigation_or_document_handle;
+  return document_associated_data_->navigation_or_document_handle();
 }
 
 void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
@@ -4822,21 +4822,22 @@ void RenderFrameHostImpl::UndoCommitNavigation(RenderFrameProxyHost& proxy,
 void RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation() {
   // Don't dispatch notification if DidFinishLoad has not yet been invoked for
   // `rfh` i.e., when the url is nullopt.
-  if (!document_associated_data_->pending_did_finish_load_url_for_prerendering)
+  if (!document_associated_data_
+           ->pending_did_finish_load_url_for_prerendering())
     return;
 
   delegate_->OnDidFinishLoad(
-      this,
-      *document_associated_data_->pending_did_finish_load_url_for_prerendering);
+      this, *document_associated_data_
+                 ->pending_did_finish_load_url_for_prerendering());
 
   // Set to nullopt to avoid calling DidFinishLoad twice.
-  document_associated_data_->pending_did_finish_load_url_for_prerendering
-      .reset();
+  document_associated_data_
+      ->reset_pending_did_finish_load_url_for_prerendering();
 }
 
 void RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation() {
   // Don't send a notification if DOM content is not yet loaded.
-  if (!document_associated_data_->dom_content_loaded)
+  if (!document_associated_data_->dom_content_loaded())
     return;
 
   delegate_->DOMContentLoaded(this);
@@ -5848,7 +5849,7 @@ void RenderFrameHostImpl::EnforceInsecureNavigationsSet(
 void RenderFrameHostImpl::AddDocumentService(
     internal::DocumentServiceBase* document_service,
     base::PassKey<internal::DocumentServiceBase>) {
-  document_associated_data_->services.push_back(document_service);
+  document_associated_data_->services().push_back(document_service);
 }
 
 void RenderFrameHostImpl::RemoveDocumentService(
@@ -5857,7 +5858,7 @@ void RenderFrameHostImpl::RemoveDocumentService(
   if (document_service == last_web_bluetooth_service_for_testing_) {
     last_web_bluetooth_service_for_testing_ = nullptr;
   }
-  base::Erase(document_associated_data_->services, document_service);
+  base::Erase(document_associated_data_->services(), document_service);
 }
 
 FrameTreeNode* RenderFrameHostImpl::FindAndVerifyChild(
@@ -6119,8 +6120,8 @@ void RenderFrameHostImpl::DidFinishLoad(const GURL& validated_url) {
   // done to avoid notifying observers about a load event triggered from a
   // inactive RenderFrameHost.
   if (lifecycle_state() == LifecycleStateImpl::kPrerendering) {
-    document_associated_data_->pending_did_finish_load_url_for_prerendering =
-        validated_url;
+    document_associated_data_->set_pending_did_finish_load_url_for_prerendering(
+        validated_url);
     return;
   }
 
@@ -6661,7 +6662,7 @@ bool RenderFrameHostImpl::GetSuddenTerminationDisablerState(
 }
 
 void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {
-  document_associated_data_->dom_content_loaded = true;
+  document_associated_data_->MarkDomContentLoaded();
 
   // In case of prerendering, we dispatch DOMContentLoaded on activation. This
   // is done to avoid notifying observers about a load event triggered from a
@@ -8738,7 +8739,7 @@ void RenderFrameHostImpl::CommitNavigation(
     absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
         subresource_overrides,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
-    const blink::DocumentToken& document_token,
+    const absl::optional<blink::DocumentToken>& document_token,
     const base::UnguessableToken& devtools_navigation_token,
     std::unique_ptr<WebBundleHandle> web_bundle_handle) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::CommitNavigation",
@@ -9169,7 +9170,7 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(subresource_loader_factories),
         std::move(subresource_overrides), std::move(controller),
         std::move(container_info), std::move(prefetch_loader_factory),
-        manifest_policy, std::move(policy_container), document_token,
+        manifest_policy, std::move(policy_container), *document_token,
         devtools_navigation_token);
     navigation_request->frame_tree_node()
         ->navigator()
@@ -11797,8 +11798,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     last_committed_cross_document_navigation_id_ =
         navigation_request->GetNavigationId();
 
-    if (lifecycle_state() != LifecycleStateImpl::kPendingCommit &&
-        !committed_speculative_rfh_before_navigation_commit_) {
+    if (ShouldResetDocumentAssociatedDataAtCommit()) {
       DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
       // The old Reporting API configuration is no longer valid, as a new
       // document is being loaded into the frame. Inform the network service
@@ -11817,24 +11817,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
                                         navigation_request->GetDocumentToken());
     } else {
       // Cross-RenderFrameHost navigations that commit into a speculative
-      // RenderFrameHost do not create a new DocumentAssociatedData.
-      // Unfortunately, this means that DocumentAssociatedData::token cannot be
-      // immutable: skipping this update means the tokens would be mismatched
-      // between the browser and the renderer. This is unfortunate, but still
-      // better than the alternative:
-      //
-      // - change NavigationRequest to figure out if the above branch will be
-      //   taken; if not, reuse the DocumentToken. This means the logic between
-      //   RenderFrameHostImpl and NavigationRequest must remain in sync.
-      //
-      // - in addition, the resulting commit will reuse the DocumentToken
-      //   between the ostensibly non-observable initial document in a
-      //   speculative RenderFrameHost and the actual document committed by the
-      //   navigation. As much as possible, it would be better to minimize
-      //   DocumentToken reuse across cross-document navigations. Note that this
-      //   reuse *does* happen internally to the renderer in one case that is
-      //   almost never visible. See https://crbug.com/778318 for the details.
-      document_associated_data_->token = navigation_request->GetDocumentToken();
+      // RenderFrameHost do not create a new DocumentAssociatedData. Ensure that
+      // the NavigationRequest was populated with the correct DocumentToken to
+      // avoid a mismatched token between the browser and the renderer.
+      CHECK_EQ(document_associated_data_->token(),
+               navigation_request->GetDocumentToken());
     }
 
     const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
@@ -11898,7 +11885,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   }
 
   if (is_main_frame()) {
-    document_associated_data_->owned_page->set_last_main_document_source_id(
+    document_associated_data_->owned_page()->set_last_main_document_source_id(
         ukm::ConvertToSourceId(navigation_request->GetNavigationId(),
                                ukm::SourceIdType::NAVIGATION_ID));
   }
@@ -11923,6 +11910,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   }
 
   return true;
+}
+
+bool RenderFrameHostImpl::ShouldResetDocumentAssociatedDataAtCommit() const {
+  return lifecycle_state() != LifecycleStateImpl::kPendingCommit &&
+         !committed_speculative_rfh_before_navigation_commit_;
 }
 
 // TODO(arthursonzogni): Investigate what must be done when
@@ -13712,7 +13704,7 @@ bool RenderFrameHostImpl::IsBackForwardCacheDisabled() const {
 }
 
 bool RenderFrameHostImpl::IsDOMContentLoaded() {
-  return document_associated_data_->dom_content_loaded;
+  return document_associated_data_->dom_content_loaded();
 }
 
 void RenderFrameHostImpl::UpdateIsAdFrame(bool is_ad_frame) {
@@ -13785,8 +13777,18 @@ const blink::DocumentToken& RenderFrameHostImpl::GetDocumentToken() const {
   return GetDocumentTokenIgnoringSafetyRestrictions();
 }
 
-void RenderFrameHostImpl::
-    ReinitializeDocumentAssociatedDataForReuseAfterCrash() {
+const blink::DocumentToken*
+RenderFrameHostImpl::GetDocumentTokenForCrossDocumentNavigationReuse(
+    base::PassKey<NavigationRequest>) {
+  if (ShouldResetDocumentAssociatedDataAtCommit()) {
+    return nullptr;
+  }
+
+  return &document_associated_data_->token();
+}
+
+void RenderFrameHostImpl::ReinitializeDocumentAssociatedDataForReuseAfterCrash(
+    base::PassKey<RenderFrameHostManager>) {
   DCHECK(is_main_frame());
   DCHECK_EQ(RenderFrameState::kDeleted, render_frame_state_);
 
@@ -14369,28 +14371,33 @@ void RenderFrameHostImpl::BindCacheStorageForBucket(
 RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
     RenderFrameHostImpl& document,
     const blink::DocumentToken& token)
-    : token(token), weak_ptr_factory(&document) {
+    : token_(token), weak_factory_(&document) {
   // Only create page object for the main document as the PageImpl is 1:1 with
   // main document.
   if (!document.GetParent()) {
     PageDelegate* page_delegate = document.frame_tree()->page_delegate();
     DCHECK(page_delegate);
-    owned_page = std::make_unique<PageImpl>(document, *page_delegate);
+    owned_page_ = std::make_unique<PageImpl>(document, *page_delegate);
   }
-  reporting_source = base::UnguessableToken::Create();
 }
 
 RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() {
-  while (!services.empty()) {
+  while (!services_.empty()) {
     // DocumentServiceBase unregisters itself at destruction time.
-    services.back()->WillBeDestroyed(
+    services_.back()->WillBeDestroyed(
         DocumentServiceDestructionReason::kEndOfDocumentLifetime);
-    services.back()->ResetAndDeleteThis();
+    services_.back()->ResetAndDeleteThis();
   }
 
   // Explicitly clear all user data here, so that the other fields of
   // DocumentAssociatedData are still valid while user data is being destroyed.
   ClearAllUserData();
+}
+
+void RenderFrameHostImpl::DocumentAssociatedData::
+    set_navigation_or_document_handle(
+        scoped_refptr<NavigationOrDocumentHandle> handle) {
+  navigation_or_document_handle_ = std::move(handle);
 }
 
 std::ostream& operator<<(std::ostream& o,

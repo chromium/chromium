@@ -2120,7 +2120,8 @@ bool RenderFrameHostManager::InitializeMainRenderFrameForImmediateUse() {
     // needs to remain in sync with `RenderFrameHostImpl::RenderFrameCreated()`,
     // which dispatches the actual notification about a new Page object for this
     // case.
-    render_frame_host_->ReinitializeDocumentAssociatedDataForReuseAfterCrash();
+    render_frame_host_->ReinitializeDocumentAssociatedDataForReuseAfterCrash(
+        /* passkey */ {});
   }
 
   if (!ReinitializeMainRenderFrame(render_frame_host_.get())) {

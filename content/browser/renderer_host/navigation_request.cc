@@ -3238,6 +3238,16 @@ void NavigationRequest::ProcessOriginAgentClusterEndResult() {
   }
 }
 
+void NavigationRequest::PopulateDocumentTokenForCrossDocumentNavigation() {
+  DCHECK(!IsSameDocument());
+  DCHECK_GE(state_, READY_TO_COMMIT);
+  const auto* token_to_reuse =
+      render_frame_host_->GetDocumentTokenForCrossDocumentNavigationReuse(
+          /* passkey */ {});
+  document_token_.emplace(token_to_reuse ? *token_to_reuse
+                                         : blink::DocumentToken());
+}
+
 bool NavigationRequest::HasCommittingOrigin(const url::Origin& origin) {
   // We are only interested in checking requests that have been assigned a
   // SiteInstance.
@@ -4845,12 +4855,12 @@ void NavigationRequest::CommitErrorPage(
 
   ReadyToCommitNavigation(true /* is_error */);
 
+  PopulateDocumentTokenForCrossDocumentNavigation();
   // Use a separate cache shard, and no cookies, for error pages.
   isolation_info_for_subresources_ = net::IsolationInfo::CreateTransient();
-  render_frame_host_->FailedNavigation(this, *common_params_, *commit_params_,
-                                       has_stale_copy_in_cache_, net_error_,
-                                       extended_error_code_, error_page_content,
-                                       document_token_.emplace());
+  render_frame_host_->FailedNavigation(
+      this, *common_params_, *commit_params_, has_stale_copy_in_cache_,
+      net_error_, extended_error_code_, error_page_content, *document_token_);
 
   SendDeferredConsoleMessages();
 }
@@ -5041,6 +5051,7 @@ void NavigationRequest::CommitNavigation() {
     commit_params_->navigation_api_history_entry_arrays =
         GetNavigationController()->GetNavigationApiHistoryEntryVectors(
             frame_tree_node_, this);
+    PopulateDocumentTokenForCrossDocumentNavigation();
   }
 
   if (early_hints_manager_) {
@@ -5062,7 +5073,7 @@ void NavigationRequest::CommitNavigation() {
       std::move(response_head), std::move(response_body_),
       std::move(url_loader_client_endpoints_),
       std::move(subresource_loader_params_), std::move(subresource_overrides_),
-      std::move(service_worker_container_info), document_token_.emplace(),
+      std::move(service_worker_container_info), document_token_,
       devtools_navigation_token_, std::move(web_bundle_handle_));
   UpdateNavigationHandleTimingsOnCommitSent();
 

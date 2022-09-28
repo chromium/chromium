@@ -416,16 +416,16 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, CrashThenReload) {
   const WeakDocumentPtr document_weak_ptr =
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr();
 
-  // After the navigation finishes, the RenderFrameHost's DocumentToken will be
-  // updated (despite DocumentAssociatedData not changing). The latter is
-  // indirectly tested by checking if the WeakDocumentPtr is still valid after
-  // the navigation commits.
+  // After the navigation finishes, the RenderFrameHost will still use the same
+  // DocumentToken, since no new DocumentAssociatedData was created. The latter
+  // is indirectly tested by checking if the WeakDocumentPtr is still valid
+  // after the navigation commits.
   nav_manager.WaitForNavigationFinished();
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
   const blink::DocumentToken token_after_navigation_finished =
       GetBrowserSideToken(web_contents());
   EXPECT_NE(token_after_navigation_finished, token);
-  EXPECT_NE(token_after_navigation_finished, token_after_navigation_started);
+  EXPECT_EQ(token_after_navigation_finished, token_after_navigation_started);
   EXPECT_NE(document_weak_ptr.AsRenderFrameHostIfValid(), nullptr);
 }
 

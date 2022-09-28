@@ -1093,6 +1093,8 @@ class CONTENT_EXPORT NavigationRequest
   void DetermineOriginAgentClusterEndResult();
   void ProcessOriginAgentClusterEndResult();
 
+  void PopulateDocumentTokenForCrossDocumentNavigation();
+
   // NavigationURLLoaderDelegate implementation.
   void OnRequestRedirected(
       const net::RedirectInfo& redirect_info,
