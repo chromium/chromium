@@ -23,7 +23,7 @@ found in the LICENSE file.
         style="@style/SyncPromoIllustrationVisibility"/>
 
     <ImageView
-        android:id="@+id/signin_promo_image"
+        android:id="@+id/sync_promo_image"
         android:layout_width="@dimen/signin_promo_account_image_size"
         android:layout_height="@dimen/signin_promo_account_image_size"
         android:layout_gravity="center"
