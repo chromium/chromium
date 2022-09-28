@@ -286,11 +286,13 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
     return nullptr;
   }
 
-  // In the case where the user has attempted to send an identical URL
-  // within the last |kDedupeTime| we think it is likely that user still
-  // has the first sent tab in progress, and so we will not attempt to resend.
+  // In the case where the user has attempted to send an identical URL to the
+  // same device within the last |kDedupeTime| we think it is likely that user
+  // still has the first sent tab in progress, and so we will not attempt to
+  // resend.
   base::Time shared_time = clock_->Now();
   if (mru_entry_ && url == mru_entry_->GetURL() &&
+      target_device_cache_guid == mru_entry_->GetTargetDeviceSyncCacheGuid() &&
       shared_time - mru_entry_->GetSharedTime() < kDedupeTime) {
     send_tab_to_self::RecordNotificationThrottled();
     return mru_entry_;
