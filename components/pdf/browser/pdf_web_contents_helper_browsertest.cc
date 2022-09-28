@@ -56,11 +56,11 @@ class TestPDFWebContentsHelperClient : public PDFWebContentsHelperClient {
     return contents->GetPrimaryMainFrame();
   }
 
-  void UpdateContentRestrictions(content::WebContents* contents,
+  void UpdateContentRestrictions(content::RenderFrameHost* render_frame_host,
                                  int content_restrictions) override {}
   void OnPDFHasUnsupportedFeature(content::WebContents* contents) override {}
   void OnSaveURL(content::WebContents* contents) override {}
-  void SetPluginCanSave(content::WebContents* contents,
+  void SetPluginCanSave(content::RenderFrameHost* render_frame_host,
                         bool can_save) override {}
 };
 

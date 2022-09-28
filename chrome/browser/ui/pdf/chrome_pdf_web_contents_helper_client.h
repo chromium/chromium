@@ -23,11 +23,12 @@ class ChromePDFWebContentsHelperClient
   // pdf::PDFWebContentsHelperClient:
   content::RenderFrameHost* FindPdfFrame(
       content::WebContents* contents) override;
-  void UpdateContentRestrictions(content::WebContents* contents,
+  void UpdateContentRestrictions(content::RenderFrameHost* render_frame_host,
                                  int content_restrictions) override;
   void OnPDFHasUnsupportedFeature(content::WebContents* contents) override;
   void OnSaveURL(content::WebContents* contents) override;
-  void SetPluginCanSave(content::WebContents* contents, bool can_save) override;
+  void SetPluginCanSave(content::RenderFrameHost* render_frame_host,
+                        bool can_save) override;
 };
 
 #endif  // CHROME_BROWSER_UI_PDF_CHROME_PDF_WEB_CONTENTS_HELPER_CLIENT_H_

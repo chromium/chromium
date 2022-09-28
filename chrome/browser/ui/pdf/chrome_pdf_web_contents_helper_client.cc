@@ -13,12 +13,14 @@
 namespace {
 
 content::WebContents* GetWebContentsToUse(
-    content::WebContents* web_contents) {
+    content::RenderFrameHost* render_frame_host) {
   // If we're viewing the PDF in a MimeHandlerViewGuest, use its embedder
   // WebContents.
   auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromWebContents(web_contents);
-  return guest_view ? guest_view->embedder_web_contents() : web_contents;
+      extensions::MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host);
+  return guest_view
+             ? guest_view->embedder_web_contents()
+             : content::WebContents::FromRenderFrameHost(render_frame_host);
 }
 
 }  // namespace
@@ -36,11 +38,12 @@ content::RenderFrameHost* ChromePDFWebContentsHelperClient::FindPdfFrame(
 }
 
 void ChromePDFWebContentsHelperClient::UpdateContentRestrictions(
-    content::WebContents* contents,
+    content::RenderFrameHost* render_frame_host,
     int content_restrictions) {
   // Speculative short-term-fix while we get at the root of
   // https://crbug.com/752822 .
-  content::WebContents* web_contents_to_use = GetWebContentsToUse(contents);
+  content::WebContents* web_contents_to_use =
+      GetWebContentsToUse(render_frame_host);
   if (!web_contents_to_use)
     return;
 
@@ -63,10 +66,10 @@ void ChromePDFWebContentsHelperClient::OnSaveURL(
 }
 
 void ChromePDFWebContentsHelperClient::SetPluginCanSave(
-    content::WebContents* contents,
+    content::RenderFrameHost* render_frame_host,
     bool can_save) {
   auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromWebContents(contents);
+      extensions::MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host);
   if (guest_view)
     guest_view->SetPluginCanSave(can_save);
 }
