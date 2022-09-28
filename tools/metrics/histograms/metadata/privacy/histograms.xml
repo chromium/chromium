@@ -380,12 +380,28 @@ reviewer.
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.CreationTime"
     units="ms" expires_after="2023-02-23">
+  <obsolete>
+    PrivacySandbox.AggregationService.Storage.Sql.CreationTime2 which only
+    records when Threadticks is supported, 10/2022.
+  </obsolete>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
     Records the time it took to initialize a new aggregation service database
     from scratch. Recorded when the aggregation service database finishes
     initialization. Note that 0 is recorded if `ThreadTicks` is not supported.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.Storage.Sql.CreationTime2"
+    units="ms" expires_after="2023-02-23">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the time it took to initialize a new aggregation service database
+    from scratch. Recorded when the aggregation service database finishes
+    initialization. Note that no event is recorded if `ThreadTicks` is not
+    supported.
   </summary>
 </histogram>
 

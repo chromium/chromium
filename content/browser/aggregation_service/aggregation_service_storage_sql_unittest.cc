@@ -154,7 +154,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   // DB creation UMA should not be recorded.
   histograms.ExpectTotalCount(
-      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime", 0);
+      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime2", 0);
 
   // Storing a public key should create and initialize the database.
   OpenDatabase();
@@ -163,9 +163,10 @@ TEST_F(AggregationServiceStorageSqlTest,
   storage_->SetPublicKeys(url, keyset);
   CloseDatabase();
 
-  // DB creation UMA should be recorded.
+  // DB creation UMA should be recorded if ThreadTicks is supported
   histograms.ExpectTotalCount(
-      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime", 1);
+      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime2",
+      base::ThreadTicks::IsSupported() ? 1 : 0);
 
   {
     sql::Database raw_db;
@@ -1155,7 +1156,8 @@ TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
   }
 
   histograms.ExpectTotalCount(
-      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime", 1);
+      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime2",
+      base::ThreadTicks::IsSupported() ? 1 : 0);
   histograms.ExpectUniqueSample(
       "PrivacySandbox.AggregationService.Storage.Sql.InitStatus",
       AggregationServiceStorageSql::InitStatus::kSuccess, 1);
@@ -1204,7 +1206,7 @@ TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateVersion1ToCurrent) {
   }
 
   histograms.ExpectTotalCount(
-      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime", 0);
+      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime2", 0);
   histograms.ExpectUniqueSample(
       "PrivacySandbox.AggregationService.Storage.Sql.InitStatus",
       AggregationServiceStorageSql::InitStatus::kSuccess, 1);
@@ -1253,7 +1255,7 @@ TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateVersion2ToCurrent) {
   }
 
   histograms.ExpectTotalCount(
-      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime", 0);
+      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime2", 0);
   histograms.ExpectUniqueSample(
       "PrivacySandbox.AggregationService.Storage.Sql.InitStatus",
       AggregationServiceStorageSql::InitStatus::kSuccess, 1);

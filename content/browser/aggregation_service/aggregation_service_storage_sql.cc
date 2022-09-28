@@ -891,9 +891,11 @@ bool AggregationServiceStorageSql::CreateSchema() {
     return false;
   }
 
-  base::UmaHistogramMediumTimes(
-      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime",
-      timer.Elapsed());
+  if (timer.is_supported()) {
+    base::UmaHistogramMediumTimes(
+        "PrivacySandbox.AggregationService.Storage.Sql.CreationTime2",
+        timer.Elapsed());
+  }
 
   return transaction.Commit();
 }
