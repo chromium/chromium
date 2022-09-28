@@ -434,16 +434,9 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
   const syncer::SyncUserSettings* sync_user_settings =
       sync_service->GetUserSettings();
 
-  bool apps_sync_enabled = false;
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    apps_sync_enabled = sync_service->CanSyncFeatureStart() &&
-                        sync_user_settings->GetSelectedOsTypes().Has(
-                            syncer::UserSelectableOsType::kOsApps);
-  } else {
-    apps_sync_enabled = sync_service->CanSyncFeatureStart() &&
-                        sync_user_settings->GetSelectedTypes().Has(
-                            syncer::UserSelectableType::kApps);
-  }
+  const bool apps_sync_enabled = sync_service->CanSyncFeatureStart() &&
+                                 sync_user_settings->GetSelectedOsTypes().Has(
+                                     syncer::UserSelectableOsType::kOsApps);
 
   if (!apps_sync_enabled) {
     VLOG(1) << "Cannot trace: App Sync is not enabled.";
