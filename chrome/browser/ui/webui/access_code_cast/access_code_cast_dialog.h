@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ACCESS_CODE_CAST_ACCESS_CODE_CAST_DIALOG_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
@@ -54,8 +55,12 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
   static void ShowForDesktopMirroring(
       AccessCodeCastDialogOpenLocation open_location);
 
+  void CloseDialogWidget();
+
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+  base::WeakPtr<AccessCodeCastDialog> GetWeakPtr();
 
  protected:
   // Creates default params for showing AccessCodeCastDialog
@@ -110,6 +115,8 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
   const raw_ptr<Profile> context_;
   base::Time dialog_creation_timestamp_;
   bool closing_dialog_ = false;
+
+  base::WeakPtrFactory<AccessCodeCastDialog> weak_ptr_factory_{this};
 };
 
 }  // namespace media_router

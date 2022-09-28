@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
 
 #include "base/json/json_writer.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
@@ -22,11 +23,15 @@ namespace media_router {
 
 namespace {
 
-void SetCurrentDialog(std::unique_ptr<AccessCodeCastDialog> dialog) {
-  static base::NoDestructor<std::unique_ptr<AccessCodeCastDialog>> instance;
-  DCHECK(!dialog || !*instance)
-      << "Can't show AccessCodeCastDialog when it is alreasdy being shown!";
-  *instance = std::move(dialog);
+void SetCurrentDialog(base::WeakPtr<AccessCodeCastDialog> dialog) {
+  // Keeps track of the dialog that is currently being displayed.
+  static base::NoDestructor<base::WeakPtr<AccessCodeCastDialog>>
+      current_instance;
+  if (*current_instance)
+    // Closing the dialog will cause the dialog to delete itself.
+    (*current_instance)->CloseDialogWidget();
+  if (dialog)
+    *current_instance = std::move(dialog);
 }
 
 }  // namespace
@@ -98,8 +103,13 @@ void AccessCodeCastDialog::Show(
       std::make_unique<AccessCodeCastDialog>(cast_mode_set,
                                              std::move(media_route_starter));
   dialog->ShowWebDialog(dialog_mode);
+  // Release the pointer from the unique_ptr after ShowWebDialog() since now the
+  // lifetime of the dialog is being managed by the WebDialog Delegate. The
+  // dialog will delete itself when OnDialogClosed() is called.
+  base::WeakPtr<AccessCodeCastDialog> new_dialog =
+      dialog.release()->GetWeakPtr();
   AccessCodeCastMetrics::RecordDialogOpenLocation(open_location);
-  SetCurrentDialog(std::move(dialog));
+  SetCurrentDialog(std::move(new_dialog));
 }
 
 // static
@@ -128,6 +138,14 @@ views::Widget::InitParams AccessCodeCastDialog::CreateParams(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
   return params;
+}
+
+void AccessCodeCastDialog::CloseDialogWidget() {
+  dialog_widget_->Close();
+}
+
+base::WeakPtr<AccessCodeCastDialog> AccessCodeCastDialog::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 // views::WidgetObserver:
@@ -185,9 +203,7 @@ void AccessCodeCastDialog::OnDialogShown(content::WebUI* webui) {
 }
 
 void AccessCodeCastDialog::OnDialogClosed(const std::string& json_retval) {
-  // Setting the global ptr to null will cause the existing dialog (this) to be
-  // destructed.
-  SetCurrentDialog(nullptr);
+  delete this;
 }
 
 void AccessCodeCastDialog::OnCloseContents(content::WebContents* source,

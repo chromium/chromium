@@ -62,6 +62,27 @@ namespace {
 
 const char kNotificationId[] = "chrome://cast";
 
+const char kEndpointResponseSuccess[] =
+    R"({
+    "device": {
+      "displayName": "test_device",
+      "id": "1234",
+      "deviceCapabilities": {
+        "videoOut": true,
+        "videoIn": true,
+        "audioOut": true,
+        "audioIn": true,
+        "devMode": true
+      },
+      "networkInfo": {
+        "hostName": "GoogleNet",
+        "port": "666",
+        "ipV4Address": "192.0.2.146",
+        "ipV6Address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+      }
+    }
+  })";
+
 // Helper to create a MediaRoute instance.
 media_router::MediaRoute MakeRoute(const std::string& route_id,
                                    const std::string& sink_id,
@@ -248,6 +269,7 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
   SystemTrayTrayCastAccessCodeChromeOSTest() {
     // Use consumer emails to avoid having to fake a policy fetch.
     login_mixin_.AppendRegularUsers(2);
+    login_mixin_.set_should_launch_browser(true);
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;
   }
@@ -267,7 +289,7 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
   void SetUpOnMainThread() override {
     ash::test::UserSessionManagerTestApi session_manager_test_api(
         ash::UserSessionManager::GetInstance());
-    session_manager_test_api.SetShouldLaunchBrowserInTests(false);
+    session_manager_test_api.SetShouldLaunchBrowserInTests(true);
     session_manager_test_api.SetShouldObtainTokenHandleInTests(false);
 
     AccessCodeCastIntegrationBrowserTest::SetUpOnMainThread();
@@ -367,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
   const ash::UserContext user_context =
       CreateUserContext(account_id1_, "password");
 
-  // Login a user that does not have access code casting enabled
+  // Login a user that does not have access code casting enabled.
   ASSERT_TRUE(login_mixin_.LoginAndWaitForActiveSession(user_context));
   SetupUserProfile(account_id1_, /* allow_access_code */ false);
 
@@ -383,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
   const ash::UserContext user_context =
       CreateUserContext(account_id2_, "password");
 
-  // Login a user that does have access code casting enabled
+  // Login a user that does have access code casting enabled.
   ASSERT_TRUE(login_mixin_.LoginAndWaitForActiveSession(user_context));
   SetupUserProfile(account_id2_, /* allow_access_code */ true);
 
@@ -399,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
   const ash::UserContext user_context =
       CreateUserContext(account_id2_, "password");
 
-  // Login a user that does have access code casting enabled
+  // Login a user that does have access code casting enabled.
   ASSERT_TRUE(login_mixin_.LoginAndWaitForActiveSession(user_context));
   SetupUserProfile(account_id2_, /* allow_access_code */ true);
 
@@ -416,26 +438,64 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
   ASSERT_TRUE(access_code_cast_button);
   ASSERT_TRUE(access_code_cast_button->GetEnabled());
 
-  const char kEndpointResponseSuccess[] =
-      R"({
-      "device": {
-        "displayName": "test_device",
-        "id": "1234",
-        "deviceCapabilities": {
-          "videoOut": true,
-          "videoIn": true,
-          "audioOut": true,
-          "audioIn": true,
-          "devMode": true
-        },
-        "networkInfo": {
-          "hostName": "GoogleNet",
-          "port": "666",
-          "ipV4Address": "192.0.2.146",
-          "ipV6Address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
-        }
-      }
-    })";
+  // Mock a successful fetch from our server.
+  SetEndpointFetcherMockResponse(kEndpointResponseSuccess, net::HTTP_OK,
+                                 net::OK);
+
+  // Simulate a successful opening of the channel.
+  SetMockOpenChannelCallbackResponse(true);
+
+  SetUpPrimaryAccountWithHostedDomain(
+      signin::ConsentLevel::kSync,
+      ProfileHelper::Get()->GetProfileByUser(user_), /*sign_in_account=*/false);
+
+  content::WebContentsAddedObserver observer;
+  TapOn(access_code_cast_button);
+
+  content::WebContents* dialog_contents = observer.GetWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(dialog_contents));
+
+  SetAccessCode("abcdef", dialog_contents);
+
+  // TODO(crbug.com/1291738): There is a validation process with desktop media
+  // requests which are unnecessary for the complexity of this browsertest. We
+  // are just passing in a hardcoded magic string instead.
+  ExpectStartRouteCallFromTabMirroring(
+      "cast:<1234>", "urn:x-org.chromium.media:source:desktop", nullptr,
+      base::Seconds(120), media_router_);
+
+  PressSubmitAndWaitForClose(dialog_contents);
+}
+
+// First open the cast dialog from browser, then open another cast dialog from
+// the system tray. Before the change, such behavior will cause a crash. After
+// the change, the first dialog will close when the second dialog opens.
+IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
+                       BrowserAndSystemTrayCasting) {
+  const ash::UserContext user_context =
+      CreateUserContext(account_id2_, "password");
+
+  // Login a user that does have access code casting enabled.
+  ASSERT_TRUE(login_mixin_.LoginAndWaitForActiveSession(user_context));
+  SetupUserProfile(account_id2_, /* allow_access_code */ true);
+
+  // Show the first cast dialog from the browser.
+  SelectFirstBrowser();
+  EnableAccessCodeCasting();
+  ASSERT_TRUE(ShowDialog());
+
+  ShowBubble();
+
+  // Show the Cast detailed view menu.
+  GetUnifiedSystemTrayController()->ShowCastDetailedView();
+
+  auto* detailed_cast_view = GetCastDetailedView();
+  ASSERT_TRUE(detailed_cast_view);
+
+  auto* access_code_cast_button =
+      detailed_cast_view->get_add_access_code_device_for_testing();  // IN-TEST
+  ASSERT_TRUE(access_code_cast_button);
+  ASSERT_TRUE(access_code_cast_button->GetEnabled());
 
   // Mock a successful fetch from our server.
   SetEndpointFetcherMockResponse(kEndpointResponseSuccess, net::HTTP_OK,
@@ -449,6 +509,8 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
       ProfileHelper::Get()->GetProfileByUser(user_), /*sign_in_account=*/false);
 
   content::WebContentsAddedObserver observer;
+
+  // Show the second dialog from the system tray.
   TapOn(access_code_cast_button);
 
   content::WebContents* dialog_contents = observer.GetWebContents();
