@@ -30,10 +30,14 @@ char kLSanDefaultSuppressions[] =
     // suppression works. http://crbug.com/605286
     "leak:__strdup\n"
 
-    // Leaks in Nvidia's libGL.
+    // Leaks in Nvidia's GL and Vulkan drivers.
     "leak:libGL.so\n"
     "leak:libGLX_nvidia.so\n"
+    "leak:libnvidia-cbl.so\n"
+    "leak:libnvidia-fatbinaryloader.so\n"
     "leak:libnvidia-glcore.so\n"
+    "leak:libnvidia-rtcore.so\n"
+    "leak:nvidiactl\n"
 
     // XRandR has several one time leaks.
     "leak:libxrandr\n"
