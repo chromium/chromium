@@ -29,8 +29,10 @@ ClipPathPaintImageGeneratorImpl::ClipPathPaintImageGeneratorImpl(
 scoped_refptr<Image> ClipPathPaintImageGeneratorImpl::Paint(
     float zoom,
     const gfx::RectF& reference_box,
+    const gfx::SizeF& clip_area_size,
     const Node& node) {
-  return clip_path_paint_definition_->Paint(zoom, reference_box, node);
+  return clip_path_paint_definition_->Paint(zoom, reference_box, clip_area_size,
+                                            node);
 }
 
 Animation* ClipPathPaintImageGeneratorImpl::GetAnimationIfCompositable(

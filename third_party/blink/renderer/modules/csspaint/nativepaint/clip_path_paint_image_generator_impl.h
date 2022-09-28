@@ -24,6 +24,7 @@ class MODULES_EXPORT ClipPathPaintImageGeneratorImpl final
 
   scoped_refptr<Image> Paint(float zoom,
                              const gfx::RectF& reference_box,
+                             const gfx::SizeF& clip_area_size,
                              const Node&) final;
   Animation* GetAnimationIfCompositable(const Element* element) final;
 

@@ -32,19 +32,19 @@ namespace {
 class ClipPathPaintWorkletInput : public PaintWorkletInput {
  public:
   ClipPathPaintWorkletInput(
-      const gfx::RectF& container_rect,
+      const gfx::RectF& reference_box,
+      const gfx::SizeF& clip_area_size,
       int worklet_id,
       float zoom,
       const Vector<scoped_refptr<BasicShape>>& animated_shapes,
       const Vector<double>& offsets,
       const absl::optional<double>& progress,
       cc::PaintWorkletInput::PropertyKeys property_keys)
-      : PaintWorkletInput(container_rect.size(),
-                          worklet_id,
-                          std::move(property_keys)),
+      : PaintWorkletInput(clip_area_size, worklet_id, std::move(property_keys)),
         zoom_(zoom),
         offsets_(offsets),
-        progress_(progress) {
+        progress_(progress),
+        reference_box_(reference_box) {
     for (const auto& basic_shape : animated_shapes) {
       InterpolationValue interpolation_value =
           CreateInterpolationValue(*basic_shape.get());
@@ -71,6 +71,8 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
     return PaintWorkletInputType::kClipPath;
   }
 
+  gfx::RectF GetReferenceBox() const { return reference_box_; }
+
  private:
   InterpolationValue CreateInterpolationValue(const BasicShape& basic_shape) {
     if (basic_shape.GetType() == BasicShape::kStylePathType) {
@@ -86,6 +88,7 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
   Vector<InterpolationValue> interpolation_values_;
   Vector<double> offsets_;
   absl::optional<double> progress_;
+  gfx::RectF reference_box_;
 };
 
 bool ShapesAreCompatible(const NonInterpolableValue& a,
@@ -228,7 +231,8 @@ sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
         animated_property_values) {
   const ClipPathPaintWorkletInput* input =
       To<ClipPathPaintWorkletInput>(compositor_input);
-  gfx::SizeF container_size = input->ContainerSize();
+  gfx::SizeF clip_area_size = input->ContainerSize();
+  gfx::RectF reference_box = input->GetReferenceBox();
 
   const Vector<InterpolationValue>& interpolation_values =
       input->InterpolationValues();
@@ -296,11 +300,11 @@ sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
   scoped_refptr<ShapeClipPathOperation> current_shape =
       ShapeClipPathOperation::Create(result_shape);
 
-  Path path = current_shape->GetPath(gfx::RectF(container_size), input->Zoom());
+  Path path = current_shape->GetPath(reference_box, input->Zoom());
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
-      gfx::ToRoundedSize(container_size), context_settings, 1, 1);
+      gfx::ToRoundedSize(clip_area_size), context_settings, 1, 1);
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
@@ -309,9 +313,13 @@ sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
   return rendering_context->GetRecord();
 }
 
+// Creates a deferred image of size clip_area_size that will be painted via
+// paint worklet. The clip paths will be scaled and translated according to
+// reference_box.
 scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     float zoom,
     const gfx::RectF& reference_box,
+    const gfx::SizeF& clip_area_size,
     const Node& node) {
   DCHECK(node.IsElementNode());
   const Element* element = static_cast<Element*>(const_cast<Node*>(&node));
@@ -350,11 +358,10 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
       CompositorPaintWorkletInput::NativePropertyType::kClipPath, element_id);
   scoped_refptr<ClipPathPaintWorkletInput> input =
       base::MakeRefCounted<ClipPathPaintWorkletInput>(
-          reference_box, worklet_id_, zoom, animated_shapes, offsets, progress,
-          std::move(input_property_keys));
+          reference_box, clip_area_size, worklet_id_, zoom, animated_shapes,
+          offsets, progress, std::move(input_property_keys));
 
-  return PaintWorkletDeferredImage::Create(std::move(input),
-                                           reference_box.size());
+  return PaintWorkletDeferredImage::Create(std::move(input), clip_area_size);
 }
 
 void ClipPathPaintDefinition::Trace(Visitor* visitor) const {

@@ -105,19 +105,32 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
   ClipPathPaintImageGenerator* generator =
       clip_path_owner.GetFrame()->GetClipPathPaintImageGenerator();
 
-  scoped_refptr<Image> paint_worklet_image =
-      generator->Paint(zoom, reference_box, *clip_path_owner.GetNode());
-
   // TODO(crbug.com/1248610): Fix bounding box. It should enclose affected area
   // of the animation.
+  // The bounding rect of the clip-path animation, relative to the layout
+  // object.
   absl::optional<gfx::RectF> bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(clip_path_owner);
   DCHECK(bounding_box);
-  gfx::RectF src_rect = bounding_box.value();
+  // The mask image should be the same size as the bounding rect, but will have
+  // an origin of 0,0 as it has its own coordinate space.
+  gfx::RectF src_rect = gfx::RectF(bounding_box.value().size());
+  gfx::RectF dst_rect = bounding_box.value();
+
+  scoped_refptr<Image> paint_worklet_image = generator->Paint(
+      zoom,
+      /* Translate the reference box such that it is relative to the origin of
+         the mask image, and not the origin of the layout object. This ensures
+         the clip path remains within the bounds of the mask image and has the
+         correct translation. */
+      gfx::RectF(reference_box.origin() - dst_rect.origin().OffsetFromOrigin(),
+                 reference_box.size()),
+
+      dst_rect.size(), *clip_path_owner.GetNode());
   // Dark mode should always be disabled for clip mask.
   context.DrawImage(paint_worklet_image.get(), Image::kSyncDecode,
                     ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
-                    src_rect, &src_rect, SkBlendMode::kSrcOver,
+                    dst_rect, &src_rect, SkBlendMode::kSrcOver,
                     kRespectImageOrientation);
 }
 
@@ -254,6 +267,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
   if (HasCompositeClipPathAnimation(layout_object)) {
     if (!layout_object.GetFrame())
       return;
+
     PaintWorkletBasedClip(context, layout_object, reference_box,
                           uses_zoomed_reference_box);
   } else {

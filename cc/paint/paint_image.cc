@@ -160,8 +160,8 @@ SkImageInfo PaintImage::GetSkImageInfo() const {
     return cached_sk_image_->imageInfo();
   } else if (paint_worklet_input_) {
     auto size = paint_worklet_input_->GetSize();
-    return SkImageInfo::MakeUnknown(static_cast<int>(size.width()),
-                                    static_cast<int>(size.height()));
+    return SkImageInfo::MakeUnknown(base::ClampCeil(size.width()),
+                                    base::ClampCeil(size.height()));
   } else {
     return SkImageInfo::MakeUnknown();
   }
