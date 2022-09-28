@@ -17,8 +17,6 @@ source_set("util") {
     "dynamic_type_util.mm",
     "force_touch_long_press_gesture_recognizer.h",
     "force_touch_long_press_gesture_recognizer.mm",
-    "i18n_string.h",
-    "i18n_string.mm",
     "keyboard_observer_helper.h",
     "keyboard_observer_helper.mm",
     "layout_guide_names.h",
@@ -47,8 +45,6 @@ source_set("util") {
     "ui_util.mm",
     "uikit_ui_util.h",
     "uikit_ui_util.mm",
-    "unicode_util.h",
-    "unicode_util.mm",
   ]
   deps = [
     "//base",
