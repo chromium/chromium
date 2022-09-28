@@ -658,6 +658,68 @@ chromium-metrics-reviews@google.com.
   <summary>Tracks UI events related to the Partial Translate bubble.</summary>
 </histogram>
 
+<histogram name="Translate.PartialTranslation.ResponseTime" units="ms"
+    expires_after="2023-09-30">
+  <owner>cuianthony@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the time from a Partial Translate being requested to the corresponding
+    Partial Translate response being received. This is recorded when a Partial
+    Translation is completed.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PartialTranslation.Selection.CharacterCount"
+    units="characters" expires_after="2023-09-30">
+  <owner>cuianthony@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the length in characters of a Partial Translate text selection before
+    truncation. This is recorded before a Partial Translation is started.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PartialTranslation.SourceLanguage"
+    enum="LocaleCodeISO639" expires_after="2023-09-30">
+  <owner>cuianthony@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the source language used for a Partial Translate request. This is
+    recorded when a Partial Translation is started.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PartialTranslation.TargetLanguage"
+    enum="LocaleCodeISO639" expires_after="2023-09-30">
+  <owner>cuianthony@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the target language used for a Partial Translate request. This is
+    recorded when a Partial Translation is started.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PartialTranslation.Translated.CharacterCount"
+    units="characters" expires_after="2023-09-30">
+  <owner>cuianthony@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the length in characters of the translated text from a Partial
+    Translation. This is recorded when a Partial Translation is completed and
+    only when it is successful. Nothing is recorded on error.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PartialTranslation.TranslationStatus"
+    enum="PartialTranslateTranslationStatus" expires_after="2023-09-30">
+  <owner>cuianthony@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the completion status of a Partial Translation. This is recorded when a
+    Partial Translation is completed.
+  </summary>
+</histogram>
+
 <histogram name="Translate.Ranker.Model.Status" enum="RankerModelStatus"
     expires_after="2023-01-22">
   <owner>megjablon@google.com</owner>

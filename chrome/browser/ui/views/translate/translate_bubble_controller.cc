@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
@@ -24,6 +25,13 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
+
+namespace {
+
+const char kTranslatePartialTranslationSelectionCharacterCount[] =
+    "Translate.PartialTranslation.Selection.CharacterCount";
+
+}
 
 TranslateBubbleController::~TranslateBubbleController() = default;
 
@@ -180,7 +188,11 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
   if (translate_bubble_view_)
     translate_bubble_view_->CloseBubble();
 
-  // Truncate text selection, if needed.
+  // Truncate text selection, if needed. Log the length of the text selection
+  // before truncating.
+  base::UmaHistogramCounts100000(
+      kTranslatePartialTranslationSelectionCharacterCount,
+      source_text.length());
   std::u16string truncated_source_text = gfx::TruncateString(
       source_text,
       translate::kDesktopPartialTranslateTextSelectionMaxCharacters.Get(),

@@ -10,6 +10,14 @@
 #include "components/translate/content/browser/partial_translate_manager.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PartialTranslateTranslationStatus {
+  kSuccess = 0,
+  kError = 1,
+  kMaxValue = kError,
+};
+
 class PartialTranslateBubbleModelImpl : public PartialTranslateBubbleModel {
  public:
   PartialTranslateBubbleModelImpl(
@@ -58,6 +66,12 @@ class PartialTranslateBubbleModelImpl : public PartialTranslateBubbleModel {
   void OnPartialTranslateResponse(const PartialTranslateRequest& request,
                                   const PartialTranslateResponse& response);
 
+  // Logs relevant information about a partial translation when it is initiated.
+  void RecordHistogramsOnPartialTranslateStart();
+
+  // Logs relevant information about a partial translation when it is completed.
+  void RecordHistogramsOnPartialTranslateComplete(bool status_error);
+
   // The current view type.
   ViewState current_view_state_;
 
@@ -70,6 +84,14 @@ class PartialTranslateBubbleModelImpl : public PartialTranslateBubbleModel {
   // The translated text, or empty if the translation has not yet been
   // performed.
   std::u16string target_text_;
+
+  // Time when the PartialTranslateManager is directed to start a translation.
+  // This is used to know the response time of a Partial Translate request.
+  base::TimeTicks translate_request_started_time_;
+
+  // Time when the Partial Translate response is received. This is used to know
+  // the response time of a Partial Translate request.
+  base::TimeTicks translate_response_received_time_;
 
   // A manager instance to handle translation of user selected strings.
   std::unique_ptr<PartialTranslateManager> partial_translate_manager_;

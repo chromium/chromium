@@ -6,6 +6,9 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
@@ -14,6 +17,21 @@
 #include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_errors.h"
+
+namespace {
+
+const char kTranslatePartialTranslationSourceLanguage[] =
+    "Translate.PartialTranslation.SourceLanguage";
+const char kTranslatePartialTranslationTargetLanguage[] =
+    "Translate.PartialTranslation.TargetLanguage";
+const char kTranslatePartialTranslationResponseTime[] =
+    "Translate.PartialTranslation.ResponseTime";
+const char kTranslatePartialTranslationTranslationStatus[] =
+    "Translate.PartialTranslation.TranslationStatus";
+const char kTranslatePartialTranslationTranslatedCharacterCount[] =
+    "Translate.PartialTranslation.Translated.CharacterCount";
+
+}  // namespace
 
 PartialTranslateBubbleModelImpl::PartialTranslateBubbleModelImpl(
     ViewState view_state,
@@ -153,6 +171,9 @@ void PartialTranslateBubbleModelImpl::Translate(
   }
   request.target_language = GetTargetLanguageCode();
 
+  translate_request_started_time_ = base::TimeTicks::Now();
+
+  RecordHistogramsOnPartialTranslateStart();
   // Cancels any ongoing requests.
   partial_translate_manager_->StartPartialTranslate(
       web_contents, request,
@@ -173,7 +194,10 @@ void PartialTranslateBubbleModelImpl::TranslateFullPage(
 void PartialTranslateBubbleModelImpl::OnPartialTranslateResponse(
     const PartialTranslateRequest& request,
     const PartialTranslateResponse& response) {
-  if (response.status != PartialTranslateStatus::kSuccess) {
+  translate_response_received_time_ = base::TimeTicks::Now();
+
+  bool status_error = (response.status != PartialTranslateStatus::kSuccess);
+  if (status_error) {
     error_type_ = translate::TranslateErrors::TRANSLATION_ERROR;
     SetViewState(PartialTranslateBubbleModel::VIEW_STATE_ERROR);
   } else {
@@ -185,7 +209,35 @@ void PartialTranslateBubbleModelImpl::OnPartialTranslateResponse(
     error_type_ = translate::TranslateErrors::NONE;
   }
 
+  RecordHistogramsOnPartialTranslateComplete(status_error);
+
   for (PartialTranslateBubbleModel::Observer& obs : observers_) {
     obs.OnPartialTranslateComplete();
+  }
+}
+
+void PartialTranslateBubbleModelImpl::
+    RecordHistogramsOnPartialTranslateStart() {
+  base::UmaHistogramSparse(kTranslatePartialTranslationSourceLanguage,
+                           base::HashMetricName(GetSourceLanguageCode()));
+  base::UmaHistogramSparse(kTranslatePartialTranslationTargetLanguage,
+                           base::HashMetricName(GetTargetLanguageCode()));
+}
+
+void PartialTranslateBubbleModelImpl::
+    RecordHistogramsOnPartialTranslateComplete(bool status_error) {
+  base::UmaHistogramMediumTimes(
+      kTranslatePartialTranslationResponseTime,
+      translate_response_received_time_ - translate_request_started_time_);
+  // All PartialTranslateTranslationStatus enum values >0 represent error
+  // states. Currently there is only one error value, but this can be split into
+  // specific error types in the future.
+  base::UmaHistogramBoolean(kTranslatePartialTranslationTranslationStatus,
+                            status_error);
+
+  if (!status_error) {
+    base::UmaHistogramCounts100000(
+        kTranslatePartialTranslationTranslatedCharacterCount,
+        target_text_.length());
   }
 }
