@@ -6,7 +6,7 @@
 
 namespace user_notes {
 
-const base::Feature kUserNotes{"UserNotes", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUserNotes, "UserNotes", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsUserNotesEnabled() {
   return base::FeatureList::IsEnabled(kUserNotes);

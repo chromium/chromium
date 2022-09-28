@@ -10,7 +10,7 @@
 namespace user_notes {
 
 // Feature controlling the User Notes feature on desktop platforms.
-extern const base::Feature kUserNotes;
+BASE_DECLARE_FEATURE(kUserNotes);
 
 // Returns true if the User Notes feature is enabled.
 bool IsUserNotesEnabled();
