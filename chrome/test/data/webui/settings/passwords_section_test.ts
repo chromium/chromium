@@ -1307,7 +1307,7 @@ suite('PasswordsSection', function() {
           createPasswordEntry({url: 'site2.com', username: 'luigi', id: 1}),
         ];
         passwordManager.data.checkStatus.state = PasswordCheckState.CANCELED;
-        passwordManager.data.leakedCredentials = [
+        passwordManager.data.insecureCredentials = [
           makeInsecureCredential(
               'site1.com', 'luigi',
               [chrome.passwordsPrivate.CompromiseType.LEAKED]),
@@ -1317,7 +1317,7 @@ suite('PasswordsSection', function() {
         const passwordsSection = elementFactory.createPasswordsSection(
             passwordManager, passwordList, []);
 
-        await passwordManager.whenCalled('getCompromisedCredentials');
+        await passwordManager.whenCalled('getInsecureCredentials');
         await pluralString.whenCalled('getPluralString');
 
         flush();
@@ -1369,7 +1369,7 @@ suite('PasswordsSection', function() {
       'showPasswordCheckLinkButtonWithoutWarningWhenNoCredentialsLeaked',
       function() {
         // Suppose no leaks initially, non-empty list of passwords, signed in.
-        passwordManager.data.leakedCredentials = [];
+        passwordManager.data.insecureCredentials = [];
         passwordManager.data.checkStatus.elapsedTimeSinceLastCheck =
             '5 min ago';
         const passwordList = [
@@ -1392,7 +1392,7 @@ suite('PasswordsSection', function() {
       'showPasswordCheckLinkButtonWithWarningWhenSomeCredentialsLeaked',
       function() {
         // Suppose no leaks initially, non-empty list of passwords, signed in.
-        passwordManager.data.leakedCredentials = [
+        passwordManager.data.insecureCredentials = [
           makeInsecureCredential(
               'one.com', 'test4',
               [chrome.passwordsPrivate.CompromiseType.LEAKED]),
@@ -1423,7 +1423,7 @@ suite('PasswordsSection', function() {
     // signed in.
     assertEquals(
         passwordManager.data.checkStatus.elapsedTimeSinceLastCheck, undefined);
-    passwordManager.data.leakedCredentials = [];
+    passwordManager.data.insecureCredentials = [];
     passwordManager.data.checkStatus.elapsedTimeSinceLastCheck = '5 min ago';
     const passwordList = [
       createPasswordEntry({url: 'one.com', username: 'test4', id: 0}),
@@ -1440,7 +1440,7 @@ suite('PasswordsSection', function() {
       assertTrue(passwordsSection.$.checkPasswordWarningIcon.hidden);
       assertTrue(passwordsSection.$.checkPasswordLeakCount.hidden);
       // Suppose two newly detected leaks come in.
-      const leakedCredentials = [
+      const insecureCredentials = [
         makeInsecureCredential(
             'one.com', 'test4',
             [chrome.passwordsPrivate.CompromiseType.LEAKED]),
@@ -1449,11 +1449,11 @@ suite('PasswordsSection', function() {
             [chrome.passwordsPrivate.CompromiseType.PHISHED]),
       ];
       const elapsedTimeSinceLastCheck = 'just now';
-      passwordManager.data.leakedCredentials = leakedCredentials;
+      passwordManager.data.insecureCredentials = insecureCredentials;
       passwordManager.data.checkStatus.elapsedTimeSinceLastCheck =
           elapsedTimeSinceLastCheck;
-      passwordManager.lastCallback.addCompromisedCredentialsListener!
-          (leakedCredentials);
+      passwordManager.lastCallback.addInsecureCredentialsListener!
+          (insecureCredentials);
       passwordManager.lastCallback.addPasswordCheckStatusListener!
           (makePasswordCheckStatus(
               /*state=*/ PasswordCheckState.RUNNING,

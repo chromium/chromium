@@ -350,12 +350,12 @@ suite('PasswordsUITest', function() {
           'google.com', 'jdoerrie',
           [chrome.passwordsPrivate.CompromiseType.LEAKED]),
     ];
-    passwordManager.data.leakedCredentials = leakedPasswords;
+    passwordManager.data.insecureCredentials = leakedPasswords;
 
     // create autofill page with leaked credentials
     autofillPage = createAutofillPageSection();
 
-    await passwordManager.whenCalled('getCompromisedCredentials');
+    await passwordManager.whenCalled('getInsecureCredentials');
     await pluralString.whenCalled('getPluralString');
 
     // With compromised credentials sublabel should have text

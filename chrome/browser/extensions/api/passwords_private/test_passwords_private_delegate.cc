@@ -216,39 +216,39 @@ void TestPasswordsPrivateDelegate::SetAccountStorageOptIn(
 }
 
 std::vector<api::passwords_private::PasswordUiEntry>
-TestPasswordsPrivateDelegate::GetCompromisedCredentials() {
-  api::passwords_private::PasswordUiEntry credential;
-  credential.username = "alice";
-  credential.urls.shown = "example.com";
-  credential.urls.link = "https://example.com";
-  credential.urls.signon_realm = "https://example.com";
-  credential.is_android_credential = false;
-  credential.change_password_url = "https://example.com/change-password";
-  credential.compromised_info.emplace();
+TestPasswordsPrivateDelegate::GetInsecureCredentials() {
+  api::passwords_private::PasswordUiEntry leaked_credential;
+  leaked_credential.username = "alice";
+  leaked_credential.urls.shown = "example.com";
+  leaked_credential.urls.link = "https://example.com";
+  leaked_credential.urls.signon_realm = "https://example.com";
+  leaked_credential.is_android_credential = false;
+  leaked_credential.change_password_url = "https://example.com/change-password";
+  leaked_credential.compromised_info.emplace();
   // Mar 03 2020 12:00:00 UTC
-  credential.compromised_info->compromise_time = 1583236800000;
-  credential.compromised_info->elapsed_time_since_compromise =
+  leaked_credential.compromised_info->compromise_time = 1583236800000;
+  leaked_credential.compromised_info->elapsed_time_since_compromise =
       base::UTF16ToUTF8(TimeFormat::Simple(
           TimeFormat::FORMAT_ELAPSED, TimeFormat::LENGTH_LONG, base::Days(3)));
-  credential.compromised_info->compromise_types = {
+  leaked_credential.compromised_info->compromise_types = {
       api::passwords_private::COMPROMISE_TYPE_LEAKED};
-  credential.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
-  std::vector<api::passwords_private::PasswordUiEntry> credentials;
-  credentials.push_back(std::move(credential));
-  return credentials;
-}
+  leaked_credential.stored_in =
+      api::passwords_private::PASSWORD_STORE_SET_DEVICE;
 
-std::vector<api::passwords_private::PasswordUiEntry>
-TestPasswordsPrivateDelegate::GetWeakCredentials() {
-  api::passwords_private::PasswordUiEntry credential;
-  credential.username = "bob";
-  credential.urls.shown = "example.com";
-  credential.urls.link = "https://example.com";
-  credential.is_android_credential = false;
-  credential.change_password_url = "https://example.com/change-password";
-  credential.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
+  api::passwords_private::PasswordUiEntry weak_credential;
+  weak_credential.username = "bob";
+  weak_credential.urls.shown = "example.com";
+  weak_credential.urls.link = "https://example.com";
+  weak_credential.is_android_credential = false;
+  weak_credential.change_password_url = "https://example.com/change-password";
+  weak_credential.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
+  weak_credential.compromised_info.emplace();
+  weak_credential.compromised_info->compromise_types = {
+      api::passwords_private::COMPROMISE_TYPE_WEAK};
+
   std::vector<api::passwords_private::PasswordUiEntry> credentials;
-  credentials.push_back(std::move(credential));
+  credentials.push_back(std::move(leaked_credential));
+  credentials.push_back(std::move(weak_credential));
   return credentials;
 }
 

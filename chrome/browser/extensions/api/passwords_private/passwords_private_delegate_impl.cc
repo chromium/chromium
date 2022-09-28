@@ -650,13 +650,8 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageOptIn(
 }
 
 std::vector<api::passwords_private::PasswordUiEntry>
-PasswordsPrivateDelegateImpl::GetCompromisedCredentials() {
-  return password_check_delegate_.GetCompromisedCredentials();
-}
-
-std::vector<api::passwords_private::PasswordUiEntry>
-PasswordsPrivateDelegateImpl::GetWeakCredentials() {
-  return password_check_delegate_.GetWeakCredentials();
+PasswordsPrivateDelegateImpl::GetInsecureCredentials() {
+  return password_check_delegate_.GetInsecureCredentials();
 }
 
 bool PasswordsPrivateDelegateImpl::MuteInsecureCredential(

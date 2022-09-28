@@ -330,18 +330,11 @@ chrome.passwordsPrivate.isOptedInForAccountStorage = function(callback) {};
 chrome.passwordsPrivate.optInForAccountStorage = function(optIn) {};
 
 /**
- * Requests the latest compromised credentials.
+ * Requests the latest insecure credentials.
  * @param {function(!Array<!chrome.passwordsPrivate.PasswordUiEntry>): void}
  *     callback
  */
-chrome.passwordsPrivate.getCompromisedCredentials = function(callback) {};
-
-/**
- * Requests the latest weak credentials.
- * @param {function(!Array<!chrome.passwordsPrivate.PasswordUiEntry>): void}
- *     callback
- */
-chrome.passwordsPrivate.getWeakCredentials = function(callback) {};
+chrome.passwordsPrivate.getInsecureCredentials = function(callback) {};
 
 /**
  * Requests to mute |credential| from the password store. Invokes |callback| on
@@ -464,16 +457,10 @@ chrome.passwordsPrivate.onPasswordsFileExportProgress;
 chrome.passwordsPrivate.onAccountStorageOptInStateChanged;
 
 /**
- * Fired when the compromised credentials changed.
+ * Fired when the insecure credentials changed.
  * @type {!ChromeEvent}
  */
-chrome.passwordsPrivate.onCompromisedCredentialsChanged;
-
-/**
- * Fired when the weak credentials changed.
- * @type {!ChromeEvent}
- */
-chrome.passwordsPrivate.onWeakCredentialsChanged;
+chrome.passwordsPrivate.onInsecureCredentialsChanged;
 
 /**
  * Fired when the status of the password check changes.

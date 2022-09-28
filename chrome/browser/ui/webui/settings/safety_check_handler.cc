@@ -165,6 +165,30 @@ SafetyCheckHandler::ChromeCleanerResult fetchChromeCleanerStatus(
   return result;
 }
 #endif
+
+bool IsUnmutedCompromisedCredential(
+    const extensions::api::passwords_private::PasswordUiEntry& entry) {
+  DCHECK(entry.compromised_info);
+  if (entry.compromised_info->is_muted)
+    return false;
+  return base::ranges::any_of(
+      entry.compromised_info->compromise_types, [](auto type) {
+        return type ==
+                   extensions::api::passwords_private::COMPROMISE_TYPE_LEAKED ||
+               type ==
+                   extensions::api::passwords_private::COMPROMISE_TYPE_PHISHED;
+      });
+}
+
+bool IsCredentialWeak(
+    const extensions::api::passwords_private::PasswordUiEntry& entry) {
+  DCHECK(entry.compromised_info);
+  return base::ranges::any_of(
+      entry.compromised_info->compromise_types, [](auto type) {
+        return type == extensions::api::passwords_private::COMPROMISE_TYPE_WEAK;
+      });
+}
+
 }  // namespace
 
 base::Time TimestampDelegate::GetSystemTime() {
@@ -867,9 +891,12 @@ void SafetyCheckHandler::DetermineIfNoPasswordsOrSafe(
 }
 
 void SafetyCheckHandler::UpdatePasswordsResultOnCheckIdle() {
-  size_t num_compromised =
-      passwords_delegate_->GetCompromisedCredentials().size();
-  size_t num_weak = passwords_delegate_->GetWeakCredentials().size();
+  auto insecure_credentials = passwords_delegate_->GetInsecureCredentials();
+  size_t num_compromised = base::ranges::count_if(
+      insecure_credentials, &IsUnmutedCompromisedCredential);
+  size_t num_weak =
+      base::ranges::count_if(insecure_credentials, &IsCredentialWeak);
+
   if (num_compromised == 0 && num_weak == 0) {
     // If there are no |OnCredentialDone| callbacks with is_leaked = true, no
     // need to wait for InsecureCredentialsManager callbacks any longer, since

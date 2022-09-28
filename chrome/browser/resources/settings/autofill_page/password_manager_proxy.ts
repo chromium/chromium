@@ -225,14 +225,9 @@ export interface PasswordManagerProxy {
   stopBulkPasswordCheck(): void;
 
   /**
-   * Requests the latest information about compromised credentials.
+   * Requests the latest information about insecure credentials.
    */
-  getCompromisedCredentials(): Promise<InsecureCredentials>;
-
-  /**
-   * Requests the latest information about weak credentials.
-   */
-  getWeakCredentials(): Promise<InsecureCredentials>;
+  getInsecureCredentials(): Promise<InsecureCredentials>;
 
   /**
    * Requests the current status of the check.
@@ -273,25 +268,14 @@ export interface PasswordManagerProxy {
   extendAuthValidity(): void;
 
   /**
-   * Add an observer to the compromised passwords change.
+   * Add an observer to the insecure passwords change.
    */
-  addCompromisedCredentialsListener(listener: CredentialsChangedListener): void;
+  addInsecureCredentialsListener(listener: CredentialsChangedListener): void;
 
   /**
-   * Remove an observer to the compromised passwords change.
+   * Remove an observer to the insecure passwords change.
    */
-  removeCompromisedCredentialsListener(listener: CredentialsChangedListener):
-      void;
-
-  /**
-   * Add an observer to the weak passwords change.
-   */
-  addWeakCredentialsListener(listener: CredentialsChangedListener): void;
-
-  /**
-   * Remove an observer to the weak passwords change.
-   */
-  removeWeakCredentialsListener(listener: CredentialsChangedListener): void;
+  removeInsecureCredentialsListener(listener: CredentialsChangedListener): void;
 
   /**
    * Add an observer to the passwords check status change.
@@ -585,16 +569,8 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.passwordsPrivate.stopPasswordCheck();
   }
 
-  getCompromisedCredentials() {
-    return new Promise<InsecureCredentials>(resolve => {
-      chrome.passwordsPrivate.getCompromisedCredentials(resolve);
-    });
-  }
-
-  getWeakCredentials() {
-    return new Promise<InsecureCredentials>(resolve => {
-      chrome.passwordsPrivate.getWeakCredentials(resolve);
-    });
+  getInsecureCredentials() {
+    return chrome.passwordsPrivate.getInsecureCredentials();
   }
 
   muteInsecureCredential(insecureCredential:
@@ -618,22 +594,13 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.passwordsPrivate.extendAuthValidity();
   }
 
-  addCompromisedCredentialsListener(listener: CredentialsChangedListener) {
-    chrome.passwordsPrivate.onCompromisedCredentialsChanged.addListener(
+  addInsecureCredentialsListener(listener: CredentialsChangedListener) {
+    chrome.passwordsPrivate.onInsecureCredentialsChanged.addListener(listener);
+  }
+
+  removeInsecureCredentialsListener(listener: CredentialsChangedListener) {
+    chrome.passwordsPrivate.onInsecureCredentialsChanged.removeListener(
         listener);
-  }
-
-  removeCompromisedCredentialsListener(listener: CredentialsChangedListener) {
-    chrome.passwordsPrivate.onCompromisedCredentialsChanged.removeListener(
-        listener);
-  }
-
-  addWeakCredentialsListener(listener: CredentialsChangedListener) {
-    chrome.passwordsPrivate.onWeakCredentialsChanged.addListener(listener);
-  }
-
-  removeWeakCredentialsListener(listener: CredentialsChangedListener) {
-    chrome.passwordsPrivate.onWeakCredentialsChanged.removeListener(listener);
   }
 
   addPasswordCheckStatusListener(listener: PasswordCheckStatusChangedListener) {

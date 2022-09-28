@@ -171,10 +171,7 @@ declare global {
       export function isOptedInForAccountStorage(
           callback: (isOptedIn: boolean) => void): void;
       export function optInForAccountStorage(optIn: boolean): void;
-      export function getCompromisedCredentials(
-          callback: (credentials: Array<PasswordUiEntry>) => void): void;
-      export function getWeakCredentials(
-          callback: (credentials: Array<PasswordUiEntry>) => void): void;
+      export function getInsecureCredentials(): Promise<Array<PasswordUiEntry>>;
       export function muteInsecureCredential(
           credential: PasswordUiEntry, callback?: () => void): void;
       export function unmuteInsecureCredential(
@@ -206,9 +203,7 @@ declare global {
           ChromeEvent<(progress: PasswordExportProgress) => void>;
       export const onAccountStorageOptInStateChanged:
           ChromeEvent<(optInState: boolean) => void>;
-      export const onCompromisedCredentialsChanged:
-          ChromeEvent<(credentials: Array<PasswordUiEntry>) => void>;
-      export const onWeakCredentialsChanged:
+      export const onInsecureCredentialsChanged:
           ChromeEvent<(credentials: Array<PasswordUiEntry>) => void>;
       export const onPasswordCheckStatusChanged:
           ChromeEvent<(status: PasswordCheckStatus) => void>;

@@ -79,7 +79,8 @@ export const PasswordCheckMixin = dedupingMixin(
           };
         }
 
-        passwordManager: PasswordManagerProxy|null = null;
+        passwordManager: PasswordManagerProxy =
+            PasswordManagerImpl.getInstance();
         leakedPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
         mutedPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
         weakPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
@@ -89,9 +90,7 @@ export const PasswordCheckMixin = dedupingMixin(
         status: chrome.passwordsPrivate.PasswordCheckStatus;
         isInitialStatus: boolean;
 
-        private leakedCredentialsListener_: CredentialsChangedListener|null =
-            null;
-        private weakCredentialsListener_: CredentialsChangedListener|null =
+        private insecureCredentialsListener_: CredentialsChangedListener|null =
             null;
         private statusChangedListener_: PasswordCheckStatusChangedListener|
             null = null;
@@ -104,47 +103,46 @@ export const PasswordCheckMixin = dedupingMixin(
             this.isInitialStatus = false;
           };
 
-          this.leakedCredentialsListener_ = compromisedCredentials => {
-            this.updateCompromisedPasswordList(compromisedCredentials);
+          this.insecureCredentialsListener_ = insecureCredentials => {
+            this.weakPasswords = insecureCredentials.filter(cred => {
+              return cred.compromisedInfo!.compromiseTypes.some(type => {
+                return type === chrome.passwordsPrivate.CompromiseType.WEAK;
+              });
+            });
+
+            this.updateCompromisedPasswordList(
+                insecureCredentials.filter(cred => {
+                  return cred.compromisedInfo!.compromiseTypes.some(type => {
+                    return type ===
+                        chrome.passwordsPrivate.CompromiseType.LEAKED ||
+                        type === chrome.passwordsPrivate.CompromiseType.PHISHED;
+                  });
+                }));
             this.fetchPluralizedStrings_();
           };
 
-          this.weakCredentialsListener_ = weakCredentials => {
-            this.weakPasswords = weakCredentials;
-            this.fetchPluralizedStrings_();
-          };
-
-          this.passwordManager = PasswordManagerImpl.getInstance();
-          this.passwordManager!.getPasswordCheckStatus().then(
+          this.passwordManager.getPasswordCheckStatus().then(
               this.statusChangedListener_);
-          this.passwordManager!.getCompromisedCredentials().then(
-              this.leakedCredentialsListener_);
-          this.passwordManager!.getWeakCredentials().then(
-              this.weakCredentialsListener_);
+          this.passwordManager.getInsecureCredentials().then(
+              this.insecureCredentialsListener_);
 
-          this.passwordManager!.addPasswordCheckStatusListener(
+          this.passwordManager.addPasswordCheckStatusListener(
               this.statusChangedListener_);
-          this.passwordManager!.addCompromisedCredentialsListener(
-              this.leakedCredentialsListener_);
-          this.passwordManager!.addWeakCredentialsListener(
-              this.weakCredentialsListener_);
+          this.passwordManager.addInsecureCredentialsListener(
+              this.insecureCredentialsListener_);
         }
 
         override disconnectedCallback() {
           super.disconnectedCallback();
 
           assert(this.statusChangedListener_);
-          this.passwordManager!.removePasswordCheckStatusListener(
+          this.passwordManager.removePasswordCheckStatusListener(
               this.statusChangedListener_);
           this.statusChangedListener_ = null;
-          assert(this.leakedCredentialsListener_);
-          this.passwordManager!.removeCompromisedCredentialsListener(
-              this.leakedCredentialsListener_);
-          this.leakedCredentialsListener_ = null;
-          assert(this.weakCredentialsListener_);
-          this.passwordManager!.removeWeakCredentialsListener(
-              this.weakCredentialsListener_);
-          this.weakCredentialsListener_ = null;
+          assert(this.insecureCredentialsListener_);
+          this.passwordManager.removeInsecureCredentialsListener(
+              this.insecureCredentialsListener_);
+          this.insecureCredentialsListener_ = null;
         }
 
         /**
