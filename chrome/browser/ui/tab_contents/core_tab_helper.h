@@ -113,6 +113,14 @@ class CoreTabHelper : public content::WebContentsObserver,
   // Wrapper method for fetching template URL service.
   TemplateURLService* GetTemplateURLService();
 
+  // Helper that returns true if the current Browser instance is a Progressive
+  // Web App
+  bool IsInProgressiveWebApp();
+
+  // Helper function to check if side panel is enabled for current browser
+  // context
+  bool IsSidePanelEnabled();
+
   // Helper function to check if the side panel is enabled for third party
   // default search engines (3PDSE).
   bool IsSidePanelEnabledFor3PDse();

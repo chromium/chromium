@@ -955,8 +955,7 @@ void RenderViewContextMenu::InitMenu() {
     AppendImageItems();
 
   if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE) &&
-      !IsInProgressiveWebApp()) {
+          ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE)) {
     AppendSearchWebForImageItems();
   }
 
@@ -3270,7 +3269,6 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
   return base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
          provider_supports_image_search &&
          !GetDocumentURL(params_).SchemeIs(content::kChromeUIScheme) &&
-         !IsInProgressiveWebApp() &&
          GetPrefs(browser_context_)
              ->GetBoolean(prefs::kLensRegionSearchEnabled);
 #else
