@@ -1572,9 +1572,6 @@ void BrowserAccessibilityManager::OnTreeDataChanged(
   ui::AXTreeManager::OnTreeDataChanged(tree, old_data, new_data);
 }
 
-void BrowserAccessibilityManager::OnSubtreeWillBeDeleted(ui::AXTree* tree,
-                                                         ui::AXNode* node) {}
-
 void BrowserAccessibilityManager::OnNodeCreated(ui::AXTree* tree,
                                                 ui::AXNode* node) {
   DCHECK(node);
