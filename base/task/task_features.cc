@@ -6,6 +6,7 @@
 
 #include "base/base_export.h"
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -42,7 +43,16 @@ BASE_FEATURE(kAddTaskLeewayFeature,
 const base::FeatureParam<TimeDelta> kTaskLeewayParam{&kAddTaskLeewayFeature,
                                                      "leeway", kDefaultLeeway};
 
-BASE_FEATURE(kAlignWakeUps, "AlignWakeUps", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAlignWakeUps,
+             "AlignWakeUps",
+#if BUILDFLAG(IS_FUCHSIA)
+             // TODO(crbug.com/1368989): Ensure that latency-sensitive
+             // activities (e.g. media playback) are compatible, and enable.
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kExplicitHighResolutionTimerWin,
              "ExplicitHighResolutionTimerWin",
