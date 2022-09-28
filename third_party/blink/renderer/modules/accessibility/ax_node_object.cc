@@ -400,13 +400,17 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
   AccessibilityOrientation orientation = Orientation();
   ax::mojom::blink::WritingDirection text_direction = GetTextDirection();
 
+  // A kKeyDown event is kRawKeyDown + kChar events. We cannot synthesize it
+  // because the KeyboardEvent constructor will prevent it, to force us to
+  // decide if we must produce both events. In our case, we don't have to
+  // produce a kChar event because we are synthesizing arrow key presses, and
+  // only keys that output characters are expected to produce kChar events.
   KeyboardEvent* keydown =
       CreateKeyboardEvent(local_dom_window, WebInputEvent::Type::kRawKeyDown,
                           action, orientation, text_direction);
   GetNode()->DispatchEvent(*keydown);
 
   // TODO(crbug.com/1099069): add a brief pause between keydown and keyup?
-  // TODO(crbug.com/1099069): fire a "char" event depending on platform?
 
   // The keydown handler may have caused the node to be removed.
   if (!GetNode())
