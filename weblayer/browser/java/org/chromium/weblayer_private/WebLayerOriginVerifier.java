@@ -4,8 +4,13 @@
 
 package org.chromium.weblayer_private;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.components.digital_asset_links.OriginVerifier;
 import org.chromium.components.digital_asset_links.Relationship;
 import org.chromium.components.embedder_support.util.Origin;
@@ -17,6 +22,10 @@ import java.util.List;
  * It uses the WebLayerVerificationResultStore to cache validations.
  */
 public class WebLayerOriginVerifier extends OriginVerifier {
+    private static final String METADATA_SKIP_ORIGIN_VERIFICATION_KEY =
+            "org.chromium.weblayer.skipOriginVerification";
+    private final boolean mSkipOriginVerification = getSkipOriginVerificationFromManifest();
+
     /**
      * Main constructor.
      * Use {@link WebLayerOriginVerifier#start}.
@@ -58,6 +67,26 @@ public class WebLayerOriginVerifier extends OriginVerifier {
         return resultStore.shouldOverride(packageName, origin, relation)
                 || resultStore.isRelationshipSaved(
                         new Relationship(packageName, signatureFingerprints, origin, relation));
+    }
+
+    // TODO(swestphal): Only for testing during development, remove again eventually.
+    boolean skipOriginVerification() {
+        return mSkipOriginVerification;
+    }
+
+    private boolean getSkipOriginVerificationFromManifest() {
+        try {
+            Context context = ContextUtils.getApplicationContext();
+            Bundle metaData = context.getPackageManager()
+                                      .getApplicationInfo(context.getPackageName(),
+                                              PackageManager.GET_META_DATA)
+                                      .metaData;
+            if (metaData != null) {
+                return metaData.getBoolean(METADATA_SKIP_ORIGIN_VERIFICATION_KEY);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+        return false;
     }
 
     @Override

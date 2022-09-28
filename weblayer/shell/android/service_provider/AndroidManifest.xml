@@ -26,6 +26,8 @@ found in the LICENSE file.
             </intent-filter>
         </service>
 
+      <meta-data android:name="org.chromium.weblayer.skipOriginVerification" android:value="false" />
+
       <!-- TODO(rayankans): Make this a template. -->
       <meta-data android:name="org.chromium.weblayer.WebLayerPackage"
                  android:value="org.chromium.weblayer.support"/>

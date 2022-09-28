@@ -88,6 +88,10 @@ public class WebLayerOriginVerificationScheduler {
             listener.onResult(false);
             return;
         }
+        if (mOriginVerifier.skipOriginVerification()) {
+            listener.onResult(true);
+            return;
+        }
 
         if (mPendingOrigins.contains(origin)) {
             mOriginVerifier.start((packageName, unused, verified, online) -> {
