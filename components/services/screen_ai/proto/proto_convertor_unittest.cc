@@ -362,8 +362,9 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate_OcrResults) {
   }
 }
 
+// TODO(https://crbug.com/1278249): Enable after the AXTree bug is fixed.
 // Tests if the given tree is properly traversed and new ids are assigned.
-TEST_F(ProtoConvertorTest, PreOrderTreeGeneration) {
+TEST_F(ProtoConvertorTest, DISABLED_PreOrderTreeGeneration) {
   // Input Tree:
   // +-- 1
   //     +-- 2
@@ -378,9 +379,9 @@ TEST_F(ProtoConvertorTest, PreOrderTreeGeneration) {
 
   // Input tree is added in shuffled order to avoid order assumption.
   NodeTemplate input_tree[] = {
-      {4, 3, {5, 6, 9}}, {1, 3, {2, 4, -20}}, {7, 0, {}}, {8, 1, {3}},
-      {6, 0, {}},        {5, 0, {}},          {3, 0, {}}, {2, 2, {7, 8}},
-      {9, 0, {}},        {-20, 0, {}}};
+      {1, 3, {2, 4, -20}}, {4, 3, {5, 6, 9}}, {6, 0, {}}, {5, 0, {}},
+      {2, 2, {7, 8}},      {8, 1, {3}},       {3, 0, {}}, {7, 0, {}},
+      {9, 0, {}},          {-20, 0, {}}};
   const int nodes_count = sizeof(input_tree) / sizeof(NodeTemplate);
 
   // Expected order of nodes in the output.
@@ -427,7 +428,8 @@ INSTANTIATE_TEST_SUITE_P(TestCases,
                          ProtoConvertorViewHierarchyTest,
                          testing::Range(0, kProtoConversionTestCasesCount));
 
-TEST_P(ProtoConvertorViewHierarchyTest, AxTreeJsonToProtoTest) {
+// TODO(https://crbug.com/1278249): Enable after the AXTree bug is fixed.
+TEST_P(ProtoConvertorViewHierarchyTest, DISABLED_AxTreeJsonToProtoTest) {
   const base::FilePath kInputJsonPath = GetInputFilePath();
   const base::FilePath kExpectedProtoPath = GetExpectedFilePath();
 

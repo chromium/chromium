@@ -7,6 +7,7 @@ include_rules = [
   "+ui/accessibility/ax_node_data.h",
   "+ui/accessibility/ax_role_properties.h",
   "+ui/accessibility/ax_serializable_tree.h",
+  "+ui/accessibility/ax_tree.h",
   "+ui/accessibility/ax_tree_id.h",
   "+ui/accessibility/ax_tree_serializer.h",
   "+ui/accessibility/ax_tree_source.h",

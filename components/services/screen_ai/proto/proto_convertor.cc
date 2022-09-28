@@ -30,8 +30,10 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_tree.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -385,20 +387,6 @@ size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
                                  line_box_node, node_data);
 }
 
-// Adds the subtree of |nodes[node_index_to_add]| to |nodes_order| with
-// pre-order traversal.
-// The comment at the beginning of |Screen2xSnapshotToViewHierarchy| explains
-// more.
-void AddSubTree(const std::vector<ui::AXNodeData>& nodes,
-                std::map<int, int>& id_to_position,
-                std::vector<int>& nodes_order,
-                const int node_index_to_add) {
-  nodes_order.push_back(node_index_to_add);
-  const ui::AXNodeData& node = nodes[node_index_to_add];
-  for (const ui::AXNodeID& child_id : node.child_ids)
-    AddSubTree(nodes, id_to_position, nodes_order, id_to_position[child_id]);
-}
-
 // Converts a Chrome role to a Screen2x role as text.
 // TODO(https://crbug.com/1341655): Remove if Screen2x training protos are
 // generated directly by Chrome or Screen2x uses the same role texts.
@@ -563,6 +551,100 @@ void AddAttribute(const std::string& name,
   ui_element.add_attributes()->Swap(&attrib);
 }
 
+// Creates the proto for |node|, setting its own and parent id respectively to
+// |id| and |parent_id|. Updates |tree_dimensions| to include the bounds of the
+// new node.
+// Requires setting "child_ids" and "bounding_box" properties in next steps.
+screenai::UiElement CreateUiElementProto(const ui::AXTree& tree,
+                                         const ui::AXNode* node,
+                                         int id,
+                                         int parent_id,
+                                         gfx::SizeF& tree_dimensions) {
+  screenai::UiElement uie;
+
+  const ui::AXNodeData& node_data = node->data();
+
+  // ID.
+  uie.set_id(id);
+
+  // Attributes.
+  // TODO(https://crbug.com/1278249): Get attribute strings from a Google3
+  // export, also the experimental ones for the unittest.
+  AddAttribute("axnode_id", static_cast<int>(node->id()), uie);
+  const std::string& display_value =
+      node_data.GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
+  if (!display_value.empty())
+    AddAttribute("/extras/styles/display", display_value, uie);
+  AddAttribute("/extras/styles/visibility",
+               node_data.IsInvisible() ? "hidden" : "visible", uie);
+
+  // This is a fixed constant for Chrome requests to Screen2x.
+  AddAttribute("class_name", "chrome.unicorn", uie);
+  AddAttribute("chrome_role", GetScreen2xRoleFromChromeRole(node_data.role),
+               uie);
+  AddAttribute("text",
+               node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+               uie);
+
+  // Type and parent.
+  uie.set_parent_id(parent_id);
+
+  // Type.
+  uie.set_type(node == tree.root() ? screenai::UiElementType::ROOT
+                                   : screenai::UiElementType::VIEW);
+
+  // Bounding Box.
+  gfx::RectF bounds = tree.RelativeToTreeBounds(
+      node, gfx::RectF(0, 0),
+      /* offscreen= */ nullptr, /* clip_bounds= */ true,
+      /* skip_container_offset= */ false);
+
+  // Bounding Box Pixels.
+  screenai::BoundingBoxPixels* bounding_box_pixels =
+      new screenai::BoundingBoxPixels();
+  bounding_box_pixels->set_top(bounds.y());
+  bounding_box_pixels->set_left(bounds.x());
+  bounding_box_pixels->set_bottom(bounds.bottom());
+  bounding_box_pixels->set_right(bounds.right());
+  uie.set_allocated_bounding_box_pixels(bounding_box_pixels);
+
+  tree_dimensions.set_height(fmax(tree_dimensions.height(), bounds.bottom()));
+  tree_dimensions.set_width(fmax(tree_dimensions.width(), bounds.right()));
+
+  return uie;
+}
+
+// Adds the subtree of |node| to |proto| with pre-order traversal.
+// Uses |next_unused_node_id| as the current node id and updates it for the
+// children. Updates |tree_dimensions| to include the bounds of the new node.
+void AddSubTree(const ui::AXTree& tree,
+                const ui::AXNode* node,
+                screenai::ViewHierarchy& proto,
+                int& next_unused_node_id,
+                int parent_id,
+                gfx::SizeF& tree_dimensions) {
+  // Ensure that node id and index are the same.
+  DCHECK(proto.ui_elements_size() == next_unused_node_id);
+
+  // Create and add proto.
+  int current_node_id = next_unused_node_id;
+  screenai::UiElement uie = CreateUiElementProto(tree, node, current_node_id,
+                                                 parent_id, tree_dimensions);
+  proto.add_ui_elements()->Swap(&uie);
+
+  // Add children.
+  std::vector<int> child_ids;
+  for (size_t i = 0; i < node->GetChildCount(); i++) {
+    child_ids.push_back(++next_unused_node_id);
+    AddSubTree(tree, node->GetChildAtIndex(i), proto, next_unused_node_id,
+               current_node_id, tree_dimensions);
+  }
+
+  // Add child ids.
+  for (int child : child_ids)
+    proto.mutable_ui_elements(current_node_id)->add_child_ids(child);
+}
+
 }  // namespace
 
 namespace screen_ai {
@@ -691,123 +773,54 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
   return update;
 }
 
+// TODO(https://crbug.com/1278249): Proto conversion for Screen2x and
+// LayoutExtraction requests are entirely independent. Separate them into two
+// different classes and add separate test suits.
 std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
-  screenai::ViewHierarchy view_hierarchy;
+  // Deserialize the snapshot.
+  ui::AXTree tree(snapshot);
 
-  // Screen2x requires the nodes to come in PRE-ORDER, and have only positive
-  // ids. |nodes_order| will specify the new order of the nodes, i.e.
-  // nodes_order[X] will tell which index in |snapshot.nodes| will be the new
-  // Xth node in the proto that is sent to Screen2x. Screen2x also requires that
-  // the node at position X would have id X.
-  std::vector<int> nodes_order;
+  // To be computed based on the max dimensions of all elements in the tree.
+  // TODO(https://crbug.com/1278249): Consider using combination of scroll
+  // max and view port size to find the tree dimensions. Screen2x is getting the
+  // size from the screenshot image of the tree.
+  gfx::SizeF tree_dimensions;
 
-  // A map for fast access from AXNode.id to position in |snapshot.nodex|.
-  std::map<int, int> id_to_position;
+  // Screen2x requires the nodes to come in PRE-ORDER, and have only
+  // positive ids. |AddSubTree| traverses the |tree| in preorder and creates the
+  // required proto.
+  int next_unused_node_id = 0;
+  screenai::ViewHierarchy proto;
+  AddSubTree(tree, tree.root(), proto, next_unused_node_id, /*parent_id=*/-1,
+             tree_dimensions);
 
-  // A map for fast access from AXNode.id of a child node to its parent node.
-  std::map<int, int> child_id_to_parent_id;
+  // If the tree has a zero dimension, there is nothing to send.
+  if (tree_dimensions.IsEmpty())
+    return "";
 
-  // The new id for each node id in |snapshot.nodes|.
-  std::map<int, int> new_id;
+  // The bounds of the root item should be set to the snapshot size.
+  proto.mutable_ui_elements(0)->mutable_bounding_box_pixels()->set_right(
+      tree_dimensions.width());
+  proto.mutable_ui_elements(0)->mutable_bounding_box_pixels()->set_bottom(
+      tree_dimensions.height());
+  DCHECK_EQ(proto.ui_elements(0).bounding_box().right(), 0);
+  DCHECK_EQ(proto.ui_elements(0).bounding_box().top(), 0);
 
-  int snapshot_width = -1;
-  int snapshot_height = -1;
-  int root_index = -1;
-
-  for (size_t i = 0; i < snapshot.nodes.size(); i++) {
-    const ui::AXNodeData& node = snapshot.nodes[i];
-
-    id_to_position[static_cast<int>(node.id)] = static_cast<int>(i);
-    for (const ui::AXNodeID& child_id : node.child_ids)
-      child_id_to_parent_id[child_id] = static_cast<int>(node.id);
-
-    // Set root as the first node and take its size as snapshot size.
-    if (node.id == snapshot.root_id) {
-      root_index = i;
-      snapshot_width = node.relative_bounds.bounds.width();
-      snapshot_height = node.relative_bounds.bounds.height();
-    }
+  // Set relative sizes.
+  for (int i = 0; i < proto.ui_elements_size(); i++) {
+    auto* bounding_box = proto.mutable_ui_elements(i)->mutable_bounding_box();
+    const auto& bounding_box_pixels =
+        proto.ui_elements(i).bounding_box_pixels();
+    bounding_box->set_top(bounding_box_pixels.top() / tree_dimensions.height());
+    bounding_box->set_left(bounding_box_pixels.left() /
+                           tree_dimensions.width());
+    bounding_box->set_bottom(bounding_box_pixels.bottom() /
+                             tree_dimensions.height());
+    bounding_box->set_right(bounding_box_pixels.right() /
+                            tree_dimensions.width());
   }
 
-  DCHECK_NE(root_index, -1) << "Root not found.";
-  AddSubTree(snapshot.nodes, id_to_position, nodes_order, root_index);
-
-  for (int i = 0; i < static_cast<int>(nodes_order.size()); i++)
-    new_id[snapshot.nodes[nodes_order[i]].id] = i;
-
-  for (int node_index : nodes_order) {
-    const ui::AXNodeData& node = snapshot.nodes[node_index];
-    const ui::AXNodeID& ax_node_id = node.id;
-    screenai::UiElement uie;
-
-    // ID.
-    uie.set_id(new_id[ax_node_id]);
-
-    // Child IDs.
-    for (const ui::AXNodeID& id : node.child_ids)
-      uie.add_child_ids(new_id[id]);
-
-    // Attributes.
-    // TODO(https://crbug.com/1278249): Get attribute strings from a Google3
-    // export, also the experimental ones for the unittest.
-    AddAttribute("axnode_id", static_cast<int>(ax_node_id), uie);
-    const std::string& display_value =
-        node.GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
-    if (!display_value.empty())
-      AddAttribute("/extras/styles/display", display_value, uie);
-    AddAttribute("/extras/styles/visibility",
-                 node.IsInvisible() ? "hidden" : "visible", uie);
-
-    // This is a fixed constant for Chrome requests to Screen2x.
-    AddAttribute("class_name", "chrome.unicorn", uie);
-    AddAttribute("chrome_role", GetScreen2xRoleFromChromeRole(node.role), uie);
-    AddAttribute("text",
-                 node.GetStringAttribute(ax::mojom::StringAttribute::kName),
-                 uie);
-
-    // Type and parent.
-    if (node.id == snapshot.root_id) {
-      uie.set_type(screenai::UiElementType::ROOT);
-      uie.set_parent_id(-1);
-    } else {
-      uie.set_type(screenai::UiElementType::VIEW);
-      uie.set_parent_id(new_id[child_id_to_parent_id[ax_node_id]]);
-    }
-
-    // TODO(https://crbug.com/1278249): Bounding box and Bounding Box Pixels
-    // do not consider offset container, transforms, device scaling, clipping,
-    // offscreen state, etc. This should be fixed the same way the data is
-    // created for training Screen2x models.
-    // This is most likely wrong for iframes. Offset containers are directly
-    // encoded into the accessibility tree; the platform accessibility tree
-    // merges all child trees so it looks like one unified tree. We're missing
-    // that here if Screen2x trains on the unified accessibility tree. We should
-    // either ensure they train only on a single accessibility tree not
-    // including iframes or ensure the snapshot grabs all child trees.
-
-    // Bounding Box.
-    screenai::BoundingBox* bounding_box = new screenai::BoundingBox;
-    bounding_box->set_top(node.relative_bounds.bounds.y() / snapshot_height);
-    bounding_box->set_left(node.relative_bounds.bounds.x() / snapshot_width);
-    bounding_box->set_bottom(node.relative_bounds.bounds.bottom() /
-                             snapshot_height);
-    bounding_box->set_right(node.relative_bounds.bounds.right() /
-                            snapshot_width);
-    uie.set_allocated_bounding_box(bounding_box);
-
-    // Bounding Box Pixels.
-    screenai::BoundingBoxPixels* bounding_box_pixels =
-        new screenai::BoundingBoxPixels();
-    bounding_box_pixels->set_top(node.relative_bounds.bounds.y());
-    bounding_box_pixels->set_left(node.relative_bounds.bounds.x());
-    bounding_box_pixels->set_bottom(node.relative_bounds.bounds.bottom());
-    bounding_box_pixels->set_right(node.relative_bounds.bounds.right());
-    uie.set_allocated_bounding_box_pixels(bounding_box_pixels);
-
-    view_hierarchy.add_ui_elements()->Swap(&uie);
-  }
-
-  return view_hierarchy.SerializeAsString();
+  return proto.SerializeAsString();
 }
 
 const std::map<std::string, ax::mojom::Role>&

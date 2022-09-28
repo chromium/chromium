@@ -28,6 +28,6 @@ source_set("proto_convertors") {
     ":proto",
     "//base",
     "//components/services/screen_ai/public/mojom",
-    "//ui/accessibility:ax_base",
+    "//ui/accessibility",
   ]
 }
