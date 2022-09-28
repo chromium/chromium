@@ -19,8 +19,8 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_apitest_base.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -36,8 +36,6 @@
 #include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_main_parts.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/test/test_api.h"
@@ -230,13 +228,13 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSessionNoAccounts) {
 IN_PROC_BROWSER_TEST_F(LoginApitest, ExitCurrentSession) {
   SetUpDeviceLocalAccountPolicy();
   SetTestCustomArg(kData);
-  content::WindowedNotificationObserver termination_waiter(
-      chrome::NOTIFICATION_APP_TERMINATING,
-      content::NotificationService::AllSources());
 
+  base::RunLoop exit_waiter;
+  auto subscription =
+      browser_shutdown::AddAppTerminatingCallback(exit_waiter.QuitClosure());
   SetUpLoginScreenExtensionAndRunTest(kExitCurrentSession,
                                       /*assert_test_succeed=*/false);
-  termination_waiter.Wait();
+  exit_waiter.Run();
 
   PrefService* local_state = g_browser_process->local_state();
   EXPECT_EQ(kData, local_state->GetString(
