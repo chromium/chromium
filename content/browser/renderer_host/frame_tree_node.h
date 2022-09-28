@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
@@ -334,10 +335,13 @@ class CONTENT_EXPORT FrameTreeNode {
   void CreatedNavigationRequest(
       std::unique_ptr<NavigationRequest> navigation_request);
 
-  // Resets the current navigation request. If |keep_state| is true, any state
-  // created by the NavigationRequest (e.g. speculative RenderFrameHost,
-  // loading state) will not be reset by the function.
-  void ResetNavigationRequest(bool keep_state);
+  // Resets the current navigation request and any state created by it,
+  // including the speculative RenderFrameHost.
+  void ResetNavigationRequest(NavigationDiscardReason reason);
+
+  // Resets the current navigation request, but keeping state created by the
+  // NavigationRequest (e.g. speculative RenderFrameHost, loading state).
+  void ResetNavigationRequestButKeepState();
 
   // A RenderFrameHost in this node started loading.
   // |should_show_loading_ui| indicates whether this navigation should be

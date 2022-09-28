@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
+#include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/navigation_controller.h"
@@ -195,7 +196,8 @@ class CONTENT_EXPORT Navigator {
       std::unique_ptr<NavigationRequest> navigation_request);
 
   // Cancel a NavigationRequest for |frame_tree_node|.
-  void CancelNavigation(FrameTreeNode* frame_tree_node);
+  void CancelNavigation(FrameTreeNode* frame_tree_node,
+                        NavigationDiscardReason reason);
 
   // Called to record the time it took to execute the beforeunload hook for the
   // current navigation. See RenderFrameHostImpl::SendBeforeUnload() for details

@@ -8316,7 +8316,8 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
         frame_tree_node_->navigation_request()->IsNavigationStarted()) {
       frame_tree_node_->navigation_request()->set_net_error(net::ERR_ABORTED);
     }
-    frame_tree_node_->ResetNavigationRequest(false);
+    frame_tree_node_->ResetNavigationRequest(
+        NavigationDiscardReason::kCancelled);
   }
 
   // In renderer-initiated navigations, don't check for beforeunload in the
@@ -8635,8 +8636,17 @@ void RenderFrameHostImpl::ResetNavigationsForPendingDeletion() {
   for (auto& child : children_)
     child->current_frame_host()->ResetNavigationsForPendingDeletion();
   ResetNavigationRequests();
-  frame_tree_node_->ResetNavigationRequest(false);
-  frame_tree_node_->render_manager()->CleanUpNavigation();
+  // TODO(https://crbug.com/1220337): This has an interesting interaction with
+  // the experimental implementations of navigation queueing: if the speculative
+  // RenderFrameHost is in pending commit when a new navigation tries to start,
+  // the new navigation attempt is queued. However, once the navigation in the
+  // speculative RenderFrameHost commits, it swaps out the old frame which
+  // causes `StartPendingDeletionOnrSubtree()` which calls this method which
+  // clobbers the navigation request that was specifically queueing...
+  frame_tree_node_->ResetNavigationRequest(
+      NavigationDiscardReason::kWillRemoveFrame);
+  frame_tree_node_->render_manager()->CleanUpNavigation(
+      NavigationDiscardReason::kWillRemoveFrame);
 }
 
 void RenderFrameHostImpl::OnUnloadTimeout() {

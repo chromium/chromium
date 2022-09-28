@@ -104,7 +104,8 @@ void PrerenderCommitDeferringCondition::DidFinishNavigation(
   //
   // The old navigation might not yet have cleaned up yet, so try that
   // first.
-  prerender_frame_tree_node->render_manager()->MaybeCleanUpNavigation();
+  prerender_frame_tree_node->render_manager()->MaybeCleanUpNavigation(
+      NavigationDiscardReason::kCancelled);
   DCHECK(!prerender_frame_tree_node->HasNavigation());
 
   if (done_closure_) {

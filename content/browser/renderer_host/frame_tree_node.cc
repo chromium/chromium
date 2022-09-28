@@ -596,7 +596,7 @@ void FrameTreeNode::CreatedNavigationRequest(
       // Mark the old request as aborted.
       navigation_request_->set_net_error(net::ERR_ABORTED);
     }
-    ResetNavigationRequest(true);
+    ResetNavigationRequestButKeepState();
   }
 
   navigation_request_ = std::move(navigation_request);
@@ -612,20 +612,24 @@ void FrameTreeNode::CreatedNavigationRequest(
   DidStartLoading(to_different_document, was_previously_loading);
 }
 
-void FrameTreeNode::ResetNavigationRequest(bool keep_state) {
+void FrameTreeNode::ResetNavigationRequest(NavigationDiscardReason reason) {
+  if (!navigation_request_)
+    return;
+
+  ResetNavigationRequestButKeepState();
+
+  // The RenderFrameHostManager should clean up any speculative RenderFrameHost
+  // it created for the navigation. Also register that the load stopped.
+  DidStopLoading();
+  render_manager_.CleanUpNavigation(reason);
+}
+
+void FrameTreeNode::ResetNavigationRequestButKeepState() {
   if (!navigation_request_)
     return;
 
   devtools_instrumentation::OnResetNavigationRequest(navigation_request_.get());
   navigation_request_.reset();
-
-  if (keep_state)
-    return;
-
-  // The RenderFrameHostManager should clean up any speculative RenderFrameHost
-  // it created for the navigation. Also register that the load stopped.
-  DidStopLoading();
-  render_manager_.CleanUpNavigation();
 }
 
 void FrameTreeNode::DidStartLoading(bool should_show_loading_ui,
@@ -687,7 +691,7 @@ void FrameTreeNode::DidChangeLoadProgress(double load_progress) {
 bool FrameTreeNode::StopLoading() {
   if (navigation_request_ && navigation_request_->IsNavigationStarted())
     navigation_request_->set_net_error(net::ERR_ABORTED);
-  ResetNavigationRequest(false);
+  ResetNavigationRequest(NavigationDiscardReason::kCancelled);
 
   if (!IsMainFrame())
     return true;
@@ -723,8 +727,9 @@ void FrameTreeNode::BeforeUnloadCanceled() {
   // We also reset navigation request only when this navigation request was
   // responsible for this dialog, as a new navigation request might cancel
   // existing unrelated dialog.
-  if (navigation_request_ && navigation_request_->IsWaitingForBeforeUnload())
-    ResetNavigationRequest(false);
+  if (navigation_request_ && navigation_request_->IsWaitingForBeforeUnload()) {
+    ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+  }
 }
 
 bool FrameTreeNode::NotifyUserActivation(

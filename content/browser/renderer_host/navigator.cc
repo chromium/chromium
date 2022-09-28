@@ -934,7 +934,7 @@ void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,
   // after the navigation started. The last user input should be respected, and
   // the navigation cancelled anyway.
   if (!proceed) {
-    CancelNavigation(frame_tree_node);
+    CancelNavigation(frame_tree_node, NavigationDiscardReason::kCancelled);
     return;
   }
 
@@ -1000,7 +1000,8 @@ void Navigator::OnBeginNavigation(
           .is_history_navigation_in_new_child_frame) {
     // Preemptively clear this local pointer before deleting the request.
     ongoing_navigation_request = nullptr;
-    frame_tree_node->ResetNavigationRequest(false);
+    frame_tree_node->ResetNavigationRequest(
+        NavigationDiscardReason::kNewNavigation);
   }
 
   // Verify this navigation has precedence.
@@ -1089,10 +1090,11 @@ void Navigator::RestartNavigationAsCrossDocument(
   // See https://crbug.com/770157.
 }
 
-void Navigator::CancelNavigation(FrameTreeNode* frame_tree_node) {
+void Navigator::CancelNavigation(FrameTreeNode* frame_tree_node,
+                                 NavigationDiscardReason reason) {
   if (frame_tree_node->navigation_request())
     frame_tree_node->navigation_request()->set_net_error(net::ERR_ABORTED);
-  frame_tree_node->ResetNavigationRequest(false);
+  frame_tree_node->ResetNavigationRequest(reason);
   if (frame_tree_node->IsMainFrame())
     navigation_data_.reset();
 }

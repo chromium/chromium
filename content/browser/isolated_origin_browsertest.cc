@@ -3726,7 +3726,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Cancel the hung request and commit a real navigation to an isolated
   // origin. This should now end up in the ServiceWorker's process.
-  web_contents()->GetPrimaryFrameTree().root()->ResetNavigationRequest(false);
+  web_contents()->GetPrimaryFrameTree().root()->ResetNavigationRequest(
+      NavigationDiscardReason::kCancelled);
   GURL isolated_url(
       embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), isolated_url));

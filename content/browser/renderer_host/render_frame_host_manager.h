@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
+#include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/renderer_host/stored_page.h"
@@ -365,16 +366,17 @@ class CONTENT_EXPORT RenderFrameHostManager {
                                                  std::string* reason = nullptr);
 
   // Clean up any state for any ongoing navigation.
-  void CleanUpNavigation();
+  void CleanUpNavigation(NavigationDiscardReason reason);
 
   // Determines whether any active navigations are associated with
   // |speculative_render_frame_host_| and if not, discards it.
-  void MaybeCleanUpNavigation();
+  void MaybeCleanUpNavigation(NavigationDiscardReason reason);
 
   // Clears the speculative RFH when a navigation is cancelled (for example, by
   // being replaced by a new navigation), returning ownership of the
   // `RenderFrameHost` to the caller for disposal.
-  std::unique_ptr<RenderFrameHostImpl> UnsetSpeculativeRenderFrameHost();
+  std::unique_ptr<RenderFrameHostImpl> UnsetSpeculativeRenderFrameHost(
+      NavigationDiscardReason reason);
 
   // Used for FrameTreeNode teardown. This releases any pending views from the
   // speculative RFH (if any) to its respective RenderProcessHost before

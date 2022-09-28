@@ -2760,7 +2760,8 @@ void NavigationRequest::OnRequestRedirected(
     // AwWebContents sees the new URL and thus passes that URL to onPageFinished
     // (rather than passing the old URL).
     UpdateStateFollowingRedirect(GURL(redirect_info.new_referrer));
-    frame_tree_node_->ResetNavigationRequest(false);
+    frame_tree_node_->ResetNavigationRequest(
+        NavigationDiscardReason::kCancelled);
     return;
   }
 #endif
@@ -3812,7 +3813,8 @@ void NavigationRequest::OnResponseStarted(
              ->ShouldAllowRendererInitiatedCrossProcessNavigation(
                  frame_tree_node_->IsOutermostMainFrame())) {
       net_error_ = net::ERR_ABORTED;
-      frame_tree_node_->ResetNavigationRequest(false);
+      frame_tree_node_->ResetNavigationRequest(
+          NavigationDiscardReason::kCancelled);
       return;
     }
   }
@@ -5756,7 +5758,8 @@ void NavigationRequest::OnRendererRequestedNavigationCancellation() {
   // live anymore, because the navigation can't commit in a crashed renderer.
   if (!IsWaitingToCommit()) {
     // The cancellation happens before READY_TO_COMMIT.
-    frame_tree_node_->navigator().CancelNavigation(frame_tree_node_);
+    frame_tree_node_->navigator().CancelNavigation(
+        frame_tree_node_, NavigationDiscardReason::kCancelled);
   } else if (render_frame_host_ ==
                  frame_tree_node_->render_manager()->current_frame_host() ||
              !render_frame_host_->IsRenderFrameLive()) {
@@ -5771,7 +5774,8 @@ void NavigationRequest::OnRendererRequestedNavigationCancellation() {
     // Changing it to no longer early return breaks a bunch of other code that
     // runs in `CommitPendingIfNecessary()` that expects `DidStopLoading()`
     // won't be called if `FrameTreeNode::navigation_request()` is null...
-    frame_tree_node->render_manager()->MaybeCleanUpNavigation();
+    frame_tree_node->render_manager()->MaybeCleanUpNavigation(
+        NavigationDiscardReason::kCancelled);
   }
 
   // Do not add code after this, NavigationRequest might have been destroyed.
@@ -7824,7 +7828,8 @@ bool NavigationRequest::MaybeCancelFailedNavigation() {
       // <webview> guests suppress net::ERR_BLOCKED_BY_CLIENT.
       (net::ERR_BLOCKED_BY_CLIENT == net_error_ &&
        silently_ignore_blocked_by_client_)) {
-    frame_tree_node_->ResetNavigationRequest(false);
+    frame_tree_node_->ResetNavigationRequest(
+        NavigationDiscardReason::kCancelled);
     return true;
   }
 
@@ -7839,7 +7844,8 @@ bool NavigationRequest::MaybeCancelFailedNavigation() {
   if (frame_tree_node()->frame_owner_element_type() ==
       blink::FrameOwnerElementType::kObject) {
     RenderFallbackContentForObjectTag();
-    frame_tree_node_->ResetNavigationRequest(false);
+    frame_tree_node_->ResetNavigationRequest(
+        NavigationDiscardReason::kCancelled);
     return true;
   }
 

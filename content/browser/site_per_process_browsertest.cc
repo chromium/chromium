@@ -8383,7 +8383,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Cancel the pending main frame navigation, and verify that the subframe can
   // still communicate with the (old) main frame.
-  root->navigator().CancelNavigation(root);
+  root->navigator().CancelNavigation(root, NavigationDiscardReason::kCancelled);
   EXPECT_FALSE(root->render_manager()->speculative_frame_host());
 
   EXPECT_EQ("root-ping-reply",
@@ -8449,7 +8449,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Cancel the pending main frame navigation, and verify that the subframe can
   // still communicate with the (old) main frame.
-  root->navigator().CancelNavigation(root);
+  root->navigator().CancelNavigation(root, NavigationDiscardReason::kCancelled);
   EXPECT_FALSE(root->render_manager()->speculative_frame_host());
 
   EXPECT_EQ("opener-ping-reply",
@@ -11875,7 +11875,7 @@ IN_PROC_BROWSER_TEST_P(
   // b.com renderer process exits cleanly without a crash.  In
   // https://crbug.com/794625, the crash was caused by trying to recreate the
   // reused proxy, which had been incorrectly set as non-live.
-  popup_root->ResetNavigationRequest(false);
+  popup_root->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
   b_process_observer.Wait();
   EXPECT_TRUE(b_process_observer.did_exit_normally());
 }

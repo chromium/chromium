@@ -593,7 +593,8 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
   }
 
   FrameTreeNode* outer_root_node = owner_render_frame_host_->frame_tree_node();
-  outer_root_node->navigator().CancelNavigation(outer_root_node);
+  outer_root_node->navigator().CancelNavigation(
+      outer_root_node, NavigationDiscardReason::kCommittedNavigation);
 
   DCHECK(!is_closing_) << "Portal should not be shutting down when contents "
                           "ownership is yielded";
