@@ -4,6 +4,8 @@
 
 #include "ui/gfx/color_conversions.h"
 
+#include "skia/ext/skcolorspace_primaries.h"
+#include "skia/ext/skcolorspace_trfn.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/color_space.h"
@@ -30,6 +32,12 @@ skcms_Matrix3x3* getXYZD50tosSRGBLinearMatrix() {
   static skcms_Matrix3x3 xyzd50_to_srgb_linear;
   skcms_Matrix3x3_invert(&SkNamedGamut::kSRGB, &xyzd50_to_srgb_linear);
   return &xyzd50_to_srgb_linear;
+}
+
+skcms_Matrix3x3* getProPhotoRGBtoXYZD50Matrix() {
+  static skcms_Matrix3x3 lin_proPhoto_to_XYZ_D50;
+  SkNamedPrimariesExt::kProPhotoRGB.toXYZD50(&lin_proPhoto_to_XYZ_D50);
+  return &lin_proPhoto_to_XYZ_D50;
 }
 
 skcms_Matrix3x3* getkXYZD65tosRGBMatrix() {
@@ -84,6 +92,15 @@ std::tuple<float, float, float> ApplyTransferFnsRGB(float r, float g, float b) {
       skcms_TransferFunction_eval(&SkNamedTransferFn::kSRGB, b));
 }
 
+std::tuple<float, float, float> ApplyTransferFnProPhoto(float r,
+                                                        float g,
+                                                        float b) {
+  return std::make_tuple(
+      skcms_TransferFunction_eval(&SkNamedTransferFnExt::kProPhotoRGB, r),
+      skcms_TransferFunction_eval(&SkNamedTransferFnExt::kProPhotoRGB, g),
+      skcms_TransferFunction_eval(&SkNamedTransferFnExt::kProPhotoRGB, b));
+}
+
 }  // namespace
 
 std::tuple<float, float, float> LchToLab(float l,
@@ -136,6 +153,15 @@ std::tuple<float, float, float> XYZD50tosRGBLinear(float x, float y, float z) {
                          rgb_result.vals[2]);
 }
 
+std::tuple<float, float, float> ProPhotoToXYZD50(float r, float g, float b) {
+  auto [r_, g_, b_] = ApplyTransferFnProPhoto(r, g, b);
+  skcms_Vector3 rgb_input{{r_, g_, b_}};
+  skcms_Vector3 xyz_output =
+      skcms_Matrix3x3_apply(getProPhotoRGBtoXYZD50Matrix(), &rgb_input);
+  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
+                         xyz_output.vals[2]);
+}
+
 std::tuple<float, float, float> DisplayP3ToXYZD50(float r, float g, float b) {
   auto [r_, g_, b_] = ApplyTransferFnsRGB(r, g, b);
   skcms_Vector3 rgb_input{{r_, g_, b_}};
@@ -162,6 +188,11 @@ SkColor4f XYZD65ToSkColor4f(float x, float y, float z, float alpha) {
 
 SkColor4f LabToSkColor4f(float l, float a, float b, float alpha) {
   auto [x, y, z] = LabToXYZD50(l, a, b);
+  return XYZD50ToSkColor4f(x, y, z, alpha);
+}
+
+SkColor4f ProPhotoToSkColor4f(float r, float g, float b, float alpha) {
+  auto [x, y, z] = ProPhotoToXYZD50(r, g, b);
   return XYZD50ToSkColor4f(x, y, z, alpha);
 }
 

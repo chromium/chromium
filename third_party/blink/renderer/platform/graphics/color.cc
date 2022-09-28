@@ -407,6 +407,8 @@ SkColor4f Color::toSkColor4f() const {
           return gfx::XYZD50ToSkColor4f(param0_, param1_, param2_, alpha_);
         case ColorFunctionSpace::kXYZD65:
           return gfx::XYZD65ToSkColor4f(param0_, param1_, param2_, alpha_);
+        case ColorFunctionSpace::kProPhotoRGB:
+          return gfx::ProPhotoToSkColor4f(param0_, param1_, param2_, alpha_);
         case ColorFunctionSpace::kSRGBLinear:
           return gfx::SRGBLinearToSkColor4f(param0_, param1_, param2_, alpha_);
         default:

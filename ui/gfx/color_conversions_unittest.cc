@@ -442,4 +442,81 @@ TEST(ColorConversions, DisplayP3ToSkColor4f) {
         << ' ' << color.fG << ' ' << color.fB;
   }
 }
+
+TEST(ColorConversions, ProPhotoToXYZD50) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=pink&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{0.9999999886663737f, 1.0000000327777285f, 0.9999999636791804f},
+       {0.9642956660812443f, 1.0000000361162846f,
+        0.8251045485672053f}},  // white
+      {{0.5402807890930262f, 0.9275948938161531f, 0.30456598218387576f},
+       {0.3851514688337912f, 0.7168870538238823f,
+        0.09708128566574631f}},  // lime
+      {{0.4202512875251534f, 0.20537448341387265f, 0.14018716364460992f},
+       {0.1763053229982614f, 0.10171766135467991f,
+        0.024020600356509242f}},  // brown
+      {{0.3415199027593793f, 0.13530888280806527f, 0.3980101298732242f},
+       {0.1250143560558979f, 0.0611129099463755f,
+        0.15715146562446167f}},  // purple
+      {{0.8755612852965058f, 0.7357597566543541f, 0.7499575746802042f},
+       {0.7245316165924385f, 0.6365774485679174f,
+        0.4915583325045292f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_r, input_g, input_b] = color_pair.input;
+    auto [expected_x, expected_y, expected_z] = color_pair.expected;
+    auto [output_x, output_y, output_z] =
+        ProPhotoToXYZD50(input_r, input_g, input_b);
+    EXPECT_NEAR(output_x, expected_x, 0.001f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+    EXPECT_NEAR(output_y, expected_y, 0.001f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+    EXPECT_NEAR(output_z, expected_z, 0.001f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+  }
+}
+
+TEST(ColorConversions, ProPhotoToSkColor4f) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=pink&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{0.9999999886663737f, 1.0000000327777285f, 0.9999999636791804f},
+       {1.0f, 1.0f, 1.0f}},  // white
+      {{0.5402807890930262f, 0.9275948938161531f, 0.30456598218387576f},
+       {0.0f, 1.0f, 0.0f}},  // lime
+      {{0.4202512875251534f, 0.20537448341387265f, 0.14018716364460992f},
+       {0.6470588235294118f, 0.16470588235294117f,
+        0.16470588235294117f}},  // brown
+      {{0.3415199027593793f, 0.13530888280806527f, 0.3980101298732242f},
+       {0.5019607843137255f, 0.0f, 0.5019607843137255f}},  // purple
+      {{0.8755612852965058f, 0.7357597566543541f, 0.7499575746802042f},
+       {1.0f, 0.7529411764705882f, 0.796078431372549f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_r, input_g, input_b] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    SkColor4f color = ProPhotoToSkColor4f(input_r, input_g, input_b, 1.0f);
+    EXPECT_NEAR(color.fR, expected_r, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fG, expected_g, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fB, expected_b, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+  }
+}
 }  // namespace gfx
