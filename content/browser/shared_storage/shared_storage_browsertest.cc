@@ -463,10 +463,12 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
             ->current_frame_host()
             ->GetPage()
             .fenced_frame_urls_map();
+    FencedFrameURLMappingTestPeer fenced_frame_url_mapping_test_peer(
+        &fenced_frame_url_mapping);
 
     SharedStorageReportingMap reporting_map;
 
-    fenced_frame_url_mapping.GetSharedStorageReportingMapForTesting(
+    fenced_frame_url_mapping_test_peer.GetSharedStorageReportingMap(
         GURL(urn_uuid), &reporting_map);
 
     return reporting_map;
@@ -2140,8 +2142,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
 
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  FencedFrameURLMappingTestPeer url_mapping_test_peer(&url_mapping);
 
-  EXPECT_TRUE(url_mapping.HasObserverForTesting(GURL(urn_uuid), request));
+  EXPECT_TRUE(url_mapping_test_peer.HasObserver(GURL(urn_uuid), request));
 
   // Execute the deferred messages. This should finish the url mapping and
   // resume the deferred navigation.

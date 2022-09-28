@@ -2347,6 +2347,7 @@ IN_PROC_BROWSER_TEST_P(
 
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  FencedFrameURLMappingTestPeer url_mapping_test_peer(&url_mapping);
 
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&url_mapping);
   const GURL mapped_url =
@@ -2371,7 +2372,7 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(request->is_deferred_on_fenced_frame_url_mapping_for_testing());
   }
 
-  EXPECT_TRUE(url_mapping.HasObserverForTesting(urn_uuid, request));
+  EXPECT_TRUE(url_mapping_test_peer.HasObserver(urn_uuid, request));
 
   auto budget_metadata =
       fenced_frame_root_node->FindSharedStorageBudgetMetadata();
@@ -2383,7 +2384,7 @@ IN_PROC_BROWSER_TEST_P(
       /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
       /*budget_to_charge=*/2.0);
 
-  EXPECT_FALSE(url_mapping.HasObserverForTesting(urn_uuid, request));
+  EXPECT_FALSE(url_mapping_test_peer.HasObserver(urn_uuid, request));
 
   observer.Wait();
 
@@ -2425,6 +2426,7 @@ IN_PROC_BROWSER_TEST_P(
 
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  FencedFrameURLMappingTestPeer url_mapping_test_peer(&url_mapping);
 
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&url_mapping);
   const GURL mapped_url =
@@ -2449,7 +2451,7 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(request->is_deferred_on_fenced_frame_url_mapping_for_testing());
   }
 
-  EXPECT_TRUE(url_mapping.HasObserverForTesting(urn_uuid, request));
+  EXPECT_TRUE(url_mapping_test_peer.HasObserver(urn_uuid, request));
 
   // Trigger the mapping to resume the deferred navigation.
   SimulateSharedStorageURNMappingComplete(
@@ -2457,7 +2459,7 @@ IN_PROC_BROWSER_TEST_P(
       /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
       /*budget_to_charge=*/2.0);
 
-  EXPECT_FALSE(url_mapping.HasObserverForTesting(urn_uuid, request));
+  EXPECT_FALSE(url_mapping_test_peer.HasObserver(urn_uuid, request));
 
   // In NavigationRequest::OnResponseStarted(), for fenced frame, it manually
   // fails the navigation with net::ERR_BLOCKED_BY_RESPONSE.
@@ -2494,6 +2496,7 @@ IN_PROC_BROWSER_TEST_P(
 
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  FencedFrameURLMappingTestPeer url_mapping_test_peer(&url_mapping);
 
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&url_mapping);
   const GURL mapped_url =
@@ -2518,7 +2521,7 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(request->is_deferred_on_fenced_frame_url_mapping_for_testing());
   }
 
-  EXPECT_TRUE(url_mapping.HasObserverForTesting(urn_uuid, request));
+  EXPECT_TRUE(url_mapping_test_peer.HasObserver(urn_uuid, request));
 
   // Navigate to a new URL. The previous navigation should have been canceled.
   // And `request` should have been removed from `url_mapping`.
@@ -2527,7 +2530,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(new_url.spec(),
             EvalJs(root, JsReplace("f.src = $1;", new_url.spec())));
 
-  EXPECT_FALSE(url_mapping.HasObserverForTesting(urn_uuid, request));
+  EXPECT_FALSE(url_mapping_test_peer.HasObserver(urn_uuid, request));
 
   observer.Wait();
 

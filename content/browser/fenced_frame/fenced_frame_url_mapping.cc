@@ -389,31 +389,6 @@ void FencedFrameURLMapping::SubstituteMappedURL(
   it->second = std::move(info);
 }
 
-bool FencedFrameURLMapping::HasObserverForTesting(
-    const GURL& urn_uuid,
-    MappingResultObserver* observer) {
-  return IsPendingMapped(urn_uuid) &&
-         pending_urn_uuid_to_url_map_.at(urn_uuid).count(observer);
-}
-
-void FencedFrameURLMapping::GetSharedStorageReportingMapForTesting(
-    const GURL& urn_uuid,
-    SharedStorageReportingMap* out_reporting_map) {
-  DCHECK(out_reporting_map);
-
-  auto urn_it = urn_uuid_to_url_map_.find(urn_uuid);
-  DCHECK(urn_it != urn_uuid_to_url_map_.end());
-
-  if (urn_it->second.reporting_metadata.metadata.empty())
-    return;
-
-  auto data_it = urn_it->second.reporting_metadata.metadata.find(
-      blink::mojom::ReportingDestination::kSharedStorageSelectUrl);
-
-  if (data_it != urn_it->second.reporting_metadata.metadata.end())
-    *out_reporting_map = data_it->second;
-}
-
 bool FencedFrameURLMapping::IsMapped(const GURL& urn_uuid) const {
   return urn_uuid_to_url_map_.find(urn_uuid) != urn_uuid_to_url_map_.end();
 }

@@ -71,6 +71,19 @@ class FencedFrameURLMappingTestPeer {
       FencedFrameURLMapping* fenced_frame_url_mapping)
       : fenced_frame_url_mapping_(fenced_frame_url_mapping) {}
 
+  bool HasObserver(const GURL& urn_uuid,
+                   FencedFrameURLMapping::MappingResultObserver* observer);
+
+  // Returns as an out parameter the `ReportingMetadata`'s map for value
+  // `"shared-storage-select-url"` associated with `urn_uuid`, or leaves the out
+  // parameter unchanged if there's no shared storage reporting metadata
+  // associated (i.e. `urn_uuid` did not originate from shared storage or else
+  // there was no metadata passed from JavaScript). Precondition: `urn_uuid`
+  // exists in `urn_uuid_to_url_map_`.
+  void GetSharedStorageReportingMap(
+      const GURL& urn_uuid,
+      SharedStorageReportingMap* out_reporting_map);
+
   // Insert urn mappings until it reaches the limit.
   void FillMap(const GURL& url);
 

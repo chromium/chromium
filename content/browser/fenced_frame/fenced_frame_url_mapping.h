@@ -313,19 +313,6 @@ class CONTENT_EXPORT FencedFrameURLMapping {
       const GURL& urn_uuid,
       const std::vector<std::pair<std::string, std::string>>& substitutions);
 
-  bool HasObserverForTesting(const GURL& urn_uuid,
-                             MappingResultObserver* observer);
-
-  // Returns as an out parameter the `ReportingMetadata`'s map for value
-  // `"shared-storage-select-url"` associated with `urn_uuid`, or leaves the out
-  // parameter unchanged if there's no shared storage reporting metadata
-  // associated (i.e. `urn_uuid` did not originate from shared storage or else
-  // there was no metadata passed from JavaScript). Precondition: `urn_uuid`
-  // exists in `urn_uuid_to_url_map_`.
-  void GetSharedStorageReportingMapForTesting(
-      const GURL& urn_uuid,
-      SharedStorageReportingMap* out_reporting_map);
-
  private:
   friend class FencedFrameURLMappingTestPeer;
 
