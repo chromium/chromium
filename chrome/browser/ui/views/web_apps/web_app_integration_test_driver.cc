@@ -167,6 +167,8 @@ Site InstallableSiteToSite(InstallableSite site) {
       return Site::kStandaloneNestedA;
     case InstallableSite::kStandaloneNestedB:
       return Site::kStandaloneNestedB;
+    case InstallableSite::kStandaloneNotStartUrl:
+      return Site::kStandaloneNotStartUrl;
     case InstallableSite::kWco:
       return Site::kWco;
     case InstallableSite::kIsolated:
@@ -285,6 +287,14 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .app_name = "Not Installed",
       .wco_not_enabled_title = u"Not Installed",
       .icon_color = SK_ColorBLUE}},
+    {Site::kStandaloneNotStartUrl,
+     {.relative_start_url =
+          "/webapps_integration/standalone/not_start_url/basic.html",
+      .relative_manifest_id =
+          "webapps_integration/standalone/not_start_url/basic.html",
+      .app_name = "Not Start URL",
+      .wco_not_enabled_title = u"Not Start URL",
+      .icon_color = SK_ColorGREEN}},
 };
 
 struct DisplayConfig {
