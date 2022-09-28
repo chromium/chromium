@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
  * ChromeVerificationResultStore stores relationships to SharedPreferences which are therefore
  * persisted across Chrome launches.
  */

@@ -174,7 +174,10 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     public void loadAsync(IObjectWrapper appContextWrapper, IObjectWrapper remoteContextWrapper,
             IObjectWrapper loadedCallbackWrapper) {
         StrictModeWorkaround.apply();
-        init(appContextWrapper, remoteContextWrapper);
+
+        Context appContext = ObjectWrapper.unwrap(appContextWrapper, Context.class);
+        Context remoteContext = ObjectWrapper.unwrap(remoteContextWrapper, Context.class);
+        init(appContext, remoteContext);
 
         final ValueCallback<Boolean> loadedCallback = (ValueCallback<Boolean>) ObjectWrapper.unwrap(
                 loadedCallbackWrapper, ValueCallback.class);
@@ -186,7 +189,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 new BrowserStartupController.StartupCallback() {
                     @Override
                     public void onSuccess() {
-                        onNativeLoaded();
+                        onNativeLoaded(appContext);
                         loadedCallback.onReceiveValue(true);
                     }
                     @Override
@@ -199,19 +202,22 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     @Override
     public void loadSync(IObjectWrapper appContextWrapper, IObjectWrapper remoteContextWrapper) {
         StrictModeWorkaround.apply();
-        init(appContextWrapper, remoteContextWrapper);
+
+        Context appContext = ObjectWrapper.unwrap(appContextWrapper, Context.class);
+        Context remoteContext = ObjectWrapper.unwrap(remoteContextWrapper, Context.class);
+        init(appContext, remoteContext);
 
         BrowserStartupController.getInstance().startBrowserProcessesSync(
                 LibraryProcessType.PROCESS_WEBLAYER,
                 /* singleProcess*/ false);
 
-        onNativeLoaded();
+        onNativeLoaded(appContext);
         // WARNING: loadAsync() may be in progress, and may call methods that this does as well.
         // Ensure any method calls from this guard against the possibility of being called multiple
         // times.
     }
 
-    private void onNativeLoaded() {
+    private void onNativeLoaded(Context appContext) {
         // This may be called multiple times, ensure processing only happens once.
         if (mOnNativeLoadedCalled) return;
         mOnNativeLoadedCalled = true;
@@ -226,11 +232,13 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         // This issues JNI calls which require native code to be loaded.
         MetricsServiceClient.init();
 
+        WebLayerOriginVerificationScheduler.init(appContext.getPackageName(), appContext);
+
         assert mInited;
         WebLayerImplJni.get().setIsWebViewCompatMode(mIsWebViewCompatMode);
     }
 
-    private void init(IObjectWrapper appContextWrapper, IObjectWrapper remoteContextWrapper) {
+    private void init(Context appContext, Context remoteContext) {
         if (mInited) {
             return;
         }
@@ -240,7 +248,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_WEBLAYER);
 
-        Context remoteContext = ObjectWrapper.unwrap(remoteContextWrapper, Context.class);
         // The remote context will have a different class loader than WebLayerImpl here if we are in
         // WebView compat mode, since WebView compat mode creates it's own class loader. The class
         // loader from remoteContext will actually never be used, since
@@ -257,9 +264,9 @@ public final class WebLayerImpl extends IWebLayer.Stub {
             notifyWebViewRunningInProcess(remoteContext.getClassLoader());
         }
 
-        Context appContext = minimalInitForContext(
-                ObjectWrapper.unwrap(appContextWrapper, Context.class), remoteContext);
-        GmsBridge.getInstance().checkClientAppContext(appContext);
+        Context wrappedAppContext = minimalInitForContext(appContext, remoteContext);
+
+        GmsBridge.getInstance().checkClientAppContext(wrappedAppContext);
 
         // Load library in the background since it may be expensive.
         // TODO(crbug.com/1146438): Look into enabling relro sharing in browser process. It seems to
@@ -279,7 +286,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 // This disk read in the critical path is for development purposes only.
                 try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
                     File localCommandLineFile =
-                            new File(appContext.getFilesDir(), COMMAND_LINE_FILE);
+                            new File(wrappedAppContext.getFilesDir(), COMMAND_LINE_FILE);
                     if (localCommandLineFile.exists()) {
                         CommandLine.initFromFile(localCommandLineFile.getPath());
                     } else {
@@ -292,7 +299,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         }
 
         // Enable ATRace on debug OS or app builds. Requires commandline initialization.
-        int applicationFlags = appContext.getApplicationInfo().flags;
+        int applicationFlags = wrappedAppContext.getApplicationInfo().flags;
         boolean isAppDebuggable = (applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
         boolean isOsDebuggable = BuildInfo.isDebugAndroid();
         // Requires command-line flags.
@@ -314,8 +321,8 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
         BundleUtils.setIsBundle(ProductConfig.IS_BUNDLE);
 
-        setChildProcessCreationParams(appContext, packageInfo.packageName);
-        ChildProcessLauncherHelper.warmUp(appContext, true);
+        setChildProcessCreationParams(wrappedAppContext, packageInfo.packageName);
+        ChildProcessLauncherHelper.warmUp(wrappedAppContext, true);
 
         // Creating the Android shared preferences object causes I/O.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {

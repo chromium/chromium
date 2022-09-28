@@ -769,6 +769,27 @@ public final class TabImpl extends ITab.Stub {
     }
 
     @Override
+    public void executeScriptIfAllowed(
+            String script, boolean useSeparateIsolate, IObjectWrapper callback) {
+        StrictModeWorkaround.apply();
+
+        WebLayerOriginVerificationScheduler originVerifier =
+                WebLayerOriginVerificationScheduler.getInstance();
+        String url = mWebContents.getVisibleUrl().getSpec();
+        originVerifier.verify(url, mProfile, (verified) -> {
+            // Make sure the page hasn't changed since we started verification.
+            if (!url.equals(mWebContents.getVisibleUrl().getSpec())) {
+                return;
+            }
+            if (verified) {
+                executeScript(script, useSeparateIsolate, callback);
+            } else {
+                // TODO(swestphal): Propagate exception to calling api.
+            }
+        });
+    }
+
+    @Override
     public boolean setFindInPageCallbackClient(IFindInPageCallbackClient client) {
         StrictModeWorkaround.apply();
         if (client == null) {

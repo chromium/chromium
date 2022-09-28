@@ -26,6 +26,8 @@ found in the LICENSE file.
             </intent-filter>
         </activity>
 
+        <meta-data android:name="asset_statements" android:resource="@string/asset_statements" />
+
         <meta-data android:name="org.chromium.browserfragment.shell.BrowserProcessMode"
                    android:value="{{ browser_process_mode }}"/>
     </application>

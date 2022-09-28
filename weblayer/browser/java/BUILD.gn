@@ -179,7 +179,10 @@ android_library("java") {
     "org/chromium/weblayer_private/WebLayerImpl.java",
     "org/chromium/weblayer_private/WebLayerNotificationChannels.java",
     "org/chromium/weblayer_private/WebLayerNotificationWrapperBuilder.java",
+    "org/chromium/weblayer_private/WebLayerOriginVerificationScheduler.java",
+    "org/chromium/weblayer_private/WebLayerOriginVerifier.java",
     "org/chromium/weblayer_private/WebLayerTabModalPresenter.java",
+    "org/chromium/weblayer_private/WebLayerVerificationResultStore.java",
     "org/chromium/weblayer_private/WebMessageReplyProxyImpl.java",
     "org/chromium/weblayer_private/WebShareServiceFactory.java",
     "org/chromium/weblayer_private/WebappsHelper.java",
@@ -248,6 +251,7 @@ android_library("java") {
     "//components/content_settings/android:java",
     "//components/crash/android:handler_java",
     "//components/crash/android:java",
+    "//components/digital_asset_links/android:java",
     "//components/download/internal/background_service:internal_java",
     "//components/download/internal/common:internal_java",
     "//components/download/network:network_java",
@@ -431,23 +435,33 @@ robolectric_library("junit_test_support") {
 
 robolectric_binary("weblayer_junit_tests") {
   testonly = true
-  sources = [ "org/chromium/weblayer_private/payments/WebLayerPaymentRequestServiceTest.java" ]
+  sources = [
+    "org/chromium/weblayer_private/WebLayerOriginVerifierTest.java",
+    "org/chromium/weblayer_private/payments/WebLayerPaymentRequestServiceTest.java",
+  ]
   resources_package = "org.chromium.weblayer_private.test"
   deps = [
     ":java",
     ":junit_test_support",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/digital_asset_links:java",
+    "//components/digital_asset_links/android:java",
+    "//components/digital_asset_links/android:junit_test_support",
+    "//components/embedder_support/android:util_java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:junit_test_support",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
     "//components/security_state/core:security_state_enums_java",
     "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
     "//mojo/public/java:bindings_java",
     "//mojo/public/java:system_java",
     "//services/service_manager/public/java:service_manager_java",
     "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

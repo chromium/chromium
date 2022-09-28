@@ -11,6 +11,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -24,7 +25,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 
@@ -150,7 +150,7 @@ public abstract class OriginVerifier {
      * @param origin The postMessage origin the application is claiming to have. Can't be null.
      */
     public void start(@NonNull OriginVerificationListener listener,
-            @NonNull BrowserContextHandle browserContextHandle, @NonNull Origin origin) {
+            BrowserContextHandle browserContextHandle, @NonNull Origin origin) {
         ThreadUtils.assertOnUiThread();
         if (mListeners.containsKey(origin)) {
             // We already have an ongoing verification for that origin, just add the listener.
@@ -167,8 +167,7 @@ public abstract class OriginVerifier {
      * Performs the DAL-validation, do not call directly, call #start to register listeners for
      * receiving the results of the validation.
      */
-    public void validate(
-            @NonNull BrowserContextHandle browserContextHandle, @NonNull Origin origin) {
+    public void validate(BrowserContextHandle browserContextHandle, @NonNull Origin origin) {
         String scheme = origin.uri().getScheme();
         if (TextUtils.isEmpty(scheme)
                 || !UrlConstants.HTTPS_SCHEME.equals(scheme.toLowerCase(Locale.US))) {
@@ -193,9 +192,6 @@ public abstract class OriginVerifier {
                     UiThreadTaskTraits.DEFAULT, new VerifiedCallback(origin, true, null));
             return;
         }
-
-        // Early return for testing without native.
-        if (!BrowserStartupController.getInstance().isFullBrowserStarted()) return;
 
         if (mWebContents != null && mWebContents.isDestroyed()) mWebContents = null;
 
@@ -228,8 +224,9 @@ public abstract class OriginVerifier {
     }
 
     /** Called asynchronously by OriginVerifierJni.get().verifyOrigin. */
+    @VisibleForTesting
     @CalledByNative
-    private void onOriginVerificationResult(String originAsString, int result) {
+    public void onOriginVerificationResult(String originAsString, int result) {
         Origin origin = Origin.createOrThrow(originAsString);
         switch (result) {
             case RelationshipCheckResult.SUCCESS:
@@ -314,8 +311,18 @@ public abstract class OriginVerifier {
      * Initialization of the native OriginVerifier.
      */
     public long initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
+        // TODO(swestphal): Refactor native origin verifier to receive WebContent only when
+        // verifying to support having one OriginVerifier for several Tabs/BrowserFragments.
         return OriginVerifierJni.get().init(
                 OriginVerifier.this, mWebContents, browserContextHandle);
+    }
+
+    @VisibleForTesting
+    public int getNumListeners(Origin origin) {
+        if (mListeners.containsKey(origin)) {
+            return mListeners.get(origin).size();
+        }
+        return 0;
     }
 
     /**
@@ -339,8 +346,9 @@ public abstract class OriginVerifier {
      */
     public abstract void recordVerificationTimeMetrics(long duration, boolean online);
 
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(OriginVerifier caller, @Nullable WebContents webContents,
                 BrowserContextHandle browserContextHandle);
         boolean verifyOrigin(long nativeOriginVerifier, OriginVerifier caller, String packageName,

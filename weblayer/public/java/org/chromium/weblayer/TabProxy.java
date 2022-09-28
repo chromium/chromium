@@ -76,8 +76,7 @@ class TabProxy extends ITabProxy.Stub {
     @Override
     public void executeScript(String script, boolean useSeparateIsolate, IStringCallback callback) {
         mHandler.post(() -> {
-            // TODO(rayankans): Verify the tab's origin is 1P.
-            getTab().executeScript(script, useSeparateIsolate, (String result) -> {
+            getTab().executeScriptIfAllowed(script, useSeparateIsolate, (String result) -> {
                 try {
                     callback.onResult(result);
                 } catch (RemoteException e) {

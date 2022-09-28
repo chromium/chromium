@@ -344,6 +344,7 @@ script_test("weblayer_shell_wpt") {
 android_resources("browserfragment_shell_resources") {
   sources = [
     "browserfragment_shell_apk/res/layout/main.xml",
+    "browserfragment_shell_apk/res/values/strings.xml",
     "browserfragment_shell_apk/res/values/styles.xml",
   ]
 }

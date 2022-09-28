@@ -190,7 +190,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
      * validation. This cache is persisted across Chrome restarts.
      *
      * @param packageName The package name.
-     * @param signatureFingerprint The signature of the package.
+     * @param signatureFingerprints The signatures of the package.
      * @param origin The origin to verify.
      * @param relation The Digital Asset Links relation to verify for.
      */
@@ -257,8 +257,9 @@ public class ChromeOriginVerifier extends OriginVerifier {
         ChromeVerificationResultStore.getInstance().clearStoredRelationships();
     }
 
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(ChromeOriginVerifier caller, @Nullable WebContents webContents,
                 BrowserContextHandle browserContextHandle);
     }

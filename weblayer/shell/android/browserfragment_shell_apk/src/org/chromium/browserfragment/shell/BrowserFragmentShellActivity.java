@@ -148,6 +148,7 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
                                 "Navigation: url:" + navigation.getUri()
                                         + ", HTTP-StatusCode: " + navigation.getStatusCode()
                                         + ", samePage: " + navigation.isSameDocument());
+                        tab.executeScript("console.log('injected JS after 1P validation')", true);
                     }
 
                     @Override

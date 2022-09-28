@@ -26,9 +26,11 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -40,11 +42,15 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactoryImpl;
-import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierUnitTestSupport;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierJni;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.digital_asset_links.OriginVerifier;
+import org.chromium.components.digital_asset_links.OriginVerifierJni;
+import org.chromium.components.digital_asset_links.OriginVerifierUnitTestSupport;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 
@@ -75,6 +81,15 @@ public class ClientManagerTest {
     @Mock
     private ClientManager.InstalledAppProviderWrapper mInstalledAppProviderWrapper;
 
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
+    @Mock
+    private OriginVerifier.Natives mMockOriginVerifierJni;
+
+    @Mock
+    private ChromeOriginVerifier.Natives mMockChromeOriginVerifierJni;
+
     @Mock
     private Profile mProfile;
 
@@ -82,11 +97,18 @@ public class ClientManagerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        mJniMocker.mock(OriginVerifierJni.TEST_HOOKS, mMockOriginVerifierJni);
+
+        mJniMocker.mock(ChromeOriginVerifierJni.TEST_HOOKS, mMockChromeOriginVerifierJni);
+        Mockito.doAnswer(args -> { return 100L; })
+                .when(mMockChromeOriginVerifierJni)
+                .init(Mockito.any(), Mockito.any(), Mockito.any());
+
         Profile.setLastUsedProfileForTesting(mProfile);
 
         RequestThrottler.purgeAllEntriesForTesting();
 
-        ChromeOriginVerifierUnitTestSupport.registerPackageWithSignature(
+        OriginVerifierUnitTestSupport.registerPackageWithSignature(
                 shadowOf(ApplicationProvider.getApplicationContext().getPackageManager()),
                 PACKAGE_NAME, mUid);
 

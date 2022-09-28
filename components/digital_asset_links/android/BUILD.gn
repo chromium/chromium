@@ -23,6 +23,16 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
+robolectric_library("junit_test_support") {
+  sources = [ "java/src/org/chromium/components/digital_asset_links/OriginVerifierUnitTestSupport.java" ]
+  deps = [
+    ":java",
+    "//components/embedder_support/android:util_java",
+    "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/digital_asset_links/OriginVerifier.java",

@@ -69,8 +69,8 @@ public abstract class VerificationResultStore {
     }
 
     @VisibleForTesting
-    public abstract Set<String> getRelationships();
+    protected abstract Set<String> getRelationships();
 
     @VisibleForTesting
-    public abstract void setRelationships(Set<String> relationships);
+    protected abstract void setRelationships(Set<String> relationships);
 }

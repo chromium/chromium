@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(ChromeOriginVerifierTest.TEST_BATCH_NAME)
 public class ChromeOriginVerifierTest {
-    public static final String TEST_BATCH_NAME = "origin_verifier";
+    public static final String TEST_BATCH_NAME = "chrome_origin_verifier";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
