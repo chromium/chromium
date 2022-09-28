@@ -680,12 +680,13 @@ std::unique_ptr<StoredPage> RenderFrameHostManager::TakePrerenderedPage() {
 
 void RenderFrameHostManager::PrepareForCollectingPage(
     RenderFrameHostImpl* main_render_frame_host,
-    std::set<RenderViewHostImpl*>* render_view_hosts,
+    StoredPage::RenderViewHostImplSafeRefSet* render_view_hosts,
     BrowsingContextState::RenderFrameProxyHostMap* proxy_hosts) {
   TRACE_EVENT("navigation", "RenderFrameHostManager::PrepareForCollectingPage");
 
   // Prepare the main frame.
-  (*render_view_hosts).insert(main_render_frame_host->render_view_host());
+  render_view_hosts->insert(
+      main_render_frame_host->render_view_host()->GetSafeRef());
   // Prepare the proxies.
   SiteInstance* instance = main_render_frame_host->GetSiteInstance();
 
@@ -695,7 +696,7 @@ void RenderFrameHostManager::PrepareForCollectingPage(
     // new cross-process, cross-BrowsingInstance navigation, as well as any
     // restored proxies which are also in a different BrowsingInstance.
     if (instance->IsRelatedSiteInstance(it.second->GetSiteInstance())) {
-      (*render_view_hosts).insert(it.second->GetRenderViewHost());
+      render_view_hosts->insert(it.second->GetRenderViewHost()->GetSafeRef());
       // When BrowsingContextState is decoupled from the FrameTreeNode and
       // RenderFrameHostManager (legacy mode is disabled), proxies and
       // replication state will be stored in a separate BrowsingContextState,
@@ -730,7 +731,7 @@ std::unique_ptr<StoredPage> RenderFrameHostManager::CollectPage(
     std::unique_ptr<RenderFrameHostImpl> main_render_frame_host) {
   DCHECK(main_render_frame_host->is_main_frame());
 
-  std::set<RenderViewHostImpl*> render_view_hosts;
+  StoredPage::RenderViewHostImplSafeRefSet render_view_hosts;
   BrowsingContextState::RenderFrameProxyHostMap proxy_hosts;
 
   PrepareForCollectingPage(main_render_frame_host.get(), &render_view_hosts,
@@ -822,7 +823,7 @@ void RenderFrameHostManager::UnloadOldFrame(
       auto entry =
           std::make_unique<BackForwardCacheImpl::Entry>(std::move(stored_page));
       // Ensures RenderViewHosts are not reused while they are in the cache.
-      for (RenderViewHostImpl* rvh : entry->render_view_hosts()) {
+      for (const auto& rvh : entry->render_view_hosts()) {
         rvh->EnterBackForwardCache();
       }
       back_forward_cache.StoreEntry(std::move(entry));
@@ -936,7 +937,7 @@ void RenderFrameHostManager::RestorePage(
   TRACE_EVENT("navigation", "RenderFrameHostManager::RestorePage",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
   // Matched in CommitPending().
-  stored_page->render_frame_host->GetProcess()->AddPendingView();
+  stored_page->render_frame_host()->GetProcess()->AddPendingView();
 
   // speculative_render_frame_host_ and stored_page_to_restore_ will be
   // consumed during CommitPendingIfNecessary.
@@ -949,7 +950,7 @@ void RenderFrameHostManager::RestorePage(
   // should have never been created, and with prerender activation, it should
   // have been cleared out earlier.
   DCHECK(!speculative_render_frame_host_);
-  speculative_render_frame_host_ = std::move(stored_page->render_frame_host);
+  speculative_render_frame_host_ = stored_page->TakeRenderFrameHost();
   // Now |stored_page| is destroyed and thus does not monitor cookie changes any
   // more. This is okay as eviction would not happen from this point.
   stored_page_to_restore_ = std::move(stored_page);
@@ -3542,6 +3543,8 @@ void RenderFrameHostManager::CommitPending(
   // If a document is being restored from the BackForwardCache or is being
   // activated from Prerendering, restore all cached state now.
   if (pending_stored_page) {
+    pending_stored_page->PrepareToRestore();
+
     // This is only implemented for the legacy mode of BrowsingContextState
     // because in the new implementation, proxies will be swapped/restored
     // whenever the RenderFrameHost (and internal BrowsingContextState) is
@@ -3550,7 +3553,7 @@ void RenderFrameHostManager::CommitPending(
         features::BrowsingContextStateImplementationType::
             kLegacyOneToOneWithFrameTreeNode) {
       BrowsingContextState::RenderFrameProxyHostMap proxy_hosts_to_restore =
-          std::move(pending_stored_page->proxy_hosts);
+          pending_stored_page->TakeProxyHosts();
       for (auto& proxy : proxy_hosts_to_restore) {
         // We only cache pages when swapping BrowsingInstance, so we should
         // never be reusing SiteInstanceGroups.
@@ -3567,13 +3570,14 @@ void RenderFrameHostManager::CommitPending(
       }
     }
 
-    std::set<RenderViewHostImpl*> render_view_hosts_to_restore =
-        std::move(pending_stored_page->render_view_hosts);
+    StoredPage::StoredPage::RenderViewHostImplSafeRefSet
+        render_view_hosts_to_restore =
+            pending_stored_page->TakeRenderViewHosts();
     if (prev_state ==
         RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache) {
-      for (RenderViewHostImpl* rvh : render_view_hosts_to_restore) {
+      for (const auto& rvh : render_view_hosts_to_restore) {
         rvh->LeaveBackForwardCache(
-            pending_stored_page->page_restore_params.Clone());
+            pending_stored_page->page_restore_params().Clone());
       }
     } else {
       DCHECK_EQ(prev_state,

@@ -152,7 +152,7 @@ std::unique_ptr<StoredPage> PrerenderPageHolder::Activate(
       std::make_unique<NavigationEntryRestoreContextImpl>();
   std::unique_ptr<NavigationEntryImpl> nav_entry =
       GetNavigationController()
-          .GetEntryWithUniqueID(page->render_frame_host->nav_entry_id())
+          .GetEntryWithUniqueID(page->render_frame_host()->nav_entry_id())
           ->CloneWithoutSharing(context.get());
 
   navigation_request.SetPrerenderActivationNavigationState(
@@ -164,9 +164,9 @@ std::unique_ptr<StoredPage> PrerenderPageHolder::Activate(
 
   // We support activating the prerenderd page only to the topmost
   // RenderFrameHost.
-  CHECK(!page->render_frame_host->GetParentOrOuterDocumentOrEmbedder());
+  CHECK(!page->render_frame_host()->GetParentOrOuterDocumentOrEmbedder());
 
-  page->render_frame_host->SetFrameTreeNode(*(target_frame_tree.root()));
+  page->render_frame_host()->SetFrameTreeNode(*(target_frame_tree.root()));
   // Copy frame name into the replication state of the primary main frame to
   // ensure that the replication state of the primary main frame after
   // activation matches the replication state stored in the renderer.
@@ -175,9 +175,9 @@ std::unique_ptr<StoredPage> PrerenderPageHolder::Activate(
   // from the StoredPage into RenderFrameHostManager. However, this is a
   // temporary solution until we move this into BrowsingContextState,
   // along with RenderFrameProxyHost.
-  page->render_frame_host->frame_tree_node()->set_frame_name_for_activation(
+  page->render_frame_host()->frame_tree_node()->set_frame_name_for_activation(
       prior_replication_state.unique_name, prior_replication_state.name);
-  for (auto& it : page->proxy_hosts) {
+  for (auto& it : page->proxy_hosts()) {
     it.second->set_frame_tree_node(*(target_frame_tree.root()));
   }
 
@@ -197,7 +197,7 @@ std::unique_ptr<StoredPage> PrerenderPageHolder::Activate(
     subframe_node->SetFrameTree(target_frame_tree);
   }
 
-  page->render_frame_host->ForEachRenderFrameHostIncludingSpeculative(
+  page->render_frame_host()->ForEachRenderFrameHostIncludingSpeculative(
       [this](RenderFrameHostImpl* rfh) {
         // The visibility state of the prerendering page has not been
         // updated by

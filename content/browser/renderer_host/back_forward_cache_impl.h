@@ -39,7 +39,6 @@
 namespace content {
 
 class RenderFrameHostImpl;
-class RenderViewHostImpl;
 class SiteInstance;
 
 // This feature is used to limit the scope of back-forward cache experiment
@@ -107,7 +106,8 @@ struct CONTENT_EXPORT BackForwardCacheCanStoreDocumentResultWithTree {
 // the current_frame_host.
 class CONTENT_EXPORT BackForwardCacheImpl
     : public BackForwardCache,
-      public RenderProcessHostInternalObserver {
+      public RenderProcessHostInternalObserver,
+      public StoredPage::Delegate {
   friend class BackForwardCacheCanStoreTreeResult;
   friend class BackForwardCacheMetrics;
 
@@ -142,23 +142,27 @@ class CONTENT_EXPORT BackForwardCacheImpl
     }
     void SetPageRestoreParams(
         blink::mojom::PageRestoreParamsPtr page_restore_params) {
-      stored_page_->page_restore_params = std::move(page_restore_params);
+      stored_page_->SetPageRestoreParams(std::move(page_restore_params));
+    }
+
+    void SetStoredPageDelegate(StoredPage::Delegate* delegate) {
+      stored_page_->SetDelegate(delegate);
     }
 
     // The main document being stored.
     RenderFrameHostImpl* render_frame_host() {
-      return stored_page_->render_frame_host.get();
+      return stored_page_->render_frame_host();
     }
 
-    std::set<RenderViewHostImpl*> render_view_hosts() {
-      return stored_page_->render_view_hosts;
+    const StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts() {
+      return stored_page_->render_view_hosts();
     }
 
     const StoredPage::RenderFrameProxyHostMap& proxy_hosts() const {
-      return stored_page_->proxy_hosts;
+      return stored_page_->proxy_hosts();
     }
 
-    size_t proxy_hosts_size() { return stored_page_->proxy_hosts.size(); }
+    size_t proxy_hosts_size() { return stored_page_->proxy_hosts_size(); }
 
    private:
     friend class BackForwardCacheImpl;
@@ -331,6 +335,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
       SiteInstanceId site_instance_id);
   bool IsProxyInBackForwardCacheForDebugging(RenderFrameProxyHost* proxy);
 
+  // StoredPage::Delegate overrides:
+  void RenderViewHostNoLongerStored(RenderViewHostImpl* rvh) override;
+
   // Construct a tree of NotRestoredReasons for |rfh| without checking the
   // eligibility of all the documents in the frame tree. This should be only
   // used for evicting the back/forward cache entry where we know why the entry
@@ -394,6 +401,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   // Return the matching entry which has |page|.
   BackForwardCacheImpl::Entry* FindMatchingEntry(PageImpl& page);
+
+  void RenderViewHostNoLongerStoredInternal(RenderViewHostImpl* rvh);
 
   // If non-zero, the cache may contain at most this many entries with involving
   // foregrounded processes and the remaining space can only be used by entries

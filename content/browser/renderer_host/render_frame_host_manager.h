@@ -878,7 +878,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
 
   void PrepareForCollectingPage(
       RenderFrameHostImpl* main_render_frame_host,
-      std::set<RenderViewHostImpl*>* render_view_hosts,
+      StoredPage::RenderViewHostImplSafeRefSet* render_view_hosts,
       BrowsingContextState::RenderFrameProxyHostMap* proxy_hosts);
 
   // Collects all of the page-related state currently owned by

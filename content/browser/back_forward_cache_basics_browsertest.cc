@@ -1682,4 +1682,80 @@ IN_PROC_BROWSER_TEST_F(CacheSizeOneBackForwardCacheBrowserTest,
   EXPECT_EQ(rfh_c->GetVisibilityState(), PageVisibilityState::kVisible);
 }
 
+class BackForwardCacheBrowsingContextStateBrowserTest
+    : public BackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    IsolateAllSitesForTesting(command_line);
+    if (GetParam()) {
+      EnableFeatureAndSetParams(
+          features::kNewBrowsingContextStateOnBrowsingContextGroupSwap, "", "");
+    }
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackForwardCacheBrowsingContextStateBrowserTest,
+                         ::testing::Bool());
+
+// Check that if a RenderViewHost is removed after the page has entered
+// the back/forward cache we don't crash.
+IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowsingContextStateBrowserTest,
+                       SlowUnloadHandlerInIframe) {
+  DoNotFailForUnexpectedMessagesWhileCached();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL initial_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  GURL url_d(embedded_test_server()->GetURL("d.com", "/title1.html"));
+
+  // 1) Navigate on a page with an iframe.
+  EXPECT_TRUE(NavigateToURL(shell(), initial_url));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameHostImplWrapper rfh_b(rfh_a->child_at(0)->current_frame_host());
+  // 2) Act like we have a slow unload handler.
+  auto unload_ack_filter = base::BindRepeating([] { return true; });
+  rfh_b->SetUnloadACKCallbackForTesting(unload_ack_filter);
+  rfh_b->DisableUnloadTimerForTesting();
+
+  // 3) Navigate the inner iframe to a new origin.
+  EXPECT_TRUE(NavigateToURLFromRenderer(rfh_a->child_at(0), url_c));
+  RenderFrameHostImplWrapper rfh_c(rfh_a->child_at(0)->current_frame_host());
+
+  // 4) Now navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), url_d));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_c->IsInBackForwardCache());
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+            rfh_b->lifecycle_state());
+
+  rfh_b->SetUnloadACKCallbackForTesting(base::NullCallback());
+  rfh_b->OnUnloadACK();
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_b.IsDestroyed());
+  EXPECT_FALSE(rfh_c.IsDestroyed());
+  EXPECT_TRUE(rfh_c->IsInBackForwardCache());
+
+  // 5) This iterates each RenderViewHost and should not crash.
+  web_contents()->WasHidden();
+
+  // 6) Confirm that navigating backwards restores the page from
+  // back/forward cache.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  EXPECT_EQ(rfh_a.get(), current_frame_host());
+  EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+  EXPECT_FALSE(rfh_c->IsInBackForwardCache());
+
+  ExpectRestored(FROM_HERE);
+
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "   +--Site B ------- proxies for A\n"
+      "Where A = http://a.com/\n"
+      "      B = http://c.com/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+}
+
 }  // namespace content

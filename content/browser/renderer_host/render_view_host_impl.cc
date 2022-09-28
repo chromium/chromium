@@ -80,6 +80,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "media/base/media_switches.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
@@ -287,6 +288,7 @@ RenderViewHostImpl::RenderViewHostImpl(
     : render_widget_host_(std::move(widget)),
       delegate_(delegate),
       render_view_host_map_id_(frame_tree->GetRenderViewHostMapId(group)),
+      site_instance_group_(group->GetSafeRef()),
       storage_partition_config_(storage_partition_config),
       routing_id_(routing_id),
       main_frame_routing_id_(main_frame_routing_id),
@@ -571,8 +573,11 @@ void RenderViewHostImpl::EnterBackForwardCache() {
 
 void RenderViewHostImpl::PrepareToLeaveBackForwardCache(
     base::OnceClosure done_cb) {
+  // We wrap `done_cb` in a default invoke because if this RenderViewHostImpl
+  // disappears we still need to call `done_cb` otherwise the navigation
+  // will be blocked indefinitely.
   page_lifecycle_state_manager_->SetIsLeavingBackForwardCache(
-      std::move(done_cb));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(done_cb)));
 }
 
 void RenderViewHostImpl::LeaveBackForwardCache(
@@ -618,8 +623,8 @@ void RenderViewHostImpl::OnBackForwardCacheTimeout() {
   const auto& entries =
       frame_tree_->controller().GetBackForwardCache().GetEntries();
   for (auto& entry : entries) {
-    for (auto* const rvh : entry->render_view_hosts()) {
-      if (rvh == this) {
+    for (const auto& rvh : entry->render_view_hosts()) {
+      if (&*rvh == this) {
         RenderFrameHostImpl* rfh = entry->render_frame_host();
         rfh->EvictFromBackForwardCacheWithReason(
             BackForwardCacheMetrics::NotRestoredReason::kTimeoutPuttingInCache);
@@ -636,8 +641,8 @@ void RenderViewHostImpl::MaybeEvictFromBackForwardCache() {
   const auto& entries =
       frame_tree_->controller().GetBackForwardCache().GetEntries();
   for (auto& entry : entries) {
-    for (auto* const rvh : entry->render_view_hosts()) {
-      if (rvh == this) {
+    for (const auto& rvh : entry->render_view_hosts()) {
+      if (&*rvh == this) {
         RenderFrameHostImpl* rfh = entry->render_frame_host();
         rfh->MaybeEvictFromBackForwardCache();
         break;
@@ -953,6 +958,10 @@ void RenderViewHostImpl::WriteIntoTrace(
   proto.Set(TraceProto::kProcess, GetProcess());
   proto->set_is_in_back_forward_cache(is_in_back_forward_cache_);
   proto->set_renderer_view_created(renderer_view_created_);
+}
+
+base::SafeRef<RenderViewHostImpl> RenderViewHostImpl::GetSafeRef() {
+  return weak_factory_.GetSafeRef();
 }
 
 }  // namespace content

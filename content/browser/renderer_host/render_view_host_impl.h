@@ -27,6 +27,7 @@
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_owner_delegate.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/render_message_filter.mojom.h"
@@ -325,6 +326,12 @@ class CONTENT_EXPORT RenderViewHostImpl
   // it from being registered with the associated FrameTree.
   void DisallowReuse();
 
+  base::SafeRef<RenderViewHostImpl> GetSafeRef();
+
+  SiteInstanceGroup* site_instance_group() const {
+    return &*site_instance_group_;
+  }
+
   // NOTE: Do not add functions that just send an IPC message that are called in
   // one or two places. Have the caller send the IPC message directly (unless
   // the caller places are in different platforms, in which case it's better
@@ -398,6 +405,9 @@ class CONTENT_EXPORT RenderViewHostImpl
   // by frames with SiteInstanceGroups that generate an ID that matches this
   // field.
   FrameTree::RenderViewHostMapId render_view_host_map_id_;
+
+  // The SiteInstanceGroup this RenderViewHostImpl belongs to.
+  base::SafeRef<SiteInstanceGroup> site_instance_group_;
 
   // Provides information for selecting the session storage namespace for this
   // view.

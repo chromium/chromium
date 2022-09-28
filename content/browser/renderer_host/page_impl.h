@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/page.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -29,7 +30,6 @@ namespace content {
 
 class PageDelegate;
 class RenderFrameHostImpl;
-class RenderViewHostImpl;
 
 // This implements the Page interface that is exposed to embedders of content,
 // and adds things only visible to content.
@@ -137,7 +137,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   // documents from prerendered to activated. Tells the corresponding
   // RenderFrameHostImpls that the renderer will be activating their documents.
   void ActivateForPrerendering(
-      std::set<RenderViewHostImpl*>& render_view_hosts_to_activate);
+      StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts_to_activate);
 
   // Prerender2:
   // Dispatches load events that were deferred to be dispatched after
