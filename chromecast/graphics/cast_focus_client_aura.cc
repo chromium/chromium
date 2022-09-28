@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/window.h"
 
 #define LOG_WINDOW_INFO(top_level, window)                                 \
@@ -59,8 +60,7 @@ void CastFocusClientAura::OnWindowDestroying(aura::Window* window) {
   DCHECK(top_level);
   DLOG(INFO) << "Removing window, " << LOG_WINDOW_INFO(top_level, window);
 
-  auto iter =
-      std::find(focusable_windows_.begin(), focusable_windows_.end(), window);
+  auto iter = base::ranges::find(focusable_windows_, window);
   if (iter != focusable_windows_.end()) {
     focusable_windows_.erase(iter);
     window->RemoveObserver(this);

@@ -121,8 +121,7 @@ void CastWebService::ClearLocalStorage(ClearLocalStorageCallback callback) {
 }
 
 bool CastWebService::IsCastWebUIOrigin(const url::Origin& origin) {
-  return std::find(cast_webui_hosts_.begin(), cast_webui_hosts_.end(),
-                   origin.host()) != cast_webui_hosts_.end();
+  return base::Contains(cast_webui_hosts_, origin.host());
 }
 
 void CastWebService::RegisterWebUiClient(

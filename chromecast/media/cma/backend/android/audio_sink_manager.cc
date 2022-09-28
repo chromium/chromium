@@ -4,10 +4,9 @@
 
 #include "chromecast/media/cma/backend/android/audio_sink_manager.h"
 
-#include <algorithm>
-
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "chromecast/media/cma/backend/android/audio_sink_android.h"
 
 namespace chromecast {
@@ -56,7 +55,7 @@ void AudioSinkManager::Remove(AudioSinkAndroid* sink) {
 
   base::AutoLock lock(lock_);
 
-  auto it = std::find(sinks_.begin(), sinks_.end(), sink);
+  auto it = base::ranges::find(sinks_, sink);
   if (it == sinks_.end()) {
     LOG(WARNING) << __func__ << ": Cannot find sink";
     return;

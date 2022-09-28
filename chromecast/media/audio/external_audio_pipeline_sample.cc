@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <vector>
 
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/media/external_audio_pipeline_shlib.h"
 #include "chromecast/public/media/mixer_output_stream.h"
@@ -41,7 +41,7 @@ class TestLoopBack {
 
   void RemoveObserver(
       ExternalAudioPipelineShlib::LoopbackAudioObserver* observer) {
-    auto it = std::find(observers_.begin(), observers_.end(), observer);
+    auto it = base::ranges::find(observers_, observer);
     if (it != observers_.end()) {
       observers_.erase(it);
     }
