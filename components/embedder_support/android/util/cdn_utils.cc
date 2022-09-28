@@ -54,8 +54,9 @@ bool IsTrustedCDN(const GURL& url) {
 
 }  // namespace
 
-const base::Feature kShowTrustedPublisherURL{"ShowTrustedPublisherURL",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kShowTrustedPublisherURL,
+             "ShowTrustedPublisherURL",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 GURL GetPublisherURL(content::Page& page) {
   content::RenderFrameHost& rfh = page.GetMainDocument();
