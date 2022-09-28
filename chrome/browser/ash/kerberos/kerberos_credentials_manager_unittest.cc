@@ -780,17 +780,17 @@ TEST_F(KerberosCredentialsManagerTest, UpdateEnabledFromPrefKerberosEnabled) {
   mgr_->SetAddManagedAccountCallbackForTesting(
       GetRepeatingCallback(kTwoAccounts));
 
-  base::Value managed_account_1(base::Value::Type::DICTIONARY);
-  base::Value managed_account_2(base::Value::Type::DICTIONARY);
+  base::Value::Dict managed_account_1;
+  base::Value::Dict managed_account_2;
 
-  managed_account_1.SetStringKey(kKeyPrincipal, kPrincipal);
-  managed_account_2.SetStringKey(kKeyPrincipal, kOtherPrincipal);
+  managed_account_1.Set(kKeyPrincipal, kPrincipal);
+  managed_account_2.Set(kKeyPrincipal, kOtherPrincipal);
 
-  base::Value managed_accounts(base::Value::Type::LIST);
+  base::Value::List managed_accounts;
   managed_accounts.Append(std::move(managed_account_1));
   managed_accounts.Append(std::move(managed_account_2));
 
-  SetPref(prefs::kKerberosAccounts, std::move(managed_accounts));
+  SetPref(prefs::kKerberosAccounts, base::Value(std::move(managed_accounts)));
 
   EXPECT_FALSE(mgr_->IsKerberosEnabled());
   EXPECT_EQ(0u, ListAccounts().size());
@@ -882,13 +882,13 @@ TEST_F(KerberosCredentialsManagerTest,
 // UpdateAccountsFromPref votes for not saving the password if kerberos is
 // disabled. Also, no account is added.
 TEST_F(KerberosCredentialsManagerTest, UpdateAccountsFromPrefKerberosDisabled) {
-  base::Value managed_account(base::Value::Type::DICTIONARY);
-  managed_account.SetStringKey(kKeyPrincipal, kPrincipal);
+  base::Value::Dict managed_account;
+  managed_account.Set(kKeyPrincipal, kPrincipal);
 
-  base::Value managed_accounts(base::Value::Type::LIST);
+  base::Value::List managed_accounts;
   managed_accounts.Append(std::move(managed_account));
 
-  SetPref(prefs::kKerberosAccounts, std::move(managed_accounts));
+  SetPref(prefs::kKerberosAccounts, base::Value(std::move(managed_accounts)));
 
   VerifyVotedForSavingLoginPassword(kDontSaveLoginPassword);
 
@@ -907,8 +907,8 @@ TEST_F(KerberosCredentialsManagerTest, UpdateAccountsFromPrefNoAccounts) {
   AddAccountAndAuthenticate(kOtherPrincipal, kManaged, kerberos::ERROR_NONE,
                             kOneNotification, kTwoAccounts);
 
-  base::Value managed_accounts(base::Value::Type::LIST);
-  SetPref(prefs::kKerberosAccounts, std::move(managed_accounts));
+  base::Value::List managed_accounts;
+  SetPref(prefs::kKerberosAccounts, base::Value(std::move(managed_accounts)));
 
   VerifyVotedForSavingLoginPassword(kDontSaveLoginPassword);
 
@@ -922,21 +922,21 @@ TEST_F(KerberosCredentialsManagerTest, UpdateAccountsFromPrefBadPrincipal) {
   // Starting with Kerberos enabled.
   SetPref(prefs::kKerberosEnabled, base::Value(true));
 
-  base::Value managed_account_1(base::Value::Type::DICTIONARY);
-  base::Value managed_account_2(base::Value::Type::DICTIONARY);
-  base::Value managed_account_3(base::Value::Type::DICTIONARY);
-  base::Value managed_account_4(base::Value::Type::DICTIONARY);
-  base::Value managed_account_5(base::Value::Type::DICTIONARY);
-  base::Value managed_account_6(base::Value::Type::DICTIONARY);
+  base::Value::Dict managed_account_1;
+  base::Value::Dict managed_account_2;
+  base::Value::Dict managed_account_3;
+  base::Value::Dict managed_account_4;
+  base::Value::Dict managed_account_5;
+  base::Value::Dict managed_account_6;
 
-  managed_account_1.SetStringKey(kKeyPrincipal, kBadPrincipal1);
-  managed_account_2.SetStringKey(kKeyPrincipal, kBadPrincipal2);
-  managed_account_3.SetStringKey(kKeyPrincipal, kBadPrincipal3);
-  managed_account_4.SetStringKey(kKeyPrincipal, kBadPrincipal4);
-  managed_account_5.SetStringKey(kKeyPrincipal, kBadPrincipal5);
-  managed_account_6.SetStringKey(kKeyPrincipal, kBadManagedPrincipal);
+  managed_account_1.Set(kKeyPrincipal, kBadPrincipal1);
+  managed_account_2.Set(kKeyPrincipal, kBadPrincipal2);
+  managed_account_3.Set(kKeyPrincipal, kBadPrincipal3);
+  managed_account_4.Set(kKeyPrincipal, kBadPrincipal4);
+  managed_account_5.Set(kKeyPrincipal, kBadPrincipal5);
+  managed_account_6.Set(kKeyPrincipal, kBadManagedPrincipal);
 
-  base::Value managed_accounts(base::Value::Type::LIST);
+  base::Value::List managed_accounts;
   managed_accounts.Append(std::move(managed_account_1));
   managed_accounts.Append(std::move(managed_account_2));
   managed_accounts.Append(std::move(managed_account_3));
@@ -944,7 +944,7 @@ TEST_F(KerberosCredentialsManagerTest, UpdateAccountsFromPrefBadPrincipal) {
   managed_accounts.Append(std::move(managed_account_5));
   managed_accounts.Append(std::move(managed_account_6));
 
-  SetPref(prefs::kKerberosAccounts, std::move(managed_accounts));
+  SetPref(prefs::kKerberosAccounts, base::Value(std::move(managed_accounts)));
 
   VerifyVotedForSavingLoginPassword(kDontSaveLoginPassword);
 
@@ -960,7 +960,7 @@ TEST_F(KerberosCredentialsManagerTest, UpdateAccountsFromPrefConfig) {
   mgr_->SetAddManagedAccountCallbackForTesting(
       GetRepeatingCallback(kTwoAccounts));
 
-  base::Value config(base::Value::Type::LIST);
+  base::Value::List config;
   config.Append(base::Value("config line 1"));
   config.Append(base::Value("config line 2"));
   config.Append(base::Value("config line 3"));
@@ -968,21 +968,21 @@ TEST_F(KerberosCredentialsManagerTest, UpdateAccountsFromPrefConfig) {
   constexpr char expected_config[] =
       "config line 1\nconfig line 2\nconfig line 3\n";
 
-  base::Value managed_account_1(base::Value::Type::DICTIONARY);
-  base::Value managed_account_2(base::Value::Type::DICTIONARY);
+  base::Value::Dict managed_account_1;
+  base::Value::Dict managed_account_2;
 
-  managed_account_1.SetStringKey(kKeyPrincipal, kPrincipal);
-  managed_account_1.SetStringKey(kKeyPassword, kPassword);
-  managed_account_1.SetKey(kKeyKrb5Conf, std::move(config));
+  managed_account_1.Set(kKeyPrincipal, kPrincipal);
+  managed_account_1.Set(kKeyPassword, kPassword);
+  managed_account_1.Set(kKeyKrb5Conf, std::move(config));
 
-  managed_account_2.SetStringKey(kKeyPrincipal, kOtherPrincipal);
-  managed_account_2.SetStringKey(kKeyPassword, kPassword);
+  managed_account_2.Set(kKeyPrincipal, kOtherPrincipal);
+  managed_account_2.Set(kKeyPassword, kPassword);
 
-  base::Value managed_accounts(base::Value::Type::LIST);
+  base::Value::List managed_accounts;
   managed_accounts.Append(std::move(managed_account_1));
   managed_accounts.Append(std::move(managed_account_2));
 
-  SetPref(prefs::kKerberosAccounts, std::move(managed_accounts));
+  SetPref(prefs::kKerberosAccounts, base::Value(std::move(managed_accounts)));
 
   // Two notifications are expected: one from AddAccountRunner and another from
   // RemoveAllManagedAccountsExcept().
@@ -1009,19 +1009,19 @@ TEST_F(KerberosCredentialsManagerTest, UpdateAccountsFromPrefPassword) {
   mgr_->SetAddManagedAccountCallbackForTesting(
       GetRepeatingCallback(kTwoAccounts));
 
-  base::Value managed_account_1(base::Value::Type::DICTIONARY);
-  base::Value managed_account_2(base::Value::Type::DICTIONARY);
+  base::Value::Dict managed_account_1;
+  base::Value::Dict managed_account_2;
 
-  managed_account_1.SetStringKey(kKeyPrincipal, kPrincipal);
-  managed_account_1.SetStringKey(kKeyPassword, kLoginPasswordPlaceholder);
-  managed_account_2.SetStringKey(kKeyPrincipal, kOtherPrincipal);
-  managed_account_2.SetStringKey(kKeyPassword, kPassword);
+  managed_account_1.Set(kKeyPrincipal, kPrincipal);
+  managed_account_1.Set(kKeyPassword, kLoginPasswordPlaceholder);
+  managed_account_2.Set(kKeyPrincipal, kOtherPrincipal);
+  managed_account_2.Set(kKeyPassword, kPassword);
 
-  base::Value managed_accounts(base::Value::Type::LIST);
+  base::Value::List managed_accounts;
   managed_accounts.Append(std::move(managed_account_1));
   managed_accounts.Append(std::move(managed_account_2));
 
-  SetPref(prefs::kKerberosAccounts, std::move(managed_accounts));
+  SetPref(prefs::kKerberosAccounts, base::Value(std::move(managed_accounts)));
 
   // Two notifications are expected: one from AddAccountRunner and another from
   // RemoveAllManagedAccountsExcept().
@@ -1048,21 +1048,21 @@ TEST_F(KerberosCredentialsManagerTest, UpdateAccountsFromPrefRememberPassword) {
   mgr_->SetAddManagedAccountCallbackForTesting(
       GetRepeatingCallback(kTwoAccounts));
 
-  base::Value managed_account_1(base::Value::Type::DICTIONARY);
-  base::Value managed_account_2(base::Value::Type::DICTIONARY);
+  base::Value::Dict managed_account_1;
+  base::Value::Dict managed_account_2;
 
-  managed_account_1.SetStringKey(kKeyPrincipal, kPrincipal);
-  managed_account_1.SetStringKey(kKeyPassword, kPassword);
-  managed_account_1.SetBoolKey(kKeyRememberPassword, kRememberPassword);
-  managed_account_2.SetStringKey(kKeyPrincipal, kOtherPrincipal);
-  managed_account_2.SetStringKey(kKeyPassword, kLoginPasswordPlaceholder);
-  managed_account_2.SetBoolKey(kKeyRememberPassword, kDontRememberPassword);
+  managed_account_1.Set(kKeyPrincipal, kPrincipal);
+  managed_account_1.Set(kKeyPassword, kPassword);
+  managed_account_1.Set(kKeyRememberPassword, kRememberPassword);
+  managed_account_2.Set(kKeyPrincipal, kOtherPrincipal);
+  managed_account_2.Set(kKeyPassword, kLoginPasswordPlaceholder);
+  managed_account_2.Set(kKeyRememberPassword, kDontRememberPassword);
 
-  base::Value managed_accounts(base::Value::Type::LIST);
+  base::Value::List managed_accounts;
   managed_accounts.Append(std::move(managed_account_1));
   managed_accounts.Append(std::move(managed_account_2));
 
-  SetPref(prefs::kKerberosAccounts, std::move(managed_accounts));
+  SetPref(prefs::kKerberosAccounts, base::Value(std::move(managed_accounts)));
 
   // Two notifications are expected: one from AddAccountRunner and another from
   // RemoveAllManagedAccountsExcept().
@@ -1095,17 +1095,17 @@ TEST_F(KerberosCredentialsManagerTest, UpdateAccountsFromPrefClearAccounts) {
   mgr_->SetAddManagedAccountCallbackForTesting(
       GetRepeatingCallback(kTwoAccounts));
 
-  base::Value managed_account_1(base::Value::Type::DICTIONARY);
-  base::Value managed_account_2(base::Value::Type::DICTIONARY);
+  base::Value::Dict managed_account_1;
+  base::Value::Dict managed_account_2;
 
-  managed_account_1.SetStringKey(kKeyPrincipal, kPrincipal);
-  managed_account_2.SetStringKey(kKeyPrincipal, kOtherPrincipal);
+  managed_account_1.Set(kKeyPrincipal, kPrincipal);
+  managed_account_2.Set(kKeyPrincipal, kOtherPrincipal);
 
-  base::Value managed_accounts(base::Value::Type::LIST);
+  base::Value::List managed_accounts;
   managed_accounts.Append(std::move(managed_account_1));
   managed_accounts.Append(std::move(managed_account_2));
 
-  SetPref(prefs::kKerberosAccounts, std::move(managed_accounts));
+  SetPref(prefs::kKerberosAccounts, base::Value(std::move(managed_accounts)));
 
   // Two notifications are expected: one from AddAccountRunner and another from
   // RemoveAllManagedAccountsExcept().
@@ -1134,15 +1134,15 @@ TEST_F(KerberosCredentialsManagerTest, DISABLED_UpdateAccountsFromPrefRetry) {
   mgr_->SetAddManagedAccountCallbackForTesting(
       GetRepeatingCallback((kOneFailure + 1) * kOneAccount));
 
-  base::Value managed_account_1(base::Value::Type::DICTIONARY);
+  base::Value::Dict managed_account_1;
 
-  managed_account_1.SetStringKey(kKeyPrincipal, kPrincipal);
-  managed_account_1.SetStringKey(kKeyPassword, kPassword);
+  managed_account_1.Set(kKeyPrincipal, kPrincipal);
+  managed_account_1.Set(kKeyPassword, kPassword);
 
-  base::Value managed_accounts(base::Value::Type::LIST);
+  base::Value::List managed_accounts;
   managed_accounts.Append(std::move(managed_account_1));
 
-  SetPref(prefs::kKerberosAccounts, std::move(managed_accounts));
+  SetPref(prefs::kKerberosAccounts, base::Value(std::move(managed_accounts)));
 
   // Two notifications are expected for each attempt: one from AddAccountRunner
   // and another from RemoveAllManagedAccountsExcept().
@@ -1173,15 +1173,15 @@ TEST_F(KerberosCredentialsManagerTest,
   mgr_->SetAddManagedAccountCallbackForTesting(
       GetRepeatingCallback((kThreeFailures + 1) * kOneAccount));
 
-  base::Value managed_account_1(base::Value::Type::DICTIONARY);
+  base::Value::Dict managed_account_1;
 
-  managed_account_1.SetStringKey(kKeyPrincipal, kPrincipal);
-  managed_account_1.SetStringKey(kKeyPassword, kPassword);
+  managed_account_1.Set(kKeyPrincipal, kPrincipal);
+  managed_account_1.Set(kKeyPassword, kPassword);
 
-  base::Value managed_accounts(base::Value::Type::LIST);
+  base::Value::List managed_accounts;
   managed_accounts.Append(std::move(managed_account_1));
 
-  SetPref(prefs::kKerberosAccounts, std::move(managed_accounts));
+  SetPref(prefs::kKerberosAccounts, base::Value(std::move(managed_accounts)));
 
   // Two notifications are expected for each attempt: one from AddAccountRunner
   // and another from RemoveAllManagedAccountsExcept().
@@ -1215,19 +1215,19 @@ TEST_F(KerberosCredentialsManagerTest,
   mgr_->SetAddManagedAccountCallbackForTesting(
       GetRepeatingCallback((kOneFailure + 1) * kTwoAccounts));
 
-  base::Value managed_account_1(base::Value::Type::DICTIONARY);
-  base::Value managed_account_2(base::Value::Type::DICTIONARY);
+  base::Value::Dict managed_account_1;
+  base::Value::Dict managed_account_2;
 
-  managed_account_1.SetStringKey(kKeyPrincipal, kPrincipal);
-  managed_account_1.SetStringKey(kKeyPassword, kPassword);
-  managed_account_2.SetStringKey(kKeyPrincipal, kOtherPrincipal);
-  managed_account_2.SetStringKey(kKeyPassword, kPassword);
+  managed_account_1.Set(kKeyPrincipal, kPrincipal);
+  managed_account_1.Set(kKeyPassword, kPassword);
+  managed_account_2.Set(kKeyPrincipal, kOtherPrincipal);
+  managed_account_2.Set(kKeyPassword, kPassword);
 
-  base::Value managed_accounts(base::Value::Type::LIST);
+  base::Value::List managed_accounts;
   managed_accounts.Append(std::move(managed_account_1));
   managed_accounts.Append(std::move(managed_account_2));
 
-  SetPref(prefs::kKerberosAccounts, std::move(managed_accounts));
+  SetPref(prefs::kKerberosAccounts, base::Value(std::move(managed_accounts)));
 
   // Two notifications are expected for each attempt: one from AddAccountRunner
   // and another from RemoveAllManagedAccountsExcept().
@@ -1262,19 +1262,19 @@ TEST_F(KerberosCredentialsManagerTest,
       KerberosCredentialsManager::kMaxFailureCountForManagedAccounts *
       kTwoAccounts));
 
-  base::Value managed_account_1(base::Value::Type::DICTIONARY);
-  base::Value managed_account_2(base::Value::Type::DICTIONARY);
+  base::Value::Dict managed_account_1;
+  base::Value::Dict managed_account_2;
 
-  managed_account_1.SetStringKey(kKeyPrincipal, kPrincipal);
-  managed_account_1.SetStringKey(kKeyPassword, kPassword);
-  managed_account_2.SetStringKey(kKeyPrincipal, kOtherPrincipal);
-  managed_account_2.SetStringKey(kKeyPassword, kPassword);
+  managed_account_1.Set(kKeyPrincipal, kPrincipal);
+  managed_account_1.Set(kKeyPassword, kPassword);
+  managed_account_2.Set(kKeyPrincipal, kOtherPrincipal);
+  managed_account_2.Set(kKeyPassword, kPassword);
 
-  base::Value managed_accounts(base::Value::Type::LIST);
+  base::Value::List managed_accounts;
   managed_accounts.Append(std::move(managed_account_1));
   managed_accounts.Append(std::move(managed_account_2));
 
-  SetPref(prefs::kKerberosAccounts, std::move(managed_accounts));
+  SetPref(prefs::kKerberosAccounts, base::Value(std::move(managed_accounts)));
 
   // Two notifications are expected for each attempt: one from AddAccountRunner
   // and another from RemoveAllManagedAccountsExcept().
