@@ -17,6 +17,7 @@ namespace features {
 
 // Alphabetical:
 BASE_DECLARE_FEATURE(kWebViewBrotliSupport);
+BASE_DECLARE_FEATURE(kWebViewCheckReturnResources);
 BASE_DECLARE_FEATURE(kWebViewConnectionlessSafeBrowsing);
 BASE_DECLARE_FEATURE(kWebViewDisplayCutout);
 BASE_DECLARE_FEATURE(kWebViewEmptyComponentLoaderPolicy);

@@ -11,6 +11,8 @@
 
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
+#include "android_webview/common/aw_features.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
@@ -180,7 +182,8 @@ void HardwareRenderer::ReturnResourcesToCompositor(
     std::vector<viz::ReturnedResource> resources,
     const viz::FrameSinkId& frame_sink_id,
     uint32_t layer_tree_frame_sink_id) {
-  if (layer_tree_frame_sink_id != last_committed_layer_tree_frame_sink_id_)
+  if (!base::FeatureList::IsEnabled(features::kWebViewCheckReturnResources) &&
+      layer_tree_frame_sink_id != last_committed_layer_tree_frame_sink_id_)
     return;
   render_thread_manager_->InsertReturnedResourcesOnRT(
       std::move(resources), frame_sink_id, layer_tree_frame_sink_id);
