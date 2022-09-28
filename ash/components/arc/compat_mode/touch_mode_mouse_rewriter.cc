@@ -138,13 +138,17 @@ void TouchModeMouseRewriter::SendScrollEvent(
     const Continuation continuation) {
   if (scroll_timeout_.is_zero())
     return;
-  const int step =
+  const int y_step =
       scroll_y_offset_ * (kSmoothScrollEventInterval / scroll_timeout_);
+  const int x_step =
+      scroll_x_offset_ * (kSmoothScrollEventInterval / scroll_timeout_);
   ui::ScrollEvent scroll_event(ui::ET_SCROLL, original_event.location_f(),
                                original_event.root_location_f(),
-                               ui::EventTimeForNow(), 0, 0, step, 0, step, 1);
+                               ui::EventTimeForNow(), 0, x_step, y_step, x_step,
+                               y_step, 1);
   std::ignore = SendEvent(continuation, &scroll_event);
-  scroll_y_offset_ -= step;
+  scroll_y_offset_ -= y_step;
+  scroll_x_offset_ -= x_step;
   scroll_timeout_ -= kSmoothScrollEventInterval;
   if (scroll_timeout_.is_zero()) {
     ui::ScrollEvent fling_start_event(ui::ET_SCROLL_FLING_START,
@@ -167,6 +171,7 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteMouseWheelEvent(
     const Continuation continuation) {
   const bool started = !scroll_timeout_.is_zero();
   scroll_y_offset_ += kWheelToSmoothScrollScale * event.y_offset();
+  scroll_x_offset_ += kWheelToSmoothScrollScale * event.x_offset();
   scroll_timeout_ = kSmoothScrollTimeout;
   if (started) {
     ui::ScrollEvent fling_cancel_event(
