@@ -788,8 +788,8 @@ void NGGridSizingTrackCollection::SetIndefiniteGrowthLimitsToBaseSize() {
 
 void NGGridSizingTrackCollection::ResetBaselines() {
   const wtf_size_t set_count = sets_.size();
-  major_baselines_ = Vector<LayoutUnit>(set_count);
-  minor_baselines_ = Vector<LayoutUnit>(set_count);
+  major_baselines_ = Vector<LayoutUnit>(set_count, LayoutUnit::Min());
+  minor_baselines_ = Vector<LayoutUnit>(set_count, LayoutUnit::Min());
 }
 
 void NGGridSizingTrackCollection::SetMajorBaseline(

@@ -3881,12 +3881,7 @@ crbug.com/1335889 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-gr
 crbug.com/1272533 external/wpt/css/css-grid/layout-algorithm/grid-intrinsic-size-dynamic-block-size.html [ Failure ]
 
 # The 'last baseline' keyword is not implemented yet
-crbug.com/885175 external/wpt/css/css-grid/alignment/grid-baseline-004.html [ Failure ]
-crbug.com/885175 external/wpt/css/css-grid/alignment/grid-item-self-baseline-001.html [ Skip ]
-crbug.com/885175 external/wpt/css/css-grid/alignment/grid-self-alignment-baseline-with-grid-001.html [ Skip ]
-crbug.com/885175 external/wpt/css/css-grid/alignment/grid-self-alignment-baseline-with-grid-002.html [ Skip ]
-crbug.com/885175 external/wpt/css/css-grid/alignment/grid-self-alignment-baseline-with-grid-004.html [ Skip ]
-crbug.com/885175 external/wpt/css/css-grid/alignment/grid-self-alignment-baseline-with-grid-003.html [ Skip ]
+crbug.com/885175 external/wpt/css/css-grid/alignment/grid-container-baseline-001.html [ Failure ]
 
 # Baseline Content-Alignment is not implemented yet for CSS Grid Layout
 crbug.com/764235 external/wpt/css/css-grid/alignment/grid-item-content-baseline-001.html [ Skip ]

@@ -2811,42 +2811,104 @@ class BaselineAccumulator {
   void Accumulate(const GridItemData& grid_item,
                   const NGBoxFragment& fragment,
                   const LayoutUnit block_offset) {
-    // Compares GridArea objects in row-major grid order for baseline
-    // precedence. Returns 'true' if |a| < |b| and 'false' otherwise.
-    auto IsBeforeInGridOrder = [&](const GridArea& a,
-                                   const GridArea& b) -> bool {
-      // Do not consider items that span tracks for container baselines.
-      if (a.rows.IntegerSpan() > 1 || a.columns.IntegerSpan() > 1 ||
-          b.rows.IntegerSpan() > 1 || b.columns.IntegerSpan() > 1) {
+    auto StartsBefore = [](const GridArea& a, const GridArea& b) -> bool {
+      if (a.rows.StartLine() < b.rows.StartLine())
+        return true;
+      if (a.rows.StartLine() > b.rows.StartLine())
         return false;
-      }
-      return (a.rows < b.rows) || (a.rows == b.rows && (a.columns < b.columns));
+      return a.columns.StartLine() < b.columns.StartLine();
     };
 
-    const LayoutUnit baseline =
-        block_offset + fragment.FirstBaselineOrSynthesize(font_baseline_);
-    if (grid_item.IsBaselineSpecifiedForDirection(kForRows)) {
-      if (!alignment_baseline_ ||
-          IsBeforeInGridOrder(grid_item.resolved_position,
-                              alignment_baseline_->resolved_position)) {
-        alignment_baseline_.emplace(grid_item.resolved_position, baseline);
+    auto EndsAfter = [](const GridArea& a, const GridArea& b) -> bool {
+      if (a.rows.EndLine() > b.rows.EndLine())
+        return true;
+      if (a.rows.EndLine() < b.rows.EndLine())
+        return false;
+      // Use greater-or-equal to prefer the "last" grid-item.
+      return a.columns.EndLine() >= b.columns.EndLine();
+    };
+
+    if (!first_fallback_baseline_ ||
+        StartsBefore(grid_item.resolved_position,
+                     first_fallback_baseline_->resolved_position)) {
+      first_fallback_baseline_.emplace(
+          grid_item.resolved_position,
+          block_offset + fragment.FirstBaselineOrSynthesize(font_baseline_));
+    }
+
+    if (!last_fallback_baseline_ ||
+        EndsAfter(grid_item.resolved_position,
+                  last_fallback_baseline_->resolved_position)) {
+      last_fallback_baseline_.emplace(
+          grid_item.resolved_position,
+          block_offset + fragment.LastBaselineOrSynthesize(font_baseline_));
+    }
+
+    // Keep track of the first/last set which has content.
+    const auto& set_indices = grid_item.SetIndices(kForRows);
+    if (first_set_index_ == kNotFound || set_indices.begin < first_set_index_)
+      first_set_index_ = set_indices.begin;
+    if (last_set_index_ == kNotFound || set_indices.end - 1 > last_set_index_)
+      last_set_index_ = set_indices.end - 1;
+  }
+
+  void AccumulateRows(const NGGridLayoutTrackCollection& rows) {
+    for (wtf_size_t i = 0; i < rows.GetSetCount(); ++i) {
+      LayoutUnit set_offset = rows.GetSetOffset(i);
+      LayoutUnit major_baseline = rows.MajorBaseline(i);
+      if (major_baseline != LayoutUnit::Min()) {
+        LayoutUnit baseline_offset = set_offset + major_baseline;
+        if (!first_major_baseline_)
+          first_major_baseline_.emplace(i, baseline_offset);
+        last_major_baseline_.emplace(i, baseline_offset);
       }
-    } else if (!fallback_baseline_ ||
-               IsBeforeInGridOrder(grid_item.resolved_position,
-                                   fallback_baseline_->resolved_position)) {
-      fallback_baseline_.emplace(grid_item.resolved_position, baseline);
+
+      LayoutUnit minor_baseline = rows.MinorBaseline(i);
+      if (minor_baseline != LayoutUnit::Min()) {
+        LayoutUnit baseline_offset =
+            set_offset + rows.ComputeSetSpanSize(i, i + 1) - minor_baseline;
+        if (!first_minor_baseline_)
+          first_minor_baseline_.emplace(i, baseline_offset);
+        last_minor_baseline_.emplace(i, baseline_offset);
+      }
     }
   }
 
-  absl::optional<LayoutUnit> Baseline() const {
-    if (alignment_baseline_)
-      return alignment_baseline_->baseline;
-    if (fallback_baseline_)
-      return fallback_baseline_->baseline;
+  absl::optional<LayoutUnit> FirstBaseline() const {
+    if (first_major_baseline_ &&
+        first_major_baseline_->set_index == first_set_index_) {
+      return first_major_baseline_->baseline;
+    }
+    if (first_minor_baseline_ &&
+        first_minor_baseline_->set_index == first_set_index_) {
+      return first_minor_baseline_->baseline;
+    }
+    if (first_fallback_baseline_)
+      return first_fallback_baseline_->baseline;
+    return absl::nullopt;
+  }
+
+  absl::optional<LayoutUnit> LastBaseline() const {
+    if (last_minor_baseline_ &&
+        last_minor_baseline_->set_index == last_set_index_) {
+      return last_minor_baseline_->baseline;
+    }
+    if (last_major_baseline_ &&
+        last_major_baseline_->set_index == last_set_index_) {
+      return last_major_baseline_->baseline;
+    }
+    if (last_fallback_baseline_)
+      return last_fallback_baseline_->baseline;
     return absl::nullopt;
   }
 
  private:
+  struct SetIndexAndBaseline {
+    SetIndexAndBaseline(wtf_size_t set_index, LayoutUnit baseline)
+        : set_index(set_index), baseline(baseline) {}
+    wtf_size_t set_index;
+    LayoutUnit baseline;
+  };
   struct PositionAndBaseline {
     PositionAndBaseline(const GridArea& resolved_position, LayoutUnit baseline)
         : resolved_position(resolved_position), baseline(baseline) {}
@@ -2855,8 +2917,16 @@ class BaselineAccumulator {
   };
 
   FontBaseline font_baseline_;
-  absl::optional<PositionAndBaseline> alignment_baseline_;
-  absl::optional<PositionAndBaseline> fallback_baseline_;
+  wtf_size_t first_set_index_ = kNotFound;
+  wtf_size_t last_set_index_ = kNotFound;
+
+  absl::optional<SetIndexAndBaseline> first_major_baseline_;
+  absl::optional<SetIndexAndBaseline> first_minor_baseline_;
+  absl::optional<PositionAndBaseline> first_fallback_baseline_;
+
+  absl::optional<SetIndexAndBaseline> last_major_baseline_;
+  absl::optional<SetIndexAndBaseline> last_minor_baseline_;
+  absl::optional<PositionAndBaseline> last_fallback_baseline_;
 };
 
 }  // namespace
@@ -2980,9 +3050,13 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     }
   }
 
-  // Propagate the baseline from the appropriate child.
-  if (auto baseline = baseline_accumulator.Baseline())
-    container_builder_.SetFirstBaseline(*baseline);
+  // Propagate the baselines.
+  if (layout_data.Rows()->HasBaselines())
+    baseline_accumulator.AccumulateRows(*layout_data.Rows());
+  if (auto first_baseline = baseline_accumulator.FirstBaseline())
+    container_builder_.SetFirstBaseline(*first_baseline);
+  if (auto last_baseline = baseline_accumulator.LastBaseline())
+    container_builder_.SetLastBaseline(*last_baseline);
 }
 
 // This is only used in NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(),
@@ -3372,9 +3446,11 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
                                  result_and_offset.relative_offset);
   }
 
-  // Propagate the baseline from the appropriate child.
-  if (auto baseline = baseline_accumulator.Baseline())
-    container_builder_.SetFirstBaseline(*baseline);
+  // Propagate the baselines.
+  if (auto first_baseline = baseline_accumulator.FirstBaseline())
+    container_builder_.SetFirstBaseline(*first_baseline);
+  if (auto last_baseline = baseline_accumulator.LastBaseline())
+    container_builder_.SetLastBaseline(*last_baseline);
 
   if (fragmentainer_space != kIndefiniteSize)
     *consumed_grid_block_size += fragmentainer_space;
