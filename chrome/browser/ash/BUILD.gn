@@ -2545,6 +2545,8 @@ source_set("ash") {
     "printing/oauth2/http_exchange.h",
     "printing/oauth2/ipp_endpoint_token_fetcher.cc",
     "printing/oauth2/ipp_endpoint_token_fetcher.h",
+    "printing/oauth2/log_entry.cc",
+    "printing/oauth2/log_entry.h",
     "printing/oauth2/profile_auth_servers_sync_bridge.cc",
     "printing/oauth2/profile_auth_servers_sync_bridge.h",
     "printing/oauth2/signin_dialog.cc",

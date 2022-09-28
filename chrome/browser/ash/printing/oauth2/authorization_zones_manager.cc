@@ -15,9 +15,9 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zone.h"
+#include "chrome/browser/ash/printing/oauth2/log_entry.h"
 #include "chrome/browser/ash/printing/oauth2/profile_auth_servers_sync_bridge.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,34 +35,6 @@ namespace ash::printing::oauth2 {
 
 namespace {
 
-// Builds a single log entry for device-log.
-std::string BuildLogEntry(base::StringPiece method,
-                          const GURL& auth_server,
-                          const chromeos::Uri& ipp_endpoint = chromeos::Uri(),
-                          absl::optional<StatusCode> status = absl::nullopt,
-                          const std::string& data = "") {
-  std::vector<base::StringPiece> strv;
-  strv.reserve(10);
-  strv.emplace_back("oauth ");
-  strv.emplace_back(method);
-  strv.emplace_back(";server=");
-  strv.emplace_back(auth_server.possibly_invalid_spec());
-  const std::string endpoint = ipp_endpoint.GetNormalized();
-  if (!endpoint.empty()) {
-    strv.emplace_back(";endpoint=");
-    strv.emplace_back(endpoint);
-  }
-  if (status) {
-    strv.emplace_back(";status=");
-    strv.emplace_back(ToStringPiece(*status));
-  }
-  if (!data.empty()) {
-    strv.emplace_back(": ");
-    strv.emplace_back(data);
-  }
-  return base::StrCat(strv);
-}
-
 // Logs results to device-log and calls `callback` with parameters `status` and
 // `data`.
 void LogAndCall(StatusCallback callback,
@@ -72,12 +44,11 @@ void LogAndCall(StatusCallback callback,
                 StatusCode status,
                 const std::string& data) {
   if (status == StatusCode::kOK || status == StatusCode::kAuthorizationNeeded) {
-    PRINTER_LOG(EVENT) << BuildLogEntry(
-        method, auth_server, ipp_endpoint, status,
-        (status == StatusCode::kOK) ? "" : data);
+    PRINTER_LOG(EVENT) << LogEntry((status == StatusCode::kOK) ? "" : data,
+                                   method, auth_server, status, ipp_endpoint);
   } else {
-    PRINTER_LOG(ERROR) << BuildLogEntry(method, auth_server, ipp_endpoint,
-                                        status, data);
+    PRINTER_LOG(ERROR) << LogEntry(data, method, auth_server, status,
+                                   ipp_endpoint);
   }
   std::move(callback).Run(status, data);
 }
@@ -122,8 +93,8 @@ class AuthorizationZonesManagerImpl
     if (!auth_server.is_valid() || !auth_server.SchemeIs("https") ||
         !auth_server.has_host() || auth_server.has_username() ||
         auth_server.has_query() || auth_server.has_ref()) {
-      PRINTER_LOG(USER) << BuildLogEntry(__func__, auth_server, chromeos::Uri(),
-                                         StatusCode::kInvalidURL);
+      PRINTER_LOG(USER) << LogEntry("", __func__, auth_server,
+                                    StatusCode::kInvalidURL);
       return StatusCode::kInvalidURL;
     }
     std::unique_ptr<AuthorizationZone> auth_zone =
@@ -138,16 +109,14 @@ class AuthorizationZonesManagerImpl
         waiting_servers_[auth_server].server = std::move(auth_zone);
       }
     }
-    PRINTER_LOG(USER) << BuildLogEntry(__func__, auth_server, chromeos::Uri(),
-                                       StatusCode::kOK);
+    PRINTER_LOG(USER) << LogEntry("", __func__, auth_server, StatusCode::kOK);
     return StatusCode::kOK;
   }
 
   void InitAuthorization(const GURL& auth_server,
                          const std::string& scope,
                          StatusCallback callback) override {
-    PRINTER_LOG(USER) << BuildLogEntry(__func__, auth_server, chromeos::Uri(),
-                                       absl::nullopt, "scope=" + scope);
+    PRINTER_LOG(USER) << LogEntry("scope=" + scope, __func__, auth_server);
     AddLoggingToCallback(callback, __func__, auth_server);
     AuthorizationZone* zone = GetAuthorizationZone(auth_server);
 
@@ -168,7 +137,7 @@ class AuthorizationZonesManagerImpl
   void FinishAuthorization(const GURL& auth_server,
                            const GURL& redirect_url,
                            StatusCallback callback) override {
-    PRINTER_LOG(USER) << BuildLogEntry(__func__, auth_server);
+    PRINTER_LOG(USER) << LogEntry("", __func__, auth_server);
     AddLoggingToCallback(callback, __func__, auth_server);
 
     AuthorizationZone* zone = GetAuthorizationZone(auth_server);
@@ -187,8 +156,8 @@ class AuthorizationZonesManagerImpl
                               const chromeos::Uri& ipp_endpoint,
                               const std::string& scope,
                               StatusCallback callback) override {
-    PRINTER_LOG(USER) << BuildLogEntry(__func__, auth_server, ipp_endpoint,
-                                       absl::nullopt, "scope=" + scope);
+    PRINTER_LOG(USER) << LogEntry("scope=" + scope, __func__, auth_server,
+                                  absl::nullopt, ipp_endpoint);
     AddLoggingToCallback(callback, __func__, auth_server, ipp_endpoint);
 
     AuthorizationZone* zone = GetAuthorizationZone(auth_server);
@@ -208,9 +177,10 @@ class AuthorizationZonesManagerImpl
       const chromeos::Uri& ipp_endpoint,
       const std::string& endpoint_access_token) override {
     AuthorizationZone* zone = GetAuthorizationZone(auth_server);
-    PRINTER_LOG(EVENT) << BuildLogEntry(
-        __func__, auth_server, ipp_endpoint,
-        zone ? StatusCode::kOK : StatusCode::kUntrustedAuthorizationServer);
+    PRINTER_LOG(EVENT) << LogEntry(
+        "", __func__, auth_server,
+        zone ? StatusCode::kOK : StatusCode::kUntrustedAuthorizationServer,
+        ipp_endpoint);
     if (zone) {
       zone->MarkEndpointAccessTokenAsExpired(ipp_endpoint,
                                              endpoint_access_token);
