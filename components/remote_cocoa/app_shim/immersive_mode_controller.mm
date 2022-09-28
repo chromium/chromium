@@ -55,15 +55,26 @@
 
 @end
 
-@interface ClearTitlebarViewController : NSTitlebarAccessoryViewController
+@interface ClearTitlebarViewController : NSTitlebarAccessoryViewController {
+  CGFloat _height;
+}
 @end
 
 @implementation ClearTitlebarViewController
 
+- (instancetype)initWithHeight:(CGFloat)height {
+  self = [super init];
+  if (self) {
+    _height = height;
+  }
+  return self;
+}
+
 - (void)viewWillAppear {
   [super viewWillAppear];
+
   NSSize size = self.view.frame.size;
-  size.height = self.fullScreenMinHeight;
+  size.height = _height;
   [self.view setFrameSize:size];
 
   // Hide the controller before it is appears but after the view's frame is set.
@@ -277,14 +288,12 @@ void ImmersiveModeController::SetTitleBarPinned(bool pinned) {
     return;
   }
 
-  clear_titlebar_view_controller_.reset(
-      [[ClearTitlebarViewController alloc] init]);
+  clear_titlebar_view_controller_.reset([[ClearTitlebarViewController alloc]
+      initWithHeight:browser_widget_.contentView.frame.size.height]);
   clear_titlebar_view_controller_.get().view =
       [[[NSView alloc] init] autorelease];
   clear_titlebar_view_controller_.get().layoutAttribute =
       NSLayoutAttributeBottom;
-  clear_titlebar_view_controller_.get().fullScreenMinHeight =
-      browser_widget_.contentView.frame.size.height;
   [browser_widget_
       addTitlebarAccessoryViewController:clear_titlebar_view_controller_];
 }
@@ -308,15 +317,12 @@ void ImmersiveModeController::ObserveOverlayChildWindows() {
 
 void ImmersiveModeController::RevealLock() {
   revealed_lock_count_++;
-  immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight =
-      immersive_mode_titlebar_view_controller_.get().view.frame.size.height;
   SetTitleBarPinned(true);
 }
 
 void ImmersiveModeController::RevealUnlock() {
   if (--revealed_lock_count_ < 1) {
     SetTitleBarPinned(false);
-    UpdateToolbarVisibility(always_show_toolbar_);
   }
 }
 
