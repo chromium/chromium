@@ -72,6 +72,9 @@ vars = {
   # TODO(ehmaldonado): Remove this once the bug in gclient is fixed.
   'checkout_fuchsia': False,
 
+  # Used for downloading the Fuchsia SDK without running hooks.
+  'checkout_fuchsia_no_hooks': False,
+
   # Pull in Android prebuilts build tools so we can create Java xrefs
   'checkout_android_prebuilts_build_tools': False,
 
@@ -1366,7 +1369,7 @@ deps = {
               'version': Var('fuchsia_version'),
           },
       ],
-      'condition': 'False',
+      'condition': 'checkout_fuchsia_no_hooks',
       'dep_type': 'cipd',
   },
 
