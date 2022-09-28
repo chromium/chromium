@@ -14,9 +14,15 @@ AppCompletionInfo::AppCompletionInfo()
       is_canceled(false),
       is_noupdate(false) {}
 AppCompletionInfo::AppCompletionInfo(const AppCompletionInfo&) = default;
+AppCompletionInfo& AppCompletionInfo::operator=(const AppCompletionInfo&) =
+    default;
 AppCompletionInfo::~AppCompletionInfo() = default;
 
 ObserverCompletionInfo::ObserverCompletionInfo() = default;
+ObserverCompletionInfo::ObserverCompletionInfo(const ObserverCompletionInfo&) =
+    default;
+ObserverCompletionInfo& ObserverCompletionInfo::operator=(
+    const ObserverCompletionInfo&) = default;
 ObserverCompletionInfo::~ObserverCompletionInfo() = default;
 
 }  // namespace updater

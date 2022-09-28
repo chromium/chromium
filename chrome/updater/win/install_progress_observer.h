@@ -73,6 +73,7 @@ struct AppCompletionInfo {
 
   AppCompletionInfo();
   AppCompletionInfo(const AppCompletionInfo&);
+  AppCompletionInfo& operator=(const AppCompletionInfo&);
   ~AppCompletionInfo();
 };
 
@@ -83,6 +84,8 @@ struct ObserverCompletionInfo {
   std::vector<AppCompletionInfo> apps_info;
 
   ObserverCompletionInfo();
+  ObserverCompletionInfo(const ObserverCompletionInfo&);
+  ObserverCompletionInfo& operator=(const ObserverCompletionInfo&);
   ~ObserverCompletionInfo();
 };
 

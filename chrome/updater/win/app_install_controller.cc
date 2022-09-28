@@ -328,8 +328,8 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
 
 InstallProgressObserverIPC::InstallProgressObserverIPC(
     InstallProgressObserver* observer,
-    DWORD obserer_thread_id)
-    : observer_(observer), observer_thread_id_(obserer_thread_id) {
+    DWORD observer_thread_id)
+    : observer_(observer), observer_thread_id_(observer_thread_id) {
   DCHECK(observer);
 }
 
@@ -582,7 +582,9 @@ class AppInstallControllerImpl : public AppInstallController,
                            const std::string& install_args,
                            const std::string& install_data);
   void InstallComplete(UpdateService::Result result);
-  void HandleInstallResult(const UpdateService::UpdateState& update_state);
+
+  [[nodiscard]] static ObserverCompletionInfo HandleInstallResult(
+      const UpdateService::UpdateState& update_state);
 
   // Returns the thread id of the thread which owns the progress window.
   DWORD GetUIThreadID() const;
@@ -616,6 +618,11 @@ class AppInstallControllerImpl : public AppInstallController,
   // The adapter for the inter-thread calls between the updater main thread
   // and the UI thread.
   std::unique_ptr<InstallProgressObserverIPC> install_progress_observer_ipc_;
+
+  // Contains the result of installing the application. This is populated
+  // by the `StateChangeCallback` or the completion callback, if the
+  // former callback was not posted.
+  absl::optional<ObserverCompletionInfo> observer_completion_info_;
 
   // Called when InstallApp is done.
   base::OnceCallback<void(int)> callback_;
@@ -832,10 +839,11 @@ void AppInstallControllerImpl::InstallComplete(UpdateService::Result result) {
     update_state.state = UpdateService::UpdateState::State::kUpdateError;
     update_state.error_category = UpdateService::ErrorCategory::kService;
     update_state.error_code = -1;
-    HandleInstallResult(update_state);
+    observer_completion_info_ = HandleInstallResult(update_state);
   }
-
   update_service_ = nullptr;
+  CHECK(observer_completion_info_.has_value());
+  install_progress_observer_ipc_->OnComplete(observer_completion_info_.value());
 }
 
 void AppInstallControllerImpl::StateChange(
@@ -880,10 +888,7 @@ void AppInstallControllerImpl::StateChange(
     case UpdateService::UpdateState::State::kUpdated:
     case UpdateService::UpdateState::State::kNoUpdate:
     case UpdateService::UpdateState::State::kUpdateError:
-      // TODO(crbug.com/1366393) - refactor the control flow of the UI so that
-      // the `update_service_` reference is released by a single call site.
-      update_service_ = nullptr;
-      HandleInstallResult(update_state);
+      observer_completion_info_ = HandleInstallResult(update_state);
       break;
 
     case UpdateService::UpdateState::State::kUnknown:
@@ -892,7 +897,7 @@ void AppInstallControllerImpl::StateChange(
   }
 }
 
-void AppInstallControllerImpl::HandleInstallResult(
+ObserverCompletionInfo AppInstallControllerImpl::HandleInstallResult(
     const UpdateService::UpdateState& update_state) {
   CompletionCodes completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
   std::wstring completion_text;
@@ -921,10 +926,10 @@ void AppInstallControllerImpl::HandleInstallResult(
   ObserverCompletionInfo observer_info;
   observer_info.completion_code = completion_code;
   observer_info.completion_text = completion_text;
-  observer_info.help_url =
-      base::StringPrintf("%s?product=%s&error=%d", HELP_CENTER_URL,
-                         base::EscapeUrlEncodedData(app_id_, false).c_str(),
-                         update_state.error_code);
+  observer_info.help_url = base::StringPrintf(
+      "%s?product=%s&error=%d", HELP_CENTER_URL,
+      base::EscapeUrlEncodedData(update_state.app_id, false).c_str(),
+      update_state.error_code);
 
   AppCompletionInfo app_info;
   if (update_state.state != UpdateService::UpdateState::State::kNoUpdate) {
@@ -955,7 +960,7 @@ void AppInstallControllerImpl::HandleInstallResult(
   }
   observer_info.apps_info.push_back(app_info);
 
-  install_progress_observer_ipc_->OnComplete(observer_info);
+  return observer_info;
 }
 
 // Creates the install progress observer. The observer has thread affinity. It
