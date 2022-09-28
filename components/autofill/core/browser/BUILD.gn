@@ -848,6 +848,7 @@ source_set("unit_tests") {
     "form_processing/label_processing_util_unittest.cc",
     "form_processing/name_processing_util_unittest.cc",
     "form_structure_rationalizer_unittest.cc",
+    "form_structure_sectioning_util_unittest.cc",
     "form_structure_unittest.cc",
     "geo/address_i18n_unittest.cc",
     "geo/alternative_state_name_map_unittest.cc",
