@@ -224,10 +224,35 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
       # The timeout provided is the same one used for crashing the processes, so
       # don't make it too short.
       self._browser.tabs[-1].EvaluateJavaScript('var cat = "dog";', timeout=10)
-    except (exceptions.AppCrashException, exceptions.TimeoutException) as e:
-      # TimeoutException does not have is_valid_dump.
-      if hasattr(e, 'is_valid_dump'):
-        self.assertTrue(e.is_valid_dump)
+    except exceptions.TimeoutException:
+      # If we time out while crashing the renderer process, the minidump should
+      # still exist, we just have to manually look for it instead of it being
+      # part of the exception.
+      all_paths = self._browser.GetAllMinidumpPaths()
+      # We can't assert that we have exactly two minidumps because we can also
+      # get one from the renderer process being notified of the GPU process
+      # crash.
+      num_paths = len(all_paths)
+      self.assertTrue(num_paths in (2, 3),
+                      'Got %d minidumps, expected 2 or 3' % num_paths)
+      found_renderer = False
+      found_gpu = False
+      for p in all_paths:
+        succeeded, stack = self._browser.SymbolizeMinidump(p)
+        self.assertTrue(succeeded)
+        try:
+          self.assertContainsAtLeastOne(FORCED_RENDERER_CRASH_SIGNATURES, stack)
+          # We don't assert that we haven't found a renderer crash yet since
+          # we can potentially get multiple under normal circumstances.
+          found_renderer = True
+        except AssertionError:
+          self.assertContainsAtLeastOne(GPU_CRASH_SIGNATURES, stack)
+          self.assertFalse(found_gpu, 'Found two GPU crashes')
+          found_gpu = True
+      self.assertTrue(found_renderer and found_gpu)
+      found_minidumps = True
+    except exceptions.AppCrashException as e:
+      self.assertTrue(e.is_valid_dump)
       # We should get one minidump from the GPU process (gl::Crash()) and one
       # minidump from the renderer process (base::debug::BreakDebugger()).
       self.assertContainsAtLeastOne(FORCED_RENDERER_CRASH_SIGNATURES,
