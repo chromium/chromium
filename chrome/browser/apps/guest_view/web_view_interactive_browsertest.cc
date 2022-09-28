@@ -1277,16 +1277,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, WordLookup) {
 }
 #endif
 
-// Flaky on Mac: http://crbug.com/811893
-// Flaky on Linux/ChromeOS/Windows: http://crbug.com/845638
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_WIN)
-#define MAYBE_FocusAndVisibility DISABLED_FocusAndVisibility
-#else
-#define MAYBE_FocusAndVisibility FocusAndVisibility
-#endif
-
-IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, MAYBE_FocusAndVisibility) {
+IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, FocusAndVisibility) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   LoadAndLaunchPlatformApp("web_view/focus_visibility",
                            "WebViewInteractiveTest.LOADED");
