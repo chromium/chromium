@@ -3557,6 +3557,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.DebugReport.HttpResponseOrNetErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-03-05">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending a debug attribution report, recorded for each sent
+    report. The HTTP response code is recorded if there is no net error code for
+    the request, or the net error code indicates there was a response code
+    failure.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DebugReport.ReportRetrySucceed"
+    enum="BooleanSuccess" expires_after="2023-01-22">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether a particular debug attribution report was successful.
+    Emitted for all debug attribution reports that retry.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DebugReport.ReportStatus"
+    enum="ConversionReportStatus" expires_after="2023-03-05">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high-level request status of a debug attribution report.
+    Recorded for every debug attribution report sent.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.DeleteSentReportOperation"
     enum="ConversionPostSendReportDeleteEvent" expires_after="M105">
   <obsolete>
@@ -3776,7 +3811,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Error info for sending a conversion report, recorded for each sent report.
     The HTTP response code is recorded if there is no net error code for the
-    request, or the net error code indicates there was a response code failusre.
+    request, or the net error code indicates there was a response code failure.
   </summary>
 </histogram>
 

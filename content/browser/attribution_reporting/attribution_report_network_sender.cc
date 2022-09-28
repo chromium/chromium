@@ -139,19 +139,23 @@ void AttributionReportNetworkSender::OnReportSent(
           ? Status::kOk
           : !internal_ok ? Status::kInternalError : Status::kExternalError;
 
-  // TODO(apaseltiner): Consider recording separate metrics for debug reports.
-  if (!is_debug_report) {
-    base::UmaHistogramEnumeration("Conversions.ReportStatus2", status);
+  base::UmaHistogramEnumeration(is_debug_report
+                                    ? "Conversions.DebugReport.ReportStatus"
+                                    : "Conversions.ReportStatus2",
+                                status);
 
-    // Since net errors are always negative and HTTP errors are always positive,
-    // it is fine to combine these in a single histogram.
-    base::UmaHistogramSparse("Conversions.Report.HttpResponseOrNetErrorCode",
-                             internal_ok ? response_code : net_error);
+  // Since net errors are always negative and HTTP errors are always positive,
+  // it is fine to combine these in a single histogram.
+  base::UmaHistogramSparse(
+      is_debug_report ? "Conversions.DebugReport.HttpResponseOrNetErrorCode"
+                      : "Conversions.Report.HttpResponseOrNetErrorCode",
+      internal_ok ? response_code : net_error);
 
-    if (loader->GetNumRetries() > 0) {
-      base::UmaHistogramBoolean("Conversions.ReportRetrySucceed2",
-                                status == Status::kOk);
-    }
+  if (loader->GetNumRetries() > 0) {
+    base::UmaHistogramBoolean(is_debug_report
+                                  ? "Conversions.DebugReport.ReportRetrySucceed"
+                                  : "Conversions.ReportRetrySucceed2",
+                              status == Status::kOk);
   }
 
   loaders_in_progress_.erase(it);
