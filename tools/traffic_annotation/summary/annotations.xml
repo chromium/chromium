@@ -394,4 +394,5 @@ Refer to README.md for content description and update process.
  <item id="send_message_express" added_in_milestone="108" content_hash_code="05c5d134" os_list="chromeos" file_path="chrome/browser/nearby_sharing/instantmessaging/send_message_express.cc" />
  <item id="cryptohome_recovery_fetch_epoch" added_in_milestone="108" content_hash_code="06e195ad" os_list="chromeos" file_path="chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.cc" />
  <item id="cryptohome_recovery_fetch_recovery_response" added_in_milestone="108" content_hash_code="01b13324" os_list="chromeos" file_path="chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.cc" />
+ <item id="supervised_user_favicon_request" added_in_milestone="108" content_hash_code="06636c2a" os_list="chromeos,android" file_path="chrome/browser/supervised_user/supervised_user_favicon_request_handler.cc" />
 </annotations>

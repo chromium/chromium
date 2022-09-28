@@ -17,7 +17,10 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_favicon_request_handler.h"
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -145,6 +148,18 @@ void CleanUpInfoBar(content::WebContents* web_contents) {
   }
 }
 
+const GURL TrimPageUrl(const GURL& url) {
+  if (!url.SchemeIsHTTPOrHTTPS() || url.HostIsIPAddress())
+    return GURL();
+
+  GURL::Replacements replacements;
+  replacements.ClearUsername();
+  replacements.ClearPassword();
+  replacements.ClearQuery();
+  replacements.ClearRef();
+  replacements.ClearPath();
+  return url.ReplaceComponents(replacements);
+}
 }  // namespace
 
 // static
@@ -176,7 +191,20 @@ SupervisedUserInterstitial::SupervisedUserInterstitial(
       url_(url),
       reason_(reason),
       frame_id_(frame_id),
-      interstitial_navigation_id_(interstitial_navigation_id) {}
+      interstitial_navigation_id_(interstitial_navigation_id),
+      favicon_handler_(SupervisedUserFaviconRequestHandler(
+          TrimPageUrl(url_),
+          LargeIconServiceFactory::GetForBrowserContext(profile_))) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (supervised_users::IsLocalWebApprovalsEnabled()) {
+    // Prefetch the favicon which will be rendered as part of the web approvals
+    // ParentAccessDialog. Pass in DoNothing() for the favicon fetched callback
+    // because if the favicon is by the time the user triggers the opening of
+    // the ParentAccessDialog, we show the default favicon.
+    favicon_handler_.StartFaviconFetch(base::DoNothing());
+  }
+#endif
+}
 
 SupervisedUserInterstitial::~SupervisedUserInterstitial() {}
 

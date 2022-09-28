@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
+#include "chrome/browser/supervised_user/supervised_user_favicon_request_handler.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -85,6 +86,8 @@ class SupervisedUserInterstitial {
 
   // The Navigation ID of the navigation that last triggered the interstitial.
   int64_t interstitial_navigation_id_;
+
+  SupervisedUserFaviconRequestHandler favicon_handler_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_INTERSTITIAL_H_
