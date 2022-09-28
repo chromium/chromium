@@ -831,7 +831,7 @@ void CastActivityManager::HandleLaunchSessionResponse(
         mojom::RouteRequestResultCode::ROUTE_NOT_FOUND);
     return;
   }
-  RecordLaunchSessionResponseAppType(session->value().FindKey("appType"));
+  RecordLaunchSessionResponseAppType(session->value().Find("appType"));
 
   mojom::RoutePresentationConnectionPtr presentation_connection;
   const std::string& client_id = cast_source.client_id();

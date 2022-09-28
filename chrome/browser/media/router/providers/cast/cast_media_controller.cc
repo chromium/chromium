@@ -152,16 +152,15 @@ void CastMediaController::PreviousTrack() {
 
 void CastMediaController::SetSession(const CastSession& session) {
   session_id_ = session.session_id();
-  if (!session.value().is_dict())
+  const base::Value::Dict* volume =
+      session.value().FindDictByDottedPath("receiver.volume");
+  if (!volume)
     return;
-  const base::Value* volume = session.value().FindPath("receiver.volume");
-  if (!volume || !volume->is_dict())
-    return;
-  SetIfNonNegative(&media_status_.volume, volume->FindKey("level"));
-  SetIfValid(&media_status_.is_muted, volume->FindKey("muted"));
-  const base::Value* volume_type = volume->FindKey("controlType");
-  if (volume_type && volume_type->is_string()) {
-    media_status_.can_set_volume = volume_type->GetString() != "fixed";
+  SetIfNonNegative(&media_status_.volume, volume->Find("level"));
+  SetIfValid(&media_status_.is_muted, volume->Find("muted"));
+  const std::string* volume_type = volume->FindString("controlType");
+  if (volume_type) {
+    media_status_.can_set_volume = *volume_type != "fixed";
     media_status_.can_mute = media_status_.can_set_volume;
   }
   observer_->OnMediaStatusUpdated(media_status_.Clone());

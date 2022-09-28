@@ -183,14 +183,14 @@ class CastSession {
   // The dictionary representing this session, derived from |receiver_status|.
   // For convenience, this is used for generating messages sent to the SDK that
   // include the session value.
-  const base::Value& value() const { return value_; }
+  const base::Value::Dict& value() const { return value_; }
 
  private:
   std::string session_id_;
   std::string app_id_;
   std::string destination_id_;
   base::flat_set<std::string> message_namespaces_;
-  base::Value value_;
+  base::Value::Dict value_;
 
   // The human-readable name of the Cast application, for example, "YouTube".
   // Mandatory.

@@ -402,9 +402,9 @@ TEST_F(CastMediaControllerTest, IgnoreInvalidImage) {
 TEST_F(CastMediaControllerTest, UpdateVolumeStatus) {
   auto session = CreateSampleSession();
   const float session_volume =
-      session->value().FindPath("receiver.volume.level")->GetDouble();
+      session->value().FindByDottedPath("receiver.volume.level")->GetDouble();
   const bool session_muted =
-      session->value().FindPath("receiver.volume.muted")->GetBool();
+      session->value().FindByDottedPath("receiver.volume.muted")->GetBool();
   EXPECT_CALL(*status_observer_, OnMediaStatusUpdated(_))
       .WillOnce([&](mojom::MediaStatusPtr status) {
         EXPECT_FLOAT_EQ(session_volume, status->volume);

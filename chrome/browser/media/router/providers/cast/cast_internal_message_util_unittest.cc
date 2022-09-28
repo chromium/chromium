@@ -242,7 +242,6 @@ TEST(CastInternalMessageUtilTest, CastSessionFromReceiverStatusNoStatusText) {
   base::flat_set<std::string> message_namespaces = {
       "urn:x-cast:com.google.cast.media", "urn:x-cast:com.google.foo"};
   EXPECT_EQ(message_namespaces, session->message_namespaces());
-  EXPECT_TRUE(session->value().is_dict());
   EXPECT_EQ("App display name", session->GetRouteDescription());
 }
 

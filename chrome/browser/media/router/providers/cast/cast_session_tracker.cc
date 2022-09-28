@@ -170,7 +170,7 @@ void CastSessionTracker::CopySavedMediaFieldsToMediaList(
   // to a value in |media_list|, copy the 'media' field from the saved objects
   // to the corresponding objects in |media_list|.
   const base::Value::List* session_media_value_list =
-      session->value().GetDict().FindList("media");
+      session->value().FindList("media");
   if (!session_media_value_list)
     return;
 

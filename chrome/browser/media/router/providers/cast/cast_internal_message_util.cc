@@ -243,12 +243,12 @@ blink::mojom::PresentationConnectionMessagePtr CreateSessionMessage(
     CastInternalMessage::Type type) {
   DCHECK(type == CastInternalMessage::Type::kNewSession ||
          type == CastInternalMessage::Type::kUpdateSession);
-  base::Value session_with_receiver_label = session.value().Clone();
-  DCHECK(!session_with_receiver_label.FindPath({"receiver", "label"}));
-  session_with_receiver_label.SetPath(
-      {"receiver", "label"}, base::Value(GetReceiverLabel(sink, hash_token)));
-  return CreateMessageCommon(type, std::move(session_with_receiver_label),
-                             client_id);
+  base::Value::Dict session_with_receiver_label = session.value().Clone();
+  DCHECK(!session_with_receiver_label.FindByDottedPath("receiver.label"));
+  session_with_receiver_label.SetByDottedPath(
+      "receiver.label", base::Value(GetReceiverLabel(sink, hash_token)));
+  return CreateMessageCommon(
+      type, base::Value(std::move(session_with_receiver_label)), client_id);
 }
 
 }  // namespace
@@ -409,7 +409,7 @@ std::unique_ptr<CastSession> CastSession::From(
   CopyValue(*app_dict, "appType", session_dict);
   CopyValue(*app_dict, "universalAppId", session_dict);
 
-  session->value_ = base::Value(std::move(session_dict));
+  session->value_ = std::move(session_dict);
 
   const base::Value::List* namespaces_value = app_dict->FindList("namespaces");
   if (!namespaces_value || namespaces_value->empty()) {
@@ -430,9 +430,8 @@ std::unique_ptr<CastSession> CastSession::From(
       session->message_namespaces_.insert(std::move(message_namespace));
     }
   }
-  session->value_.GetDict().Set("namespaces", namespaces_value
-                                                  ? namespaces_value->Clone()
-                                                  : base::Value::List());
+  session->value_.Set("namespaces", namespaces_value ? namespaces_value->Clone()
+                                                     : base::Value::List());
   return session;
 }
 
@@ -447,19 +446,20 @@ void CastSession::UpdateSession(std::unique_ptr<CastSession> from) {
   status_ = std::move(from->status_);
   message_namespaces_ = std::move(from->message_namespaces_);
 
-  auto* status_text_value = from->value_.FindKey("statusText");
+  auto* status_text_value = from->value_.Find("statusText");
   DCHECK(status_text_value);
-  value_.SetKey("statusText", std::move(*status_text_value));
-  auto* namespaces_value = from->value_.FindKey("namespaces");
+  value_.Set("statusText", std::move(*status_text_value));
+  auto* namespaces_value = from->value_.Find("namespaces");
   DCHECK(namespaces_value);
-  value_.SetKey("namespaces", std::move(*namespaces_value));
-  auto* receiver_volume_value = from->value_.FindPath({"receiver", "volume"});
+  value_.Set("namespaces", std::move(*namespaces_value));
+  auto* receiver_volume_value =
+      from->value_.FindByDottedPath("receiver.volume");
   DCHECK(receiver_volume_value);
-  value_.SetPath({"receiver", "volume"}, std::move(*receiver_volume_value));
+  value_.SetByDottedPath("receiver.volume", std::move(*receiver_volume_value));
 }
 
 void CastSession::UpdateMedia(const base::Value::List& media) {
-  value_.SetKey("media", base::Value(media.Clone()));
+  value_.Set("media", base::Value(media.Clone()));
 }
 
 blink::mojom::PresentationConnectionMessagePtr CreateReceiverActionCastMessage(

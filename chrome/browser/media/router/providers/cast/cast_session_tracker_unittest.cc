@@ -209,7 +209,7 @@ TEST_F(CastSessionTrackerTest, HandleMediaStatusMessageBasic) {
 
   // Check that the stored media value is the same as the 'status' field in the
   // outgoing message.
-  EXPECT_THAT(*session_->value().FindKey("media"), IsJson(R"([{
+  EXPECT_THAT(*session_->value().Find("media"), IsJson(R"([{
     "playerState": "anything but IDLE",
     "sessionId": "theSessionId",
     "supportedMediaCommands": [],
@@ -272,7 +272,7 @@ TEST_F(CastSessionTrackerTest, HandleMediaStatusMessageFancy) {
 
   // Check that the stored media value is the same as the 'status' field in the
   // outgoing message.
-  EXPECT_THAT(*session_->value().FindKey("media"), IsJson(R"([{
+  EXPECT_THAT(*session_->value().Find("media"), IsJson(R"([{
     "playerState": "anything but IDLE",
     "sessionId": "theSessionId",
     "supportedMediaCommands": ["pause"],
@@ -304,7 +304,7 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
   })")));
 
   // Check that the stored media value is what we expected.
-  ASSERT_THAT(*session_->value().FindKey("media"), IsJson(R"([{
+  ASSERT_THAT(*session_->value().Find("media"), IsJson(R"([{
     "mediaSessionId": 345,
     "media": "theMedia",
     "playerState": "anything but IDLE",
@@ -350,7 +350,7 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
 
   // Check that the stored media value is the same as the 'status' field in the
   // outgoing message.
-  EXPECT_THAT(*session_->value().FindKey("media"), IsJson(R"([{
+  EXPECT_THAT(*session_->value().Find("media"), IsJson(R"([{
     "media": "theMedia",
     "mediaSessionId": 345,
     "playerState": "anything but IDLE",
@@ -395,7 +395,7 @@ TEST_F(CastSessionTrackerTest, DoNotCopySavedMediaFieldsWhenFieldPresent) {
   })")));
 
   // Check that 'media' field has the new value rather than the cached value.
-  EXPECT_THAT(*session_->value().FindKey("media"), IsJson(R"([{
+  EXPECT_THAT(*session_->value().Find("media"), IsJson(R"([{
     "media": "newMedia",
     "mediaSessionId": 345,
     "playerState": "anything but IDLE",
