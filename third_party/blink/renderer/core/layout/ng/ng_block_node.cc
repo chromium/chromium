@@ -609,12 +609,12 @@ const NGLayoutResult* NGBlockNode::Layout(
       FinishLayout(block_flow, constraint_space, break_token, layout_result);
 
 #if DCHECK_IS_ON()
-    scrollbar_changed->erase(box_);
+      scrollbar_changed->erase(box_);
 #endif
 
-    scrollbars_after = ComputeScrollbars(constraint_space, *this);
-    DCHECK(!freeze_horizontal || !freeze_vertical ||
-           scrollbars_after == scrollbars_before);
+      scrollbars_after = ComputeScrollbars(constraint_space, *this);
+      DCHECK(!freeze_horizontal || !freeze_vertical ||
+             scrollbars_after == scrollbars_before);
     } while (scrollbars_after != scrollbars_before);
   }
 
