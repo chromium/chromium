@@ -1655,6 +1655,9 @@ extern const char kUnifiedPasswordManagerAndroidDescription[];
 extern const char kUnifiedPasswordManagerErrorMessagesName[];
 extern const char kUnifiedPasswordManagerErrorMessagesDescription[];
 
+extern const char kUnifiedPasswordManagerAndroidReenrollmentName[];
+extern const char kUnifiedPasswordManagerAndroidReenrollmentDescription[];
+
 extern const char kUnsafeWebGPUName[];
 extern const char kUnsafeWebGPUDescription[];
 
