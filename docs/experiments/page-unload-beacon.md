@@ -1,19 +1,19 @@
 # Page Unload Beacon API
 
-Contact: pending-beacon-experiment@chromium.org
-API Feedback: https://github.com/WICG/unload-beacon/issues
+- Contact: pending-beacon-experiment@chromium.org
+- API Feedback: https://github.com/WICG/unload-beacon/issues
 
 This document describes the status of the current implementation of the
-[Page Unload Beacon API](https://wicg.github.io/unload-beacon/)
+[**Page Unload Beacon API**](https://wicg.github.io/unload-beacon/)
 (a.k.a. PendingBeacon API) in Chrome, and how to enable it manually.
 
-Starting from version 107 , Chrome experimentally supports the
+Starting from [version 107][status], Chrome experimentally supports the
 Page Unload Beacon API,
 which allows website authors to specify one or more beacons (HTTP requests) that should be sent reliably when the page is being unloaded.
 
 See the [public explainer](https://github.com/WICG/unload-beacon#readme) to learn more about how it works.
 
-Note that this API is not enabled by default. Instead, Chrome plans to run A/B testing to evaluate its impact. But Chrome also provides some ways to opt-in to the API for web developers who what to try the features.
+Note that this API is not enabled by default. Instead, Chrome plans to run A/B testing to evaluate its impact. But Chrome also provides some ways to fully opt-in to the API for web developers who what to try the features.
 
 ## What’s supported
 
@@ -27,6 +27,9 @@ Chrome supports all the JavaScript APIs described in the explainer, specifically
 
 The following features are not yet supported in Chrome:
 
+- When calling `setData(data)` on a `PendingPostBeacon`, the `data` payload cannot be
+  - A complex body, i.e. for a `data` of `FormData` type, it can only have single [entry/part][formdata-entry].
+  - A streaming body, i.e. a `data` cannot be a [ReadableStream].
 - Crash recovery related behaviors and privacy requirements: not yet supported. Chrome currently doesn't store any PendingBeacon on disk.
 - Delete pending beacons for a site if a user clears site data: not supported yet, as crash recovery from disk is not yet supported.
 - Beacon requests are not yet observable in Chrome DevTools.
@@ -42,8 +45,11 @@ The following features work differently than the one described in explainer:
   specifies that a `PendingPostBeacon` is only queued if it has non-undefined
   and non-null data (described in `setData()` method).
 - Beacons must be sent over HTTPS: current implementation doesn't enforce HTTPS,
-  which means if web developer creates a Pending*Beacon with HTTP URL property, it will still work.
+  which means if web developer creates a `Pending*Beacon` with HTTP URL property, it will still work.
 - Beacons max TTL is bound by Chrome's back/forward cache TTL, which is currently 3 minutes.
+
+[formdata-entry]: https://developer.mozilla.org/en-US/docs/Web/API/FormData/entries
+[ReadableStream]: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream
 
 ## Activation
 
@@ -57,9 +63,9 @@ to Chrome enables PendingBeacon API support.
 
 ### Using Origin Trial
 
-[Trial for Page Unload Beacon](https://developer.chrome.com/origintrials/#/view_trial/1581889369113886721).
+[**Trial for Page Unload Beacon**](https://developer.chrome.com/origintrials/#/view_trial/1581889369113886721).
 
-You can opt any page on your origin into PendingBeacon API Origin Trial by [requesting a token][ot-tutorial] for your origin. Include the token in both your page so that Chrome can recognize your pages are opted in.
+You can opt any page on your origin into PendingBeacon API Origin Trial by [requesting a token][ot-tutorial] for your origin via the above link. Include the token in your page so that Chrome can recognize your page is opted in.
 
 The simplest way is to include the following line in your page:
 
@@ -68,6 +74,10 @@ The simplest way is to include the following line in your page:
 ```
 
 Or you can also include the token in your HTTP request.
+
+*** note
+**NOTE**: Even with the Origin Trial token, **NOT all of visits to your page** will have the API enabled. It is because as mentioned above, Chrome plan to do A/B testing on the API.
+***
 
 [ot-tutorial]: https://developer.chrome.com/docs/web-platform/origin-trials/#take-part-in-an-origin-trial
 
@@ -86,8 +96,10 @@ your web server that hosts the page.
 
 ## Related Links
 
-- [Page Unload Beacon Design Doc in Chromium](https://docs.google.com/document/d/1QIFUu6Ne8x0W62RKJSoTtZjSd_bIM2yXZSELxdeuTFo/edit#)
-- [Chrome Status](https://chromestatus.com/feature/5690553554436096)
+- [Chrome Platform Status - Feature: Declarative PendingBeacon API][status]
 - [Page Unload Beacon Explainer on GitHub](https://github.com/WICG/unload-beacon#readme)
 - [Page Unload Beacon API Spec (draft)](https://wicg.github.io/unload-beacon/)
 - Ask questions about API & Spec via [new issue](https://github.com/WICG/unload-beacon/issues/new)
+- [Page Unload Beacon Design Doc in Chromium](https://docs.google.com/document/d/1QIFUu6Ne8x0W62RKJSoTtZjSd_bIM2yXZSELxdeuTFo/edit#)
+
+[status]: https://chromestatus.com/feature/5690553554436096
