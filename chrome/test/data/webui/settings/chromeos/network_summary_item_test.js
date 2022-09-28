@@ -5,7 +5,7 @@
 import 'chrome://os-settings/chromeos/os_settings.js';
 
 import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -189,7 +189,7 @@ suite('NetworkSummaryItem', function() {
     initWithPSimOnly(/*isLocked=*/ true);
     assertTrue(doesElementExist('network-siminfo'));
     assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
-                   .classList.contains('locked-warning-message'));
+                   .classList.contains('warning-message'));
     assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
                     .classList.contains('network-state'));
     assertFalse(doesElementExist('#deviceEnabledButton'));
@@ -199,7 +199,7 @@ suite('NetworkSummaryItem', function() {
     initWithPSimOnly(/*isLocked=*/ false);
     assertFalse(doesElementExist('network-siminfo'));
     assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
-                    .classList.contains('locked-warning-message'));
+                    .classList.contains('warning-message'));
     assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
                    .classList.contains('network-state'));
     assertTrue(doesElementExist('#deviceEnabledButton'));
@@ -209,7 +209,7 @@ suite('NetworkSummaryItem', function() {
     initWithESimLocked();
     assertFalse(doesElementExist('network-siminfo'));
     assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
-                    .classList.contains('locked-warning-message'));
+                    .classList.contains('warning-message'));
     assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
                    .classList.contains('network-state'));
     assertTrue(doesElementExist('#deviceEnabledButton'));
@@ -248,4 +248,90 @@ suite('NetworkSummaryItem', function() {
         flush();
         await showNetworksFiredPromise;
       });
+
+  suite('Portal', function() {
+    const testName = 'test_name';
+
+    function initWithPortalState(flagEnabled, portalState) {
+      netSummaryItem.setProperties({
+        isCaptivePortalUI2022Enabled_: flagEnabled,
+        deviceState: {
+          deviceState: DeviceStateType.kEnabled,
+          inhibitReason: InhibitReason.kNotInhibited,
+          type: NetworkType.kWiFi,
+        },
+        activeNetworkState: {
+          connectionState: ConnectionStateType.kPortal,
+          guid: '0001',
+          type: NetworkType.kWiFi,
+          typeState: {
+            wifi: {
+              bssid: 'bssid',
+              frequency: 1,
+              hexSsid: 'hexSsid',
+              security: 'security',
+              signalStrength: 99,
+              ssid: 'ssid',
+              hiddenSsid: false,
+            },
+          },
+          name: testName,
+          portalState: portalState,
+        },
+      });
+      flush();
+    }
+
+    test('kPortal shows sign in', function() {
+      initWithPortalState(true /* flagEnabled */, PortalState.kPortal);
+      assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
+                     .classList.contains('warning-message'));
+      assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
+                      .classList.contains('network-state'));
+      assertEquals(
+          netSummaryItem.getNetworkStateText_(),
+          netSummaryItem.i18n('networkListItemSignIn'));
+      assertEquals(netSummaryItem.getTitleText_(), testName);
+    });
+
+    test('kProxyAuthRequired shows sign in', function() {
+      initWithPortalState(
+          true /* flagEnabled */, PortalState.kProxyAuthRequired);
+      assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
+                     .classList.contains('warning-message'));
+      assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
+                      .classList.contains('network-state'));
+      assertEquals(
+          netSummaryItem.getNetworkStateText_(),
+          netSummaryItem.i18n('networkListItemSignIn'));
+      assertEquals(netSummaryItem.getTitleText_(), testName);
+    });
+
+    test('kPortal does not show sign in when flag is disabled', function() {
+      initWithPortalState(false /* flagEnabled */, PortalState.kPortal);
+      assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
+                      .classList.contains('warning-message'));
+      assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
+                     .classList.contains('network-state'));
+      assertNotEquals(
+          netSummaryItem.getNetworkStateText_(),
+          netSummaryItem.i18n('networkListItemSignIn'));
+      assertNotEquals(netSummaryItem.getTitleText_(), testName);
+    });
+
+    test(
+        'kProxyAuthRequired does not show sign in when flag is disabled',
+        function() {
+          initWithPortalState(
+              false /* flagEnabled */, PortalState.kProxyAuthRequired);
+          assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
+                          .classList.contains('warning-message'));
+          assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
+                         .classList.contains('network-state'));
+          assertNotEquals(
+              netSummaryItem.getNetworkStateText_(),
+              netSummaryItem.i18n('networkListItemSignIn'));
+          assertNotEquals(netSummaryItem.getTitleText_(), testName);
+        });
+  });
 });

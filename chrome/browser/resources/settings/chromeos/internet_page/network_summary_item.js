@@ -24,7 +24,7 @@ import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_po
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {GlobalPolicy, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, DeviceStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -101,6 +101,18 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
         },
       },
 
+      /**
+       * Return true if captivePortalUI2022 feature flag is enabled.
+       * @private
+       */
+      isCaptivePortalUI2022Enabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('captivePortalUI2022') &&
+              loadTimeData.getBoolean('captivePortalUI2022');
+        },
+      },
+
       /** @private {!GlobalPolicy|undefined} */
       globalPolicy: Object,
     };
@@ -127,8 +139,12 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       return this.i18n('internetDeviceBusy');
     }
 
-    const stateText =
-        this.getConnectionStateText_(this.activeNetworkState, this.deviceState);
+    if (this.isCaptivePortalUI2022Enabled_ &&
+        this.isPortalState_(this.activeNetworkState.portalState)) {
+      return this.i18n('networkListItemSignIn');
+    }
+
+    const stateText = this.getConnectionStateText_(this.activeNetworkState);
     if (stateText) {
       return stateText;
     }
@@ -158,11 +174,10 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
 
   /**
    * @param {!OncMojo.NetworkStateProperties|undefined} networkState
-   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
    * @return {string}
    * @private
    */
-  getConnectionStateText_(networkState, deviceState) {
+  getConnectionStateText_(networkState) {
     if (!networkState || !networkState.guid) {
       return '';
     }
@@ -229,13 +244,16 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
   }
 
   /**
+   * @param {!OncMojo.NetworkStateProperties|undefined} activeNetworkState
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
    * @return {string}
    * @private
    */
-  getNetworkStateClass_(deviceState) {
-    if (this.shouldShowLockedWarningMessage_(deviceState)) {
-      return 'locked-warning-message';
+  getNetworkStateClass_(activeNetworkState, deviceState) {
+    if ((this.isCaptivePortalUI2022Enabled_ &&
+         this.isPortalState_(activeNetworkState.portalState)) ||
+        this.shouldShowLockedWarningMessage_(deviceState)) {
+      return 'warning-message';
     }
     return 'network-state';
   }
@@ -616,8 +634,17 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
    * @private
    */
   getTitleText_() {
-    return this.networkTitleText ||
-        this.getNetworkTypeString_(this.activeNetworkState.type);
+    if (this.networkTitleText) {
+      return this.networkTitleText;
+    }
+    if (this.isCaptivePortalUI2022Enabled_ &&
+        this.isPortalState_(this.activeNetworkState.portalState)) {
+      const stateText = this.getConnectionStateText_(this.activeNetworkState);
+      if (stateText) {
+        return stateText;
+      }
+    }
+    return this.getNetworkTypeString_(this.activeNetworkState.type);
   }
 
   /**
@@ -642,6 +669,17 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       type = NetworkType.kMobile;
     }
     return this.i18n('OncType' + OncMojo.getNetworkTypeString(type));
+  }
+
+  /**
+   * Return true if portalState is either kPortal or kProxyAuthRequired.
+   * @param {!PortalState} portalState
+   * @return {boolean}
+   * @private
+   */
+  isPortalState_(portalState) {
+    return portalState === PortalState.kPortal ||
+        portalState === PortalState.kProxyAuthRequired;
   }
 }
 

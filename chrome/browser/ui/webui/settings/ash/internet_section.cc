@@ -850,6 +850,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           ash::features::kCellularBypassESimInstallationConnectivityCheck));
   html_source->AddBoolean("showTechnologyBadge",
                           !ash::features::IsSeparateNetworkIconsEnabled());
+  html_source->AddBoolean("captivePortalUI2022",
+                          ash::features::IsCaptivePortalUI2022Enabled());
   html_source->AddBoolean(
       "showMeteredToggle",
       base::FeatureList::IsEnabled(::features::kMeteredShowToggle));

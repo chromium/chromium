@@ -23,7 +23,7 @@
     font-size: inherit;
   }
 
-  .locked-warning-message {
+  .warning-message {
     color: var(--cros-text-color-warning);
     font-size: inherit;
   }
@@ -43,10 +43,11 @@
       </network-icon>
       <div class="flex settings-box-text">
         <div id="networkTitleText">
-          [[getTitleText_(activeNetworkState)]]
+          [[getTitleText_(activeNetworkState, deviceState)]]
         </div>
         <div id="networkState"
-            class$="[[getNetworkStateClass_(deviceState, deviceState.*)]]">
+            class$="[[getNetworkStateClass_(activeNetworkState,
+                        deviceState, deviceState.*)]]">
           [[getNetworkStateText_(activeNetworkState, deviceState.*)]]
         </div>
       </div>
@@ -63,7 +64,7 @@
 
     <template is="dom-if" if="[[showPolicyIndicator_(activeNetworkState)]]">
       <cr-policy-indicator id="policyIndicator"
-          icon-aria-label="[[getTitleText_(activeNetworkState)]]"
+          icon-aria-label="[[getTitleText_(activeNetworkState, deviceState)]]"
           indicator-type="[[getPolicyIndicatorType_(activeNetworkState)]]"
           on-click="doNothing_">
       </cr-policy-indicator>

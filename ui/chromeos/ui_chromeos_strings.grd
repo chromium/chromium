@@ -1407,6 +1407,9 @@
       <message name="IDS_STATUSBAR_NETWORK_DEVICE_CONNECTED" desc="The network device status connected.">
         Connected
       </message>
+      <message name="IDS_STATUSBAR_NETWORK_DEVICE_SIGNIN" desc="Settings > Network, text in network page when in captive portal state or proxy auth state.">
+        Sign in to network
+      </message>
 
       <!-- Strings used in <network-list>, used in Settings and OOBE -->
       <message name="IDS_NETWORK_LIST_INITIALIZING" desc="Text in the network list element when a Cellular network is initiailizing.">
