@@ -47,10 +47,6 @@ namespace {
 
 using PixelLayoutCandidate = ImageProcessor::PixelLayoutCandidate;
 
-// The number of requested frames used for the image processor should be the
-// number of frames in media::Pipeline plus the current processing frame.
-constexpr size_t kNumFramesForImageProcessor = limits::kMaxVideoFrames + 1;
-
 // Preferred output formats in order of preference.
 // TODO(mcasas): query the platform for its preferred formats and modifiers.
 constexpr Fourcc kPreferredRenderableFourccs[] = {
@@ -815,12 +811,12 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
         candidates,
         /*input_visible_rect=*/decoder_visible_rect,
         output_size ? *output_size : decoder_visible_rect.size(),
-        kNumFramesForImageProcessor);
+        num_of_pictures);
   } else {
     image_processor = ImageProcessorFactory::CreateWithInputCandidates(
         candidates, /*input_visible_rect=*/decoder_visible_rect,
         output_size ? *output_size : decoder_visible_rect.size(),
-        kNumFramesForImageProcessor, decoder_task_runner_,
+        num_of_pictures, decoder_task_runner_,
         base::BindRepeating(&PickRenderableFourcc),
         BindToCurrentLoop(base::BindRepeating(&VideoDecoderPipeline::OnError,
                                               decoder_weak_this_,
@@ -861,8 +857,8 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   // TODO(b/203240043): Add CHECKs to verify that the image processor is being
   // created for only valid use cases. Writing to a linear output buffer, e.g.
   auto status_or_image_processor = ImageProcessorWithPool::Create(
-      std::move(image_processor), main_frame_pool_.get(),
-      kNumFramesForImageProcessor, use_protected, decoder_task_runner_);
+      std::move(image_processor), main_frame_pool_.get(), num_of_pictures,
+      use_protected, decoder_task_runner_);
   if (status_or_image_processor.has_error()) {
     DVLOGF(2) << "Unable to create ImageProcessorWithPool.";
     return std::move(status_or_image_processor).error();
