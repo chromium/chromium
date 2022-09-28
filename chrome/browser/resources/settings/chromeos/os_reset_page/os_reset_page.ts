@@ -10,10 +10,10 @@
 import './os_powerwash_dialog.js';
 
 import {getEuicc, getNonPendingESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink_js.js';
 import {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
@@ -21,34 +21,34 @@ import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const OsSettingsResetPageElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, RouteObserverBehavior], PolymerElement);
+import {getTemplate} from './os_reset_page.html.js';
 
-/** @polymer */
+interface OsSettingsResetPageElement {
+  $: {
+    powerwash: CrButtonElement,
+  };
+}
+
+const OsSettingsResetPageElementBase =
+    mixinBehaviors(
+        [DeepLinkingBehavior, RouteObserverBehavior], PolymerElement) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          RouteObserverBehaviorInterface,
+    };
+
 class OsSettingsResetPageElement extends OsSettingsResetPageElementBase {
   static get is() {
     return 'os-settings-reset-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @private */
       showPowerwashDialog_: Boolean,
 
-      /**
-       * @type {!Array<!ESimProfileRemote>}
-       * @private
-       */
       installedESimProfiles_: {
         type: Array,
         value() {
@@ -58,7 +58,6 @@ class OsSettingsResetPageElement extends OsSettingsResetPageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -67,12 +66,10 @@ class OsSettingsResetPageElement extends OsSettingsResetPageElementBase {
     };
   }
 
-  /** @private */
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onShowPowerwashDialog_(e) {
+  private installedESimProfiles_: ESimProfileRemote[];
+  private showPowerwashDialog_: boolean;
+
+  private onShowPowerwashDialog_(e: Event) {
     e.preventDefault();
 
     getEuicc().then(euicc => {
@@ -88,25 +85,24 @@ class OsSettingsResetPageElement extends OsSettingsResetPageElementBase {
     });
   }
 
-  /** @private */
-  onPowerwashDialogClose_() {
+  private onPowerwashDialogClose_() {
     this.showPowerwashDialog_ = false;
-    focusWithoutInk(assert(this.$.powerwash));
+    focusWithoutInk(this.$.powerwash);
   }
 
-  /**
-   * RouteObserverBehavior
-   * @param {!Route} newRoute
-   * @param {!Route=} oldRoute
-   * @protected
-   */
-  currentRouteChanged(newRoute, oldRoute) {
+  override currentRouteChanged(newRoute: Route, _oldRoute?: Route) {
     // Does not apply to this page.
     if (newRoute !== routes.OS_RESET) {
       return;
     }
 
     this.attemptDeepLink();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'os-settings-reset-page': OsSettingsResetPageElement;
   }
 }
 

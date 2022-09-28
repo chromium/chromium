@@ -238,6 +238,8 @@ generate_grd("build_grdp") {
 
 generate_definitions_js_files = [
   "cellular_setup/cellular_setup_icons.html.js",
+  "cellular_setup/esim_manager_utils.js",
+  "cellular_setup/mojo_interface_provider.js",
   "cr_picture/cr_camera.html.js",
   "cr_picture/cr_picture_list.html.js",
   "cr_picture/cr_picture_list.js",
@@ -249,6 +251,7 @@ generate_definitions_js_files = [
   "keyboard_shortcut_list_js.js",
   "navigation_shared_vars.css.js",
   "network/network_shared.css.js",
+  "network/onc_mojo.js",
   "quick_unlock/lock_screen_constants.js",
   "quick_unlock/pin_keyboard_icons.html.js",
   "store/store.js",
@@ -285,7 +288,6 @@ checked_in_dts_files = [
   "cellular_setup/cellular_types.d.ts",
   "cellular_setup/esim_flow_ui.d.ts",
   "cellular_setup/esim_manager_listener_behavior.d.ts",
-  "cellular_setup/esim_manager_utils.d.ts",
   "cellular_setup/profile_discovery_list_page.d.ts",
   "cellular_setup/provisioning_page.d.ts",
   "cellular_setup/psim_flow_ui.d.ts",
@@ -318,7 +320,6 @@ checked_in_dts_files = [
   "network/network_property_list_mojo.d.ts",
   "network/network_proxy.d.ts",
   "network/network_siminfo.d.ts",
-  "network/onc_mojo.d.ts",
   "network/sim_lock_dialogs.d.ts",
 ]
 

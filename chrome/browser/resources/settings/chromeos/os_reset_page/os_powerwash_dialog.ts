@@ -16,25 +16,32 @@ import '../../settings_shared.css.js';
 import './os_powerwash_dialog_esim_item.js';
 
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
+import {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {Router} from '../../router.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 
+import {getTemplate} from './os_powerwash_dialog.html.js';
 import {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_browser_proxy.js';
 
-/** @polymer */
+interface OsSettingsPowerwashDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 class OsSettingsPowerwashDialogElement extends PolymerElement {
   static get is() {
     return 'os-settings-powerwash-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -44,10 +51,6 @@ class OsSettingsPowerwashDialogElement extends PolymerElement {
         value: false,
       },
 
-      /**
-       * @type {!Array<!ESimProfileRemote>}
-       * @private
-       */
       installedESimProfiles: {
         type: Array,
         value() {
@@ -55,7 +58,6 @@ class OsSettingsPowerwashDialogElement extends PolymerElement {
         },
       },
 
-      /** @private */
       shouldShowESimWarning_: {
         type: Boolean,
         value: false,
@@ -63,13 +65,11 @@ class OsSettingsPowerwashDialogElement extends PolymerElement {
             'computeShouldShowESimWarning_(installedESimProfiles, hasContinueBeenTapped_)',
       },
 
-      /** @private */
       isESimCheckboxChecked_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       hasContinueBeenTapped_: {
         type: Boolean,
         value: false,
@@ -77,43 +77,43 @@ class OsSettingsPowerwashDialogElement extends PolymerElement {
     };
   }
 
+  installedESimProfiles: ESimProfileRemote[];
+  requestTpmFirmwareUpdate: boolean;
+  private hasContinueBeenTapped_: boolean;
+  private isESimCheckboxChecked_: boolean;
+  private lifetimeBrowserProxy_: LifetimeBrowserProxy;
+  private osResetBrowserProxy_: OsResetBrowserProxy;
+  private shouldShowESimWarning_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!OsResetBrowserProxy} */
     this.osResetBrowserProxy_ = OsResetBrowserProxyImpl.getInstance();
-
-    /** @private */
     this.lifetimeBrowserProxy_ = LifetimeBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.osResetBrowserProxy_.onPowerwashDialogShow();
     this.$.dialog.showModal();
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.$.dialog.close();
   }
 
-  /** @private */
-  onRestartTap_() {
+  private onRestartTap_() {
     recordSettingChange();
     LifetimeBrowserProxyImpl.getInstance().factoryReset(
         this.requestTpmFirmwareUpdate);
   }
 
-  /** @private */
-  onContinueTap_() {
+  private onContinueTap_() {
     this.hasContinueBeenTapped_ = true;
   }
 
-  /** @private */
-  onMobileSettingsLinkClicked_(event) {
+  private onMobileSettingsLinkClicked_(event: CustomEvent) {
     event.detail.event.preventDefault();
 
     const params = new URLSearchParams();
@@ -123,15 +123,17 @@ class OsSettingsPowerwashDialogElement extends PolymerElement {
     this.$.dialog.close();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShouldShowESimWarning_() {
+  private computeShouldShowESimWarning_(): boolean {
     if (this.hasContinueBeenTapped_) {
       return false;
     }
     return !!this.installedESimProfiles.length;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'os-settings-powerwash-dialog': OsSettingsPowerwashDialogElement;
   }
 }
 

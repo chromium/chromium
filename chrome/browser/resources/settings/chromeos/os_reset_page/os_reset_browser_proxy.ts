@@ -2,42 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @interface */
-export class OsResetBrowserProxy {
+export interface OsResetBrowserProxy {
   /**
    * A method to be called when the reset powerwash dialog is shown.
    */
-  onPowerwashDialogShow() {}
+  onPowerwashDialogShow(): void;
 
   /**
    * Initiates a factory reset and restarts.
    */
-  requestFactoryResetRestart() {}
+  requestFactoryResetRestart(): void;
 }
 
-/** @type {?OsResetBrowserProxy} */
-let instance = null;
+let instance: OsResetBrowserProxy|null = null;
 
-/**
- * @implements {OsResetBrowserProxy}
- */
-export class OsResetBrowserProxyImpl {
-  /** @return {!OsResetBrowserProxy} */
-  static getInstance() {
+export class OsResetBrowserProxyImpl implements OsResetBrowserProxy {
+  static getInstance(): OsResetBrowserProxy {
     return instance || (instance = new OsResetBrowserProxyImpl());
   }
 
-  /** @param {!OsResetBrowserProxy} obj */
-  static setInstanceForTesting(obj) {
+  static setInstanceForTesting(obj: OsResetBrowserProxy) {
     instance = obj;
   }
 
-  /** @override */
   onPowerwashDialogShow() {
     chrome.send('onPowerwashDialogShow');
   }
 
-  /** @override */
   requestFactoryResetRestart() {
     chrome.send('requestFactoryResetRestart');
   }

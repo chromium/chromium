@@ -10,7 +10,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {ActivationStateType, ApnProperties, AuthenticationType, ConfigProperties, DeviceStateProperties, HiddenSsidMode, InhibitReason, IPConfigProperties, ManagedApnList, ManagedBoolean, ManagedInt32, ManagedProperties, ManagedString, ManagedStringList, ManagedSubjectAltNameMatchList, NetworkStateProperties, ProxyMode, SecurityType, SIMInfo, SIMLockStatus, SubjectAltName, SubjectAltName_Type, TetherStateProperties, TrafficCounterProperties, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ActivationStateType, ApnProperties, AuthenticationType, ConfigProperties, DeviceStateProperties as MojomDeviceStateProperties, HiddenSsidMode, InhibitReason, IPConfigProperties, ManagedApnList, ManagedBoolean, ManagedInt32, ManagedProperties, ManagedString, ManagedStringList, ManagedSubjectAltNameMatchList, NetworkStateProperties as MojomNetworkStateProperties, ProxyMode, SecurityType, SIMInfo, SIMLockStatus, SubjectAltName, SubjectAltName_Type, TetherStateProperties, TrafficCounterProperties, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {IPAddress} from 'chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js';
 
@@ -213,8 +213,7 @@ export class OncMojo {
   }
 
   /**
-   * @param {?DeviceStateProperties|undefined}
-   *     device
+   * @param {?MojomDeviceStateProperties|undefined} device
    * @return {boolean}
    */
   static deviceIsInhibited(device) {
@@ -494,7 +493,7 @@ export class OncMojo {
   }
 
   /**
-   * @param {!NetworkStateProperties} network
+   * @param {!MojomNetworkStateProperties} network
    * @return {string}
    */
   static getNetworkStateDisplayName(network) {
@@ -527,7 +526,7 @@ export class OncMojo {
 
   /**
    * Gets the SignalStrength value from |network| based on network.type.
-   * @param {!NetworkStateProperties} network
+   * @param {!MojomNetworkStateProperties} network
    * @return {number} The signal strength value if it exists or 0.
    */
   static getSignalStrength(network) {
@@ -547,7 +546,7 @@ export class OncMojo {
    * Determines whether a connection to |network| can be attempted. Note that
    * this function does not consider policies which may block a connection from
    * succeeding.
-   * @param {!NetworkStateProperties|
+   * @param {!MojomNetworkStateProperties|
    *     !ManagedProperties} network
    * @return {boolean} Whether the network can currently be connected; if the
    *     network is not connectable, it must first be configured.
@@ -590,7 +589,7 @@ export class OncMojo {
    * Returns a NetworkStateProperties object with type set and default values.
    * @param {!NetworkType} type
    * @param {?string=} opt_name Optional name, intended for testing.
-   * @return {!NetworkStateProperties}
+   * @return {!MojomNetworkStateProperties}
    */
   static getDefaultNetworkState(type, opt_name) {
     const result = {
@@ -662,7 +661,7 @@ export class OncMojo {
    * Converts an ManagedProperties dictionary to NetworkStateProperties.
    * Used to provide state properties to NetworkIcon.
    * @param {!ManagedProperties} properties
-   * @return {!NetworkStateProperties}
+   * @return {!MojomNetworkStateProperties}
    */
   static managedPropertiesToNetworkState(properties) {
     const networkState = OncMojo.getDefaultNetworkState(properties.type);
@@ -1377,10 +1376,10 @@ export class OncMojo {
  */
 OncMojo.USE_ATTACH_APN_NAME = 'attach';
 
-/** @typedef {DeviceStateProperties} */
+/** @typedef {MojomDeviceStateProperties} */
 OncMojo.DeviceStateProperties;
 
-/** @typedef {NetworkStateProperties} */
+/** @typedef {MojomNetworkStateProperties} */
 OncMojo.NetworkStateProperties;
 
 /**

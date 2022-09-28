@@ -9,19 +9,14 @@
  */
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const OsSettingsPowerwashDialogEsimItemElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+import {getTemplate} from './os_powerwash_dialog_esim_item.html.js';
 
-/** @polymer */
+const OsSettingsPowerwashDialogEsimItemElementBase = I18nMixin(PolymerElement);
+
 class OsSettingsPowerwashDialogEsimItemElement extends
     OsSettingsPowerwashDialogEsimItemElementBase {
   static get is() {
@@ -29,22 +24,17 @@ class OsSettingsPowerwashDialogEsimItemElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @type {?ESimProfileRemote} */
       profile: {
         type: Object,
         value: null,
         observer: 'onProfileChanged_',
       },
 
-      /**
-       * @type {?ESimProfileProperties}
-       * @private
-       */
       profileProperties_: {
         type: Object,
         value: null,
@@ -52,8 +42,10 @@ class OsSettingsPowerwashDialogEsimItemElement extends
     };
   }
 
-  /** @private */
-  onProfileChanged_() {
+  profile: ESimProfileRemote|null;
+  private profileProperties_: ESimProfileProperties|null;
+
+  private onProfileChanged_() {
     if (!this.profile) {
       this.profileProperties_ = null;
       return;
@@ -63,11 +55,7 @@ class OsSettingsPowerwashDialogEsimItemElement extends
     });
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getItemInnerHtml_() {
+  private getItemInnerHtml_(): string {
     if (!this.profileProperties_) {
       return '';
     }
@@ -82,12 +70,7 @@ class OsSettingsPowerwashDialogEsimItemElement extends
         {attrs: ['id'], substitutions: [profileName, providerName]});
   }
 
-  /**
-   * @param {ESimProfileProperties} profileProperties
-   * @return {string}
-   * @private
-   */
-  getProfileName_(profileProperties) {
+  private getProfileName_(profileProperties: ESimProfileProperties): string {
     if (!profileProperties.nickname.data ||
         !profileProperties.nickname.data.length) {
       return this.escapeHtml_(
@@ -97,17 +80,19 @@ class OsSettingsPowerwashDialogEsimItemElement extends
         String.fromCharCode(...profileProperties.nickname.data));
   }
 
-  /**
-   * @param {string} string
-   * @return {string}
-   * @private
-   */
-  escapeHtml_(string) {
+  private escapeHtml_(string: string): string {
     return string.replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'os-settings-powerwash-dialog-esim-item':
+        OsSettingsPowerwashDialogEsimItemElement;
   }
 }
 
