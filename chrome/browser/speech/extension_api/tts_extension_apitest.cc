@@ -37,16 +37,16 @@
 #include "chromeos/services/tts/tts_service.h"
 #endif  // IS_CHROMEOS_ASH
 
+using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::InSequence;
+using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::SetArgPointee;
 using ::testing::StrictMock;
-using ::testing::_;
 
 namespace {
 int g_saved_utterance_id;
@@ -131,6 +131,8 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
   }
 
   void Shutdown() override {}
+
+  void Enqueue(std::unique_ptr<content::TtsUtterance> utterance) override {}
 
   void FinalizeVoiceOrdering(std::vector<content::VoiceData>& voices) override {
     // Prefer non-native voices.

@@ -32,6 +32,7 @@ class MockTtsController : public content::TtsController {
                   int char_index,
                   int length,
                   const std::string& error_message) override {}
+  void OnTtsUtteranceBecameInvalid(int utterance_id) override {}
   void GetVoices(content::BrowserContext* browser_context,
                  const GURL& source_url,
                  std::vector<content::VoiceData>* out_voices) override {}

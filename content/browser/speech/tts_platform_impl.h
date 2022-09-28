@@ -22,6 +22,7 @@ class TtsPlatformImpl : public TtsPlatform {
 
   // TtsPlatform overrides.
   void LoadBuiltInTtsEngine(BrowserContext* browser_context) override;
+  void Enqueue(std::unique_ptr<TtsUtterance> utterance) override {}
   void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                    const VoiceData& voice_data) override;
   std::string GetError() override;

@@ -41,6 +41,10 @@ struct CONTENT_EXPORT UtteranceContinuousParameters {
   double volume;
 };
 
+// Returns true if this event type is one that indicates an utterance
+// is finished and can be destroyed.
+CONTENT_EXPORT bool IsFinalTtsEventType(TtsEventType event_type);
+
 // Class that wants to receive events on utterances.
 class CONTENT_EXPORT UtteranceEventDelegate {
  public:

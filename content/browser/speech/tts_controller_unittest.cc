@@ -66,6 +66,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
       out_voices->push_back(voice);
   }
   void LoadBuiltInTtsEngine(BrowserContext* browser_context) override {}
+  void Enqueue(std::unique_ptr<content::TtsUtterance> utterance) override {}
   void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                    const VoiceData& voice_data) override {}
   void SetError(const std::string& error) override { error_ = error; }
@@ -593,6 +594,12 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
   }
 }
 
+// Note: The following tests are disabled since they do not apply for Lacros
+// build. TtsPlatformImpl is not supported for Lacros when lacros tts support
+// feature is disabled.
+// TODO(crbug.com/1227543): Add new tests for lacros with tts support feature
+// being enabled.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(TtsControllerTest, StopsWhenWebContentsDestroyed) {
   std::unique_ptr<WebContents> web_contents = CreateWebContents();
   std::unique_ptr<TtsUtteranceImpl> utterance =
@@ -715,14 +722,6 @@ TEST_F(TtsControllerTest, SkipsQueuedUtteranceFromHiddenWebContents) {
   controller()->OnTtsEvent(utterance1_id, TTS_EVENT_END, 0, 0, {});
   EXPECT_EQ(nullptr, TtsControllerCurrentUtterance());
   EXPECT_TRUE(IsUtteranceListEmpty());
-}
-
-TEST_F(TtsControllerTest, PauseResumeNoUtterance) {
-  // Pause should not call the platform API when there is no utterance.
-  controller()->Pause();
-  controller()->Resume();
-  EXPECT_EQ(0, platform_impl()->pause_called());
-  EXPECT_EQ(0, platform_impl()->resume_called());
 }
 
 TEST_F(TtsControllerTest, SpeakPauseResume) {
@@ -987,6 +986,15 @@ TEST_F(TtsControllerTest, EngineIdSetNoDelegateSpeakPauseResumeStop) {
   EXPECT_TRUE(IsUtteranceListEmpty());
   EXPECT_FALSE(TtsControllerCurrentUtterance());
   EXPECT_FALSE(controller()->IsSpeaking());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+TEST_F(TtsControllerTest, PauseResumeNoUtterance) {
+  // Pause should not call the platform API when there is no utterance.
+  controller()->Pause();
+  controller()->Resume();
+  EXPECT_EQ(0, platform_impl()->pause_called());
+  EXPECT_EQ(0, platform_impl()->resume_called());
 }
 
 TEST_F(TtsControllerTest, PlatformNotSupported) {

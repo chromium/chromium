@@ -28,6 +28,7 @@ class WebTestTtsPlatform : public content::TtsPlatform {
              const content::VoiceData& voice,
              const content::UtteranceContinuousParameters& params,
              base::OnceCallback<void(bool)> on_speak_finished) override;
+  void Enqueue(std::unique_ptr<content::TtsUtterance> utterance) override {}
   bool StopSpeaking() override;
   bool IsSpeaking() override;
   void GetVoices(std::vector<content::VoiceData>* out_voices) override;

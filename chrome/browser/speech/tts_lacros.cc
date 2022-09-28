@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_client_lacros.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
+#include "content/public/browser/tts_utterance.h"
 
 namespace {
 bool g_enable_for_test = false;
@@ -56,6 +57,12 @@ void TtsPlatformImplLacros::GetVoicesForBrowserContext(
     std::vector<content::VoiceData>* out_voices) {
   TtsClientLacros::GetForBrowserContext(browser_context)
       ->GetAllVoices(out_voices);
+}
+
+void TtsPlatformImplLacros::Enqueue(
+    std::unique_ptr<content::TtsUtterance> utterance) {
+  TtsClientLacros::GetForBrowserContext(utterance->GetBrowserContext())
+      ->SpeakOrEnqueue(std::move(utterance));
 }
 
 std::string TtsPlatformImplLacros::GetError() {

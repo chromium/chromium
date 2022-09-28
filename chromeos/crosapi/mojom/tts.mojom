@@ -128,6 +128,11 @@ interface Tts {
   // |browser_context_id|, |lacros_voices| contains new Lacros voices.
   VoicesChanged@1(mojo_base.mojom.UnguessableToken browser_context_id,
     array<TtsVoice> lacros_voices);
+
+  // Speaks or enqueues |utterance|.
+  [MinVersion=1]
+  SpeakOrEnqueue@2(TtsUtterance utterance,
+                   pending_remote<TtsUtteranceClient> utterance_client);
 };
 
 // Interface for tts client. Implemented in lacros-chrome.
@@ -139,4 +144,22 @@ interface TtsClient {
   // |all_voices| contains the new voices (provided by both Ash and
   // Lacros).
   VoicesChanged@0(array<TtsVoice> all_voices);
+};
+
+// This interface serves as a remote client of a TtsUtterance in Ash which is
+// originated from the Lacros. Implemented in lacros-chrome.
+// When Tts extension API or SpeechSynthesis web API is called from Lacros
+// browser to speak an utterance, We will call Tts::SpeakOrEnqueue to send the
+// utterance data to Ash along with a pending_remote<TtsUtteranceClient>
+// object, which allows to perform tasks associated with the utterance.
+// The disconnect handler will be invoked in Ash when the original utterance
+// becomes invalid in Lacros.
+[Stable, Uuid="edf0536d-53ea-445c-9519-cb39af32364f"]
+interface TtsUtteranceClient {
+  // Forwards a speech engine event received from an Ash speech engine
+  // to the callback function of the Tts client in Lacros. |error_message|
+  // may contain an error message from the speech engine only if |event_type|
+  // is TtsEventType::kError.
+  OnTtsEvent@0(TtsEventType event_type, uint32 char_index,
+             uint32 length, string error_message);
 };

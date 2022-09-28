@@ -72,6 +72,7 @@ class TestableTtsController : public content::TtsController {
   void StripSSML(
       const std::string& utterance,
       base::OnceCallback<void(const std::string&)> callback) override {}
+  void OnTtsUtteranceBecameInvalid(int utterance_id) override {}
 
   int last_utterance_id_;
   content::TtsEventType last_event_type_;

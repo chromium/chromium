@@ -36,9 +36,17 @@ class CONTENT_EXPORT TtsPlatform {
   // the engine finishes loading.
   virtual void LoadBuiltInTtsEngine(BrowserContext* browser_context) = 0;
 
-  // Speak the given utterance with the given parameters if possible,
-  // and return true on success. Utterance will always be nonempty.
-  // If rate, pitch, or volume are -1.0, they will be ignored.
+  // Enqueue the given utterance when the TtsController, which
+  // processes the utterances, lives outside of the current browser process.
+  // It eventually passes the given utterance to the TtsController, so that
+  // the uttenance will be addeded to the controller's utterance queue and
+  // processed in sequence.
+  virtual void Enqueue(std::unique_ptr<TtsUtterance> utterance) = 0;
+
+  // Speak the given utterance using the native voice provided by the platform
+  // with the given parameters if possible.
+  // Utterance will always be nonempty. If rate, pitch, or volume are -1.0,
+  // they will be ignored.
   //
   // The TtsController will only try to speak one utterance at
   // a time. If it wants to interrupt speech, it will always call Stop

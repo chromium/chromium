@@ -48,19 +48,25 @@ class TtsClientLacros
   // for Lacros including the ones provided by both Ash and Lacros.
   void GetAllVoices(std::vector<content::VoiceData>* out_voices);
 
+  // Forwards the given utterance to Ash to be processed by Ash TtsController.
+  void SpeakOrEnqueue(std::unique_ptr<content::TtsUtterance> utterance);
+
+  void DeletePendingUtteranceClient(int utterance_id);
+
   content::BrowserContext* browser_context() { return browser_context_; }
 
   static TtsClientLacros* GetForBrowserContext(
       content::BrowserContext* context);
 
  private:
+  class TtsUtteraneClient;
   friend class extensions::BrowserContextKeyedAPIFactory<TtsClientLacros>;
 
   // net::NetworkChangeNotifier::NetworkChangeObserver:
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
- // extensions::EventRouter::Observer:
+  // extensions::EventRouter::Observer:
   void OnListenerAdded(const extensions::EventListenerInfo& details) override;
   void OnListenerRemoved(const extensions::EventListenerInfo& details) override;
 
@@ -81,6 +87,9 @@ class TtsClientLacros
   std::vector<content::VoiceData> all_voices_;
 
   bool is_offline_;
+
+  // Pending Tts Utterance clients by by utterance id.
+  std::map<int, std::unique_ptr<TtsUtteraneClient>> pending_utterance_clients_;
 
   base::WeakPtrFactory<TtsClientLacros> weak_ptr_factory_{this};
 };

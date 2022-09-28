@@ -19,6 +19,63 @@
 #include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/tts_controller.h"
+#include "content/public/browser/tts_utterance.h"
+
+namespace {
+
+// This class is used as the UtteranceEventDelegate for the TtsUtterance
+// instance to be procssed by Ash's TtsController which is created for the
+// utterance sent from Lacros via crosapi.
+// The lifetime of instance of this class is bound to the lifetime of the
+// associated TtsUtterance. It will be deleted when the associated TtsUtterance
+// receives the final event.
+class CrosapiUtteranceEventDelegate : public content::UtteranceEventDelegate {
+ public:
+  CrosapiUtteranceEventDelegate(
+      int utterance_id,
+      mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient> client)
+      : utterance_id_(utterance_id), client_(std::move(client)) {
+    client_.set_disconnect_handler(base::BindOnce(
+        &CrosapiUtteranceEventDelegate::OnTtsUtteranceClientDisconnected,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  CrosapiUtteranceEventDelegate(const CrosapiUtteranceEventDelegate&) = delete;
+  CrosapiUtteranceEventDelegate& operator=(
+      const CrosapiUtteranceEventDelegate&) = delete;
+  ~CrosapiUtteranceEventDelegate() override = default;
+
+  // content::UtteranceEventDelegate methods:
+  void OnTtsEvent(content::TtsUtterance* utterance,
+                  content::TtsEventType event_type,
+                  int char_index,
+                  int char_length,
+                  const std::string& error_message) override {
+    // Note: If |client_| is disconnected, this will be a no-op.
+    client_->OnTtsEvent(tts_crosapi_util::ToMojo(event_type), char_index,
+                        char_length, error_message);
+
+    if (utterance->IsFinished())
+      delete this;
+  }
+
+ private:
+  void OnTtsUtteranceClientDisconnected() {
+    content::TtsController::GetInstance()->OnTtsUtteranceBecameInvalid(
+        utterance_id_);
+  }
+
+  // Id of the TtsUtterance to be processed by Ash's TtsController.
+  int utterance_id_;
+
+  // Can be used to forward the Tts events back to Lacros, or notify Ash
+  // TtsController when the original utterance in Lacros becomes invalid.
+  mojo::Remote<crosapi::mojom::TtsUtteranceClient> client_;
+
+  base::WeakPtrFactory<CrosapiUtteranceEventDelegate> weak_ptr_factory_{this};
+};
+
+}  // namespace
 
 namespace crosapi {
 
@@ -51,11 +108,11 @@ void TtsAsh::RegisterTtsClient(mojo::PendingRemote<mojom::TtsClient> client,
   if (from_primary_profile)
     primary_profile_browser_context_id_ = browser_context_id;
 
-  // Note: This is a temporary workaround for enabling Lacros tts support in ash
-  // when running Lacros tts extension api lacros browser tests.
-  // TODO(crbug.com/1227543): Migrate to enable tts lacros support feature flag
-  // in Ash before running lacros browser tests once the Lacros testing
-  // infrasture adds that support.
+  // Note: This is a temporary workaround for enabling Lacros tts support in
+  // ash when running Lacros tts extension api lacros browser tests.
+  // TODO(crbug.com/1227543): Migrate to enable tts lacros support feature
+  // flag in Ash before running lacros browser tests once the Lacros testing
+  // infrastructure adds that support.
   if (!tts_crosapi_util::ShouldEnableLacrosTtsSupport()) {
     // This code path is only called when running lacros browser tests.
     content::TtsController::GetInstance()->SetRemoteTtsEngineDelegate(
@@ -86,6 +143,17 @@ void TtsAsh::VoicesChanged(const base::UnguessableToken& browser_context_id,
 
   // Notify TtsController about VoicesChanged.
   content::TtsController::GetInstance()->VoicesChanged();
+}
+
+void TtsAsh::SpeakOrEnqueue(
+    mojom::TtsUtterancePtr mojo_utterance,
+    mojo::PendingRemote<mojom::TtsUtteranceClient> utterance_client) {
+  std::unique_ptr<content::TtsUtterance> utterance =
+      tts_crosapi_util::FromMojo(mojo_utterance);
+  utterance->SetEventDelegate(new CrosapiUtteranceEventDelegate(
+      utterance->GetId(), std::move(utterance_client)));
+
+  content::TtsController::GetInstance()->SpeakOrEnqueue(std::move(utterance));
 }
 
 void TtsAsh::GetCrosapiVoices(base::UnguessableToken browser_context_id,

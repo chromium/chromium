@@ -155,6 +155,18 @@ TtsControllerImpl::~TtsControllerImpl() {
 
 void TtsControllerImpl::SpeakOrEnqueue(
     std::unique_ptr<TtsUtterance> utterance) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (GetTtsPlatform()->PlatformImplSupported())
+    GetTtsPlatform()->Enqueue(std::move(utterance));
+  else
+    SpeakOrEnqueueInternal(std::move(utterance));
+#else
+  SpeakOrEnqueueInternal(std::move(utterance));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+void TtsControllerImpl::SpeakOrEnqueueInternal(
+    std::unique_ptr<TtsUtterance> utterance) {
   if (!ShouldSpeakUtterance(utterance.get())) {
     utterance->Finish();
     return;
@@ -218,6 +230,11 @@ bool TtsControllerImpl::StopCurrentUtteranceIfMatches(const GURL& source_url) {
           source_url.DeprecatedGetOriginAsURL())
     return false;
 
+  StopCurrentUtterance();
+  return true;
+}
+
+void TtsControllerImpl::StopCurrentUtterance() {
   if (engine_delegate_ && current_utterance_ &&
       !current_utterance_->GetEngineId().empty()) {
     engine_delegate_->Stop(current_utterance_.get());
@@ -226,11 +243,12 @@ bool TtsControllerImpl::StopCurrentUtteranceIfMatches(const GURL& source_url) {
     GetTtsPlatform()->StopSpeaking();
   }
 
-  if (current_utterance_)
+  if (current_utterance_) {
     current_utterance_->OnTtsEvent(TTS_EVENT_INTERRUPTED, kInvalidCharIndex,
                                    kInvalidLength, std::string());
+  }
+
   FinishCurrentUtterance();
-  return true;
 }
 
 void TtsControllerImpl::Pause() {
@@ -324,6 +342,16 @@ void TtsControllerImpl::OnTtsEvent(int utterance_id,
     FinishCurrentUtterance();
     SpeakNextUtterance();
   }
+}
+
+void TtsControllerImpl::OnTtsUtteranceBecameInvalid(int utterance_id) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This handles the case that the utterance originated from the standalone
+  // browser becomes invalid, we need to stop
+  RemoveUtteranceAndStopIfNeeded(utterance_id);
+#else
+  NOTREACHED();
+#endif
 }
 
 void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
@@ -896,10 +924,39 @@ void TtsControllerImpl::StopCurrentUtteranceAndRemoveUtterancesMatching(
   SpeakNextUtterance();
 }
 
+void TtsControllerImpl::RemoveUtteranceAndStopIfNeeded(int utterance_id) {
+  for (std::list<std::unique_ptr<TtsUtterance>>::iterator it =
+           utterance_list_.begin();
+       it != utterance_list_.end(); ++it) {
+    if ((*it)->GetId() == utterance_id) {
+      TtsUtteranceImpl* utterance_impl = AsUtteranceImpl((*it).get());
+      utterance_impl->Finish();
+      utterance_list_.erase(it);
+      break;
+    }
+  }
+
+  const bool stopped = StopCurrentUtteranceIfMatches(utterance_id);
+  if (stopped)
+    SpeakNextUtterance();
+}
+
+bool TtsControllerImpl::StopCurrentUtteranceIfMatches(int utterance_id) {
+  paused_ = false;
+
+  if (current_utterance_->GetId() != utterance_id)
+    return false;
+
+  StopCurrentUtterance();
+  return true;
+}
+
 bool TtsControllerImpl::ShouldSpeakUtterance(TtsUtterance* utterance) {
   TtsUtteranceImpl* utterance_impl = AsUtteranceImpl(utterance);
-  if (!utterance_impl->was_created_with_web_contents())
+  if (!utterance_impl->was_created_with_web_contents() ||
+      utterance_impl->ShouldAlwaysBeSpoken()) {
     return true;
+  }
 
   // If the WebContents that created the utterance has been destroyed, don't
   // speak it.

@@ -12,16 +12,10 @@
 
 namespace content {
 
-namespace {
-
-// Returns true if this event type is one that indicates an utterance
-// is finished and can be destroyed.
 bool IsFinalTtsEventType(TtsEventType event_type) {
   return (event_type == TTS_EVENT_END || event_type == TTS_EVENT_INTERRUPTED ||
           event_type == TTS_EVENT_CANCELLED || event_type == TTS_EVENT_ERROR);
 }
-
-}  // namespace
 
 //
 // UtteranceContinuousParameters

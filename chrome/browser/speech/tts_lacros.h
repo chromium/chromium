@@ -15,7 +15,8 @@
 
 namespace content {
 class BrowserContext;
-}
+class TtsUtterance;
+}  // namespace content
 
 // Implements content::TtsPlatform.
 // Creates TtsClientLacros when user profile is loaded, and handles TTS
@@ -42,6 +43,7 @@ class TtsPlatformImplLacros : public content::TtsPlatform,
       content::BrowserContext* browser_context,
       const GURL& source_url,
       std::vector<content::VoiceData>* out_voices) override;
+  void Enqueue(std::unique_ptr<content::TtsUtterance> utterance) override;
 
   // Unimplemented.
   void LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override {

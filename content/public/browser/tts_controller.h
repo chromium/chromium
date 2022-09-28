@@ -145,6 +145,12 @@ class CONTENT_EXPORT TtsController {
                           int length,
                           const std::string& error_message) = 0;
 
+  // Called when the utterance with |utterance_id| becomes invalid.
+  // For example, when the WebContents associated with the utterance
+  // living in a standalone browser is destroyed, the utterance becomes
+  // invalid and should not be spoken.
+  virtual void OnTtsUtteranceBecameInvalid(int utterance_id) = 0;
+
   // Return a list of all available voices, including the native voice,
   // if supported, and all voices registered by engines. |source_url|
   // will be used for policy decisions by engines to determine which
