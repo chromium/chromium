@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_split.h"
+#include "base/time/time.h"
 
 namespace media {
 
@@ -43,6 +44,11 @@ std::string GetURLQueryString(const base::StringPairs& query_params);
 //  |name| - The name of the file.
 //  |buffer| - The contents of the file.
 scoped_refptr<DecoderBuffer> ReadTestDataFile(const std::string& name);
+
+// Reads a decoder buffer from a file as well, but also sets the presentation
+// timestamp on it.
+scoped_refptr<DecoderBuffer> ReadTestDataFile(const std::string& name,
+                                              base::TimeDelta pts);
 
 // If the provided |key_id| is that of a test key, returns true and fills the
 // |key|, otherwise returns false. If |allowRotation| is true, then other valid

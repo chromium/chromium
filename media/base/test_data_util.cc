@@ -223,6 +223,13 @@ scoped_refptr<DecoderBuffer> ReadTestDataFile(const std::string& name) {
   return buffer;
 }
 
+scoped_refptr<DecoderBuffer> ReadTestDataFile(const std::string& name,
+                                              base::TimeDelta pts) {
+  auto buffer = ReadTestDataFile(name);
+  buffer->set_timestamp(pts);
+  return buffer;
+}
+
 bool LookupTestKeyVector(const std::vector<uint8_t>& key_id,
                          bool allow_rotation,
                          std::vector<uint8_t>* key) {

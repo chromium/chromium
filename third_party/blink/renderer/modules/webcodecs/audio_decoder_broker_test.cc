@@ -305,18 +305,24 @@ TEST_F(AudioDecoderBrokerTest, Decode_NoMojoDecoder) {
   InitializeDecoder(MakeVorbisConfig());
   EXPECT_EQ(GetDecoderType(), media::AudioDecoderType::kFFmpeg);
 
-  DecodeBuffer(media::ReadTestDataFile("vorbis-packet-0"));
-  DecodeBuffer(media::ReadTestDataFile("vorbis-packet-1"));
-  DecodeBuffer(media::ReadTestDataFile("vorbis-packet-2"));
+  DecodeBuffer(
+      media::ReadTestDataFile("vorbis-packet-0", base::Milliseconds(0)));
+  DecodeBuffer(
+      media::ReadTestDataFile("vorbis-packet-1", base::Milliseconds(1)));
+  DecodeBuffer(
+      media::ReadTestDataFile("vorbis-packet-2", base::Milliseconds(2)));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
   // 2, not 3, because the first frame doesn't generate an output.
   ASSERT_EQ(2U, output_buffers_.size());
 
   ResetDecoder();
 
-  DecodeBuffer(media::ReadTestDataFile("vorbis-packet-0"));
-  DecodeBuffer(media::ReadTestDataFile("vorbis-packet-1"));
-  DecodeBuffer(media::ReadTestDataFile("vorbis-packet-2"));
+  DecodeBuffer(
+      media::ReadTestDataFile("vorbis-packet-0", base::Milliseconds(0)));
+  DecodeBuffer(
+      media::ReadTestDataFile("vorbis-packet-1", base::Milliseconds(1)));
+  DecodeBuffer(
+      media::ReadTestDataFile("vorbis-packet-2", base::Milliseconds(2)));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
   // 2 more than last time.
   ASSERT_EQ(4U, output_buffers_.size());

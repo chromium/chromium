@@ -795,7 +795,7 @@ TEST_F(PipelineIntegrationTest, PlaybackWithAudioTrackDisabledThenEnabled) {
   ASSERT_TRUE(WaitUntilOnEnded());
 
   // Verify that audio has been playing after being enabled.
-  EXPECT_HASH_EQ("-1.53,0.21,1.23,1.56,-0.34,-0.94,", GetAudioHash());
+  EXPECT_HASH_EQ("-0.04,0.42,-0.22,0.40,0.15,0.18,", GetAudioHash());
 }
 
 TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
