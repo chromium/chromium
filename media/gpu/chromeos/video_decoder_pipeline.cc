@@ -334,7 +334,9 @@ int VideoDecoderPipeline::GetMaxDecodeRequests() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   // TODO(mcasas): query |decoder_| instead.
-  return 4;
+  // This value comes from the number of buffers in the input queue in
+  // V4L2VideoDecoder.
+  return 8;
 }
 
 bool VideoDecoderPipeline::FramesHoldExternalResources() const {
