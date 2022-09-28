@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
-#include "base/callback_helpers.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -168,8 +166,6 @@ class TurnSyncOnHelper {
   void OnSyncStartupStateChanged(SyncStartupTracker::ServiceStartupState state);
 
  private:
-  friend class base::DeleteHelper<TurnSyncOnHelper>;
-
   enum class ProfileMode {
     // Attempts to sign the user in |profile_|. Note that if the account to be
     // signed in is a managed account, then a profile confirmation dialog is
@@ -183,6 +179,9 @@ class TurnSyncOnHelper {
 
   // TurnSyncOnHelper deletes itself.
   ~TurnSyncOnHelper();
+
+  // Triggers the start of the flow.
+  void TurnSyncOnInternal();
 
   // Handles can offer sign-in errors.  It returns true if there is an error,
   // and false otherwise.

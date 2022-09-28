@@ -6,7 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
@@ -168,8 +168,12 @@ class LacrosPrimaryProfilePolicyFetchTracker
   }
 
   bool FetchPolicy(base::OnceClosure callback) override {
-    // Policies are populated via Ash at Lacros startup time, nothing to do.
-    std::move(callback).Run();
+    // Policies are populated via Ash at Lacros startup time, nothing to do
+    // besides running the callback.
+    // We post it to match the behaviour of other policy fetch trackers and
+    // because `callback` can trigger the deletion of this object.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return IsManagedProfile();
   }
 

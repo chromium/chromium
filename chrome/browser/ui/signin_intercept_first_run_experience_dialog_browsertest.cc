@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/signin_intercept_first_run_experience_dialog.h"
 
@@ -572,6 +573,10 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
       account_id(), /* is_forced_intercept = */ false);
+
+  // The dialog is shown asynchronously. We wait for the posted tasks to run,
+  // but nothing will be shown until we update the Sync service state.
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(controller()->ShowsModalDialog());
 
   controller()->CloseModalSignin();
@@ -700,6 +705,10 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
       account_id(), /* is_forced_intercept = */ true);
+
+  // Wait for the dialog creation posted tasks to complete.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_FALSE(controller()->ShowsModalDialog());
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());

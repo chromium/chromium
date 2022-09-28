@@ -1045,6 +1045,18 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
   EXPECT_FALSE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   SendRefreshTokenResponse();
+
+  ui_test_utils::UrlLoadObserver ntp_url_observer(
+      GURL(chrome::kChromeUINewTabURL),
+      content::NotificationService::AllSources());
+
+  EXPECT_EQ(1, reconcilor_blocked_count_);
+  WaitForReconcilorUnblockedCount(1);
+  EXPECT_EQ(1, reconcilor_started_count_);
+
+  // Check that the tab was navigated to the NTP.
+  ntp_url_observer.Wait();
+
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
@@ -1058,17 +1070,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
                                signin::kDiceProtocolVersion, client_id.c_str(),
                                GetDeviceId().c_str()),
             dice_request_header_);
-
-  ui_test_utils::UrlLoadObserver ntp_url_observer(
-      GURL(chrome::kChromeUINewTabURL),
-      content::NotificationService::AllSources());
-
-  EXPECT_EQ(1, reconcilor_blocked_count_);
-  WaitForReconcilorUnblockedCount(1);
-  EXPECT_EQ(1, reconcilor_started_count_);
-
-  // Check that the tab was navigated to the NTP.
-  ntp_url_observer.Wait();
 
   // Wait for the Sync confirmation UI and click through.
   EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));

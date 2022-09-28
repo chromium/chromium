@@ -17,7 +17,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
@@ -202,45 +201,12 @@ TurnSyncOnHelper::TurnSyncOnHelper(
   // Cancel any existing helper.
   AttachToProfile();
 
-  if (account_info_.gaia.empty() || account_info_.email.empty()) {
-    LOG(ERROR) << "Cannot turn Sync On for invalid account.";
-    base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
-    return;
-  }
-
-  DCHECK(!account_info_.gaia.empty());
-  DCHECK(!account_info_.email.empty());
-
-  if (HasCanOfferSigninError()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    LOG(WARNING) << "crbug.com/1340791 | Not able to offer sign in.";
-#endif
-    // Do not self-destruct synchronously in the constructor.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&TurnSyncOnHelper::AbortAndDelete,
-                                  weak_pointer_factory_.GetWeakPtr()));
-    return;
-  }
-
-  if (!IsCrossAccountError(profile_, account_info_.gaia)) {
-    TurnSyncOnWithProfileMode(ProfileMode::CURRENT_PROFILE);
-    return;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | Cross-account error.";
-#endif
-
-  // Handles cross account sign in error. If |account_info_| does not match the
-  // last authenticated account of the current profile, then Chrome will show a
-  // confirmation dialog before starting sync.
-  // TODO(skym): Warn for high risk upgrade scenario (https://crbug.com/572754).
-  std::string last_email =
-      profile_->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
-  delegate_->ShowMergeSyncDataConfirmation(
-      last_email, account_info_.email,
-      base::BindOnce(&TurnSyncOnHelper::OnMergeAccountConfirmation,
-                     weak_pointer_factory_.GetWeakPtr()));
+  // Trigger the start of the flow via a posted task. Starting the flow could
+  // result in the deletion of this object and the deletion of the host, which
+  // should not be done synchronously. See crbug.com/1367078 for example.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&TurnSyncOnHelper::TurnSyncOnInternal,
+                                weak_pointer_factory_.GetWeakPtr()));
 }
 
 TurnSyncOnHelper::TurnSyncOnHelper(
@@ -267,6 +233,45 @@ TurnSyncOnHelper::~TurnSyncOnHelper() {
 
   DCHECK_EQ(this, GetCurrentTurnSyncOnHelper(profile_));
   SetCurrentTurnSyncOnHelper(profile_, nullptr);
+}
+
+void TurnSyncOnHelper::TurnSyncOnInternal() {
+  if (account_info_.gaia.empty() || account_info_.email.empty()) {
+    LOG(ERROR) << "Cannot turn Sync On for invalid account.";
+    delete this;
+    return;
+  }
+
+  DCHECK(!account_info_.gaia.empty());
+  DCHECK(!account_info_.email.empty());
+
+  if (HasCanOfferSigninError()) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    LOG(WARNING) << "crbug.com/1340791 | Not able to offer sign in.";
+#endif
+    AbortAndDelete();
+    return;
+  }
+
+  if (!IsCrossAccountError(profile_, account_info_.gaia)) {
+    TurnSyncOnWithProfileMode(ProfileMode::CURRENT_PROFILE);
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  LOG(WARNING) << "crbug.com/1340791 | Cross-account error.";
+#endif
+
+  // Handles cross account sign in error. If |account_info_| does not match the
+  // last authenticated account of the current profile, then Chrome will show a
+  // confirmation dialog before starting sync.
+  // TODO(skym): Warn for high risk upgrade scenario (https://crbug.com/572754).
+  std::string last_email =
+      profile_->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
+  delegate_->ShowMergeSyncDataConfirmation(
+      last_email, account_info_.email,
+      base::BindOnce(&TurnSyncOnHelper::OnMergeAccountConfirmation,
+                     weak_pointer_factory_.GetWeakPtr()));
 }
 
 bool TurnSyncOnHelper::HasCanOfferSigninError() {
