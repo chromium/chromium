@@ -116,7 +116,7 @@ class ProxyImplBase {
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 
-  const UpdaterScope scope_ = UpdaterScope::kSystem;
+  const UpdaterScope scope_;
 
   // Interface owned by the STA. It must be created and released by the STA.
   absl::variant<HRESULT, Microsoft::WRL::ComPtr<Interface>> interface_;
