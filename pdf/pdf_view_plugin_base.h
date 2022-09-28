@@ -39,8 +39,7 @@ struct AccessibilityTextRunInfo;
 struct AccessibilityViewportInfo;
 
 // TODO(crbug.com/1302059): Merge with PdfViewWebPlugin.
-class PdfViewPluginBase : public PDFEngine::Client,
-                          public PaintManager::Client {
+class PdfViewPluginBase : public PDFEngine::Client {
  public:
   enum class AccessibilityState {
     kOff = 0,  // Off.
@@ -67,10 +66,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Gets the accessibility doc info based on the information from `engine_`.
   AccessibilityDocInfo GetAccessibilityDocInfo() const;
-
-  DocumentLoadState document_load_state_for_testing() const {
-    return document_load_state_;
-  }
 
  protected:
   PdfViewPluginBase();
@@ -137,60 +132,26 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Records user actions.
   virtual void UserMetricsRecordAction(const std::string& action) = 0;
 
-  PaintManager& paint_manager() { return paint_manager_; }
-
+  virtual PaintManager& paint_manager() = 0;
+  virtual const gfx::Rect& available_area() const = 0;
+  virtual double zoom() const = 0;
   virtual bool full_frame() const = 0;
-
-  const gfx::Rect& available_area() const { return available_area_; }
-  gfx::Rect& mutable_available_area() { return available_area_; }
 
   // TODO(crbug.com/1288847): Don't provide direct access to the origin of
   // `plugin_rect_`, as this exposes the unintuitive "paint offset."
   virtual const gfx::Rect& plugin_rect() const = 0;
 
-  double zoom() const { return zoom_; }
-  void set_zoom(double zoom) { zoom_ = zoom; }
-
   virtual float device_scale() const = 0;
-
-  DocumentLoadState document_load_state() const { return document_load_state_; }
-  void set_document_load_state(DocumentLoadState state) {
-    document_load_state_ = state;
-  }
-
-  AccessibilityState accessibility_state() const {
-    return accessibility_state_;
-  }
-
-  void set_accessibility_state(AccessibilityState state) {
-    accessibility_state_ = state;
-  }
+  virtual DocumentLoadState document_load_state() const = 0;
+  virtual void set_document_load_state(DocumentLoadState state) = 0;
+  virtual AccessibilityState accessibility_state() const = 0;
+  virtual void set_accessibility_state(AccessibilityState state) = 0;
+  virtual int32_t next_accessibility_page_index() const = 0;
+  virtual void increment_next_accessibility_page_index() = 0;
+  virtual void reset_next_accessibility_page_index() = 0;
 
   // Starts loading accessibility information.
   void LoadAccessibility();
-
- private:
-  // TODO(crbug.com/1302059): `PdfViewPluginBase` is being merged into
-  // `PdfViewWebPlugin`, so all methods should be protected or public.
-
-  PaintManager paint_manager_{this};
-
-  // Remaining area, in pixels, to render the pdf in after accounting for
-  // horizontal centering.
-  gfx::Rect available_area_;
-
-  // Current zoom factor.
-  double zoom_ = 1.0;
-
-  // The current state of document load.
-  DocumentLoadState document_load_state_ = DocumentLoadState::kLoading;
-
-  // The current state of accessibility.
-  AccessibilityState accessibility_state_ = AccessibilityState::kOff;
-
-  // The next accessibility page index, used to track interprocess calls when
-  // reconstructing the tree for new document layouts.
-  int32_t next_accessibility_page_index_ = 0;
 };
 
 }  // namespace chrome_pdf

@@ -78,6 +78,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public pdf::mojom::PdfListener,
                                public UrlLoader::Client,
                                public PostMessageReceiver::Client,
+                               public PaintManager::Client,
                                public PdfAccessibilityActionHandler,
                                public PreviewModeClient::Client {
  public:
@@ -379,6 +380,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   float GetDeviceScaleForTesting() const { return device_scale_; }
 
+  DocumentLoadState document_load_state_for_testing() const {
+    return document_load_state_;
+  }
+
  protected:
   // PdfViewPluginBase:
   const PDFiumEngine* engine() const override;
@@ -402,9 +407,19 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                               const gfx::PointF& right,
                               int right_height) override;
   void UserMetricsRecordAction(const std::string& action) override;
+  PaintManager& paint_manager() override;
+  const gfx::Rect& available_area() const override;
+  double zoom() const override;
   bool full_frame() const override;
   const gfx::Rect& plugin_rect() const override;
   float device_scale() const override;
+  DocumentLoadState document_load_state() const override;
+  void set_document_load_state(DocumentLoadState state) override;
+  AccessibilityState accessibility_state() const override;
+  void set_accessibility_state(AccessibilityState state) override;
+  int32_t next_accessibility_page_index() const override;
+  void increment_next_accessibility_page_index() override;
+  void reset_next_accessibility_page_index() override;
 
  private:
   // Callback that runs after `LoadUrl()`. The `loader` is the loader used to
@@ -607,6 +622,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   v8::Persistent<v8::Object> scriptable_receiver_;
 
+  PaintManager paint_manager_{this};
+
   // Image data buffer for painting.
   SkBitmap image_data_;
 
@@ -642,6 +659,13 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The plugin rectangle in device pixels.
   gfx::Rect plugin_rect_;
+
+  // Remaining area, in pixels, to render the PDF in after accounting for
+  // horizontal centering.
+  gfx::Rect available_area_;
+
+  // Current zoom factor.
+  double zoom_ = 1.0;
 
   // Current device scale factor. Multiply by `device_scale_` to convert from
   // viewport to screen coordinates. Divide by `device_scale_` to convert from
@@ -693,6 +717,16 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The last document load progress value sent to the web page.
   double last_progress_sent_ = 0.0;
+
+  // The current state of document load.
+  DocumentLoadState document_load_state_ = DocumentLoadState::kLoading;
+
+  // The current state of accessibility.
+  AccessibilityState accessibility_state_ = AccessibilityState::kOff;
+
+  // The next accessibility page index, used to track interprocess calls when
+  // reconstructing the tree for new document layouts.
+  int32_t next_accessibility_page_index_ = 0;
 
   // Used for submitting forms.
   std::unique_ptr<UrlLoader> form_loader_;

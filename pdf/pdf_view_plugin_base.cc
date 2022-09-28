@@ -72,8 +72,8 @@ PdfViewPluginBase::PdfViewPluginBase() = default;
 PdfViewPluginBase::~PdfViewPluginBase() = default;
 
 void PdfViewPluginBase::DocumentLoadComplete() {
-  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state_);
-  document_load_state_ = DocumentLoadState::kComplete;
+  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state());
+  set_document_load_state(DocumentLoadState::kComplete);
 
   UserMetricsRecordAction("PDF.LoadSuccess");
 
@@ -93,8 +93,8 @@ void PdfViewPluginBase::DocumentLoadComplete() {
 }
 
 void PdfViewPluginBase::DocumentLoadFailed() {
-  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state_);
-  document_load_state_ = DocumentLoadState::kFailed;
+  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state());
+  set_document_load_state(DocumentLoadState::kFailed);
 
   UserMetricsRecordAction("PDF.LoadFailure");
 
@@ -103,13 +103,13 @@ void PdfViewPluginBase::DocumentLoadFailed() {
 
   DidStopLoading();
 
-  paint_manager_.InvalidateRect(gfx::Rect(plugin_rect().size()));
+  paint_manager().InvalidateRect(gfx::Rect(plugin_rect().size()));
 }
 
 void PdfViewPluginBase::SelectionChanged(const gfx::Rect& left,
                                          const gfx::Rect& right) {
-  gfx::PointF left_point(left.x() + available_area_.x(), left.y());
-  gfx::PointF right_point(right.x() + available_area_.x(), right.y());
+  gfx::PointF left_point(left.x() + available_area().x(), left.y());
+  gfx::PointF right_point(right.x() + available_area().x(), right.y());
 
   const float inverse_scale = 1.0f / device_scale();
   left_point.Scale(inverse_scale);
@@ -118,7 +118,7 @@ void PdfViewPluginBase::SelectionChanged(const gfx::Rect& left,
   NotifySelectionChanged(left_point, left.height() * inverse_scale, right_point,
                          right.height() * inverse_scale);
 
-  if (accessibility_state_ == AccessibilityState::kLoaded)
+  if (accessibility_state() == AccessibilityState::kLoaded)
     PrepareAndSetAccessibilityViewportInfo();
 }
 
@@ -146,9 +146,9 @@ AccessibilityDocInfo PdfViewPluginBase::GetAccessibilityDocInfo() const {
 
 void PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
   // Outdated calls are ignored.
-  if (page_index != next_accessibility_page_index_)
+  if (page_index != next_accessibility_page_index())
     return;
-  ++next_accessibility_page_index_;
+  increment_next_accessibility_page_index();
 
   AccessibilityPageInfo page_info;
   std::vector<AccessibilityTextRunInfo> text_runs;
@@ -173,9 +173,9 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
 
 void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
   AccessibilityViewportInfo viewport_info;
-  viewport_info.offset = gfx::ScaleToFlooredPoint(available_area_.origin(),
-                                                  1 / (device_scale() * zoom_));
-  viewport_info.zoom = zoom_;
+  viewport_info.offset = gfx::ScaleToFlooredPoint(
+      available_area().origin(), 1 / (device_scale() * zoom()));
+  viewport_info.zoom = zoom();
   viewport_info.scale = device_scale();
   viewport_info.focus_info = {FocusObjectType::kNone, 0, 0};
 
@@ -188,12 +188,12 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
 }
 
 void PdfViewPluginBase::LoadAccessibility() {
-  accessibility_state_ = AccessibilityState::kLoaded;
+  set_accessibility_state(AccessibilityState::kLoaded);
 
   // A new document layout will trigger the creation of a new accessibility
   // tree, so `next_accessibility_page_index_` should be reset to ignore
   // outdated asynchronous calls of PrepareAndSetAccessibilityPageInfo().
-  next_accessibility_page_index_ = 0;
+  reset_next_accessibility_page_index();
   SetAccessibilityDocInfo(GetAccessibilityDocInfo());
 
   // If the document contents isn't accessible, don't send anything more.
