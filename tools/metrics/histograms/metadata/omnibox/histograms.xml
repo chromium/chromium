@@ -1446,6 +1446,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SuggestionUsed.ClientSummarizedResultType"
+    enum="ClientSummarizedResultType" expires_after="2023-02-26">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    For each user navigation using the omnibox, logs the selected omnibox result
+    as one of a limited set of result types, based on the autocomplete match.
+
+    As an example, HISTORY_URL and HISTORY_TITLE are both summarized into the
+    Url summarized result type.
+
+    This histogram intended to match the server-side histograms that use
+    OmniboxSummarizedResultType such as Omnibox.SuggestionUsed.SearchVsUrl. This
+    is also calculated on the client side to enable functionality that is based
+    on listening to local metrics at runtime.
+
+    Logged whenever a user navigates using the omnibox.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SuggestionUsed.OfferedTabMatch" enum="BooleanOffered"
     expires_after="2023-02-12">
   <owner>gangwu@chromium.org</owner>

@@ -28,12 +28,19 @@ class OmniboxMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
  private:
+  friend class OmniboxMetricsProviderTest;
+
   // Called when a URL is opened from the Omnibox.
   void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
   // Records the input text, available choices, and selected entry when the
   // user uses the Omnibox to open a URL.
   void RecordOmniboxOpenedURL(const OmniboxLog& log);
+
+  // Records the summary group of the selected Omnibox result. This is recorded
+  // on the client side in addition to being generated on the server side, such
+  // that it can be used by client side code that listens to UMA histograms.
+  void RecordOmniboxOpenedURLClientSummarizedResultType(const OmniboxLog& log);
 
   // Subscription for receiving Omnibox event callbacks.
   base::CallbackListSubscription subscription_;
