@@ -108,10 +108,8 @@ void PasswordChangeRunView::CreateView() {
 
   top_icon_ = AddChildView(views::Builder<views::ImageView>().Build());
 
-  // childrenIDsOffset makes sure that none of the IDs set in this view will
-  // colapse with the ones insde `PasswordChangeRunProgress`.
-  password_change_run_progress_ = AddChildView(
-      std::make_unique<PasswordChangeRunProgress>(/*childrenIDsOffset=*/20));
+  password_change_run_progress_ =
+      AddChildView(std::make_unique<PasswordChangeRunProgress>());
 
   title_container_ = AddChildView(
       views::Builder<views::View>()

@@ -4,46 +4,26 @@
 
 #include "chrome/browser/ui/views/autofill_assistant/password_change/password_change_animated_icon.h"
 
-#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/autofill_assistant/password_change/vector_icons/vector_icons.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "components/vector_icons/vector_icons.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/views_test_base.h"
+
+namespace gfx {
+class AnimationContainer;
+}  // namespace gfx
 
 namespace {
 
 constexpr int kIconSize = 16;
 
-// A test class that allows overwriting the internal timer used for
-// animations.
-class TestPasswordChangeAnimatedIcon : public PasswordChangeAnimatedIcon {
- public:
-  explicit TestPasswordChangeAnimatedIcon(
-      autofill_assistant::password_change::ProgressStep progress_step)
-      : PasswordChangeAnimatedIcon(/*id=*/0, progress_step) {}
-  ~TestPasswordChangeAnimatedIcon() override = default;
-
-  void AnimationContainerWasSet(gfx::AnimationContainer* container) override {
-    PasswordChangeAnimatedIcon::AnimationContainerWasSet(container);
-    container_test_api_.reset();
-    if (container) {
-      container_test_api_ =
-          std::make_unique<gfx::AnimationContainerTestApi>(container);
-    }
-  }
-
-  gfx::AnimationContainerTestApi* test_api() {
-    return container_test_api_.get();
-  }
-
- private:
-  std::unique_ptr<gfx::AnimationContainerTestApi> container_test_api_;
-};
-
-class PasswordChangeAnimatedIconTest : public views::ViewsTestBase {
+class PasswordChangeAnimatedIconTest
+    : public views::ViewsTestBase,
+      public PasswordChangeAnimatedIcon::Delegate {
  public:
   PasswordChangeAnimatedIconTest() = default;
   ~PasswordChangeAnimatedIconTest() override = default;
@@ -62,24 +42,40 @@ class PasswordChangeAnimatedIconTest : public views::ViewsTestBase {
   void CreateIcon(autofill_assistant::password_change::ProgressStep
                       progress_step = autofill_assistant::password_change::
                           ProgressStep::PROGRESS_STEP_CHANGE_PASSWORD) {
-    animated_icon_ = widget_->SetContentsView(
-        std::make_unique<TestPasswordChangeAnimatedIcon>(progress_step));
+    animated_icon_ =
+        widget_->SetContentsView(std::make_unique<PasswordChangeAnimatedIcon>(
+            /*id=*/0, progress_step, this));
   }
 
-  TestPasswordChangeAnimatedIcon* animated_icon() {
-    return animated_icon_.get();
+  // PasswordChangeAnimatedIcon::Delegate:
+  void OnAnimationContainerWasSet(PasswordChangeAnimatedIcon* icon,
+                                  gfx::AnimationContainer* container) override {
+    container_test_api_.reset();
+    if (container) {
+      container_test_api_ =
+          std::make_unique<gfx::AnimationContainerTestApi>(container);
+    }
   }
+  MOCK_METHOD(void,
+              OnAnimationEnded,
+              (PasswordChangeAnimatedIcon*),
+              (override));
+
+  PasswordChangeAnimatedIcon* animated_icon() { return animated_icon_.get(); }
 
   void AdvanceTime(base::TimeDelta time) {
-    animated_icon()->test_api()->IncrementTime(time);
+    if (container_test_api_)
+      container_test_api_->IncrementTime(time);
   }
 
  private:
   // Widget to anchor the view and retrieve a color provider from.
   std::unique_ptr<views::Widget> widget_;
+  // A test API to control time for the animations.
+  std::unique_ptr<gfx::AnimationContainerTestApi> container_test_api_;
 
   // The object to be tested.
-  raw_ptr<TestPasswordChangeAnimatedIcon> animated_icon_ = nullptr;
+  raw_ptr<PasswordChangeAnimatedIcon> animated_icon_ = nullptr;
 };
 
 TEST_F(PasswordChangeAnimatedIconTest, SetsCorrectIcon) {
@@ -176,27 +172,42 @@ TEST_F(PasswordChangeAnimatedIconTest, PulseOnce) {
 TEST_F(PasswordChangeAnimatedIconTest, CallbackSetDuringPulsing) {
   animated_icon()->StartPulsingAnimation();
 
-  base::MockOnceClosure closure;
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
-  animated_icon()->SetAnimationEndedCallback(closure.Get());
   animated_icon()->StopPulsingAnimation();
 
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
-  EXPECT_CALL(closure, Run);
+  EXPECT_CALL(*this, OnAnimationEnded(animated_icon()));
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_FALSE(animated_icon()->IsPulsing());
 }
 
 TEST_F(PasswordChangeAnimatedIconTest, CallbackSetBeforeStartingPulsing) {
-  base::MockOnceClosure closure;
-  animated_icon()->SetAnimationEndedCallback(closure.Get());
-
   animated_icon()->StartPulsingAnimation();
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
   animated_icon()->StopPulsingAnimation();
 
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
-  EXPECT_CALL(closure, Run);
+  EXPECT_CALL(*this, OnAnimationEnded(animated_icon()));
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  EXPECT_FALSE(animated_icon()->IsPulsing());
+}
+
+TEST_F(PasswordChangeAnimatedIconTest, CallbackCalledMultipleTimes) {
+  animated_icon()->StartPulsingAnimation();
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
+  animated_icon()->StopPulsingAnimation();
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+
+  EXPECT_CALL(*this, OnAnimationEnded(animated_icon()));
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  EXPECT_FALSE(animated_icon()->IsPulsing());
+
+  animated_icon()->StartPulsingAnimation();
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
+  animated_icon()->StopPulsingAnimation();
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+
+  EXPECT_CALL(*this, OnAnimationEnded(animated_icon()));
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_FALSE(animated_icon()->IsPulsing());
 }

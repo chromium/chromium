@@ -12,26 +12,38 @@
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/controls/image_view.h"
 
+namespace gfx {
+class AnimationContainer;
+}  // namespace gfx
+
 // A pulsing icon used as an element of the password change progress bar.
 class PasswordChangeAnimatedIcon : public gfx::LinearAnimation,
                                    public gfx::AnimationDelegate,
                                    public views::ImageView {
  public:
+  class Delegate {
+   public:
+    // Handles that the animation has ended.
+    virtual void OnAnimationEnded(PasswordChangeAnimatedIcon* icon) = 0;
+
+    // Handles that the animation container was set. Used for testing purposes
+    // only.
+    virtual void OnAnimationContainerWasSet(
+        PasswordChangeAnimatedIcon* icon,
+        gfx::AnimationContainer* container) = 0;
+  };
+
   // The duration of one icon pulse cycle.
   static constexpr base::TimeDelta kAnimationDuration = base::Seconds(1);
 
-  explicit PasswordChangeAnimatedIcon(
+  PasswordChangeAnimatedIcon(
       int id,
-      autofill_assistant::password_change::ProgressStep progress_step);
+      autofill_assistant::password_change::ProgressStep progress_step,
+      Delegate* delegate);
   PasswordChangeAnimatedIcon(const PasswordChangeAnimatedIcon&) = delete;
   PasswordChangeAnimatedIcon& operator=(const PasswordChangeAnimatedIcon&) =
       delete;
   ~PasswordChangeAnimatedIcon() override;
-
-  // Sets a `callback` to be triggered when the icon stops pulsing. If the icon
-  // is not pulsing, it executes `callback` only after icon has started and
-  // stopped pulsing again.
-  void SetAnimationEndedCallback(base::OnceClosure callback);
 
   // Starts the pulsing of the icon. If the icon is already pulsing and not
   // in its last cycle, it does nothing. If the icon is in its last pulse cycle,
@@ -51,6 +63,7 @@ class PasswordChangeAnimatedIcon : public gfx::LinearAnimation,
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationContainerWasSet(gfx::AnimationContainer* container) override;
 
   // The progress step with which this icon is associated. Determines the icon
   // that is shown.
@@ -65,8 +78,8 @@ class PasswordChangeAnimatedIcon : public gfx::LinearAnimation,
   // Is `true` when the animation is currently not pulsing, `false` otherwise.
   bool animation_ended_ = true;
 
-  // A callback to trigger when the pulsing stops.
-  base::OnceClosure animation_ended_callback_;
+  // A raw pointer to the delegate for this icon that must outlive `this`.
+  Delegate* delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_PASSWORD_CHANGE_ANIMATED_ICON_H_
