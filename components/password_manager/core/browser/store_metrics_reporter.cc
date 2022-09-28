@@ -427,6 +427,15 @@ void ReportMultiStoreMetrics(
   }
 }
 
+void ReportBiometricAuthenticationBeforeFillingMetrics(PrefService* prefs) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  base::UmaHistogramBoolean(
+      base::StrCat({kPasswordManager, ".BiometricAuthBeforeFillingEnabled"}),
+      prefs->GetBoolean(
+          password_manager::prefs::kBiometricAuthenticationBeforeFilling));
+#endif
+}
+
 }  // namespace
 
 StoreMetricsReporter::StoreMetricsReporter(
@@ -479,6 +488,8 @@ StoreMetricsReporter::StoreMetricsReporter(
   base::UmaHistogramBoolean(
       base::StrCat({kPasswordManager, ".Enabled3"}),
       prefs->GetBoolean(password_manager::prefs::kCredentialsEnableService));
+
+  ReportBiometricAuthenticationBeforeFillingMetrics(prefs);
 
   // May be null in tests.
   if (profile_store) {

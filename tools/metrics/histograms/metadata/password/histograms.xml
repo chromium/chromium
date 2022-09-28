@@ -775,6 +775,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.BiometricAuthBeforeFillingEnabled"
+    enum="BooleanEnabled" expires_after="M112">
+  <owner>kazinova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Indicates whether biometric authentication before filling is enabled.
+    Recorded 30 seconds after PasswordStore is created which happens once per
+    profile, and at most once per day.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.BiometricAuthPwdFill.AuthResult"
     enum="BiometricAuthResult" expires_after="2023-02-12">
   <owner>ioanap@chromium.org</owner>

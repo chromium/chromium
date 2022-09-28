@@ -150,6 +150,10 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
                                            false);
     prefs_.registry()->RegisterDoublePref(
         prefs::kLastTimePasswordStoreMetricsReported, 0.0);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kBiometricAuthenticationBeforeFilling, false);
+#endif
   }
 
   void TearDown() override { OSCryptMocker::TearDown(); }
@@ -161,14 +165,16 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
   TestingPrefServiceSimple prefs_;
 };
 
-// The test fixture is used to test StoreIndependentMetrics. The parameter
-// defines whether password manager is enabled.
+// The test fixture is used to test StoreIndependentMetrics. Depending on the
+// test, the parameter defines whether password manager or
+// kBiometricAuthenticationBeforeFilling pref is enabled.
 class StoreMetricsReporterTestWithParams
     : public StoreMetricsReporterTest,
       public ::testing::WithParamInterface<bool> {};
 
-// Test that store-independent metrics are reported correctly.
-TEST_P(StoreMetricsReporterTestWithParams, StoreIndependentMetrics) {
+// Test if password manager status is recorded correctly.
+TEST_P(StoreMetricsReporterTestWithParams,
+       ReportMetricsPasswordManagerEnabled) {
   const bool password_manager_enabled = GetParam();
 
   prefs_.SetBoolean(password_manager::prefs::kCredentialsEnableService,
@@ -184,6 +190,28 @@ TEST_P(StoreMetricsReporterTestWithParams, StoreIndependentMetrics) {
   histogram_tester.ExpectUniqueSample("PasswordManager.Enabled3",
                                       password_manager_enabled, 1);
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_P(StoreMetricsReporterTestWithParams,
+       ReportMetricsBiometricAuthBeforeFilling) {
+  const bool biometric_auth_before_filling_enabled = GetParam();
+
+  prefs_.SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling,
+      biometric_auth_before_filling_enabled);
+  base::HistogramTester histogram_tester;
+
+  StoreMetricsReporter reporter(
+      /*profile_store=*/nullptr, /*account_store=*/nullptr, sync_service(),
+      identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
+      /*is_under_advanced_protection=*/false,
+      /*done_callback*/ base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.BiometricAuthBeforeFillingEnabled",
+      biometric_auth_before_filling_enabled, 1);
+}
+#endif
 
 INSTANTIATE_TEST_SUITE_P(All, StoreMetricsReporterTestWithParams, Bool());
 
