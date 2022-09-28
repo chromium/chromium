@@ -218,6 +218,7 @@ source_set("blink_heap_perftests_sources") {
   ]
 
   deps = [
+    "//gin:gin",
     "//testing/gtest",
     "//testing/perf",
     "//third_party/blink/renderer/platform:test_support",

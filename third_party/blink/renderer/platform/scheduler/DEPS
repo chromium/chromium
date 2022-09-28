@@ -72,7 +72,7 @@ specific_include_rules = {
     "+components/ukm/test_ukm_recorder.h",
     "+testing",
   ],
- "sequence_manager_fuzzer.cc": [
-   '+testing/libfuzzer/proto/lpm_interface.h'
- ],
+  "sequence_manager_fuzzer.cc": [
+    '+testing/libfuzzer/proto/lpm_interface.h'
+  ],
 }

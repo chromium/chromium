@@ -16,7 +16,6 @@
 #include "v8/include/cppgc/heap-consistency.h"
 #include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-embedder-heap.h"
-#include "v8/include/v8-initialization.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-traced-handle.h"
@@ -248,13 +247,6 @@ void ThreadState::CollectNodeAndCssStatistics(
 
 void ThreadState::EnableDetachedGarbageCollectionsForTesting() {
   cpp_heap().EnableDetachedGarbageCollectionsForTesting();
-  // Detached GCs cannot rely on the V8 platform being initialized which is
-  // needed by cppgc to perform a garbage collection.
-  static bool v8_platform_initialized = false;
-  if (!v8_platform_initialized) {
-    v8::V8::InitializePlatform(gin::V8Platform::Get());
-    v8_platform_initialized = true;
-  }
 }
 
 bool ThreadState::IsIncrementalMarking() {

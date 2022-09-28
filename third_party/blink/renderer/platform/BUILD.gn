@@ -2245,6 +2245,7 @@ source_set("blink_platform_unittests_sources") {
     "//build:chromeos_buildflags",
     "//cc",
     "//cc:test_support",
+    "//gin:gin",
     "//media:test_support",
     "//media/capture/mojom:video_capture",
     "//mojo/core/embedder",
@@ -2359,6 +2360,7 @@ test("blink_platform_perftests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//gin:gin",
     "//mojo/public/cpp/bindings/tests:for_blink_tests",
     "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/interfaces/bindings/tests:test_interfaces_blink",
@@ -2409,6 +2411,7 @@ test("blink_fuzzer_unittests") {
   deps = [
     ":test_support",
     "//base/test:test_support",
+    "//gin:gin",
     "//mojo/core/embedder:embedder",
     "//third_party/blink/public:test_support",
   ]

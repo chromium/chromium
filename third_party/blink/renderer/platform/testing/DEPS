@@ -59,6 +59,14 @@ specific_include_rules = {
     "empty_web_media_player\.cc": [
         "+media/base/video_frame.h",
     ],
+    "run_all_tests\.cc": [
+        "+gin/array_buffer.h",
+        "+gin/public/isolate_holder.h",
+    ],
+    "run_all_perf_tests\.cc": [
+        "+gin/array_buffer.h",
+        "+gin/public/isolate_holder.h",
+    ],
     "scoped_fake_ukm_recorder\.cc": [
         "+services/metrics/public/mojom/ukm_interface.mojom-blink.h",
     ],

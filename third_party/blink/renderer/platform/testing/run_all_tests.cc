@@ -35,6 +35,8 @@
 #include "base/test/test_io_thread.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
+#include "gin/array_buffer.h"
+#include "gin/public/isolate_holder.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -75,6 +77,8 @@ int main(int argc, char** argv) {
     mojo::core::ScopedIPCSupport ipcSupport(
         testIoThread.task_runner(),
         mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
+    gin::IsolateHolder::Initialize(gin::IsolateHolder::kStrictMode,
+                                   gin::ArrayBufferAllocator::SharedInstance());
     result = base::LaunchUnitTests(
         argc, argv, base::BindOnce(runTestSuite, base::Unretained(&testSuite)));
   }
