@@ -125,7 +125,6 @@ lens::RenderingEnvironment GetRenderingEnvironment(
 
 namespace lens {
 
-// TODO(shivpatel): add unit tests (b/243041286)
 void AppendLogsQueryParam(
     std::string* query_string,
     const std::vector<lens::mojom::LatencyLogPtr>& log_data) {

@@ -192,4 +192,29 @@ TEST(LensUrlUtilsTest, AppendUnknownRenderingEnvironmentTest) {
   EXPECT_THAT(url.query(), MatchesRegex("ep=crs&s=&st=\\d+"));
 }
 
+TEST(LensUrlUtilsTest, AppendEmptyLogsTest) {
+  std::vector<lens::mojom::LatencyLogPtr> log_data;
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens::EntryPoint::UNKNOWN,
+      /* is_side_panel_request= */ true,
+      /* is_full_screen_region_search_request= */ false);
+  EXPECT_THAT(query_param, MatchesRegex("re=dcsp&s=csp&st=\\d+"));
+  lens::AppendLogsQueryParam(&query_param, std::move(log_data));
+  EXPECT_THAT(query_param, MatchesRegex("re=dcsp&s=csp&st=\\d+"));
+}
+
+TEST(LensUrlUtilsTest, AppendPopulatedLogsTest) {
+  std::vector<lens::mojom::LatencyLogPtr> log_data;
+  log_data.push_back(lens::mojom::LatencyLog::New(
+      lens::mojom::Phase::DOWNSCALE_START, gfx::Size(), gfx::Size(),
+      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens::EntryPoint::UNKNOWN,
+      /* is_side_panel_request= */ true,
+      /* is_full_screen_region_search_request= */ false);
+  EXPECT_THAT(query_param, MatchesRegex("re=dcsp&s=csp&st=\\d+"));
+  lens::AppendLogsQueryParam(&query_param, std::move(log_data));
+  EXPECT_THAT(query_param, MatchesRegex("re=dcsp&s=csp&st=\\d+&lm.+"));
+}
+
 }  // namespace lens
