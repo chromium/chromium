@@ -53,7 +53,7 @@ base::Value::Dict GetSiteEngagementScoreDictForSettings(
   if (!value.is_dict())
     return base::Value::Dict();
 
-  return std::move(value.GetDict());
+  return std::move(value).TakeDict();
 }
 
 }  // namespace
