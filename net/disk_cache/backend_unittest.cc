@@ -283,9 +283,12 @@ int DiskCacheBackendTest::GeneratePendingIO(net::TestCompletionCallback* cb) {
     // We are using the current thread as the cache thread because we want to
     // be able to call directly this method to make sure that the OS (instead
     // of us switching thread) is returning IO pending.
+    bool optimistic = false;
     if (!simple_cache_mode_) {
       rv = static_cast<disk_cache::EntryImpl*>(entry)->WriteDataImpl(
-          0, i, buffer.get(), kSize, cb->callback(), false);
+          0, i, buffer.get(), kSize, cb->callback(), false, &optimistic);
+      if (optimistic)
+        rv = net::ERR_IO_PENDING;
     } else {
       rv = entry->WriteData(0, i, buffer.get(), kSize, cb->callback(), false);
     }

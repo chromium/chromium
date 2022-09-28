@@ -89,6 +89,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.BlockfileWriteInUserBuffer" enum="Boolean"
+    expires_after="2022-11-25">
+  <owner>jam@chromium.org</owner>
+  <owner>swarm-team@google.com</owner>
+  <summary>
+    Records whether a write operation in the blockfile implementation used the
+    in-memory user-buffer or went to disk. This is emitted each time a write
+    operation to the disk cache occurs.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.CreateDiskEntry" units="ms"
     expires_after="2023-02-12">
   <owner>yhirano@chromium.org</owner>

@@ -7385,6 +7385,21 @@
             ]
         }
     ],
+    "OptimisticBlockfileWrite": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OptimisticBlockfileWrite"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptimizeAccessibilityUiThreadWork": [
         {
             "platforms": [

@@ -344,6 +344,12 @@ BASE_FEATURE(kBlockSetCookieHeader,
              "BlockSetCookieHeader",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Run callbacks optimstically for write calls to the blockfile disk cache
+// implementation.
+BASE_FEATURE(kOptimisticBlockfileWrite,
+             "OptimisticBlockfileWrite",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Read as much of the net::URLRequest as there is space in the Mojo data pipe.
 BASE_FEATURE(kOptimizeNetworkBuffers,
              "OptimizeNetworkBuffers2",

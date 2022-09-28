@@ -182,6 +182,7 @@ class BackendIO : public BackgroundIO {
   bool truncate_ = false;
   int64_t offset64_ = 0;
   base::TimeTicks start_time_;
+  bool notify_controller_ = true;
   base::OnceClosure task_;
 };
 
