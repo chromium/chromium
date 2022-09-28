@@ -670,8 +670,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1368936) Test is flaky on Linux Tests
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CreateForceSignedInProfile DISABLED_CreateForceSignedInProfile
+#else
+#define MAYBE_CreateForceSignedInProfile CreateForceSignedInProfile
+#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       CreateForceSignedInProfile) {
+                       MAYBE_CreateForceSignedInProfile) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
