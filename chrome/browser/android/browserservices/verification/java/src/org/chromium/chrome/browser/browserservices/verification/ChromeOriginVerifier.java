@@ -234,8 +234,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
 
     @Override
     public long initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
-        return ChromeOriginVerifierJni.get().init(
-                ChromeOriginVerifier.this, mWebContents, browserContextHandle);
+        return ChromeOriginVerifierJni.get().init(ChromeOriginVerifier.this, browserContextHandle);
     }
 
     @Override
@@ -260,7 +259,6 @@ public class ChromeOriginVerifier extends OriginVerifier {
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
-        long init(ChromeOriginVerifier caller, @Nullable WebContents webContents,
-                BrowserContextHandle browserContextHandle);
+        long init(ChromeOriginVerifier caller, BrowserContextHandle browserContextHandle);
     }
 }

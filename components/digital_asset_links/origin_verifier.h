@@ -13,10 +13,6 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace digital_asset_links {
 enum class RelationshipCheckResult;
 class DigitalAssetLinksHandler;
@@ -28,7 +24,6 @@ class OriginVerifier {
   OriginVerifier(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj,
-      const base::android::JavaRef<jobject>& jweb_contents,
       const base::android::JavaRef<jobject>& jbrowser_context_handle);
 
   OriginVerifier(const OriginVerifier&) = delete;
@@ -44,12 +39,12 @@ class OriginVerifier {
       const base::android::JavaParamRef<jstring>& j_package_name,
       const base::android::JavaParamRef<jobjectArray>& j_fingerprints,
       const base::android::JavaParamRef<jstring>& j_origin,
-      const base::android::JavaParamRef<jstring>& j_relationship);
+      const base::android::JavaParamRef<jstring>& j_relationship,
+      const base::android::JavaRef<jobject>& jweb_contents);
 
   static jlong Init(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jweb_contents,
       const base::android::JavaParamRef<jobject>& jbrowser_context_handle);
 
   void Destroy(JNIEnv* env, const base::android::JavaRef<jobject>& obj);
@@ -63,7 +58,6 @@ class OriginVerifier {
       digital_asset_links::RelationshipCheckResult result);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  raw_ptr<content::WebContents> web_contents_;
 
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
 };

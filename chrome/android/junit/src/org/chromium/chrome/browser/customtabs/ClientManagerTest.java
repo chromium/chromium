@@ -102,7 +102,7 @@ public class ClientManagerTest {
         mJniMocker.mock(ChromeOriginVerifierJni.TEST_HOOKS, mMockChromeOriginVerifierJni);
         Mockito.doAnswer(args -> { return 100L; })
                 .when(mMockChromeOriginVerifierJni)
-                .init(Mockito.any(), Mockito.any(), Mockito.any());
+                .init(Mockito.any(), Mockito.any());
 
         Profile.setLastUsedProfileForTesting(mProfile);
 

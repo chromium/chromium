@@ -204,7 +204,7 @@ public abstract class OriginVerifier {
         mVerificationStartTime = SystemClock.uptimeMillis();
         boolean requestSent = OriginVerifierJni.get().verifyOrigin(mNativeOriginVerifier,
                 OriginVerifier.this, mPackageName, mSignatureFingerprints.toArray(new String[0]),
-                origin.toString(), mRelation);
+                origin.toString(), mRelation, mWebContents);
         if (!requestSent) {
             recordResultMetrics(VerifierResult.REQUEST_FAILURE);
             PostTask.runOrPostTask(
@@ -313,8 +313,7 @@ public abstract class OriginVerifier {
     public long initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
         // TODO(swestphal): Refactor native origin verifier to receive WebContent only when
         // verifying to support having one OriginVerifier for several Tabs/BrowserFragments.
-        return OriginVerifierJni.get().init(
-                OriginVerifier.this, mWebContents, browserContextHandle);
+        return OriginVerifierJni.get().init(OriginVerifier.this, browserContextHandle);
     }
 
     @VisibleForTesting
@@ -349,10 +348,10 @@ public abstract class OriginVerifier {
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
-        long init(OriginVerifier caller, @Nullable WebContents webContents,
-                BrowserContextHandle browserContextHandle);
+        long init(OriginVerifier caller, BrowserContextHandle browserContextHandle);
         boolean verifyOrigin(long nativeOriginVerifier, OriginVerifier caller, String packageName,
-                String[] signatureFingerprint, String origin, String relationship);
+                String[] signatureFingerprint, String origin, String relationship,
+                @Nullable WebContents webContents);
         void destroy(long nativeOriginVerifier, OriginVerifier caller);
     }
 }

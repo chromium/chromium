@@ -28,7 +28,6 @@ using digital_asset_links::RelationshipCheckResult;
 OriginVerifier::OriginVerifier(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
-    const JavaRef<jobject>& jweb_contents,
     const JavaRef<jobject>& jbrowser_context_handle) {
   jobject_.Reset(obj);
   content::BrowserContext* context =
@@ -36,7 +35,6 @@ OriginVerifier::OriginVerifier(
   DCHECK(context);
   url_loader_factory_ = context->GetDefaultStoragePartition()
                             ->GetURLLoaderFactoryForBrowserProcess();
-  web_contents_ = content::WebContents::FromJavaWebContents(jweb_contents);
 }
 
 OriginVerifier::~OriginVerifier() = default;
@@ -47,10 +45,12 @@ bool OriginVerifier::VerifyOrigin(
     const JavaParamRef<jstring>& j_package_name,
     const JavaParamRef<jobjectArray>& j_fingerprints,
     const JavaParamRef<jstring>& j_origin,
-    const JavaParamRef<jstring>& j_relationship) {
+    const JavaParamRef<jstring>& j_relationship,
+    const base::android::JavaRef<jobject>& jweb_contents) {
   if (!j_package_name || !j_fingerprints || !j_origin || !j_relationship)
     return false;
-
+  raw_ptr<content::WebContents> web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
   std::string package_name = ConvertJavaStringToUTF8(env, j_package_name);
   // TODO(swestphal): pass all fingerprints for verification.
   std::vector<std::string> fingerprints;
@@ -62,7 +62,7 @@ bool OriginVerifier::VerifyOrigin(
 
   auto asset_link_handler =
       std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
-          url_loader_factory_, web_contents_);
+          url_loader_factory_, web_contents);
 
   auto* asset_link_handler_ptr = asset_link_handler.get();
 
@@ -89,10 +89,9 @@ void OriginVerifier::OnRelationshipCheckComplete(
 jlong OriginVerifier::Init(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
     const base::android::JavaParamRef<jobject>& jbrowser_context_handle) {
   OriginVerifier* native_verifier =
-      new OriginVerifier(env, obj, jweb_contents, jbrowser_context_handle);
+      new OriginVerifier(env, obj, jbrowser_context_handle);
   return reinterpret_cast<intptr_t>(native_verifier);
 }
 
@@ -104,7 +103,6 @@ void OriginVerifier::Destroy(JNIEnv* env,
 static jlong JNI_OriginVerifier_Init(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
     const base::android::JavaParamRef<jobject>& jbrowser_context_handle) {
-  return OriginVerifier::Init(env, obj, jweb_contents, jbrowser_context_handle);
+  return OriginVerifier::Init(env, obj, jbrowser_context_handle);
 }

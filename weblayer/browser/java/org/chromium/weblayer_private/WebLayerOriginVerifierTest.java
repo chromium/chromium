@@ -93,7 +93,7 @@ public class WebLayerOriginVerifierTest {
         mJniMocker.mock(OriginVerifierJni.TEST_HOOKS, mMockOriginVerifierJni);
         Mockito.doAnswer(args -> { return 100L; })
                 .when(mMockOriginVerifierJni)
-                .init(Mockito.any(), Mockito.any(), Mockito.any());
+                .init(Mockito.any(), Mockito.any());
         Mockito.doAnswer(args -> {
                    mHandleAllUrlsVerifier.onOriginVerificationResult(
                            args.getArgument(4), RelationshipCheckResult.SUCCESS);
@@ -102,7 +102,7 @@ public class WebLayerOriginVerifierTest {
                 .when(mMockOriginVerifierJni)
                 .verifyOrigin(ArgumentMatchers.anyLong(), Mockito.any(),
                         ArgumentMatchers.anyString(), Mockito.any(), ArgumentMatchers.anyString(),
-                        ArgumentMatchers.anyString());
+                        ArgumentMatchers.anyString(), Mockito.any());
     }
 
     @Test
@@ -134,7 +134,7 @@ public class WebLayerOriginVerifierTest {
                 .when(mMockOriginVerifierJni)
                 .verifyOrigin(ArgumentMatchers.anyLong(), Mockito.any(),
                         ArgumentMatchers.anyString(), Mockito.any(), ArgumentMatchers.anyString(),
-                        ArgumentMatchers.anyString());
+                        ArgumentMatchers.anyString(), Mockito.any());
         TestOriginVerificationListener verificationResult1 =
                 new TestOriginVerificationListener(mVerificationResultLatch);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -151,7 +151,7 @@ public class WebLayerOriginVerifierTest {
                 .when(mMockOriginVerifierJni)
                 .verifyOrigin(ArgumentMatchers.anyLong(), Mockito.any(),
                         ArgumentMatchers.anyString(), Mockito.any(), ArgumentMatchers.anyString(),
-                        ArgumentMatchers.anyString());
+                        ArgumentMatchers.anyString(), Mockito.any());
 
         TestOriginVerificationListener verificationResult2 =
                 new TestOriginVerificationListener(mVerificationResultLatch2);

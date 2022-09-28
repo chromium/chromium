@@ -30,12 +30,11 @@ int ChromeOriginVerifier::GetClearBrowsingDataCallCountForTesting() {
 static jlong JNI_ChromeOriginVerifier_Init(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
     const base::android::JavaParamRef<jobject>& jbrowser_context_handle) {
   if (!g_browser_process)
     return 0;
 
-  return OriginVerifier::Init(env, obj, jweb_contents, jbrowser_context_handle);
+  return OriginVerifier::Init(env, obj, jbrowser_context_handle);
 }
 
 }  // namespace customtabs
