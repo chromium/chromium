@@ -45,6 +45,8 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data {
                              const JavaParamRef<jobject>& j_gurl,
                              const JavaParamRef<jobject>& j_callback);
 
+  void FetchPriceEmailPref(JNIEnv* env, const JavaParamRef<jobject>& obj);
+
   ScopedJavaGlobalRef<jobject> java_ref() { return java_ref_; }
 
  private:
