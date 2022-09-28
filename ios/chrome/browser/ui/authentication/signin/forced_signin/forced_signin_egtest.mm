@@ -1016,6 +1016,11 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
+  // TODO(crbug.com/1369148): Test is failing on iPad devices and simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
+
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
   config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
