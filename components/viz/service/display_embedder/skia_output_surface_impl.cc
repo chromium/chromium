@@ -1180,7 +1180,11 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     return GrBackendFormat::MakeMtl(ToMTLPixelFormat(resource_format));
 #endif
   } else {
+#if !BUILDFLAG(IS_LINUX)
+    // Skip the check as ycbcr info is always set by `VaapiVideoDecoder` on
+    // Linux.
     DCHECK(!ycbcr_info);
+#endif
     // Convert internal format from GLES2 to platform GL.
     unsigned int texture_storage_format = gpu::GetGrGLBackendTextureFormat(
         impl_on_gpu_->GetFeatureInfo(), resource_format,
