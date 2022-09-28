@@ -128,6 +128,7 @@ consoles.console_view(
     ("fuchsia-x64", "p/chrome|x64", "rel"),
 )]
 
+exec("./ci/checks.star")
 exec("./ci/chromium.star")
 exec("./ci/chromium.accessibility.star")
 exec("./ci/chromium.android.star")
