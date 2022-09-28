@@ -1,6 +1,6 @@
 EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
 layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
+  LayoutNGView at (0,0) size 800x600
 layer at (0,0) size 800x600
   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
@@ -18,11 +18,10 @@ layer at (0,0) size 800x600
           text run at (0,0) width 759: "This test uses a right aligned image next to some left aligned text. The image should not be selected, and should not be"
           text run at (0,18) width 612: "included in the selection rect (you won't see the selection rect when you run this test manually)."
       LayoutNGBlockFlow {DIV} at (0,122) size 784x18
+        LayoutImage (floating) {IMG} at (708,0) size 76x103
         LayoutText {#text} at (0,0) size 182x18
           text run at (0,0) width 182: "This text should be selected."
 layer at (8,60) size 784x2 clip at (0,0) size 0x0
   LayoutNGBlockFlow {HR} at (0,52) size 784x2 [border: (1px inset #EEEEEE)]
-layer at (716,130) size 76x103
-  LayoutImage (floating) {IMG} at (708,0) size 76x103
 selection start: position 0 of child 1 {#text} of child 6 {DIV} of body
 selection end:   position 29 of child 1 {#text} of child 6 {DIV} of body

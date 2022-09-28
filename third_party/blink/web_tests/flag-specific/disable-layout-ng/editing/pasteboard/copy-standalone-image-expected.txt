@@ -16,6 +16,7 @@ layer at (0,0) size 800x600
       LayoutBlockFlow (anonymous) at (0,92) size 784x154
         LayoutText {#text} at (0,0) size 0x0
       LayoutBlockFlow {DIV} at (0,246) size 784x131 [border: (2px solid #FF0000)]
+        LayoutImage {IMG} at (14,14) size 76x103
         LayoutText {#text} at (0,0) size 0x0
 layer at (8,100) size 304x154 clip at (10,102) size 300x150
   LayoutIFrame {IFRAME} at (0,0) size 304x154 [border: (2px solid #0000FF)]
@@ -24,8 +25,5 @@ layer at (8,100) size 304x154 clip at (10,102) size 300x150
     layer at (0,0) size 300x150
       LayoutBlockFlow {HTML} at (0,0) size 300x150
         LayoutBlockFlow {BODY} at (0,0) size 300x150
-    layer at (0,0) size 76x103
-      LayoutImage {IMG} at (0,0) size 76x103
-layer at (22,268) size 76x103
-  LayoutImage {IMG} at (14,14) size 76x103
+          LayoutImage {IMG} at (0,0) size 76x103
 caret: position 1 of child 0 {IMG} of child 7 {DIV} of body
