@@ -13,6 +13,10 @@
 
 #include <cstdint>
 
+namespace base {
+  class DictionaryValue;
+}
+
 namespace recordreplay {
 
 bool IsRecordingOrReplaying();
@@ -53,6 +57,8 @@ void BeginPassThroughEvents();
 void EndPassThroughEvents();
 void BeginDisallowEvents();
 void EndDisallowEvents();
+
+void BrowserEvent(const char* msg, const base::DictionaryValue& info);
 
 struct AutoPassThroughEvents {
   AutoPassThroughEvents() { BeginPassThroughEvents(); }

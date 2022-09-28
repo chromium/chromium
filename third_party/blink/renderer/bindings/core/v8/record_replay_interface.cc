@@ -40,7 +40,6 @@ const char* gRecordReplayScript = R""""(
 const {
   log,
   setCDPMessageCallback,
-  setBrowserEventsCallback,
   sendCDPMessage,
   setCommandCallback,
   setClearPauseDataCallback,
@@ -94,7 +93,6 @@ function initMessages() {
   }
 
   setCDPMessageCallback(messageCallback);
-  setBrowserEventsCallback(browserEventsCallback);
   setCommandCallback(commandCallback);
   setClearPauseDataCallback(clearPauseDataCallback);
 }
@@ -1248,6 +1246,7 @@ static void HandleBrowserEvent(const char* name, const char* payload) {
   if (!gBrowserEvents) {
     gBrowserEvents = new std::vector<BrowserEvent>();
   }
+  fprintf(stderr, "KVKV-HandleBrowserEvent - %s - %s\n", name, payload);
   gBrowserEvents->push_back(
     BrowserEvent(std::string(name), std::string(payload))
   );
