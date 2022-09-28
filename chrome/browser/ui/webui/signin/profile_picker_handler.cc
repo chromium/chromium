@@ -523,8 +523,7 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
 
   if (entry->IsSigninRequired()) {
     DCHECK(signin_util::IsForceSigninEnabled());
-    if (entry->CanBeManaged() &&
-        base::FeatureList::IsEnabled(features::kForceSignInReauth)) {
+    if (entry->CanBeManaged()) {
       ProfilePickerForceSigninDialog::ShowReauthDialog(
           web_ui()->GetWebContents()->GetBrowserContext(),
           base::UTF16ToUTF8(entry->GetUserName()), *profile_path);
