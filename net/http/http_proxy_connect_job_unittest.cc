@@ -133,7 +133,7 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
             secure_dns_policy, OnHostResolutionCallback(),
             /*supported_alpns=*/base::flat_set<std::string>()),
         nullptr, nullptr, HostPortPair(kHttpsProxyHost, 443), SSLConfig(),
-        PRIVACY_MODE_DISABLED, NetworkIsolationKey());
+        PRIVACY_MODE_DISABLED, NetworkAnonymizationKey());
   }
 
   // Returns a correctly constructed HttpProxyParams for the HTTP or HTTPS
@@ -941,7 +941,7 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
           SecureDnsPolicy::kDisable, OnHostResolutionCallback(),
           /*supported_alpns=*/base::flat_set<std::string>()),
       nullptr, nullptr, HostPortPair(kHttpsProxyHost, 443), SSLConfig(),
-      PRIVACY_MODE_DISABLED, NetworkIsolationKey());
+      PRIVACY_MODE_DISABLED, NetworkAnonymizationKey());
   auto http_proxy_params = base::MakeRefCounted<HttpProxySocketParams>(
       nullptr /* tcp_params */, std::move(ssl_params), false /* is_quic */,
       HostPortPair(kEndpointHost, 443),

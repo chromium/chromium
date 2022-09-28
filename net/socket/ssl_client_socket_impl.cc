@@ -1266,7 +1266,7 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
             server_cert_verify_result_.public_key_hashes, server_cert_.get(),
             server_cert_verify_result_.verified_cert.get(),
             TransportSecurityState::ENABLE_PIN_REPORTS,
-            ssl_config_.network_isolation_key, &pinning_failure_log_);
+            ssl_config_.network_anonymization_key, &pinning_failure_log_);
     switch (pin_validity) {
       case TransportSecurityState::PKPStatus::VIOLATED:
         server_cert_verify_result_.cert_status |=
@@ -1339,7 +1339,7 @@ int SSLClientSocketImpl::CheckCTCompliance() {
           server_cert_verify_result_.scts,
           TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
           server_cert_verify_result_.policy_compliance,
-          ssl_config_.network_isolation_key);
+          ssl_config_.network_anonymization_key);
 
   if (context_->sct_auditing_delegate()) {
     context_->sct_auditing_delegate()->MaybeEnqueueReport(
@@ -1727,7 +1727,7 @@ SSLClientSessionCache::Key SSLClientSocketImpl::GetSessionCacheKey(
   key.dest_ip_addr = dest_ip_addr;
   if (base::FeatureList::IsEnabled(
           features::kPartitionSSLSessionsByNetworkIsolationKey)) {
-    key.network_isolation_key = ssl_config_.network_isolation_key;
+    key.network_anonymization_key = ssl_config_.network_anonymization_key;
   }
   key.privacy_mode = ssl_config_.privacy_mode;
   key.disable_legacy_crypto = ssl_config_.disable_legacy_crypto;

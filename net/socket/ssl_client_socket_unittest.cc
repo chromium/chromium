@@ -3185,10 +3185,11 @@ TEST_P(SSLClientSocketVersionTest,
   EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
   sock_.reset();
 
-  // Using a different NetworkIsolationKey shares session cache key because
+  // Using a different NetworkAnonymizationKey shares session cache key because
   // sharding is disabled.
   const SchemefulSite kSiteA(GURL("https://a.test"));
-  ssl_config.network_isolation_key = NetworkIsolationKey(kSiteA, kSiteA);
+  ssl_config.network_anonymization_key =
+      NetworkAnonymizationKey(kSiteA, kSiteA, /*is_cross_site=*/false);
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   ASSERT_THAT(rv, IsOk());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
@@ -3197,7 +3198,8 @@ TEST_P(SSLClientSocketVersionTest,
   sock_.reset();
 
   const SchemefulSite kSiteB(GURL("https://a.test"));
-  ssl_config.network_isolation_key = NetworkIsolationKey(kSiteB, kSiteB);
+  ssl_config.network_anonymization_key =
+      NetworkAnonymizationKey(kSiteB, kSiteB, /*is_cross_site=*/false);
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   ASSERT_THAT(rv, IsOk());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
@@ -3206,7 +3208,7 @@ TEST_P(SSLClientSocketVersionTest,
   sock_.reset();
 }
 
-// Tests that the session cache is sharded by NetworkIsolationKey if the
+// Tests that the session cache is sharded by NetworkAnonymizationKey if the
 // feature is enabled.
 TEST_P(SSLClientSocketVersionTest,
        SessionResumptionNetworkIsolationKeyEnabled) {
@@ -3216,8 +3218,10 @@ TEST_P(SSLClientSocketVersionTest,
 
   const SchemefulSite kSiteA(GURL("https://a.test"));
   const SchemefulSite kSiteB(GURL("https://b.test"));
-  const NetworkIsolationKey kNetworkIsolationKeyA(kSiteA, kSiteA);
-  const NetworkIsolationKey kNetworkIsolationKeyB(kSiteB, kSiteB);
+  const NetworkAnonymizationKey kNetworkAnonymizationKeyA(
+      kSiteA, kSiteA, /*is_cross_site=*/false);
+  const NetworkAnonymizationKey kNetworkAnonymizationKeyB(
+      kSiteB, kSiteB, /*is_cross_site=*/false);
 
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
@@ -3244,8 +3248,9 @@ TEST_P(SSLClientSocketVersionTest,
   EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
   sock_.reset();
 
-  // Using a different NetworkIsolationKey uses a different session cache key.
-  ssl_config.network_isolation_key = kNetworkIsolationKeyA;
+  // Using a different NetworkAnonymizationKey uses a different session cache
+  // key.
+  ssl_config.network_anonymization_key = kNetworkAnonymizationKeyA;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   ASSERT_THAT(rv, IsOk());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
@@ -3262,7 +3267,7 @@ TEST_P(SSLClientSocketVersionTest,
   sock_.reset();
 
   // Repeat with another non-null key.
-  ssl_config.network_isolation_key = kNetworkIsolationKeyB;
+  ssl_config.network_anonymization_key = kNetworkAnonymizationKeyB;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   ASSERT_THAT(rv, IsOk());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
@@ -3278,7 +3283,7 @@ TEST_P(SSLClientSocketVersionTest,
   sock_.reset();
 
   // b.test does not evict a.test's session.
-  ssl_config.network_isolation_key = kNetworkIsolationKeyA;
+  ssl_config.network_anonymization_key = kNetworkAnonymizationKeyA;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   ASSERT_THAT(rv, IsOk());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
@@ -4047,7 +4052,9 @@ TEST_P(SSLClientSocketVersionTest, CTIsRequiredByExpectCT) {
           Return(ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
 
   SSLConfig ssl_config;
-  ssl_config.network_isolation_key = network_isolation_key;
+  ssl_config.network_anonymization_key = NetworkAnonymizationKey::
+      CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+          network_isolation_key);
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   SSLInfo ssl_info;

@@ -149,7 +149,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
         proxy == ProxyServer::SCHEME_SOCKS5 ? socks_socket_params_ : nullptr,
         proxy == ProxyServer::SCHEME_HTTP ? http_proxy_socket_params_ : nullptr,
         HostPortPair("host", 443), SSLConfig(), PRIVACY_MODE_DISABLED,
-        NetworkIsolationKey());
+        NetworkAnonymizationKey());
   }
 
   void AddAuthToCache() {
