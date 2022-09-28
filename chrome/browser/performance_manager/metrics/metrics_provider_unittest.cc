@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
+#include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
@@ -54,7 +55,10 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
 
   performance_manager::MetricsProvider* provider() { return provider_.get(); }
 
-  void ShutdownUserPerformanceTuningManager() { manager_.reset(); }
+  void ShutdownUserPerformanceTuningManager() {
+    user_performance_tuning_env_->TearDown();
+    user_performance_tuning_env_.reset();
+  }
 
  private:
   void SetUp() override {
@@ -66,14 +70,19 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
     performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
         local_state_.registry());
 
-    manager_.reset(
-        new performance_manager::user_tuning::UserPerformanceTuningManager(
-            &local_state_, nullptr,
-            std::make_unique<performance_manager::FakeFrameThrottlingDelegate>(
-                &throttling_enabled_),
-            std::make_unique<FakeHighEfficiencyModeToggleDelegate>()));
-    manager_->Start();
+    user_performance_tuning_env_ =
+        std::make_unique<performance_manager::user_tuning::
+                             TestUserPerformanceTuningManagerEnvironment>();
+    user_performance_tuning_env_->SetUp(&local_state_);
+
     provider_.reset(new performance_manager::MetricsProvider(local_state()));
+  }
+
+  void TearDown() override {
+    // Tests may teardown the environment before this is called to make some
+    // assertions.
+    if (user_performance_tuning_env_)
+      user_performance_tuning_env_->TearDown();
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -82,10 +91,9 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   base::test::ScopedFeatureList feature_list_;
 
-  bool throttling_enabled_ = false;
-  std::unique_ptr<
-      performance_manager::user_tuning::UserPerformanceTuningManager>
-      manager_;
+  std::unique_ptr<performance_manager::user_tuning::
+                      TestUserPerformanceTuningManagerEnvironment>
+      user_performance_tuning_env_;
   std::unique_ptr<performance_manager::MetricsProvider> provider_;
 };
 

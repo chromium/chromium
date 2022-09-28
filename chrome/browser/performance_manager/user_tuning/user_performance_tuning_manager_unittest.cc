@@ -7,6 +7,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/run_loop.h"
+#include "base/test/power_monitor_test_utils.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
@@ -15,6 +16,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager::user_tuning {
@@ -57,6 +59,23 @@ class QuitRunLoopOnPowerStateChangeObserver : public QuitRunLoopObserverBase {
   void OnExternalPowerConnectedChanged(bool) override { Quit(); }
 };
 
+class MockObserver : public performance_manager::user_tuning::
+                         UserPerformanceTuningManager::Observer {
+ public:
+  MOCK_METHOD0(OnBatteryThresholdReached, void());
+};
+
+base::BatteryLevelProvider::BatteryState CreateBatteryState(
+    bool under_threshold) {
+  return {
+      .battery_count = 1,
+      .is_external_power_connected = false,
+      .current_capacity = (under_threshold ? 10 : 30),
+      .full_charged_capacity = 100,
+      .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kRelative,
+      .capture_time = base::TimeTicks::Now()};
+}
+
 }  // namespace
 
 class UserPerformanceTuningManagerTest : public testing::Test {
@@ -76,6 +95,18 @@ class UserPerformanceTuningManagerTest : public testing::Test {
               {performance_manager::features::kBatterySaverModeAvailable, {}},
               {performance_manager::features::kHighEfficiencyModeAvailable, {}},
           }) {
+    auto test_sampling_event_source =
+        std::make_unique<base::test::TestSamplingEventSource>();
+    auto test_battery_level_provider =
+        std::make_unique<base::test::TestBatteryLevelProvider>();
+
+    sampling_source_ = test_sampling_event_source.get();
+    battery_level_provider_ = test_battery_level_provider.get();
+
+    battery_sampler_ = std::make_unique<base::BatteryStateSampler>(
+        std::move(test_sampling_event_source),
+        std::move(test_battery_level_provider));
+
     feature_list_.InitWithFeaturesAndParameters(features_and_params, {});
     manager_.reset(new UserPerformanceTuningManager(
         &local_state_, nullptr,
@@ -96,6 +127,10 @@ class UserPerformanceTuningManagerTest : public testing::Test {
 
   TestingPrefServiceSimple local_state_;
   base::test::ScopedFeatureList feature_list_;
+
+  raw_ptr<base::test::TestSamplingEventSource> sampling_source_;
+  raw_ptr<base::test::TestBatteryLevelProvider> battery_level_provider_;
+  std::unique_ptr<base::BatteryStateSampler> battery_sampler_;
 
   FakePowerMonitorSource* power_monitor_source_;
   bool throttling_enabled_ = false;
@@ -130,9 +165,49 @@ TEST_F(UserPerformanceTuningManagerTest, TemporaryBatterySaver) {
       static_cast<int>(performance_manager::user_tuning::prefs::
                            BatterySaverModeState::kEnabledOnBattery));
   EXPECT_FALSE(manager()->IsBatterySaverModeDisabledForSession());
+}
 
-  // TODO(anthonyvd): Test the flag is cleared when the device is plugged in
-  // once that CL lands.
+TEST_F(UserPerformanceTuningManagerTest,
+       TemporaryBatterySaverTurnsOffWhenPlugged) {
+  StartManager();
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(throttling_enabled());
+
+  // Test the flag is cleared when the device is plugged in.
+  {
+    base::RunLoop run_loop;
+    std::unique_ptr<QuitRunLoopOnPowerStateChangeObserver> observer =
+        std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
+            run_loop.QuitClosure());
+    manager()->AddObserver(observer.get());
+    power_monitor_source_->SetOnBatteryPower(true);
+    run_loop.Run();
+    manager()->RemoveObserver(observer.get());
+  }
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kEnabled));
+  EXPECT_TRUE(manager()->IsBatterySaverActive());
+  EXPECT_TRUE(throttling_enabled());
+
+  manager()->SetTemporaryBatterySaverDisabledForSession(true);
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(throttling_enabled());
+
+  {
+    base::RunLoop run_loop;
+    std::unique_ptr<QuitRunLoopOnPowerStateChangeObserver> observer =
+        std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
+            run_loop.QuitClosure());
+    manager()->AddObserver(observer.get());
+    power_monitor_source_->SetOnBatteryPower(false);
+    run_loop.Run();
+    manager()->RemoveObserver(observer.get());
+  }
+  EXPECT_FALSE(manager()->IsBatterySaverModeDisabledForSession());
+  EXPECT_TRUE(manager()->IsBatterySaverActive());
+  EXPECT_TRUE(throttling_enabled());
 }
 
 TEST_F(UserPerformanceTuningManagerTest, BatterySaverModePref) {
@@ -200,7 +275,6 @@ TEST_F(UserPerformanceTuningManagerTest, HEMFinchEnabledByDefault) {
 
 TEST_F(UserPerformanceTuningManagerTest, EnabledOnBatteryPower) {
   StartManager();
-
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
 
@@ -263,6 +337,101 @@ TEST_F(UserPerformanceTuningManagerTest, EnabledOnBatteryPower) {
       performance_manager::user_tuning::prefs::kBatterySaverModeState,
       static_cast<int>(performance_manager::user_tuning::prefs::
                            BatterySaverModeState::kEnabledOnBattery));
+  EXPECT_TRUE(manager()->IsBatterySaverActive());
+  EXPECT_TRUE(throttling_enabled());
+}
+
+TEST_F(UserPerformanceTuningManagerTest, LowBatteryThresholdRaised) {
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kDisabled));
+  StartManager();
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(throttling_enabled());
+
+  MockObserver obs;
+  manager()->AddObserver(&obs);
+  EXPECT_CALL(obs, OnBatteryThresholdReached()).Times(1);
+
+  battery_level_provider_->SetBatteryState(
+      CreateBatteryState(/*under_threshold=*/true));
+  sampling_source_->SimulateEvent();
+
+  // A new sample under the threshold won't trigger the event again
+  sampling_source_->SimulateEvent();
+}
+
+TEST_F(UserPerformanceTuningManagerTest, BSMEnabledUnderThreshold) {
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kEnabledBelowThreshold));
+  StartManager();
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(throttling_enabled());
+
+  // If the device is not on battery, getting a "below threshold" sample doesn't
+  // enable BSM
+  battery_level_provider_->SetBatteryState(
+      CreateBatteryState(/*under_threshold=*/true));
+  sampling_source_->SimulateEvent();
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(throttling_enabled());
+
+  // We're below threshold and the device goes on battery, BSM is enabled
+  {
+    base::RunLoop run_loop;
+    std::unique_ptr<QuitRunLoopOnPowerStateChangeObserver> observer =
+        std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
+            run_loop.QuitClosure());
+    manager()->AddObserver(observer.get());
+    power_monitor_source_->SetOnBatteryPower(true);
+    run_loop.Run();
+    manager()->RemoveObserver(observer.get());
+  }
+
+  EXPECT_TRUE(manager()->IsBatterySaverActive());
+  EXPECT_TRUE(throttling_enabled());
+
+  // The device is plugged in, BSM deactivates. Then it's charged above
+  // threshold, unplugged, and the battery is drained below threshold, which
+  // reactivates BSM.
+  {
+    base::RunLoop run_loop;
+    std::unique_ptr<QuitRunLoopOnPowerStateChangeObserver> observer =
+        std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
+            run_loop.QuitClosure());
+    manager()->AddObserver(observer.get());
+    power_monitor_source_->SetOnBatteryPower(false);
+    run_loop.Run();
+    manager()->RemoveObserver(observer.get());
+  }
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(throttling_enabled());
+
+  battery_level_provider_->SetBatteryState(
+      CreateBatteryState(/*under_threshold=*/false));
+  sampling_source_->SimulateEvent();
+
+  {
+    base::RunLoop run_loop;
+    std::unique_ptr<QuitRunLoopOnPowerStateChangeObserver> observer =
+        std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
+            run_loop.QuitClosure());
+    manager()->AddObserver(observer.get());
+    power_monitor_source_->SetOnBatteryPower(true);
+    run_loop.Run();
+    manager()->RemoveObserver(observer.get());
+  }
+
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(throttling_enabled());
+
+  battery_level_provider_->SetBatteryState(
+      CreateBatteryState(/*under_threshold=*/true));
+  sampling_source_->SimulateEvent();
+
   EXPECT_TRUE(manager()->IsBatterySaverActive());
   EXPECT_TRUE(throttling_enabled());
 }

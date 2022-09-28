@@ -7,7 +7,9 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -28,8 +30,14 @@ namespace performance_manager::user_tuning {
 // - Starts to manage the modes when Start() is called in PreMainMessageLoopRun.
 //
 // This object lives on the main thread and should be used from it exclusively.
-class UserPerformanceTuningManager : public base::PowerStateObserver {
+class UserPerformanceTuningManager
+    : public base::PowerStateObserver,
+      public base::BatteryStateSampler::Observer {
  public:
+  // The percentage of battery that is considered "low". For instance, this
+  // would be `20` for 20%.
+  static const uint64_t kLowBatteryThresholdPercent;
+
   class FrameThrottlingDelegate {
    public:
     virtual void StartThrottlingAllFrameSinks() = 0;
@@ -59,7 +67,7 @@ class UserPerformanceTuningManager : public base::PowerStateObserver {
     // state is updated.
     virtual void OnExternalPowerConnectedChanged(bool on_battery_power) {}
 
-    // Raised when the battery has reached the X% threshold
+    // Raised when the battery has reached the 20% threshold
     // Can be used by the UI to show a promo if BSM isn't configured to be
     // enabled when on battery power under a certain threshold.
     virtual void OnBatteryThresholdReached() {}
@@ -86,6 +94,9 @@ class UserPerformanceTuningManager : public base::PowerStateObserver {
 
   // Returns true if the device is a portable device that can run on battery
   // power, false otherwise.
+  // This is determined asynchronously, so it may indicate false for an
+  // undetermined amount of time at startup, until the battery state is sampled
+  // for the first time.
   bool DeviceHasBattery() const;
 
   // If called with `disabled = true`, will disable battery saver mode until the
@@ -139,6 +150,11 @@ class UserPerformanceTuningManager : public base::PowerStateObserver {
   // base::PowerStateObserver:
   void OnPowerStateChange(bool on_battery_power) override;
 
+  // base::BatteryStateSampler::Observer:
+  void OnBatteryStateSampled(
+      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+          battery_state) override;
+
   bool was_started_ = false;
   bool battery_saver_mode_enabled_ = false;
   bool battery_saver_mode_disabled_for_session_ = false;
@@ -146,8 +162,13 @@ class UserPerformanceTuningManager : public base::PowerStateObserver {
   std::unique_ptr<HighEfficiencyModeToggleDelegate>
       high_efficiency_mode_toggle_delegate_;
 
+  bool has_battery_ = false;
   bool on_battery_power_ = false;
+  bool is_below_low_battery_threshold_ = false;
 
+  base::ScopedObservation<base::BatteryStateSampler,
+                          base::BatteryStateSampler::Observer>
+      battery_state_sampler_obs_{this};
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<Observer> observers_;
 };

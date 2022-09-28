@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/power_monitor/battery_state_sampler.h"
 #include "base/test/bind.h"
+#include "base/test/power_monitor_test_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -50,6 +52,8 @@ class BatterySaverHelpPromoTest : public InProcessBrowserTest {
          performance_manager::features::kBatterySaverModeAvailable},
         {});
 
+    SetUpFakeBatterySampler();
+
     InProcessBrowserTest::SetUp();
   }
 
@@ -76,7 +80,29 @@ class BatterySaverHelpPromoTest : public InProcessBrowserTest {
     return tracker->IsInitialized();
   }
 
+  void SetUpFakeBatterySampler() {
+    auto test_sampling_event_source =
+        std::make_unique<base::test::TestSamplingEventSource>();
+    auto test_battery_level_provider =
+        std::make_unique<base::test::TestBatteryLevelProvider>();
+
+    sampling_source_ = test_sampling_event_source.get();
+    battery_level_provider_ = test_battery_level_provider.get();
+    test_battery_level_provider->SetBatteryState(
+        base::test::TestBatteryLevelProvider::CreateBatteryState());
+
+    battery_state_sampler_ =
+        base::BatteryStateSampler::CreateInstanceForTesting(
+            std::move(test_sampling_event_source),
+            std::move(test_battery_level_provider));
+  }
+
  private:
+  raw_ptr<base::test::TestSamplingEventSource> sampling_source_;
+  raw_ptr<base::test::TestBatteryLevelProvider> battery_level_provider_;
+  // Only used on platforms without a battery level provider implementation.
+  std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
+
   base::test::ScopedFeatureList feature_list_;
 };
 

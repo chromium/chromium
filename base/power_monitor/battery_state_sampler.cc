@@ -16,6 +16,7 @@ namespace {
 
 // Singleton instance of the BatteryStateSampler.
 BatteryStateSampler* g_battery_state_sampler = nullptr;
+bool g_test_instance_installed = false;
 
 }  // namespace
 
@@ -44,6 +45,7 @@ BatteryStateSampler::~BatteryStateSampler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(g_battery_state_sampler, this);
   g_battery_state_sampler = nullptr;
+  g_test_instance_installed = false;
 }
 
 // static
@@ -69,6 +71,21 @@ void BatteryStateSampler::AddObserver(Observer* observer) {
 void BatteryStateSampler::RemoveObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observer_list_.RemoveObserver(observer);
+}
+
+// static
+std::unique_ptr<base::BatteryStateSampler>
+BatteryStateSampler::CreateInstanceForTesting(
+    std::unique_ptr<SamplingEventSource> sampling_event_source,
+    std::unique_ptr<BatteryLevelProvider> battery_level_provider) {
+  g_test_instance_installed = true;
+  return std::make_unique<BatteryStateSampler>(
+      std::move(sampling_event_source), std::move(battery_level_provider));
+}
+
+// static
+bool BatteryStateSampler::HasTestingInstance() {
+  return g_test_instance_installed;
 }
 
 #if !BUILDFLAG(IS_MAC)

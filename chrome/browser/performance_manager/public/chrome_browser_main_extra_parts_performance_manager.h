@@ -17,6 +17,12 @@
 
 class Profile;
 
+#if !BUILDFLAG(IS_ANDROID)
+namespace base {
+class BatteryStateSampler;
+}
+#endif
+
 namespace content {
 class FeatureObserverClient;
 }
@@ -119,6 +125,7 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   std::unique_ptr<
       performance_manager::user_tuning::ProfileDiscardOptOutListHelper>
       profile_discard_opt_out_list_helper_;
+  std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

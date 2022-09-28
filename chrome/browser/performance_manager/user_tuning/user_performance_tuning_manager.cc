@@ -55,6 +55,8 @@ class HighEfficiencyModeToggleDelegateImpl
 
 }  // namespace
 
+const uint64_t UserPerformanceTuningManager::kLowBatteryThresholdPercent = 20;
+
 // static
 UserPerformanceTuningManager* UserPerformanceTuningManager::GetInstance() {
   DCHECK(g_user_performance_tuning_manager);
@@ -77,9 +79,7 @@ void UserPerformanceTuningManager::RemoveObserver(Observer* o) {
 }
 
 bool UserPerformanceTuningManager::DeviceHasBattery() const {
-  // TODO(crbug.com/1348590): Check platform-specific APIs to return whether
-  // this device has a battery.
-  return true;
+  return has_battery_;
 }
 
 void UserPerformanceTuningManager::SetTemporaryBatterySaverDisabledForSession(
@@ -193,6 +193,14 @@ void UserPerformanceTuningManager::Start() {
     on_battery_power_ =
         base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
 
+    base::BatteryStateSampler* battery_state_sampler =
+        base::BatteryStateSampler::Get();
+    // Some platforms don't have a battery sampler, treat them as if they had no
+    // battery at all.
+    if (battery_state_sampler) {
+      battery_state_sampler_obs_.Observe(battery_state_sampler);
+    }
+
     OnBatterySaverModePrefChanged();
   }
 }
@@ -219,11 +227,25 @@ void UserPerformanceTuningManager::UpdateBatterySaverModeState() {
 
   bool previously_enabled = battery_saver_mode_enabled_;
 
-  battery_saver_mode_enabled_ =
-      !battery_saver_mode_disabled_for_session_ &&
-      (state == BatterySaverModeState::kEnabled ||
-       (state == BatterySaverModeState::kEnabledOnBattery &&
-        on_battery_power_));
+  battery_saver_mode_enabled_ = false;
+
+  if (!battery_saver_mode_disabled_for_session_) {
+    switch (state) {
+      case BatterySaverModeState::kEnabled:
+        battery_saver_mode_enabled_ = true;
+        break;
+      case BatterySaverModeState::kEnabledOnBattery:
+        battery_saver_mode_enabled_ = on_battery_power_;
+        break;
+      case BatterySaverModeState::kEnabledBelowThreshold:
+        battery_saver_mode_enabled_ =
+            on_battery_power_ && is_below_low_battery_threshold_;
+        break;
+      default:
+        battery_saver_mode_enabled_ = false;
+        break;
+    }
+  }
 
   // Don't change throttling or notify observers if the mode didn't change.
   if (previously_enabled == battery_saver_mode_enabled_)
@@ -255,8 +277,47 @@ void UserPerformanceTuningManager::NotifyMemoryThresholdReached() {
 void UserPerformanceTuningManager::OnPowerStateChange(bool on_battery_power) {
   on_battery_power_ = on_battery_power;
 
+  // Plugging in the device unsets the temporary disable BSM flag
+  if (!on_battery_power)
+    battery_saver_mode_disabled_for_session_ = false;
+
   for (auto& obs : observers_) {
     obs.OnExternalPowerConnectedChanged(on_battery_power);
+  }
+
+  UpdateBatterySaverModeState();
+}
+
+void UserPerformanceTuningManager::OnBatteryStateSampled(
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        battery_state) {
+  if (!battery_state)
+    return;
+
+  has_battery_ = battery_state->battery_count > 0;
+
+  if (!battery_state->current_capacity ||
+      !battery_state->full_charged_capacity) {
+    // This should only happen if there are no batteries connected, or multiple
+    // batteries connected (in which case their units may not match so they
+    // don't report a charge). We're not under the threshold for any battery.
+    DCHECK_NE(1, battery_state->battery_count);
+
+    is_below_low_battery_threshold_ = false;
+    return;
+  }
+
+  bool was_below_threshold = is_below_low_battery_threshold_;
+
+  // A battery is below the threshold if it's under 20% charge.
+  is_below_low_battery_threshold_ = *(battery_state->current_capacity) <
+                                    (*(battery_state->full_charged_capacity) *
+                                     kLowBatteryThresholdPercent / 100);
+
+  if (is_below_low_battery_threshold_ && !was_below_threshold) {
+    for (auto& obs : observers_) {
+      obs.OnBatteryThresholdReached();
+    }
   }
 
   UpdateBatterySaverModeState();

@@ -9,6 +9,14 @@
 
 class PrefService;
 
+namespace base {
+class BatteryStateSampler;
+namespace test {
+class TestSamplingEventSource;
+class TestBatteryLevelProvider;
+}  // namespace test
+}  // namespace base
+
 namespace performance_manager::user_tuning {
 
 class TestUserPerformanceTuningManagerEnvironment {
@@ -19,7 +27,14 @@ class TestUserPerformanceTuningManagerEnvironment {
   void SetUp(PrefService* local_state);
   void TearDown();
 
+  base::test::TestSamplingEventSource* sampling_source();
+  base::test::TestBatteryLevelProvider* battery_level_provider();
+
  private:
+  raw_ptr<base::test::TestSamplingEventSource> sampling_source_;
+  raw_ptr<base::test::TestBatteryLevelProvider> battery_level_provider_;
+  std::unique_ptr<base::BatteryStateSampler> battery_sampler_;
+
   bool throttling_enabled_ = false;
   std::unique_ptr<UserPerformanceTuningManager> manager_;
 };

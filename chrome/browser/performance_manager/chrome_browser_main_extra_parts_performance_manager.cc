@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/system/sys_info.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
@@ -53,6 +54,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/power_monitor/battery_state_sampler.h"
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
@@ -237,6 +239,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extension_watcher_ =
       std::make_unique<performance_manager::ExtensionWatcher>();
+#endif
+
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
+  // Some browser tests need to control how the battery state behaves, so they
+  // install a test `BatteryStateSampler` before browser setup.
+  if (!base::BatteryStateSampler::HasTestingInstance())
+    battery_state_sampler_ = std::make_unique<base::BatteryStateSampler>();
 #endif
 }
 

@@ -89,6 +89,8 @@ static_library("test_support") {
     "perf_time_logger.h",
     "power_monitor_test.cc",
     "power_monitor_test.h",
+    "power_monitor_test_utils.cc",
+    "power_monitor_test_utils.h",
     "repeating_test_future.h",
     "scoped_command_line.cc",
     "scoped_command_line.h",
