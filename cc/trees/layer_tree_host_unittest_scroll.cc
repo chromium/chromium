@@ -2653,6 +2653,69 @@ class LayerTreeHostScrollTestImplSideInvalidation
 
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplSideInvalidation);
 
+class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
+ public:
+  void SetupTree() override {
+    LayerTreeHostScrollTest::SetupTree();
+    GetViewportScrollNode()->main_thread_scrolling_reasons =
+        MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+  }
+
+  void UpdateLayerTreeHost() override {
+    if (layer_tree_host()->SourceFrameNumber() == 1)
+      GetViewportScrollNode()->main_thread_scrolling_reasons =
+          MainThreadScrollingReason::kNotScrollingOnMain;
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    int frame_number = host_impl->active_tree()->source_frame_number();
+    InputHandler& input_handler = host_impl->GetInputHandler();
+
+    if (frame_number == 0) {
+      EXPECT_EQ(SAME_PRIORITY_FOR_BOTH_TREES, host_impl->GetTreePriority());
+      DoScrollBeginAndUpdate(input_handler);
+
+      // In frame 0, scroll node has main_thread_scrolling_reasons. Do not
+      // prioritize smoothness, since we need to repaint on the main thread for
+      // the user to see the scroll.
+      EXPECT_EQ(SAME_PRIORITY_FOR_BOTH_TREES, host_impl->GetTreePriority());
+      input_handler.ScrollEnd();
+      PostSetNeedsCommitToMainThread();
+    }
+
+    if (frame_number == 1) {
+      EXPECT_EQ(SAME_PRIORITY_FOR_BOTH_TREES, host_impl->GetTreePriority());
+      DoScrollBeginAndUpdate(input_handler);
+
+      // In frame 1, we have cleared the main_thread_scrolling_reasons.
+      // Prioritize smoothness.
+      EXPECT_EQ(SMOOTHNESS_TAKES_PRIORITY, host_impl->GetTreePriority());
+      input_handler.ScrollEnd();
+      EndTest();
+    }
+  }
+
+ private:
+  ScrollNode* GetViewportScrollNode() {
+    LayerTreeHost* host = layer_tree_host();
+    ElementId viewport_element_id = host->OuterViewportScrollElementId();
+    ScrollTree& scroll_tree = host->property_trees()->scroll_tree_mutable();
+    return scroll_tree.FindNodeFromElementId(viewport_element_id);
+  }
+
+  void DoScrollBeginAndUpdate(InputHandler& input_handler) {
+    input_handler.ScrollBegin(
+        BeginState(gfx::Point(), gfx::Vector2dF(0, 10)).get(),
+        ui::ScrollInputType::kTouchscreen);
+    input_handler.ScrollUpdate(
+        UpdateState(gfx::Point(), gfx::Vector2dF(0, 10)).get());
+  }
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostScrollTestMainRepaint);
+
 class NonScrollingNonFastScrollableRegion : public LayerTreeHostScrollTest {
  public:
   NonScrollingNonFastScrollableRegion() { SetUseLayerLists(); }

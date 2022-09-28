@@ -1196,6 +1196,15 @@ ActivelyScrollingType InputHandler::GetActivelyScrollingType() const {
   return ActivelyScrollingType::kPrecise;
 }
 
+bool InputHandler::IsCurrentScrollMainRepainted() const {
+  const ScrollNode* scroll_node = CurrentlyScrollingNode();
+  if (!scroll_node)
+    return false;
+  uint32_t repaint_reasons =
+      GetScrollTree().GetMainThreadRepaintReasons(*scroll_node);
+  return repaint_reasons != MainThreadScrollingReason::kNotScrollingOnMain;
+}
+
 ScrollNode* InputHandler::CurrentlyScrollingNode() {
   return GetScrollTree().CurrentlyScrollingNode();
 }

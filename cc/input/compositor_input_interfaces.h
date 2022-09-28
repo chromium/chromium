@@ -89,6 +89,12 @@ class InputDelegateForCompositor {
   // the touchmoves. In that case, we latch and have a CurrentlyScrollingNode()
   // but will never receive a ScrollUpdate.
   virtual ActivelyScrollingType GetActivelyScrollingType() const = 0;
+
+  // Returns true if we're currently scrolling and the scroll must be realized
+  // on the main thread (see ScrollTree::CanRealizeScrollsOnCompositor).
+  // TODO(skobes): Combine IsCurrentlyScrolling, GetActivelyScrollingType, and
+  // IsCurrentScrollMainRepainted into a single method returning everything.
+  virtual bool IsCurrentScrollMainRepainted() const = 0;
 };
 
 // This is the interface that's exposed by the LayerTreeHostImpl to the input

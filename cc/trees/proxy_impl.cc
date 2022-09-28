@@ -524,6 +524,10 @@ void ProxyImpl::RenewTreePriority() {
           features::kPreferNewContentForCheckerboardedScrolls)) {
     prefer_new_content = true;
   }
+  if (scroll_type_considered_interaction &&
+      host_impl_->IsCurrentScrollMainRepainted()) {
+    prefer_new_content = true;
+  }
 
   // Schedule expiration if smoothness currently takes priority.
   if (user_interaction_in_progress && !prefer_new_content)
