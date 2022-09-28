@@ -50,8 +50,6 @@ using proto::SegmentId;
 
 namespace {
 
-constexpr char kDefaultModelEnabledParam[] = "enable_default_model";
-
 // Default TTL for segment selection and unknown selection:
 
 constexpr int kChromeLowUserEngagementSelectionTTLDays = 7;
@@ -68,17 +66,10 @@ constexpr int kCrossDeviceUserSegmentUnknownSelectionTTLDays = 7;
 constexpr int kResumeHeavyUserSegmentSelectionTTLDays = 14;
 constexpr int kResumeHeavyUserSegmentUnknownSelectionTTLDays = 14;
 
-constexpr char kVariationsParamNameSegmentSelectionTTLDays[] =
-    "segment_selection_ttl_days";
-constexpr char kVariationsParamNameUnknownSelectionTTLDays[] =
-    "unknown_selection_ttl_days";
-
 #if BUILDFLAG(IS_ANDROID)
 
 constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 56;
 
-constexpr int kChromeStartDefaultSelectionTTLDays = 30;
-constexpr int kChromeStartDefaultUnknownTTLDays = 7;
 // See
 // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java
 const char kNumDaysKeepShowingQueryTiles[] =
@@ -115,36 +106,6 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-std::unique_ptr<ModelProvider> GetChromeStartAndroidModel() {
-  if (!base::GetFieldTrialParamByFeatureAsBool(
-          chrome::android::kStartSurfaceAndroid, kDefaultModelEnabledParam,
-          false)) {
-    return nullptr;
-  }
-  return std::make_unique<ChromeStartModel>();
-}
-
-std::unique_ptr<Config> GetConfigForChromeStartAndroid() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kChromeStartAndroidSegmentationKey;
-  config->segmentation_uma_name = kChromeStartAndroidUmaName;
-  config->AddSegmentId(
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
-      GetChromeStartAndroidModel());
-
-  int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
-      chrome::android::kStartSurfaceAndroid,
-      kVariationsParamNameSegmentSelectionTTLDays,
-      kChromeStartDefaultSelectionTTLDays);
-  int unknown_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
-      chrome::android::kStartSurfaceAndroid,
-      "segment_unknown_selection_ttl_days", kChromeStartDefaultUnknownTTLDays);
-  config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
-  config->unknown_selection_ttl = base::Days(unknown_selection_ttl_days);
-
-  return config;
-}
-
 std::unique_ptr<ModelProvider> GetChromeStartAndroidModelV2() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
           chrome::android::kStartSurfaceReturnTime, kDefaultModelEnabledParam,
@@ -162,10 +123,11 @@ std::unique_ptr<Config> GetConfigForChromeStartAndroidV2() {
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2,
       GetChromeStartAndroidModelV2());
 
+  constexpr int kChromeStartV2DefaultSelectionTTLDays = 30;
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       chrome::android::kStartSurfaceReturnTime,
       kVariationsParamNameSegmentSelectionTTLDays,
-      kChromeStartDefaultSelectionTTLDays);
+      kChromeStartV2DefaultSelectionTTLDays);
   config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
   config->unknown_selection_ttl = config->segment_selection_ttl;
 
@@ -416,7 +378,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     configs.emplace_back(GetConfigForContextualPageActions(context));
   }
   if (IsStartSurfaceBehaviouralTargetingEnabled()) {
-    configs.emplace_back(GetConfigForChromeStartAndroid());
+    configs.emplace_back(ChromeStartModel::GetConfig());
   }
   if (base::FeatureList::IsEnabled(
           query_tiles::features::kQueryTilesSegmentation)) {
@@ -463,7 +425,7 @@ void AppendConfigsFromExperiments(
   for (const auto& active_group : active_groups) {
     base::FieldTrialParams params;
     if (base::GetFieldTrialParams(active_group.trial_name, &params)) {
-      const auto& it = params.find("segmentation_platform_add_config_param");
+      const auto& it = params.find(kSegmentationConfigParamName);
       if (it == params.end())
         continue;
       param_values.push_back(it->second);

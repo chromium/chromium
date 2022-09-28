@@ -74,6 +74,21 @@ const char kResumeHeavyUserUmaName[] = "ResumeHeavyUser";
 const char kSegmentIdsAllowedForReportingKey[] =
     "segment_ids_allowed_for_reporting";
 
+// Config parameter name specified in experiment configs. Any experiment config
+// or feature can include this param and segmentation will enable the config for
+// storing cached results.
+const char kSegmentationConfigParamName[] =
+    "segmentation_platform_add_config_param";
+
+// Parameter names used for defining segmentation config.
+// TODO(ssid): These should be deprecated and clients should use
+// `kSegmentationConfigParamName` to define config instead.
+constexpr char kDefaultModelEnabledParam[] = "enable_default_model";
+constexpr char kVariationsParamNameSegmentSelectionTTLDays[] =
+    "segment_selection_ttl_days";
+constexpr char kVariationsParamNameUnknownSelectionTTLDays[] =
+    "unknown_selection_ttl_days";
+
 const char kSubsegmentDiscreteMappingSuffix[] = "_subsegment";
 
 // Returns an UMA display string for the given `segmentation_key`.

@@ -25,6 +25,9 @@ constexpr SegmentId kChromeStartSegmentId =
 constexpr int64_t kChromeStartSignalStorageLength = 28;
 constexpr int64_t kChromeStartMinSignalCollectionLength = 1;
 
+constexpr int kChromeStartDefaultSelectionTTLDays = 30;
+constexpr int kChromeStartDefaultUnknownTTLDays = 7;
+
 // InputFeatures.
 constexpr int32_t kProfileSigninStatusEnums[] = {0 /* All profiles syncing */,
                                                  2 /* Mixed sync status */};
@@ -47,7 +50,38 @@ constexpr std::array<MetadataWriter::UMAFeature, 8> kChromeStartUMAFeatures = {
                                                   kProfileSigninStatusEnums,
                                                   2)};
 
+std::unique_ptr<ModelProvider> GetChromeStartAndroidModel() {
+  if (!base::GetFieldTrialParamByFeatureAsBool(
+          chrome::android::kStartSurfaceAndroid, kDefaultModelEnabledParam,
+          false)) {
+    return nullptr;
+  }
+  return std::make_unique<ChromeStartModel>();
+}
+
 }  // namespace
+
+// static
+std::unique_ptr<Config> ChromeStartModel::GetConfig() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kChromeStartAndroidSegmentationKey;
+  config->segmentation_uma_name = kChromeStartAndroidUmaName;
+  config->AddSegmentId(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
+      GetChromeStartAndroidModel());
+
+  int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      chrome::android::kStartSurfaceAndroid,
+      kVariationsParamNameSegmentSelectionTTLDays,
+      kChromeStartDefaultSelectionTTLDays);
+  int unknown_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      chrome::android::kStartSurfaceAndroid,
+      "segment_unknown_selection_ttl_days", kChromeStartDefaultUnknownTTLDays);
+  config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
+  config->unknown_selection_ttl = base::Days(unknown_selection_ttl_days);
+
+  return config;
+}
 
 ChromeStartModel::ChromeStartModel() : ModelProvider(kChromeStartSegmentId) {}
 

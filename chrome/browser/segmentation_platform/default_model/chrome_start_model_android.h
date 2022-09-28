@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SEGMENTATION_PLATFORM_DEFAULT_MODEL_CHROME_START_MODEL_ANDROID_H_
 #define CHROME_BROWSER_SEGMENTATION_PLATFORM_DEFAULT_MODEL_CHROME_START_MODEL_ANDROID_H_
 
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
@@ -19,6 +20,8 @@ class ChromeStartModel : public ModelProvider {
   // Disallow copy/assign.
   ChromeStartModel(ChromeStartModel&) = delete;
   ChromeStartModel& operator=(ChromeStartModel&) = delete;
+
+  static std::unique_ptr<Config> GetConfig();
 
   // ModelProvider implementation.
   void InitAndFetchModel(
