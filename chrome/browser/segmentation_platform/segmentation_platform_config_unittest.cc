@@ -119,7 +119,7 @@ TEST_F(SegmentationPlatformConfigTest, MultipleConfigs) {
       features::kSegmentationPlatformFeedSegmentFeature,
       {{"segmentation_platform_add_config_param", kValidConfig1}}));
   features.push_back(ScopedFeatureList::FeatureAndParams(
-      features::kSegmentationPlatformDummyFeature,
+      features::kShoppingUserSegmentFeature,
       {{"segmentation_platform_add_config_param", kValidConfig2}}));
   EnableFeaturesWithParams(features);
 

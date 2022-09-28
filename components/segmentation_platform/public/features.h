@@ -13,10 +13,6 @@ namespace segmentation_platform::features {
 // Core feature flag for segmentation platform.
 BASE_DECLARE_FEATURE(kSegmentationPlatformFeature);
 
-// Feature flag for segmentation platform dummy model that is used for
-// experimental models and data collection.
-BASE_DECLARE_FEATURE(kSegmentationPlatformDummyFeature);
-
 // Feature flag for allowing structured metrics to be collected.
 BASE_DECLARE_FEATURE(kSegmentationStructuredMetricsFeature);
 

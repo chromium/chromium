@@ -12,10 +12,6 @@ BASE_FEATURE(kSegmentationPlatformFeature,
              "SegmentationPlatform",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSegmentationPlatformDummyFeature,
-             "SegmentationPlatformDummyFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSegmentationStructuredMetricsFeature,
              "SegmentationStructuredMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
