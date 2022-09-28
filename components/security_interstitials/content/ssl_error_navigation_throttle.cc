@@ -46,12 +46,9 @@ SSLErrorNavigationThrottle::WillFailRequest() {
   }
 
   // Do not set special error page HTML for non-primary pages (e.g. regular
-  // subframe, prerendering, fenced-frame, portal and guest-view). Those are
-  // handled as normal network errors. SSL interstitials in guest-view are
-  // suppressed per crbug/1338009.
-  if (!handle->IsInPrimaryMainFrame() ||
-      handle->GetWebContents() !=
-          handle->GetWebContents()->GetResponsibleWebContents()) {
+  // subframe, prerendering, fenced-frame, portal). Those are handled as normal
+  // network errors.
+  if (!handle->IsInPrimaryMainFrame() || handle->GetWebContents()->IsPortal()) {
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -86,12 +83,9 @@ SSLErrorNavigationThrottle::WillProcessResponse() {
   }
 
   // Do not set special error page HTML for non-primary pages (e.g. regular
-  // subframe, prerendering, fenced-frame, portal and guest-view). Those are
-  // handled as normal network errors. SSL interstitials in guest-view are
-  // suppressed per crbug/1338009.
-  if (!handle->IsInPrimaryMainFrame() ||
-      handle->GetWebContents() !=
-          handle->GetWebContents()->GetResponsibleWebContents()) {
+  // subframe, prerendering, fenced-frame, portal). Those are handled as normal
+  // network errors.
+  if (!handle->IsInPrimaryMainFrame() || handle->GetWebContents()->IsPortal()) {
     return content::NavigationThrottle::PROCEED;
   }
 
