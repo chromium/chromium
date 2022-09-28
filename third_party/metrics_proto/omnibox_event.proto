@@ -179,8 +179,7 @@ message OmniboxEventProto {
     // enum is used in other places too, and not only OmniboxEventProto.)
     NTP_ZPS_PREFETCH = 20;
 
-    // Android's auxiliary search backend.
-    ANDROID_AUXILIARY_SEARCH = 21;
+    // Note: PageClassification 21 has never been used.
 
     // The Search Results Page zero-prefix suggestion prefetch.
     // Used for prefetching suggestions and should never appear in an
