@@ -227,6 +227,17 @@ constexpr const char* BuildArch() {
 #endif
 }
 
+base::CommandLine::StringType GetCommandLineString() {
+#if BUILDFLAG(IS_WIN)
+  // Gets the raw command line on Windows, because
+  // `base::CommandLine::GetCommandLineString()` could return an invalid string
+  // after the class re-arranges the legacy command line arguments.
+  return ::GetCommandLine();
+#else
+  return base::CommandLine::ForCurrentProcess()->GetCommandLineString();
+#endif
+}
+
 }  // namespace
 
 int UpdaterMain(int argc, const char* const* argv) {
@@ -246,8 +257,7 @@ int UpdaterMain(int argc, const char* const* argv) {
   InitLogging(updater_scope);
 
   VLOG(1) << "Version " << kUpdaterVersion << ", " << BuildFlavor() << ", "
-          << BuildArch()
-          << ", command line: " << command_line->GetCommandLineString();
+          << BuildArch() << ", command line: " << GetCommandLineString();
   const int retval = HandleUpdaterCommands(updater_scope, command_line);
   VLOG(1) << __func__ << " (--" << GetUpdaterCommand(command_line) << ")"
           << " returned " << retval << ".";
