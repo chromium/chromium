@@ -801,44 +801,70 @@ Additional details:
   <message name="IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning before saving a screen recording.">
     Delete recording
   </message>
-  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_TITLE" desc="The title for notification informing the user that action on selected files is not recommended.">
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_TITLE" desc="The title for notification informing the user that downloading selected files is not recommended.">
         {0, plural,
           =1 {Download confidential file?}
           other {Download confidential files?}}
   </message>
-  <message name="IDS_POLICY_DLP_FILES_TRANSFER_WARN_TITLE" desc="The title for notification informing the user that action on selected files is not recommended.">
+  <message name="IDS_POLICY_DLP_FILES_TRANSFER_WARN_TITLE" desc="The title for notification informing the user that transferring selected files is not recommended.">
         {0, plural,
           =1 {Transfer confidential file?}
           other {Transfer confidential files?}}
   </message>
-  <message name="IDS_POLICY_DLP_FILES_UPLOAD_WARN_TITLE" desc="The title for notification informing the user that action on selected files is not recommended.">
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_WARN_TITLE" desc="The title for notification informing the user that uploading selected files is not recommended.">
         {0, plural,
           =1 {Upload confidential file?}
           other {Upload confidential files?}}
   </message>
-  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE" desc="The message for notification informing the user that action on files is not recommended.">
+  <message name="IDS_POLICY_DLP_FILES_MOVE_WARN_TITLE" desc="The title for notification informing the user that moving selected files is not recommended.">
+        {0, plural,
+          =1 {Move confidential file?}
+          other {Move confidential files?}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_COPY_WARN_TITLE" desc="The title for notification informing the user that copying selected files is not recommended.">
+        {0, plural,
+          =1 {Copy confidential file?}
+          other {Copy confidential files?}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE" desc="The message for notification informing the user that downloading files is not recommended.">
         {0, plural,
                 =1 {Administrator policy doesn’t recommend downloading this file to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
                 other {Administrator policy doesn’t recommend downloading these files to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}}
   </message>
-  <message name="IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE" desc="The message for notification informing the user that action on files is not recommended.">
+  <message name="IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE" desc="The message for notification informing the user that transferring files is not recommended.">
         {0, plural,
                 =1 {Administrator policy doesn’t recommend transferring this file to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
                 other {Administrator policy doesn’t recommend transferring these files to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}}
   </message>
-  <message name="IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE" desc="The message for notification informing the user that action on files is not recommended.">
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE" desc="The message for notification informing the user that uploading files is not recommended.">
         {0, plural,
                 =1 {Administrator policy doesn’t recommend uploading this file to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
                 other {Administrator policy doesn’t recommend uploading these files to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}}
   </message>
-  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before action on files.">
+  <message name="IDS_POLICY_DLP_FILES_MOVE_WARN_MESSAGE" desc="The message for notification informing the user that moving files is not recommended.">
+        {0, plural,
+                =1 {Administrator policy doesn’t recommend moving this file to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
+                other {Administrator policy doesn’t recommend moving these files to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_COPY_WARN_MESSAGE" desc="The message for notification informing the user that copying files is not recommended.">
+        {0, plural,
+                =1 {Administrator policy doesn’t recommend copying this file to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
+                other {Administrator policy doesn’t recommend copying these files to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before downloading files.">
     Download anyway
   </message>
-  <message name="IDS_POLICY_DLP_FILES_TRANSFER_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before action on files.">
+  <message name="IDS_POLICY_DLP_FILES_TRANSFER_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before transferring files.">
     Transfer anyway
   </message>
-  <message name="IDS_POLICY_DLP_FILES_UPLOAD_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before action on files.">
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before uploading files.">
     Upload anyway
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_MOVE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before moving files.">
+    Move anyway
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_COPY_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before copying files.">
+    Copy anyway
   </message>
   <message name="IDS_POLICY_DLP_FILES_DESTINATION_REMOVABLE_STORAGE" desc="A label for the 'Removable storage' files transfer destination.">
     Removable storage
