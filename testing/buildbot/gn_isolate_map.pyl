@@ -1509,6 +1509,14 @@
     "script": "//third_party/catapult/devil/devil/android/tools/system_app.py",
     "type": "script",
   },
+  "performance_weblayer_test_suite": {
+    "args": [
+      "../../tools/perf/run_benchmark",
+    ],
+    "label": "//chrome/test:performance_weblayer_test_suite",
+    "script": "//testing/scripts/run_performance_tests.py",
+    "type": "script",
+  },
   "polymer_tools_python_unittests": {
     "args": [
       "../../tools/polymer/run_polymer_tools_tests.py",
@@ -1791,6 +1799,10 @@
     "script": "//testing/scripts/run_telemetry_as_googletest.py",
     "type": "script",
   },
+  "telemetry_weblayer_apks": {
+    "label": "//tools/perf/chrome_telemetry_build:telemetry_weblayer_apks",
+    "type": "additional_compile_target",
+  },
   "test_ash_chrome": {
     "label": "//chrome/test:test_ash_chrome",
     "type": "additional_compile_target",
@@ -2025,6 +2037,18 @@
       "${ISOLATED_OUTDIR}",
     ],
   },
+  "weblayer_browsertests": {
+    "label": "//weblayer/test:weblayer_browsertests",
+    "type": "windowed_test_launcher",
+  },
+  "weblayer_shell_wpt": {
+    "label": "//weblayer/shell/android:weblayer_shell_wpt",
+    "type": "generated_script",
+  },
+  "weblayer_unittests": {
+    "label": "//weblayer/test:weblayer_unittests",
+    "type": "windowed_test_launcher",
+  },
   "webview_cts_tests": {
     "args": [
       "--skip-expected-failures",
@@ -2094,6 +2118,33 @@
       "--use-apk-under-test-flags-file",
     ],
     "label": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
+    "type": "console_test_launcher",
+  },
+  "weblayer_bundle_test": {
+    "label": "//weblayer/browser/android/javatests:weblayer_bundle_test",
+    "type": "console_test_launcher",
+  },
+  "weblayer_instrumentation_test_apk": {
+    "label": "//weblayer/browser/android/javatests:weblayer_instrumentation_test_apk",
+    "type": "console_test_launcher",
+  },
+  "weblayer_skew_tests": {
+    "label": "//weblayer/browser/android/javatests:weblayer_skew_tests",
+    "type": "console_test_launcher",
+  },
+  "weblayer_skew_tests_with_chrome": {
+    "args":  [
+      "--replace-system-package=apks/WebLayerShellSystemWebView.apk"
+    ],
+    "label": "//weblayer/browser/android/javatests:weblayer_skew_tests_with_chrome",
+    "type": "console_test_launcher",
+  },
+  "weblayer_junit_tests": {
+    "label": "//weblayer/browser/java:weblayer_junit_tests",
+    "type": "junit_test",
+  },
+  "weblayer_private_instrumentation_test_apk": {
+    "label": "//weblayer/browser/android/javatests:weblayer_private_instrumentation_test_apk",
     "type": "console_test_launcher",
   },
   "weblayer_shell": {

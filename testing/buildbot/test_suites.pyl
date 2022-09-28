@@ -238,6 +238,8 @@
         },
       },
       'viz_unittests': {},
+      'weblayer_bundle_test': {},
+      'weblayer_instrumentation_test_apk': {},
       'webview_instrumentation_test_apk': {
         'swarming': {
           'shards': 7,
@@ -1138,6 +1140,13 @@
           'nougat-x86-emulator',
         ],
       },
+      'weblayer_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+        # Experimental until we're sure these are stable.
+        'experiment_percentage': 100
+      },
     },
 
     'chromium_linux_scripts': {
@@ -1179,6 +1188,7 @@
     'chromium_swarm_android_gtests': {
       'base_unittests': {},
       'chrome_modern_public_bundle_smoke_test': {},
+      'weblayer_bundle_test': {},
     },
 
     'chromium_swarm_desktop_gtests': {
@@ -4863,6 +4873,71 @@
       'web_runner_integration_tests': {},
     },
 
+    'weblayer_android_gtests': {
+      'weblayer_bundle_test': {
+      },
+      'weblayer_instrumentation_test_apk': {
+      },
+      'weblayer_private_instrumentation_test_apk': {
+      },
+    },
+
+
+    'weblayer_gtests': {
+      'weblayer_browsertests': {
+      },
+      'weblayer_unittests': {
+      },
+    },
+
+    'weblayer_instrumentation_tests': {
+      'weblayer_instrumentation_test_apk': {
+      }
+    },
+
+    'weblayer_shell_wpt': {
+      'weblayer_shell_wpt': {
+        'args': [
+          '--no-wpt-internal',
+        ],
+        'swarming': {
+          'shards': 18,
+          'expiration': 18000,
+          'hard_timeout': 14400,
+        },
+        'experiment_percentage': 100,
+        'merge': {
+          'args': [
+            '--verbose',
+          ],
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'results_handler': 'layout tests',
+      },
+    },
+
+    'weblayer_skew_tests': {
+      'weblayer_skew_tests': {
+        'swarming': {
+          'shards': 2,
+        },
+        'args': [
+          '--additional-apk=apks/WebLayerShellSystemWebView.apk',
+        ],
+      },
+    },
+
+    'weblayer_skew_tests_with_chrome': {
+      'weblayer_skew_tests_with_chrome': {
+        'swarming': {
+          'shards': 2,
+        },
+        'args': [
+          '--additional-apk=apks/ChromePublic.apk'
+        ],
+      },
+    },
+
     'webrtc_chromium_baremetal_gtests': {
       'browser_tests': {
         'args': [
@@ -5315,6 +5390,8 @@
       'chromium_gtests',
       'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
+      'weblayer_android_gtests',
+      'weblayer_gtests',
     ],
 
     # List gtests that run on android-marshmallow-x86-rel builder.
@@ -5337,6 +5414,8 @@
       # chromium_gtests are enabled in this suite.
       'components_capacity_tests',
       'linux_flavor_specific_chromium_gtests',
+      #'weblayer_android_gtests',
+      #'weblayer_gtests',
     ],
 
     # Note that tests here are gradually moved to
@@ -5348,6 +5427,8 @@
     # is android_wpr_record_replay_tests
     'android_marshmallow_emulator_non_cq_gtests': [
       'chromium_gtests',
+      'weblayer_android_gtests',
+      'weblayer_gtests',
     ],
 
     'android_marshmallow_gtests': [
@@ -5360,6 +5441,8 @@
       'linux_flavor_specific_chromium_gtests',
       'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
+      'weblayer_android_gtests',
+      'weblayer_gtests',
     ],
 
     'android_nougat_emulator_gtests': [
@@ -5372,6 +5455,8 @@
       'chromium_gtests_for_devices_with_graphical_output',
       'linux_flavor_specific_chromium_gtests',
       'system_webview_shell_instrumentation_tests', # Not an experimental test
+      'weblayer_android_gtests',
+      'weblayer_gtests',
       'webview_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
     ],
@@ -5393,7 +5478,8 @@
 
     # This is the same as 'chromium_android_gtests'
     # with the addition of 'android_modern_smoke_tests',
-    # 'webview_cts_tests_gtest', and 'webview_ui_instrumentation_tests',
+    # 'webview_cts_tests_gtest', 'webview_ui_instrumentation_tests',
+    # 'weblayer_android_gtests', and 'weblayer_gtests'.
     'android_pie_coverage_gtests': [
       'android_modern_smoke_tests',
       'android_smoke_tests',
@@ -5404,6 +5490,8 @@
       'linux_flavor_specific_chromium_gtests',
       'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
+      'weblayer_android_gtests',
+      'weblayer_gtests',
       'webview_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
     ],
@@ -5432,6 +5520,8 @@
       'chromium_gtests_for_devices_with_graphical_output',
       'linux_flavor_specific_chromium_gtests',
       'system_webview_shell_instrumentation_tests', # Not an experimental test
+      'weblayer_android_gtests',
+      'weblayer_gtests',
       'webview_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
     ],
@@ -5452,6 +5542,8 @@
       'system_webview_shell_instrumentation_tests',
     #   'vr_android_specific_chromium_tests',
     #   'vr_platform_specific_chromium_gtests',
+    #   'weblayer_android_gtests',
+      'weblayer_gtests',
       'webview_64_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
     ],
@@ -5527,6 +5619,7 @@
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
       'overlay_prioritization_gtests',
+      'weblayer_gtests',
     ],
 
     # This is meant to be a superset of 'chromium_linux_and_gl_gtests'. Any
@@ -5546,6 +5639,7 @@
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
+      'weblayer_gtests',
     ],
 
     # gl_tests requires dedicated slaves with GPUs on linux, so have a separate
@@ -5564,6 +5658,7 @@
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
+      'weblayer_gtests',
     ],
 
     'chromium_linux_cast_audio_gtests': [
@@ -5602,6 +5697,7 @@
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
       'overlay_prioritization_gtests',
+      'weblayer_gtests',
     ],
 
     'chromium_linux_rel_isolated_scripts': [
@@ -5686,6 +5782,7 @@
       'non_android_chromium_gtests_skia_gold',
       'pixel_browser_tests_gtests',
       'vr_platform_specific_chromium_gtests',
+      'weblayer_gtests',
       'win_specific_chromium_gtests',
     ],
 
@@ -5719,6 +5816,7 @@
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
+      'weblayer_gtests',
       'win_specific_chromium_gtests',
     ],
 
@@ -6264,6 +6362,8 @@
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
+      'weblayer_android_gtests': {},
+      'weblayer_gtests': {},
       'webview_trichrome_cts_tests': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
@@ -6286,6 +6386,8 @@
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
+      'weblayer_android_gtests': {},
+      'weblayer_gtests': {},
       'webview_trichrome_64_cts_tests': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
@@ -6304,9 +6406,72 @@
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
+      'weblayer_android_gtests': {},
+      'weblayer_gtests': {},
       'webview_ui_instrumentation_tests': {},
     },
 
+
+    'android_weblayer_x86_10_gtests': {
+      'weblayer_instrumentation_tests': {
+        'variants': [
+          {'identifier': 'ToT_Tests'}
+        ]
+      },
+      'weblayer_skew_tests': {
+        'variants': [
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE',
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_THREE_MILESTONE',
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_THREE_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
+        ]
+      }
+    },
+
+    'android_weblayer_x86_marshmallow_gtests': {
+      'weblayer_skew_tests_with_chrome': {
+        'variants': [
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE',
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_THREE_MILESTONE',
+          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_THREE_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
+        ]
+      }
+    },
+
+    'android_weblayer_x86_pie_oreo_gtests': {
+      'weblayer_instrumentation_tests': {
+        'variants': [
+          {'identifier': 'ToT_Tests'}
+        ]
+      },
+      'weblayer_skew_tests': {
+        'variants': [
+          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE',
+          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
+          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
+          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_THREE_MILESTONE',
+          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_THREE_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
+        ]
+      }
+    },
 
     'chromeos_trogdor64_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {

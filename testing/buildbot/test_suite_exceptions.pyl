@@ -4053,6 +4053,84 @@
       },
     },
   },
+  'weblayer_browsertests': {
+    'remove_from': [
+      'android-pie-arm64-rel', # crbug.com/1354867
+    ],
+    'modifications': {
+      'android-11-x86-rel': {
+        'args': [
+          # TODO(crbug.com/1191784): Fix the test failure
+          '--gtest_filter=-DownloadBrowserTest.OverrideDownloadDirectory',
+        ],
+      },
+      'android-12-x64-rel': {
+        'args': [
+          # TODO(crbug.com/1191784): Fix the test failure
+          '--gtest_filter=-DownloadBrowserTest.OverrideDownloadDirectory',
+        ],
+      },
+    },
+  },
+  'weblayer_bundle_test': {
+    'remove_from': [
+      'android-marshmallow-x86-rel-non-cq', # crbug.com/1088013
+      'android-pie-arm64-rel', # crbug.com/1354867
+      'android-11-x86-rel', # crbug.com/1165280
+    ],
+  },
+  'weblayer_instrumentation_test_apk': {
+    'remove_from': [
+      'android-marshmallow-x86-rel-non-cq', # crbug.com/1088013
+      'android-pie-arm64-rel', # crbug.com/1354867
+      'android-11-x86-rel', # crbug.com/1165280
+    ],
+    'modifications': {
+      'android-marshmallow-arm64-rel': {
+        'swarming': {
+          'quickrun_shards': 2,
+        },
+      },
+      'android-nougat-x86-rel': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+            },
+          ],
+        },
+      },
+    },
+  },
+  'weblayer_private_instrumentation_test_apk': {
+    'modifications': {
+      # TODO(crbug.com/1189403): Remove the filter once the issue is fixed.
+      'android-11-x86-rel': {
+        'args': [
+          '--gtest_filter=-org.chromium.weblayer.test.MediaCaptureTest.*',
+        ],
+      },
+      'android-12-x64-rel': {
+        'args': [
+          # crbug.com/1275200
+          '--gtest_filter=-org.chromium.weblayer.test.BrowserControlsTest.testTopExpandedOnLoadWhenOnlyExpandAtTop',
+        ],
+      },
+    },
+  },
+  'weblayer_shell_wpt': {
+    'modifications': {
+      'android-weblayer-pie-x86-wpt-smoketest': {
+        'args': [
+          '--default-exclude',
+          '--include-file=../../third_party/blink/web_tests/android/WPTSmokeTestCases',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
+    },
+  },
   'webview_64_cts_tests': {
     'modifications': {
       'android-pie-arm64-rel': {
