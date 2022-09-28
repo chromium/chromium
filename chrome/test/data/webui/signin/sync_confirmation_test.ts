@@ -29,8 +29,7 @@ const CONSENT_DESCRIPTION_TEXTS = [
 ];
 const CONSENT_DESCRIPTION_SIGNIN_INTERCEPT_TEXTS = [
   'Welcome, Person 1',
-  'Turn on sync to get your bookmarks, passwords, history, and more on this device and anywhere else you\'re syncing.',
-  'Google may use your history to personalize Search and other Google services',
+  'Turn on sync to get your bookmarks, passwords, history, and more on this device and anywhere else you\'re syncing. Google may use your history to personalize Search and other Google services.',
 ];
 
 // <if expr="chromeos_lacros">
@@ -130,10 +129,14 @@ suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
     app.shadowRoot!.querySelector<HTMLElement>('#confirmButton')!.click();
     const [description, confirmation] =
         await browserProxy.whenCalled('confirm');
-    assertEquals(
-        isSigninInterceptFreEnabled ? SIGNIN_INTERCEPT_CONSENT_CONFIRMATION :
-                                      STANDARD_CONSENT_CONFIRMATION,
-        confirmation);
+    if (isSigninInterceptFreEnabled) {
+      // Confirmation button is capitalized on MacOS.
+      assertEquals(
+          SIGNIN_INTERCEPT_CONSENT_CONFIRMATION.toLowerCase(),
+          confirmation.toLowerCase());
+    } else {
+      assertEquals(STANDARD_CONSENT_CONFIRMATION, confirmation);
+    }
     assertArrayEquals(
         isSigninInterceptFreEnabled ?
             CONSENT_DESCRIPTION_SIGNIN_INTERCEPT_TEXTS :
