@@ -6,8 +6,9 @@
 
 namespace content_creation {
 
-const base::Feature kLightweightReactions{"LightweightReactions",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLightweightReactions,
+             "LightweightReactions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsLightweightReactionsEnabled() {
   return base::FeatureList::IsEnabled(kLightweightReactions);

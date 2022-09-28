@@ -10,7 +10,7 @@
 namespace content_creation {
 
 // Main feature for the Lightweight Reactions project.
-extern const base::Feature kLightweightReactions;
+BASE_DECLARE_FEATURE(kLightweightReactions);
 
 // Returns true if the Lightweight Reactions feature is enabled.
 bool IsLightweightReactionsEnabled();

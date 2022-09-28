@@ -11,17 +11,17 @@
 namespace content_creation {
 
 // Main feature for the Web Notes Stylize project.
-extern const base::Feature kWebNotesStylizeEnabled;
+BASE_DECLARE_FEATURE(kWebNotesStylizeEnabled);
 
 // Feature parameter for Web Notes Stylize which controls whether the ordering
 // of templates is randomized for each client or not.
 extern const base::FeatureParam<bool> kRandomizeOrderParam;
 
 // Feature for publishing Web Notes to the server.
-extern const base::Feature kWebNotesPublish;
+BASE_DECLARE_FEATURE(kWebNotesPublish);
 
 // Feature for enabling dynamic templates.
-extern const base::Feature kWebNotesDynamicTemplates;
+BASE_DECLARE_FEATURE(kWebNotesDynamicTemplates);
 
 // Returns true if the Web Notes Stylize feature is enabled.
 bool IsStylizeEnabled();
