@@ -31,7 +31,7 @@ CHANGELIST_SIZE_TO_TRIGGER_FULL_TEST = 100
 
 class NetworkTrafficAnnotationChecker():
   EXTENSIONS = ['.cc', '.mm', '.java']
-  ANNOTATIONS_FILE = 'annotations.xml'
+  IMPORTANT_FILES = {'annotations.xml', 'grouping.xml', 'safe_list.txt'}
 
   def __init__(self, build_path=None):
     """Initializes a NetworkTrafficAnnotationChecker object.
@@ -43,9 +43,12 @@ class NetworkTrafficAnnotationChecker():
     """
     self.tools = NetworkTrafficAnnotationTools(build_path)
 
-  def IsAnnotationsFile(self, file_path):
-    """Returns true if the given file is the annotations file."""
-    return os.path.basename(file_path) == self.ANNOTATIONS_FILE
+  def IsImportantFile(self, file_path):
+    """Returns true if the given file is an important file.
+
+    Importrant files trigger a run on the full Chromium codebase, instead of
+    only analyzing modified source files."""
+    return os.path.basename(file_path) in self.IMPORTANT_FILES
 
   def ShouldCheckFile(self, file_path):
     """Returns true if the input file has an extension relevant to network
@@ -60,14 +63,14 @@ class NetworkTrafficAnnotationChecker():
     # run in error resilient mode.
     file_paths = self.tools.GetModifiedFiles() or []
 
-    annotations_file_changed = any(
-        self.IsAnnotationsFile(file_path) for file_path in file_paths)
+    important_file_changed = any(
+        self.IsImportantFile(file_path) for file_path in file_paths)
 
     # If the annotations file has changed, trigger a full test to avoid
     # missing a case where the annotations file has changed, but not the
     # corresponding file, causing a mismatch that is not detected by just
     # checking the changed .cc and .mm files.
-    if annotations_file_changed:
+    if important_file_changed:
       return []
 
     file_paths = [
