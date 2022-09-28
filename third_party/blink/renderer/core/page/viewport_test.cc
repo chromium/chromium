@@ -3260,7 +3260,7 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardResizeLayout) {
   ASSERT_EQ(WebView().VirtualKeyboardModeForTesting(),
             ui::mojom::blink::VirtualKeyboardMode::kUnset);
 
-  // Basic test case
+  // Check resize-layout value is set in a basic test case.
   LoadPageWithHTML(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="virtual-keyboard=resize-layout">
@@ -3286,6 +3286,54 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardResizeLayout) {
   EXPECT_TRUE(ConsoleMessages().empty()) << ConsoleMessages().front();
   EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
             ui::mojom::blink::VirtualKeyboardMode::kResizeLayout);
+}
+
+// Test that the resize-visual value is correctly parsed and set on the
+// virtual-keyboard key.
+TEST_F(ViewportMetaSimTest, VirtualKeyboardResizeVisual) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kOSKResizesVisualViewport);
+
+  // Blank page to set the default.
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+  )HTML");
+  ASSERT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kUnset);
+
+  // Check resize-visual value is set.
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <meta name="viewport" content="virtual-keyboard=resize-visual">
+  )HTML");
+
+  EXPECT_TRUE(ConsoleMessages().empty()) << ConsoleMessages().front();
+  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kResizeVisual);
+}
+
+// Test that the overlays-content value is correctly parsed and set on the
+// virtual-keyboard key.
+TEST_F(ViewportMetaSimTest, VirtualKeyboardOverlaysContent) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kOSKResizesVisualViewport);
+
+  // Blank page to set the default.
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+  )HTML");
+  ASSERT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kUnset);
+
+  // Check overlays-content value is set.
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <meta name="viewport" content="virtual-keyboard=overlays-content">
+  )HTML");
+
+  EXPECT_TRUE(ConsoleMessages().empty()) << ConsoleMessages().front();
+  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kOverlaysContent);
 }
 
 // Test that the virtualKeyboard.overlaysContent API overrides any values set

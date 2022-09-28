@@ -335,6 +335,10 @@ absl::optional<ui::mojom::blink::VirtualKeyboardMode>
 HTMLMetaElement::ParseVirtualKeyboardValueAsEnum(const String& value) {
   if (EqualIgnoringASCIICase(value, "resize-layout"))
     return ui::mojom::blink::VirtualKeyboardMode::kResizeLayout;
+  else if (EqualIgnoringASCIICase(value, "resize-visual"))
+    return ui::mojom::blink::VirtualKeyboardMode::kResizeVisual;
+  else if (EqualIgnoringASCIICase(value, "overlays-content"))
+    return ui::mojom::blink::VirtualKeyboardMode::kOverlaysContent;
 
   return absl::nullopt;
 }

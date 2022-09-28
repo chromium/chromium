@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
 import android.support.test.InstrumentationRegistry;
@@ -13,6 +14,7 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +36,7 @@ import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 /**
  * Tests the virtual keyboard's effect on resizing web pages.
@@ -66,6 +69,14 @@ public class VirtualKeyboardResizeTest {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
     }
 
+    private void navigateToURL(String url) {
+        mActivityTestRule.loadUrl(mTestServer.getURL(url));
+    }
+
+    private void openInNewTab(String url) {
+        mActivityTestRule.loadUrlInNewTab(mTestServer.getURL(url));
+    }
+
     private void assertWaitForKeyboardStatus(final boolean show) {
         CriteriaHelper.pollUiThread(() -> {
             boolean isKeyboardShowing = mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(
@@ -96,8 +107,24 @@ public class VirtualKeyboardResizeTest {
         }, TEST_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
+    private void assertWaitForNthGeometryChangeEvent(final int n) {
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                int numGeometryChangeEvents = getNumGeometryChangeEvents();
+                Criteria.checkThat(numGeometryChangeEvents, greaterThanOrEqualTo(n));
+            } catch (Throwable e) {
+                throw new CriteriaNotSatisfiedException(e);
+            }
+        }, TEST_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
     private WebContents getWebContents() {
         return mActivityTestRule.getActivity().getActivityTab().getWebContents();
+    }
+
+    private int getNumGeometryChangeEvents() throws Throwable {
+        return Integer.parseInt(JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                getWebContents(), "window.numGeometryChangeEvents"));
     }
 
     private int getPageInnerHeight() throws Throwable {
@@ -188,6 +215,39 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
+     * Tests the <meta name="viewport" content="virtual-keyboard=resize-visual"> tag (which works
+     * only when the OSKResizesVisualViewport flag is enabled) causes the page to resize only the
+     * visual viewport.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT})
+    public void testResizeVisualMetaTag() throws Throwable {
+        startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html?resize-visual");
+
+        int initialHeight = getPageInnerHeight();
+        double initialVVHeight = getVisualViewportHeight();
+
+        DOMUtils.clickNode(getWebContents(), TEXTFIELD_DOM_ID);
+        assertWaitForKeyboardStatus(true);
+
+        double keyboardHeight = getKeyboardHeightDp();
+
+        // Use less than or equal since the keyboard may actually include accessories like the
+        // Autofill bar. +1 to account for device scale factor rounding.
+        assertWaitForVisualViewportHeight(lessThanOrEqualTo(initialVVHeight - keyboardHeight + 1));
+        assertWaitForPageHeight(Matchers.is(initialHeight));
+
+        // Hide the OSK and ensure the state is correctly restored to the initial height.
+        hideKeyboard();
+        assertWaitForKeyboardStatus(false);
+
+        assertWaitForPageHeight(Matchers.is(initialHeight));
+        assertWaitForVisualViewportHeight(
+                Matchers.closeTo((double) initialVVHeight, /*error=*/1.0));
+    }
+
+    /**
      * Tests the <meta name="viewport" content="virtual-keyboard=resize-layout"> tag opts the page
      * back into a mode where the keyboard resizes layout.
      */
@@ -218,5 +278,95 @@ public class VirtualKeyboardResizeTest {
         assertWaitForPageHeight(Matchers.is(initialHeight));
         assertWaitForVisualViewportHeight(
                 Matchers.closeTo((double) initialVVHeight, /*error=*/1.0));
+    }
+
+    /**
+     * Tests the <meta name="viewport" content="virtual-keyboard=overlays-content"> tag (which works
+     * only when the OSKResizesVisualViewport flag is enabled) causes the page to avoid resizing any
+     * viewports.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT})
+    public void testOverlaysContentMetaTag() throws Throwable {
+        startMainActivityWithURL(
+                "/chrome/test/data/android/page_with_editable.html?overlays-content");
+
+        Assert.assertEquals(getNumGeometryChangeEvents(), 0);
+
+        int initialHeight = getPageInnerHeight();
+        double initialVVHeight = getVisualViewportHeight();
+
+        DOMUtils.clickNode(getWebContents(), TEXTFIELD_DOM_ID);
+        assertWaitForKeyboardStatus(true);
+        assertWaitForNthGeometryChangeEvent(1);
+
+        // We're checking something didn't happen so we have nothing to wait on - give it some time
+        // to make sure a resize should often occur by now.
+        Thread.sleep(200);
+
+        // Ensure neither the innerHeight nor visualViewport height has changed.
+        Assert.assertEquals(getPageInnerHeight(), initialHeight);
+        Assert.assertEquals(getVisualViewportHeight(), initialVVHeight, /*delta=*/1.0f);
+    }
+
+    /**
+     * Test that the virtual keyboard mode is correctly set/reset on navigations.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT})
+    public void testModeAfterNavigation() throws Throwable {
+        startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html");
+
+        Assert.assertEquals(mActivityTestRule.getActivity()
+                                    .getCompositorViewHolderForTesting()
+                                    .getVirtualKeyboardModeForTesting(),
+                VirtualKeyboardMode.RESIZE_VISUAL);
+
+        navigateToURL("/chrome/test/data/android/page_with_editable.html?resize-layout");
+        Assert.assertEquals(mActivityTestRule.getActivity()
+                                    .getCompositorViewHolderForTesting()
+                                    .getVirtualKeyboardModeForTesting(),
+                VirtualKeyboardMode.RESIZE_LAYOUT);
+
+        navigateToURL("/chrome/test/data/android/page_with_editable.html");
+
+        Assert.assertEquals(mActivityTestRule.getActivity()
+                                    .getCompositorViewHolderForTesting()
+                                    .getVirtualKeyboardModeForTesting(),
+                VirtualKeyboardMode.RESIZE_VISUAL);
+
+        navigateToURL("/chrome/test/data/android/page_with_editable.html?overlays-content");
+
+        Assert.assertEquals(mActivityTestRule.getActivity()
+                                    .getCompositorViewHolderForTesting()
+                                    .getVirtualKeyboardModeForTesting(),
+                VirtualKeyboardMode.OVERLAYS_CONTENT);
+
+        openInNewTab("/chrome/test/data/android/page_with_editable.html?resize-layout");
+        Assert.assertEquals(mActivityTestRule.getActivity()
+                                    .getCompositorViewHolderForTesting()
+                                    .getVirtualKeyboardModeForTesting(),
+                VirtualKeyboardMode.RESIZE_LAYOUT);
+
+        // Ensure showing the keyboard and going through the resize flow uses the current virtual
+        // keyboard mode.
+        {
+            int initialHeight = getPageInnerHeight();
+
+            DOMUtils.clickNode(getWebContents(), TEXTFIELD_DOM_ID);
+            assertWaitForKeyboardStatus(true);
+
+            double keyboardHeight = getKeyboardHeightDp();
+
+            assertWaitForPageHeight(
+                    lessThanOrEqualTo((int) (initialHeight - keyboardHeight + 1.0)));
+
+            hideKeyboard();
+            assertWaitForKeyboardStatus(false);
+
+            assertWaitForPageHeight(Matchers.is(initialHeight));
+        }
     }
 }

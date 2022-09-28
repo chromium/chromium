@@ -195,7 +195,9 @@ public class CompositorViewHolder extends FrameLayout
     private boolean mHasKeyboardGeometryChangeFired;
 
     @VirtualKeyboardMode.EnumType
-    private int mVirtualKeyboardMode = VirtualKeyboardMode.UNSET;
+    private int mVirtualKeyboardMode = ChromeFeatureList.sOSKResizesVisualViewport.isEnabled()
+            ? VirtualKeyboardMode.RESIZE_VISUAL
+            : VirtualKeyboardMode.RESIZE_LAYOUT;
 
     private OnscreenContentProvider mOnscreenContentProvider;
 
@@ -574,7 +576,7 @@ public class CompositorViewHolder extends FrameLayout
     private void updateApplicationViewportInsetSuppliers() {
         if (mApplicationViewportInsetSupplier == null) return;
 
-        if (oskResizesVisualViewport(getWebContents())) {
+        if (oskResizesVisualViewport()) {
             if (mAutofillUiBottomInsetSupplier != null) {
                 mApplicationViewportInsetSupplier.addStackingSupplier(
                         mAutofillUiBottomInsetSupplier);
@@ -603,7 +605,7 @@ public class CompositorViewHolder extends FrameLayout
         // The InsetObserverView is used to monitor keyboard resizes while
         // fullscreened to simulate a view resize. This is unneeded when the
         // OSK resizes only the visual viewport.
-        if (oskResizesVisualViewport(getWebContents())) {
+        if (oskResizesVisualViewport()) {
             return;
         }
 
@@ -881,14 +883,9 @@ public class CompositorViewHolder extends FrameLayout
             // Also the geometrychange event should only fire to the foreground tab.
             int keyboardHeight = 0;
 
-            // The resize-layout mode is available only when the default OSK
-            // behavior is to resize the visual viewport.
-            assert mVirtualKeyboardMode != VirtualKeyboardMode.RESIZE_LAYOUT
-                    || ChromeFeatureList.sOSKResizesVisualViewport.isEnabled();
-
             boolean vkModePreservesWebContentsHeight =
                     mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT
-                    || oskResizesVisualViewport(webContents);
+                    || oskResizesVisualViewport();
 
             // In fullscreen, the keyboard doesn't resize the view so there's no need to adjust the
             // layout height by the keyboard height to keep it from changing in response.
@@ -915,9 +912,11 @@ public class CompositorViewHolder extends FrameLayout
         return view != null && view.getWindowToken() != null;
     }
 
-    private boolean oskResizesVisualViewport(WebContents webContents) {
-        return ChromeFeatureList.sOSKResizesVisualViewport.isEnabled()
-                && mVirtualKeyboardMode == VirtualKeyboardMode.UNSET;
+    private boolean oskResizesVisualViewport() {
+        // UNSET means the author hasn't explicitly set a preference but the mode should have been
+        // set to the default in that case.
+        assert mVirtualKeyboardMode != VirtualKeyboardMode.UNSET;
+        return mVirtualKeyboardMode == VirtualKeyboardMode.RESIZE_VISUAL;
     }
 
     /**
@@ -1077,7 +1076,7 @@ public class CompositorViewHolder extends FrameLayout
         // visual viewport which is communicated to the renderer by observing
         // the inset provider in TabViewAndroidDelegate. This is a no-op in
         // CompositorViewHolder.
-        if (oskResizesVisualViewport(getWebContents())) {
+        if (oskResizesVisualViewport()) {
             return;
         }
 
@@ -1346,7 +1345,7 @@ public class CompositorViewHolder extends FrameLayout
         // If osk-resizes-visual-viewport is enabled, the OSK and its
         // accessories don't resize the view/page so the autofill inset
         // supplier must not have been set.
-        if (oskResizesVisualViewport(getWebContents())) {
+        if (oskResizesVisualViewport()) {
             return 0;
         }
 
@@ -1549,6 +1548,15 @@ public class CompositorViewHolder extends FrameLayout
 
     @VisibleForTesting
     void updateVirtualKeyboardMode(@VirtualKeyboardMode.EnumType int newMode) {
+        if (newMode == VirtualKeyboardMode.UNSET) {
+            newMode = ChromeFeatureList.sOSKResizesVisualViewport.isEnabled()
+                    ? VirtualKeyboardMode.RESIZE_VISUAL
+                    : VirtualKeyboardMode.RESIZE_LAYOUT;
+        }
+
+        assert newMode != VirtualKeyboardMode.RESIZE_VISUAL
+                || ChromeFeatureList.sOSKResizesVisualViewport.isEnabled();
+
         if (mVirtualKeyboardMode == newMode) return;
 
         @VirtualKeyboardMode.EnumType
@@ -1556,13 +1564,17 @@ public class CompositorViewHolder extends FrameLayout
         mVirtualKeyboardMode = newMode;
 
         // If this flag isn't enabled there isn't any way the view size can differ from
-        // the visual viewport insets so there's nothing to do.
+        // the visual viewport insets so there's nothing to do. (Because only RESIZE_LAYOUT and
+        // OVERLAYS_CONTENT are the only possibilities. RESIZE_LAYOUT resizes the web contents
+        // container and thus the visual viewport with it; OVERLAYS_CONTENT resizes neither the web
+        // contents or the visual viewport.)
         if (!ChromeFeatureList.sOSKResizesVisualViewport.isEnabled()) return;
 
         // If we're going into or out of the default OSK resizes visual viewport mode
         // we're changing whether the ApplicationViewportInsetSupplier needs to listen to
         // the keyboard since its responsible for insetting the visual viewport.
-        if (oldMode == VirtualKeyboardMode.UNSET || newMode == VirtualKeyboardMode.UNSET) {
+        if (oldMode == VirtualKeyboardMode.RESIZE_VISUAL
+                || newMode == VirtualKeyboardMode.RESIZE_VISUAL) {
             updateApplicationViewportInsetSuppliers();
         }
     }
@@ -1829,5 +1841,10 @@ public class CompositorViewHolder extends FrameLayout
 
     void setCompositorViewForTesting(CompositorView compositorView) {
         mCompositorView = compositorView;
+    }
+
+    @VirtualKeyboardMode.EnumType
+    public int getVirtualKeyboardModeForTesting() {
+        return mVirtualKeyboardMode;
     }
 }

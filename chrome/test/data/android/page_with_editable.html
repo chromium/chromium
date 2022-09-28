@@ -6,11 +6,24 @@
       let metaTagContent = 'width=device-width';
       if (params.has('resize-layout'))
         metaTagContent += ',virtual-keyboard=resize-layout';
+      else if (params.has('resize-visual'))
+        metaTagContent += ',virtual-keyboard=resize-visual';
+      else if (params.has('overlays-content')) {
+        metaTagContent += ',virtual-keyboard=overlays-content';
+
+        window.numGeometryChangeEvents = 0;
+        navigator.virtualKeyboard.addEventListener('geometrychange', () => {
+          window.numGeometryChangeEvents++;
+        });
+      }
 
       let meta = document.createElement('meta');
       meta.name = 'viewport';
       meta.content = metaTagContent;
       document.head.appendChild(meta);
+      onload = () =>{
+        document.getElementById('output').innerText = metaTagContent;
+      }
     </script>
   </head>
   <body>

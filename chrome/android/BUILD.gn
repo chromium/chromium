@@ -1782,6 +1782,7 @@ if (current_toolchain == default_toolchain) {
       "//ui/android:clipboard_java_test_support",
       "//ui/android:ui_java",
       "//ui/android:ui_java_test_support",
+      "//ui/base/ime/mojom:mojom_java",
       "//ui/base/mojom:mojom_java",
       "//url:gurl_java",
       "//url:gurl_junit_test_support",
