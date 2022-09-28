@@ -152,7 +152,7 @@ void CloseTabIfNeeded(base::WeakPtr<WebContents> web_contents,
 
   if (web_contents->GetController().IsInitialNavigation() ||
       safe_to_bypass_ui) {
-    web_contents->Close();
+    web_contents->ClosePage();
   }
 }
 
