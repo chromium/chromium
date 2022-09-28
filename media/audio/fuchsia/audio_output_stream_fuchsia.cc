@@ -311,14 +311,15 @@ void AudioOutputStreamFuchsia::PumpSamples() {
   payload_buffer_pos_ =
       (payload_buffer_pos_ + packet_size) % payload_buffer_.size();
 
-  SchedulePumpSamples(now);
+  SchedulePumpSamples();
 }
 
-void AudioOutputStreamFuchsia::SchedulePumpSamples(base::TimeTicks now) {
+void AudioOutputStreamFuchsia::SchedulePumpSamples() {
   base::TimeTicks next_pump_time = GetCurrentStreamTime() -
                                    min_lead_time_.value() -
                                    parameters_.GetBufferDuration() / 2;
-  timer_.Start(FROM_HERE, next_pump_time - now,
+
+  timer_.Start(FROM_HERE, next_pump_time,
                base::BindOnce(&AudioOutputStreamFuchsia::PumpSamples,
                               base::Unretained(this)));
 }

@@ -67,7 +67,7 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
 
   // Schedules |timer_| to call PumpSamples() when appropriate for the next
   // packet.
-  void SchedulePumpSamples(base::TimeTicks now);
+  void SchedulePumpSamples();
 
   AudioManagerFuchsia* manager_;
   AudioParameters parameters_;
@@ -99,7 +99,7 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
   absl::optional<base::TimeDelta> min_lead_time_;
 
   // Timer that's scheduled to call PumpSamples().
-  base::OneShotTimer timer_;
+  base::DeadlineTimer timer_;
 };
 
 }  // namespace media
