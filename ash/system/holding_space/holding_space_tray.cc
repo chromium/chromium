@@ -302,7 +302,7 @@ std::u16string HoldingSpaceTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringFUTF16(
       IDS_ASH_HOLDING_SPACE_A11Y_NAME,
       features::IsHoldingSpaceRebrandEnabled()
-          ? l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE_REBRAND)
+          ? l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE_REFRESH)
           : l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
 }
 
@@ -314,7 +314,7 @@ views::View* HoldingSpaceTray::GetTooltipHandlerForPoint(
 
 std::u16string HoldingSpaceTray::GetTooltipText(const gfx::Point& point) const {
   return features::IsHoldingSpaceRebrandEnabled()
-             ? l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE_REBRAND)
+             ? l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE_REFRESH)
              : l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
 }
 

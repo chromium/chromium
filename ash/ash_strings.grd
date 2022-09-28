@@ -1320,8 +1320,8 @@ This file contains the strings for ash.
       <message name="IDS_ASH_HOLDING_SPACE_TITLE" desc="Title of the holding space tray and bubble.">
         Tote
       </message>
-      <message name="IDS_ASH_HOLDING_SPACE_TITLE_REBRAND" desc="Title of the holding space tray and bubble when rebranding is enabled.">
-        Quick Files
+      <message name="IDS_ASH_HOLDING_SPACE_TITLE_REFRESH" desc="Title of the holding space tray and bubble when refresh is enabled.">
+        Quick files
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_PINNED_TITLE" desc="Title of the pinned files area in the holding space bubble.">
         Pinned files

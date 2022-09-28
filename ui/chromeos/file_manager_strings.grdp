@@ -1195,10 +1195,10 @@
     Got it
   </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT" desc="In the Holding Space welcome banner, text of the welcome message.">
-    Right-click a file, and select "<ph name="PIN_COMMAND">$1<ex>Pin to Quick Files</ex></ph>" for quick access to your files in shelf.
+    Right-click a file, and select "<ph name="PIN_COMMAND">$1<ex>Pin to quick files</ex></ph>" for quick access to your files in shelf.
   </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT_IN_TABLET_MODE_HTML" desc="In the Holding Space welcome banner, text of the welcome message in tablet mode.">
-    Touch &amp; hold a file and tap <ph name="ICON">&lt;span class='icon'&gt;&lt;/span&gt;</ph>, and select "<ph name="PIN_COMMAND">$1<ex>Pin to Quick Files</ex></ph>" for quick access to your files in shelf.
+    Touch &amp; hold a file and tap <ph name="ICON">&lt;span class='icon'&gt;&lt;/span&gt;</ph>, and select "<ph name="PIN_COMMAND">$1<ex>Pin to quick files</ex></ph>" for quick access to your files in shelf.
   </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TITLE" desc="In the Holding Space welcome banner, title of banner.">
     Create a shortcut for your files
@@ -1468,10 +1468,10 @@
 
 <!-- Holding space -->
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_PIN_COMMAND_LABEL" desc="Label for the command which pins one or more files to the holding space.">
-    Pin to Quick Files
+    Pin to quick files
   </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_COMMAND_LABEL" desc="Label for the command which unpins one or more files from the holding space.">
-    Unpin from Quick Files
+    Unpin from quick files
   </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL" desc="Label for the command which pins one or more files to the holding space in the shelf.">
     Pin to shelf

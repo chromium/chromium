@@ -3647,7 +3647,7 @@ TEST_P(HoldingSpaceTrayRebrandTest, CheckTrayAccessibilityText) {
   EXPECT_EQ(
       GetTray()->GetAccessibleNameForTray(),
       IsHoldingSpaceRebrandEnabled()
-          ? u"Quick Files: recent screen captures, downloads, and pinned files"
+          ? u"Quick files: recent screen captures, downloads, and pinned files"
           : u"Tote: recent screen captures, downloads, and pinned files");
 }
 
@@ -3669,7 +3669,7 @@ TEST_P(HoldingSpaceTrayRebrandTest, CheckTrayTooltipText) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()),
-            IsHoldingSpaceRebrandEnabled() ? u"Quick Files" : u"Tote");
+            IsHoldingSpaceRebrandEnabled() ? u"Quick files" : u"Tote");
 }
 
 TEST_P(HoldingSpaceTrayRebrandTest, PaintsSeparatorBetweenBubbles) {
