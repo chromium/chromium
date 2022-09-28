@@ -117,6 +117,8 @@ AXTreeDistiller::~AXTreeDistiller() = default;
 
 void AXTreeDistiller::Distill(
     mojom::Frame::SnapshotAndDistillAXTreeCallback callback) {
+  if (callback_)
+    RunCallback();
   callback_ = std::move(callback);
   SnapshotAXTree();
   DistillAXTree();
