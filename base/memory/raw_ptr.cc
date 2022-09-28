@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/process/process.h"
 
 // USE_BACKUP_REF_PTR implies USE_PARTITION_ALLOC, needed for code under
@@ -50,6 +51,19 @@ void BackupRefPtrImpl<AllowDangling>::ReleaseInternal(uintptr_t address) {
     if (partition_alloc::internal::PartitionRefCountPointer(slot_start)
             ->Release())
       partition_alloc::internal::PartitionAllocFreeForRefCounting(slot_start);
+  }
+}
+
+template <bool AllowDangling>
+void BackupRefPtrImpl<AllowDangling>::ReportIfDanglingInternal(
+    uintptr_t address) {
+  if (partition_alloc::internal::IsUnretainedDanglingRawPtrCheckEnabled()) {
+    if (IsSupportedAndNotNull(address)) {
+      uintptr_t slot_start =
+          partition_alloc::PartitionAllocGetSlotStartInBRPPool(address);
+      partition_alloc::internal::PartitionRefCountPointer(slot_start)
+          ->ReportIfDangling();
+    }
   }
 }
 

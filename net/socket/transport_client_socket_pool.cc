@@ -1391,7 +1391,8 @@ void TransportClientSocketPool::InvokeUserCallbackLater(
   }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&TransportClientSocketPool::InvokeUserCallback,
-                                weak_factory_.GetWeakPtr(), handle));
+                                weak_factory_.GetWeakPtr(),
+                                base::UnsafeDanglingUntriaged(handle)));
 }
 
 void TransportClientSocketPool::InvokeUserCallback(ClientSocketHandle* handle) {

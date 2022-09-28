@@ -8,6 +8,7 @@
 #include <atomic>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
@@ -19,10 +20,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-#include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
-#endif
 
 namespace partition_alloc::internal {
 
@@ -217,6 +214,18 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
     if (alive)
       CheckCookieIfSupported();
     return alive;
+  }
+
+  // Called when a raw_ptr is not banning dangling ptrs, but the user still
+  // wants to ensure the pointer is not currently dangling. This is currently
+  // used in UnretainedWrapper to make sure callbacks are not invoked with
+  // dangling pointers. If such a raw_ptr exists but the allocation is no longer
+  // alive, then we have a dangling pointer to a dead object.
+  PA_ALWAYS_INLINE void ReportIfDangling() {
+    if (!IsAlive()) {
+      partition_alloc::internal::UnretainedDanglingRawPtrDetected(
+          reinterpret_cast<uintptr_t>(this));
+    }
   }
 
   // GWP-ASan slots are assigned an extra reference (note `kPtrInc` below) to

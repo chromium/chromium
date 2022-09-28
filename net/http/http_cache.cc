@@ -1117,8 +1117,9 @@ void HttpCache::ProcessQueuedTransactions(ActiveEntry* entry) {
   // Post a task instead of invoking the io callback of another transaction here
   // to avoid re-entrancy.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&HttpCache::OnProcessQueuedTransactions,
-                                GetWeakPtr(), entry));
+      FROM_HERE,
+      base::BindOnce(&HttpCache::OnProcessQueuedTransactions, GetWeakPtr(),
+                     base::UnsafeDanglingUntriaged(entry)));
 }
 
 void HttpCache::ProcessAddToEntryQueue(ActiveEntry* entry) {

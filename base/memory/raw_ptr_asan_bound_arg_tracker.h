@@ -22,7 +22,7 @@ namespace internal {
 template <typename, typename>
 struct Invoker;
 
-template <typename T>
+template <typename T, typename Impl>
 class UnretainedWrapper;
 
 template <typename T, bool>
@@ -69,8 +69,8 @@ class BASE_EXPORT RawPtrAsanBoundArgTracker {
 
   // When argument is base::Unretained, add the argument to the set of
   // arguments protected in this scope.
-  template <typename T>
-  void AddArg(const internal::UnretainedWrapper<T>& arg) {
+  template <typename T, typename Impl>
+  void AddArg(const internal::UnretainedWrapper<T, Impl>& arg) {
     if constexpr (raw_ptr_traits::IsSupportedType<T>::value) {
       Add(reinterpret_cast<uintptr_t>(arg.get()));
     }

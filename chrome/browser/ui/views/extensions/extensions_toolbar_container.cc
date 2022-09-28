@@ -238,7 +238,7 @@ void ExtensionsToolbarContainer::ShowWidgetForExtension(
   UpdateIconVisibility(extension_id);
   GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
       &ExtensionsToolbarContainer::AnchorAndShowWidgetImmediately,
-      weak_ptr_factory_.GetWeakPtr(), widget));
+      weak_ptr_factory_.GetWeakPtr(), base::UnsafeDanglingUntriaged(widget)));
 }
 
 views::Widget*

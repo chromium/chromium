@@ -154,7 +154,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
         task_runner->PostTask(
             current_notification->from_here,
             BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
-                     observer,
+                     UnsafeDanglingUntriaged(observer),
                      NotificationData(this, observer_id,
                                       current_notification->from_here,
                                       notification_data->method)));
@@ -200,7 +200,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
       observer.second.task_runner->PostTask(
           from_here,
           BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
-                   observer.first,
+                   base::UnsafeDanglingUntriaged(observer.first),
                    NotificationData(this, observer.second.observer_id,
                                     from_here, method)));
     }

@@ -88,7 +88,7 @@ namespace internal {
 template <typename Functor, typename SFINAE = void>
 struct FunctorTraits;
 
-template <typename T>
+template <typename T, typename RawPtrType = base::RawPtrBanDanglingIfSupported>
 class UnretainedWrapper {
  public:
   explicit UnretainedWrapper(T* o) : ptr_(o) {}
@@ -103,7 +103,16 @@ class UnretainedWrapper {
   template <typename U = T, typename I>
   explicit UnretainedWrapper(raw_ptr<U, I>&& o) : ptr_(std::move(o)) {}
 
-  T* get() const { return ptr_; }
+  T* get() const {
+    // `ptr_` is either a `raw_ptr` (if `T` is a supported type) or a regular
+    // C++ pointer otherwise.
+    if constexpr (std::is_same_v<RawPtrType,
+                                 base::RawPtrBanDanglingIfSupported> &&
+                  !std::is_same_v<ImplType, T*>) {
+      ptr_.ReportIfDangling();
+    }
+    return ptr_;
+  }
 
  private:
 #if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
@@ -118,8 +127,16 @@ class UnretainedWrapper {
   // than `raw_ptr`) when `raw_ptr` is `MTECheckedPtr`.
   using ImplType = T*;
 #else
+  // `Unretained()` arguments often dangle by design (common design patterns
+  // consists of managing objects lifetime inside the callbacks themselves using
+  // stateful information), so disable direct dangling pointer detection of
+  // `ptr_`.
+  //
+  // If the callback is invoked, dangling pointer detection will be triggered
+  // before invoking the bound functor (unless stated other wise, see
+  // `UnsafeDangling()`), when retrieving the pointer value via `get()` above.
   using ImplType = std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
-                                      raw_ptr<T, DanglingUntriaged>,
+                                      raw_ptr<T, DisableDanglingPtrDetection>,
                                       T*>;
 #endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   ImplType ptr_;
@@ -790,37 +807,42 @@ using MakeStorageType = typename StorageTraits<std::decay_t<T>>::Type;
 //
 // WeakCalls need special syntax that is applied to the first argument to check
 // if they should no-op themselves.
-template <bool is_weak_call, typename ReturnType>
+template <bool is_weak_call, typename ReturnType, size_t... indices>
 struct InvokeHelper;
 
-template <typename ReturnType>
-struct InvokeHelper<false, ReturnType> {
-  template <typename Functor, typename... RunArgs>
-  static inline ReturnType MakeItSo(Functor&& functor, RunArgs&&... args) {
+template <typename ReturnType, size_t... indices>
+struct InvokeHelper<false, ReturnType, indices...> {
+  template <typename Functor, typename BoundArgsTuple, typename... RunArgs>
+  static inline ReturnType MakeItSo(Functor&& functor,
+                                    BoundArgsTuple&& bound,
+                                    RunArgs&&... args) {
     using Traits = MakeFunctorTraits<Functor>;
-    return Traits::Invoke(std::forward<Functor>(functor),
-                          std::forward<RunArgs>(args)...);
+    return Traits::Invoke(
+        std::forward<Functor>(functor),
+        Unwrap(std::get<indices>(std::forward<BoundArgsTuple>(bound)))...,
+        std::forward<RunArgs>(args)...);
   }
 };
 
-template <typename ReturnType>
-struct InvokeHelper<true, ReturnType> {
+template <typename ReturnType, size_t... indices>
+struct InvokeHelper<true, ReturnType, indices...> {
   // WeakCalls are only supported for functions with a void return type.
   // Otherwise, the function result would be undefined if the WeakPtr<>
   // is invalidated.
   static_assert(std::is_void_v<ReturnType>,
                 "weak_ptrs can only bind to methods without return values");
 
-  template <typename Functor, typename BoundWeakPtr, typename... RunArgs>
+  template <typename Functor, typename BoundArgsTuple, typename... RunArgs>
   static inline void MakeItSo(Functor&& functor,
-                              BoundWeakPtr&& weak_ptr,
+                              BoundArgsTuple&& bound,
                               RunArgs&&... args) {
-    if (!weak_ptr)
+    if (!std::get<0>(bound))
       return;
     using Traits = MakeFunctorTraits<Functor>;
-    Traits::Invoke(std::forward<Functor>(functor),
-                   std::forward<BoundWeakPtr>(weak_ptr),
-                   std::forward<RunArgs>(args)...);
+    Traits::Invoke(
+        std::forward<Functor>(functor),
+        Unwrap(std::get<indices>(std::forward<BoundArgsTuple>(bound)))...,
+        std::forward<RunArgs>(args)...);
   }
 };
 
@@ -862,7 +884,7 @@ struct Invoker<StorageType, R(UnboundArgs...)> {
   template <typename Functor, typename BoundArgsTuple, size_t... indices>
   static inline R RunImpl(Functor&& functor,
                           BoundArgsTuple&& bound,
-                          std::index_sequence<indices...>,
+                          std::index_sequence<indices...> seq,
                           UnboundArgs&&... unbound_args) {
     static constexpr bool is_method = MakeFunctorTraits<Functor>::is_method;
 
@@ -879,9 +901,18 @@ struct Invoker<StorageType, R(UnboundArgs...)> {
         IsWeakMethod<is_method,
                      std::tuple_element_t<indices, DecayedArgsTuple>...>();
 
-    return InvokeHelper<is_weak_call, R>::MakeItSo(
-        std::forward<Functor>(functor),
-        Unwrap(std::get<indices>(std::forward<BoundArgsTuple>(bound)))...,
+    // Do not `Unwrap()` here, as that immediately triggers dangling pointer
+    // detection. Dangling pointer detection should only be triggered if the
+    // callback is not cancelled, but cancellation status is not determined
+    // until later inside the InvokeHelper::MakeItSo specialization for weak
+    // calls.
+    //
+    // Dangling pointers when invoking a cancelled callback are not considered
+    // a memory safety error because protecting raw pointers usage with weak
+    // receivers (where the weak receiver usually own the pointed objects) is a
+    // common and broadly used pattern in the codebase.
+    return InvokeHelper<is_weak_call, R, indices...>::MakeItSo(
+        std::forward<Functor>(functor), std::forward<BoundArgsTuple>(bound),
         std::forward<UnboundArgs>(unbound_args)...);
   }
 };
@@ -1492,9 +1523,11 @@ struct BindUnwrapTraits {
   }
 };
 
-template <typename T>
-struct BindUnwrapTraits<internal::UnretainedWrapper<T>> {
-  static T* Unwrap(const internal::UnretainedWrapper<T>& o) { return o.get(); }
+template <typename T, typename ImplType>
+struct BindUnwrapTraits<internal::UnretainedWrapper<T, ImplType>> {
+  static T* Unwrap(const internal::UnretainedWrapper<T, ImplType>& o) {
+    return o.get();
+  }
 };
 
 template <typename T>

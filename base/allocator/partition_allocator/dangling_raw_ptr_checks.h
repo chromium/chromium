@@ -35,6 +35,13 @@ DanglingRawPtrDetectedFn* GetDanglingRawPtrDetectedFn();
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void SetDanglingRawPtrDetectedFn(DanglingRawPtrDetectedFn);
 
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+DanglingRawPtrDetectedFn* GetUnretainedDanglingRawPtrDetectedFn();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void SetUnretainedDanglingRawPtrDetectedFn(DanglingRawPtrDetectedFn*);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool SetUnretainedDanglingRawPtrCheckEnabled(bool enabled);
+
 // DanglingRawPtrReleased: Called after DanglingRawPtrDetected(id), once the
 // last dangling raw_ptr stops referencing the memory region.
 //
@@ -49,6 +56,10 @@ namespace internal {
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC) void DanglingRawPtrDetected(uintptr_t id);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC) void DanglingRawPtrReleased(uintptr_t id);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void UnretainedDanglingRawPtrDetected(uintptr_t id);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool IsUnretainedDanglingRawPtrCheckEnabled();
 
 }  // namespace internal
 }  // namespace partition_alloc

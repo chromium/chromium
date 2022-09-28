@@ -116,10 +116,20 @@ struct BindFailedCheckPreviousErrors {};
 BindFailedCheckPreviousErrors BindOnce(...);
 BindFailedCheckPreviousErrors BindRepeating(...);
 
-// Unretained() allows binding a non-refcounted class, and to disable
-// refcounting on arguments that are refcounted objects.
+// Unretained(), UnsafeDangling() and UnsafeDanglingUntriaged() allow binding a
+// non-refcounted class, and to disable refcounting on arguments that are
+// refcounted. The main difference is whether or not the raw pointers will be
+// checked for dangling references (e.g. a pointer that points to an already
+// destroyed object) when the callback is run.
 //
-// EXAMPLE OF Unretained():
+// It is _required_ to use one of Unretained(), UnsafeDangling() or
+// UnsafeDanglingUntriaged() for raw pointer receivers now. For other arguments,
+// it remains optional. If not specified, default behavior is Unretained().
+
+// Unretained() pointers will be checked for dangling pointers when the
+// callback is run, *if* the callback has not been cancelled.
+//
+// Example of Unretained() usage:
 //
 //   class Foo {
 //    public:
@@ -134,6 +144,31 @@ BindFailedCheckPreviousErrors BindRepeating(...);
 //
 // Without the Unretained() wrapper on |&foo|, the above call would fail
 // to compile because Foo does not support the AddRef() and Release() methods.
+//
+// Unretained() does not allow dangling pointers, e.g.:
+//   class MyClass {
+//    public:
+//     OnError(int error);
+//    private:
+//     scoped_refptr<base::TaskRunner> runner_;
+//     std::unique_ptr<AnotherClass> obj_;
+//   };
+//
+//   void MyClass::OnError(int error) {
+//     // the pointer (which is also the receiver here) to `AnotherClass`
+//     // might dangle depending on when the task is invoked.
+//     runner_->PostTask(FROM_HERE, base::BindOnce(&AnotherClass::OnError,
+//         base::Unretained(obj_.get()), error));
+//     // one of the way to solve this issue here would be:
+//     // runner_->PostTask(FROM_HERE,
+//     //                   base::BindOnce(&AnotherClass::OnError,
+//     //                   base::Owned(std::move(obj_)), error));
+//     delete this;
+//   }
+//
+// the above example is a BAD USAGE of Unretained(), which might result in a
+// use-after-free, as `AnotherClass::OnError` might be invoked with a dangling
+// pointer as receiver.
 template <typename T>
 inline internal::UnretainedWrapper<T> Unretained(T* o) {
   return internal::UnretainedWrapper<T>(o);
@@ -157,6 +192,81 @@ inline auto Unretained(const raw_ref<T, I>& o) {
 template <typename T, typename I>
 inline auto Unretained(raw_ref<T, I>&& o) {
   return internal::UnretainedRefWrapper(std::move(o));
+}
+
+// Similar to `Unretained()`, but allows dangling pointers, e.g.:
+//
+//   class MyClass {
+//     public:
+//       DoSomething(HandlerClass* handler);
+//     private:
+//       void MyClass::DoSomethingInternal(HandlerClass::Id id,
+//                                         HandlerClass* handler);
+//
+//       std::unordered_map<HandlerClass::Id, HandlerClass*> handlers_;
+//       scoped_refptr<base::SequencedTaskRunner> runner_;
+//       base::Lock lock_;
+//   };
+//   void MyClass::DoSomething(HandlerClass* handler) {
+//      runner_->PostTask(FROM_HERE,
+//          base::BindOnce(&MyClass::DoSomethingInternal,
+//                         base::Unretained(this),
+//                         handler->id(),
+//                         base::Unretained(handler)));
+//   }
+//   void MyClass::DoSomethingInternal(HandlerClass::Id id,
+//                                     HandlerClass* handler) {
+//     base::AutoLock locker(lock_);
+//     if (handlers_.find(id) == std::end(handlers_)) return;
+//     // Now we can use `handler`.
+//   }
+//
+// As `DoSomethingInternal` is run on a sequence (and we can imagine
+// `handlers_` being modified on it as well), we protect the function from
+// using a dangling `handler` by making sure it is still contained in the
+// map.
+//
+// Strongly prefer `Unretained()`. This is useful in limited situations such as
+// the one above.
+template <typename T>
+inline internal::UnretainedWrapper<T, DisableDanglingPtrDetection>
+UnsafeDangling(T* o) {
+  return internal::UnretainedWrapper<T, DisableDanglingPtrDetection>(o);
+}
+
+template <typename T, typename I>
+internal::UnretainedWrapper<T, DisableDanglingPtrDetection> UnsafeDangling(
+    const raw_ptr<T, I>& o) {
+  return internal::UnretainedWrapper<T, DisableDanglingPtrDetection>(o);
+}
+
+template <typename T, typename I>
+internal::UnretainedWrapper<T, DisableDanglingPtrDetection> UnsafeDangling(
+    raw_ptr<T, I>&& o) {
+  return internal::UnretainedWrapper<T, DisableDanglingPtrDetection>(
+      std::move(o));
+}
+
+// Like `UnsafeDangling()`, but used to annotate places that still need to be
+// triaged and either migrated to `Unretained()` and safer ownership patterns
+// (preferred) or `UnsafeDangling()` if the correct pattern to use is the one
+// in the `UnsafeDangling()` example above for example.
+template <typename T>
+inline internal::UnretainedWrapper<T, DanglingUntriaged>
+UnsafeDanglingUntriaged(T* o) {
+  return internal::UnretainedWrapper<T, DanglingUntriaged>(o);
+}
+
+template <typename T, typename I>
+internal::UnretainedWrapper<T, DanglingUntriaged> UnsafeDanglingUntriaged(
+    const raw_ptr<T, I>& o) {
+  return internal::UnretainedWrapper<T, DanglingUntriaged>(o);
+}
+
+template <typename T, typename I>
+internal::UnretainedWrapper<T, DanglingUntriaged> UnsafeDanglingUntriaged(
+    raw_ptr<T, I>&& o) {
+  return internal::UnretainedWrapper<T, DanglingUntriaged>(std::move(o));
 }
 
 // RetainedRef() accepts a ref counted object and retains a reference to it.
