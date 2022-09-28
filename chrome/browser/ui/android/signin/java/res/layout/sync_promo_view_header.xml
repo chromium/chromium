@@ -20,7 +20,7 @@ found in the LICENSE file.
         android:layout_marginBottom="12dp"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/sync_promo_illustration"
-        style="@style/SigninPromoIllustrationVisibility"/>
+        style="@style/SyncPromoIllustrationVisibility"/>
 
     <ImageView
         android:id="@+id/signin_promo_image"
