@@ -74,19 +74,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     in_scope_2_ = start_url_.Resolve("page2.html");
     scope_ = start_url_.GetWithoutFilename();
 
-    // Create new tab to navigate, install, automatically pop out and then
-    // close. This sequence avoids altering the browser window state we started
-    // with.
-    AddTab(browser(), about_blank_);
-
-    BrowserChangeObserver observer(nullptr,
-                                   BrowserChangeObserver::ChangeType::kAdded);
-    app_id_ = web_app::InstallWebAppFromPage(browser(), start_url_);
-
-    Browser* app_browser = observer.Wait();
-    EXPECT_NE(app_browser, browser());
-    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
-    chrome::CloseWindow(app_browser);
+    app_id_ = InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url_);
   }
 
   WebAppProvider& provider() {

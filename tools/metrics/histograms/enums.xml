@@ -58130,6 +58130,7 @@ from previous Chrome versions.
   <int value="-1126217973" label="IdleTimeSpellChecking:disabled"/>
   <int value="-1125840399" label="ViewsBrowserWindows:enabled"/>
   <int value="-1125133283" label="disable-threaded-scrolling"/>
+  <int value="-1123054362" label="MicrosoftOfficeWebAppExperiment:enabled"/>
   <int value="-1122899696" label="PluginVmShowMicrophonePermissions:disabled"/>
   <int value="-1122895401"
       label="EnableExternalKeyboardsInDiagnosticsApp:disabled"/>
@@ -62059,6 +62060,7 @@ from previous Chrome versions.
   <int value="1283908088" label="ImprovedLanguageSettings:disabled"/>
   <int value="1283956865" label="force-tablet-mode"/>
   <int value="1283960113" label="disable-fixed-position-compositing"/>
+  <int value="1284364448" label="MicrosoftOfficeWebAppExperiment:disabled"/>
   <int value="1284910808" label="disable-checker-imaging"/>
   <int value="1285169797" label="ClipboardHistoryNudgeSessionReset:disabled"/>
   <int value="1285905715" label="WebXRHitTest:enabled"/>

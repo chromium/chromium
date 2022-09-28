@@ -755,6 +755,12 @@ BASE_FEATURE(kMetricsSettingsAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kMicrosoftOfficeWebAppExperiment,
+             "MicrosoftOfficeWebAppExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kMoveWebApp,
              "MoveWebApp",
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);

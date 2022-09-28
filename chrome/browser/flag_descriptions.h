@@ -3638,6 +3638,9 @@ extern const char kLinkCapturingUiUpdateDescription[];
 extern const char kMessagesPreinstallName[];
 extern const char kMessagesPreinstallDescription[];
 
+extern const char kMicrosoftOfficeWebAppExperimentName[];
+extern const char kMicrosoftOfficeWebAppExperimentDescription[];
+
 extern const char kOneGroupPerRendererName[];
 extern const char kOneGroupPerRendererDescription[];
 

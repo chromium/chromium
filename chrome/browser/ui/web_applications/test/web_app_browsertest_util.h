@@ -46,6 +46,11 @@ SkColor GetIconTopLeftColor(const base::FilePath& shortcut_path);
 // Always selects to open app in its own window.
 AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url);
 
+// Same as InstallWebAppFromPage() but waits for the app browser window to
+// appear and closes it.
+AppId InstallWebAppFromPageAndCloseAppBrowser(Browser* browser,
+                                              const GURL& app_url);
+
 // Navigates to |app_url|, verifies WebApp installability, and installs app.
 AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url);
 

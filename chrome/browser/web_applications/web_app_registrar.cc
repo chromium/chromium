@@ -36,6 +36,10 @@
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -321,9 +325,20 @@ size_t WebAppRegistrar::GetUrlInAppScopeScore(const std::string& url_spec,
   if (app_scope.empty())
     return 0;
 
-  return base::StartsWith(url_spec, app_scope, base::CompareCase::SENSITIVE)
-             ? app_scope.size()
-             : 0;
+  size_t score =
+      base::StartsWith(url_spec, app_scope, base::CompareCase::SENSITIVE)
+          ? app_scope.size()
+          : 0;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          features::kMicrosoftOfficeWebAppExperiment)) {
+    score = std::max(score, ChromeOsWebAppExperiments::GetExtendedScopeScore(
+                                app_id, url_spec));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  return score;
 }
 
 absl::optional<AppId> WebAppRegistrar::FindAppWithUrlInScope(

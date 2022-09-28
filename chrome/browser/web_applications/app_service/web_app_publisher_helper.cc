@@ -100,6 +100,8 @@
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
+#include "chrome/common/chrome_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -659,6 +661,17 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
     filters.push_back(apps::ConvertMojomIntentFilterToIntentFilter(
         apps_util::CreateIntentFilterForUrlScope(app_scope)));
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          features::kMicrosoftOfficeWebAppExperiment)) {
+    for (const char* scope_extension :
+         ChromeOsWebAppExperiments::GetScopeExtensions(app_id)) {
+      filters.push_back(apps::ConvertMojomIntentFilterToIntentFilter(
+          apps_util::CreateIntentFilterForUrlScope(GURL(scope_extension))));
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (app_share_target) {
     base::Extend(filters,

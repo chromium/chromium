@@ -231,6 +231,8 @@ source_set("web_applications") {
 
   if (is_chromeos) {
     sources += [
+      "chromeos_web_app_experiments.cc",
+      "chromeos_web_app_experiments.h",
       "os_integration/web_app_run_on_os_login_chromeos.cc",
       "os_integration/web_app_shortcut_chromeos.cc",
     ]
@@ -790,6 +792,10 @@ source_set("app_service_browser_tests") {
   testonly = true
 
   sources = [ "preinstalled_web_app_migration_browsertest.cc" ]
+
+  if (is_chromeos) {
+    sources += [ "chromeos_web_app_experiments_browsertest.cc" ]
+  }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 

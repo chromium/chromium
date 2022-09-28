@@ -4507,6 +4507,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          web_app::kAllowDefaultWebAppMigrationForChromeOsManagedUsers)},
+    {"microsoft-office-web-app-experiment",
+     flag_descriptions::kMicrosoftOfficeWebAppExperimentName,
+     flag_descriptions::kMicrosoftOfficeWebAppExperimentDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kMicrosoftOfficeWebAppExperiment)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
     {"enable-desktop-pwas-remove-status-bar",
      flag_descriptions::kDesktopPWAsRemoveStatusBarName,
