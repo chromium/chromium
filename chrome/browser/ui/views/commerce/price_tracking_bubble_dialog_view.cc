@@ -64,7 +64,7 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
 
   auto folder_name = GetMostRecentlyModifiedUserBookmarkFolderName(profile_);
 
-  if (type == PriceTrackingBubbleDialogView::Type::TYPE_FUE) {
+  if (type == PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE) {
     SetTitle(l10n_util::GetStringUTF16(
         IDS_OMNIBOX_TRACK_PRICE_DIALOG_TITLE_FIRST_RUN));
     SetButtonLabel(ui::DIALOG_BUTTON_OK,

@@ -44,6 +44,7 @@ class PriceTrackingIconView : public PageActionIconView {
   void OnPriceTrackingServerStateUpdated(bool success);
   bool ShouldShow();
   bool IsPriceTracking() const;
+  bool ShouldShowFirstUseExperienceBubble() const;
 
   raw_ptr<Profile> profile_;
   PriceTrackingBubbleCoordinator bubble_coordinator_;

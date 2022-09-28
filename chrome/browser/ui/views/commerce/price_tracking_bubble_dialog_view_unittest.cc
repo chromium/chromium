@@ -112,7 +112,8 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(PriceTrackingBubbleDialogViewUnitTest, FUEBubble) {
-  CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type::TYPE_FUE);
+  CreateBubbleViewAndShow(
+      PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
 
   auto* bubble = BubbleCoordinator()->GetBubble();
   EXPECT_TRUE(bubble);
@@ -160,7 +161,8 @@ TEST_F(PriceTrackingBubbleDialogViewUnitTest, NormalBubble) {
 }
 
 TEST_F(PriceTrackingBubbleDialogViewUnitTest, AcceptFUEBubble) {
-  CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type::TYPE_FUE);
+  CreateBubbleViewAndShow(
+      PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
 
   auto* bubble = BubbleCoordinator()->GetBubble();
   EXPECT_TRUE(bubble);

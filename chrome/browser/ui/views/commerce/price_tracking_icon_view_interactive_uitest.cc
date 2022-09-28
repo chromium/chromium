@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -119,11 +120,32 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
   auto* bubble =
       static_cast<PriceTrackingBubbleDialogView*>(icon_view->GetBubble());
   EXPECT_EQ(bubble->GetTypeForTesting(),
-            PriceTrackingBubbleDialogView::Type::TYPE_FUE);
+            PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PriceTrackingIconViewInteractiveTest,
+    PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct) {
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kShouldShowPriceTrackFUEBubble));
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  commerce::AddProductBookmark(bookmark_model, u"title", GURL(kTestURL), 0,
+                               true);
+
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/true);
+
+  ClickPriceTrackingIconView();
+  EXPECT_TRUE(icon_view->GetBubble());
+  auto* bubble =
+      static_cast<PriceTrackingBubbleDialogView*>(icon_view->GetBubble());
+  EXPECT_EQ(bubble->GetTypeForTesting(),
+            PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
 }
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       PriceTrackingBubbleShownOnPress) {
+                       PriceTrackingBubbleShownOnPress_AfterFUE) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble, false);
   auto* icon_view = GetChip();
@@ -192,6 +214,18 @@ class PriceTrackingBubbleInteractiveTest
       const PriceTrackingBubbleInteractiveTest&) = delete;
 
   ~PriceTrackingBubbleInteractiveTest() override = default;
+
+  StarView* GetBookmarkStar() {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    auto* location_bar_view = browser_view->toolbar()->location_bar();
+    const ui::ElementContext context =
+        views::ElementTrackerViews::GetContextForView(location_bar_view);
+    views::View* matched_view =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kBookmarkStarViewElementId, context);
+
+    return matched_view ? views::AsViewClass<StarView>(matched_view) : nullptr;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
@@ -214,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
       static_cast<PriceTrackingBubbleDialogView*>(icon_view->GetBubble());
   EXPECT_TRUE(bubble);
   EXPECT_EQ(bubble->GetTypeForTesting(),
-            PriceTrackingBubbleDialogView::Type::TYPE_FUE);
+            PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
 
   // Click the Accept(Track price) bubble.
   bubble->Accept();
@@ -227,6 +261,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
                omnibox::kPriceTrackingEnabledFilledIcon.name);
   EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
+  EXPECT_TRUE(GetBookmarkStar()->GetActive());
 }
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
