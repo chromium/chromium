@@ -707,14 +707,18 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   ScriptState* script_state =
       ToScriptStateForMainWorld(GetDocument().GetFrame());
   ScriptState::Scope entered_context_scope(script_state);
-  OpenDocumentPictureInPictureSession(v8_scope, GetDocument(),
-                                      CopyStyleSheetOptions::kNo);
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  auto* session = OpenDocumentPictureInPictureSession(
+      v8_scope, GetDocument(), CopyStyleSheetOptions::kNo);
+  ASSERT_TRUE(session);
   GetDocument().GetPage()->SetVisibilityState(
       mojom::blink::PageVisibilityState::kHidden, /*is_initial_state=*/false);
 
   EXPECT_TRUE(Fullscreen::IsFullscreenElement(*Video()));
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(PictureInPictureControllerTestWithWidget,
