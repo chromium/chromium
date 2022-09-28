@@ -348,6 +348,7 @@ TEST_F(ChromeUsbDelegateTest, ReconnectDeviceManager) {
 
   // Reconnect the service.
   web_usb_service.reset();
+  base::RunLoop().RunUntilIdle();
   ConnectToService(web_usb_service.BindNewPipeAndPassReceiver());
   web_usb_service->SetClient(mock_client.CreateInterfacePtrAndBind());
 

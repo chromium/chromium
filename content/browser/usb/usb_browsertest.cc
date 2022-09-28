@@ -61,16 +61,16 @@ class WebUsbTest : public ContentBrowserTest {
 
     // Route calls to the FakeUsbDeviceManager.
     EXPECT_CALL(delegate(), GetDeviceInfo)
-        .WillRepeatedly([&](auto& frame, const std::string& guid) {
+        .WillRepeatedly([&](auto* browser_context, const std::string& guid) {
           return device_manager_.GetDeviceInfo(guid);
         });
     EXPECT_CALL(delegate(), GetDevices)
-        .WillRepeatedly([&](auto& frame, auto callback) {
+        .WillRepeatedly([&](auto* browser_context, auto callback) {
           device_manager_.GetDevices(nullptr, std::move(callback));
         });
     EXPECT_CALL(delegate(), GetDevice)
         .WillRepeatedly(
-            [&](auto& frame, const std::string& guid,
+            [&](auto* browser_context, const std::string& guid,
                 base::span<const uint8_t> bic_span,
                 mojo::PendingReceiver<device::mojom::UsbDevice> receiver,
                 mojo::PendingRemote<device::mojom::UsbDeviceClient> client) {

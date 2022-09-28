@@ -42,8 +42,10 @@ class MockUsbDelegate : public UsbDelegate {
       std::vector<device::mojom::UsbDeviceFilterPtr> filters,
       blink::mojom::WebUsbService::GetPermissionCallback callback) override;
 
-  void AddObserver(RenderFrameHost& frame, Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  void AddObserver(BrowserContext* browser_context,
+                   Observer* observer) override;
+  void RemoveObserver(BrowserContext* browser_context,
+                      Observer* observer) override;
 
   // Simulate events from tests.
   void OnDeviceAdded(const device::mojom::UsbDeviceInfo& device);
@@ -51,21 +53,29 @@ class MockUsbDelegate : public UsbDelegate {
   void OnPermissionRevoked(const url::Origin& origin);
 
   MOCK_METHOD0(RunChooserInternal, device::mojom::UsbDeviceInfoPtr());
-  MOCK_METHOD2(AdjustProtectedInterfaceClasses,
-               void(RenderFrameHost&, std::vector<uint8_t>&));
-  MOCK_METHOD1(CanRequestDevicePermission, bool(RenderFrameHost&));
-  MOCK_METHOD2(RevokeDevicePermissionWebInitiated,
-               void(RenderFrameHost&, const device::mojom::UsbDeviceInfo&));
+  MOCK_METHOD4(AdjustProtectedInterfaceClasses,
+               void(BrowserContext*,
+                    const url::Origin&,
+                    RenderFrameHost*,
+                    std::vector<uint8_t>&));
+  MOCK_METHOD2(CanRequestDevicePermission,
+               bool(BrowserContext*, const url::Origin&));
+  MOCK_METHOD3(RevokeDevicePermissionWebInitiated,
+               void(BrowserContext*,
+                    const url::Origin&,
+                    const device::mojom::UsbDeviceInfo&));
   MOCK_METHOD2(GetDeviceInfo,
-               const device::mojom::UsbDeviceInfo*(RenderFrameHost&,
+               const device::mojom::UsbDeviceInfo*(BrowserContext*,
                                                    const std::string& guid));
-  MOCK_METHOD2(HasDevicePermission,
-               bool(RenderFrameHost&, const device::mojom::UsbDeviceInfo&));
+  MOCK_METHOD3(HasDevicePermission,
+               bool(BrowserContext*,
+                    const url::Origin&,
+                    const device::mojom::UsbDeviceInfo&));
   MOCK_METHOD2(GetDevices,
-               void(RenderFrameHost&,
+               void(BrowserContext*,
                     blink::mojom::WebUsbService::GetDevicesCallback));
   MOCK_METHOD5(GetDevice,
-               void(RenderFrameHost&,
+               void(BrowserContext*,
                     const std::string&,
                     base::span<const uint8_t>,
                     mojo::PendingReceiver<device::mojom::UsbDevice>,
@@ -74,6 +84,7 @@ class MockUsbDelegate : public UsbDelegate {
                void(RenderFrameHost&,
                     mojo::PendingRemote<device::mojom::UsbDeviceManager>
                         device_manager));
+  MOCK_METHOD1(IsServiceWorkerAllowedForOrigin, bool(const url::Origin&));
 
  private:
   base::ObserverList<UsbDelegate::Observer> observer_list_;

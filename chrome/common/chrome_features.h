@@ -237,6 +237,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kEnableWebHidOnExtensionServiceWorker);
 #endif
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kEnableWebUsbOnExtensionServiceWorker;
+
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kExtensionDeferredIndividualSettings);

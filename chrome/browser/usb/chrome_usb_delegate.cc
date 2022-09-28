@@ -19,10 +19,12 @@
 #include "chrome/browser/usb/usb_chooser_controller.h"
 #include "chrome/browser/usb/web_usb_chooser.h"
 #include "components/permissions/object_permission_context_base.h"
+#include "content/public/browser/render_frame_host.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/containers/fixed_flat_set.h"
+#include "chrome/common/chrome_features.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -31,7 +33,6 @@
 
 namespace {
 
-using ::content::RenderFrameHost;
 using ::content::UsbChooser;
 
 UsbChooserContext* GetChooserContext(content::BrowserContext* browser_context) {
@@ -160,12 +161,14 @@ ChromeUsbDelegate::ChromeUsbDelegate() = default;
 ChromeUsbDelegate::~ChromeUsbDelegate() = default;
 
 void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
-    RenderFrameHost& frame,
+    content::BrowserContext* browser_context,
+    const url::Origin& origin,
+    content::RenderFrameHost* frame,
     std::vector<uint8_t>& classes) {
   // Isolated Apps have unrestricted access to any USB interface class.
-  if (frame.GetWebExposedIsolationLevel() >=
-      content::RenderFrameHost::WebExposedIsolationLevel::
-          kMaybeIsolatedApplication) {
+  if (frame && frame->GetWebExposedIsolationLevel() >=
+                   content::RenderFrameHost::WebExposedIsolationLevel::
+                       kMaybeIsolatedApplication) {
     // TODO(https://crbug.com/1236706): Should the list of interface classes the
     // app expects to claim be encoded in the Web App Manifest?
     classes.clear();
@@ -173,13 +176,11 @@ void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  const auto origin = frame.GetMainFrame()->GetLastCommittedOrigin();
-
   // Don't enforce protected interface classes for Chrome Apps since the
   // chrome.usb API has no such restriction.
   if (origin.scheme() == extensions::kExtensionScheme) {
     auto* extension_registry =
-        extensions::ExtensionRegistry::Get(frame.GetBrowserContext());
+        extensions::ExtensionRegistry::Get(browser_context);
     if (extension_registry) {
       const extensions::Extension* extension =
           extension_registry->enabled_extensions().GetByID(origin.host());
@@ -246,7 +247,7 @@ void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
 }
 
 std::unique_ptr<UsbChooser> ChromeUsbDelegate::RunChooser(
-    RenderFrameHost& frame,
+    content::RenderFrameHost& frame,
     std::vector<device::mojom::UsbDeviceFilterPtr> filters,
     blink::mojom::WebUsbService::GetPermissionCallback callback) {
   auto controller = std::make_unique<UsbChooserController>(
@@ -254,65 +255,82 @@ std::unique_ptr<UsbChooser> ChromeUsbDelegate::RunChooser(
   return WebUsbChooser::Create(&frame, std::move(controller));
 }
 
-bool ChromeUsbDelegate::CanRequestDevicePermission(RenderFrameHost& frame) {
-  return GetChooserContext(frame.GetBrowserContext())
-      ->CanRequestObjectPermission(
-          frame.GetMainFrame()->GetLastCommittedOrigin());
+bool ChromeUsbDelegate::CanRequestDevicePermission(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin) {
+  return GetChooserContext(browser_context)->CanRequestObjectPermission(origin);
 }
 
 void ChromeUsbDelegate::RevokeDevicePermissionWebInitiated(
-    content::RenderFrameHost& frame,
+    content::BrowserContext* browser_context,
+    const url::Origin& origin,
     const device::mojom::UsbDeviceInfo& device) {
-  GetChooserContext(frame.GetBrowserContext())
-      ->RevokeDevicePermissionWebInitiated(
-          frame.GetMainFrame()->GetLastCommittedOrigin(), device);
+  GetChooserContext(browser_context)
+      ->RevokeDevicePermissionWebInitiated(origin, device);
 }
 
 const device::mojom::UsbDeviceInfo* ChromeUsbDelegate::GetDeviceInfo(
-    RenderFrameHost& frame,
+    content::BrowserContext* browser_context,
     const std::string& guid) {
-  return GetChooserContext(frame.GetBrowserContext())->GetDeviceInfo(guid);
+  return GetChooserContext(browser_context)->GetDeviceInfo(guid);
 }
 
 bool ChromeUsbDelegate::HasDevicePermission(
-    RenderFrameHost& frame,
+    content::BrowserContext* browser_context,
+    const url::Origin& origin,
     const device::mojom::UsbDeviceInfo& device) {
-  const auto origin = frame.GetMainFrame()->GetLastCommittedOrigin();
   if (IsDevicePermissionAutoGranted(origin, device))
     return true;
 
-  return GetChooserContext(frame.GetBrowserContext())
+  return GetChooserContext(browser_context)
       ->HasDevicePermission(origin, device);
 }
 
 void ChromeUsbDelegate::GetDevices(
-    RenderFrameHost& frame,
+    content::BrowserContext* browser_context,
     blink::mojom::WebUsbService::GetDevicesCallback callback) {
-  GetChooserContext(frame.GetBrowserContext())->GetDevices(std::move(callback));
+  GetChooserContext(browser_context)->GetDevices(std::move(callback));
 }
 
 void ChromeUsbDelegate::GetDevice(
-    RenderFrameHost& frame,
+    content::BrowserContext* browser_context,
     const std::string& guid,
     base::span<const uint8_t> blocked_interface_classes,
     mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
     mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client) {
-  GetChooserContext(frame.GetBrowserContext())
+  GetChooserContext(browser_context)
       ->GetDevice(guid, blocked_interface_classes, std::move(device_receiver),
                   std::move(device_client));
 }
 
-void ChromeUsbDelegate::AddObserver(RenderFrameHost& frame,
+void ChromeUsbDelegate::AddObserver(content::BrowserContext* browser_context,
                                     Observer* observer) {
-  auto* browser_context = frame.GetBrowserContext();
+  GetContextObserver(browser_context)->AddObserver(observer);
+}
+
+void ChromeUsbDelegate::RemoveObserver(content::BrowserContext* browser_context,
+                                       Observer* observer) {
+  GetContextObserver(browser_context)->RemoveObserver(observer);
+}
+
+ChromeUsbDelegate::ContextObservation* ChromeUsbDelegate::GetContextObserver(
+    content::BrowserContext* browser_context) {
   if (!base::Contains(observations_, browser_context)) {
     observations_.emplace(browser_context, std::make_unique<ContextObservation>(
                                                this, browser_context));
   }
-  observations_[browser_context]->AddObserver(observer);
+  return observations_[browser_context].get();
 }
 
-void ChromeUsbDelegate::RemoveObserver(Observer* observer) {
-  for (auto& entry : observations_)
-    entry.second->RemoveObserver(observer);
+bool ChromeUsbDelegate::IsServiceWorkerAllowedForOrigin(
+    const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // WebUSB is only available on extension service workers for now.
+  if (base::FeatureList::IsEnabled(
+          features::kEnableWebUsbOnExtensionServiceWorker) &&
+      origin.scheme() == extensions::kExtensionScheme) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  return false;
 }

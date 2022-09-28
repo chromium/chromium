@@ -25,6 +25,7 @@ class Origin;
 
 namespace content {
 
+class BrowserContext;
 class RenderFrameHost;
 class UsbChooser;
 
@@ -43,9 +44,11 @@ class CONTENT_EXPORT UsbDelegate {
   virtual ~UsbDelegate() = default;
 
   // Allows the embedder to modify the set of protected interface classes for
-  // the given frame.
+  // the given frame. `frame` may be nullptr if the context has no frame.
   virtual void AdjustProtectedInterfaceClasses(
-      RenderFrameHost& frame,
+      BrowserContext* browser_context,
+      const url::Origin& origin,
+      RenderFrameHost* frame,
       std::vector<uint8_t>& classes) = 0;
 
   // Shows a chooser for the user to select a USB device.  |callback| will be
@@ -57,20 +60,28 @@ class CONTENT_EXPORT UsbDelegate {
       std::vector<device::mojom::UsbDeviceFilterPtr> filters,
       blink::mojom::WebUsbService::GetPermissionCallback callback) = 0;
 
-  // Returns whether |frame| has permission to request access to a device.
-  virtual bool CanRequestDevicePermission(RenderFrameHost& frame) = 0;
+  // Returns whether `origin` in `browser_context` has permission to request
+  // access to a device.
+  virtual bool CanRequestDevicePermission(BrowserContext* browser_context,
+                                          const url::Origin& origin) = 0;
 
+  // Attempts to revoke the permission for `origin` in `browser_context` to
+  // access the USB device described by `device`.
   virtual void RevokeDevicePermissionWebInitiated(
-      content::RenderFrameHost& frame,
+      BrowserContext* browser_context,
+      const url::Origin& origin,
       const device::mojom::UsbDeviceInfo& device) = 0;
 
+  // Returns device information for the device with matching `guid`.
   virtual const device::mojom::UsbDeviceInfo* GetDeviceInfo(
-      RenderFrameHost& frame,
+      BrowserContext* browser_context,
       const std::string& guid) = 0;
 
-  // Returns whether |frame| has permission to access |device|.
+  // Returns whether `origin` in `browser_context` has permission to access
+  // the USB device described by `device`.
   virtual bool HasDevicePermission(
-      RenderFrameHost& frame,
+      BrowserContext* browser_context,
+      const url::Origin& origin,
       const device::mojom::UsbDeviceInfo& device) = 0;
 
   // These two methods are expected to proxy to the UsbDeviceManager interface
@@ -81,10 +92,10 @@ class CONTENT_EXPORT UsbDelegate {
   // before they are delivered to content. Otherwise race conditions are
   // possible.
   virtual void GetDevices(
-      RenderFrameHost& frame,
+      BrowserContext* browser_context,
       blink::mojom::WebUsbService::GetDevicesCallback callback) = 0;
   virtual void GetDevice(
-      RenderFrameHost& frame,
+      BrowserContext* browser_context,
       const std::string& guid,
       base::span<const uint8_t> blocked_interface_classes,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
@@ -92,8 +103,13 @@ class CONTENT_EXPORT UsbDelegate {
 
   // Functions to manage the set of Observer instances registered to this
   // object.
-  virtual void AddObserver(RenderFrameHost& frame, Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
+  virtual void AddObserver(BrowserContext* browser_context,
+                           Observer* observer) = 0;
+  virtual void RemoveObserver(BrowserContext* browser_context,
+                              Observer* observer) = 0;
+
+  // Returns true if `origin` is allowed to access WebUSB from service workers.
+  virtual bool IsServiceWorkerAllowedForOrigin(const url::Origin& origin) = 0;
 };
 
 }  // namespace content

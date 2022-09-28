@@ -242,6 +242,10 @@ class MockWebContentsObserver : public WebContentsObserver {
               OnIsConnectedToBluetoothDeviceChanged,
               (bool is_connected_to_bluetooth_device),
               (override));
+  MOCK_METHOD(void,
+              OnIsConnectedToUsbDeviceChanged,
+              (bool is_connected_to_usb_device),
+              (override));
   MOCK_METHOD(void, DidUpdateAudioMutingState, (bool muted), (override));
   MOCK_METHOD(void,
               DidToggleFullscreenModeForTab,

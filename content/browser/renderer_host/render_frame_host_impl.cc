@@ -10419,8 +10419,7 @@ void RenderFrameHostImpl::CreateWebUsbService(
   BackForwardCache::DisableForRenderFrameHost(
       this, BackForwardCacheDisable::DisabledReason(
                 BackForwardCacheDisable::DisabledReasonId::kWebUSB));
-  WebUsbServiceImpl::GetOrCreateForCurrentDocument(this)->BindReceiver(
-      std::move(receiver));
+  WebUsbServiceImpl::Create(*this, std::move(receiver));
 }
 
 void RenderFrameHostImpl::ResetPermissionsPolicy() {

@@ -22,11 +22,13 @@ std::unique_ptr<UsbChooser> MockUsbDelegate::RunChooser(
   return nullptr;
 }
 
-void MockUsbDelegate::AddObserver(RenderFrameHost& frame, Observer* observer) {
+void MockUsbDelegate::AddObserver(BrowserContext* browser_context,
+                                  Observer* observer) {
   observer_list_.AddObserver(observer);
 }
 
-void MockUsbDelegate::RemoveObserver(Observer* observer) {
+void MockUsbDelegate::RemoveObserver(BrowserContext* browser_context,
+                                     Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 

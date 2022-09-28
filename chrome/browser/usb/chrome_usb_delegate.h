@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_USB_CHROME_USB_DELEGATE_H_
 
 #include "base/containers/span.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/usb_chooser.h"
 #include "content/public/browser/usb_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -17,6 +16,11 @@
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "url/origin.h"
 
+namespace content {
+class BrowserContext;
+class RenderFrameHost;
+}  // namespace content
+
 class ChromeUsbDelegate : public content::UsbDelegate {
  public:
   ChromeUsbDelegate();
@@ -25,37 +29,47 @@ class ChromeUsbDelegate : public content::UsbDelegate {
   ~ChromeUsbDelegate() override;
 
   // content::UsbDelegate:
-  void AdjustProtectedInterfaceClasses(content::RenderFrameHost& frame,
+  void AdjustProtectedInterfaceClasses(content::BrowserContext* browser_context,
+                                       const url::Origin& origin,
+                                       content::RenderFrameHost* frame,
                                        std::vector<uint8_t>& classes) override;
   std::unique_ptr<content::UsbChooser> RunChooser(
       content::RenderFrameHost& frame,
       std::vector<device::mojom::UsbDeviceFilterPtr> filters,
       blink::mojom::WebUsbService::GetPermissionCallback callback) override;
-  bool CanRequestDevicePermission(content::RenderFrameHost& frame) override;
+  bool CanRequestDevicePermission(content::BrowserContext* browser_context,
+                                  const url::Origin& origin) override;
   void RevokeDevicePermissionWebInitiated(
-      content::RenderFrameHost& frame,
+      content::BrowserContext* browser_context,
+      const url::Origin& origin,
       const device::mojom::UsbDeviceInfo& device) override;
   const device::mojom::UsbDeviceInfo* GetDeviceInfo(
-      content::RenderFrameHost& frame,
+      content::BrowserContext* browser_context,
       const std::string& guid) override;
-  bool HasDevicePermission(content::RenderFrameHost& frame,
+  bool HasDevicePermission(content::BrowserContext* browser_context,
+                           const url::Origin& origin,
                            const device::mojom::UsbDeviceInfo& device) override;
   void GetDevices(
-      content::RenderFrameHost& frame,
+      content::BrowserContext* browser_context,
       blink::mojom::WebUsbService::GetDevicesCallback callback) override;
   void GetDevice(
-      content::RenderFrameHost& frame,
+      content::BrowserContext* browser_context,
       const std::string& guid,
       base::span<const uint8_t> blocked_interface_classes,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client)
       override;
-  void AddObserver(content::RenderFrameHost& frame,
+  void AddObserver(content::BrowserContext* browser_context,
                    Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  void RemoveObserver(content::BrowserContext* browser_context,
+                      Observer* observer) override;
+  bool IsServiceWorkerAllowedForOrigin(const url::Origin& origin) override;
 
  private:
   class ContextObservation;
+
+  ContextObservation* GetContextObserver(
+      content::BrowserContext* browser_context);
 
   base::flat_map<content::BrowserContext*, std::unique_ptr<ContextObservation>>
       observations_;

@@ -12,12 +12,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/document_user_data.h"
+#include "content/common/content_export.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/usb_chooser.h"
 #include "content/public/browser/usb_delegate.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/usb_device.mojom-forward.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom-forward.h"
@@ -26,34 +26,34 @@
 
 namespace content {
 
-class RenderFrameHost;
+class RenderFrameHostImpl;
+class ServiceWorkerContextCore;
 
 // Implements a restricted device::mojom::UsbDeviceManager interface by wrapping
 // another UsbDeviceManager instance and enforces the rules of the WebUSB
 // permission model as well as permission granted by the user through a device
 // chooser UI.
-class WebUsbServiceImpl : public blink::mojom::WebUsbService,
-                          public UsbDelegate::Observer,
-                          public DocumentUserData<WebUsbServiceImpl> {
+class CONTENT_EXPORT WebUsbServiceImpl : public blink::mojom::WebUsbService,
+                                         public UsbDelegate::Observer {
  public:
-  explicit WebUsbServiceImpl(RenderFrameHost* render_frame_host);
-
+  WebUsbServiceImpl(
+      RenderFrameHostImpl* render_frame_host,
+      base::WeakPtr<ServiceWorkerContextCore> service_worker_context,
+      const url::Origin& origin);
   WebUsbServiceImpl(const WebUsbServiceImpl&) = delete;
   WebUsbServiceImpl& operator=(const WebUsbServiceImpl&) = delete;
-
   ~WebUsbServiceImpl() override;
 
-  void BindReceiver(
-      mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
+  // Use this when creating from a document.
+  static void Create(
+      RenderFrameHostImpl& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::WebUsbService> pending_receiver);
 
- private:
-  friend class DocumentUserData<WebUsbServiceImpl>;
-
-  class UsbDeviceClient;
-
-  UsbDelegate* delegate() const;
-
-  std::vector<uint8_t> GetProtectedInterfaceClasses() const;
+  // Use this when creating from a service worker.
+  static void Create(
+      base::WeakPtr<ServiceWorkerContextCore> service_worker_context,
+      const url::Origin& origin,
+      mojo::PendingReceiver<blink::mojom::WebUsbService> pending_receiver);
 
   // blink::mojom::WebUsbService implementation:
   void GetDevices(GetDevicesCallback callback) override;
@@ -68,6 +68,15 @@ class WebUsbServiceImpl : public blink::mojom::WebUsbService,
   void SetClient(
       mojo::PendingAssociatedRemote<device::mojom::UsbDeviceManagerClient>
           client) override;
+
+ private:
+  class UsbDeviceClient;
+
+  // Get the `BrowserContext` this `WebUsbServiceImpl` belongs to. Returns
+  // `nullptr` if the `BrowserContext` is destroyed.
+  BrowserContext* GetBrowserContext() const;
+
+  std::vector<uint8_t> GetProtectedInterfaceClasses() const;
 
   void OnGetDevices(
       GetDevicesCallback callback,
@@ -84,11 +93,20 @@ class WebUsbServiceImpl : public blink::mojom::WebUsbService,
   void DecrementConnectionCount();
   void RemoveDeviceClient(const UsbDeviceClient* client);
 
+  // May be `nullptr` if this `WebUsbServiceImpl` is created in a context
+  // without a frame. When `render_frame_host_` is destroyed, this
+  // `WebUsbServiceImpl` is destroyed first.
+  const raw_ptr<RenderFrameHostImpl> render_frame_host_;
+
+  // `nullptr` if this `WebUsbServiceImpl` is not created in a service worker
+  // context.
+  const base::WeakPtr<ServiceWorkerContextCore> service_worker_context_;
+
+  const url::Origin origin_;
+
   std::unique_ptr<UsbChooser> usb_chooser_;
-  url::Origin origin_;
 
   // Used to bind with Blink.
-  mojo::ReceiverSet<blink::mojom::WebUsbService> receivers_;
   mojo::AssociatedRemoteSet<device::mojom::UsbDeviceManagerClient> clients_;
 
   // A UsbDeviceClient tracks a UsbDevice pipe that has been passed to Blink.
@@ -96,8 +114,6 @@ class WebUsbServiceImpl : public blink::mojom::WebUsbService,
   int connection_count_ = 0;
 
   base::WeakPtrFactory<WebUsbServiceImpl> weak_factory_{this};
-
-  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
 }  // namespace content
