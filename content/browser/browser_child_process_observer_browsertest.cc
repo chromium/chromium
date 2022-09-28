@@ -418,8 +418,8 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
 
 // Tests that launching and then causing a crash the host results in a crashed
 // notification.
-// TODO(https://crbug.com/1368044): Times out on android-arm64-tests.
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
+// TODO(https://crbug.com/1368044): Times out on Android tests.
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_LaunchAndCrash DISABLED_LaunchAndCrash
 #else
 #define MAYBE_LaunchAndCrash LaunchAndCrash
