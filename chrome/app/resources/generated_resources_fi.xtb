@@ -3602,7 +3602,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ja <ph name="NUMBER_OF_OTHER_SWITCHES" /> muuta kytkintä</translation>
 <translation id="439266289085815679"><ph name="USER_EMAIL" /> ohjaa Bluetooth-määritystä.</translation>
 <translation id="4392896746540753732">Muokkaa määritystiedostoa</translation>
-<translation id="4393713825278446281">Pikaparilaitteet tallennettu: <ph name="PRIMARY_EMAIL" /></translation>
+<translation id="4393713825278446281">Tilille <ph name="PRIMARY_EMAIL" /> tallennetut pikaparilaitteet</translation>
 <translation id="4394049700291259645">Poista käytöstä</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Avaa (&amp;O) kaikki}=1{Avaa (&amp;O) kirjanmerkki}other{Avaa (&amp;O) kaikki ({COUNT})}}</translation>
 <translation id="4397372003838952832">Sinun ei tarvitse muistaa tätä salasanaa. <ph name="EMAIL" />-sähköpostin salasana tallennetaan tänne: <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>

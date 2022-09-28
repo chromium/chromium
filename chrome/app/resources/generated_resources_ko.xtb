@@ -1674,7 +1674,7 @@
 <translation id="2508428939232952663">Google Play 스토어 계정</translation>
 <translation id="2509495747794740764">배율 값은 10에서 200 사이의 숫자여야 합니다.</translation>
 <translation id="2509566264613697683">8배</translation>
-<translation id="2510988373360790637">블루투스 기기 삭제</translation>
+<translation id="2510988373360790637">블루투스 기기 페어링 해제</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" />(선택됨)</translation>
 <translation id="2513396635448525189">로그인 이미지</translation>
 <translation id="2514326558286966059">지문으로 신속하게 잠금 해제</translation>
@@ -4297,7 +4297,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5074761966806028321">설정을 완료하려면 여전히 권한이 필요합니다.</translation>
 <translation id="5075563999073408211">한 개 이상의 스위치로 기기를 제어합니다. 키보드 키, 게임패드 버튼 또는 전용 기기를 스위치로 사용할 수 있습니다.</translation>
 <translation id="5075910247684008552">보안 사이트에서는 안전하지 않은 콘텐츠가 기본적으로 차단됩니다.</translation>
-<translation id="5078490485380754244">기기 삭제</translation>
+<translation id="5078490485380754244">기기 저장 안함</translation>
 <translation id="5078638979202084724">모든 탭 북마크</translation>
 <translation id="5078796286268621944">잘못된 PIN</translation>
 <translation id="5079010647467150187">기본 제공 VPN 추가...</translation>

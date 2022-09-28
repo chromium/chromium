@@ -3578,7 +3578,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i jeszcze <ph name="NUMBER_OF_OTHER_SWITCHES" /></translation>
 <translation id="439266289085815679">Konfiguracją Bluetooth zarządza <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edytuj plik konfiguracji</translation>
-<translation id="4393713825278446281">Urządzenia obsługujące szybkie parowanie zostały zapisane na koncie <ph name="PRIMARY_EMAIL" /></translation>
+<translation id="4393713825278446281">Urządzenia obsługujące Szybkie parowanie zostały zapisane na koncie <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Wyłącz</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Otwórz wszystkie}=1{&amp;Otwórz zakładkę}few{&amp;Otwórz wszystkie ({COUNT})}many{&amp;Otwórz wszystkie ({COUNT})}other{&amp;Otwórz wszystkie ({COUNT})}}</translation>
 <translation id="4397372003838952832">Nie musisz pamiętać tego hasła. Zostanie ono zapisane w usłudze <ph name="GOOGLE_PASSWORD_MANAGER" /> na koncie <ph name="EMAIL" />.</translation>
