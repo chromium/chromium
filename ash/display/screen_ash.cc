@@ -205,6 +205,10 @@ void ScreenAsh::RemoveObserver(display::DisplayObserver* observer) {
   GetDisplayManager()->RemoveObserver(observer);
 }
 
+display::TabletState ScreenAsh::GetTabletState() const {
+  return GetDisplayManager()->GetTabletState();
+}
+
 // static
 std::unique_ptr<display::DisplayManager> ScreenAsh::CreateDisplayManager() {
   auto screen = std::make_unique<ScreenAsh>();

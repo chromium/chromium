@@ -856,7 +856,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
   DeleteScreenshot();
 
   if (should_enable) {
-    Shell::Get()->display_manager()->NotifyDisplayTabletStateChanged(
+    Shell::Get()->display_manager()->SetTabletState(
         display::TabletState::kEnteringTabletMode);
 
     // Take a screenshot if there is a top window that will get animated.
@@ -886,7 +886,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
       FinishInitTabletMode();
     }
   } else {
-    Shell::Get()->display_manager()->NotifyDisplayTabletStateChanged(
+    Shell::Get()->display_manager()->SetTabletState(
         display::TabletState::kExitingTabletMode);
 
     // We may have entered tablet mode, then tried to exit before the screenshot
@@ -903,7 +903,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
 
     base::RecordAction(base::UserMetricsAction("Touchview_Disabled"));
     RecordTabletModeUsageInterval(TABLET_MODE_INTERVAL_ACTIVE);
-    Shell::Get()->display_manager()->NotifyDisplayTabletStateChanged(
+    Shell::Get()->display_manager()->SetTabletState(
         display::TabletState::kInClamshellMode);
     for (auto& observer : tablet_mode_observers_)
       observer.OnTabletModeEnded();
@@ -1155,7 +1155,7 @@ void TabletModeController::FinishInitTabletMode() {
 
   base::RecordAction(base::UserMetricsAction("Touchview_Enabled"));
   RecordTabletModeUsageInterval(TABLET_MODE_INTERVAL_INACTIVE);
-  Shell::Get()->display_manager()->NotifyDisplayTabletStateChanged(
+  Shell::Get()->display_manager()->SetTabletState(
       display::TabletState::kInTabletMode);
 
   for (auto& observer : tablet_mode_observers_)

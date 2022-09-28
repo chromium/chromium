@@ -143,7 +143,7 @@ base::Value::List Screen::GetGpuExtraInfo(
   return base::Value::List();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 TabletState Screen::GetTabletState() const {
   return TabletState::kInClamshellMode;
 }

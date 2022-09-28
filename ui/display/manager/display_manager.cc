@@ -2173,6 +2173,12 @@ void DisplayManager::RunPendingTasksForTest() {
   run_loop.Run();
 }
 
+void DisplayManager::SetTabletState(const TabletState& tablet_state) {
+  tablet_state_ = tablet_state;
+  for (auto& observer : observers_)
+    observer.OnDisplayTabletStateChanged(tablet_state);
+}
+
 void DisplayManager::NotifyMetricsChanged(const Display& display,
                                           uint32_t metrics) {
   for (auto& observer : observers_)
@@ -2189,18 +2195,16 @@ void DisplayManager::NotifyDisplayRemoved(const Display& display) {
     observer.OnDisplayRemoved(display);
 }
 
-void DisplayManager::NotifyDisplayTabletStateChanged(
-    const TabletState& tablet_state) {
-  for (auto& observer : observers_)
-    observer.OnDisplayTabletStateChanged(tablet_state);
-}
-
 void DisplayManager::AddObserver(DisplayObserver* observer) {
   observers_.AddObserver(observer);
 }
 
 void DisplayManager::RemoveObserver(DisplayObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+display::TabletState DisplayManager::GetTabletState() const {
+  return tablet_state_;
 }
 
 void DisplayManager::UpdateInfoForRestoringMirrorMode() {

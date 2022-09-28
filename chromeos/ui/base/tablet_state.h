@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState
   // Returns true if the system is in tablet mode.
   bool InTabletMode() const;
 
-  display::TabletState state() const { return state_; }
+  display::TabletState state() const;
 
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState
  private:
   display::ScopedDisplayObserver display_observer_{this};
 
-  display::TabletState state_ = display::TabletState::kInClamshellMode;
+  // display::TabletState state_ = display::TabletState::kInClamshellMode;
 };
 
 }  // namespace chromeos

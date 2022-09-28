@@ -195,7 +195,7 @@ class DISPLAY_EXPORT Screen {
   virtual base::Value::List GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns tablet state.
   // TODO(crbug.com/1170013): Support this on ash-chrome as well.
   virtual TabletState GetTabletState() const;

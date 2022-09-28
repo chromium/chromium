@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -24,12 +25,6 @@ TabletState* TabletState::Get() {
 
 TabletState::TabletState() {
   DCHECK_EQ(nullptr, g_instance);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Initialize `state_` with the stored state in display::Screen.
-  // This is required since OnDisplayTabletStateChanged() is not called for
-  // tablet mode change triggered before TabletState is initialized.
-  state_ = display::Screen::GetScreen()->GetTabletState();
-#endif
   g_instance = this;
 }
 
@@ -39,12 +34,15 @@ TabletState::~TabletState() {
 }
 
 bool TabletState::InTabletMode() const {
-  return state_ == display::TabletState::kInTabletMode ||
-         state_ == display::TabletState::kEnteringTabletMode;
+  return state() == display::TabletState::kInTabletMode ||
+         state() == display::TabletState::kEnteringTabletMode;
+}
+
+display::TabletState TabletState::state() const {
+  return display::Screen::GetScreen()->GetTabletState();
 }
 
 void TabletState::OnDisplayTabletStateChanged(display::TabletState state) {
-  state_ = state;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TouchUIController is used by Chrome and other apps to determine whether
   // the device is in either a primarily touch-input or primarily keyboard

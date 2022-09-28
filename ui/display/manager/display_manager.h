@@ -33,6 +33,7 @@
 #include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/touch_device_manager.h"
+#include "ui/display/tablet_state.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/unified_desktop_utils.h"
 
@@ -47,7 +48,6 @@ class DisplayLayoutStore;
 class DisplayObserver;
 class NativeDisplayDelegate;
 class Screen;
-enum class TabletState;
 
 namespace test {
 class DisplayManagerTestApi;
@@ -487,15 +487,19 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // Resets the zoom value to 1 for the display identified by |display_id|.
   void ResetDisplayZoom(int64_t display_id);
 
+  // Sets `tablet_state_` and notifies observers of display.
+  void SetTabletState(const TabletState& tablet_state);
+
   // Notifies observers of display configuration changes.
   void NotifyMetricsChanged(const Display& display, uint32_t metrics);
   void NotifyDisplayAdded(const Display& display);
   void NotifyDisplayRemoved(const Display& display);
-  void NotifyDisplayTabletStateChanged(const TabletState& tablet_state);
 
   // Delegated from the Screen implementation.
   void AddObserver(DisplayObserver* observer);
   void RemoveObserver(DisplayObserver* observer);
+
+  display::TabletState GetTabletState() const;
 
  private:
   friend class test::DisplayManagerTestApi;
@@ -711,6 +715,8 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // Temporary changes may include things like the user trying out different
   // zoom levels before making the final decision.
   base::CancelableOnceClosure on_display_zoom_modify_timeout_;
+
+  display::TabletState tablet_state_ = display::TabletState::kInClamshellMode;
 
   base::WeakPtrFactory<DisplayManager> weak_ptr_factory_{this};
 };
