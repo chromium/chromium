@@ -405,6 +405,7 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   init_args.platform = platform_.get();
   init_args.custom_backend = tracing_backend_.get();
   init_args.backends |= perfetto::kCustomBackend;
+  init_args.supports_multiple_data_source_instances = false;
 // TODO(eseckler): Not yet supported on Android to avoid binary size regression
 // of the consumer IPC messages. We'll need a way to exclude them.
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
