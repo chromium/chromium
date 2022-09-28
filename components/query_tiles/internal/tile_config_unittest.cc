@@ -94,7 +94,8 @@ TEST(TileConfigTest, ExperimentTagForEnabledCountries) {
   EXPECT_EQ(TileConfig::GetExperimentTag("in"),
             TileConfig::GetExperimentTag("ng"));
   EXPECT_EQ(TileConfig::GetExperimentTag("jp"),
-            "{maxLevels : 1, rankTiles : true}");
+            "{maxLevels : 1, rankTiles : true, enableTrending : true, "
+            "maxTrendingQueries : 8, disableEntityTranslation: true}");
 
   // Finch params should override default values.
   std::map<std::string, std::string> params = {
