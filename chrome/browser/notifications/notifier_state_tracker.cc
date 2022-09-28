@@ -130,8 +130,8 @@ void NotifierStateTracker::SetNotifierEnabled(
   }
   DCHECK(pref_name != nullptr);
 
-  ListPrefUpdate update(profile_->GetPrefs(), pref_name);
-  base::Value::List& update_list = update->GetList();
+  ScopedListPrefUpdate update(profile_->GetPrefs(), pref_name);
+  base::Value::List& update_list = update.Get();
   if (add_new_item) {
     if (!base::Contains(update_list, id))
       update_list.Append(std::move(id));
