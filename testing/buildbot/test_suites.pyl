@@ -5220,7 +5220,6 @@
         'args': [
           '--no-wpt-internal',
           '--child-processes=8',
-          '--run-by-dir=0',
           '--no-restart-on-new-group',
           '--log-wptreport',
         ],
@@ -5243,7 +5242,6 @@
       'wpt_tests_suite': {
         'args': [
           '--child-processes=8',
-          '--run-by-dir=0',
           '--no-restart-on-new-group',
           '--log-wptreport',
           '--xvfb'
@@ -5312,7 +5310,6 @@
       'wpt_tests_suite': {
         'args': [
           '--child-processes=8',
-          '--run-by-dir=0',
           '--no-restart-on-new-group',
           '--product=chrome_ios'
         ],

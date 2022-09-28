@@ -151,6 +151,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             '--binary-arg=--force-fieldtrial-params='
             'DownloadServiceStudy.Enabled:start_up_delay_ms/0',
             '--run-info=%s' % self._tmp_dir,
+            '--run-by-dir=0',
         ])
         rest_args.extend(self.product.wpt_args)
 

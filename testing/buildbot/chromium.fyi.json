@@ -63955,7 +63955,6 @@
       {
         "args": [
           "--child-processes=8",
-          "--run-by-dir=0",
           "--no-restart-on-new-group",
           "--product=chrome_ios",
           "--out-dir",
@@ -113970,7 +113969,6 @@
       {
         "args": [
           "--child-processes=8",
-          "--run-by-dir=0",
           "--no-restart-on-new-group",
           "--log-wptreport",
           "--xvfb"
@@ -114009,7 +114007,6 @@
         "args": [
           "--no-wpt-internal",
           "--child-processes=8",
-          "--run-by-dir=0",
           "--no-restart-on-new-group",
           "--log-wptreport"
         ],
@@ -126162,7 +126159,6 @@
       {
         "args": [
           "--child-processes=8",
-          "--run-by-dir=0",
           "--no-restart-on-new-group",
           "--log-wptreport",
           "--xvfb"
