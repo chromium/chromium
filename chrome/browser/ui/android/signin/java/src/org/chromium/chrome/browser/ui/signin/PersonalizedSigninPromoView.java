@@ -44,13 +44,13 @@ public class PersonalizedSigninPromoView extends LinearLayout {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
             // TODO(crbug.com/1323197): remove new_signin_promo_description or
-            // signin_promo_description and signin_promo_title or signin_promo_status_message, if
+            // signin_promo_description and signin_promo_title or sync_promo_status_message, if
             // the feature enabled or disabled by default.
             mTitle = findViewById(R.id.signin_promo_title);
             mDescription = findViewById(R.id.new_signin_promo_description);
             findViewById(R.id.signin_promo_description).setVisibility(View.GONE);
         } else {
-            mTitle = findViewById(R.id.signin_promo_status_message);
+            mTitle = findViewById(R.id.sync_promo_status_message);
             mDescription = findViewById(R.id.signin_promo_description);
             findViewById(R.id.new_signin_promo_description).setVisibility(View.GONE);
         }
