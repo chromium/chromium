@@ -225,6 +225,12 @@ BASE_FEATURE(kAudioPeripheralVolumeGranularity,
              "AudioPeripheralVolumeGranularity",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the AudioSourceFetcher resamples the audio for speech
+// recongnition.
+BASE_FEATURE(kAudioSourceFetcherResampling,
+             "AudioSourceFetcherResampling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Audio Settings Page in System Settings, which allows
 // audio configuration. crbug.com/1092970.
 BASE_FEATURE(kAudioSettingsPage,
@@ -2303,6 +2309,10 @@ bool IsEapGtcWifiAuthenticationEnabled() {
 
 bool IsAudioPeripheralVolumeGranularityEnabled() {
   return base::FeatureList::IsEnabled(kAudioPeripheralVolumeGranularity);
+}
+
+bool IsAudioSourceFetcherResamplingEnabled() {
+  return base::FeatureList::IsEnabled(kAudioSourceFetcherResampling);
 }
 
 bool IsEcheSWAEnabled() {
