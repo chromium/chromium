@@ -369,6 +369,12 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
     std::vector<std::wstring> install_cmd_args = {
         base::StrCat({L"\"", exe_path.value(), L"\""}),
 
+        build_legacy_switch(updater::kEnableLoggingSwitch),
+        // This switch and its value must be connected by '=' because logging
+        // switch does not support legacy format.
+        base::StrCat({build_legacy_switch(updater::kLoggingModuleSwitch), L"=",
+                      base::ASCIIToWide(updater::kLoggingModuleSwitchValue)}),
+
         install_scope == UpdaterScope::kSystem
             ? build_legacy_switch(updater::kSystemSwitch)
             : L"",
