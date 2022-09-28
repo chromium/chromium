@@ -3346,6 +3346,9 @@ extern const char kPhoneHubCameraRollDescription[];
 extern const char kPhoneHubFeatureSetupErrorHandlingName[];
 extern const char kPhoneHubFeatureSetupErrorHandlingDescription[];
 
+extern const char kPreferDcheckName[];
+extern const char kPreferDcheckDescription[];
+
 extern const char kProductivityLauncherName[];
 extern const char kProductivityLauncherDescription[];
 

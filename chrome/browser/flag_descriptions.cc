@@ -5858,6 +5858,10 @@ const char kPhoneHubFeatureSetupErrorHandlingDescription[] =
     "users to see result on Chromebook when the setup failed on connected"
     "remote phone device.";
 
+const char kPreferDcheckName[] = "Prefer DCHECK-enabled build";
+const char kPreferDcheckDescription[] =
+    "Use a DCHECK-enabled build when available.";
+
 const char kProductivityLauncherName[] =
     "Productivity experiment: App Launcher";
 const char kProductivityLauncherDescription[] =

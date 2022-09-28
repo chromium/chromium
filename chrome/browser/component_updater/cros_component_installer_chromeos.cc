@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
@@ -17,9 +18,11 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/component_installer_errors.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
@@ -32,6 +35,13 @@
 #include "crypto/sha2.h"
 
 namespace component_updater {
+
+// Switch that can be used for opting in to receive DCHECK-enabled binaries. If
+// we need to expose this through chrome://flags on other platforms this can
+// move to a shared place (but still share the prefer-dcheck name).
+const char kPreferDcheckSwitch[] = "prefer-dcheck";
+const char kPreferDcheckOptIn[] = "opt-in";
+const char kPreferDcheckOptOut[] = "opt-out";
 
 // Root path where all components are stored.
 constexpr char kComponentsRootPath[] = "cros-components";
@@ -249,7 +259,13 @@ void LacrosInstallerPolicy::ComponentReady(const base::Version& version,
 
 update_client::InstallerAttributes
 LacrosInstallerPolicy::GetInstallerAttributes() const {
-  return {};
+  update_client::InstallerAttributes attributes;
+  auto* const cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(kPreferDcheckSwitch)) {
+    attributes[kPreferDcheckSwitch] =
+        cmdline->GetSwitchValueASCII(kPreferDcheckSwitch);
+  }
+  return attributes;
 }
 
 // static

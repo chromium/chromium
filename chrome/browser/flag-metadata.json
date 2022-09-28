@@ -5438,6 +5438,13 @@
     "expiry_milestone": 110
   },
   {
+    "name": "prefer-dcheck",
+    "owners": [ "pbos", "waffles" ],
+    // This is a long-lived flag to allow users to opt in to receive a
+    // DCHECK-enabled build from the updater.
+    "expiry_milestone": -1
+  },
+  {
     "name": "print-with-postscript-type42-fonts",
     "owners": [ "thestig" ],
     "expiry_milestone": 112

@@ -95,6 +95,7 @@
   "omaha-min-sdk-version-android",
   "overlay-strategies",
   "password-import",
+  "prefer-dcheck",
   "reader-mode-heuristics",
   "record-web-app-debug-info",
   "release-notes-notification-all-channels",

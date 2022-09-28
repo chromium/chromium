@@ -248,6 +248,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/memory/memory_ablation_study.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -876,6 +877,8 @@ const FeatureEntry::Choice kUXStudy1Choices[] = {
     {memory::kUXStudy1D, memory::kUXStudy1Switch, memory::kUXStudy1D},
 };
 
+const char kPreferDcheckInternalName[] = "prefer-dcheck";
+
 const char kLacrosAvailabilityIgnoreInternalName[] =
     "lacros-availability-ignore";
 const char kLacrosOnlyInternalName[] = "lacros-only";
@@ -885,6 +888,16 @@ const char kLacrosStabilityInternalName[] = "lacros-stability";
 const char kWebAppsCrosapiInternalName[] = "web-apps-crosapi";
 const char kArcVmBalloonPolicyInternalName[] =
     "arc-use-limit-cache-balloon-policy";
+
+const FeatureEntry::Choice kPreferDcheckChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {component_updater::kPreferDcheckOptIn,
+     component_updater::kPreferDcheckSwitch,
+     component_updater::kPreferDcheckOptIn},
+    {component_updater::kPreferDcheckOptOut,
+     component_updater::kPreferDcheckSwitch,
+     component_updater::kPreferDcheckOptOut},
+};
 
 const FeatureEntry::Choice kLacrosStabilityChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -3910,6 +3923,9 @@ const FeatureEntry kFeatureEntries[] = {
     {kLacrosStabilityInternalName, flag_descriptions::kLacrosStabilityName,
      flag_descriptions::kLacrosStabilityDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kLacrosStabilityChoices)},
+    {kPreferDcheckInternalName, flag_descriptions::kPreferDcheckName,
+     flag_descriptions::kPreferDcheckDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kPreferDcheckChoices)},
     {"uxstudy1", flag_descriptions::kUXStudy1Name,
      flag_descriptions::kUXStudy1Description, kOsCrOS,
      MULTI_VALUE_TYPE(kUXStudy1Choices)},
@@ -9625,6 +9641,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (!strcmp(crosapi::browser_util::kLacrosAvailabilityPolicyInternalName,
               entry.internal_name)) {
     return true;
+  }
+
+  if (!strcmp(kPreferDcheckInternalName, entry.internal_name)) {
+    return !crosapi::browser_util::IsLacrosAllowedToBeEnabled();
   }
 
   if (!strcmp(kLacrosSupportInternalName, entry.internal_name)) {
