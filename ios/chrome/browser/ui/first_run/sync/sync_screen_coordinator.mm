@@ -216,6 +216,9 @@
 }
 
 - (void)logScrollButtonVisible:(BOOL)scrollButtonVisible {
+  if (!self.firstRun) {
+    return;
+  }
   RecordFirstRunScrollButtonVisibilityMetrics(
       first_run::FirstRunScreenType::kSyncScreenWithoutIdentityPicker,
       scrollButtonVisible);
