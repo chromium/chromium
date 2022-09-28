@@ -1159,6 +1159,14 @@
       },
     },
   },
+  'record_failed_tests': {
+    '$mixin_append': {
+      'args': [
+        '--record-video',
+        'failed_only',
+      ],
+    },
+  },
   's_generic': {
     'swarming': {
       'dimensions': {
