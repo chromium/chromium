@@ -60,7 +60,6 @@
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/surface_augmenter.h"
 #include "components/exo/wayland/wayland_display_output.h"
-#include "components/exo/wayland/wayland_dmabuf_feedback_manager.h"
 #include "components/exo/wayland/wayland_watcher.h"
 #include "components/exo/wayland/wl_compositor.h"
 #include "components/exo/wayland/wl_data_device_manager.h"
@@ -290,13 +289,8 @@ void Server::Initialize() {
   wl_global_create(wl_display_.get(), &wl_compositor_interface,
                    kWlCompositorVersion, this, bind_compositor);
   wl_global_create(wl_display_.get(), &wl_shm_interface, 1, display_, bind_shm);
-  wayland_feedback_manager_ =
-      std::make_unique<WaylandDmabufFeedbackManager>(display_);
-  if (wayland_feedback_manager_->GetVersionSupportedByPlatform() > 0) {
-    wl_global_create(wl_display_.get(), &zwp_linux_dmabuf_v1_interface,
-                     wayland_feedback_manager_->GetVersionSupportedByPlatform(),
-                     wayland_feedback_manager_.get(), bind_linux_dmabuf);
-  }
+  wl_global_create(wl_display_.get(), &zwp_linux_dmabuf_v1_interface,
+                   kZwpLinuxDmabufVersion, display_, bind_linux_dmabuf);
   wl_global_create(wl_display_.get(), &wl_subcompositor_interface, 1, display_,
                    bind_subcompositor);
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays())

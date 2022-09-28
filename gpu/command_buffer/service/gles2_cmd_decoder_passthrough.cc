@@ -1750,10 +1750,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.angle_rgbx_internal_format =
       feature_info_->feature_flags().angle_rgbx_internal_format;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  PopulateDRMCapabilities(&caps);
-#endif
-
   return caps;
 }
 

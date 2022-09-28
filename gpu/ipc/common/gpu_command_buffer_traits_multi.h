@@ -162,8 +162,6 @@ IPC_STRUCT_TRAITS_BEGIN(gpu::Capabilities)
 
   IPC_STRUCT_TRAITS_MEMBER(gpu_memory_buffer_formats)
   IPC_STRUCT_TRAITS_MEMBER(texture_target_exception_list)
-  IPC_STRUCT_TRAITS_MEMBER(drm_formats_and_modifiers)
-  IPC_STRUCT_TRAITS_MEMBER(drm_render_node)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(gpu::CommandBuffer::State)

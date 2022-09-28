@@ -1738,9 +1738,4 @@ SecurityDelegate* Surface::GetSecurityDelegate() {
   return nullptr;
 }
 
-void Surface::OnFullscreenStateChanged(bool fullscreen) {
-  for (SurfaceObserver& observer : observers_)
-    observer.OnFullscreenStateChanged(fullscreen);
-}
-
 }  // namespace exo
