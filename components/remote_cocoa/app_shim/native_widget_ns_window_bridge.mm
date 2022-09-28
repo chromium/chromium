@@ -918,12 +918,16 @@ void NativeWidgetNSWindowBridge::DisableImmersiveFullscreen() {
 }
 
 void NativeWidgetNSWindowBridge::UpdateToolbarVisibility(bool always_show) {
-  immersive_mode_controller_->UpdateToolbarVisibility(always_show);
+  if (immersive_mode_controller_) {
+    immersive_mode_controller_->UpdateToolbarVisibility(always_show);
+  }
 }
 
 void NativeWidgetNSWindowBridge::OnTopContainerViewBoundsChanged(
     const gfx::Rect& bounds) {
-  immersive_mode_controller_->OnTopViewBoundsChanged(bounds);
+  if (immersive_mode_controller_) {
+    immersive_mode_controller_->OnTopViewBoundsChanged(bounds);
+  }
 }
 
 void NativeWidgetNSWindowBridge::SetCanGoBack(bool can_go_back) {
