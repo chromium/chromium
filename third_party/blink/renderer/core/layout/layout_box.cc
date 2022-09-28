@@ -490,15 +490,7 @@ PaintLayerType LayoutBox::LayerTypeRequired() const {
       (StyleRef().SpecifiesColumns() && !IsLayoutNGObject()))
     return kNormalPaintLayer;
 
-  // This preserves the previous behaviour where paint time clipping of replaced
-  // elements doesn't require paint layers.
-  // TODO(khushalsagar): This is likely related to whether the element creates
-  // a scroll container. Investigate switching to that to expand it to more
-  // cases.
-  const bool is_replaced_element_respecting_overflow =
-      RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled() &&
-      IsLayoutReplaced();
-  if (HasNonVisibleOverflow() && !is_replaced_element_respecting_overflow)
+  if (HasNonVisibleOverflow())
     return kOverflowClipPaintLayer;
 
   return kNoPaintLayer;
