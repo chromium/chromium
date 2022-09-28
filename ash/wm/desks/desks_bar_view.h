@@ -22,7 +22,6 @@ class DeskBarHoverObserver;
 class DeskDragProxy;
 class DeskMiniView;
 class ExpandedDesksBarButton;
-class GradientLayerDelegate;
 class NewDeskButton;
 class OverviewGrid;
 class PersistentDesksBarVerticalDotsButton;
@@ -245,7 +244,7 @@ class ASH_EXPORT DesksBarView : public views::View,
   // We will show a fade in gradient besides |left_scroll_button_| and a fade
   // out gradient besides |right_scroll_button_|. Show the gradient only when
   // the corresponding scroll button is visible.
-  void UpdateGradientZone();
+  void UpdateGradientMask();
 
   // Scrolls the desks bar to the previous or next page. The page size is the
   // width of the scroll view, the contents that are outside of the scroll view
@@ -318,10 +317,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   DeskMiniView* drag_view_ = nullptr;
   // Drag proxy for the dragged desk.
   std::unique_ptr<DeskDragProxy> drag_proxy_;
-
-  // The layer delegate used for |scroll_view_|'s mask layer, with left and
-  // right gradient asides the scroll buttons.
-  std::unique_ptr<GradientLayerDelegate> gradient_layer_delegate_;
 
   // A circular button which when clicked will open the context menu of the
   // persistent desks bar. Note that this button will only be created when

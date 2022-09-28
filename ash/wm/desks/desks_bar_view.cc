@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/controls/gradient_layer_delegate.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -442,10 +441,6 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
   scroll_view_contents_->SetLayoutManager(
       std::make_unique<DesksBarScrollViewLayout>(this));
 
-  gradient_layer_delegate_ =
-      std::make_unique<GradientLayerDelegate>(/*animate_in=*/false);
-  scroll_view_->layer()->SetMaskLayer(gradient_layer_delegate_->layer());
-
   on_contents_scrolled_subscription_ =
       scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
           &DesksBarView::OnContentsScrolled, base::Unretained(this)));
@@ -809,7 +804,7 @@ void DesksBarView::Layout() {
   scroll_view_->Layout();
 
   UpdateScrollButtonsVisibility();
-  UpdateGradientZone();
+  UpdateGradientMask();
 }
 
 bool DesksBarView::OnMousePressed(const ui::MouseEvent& event) {
@@ -1180,7 +1175,7 @@ void DesksBarView::UpdateScrollButtonsVisibility() {
                                    scroll_view_contents_->bounds().width());
 }
 
-void DesksBarView::UpdateGradientZone() {
+void DesksBarView::UpdateGradientMask() {
   const bool is_rtl = base::i18n::IsRTL();
   const bool is_left_scroll_button_visible = left_scroll_button_->GetVisible();
   const bool is_right_scroll_button_visible =
@@ -1210,35 +1205,29 @@ void DesksBarView::UpdateGradientZone() {
   // LTR or RTL layout. While the |left_scroll_button_| will be changed from
   // left to right and |right_scroll_button_| will be changed from right to left
   // if it is RTL layout.
-  const gfx::Rect bounds = scroll_view_->bounds();
-  gfx::Rect start_gradient_bounds, end_gradient_bounds;
+
+  // Horizontal linear gradient, from left to right.
+  gfx::LinearGradient gradient_mask(/*angle=*/0);
+
+  // Fraction of layer width that gradient will be applied to.
+  const float fade_position =
+      should_show_start_gradient || should_show_end_gradient
+          ? static_cast<float>(kGradientZoneLength) /
+                scroll_view_->bounds().width()
+          : 0;
+
+  // Left fade in section.
   if (should_show_start_gradient) {
-    start_gradient_bounds =
-        gfx::Rect(0, 0, kGradientZoneLength, bounds.height());
+    gradient_mask.AddStep(/*fraction=*/0, /*alpha=*/0);
+    gradient_mask.AddStep(fade_position, 255);
   }
+  // Right fade out section.
   if (should_show_end_gradient) {
-    end_gradient_bounds = gfx::Rect(bounds.width() - kGradientZoneLength, 0,
-                                    kGradientZoneLength, bounds.height());
+    gradient_mask.AddStep((1 - fade_position), 255);
+    gradient_mask.AddStep(1, 0);
   }
 
-  // Return early if the gradients do not change.
-  if (start_gradient_bounds ==
-          gradient_layer_delegate_->start_fade_zone_bounds() &&
-      end_gradient_bounds == gradient_layer_delegate_->end_fade_zone_bounds()) {
-    return;
-  }
-
-  const GradientLayerDelegate::FadeZone start_gradient_zone = {
-      start_gradient_bounds,
-      /*fade_in=*/true,
-      /*is_horizontal=*/true};
-  const GradientLayerDelegate::FadeZone end_gradient_zone = {
-      end_gradient_bounds,
-      /*fade_in=*/false,
-      /*is_horizonal=*/true};
-  gradient_layer_delegate_->set_start_fade_zone(start_gradient_zone);
-  gradient_layer_delegate_->set_end_fade_zone(end_gradient_zone);
-  gradient_layer_delegate_->layer()->SetBounds(scroll_view_->layer()->bounds());
+  scroll_view_->layer()->SetGradientMask(gradient_mask);
   scroll_view_->SchedulePaint();
 }
 
@@ -1316,7 +1305,7 @@ void DesksBarView::MaybeUpdateCombineDesksTooltips() {
 
 void DesksBarView::OnContentsScrolled() {
   UpdateScrollButtonsVisibility();
-  UpdateGradientZone();
+  UpdateGradientMask();
 }
 
 void DesksBarView::OnContentsScrollEnded() {
@@ -1328,7 +1317,7 @@ void DesksBarView::OnContentsScrollEnded() {
     scroll_view_->ScrollToPosition(scroll_view_->horizontal_scroll_bar(),
                                    adjusted_position);
   }
-  UpdateGradientZone();
+  UpdateGradientMask();
 }
 
 void DesksBarView::NudgeDeskName(int desk_index) {
