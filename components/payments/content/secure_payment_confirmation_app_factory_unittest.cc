@@ -295,6 +295,8 @@ class SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest
     EXPECT_CALL(*mock_authenticator,
                 IsUserVerifyingPlatformAuthenticatorAvailable(_))
         .WillOnce(RunOnceCallback<0>(true));
+    EXPECT_CALL(*mock_authenticator, IsGetMatchingCredentialIdsSupported())
+        .WillOnce(Return(true));
 
     // This is the core 'test' line of this method. It ensures that the
     // authenticator device is asked for the right RP ID and credentials, and
@@ -353,6 +355,42 @@ TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
       url::Origin::Create(GURL("https://www.rp.example"));
   TestThirdPartyPaymentBitSetCorrectly(
       caller_origin, /*expected_require_third_party_payment_bit=*/false);
+}
+
+TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
+       AppDisabledIfCredentialStoreAPIsUnavailable) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+
+  auto mock_authenticator =
+      std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
+  EXPECT_CALL(*mock_authenticator,
+              IsUserVerifyingPlatformAuthenticatorAvailable(_))
+      .WillOnce(RunOnceCallback<0>(true));
+  // Make it so that the credential store API support is unavailable.
+  EXPECT_CALL(*mock_authenticator, IsGetMatchingCredentialIdsSupported())
+      .WillOnce(Return(false));
+
+  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
+      base::MakeRefCounted<MockPaymentManifestWebDataService>();
+
+  EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
+      .WillOnce(Return(ByMove(std::move(mock_authenticator))));
+  EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
+      .WillRepeatedly(Return(mock_service));
+
+  // When the credential store APIs are unavailable, we do not create an SPC app
+  // (which in turn makes canMakePayment() return false).
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_)).Times(0);
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _)).Times(0);
+  EXPECT_CALL(*mock_delegate, OnDoneCreatingPaymentApps()).Times(1);
+
+  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
 }
 
 }  // namespace

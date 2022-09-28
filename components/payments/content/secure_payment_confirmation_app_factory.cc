@@ -189,6 +189,20 @@ void SecurePaymentConfirmationAppFactory::
     return;
   }
 
+  // If we are relying on underlying credential-store level support for SPC, but
+  // it isn't available, ensure that canMakePayment() will return false by
+  // returning early here.
+  //
+  // This helps websites avoid a failure scenario when SPC appears to be
+  // available, but in practice it is non-functional due to lack of platform
+  // support.
+  if (base::FeatureList::IsEnabled(
+          features::kSecurePaymentConfirmationUseCredentialStoreAPIs) &&
+      !request->authenticator->IsGetMatchingCredentialIdsSupported()) {
+    request->delegate->OnDoneCreatingPaymentApps();
+    return;
+  }
+
   // Regardless of whether any credentials match, canMakePayment() and
   // hasEnrolledInstrument() should return true for SPC when a user-verifying
   // platform authenticator device is available.

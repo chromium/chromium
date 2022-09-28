@@ -124,6 +124,15 @@ public class InternalAuthenticator {
 
     /**
      * Called by InternalAuthenticatorAndroid, which facilitates WebAuthn for processes that
+     * originate from the browser process.
+     */
+    @CalledByNative
+    public boolean isGetMatchingCredentialIdsSupported() {
+        return mAuthenticator.isGetMatchingCredentialIdsSupported();
+    }
+
+    /**
+     * Called by InternalAuthenticatorAndroid, which facilitates WebAuthn for processes that
      * originate from the browser process. The response will be passed through
      * |invokeGetMatchingCredentialIdsResponse()|.
      */

@@ -12,6 +12,10 @@ void TestInternalAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
   std::move(callback).Run(false);
 }
 
+bool TestInternalAuthenticator::IsGetMatchingCredentialIdsSupported() {
+  return false;
+}
+
 content::RenderFrameHost* TestInternalAuthenticator::GetRenderFrameHost() {
   return nullptr;
 }

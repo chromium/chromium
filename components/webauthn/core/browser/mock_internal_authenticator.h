@@ -29,6 +29,7 @@ class MockInternalAuthenticator : public webauthn::InternalAuthenticator {
   MOCK_METHOD1(IsUserVerifyingPlatformAuthenticatorAvailable,
                void(blink::mojom::Authenticator::
                         IsUserVerifyingPlatformAuthenticatorAvailableCallback));
+  MOCK_METHOD0(IsGetMatchingCredentialIdsSupported, bool());
   MOCK_METHOD4(GetMatchingCredentialIds,
                void(const std::string& relying_party_id,
                     const std::vector<std::vector<uint8_t>>& credential_ids,

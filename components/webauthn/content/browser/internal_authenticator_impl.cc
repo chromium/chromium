@@ -61,6 +61,11 @@ void InternalAuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
       std::move(callback));
 }
 
+bool InternalAuthenticatorImpl::IsGetMatchingCredentialIdsSupported() {
+  // TODO(crbug.com/1368590): Not yet supported on any desktop platform.
+  return false;
+}
+
 void InternalAuthenticatorImpl::GetMatchingCredentialIds(
     const std::string& relying_party_id,
     const std::vector<std::vector<uint8_t>>& credential_ids,

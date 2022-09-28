@@ -196,6 +196,15 @@ public final class AuthenticatorImpl implements Authenticator {
     }
 
     /**
+     * Returns whether or not the getMatchingCredentialIds API is supported. As the API is
+     * flag-guarded inside of GMSCore, we can only provide a best-effort guess based on the GMSCore
+     * version.
+     */
+    public boolean isGetMatchingCredentialIdsSupported() {
+        return mGmsCorePackageVersion >= GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS;
+    }
+
+    /**
      * Retrieves the set of credentials for the given relying party, and filters them to match the
      * given input credential IDs. Optionally, may also filter the credentials to only return those
      * that are marked as third-party payment enabled.

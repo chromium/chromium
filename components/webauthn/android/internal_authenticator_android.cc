@@ -117,6 +117,15 @@ void InternalAuthenticatorAndroid::
                                                                            obj);
 }
 
+bool InternalAuthenticatorAndroid::IsGetMatchingCredentialIdsSupported() {
+  JNIEnv* env = AttachCurrentThread();
+  JavaRef<jobject>& obj = GetJavaObject();
+  DCHECK(!obj.is_null());
+
+  return Java_InternalAuthenticator_isGetMatchingCredentialIdsSupported(env,
+                                                                        obj);
+}
+
 void InternalAuthenticatorAndroid::GetMatchingCredentialIds(
     const std::string& relying_party_id,
     const std::vector<std::vector<uint8_t>>& credential_ids,

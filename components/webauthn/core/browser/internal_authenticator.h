@@ -58,6 +58,9 @@ class InternalAuthenticator {
       blink::mojom::Authenticator::
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) = 0;
 
+  // Returns true if an authenticator supports the GetMatchingCredentialIds API.
+  virtual bool IsGetMatchingCredentialIdsSupported() = 0;
+
   // Queries the authenticator for known credentials for the given
   // |relying_party_id| which are also in the input |credential_ids| list.
   // Optionally, can restrict to only match third-party payment enabled

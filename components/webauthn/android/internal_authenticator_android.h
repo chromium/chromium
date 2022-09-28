@@ -46,6 +46,7 @@ class InternalAuthenticatorAndroid : public webauthn::InternalAuthenticator {
       blink::mojom::Authenticator::
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback)
       override;
+  bool IsGetMatchingCredentialIdsSupported() override;
   void GetMatchingCredentialIds(
       const std::string& relying_party_id,
       const std::vector<std::vector<uint8_t>>& credential_ids,
