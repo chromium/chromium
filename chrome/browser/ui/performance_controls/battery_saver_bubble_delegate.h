@@ -20,7 +20,7 @@ class BatterySaverBubbleDelegate : public ui::DialogModelDelegate {
                                       BatterySaverBubbleObserver* observer);
 
   void OnWindowClosing();
-  void OnSessionOffClicked(const ui::Event& event);
+  void OnSessionOffClicked();
 
  private:
   raw_ptr<Browser> browser_;

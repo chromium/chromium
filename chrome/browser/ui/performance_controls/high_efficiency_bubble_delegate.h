@@ -18,7 +18,7 @@ class HighEfficiencyBubbleDelegate : public ui::DialogModelDelegate {
   explicit HighEfficiencyBubbleDelegate(Browser* browser,
                                         HighEfficiencyBubbleObserver* observer);
 
-  void OnSettingsClicked(const ui::Event& event);
+  void OnSettingsClicked();
 
   void OnDialogDestroy();
 

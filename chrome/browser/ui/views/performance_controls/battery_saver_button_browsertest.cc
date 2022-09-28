@@ -233,11 +233,15 @@ IN_PROC_BROWSER_TEST_F(BatterySaverBubbleViewTest, DisableModeForSession) {
   PressButton(battery_saver_button);
   base::RunLoop().RunUntilIdle();
 
-  auto* bubble_dialog_host = battery_saver_button->GetBubble();
+  views::BubbleDialogModelHost* const bubble_dialog_host =
+      battery_saver_button->GetBubble();
   EXPECT_TRUE(bubble_dialog_host);
 
-  auto* extra_button_view = bubble_dialog_host->GetExtraView();
-  PressButton(static_cast<views::Button*>(extra_button_view));
+  views::LabelButton* const turn_off_button_view =
+      bubble_dialog_host->GetCancelButton();
+  EXPECT_TRUE(turn_off_button_view);
+
+  bubble_dialog_host->Cancel();
   base::RunLoop().RunUntilIdle();
 
   is_disabled = manager->IsBatterySaverModeDisabledForSession();

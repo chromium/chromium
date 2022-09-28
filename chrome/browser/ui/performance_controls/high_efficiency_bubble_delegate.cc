@@ -18,9 +18,10 @@ HighEfficiencyBubbleDelegate::HighEfficiencyBubbleDelegate(
   DCHECK(observer);
 }
 
-void HighEfficiencyBubbleDelegate::OnSettingsClicked(const ui::Event& event) {
+void HighEfficiencyBubbleDelegate::OnSettingsClicked() {
   chrome::ShowSettingsSubPage(browser_, chrome::kPerformanceSubPage);
   close_action_ = HighEfficiencyBubbleActionType::kOpenSettings;
+  dialog_model()->host()->Close();
 }
 
 void HighEfficiencyBubbleDelegate::OnDialogDestroy() {

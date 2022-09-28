@@ -188,10 +188,15 @@ TEST_F(BatterySaverButtonTest, LogMetricsOnTurnOffNowTest) {
   test_api.NotifyClick(e);
   EXPECT_TRUE(battery_saver_button->IsBubbleShowing());
 
-  views::test::ButtonTestApi turn_off_api(static_cast<views::Button*>(
-      battery_saver_button->GetBubble()->GetExtraView()));
-  turn_off_api.NotifyClick(e);
-  EXPECT_FALSE(battery_saver_button->IsBubbleShowing());
+  views::BubbleDialogModelHost* const bubble_dialog_host =
+      battery_saver_button->GetBubble();
+  EXPECT_TRUE(bubble_dialog_host);
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(
+      bubble_dialog_host->GetWidget());
+  bubble_dialog_host->Cancel();
+  destroyed_waiter.Wait();
+
   GetHistogramTester()->ExpectUniqueSample(
       "PerformanceControls.BatterySaver.BubbleAction",
       BatterySaverBubbleActionType::kTurnOffNow, 1);

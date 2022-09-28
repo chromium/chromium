@@ -1681,21 +1681,20 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
       <!-- High Efficiency Chip strings -->
       <if expr="not is_android">
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_BODY" desc="Body text for a dialog describing that Memory Saver mode will use less memory from inactive tabs and that this is a setting the user can control.">
-          As needed, Chrome reclaims memory from tabs you aren't actively using. You can change this anytime in settings.
-        </message>
-        <message name="IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_TITLE" desc="The title for the high efficiency info mode in-product promo bubble.">
-          Chrome turned on Memory Saver
-        </message>
-        <message name="IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_TEXT" desc="The text shown for the high efficiency info mode in-product promo bubble.">
-          To make your browsing faster, Chrome reclaims memory from tabs you aren't using.
+        <message name="IDS_HIGH_EFFICIENCY_DIALOG_TITLE" desc="Title text for a dialog describing that the Memory Saver setting is enabled">
+          Memory Saver made Chrome faster
         </message>
       </if>
 
-      <!-- High Efficiency Chip App Menu IPH strings -->
-      <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TITLE" desc="The title for the high efficiency mode in-product promo bubble">
-        Make Chrome faster
-      </message>
+      <!-- High Efficiency IPH strings -->
+      <if expr="not is_android">
+        <message name="IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_TITLE" desc="The title for the high efficiency info mode in-product promo bubble.">
+          Memory Saver made Chrome faster
+        </message>
+        <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TITLE" desc="The title for the high efficiency mode in-product promo bubble">
+          Make Chrome faster
+        </message>
+      </if>
     </messages>
   </release>
 </grit>

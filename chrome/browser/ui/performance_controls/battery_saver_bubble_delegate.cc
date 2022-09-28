@@ -23,7 +23,7 @@ void BatterySaverBubbleDelegate::OnWindowClosing() {
   RecordBatterySaverBubbleAction(action_type_);
 }
 
-void BatterySaverBubbleDelegate::OnSessionOffClicked(const ui::Event& event) {
+void BatterySaverBubbleDelegate::OnSessionOffClicked() {
   action_type_ = BatterySaverBubbleActionType::kTurnOffNow;
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();

@@ -139,21 +139,6 @@ TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsOnDialogDismiss) {
       HighEfficiencyBubbleActionType::kDismiss, 1);
 }
 
-// A link should be rendered within the dialog.
-TEST_F(HighEfficiencyChipViewTest, ShouldRenderLinkInDialog) {
-  SetTabDiscardState(true);
-
-  PageActionIconView* view = GetPageActionIconView();
-
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                   ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi test_api(view);
-  test_api.NotifyClick(e);
-
-  views::View* extra_view = view->GetBubble()->GetExtraView();
-  ASSERT_EQ(std::string(extra_view->GetClassName()), "Link");
-}
-
 // When the previous page was not previously discarded, the icon should not be
 // visible.
 TEST_F(HighEfficiencyChipViewTest, ShouldHideLabelAfterThreeTimes) {
