@@ -34,3 +34,20 @@ source_set("post_restore_signin") {
     "//ui/base",
   ]
 }
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "post_restore_signin_provider_unittest.mm",
+    "post_restore_signin_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":post_restore_signin",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/signin:signin_util",
+    "//ios/chrome/browser/ui/post_restore_signin:features",
+    "//third_party/ocmock",
+  ]
+}
