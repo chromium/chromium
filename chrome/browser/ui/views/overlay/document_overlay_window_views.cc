@@ -508,7 +508,7 @@ void DocumentOverlayWindowViews::UpdateResizeHandleBounds(
     //   +-------+------+-------------------+--------+
     //   |                web view                   |
     //   +-------------------------------------------+
-    if (controls_container_view_->GetIndexOf(close_controls_view_) != 0) {
+    if (controls_container_view_->GetIndexOf(close_controls_view_) != 0u) {
       resize_handle_view_->SetQuadrant(quadrant);
       controls_container_view_->ReorderChildView(close_controls_view_, 0);
       controls_container_view_->ReorderChildView(back_to_tab_image_button_, 1);
@@ -525,7 +525,7 @@ void DocumentOverlayWindowViews::UpdateResizeHandleBounds(
     //   +--------+-------------------+------+-------+
     //   |                web view                   |
     //   +-------------------------------------------+
-    if (controls_container_view_->GetIndexOf(resize_handle_view_) != 0) {
+    if (controls_container_view_->GetIndexOf(resize_handle_view_) != 0u) {
       resize_handle_view_->SetQuadrant(quadrant);
       controls_container_view_->ReorderChildView(
           back_to_tab_image_button_,

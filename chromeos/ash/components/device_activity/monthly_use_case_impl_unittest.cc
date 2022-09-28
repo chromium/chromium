@@ -79,7 +79,7 @@ TEST_F(MonthlyUseCaseImplTest, ValidateWindowIdFormattedCorrectly) {
   std::string window_id =
       monthly_use_case_impl_->GenerateUTCWindowIdentifier(new_monthly_ts);
 
-  EXPECT_EQ(window_id.size(), 6);
+  EXPECT_EQ(window_id.size(), 6u);
   EXPECT_EQ(window_id, "202201");
 }
 

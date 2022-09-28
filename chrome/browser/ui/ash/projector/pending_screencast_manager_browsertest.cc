@@ -143,8 +143,9 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
 
     base::File file(folder_path.Append(relative_file_path.BaseName()),
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    EXPECT_EQ(file_content.size(), file.Write(/*offset=*/0, file_content.data(),
-                                              /*size=*/file_content.size()));
+    EXPECT_EQ(static_cast<int>(file_content.size()),
+              file.Write(/*offset=*/0, file_content.data(),
+                         /*size=*/file_content.size()));
     EXPECT_TRUE(file.IsValid());
     file.Close();
   }
@@ -666,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   // Verify we have a fail status screencast.
   const PendingScreencastSet pending_screencasts =
       pending_screencast_manager()->GetPendingScreencasts();
-  EXPECT_EQ(1, pending_screencasts.size());
+  EXPECT_EQ(1u, pending_screencasts.size());
   ash::PendingScreencast ps = *(pending_screencasts.begin());
   EXPECT_TRUE(ps.upload_failed);
 

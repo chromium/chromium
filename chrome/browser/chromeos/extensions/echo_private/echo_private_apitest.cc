@@ -285,8 +285,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, RemoveEmptyValueDicts) {
 
   // After removing empty nested dicts, we  are left with:
   //   {"a" : "b", "nested" : {"c" : "d"}}
-  EXPECT_EQ(2, dict.size());
-  EXPECT_EQ(1, dict.FindDict("nested")->size());
+  EXPECT_EQ(2u, dict.size());
+  EXPECT_EQ(1u, dict.FindDict("nested")->size());
   EXPECT_EQ("b", *dict.FindString("a"));
   EXPECT_EQ("d", *dict.FindStringByDottedPath("nested.c"));
 }

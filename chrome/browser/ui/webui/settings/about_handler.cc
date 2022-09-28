@@ -549,7 +549,7 @@ void AboutHandler::HandleGetFirmwareUpdateCount(const base::Value::List& args) {
   const std::string& callback_id = args[0].GetString();
   auto* firmware_update_manager = ash::FirmwareUpdateManager::Get();
   size_t update_count = firmware_update_manager->GetUpdateCount();
-  DCHECK_LT(update_count, std::numeric_limits<int>::max());
+  DCHECK_LT(update_count, std::numeric_limits<size_t>::max());
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(static_cast<int>(update_count)));
 }

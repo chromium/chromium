@@ -43,7 +43,7 @@ class CheckPasswordsAgainstCryptohomeHelper : public AuthStatusConsumer {
  private:
   UserContext user_context_;
   const ::login::StringList scraped_passwords_;
-  int current_password_index_ = 0;
+  size_t current_password_index_ = 0u;
 
   // Used to authenticate the user.
   scoped_refptr<ExtendedAuthenticator> extended_authenticator_;

@@ -2072,7 +2072,7 @@ void FileManagerPrivateInternalParseTrashInfoFilesFunction::
   DCHECK_EQ(parsed_data.size(), entry_definition_list->size());
   std::vector<api::file_manager_private_internal::ParsedTrashInfoFile> results;
 
-  for (int i = 0; i < parsed_data.size(); ++i) {
+  for (size_t i = 0; i < parsed_data.size(); ++i) {
     const auto& [trash_info_path, trashed_file_path, absolute_restore_path,
                  deletion_date] = parsed_data[i];
     api::file_manager_private_internal::ParsedTrashInfoFile info;

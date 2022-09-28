@@ -196,11 +196,11 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
             kIpv6Address);
 
   base::Value::List* imei_list = signals.FindList(device_signals::names::kImei);
-  EXPECT_EQ(imei_list->size(), 1);
+  EXPECT_EQ(imei_list->size(), 1u);
   EXPECT_EQ(imei_list->front(), kFakeImei);
 
   base::Value::List* meid_list = signals.FindList(device_signals::names::kMeid);
-  EXPECT_EQ(meid_list->size(), 1);
+  EXPECT_EQ(meid_list->size(), 1u);
   EXPECT_EQ(meid_list->front(), kFakeMeid);
 }
 

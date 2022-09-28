@@ -412,7 +412,7 @@ arc::mojom::OpenUrlsRequestPtr ConstructOpenUrlsRequest(
   request->action_type = GetArcActionType(intent->action);
   request->activity_name = activity.Clone();
   DCHECK_EQ(content_urls.size(), intent->files.size());
-  for (int i = 0; i < content_urls.size(); i++) {
+  for (size_t i = 0; i < content_urls.size(); i++) {
     auto content_url = content_urls[i];
     arc::mojom::ContentUrlWithMimeTypePtr url_with_type =
         arc::mojom::ContentUrlWithMimeType::New();

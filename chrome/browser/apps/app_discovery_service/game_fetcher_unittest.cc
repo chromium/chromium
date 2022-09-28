@@ -113,7 +113,7 @@ TEST_F(GameFetcherTest, RegisterForUpdatesLocaleWithNoResults) {
   subscription_ =
       game_fetcher()->RegisterForAppUpdates(base::BindLambdaForTesting(
           [&run_loop, &update_verified](const std::vector<Result>& results) {
-            EXPECT_EQ(results.size(), 0);
+            EXPECT_EQ(results.size(), 0u);
             update_verified = true;
             run_loop.Quit();
           }));

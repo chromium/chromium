@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 
+#include "base/check_op.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -98,7 +99,7 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   std::vector<ProvidedFileSystemInfo> file_systems =
       service->GetProvidedFileSystemInfoList(provider_id);
   // One and only one filesystem should be mounted for the ODFS extension.
-  if (file_systems.size() != 1) {
+  if (file_systems.size() != 1u) {
     std::string error_message =
         file_systems.empty()
             ? "No file systems found for the ODFS Extension"
@@ -181,7 +182,7 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       return;
     case file_manager::io_task::State::kSuccess:
       notification_manager_->ShowProgress(100);
-      DCHECK_EQ(status.outputs.size(), 1);
+      DCHECK_EQ(status.outputs.size(), 1u);
       file_manager::util::ShowItemInFolder(
           profile_, status.outputs[0].url.path(),
           base::BindOnce(&OneDriveUploadHandler::OnShowItemInFolder,

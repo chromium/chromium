@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
@@ -268,7 +269,7 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
                      weak_factory_.GetWeakPtr());
 
   if (password.empty()) {
-    CHECK_NE(scraped_saml_passwords.size(), 1);
+    CHECK_NE(scraped_saml_passwords.size(), 1u);
     complete_login_callback = base::BindOnce(
         &LockScreenReauthHandler::SamlConfirmPassword,
         weak_factory_.GetWeakPtr(), std::move(scraped_saml_passwords));

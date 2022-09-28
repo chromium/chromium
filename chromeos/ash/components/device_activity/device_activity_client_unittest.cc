@@ -979,7 +979,7 @@ TEST_F(DeviceActivityClientTest, NetworkDisconnectsWhileWaitingForResponse) {
   SetWifiNetworkState(shill::kStateOnline);
 
   // We expect the size of the use cases to be greater than 0.
-  EXPECT_GT(device_activity_client_->GetUseCases().size(), 0);
+  EXPECT_GT(device_activity_client_->GetUseCases().size(), 0u);
 
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kCheckingMembershipOprf);

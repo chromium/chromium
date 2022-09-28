@@ -61,7 +61,7 @@ void VerifyResponse(const content::EvalJsResult& result) {
   // We can't verify the entire video src url because the random hash at the end
   // differs across test runs, even for the same file. Just check that the url
   // begins with blob:chrome-untrusted://projector/.
-  EXPECT_EQ(src_url->rfind("blob:chrome-untrusted://projector/", 0), 0);
+  EXPECT_EQ(src_url->rfind("blob:chrome-untrusted://projector/", 0), 0u);
   const std::string* duration_millis = dict.FindString("durationMillis");
   ASSERT_TRUE(duration_millis);
   EXPECT_EQ(*duration_millis, kTestVideoDurationMilliesecond);

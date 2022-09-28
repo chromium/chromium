@@ -54,7 +54,7 @@ bool DetailsEquals(const std::unique_ptr<ChromeSearchResult>& result,
                    const std::u16string& details) {
   const auto& details_vector = result->details_text_vector();
 
-  if (details_vector.size() != 1)
+  if (details_vector.size() != 1u)
     return false;
 
   if (details_vector[0].GetType() != ash::SearchResultTextItemType::kString)
@@ -147,13 +147,13 @@ TEST_P(GameProviderTest, SpecialCharactersIgnored) {
 
   // Expect that the results have similar scores.
   StartSearch(u"titles");
-  ASSERT_EQ(LastResults().size(), 2);
+  ASSERT_EQ(LastResults().size(), 2u);
   double score_diff =
       abs(LastResults()[0]->relevance() - LastResults()[1]->relevance());
   EXPECT_LT(score_diff, 0.01);
 
   StartSearch(u"title's");
-  ASSERT_EQ(LastResults().size(), 2);
+  ASSERT_EQ(LastResults().size(), 2u);
   score_diff =
       abs(LastResults()[0]->relevance() - LastResults()[1]->relevance());
   EXPECT_LT(score_diff, 0.01);
@@ -193,7 +193,7 @@ TEST_P(GameProviderTest, RandomizeSourceOrder) {
   int b_first = 0;
   for (int i = 0; i < 1000; ++i) {
     StartSearch(u"title");
-    ASSERT_EQ(LastResults().size(), 2);
+    ASSERT_EQ(LastResults().size(), 2u);
 
     // The source name is set into the result details, so use the result details
     // to identify which source it came from.

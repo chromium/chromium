@@ -16,7 +16,7 @@ namespace ash {
 namespace {
 
 // Maximum number of attempts to check scraped password against cryptohome.
-const int kMaximumNumberOfAttempts = 5;
+const size_t kMaximumNumberOfAttempts = 5;
 
 void SetKeyForUserContext(UserContext& user_context,
                           const std::string& password) {
@@ -41,7 +41,7 @@ CheckPasswordsAgainstCryptohomeHelper::CheckPasswordsAgainstCryptohomeHelper(
           on_check_passwords_against_cryptohome_helper_failure_callback)),
       on_check_passwords_against_cryptohome_helper_success_callback_(std::move(
           on_check_passwords_against_cryptohome_helper_success_callback)) {
-  current_password_index_ = 0;
+  current_password_index_ = 0u;
   extended_authenticator_ = ExtendedAuthenticator::Create(this);
   SetKeyForUserContext(user_context_,
                        scraped_passwords_[current_password_index_]);
@@ -57,7 +57,7 @@ void CheckPasswordsAgainstCryptohomeHelper::OnAuthFailure(
   current_password_index_++;
   if (current_password_index_ == kMaximumNumberOfAttempts ||
       current_password_index_ == scraped_passwords_.size()) {
-    current_password_index_ = 0;
+    current_password_index_ = 0u;
     std::move(on_check_passwords_against_cryptohome_helper_failure_callback_)
         .Run();
     return;

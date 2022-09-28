@@ -397,7 +397,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateScope) {
               ::testing::ElementsAre(webapk::WebApk::SCOPE_DIFFERS));
 
   webapk::WebAppManifest manifest = last_webapk_request()->manifest();
-  EXPECT_EQ(last_webapk_request()->manifest().scopes_size(), 1u);
+  EXPECT_EQ(last_webapk_request()->manifest().scopes_size(), 1);
   EXPECT_EQ(last_webapk_request()->manifest().scopes(0),
             "https://www.differentexample.com/");
 

@@ -155,7 +155,7 @@ void ExistingWindowSubMenuModelTest::CheckBrowserTitle(
                                  base::CompareCase::SENSITIVE));
 
     // Title should always have at least a few characters.
-    EXPECT_GE(tokens[0].size(), 3ull);
+    EXPECT_GE(tokens[0].size(), 3u);
   }
 }
 
@@ -462,7 +462,8 @@ TEST_F(ExistingWindowSubMenuModelTest, EnsureGroupedByDesksCommands) {
   const std::vector<std::pair<int, int>> kExpectedMappings{
       {1002, 1}, {1003, 0}, {1004, 2}, {1005, 3}};
   for (const auto& pair : kExpectedMappings) {
-    EXPECT_EQ(pair.second, command_id_to_target_index.at(pair.first));
+    EXPECT_EQ(pair.second,
+              static_cast<int>(command_id_to_target_index.at(pair.first)));
   }
 
   // Clean up.

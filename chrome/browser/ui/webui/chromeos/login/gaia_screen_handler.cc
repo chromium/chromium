@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -829,7 +830,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
       });
 
   if (password.empty() && !IsSamlUserPasswordless()) {
-    CHECK_NE(scraped_saml_passwords.size(), 1);
+    CHECK_NE(scraped_saml_passwords.size(), 1u);
     complete_login_callback = base::BindOnce(
         &GaiaScreenHandler::SAMLConfirmPassword, weak_factory_.GetWeakPtr(),
         std::move(scraped_saml_passwords));

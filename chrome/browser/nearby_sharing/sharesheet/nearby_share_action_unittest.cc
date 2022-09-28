@@ -221,7 +221,7 @@ TEST_F(NearbyShareActionTest, CreateAttachmentFromIntentWithCustomName) {
   auto attachments = NearbyShareAction::CreateAttachmentsFromIntent(
       profile_, std::move(intent));
 
-  ASSERT_EQ(attachments.size(), 1);
+  ASSERT_EQ(attachments.size(), 1u);
   ASSERT_EQ(attachments[0]->family(), Attachment::Family::kFile);
 
   auto* file_attachment = static_cast<FileAttachment*>(attachments[0].get());

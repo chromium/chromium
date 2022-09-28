@@ -1460,7 +1460,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
 
     // Use |feature_mask| as a bitmask to decide which features in
     // |kTestFeatures| to enable or disable.
-    for (int i = 0; i < kTestFeatures.size(); i++) {
+    for (size_t i = 0; i < kTestFeatures.size(); i++) {
       if (feature_mask & 1 << i) {
         enabled_features.push_back(kTestFeatures[i]);
       } else {

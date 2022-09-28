@@ -180,7 +180,7 @@ TEST_F(SourceDestinationMatcherAshTest, NullptrSettingsNoCrash) {
   size_t id = 0;
   base::Value::List* settings = nullptr;
   matcher.AddFilters(&id, settings);
-  EXPECT_EQ(id, 0);
+  EXPECT_EQ(id, 0u);
 }
 
 class SourceDestinationMatcherAshAddFilters
@@ -284,7 +284,7 @@ TEST_P(SourceDestinationMatcherAshParamTest, FromOneToAny) {
   ASSERT_TRUE(settings_list);
   matcher.AddFilters(&id, settings_list);
   // One rule should be added!
-  EXPECT_EQ(id, 1);
+  EXPECT_EQ(id, 1u);
 
   for (auto src_test_info : kVolumeInfos) {
     bool should_match = std::string(src_test_info.fs_config_string) ==
@@ -294,7 +294,7 @@ TEST_P(SourceDestinationMatcherAshParamTest, FromOneToAny) {
           matcher.Match(profile(), GetBaseFileSystemURLForVolume(src_test_info),
                         GetBaseFileSystemURLForVolume(dest_test_info));
       if (should_match) {
-        ASSERT_EQ(matches.size(), 1)
+        ASSERT_EQ(matches.size(), 1u)
             << "matches: " << matches.size()
             << ", source: " << src_test_info.fs_config_string
             << ", destination: " << dest_test_info.fs_config_string;
@@ -331,7 +331,7 @@ TEST_P(SourceDestinationMatcherAshParamTest, FromAnyToOne) {
   ASSERT_TRUE(settings_list);
   matcher.AddFilters(&id, settings_list);
   // One rule should be added!
-  EXPECT_EQ(id, 1);
+  EXPECT_EQ(id, 1u);
 
   for (auto src_test_info : kVolumeInfos) {
     for (auto dest_test_info : kVolumeInfos) {
@@ -341,7 +341,7 @@ TEST_P(SourceDestinationMatcherAshParamTest, FromAnyToOne) {
           matcher.Match(profile(), GetBaseFileSystemURLForVolume(src_test_info),
                         GetBaseFileSystemURLForVolume(dest_test_info));
       if (should_match) {
-        ASSERT_EQ(matches.size(), 1)
+        ASSERT_EQ(matches.size(), 1u)
             << "matches: " << matches.size()
             << ", source: " << src_test_info.fs_config_string
             << ", destination: " << dest_test_info.fs_config_string;

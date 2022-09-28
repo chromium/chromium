@@ -229,11 +229,11 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
   const base::Value::List* sessions_list =
       dict.FindList(kKioskSessionLastDayList);
   ASSERT_TRUE(sessions_list);
-  EXPECT_EQ(1, sessions_list->size());
+  EXPECT_EQ(1u, sessions_list->size());
 
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kStopped, 1);
-  EXPECT_EQ(2, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
+  EXPECT_EQ(2u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 
   histogram()->ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
   histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
@@ -261,14 +261,14 @@ TEST_F(AppSessionTest, ChromeAppKioskTracksBrowserCreation) {
   const base::Value::List* sessions_list =
       dict.FindList(kKioskSessionLastDayList);
   ASSERT_TRUE(sessions_list);
-  EXPECT_EQ(1, sessions_list->size());
+  EXPECT_EQ(1u, sessions_list->size());
 
   // Emulate exiting kiosk session.
   ResetAppSession();
 
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kStopped, 1);
-  EXPECT_EQ(2, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
+  EXPECT_EQ(2u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 
   histogram()->ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
   histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
@@ -324,7 +324,7 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
   ASSERT_TRUE(sessions_list);
   // There should be only two kiosk sessions on the list:
   // the one that happened right before the current one and the current one.
-  EXPECT_EQ(2, sessions_list->size());
+  EXPECT_EQ(2u, sessions_list->size());
   for (const auto& time : *sessions_list) {
     EXPECT_LE(base::Time::Now() - base::ValueToTime(time).value(),
               base::Days(1));
@@ -332,7 +332,7 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
 
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kStopped, 1);
-  EXPECT_EQ(3, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
+  EXPECT_EQ(3u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
   histogram()->ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
   histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
 }
@@ -522,7 +522,7 @@ TEST_F(AppSessionTest, OnPluginCrashed) {
 
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kPluginCrashed, 1);
-  EXPECT_EQ(1, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
+  EXPECT_EQ(1u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 
   histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 0);
 }
@@ -539,7 +539,7 @@ TEST_F(AppSessionTest, OnPluginHung) {
   delegate->OnPluginHung(std::set<int>());
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kPluginHung, 1);
-  EXPECT_EQ(1, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
+  EXPECT_EQ(1u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 
   histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 0);
 }

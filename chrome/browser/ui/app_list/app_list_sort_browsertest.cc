@@ -1348,8 +1348,8 @@ class AppListSortColorOrderBrowserTest : public AppListSortBrowserTest {
     base::strings::SafeSPrintf(json_buffer, icon_json, icon_size,
                                icon_file_name);
     char manifest_buffer[300];
-    size_t count = base::strings::SafeSPrintf(manifest_buffer, kManifestData,
-                                              app_name.c_str(), json_buffer);
+    int count = base::strings::SafeSPrintf(manifest_buffer, kManifestData,
+                                           app_name.c_str(), json_buffer);
     EXPECT_EQ(count, manifest_file.Write(0, manifest_buffer, count));
     manifest_file.Close();
 

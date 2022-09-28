@@ -176,7 +176,7 @@ class ArcAppsPublisherTest : public testing::Test {
         });
 
     EXPECT_EQ(source.size(), target.size());
-    for (int i = 0; i < static_cast<int>(source.size()); i++) {
+    for (size_t i = 0; i < source.size(); i++) {
       EXPECT_EQ(*source[i], *target[i]);
     }
   }
@@ -416,10 +416,10 @@ TEST_F(ArcAppsPublisherTest,
 
   ASSERT_EQ(apps::State::SUCCESS, result.value_or(apps::State::FAILED));
 
-  ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1);
+  ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
   ASSERT_EQ(url_request->action_type, arc::mojom::ActionType::EDIT);
-  ASSERT_EQ(url_request->urls.size(), 1);
+  ASSERT_EQ(url_request->urls.size(), 1u);
   ASSERT_EQ(url_request->urls[0]->mime_type, "text/plain");
   ASSERT_TRUE(
       base::EndsWith(url_request->urls[0]->content_url.spec(), "test.txt"));
@@ -487,10 +487,10 @@ TEST_F(
 
   ASSERT_EQ(apps::State::SUCCESS, result.value_or(apps::State::FAILED));
 
-  ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1);
+  ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
   ASSERT_EQ(url_request->action_type, arc::mojom::ActionType::VIEW);
-  ASSERT_EQ(url_request->urls.size(), 2);
+  ASSERT_EQ(url_request->urls.size(), 2u);
   ASSERT_EQ(url_request->urls[0]->mime_type, "image/png");
   ASSERT_EQ(url_request->urls[1]->mime_type, "image/jpeg");
   ASSERT_TRUE(
@@ -526,10 +526,10 @@ TEST_F(ArcAppsPublisherTest,
 
   ASSERT_EQ(apps::State::SUCCESS, result.value_or(apps::State::FAILED));
 
-  ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1);
+  ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
   ASSERT_EQ(url_request->action_type, arc::mojom::ActionType::SEND);
-  ASSERT_EQ(url_request->urls.size(), 1);
+  ASSERT_EQ(url_request->urls.size(), 1u);
   ASSERT_EQ(url_request->urls[0]->mime_type, mime_type);
   ASSERT_TRUE(
       base::EndsWith(url_request->urls[0]->content_url.spec(), file_name));
@@ -558,10 +558,10 @@ TEST_F(ArcAppsPublisherTest, LaunchAppWithIntent_ShareFilesIntent_SendsExtras) {
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr, base::DoNothing());
 
-  ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1);
+  ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
   ASSERT_EQ(url_request->action_type, arc::mojom::ActionType::SEND);
-  ASSERT_EQ(url_request->urls.size(), 1);
+  ASSERT_EQ(url_request->urls.size(), 1u);
   ASSERT_EQ(url_request->extras.value()[kTestExtraKey], kTestExtraValue);
   ASSERT_EQ(url_request->extras.value()["android.intent.extra.TEXT"],
             kTestIntentText);

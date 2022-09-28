@@ -72,7 +72,7 @@ TEST_F(ClassicOmniboxAnswerResultTest, ClassicCalculatorResult) {
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
   EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_CALCULATOR);
 
-  ASSERT_EQ(result.title_text_vector().size(), 1);
+  ASSERT_EQ(result.title_text_vector().size(), 1u);
   const auto& title = result.title_text_vector()[0];
   size_t length = title.GetText().length();
   ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
@@ -128,13 +128,13 @@ TEST_F(OmniboxAnswerResultTest, CalculatorResult) {
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
   EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_CALCULATOR);
 
-  ASSERT_EQ(result.title_text_vector().size(), 1);
+  ASSERT_EQ(result.title_text_vector().size(), 1u);
   const auto& title = result.title_text_vector()[0];
   ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(title.GetText(), u"2+2");
   EXPECT_TRUE(title.GetTextTags().empty());
 
-  ASSERT_EQ(result.details_text_vector().size(), 1);
+  ASSERT_EQ(result.details_text_vector().size(), 1u);
   const auto& details = result.details_text_vector()[0];
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"4");
@@ -155,13 +155,13 @@ TEST_F(OmniboxAnswerResultTest, CalculatorResultNoDescription) {
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
   EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_CALCULATOR);
 
-  ASSERT_EQ(result.title_text_vector().size(), 1);
+  ASSERT_EQ(result.title_text_vector().size(), 1u);
   const auto& title = result.title_text_vector()[0];
   ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(title.GetText(), u"2+2");
   EXPECT_TRUE(title.GetTextTags().empty());
 
-  ASSERT_EQ(result.details_text_vector().size(), 1);
+  ASSERT_EQ(result.details_text_vector().size(), 1u);
   const auto& details = result.details_text_vector()[0];
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"4");
@@ -200,25 +200,25 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
   EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_ANSWER);
 
-  ASSERT_EQ(result.big_title_text_vector().size(), 1);
+  ASSERT_EQ(result.big_title_text_vector().size(), 1u);
   const auto& big_title = result.big_title_text_vector()[0];
   ASSERT_EQ(big_title.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(big_title.GetText(), u"-5");
   EXPECT_TRUE(big_title.GetTextTags().empty());
 
-  ASSERT_EQ(result.big_title_superscript_text_vector().size(), 1);
+  ASSERT_EQ(result.big_title_superscript_text_vector().size(), 1u);
   const auto& superscript = result.big_title_superscript_text_vector()[0];
   ASSERT_EQ(superscript.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(superscript.GetText(), u"°C");
   EXPECT_TRUE(big_title.GetTextTags().empty());
 
-  ASSERT_EQ(result.title_text_vector().size(), 1);
+  ASSERT_EQ(result.title_text_vector().size(), 1u);
   const auto& title = result.title_text_vector()[0];
   ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(title.GetText(), u"accessibility label");
   EXPECT_TRUE(title.GetTextTags().empty());
 
-  ASSERT_EQ(result.details_text_vector().size(), 1);
+  ASSERT_EQ(result.details_text_vector().size(), 1u);
   const auto& details = result.details_text_vector()[0];
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"additional two");
@@ -259,7 +259,7 @@ TEST_F(OmniboxAnswerResultTest, AnswerResult) {
   EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_ANSWER);
 
   const auto& title = result.title_text_vector();
-  ASSERT_EQ(title.size(), 3);
+  ASSERT_EQ(title.size(), 3u);
   ASSERT_EQ(title[0].GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(title[0].GetText(), u"contents");
   EXPECT_TRUE(title[0].GetTextTags().empty());
@@ -275,7 +275,7 @@ TEST_F(OmniboxAnswerResultTest, AnswerResult) {
   // The NEGATIVE text type should have RED tags, and the POSITIVE text type
   // should have GREEN tags.
   const auto& details = result.details_text_vector();
-  ASSERT_EQ(details.size(), 3);
+  ASSERT_EQ(details.size(), 3u);
   ASSERT_EQ(details[0].GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details[0].GetText(), u"text two");
   size_t length = details[0].GetText().length();

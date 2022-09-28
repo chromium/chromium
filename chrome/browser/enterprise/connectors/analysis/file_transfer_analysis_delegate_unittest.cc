@@ -275,7 +275,7 @@ class BaseTest : public testing::Test {
         profile(), {src_url}, dest_url);
     ASSERT_EQ(expect_dlp || expect_malware, !settings.empty());
     if (expect_dlp || expect_malware) {
-      ASSERT_EQ(settings.size(), 1);
+      ASSERT_EQ(settings.size(), 1u);
       ASSERT_TRUE(settings[0].has_value());
       EXPECT_EQ(expect_dlp, settings[0].value().tags.count("dlp"));
       EXPECT_EQ(expect_malware, settings[0].value().tags.count("malware"));
@@ -417,7 +417,7 @@ TEST_P(FileTransferAnalysisDelegateIsEnabledTest, Enabled) {
       GetPrefState() == NOTHING_ENABLED_PREF) {
     EXPECT_TRUE(settings.empty());
   } else {
-    ASSERT_EQ(settings.size(), 1);
+    ASSERT_EQ(settings.size(), 1u);
     ASSERT_TRUE(settings[0].has_value());
     if (GetPrefState() == DLP_PREF || GetPrefState() == DLP_MALWARE_PREF) {
       EXPECT_TRUE(settings[0].value().tags.count("dlp"));

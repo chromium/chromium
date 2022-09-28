@@ -35,7 +35,7 @@ TEST_F(StartupStatusTest, TestNotVerbose) {
   status_printer->PrintStage(10, "Last Stage");
   status_printer->PrintSucceeded();
 
-  ASSERT_EQ(output_.size(), 5);
+  ASSERT_EQ(output_.size(), 5u);
 
   // Hide cursor, init progress.
   EXPECT_EQ(output_[0], "\x1b[?25l\x1b[35m[          ] ");
@@ -61,7 +61,7 @@ TEST_F(StartupStatusTest, TestVerbose) {
   status_printer->PrintStage(10, "Last Stage");
   status_printer->PrintSucceeded();
 
-  ASSERT_EQ(output_.size(), 6);
+  ASSERT_EQ(output_.size(), 6u);
 
   // Hide cursor, init progress.
   EXPECT_EQ(output_[0], "\x1b[?25l\x1b[35m[          ] ");
@@ -88,7 +88,7 @@ TEST_F(StartupStatusTest, TestError) {
   status_printer->PrintStage(1, "First Stage");
   status_printer->PrintError("Error message");  // Prints two things.
 
-  ASSERT_EQ(output_.size(), 4);
+  ASSERT_EQ(output_.size(), 4u);
 
   // Hide cursor, init progress.
   EXPECT_EQ(output_[0], "\x1b[?25l\x1b[35m[          ] ");

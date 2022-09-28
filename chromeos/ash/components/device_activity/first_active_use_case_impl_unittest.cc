@@ -137,7 +137,7 @@ TEST_F(FirstActiveUseCaseImplTest, EncryptAndDecryptTimestampPsmValue) {
   std::string first_active_ts_ciphertext =
       first_active_use_case_impl_->GetTsCiphertext();
 
-  EXPECT_GT(first_active_ts_ciphertext.size(), 0);
+  EXPECT_GT(first_active_ts_ciphertext.size(), 0u);
 
   // Try decrypting the stored ciphertext.
   base::Time decrypt_ts =

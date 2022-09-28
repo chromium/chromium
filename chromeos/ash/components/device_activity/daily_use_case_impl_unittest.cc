@@ -78,7 +78,7 @@ TEST_F(DailyUseCaseImplTest, ValidateWindowIdFormattedCorrectly) {
   std::string window_id =
       daily_use_case_impl_->GenerateUTCWindowIdentifier(new_daily_ts);
 
-  EXPECT_EQ(window_id.size(), 8);
+  EXPECT_EQ(window_id.size(), 8u);
   EXPECT_EQ(window_id, "20220101");
 }
 

@@ -173,11 +173,11 @@ class FileManagerEventRouterTest : public testing::Test {
 // extract the "outputs" key. It then looks at the output at `index` and matches
 // the `field` against the `expected_value`.
 MATCHER_P3(ExpectEventArgString, index, field, expected_value, "") {
-  EXPECT_GE(arg.size(), 1);
+  EXPECT_GE(arg.size(), 1u);
   const base::Value* outputs =
       arg[0].FindKeyOfType("outputs", base::Value::Type::LIST);
   EXPECT_TRUE(outputs) << "The outputs field is not available on the event";
-  EXPECT_GT((*outputs).GetList().size(), index)
+  EXPECT_GT(static_cast<int>((*outputs).GetList().size()), index)
       << "The supplied index on outputs is not available, size: "
       << (*outputs).GetList().size() << ", index: " << index;
   const std::string* actual_value =

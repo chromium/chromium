@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 
+#include "base/check_op.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
@@ -193,8 +194,8 @@ void DriveUploadHandler::OnIOTaskStatus(
       UpdateProgressNotification();
       if (observed_relative_drive_path_.empty()) {
         // TODO (b/242685536) Define multiple-file handling.
-        DCHECK_EQ(status.sources.size(), 1);
-        DCHECK_EQ(status.outputs.size(), 1);
+        DCHECK_EQ(status.sources.size(), 1u);
+        DCHECK_EQ(status.outputs.size(), 1u);
 
         if (!drive_integration_service_) {
           OnEndUpload(GURL(), "No drive integration service");
@@ -215,7 +216,7 @@ void DriveUploadHandler::OnIOTaskStatus(
     case file_manager::io_task::State::kSuccess:
       move_progress_ = 100;
       UpdateProgressNotification();
-      DCHECK_EQ(status.outputs.size(), 1);
+      DCHECK_EQ(status.outputs.size(), 1u);
       file_manager::util::ShowItemInFolder(
           profile_, status.outputs[0].url.path(),
           base::BindOnce(&LogErrorOnShowItemInFolder));

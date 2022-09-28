@@ -178,7 +178,7 @@ apps::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
       // prefixes. Detect and convert these, since prefix matching is easier &
       // cheaper.
       if (IsPrefixOnlyGlob(path.pattern())) {
-        DCHECK_GE(path.pattern().size(), 2);
+        DCHECK_GE(path.pattern().size(), 2u);
         return std::make_unique<apps::ConditionValue>(
             path.pattern().substr(0, path.pattern().size() - 2),
             apps::PatternMatchType::kPrefix);
@@ -208,7 +208,7 @@ apps::mojom::ConditionValuePtr ConvertArcPatternMatcherToMojomConditionValue(
       // prefixes. Detect and convert these, since prefix matching is easier &
       // cheaper.
       if (IsPrefixOnlyGlob(path.pattern())) {
-        DCHECK_GE(path.pattern().size(), 2);
+        DCHECK_GE(path.pattern().size(), 2u);
         return MakeConditionValue(
             path.pattern().substr(0, path.pattern().size() - 2),
             apps::mojom::PatternMatchType::kPrefix);

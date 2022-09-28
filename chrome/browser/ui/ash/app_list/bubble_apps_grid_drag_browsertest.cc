@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(BubbleAppsGridDragBrowserTest, ItemMerge) {
   // Verify that the folder apps grid contains two items.
   ash::AppsGridView* folder_apps_grid_view =
       app_list_test_api()->GetFolderAppsGridView();
-  EXPECT_EQ(2, folder_apps_grid_view->view_model()->view_size());
+  EXPECT_EQ(2u, folder_apps_grid_view->view_model()->view_size());
 
   const std::vector<std::string> top_level_ids_after_merging =
       app_list_test_api()->GetTopLevelViewIdList();

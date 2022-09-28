@@ -41,14 +41,14 @@ TEST(QueryHighlighterTest, KeepExistingNonMatchTags) {
   // The example result is initialized with a URL tag.
   auto tags =
       results[ResultType::kOmnibox][0]->title_text_vector()[0].GetTextTags();
-  ASSERT_EQ(tags.size(), 1);
+  ASSERT_EQ(tags.size(), 1u);
   EXPECT_TRUE(tags[0].styles & Tag::URL);
 
   highlighter.UpdateResultRanks(results, ProviderType::kOmnibox);
 
   // The URL tag should still be there.
   tags = results[ResultType::kOmnibox][0]->title_text_vector()[0].GetTextTags();
-  ASSERT_GE(tags.size(), 1);
+  ASSERT_GE(tags.size(), 1u);
   EXPECT_TRUE(tags[0].styles & Tag::URL);
 }
 
@@ -64,14 +64,14 @@ TEST(QueryHighlighterTest, RemoveExistingMatchTags) {
   // The example result is initialized with a MATCH tag.
   auto tags =
       results[ResultType::kOmnibox][0]->title_text_vector()[0].GetTextTags();
-  ASSERT_EQ(tags.size(), 1);
+  ASSERT_EQ(tags.size(), 1u);
   EXPECT_TRUE(tags[0].styles & Tag::MATCH);
 
   highlighter.UpdateResultRanks(results, ProviderType::kOmnibox);
 
   // The MATCH tag should be removed.
   tags = results[ResultType::kOmnibox][0]->title_text_vector()[0].GetTextTags();
-  ASSERT_GE(tags.size(), 1);
+  ASSERT_GE(tags.size(), 1u);
   EXPECT_FALSE(tags[0].styles & Tag::MATCH);
 }
 
@@ -87,15 +87,15 @@ TEST(QueryHighlighterTest, AppendMatchTags) {
   // The example result is initialized with one tag.
   auto tags =
       results[ResultType::kOmnibox][0]->title_text_vector()[0].GetTextTags();
-  EXPECT_EQ(tags.size(), 1);
+  EXPECT_EQ(tags.size(), 1u);
 
   highlighter.UpdateResultRanks(results, ProviderType::kOmnibox);
 
   // The query highlighter should have appended more tags, all of which are
   // MATCH only.
   tags = results[ResultType::kOmnibox][0]->title_text_vector()[0].GetTextTags();
-  ASSERT_GT(tags.size(), 1);
-  for (int i = 1; i < tags.size(); ++i) {
+  ASSERT_GT(tags.size(), 1u);
+  for (size_t i = 1; i < tags.size(); ++i) {
     EXPECT_EQ(tags[i].styles, Tag::MATCH);
   }
 }

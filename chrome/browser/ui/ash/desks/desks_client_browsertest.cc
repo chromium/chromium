@@ -2278,7 +2278,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateAndCleanUpDesk) {
   auto* desks_controller = ash::DesksController::Get();
   // Should have 1 default active desk.
-  EXPECT_EQ(1, desks_controller->desks().size());
+  EXPECT_EQ(1u, desks_controller->desks().size());
 
   // Capture and create a desk template.
   std::unique_ptr<ash::DeskTemplate> desk_template =
@@ -2296,7 +2296,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateAndCleanUpDesk) {
       base::GUID(), base::BindLambdaForTesting(
                         [&](std::string error, const base::GUID& desk_uuid) {
                           EXPECT_TRUE(error.empty());
-                          EXPECT_EQ(2, desks_controller->desks().size());
+                          EXPECT_EQ(2u, desks_controller->desks().size());
                           desk_id = desk_uuid;
                           loop.Quit();
                         }));
@@ -2308,7 +2308,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateAndCleanUpDesk) {
       }));
   ash::DeskSwitchAnimationWaiter waiter;
   waiter.Wait();
-  EXPECT_EQ(1, desks_controller->desks().size());
+  EXPECT_EQ(1u, desks_controller->desks().size());
 }
 
 // Tests that if we've been in the library, then switched to a different desk,
@@ -2325,7 +2325,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
   ash::DesksController* desks_controller = ash::DesksController::Get();
   const auto& desks = desks_controller->desks();
-  ASSERT_EQ(1ul, desks.size());
+  ASSERT_EQ(1u, desks.size());
   ASSERT_TRUE(desks[0]->ContainsAppWindows());
 
   // Click on the "Use template" button to launch the template.
@@ -2354,14 +2354,14 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   ui_test_utils::WaitForBrowserToClose();
 
   // Verify that we're back to one desk.
-  EXPECT_EQ(1ul, desks.size());
+  EXPECT_EQ(1u, desks.size());
 }
 
 // Tests trying to remove an invalid desk Id should return error.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, RemoveWithInvalidDeskId) {
   auto* desks_controller = ash::DesksController::Get();
   // Should have 1 default desk.
-  EXPECT_EQ(1, desks_controller->desks().size());
+  EXPECT_EQ(1u, desks_controller->desks().size());
   // Construct an empty invalid desk_id.
   base::GUID desk_id{};
   DesksClient::Get()->RemoveDesk(
@@ -2369,18 +2369,18 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, RemoveWithInvalidDeskId) {
         EXPECT_EQ("The desk identifier is not valid.", error);
       }));
 
-  EXPECT_EQ(1, desks_controller->desks().size());
+  EXPECT_EQ(1u, desks_controller->desks().size());
 }
 
 // Tests list all available desks.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, GetAllDesks) {
   auto* desks_controller = ash::DesksController::Get();
   // Should have 1 default active desk.
-  EXPECT_EQ(1, desks_controller->desks().size());
+  EXPECT_EQ(1u, desks_controller->desks().size());
   DesksClient::Get()->GetAllDesks(base::BindLambdaForTesting(
       [&](const std::vector<const ash::Desk*>& desks, std::string error) {
         EXPECT_TRUE(error.empty());
-        EXPECT_EQ(1, desks_controller->desks().size());
+        EXPECT_EQ(1u, desks_controller->desks().size());
       }));
 }
 
@@ -2389,7 +2389,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
                        LaunchEmptyDeskWithProvidedName) {
   auto* desks_controller = ash::DesksController::Get();
   // Should have 1 default active desk.
-  EXPECT_EQ(1, desks_controller->desks().size());
+  EXPECT_EQ(1u, desks_controller->desks().size());
 
   base::RunLoop loop;
   std::u16string desk_name(u"test");
@@ -2398,11 +2398,11 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
           [&](std::string error, const base::GUID& desk_uuid) {
             EXPECT_TRUE(error.empty());
             // Launch one template, desk size should increase by 1.
-            EXPECT_EQ(2, desks_controller->desks().size());
+            EXPECT_EQ(2u, desks_controller->desks().size());
             // `desk_name` should be set as provided
             EXPECT_EQ(desk_name, desks_controller->desks().back()->name());
             // `desk_uuid` should be returned.
-            EXPECT_TRUE(desk_uuid.AsLowercaseString().size() > 0);
+            EXPECT_GT(desk_uuid.AsLowercaseString().size(), 0u);
             loop.Quit();
           }),
       desk_name);
@@ -2414,18 +2414,18 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
                        LaunchEmptyDeskWithDefaultName) {
   auto* desks_controller = ash::DesksController::Get();
   // Should have 1 default active desk.
-  EXPECT_EQ(1, desks_controller->desks().size());
+  EXPECT_EQ(1u, desks_controller->desks().size());
 
   base::RunLoop loop;
   DesksClient::Get()->LaunchEmptyDesk(base::BindLambdaForTesting(
       [&](std::string error, const base::GUID& desk_uuid) {
         EXPECT_TRUE(error.empty());
         // Launch one template, desk size should increase by 1.
-        EXPECT_EQ(2, desks_controller->desks().size());
+        EXPECT_EQ(2u, desks_controller->desks().size());
         // `desk_name` should be set as default desk name
         EXPECT_EQ(u"Desk 2", desks_controller->desks().back()->name());
         // `desk_uuid` should be returned.
-        EXPECT_TRUE(desk_uuid.AsLowercaseString().size() > 0);
+        EXPECT_GT(desk_uuid.AsLowercaseString().size(), 0u);
         loop.Quit();
       }));
   loop.Run();
@@ -2439,7 +2439,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SetWindowProperties) {
   auto* desks_controller = ash::DesksController::Get();
 
   // Start with no all-desk window.
-  EXPECT_EQ(0, desks_controller->visible_on_all_desks_windows().size());
+  EXPECT_EQ(0u, desks_controller->visible_on_all_desks_windows().size());
 
   // Get the first browser window.
   SessionID browser_session_id =
@@ -2452,7 +2452,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SetWindowProperties) {
       base::BindLambdaForTesting([&](std::string error) {
         EXPECT_TRUE(error.empty());
         // Should have 1 all-desk window now.
-        EXPECT_EQ(1, desks_controller->visible_on_all_desks_windows().size());
+        EXPECT_EQ(1u, desks_controller->visible_on_all_desks_windows().size());
         loop1.Quit();
       }));
   loop1.Run();
@@ -2464,7 +2464,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SetWindowProperties) {
       base::BindLambdaForTesting([&](std::string error) {
         EXPECT_TRUE(error.empty());
         // Should have no all-desk window now.
-        EXPECT_EQ(0, desks_controller->visible_on_all_desks_windows().size());
+        EXPECT_EQ(0u, desks_controller->visible_on_all_desks_windows().size());
         loop2.Quit();
       }));
   loop2.Run();
@@ -2501,8 +2501,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SaveActiveDesk) {
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();
   // An empty desk should be created.
-  EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 1u);
-  EXPECT_EQ(ash::DesksController::Get()->active_desk()->windows().size(), 0);
+  EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 1);
+  EXPECT_EQ(ash::DesksController::Get()->active_desk()->windows().size(), 0u);
 }
 
 // Tests delete a saved desk from library.
@@ -2524,7 +2524,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, DeleteSavedDesk) {
 // Tests recall a saved desk from library.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, RecallSavedDesk) {
   auto* desk_model = DesksClient::Get()->GetDeskModel();
-  EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 1u);
+  EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 1);
 
   // Create a new browser and add a few tabs to it.
   CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
@@ -2533,7 +2533,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, RecallSavedDesk) {
       CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kSaveAndRecall);
 
   EXPECT_EQ(1u, desk_model->GetEntryCount());
-  EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 1u);
+  EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 1);
 
   // Restart browser process.
   CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
@@ -2542,7 +2542,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, RecallSavedDesk) {
       desk_template->uuid(),
       base::BindLambdaForTesting(
           [desk_model, &loop](std::string error, const base::GUID& desk_uuid) {
-            EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 2u);
+            EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 2);
             EXPECT_EQ(0u, desk_model->GetEntryCount());
             loop.Quit();
           }));

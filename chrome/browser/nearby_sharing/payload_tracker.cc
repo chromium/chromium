@@ -237,7 +237,8 @@ void PayloadTracker::EmitFinalMetrics(
         text_attachment.type(), share_target_.is_incoming, status);
   }
 
-  for (int i = 0; i < share_target_.wifi_credentials_attachments.size(); ++i) {
+  for (size_t i = 0; i < share_target_.wifi_credentials_attachments.size();
+       ++i) {
     RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
         share_target_.is_incoming, status);
   }
