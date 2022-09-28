@@ -8,7 +8,7 @@ namespace enterprise_connectors {
 
 BASE_FEATURE(kDeviceTrustConnectorEnabled,
              "DeviceTrustConnectorEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsDeviceTrustConnectorFeatureEnabled() {
   return base::FeatureList::IsEnabled(kDeviceTrustConnectorEnabled);
