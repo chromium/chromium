@@ -134,11 +134,6 @@ function messageCallback(message) {
   }
 }
 
-function browserEventsCallback(name, info) {
-  const infoStr = JSON.stringify(info);
-  log(`KVKV: browserEventsCallback(${name}, ${infoStr})`);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // main.js
 ///////////////////////////////////////////////////////////////////////////////
@@ -1246,7 +1241,6 @@ static void HandleBrowserEvent(const char* name, const char* payload) {
   if (!gBrowserEvents) {
     gBrowserEvents = new std::vector<BrowserEvent>();
   }
-  fprintf(stderr, "KVKV-HandleBrowserEvent - %s - %s\n", name, payload);
   gBrowserEvents->push_back(
     BrowserEvent(std::string(name), std::string(payload))
   );
