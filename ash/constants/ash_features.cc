@@ -906,7 +906,7 @@ BASE_FEATURE(kFilesSinglePartitionFormat,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable files app trash.
-BASE_FEATURE(kFilesTrash, "FilesTrash", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFilesTrash, "FilesTrash", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables filters in Files app Recents view V2.
 BASE_FEATURE(kFiltersInRecentsV2,
