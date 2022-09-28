@@ -472,7 +472,18 @@ void DevToolsClientImpl::SetMainPage(bool value) {
 }
 
 int DevToolsClientImpl::NextMessageId() const {
-  return next_id_;
+  const DevToolsClientImpl* root = this;
+  for (; root->parent_ != nullptr; root = root->parent_.get()) {
+  }
+  return root->next_id_;
+}
+
+// Return NextMessageId and immediately increment it
+int DevToolsClientImpl::AdvanceNextMessageId() {
+  DevToolsClientImpl* root = this;
+  for (; root->parent_ != nullptr; root = root->parent_.get()) {
+  }
+  return root->next_id_++;
 }
 
 Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
@@ -487,7 +498,8 @@ Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
     return Status(kDisconnected, "not connected to DevTools");
 
   // |client_command_id| will be 0 for commands sent by ChromeDriver
-  int command_id = client_command_id ? client_command_id : next_id_++;
+  int command_id =
+      client_command_id ? client_command_id : AdvanceNextMessageId();
   base::DictionaryValue command;
   command.SetInteger("id", command_id);
   command.SetString("method", method);
@@ -715,7 +727,7 @@ Status DevToolsClientImpl::ProcessEvent(const internal::InspectorEvent& event) {
     // If for some reason the round trip command fails, mark all the waiting
     // commands as blocked and return the error. This is better than risking
     // a hang.
-    int max_id = next_id_;
+    int max_id = NextMessageId();
     base::Value::Dict enable_params;
     enable_params.Set("purpose", "detect if alert blocked any cmds");
     Status enable_status = SendCommand("Inspector.enable", enable_params);

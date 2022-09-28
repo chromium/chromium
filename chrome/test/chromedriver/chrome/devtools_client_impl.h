@@ -149,6 +149,8 @@ class DevToolsClientImpl : public DevToolsClient {
   bool IsMainPage() const override;
   void SetMainPage(bool value);
   int NextMessageId() const;
+  // Return NextMessageId and immediately increment it
+  int AdvanceNextMessageId();
 
  private:
   enum ResponseState {
