@@ -428,11 +428,19 @@ TEST_F(AutofillSuggestionGeneratorTest,
           /*prefix_matched_suggestion=*/false, /*virtual_card_option=*/true,
           "");
 
+#if BUILDFLAG(IS_ANDROID)
+  // For Android, split the first line and populate card name, last 4 digits
+  // separately.
+  EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value, u"Visa");
+  EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value,
+            internal::GetObfuscatedStringForCardDigits(u"1111", 4));
+#else
   // Only card number is displayed on the first line.
   EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value,
             base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
                                          u"1111", 4)}));
   EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value, u"");
+#endif
 
   // "Virtual card" is the label.
   ASSERT_EQ(virtual_card_number_field_suggestion.labels.size(), 1U);
@@ -518,11 +526,19 @@ TEST_F(AutofillSuggestionGeneratorTest,
           /*prefix_matched_suggestion=*/false, /*virtual_card_option=*/false,
           "");
 
+#if BUILDFLAG(IS_ANDROID)
+  // For Android, split the first line and populate card name, last 4 digits
+  // separately.
+  EXPECT_EQ(real_card_number_field_suggestion.main_text.value, u"Visa");
+  EXPECT_EQ(real_card_number_field_suggestion.minor_text.value,
+            internal::GetObfuscatedStringForCardDigits(u"1111", 4));
+#else
   // Only the card number is displayed on the first line.
   EXPECT_EQ(real_card_number_field_suggestion.main_text.value,
             base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
                                          u"1111", 4)}));
   EXPECT_EQ(real_card_number_field_suggestion.minor_text.value, u"");
+#endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // For mobile devices, the label is the expiration date formatted as mm/yy.

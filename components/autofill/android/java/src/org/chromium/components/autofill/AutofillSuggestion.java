@@ -20,6 +20,8 @@ import java.util.Objects;
  */
 public class AutofillSuggestion extends DropdownItemBase {
     private final String mLabel;
+    @Nullable
+    private final String mSecondaryLabel;
     private final String mSublabel;
     @Nullable
     private final String mItemTag;
@@ -61,17 +63,19 @@ public class AutofillSuggestion extends DropdownItemBase {
     public AutofillSuggestion(String label, String sublabel, @Nullable String itemTag, int iconId,
             boolean isIconAtStart, int suggestionId, boolean isDeletable, boolean isMultilineLabel,
             boolean isBoldLabel, @Nullable String featureForIPH) {
-        this(label, sublabel, itemTag, iconId, isIconAtStart, suggestionId, isDeletable,
-                isMultilineLabel, isBoldLabel, featureForIPH, /*customIconUrl=*/null,
-                /*customIcon=*/null);
+        this(label, /* secondaryLabel= */ null, sublabel, itemTag, iconId, isIconAtStart,
+                suggestionId, isDeletable, isMultilineLabel, isBoldLabel, featureForIPH,
+                /*customIconUrl=*/null, /*customIcon=*/null);
     }
 
     @VisibleForTesting
-    public AutofillSuggestion(String label, String sublabel, @Nullable String itemTag, int iconId,
-            boolean isIconAtStart, int suggestionId, boolean isDeletable, boolean isMultilineLabel,
-            boolean isBoldLabel, @Nullable String featureForIPH, @Nullable GURL customIconUrl,
+    public AutofillSuggestion(String label, @Nullable String secondaryLabel, String sublabel,
+            @Nullable String itemTag, int iconId, boolean isIconAtStart, int suggestionId,
+            boolean isDeletable, boolean isMultilineLabel, boolean isBoldLabel,
+            @Nullable String featureForIPH, @Nullable GURL customIconUrl,
             @Nullable Bitmap customIcon) {
         mLabel = label;
+        mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;
         mItemTag = itemTag;
         mIconId = iconId;
@@ -88,6 +92,12 @@ public class AutofillSuggestion extends DropdownItemBase {
     @Override
     public String getLabel() {
         return mLabel;
+    }
+
+    @Override
+    @Nullable
+    public String getSecondaryLabel() {
+        return mSecondaryLabel;
     }
 
     @Override
@@ -172,7 +182,9 @@ public class AutofillSuggestion extends DropdownItemBase {
             return false;
         }
         AutofillSuggestion other = (AutofillSuggestion) o;
-        return this.mLabel.equals(other.mLabel) && this.mSublabel.equals(other.mSublabel)
+        return this.mLabel.equals(other.mLabel)
+                && Objects.equals(this.mSecondaryLabel, other.mSecondaryLabel)
+                && this.mSublabel.equals(other.mSublabel)
                 && Objects.equals(this.mItemTag, other.mItemTag) && this.mIconId == other.mIconId
                 && this.mIsIconAtStart == other.mIsIconAtStart
                 && this.mSuggestionId == other.mSuggestionId
@@ -188,6 +200,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     public Builder toBuilder() {
         return new Builder()
                 .setLabel(mLabel)
+                .setSecondaryLabel(mSecondaryLabel)
                 .setSubLabel(mSublabel)
                 .setItemTag(mItemTag)
                 .setIconId(mIconId)
@@ -215,6 +228,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         private String mFeatureForIPH;
         private String mItemTag;
         private String mLabel;
+        private String mSecondaryLabel;
         private String mSubLabel;
         private int mSuggestionId;
 
@@ -268,6 +282,11 @@ public class AutofillSuggestion extends DropdownItemBase {
             return this;
         }
 
+        public Builder setSecondaryLabel(String secondaryLabel) {
+            this.mSecondaryLabel = secondaryLabel;
+            return this;
+        }
+
         public Builder setSubLabel(String subLabel) {
             this.mSubLabel = subLabel;
             return this;
@@ -282,9 +301,9 @@ public class AutofillSuggestion extends DropdownItemBase {
             assert !TextUtils.isEmpty(mLabel) : "AutofillSuggestion requires the label to be set.";
             assert (mSubLabel != null)
                 : "The AutofillSuggestion sublabel can be empty but never null.";
-            return new AutofillSuggestion(mLabel, mSubLabel, mItemTag, mIconId, mIsIconAtStart,
-                    mSuggestionId, mIsDeletable, mIsMultiLineLabel, mIsBoldLabel, mFeatureForIPH,
-                    mCustomIconUrl, mCustomIcon);
+            return new AutofillSuggestion(mLabel, mSecondaryLabel, mSubLabel, mItemTag, mIconId,
+                    mIsIconAtStart, mSuggestionId, mIsDeletable, mIsMultiLineLabel, mIsBoldLabel,
+                    mFeatureForIPH, mCustomIconUrl, mCustomIcon);
         }
     }
 }

@@ -78,21 +78,30 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
       Java_AutofillPopupBridge_createAutofillSuggestionArray(env, count);
 
   for (size_t i = 0; i < count; ++i) {
-    std::u16string value_text =
-        controller_->GetSuggestionMinorTextAt(i).empty()
-            ? controller_->GetSuggestionMainTextAt(i)
-            : base::StrCat({controller_->GetSuggestionMainTextAt(i), u" ",
-                            controller_->GetSuggestionMinorTextAt(i)});
-    ScopedJavaLocalRef<jstring> value =
-        base::android::ConvertUTF16ToJavaString(env, value_text);
-    ScopedJavaLocalRef<jstring> label =
+    ScopedJavaLocalRef<jstring> label;
+    ScopedJavaLocalRef<jstring> secondary_label;
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableVirtualCardMetadata)) {
+      label = base::android::ConvertUTF16ToJavaString(
+          env, controller_->GetSuggestionMainTextAt(i));
+      secondary_label = base::android::ConvertUTF16ToJavaString(
+          env, controller_->GetSuggestionMinorTextAt(i));
+    } else {
+      label = base::android::ConvertUTF16ToJavaString(
+          env,
+          controller_->GetSuggestionMinorTextAt(i).empty()
+              ? controller_->GetSuggestionMainTextAt(i)
+              : base::StrCat({controller_->GetSuggestionMainTextAt(i), u" ",
+                              controller_->GetSuggestionMinorTextAt(i)}));
+    }
+    ScopedJavaLocalRef<jstring> sublabel =
         base::android::ConvertUTF8ToJavaString(env, std::string());
     std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
         controller_->GetSuggestionLabelsAt(i);
     if (!suggestion_labels.empty()) {
       DCHECK_EQ(suggestion_labels.size(), 1U);
       DCHECK_EQ(suggestion_labels[0].size(), 1U);
-      label = base::android::ConvertUTF16ToJavaString(
+      sublabel = base::android::ConvertUTF16ToJavaString(
           env, std::move(suggestion_labels[0][0].value));
     }
     int android_icon_id = 0;
@@ -114,9 +123,9 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
     ScopedJavaLocalRef<jstring> item_tag =
         base::android::ConvertUTF16ToJavaString(env, suggestion.offer_label);
     Java_AutofillPopupBridge_addToAutofillSuggestionArray(
-        env, data_array, i, value, label, item_tag, android_icon_id,
-        suggestion.is_icon_at_start, suggestion.frontend_id, is_deletable,
-        is_label_multiline, /*isLabelBold*/ false,
+        env, data_array, i, label, secondary_label, sublabel, item_tag,
+        android_icon_id, suggestion.is_icon_at_start, suggestion.frontend_id,
+        is_deletable, is_label_multiline, /* isLabelBold= */ false,
         url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }
 

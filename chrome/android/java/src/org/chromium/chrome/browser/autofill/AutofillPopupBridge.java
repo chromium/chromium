@@ -180,8 +180,9 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
     /**
      * @param array AutofillSuggestion array that should get a new suggestion added.
      * @param index Index in the array where to place a new suggestion.
-     * @param label First line of the suggestion.
-     * @param sublabel Second line of the suggestion.
+     * @param label The first part of first line of the suggestion.
+     * @param secondaryLabel The second part of first line of the suggestion.
+     * @param sublabel The second line of the suggestion.
      * @param itemTag The offer label of the suggestion.
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param isIconAtStart {@code true} if {@param iconId} is displayed before {@param label}.
@@ -195,12 +196,13 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
      */
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
-            String label, String sublabel, String itemTag, int iconId, boolean isIconAtStart,
-            int suggestionId, boolean isDeletable, boolean isLabelMultiline, boolean isLabelBold,
-            GURL customIconUrl) {
+            String label, String secondaryLabel, String sublabel, String itemTag, int iconId,
+            boolean isIconAtStart, int suggestionId, boolean isDeletable, boolean isLabelMultiline,
+            boolean isLabelBold, GURL customIconUrl) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
         AutofillSuggestion.Builder builder = new AutofillSuggestion.Builder()
                                                      .setLabel(label)
+                                                     .setSecondaryLabel(secondaryLabel)
                                                      .setSubLabel(sublabel)
                                                      .setItemTag(itemTag)
                                                      .setIconId(drawableId)

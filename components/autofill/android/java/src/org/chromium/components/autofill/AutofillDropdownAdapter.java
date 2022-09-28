@@ -86,6 +86,7 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
 
         if (mIsRefresh) {
             TextView labelView = populateLabelView(item, layout);
+            populateSecondaryLabelView(item, layout);
             populateSublabelView(item, layout);
             // For refreshed layout, ignore the return value as we don't need to adjust the height
             // of the view.
@@ -164,6 +165,7 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
 
         // Layout of the main label view.
         TextView labelView = populateLabelView(item, layout);
+        TextView secondaryLabelView = populateSecondaryLabelView(item, layout);
         labelView.setSingleLine(!item.isMultilineLabel());
         if (item.isMultilineLabel()) {
             // If there is a multiline label, we add extra padding at the top and bottom because
@@ -176,13 +178,25 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
 
         if (item.isGroupHeader() || item.isBoldLabel()) {
             labelView.setTypeface(null, Typeface.BOLD);
+            if (secondaryLabelView != null) {
+                secondaryLabelView.setTypeface(null, Typeface.BOLD);
+            }
         } else {
             labelView.setTypeface(null, Typeface.NORMAL);
+            if (secondaryLabelView != null) {
+                secondaryLabelView.setTypeface(null, Typeface.NORMAL);
+            }
         }
 
         labelView.setTextColor(mContext.getColor(item.getLabelFontColorResId()));
         labelView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 mContext.getResources().getDimension(R.dimen.text_size_large));
+
+        if (secondaryLabelView != null) {
+            secondaryLabelView.setTextColor(mContext.getColor(item.getLabelFontColorResId()));
+            secondaryLabelView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    mContext.getResources().getDimension(R.dimen.text_size_large));
+        }
 
         // Layout of the sublabel view, which has a smaller font and usually sits below the main
         // label.
@@ -224,7 +238,7 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
     }
 
     /**
-     * Sets the text and enabled state of the primary label's View.
+     * Sets the text and enabled state of the view for the first part of first line of the dropdown.
      * @param item the DropdownItem for this row.
      * @param layout the View in which the label can be found.
      * @return the View.
@@ -234,6 +248,26 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         labelView.setEnabled(item.isEnabled());
         labelView.setText(item.getLabel());
         return labelView;
+    }
+
+    /**
+     * Sets the text and enabled state of the view for the second part of first line of the
+     * dropdown.
+     * @param item the DropdownItem for this row.
+     * @param layout the View in which the label can be found.
+     * @return the View if it has been set to be visible; null otherwise.
+     */
+    private TextView populateSecondaryLabelView(DropdownItem item, View layout) {
+        TextView secondaryLabelView = (TextView) layout.findViewById(R.id.dropdown_secondary_label);
+        CharSequence secondaryLabel = item.getSecondaryLabel();
+        if (TextUtils.isEmpty(secondaryLabel)) {
+            secondaryLabelView.setVisibility(View.GONE);
+            return null;
+        }
+        secondaryLabelView.setEnabled(item.isEnabled());
+        secondaryLabelView.setText(secondaryLabel);
+        secondaryLabelView.setVisibility(View.VISIBLE);
+        return secondaryLabelView;
     }
 
     /**

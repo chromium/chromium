@@ -331,6 +331,8 @@ void AutofillSuggestionGenerator::SplitFrontendId(
   *profile_backend_id = InternalIdToBackendId(profile_int_id);
 }
 
+// TODO(crbug.com/1346331): Separate logic for desktop, Android dropdown, and
+// Keyboard Accessory.
 Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     const CreditCard& credit_card,
     const AutofillType& type,
@@ -362,11 +364,32 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   // Otherwise the label is the card number, or if that is empty the cardholder
   // name. The label should never repeat the value.
   if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory) ||
+        !base::FeatureList::IsEnabled(
+            features::kAutofillEnableVirtualCardMetadata)) {
+      suggestion.main_text =
+          Suggestion::Text(credit_card.CardIdentifierStringForAutofillDisplay(
+                               suggestion_nickname, obfuscation_length),
+                           Suggestion::Text::IsPrimary(true));
+    } else {
+      // For the Android dropdown, populate the card name (nickname/product
+      // description/network) and the last 4 digits separately to allow them to
+      // be shown in separate views. If the suggestion text overflows, only the
+      // card name gets truncated in the view.
+      suggestion.main_text = Suggestion::Text(
+          credit_card.CardNameForAutofillDisplay(suggestion_nickname),
+          Suggestion::Text::IsPrimary(true));
+      suggestion.minor_text = Suggestion::Text(
+          credit_card.ObfuscatedLastFourDigits(obfuscation_length),
+          Suggestion::Text::IsPrimary(true));
+    }
+#else
     suggestion.main_text =
         Suggestion::Text(credit_card.CardIdentifierStringForAutofillDisplay(
                              suggestion_nickname, obfuscation_length),
                          Suggestion::Text::IsPrimary(true));
-
+#endif
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     suggestion_label = credit_card.GetInfo(
         AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale);

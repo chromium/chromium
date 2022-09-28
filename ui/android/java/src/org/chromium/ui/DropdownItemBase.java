@@ -20,6 +20,11 @@ public class DropdownItemBase implements DropdownItem {
     }
 
     @Override
+    public String getSecondaryLabel() {
+        return null;
+    }
+
+    @Override
     public String getSublabel() {
         return null;
     }
