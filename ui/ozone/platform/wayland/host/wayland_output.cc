@@ -24,7 +24,11 @@ namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 2;
+#if CHROME_WAYLAND_CHECK_VERSION(1, 20, 0)
 constexpr uint32_t kMaxVersion = 4;
+#else
+constexpr uint32_t kMaxVersion = 2;
+#endif
 }  // namespace
 
 // static
