@@ -328,6 +328,16 @@ TEST(CommandLineTest, GetCommandLineStringWithUnsafeInsertSequences) {
   EXPECT_EQ(FILE_PATH_LITERAL("program --switch=%1 --%2 %3"),
             cl.GetCommandLineStringWithUnsafeInsertSequences());
 }
+
+TEST(CommandLineTest, HasSingleArgument) {
+  CommandLine cl(FilePath(FILE_PATH_LITERAL("Program")));
+  cl.AppendSwitchASCII("switch2", "foo");
+  EXPECT_FALSE(cl.HasSingleArgumentSwitch());
+  CommandLine cl_for_shell(
+      CommandLine::FromString(cl.GetCommandLineStringForShell()));
+  EXPECT_TRUE(cl_for_shell.HasSingleArgumentSwitch());
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 // Tests that when AppendArguments is called that the program is set correctly

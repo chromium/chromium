@@ -208,6 +208,11 @@ class BASE_EXPORT CommandLine {
   // Initialize by parsing the given command line string.
   // The program name is assumed to be the first item in the string.
   void ParseFromString(StringPieceType command_line);
+
+  // Returns true if the command line had the --single-argument switch, and
+  // thus likely came from a Windows shell registration. This is only set if the
+  // command line is parsed, and is not changed after it is parsed.
+  bool HasSingleArgumentSwitch() const { return has_single_argument_switch_; }
 #endif
 
   // Sets a delegate that's called when we encounter a duplicate switch
@@ -247,6 +252,11 @@ class BASE_EXPORT CommandLine {
   // ParseFromString(). Empty if this command line was not parsed from a string,
   // or if ParseFromString() has finished executing.
   StringPieceType raw_command_line_string_;
+
+  // Set to true if the command line had --single-argument when initially
+  // parsed. It does not change if the command line mutates after initial
+  // parsing.
+  bool has_single_argument_switch_ = false;
 #endif
 
   // The singleton CommandLine representing the current process's command line.
