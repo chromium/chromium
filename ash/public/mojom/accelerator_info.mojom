@@ -60,6 +60,28 @@ enum AcceleratorLayoutStyle {
   kDefault = 0,
 };
 
+// Enum of top-level accelerator categories. Used in the UI for categorization.
+// TODO(jimmyxgong): These are not the final enums, update once final categories
+// are available.
+enum AcceleratorCategory {
+  kSystem,
+  kWindowsAndDesk,
+  kTabsAndPages,
+  kTextAndInput,
+  kDebug,
+  kDeveloper,
+};
+
+// Enum of secondary-level accelerator categories. Used in the UI for
+// categorization.
+// TODO(jimmyxgong): These are not the final enums, update once final
+// subcategories are available.
+enum AcceleratorSubcategory {
+  kGeneral,
+  kSystemControls,
+  kSystemApps,
+};
+
 // Represents an accelerator in its entirety. Includes the keys, state, type,
 // and whether the accelerator is locked.
 struct AcceleratorInfo {
@@ -75,10 +97,10 @@ struct AcceleratorInfo {
 // Represents layout styling descriptors of an accelerator. Includes the
 // description of the accelerator along with its category identifiers.
 struct AcceleratorLayoutInfo {
-  // Translated string for category.
-  mojo_base.mojom.String16 category;
-  // Translated string for sub-category.
-  mojo_base.mojom.String16 sub_category;
+  // Top-level category used for categorization in the UI.
+  AcceleratorCategory category;
+  // Secondary-level category used for categorization in the UI.
+  AcceleratorSubcategory sub_category;
   // Translated string for the action description.
   mojo_base.mojom.String16 description;
   // The way the AcceleratorRow should be styled.

@@ -199,16 +199,12 @@ bool AshAcceleratorConfiguration::IsDeprecated(
 }
 
 void AshAcceleratorConfiguration::AddLayoutInfo(const AcceleratorData& data) {
-  // TODO(jimmyxgong): Replace with real i18n strings.
-  std::u16string ash_category = u"Chrome OS";
-  std::u16string system_sub_category = u"System";
-
   // TODO(jimmyxgong): This a basic stub implementation, replace with real
   // implementation.
   mojom::AcceleratorLayoutInfoPtr layout_info =
       mojom::AcceleratorLayoutInfo::New();
-  layout_info->category = std::move(ash_category);
-  layout_info->sub_category = std::move(system_sub_category);
+  layout_info->category = mojom::AcceleratorCategory::kSystem;
+  layout_info->sub_category = mojom::AcceleratorSubcategory::kGeneral;
   // TODO(jimmyxgong): Create a mapping between action_id and description.
   layout_info->description = u"Stub description";
   layout_info->style = mojom::AcceleratorLayoutStyle::kDefault;
