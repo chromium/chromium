@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/game_mode/testing/game_mode_controller_test_base.h"
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/shell.h"
 #include "ash/test/test_widget_builder.h"
@@ -12,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/borealis/testing/widgets.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 #include "components/exo/shell_surface_util.h"
@@ -27,6 +30,12 @@ class GameModeControllerForArcTest : public GameModeControllerTestBase {
 
     GameModeControllerTestBase::SetUp();
 
+    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_pref_service_);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ash::switches::kEnableArcVm);
+    // ARC VM expects the kArcSerialNumberSalt preference to be registered.
+    arc::prefs::RegisterLocalStatePrefs(local_pref_service_.registry());
+
     arc_app_test_.SetUp(profile_.get());
 
     focus_client_ =
@@ -37,6 +46,7 @@ class GameModeControllerForArcTest : public GameModeControllerTestBase {
   void TearDown() override {
     focus_client_ = nullptr;
     arc_app_test_.TearDown();
+    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     GameModeControllerTestBase::TearDown();
   }
@@ -54,6 +64,7 @@ class GameModeControllerForArcTest : public GameModeControllerTestBase {
   ArcAppTest arc_app_test_;
   aura::client::FocusClient* focus_client_ = nullptr;
   base::test::ScopedFeatureList features_;
+  TestingPrefServiceSimple local_pref_service_;
 };
 
 TEST_F(GameModeControllerForArcTest, ChangingFullScreenTogglesGameMode) {
@@ -236,6 +247,25 @@ TEST_F(GameModeControllerForArcTest, RecordGameModeResultHistogram) {
       1);
   histogram_tester_->ExpectBucketCount(
       GameModeResultHistogramName(GameMode::ARC), GameModeResult::kFailed, 1);
+}
+
+TEST_F(GameModeControllerForArcTest, DisabledOnContainer) {
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      ash::switches::kEnableArcVm);
+
+  arc_app_test_.app_instance()->set_app_category_of_pkg(
+      "net.another.game", arc::mojom::AppCategory::kGame);
+  arc_app_test_.app_instance()->SetTaskInfo(2424, "net.another.game",
+                                            "activity");
+
+  auto game_widget = CreateArcTaskWidget(2424);
+  game_widget->Show();
+
+  fake_resourced_client_->set_set_game_mode_response(
+      ash::ResourcedClient::GameMode::OFF);
+
+  game_widget->SetFullscreen(true);
+  EXPECT_EQ(0, fake_resourced_client_->get_enter_game_mode_count());
 }
 
 }  // namespace

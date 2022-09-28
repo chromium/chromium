@@ -36,6 +36,11 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
   // Constructs an instance using the task ID of the window it is associated
   // with.
   explicit ArcGameModeCriteria(int task_id) {
+    // For ARC container boards, Game Mode optimizations are not available
+    // (b/248972198).
+    if (!arc::IsArcVmEnabled())
+      return;
+
     // ARC is only allowed for the primary user.
     auto* profile = ProfileManager::GetPrimaryUserProfile();
     DCHECK(arc::IsArcAllowedForProfile(profile));
