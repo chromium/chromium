@@ -28,8 +28,8 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/gfx/win/hwnd_util.h"
@@ -123,10 +123,11 @@ void GetUIARuntimeId(IUIAutomationElement* first_child,
 void GetUIARoot(ui::AXPlatformNodeDelegate* start,
                 IUIAutomation* uia,
                 IUIAutomationElement** root) {
-  content::BrowserAccessibility* start_internal =
-      content::BrowserAccessibility::FromAXPlatformNodeDelegate(start);
+  ui::AXTreeManager* tree_manager = start->GetTreeManager();
+  DCHECK(tree_manager);
+
   // Start by getting the root element for the HWND hosting the web content.
-  HWND hwnd = start_internal->manager()
+  HWND hwnd = static_cast<ui::AXPlatformTreeManager*>(tree_manager)
                   ->RootDelegate()
                   ->GetTargetForNativeAccessibilityEvent();
   uia->ElementFromHandle(hwnd, root);
@@ -158,8 +159,7 @@ void GetUIAElementFromDelegate(ui::AXPlatformNodeDelegate* start,
   // Get first_child's RuntimeId and swap out the last element in its SAFEARRAY
   // for the UniqueId of the element we want to start from.
   Microsoft::WRL::ComPtr<IUnknown> start_unknown =
-      content::BrowserAccessibility::FromAXPlatformNodeDelegate(start)
-          ->GetNativeViewAccessible();
+      start->GetNativeViewAccessible();
   Microsoft::WRL::ComPtr<IRawElementProviderFragment> start_fragment;
   start_unknown.As(&start_fragment);
   CHECK(start_fragment.Get());
