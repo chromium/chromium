@@ -380,6 +380,8 @@ void DoSafeBrowsingCheckOnUIThread(
 
   sb_service->download_protection_service()->CheckFileSystemAccessWrite(
       std::move(item), std::move(callback));
+#else
+  std::move(callback).Run(safe_browsing::DownloadCheckResult::UNKNOWN);
 #endif
 }
 
@@ -389,7 +391,7 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
   switch (result) {
     // Only allow downloads that are marked as SAFE or UNKNOWN by SafeBrowsing.
     // All other types are going to be blocked. UNKNOWN could be the result of a
-    // failed safe browsing ping.
+    // failed safe browsing ping or if Safe Browsing is not enabled.
     case Result::UNKNOWN:
     case Result::SAFE:
     case Result::ALLOWLISTED_BY_POLICY:
