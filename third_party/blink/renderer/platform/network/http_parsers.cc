@@ -44,6 +44,7 @@
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
+#include "services/network/public/mojom/supports_loading_mode.mojom-blink.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -93,6 +94,10 @@ blink::CSPDirectiveName ConvertToBlink(CSPDirectiveName name) {
 // by both the non-Blink Mojo variant and the Blink Mojo variant.
 blink::WebClientHintsType ConvertToBlink(WebClientHintsType in) {
   return in;
+}
+
+blink::LoadingMode ConvertToBlink(LoadingMode in) {
+  return static_cast<blink::LoadingMode>(in);
 }
 
 // ===== Converters for other basic Blink types =====
@@ -257,7 +262,8 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
           ? absl::make_optional(ConvertToBlink(in->critical_ch.value()))
           : absl::nullopt,
       in->xfo, ConvertToBlink(in->link_headers),
-      ConvertToBlink(in->timing_allow_origin), in->is_credentialed_prerender,
+      ConvertToBlink(in->timing_allow_origin),
+      ConvertToBlink(in->supports_loading_mode),
       in->reporting_endpoints.has_value()
           ? absl::make_optional(ConvertToBlink(in->reporting_endpoints.value()))
           : absl::nullopt,

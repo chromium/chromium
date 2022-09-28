@@ -71,7 +71,8 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   if (!result.is_null() &&
       base::Contains(result->supported_modes,
                      network::mojom::LoadingMode::kCredentialedPrerender)) {
-    parsed_headers->is_credentialed_prerender = true;
+    parsed_headers->supports_loading_mode.push_back(
+        network::mojom::LoadingMode::kCredentialedPrerender);
   }
 
 #if BUILDFLAG(ENABLE_REPORTING)

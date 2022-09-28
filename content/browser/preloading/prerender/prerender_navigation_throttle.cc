@@ -269,7 +269,10 @@ PrerenderNavigationThrottle::WillProcessResponse() {
   // set response to a network error."
   bool is_credentialed_prerender =
       navigation_request->response() &&
-      navigation_request->response()->parsed_headers->is_credentialed_prerender;
+      navigation_request->response()->parsed_headers &&
+      base::Contains(
+          navigation_request->response()->parsed_headers->supports_loading_mode,
+          network::mojom::LoadingMode::kCredentialedPrerender);
   if (!is_credentialed_prerender && is_same_site_cross_origin_prerender_) {
     prerender_host_registry->CancelHost(
         frame_tree_node->frame_tree_node_id(),

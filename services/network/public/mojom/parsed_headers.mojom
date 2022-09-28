@@ -9,6 +9,7 @@ import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/cross_origin_opener_policy.mojom";
 import "services/network/public/mojom/link_header.mojom";
+import "services/network/public/mojom/supports_loading_mode.mojom";
 import "services/network/public/mojom/timing_allow_origin.mojom";
 import "services/network/public/mojom/variants_header.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
@@ -80,11 +81,10 @@ struct ParsedHeaders {
 
   TimingAllowOrigin? timing_allow_origin;
 
-  // TODO(crbug/1356449): Refactor this to handle Supports-Loading-Mode header
-  // more generally.
-  // Whether the parsed Supports-Loading-Mode header contains the
-  // "credential-prerender" value.
-  bool is_credentialed_prerender = false;
+  // The parsed Supports-Loading-Mode header.
+  // For more information, see:
+  // https://wicg.github.io/nav-speculation/prerendering.html#supports-loading-mode
+  array<LoadingMode> supports_loading_mode;
 
   // Parsed mapping of endpoint names to URLs from the Reporting-Endpoints
   // header. Will be null if that header was not present in the response.
