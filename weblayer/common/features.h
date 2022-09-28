@@ -12,8 +12,8 @@ namespace features {
 
 // Weblayer features in alphabetical order.
 
-extern const base::Feature kWebLayerClientSidePhishingDetection;
-extern const base::Feature kWebLayerSafeBrowsing;
+BASE_DECLARE_FEATURE(kWebLayerClientSidePhishingDetection);
+BASE_DECLARE_FEATURE(kWebLayerSafeBrowsing);
 
 }  // namespace features
 }  // namespace weblayer
