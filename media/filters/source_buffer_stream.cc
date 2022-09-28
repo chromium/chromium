@@ -1656,6 +1656,16 @@ void SourceBufferStream::WarnIfTrackBufferExhaustionSkipsForward(
   }
 }
 
+bool SourceBufferStream::IsNextBufferConfigChanged() {
+  if (!track_buffer_.empty())
+    return track_buffer_.front()->GetConfigId() != current_config_index_;
+
+  if (!selected_range_ || !selected_range_->HasNextBuffer())
+    return false;
+
+  return selected_range_->GetNextConfigId() != current_config_index_;
+}
+
 base::TimeDelta SourceBufferStream::GetNextBufferTimestamp() {
   if (!track_buffer_.empty())
     return track_buffer_.front()->timestamp();

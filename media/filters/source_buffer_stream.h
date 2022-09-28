@@ -179,6 +179,11 @@ class MEDIA_EXPORT SourceBufferStream {
     memory_limit_ = memory_limit;
   }
 
+  // A helper function for detecting video/audio config change, so that we
+  // can "peek" the next buffer instead of dequeuing it directly from the source
+  // stream buffer queue.
+  bool IsNextBufferConfigChanged();
+
  private:
   friend class SourceBufferStreamTest;
 

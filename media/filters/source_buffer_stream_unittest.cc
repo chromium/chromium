@@ -3368,10 +3368,41 @@ TEST_F(SourceBufferStreamTest, GetRemovalRange_Range) {
   EXPECT_EQ(18, bytes_removed);
 }
 
-TEST_F(SourceBufferStreamTest, ConfigChange_Basic) {
+TEST_F(SourceBufferStreamTest, IsNextBufferConfigChanged) {
+  // selected_range_ is nullptr, so return false
+  EXPECT_FALSE(stream_->IsNextBufferConfigChanged());
   VideoDecoderConfig new_config = TestVideoConfig::Large();
   ASSERT_FALSE(new_config.Matches(video_config_));
 
+  // read all buffers
+  NewCodedFrameGroupAppend("0K 10 20");
+  Seek(0);
+  CheckExpectedRangesByTimestamp("{ [0,30) }");
+  CheckExpectedBuffers("0K 10 20");
+  EXPECT_FALSE(stream_->IsNextBufferConfigChanged());
+
+  // Signal a config change.
+  stream_->UpdateVideoConfig(new_config, false);
+  NewCodedFrameGroupAppend("30K 40");
+  EXPECT_TRUE(stream_->IsNextBufferConfigChanged());
+
+  scoped_refptr<StreamParserBuffer> buffer;
+  EXPECT_STATUS_FOR_STREAM_OP(kConfigChange, GetNextBuffer(&buffer));
+  CheckVideoConfig(new_config);
+
+  // Overlap-append
+  NewCodedFrameGroupAppend(
+      "21K 41 51 61 71 81 91 101 111 121 "
+      "131K 141");
+  CheckExpectedRangesByTimestamp("{ [0,151) }");
+
+  // track_buffer has the buffers with timestamp 30 and 40
+  EXPECT_FALSE(stream_->IsNextBufferConfigChanged());
+}
+
+TEST_F(SourceBufferStreamTest, ConfigChange_Basic) {
+  VideoDecoderConfig new_config = TestVideoConfig::Large();
+  ASSERT_FALSE(new_config.Matches(video_config_));
   Seek(0);
   CheckVideoConfig(video_config_);
 
@@ -3399,6 +3430,7 @@ TEST_F(SourceBufferStreamTest, ConfigChange_Basic) {
 
   // Verify the next attempt to get a buffer will signal that a config change
   // has happened.
+  EXPECT_TRUE(stream_->IsNextBufferConfigChanged());
   EXPECT_STATUS_FOR_STREAM_OP(kConfigChange, GetNextBuffer(&buffer));
 
   // Verify that the new config is now returned.
@@ -3425,6 +3457,7 @@ TEST_F(SourceBufferStreamTest, ConfigChange_Seek) {
   CheckVideoConfig(video_config_);
   Seek(5);
   CheckVideoConfig(video_config_);
+  EXPECT_TRUE(stream_->IsNextBufferConfigChanged());
   EXPECT_STATUS_FOR_STREAM_OP(kConfigChange, GetNextBuffer(&buffer));
   CheckVideoConfig(new_config);
   CheckExpectedBuffers(5, 9, &kDataB);
@@ -3443,6 +3476,7 @@ TEST_F(SourceBufferStreamTest, ConfigChange_Seek) {
   CheckVideoConfig(new_config);
   Seek(0);
   CheckVideoConfig(new_config);
+  EXPECT_TRUE(stream_->IsNextBufferConfigChanged());
   EXPECT_STATUS_FOR_STREAM_OP(kConfigChange, GetNextBuffer(&buffer));
   CheckVideoConfig(video_config_);
   CheckExpectedBuffers(0, 4, &kDataA);
@@ -4578,6 +4612,7 @@ TEST_F(SourceBufferStreamTest, Audio_ConfigChangeWithPreroll) {
   // Verify the next attempt to get a buffer will signal that a config change
   // has happened.
   scoped_refptr<StreamParserBuffer> buffer;
+  EXPECT_TRUE(stream_->IsNextBufferConfigChanged());
   EXPECT_STATUS_FOR_STREAM_OP(kConfigChange, GetNextBuffer(&buffer));
 
   // Verify upcoming buffers will use the new config.
@@ -4832,6 +4867,7 @@ TEST_F(SourceBufferStreamTest, ConfigChange_ReSeek) {
   CheckVideoConfig(video_config_);
   SeekToTimestampMs(2030);
   CheckVideoConfig(video_config_);
+  EXPECT_TRUE(stream_->IsNextBufferConfigChanged());
   EXPECT_STATUS_FOR_STREAM_OP(kConfigChange, GetNextBuffer(&buffer));
   CheckVideoConfig(new_config);
 
@@ -4853,10 +4889,12 @@ TEST_F(SourceBufferStreamTest, ConfigChange_ReSeek) {
   SeekToTimestampMs(2000);
   CheckVideoConfig(new_config);
   ASSERT_FALSE(new_config.Matches(video_config_));
+  EXPECT_TRUE(stream_->IsNextBufferConfigChanged());
   EXPECT_STATUS_FOR_STREAM_OP(kConfigChange, GetNextBuffer(&buffer));
   CheckVideoConfig(video_config_);
   CheckExpectedBuffers("2000K 2010 2020D10");
   CheckVideoConfig(video_config_);
+  EXPECT_TRUE(stream_->IsNextBufferConfigChanged());
   EXPECT_STATUS_FOR_STREAM_OP(kConfigChange, GetNextBuffer(&buffer));
   CheckVideoConfig(new_config);
   CheckExpectedBuffers("2030K 2040 2050D10");
