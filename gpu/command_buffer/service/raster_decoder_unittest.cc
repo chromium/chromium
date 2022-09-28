@@ -297,8 +297,10 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
     gfx::Size size(width, height);
     auto color_space = gfx::ColorSpace::CreateSRGB();
+    viz::SharedImageFormat si_format =
+        viz::SharedImageFormat::SinglePlane(resource_format);
     shared_image_factory_->CreateSharedImage(
-        mailbox, resource_format, size, color_space, kTopLeft_GrSurfaceOrigin,
+        mailbox, si_format, size, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
         SHARED_IMAGE_USAGE_RASTER);
 

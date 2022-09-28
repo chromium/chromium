@@ -80,7 +80,7 @@ SharedImageInterfaceProxy::SharedImageInterfaceProxy(GpuChannelHost* host,
 SharedImageInterfaceProxy::~SharedImageInterfaceProxy() = default;
 
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -111,7 +111,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
 }
 
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,

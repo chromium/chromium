@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -57,7 +58,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   ~SharedImageFactory();
 
   bool CreateSharedImage(const Mailbox& mailbox,
-                         viz::ResourceFormat format,
+                         viz::SharedImageFormat si_format,
                          const gfx::Size& size,
                          const gfx::ColorSpace& color_space,
                          GrSurfaceOrigin surface_origin,
@@ -65,7 +66,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                          gpu::SurfaceHandle surface_handle,
                          uint32_t usage);
   bool CreateSharedImage(const Mailbox& mailbox,
-                         viz::ResourceFormat format,
+                         viz::SharedImageFormat si_format,
                          const gfx::Size& size,
                          const gfx::ColorSpace& color_space,
                          GrSurfaceOrigin surface_origin,

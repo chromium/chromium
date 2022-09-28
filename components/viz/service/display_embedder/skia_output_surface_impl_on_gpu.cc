@@ -742,8 +742,9 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
                               gpu::SHARED_IMAGE_USAGE_DISPLAY;
 
   gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  SharedImageFormat si_format = SharedImageFormat::SinglePlane(resource_format);
   bool result = shared_image_factory_->CreateSharedImage(
-      mailbox, resource_format, size, color_space, kBottomLeft_GrSurfaceOrigin,
+      mailbox, si_format, size, color_space, kBottomLeft_GrSurfaceOrigin,
       kUnpremul_SkAlphaType, gpu::kNullSurfaceHandle, kUsage);
   if (!result) {
     DLOG(ERROR) << "Failed to create shared image.";
@@ -2269,8 +2270,9 @@ void SkiaOutputSurfaceImplOnGpu::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     uint32_t usage,
     gpu::SurfaceHandle surface_handle) {
+  SharedImageFormat si_format = SharedImageFormat::SinglePlane(format);
   shared_image_factory_->CreateSharedImage(
-      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
+      mailbox, si_format, size, color_space, kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType, surface_handle, usage);
   skia_representations_.emplace(mailbox, nullptr);
 }
@@ -2281,6 +2283,7 @@ void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
     const gfx::ColorSpace& color_space) {
   // Create a 1x1 pixel span of the colour in RGBA format.
   gfx::Size size(1, 1);
+  SharedImageFormat si_format = SharedImageFormat::SinglePlane(RGBA_8888);
   // Premultiply the SkColor4f to support transparent quads.
   SkColor4f premul{color[0] * color[3], color[1] * color[3],
                    color[2] * color[3], color[3]};
@@ -2290,7 +2293,7 @@ void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
 
   // TODO(crbug.com/1360538) Some work is needed to properly support F16 format.
   shared_image_factory_->CreateSharedImage(
-      mailbox, RGBA_8888, size, color_space, kTopLeft_GrSurfaceOrigin,
+      mailbox, si_format, size, color_space, kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY,
       pixel_span);

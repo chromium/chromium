@@ -231,6 +231,7 @@ mojom("gpu_channel_mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom:resource_format",
+    "//services/viz/public/mojom:shared_image_format",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",

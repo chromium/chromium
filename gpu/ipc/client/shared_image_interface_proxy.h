@@ -14,6 +14,10 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/buffer.h"
 
+namespace viz {
+class SharedImageFormat;
+}
+
 namespace gpu {
 class GpuChannelHost;
 
@@ -22,13 +26,13 @@ class SharedImageInterfaceProxy {
  public:
   explicit SharedImageInterfaceProxy(GpuChannelHost* host, int32_t route_id);
   ~SharedImageInterfaceProxy();
-  Mailbox CreateSharedImage(viz::ResourceFormat format,
+  Mailbox CreateSharedImage(viz::SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
                             GrSurfaceOrigin surface_origin,
                             SkAlphaType alpha_type,
                             uint32_t usage);
-  Mailbox CreateSharedImage(viz::ResourceFormat format,
+  Mailbox CreateSharedImage(viz::SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
                             GrSurfaceOrigin surface_origin,

@@ -463,8 +463,10 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
 
   gpu::Mailbox MakeOverlayMailbox() {
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+    SharedImageFormat si_format =
+        SharedImageFormat::SinglePlane(ResourceFormat::RGBA_8888);
     bool success = shared_image_factory_->CreateSharedImage(
-        mailbox, ResourceFormat::RGBA_8888, gfx::Size(1000, 1000),
+        mailbox, si_format, gfx::Size(1000, 1000),
         gfx::ColorSpace::CreateSRGB(),
         GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
         SkAlphaType::kPremul_SkAlphaType, gpu::kNullSurfaceHandle,

@@ -5,6 +5,7 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "ui/gfx/gpu_fence.h"
@@ -89,8 +90,9 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     gpu::SurfaceHandle surface_handle) {
   DCHECK_EQ(surface_handle, kNullSurfaceHandle);
   DCHECK(gpu::IsValidClientUsage(usage));
+  auto si_format = viz::SharedImageFormat::SinglePlane(format);
   return AddMailbox(proxy_->CreateSharedImage(
-      format, size, color_space, surface_origin, alpha_type, usage));
+      si_format, size, color_space, surface_origin, alpha_type, usage));
 }
 
 Mailbox ClientSharedImageInterface::CreateSharedImage(
@@ -102,7 +104,8 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
   DCHECK(gpu::IsValidClientUsage(usage));
-  return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
+  auto si_format = viz::SharedImageFormat::SinglePlane(format);
+  return AddMailbox(proxy_->CreateSharedImage(si_format, size, color_space,
                                               surface_origin, alpha_type, usage,
                                               pixel_data));
 }

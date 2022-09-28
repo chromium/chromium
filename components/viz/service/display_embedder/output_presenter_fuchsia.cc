@@ -232,8 +232,8 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
   for (size_t i = 0; i < num_images; ++i) {
     auto mailbox = gpu::Mailbox::GenerateForSharedImage();
     if (!shared_image_factory_->CreateSharedImage(
-            mailbox, GetResourceFormat(buffer_format_), frame_size_,
-            color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+            mailbox, si_format_, frame_size_, color_space,
+            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
             dependency_->GetSurfaceHandle(), image_usage)) {
       return {};
     }

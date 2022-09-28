@@ -90,7 +90,8 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
       shared_image_representation_factory_;
 
   gfx::Size frame_size_;
-  gfx::BufferFormat buffer_format_ = gfx::BufferFormat::RGBA_8888;
+  SharedImageFormat si_format_ =
+      SharedImageFormat::SinglePlane(ResourceFormat::RGBA_8888);
 
   // The next frame to be submitted by SwapBuffers().
   absl::optional<PendingFrame> next_frame_;

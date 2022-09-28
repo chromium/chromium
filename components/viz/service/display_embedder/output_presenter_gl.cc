@@ -88,9 +88,10 @@ bool PresenterImageGL::Initialize(
     SkiaOutputSurfaceDependency* deps,
     uint32_t shared_image_usage) {
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto si_format = SharedImageFormat::SinglePlane(format);
 
   if (!factory->CreateSharedImage(
-          mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
+          mailbox, si_format, size, color_space, kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, deps->GetSurfaceHandle(), shared_image_usage)) {
     DLOG(ERROR) << "CreateSharedImage failed.";
     return false;
