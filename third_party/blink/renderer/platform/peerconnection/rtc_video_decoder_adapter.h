@@ -21,6 +21,8 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_fallback_recorder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -115,6 +117,11 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   using InitCB = CrossThreadOnceFunction<void(bool)>;
   using FlushDoneCB = CrossThreadOnceFunction<void()>;
 
+  enum class DecodeResult {
+    kOk,
+    kErrorRequestKeyFrame,
+  };
+
   // Called on the worker thread.
   RTCVideoDecoderAdapter(media::GpuVideoAcceleratorFactories* gpu_factories,
                          const media::VideoDecoderConfig& config,
@@ -125,10 +132,21 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
                                InitCB init_cb);
   static void OnInitializeDone(base::OnceCallback<void(bool)> cb,
                                media::DecoderStatus status);
+  absl::optional<RTCVideoDecoderFallbackReason>
+  FallbackOrRegisterConcurrentInstanceOnce(media::VideoCodec codec);
+  absl::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
+      media::VideoCodec codec,
+      const media::DecoderBuffer& buffer) const;
+  absl::variant<DecodeResult, RTCVideoDecoderFallbackReason> EnqueueBuffer(
+      scoped_refptr<media::DecoderBuffer> buffer);
   void DecodeOnMediaThread();
   void OnDecodeDone(media::DecoderStatus status);
   void OnOutput(scoped_refptr<media::VideoFrame> frame);
 
+  absl::variant<DecodeResult, RTCVideoDecoderFallbackReason> DecodeInternal(
+      const webrtc::EncodedImage& input_image,
+      bool missing_frames,
+      int64_t render_time_ms);
   bool ShouldReinitializeForSettingHDRColorSpace(
       const webrtc::EncodedImage& input_image) const;
   bool ReinitializeSync(const media::VideoDecoderConfig& config);
@@ -167,7 +185,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   // Resolution of most recently decoded frame, or the initial resolution if we
   // haven't decoded anything yet.  Since this is updated asynchronously, it's
   // only an approximation of "most recently".
-  int32_t current_resolution_ = 0;
+  int32_t current_resolution_ GUARDED_BY(lock_){0};
   // Time since construction.  Cleared when we record that a frame has been
   // successfully decoded.
   absl::optional<base::TimeTicks> start_time_ GUARDED_BY(lock_);

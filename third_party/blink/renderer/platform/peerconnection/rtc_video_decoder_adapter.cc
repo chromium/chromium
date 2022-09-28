@@ -123,6 +123,45 @@ void RecordReinitializationLatency(base::TimeDelta latency) {
                           latency);
 }
 
+bool HasSoftwareFallback(media::VideoCodec video_codec) {
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  return video_codec != media::VideoCodec::kH264;
+#else
+  return true;
+#endif
+}
+
+scoped_refptr<media::DecoderBuffer> ConvertToDecoderBuffer(
+    const webrtc::EncodedImage& input_image) {
+  std::vector<uint32_t> spatial_layer_frame_size;
+  const int max_sl_index = input_image.SpatialIndex().value_or(0);
+  for (int i = 0; i <= max_sl_index; i++) {
+    const absl::optional<size_t>& frame_size =
+        input_image.SpatialLayerFrameSize(i);
+    if (!frame_size)
+      continue;
+    spatial_layer_frame_size.push_back(
+        base::checked_cast<uint32_t>(*frame_size));
+  }
+
+  // TODO(sandersd): What is |render_time_ms|?
+  scoped_refptr<media::DecoderBuffer> buffer;
+  if (spatial_layer_frame_size.size() > 1) {
+    const uint8_t* side_data =
+        reinterpret_cast<const uint8_t*>(spatial_layer_frame_size.data());
+    size_t side_data_size =
+        spatial_layer_frame_size.size() * sizeof(uint32_t) / sizeof(uint8_t);
+    buffer = media::DecoderBuffer::CopyFrom(
+        input_image.data(), input_image.size(), side_data, side_data_size);
+  } else {
+    buffer =
+        media::DecoderBuffer::CopyFrom(input_image.data(), input_image.size());
+  }
+  buffer->set_timestamp(base::Microseconds(input_image.Timestamp()));
+  buffer->set_is_key_frame(input_image._frameType ==
+                           webrtc::VideoFrameType::kVideoFrameKey);
+  return buffer;
+}
 }  // namespace
 
 void RTCVideoDecoderAdapter::InitializeOnMediaThread(
@@ -160,6 +199,113 @@ void RTCVideoDecoderAdapter::InitializeOnMediaThread(
       base::BindOnce(&RTCVideoDecoderAdapter::OnInitializeDone,
                      ConvertToBaseOnceCallback(std::move(init_cb))),
       output_cb, base::DoNothing());
+}
+
+absl::optional<RTCVideoDecoderFallbackReason>
+RTCVideoDecoderAdapter::FallbackOrRegisterConcurrentInstanceOnce(
+    media::VideoCodec codec) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+
+  // If this is the first decode, then increment the count of working decoders.
+  if (!have_started_decoding_) {
+    have_started_decoding_ = true;
+    GetDecoderCounter()->IncrementCount();
+  }
+
+  base::AutoLock auto_lock(lock_);
+  // Don't allow hardware decode for small videos if there are too many
+  // decoder instances.  This includes the case where our resolution drops while
+  // too many decoders exist.
+  if (HasSoftwareFallback(codec) && current_resolution_ < kMinResolution &&
+      GetDecoderCounter()->Count() > kMaxDecoderInstances) {
+    // Decrement the count and clear the flag, so that other decoders don't
+    // fall back also.
+    have_started_decoding_ = false;
+    GetDecoderCounter()->DecrementCount();
+    // TODO(b/246460597): Add the fallback reason about too many concurrent
+    // instances.
+    return RTCVideoDecoderFallbackReason::kPreviousErrorOnDecode;
+  }
+
+  return absl::nullopt;
+}
+
+absl::optional<RTCVideoDecoderFallbackReason>
+RTCVideoDecoderAdapter::NeedSoftwareFallback(
+    const media::VideoCodec codec,
+    const media::DecoderBuffer& buffer) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+  // Fall back to software decoding if there's no support for VP9 spatial
+  // layers. See https://crbug.com/webrtc/9304.
+  const bool is_spatial_layer_buffer = buffer.side_data_size() > 0;
+  if (codec == media::VideoCodec::kVP9 && is_spatial_layer_buffer &&
+      !Vp9HwSupportForSpatialLayers()) {
+    // D3D11 supports decoding the VP9 kSVC stream, but DXVA not. Currently just
+    // a reasonably temporary measure. Once the DXVA supports decoding VP9 kSVC
+    // stream, the boolean |need_fallback_to_software| should be removed, and if
+    // the OS is windows but not win7, we will return true in
+    // 'Vp9HwSupportForSpatialLayers' instead of false.
+#if BUILDFLAG(IS_WIN)
+    if (video_decoder_->GetDecoderType() == media::VideoDecoderType::kD3D11 &&
+        base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding)) {
+      return absl::nullopt;
+    }
+#endif
+    return RTCVideoDecoderFallbackReason::kSpatialLayers;
+  }
+
+  return absl::nullopt;
+}
+
+absl::variant<RTCVideoDecoderAdapter::DecodeResult,
+              RTCVideoDecoderFallbackReason>
+RTCVideoDecoderAdapter::EnqueueBuffer(
+    scoped_refptr<media::DecoderBuffer> buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+  if (auto fallback_reason = NeedSoftwareFallback(config_.codec(), *buffer))
+    return *fallback_reason;
+  if (auto fallback_reason =
+          FallbackOrRegisterConcurrentInstanceOnce(config_.codec())) {
+    return *fallback_reason;
+  }
+
+  if (key_frame_required_) {
+    // We discarded previous frame because we have too many pending buffers (see
+    // logic) below. Now we need to wait for the key frame and discard
+    // everything else.
+    if (!buffer->is_key_frame()) {
+      DVLOG(2) << "Discard non-key frame";
+      return DecodeResult::kErrorRequestKeyFrame;
+    }
+    DVLOG(2) << "Key frame received, resume decoding";
+    // ok, we got key frame and can continue decoding
+    key_frame_required_ = false;
+  }
+
+  // Queue for decoding.
+  base::AutoLock auto_lock(lock_);
+  if (has_error_) {
+    return RTCVideoDecoderFallbackReason::kPreviousErrorOnDecode;
+  }
+
+  if (HasSoftwareFallback(config_.codec()) &&
+      pending_buffers_.size() >= kMaxPendingBuffers) {
+    // We are severely behind. Drop pending buffers and request a keyframe to
+    // catch up as quickly as possible.
+    DVLOG(2) << "Pending buffers overflow";
+    pending_buffers_.clear();
+    // Actually we just discarded a frame. We must wait for the key frame and
+    // drop any other non-key frame.
+    key_frame_required_ = true;
+    if (++consecutive_error_count_ > kMaxConsecutiveErrors) {
+      decode_timestamps_.clear();
+      return RTCVideoDecoderFallbackReason::kConsecutivePendingBufferOverflow;
+    }
+    return DecodeResult::kErrorRequestKeyFrame;
+  }
+
+  pending_buffers_.push_back(std::move(buffer));
+  return DecodeResult::kOk;
 }
 
 void RTCVideoDecoderAdapter::DecodeOnMediaThread() {
@@ -416,155 +562,51 @@ bool RTCVideoDecoderAdapter::Configure(const Settings& settings) {
 int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
                                        bool missing_frames,
                                        int64_t render_time_ms) {
+  auto result = DecodeInternal(input_image, missing_frames, render_time_ms);
+  if (const auto* fallback_reason =
+          absl::get_if<RTCVideoDecoderFallbackReason>(&result)) {
+    RecordRTCVideoDecoderFallbackReason(config_.codec(), *fallback_reason);
+    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+  }
+
+  return *absl::get_if<DecodeResult>(&result) == DecodeResult::kOk
+             ? WEBRTC_VIDEO_CODEC_OK
+             : WEBRTC_VIDEO_CODEC_ERROR;
+}
+
+absl::variant<RTCVideoDecoderAdapter::DecodeResult,
+              RTCVideoDecoderFallbackReason>
+RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
+                                       bool missing_frames,
+                                       int64_t render_time_ms) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
-
-  // If this is the first decode, then increment the count of working decoders.
-  if (!have_started_decoding_) {
-    have_started_decoding_ = true;
-    GetDecoderCounter()->IncrementCount();
-  }
-
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  const bool has_software_fallback =
-      video_codec_type_ != webrtc::kVideoCodecH264;
-#else
-  const bool has_software_fallback = true;
-#endif
-
-  // Don't allow hardware decode for small videos if there are too many
-  // decoder instances.  This includes the case where our resolution drops while
-  // too many decoders exist.
-  {
-    base::AutoLock auto_lock(lock_);
-    if (has_software_fallback && current_resolution_ < kMinResolution &&
-        GetDecoderCounter()->Count() > kMaxDecoderInstances) {
-      // Decrement the count and clear the flag, so that other decoders don't
-      // fall back also.
-      have_started_decoding_ = false;
-      GetDecoderCounter()->DecrementCount();
-      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-    }
-  }
-
-  // Fall back to software decoding if there's no support for VP9 spatial
-  // layers. See https://crbug.com/webrtc/9304.
-  if (video_codec_type_ == webrtc::kVideoCodecVP9 &&
-      input_image.SpatialIndex().value_or(0) > 0 &&
-      !Vp9HwSupportForSpatialLayers()) {
-    // D3D11 supports decoding the VP9 kSVC stream, but DXVA not. Currently just
-    // a reasonably temporary measure. Once the DXVA supports decoding VP9 kSVC
-    // stream, the boolen |need_fallback_to_software| should be removed, and if
-    // the OS is windows but not win7, we will return true in
-    // 'Vp9HwSupportForSpatialLayers' instead of false.
-    bool need_fallback_to_software = true;
-#if BUILDFLAG(IS_WIN)
-    if (video_decoder_->GetDecoderType() == media::VideoDecoderType::kD3D11 &&
-        base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding)) {
-      need_fallback_to_software = false;
-    }
-#endif
-    if (need_fallback_to_software) {
-      RecordRTCVideoDecoderFallbackReason(
-          config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
-      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-    }
-  }
 
   if (missing_frames) {
     DVLOG(2) << "Missing frames";
     // We probably can't handle broken frames. Request a key frame.
-    return WEBRTC_VIDEO_CODEC_ERROR;
+    return DecodeResult::kErrorRequestKeyFrame;
   }
-
-  if (key_frame_required_) {
-    // We discarded previous frame because we have too many pending buffers (see
-    // logic) below. Now we need to wait for the key frame and discard
-    // everything else.
-    if (input_image._frameType != webrtc::VideoFrameType::kVideoFrameKey) {
-      DVLOG(2) << "Discard non-key frame";
-      return WEBRTC_VIDEO_CODEC_ERROR;
-    }
-    DVLOG(2) << "Key frame received, resume decoding";
-    // ok, we got key frame and can continue decoding
-    key_frame_required_ = false;
-  }
-
-  std::vector<uint32_t> spatial_layer_frame_size;
-  int max_sl_index = input_image.SpatialIndex().value_or(0);
-  for (int i = 0; i <= max_sl_index; i++) {
-    auto frame_size = input_image.SpatialLayerFrameSize(i);
-    if (!frame_size)
-      continue;
-    spatial_layer_frame_size.push_back(
-        base::checked_cast<uint32_t>(*frame_size));
-  }
-
-  // Convert to media::DecoderBuffer.
-  // TODO(sandersd): What is |render_time_ms|?
-  scoped_refptr<media::DecoderBuffer> buffer;
-  if (spatial_layer_frame_size.size() > 1) {
-    const uint8_t* side_data =
-        reinterpret_cast<const uint8_t*>(spatial_layer_frame_size.data());
-    size_t side_data_size =
-        spatial_layer_frame_size.size() * sizeof(uint32_t) / sizeof(uint8_t);
-    buffer = media::DecoderBuffer::CopyFrom(
-        input_image.data(), input_image.size(), side_data, side_data_size);
-  } else {
-    buffer =
-        media::DecoderBuffer::CopyFrom(input_image.data(), input_image.size());
-  }
-  buffer->set_timestamp(base::Microseconds(input_image.Timestamp()));
 
   if (ShouldReinitializeForSettingHDRColorSpace(input_image)) {
     config_.set_color_space_info(
         blink::WebRtcToMediaVideoColorSpace(*input_image.ColorSpace()));
-    if (!ReinitializeSync(config_)) {
-      RecordRTCVideoDecoderFallbackReason(
-          config_.codec(),
-          RTCVideoDecoderFallbackReason::kReinitializationFailed);
-      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-    }
+    if (!ReinitializeSync(config_))
+      return RTCVideoDecoderFallbackReason::kReinitializationFailed;
     if (input_image._frameType != webrtc::VideoFrameType::kVideoFrameKey)
-      return WEBRTC_VIDEO_CODEC_ERROR;
+      return DecodeResult::kErrorRequestKeyFrame;
   }
 
-  // Queue for decoding.
-  {
-    base::AutoLock auto_lock(lock_);
-    if (has_error_) {
-      RecordRTCVideoDecoderFallbackReason(
-          config_.codec(),
-          RTCVideoDecoderFallbackReason::kPreviousErrorOnDecode);
-      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-    }
-
-    if (has_software_fallback &&
-        pending_buffers_.size() >= kMaxPendingBuffers) {
-      // We are severely behind. Drop pending buffers and request a keyframe to
-      // catch up as quickly as possible.
-      DVLOG(2) << "Pending buffers overflow";
-      pending_buffers_.clear();
-      // Actually we just discarded a frame. We must wait for the key frame and
-      // drop any other non-key frame.
-      key_frame_required_ = true;
-      if (++consecutive_error_count_ > kMaxConsecutiveErrors) {
-        decode_timestamps_.clear();
-        RecordRTCVideoDecoderFallbackReason(
-            config_.codec(),
-            RTCVideoDecoderFallbackReason::kConsecutivePendingBufferOverflow);
-        return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-      }
-      return WEBRTC_VIDEO_CODEC_ERROR;
-    }
-    pending_buffers_.push_back(std::move(buffer));
+  auto enqueue_res = EnqueueBuffer(ConvertToDecoderBuffer(input_image));
+  const auto* ret = absl::get_if<DecodeResult>(&enqueue_res);
+  if (ret && *ret == DecodeResult::kOk) {
+    PostCrossThreadTask(
+        *media_task_runner_.get(), FROM_HERE,
+        CrossThreadBindOnce(&RTCVideoDecoderAdapter::DecodeOnMediaThread,
+                            weak_this_));
   }
-  PostCrossThreadTask(
-      *media_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(&RTCVideoDecoderAdapter::DecodeOnMediaThread,
-                          weak_this_));
 
-  return WEBRTC_VIDEO_CODEC_OK;
+  return enqueue_res;
 }
 
 int32_t RTCVideoDecoderAdapter::RegisterDecodeCompleteCallback(

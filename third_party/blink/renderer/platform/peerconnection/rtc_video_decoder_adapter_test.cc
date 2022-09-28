@@ -208,6 +208,8 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
     webrtc::EncodedImage input_image;
     static const uint8_t data[1] = {0};
     input_image.SetSpatialIndex(spatial_index_);
+    for (int i = 0; i <= spatial_index_; i++)
+      input_image.SetSpatialLayerFrameSize(i, 4);
     input_image.SetEncodedData(
         webrtc::EncodedImageBuffer::Create(data, sizeof(data)));
     input_image._frameType = webrtc::VideoFrameType::kVideoFrameKey;
@@ -558,8 +560,8 @@ TEST_F(RTCVideoDecoderAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
 }
 #endif
 
-// On ChromeOS, only based on x86(use VaapiDecoder) architecture has the ability
-// to decode VP9 kSVC Stream. Other cases should fallback to sw decoder.
+// ChromeOS has the ability to decode VP9 kSVC Stream. Other cases should
+// fallback to sw decoder.
 #if !(defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS))
 TEST_F(RTCVideoDecoderAdapterTest,
        FallbackToSWSinceDecodeVP9kSVCStreamWithoutD3D11) {
