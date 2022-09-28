@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/telemetry_extension/diagnostics_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-forward.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
@@ -99,42 +98,6 @@ void DiagnosticsServiceAsh::GetRoutineUpdate(
           std::move(callback)));
 }
 
-void DiagnosticsServiceAsh::RunBatteryCapacityRoutine(
-    RunBatteryCapacityRoutineCallback callback) {
-  GetService()->RunBatteryCapacityRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunBatteryCapacityRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunBatteryHealthRoutine(
-    RunBatteryHealthRoutineCallback callback) {
-  GetService()->RunBatteryHealthRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunBatteryHealthRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunSmartctlCheckRoutine(
-    RunSmartctlCheckRoutineCallback callback) {
-  GetService()->RunSmartctlCheckRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunSmartctlCheckRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
 void DiagnosticsServiceAsh::RunAcPowerRoutine(
     crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
     const absl::optional<std::string>& expected_power_type,
@@ -149,6 +112,62 @@ void DiagnosticsServiceAsh::RunAcPowerRoutine(
                 converters::ConvertDiagnosticsPtr(std::move(ptr)));
           },
           std::move(callback)));
+}
+
+void DiagnosticsServiceAsh::RunBatteryCapacityRoutine(
+    RunBatteryCapacityRoutineCallback callback) {
+  GetService()->RunBatteryCapacityRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunBatteryCapacityRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
+void DiagnosticsServiceAsh::RunBatteryChargeRoutine(
+    uint32_t length_seconds,
+    uint32_t minimum_charge_percent_required,
+    RunBatteryChargeRoutineCallback callback) {
+  GetService()->RunBatteryChargeRoutine(
+      length_seconds, minimum_charge_percent_required,
+      base::BindOnce(
+          [](crosapi::mojom::DiagnosticsService::RunBatteryChargeRoutineCallback
+                 callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(
+                converters::ConvertDiagnosticsPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
+void DiagnosticsServiceAsh::RunBatteryDischargeRoutine(
+    uint32_t length_seconds,
+    uint32_t maximum_discharge_percent_allowed,
+    RunBatteryDischargeRoutineCallback callback) {
+  GetService()->RunBatteryDischargeRoutine(
+      length_seconds, maximum_discharge_percent_allowed,
+      base::BindOnce(
+          [](crosapi::mojom::DiagnosticsService::
+                 RunBatteryDischargeRoutineCallback callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(
+                converters::ConvertDiagnosticsPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
+void DiagnosticsServiceAsh::RunBatteryHealthRoutine(
+    RunBatteryHealthRoutineCallback callback) {
+  GetService()->RunBatteryHealthRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunBatteryHealthRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
 }
 
 void DiagnosticsServiceAsh::RunCpuCacheRoutine(
@@ -181,6 +200,47 @@ void DiagnosticsServiceAsh::RunCpuStressRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsServiceAsh::RunDiskReadRoutine(
+    crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum type,
+    uint32_t length_seconds,
+    uint32_t file_size_mb,
+    RunDiskReadRoutineCallback callback) {
+  GetService()->RunDiskReadRoutine(
+      converters::Convert(type), length_seconds, file_size_mb,
+      base::BindOnce(
+          [](crosapi::mojom::DiagnosticsService::RunDiskReadRoutineCallback
+                 callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(
+                converters::ConvertDiagnosticsPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
+void DiagnosticsServiceAsh::RunDnsResolutionRoutine(
+    RunDnsResolutionRoutineCallback callback) {
+  GetService()->RunDnsResolutionRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunDnsResolutionRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
+void DiagnosticsServiceAsh::RunDnsResolverPresentRoutine(
+    RunDnsResolverPresentRoutineCallback callback) {
+  GetService()->RunDnsResolverPresentRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::
+             RunDnsResolverPresentRoutineCallback callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 void DiagnosticsServiceAsh::RunFloatingPointAccuracyRoutine(
     uint32_t length_seconds,
     RunFloatingPointAccuracyRoutineCallback callback) {
@@ -189,6 +249,56 @@ void DiagnosticsServiceAsh::RunFloatingPointAccuracyRoutine(
       base::BindOnce(
           [](crosapi::mojom::DiagnosticsService::
                  RunFloatingPointAccuracyRoutineCallback callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(
+                converters::ConvertDiagnosticsPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
+void DiagnosticsServiceAsh::RunGatewayCanBePingedRoutine(
+    RunGatewayCanBePingedRoutineCallback callback) {
+  GetService()->RunGatewayCanBePingedRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::
+             RunGatewayCanBePingedRoutineCallback callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
+void DiagnosticsServiceAsh::RunLanConnectivityRoutine(
+    RunLanConnectivityRoutineCallback callback) {
+  GetService()->RunLanConnectivityRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunLanConnectivityRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
+void DiagnosticsServiceAsh::RunMemoryRoutine(
+    RunMemoryRoutineCallback callback) {
+  GetService()->RunMemoryRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunMemoryRoutineCallback callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
+void DiagnosticsServiceAsh::RunNvmeSelfTestRoutine(
+    crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
+    RunNvmeSelfTestRoutineCallback callback) {
+  GetService()->RunNvmeSelfTestRoutine(
+      converters::Convert(nvme_self_test_type),
+      base::BindOnce(
+          [](crosapi::mojom::DiagnosticsService::RunNvmeSelfTestRoutineCallback
+                 callback,
              cros_healthd::mojom::RunRoutineResponsePtr ptr) {
             std::move(callback).Run(
                 converters::ConvertDiagnosticsPtr(std::move(ptr)));
@@ -211,50 +321,6 @@ void DiagnosticsServiceAsh::RunNvmeWearLevelRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsServiceAsh::RunNvmeSelfTestRoutine(
-    crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
-    RunNvmeSelfTestRoutineCallback callback) {
-  GetService()->RunNvmeSelfTestRoutine(
-      converters::Convert(nvme_self_test_type),
-      base::BindOnce(
-          [](crosapi::mojom::DiagnosticsService::RunNvmeSelfTestRoutineCallback
-                 callback,
-             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-            std::move(callback).Run(
-                converters::ConvertDiagnosticsPtr(std::move(ptr)));
-          },
-          std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunDiskReadRoutine(
-    crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum type,
-    uint32_t length_seconds,
-    uint32_t file_size_mb,
-    RunDiskReadRoutineCallback callback) {
-  GetService()->RunDiskReadRoutine(
-      converters::Convert(type), length_seconds, file_size_mb,
-      base::BindOnce(
-          [](crosapi::mojom::DiagnosticsService::RunDiskReadRoutineCallback
-                 callback,
-             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-            std::move(callback).Run(
-                converters::ConvertDiagnosticsPtr(std::move(ptr)));
-          },
-          std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunDnsResolverPresentRoutine(
-    RunDnsResolverPresentRoutineCallback callback) {
-  GetService()->RunDnsResolverPresentRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::
-             RunDnsResolverPresentRoutineCallback callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
 void DiagnosticsServiceAsh::RunPrimeSearchRoutine(
     uint32_t length_seconds,
     RunPrimeSearchRoutineCallback callback) {
@@ -270,73 +336,6 @@ void DiagnosticsServiceAsh::RunPrimeSearchRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsServiceAsh::RunBatteryDischargeRoutine(
-    uint32_t length_seconds,
-    uint32_t maximum_discharge_percent_allowed,
-    RunBatteryDischargeRoutineCallback callback) {
-  GetService()->RunBatteryDischargeRoutine(
-      length_seconds, maximum_discharge_percent_allowed,
-      base::BindOnce(
-          [](crosapi::mojom::DiagnosticsService::
-                 RunBatteryDischargeRoutineCallback callback,
-             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-            std::move(callback).Run(
-                converters::ConvertDiagnosticsPtr(std::move(ptr)));
-          },
-          std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunBatteryChargeRoutine(
-    uint32_t length_seconds,
-    uint32_t minimum_charge_percent_required,
-    RunBatteryChargeRoutineCallback callback) {
-  GetService()->RunBatteryChargeRoutine(
-      length_seconds, minimum_charge_percent_required,
-      base::BindOnce(
-          [](crosapi::mojom::DiagnosticsService::RunBatteryChargeRoutineCallback
-                 callback,
-             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-            std::move(callback).Run(
-                converters::ConvertDiagnosticsPtr(std::move(ptr)));
-          },
-          std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunMemoryRoutine(
-    RunMemoryRoutineCallback callback) {
-  GetService()->RunMemoryRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunMemoryRoutineCallback callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunLanConnectivityRoutine(
-    RunLanConnectivityRoutineCallback callback) {
-  GetService()->RunLanConnectivityRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunLanConnectivityRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunDnsResolutionRoutine(
-    RunDnsResolutionRoutineCallback callback) {
-  GetService()->RunDnsResolutionRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunDnsResolutionRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
 void DiagnosticsServiceAsh::RunSignalStrengthRoutine(
     RunSignalStrengthRoutineCallback callback) {
   GetService()->RunSignalStrengthRoutine(base::BindOnce(
@@ -349,11 +348,11 @@ void DiagnosticsServiceAsh::RunSignalStrengthRoutine(
       std::move(callback)));
 }
 
-void DiagnosticsServiceAsh::RunGatewayCanBePingedRoutine(
-    RunGatewayCanBePingedRoutineCallback callback) {
-  GetService()->RunGatewayCanBePingedRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::
-             RunGatewayCanBePingedRoutineCallback callback,
+void DiagnosticsServiceAsh::RunSmartctlCheckRoutine(
+    RunSmartctlCheckRoutineCallback callback) {
+  GetService()->RunSmartctlCheckRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunSmartctlCheckRoutineCallback
+             callback,
          cros_healthd::mojom::RunRoutineResponsePtr ptr) {
         std::move(callback).Run(
             converters::ConvertDiagnosticsPtr(std::move(ptr)));

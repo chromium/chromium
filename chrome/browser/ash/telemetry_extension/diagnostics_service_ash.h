@@ -54,55 +54,55 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
                         crosapi::mojom::DiagnosticsRoutineCommandEnum command,
                         bool include_output,
                         GetRoutineUpdateCallback callback) override;
-  void RunBatteryCapacityRoutine(
-      RunBatteryCapacityRoutineCallback callback) override;
-  void RunBatteryHealthRoutine(
-      RunBatteryHealthRoutineCallback callback) override;
-  void RunSmartctlCheckRoutine(
-      RunSmartctlCheckRoutineCallback callback) override;
   void RunAcPowerRoutine(
       crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
       const absl::optional<std::string>& expected_power_type,
       RunAcPowerRoutineCallback callback) override;
+  void RunBatteryCapacityRoutine(
+      RunBatteryCapacityRoutineCallback callback) override;
+  void RunBatteryChargeRoutine(
+      uint32_t length_seconds,
+      uint32_t minimum_charge_percent_required,
+      RunBatteryChargeRoutineCallback callback) override;
+  void RunBatteryDischargeRoutine(
+      uint32_t length_seconds,
+      uint32_t maximum_discharge_percent_allowed,
+      RunBatteryDischargeRoutineCallback callback) override;
+  void RunBatteryHealthRoutine(
+      RunBatteryHealthRoutineCallback callback) override;
   void RunCpuCacheRoutine(uint32_t length_seconds,
                           RunCpuCacheRoutineCallback callback) override;
   void RunCpuStressRoutine(uint32_t length_seconds,
                            RunCpuStressRoutineCallback callback) override;
-  void RunFloatingPointAccuracyRoutine(
-      uint32_t length_seconds,
-      RunFloatingPointAccuracyRoutineCallback callback) override;
-  void RunNvmeWearLevelRoutine(
-      uint32_t wear_level_threshold,
-      RunNvmeWearLevelRoutineCallback callback) override;
-  void RunNvmeSelfTestRoutine(
-      crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
-      RunNvmeSelfTestRoutineCallback callback) override;
   void RunDiskReadRoutine(
       crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum type,
       uint32_t length_seconds,
       uint32_t file_size_mb,
       RunDiskReadRoutineCallback callback) override;
-  void RunDnsResolverPresentRoutine(
-      RunDnsResolverPresentRoutineCallback) override;
-  void RunPrimeSearchRoutine(uint32_t length_seconds,
-                             RunPrimeSearchRoutineCallback callback) override;
-  void RunBatteryDischargeRoutine(
-      uint32_t length_seconds,
-      uint32_t maximum_discharge_percent_allowed,
-      RunBatteryDischargeRoutineCallback callback) override;
-  void RunBatteryChargeRoutine(
-      uint32_t length_seconds,
-      uint32_t minimum_charge_percent_required,
-      RunBatteryChargeRoutineCallback callback) override;
-  void RunMemoryRoutine(RunMemoryRoutineCallback callback) override;
-  void RunLanConnectivityRoutine(
-      RunLanConnectivityRoutineCallback callback) override;
   void RunDnsResolutionRoutine(
       RunDnsResolutionRoutineCallback callback) override;
-  void RunSignalStrengthRoutine(
-      RunSignalStrengthRoutineCallback callback) override;
+  void RunDnsResolverPresentRoutine(
+      RunDnsResolverPresentRoutineCallback callback) override;
+  void RunFloatingPointAccuracyRoutine(
+      uint32_t length_seconds,
+      RunFloatingPointAccuracyRoutineCallback callback) override;
   void RunGatewayCanBePingedRoutine(
       RunGatewayCanBePingedRoutineCallback callback) override;
+  void RunLanConnectivityRoutine(
+      RunLanConnectivityRoutineCallback callback) override;
+  void RunMemoryRoutine(RunMemoryRoutineCallback callback) override;
+  void RunNvmeSelfTestRoutine(
+      crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
+      RunNvmeSelfTestRoutineCallback callback) override;
+  void RunNvmeWearLevelRoutine(
+      uint32_t wear_level_threshold,
+      RunNvmeWearLevelRoutineCallback callback) override;
+  void RunPrimeSearchRoutine(uint32_t length_seconds,
+                             RunPrimeSearchRoutineCallback callback) override;
+  void RunSignalStrengthRoutine(
+      RunSignalStrengthRoutineCallback callback) override;
+  void RunSmartctlCheckRoutine(
+      RunSmartctlCheckRoutineCallback callback) override;
 
   // Pointer to real implementation.
   mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService> service_;

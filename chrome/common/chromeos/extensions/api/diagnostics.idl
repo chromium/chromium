@@ -167,6 +167,8 @@ namespace os.diagnostics {
 
     [supportsPromises] static void runDnsResolutionRoutine(RunRoutineCallback callback);
 
+    [supportsPromises] static void runDnsResolverPresentRoutine(RunRoutineCallback callback);
+
     [supportsPromises] static void runGatewayCanBePingedRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runLanConnectivityRoutine(RunRoutineCallback callback);
@@ -179,8 +181,5 @@ namespace os.diagnostics {
     [supportsPromises] static void runSignalStrengthRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runSmartctlCheckRoutine(RunRoutineCallback callback);
-
-    // Starts DnsResolverPresent routine.
-    [supportsPromises] static void runDnsResolverPresentRoutine(RunRoutineCallback callback);
   };
 };
