@@ -312,6 +312,23 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
   EXPECT_THAT(get_all(), testing::ElementsAre(kExampleCom));
 }
 
+// Tests requesting permissions that are already granted with the
+// permissions.request() API.
+TEST_F(PermissionsAPIUnitTest, RequestingGrantedPermissions) {
+  // Create an extension with requires all urls, and grant the permission.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("extension").AddPermissions({"<all_urls>"}).Build();
+  AddExtensionAndGrantPermissions(*extension);
+
+  // Request access to any host permissions. No permissions should be prompted,
+  // since permissions that are already granted are not taken into account.
+  std::unique_ptr<const PermissionSet> prompted_permissions;
+  EXPECT_TRUE(RunRequestFunction(*extension, browser(),
+                                 R"([{"origins": ["https://*/*"]}])",
+                                 &prompted_permissions));
+  EXPECT_EQ(prompted_permissions, nullptr);
+}
+
 // Tests requesting withheld permissions with the permissions.request() API.
 TEST_F(PermissionsAPIUnitTest, RequestingWithheldPermissions) {
   // Create an extension with required host permissions, and withhold those

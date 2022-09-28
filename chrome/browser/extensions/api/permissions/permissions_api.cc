@@ -22,6 +22,7 @@
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/permissions_info.h"
+#include "extensions/common/url_pattern_set.h"
 
 namespace extensions {
 
@@ -242,13 +243,26 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   requested_optional_ =
       PermissionSet::CreateDifference(*requested_optional_, active_permissions);
 
-  // Do the same for withheld permissions.
+  // Determine which of the requested permissions are withheld host permissions.
+  // Since hosts are not always exact matches, we cannot take a set difference.
+  // Thus we only consider requested permissions that are not already active on
+  // the extension.
+  URLPatternSet explicit_hosts;
+  for (const auto& host : unpack_result->required_explicit_hosts) {
+    if (!active_permissions.explicit_hosts().ContainsPattern(host)) {
+      explicit_hosts.AddPattern(host);
+    }
+  }
+  URLPatternSet scriptable_hosts;
+  for (const auto& host : unpack_result->required_scriptable_hosts) {
+    if (!active_permissions.scriptable_hosts().ContainsPattern(host)) {
+      scriptable_hosts.AddPattern(host);
+    }
+  }
+
   requested_withheld_ = std::make_unique<const PermissionSet>(
-      APIPermissionSet(), ManifestPermissionSet(),
-      std::move(unpack_result->required_explicit_hosts),
-      std::move(unpack_result->required_scriptable_hosts));
-  requested_withheld_ =
-      PermissionSet::CreateDifference(*requested_withheld_, active_permissions);
+      APIPermissionSet(), ManifestPermissionSet(), std::move(explicit_hosts),
+      std::move(scriptable_hosts));
 
   // Determine the total "new" permissions; this is the set of all permissions
   // that aren't currently active on the extension.
