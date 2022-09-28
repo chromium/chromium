@@ -367,7 +367,7 @@ try_.builder(
     name = "android-nougat-x86-rel",
     mirrors = ["ci/android-nougat-x86-rel"],
     tryjob = try_.job(
-        experiment_percentage = 20,
+        experiment_percentage = 100,
     ),
 )
 
