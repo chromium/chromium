@@ -26,7 +26,7 @@ BASE_FEATURE(kSharedHighlightingAmp,
 
 BASE_FEATURE(kIOSSharedHighlightingV2,
              "IOSSharedHighlightingV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedHighlightingRefinedBlocklist,
              "SharedHighlightingRefinedBlocklist",
