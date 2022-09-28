@@ -221,13 +221,13 @@ void FirstPartySetsManager::InvokePendingQueries() {
                               ? first_async_query_timer_->Elapsed()
                               : base::TimeDelta());
 
-  while (!pending_queries_->empty()) {
-    base::OnceClosure query_task = std::move(pending_queries_->front());
-    pending_queries_->pop_front();
+  std::unique_ptr<base::circular_deque<base::OnceClosure>> queue;
+  queue.swap(pending_queries_);
+  while (!queue->empty()) {
+    base::OnceClosure query_task = std::move(queue->front());
+    queue->pop_front();
     std::move(query_task).Run();
   }
-
-  pending_queries_ = nullptr;
 }
 
 void FirstPartySetsManager::SetCompleteSets(net::PublicSets public_sets) {

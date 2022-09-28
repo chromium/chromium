@@ -220,12 +220,13 @@ void FirstPartySetsHandlerImpl::SetDatabase(
 
 void FirstPartySetsHandlerImpl::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  while (!on_sets_ready_callbacks_.empty()) {
-    base::OnceCallback callback = std::move(on_sets_ready_callbacks_.front());
-    on_sets_ready_callbacks_.pop_front();
+  base::circular_deque<base::OnceClosure> queue;
+  queue.swap(on_sets_ready_callbacks_);
+  while (!queue.empty()) {
+    base::OnceCallback callback = std::move(queue.front());
+    queue.pop_front();
     std::move(callback).Run();
   }
-  on_sets_ready_callbacks_.shrink_to_fit();
 }
 
 net::PublicSets FirstPartySetsHandlerImpl::GetPublicSetsSync() const {
