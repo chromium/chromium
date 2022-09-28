@@ -320,6 +320,7 @@ class FakeV4LocalDatabaseManager : public V4LocalDatabaseManager {
   // V4LocalDatabaseManager impl:
   void PerformFullHashCheck(std::unique_ptr<PendingCheck> check) override {
     perform_full_hash_check_called_ = true;
+    RemovePendingCheck(pending_checks_.find(check.get()));
   }
 
   static bool PerformFullHashCheckCalled(
@@ -327,6 +328,12 @@ class FakeV4LocalDatabaseManager : public V4LocalDatabaseManager {
     FakeV4LocalDatabaseManager* fake =
         static_cast<FakeV4LocalDatabaseManager*>(v4_ldbm.get());
     return fake->perform_full_hash_check_called_;
+  }
+
+  void OnFullHashResponse(
+      std::unique_ptr<PendingCheck> check,
+      const std::vector<FullHashInfo>& full_hash_infos) override {
+    RemovePendingCheck(pending_checks_.find(check.get()));
   }
 
  private:
@@ -379,6 +386,10 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
 
   const V4LocalDatabaseManager::QueuedChecks& GetQueuedChecks() {
     return v4_local_database_manager_->queued_checks_;
+  }
+
+  const V4LocalDatabaseManager::PendingChecks& GetPendingChecks() {
+    return v4_local_database_manager_->pending_checks_;
   }
 
   ExtendedReportingLevel GetExtendedReportingLevel() {
@@ -499,6 +510,9 @@ TEST_F(V4LocalDatabaseManagerTest,
 }
 
 TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithFakeDbReturnsMatch) {
+  // Setup to receive full-hash misses. We won't make URL requests.
+  ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
+  ResetLocalDatabaseManager();
   WaitForTasksOnTaskRunner();
 
   std::string url_bad_no_scheme("example.com/bad/");
@@ -509,8 +523,9 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithFakeDbReturnsMatch) {
   ReplaceV4Database(store_and_hash_prefixes);
 
   const GURL url_bad("https://" + url_bad_no_scheme);
+  TestClient client(SB_THREAT_TYPE_SAFE, url_bad);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_bad, usual_threat_types_, nullptr));
+      url_bad, usual_threat_types_, &client));
 
   // Wait for PerformFullHashCheck to complete.
   WaitForTasksOnTaskRunner();
@@ -964,6 +979,20 @@ TEST_F(V4LocalDatabaseManagerTest, CancelPending) {
     WaitForTasksOnTaskRunner();
     EXPECT_FALSE(client.on_check_browse_url_result_called());
   }
+
+  // Test that the client gets a safe response for a pending check when safe
+  // browsing is stopped.
+  {
+    TestClient client(SB_THREAT_TYPE_SAFE, url_bad);
+    EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
+        url_bad, usual_threat_types_, &client));
+    EXPECT_EQ(1ul, GetPendingChecks().size());
+    EXPECT_FALSE(client.on_check_browse_url_result_called());
+    EXPECT_TRUE((*GetPendingChecks().begin())->is_in_pending_checks);
+    StopLocalDatabaseManager();
+    EXPECT_TRUE(GetPendingChecks().empty());
+    EXPECT_TRUE(client.on_check_browse_url_result_called());
+  }
 }
 
 // When the database load flushes the queued requests, make sure that
@@ -1025,8 +1054,9 @@ TEST_F(V4LocalDatabaseManagerTest, UsingWeakPtrDropsCallback) {
   ReplaceV4Database(store_and_hash_prefixes);
 
   const GURL url_bad("https://" + url_bad_no_scheme);
+  TestClient client(SB_THREAT_TYPE_SAFE, url_bad);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_bad, usual_threat_types_, nullptr));
+      url_bad, usual_threat_types_, &client));
   v4_local_database_manager_->StopOnIOThread(true);
 
   // Release the V4LocalDatabaseManager object right away before the callback
@@ -1350,6 +1380,7 @@ TEST_F(V4LocalDatabaseManagerTest, FlagOneUrlAsPhishing) {
   EXPECT_TRUE(v4_local_database_manager_->CheckBrowseUrl(
       url_good, usual_threat_types_, nullptr));
 
+  WaitForTasksOnTaskRunner();
   StopLocalDatabaseManager();
 }
 
@@ -1371,6 +1402,7 @@ TEST_F(V4LocalDatabaseManagerTest, FlagOneUrlAsMalware) {
   EXPECT_TRUE(v4_local_database_manager_->CheckBrowseUrl(
       url_good, usual_threat_types_, nullptr));
 
+  WaitForTasksOnTaskRunner();
   StopLocalDatabaseManager();
 }
 
@@ -1392,6 +1424,7 @@ TEST_F(V4LocalDatabaseManagerTest, FlagOneUrlAsUWS) {
   EXPECT_TRUE(v4_local_database_manager_->CheckBrowseUrl(
       url_good, usual_threat_types_, nullptr));
 
+  WaitForTasksOnTaskRunner();
   StopLocalDatabaseManager();
 }
 
@@ -1406,22 +1439,26 @@ TEST_F(V4LocalDatabaseManagerTest, FlagMultipleUrls) {
   PopulateArtificialDatabase();
 
   const GURL url_phishing("https://example.com/1/");
+  TestClient client_phishing(SB_THREAT_TYPE_SAFE, url_phishing);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_phishing, usual_threat_types_, nullptr));
+      url_phishing, usual_threat_types_, &client_phishing));
   const GURL url_malware("https://2.example.com");
+  TestClient client_malware(SB_THREAT_TYPE_SAFE, url_malware);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_malware, usual_threat_types_, nullptr));
+      url_malware, usual_threat_types_, &client_malware));
   const GURL url_uws("https://example.test.com");
+  TestClient client_uws(SB_THREAT_TYPE_SAFE, url_uws);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_uws, usual_threat_types_, nullptr));
+      url_uws, usual_threat_types_, &client_uws));
   // PerformFullHashCheck will not be called if there is a match within the
   // artificial database
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));
 
   const GURL url_good("https://other.example.com");
+  TestClient client_good(SB_THREAT_TYPE_SAFE, url_good);
   EXPECT_TRUE(v4_local_database_manager_->CheckBrowseUrl(
-      url_good, usual_threat_types_, nullptr));
+      url_good, usual_threat_types_, &client_good));
 
   StopLocalDatabaseManager();
 }
