@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "url/origin.h"
 
@@ -21,10 +22,11 @@ struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
   ParsedPermissionsPolicyDeclaration();
   explicit ParsedPermissionsPolicyDeclaration(
       mojom::PermissionsPolicyFeature feature);
-  ParsedPermissionsPolicyDeclaration(mojom::PermissionsPolicyFeature feature,
-                                     const std::vector<url::Origin>& values,
-                                     bool matches_all_origins,
-                                     bool matches_opaque_src);
+  ParsedPermissionsPolicyDeclaration(
+      mojom::PermissionsPolicyFeature feature,
+      const std::vector<OriginWithPossibleWildcards>& allowed_origins,
+      bool matches_all_origins,
+      bool matches_opaque_src);
   ParsedPermissionsPolicyDeclaration(
       const ParsedPermissionsPolicyDeclaration& rhs);
   ParsedPermissionsPolicyDeclaration& operator=(
@@ -40,8 +42,8 @@ struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
 
   mojom::PermissionsPolicyFeature feature;
 
-  // An alphabetically sorted list of all the origins allowed.
-  std::vector<url::Origin> allowed_origins;
+  // An list of all the origins/wildcards allowed.
+  std::vector<OriginWithPossibleWildcards> allowed_origins;
   // Fallback value is used when feature is enabled for all or disabled for all.
   bool matches_all_origins{false};
   // This flag is set true for a declared policy on an <iframe sandbox>

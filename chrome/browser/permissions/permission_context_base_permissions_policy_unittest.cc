@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/gurl.h"
@@ -61,9 +62,11 @@ class PermissionContextBasePermissionsPolicyTest
           blink::mojom::PermissionsPolicyFeature::kNotFound) {
     blink::ParsedPermissionsPolicy frame_policy = {};
     if (feature != blink::mojom::PermissionsPolicyFeature::kNotFound) {
-      frame_policy.push_back(
-          {feature, std::vector<url::Origin>{url::Origin::Create(GURL(origin))},
-           false, false});
+      frame_policy.emplace_back(feature,
+                                std::vector({blink::OriginWithPossibleWildcards(
+                                    url::Origin::Create(GURL(origin)),
+                                    /*has_subdomain_wildcard=*/false)}),
+                                false, false);
     }
     content::RenderFrameHost* result =
         content::RenderFrameHostTester::For(parent)->AppendChildWithPolicy(
@@ -83,9 +86,11 @@ class PermissionContextBasePermissionsPolicyTest
     content::RenderFrameHost* current = *rfh;
     auto navigation = content::NavigationSimulator::CreateRendererInitiated(
         current->GetLastCommittedURL(), current);
-    std::vector<url::Origin> parsed_origins;
-    for (const std::string& origin : origins)
-      parsed_origins.push_back(url::Origin::Create(GURL(origin)));
+    std::vector<blink::OriginWithPossibleWildcards> parsed_origins;
+    for (const std::string& origin : origins) {
+      parsed_origins.emplace_back(url::Origin::Create(GURL(origin)),
+                                  /*has_subdomain_wildcard=*/false);
+    }
     navigation->SetPermissionsPolicyHeader(
         {{feature, parsed_origins, false, false}});
     navigation->Commit();

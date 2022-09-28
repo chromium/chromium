@@ -38,6 +38,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
@@ -147,8 +148,9 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   {
     blink::ParsedPermissionsPolicyDeclaration declaration;
     declaration.feature = blink::mojom::PermissionsPolicyFeature::kFullscreen;
-    declaration.allowed_origins = {
-        url::Origin::Create(GURL("https://www.example.com"))};
+    declaration.allowed_origins = {blink::OriginWithPossibleWildcards(
+        url::Origin::Create(GURL("https://www.example.com")),
+        /*has_subdomain_wildcard=*/false)};
     declaration.matches_all_origins = false;
     declaration.matches_opaque_src = false;
 
@@ -264,7 +266,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
             blink::mojom::PermissionsPolicyFeature::kFullscreen);
   EXPECT_EQ(1u, declaration.allowed_origins.size());
   EXPECT_EQ("https://www.example.com",
-            declaration.allowed_origins[0].Serialize());
+            declaration.allowed_origins[0].origin.Serialize());
   EXPECT_FALSE(declaration.matches_all_origins);
   EXPECT_FALSE(declaration.matches_opaque_src);
 }

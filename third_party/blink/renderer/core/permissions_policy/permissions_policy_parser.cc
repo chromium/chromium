@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/http/structured_headers.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -111,7 +112,7 @@ class ParsingContext {
       const PermissionsPolicyParser::Declaration&);
 
   struct ParsedAllowlist {
-    std::vector<url::Origin> allowed_origins;
+    std::vector<blink::OriginWithPossibleWildcards> allowed_origins;
     bool matches_all_origins{false};
     bool matches_opaque_src{false};
 
@@ -285,9 +286,11 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
     //       |src_origin| is not null), |src_origin| is not opaque; or
     //     c. the opaque origin of the frame, if |src_origin| is opaque.
     if (!src_origin_) {
-      allowlist.allowed_origins.push_back(self_origin_->ToUrlOrigin());
+      allowlist.allowed_origins.emplace_back(self_origin_->ToUrlOrigin(),
+                                             /*has_subdomain_wildcard=*/false);
     } else if (!src_origin_->IsOpaque()) {
-      allowlist.allowed_origins.push_back(src_origin_->ToUrlOrigin());
+      allowlist.allowed_origins.emplace_back(src_origin_->ToUrlOrigin(),
+                                             /*has_subdomain_wildcard=*/false);
     } else {
       allowlist.matches_opaque_src = true;
     }
@@ -357,7 +360,10 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       } else if (target_is_opaque) {
         allowlist.matches_opaque_src = true;
       } else {
-        allowlist.allowed_origins.push_back(target_origin);
+        // TODO(crbug.com/1345994): Support wildcard matching.
+        allowlist.allowed_origins.emplace_back(
+            target_origin,
+            /*has_subdomain_wildcard=*/false);
       }
     }
   }

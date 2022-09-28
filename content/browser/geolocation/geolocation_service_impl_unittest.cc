@@ -23,6 +23,7 @@
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 using blink::mojom::GeolocationService;
@@ -104,8 +105,10 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
     if (allow_via_permissions_policy) {
       frame_policy.push_back(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
-           std::vector<url::Origin>{url::Origin::Create(kEmbeddedUrl)}, false,
-           false});
+           std::vector{blink::OriginWithPossibleWildcards(
+               url::Origin::Create(kEmbeddedUrl),
+               /*has_subdomain_wildcard=*/false)},
+           false, false});
     }
     RenderFrameHost* embedded_rfh =
         RenderFrameHostTester::For(main_rfh())

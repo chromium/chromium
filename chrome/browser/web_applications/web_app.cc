@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/sync/base/time.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/color_utils.h"
@@ -781,8 +782,13 @@ base::Value WebApp::AsDebugValue() const {
       json_decl.SetStringKey("feature", feature_name->second);
       base::Value& allowlist_json = *json_decl.SetKey(
           "allowed_origins", base::Value(base::Value::Type::LIST));
-      for (const auto& origin : decl.allowed_origins)
-        allowlist_json.Append(origin.Serialize().c_str());
+      for (const auto& origin_with_possible_wildcards : decl.allowed_origins) {
+        // TODO(crbug.com/1345994): Support wildcard matching.
+        if (!origin_with_possible_wildcards.has_subdomain_wildcard) {
+          allowlist_json.Append(
+              origin_with_possible_wildcards.origin.Serialize());
+        }
+      }
       json_decl.SetBoolKey("matches_all_origins", decl.matches_all_origins);
       json_decl.SetBoolKey("matches_opaque_src", decl.matches_opaque_src);
       policy_list.Append(std::move(json_decl));

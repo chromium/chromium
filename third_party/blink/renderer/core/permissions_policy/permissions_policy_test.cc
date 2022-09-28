@@ -9,6 +9,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -191,8 +192,9 @@ class PermissionsPolicyParserParsingTest
       ASSERT_EQ(actual_declaration.allowed_origins.size(),
                 expected_declaration.origins.size());
       for (size_t j = 0; j < actual_declaration.allowed_origins.size(); ++j) {
-        EXPECT_TRUE(actual_declaration.allowed_origins[j].IsSameOriginWith(
-            url::Origin::Create(GURL(expected_declaration.origins[j]))));
+        EXPECT_TRUE(
+            actual_declaration.allowed_origins[j].origin.IsSameOriginWith(
+                url::Origin::Create(GURL(expected_declaration.origins[j]))));
       }
     }
   }
@@ -1167,9 +1169,19 @@ class FeaturePolicyMutationTest : public testing::Test {
 
   ParsedPermissionsPolicy test_policy = {
       {mojom::blink::PermissionsPolicyFeature::kFullscreen,
-       /* allowed_origins */ {url_origin_a_, url_origin_b_}, false, false},
+       /* allowed_origins */
+       {blink::OriginWithPossibleWildcards(url_origin_a_,
+                                           /*has_subdomain_wildcard=*/false),
+        blink::OriginWithPossibleWildcards(url_origin_b_,
+                                           /*has_subdomain_wildcard=*/false)},
+       false,
+       false},
       {mojom::blink::PermissionsPolicyFeature::kGeolocation,
-       /* allowed_origins */ {url_origin_a_}, false, false}};
+       /* allowed_origins */
+       {blink::OriginWithPossibleWildcards(url_origin_a_,
+                                           /*has_subdomain_wildcard=*/false)},
+       false,
+       false}};
 
   ParsedPermissionsPolicy empty_policy = {};
 };

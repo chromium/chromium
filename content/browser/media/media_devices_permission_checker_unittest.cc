@@ -15,6 +15,7 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/origin.h"
 
@@ -53,9 +54,9 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
       bool enabled) {
     auto navigation = NavigationSimulator::CreateBrowserInitiated(
         origin_.GetURL(), web_contents());
-    std::vector<url::Origin> allowlist;
+    std::vector<blink::OriginWithPossibleWildcards> allowlist;
     if (enabled)
-      allowlist.push_back(origin_);
+      allowlist.emplace_back(origin_, /*has_subdomain_wildcard=*/false);
     navigation->SetPermissionsPolicyHeader(
         {{feature, allowlist, false, false}});
     navigation->Commit();

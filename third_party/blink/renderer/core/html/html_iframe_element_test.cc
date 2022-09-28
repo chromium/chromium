@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -165,7 +166,7 @@ TEST_F(HTMLIFrameElementTest, AllowAttributeContainerPolicy) {
   EXPECT_FALSE(container_policy1[0].matches_all_origins);
   EXPECT_EQ(1UL, container_policy1[0].allowed_origins.size());
   EXPECT_EQ("http://example.net",
-            container_policy1[0].allowed_origins.begin()->Serialize());
+            container_policy1[0].allowed_origins.begin()->origin.Serialize());
 
   frame_element_->setAttribute(html_names::kAllowAttr, "payment; fullscreen");
   frame_element_->UpdateContainerPolicyForTests();
@@ -183,11 +184,11 @@ TEST_F(HTMLIFrameElementTest, AllowAttributeContainerPolicy) {
                   mojom::blink::PermissionsPolicyFeature::kPayment);
   EXPECT_EQ(1UL, container_policy2[0].allowed_origins.size());
   EXPECT_EQ("http://example.net",
-            container_policy2[0].allowed_origins.begin()->Serialize());
+            container_policy2[0].allowed_origins.begin()->origin.Serialize());
   EXPECT_FALSE(container_policy2[1].matches_all_origins);
   EXPECT_EQ(1UL, container_policy2[1].allowed_origins.size());
   EXPECT_EQ("http://example.net",
-            container_policy2[1].allowed_origins.begin()->Serialize());
+            container_policy2[1].allowed_origins.begin()->origin.Serialize());
 }
 
 // Test the ConstructContainerPolicy method when no attributes are set on the
@@ -209,13 +210,15 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicy) {
             container_policy[0].feature);
   EXPECT_FALSE(container_policy[0].matches_all_origins);
   EXPECT_EQ(1UL, container_policy[0].allowed_origins.size());
-  EXPECT_TRUE(container_policy[0].allowed_origins.begin()->IsSameOriginWith(
-      GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
+  EXPECT_TRUE(
+      container_policy[0].allowed_origins.begin()->origin.IsSameOriginWith(
+          GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kUsb,
             container_policy[1].feature);
   EXPECT_EQ(1UL, container_policy[1].allowed_origins.size());
-  EXPECT_TRUE(container_policy[1].allowed_origins.begin()->IsSameOriginWith(
-      GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
+  EXPECT_TRUE(
+      container_policy[1].allowed_origins.begin()->origin.IsSameOriginWith(
+          GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
 }
 
 // Test the ConstructContainerPolicy method when the "allowfullscreen" attribute
@@ -245,8 +248,9 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowPaymentRequest) {
             container_policy[0].feature);
   EXPECT_FALSE(container_policy[0].matches_all_origins);
   EXPECT_EQ(1UL, container_policy[0].allowed_origins.size());
-  EXPECT_TRUE(container_policy[0].allowed_origins.begin()->IsSameOriginWith(
-      GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
+  EXPECT_TRUE(
+      container_policy[0].allowed_origins.begin()->origin.IsSameOriginWith(
+          GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kPayment,
             container_policy[1].feature);
 }
@@ -270,13 +274,15 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowAttributes) {
             container_policy[0].feature);
   EXPECT_FALSE(container_policy[0].matches_all_origins);
   EXPECT_EQ(1UL, container_policy[0].allowed_origins.size());
-  EXPECT_TRUE(container_policy[0].allowed_origins.begin()->IsSameOriginWith(
-      GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
+  EXPECT_TRUE(
+      container_policy[0].allowed_origins.begin()->origin.IsSameOriginWith(
+          GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kUsb,
             container_policy[1].feature);
   EXPECT_EQ(1UL, container_policy[1].allowed_origins.size());
-  EXPECT_TRUE(container_policy[1].allowed_origins.begin()->IsSameOriginWith(
-      GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
+  EXPECT_TRUE(
+      container_policy[1].allowed_origins.begin()->origin.IsSameOriginWith(
+          GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kFullscreen,
             container_policy[2].feature);
 }

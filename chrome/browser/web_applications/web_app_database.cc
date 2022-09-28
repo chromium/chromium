@@ -39,6 +39,7 @@
 #include "components/sync/model/model_error.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -692,8 +693,12 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         continue;
       const std::string feature_string(feature_name->second);
       proto_policy.set_feature(feature_string);
-      for (const auto& origin : decl.allowed_origins) {
-        proto_policy.add_allowed_origins(origin.Serialize());
+      for (const auto& origin_with_possible_wildcards : decl.allowed_origins) {
+        // TODO(crbug.com/1345994): Support wildcard matching.
+        if (!origin_with_possible_wildcards.has_subdomain_wildcard) {
+          proto_policy.add_allowed_origins(
+              origin_with_possible_wildcards.origin.Serialize());
+        }
       }
       proto_policy.set_matches_all_origins(decl.matches_all_origins);
       proto_policy.set_matches_opaque_src(decl.matches_opaque_src);
@@ -1315,7 +1320,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       decl.feature = feature_enum->second;
 
       for (const std::string& origin : decl_proto.allowed_origins()) {
-        decl.allowed_origins.push_back(url::Origin::Create(GURL(origin)));
+        decl.allowed_origins.emplace_back(url::Origin::Create(GURL(origin)),
+                                          /*has_subdomain_wildcard=*/false);
       }
       decl.matches_all_origins = decl_proto.matches_all_origins();
       decl.matches_opaque_src = decl_proto.matches_opaque_src();

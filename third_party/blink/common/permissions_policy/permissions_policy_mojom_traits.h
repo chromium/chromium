@@ -44,7 +44,7 @@ class BLINK_COMMON_EXPORT
       const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.feature;
   }
-  static const std::vector<url::Origin>& allowed_origins(
+  static const std::vector<blink::OriginWithPossibleWildcards>& allowed_origins(
       const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.allowed_origins;
   }

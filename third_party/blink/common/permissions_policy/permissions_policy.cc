@@ -39,7 +39,8 @@ PermissionsPolicy::Allowlist::Allowlist(const Allowlist& rhs) = default;
 
 PermissionsPolicy::Allowlist::~Allowlist() = default;
 
-void PermissionsPolicy::Allowlist::Add(const url::Origin& origin) {
+void PermissionsPolicy::Allowlist::Add(
+    const blink::OriginWithPossibleWildcards& origin) {
   allowed_origins_.push_back(origin);
 }
 
@@ -53,7 +54,7 @@ void PermissionsPolicy::Allowlist::AddOpaqueSrc() {
 
 bool PermissionsPolicy::Allowlist::Contains(const url::Origin& origin) const {
   for (const auto& allowed_origin : allowed_origins_) {
-    if (origin == allowed_origin)
+    if (allowed_origin.DoesMatchOrigin(origin))
       return true;
   }
   if (origin.opaque())
@@ -219,7 +220,9 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
   if (default_policy == PermissionsPolicyFeatureDefault::EnableForAll) {
     default_allowlist.AddAll();
   } else if (default_policy == PermissionsPolicyFeatureDefault::EnableForSelf) {
-    default_allowlist.Add(origin_);
+    default_allowlist.Add(
+        blink::OriginWithPossibleWildcards(origin_,
+                                           /*has_subdomain_wildcard=*/false));
   }
 
   return default_allowlist;
@@ -284,7 +287,7 @@ void PermissionsPolicy::SetHeaderPolicyForIsolatedApp(
     // Otherwise, we use the intersection of origins in the manifest and the
     // header.
     auto manifest_allowed_origins = isolated_app_allowlist.AllowedOrigins();
-    std::vector<url::Origin> final_allowed_origins;
+    std::vector<blink::OriginWithPossibleWildcards> final_allowed_origins;
     for (const auto& origin : manifest_allowed_origins) {
       if (base::Contains(header_allowed_origins, origin)) {
         final_allowed_origins.push_back(origin);

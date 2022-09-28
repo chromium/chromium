@@ -11,6 +11,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
@@ -103,8 +104,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     Allowlist(const Allowlist& rhs);
     ~Allowlist();
 
-    // Adds a single origin to the allowlist.
-    void Add(const url::Origin& origin);
+    // Adds a single origin with possible wildcards to the allowlist.
+    void Add(const blink::OriginWithPossibleWildcards& origin);
 
     // Adds all origins to the allowlist.
     void AddAll();
@@ -128,19 +129,20 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     // the 'src' keyword.
     bool MatchesOpaqueSrc() const;
 
-    const std::vector<url::Origin>& AllowedOrigins() const {
+    const std::vector<OriginWithPossibleWildcards>& AllowedOrigins() const {
       return allowed_origins_;
     }
 
     // Overwrite allowed_origins_ for Isolated Apps that have a more restrictive
     // Permissions-Policy HTTP header than the permissions policy declared in
     // its Web App Manifest.
-    void SetAllowedOrigins(const std::vector<url::Origin> allowed_origins) {
+    void SetAllowedOrigins(
+        const std::vector<OriginWithPossibleWildcards> allowed_origins) {
       allowed_origins_ = allowed_origins;
     }
 
    private:
-    std::vector<url::Origin> allowed_origins_;
+    std::vector<OriginWithPossibleWildcards> allowed_origins_;
     bool matches_all_origins_{false};
     bool matches_opaque_src_{false};
   };

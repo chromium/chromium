@@ -6,6 +6,7 @@
 
 #include "services/network/public/cpp/client_hints.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
@@ -65,12 +66,17 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
     // We need to retain any preexisting settings, just adding new origins.
     const auto& allow_list =
         current_policy->GetAllowlistForFeature(policy_name);
-    std::set<url::Origin> origin_set(allow_list.AllowedOrigins().begin(),
-                                     allow_list.AllowedOrigins().end());
-    origin_set.insert(pair.second.begin(), pair.second.end());
+    std::set<blink::OriginWithPossibleWildcards> origin_set(
+        allow_list.AllowedOrigins().begin(), allow_list.AllowedOrigins().end());
+    for (const auto& origin : pair.second) {
+      origin_set.insert(
+          blink::OriginWithPossibleWildcards(origin,
+                                             /*has_subdomain_wildcard=*/false));
+    }
     auto declaration = ParsedPermissionsPolicyDeclaration(
         policy_name,
-        std::vector<url::Origin>(origin_set.begin(), origin_set.end()),
+        std::vector<blink::OriginWithPossibleWildcards>(origin_set.begin(),
+                                                        origin_set.end()),
         allow_list.MatchesAll(), allow_list.MatchesOpaqueSrc());
     container_policy.push_back(declaration);
   }
@@ -134,7 +140,7 @@ void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
         maybe_window_allow_list.value().MatchesAll();
     merged_policy.matches_opaque_src |=
         maybe_window_allow_list.value().MatchesOpaqueSrc();
-    std::set<url::Origin> origin_set;
+    std::set<blink::OriginWithPossibleWildcards> origin_set;
     if (!merged_policy.matches_all_origins) {
       origin_set.insert(merged_policy.allowed_origins.begin(),
                         merged_policy.allowed_origins.end());
@@ -143,7 +149,7 @@ void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
           maybe_window_allow_list.value().AllowedOrigins().end());
     }
     merged_policy.allowed_origins =
-        std::vector<url::Origin>(origin_set.begin(), origin_set.end());
+        std::vector(origin_set.begin(), origin_set.end());
     container_policy.push_back(merged_policy);
   }
 }

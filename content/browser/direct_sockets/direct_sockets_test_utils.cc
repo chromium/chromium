@@ -13,6 +13,7 @@
 #include "base/types/optional_util.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 
 namespace content::test {
 
@@ -218,7 +219,9 @@ IsolatedAppContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
   blink::ParsedPermissionsPolicy out;
   blink::ParsedPermissionsPolicyDeclaration decl(
       blink::mojom::PermissionsPolicyFeature::kDirectSockets,
-      /*values=*/{app_origin},
+      /*allowed_origins=*/
+      {blink::OriginWithPossibleWildcards(app_origin,
+                                          /*has_subdomain_wildcard=*/false)},
       /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
   out.push_back(decl);
   return out;

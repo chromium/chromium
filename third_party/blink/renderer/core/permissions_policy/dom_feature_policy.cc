@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/permissions_policy/dom_feature_policy.h"
 
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -121,8 +122,12 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
         return Vector<String>({"*"});
     }
     Vector<String> result;
-    for (const auto& origin : allowed_origins) {
-      result.push_back(WTF::String::FromUTF8(origin.Serialize()));
+    for (const auto& origin_with_possible_wildcards : allowed_origins) {
+      // TODO(crbug.com/1345994): Support wildcard matching.
+      if (!origin_with_possible_wildcards.has_subdomain_wildcard) {
+        result.push_back(WTF::String::FromUTF8(
+            origin_with_possible_wildcards.origin.Serialize()));
+      }
     }
     return result;
   }

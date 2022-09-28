@@ -23,7 +23,7 @@ struct OriginWithPossibleWildcards {
 // NOTE: These types are used for replication frame state between processes.
 struct ParsedPermissionsPolicyDeclaration {
   PermissionsPolicyFeature feature;
-  array<url.mojom.Origin> allowed_origins;
+  array<OriginWithPossibleWildcards> allowed_origins;
   bool matches_all_origins;
   bool matches_opaque_src;
 };
