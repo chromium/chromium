@@ -6,8 +6,11 @@
 
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -126,12 +129,18 @@ TEST_P(OriginWithPossibleWildcardsTest, Constructors) {
   EXPECT_NE(a, b);
   EXPECT_EQ(b, c);
   EXPECT_EQ(c, d);
+  mojo::test::SerializeAndDeserialize<mojom::OriginWithPossibleWildcards>(a, b);
+  EXPECT_EQ(a, b);
 }
 
 TEST_P(OriginWithPossibleWildcardsTest, Opaque) {
-  OriginWithPossibleWildcards opaque_without_wildcards(url::Origin(), false);
-  EXPECT_DCHECK_DEATH(
-      OriginWithPossibleWildcards opaque_with_wildcards(url::Origin(), true));
+  EXPECT_DCHECK_DEATH(OriginWithPossibleWildcards(url::Origin(), true));
+  OriginWithPossibleWildcards original(url::Origin(), false);
+  original.has_subdomain_wildcard = true;
+  OriginWithPossibleWildcards copy;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::OriginWithPossibleWildcards>(
+          original, copy));
 }
 
 }  // namespace blink

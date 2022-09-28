@@ -13,7 +13,11 @@ bool StructTraits<blink::mojom::OriginWithPossibleWildcardsDataView,
     Read(blink::mojom::OriginWithPossibleWildcardsDataView in,
          blink::OriginWithPossibleWildcards* out) {
   out->has_subdomain_wildcard = in.has_subdomain_wildcard();
-  return in.ReadOrigin(&out->origin);
+  if (!in.ReadOrigin(&out->origin))
+    return false;
+
+  // An opaque origin cannot have a wildcard.
+  return !out->origin.opaque() || !out->has_subdomain_wildcard;
 }
 
 bool StructTraits<blink::mojom::ParsedPermissionsPolicyDeclarationDataView,
