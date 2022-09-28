@@ -56,29 +56,27 @@ class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
 
     // Note: in normal circumstances, these prefs are synced to local state in
     // ProximityAuthProfilePrefService.
-    base::Value user1_prefs(base::Value::Type::DICTIONARY);
-    user1_prefs.SetBoolKey(
-        proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
-        kIsChromeOSLoginEnabled1);
-    user1_prefs.SetBoolKey(ash::multidevice_setup::kSmartLockAllowedPrefName,
-                           kIsEasyUnlockAllowed1);
-    user1_prefs.SetBoolKey(ash::multidevice_setup::kSmartLockEnabledPrefName,
-                           kIsEasyUnlockEnabled1);
-    DictionaryPrefUpdate update1(&local_state_,
+    base::Value::Dict user1_prefs;
+    user1_prefs.Set(proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
+                    kIsChromeOSLoginEnabled1);
+    user1_prefs.Set(ash::multidevice_setup::kSmartLockAllowedPrefName,
+                    kIsEasyUnlockAllowed1);
+    user1_prefs.Set(ash::multidevice_setup::kSmartLockEnabledPrefName,
+                    kIsEasyUnlockEnabled1);
+    ScopedDictPrefUpdate update1(&local_state_,
                                  prefs::kEasyUnlockLocalStateUserPrefs);
-    update1->SetKey(user1_.GetUserEmail(), std::move(user1_prefs));
+    update1->Set(user1_.GetUserEmail(), std::move(user1_prefs));
 
-    base::Value user2_prefs(base::Value::Type::DICTIONARY);
-    user2_prefs.SetBoolKey(
-        proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
-        kIsChromeOSLoginEnabled2);
-    user2_prefs.SetBoolKey(ash::multidevice_setup::kSmartLockAllowedPrefName,
-                           kIsEasyUnlockAllowed2);
-    user2_prefs.SetBoolKey(ash::multidevice_setup::kSmartLockEnabledPrefName,
-                           kIsEasyUnlockEnabled2);
-    DictionaryPrefUpdate update2(&local_state_,
+    base::Value::Dict user2_prefs;
+    user2_prefs.Set(proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
+                    kIsChromeOSLoginEnabled2);
+    user2_prefs.Set(ash::multidevice_setup::kSmartLockAllowedPrefName,
+                    kIsEasyUnlockAllowed2);
+    user2_prefs.Set(ash::multidevice_setup::kSmartLockEnabledPrefName,
+                    kIsEasyUnlockEnabled2);
+    ScopedDictPrefUpdate update2(&local_state_,
                                  prefs::kEasyUnlockLocalStateUserPrefs);
-    update2->SetKey(user2_.GetUserEmail(), std::move(user2_prefs));
+    update2->Set(user2_.GetUserEmail(), std::move(user2_prefs));
   }
 
   AccountId user1_;

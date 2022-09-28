@@ -136,24 +136,14 @@ bool ProximityAuthLocalStatePrefManager::IsChromeOSLoginEnabled() const {
 
 void ProximityAuthLocalStatePrefManager::SetHasShownLoginDisabledMessage(
     bool has_shown) {
-  DictionaryPrefUpdate update(local_state_,
+  ScopedDictPrefUpdate update(local_state_,
                               prefs::kEasyUnlockLocalStateUserPrefs);
 
-  base::Value* current_user_prefs =
-      update.Get()->FindDictKey(active_user_.GetUserEmail());
-  if (current_user_prefs) {
-    current_user_prefs->SetBoolKey(
-        prefs::kProximityAuthHasShownLoginDisabledMessage, has_shown);
-    return;
-  }
-
-  // Create an otherwise empty dictionary in order to ensure |has_shown| is
-  // persisted for |active_user_|.
-  base::Value new_current_user_prefs(base::Value::Type::DICTIONARY);
-  new_current_user_prefs.SetBoolKey(
-      prefs::kProximityAuthHasShownLoginDisabledMessage, has_shown);
-  update->SetKey(active_user_.GetUserEmail(),
-                 std::move(new_current_user_prefs));
+  // Get or create a dictionary to persist `has_shown` for `active_user_`.
+  base::Value::Dict* current_user_prefs =
+      update->EnsureDict(active_user_.GetUserEmail());
+  current_user_prefs->Set(prefs::kProximityAuthHasShownLoginDisabledMessage,
+                          has_shown);
 }
 
 bool ProximityAuthLocalStatePrefManager::HasShownLoginDisabledMessage() const {
