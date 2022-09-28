@@ -8,6 +8,7 @@ import("//components/vector_icons/vector_icons.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -16,6 +17,12 @@ if (is_android) {
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [ "ENABLE_VR=$enable_vr" ]
+}
+
+proto_library("omnibox_proto") {
+  sources = [ "suggestion_group.proto" ]
+  proto_in_dir = "//"
+  deps = [ "//third_party/omnibox_proto" ]
 }
 
 aggregate_vector_icons("omnibox_vector_icons") {
@@ -220,8 +227,8 @@ static_library("browser") {
     "shortcuts_provider.h",
     "suggestion_answer.cc",
     "suggestion_answer.h",
-    "suggestion_group.cc",
-    "suggestion_group.h",
+    "suggestion_group_util.cc",
+    "suggestion_group_util.h",
     "tab_matcher.cc",
     "tab_matcher.h",
     "tailored_word_break_iterator.cc",
@@ -249,6 +256,7 @@ static_library("browser") {
   public_deps = [
     ":buildflags",
     ":location_bar",
+    ":omnibox_proto",
     "//base",
     "//base:i18n",
     "//components/history/core/browser",

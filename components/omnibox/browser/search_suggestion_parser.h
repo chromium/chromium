@@ -15,7 +15,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
-#include "components/omnibox/browser/suggestion_group.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
@@ -344,7 +344,7 @@ class SearchSuggestionParser {
     bool relevances_from_server;
 
     // The map of suggestion group IDs to suggestion group information.
-    SuggestionGroupsMap suggestion_groups_map;
+    omnibox::SuggestionGroupsMap suggestion_groups_map;
   };
 
   // Converts JSON loaded by a SimpleURLLoader into UTF-8 and returns the

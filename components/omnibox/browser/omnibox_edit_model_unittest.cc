@@ -748,10 +748,12 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   auto* result = &model()->autocomplete_controller()->result_;
   result->AppendMatches(matches);
 
-  SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[kNewGroupId].group_config.set_header_text("header");
+  omnibox::SuggestionGroupsMap suggestion_groups_map;
+  suggestion_groups_map[kNewGroupId].mutable_group_config()->set_header_text(
+      "header");
   suggestion_groups_map[omnibox::GROUP_HISTORY_CLUSTER]
-      .group_config.set_header_text("");
+      .mutable_group_config()
+      ->set_header_text("");
 
   // Do not set the original_group_id on purpose to test that default visibility
   // can be safely queried via AutocompleteResult::IsSuggestionGroupHidden().
@@ -841,9 +843,10 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
   auto* result = &model()->autocomplete_controller()->result_;
   result->AppendMatches(matches);
 
-  SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[kNewGroupId].group_config.set_header_text("header");
-  suggestion_groups_map[kNewGroupId].original_group_id = 12345;
+  omnibox::SuggestionGroupsMap suggestion_groups_map;
+  suggestion_groups_map[kNewGroupId].mutable_group_config()->set_header_text(
+      "header");
+  suggestion_groups_map[kNewGroupId].set_original_group_id(12345);
   // Setting the original_group_id allows the default visibility to be set via
   // AutocompleteResult::SetSuggestionGroupHidden().
   result->MergeSuggestionGroupsMap(suggestion_groups_map);
@@ -917,8 +920,9 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   auto* result = &model()->autocomplete_controller()->result_;
   result->AppendMatches(matches);
 
-  SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[kNewGroupId].group_config.set_header_text("header");
+  omnibox::SuggestionGroupsMap suggestion_groups_map;
+  suggestion_groups_map[kNewGroupId].mutable_group_config()->set_header_text(
+      "header");
   // Do not set the original_group_id on purpose to test that default visibility
   // can be safely queried via AutocompleteResult::IsSuggestionGroupHidden().
   result->MergeSuggestionGroupsMap(suggestion_groups_map);

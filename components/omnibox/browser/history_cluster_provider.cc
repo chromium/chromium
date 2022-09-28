@@ -16,7 +16,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/suggestion_group.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 
 HistoryClusterProvider::HistoryClusterProvider(
     AutocompleteProviderClient* client,
@@ -151,7 +151,7 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(std::u16string text) {
       ACMatchClassification(0, ACMatchClassification::URL));
 
   match.suggestion_group_id = omnibox::GROUP_HISTORY_CLUSTER;
-  // Insert a corresponding SuggestionGroup with default values in the
+  // Insert a corresponding omnibox::SuggestionGroup with default values in the
   // suggestion groups map; otherwise the group ID will get dropped.
   suggestion_groups_map_[omnibox::GROUP_HISTORY_CLUSTER];
 

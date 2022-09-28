@@ -29,7 +29,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/browser/suggestion_group.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
@@ -141,28 +141,28 @@ omnibox::GroupId ChromeGroupIdForRemoteGroupIdAndIndex(const int group_id,
   }
 }
 
-constexpr auto kReservedGroupPrioritiesMap =
-    base::MakeFixedFlatMap<int, SuggestionGroupPriority>(
-        {{0, SuggestionGroupPriority::kRemoteZeroSuggest1},
-         {1, SuggestionGroupPriority::kRemoteZeroSuggest2},
-         {2, SuggestionGroupPriority::kRemoteZeroSuggest3},
-         {3, SuggestionGroupPriority::kRemoteZeroSuggest4},
-         {4, SuggestionGroupPriority::kRemoteZeroSuggest5},
-         {5, SuggestionGroupPriority::kRemoteZeroSuggest6},
-         {6, SuggestionGroupPriority::kRemoteZeroSuggest7},
-         {7, SuggestionGroupPriority::kRemoteZeroSuggest8},
-         {8, SuggestionGroupPriority::kRemoteZeroSuggest9},
-         {9, SuggestionGroupPriority::kRemoteZeroSuggest10}});
+constexpr auto kReservedReservedGroupSectionsMap =
+    base::MakeFixedFlatMap<int, omnibox::GroupSection>(
+        {{0, omnibox::SECTION_REMOTE_ZPS_1},
+         {1, omnibox::SECTION_REMOTE_ZPS_2},
+         {2, omnibox::SECTION_REMOTE_ZPS_3},
+         {3, omnibox::SECTION_REMOTE_ZPS_4},
+         {4, omnibox::SECTION_REMOTE_ZPS_5},
+         {5, omnibox::SECTION_REMOTE_ZPS_6},
+         {6, omnibox::SECTION_REMOTE_ZPS_7},
+         {7, omnibox::SECTION_REMOTE_ZPS_8},
+         {8, omnibox::SECTION_REMOTE_ZPS_9},
+         {9, omnibox::SECTION_REMOTE_ZPS_10}});
 
 // Converts the given 0-based index of a group in the server response to a group
-// priority known to Chrome.
-SuggestionGroupPriority ChromeGroupPriorityForRemoteGroupIndex(
+// section known to Chrome.
+omnibox::GroupSection ChromeGroupSectionForRemoteGroupIndex(
     const int group_index) {
-  if (base::Contains(kReservedGroupPrioritiesMap, group_index)) {
-    return kReservedGroupPrioritiesMap.at(group_index);
+  if (base::Contains(kReservedReservedGroupSectionsMap, group_index)) {
+    return kReservedReservedGroupSectionsMap.at(group_index);
   } else {
-    // Return a default priority if we don't have any reserved priorities left.
-    return SuggestionGroupPriority::kDefault;
+    // Return a default section if we don't have any reserved sections left.
+    return omnibox::SECTION_DEFAULT;
   }
 }
 
@@ -839,12 +839,12 @@ bool SearchSuggestionParser::ParseSuggestResults(
       }
 
       if (suggestion_group_id) {
-        // Do not use GroupIdForNumber() because |suggestion_group_id| may not
-        // be present in omnibox::GroupId. However, casting int values into
-        // omnibox::GroupId enum without testing membership is expected to be
-        // safe as omnibox::GroupId enum has a fixed int underlying type.
-        // TODO(crbug.com/1343512): Use GroupIdForNumber() once the server
-        //  response has migrated to a serialized omnibox::GroupsInfo proto.
+        // Do not use omnibox::GroupIdForNumber() because |suggestion_group_id|
+        // may not be present in omnibox::GroupId. However, casting int values
+        // into omnibox::GroupId enum without testing membership is expected to
+        // be safe as omnibox::GroupId enum has a fixed int underlying type.
+        // TODO(crbug.com/1343512): Use omnibox::GroupIdForNumber() once the
+        //  server response migrates to a serialized omnibox::GroupsInfo proto.
         results->suggest_results.back().set_suggestion_group_id(
             static_cast<omnibox::GroupId>(*suggestion_group_id));
       }
@@ -887,12 +887,13 @@ bool SearchSuggestionParser::ParseSuggestResults(
     chrome_group_ids_map[suggestion_group_id] = chrome_group_id;
 
     // Store the associated suggestion group information in the results.
-    results->suggestion_groups_map[chrome_group_id].group_config.MergeFrom(
-        group_config);
-    results->suggestion_groups_map[chrome_group_id].original_group_id =
-        suggestion_group_id;
-    results->suggestion_groups_map[chrome_group_id].priority =
-        ChromeGroupPriorityForRemoteGroupIndex(group_index);
+    results->suggestion_groups_map[chrome_group_id]
+        .mutable_group_config()
+        ->MergeFrom(group_config);
+    results->suggestion_groups_map[chrome_group_id].set_original_group_id(
+        suggestion_group_id);
+    results->suggestion_groups_map[chrome_group_id].set_section(
+        ChromeGroupSectionForRemoteGroupIndex(group_index));
   };
 
   for (auto& suggest_result : results->suggest_results) {
@@ -927,12 +928,12 @@ bool SearchSuggestionParser::ParseSuggestResults(
   // The only known use case is the personalized zero-suggest which is also
   // produced by Chrome and relies on the server-provided group config to show.
   for (const auto& entry : groups_info.group_configs()) {
-    // Do not use GroupIdForNumber() because |groups_info| keys may not be
-    // present in omnibox::GroupId. However, casting int values into
+    // Do not use omnibox::GroupIdForNumber() because |groups_info| keys may not
+    // be present in omnibox::GroupId. However, casting int values into
     // omnibox::GroupId enum without testing membership is expected to be safe
     // as omnibox::GroupId enum has a fixed int underlying type.
-    // TODO(crbug.com/1343512): Use GroupIdForNumber() once the server
-    //  response has migrated to a serialized omnibox::GroupsInfo proto.
+    // TODO(crbug.com/1343512): Use omnibox::GroupIdForNumber() once the server
+    //  response migrates to a serialized omnibox::GroupsInfo proto.
     add_group_info(static_cast<omnibox::GroupId>(entry.first), entry.second);
   }
 

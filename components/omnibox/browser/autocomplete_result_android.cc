@@ -91,19 +91,19 @@ ScopedJavaLocalRef<jobject> AutocompleteResult::GetOrCreateJavaObject(
   if (java_result_)
     return ScopedJavaLocalRef<jobject>(java_result_);
 
-  const size_t groups_count = suggestion_groups_map_.size();
+  const size_t groups_count = suggestion_groups_map().size();
 
   std::vector<int> group_ids(groups_count);
   std::vector<std::u16string> group_names(groups_count);
   bool group_collapsed_states[groups_count];
 
   size_t index = 0;
-  for (const auto& suggestion_group : suggestion_groups_map_) {
-    group_ids[index] = static_cast<int>(suggestion_group.first);
+  for (const auto& suggestion_group : suggestion_groups_map()) {
+    group_ids[index] = suggestion_group.first;
     group_names[index] =
-        base::UTF8ToUTF16(suggestion_group.second.group_config.header_text());
+        base::UTF8ToUTF16(suggestion_group.second.group_config().header_text());
     group_collapsed_states[index] =
-        suggestion_group.second.group_config.visibility() ==
+        suggestion_group.second.group_config().visibility() ==
         omnibox::GroupConfig_Visibility_HIDDEN;
     ++index;
   }

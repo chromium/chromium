@@ -17,7 +17,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
-#include "components/omnibox/browser/suggestion_group.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"

@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/debug/stack_trace.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -436,7 +437,7 @@ void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
     }
 
     const omnibox::GroupId group_id = match.suggestion_group_id.value();
-    if (!base::Contains(suggestion_groups_map_, group_id)) {
+    if (!base::Contains(suggestion_groups_map(), group_id)) {
       // Strip group IDs from the matches for which there is no suggestion
       // group information. These matches should instead be treated as
       // ordinary matches with no group IDs.
@@ -451,9 +452,8 @@ void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
     match.RecordAdditionalInfo("group id", group_id);
     match.RecordAdditionalInfo("group header",
                                GetHeaderForSuggestionGroup(group_id));
-    match.RecordAdditionalInfo(
-        "group priority",
-        static_cast<int>(GetPriorityForSuggestionGroup(group_id)));
+    match.RecordAdditionalInfo("group section",
+                               GetSectionForSuggestionGroup(group_id));
   }
 
   // No need to group and demote matches in groups if none exists.
@@ -462,7 +462,7 @@ void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
   }
 
   // Sort the matches based on the order in which their groups should appear
-  // while preserving the existing order of matches within the same group.
+  // while preserving the existing order of matches within the same section.
   std::stable_sort(
       matches_.begin(), matches_.end(), [this](const auto& a, const auto& b) {
         // Note that matches not in a group must appear before the matches in
@@ -473,8 +473,8 @@ void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
         if (!a.suggestion_group_id.has_value()) {
           return true;
         }
-        return GetPriorityForSuggestionGroup(a.suggestion_group_id.value()) <
-               GetPriorityForSuggestionGroup(b.suggestion_group_id.value());
+        return GetSectionForSuggestionGroup(a.suggestion_group_id.value()) <
+               GetSectionForSuggestionGroup(b.suggestion_group_id.value());
       });
 }
 
@@ -991,27 +991,27 @@ AutocompleteResult::GetMatchDedupComparators() const {
 
 std::u16string AutocompleteResult::GetHeaderForSuggestionGroup(
     omnibox::GroupId suggestion_group_id) const {
-  auto it = suggestion_groups_map_.find(suggestion_group_id);
-  if (it == suggestion_groups_map_.end()) {
+  auto it = suggestion_groups_map().find(suggestion_group_id);
+  if (it == suggestion_groups_map().end()) {
     return u"";
   }
-  return base::UTF8ToUTF16(it->second.group_config.header_text());
+  return base::UTF8ToUTF16(it->second.group_config().header_text());
 }
 
 bool AutocompleteResult::IsSuggestionGroupHidden(
     PrefService* prefs,
     omnibox::GroupId suggestion_group_id) const {
-  auto it = suggestion_groups_map_.find(suggestion_group_id);
-  if (it == suggestion_groups_map_.end()) {
+  auto it = suggestion_groups_map().find(suggestion_group_id);
+  if (it == suggestion_groups_map().end()) {
     return false;
   }
-  if (!it->second.original_group_id.has_value()) {
+  if (!it->second.has_original_group_id()) {
     return false;
   }
 
   omnibox::SuggestionGroupVisibility user_preference =
       omnibox::GetUserPreferenceForSuggestionGroupVisibility(
-          prefs, it->second.original_group_id.value());
+          prefs, it->second.original_group_id());
 
   if (user_preference == omnibox::SuggestionGroupVisibility::HIDDEN)
     return true;
@@ -1019,7 +1019,7 @@ bool AutocompleteResult::IsSuggestionGroupHidden(
     return false;
 
   DCHECK_EQ(user_preference, omnibox::SuggestionGroupVisibility::DEFAULT);
-  return it->second.group_config.visibility() ==
+  return it->second.group_config().visibility() ==
          omnibox::GroupConfig_Visibility_HIDDEN;
 }
 
@@ -1027,32 +1027,32 @@ void AutocompleteResult::SetSuggestionGroupHidden(
     PrefService* prefs,
     omnibox::GroupId suggestion_group_id,
     bool hidden) const {
-  auto it = suggestion_groups_map_.find(suggestion_group_id);
-  if (it == suggestion_groups_map_.end()) {
+  auto it = suggestion_groups_map().find(suggestion_group_id);
+  if (it == suggestion_groups_map().end()) {
     return;
   }
-  if (!it->second.original_group_id.has_value()) {
+  if (!it->second.has_original_group_id()) {
     return;
   }
 
   omnibox::SetUserPreferenceForSuggestionGroupVisibility(
-      prefs, it->second.original_group_id.value(),
+      prefs, it->second.original_group_id(),
       hidden ? omnibox::SuggestionGroupVisibility::HIDDEN
              : omnibox::SuggestionGroupVisibility::SHOWN);
 }
 
-SuggestionGroupPriority AutocompleteResult::GetPriorityForSuggestionGroup(
+omnibox::GroupSection AutocompleteResult::GetSectionForSuggestionGroup(
     omnibox::GroupId suggestion_group_id) const {
-  auto it = suggestion_groups_map_.find(suggestion_group_id);
-  if (it == suggestion_groups_map_.end()) {
-    return SuggestionGroupPriority::kDefault;
+  auto it = suggestion_groups_map().find(suggestion_group_id);
+  if (it == suggestion_groups_map().end()) {
+    return omnibox::SECTION_DEFAULT;
   }
 
-  return it->second.priority;
+  return it->second.section();
 }
 
 void AutocompleteResult::MergeSuggestionGroupsMap(
-    const SuggestionGroupsMap& suggestion_groups_map) {
+    const omnibox::SuggestionGroupsMap& suggestion_groups_map) {
   for (const auto& entry : suggestion_groups_map) {
     suggestion_groups_map_[entry.first].MergeFrom(entry.second);
   }

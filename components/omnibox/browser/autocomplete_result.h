@@ -15,7 +15,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
-#include "components/omnibox/browser/suggestion_group.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -118,15 +118,16 @@ class AutocompleteResult {
   // the groups should appear in the result set. This is done for two reasons:
   //
   // 1) Certain groups of remote zero-prefix matches need to appear under a
-  // header as specified in SuggestionGroup. SuggestionGroups are uniquely
-  // identified by the group IDs in |suggestion_groups_map_|. It is also
-  // possible for zero-prefix matches to mix and match while belonging to the
-  // same groups (e.g., bad server data or mixing of local and remote
+  // header as specified in omnibox::SuggestionGroup. SuggestionGroups are
+  // uniquely identified by the group IDs in |suggestion_groups_map_|. It is
+  // also possible for zero-prefix matches to mix and match while belonging to
+  // the same groups (e.g., bad server data or mixing of local and remote
   // suggestions from different providers). Hence, after mixing, deduping, and
   // sorting the matches, we group the ones with the same group ID and demote
   // them to the bottom of the result set based on a predetermined order. This
-  // ensures matches without group IDs or SuggestionGroup to appear at the top
-  // of the result set, and two, there are no interleaving of groups or headers;
+  // ensures matches without group IDs or omnibox::SuggestionGroup to appear at
+  // the top of the result set, and two, there are no interleaving of groups or
+  // headers;
   //
   // 2) Certain groups of non-zero-prefix matches, such as those produced by the
   // HistoryClusterProvider, must appear at the bottom of the result set.
@@ -191,7 +192,7 @@ class AutocompleteResult {
       const ACMatches& matches,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
 
-  const SuggestionGroupsMap& suggestion_groups_map() const {
+  const omnibox::SuggestionGroupsMap& suggestion_groups_map() const {
     return suggestion_groups_map_;
   }
 
@@ -257,10 +258,10 @@ class AutocompleteResult {
                                 omnibox::GroupId suggestion_group_id,
                                 bool hidden) const;
 
-  // Returns the priority associated with |suggestion_group_id|.
-  // Returns the default priority if |suggestion_group_id| is not found in
+  // Returns the section associated with |suggestion_group_id|.
+  // Returns omnibox::SECTION_DEFAULT if |suggestion_group_id| is not found in
   // |suggestion_groups_map_|.
-  SuggestionGroupPriority GetPriorityForSuggestionGroup(
+  omnibox::GroupSection GetSectionForSuggestionGroup(
       omnibox::GroupId suggestion_group_id) const;
 
   // Updates |suggestion_groups_map_| with the suggestion groups information
@@ -269,7 +270,7 @@ class AutocompleteResult {
   // appear while preserving the existing order of matches within the same
   // group.
   void MergeSuggestionGroupsMap(
-      const SuggestionGroupsMap& suggeston_groups_map);
+      const omnibox::SuggestionGroupsMap& suggeston_groups_map);
 
   // This method implements a stateful stable partition. Matches which are
   // search types, and their submatches regardless of type, are shifted
@@ -357,7 +358,7 @@ class AutocompleteResult {
   ACMatches matches_;
 
   // The map of suggestion group IDs to suggestion group information.
-  SuggestionGroupsMap suggestion_groups_map_;
+  omnibox::SuggestionGroupsMap suggestion_groups_map_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Corresponding Java object.

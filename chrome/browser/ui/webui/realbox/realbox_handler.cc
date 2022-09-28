@@ -120,15 +120,16 @@ constexpr char kShareIconResourceName[] = "realbox/icons/share.svg";
 #endif
 
 base::flat_map<int32_t, realbox::mojom::SuggestionGroupPtr>
-CreateSuggestionGroupsMap(const AutocompleteResult& result,
-                          PrefService* prefs,
-                          const SuggestionGroupsMap& suggestion_groups_map) {
+CreateSuggestionGroupsMap(
+    const AutocompleteResult& result,
+    PrefService* prefs,
+    const omnibox::SuggestionGroupsMap& suggestion_groups_map) {
   base::flat_map<int32_t, realbox::mojom::SuggestionGroupPtr> result_map;
   for (const auto& pair : suggestion_groups_map) {
     realbox::mojom::SuggestionGroupPtr suggestion_group =
         realbox::mojom::SuggestionGroup::New();
     suggestion_group->header =
-        base::UTF8ToUTF16(pair.second.group_config.header_text());
+        base::UTF8ToUTF16(pair.second.group_config().header_text());
     suggestion_group->hidden =
         result.IsSuggestionGroupHidden(prefs, pair.first);
     suggestion_group->show_group_a11y_label = l10n_util::GetStringFUTF16(
@@ -690,7 +691,7 @@ void RealboxHandler::ToggleSuggestionGroupIdVisibility(
     return;
   }
 
-  const auto& group_id = GroupIdForNumber(suggestion_group_id);
+  const auto& group_id = omnibox::GroupIdForNumber(suggestion_group_id);
   DCHECK_NE(omnibox::GROUP_INVALID, group_id);
   const bool current_visibility =
       autocomplete_controller_->result().IsSuggestionGroupHidden(
