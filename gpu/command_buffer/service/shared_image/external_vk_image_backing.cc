@@ -259,7 +259,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
                                                       handle.type)) {
     VkFormat vk_format = ToVkFormat(resource_format);
     auto image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
-        device_queue, std::move(handle), size, vk_format);
+        device_queue, std::move(handle), size, vk_format, color_space);
     if (!image) {
       DLOG(ERROR) << "Failed to create VkImage from GpuMemoryHandle.";
       return nullptr;

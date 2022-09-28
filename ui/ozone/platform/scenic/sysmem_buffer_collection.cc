@@ -120,18 +120,25 @@ VkImageFormatConstraintsInfoFUCHSIA GetDefaultImageFormatConstraintsInfo(
   DCHECK(create_info.usage != 0);
 
   static const VkSysmemColorSpaceFUCHSIA kSrgbColorSpace = {
-      .sType = VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA,
-      .pNext = nullptr,
-      .colorSpace =
-          static_cast<uint32_t>(fuchsia::sysmem::ColorSpaceType::SRGB),
+      VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
+      static_cast<uint32_t>(fuchsia::sysmem::ColorSpaceType::SRGB)};
+
+  static const VkSysmemColorSpaceFUCHSIA kYuvDefaultColorSpaces[] = {
+      {VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
+       static_cast<uint32_t>(fuchsia::sysmem::ColorSpaceType::REC709)},
+      {VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
+       static_cast<uint32_t>(fuchsia::sysmem::ColorSpaceType::REC601_NTSC)},
+      {VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
+       static_cast<uint32_t>(
+           fuchsia::sysmem::ColorSpaceType::REC601_NTSC_FULL_RANGE)},
+      {VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
+       static_cast<uint32_t>(fuchsia::sysmem::ColorSpaceType::REC601_PAL)},
+      {VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
+       static_cast<uint32_t>(
+           fuchsia::sysmem::ColorSpaceType::REC601_PAL_FULL_RANGE)},
   };
 
-  static const VkSysmemColorSpaceFUCHSIA kYuvDefaultColorSpace = {
-      .sType = VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA,
-      .pNext = nullptr,
-      .colorSpace =
-          static_cast<uint32_t>(fuchsia::sysmem::ColorSpaceType::REC709),
-  };
+  bool is_yuv = IsYuvVkFormat(create_info.format);
 
   VkImageFormatConstraintsInfoFUCHSIA format_info = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_CONSTRAINTS_INFO_FUCHSIA,
@@ -140,9 +147,9 @@ VkImageFormatConstraintsInfoFUCHSIA GetDefaultImageFormatConstraintsInfo(
       .requiredFormatFeatures =
           GetFormatFeatureFlagsFromUsage(create_info.usage),
       .sysmemPixelFormat = 0u,
-      .colorSpaceCount = 1u,
-      .pColorSpaces = IsYuvVkFormat(create_info.format) ? &kYuvDefaultColorSpace
-                                                        : &kSrgbColorSpace,
+      .colorSpaceCount = static_cast<uint32_t>(
+          is_yuv ? std::size(kYuvDefaultColorSpaces) : 1u),
+      .pColorSpaces = is_yuv ? kYuvDefaultColorSpaces : &kSrgbColorSpace,
   };
   return format_info;
 }
@@ -350,15 +357,13 @@ scoped_refptr<gfx::NativePixmap> SysmemBufferCollection::CreateNativePixmap(
   return new SysmemNativePixmap(this, std::move(handle), size);
 }
 
-bool SysmemBufferCollection::CreateVkImage(
-    size_t buffer_index,
-    VkDevice vk_device,
-    gfx::Size size,
-    VkImage* vk_image,
-    VkImageCreateInfo* vk_image_info,
-    VkDeviceMemory* vk_device_memory,
-    VkDeviceSize* mem_allocation_size,
-    absl::optional<gpu::VulkanYCbCrInfo>* ycbcr_info) {
+bool SysmemBufferCollection::CreateVkImage(size_t buffer_index,
+                                           VkDevice vk_device,
+                                           gfx::Size size,
+                                           VkImage* vk_image,
+                                           VkImageCreateInfo* vk_image_info,
+                                           VkDeviceMemory* vk_device_memory,
+                                           VkDeviceSize* mem_allocation_size) {
   DCHECK_CALLED_ON_VALID_THREAD(vulkan_thread_checker_);
 
   if (vk_device_ != vk_device) {
@@ -432,33 +437,6 @@ bool SysmemBufferCollection::CreateVkImage(
   }
 
   *mem_allocation_size = requirements.size;
-
-  auto color_space =
-      buffers_info_.settings.image_format_constraints.color_space[0].type;
-  switch (color_space) {
-    case fuchsia::sysmem::ColorSpaceType::SRGB:
-      *ycbcr_info = absl::nullopt;
-      break;
-
-    case fuchsia::sysmem::ColorSpaceType::REC709: {
-      // Currently sysmem doesn't specify location of chroma samples relative to
-      // luma (see fxbug.dev/13677). Assume they are cosited with luma. YCbCr
-      // info here must match the values passed for the same buffer in
-      // FuchsiaVideoDecoder. |format_features| are resolved later in the GPU
-      // process before the ycbcr info is passed to Skia.
-      *ycbcr_info = gpu::VulkanYCbCrInfo(
-          vk_image_info->format, /*external_format=*/0,
-          VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709,
-          VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,
-          VK_CHROMA_LOCATION_COSITED_EVEN, /*format_features=*/0);
-      break;
-    }
-
-    default:
-      DLOG(ERROR) << "Sysmem allocated buffer with unsupported color space: "
-                  << static_cast<int>(color_space);
-      return false;
-  }
 
   return true;
 }

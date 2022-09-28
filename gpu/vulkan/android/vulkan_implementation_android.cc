@@ -139,7 +139,8 @@ VulkanImplementationAndroid::CreateImageFromGpuMemoryHandle(
     VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferHandle gmb_handle,
     gfx::Size size,
-    VkFormat vk_format) {
+    VkFormat vk_format,
+    const gfx::ColorSpace& color_space) {
   // TODO(sergeyu): Move code from CreateVkImageAndImportAHB() here and remove
   // CreateVkImageAndImportAHB().
   NOTIMPLEMENTED();

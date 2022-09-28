@@ -121,9 +121,6 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
   OutputCB output_cb_;
   WaitingCB waiting_cb_;
 
-  // Aspect ratio specified in container.
-  VideoAspectRatio container_aspect_ratio_;
-
   std::unique_ptr<SysmemBufferStream> sysmem_buffer_stream_;
 
   // Initialized in InitializeSysmemBufferStream()

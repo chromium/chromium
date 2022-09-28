@@ -217,7 +217,8 @@ std::unique_ptr<SkiaImageRepresentation> OzoneImageBacking::ProduceSkia(
     auto* vulkan_implementation =
         context_state->vk_context_provider()->GetVulkanImplementation();
     auto vulkan_image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
-        device_queue, std::move(gmb_handle), size(), ToVkFormat(format()));
+        device_queue, std::move(gmb_handle), size(), ToVkFormat(format()),
+        gfx::ColorSpace());
 
     if (!vulkan_image)
       return nullptr;

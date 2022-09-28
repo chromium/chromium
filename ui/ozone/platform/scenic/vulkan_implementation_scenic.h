@@ -58,7 +58,8 @@ class VulkanImplementationScenic : public gpu::VulkanImplementation {
       gpu::VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size size,
-      VkFormat vk_format) override;
+      VkFormat vk_format,
+      const gfx::ColorSpace& color_space) override;
   std::unique_ptr<gpu::SysmemBufferCollection> RegisterSysmemBufferCollection(
       VkDevice device,
       gfx::SysmemBufferCollectionId id,

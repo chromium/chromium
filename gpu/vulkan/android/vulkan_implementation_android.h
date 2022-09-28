@@ -54,7 +54,8 @@ class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
       VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size size,
-      VkFormat vk_format) override;
+      VkFormat vk_format,
+      const gfx::ColorSpace& color_space) override;
   bool GetSamplerYcbcrConversionInfo(
       const VkDevice& vk_device,
       base::android::ScopedHardwareBufferHandle ahb_handle,

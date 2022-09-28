@@ -142,7 +142,8 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
     gpu::VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferHandle gmb_handle,
     gfx::Size size,
-    VkFormat vk_format) {
+    VkFormat vk_format,
+    const gfx::ColorSpace& color_space) {
   if (gmb_handle.type != gfx::NATIVE_PIXMAP)
     return nullptr;
 
@@ -161,13 +162,30 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
   VkImageCreateInfo vk_image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
   VkDeviceMemory vk_device_memory = VK_NULL_HANDLE;
   VkDeviceSize vk_device_size = 0;
-  absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
   if (!collection->CreateVkImage(gmb_handle.native_pixmap_handle.buffer_index,
                                  device_queue->GetVulkanDevice(), size,
                                  &vk_image, &vk_image_info, &vk_device_memory,
-                                 &vk_device_size, &ycbcr_info)) {
+                                 &vk_device_size)) {
     DLOG(ERROR) << "CreateVkImage failed.";
     return nullptr;
+  }
+
+  absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+  if (collection->format() == gfx::BufferFormat::YUV_420_BIPLANAR) {
+    VkSamplerYcbcrModelConversion ycbcr_conversion =
+        (color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709)
+            ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709
+            : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
+
+    // Currently sysmem doesn't specify location of chroma samples relative to
+    // luma (see fxbug.dev/13677). Assume they are cosited with luma. Y'CbCr
+    // info here must match the values passed for the same buffer in
+    // FuchsiaVideoDecoder. |format_features| are resolved later in the GPU
+    // process before the ycbcr info is passed to Skia.
+    ycbcr_info = gpu::VulkanYCbCrInfo(
+        vk_image_info.format, /*external_format=*/0, ycbcr_conversion,
+        VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,
+        VK_CHROMA_LOCATION_COSITED_EVEN, /*format_features=*/0);
   }
 
   auto image = gpu::VulkanImage::Create(

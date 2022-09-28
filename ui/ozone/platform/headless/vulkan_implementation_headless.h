@@ -49,7 +49,8 @@ class VulkanImplementationHeadless : public gpu::VulkanImplementation {
       gpu::VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size size,
-      VkFormat vk_format) override;
+      VkFormat vk_format,
+      const gfx::ColorSpace& color_space) override;
 
 #if BUILDFLAG(IS_FUCHSIA)
   std::unique_ptr<gpu::SysmemBufferCollection> RegisterSysmemBufferCollection(

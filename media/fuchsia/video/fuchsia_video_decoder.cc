@@ -27,6 +27,7 @@
 #include "media/base/cdm_context.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_aspect_ratio.h"
+#include "media/base/video_color_space.h"
 #include "media/base/video_frame.h"
 #include "media/fuchsia/cdm/fuchsia_cdm_context.h"
 #include "media/fuchsia/cdm/fuchsia_stream_decryptor.h"
@@ -110,7 +111,8 @@ class FuchsiaVideoDecoder::OutputMailbox {
  public:
   OutputMailbox(
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-      std::unique_ptr<gfx::GpuMemoryBuffer> gmb)
+      std::unique_ptr<gfx::GpuMemoryBuffer> gmb,
+      const gfx::ColorSpace& color_space)
       : raster_context_provider_(raster_context_provider),
         size_(gmb->GetSize()),
         weak_factory_(this) {
@@ -119,7 +121,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
                      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE;
     mailbox_ =
         raster_context_provider_->SharedImageInterface()->CreateSharedImage(
-            gmb.get(), nullptr, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+            gmb.get(), nullptr, color_space, kTopLeft_GrSurfaceOrigin,
             kPremul_SkAlphaType, usage);
   }
 
@@ -270,7 +272,6 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   output_cb_ = output_cb;
   waiting_cb_ = waiting_cb;
-  container_aspect_ratio_ = config.aspect_ratio();
 
   // Keep decoder and decryptor if the configuration hasn't changed.
   if (decoder_ && current_config_.codec() == config.codec() &&
@@ -318,6 +319,13 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   decoder_ = std::make_unique<StreamProcessorHelper>(std::move(decoder), this);
 
   current_config_ = config;
+
+  // Default to REC601 when the colorspace is not specified in the container.
+  // TODO(crbug.com/1364366): HW decoders currently don't provide accurate
+  // color space information to sysmem. Once that issue is resolved, we'll
+  // need to update this logic accordingly.
+  if (!current_config_.color_space_info().IsSpecified())
+    current_config_.set_color_space_info(VideoColorSpace::REC601());
 
   std::move(done_callback).Run(DecoderStatus::Codes::kOk);
 }
@@ -565,7 +573,8 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
         gpu::GpuMemoryBufferImpl::DestructionCallback());
 
     output_mailboxes_[buffer_index] =
-        new OutputMailbox(raster_context_provider_, std::move(gmb));
+        new OutputMailbox(raster_context_provider_, std::move(gmb),
+                          current_config_.color_space_info().ToGfxColorSpace());
   } else {
     raster_context_provider_->SharedImageInterface()->UpdateSharedImage(
         gpu::SyncToken(), output_mailboxes_[buffer_index]->mailbox());
@@ -574,7 +583,7 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   auto display_rect = gfx::Rect(output_format_.primary_display_width_pixels,
                                 output_format_.primary_display_height_pixels);
 
-  VideoAspectRatio aspect_ratio = container_aspect_ratio_;
+  VideoAspectRatio aspect_ratio = current_config_.aspect_ratio();
   if (!aspect_ratio.IsValid() && output_format_.has_pixel_aspect_ratio) {
     aspect_ratio =
         VideoAspectRatio::PAR(output_format_.pixel_aspect_ratio_width,
@@ -600,6 +609,12 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
       base::BindOnce(&FuchsiaVideoDecoder::ReleaseOutputPacket,
                      base::Unretained(this), std::move(output_packet)));
 
+  VkSamplerYcbcrModelConversion ycbcr_conversion =
+      (current_config_.color_space_info().matrix ==
+       VideoColorSpace::MatrixID::BT709)
+          ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709
+          : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
+
   // Currently sysmem doesn't specify location of chroma samples relative to
   // luma (see fxbug.dev/13677). Assume they are cosited with luma. YCbCr info
   // here must match the values passed for the same buffer in
@@ -607,8 +622,7 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   // ui/ozone/platform/scenic/sysmem_buffer_collection.cc). |format_features|
   // are resolved later in the GPU process before this info is passed to Skia.
   frame->set_ycbcr_info(gpu::VulkanYCbCrInfo(
-      vk_format, /*external_format=*/0,
-      VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709,
+      vk_format, /*external_format=*/0, ycbcr_conversion,
       VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,
       VK_CHROMA_LOCATION_COSITED_EVEN, /*format_features=*/0));
 
