@@ -26,6 +26,7 @@ class DeviceTrustConnectorServiceFactory : public ProfileKeyedServiceFactory {
 
  protected:
   bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsNULLWhileTesting() const override;
 
  private:
   friend struct base::DefaultSingletonTraits<

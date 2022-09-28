@@ -51,6 +51,10 @@ bool DeviceTrustConnectorServiceFactory::ServiceIsCreatedWithBrowserContext()
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
+bool DeviceTrustConnectorServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
+
 DeviceTrustConnectorServiceFactory::DeviceTrustConnectorServiceFactory()
     : ProfileKeyedServiceFactory(
           "DeviceTrustConnectorService",

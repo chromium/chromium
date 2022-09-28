@@ -24,6 +24,9 @@ class DeviceTrustServiceFactory : public ProfileKeyedServiceFactory {
   static DeviceTrustServiceFactory* GetInstance();
   static DeviceTrustService* GetForProfile(Profile* profile);
 
+ protected:
+  bool ServiceIsNULLWhileTesting() const override;
+
  private:
   friend struct base::DefaultSingletonTraits<DeviceTrustServiceFactory>;
 

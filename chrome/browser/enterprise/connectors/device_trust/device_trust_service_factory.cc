@@ -56,6 +56,10 @@ DeviceTrustServiceFactory::DeviceTrustServiceFactory()
   DependsOn(policy::ManagementServiceFactory::GetInstance());
 }
 
+bool DeviceTrustServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
+
 DeviceTrustServiceFactory::~DeviceTrustServiceFactory() = default;
 
 KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
