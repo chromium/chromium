@@ -178,6 +178,9 @@ const char kStagingHighlightsAppId[] = "glochkamldfopmdlegmcnjmgkopfiplb";
 const char kNewAttractLoopAppId[] = "igilkdghcdehjdcpndaodgnjgdggiemm";
 // 2022 Highlights App ID
 const char kNewHighlightsAppId[] = "enchmnkoajljphdmahljlebfmpkkbnkj";
+// Specialized demo apps for blazey devices
+const char kBlazeyAttractLoopAppId[] = "lceekekmpiieklnpocjfahfakahjkhha";
+const char kBlazeyHighlightsAppId[] = "jbpnmbcpgemgfblnjfhnmlffhkofekmf";
 
 bool IsSystemUIApp(base::StringPiece extension_id) {
   static const char* const kApps[] = {
@@ -197,8 +200,16 @@ bool IsSystemUIApp(base::StringPiece extension_id) {
 
 bool IsDemoModeChromeApp(base::StringPiece extension_id) {
   static const char* const kDemoModeApps[] = {
-      kHighlightsAppId,        kScreensaverAppId,    kStagingAttractLoopAppId,
-      kStagingHighlightsAppId, kNewAttractLoopAppId, kNewHighlightsAppId,
+      // clang-format off
+      kHighlightsAppId,
+      kScreensaverAppId,
+      kStagingAttractLoopAppId,
+      kStagingHighlightsAppId,
+      kNewAttractLoopAppId,
+      kNewHighlightsAppId,
+      kBlazeyAttractLoopAppId,
+      kBlazeyHighlightsAppId
+      // clang-format on
   };
   for (const char* id : kDemoModeApps) {
     if (extension_id == id)
