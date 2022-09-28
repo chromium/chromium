@@ -111,11 +111,11 @@ void AppActivity::CreateMediaController(
     CastSession* session = GetSession();
     if (session) {
       media_controller_->SetSession(*session);
-      base::Value status_request(base::Value::Type::DICTIONARY);
-      status_request.SetStringKey(
-          "type", cast_util::EnumToString<
-                      cast_channel::V2MessageType,
-                      cast_channel::V2MessageType::kMediaGetStatus>());
+      base::Value::Dict status_request;
+      status_request.Set("type",
+                         cast_util::EnumToString<
+                             cast_channel::V2MessageType,
+                             cast_channel::V2MessageType::kMediaGetStatus>());
       message_handler_->SendMediaRequest(cast_channel_id(), status_request,
                                          media_controller_->sender_id(),
                                          session->destination_id());

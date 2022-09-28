@@ -116,9 +116,9 @@ class CastInternalMessage {
     return message_body_;
   }
 
-  const base::Value& v2_message_body() const {
+  const base::Value::Dict& v2_message_body() const {
     DCHECK(type_ == Type::kV2Message);
-    return message_body_;
+    return message_body_.GetDict();
   }
 
  private:

@@ -282,12 +282,12 @@ CastMessage CreateCastMessage(const std::string& message_namespace,
                               const std::string& source_id,
                               const std::string& destination_id);
 
-CastMessage CreateMediaRequest(const base::Value& body,
+CastMessage CreateMediaRequest(const base::Value::Dict& body,
                                int request_id,
                                const std::string& source_id,
                                const std::string& destination_id);
 
-CastMessage CreateSetVolumeRequest(const base::Value& body,
+CastMessage CreateSetVolumeRequest(const base::Value::Dict& body,
                                    int request_id,
                                    const std::string& source_id);
 

@@ -210,12 +210,12 @@ class MockCastMessageHandler : public CastMessageHandler {
                Result(int channel_id, const CastMessage& message));
   MOCK_METHOD4(SendMediaRequest,
                absl::optional<int>(int channel_id,
-                                   const base::Value& body,
+                                   const base::Value::Dict& body,
                                    const std::string& source_id,
                                    const std::string& destination_id));
   MOCK_METHOD4(SendSetVolumeRequest,
                void(int channel_id,
-                    const base::Value& body,
+                    const base::Value::Dict& body,
                     const std::string& source_id,
                     ResultCallback callback));
 };

@@ -37,17 +37,17 @@ constexpr char kSessionId[] = "sessionId123";
 constexpr int kMediaSessionId = 12345678;
 
 // Verifies that the session ID is |kSessionId|.
-void VerifySessionId(const Value& v2_message_body) {
-  const Value* sessionId = v2_message_body.FindKey("sessionId");
+void VerifySessionId(const Value::Dict& v2_message_body) {
+  const Value* sessionId = v2_message_body.Find("sessionId");
   ASSERT_TRUE(sessionId);
   ASSERT_TRUE(sessionId->is_string());
   EXPECT_EQ(kSessionId, sessionId->GetString());
 }
 
 // Verifies that the media session ID is |kMediaSessionId|.
-void VerifySessionAndMediaSessionIds(const Value& v2_message_body) {
+void VerifySessionAndMediaSessionIds(const Value::Dict& v2_message_body) {
   VerifySessionId(v2_message_body);
-  const Value* mediaSessionId = v2_message_body.FindKey("mediaSessionId");
+  const Value* mediaSessionId = v2_message_body.Find("mediaSessionId");
   ASSERT_TRUE(mediaSessionId);
   ASSERT_TRUE(mediaSessionId->is_int());
   EXPECT_EQ(kMediaSessionId, mediaSessionId->GetInt());
@@ -234,8 +234,9 @@ TEST_F(CastMediaControllerTest, SendMuteRequests) {
   EXPECT_CALL(activity_, SendSetVolumeRequestToReceiver(_, _))
       .WillOnce(WithArg<0>([](const CastInternalMessage& cast_message) {
         EXPECT_EQ("SET_VOLUME", cast_message.v2_message_type());
-        EXPECT_TRUE(
-            cast_message.v2_message_body().FindPath("volume.muted")->GetBool());
+        EXPECT_TRUE(cast_message.v2_message_body()
+                        .FindByDottedPath("volume.muted")
+                        ->GetBool());
         VerifySessionId(cast_message.v2_message_body());
         return 0;
       }));
@@ -245,8 +246,9 @@ TEST_F(CastMediaControllerTest, SendMuteRequests) {
   EXPECT_CALL(activity_, SendSetVolumeRequestToReceiver(_, _))
       .WillOnce(WithArg<0>([](const CastInternalMessage& cast_message) {
         EXPECT_EQ("SET_VOLUME", cast_message.v2_message_type());
-        EXPECT_FALSE(
-            cast_message.v2_message_body().FindPath("volume.muted")->GetBool());
+        EXPECT_FALSE(cast_message.v2_message_body()
+                         .FindByDottedPath("volume.muted")
+                         ->GetBool());
         VerifySessionId(cast_message.v2_message_body());
         return 0;
       }));
@@ -259,7 +261,7 @@ TEST_F(CastMediaControllerTest, SendVolumeRequest) {
       .WillOnce(WithArg<0>([&](const CastInternalMessage& cast_message) {
         EXPECT_EQ("SET_VOLUME", cast_message.v2_message_type());
         EXPECT_FLOAT_EQ(0.314, cast_message.v2_message_body()
-                                   .FindPath("volume.level")
+                                   .FindByDottedPath("volume.level")
                                    ->GetDouble());
         VerifySessionId(cast_message.v2_message_body());
         return 0;
@@ -274,7 +276,7 @@ TEST_F(CastMediaControllerTest, SendSeekRequest) {
         EXPECT_EQ("SEEK", cast_message.v2_message_type());
         EXPECT_DOUBLE_EQ(
             12.34,
-            cast_message.v2_message_body().FindKey("currentTime")->GetDouble());
+            cast_message.v2_message_body().Find("currentTime")->GetDouble());
         VerifySessionId(cast_message.v2_message_body());
         return 0;
       });
@@ -286,7 +288,7 @@ TEST_F(CastMediaControllerTest, SendNextTrackRequest) {
   EXPECT_CALL(activity_, SendMediaRequestToReceiver(_))
       .WillOnce([](const CastInternalMessage& cast_message) {
         EXPECT_EQ("QUEUE_UPDATE", cast_message.v2_message_type());
-        EXPECT_EQ(1, cast_message.v2_message_body().FindKey("jump")->GetInt());
+        EXPECT_EQ(1, cast_message.v2_message_body().Find("jump")->GetInt());
         VerifySessionAndMediaSessionIds(cast_message.v2_message_body());
         return 0;
       });
@@ -298,7 +300,7 @@ TEST_F(CastMediaControllerTest, SendPreviousTrackRequest) {
   EXPECT_CALL(activity_, SendMediaRequestToReceiver(_))
       .WillOnce([](const CastInternalMessage& cast_message) {
         EXPECT_EQ("QUEUE_UPDATE", cast_message.v2_message_type());
-        EXPECT_EQ(-1, cast_message.v2_message_body().FindKey("jump")->GetInt());
+        EXPECT_EQ(-1, cast_message.v2_message_body().Find("jump")->GetInt());
         VerifySessionAndMediaSessionIds(cast_message.v2_message_body());
         return 0;
       });

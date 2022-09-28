@@ -298,7 +298,7 @@ Result CastMessageHandler::SendAppMessage(int channel_id,
 
 absl::optional<int> CastMessageHandler::SendMediaRequest(
     int channel_id,
-    const base::Value& body,
+    const base::Value::Dict& body,
     const std::string& source_id,
     const std::string& destination_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -316,7 +316,7 @@ absl::optional<int> CastMessageHandler::SendMediaRequest(
 }
 
 void CastMessageHandler::SendSetVolumeRequest(int channel_id,
-                                              const base::Value& body,
+                                              const base::Value::Dict& body,
                                               const std::string& source_id,
                                               ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -84,8 +84,8 @@ DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
       const auto& input = input_union.create_media_request_input();
       auto type = static_cast<V2MessageType>(input.type());
       if (IsMediaRequestMessageType(type)) {
-        base::Value body = MakeValue(input.body());
-        body.GetDict().Set("type", *EnumToString(type));
+        base::Value::Dict body = MakeDict(input.body());
+        body.Set("type", *EnumToString(type));
         CreateMediaRequest(body, input.request_id(), input.source_id(),
                            input.destination_id());
       }
@@ -93,9 +93,9 @@ DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
     }
     case CastMessageUtilInputs::kCreateSetVolumeRequestInput: {
       const auto& input = input_union.create_set_volume_request_input();
-      base::Value body = MakeValue(input.body());
-      body.GetDict().Set(
-          "type", EnumToString<V2MessageType, V2MessageType::kSetVolume>());
+      base::Value::Dict body = MakeDict(input.body());
+      body.Set("type",
+               EnumToString<V2MessageType, V2MessageType::kSetVolume>());
       CreateSetVolumeRequest(body, input.request_id(), input.source_id());
       break;
     }

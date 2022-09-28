@@ -26,6 +26,7 @@
 
 using base::test::IsJson;
 using base::test::ParseJson;
+using base::test::ParseJsonDict;
 using testing::_;
 using testing::AnyNumber;
 using testing::InSequence;
@@ -170,7 +171,8 @@ class CastMessageHandlerTest : public testing::Test {
                                       get_app_availability_callback_.Get());
       handler_.SendSetVolumeRequest(
           channel_id_,
-          ParseJson(R"({"sessionId": "theSessionId", "type": "SET_VOLUME"})"),
+          ParseJsonDict(
+              R"({"sessionId": "theSessionId", "type": "SET_VOLUME"})"),
           kSourceId, set_volume_callback_.Get());
     }
     handler_.StopSession(channel_id_, kSessionId, kSourceId,
@@ -179,9 +181,9 @@ class CastMessageHandlerTest : public testing::Test {
 
   void SendMessageAndExpectConnection(const std::string& destination_id,
                                       VirtualConnectionType connection_type) {
-    CastMessage message = CreateCastMessage(
-        "namespace", base::Value(base::Value::Type::DICTIONARY), kSourceId,
-        destination_id);
+    CastMessage message =
+        CreateCastMessage("namespace", base::Value(base::Value::Dict()),
+                          kSourceId, destination_id);
     {
       InSequence dummy;
       // We should first send a CONNECT request to ensure a connection.
@@ -534,7 +536,7 @@ TEST_F(CastMessageHandlerTest, SendMediaRequest) {
             "requestId": 1,
             "type": "PLAY",
           })";
-          auto expected = CreateMediaRequest(ParseJson(expected_body), 1,
+          auto expected = CreateMediaRequest(ParseJsonDict(expected_body), 1,
                                              "theSourceId", kDestinationId);
           EXPECT_EQ(expected.namespace_(), message.namespace_());
           EXPECT_EQ(expected.source_id(), message.source_id());
@@ -551,7 +553,7 @@ TEST_F(CastMessageHandlerTest, SendMediaRequest) {
     "type": "PLAY",
   })";
   absl::optional<int> request_id = handler_.SendMediaRequest(
-      channel_id_, ParseJson(message_str), "theSourceId", kDestinationId);
+      channel_id_, ParseJsonDict(message_str), "theSourceId", kDestinationId);
   EXPECT_EQ(1, request_id);
 }
 
@@ -592,8 +594,8 @@ TEST_F(CastMessageHandlerTest, SendVolumeCommand) {
             "requestId": 1,
             "type": "SET_VOLUME",
           })";
-          auto expected = CreateSetVolumeRequest(ParseJson(expected_body), 1,
-                                                 "theSourceId");
+          auto expected = CreateSetVolumeRequest(ParseJsonDict(expected_body),
+                                                 1, "theSourceId");
           EXPECT_EQ(expected.namespace_(), message.namespace_());
           EXPECT_EQ(expected.source_id(), message.source_id());
           EXPECT_EQ(expected.destination_id(), message.destination_id());
@@ -609,7 +611,7 @@ TEST_F(CastMessageHandlerTest, SendVolumeCommand) {
     "sessionId": "theSessionId",
     "type": "SET_VOLUME",
   })";
-  handler_.SendSetVolumeRequest(channel_id_, ParseJson(message_str),
+  handler_.SendSetVolumeRequest(channel_id_, ParseJsonDict(message_str),
                                 "theSourceId", base::DoNothing());
 }
 
@@ -676,7 +678,7 @@ TEST_F(CastMessageHandlerTest, SetVolumeTimedOut) {
     "type": "SET_VOLUME",
   })";
   base::MockCallback<ResultCallback> callback;
-  handler_.SendSetVolumeRequest(channel_id_, ParseJson(message_str),
+  handler_.SendSetVolumeRequest(channel_id_, ParseJsonDict(message_str),
                                 "theSourceId", callback.Get());
   EXPECT_CALL(callback, Run(Result::kFailed));
   task_environment_.FastForwardBy(kRequestTimeout);

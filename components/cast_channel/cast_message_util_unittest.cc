@@ -257,8 +257,8 @@ TEST(CastMessageUtilTest, CreateMediaRequest) {
        "requestId": 123,
     })";
 
-  CastMessage message = CreateMediaRequest(ParseJson(body), 123, "theSourceId",
-                                           "theDestinationId");
+  CastMessage message = CreateMediaRequest(ParseJsonDict(body), 123,
+                                           "theSourceId", "theDestinationId");
   ASSERT_TRUE(IsCastMessageValid(message));
   EXPECT_EQ(kMediaNamespace, message.namespace_());
   EXPECT_EQ("theSourceId", message.source_id());
@@ -277,7 +277,7 @@ TEST(CastMessageUtilTest, CreateVolumeRequest) {
     })";
 
   CastMessage message =
-      CreateSetVolumeRequest(ParseJson(body), 123, "theSourceId");
+      CreateSetVolumeRequest(ParseJsonDict(body), 123, "theSourceId");
   ASSERT_TRUE(IsCastMessageValid(message));
   EXPECT_EQ(kReceiverNamespace, message.namespace_());
   EXPECT_EQ("theSourceId", message.source_id());

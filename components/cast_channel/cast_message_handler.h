@@ -258,7 +258,7 @@ class CastMessageHandler : public CastSocket::Observer {
   // the sequenceNumber on the message).
   virtual absl::optional<int> SendMediaRequest(
       int channel_id,
-      const base::Value& body,
+      const base::Value::Dict& body,
       const std::string& source_id,
       const std::string& destination_id);
 
@@ -266,7 +266,7 @@ class CastMessageHandler : public CastSocket::Observer {
   // with the result of the operation. It is invalid to call this with
   // a message body that is not a volume request.
   virtual void SendSetVolumeRequest(int channel_id,
-                                    const base::Value& body,
+                                    const base::Value::Dict& body,
                                     const std::string& source_id,
                                     ResultCallback callback);
 

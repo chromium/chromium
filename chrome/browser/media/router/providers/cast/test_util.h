@@ -35,7 +35,8 @@ MATCHER_P(IsCastInternalMessage, json, "") {
              arg.app_message_body() == message->app_message_body();
     case CastInternalMessage::Type::kV2Message:
       return arg.v2_message_type() == message->v2_message_type() &&
-             testing::Matches(base::test::IsJson(arg.v2_message_body()))(
+             testing::Matches(
+                 base::test::IsJson(arg.v2_message_body().DebugString()))(
                  message->v2_message_body());
     default:
       return true;

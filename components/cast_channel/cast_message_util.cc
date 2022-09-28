@@ -523,29 +523,30 @@ CastMessage CreateCastMessage(const std::string& message_namespace,
   return output;
 }
 
-CastMessage CreateMediaRequest(const base::Value& body,
+CastMessage CreateMediaRequest(const base::Value::Dict& body,
                                int request_id,
                                const std::string& source_id,
                                const std::string& destination_id) {
-  Value dict = body.Clone();
-  std::string* type = dict.GetDict().FindString("type");
+  Value::Dict dict = body.Clone();
+  std::string* type = dict.FindString("type");
   CHECK(type);
-  dict.GetDict().Set("type", GetRemappedMediaRequestType(*type));
-  dict.GetDict().Set("requestId", request_id);
-  return CreateCastMessage(kMediaNamespace, dict, source_id, destination_id);
+  dict.Set("type", GetRemappedMediaRequestType(*type));
+  dict.Set("requestId", request_id);
+  return CreateCastMessage(kMediaNamespace, base::Value(std::move(dict)),
+                           source_id, destination_id);
 }
 
-CastMessage CreateSetVolumeRequest(const base::Value& body,
+CastMessage CreateSetVolumeRequest(const base::Value::Dict& body,
                                    int request_id,
                                    const std::string& source_id) {
-  DCHECK(body.GetDict().FindString("type") &&
-         *body.GetDict().FindString("type") ==
+  DCHECK(body.FindString("type") &&
+         *body.FindString("type") ==
              (EnumToString<V2MessageType, V2MessageType::kSetVolume>()));
-  Value dict = body.Clone();
-  dict.GetDict().Remove("sessionId");
-  dict.GetDict().Set("requestId", request_id);
-  return CreateCastMessage(kReceiverNamespace, dict, source_id,
-                           kPlatformReceiverId);
+  Value::Dict dict = body.Clone();
+  dict.Remove("sessionId");
+  dict.Set("requestId", request_id);
+  return CreateCastMessage(kReceiverNamespace, base::Value(std::move(dict)),
+                           source_id, kPlatformReceiverId);
 }
 
 bool IsMediaRequestMessageType(V2MessageType type) {
