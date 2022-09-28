@@ -143,9 +143,10 @@ ScriptPromise ShapeDetector::DetectShapesOnImageData(
 
   SkPixmap image_data_pixmap = image_data->GetSkPixmap();
   SkBitmap sk_bitmap;
+  // Pass 0 for rowBytes to have SkBitmap calculate minimum valid size.
   if (!sk_bitmap.tryAllocPixels(
           image_data_pixmap.info().makeColorType(kN32_SkColorType),
-          image_data_pixmap.rowBytes())) {
+          /*rowBytes=*/0)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Failed to allocate pixels for current frame.");
