@@ -25,6 +25,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gl/dcomp_surface_proxy.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 #endif
@@ -439,6 +443,10 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
     scoped_refptr<gfx::NativePixmap> GetNativePixmap() {
       return representation()->GetNativePixmap();
     }
+#elif BUILDFLAG(IS_WIN)
+    scoped_refptr<gl::DCOMPSurfaceProxy> GetDCOMPSurfaceProxy() {
+      return representation()->GetDCOMPSurfaceProxy();
+    }
 #endif
 
     gfx::GpuFenceHandle TakeAcquireFence() { return std::move(acquire_fence_); }
@@ -478,6 +486,8 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
   virtual AHardwareBuffer* GetAHardwareBuffer();
 #elif defined(USE_OZONE)
   scoped_refptr<gfx::NativePixmap> GetNativePixmap();
+#elif BUILDFLAG(IS_WIN)
+  virtual scoped_refptr<gl::DCOMPSurfaceProxy> GetDCOMPSurfaceProxy();
 #endif
 
   // TODO(penghuang): Refactor it to not depend on GL.

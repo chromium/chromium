@@ -19,6 +19,10 @@
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_export.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gl/dcomp_surface_proxy.h"
+#endif
+
 namespace gl {
 class GLImage;
 }
@@ -35,6 +39,11 @@ struct GL_EXPORT DCRendererLayerParams {
   enum : size_t { kNumImages = 2 };
   using OverlayImages = std::array<scoped_refptr<gl::GLImage>, kNumImages>;
   OverlayImages images;
+
+#if BUILDFLAG(IS_WIN)
+  // DCOMPSurfaceProxy corresponding to MF video renderer.
+  scoped_refptr<gl::DCOMPSurfaceProxy> dcomp_surface_proxy;
+#endif
 
   // Stacking order relative to backbuffer which has z-order 0.
   int z_order = 1;

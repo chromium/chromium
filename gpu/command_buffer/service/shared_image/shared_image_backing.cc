@@ -49,6 +49,8 @@ const char* BackingTypeToString(SharedImageBackingType type) {
       return "WrappedSkImage";
     case SharedImageBackingType::kCompound:
       return "CompoundImageBacking";
+    case SharedImageBackingType::kDCOMPSurfaceProxy:
+      return "DCOMPSurfaceProxy";
   }
   NOTREACHED();
 }
@@ -96,6 +98,8 @@ SkImageInfo SharedImageBacking::AsSkImageInfo() const {
 bool SharedImageBacking::CopyToGpuMemoryBuffer() {
   return false;
 }
+
+void SharedImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
 
 bool SharedImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
   NOTREACHED();

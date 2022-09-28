@@ -17,7 +17,7 @@
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "ui/gl/gl_image_dcomp_surface.h"
+#include "ui/gl/dcomp_surface_proxy.h"
 
 namespace gfx {
 class Size;
@@ -27,7 +27,7 @@ namespace gpu {
 class GpuChannel;
 struct Mailbox;
 
-class DCOMPTexture : public gl::GLImageDCOMPSurface,
+class DCOMPTexture : public gl::DCOMPSurfaceProxy,
                      public SharedContextState::ContextLostObserver,
                      public mojom::DCOMPTexture {
  public:
@@ -41,21 +41,23 @@ class DCOMPTexture : public gl::GLImageDCOMPSurface,
   // releases its ref on this class.
   void ReleaseChannel();
 
+  // gl::DCOMPSurfaceProxy implementation.
+  const gfx::Size& GetSize() const override;
+  HANDLE GetSurfaceHandle() override;
+  void SetParentWindow(HWND parent) override;
+  void SetRect(const gfx::Rect& window_relative_rect) override;
+
  private:
   DCOMPTexture(GpuChannel* channel,
                int32_t route_id,
                mojo::PendingAssociatedReceiver<mojom::DCOMPTexture> receiver,
                scoped_refptr<SharedContextState> context_state);
-  DCOMPTexture(const DCOMPTexture&) = delete;
-  DCOMPTexture& operator=(const DCOMPTexture&) = delete;
   ~DCOMPTexture() override;
-
-  // gl::GLImage implementation is in gl::GLImageDCOMPSurface.
 
   // SharedContextState::ContextLostObserver implementation.
   void OnContextLost() override;
 
-  // mojom::DCOMPTexture:
+  // mojom::DCOMPTexture implementation.
   void StartListening(
       mojo::PendingAssociatedRemote<mojom::DCOMPTextureClient> client) override;
   void SetTextureSize(const gfx::Size& size) override;
@@ -64,11 +66,15 @@ class DCOMPTexture : public gl::GLImageDCOMPSurface,
 
   gpu::Mailbox CreateSharedImage();
   gfx::Rect GetParentWindowRect();
-  void SetParentWindow(HWND parent) override;
+
   void OnUpdateParentWindowRect();
-  void SetRect(const gfx::Rect& window_relative_rect) override;
   void SendOutputRect();
-  bool IsContextValid() const override;
+
+  // Size of {1, 1} to signify the Media Foundation rendering pipeline is not
+  // ready to setup DCOMP video yet.
+  gfx::Size size_ = gfx::Size(1, 1);
+  base::win::ScopedHandle surface_handle_;
+  HWND last_parent_ = nullptr;
 
   bool context_lost_ = false;
   bool shared_image_mailbox_created_ = false;

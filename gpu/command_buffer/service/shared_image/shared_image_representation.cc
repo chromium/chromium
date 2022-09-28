@@ -291,6 +291,11 @@ AHardwareBuffer* OverlayImageRepresentation::GetAHardwareBuffer() {
 scoped_refptr<gfx::NativePixmap> OverlayImageRepresentation::GetNativePixmap() {
   return backing()->GetNativePixmap();
 }
+#elif BUILDFLAG(IS_WIN)
+scoped_refptr<gl::DCOMPSurfaceProxy>
+OverlayImageRepresentation::GetDCOMPSurfaceProxy() {
+  return nullptr;
+}
 #endif
 
 OverlayImageRepresentation::ScopedReadAccess::ScopedReadAccess(

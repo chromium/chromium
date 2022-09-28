@@ -70,6 +70,7 @@ enum class SharedImageBackingType {
   kVideo = 11,
   kWrappedSkImage = 12,
   kCompound = 13,
+  kDCOMPSurfaceProxy = 14,
 };
 
 // Represents the actual storage (GL texture, VkImage, GMB) for a SharedImage.
@@ -139,7 +140,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // Marks the provided rect as cleared.
   virtual void SetClearedRect(const gfx::Rect& cleared_rect) = 0;
 
-  virtual void Update(std::unique_ptr<gfx::GpuFence> in_fence) = 0;
+  virtual void Update(std::unique_ptr<gfx::GpuFence> in_fence);
 
   // Uploads pixels from memory into GPU texture. Backings must implement this
   // if they support `SHARED_IMAGE_USAGE_CPU_UPLOAD`.

@@ -22,7 +22,6 @@
 #include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_image_d3d.h"
-#include "ui/gl/gl_image_dcomp_surface.h"
 #include "ui/gl/gl_image_dxgi.h"
 #include "ui/gl/gl_image_memory.h"
 #include "ui/gl/gl_switches.h"
@@ -947,10 +946,8 @@ bool SwapChainPresenter::PresentToSwapChain(
   *transform = params.transform;
   *clip_rect = params.clip_rect.value_or(gfx::Rect());
 
-  if (GLImageDCOMPSurface::FromGLImage(
-          params.images[kYPlaneImageIndex].get()) != nullptr) {
+  if (params.dcomp_surface_proxy)
     return PresentDCOMPSurface(params);
-  }
 
   // SwapChainPresenter can be reused when switching between MediaFoundation
   // (MF) video content and non-MF content; in such cases, the DirectComposition
@@ -1250,42 +1247,52 @@ bool SwapChainPresenter::PresentDCOMPSurface(
 
   ReleaseSwapChainResources();
 
-  GLImageDCOMPSurface* image_dcomp_surface =
-      GLImageDCOMPSurface::FromGLImage(params.images[kYPlaneImageIndex].get());
+  auto dcomp_surface_proxy = params.dcomp_surface_proxy;
 
-  if (layer_tree_->window() != image_dcomp_surface->GetParentWindow())
-    image_dcomp_surface->SetParentWindow(layer_tree_->window());
+  dcomp_surface_proxy->SetParentWindow(layer_tree_->window());
 
   // Apply transform to video and notify DCOMPTexture.
   gfx::Transform transform = params.transform;
   gfx::RectF on_screen_bounds(params.quad_rect);
   transform.TransformRect(&on_screen_bounds);
-  image_dcomp_surface->SetRect(gfx::ToEnclosingRect(on_screen_bounds));
+  dcomp_surface_proxy->SetRect(gfx::ToEnclosingRect(on_screen_bounds));
 
-  // If |image_dcomp_surface| size is {1, 1}, the texture was initialized
-  // without knowledge of output size; do not add to |clip_visual_|.
-  if (image_dcomp_surface->GetSize().width() == 1 &&
-      image_dcomp_surface->GetSize().height() == 1) {
+  // If |dcomp_surface_proxy| size is {1, 1}, the texture was initialized
+  // without knowledge of output size; reset |content_| so it's not added to the
+  // visual tree.
+  if (dcomp_surface_proxy->GetSize() == gfx::Size(1, 1)) {
     // If |content_visual_| is not updated, empty the visual and clear the DComp
     // surface to prevent stale content from being displayed.
     ReleaseDCOMPSurfaceResourcesIfNeeded();
     DVLOG(2) << __func__ << " this=" << this
-             << " image_dcomp_surface size (1x1) path.";
+             << " dcomp_surface_proxy size (1x1) path.";
     return true;
   }
 
   // TODO(crbug.com/999747): Call UpdateVisuals() here.
 
   // This visual's content was a different DC surface.
-  if (dcomp_surface_handle_ != image_dcomp_surface->GetSurfaceHandle()) {
+  HANDLE surface_handle = dcomp_surface_proxy->GetSurfaceHandle();
+  if (dcomp_surface_handle_ != surface_handle) {
     DVLOG(2) << "Update visual's content. " << __func__ << "(" << this << ")";
 
-    Microsoft::WRL::ComPtr<IDCompositionSurface> texture_dc_surface =
-        image_dcomp_surface->CreateSurfaceForDevice(dcomp_device_.Get());
-    content_ = texture_dc_surface.Get();
-    // Don't take ownership of handle as the GLImageDCOMPSurface instance
-    // manages it
-    dcomp_surface_handle_ = image_dcomp_surface->GetSurfaceHandle();
+    Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface;
+    Microsoft::WRL::ComPtr<IDCompositionDevice> dcomp_device1;
+    HRESULT hr = dcomp_device_.As(&dcomp_device1);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to get DCOMP device. hr=" << hr;
+      return false;
+    }
+
+    hr = dcomp_device1->CreateSurfaceFromHandle(surface_handle, &dcomp_surface);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to create DCOMP surface. hr=" << hr;
+      return false;
+    }
+
+    content_ = dcomp_surface.Get();
+    // Don't take ownership of handle as the DCOMPSurfaceProxy instance owns it.
+    dcomp_surface_handle_ = surface_handle;
   }
 
   return true;
