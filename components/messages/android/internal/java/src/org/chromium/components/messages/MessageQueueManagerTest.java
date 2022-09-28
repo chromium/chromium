@@ -64,12 +64,12 @@ public class MessageQueueManagerTest {
 
     private class EmptyMessageStateHandler implements MessageStateHandler {
         @Override
-        public Animator show(int fromIndex, int endIndex) {
+        public Animator show(int fromIndex, int toIndex) {
             return new AnimatorSet();
         }
 
         @Override
-        public Animator hide(int fromIndex, int endIndex, boolean animate) {
+        public Animator hide(int fromIndex, int toIndex, boolean animate) {
             return new AnimatorSet();
         }
 

@@ -84,12 +84,12 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     /**
      * Show a message view on the given {@link MessageContainer}.
      * @param fromIndex The initial position of the message view.
-     * @param endIndex The target position of the message view.
+     * @param toIndex The target position of the message view.
      * @return The animator to move the message view.
      */
     @NonNull
     @Override
-    public Animator show(int fromIndex, int endIndex) {
+    public Animator show(int fromIndex, int toIndex) {
         if (mMessageBanner == null) {
             mView = (MessageBannerView) LayoutInflater.from(mContainer.getContext())
                             .inflate(R.layout.message_banner_view, mContainer, false);
@@ -103,8 +103,8 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         }
 
         // Update elevation to ensure background view is always behind the front one.
-        int elevationDimen = endIndex == Position.FRONT ? R.dimen.message_banner_elevation
-                                                        : R.dimen.message_banner_back_elevation;
+        int elevationDimen = toIndex == Position.FRONT ? R.dimen.message_banner_elevation
+                                                       : R.dimen.message_banner_back_elevation;
         mModel.set(MessageBannerProperties.ELEVATION,
                 mView.getResources().getDimension(elevationDimen));
         // #show can be called multiple times when its own index is updated.
@@ -112,24 +112,24 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
             mContainer.addMessage(mView);
         }
 
-        if (endIndex == Position.FRONT) {
+        if (toIndex == Position.FRONT) {
             mContainer.setA11yDelegate(this);
         }
 
         mMessageShownTime = MessagesMetrics.now();
-        return mMessageBanner.show(fromIndex, endIndex);
+        return mMessageBanner.show(fromIndex, toIndex);
     }
 
     /**
      * Hide the message view shown on the given {@link MessageContainer}.
      * @param fromIndex The initial position of the message view.
-     * @param endIndex The target position of the message view.
+     * @param toIndex The target position of the message view.
      * @param animate Whether to show animation.
      * @return The animator to move the message view.
      */
     @Nullable
     @Override
-    public Animator hide(int fromIndex, int endIndex, boolean animate) {
+    public Animator hide(int fromIndex, int toIndex, boolean animate) {
         return mMessageBanner.hide(animate, () -> mContainer.removeMessage(mView));
     }
 

@@ -28,21 +28,21 @@ public interface MessageStateHandler {
     /**
      * Signals that the message needs to show its UI.
      * @param fromIndex The position from which the message view starts to move.
-     * @param endIndex The target position at which the message view animation will stop.
+     * @param toIndex The target position at which the message view animation will stop.
      * @return The animator to trigger the showing animation.
      */
     @NonNull
-    Animator show(@Position int fromIndex, @Position int endIndex);
+    Animator show(@Position int fromIndex, @Position int toIndex);
 
     /**
      * Signals that the message needs to hide its UI.
      * @param fromIndex The position from which the message view starts to move.
-     * @param endIndex The target position at which the message view animation will stop.
+     * @param toIndex The target position at which the message view animation will stop.
      * @param animate Whether animation should be run or not.
      * @return The animator to trigger the hiding animation.
      */
     @Nullable
-    Animator hide(@Position int fromIndex, @Position int endIndex, boolean animate);
+    Animator hide(@Position int fromIndex, @Position int toIndex, boolean animate);
 
     /**
      * Notify that the message is about to be dismissed from the queue.

@@ -91,12 +91,12 @@ class MessageBannerCoordinator {
     /**
      * Shows the message banner.
      * @param fromIndex The initial position.
-     * @param endIndex The target position the message is moving to.
+     * @param toIndex The target position the message is moving to.
      * @return The animator which shows the message view.
      */
-    Animator show(@Position int fromIndex, @Position int endIndex) {
-        return mMediator.show(fromIndex, endIndex, () -> {
-            if (endIndex != Position.FRONT) {
+    Animator show(@Position int fromIndex, @Position int toIndex) {
+        return mMediator.show(fromIndex, toIndex, () -> {
+            if (toIndex != Position.FRONT) {
                 setOnTouchRunnable(null);
                 setOnTitleChanged(null);
                 mTimer.cancelTimer();

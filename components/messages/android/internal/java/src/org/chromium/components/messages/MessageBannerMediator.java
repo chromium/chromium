@@ -112,15 +112,15 @@ class MessageBannerMediator implements SwipeHandler {
     /**
      * Shows the message banner with an animation.
      * @param fromIndex The initial position.
-     * @param endIndex The target position the message is moving to.
+     * @param toIndex The target position the message is moving to.
      * @param messageShown The {@link Runnable} that will run once the message banner is shown.
      * @return The animator to show the message.
      */
-    Animator show(@Position int fromIndex, @Position int endIndex, Runnable messageShown) {
+    Animator show(@Position int fromIndex, @Position int toIndex, Runnable messageShown) {
         if (mCurrentState == State.HIDDEN) {
             mModel.set(TRANSLATION_Y,
                     fromIndex == Position.FRONT ? 0 : -mMaxTranslationYSupplier.get());
-        } else if (mCurrentState == State.IDLE && endIndex == Position.FRONT) {
+        } else if (mCurrentState == State.IDLE && toIndex == Position.FRONT) {
             // Animating marginTop is expensive. Use translationY to simulate the effect of
             // marginTop.
             mModel.set(TRANSLATION_Y, mPeekingMarginTop - mDefaultMarginTop);
@@ -128,7 +128,7 @@ class MessageBannerMediator implements SwipeHandler {
         }
         cancelAnyAnimations();
         return startAnimation(true, 0, false,
-                endIndex == Position.BACK ? mPeekingMarginTop : mDefaultMarginTop, messageShown);
+                toIndex == Position.BACK ? mPeekingMarginTop : mDefaultMarginTop, messageShown);
     }
 
     /**
