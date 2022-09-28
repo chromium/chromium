@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.view.ActionMode;
 import android.view.View;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -172,13 +174,14 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
         mAutocompleteAnchorView = autocompleteAnchorView;
+        Context context = mLocationBarLayout.getContext();
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         // TODO(crbug.com/1151513): Inject LocaleManager instance to LocationBarCoordinator instead
         // of using the singleton.
-        mLocationBarMediator = new LocationBarMediator(mLocationBarLayout.getContext(),
-                mLocationBarLayout, locationBarDataProvider, profileObservableSupplier,
-                privacyPreferencesManager, overrideUrlLoadingDelegate, LocaleManager.getInstance(),
+        mLocationBarMediator = new LocationBarMediator(context, mLocationBarLayout,
+                locationBarDataProvider, profileObservableSupplier, privacyPreferencesManager,
+                overrideUrlLoadingDelegate, LocaleManager.getInstance(),
                 mTemplateUrlServiceSupplier, backKeyBehavior, windowAndroid,
                 isTablet() && isTabletLayout(), searchEngineLogoUtils, LensController.getInstance(),
                 launchAssistanceSettingsAction, saveOfflineButtonState, omniboxUma,
@@ -228,18 +231,17 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
                     mAutocompleteCoordinator.updateSuggestionListLayoutDirection();
                 }));
 
-        mLocationBarLayout.getContext().registerComponentCallbacks(mLocationBarMediator);
+        context.registerComponentCallbacks(mLocationBarMediator);
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
                 locationBarDataProvider, searchEngineLogoUtils);
 
-        mDropdownStandardBackgroundColor =
-                locationBarDataProvider.getDropdownStandardBackgroundColor();
-        mDropdownIncognitoBackgroundColor =
-                locationBarDataProvider.getDropdownIncognitoBackgroundColor();
+        mDropdownStandardBackgroundColor = ChromeColors.getSurfaceColor(
+                context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+        mDropdownIncognitoBackgroundColor = context.getColor(R.color.omnibox_dropdown_bg_incognito);
         mSuggestionStandardBackgroundColor =
-                locationBarDataProvider.getSuggestionStandardBackgroundColor();
+                ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_elevation);
         mSuggestionIncognitoBackgroundColor =
-                locationBarDataProvider.getSuggestionIncognitoBackgroundColor();
+                context.getColor(R.color.omnibox_suggestion_bg_incognito);
 
         if (isPhoneLayout()) {
             mSubCoordinator = new LocationBarCoordinatorPhone(

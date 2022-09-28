@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -513,8 +514,8 @@ public class SearchActivity extends AsyncInitializationActivity
                     getResources().getDimensionPixelOffset(R.dimen.toolbar_edge_padding_modern);
             toolbarView.setPaddingRelative(edgePadding, toolbarView.getPaddingTop(), edgePadding,
                     toolbarView.getPaddingBottom());
-            toolbarView.setBackground(
-                    new ColorDrawable(mSearchBoxDataProvider.getDropdownStandardBackgroundColor()));
+            toolbarView.setBackground(new ColorDrawable(ChromeColors.getSurfaceColor(
+                    this, R.dimen.omnibox_suggestion_dropdown_bg_elevation)));
         }
         return contentView;
     }
