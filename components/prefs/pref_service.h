@@ -268,7 +268,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   //
   // To set the value of dictionary or list values in the pref tree, use
   // SetDict()/SetList(), but to modify the value of a dictionary or list use
-  // either DictionaryPrefUpdate or ListPrefUpdate from
+  // either ScopedDictPrefUpdate or ScopedListPrefUpdate from
   // scoped_user_pref_update.h.
   void Set(const std::string& path, const base::Value& value);
   void SetBoolean(const std::string& path, bool value);

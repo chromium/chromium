@@ -166,11 +166,10 @@ class ScopedUserPrefUpdate : public subtle::ScopedUserPrefUpdateBase {
   base::Value* operator->() { return Get(); }
 };
 
-// DEPRECATED: Please use ScopedDictPrefUpdate or ScopedListPrefUpdate instead.
+// DEPRECATED: Please use ScopedDictPrefUpdate instead.
 //
-// TODO(https://crbug.com/1362719): Migrate consumers and delete these.
+// TODO(https://crbug.com/1362719): Migrate consumers and delete this.
 typedef ScopedUserPrefUpdate<base::Value::Type::DICTIONARY>
     DictionaryPrefUpdate;
-typedef ScopedUserPrefUpdate<base::Value::Type::LIST> ListPrefUpdate;
 
 #endif  // COMPONENTS_PREFS_SCOPED_USER_PREF_UPDATE_H_

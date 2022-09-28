@@ -178,20 +178,6 @@ TEST_F(ScopedUserPrefUpdateTest, NeverTouchAnything) {
   Mock::VerifyAndClearExpectations(&dict_observer_);
 }
 
-TEST_F(ScopedUserPrefUpdateTest, UpdatingListPrefWithDefaults) {
-  base::Value::List defaults;
-  defaults.Append("firstvalue");
-  defaults.Append("secondvalue");
-
-  std::string pref_name = "mypref";
-  prefs_.registry()->RegisterListPref(pref_name, std::move(defaults));
-  EXPECT_EQ(2u, prefs_.GetList(pref_name).size());
-
-  ListPrefUpdate update(&prefs_, pref_name);
-  update->Append("thirdvalue");
-  EXPECT_EQ(3u, prefs_.GetList(pref_name).size());
-}
-
 TEST_F(ScopedUserPrefUpdateTest, UpdatingDictionaryPrefWithDefaults) {
   base::Value::Dict defaults;
   defaults.Set("firstkey", "value");

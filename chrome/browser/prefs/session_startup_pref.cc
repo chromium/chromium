@@ -14,7 +14,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "components/url_formatter/url_fixer.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -92,13 +91,10 @@ void SessionStartupPref::SetStartupPref(PrefService* prefs,
   if (!SessionStartupPref::URLsAreManaged(prefs)) {
     // Always save the URLs, that way the UI can remain consistent even if the
     // user changes the startup type pref.
-    // Ownership of the list Value retains with the pref service.
-    ListPrefUpdate update(prefs, prefs::kURLsToRestoreOnStartup);
-    base::Value* url_pref_list = update.Get();
-    DCHECK(url_pref_list);
-    url_pref_list->ClearList();
+    base::Value::List url_pref_list;
     for (GURL url : pref.urls)
-      url_pref_list->Append(url.spec());
+      url_pref_list.Append(url.spec());
+    prefs->SetList(prefs::kURLsToRestoreOnStartup, std::move(url_pref_list));
   }
 }
 
