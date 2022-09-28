@@ -991,6 +991,9 @@ void NativeWidgetAura::OnDeviceScaleFactorChanged(
 
 void NativeWidgetAura::OnWindowDestroying(aura::Window* window) {
   window_->RemoveObserver(this);
+  if (wm::TransientWindowManager::GetIfExists(window_)) {
+    wm::TransientWindowManager::GetOrCreate(window_)->RemoveObserver(this);
+  }
   delegate_->OnNativeWidgetDestroying();
 
   // If the aura::Window is destroyed, we can no longer show tooltips.

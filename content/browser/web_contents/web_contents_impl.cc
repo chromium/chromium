@@ -827,6 +827,7 @@ void WebContentsImpl::WebContentsTreeNode::OnFrameTreeNodeDestroyed(
       << "WebContentsTreeNode should only receive notifications for the "
          "FrameTreeNode in its outer WebContents that hosts it.";
 
+  node->RemoveObserver(this);
   // Deletes |this| too.
   outer_web_contents_->node_.DetachInnerWebContents(current_web_contents_);
 }

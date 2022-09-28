@@ -1876,9 +1876,9 @@ mojom::FrameHost* RenderFrameImpl::GetFrameHost() {
 
 RenderFrameImpl::~RenderFrameImpl() {
   for (auto& observer : observers_)
-    observer.RenderFrameGone();
-  for (auto& observer : observers_)
     observer.OnDestruct();
+  for (auto& observer : observers_)
+    observer.RenderFrameGone();
 
   web_media_stream_device_observer_.reset();
 
