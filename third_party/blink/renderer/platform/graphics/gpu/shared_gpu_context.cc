@@ -117,17 +117,8 @@ void SharedGpuContext::CreateContextProviderIfNeeded(
     if (is_gpu_compositing_disabled_ && only_if_gpu_compositing)
       return;
     std::unique_ptr<blink::WebGraphicsContext3DProvider> context_provider;
-    if (base::FeatureList::IsEnabled(blink::features::kDawn2dCanvas)) {
-      context_provider =
-          Platform::Current()->CreateWebGPUGraphicsContext3DProvider(
-              blink::WebURL());
-      if (context_provider) {
-        context_provider->BindToCurrentThread();
-      }
-    } else {
-      context_provider =
-          Platform::Current()->CreateSharedOffscreenGraphicsContext3DProvider();
-    }
+    context_provider =
+        Platform::Current()->CreateSharedOffscreenGraphicsContext3DProvider();
     if (context_provider) {
       context_provider_wrapper_ =
           std::make_unique<WebGraphicsContext3DProviderWrapper>(

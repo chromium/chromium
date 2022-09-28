@@ -78,7 +78,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
     kDirectGpuMemoryBuffer [[deprecated]] = 6,
     kPassThrough = 7,
     kSwapChain = 8,
-    kSkiaDawnSharedImage = 9,
+    kSkiaDawnSharedImage [[deprecated]] = 9,
     kMaxValue = kSkiaDawnSharedImage,
   };
 

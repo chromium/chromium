@@ -680,9 +680,6 @@ BASE_FEATURE(kLowLatencyCanvas2dImageChromium,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 );
 
-// Enables Dawn-accelerated 2D canvas.
-BASE_FEATURE(kDawn2dCanvas, "Dawn2dCanvas", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables small accelerated canvases for webview (crbug.com/1004304)
 BASE_FEATURE(kWebviewAccelerateSmallCanvases,
              "WebviewAccelerateSmallCanvases",
