@@ -425,8 +425,10 @@ public class AppLanguagePromoDialog {
 
         Locale originalSystemLocale =
                 GlobalAppLocaleController.getInstance().getOriginalSystemLocale();
-        return getTopLanguagesHelper(
+        LinkedHashSet<LanguageItem> topLanguages = getTopLanguagesHelper(
                 uiLanguages, topLanguageCodes, currentOverrideLanguage, originalSystemLocale);
+        recordTopLanguageCount(topLanguages.size());
+        return topLanguages;
     }
 
     /**
@@ -615,6 +617,11 @@ public class AppLanguagePromoDialog {
         RecordHistogram.recordEnumeratedHistogram(
                 "LanguageSettings.AppLanguagePrompt.TopULPMatchStatus", hasMatch,
                 TopULPMatchType.NUM_ENTRIES);
+    }
+
+    private static void recordTopLanguageCount(int count) {
+        RecordHistogram.recordCount100Histogram(
+                "LanguageSettings.AppLanguagePrompt.TopLanguageCount", count);
     }
 
     private static void recordIsTopLanguage(boolean isTopLanguage) {

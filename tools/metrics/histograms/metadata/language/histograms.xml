@@ -183,6 +183,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LanguageSettings.AppLanguagePrompt.TopLanguageCount"
+    units="count" expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The count of top languages not hidden behind the &quot;Other languages&quot;
+    button.
+
+    Logged once when the AppLanguagePrompt is shown.
+  </summary>
+</histogram>
+
 <histogram name="LanguageSettings.AppLanguagePrompt.TopULPMatchStatus"
     enum="ULPTopLanguageMatch" expires_after="2023-03-19">
   <owner>perrier@chromium.org</owner>
@@ -229,7 +241,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LanguageUsage.AcceptLanguage.Count" units="units"
+<histogram name="LanguageUsage.AcceptLanguage.Count" units="count"
     expires_after="2023-03-19">
   <owner>dvallet@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
