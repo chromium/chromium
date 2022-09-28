@@ -20,6 +20,10 @@ class DecoderBuffer;
 class VideoDecoderConfig;
 class VideoFrame;
 
+// Interface for all video decoders.
+//
+// VideoDecoders may be constructed on any thread, after which all calls must
+// occur on a single sequence (which may differ from the construction sequence).
 class MEDIA_EXPORT VideoDecoder : public Decoder {
  public:
   // Callback for Decoder initialization.
