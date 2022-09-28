@@ -369,6 +369,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
     return window_drag_controller_.get();
   }
 
+  ScopedOverviewHideWindows* hide_windows_for_saved_desks_grid() {
+    return hide_windows_for_saved_desks_grid_.get();
+  }
+
   OverviewHighlightController* highlight_controller() {
     return highlight_controller_.get();
   }
@@ -478,6 +482,11 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   std::unique_ptr<OverviewWindowDragController> window_drag_controller_;
 
   std::unique_ptr<ScopedOverviewHideWindows> hide_overview_windows_;
+
+  // Scoped windows to hide for saved desks grid. For now, this contains only
+  // the real window in the overview to make sure it's not shown via other
+  // events for saved desks grid.
+  std::unique_ptr<ScopedOverviewHideWindows> hide_windows_for_saved_desks_grid_;
 
   std::unique_ptr<OverviewHighlightController> highlight_controller_;
 

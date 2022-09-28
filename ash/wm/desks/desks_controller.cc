@@ -36,6 +36,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/scoped_overview_hide_windows.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/switchable_windows.h"
@@ -173,6 +174,13 @@ void RemoveAllWindowsFromOverview() {
       overview_session->RemoveItem(overview_item);
     }
   }
+
+  // Clear the hidden windows for saved desks grid so that when we reach the
+  // new desk, the hidden windows will be handled correctly.
+  ScopedOverviewHideWindows* hide_windows =
+      overview_session->hide_windows_for_saved_desks_grid();
+  if (hide_windows)
+    hide_windows->RemoveAllWindows();
 }
 
 // Updates the |ShelfItem::is_on_active_desk| of the items associated with

@@ -32,6 +32,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
+#include "ash/wm/overview/scoped_overview_hide_windows.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"
@@ -220,8 +221,20 @@ void OverviewItem::HideForDesksTemplatesGrid(bool animate) {
   // property on the window, we can force it to stay visible.
   GetWindow()->SetProperty(kForceVisibleInMiniViewKey, true);
 
+  // Temporarily hide this window in overview, so that dark/light theme change
+  // does not reset the layer visible. If `animate` is false, the callback will
+  // not run in `PerformFadeOutLayer`. Thus, here we make sure the window is
+  // also hidden in that case.
   DCHECK(item_widget_);
-  PerformFadeOutLayer(item_widget_->GetLayer(), animate, base::DoNothing());
+  hide_window_in_overview_callback_.Reset(base::BindOnce(
+      &OverviewItem::HideWindowInOverview, weak_ptr_factory_.GetWeakPtr()));
+  PerformFadeOutLayer(item_widget_->GetLayer(), animate,
+                      hide_window_in_overview_callback_.callback());
+  if (!animate) {
+    // Cancel the callback if we are going to run it directly.
+    hide_window_in_overview_callback_.Cancel();
+    HideWindowInOverview();
+  }
 
   for (aura::Window* transient_child : GetTransientTreeIterator(GetWindow())) {
     transient_child->SetProperty(kForceVisibleInMiniViewKey, true);
@@ -236,6 +249,13 @@ void OverviewItem::HideForDesksTemplatesGrid(bool animate) {
 }
 
 void OverviewItem::RevertHideForDesksTemplatesGrid(bool animate) {
+  // This might run before `HideForDesksTemplatesGrid()`, thus cancel the
+  // callback to prevent such case.
+  hide_window_in_overview_callback_.Cancel();
+
+  // Restore and show the window back to overview.
+  ShowWindowInOverview();
+
   // `item_widget_` may be null during shutdown if the window is minimized.
   if (item_widget_)
     PerformFadeInLayer(item_widget_->GetLayer(), animate);
@@ -1419,6 +1439,20 @@ aura::Window::Windows OverviewItem::GetWindowsForHomeGesture() {
   if (cannot_snap_widget_)
     windows.push_back(cannot_snap_widget_->GetNativeWindow());
   return windows;
+}
+
+void OverviewItem::HideWindowInOverview() {
+  ScopedOverviewHideWindows* hide_windows =
+      overview_session_->hide_windows_for_saved_desks_grid();
+  if (hide_windows && !hide_windows->HasWindow(GetWindow()))
+    hide_windows->AddWindow(GetWindow());
+}
+
+void OverviewItem::ShowWindowInOverview() {
+  ScopedOverviewHideWindows* hide_windows =
+      overview_session_->hide_windows_for_saved_desks_grid();
+  if (hide_windows && hide_windows->HasWindow(GetWindow()))
+    hide_windows->RemoveWindow(GetWindow());
 }
 
 }  // namespace ash
