@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/api/automation/automation_position.h"
+#include "ui/accessibility/platform/automation/automation_position.h"
 
 #include "gin/arguments.h"
 #include "gin/object_template_builder.h"
 #include "ui/accessibility/ax_node.h"
 
-namespace extensions {
+namespace ui {
 
 AutomationPosition::AutomationPosition(const ui::AXNode& node,
                                        int offset,
@@ -440,4 +440,4 @@ std::u16string AutomationPosition::GetText(gin::Arguments* arguments) {
   return position_->GetText();
 }
 
-}  // namespace extensions
+}  // namespace ui

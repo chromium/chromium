@@ -84,6 +84,9 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   v8::Local<v8::Context> GetContext() const override;
   void RouteHandlerFunction(const std::string& name,
                             HandlerFunction handler_function) override;
+  void RouteHandlerFunction(const std::string& name,
+                            const std::string& api_name,
+                            HandlerFunction handler_function) override;
   std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event> ParseEventType(
       const std::string& event_type) const override;
 
@@ -126,36 +129,9 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   void RemoveTreeChangeObserver(
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  void GetFocus(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  //
-  // Access the cached accessibility trees and properties of their nodes.
-  //
-
-  // Args: string ax_tree_id, int node_id, Returns: int child_id.
-  void GetChildIDAtIndex(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // Returns: string tree_id and int node_id of a node which has global
-  // accessibility focus.
-  void GetAccessibilityFocus(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // Args: string ax_tree_id.
-  void SetDesktopID(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // Args: string ax_tree_id, int node_id
-  // Returns: JS object with a map from html attribute key to value.
-  void GetHtmlAttributes(const v8::FunctionCallbackInfo<v8::Value>& args);
-
   // Args: string ax_tree_id, int node_id
   // Returns: JS object with a string key for each state flag that's set.
   void GetState(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // Creates the backing AutomationPosition native object given a request from
-  // javascript.
-  // Args: string ax_tree_id, int node_id, int offset, bool is_downstream
-  // Returns: JS object with bindings back to the native AutomationPosition.
-  void CreateAutomationPosition(
-      const v8::FunctionCallbackInfo<v8::Value>& args);
 
   void GetImageAnnotation(v8::Isolate* isolate,
                           v8::ReturnValue<v8::Value> result,

@@ -34,6 +34,9 @@ class AX_EXPORT AutomationV8Router {
       base::RepeatingCallback<void(const v8::FunctionCallbackInfo<v8::Value>&)>;
   virtual void RouteHandlerFunction(const std::string& name,
                                     HandlerFunction handler_function) = 0;
+  virtual void RouteHandlerFunction(const std::string& name,
+                                    const std::string& api_name,
+                                    HandlerFunction handler_function) = 0;
 };
 }  // namespace ui
 

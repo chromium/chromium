@@ -15,8 +15,6 @@ source_set("renderer") {
     "api/automation/automation_api_helper.h",
     "api/automation/automation_internal_custom_bindings.cc",
     "api/automation/automation_internal_custom_bindings.h",
-    "api/automation/automation_position.cc",
-    "api/automation/automation_position.h",
     "api_activity_logger.cc",
     "api_activity_logger.h",
     "api_definitions_natives.cc",

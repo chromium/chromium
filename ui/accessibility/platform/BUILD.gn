@@ -100,6 +100,8 @@ source_set("platform") {
       "automation/automation_api_util.h",
       "automation/automation_ax_tree_wrapper.cc",
       "automation/automation_ax_tree_wrapper.h",
+      "automation/automation_position.cc",
+      "automation/automation_position.h",
       "automation/automation_tree_manager_owner.cc",
       "automation/automation_tree_manager_owner.h",
       "automation/automation_v8_bindings.cc",

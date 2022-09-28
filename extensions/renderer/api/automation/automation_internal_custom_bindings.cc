@@ -27,7 +27,6 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/automation.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/renderer/api/automation/automation_position.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "extensions/renderer/script_context.h"
@@ -42,7 +41,6 @@
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
-#include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/platform/automation/automation_api_util.h"
@@ -262,13 +260,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
   ROUTE_FUNCTION(DestroyAccessibilityTree);
   ROUTE_FUNCTION(AddTreeChangeObserver);
   ROUTE_FUNCTION(RemoveTreeChangeObserver);
-  ROUTE_FUNCTION(GetChildIDAtIndex);
-  ROUTE_FUNCTION(GetFocus);
-  ROUTE_FUNCTION(GetHtmlAttributes);
   ROUTE_FUNCTION(GetState);
-  ROUTE_FUNCTION(CreateAutomationPosition);
-  ROUTE_FUNCTION(GetAccessibilityFocus);
-  ROUTE_FUNCTION(SetDesktopID);
 #undef ROUTE_FUNCTION
 
   // This should only be called once.
@@ -491,94 +483,6 @@ void AutomationInternalCustomBindings::RemoveTreeChangeObserver(
   UpdateOverallTreeChangeObserverFilter();
 }
 
-void AutomationInternalCustomBindings::GetFocus(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() != 0) {
-    ThrowInvalidArgumentsException();
-    return;
-  }
-
-  ui::AutomationAXTreeWrapper* desktop_tree =
-      GetAutomationAXTreeWrapperFromTreeID(desktop_tree_id());
-  ui::AutomationAXTreeWrapper* focused_wrapper = nullptr;
-  ui::AXNode* focused_node = nullptr;
-  if (desktop_tree &&
-      !GetFocusInternal(desktop_tree, &focused_wrapper, &focused_node))
-    return;
-
-  if (!desktop_tree) {
-    focused_wrapper = GetAutomationAXTreeWrapperFromTreeID(focus_tree_id());
-    if (!focused_wrapper)
-      return;
-
-    focused_node = focused_wrapper->GetNodeFromTree(
-        focused_wrapper->GetTreeID(), focus_id());
-    if (!focused_node)
-      return;
-  }
-
-  args.GetReturnValue().Set(
-      gin::DataObjectBuilder(GetIsolate())
-          .Set("treeId", focused_wrapper->GetTreeID().ToString())
-          .Set("nodeId", focused_node->id())
-          .Build());
-}
-
-void AutomationInternalCustomBindings::GetAccessibilityFocus(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  ui::AutomationAXTreeWrapper* tree_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(accessibility_focused_tree_id());
-  if (!tree_wrapper)
-    return;
-
-  ui::AXNode* node = tree_wrapper->GetAccessibilityFocusedNode();
-  if (!node)
-    return;
-
-  args.GetReturnValue().Set(
-      gin::DataObjectBuilder(GetIsolate())
-          .Set("treeId", accessibility_focused_tree_id().ToString())
-          .Set("nodeId", node->id())
-          .Build());
-}
-
-void AutomationInternalCustomBindings::SetDesktopID(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() != 1 || !args[0]->IsString()) {
-    ThrowInvalidArgumentsException();
-    return;
-  }
-
-  SetDesktopTreeId(ui::AXTreeID::FromString(
-      *v8::String::Utf8Value(args.GetIsolate(), args[0])));
-}
-
-void AutomationInternalCustomBindings::GetHtmlAttributes(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  v8::Isolate* isolate = GetIsolate();
-  if (args.Length() < 2 || !args[0]->IsString() || !args[1]->IsNumber())
-    ThrowInvalidArgumentsException();
-
-  ui::AXTreeID tree_id =
-      ui::AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
-  int node_id = args[1]->Int32Value(context()->v8_context()).FromMaybe(0);
-
-  ui::AutomationAXTreeWrapper* tree_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(tree_id);
-  if (!tree_wrapper)
-    return;
-
-  ui::AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
-  if (!node)
-    return;
-
-  gin::DataObjectBuilder dst(isolate);
-  for (const auto& pair : node->data().html_attributes)
-    dst.Set(pair.first, pair.second);
-  args.GetReturnValue().Set(dst.Build());
-}
-
 void AutomationInternalCustomBindings::GetState(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* isolate = GetIsolate();
@@ -629,36 +533,6 @@ void AutomationInternalCustomBindings::GetState(
   args.GetReturnValue().Set(state.Build());
 }
 
-void AutomationInternalCustomBindings::CreateAutomationPosition(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  v8::Isolate* isolate = GetIsolate();
-  if (args.Length() < 4 || !args[0]->IsString() /* tree id */ ||
-      !args[1]->IsInt32() /* node id */ || !args[2]->IsInt32() /* offset */ ||
-      !args[3]->IsBoolean() /* is upstream affinity */) {
-    ThrowInvalidArgumentsException();
-  }
-
-  ui::AXTreeID tree_id =
-      ui::AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
-  int node_id = args[1]->Int32Value(context()->v8_context()).ToChecked();
-
-  ui::AutomationAXTreeWrapper* tree_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(tree_id);
-  if (!tree_wrapper)
-    return;
-
-  ui::AXNode* node = tree_wrapper->ax_tree()->GetFromId(node_id);
-  if (!node)
-    return;
-
-  int offset = args[2]->Int32Value(context()->v8_context()).ToChecked();
-  bool is_upstream = args[3]->BooleanValue(isolate);
-
-  gin::Handle<AutomationPosition> handle = gin::CreateHandle(
-      isolate, new AutomationPosition(*node, offset, is_upstream));
-  args.GetReturnValue().Set(handle.ToV8().As<v8::Object>());
-}
-
 void AutomationInternalCustomBindings::GetImageAnnotation(
     v8::Isolate* isolate,
     v8::ReturnValue<v8::Value> result,
@@ -695,52 +569,6 @@ void AutomationInternalCustomBindings::UpdateOverallTreeChangeObserverFilter() {
   tree_change_observer_overall_filter_ = 0;
   for (const auto& observer : tree_change_observers_)
     tree_change_observer_overall_filter_ |= 1 << observer.filter;
-}
-
-void AutomationInternalCustomBindings::GetChildIDAtIndex(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() < 3 || !args[2]->IsNumber()) {
-    ThrowInvalidArgumentsException();
-    return;
-  }
-
-  ui::AXTreeID tree_id = ui::AXTreeID::FromString(
-      *v8::String::Utf8Value(args.GetIsolate(), args[0]));
-  int node_id = args[1]->Int32Value(context()->v8_context()).FromMaybe(0);
-
-  ui::AutomationAXTreeWrapper* tree_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(tree_id);
-  if (!tree_wrapper)
-    return;
-
-  ui::AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
-  if (!node)
-    return;
-
-  int index = args[2]->Int32Value(context()->v8_context()).FromMaybe(0);
-
-  // Check for child roots.
-  std::vector<ui::AXNode*> child_roots = GetRootsOfChildTree(node);
-
-  if (index < 0)
-    return;
-
-  ui::AXNode* child_node = nullptr;
-  if (!child_roots.empty() && static_cast<size_t>(index) < child_roots.size()) {
-    child_node = child_roots[index];
-  } else if (static_cast<size_t>(index) >= node->GetUnignoredChildCount()) {
-    return;
-  } else {
-    child_node = node->GetUnignoredChildAtIndex(static_cast<size_t>(index));
-  }
-
-  DCHECK(child_node);
-
-  gin::DataObjectBuilder response(GetIsolate());
-  response.Set("treeId", child_node->tree()->GetAXTreeID().ToString());
-  response.Set("nodeId", child_node->id());
-  args.GetReturnValue().Set(response.Build());
 }
 
 //
@@ -1014,6 +842,14 @@ void AutomationInternalCustomBindings::RouteHandlerFunction(
     const std::string& name,
     HandlerFunction handler_function) {
   ObjectBackedNativeHandler::RouteHandlerFunction(name, handler_function);
+}
+
+void AutomationInternalCustomBindings::RouteHandlerFunction(
+    const std::string& name,
+    const std::string& api_name,
+    HandlerFunction handler_function) {
+  ObjectBackedNativeHandler::RouteHandlerFunction(name, api_name,
+                                                  handler_function);
 }
 
 std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>

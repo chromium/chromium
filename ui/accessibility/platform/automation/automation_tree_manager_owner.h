@@ -54,7 +54,7 @@ class AX_EXPORT AutomationTreeManagerOwner {
           absl::optional<AXEventGenerator::Event>()) = 0;
 
   virtual void TreeEventListenersChanged(
-      ui::AutomationAXTreeWrapper* tree_wrapper) = 0;
+      AutomationAXTreeWrapper* tree_wrapper) = 0;
 
   // Gets the hosting node in a parent tree.
   AXNode* GetHostInParentTree(
@@ -115,12 +115,34 @@ class AX_EXPORT AutomationTreeManagerOwner {
       AXNode* node,
       bool start_boundary);
 
+  bool GetFocus(AXTreeID* focused_tree_id, int* node_id);
+
+  //
+  // Access the cached accessibility trees and properties of their nodes.
+  //
+
+  // Sets |child_tree_id| and |child_node_id|. Returns false if not successful.
+  bool GetChildIDAtIndex(const AXTreeID& ax_tree_id,
+                         int node_id,
+                         int index,
+                         AXTreeID* child_tree_id,
+                         int* child_node_id);
+
+  // Sets the |node_id| and |tree_id| for the node which has global
+  // accessibility focus, or returns false if it cannot find the focus.
+  bool GetAccessibilityFocus(AXTreeID* tree_id, int* node_id);
+
+  // Find the node with the given ID in the tree with the given ID, or
+  // returns nullptr if not found.s
+  AXNode* GetNodeFromTree(const AXTreeID& tree_id, int node_id);
+
   const AXTreeID& accessibility_focused_tree_id() const {
     return accessibility_focused_tree_id_;
   }
   void SetAccessibilityFocusedTreeID(AXTreeID tree_id) {
     accessibility_focused_tree_id_ = tree_id;
   }
+  void SetDesktopTreeId(AXTreeID tree_id) { desktop_tree_id_ = tree_id; }
 
  protected:
   friend class extensions::AutomationInternalCustomBindingsTest;
@@ -143,8 +165,6 @@ class AX_EXPORT AutomationTreeManagerOwner {
   const AXTreeID& focus_tree_id() const { return focus_tree_id_; }
 
   int32_t focus_id() const { return focus_id_; }
-
-  void SetDesktopTreeId(AXTreeID tree_id) { desktop_tree_id_ = tree_id; }
 
   const AXTreeID& desktop_tree_id() { return desktop_tree_id_; }
 

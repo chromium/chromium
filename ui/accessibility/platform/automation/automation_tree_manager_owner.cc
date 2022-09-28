@@ -542,6 +542,94 @@ std::vector<int> AutomationTreeManagerOwner::CalculateSentenceBoundary(
   return sentence_boundary;
 }
 
+bool AutomationTreeManagerOwner::GetFocus(AXTreeID* focused_tree_id,
+                                          int* node_id) {
+  AutomationAXTreeWrapper* desktop_tree =
+      GetAutomationAXTreeWrapperFromTreeID(desktop_tree_id());
+  AutomationAXTreeWrapper* focused_wrapper = nullptr;
+  AXNode* focused_node = nullptr;
+  if (desktop_tree &&
+      !GetFocusInternal(desktop_tree, &focused_wrapper, &focused_node))
+    return false;
+
+  if (!desktop_tree) {
+    focused_wrapper = GetAutomationAXTreeWrapperFromTreeID(focus_tree_id());
+    if (!focused_wrapper)
+      return false;
+
+    focused_node = focused_wrapper->GetNodeFromTree(
+        focused_wrapper->GetTreeID(), focus_id());
+    if (!focused_node)
+      return false;
+  }
+
+  *focused_tree_id = focused_wrapper->GetTreeID();
+  *node_id = focused_node->id();
+  return true;
+}
+
+bool AutomationTreeManagerOwner::GetChildIDAtIndex(const AXTreeID& tree_id,
+                                                   int node_id,
+                                                   int index,
+                                                   AXTreeID* child_tree_id,
+                                                   int* child_node_id) {
+  if (index < 0)
+    return false;
+
+  ui::AutomationAXTreeWrapper* tree_wrapper =
+      GetAutomationAXTreeWrapperFromTreeID(tree_id);
+  if (!tree_wrapper)
+    return false;
+
+  ui::AXNode* node =
+      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
+  if (!node)
+    return false;
+
+  // Check for child roots.
+  std::vector<ui::AXNode*> child_roots = GetRootsOfChildTree(node);
+
+  ui::AXNode* child_node = nullptr;
+  if (!child_roots.empty() && static_cast<size_t>(index) < child_roots.size()) {
+    child_node = child_roots[index];
+  } else if (static_cast<size_t>(index) >= node->GetUnignoredChildCount()) {
+    return false;
+  } else {
+    child_node = node->GetUnignoredChildAtIndex(static_cast<size_t>(index));
+  }
+
+  DCHECK(child_node);
+  *child_tree_id = child_node->tree()->GetAXTreeID();
+  *child_node_id = child_node->id();
+  return true;
+}
+
+bool AutomationTreeManagerOwner::GetAccessibilityFocus(ui::AXTreeID* tree_id,
+                                                       int* node_id) {
+  AutomationAXTreeWrapper* tree_wrapper =
+      GetAutomationAXTreeWrapperFromTreeID(accessibility_focused_tree_id());
+  if (!tree_wrapper)
+    return false;
+
+  AXNode* node = tree_wrapper->GetAccessibilityFocusedNode();
+  if (!node)
+    return false;
+
+  *tree_id = accessibility_focused_tree_id();
+  *node_id = node->id();
+  return true;
+}
+
+AXNode* AutomationTreeManagerOwner::GetNodeFromTree(const ui::AXTreeID& tree_id,
+                                                    int node_id) {
+  AutomationAXTreeWrapper* tree_wrapper =
+      GetAutomationAXTreeWrapperFromTreeID(tree_id);
+  if (!tree_wrapper)
+    return nullptr;
+
+  return tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
+}
+
 void AutomationTreeManagerOwner::CacheAutomationTreeWrapperForTreeID(
     const AXTreeID& tree_id,
     AutomationAXTreeWrapper* tree_wrapper) {

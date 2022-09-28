@@ -10,12 +10,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
+#include "gin/handle.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/platform/automation/automation_api_util.h"
+#include "ui/accessibility/platform/automation/automation_position.h"
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
 #include "ui/accessibility/platform/automation/automation_v8_router.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -468,8 +470,21 @@ AutomationV8Bindings::AutomationV8Bindings(AutomationTreeManagerOwner* owner,
 AutomationV8Bindings::~AutomationV8Bindings() = default;
 
 void AutomationV8Bindings::AddV8Routes() {
+  // It's safe to use base::Unretained(this) here because these bindings
+  // will only be called on a valid AutomationV8Bindings instance
+  // and none of the functions have any side effects.
+#define ROUTE_FUNCTION(FN)                     \
+  automation_v8_router_->RouteHandlerFunction( \
+      #FN, "automation",                       \
+      base::BindRepeating(&AutomationV8Bindings::FN, base::Unretained(this)))
   // TODO(crbug.com/1357889): Add more routes from
   // AutomationInternalCustomBindings.
+  ROUTE_FUNCTION(GetChildIDAtIndex);
+  ROUTE_FUNCTION(GetFocus);
+  ROUTE_FUNCTION(GetHtmlAttributes);
+  ROUTE_FUNCTION(CreateAutomationPosition);
+  ROUTE_FUNCTION(GetAccessibilityFocus);
+  ROUTE_FUNCTION(SetDesktopID);
 
   // Bindings that take a Tree ID and return a property of the tree.
 
@@ -1433,6 +1448,132 @@ void AutomationV8Bindings::RouteNodeIDPlusEventFunction(
       automation_tree_manager_owner_, automation_v8_router_, callback);
   automation_v8_router_->RouteHandlerFunction(
       name, base::BindRepeating(&NodeIDPlusEventWrapper::Run, wrapper));
+}
+
+void AutomationV8Bindings::GetFocus(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() != 0) {
+    automation_v8_router_->ThrowInvalidArgumentsException();
+    return;
+  }
+
+  int node_id;
+  AXTreeID focused_tree_id;
+  if (!automation_tree_manager_owner_->GetFocus(&focused_tree_id, &node_id))
+    return;
+
+  args.GetReturnValue().Set(
+      gin::DataObjectBuilder(automation_v8_router_->GetIsolate())
+          .Set("treeId", focused_tree_id.ToString())
+          .Set("nodeId", node_id)
+          .Build());
+}
+
+void AutomationV8Bindings::GetAccessibilityFocus(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  AXTreeID tree_id;
+  int node_id;
+  if (!automation_tree_manager_owner_->GetAccessibilityFocus(&tree_id,
+                                                             &node_id))
+    return;
+
+  args.GetReturnValue().Set(
+      gin::DataObjectBuilder(automation_v8_router_->GetIsolate())
+          .Set("treeId", tree_id.ToString())
+          .Set("nodeId", node_id)
+          .Build());
+}
+
+void AutomationV8Bindings::SetDesktopID(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() != 1 || !args[0]->IsString()) {
+    automation_v8_router_->ThrowInvalidArgumentsException();
+    return;
+  }
+
+  automation_tree_manager_owner_->SetDesktopTreeId(
+      AXTreeID::FromString(*v8::String::Utf8Value(args.GetIsolate(), args[0])));
+}
+
+void AutomationV8Bindings::GetHtmlAttributes(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = automation_v8_router_->GetIsolate();
+  if (args.Length() < 2 || !args[0]->IsString() || !args[1]->IsNumber())
+    automation_v8_router_->ThrowInvalidArgumentsException();
+
+  AXTreeID tree_id =
+      AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
+  int node_id =
+      args[1]->Int32Value(automation_v8_router_->GetContext()).FromMaybe(0);
+
+  AXNode* node =
+      automation_tree_manager_owner_->GetNodeFromTree(tree_id, node_id);
+  if (!node)
+    return;
+
+  gin::DataObjectBuilder dst(isolate);
+  for (const auto& pair : node->data().html_attributes)
+    dst.Set(pair.first, pair.second);
+  args.GetReturnValue().Set(dst.Build());
+}
+
+void AutomationV8Bindings::GetChildIDAtIndex(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() < 3 || !args[2]->IsNumber()) {
+    automation_v8_router_->ThrowInvalidArgumentsException();
+    return;
+  }
+
+  AXTreeID tree_id =
+      AXTreeID::FromString(*v8::String::Utf8Value(args.GetIsolate(), args[0]));
+  int node_id =
+      args[1]->Int32Value(automation_v8_router_->GetContext()).FromMaybe(0);
+  int index =
+      args[2]->Int32Value(automation_v8_router_->GetContext()).FromMaybe(0);
+
+  int child_node_id;
+  AXTreeID child_tree_id;
+  if (!automation_tree_manager_owner_->GetChildIDAtIndex(
+          tree_id, node_id, index, &child_tree_id, &child_node_id))
+    return;
+
+  gin::DataObjectBuilder response(automation_v8_router_->GetIsolate());
+  response.Set("treeId", child_tree_id.ToString());
+  response.Set("nodeId", child_node_id);
+  args.GetReturnValue().Set(response.Build());
+}
+
+void AutomationV8Bindings::CreateAutomationPosition(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = automation_v8_router_->GetIsolate();
+  if (args.Length() < 4 || !args[0]->IsString() /* tree id */ ||
+      !args[1]->IsInt32() /* node id */ || !args[2]->IsInt32() /* offset */ ||
+      !args[3]->IsBoolean() /* is upstream affinity */) {
+    automation_v8_router_->ThrowInvalidArgumentsException();
+  }
+
+  AXTreeID tree_id =
+      AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
+  int node_id =
+      args[1]->Int32Value(automation_v8_router_->GetContext()).ToChecked();
+
+  AutomationAXTreeWrapper* tree_wrapper =
+      automation_tree_manager_owner_->GetAutomationAXTreeWrapperFromTreeID(
+          tree_id);
+  if (!tree_wrapper)
+    return;
+
+  AXNode* node = tree_wrapper->ax_tree()->GetFromId(node_id);
+  if (!node)
+    return;
+
+  int offset =
+      args[2]->Int32Value(automation_v8_router_->GetContext()).ToChecked();
+  bool is_upstream = args[3]->BooleanValue(isolate);
+
+  gin::Handle<AutomationPosition> handle = gin::CreateHandle(
+      isolate, new AutomationPosition(*node, offset, is_upstream));
+  args.GetReturnValue().Set(handle.ToV8().As<v8::Object>());
 }
 
 void AutomationV8Bindings::GetParentID(v8::Isolate* isolate,

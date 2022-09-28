@@ -2,26 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_POSITION_H_
-#define EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_POSITION_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_POSITION_H_
+#define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_POSITION_H_
 
 #include "gin/wrappable.h"
 #include "ui/accessibility/ax_node_position.h"
-#include "ui/accessibility/ax_tree_id.h"
 
 namespace gin {
 class Arguments;
 }
 
-namespace extensions {
+namespace ui {
 
 // A class that wraps an ui::AXPosition to make available in javascript.
 //
 // For new additions, consider whether it should be public to the
 // chrome.automation extension api. If so, please update
 // extensions/common/api/automation.idl.
-// TODO(crbug.com/1357889): Move into ui/accessibility/platform/automation/.
-class AutomationPosition final : public gin::Wrappable<AutomationPosition> {
+class AX_EXPORT AutomationPosition final
+    : public gin::Wrappable<AutomationPosition> {
  public:
   AutomationPosition(const ui::AXNode& node, int offset, bool is_upstream);
 
@@ -104,6 +103,6 @@ class AutomationPosition final : public gin::Wrappable<AutomationPosition> {
   ui::AXNodePosition::AXPositionInstance position_;
 };
 
-}  // namespace extensions
+}  // namespace ui
 
-#endif  // EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_POSITION_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_POSITION_H_
