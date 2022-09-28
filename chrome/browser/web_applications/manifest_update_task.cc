@@ -444,8 +444,12 @@ void ManifestUpdateTask::UpdateAfterWindowsClose() {
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   keep_alive_ = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
-  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-      profile, ProfileKeepAliveOrigin::kWebAppUpdate);
+  if (!profile->IsOffTheRecord()) {
+    // TODO(crbug.com/1369117): The DevTools Protocol's OTR profile can be
+    // destroyed at any time, which causes crashes...
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kWebAppUpdate);
+  }
 
   Observe(nullptr);
 
