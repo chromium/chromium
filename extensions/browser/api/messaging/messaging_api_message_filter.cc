@@ -151,20 +151,20 @@ bool IsValidSourceContext(RenderProcessHost& process,
 
 base::debug::CrashKeyString* GetTargetIdCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ExternalConnectionInfo::target_id", base::debug::CrashKeySize::Size64);
+      "ExternalConnectionInfo-target_id", base::debug::CrashKeySize::Size64);
   return crash_key;
 }
 
 base::debug::CrashKeyString* GetSourceOriginCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ExternalConnectionInfo::source_origin",
+      "ExternalConnectionInfo-source_origin",
       base::debug::CrashKeySize::Size256);
   return crash_key;
 }
 
 base::debug::CrashKeyString* GetSourceUrlCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ExternalConnectionInfo::source_url", base::debug::CrashKeySize::Size256);
+      "ExternalConnectionInfo-source_url", base::debug::CrashKeySize::Size256);
   return crash_key;
 }
 
