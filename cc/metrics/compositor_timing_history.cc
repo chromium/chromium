@@ -820,10 +820,6 @@ void CompositorTimingHistory::DidDraw(bool used_new_active_tree,
   draw_start_time_ = base::TimeTicks();
 }
 
-void CompositorTimingHistory::SetTreePriority(TreePriority priority) {
-  tree_priority_ = priority;
-}
-
 void CompositorTimingHistory::RecordDeadlineMode(DeadlineMode deadline_mode) {
   if (uma_reporter_)
     uma_reporter_->AddImplFrameDeadlineType(deadline_mode);

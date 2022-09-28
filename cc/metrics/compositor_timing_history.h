@@ -86,7 +86,6 @@ class CC_EXPORT CompositorTimingHistory {
   void DidDraw(bool used_new_active_tree,
                bool has_custom_property_animations);
   void WillInvalidateOnImplSide();
-  void SetTreePriority(TreePriority priority);
 
   // Record the scheduler's deadline mode and send to UMA.
   using DeadlineMode = SchedulerStateMachine::BeginImplFrameDeadlineMode;
@@ -173,8 +172,6 @@ class CC_EXPORT CompositorTimingHistory {
 
   // Used only for reporting animation targeted UMA.
   bool previous_frame_had_custom_property_animations_ = false;
-
-  TreePriority tree_priority_ = SAME_PRIORITY_FOR_BOTH_TREES;
 };
 
 }  // namespace cc

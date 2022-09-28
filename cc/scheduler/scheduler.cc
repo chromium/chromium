@@ -209,7 +209,6 @@ void Scheduler::DidReceiveCompositorFrameAck() {
 void Scheduler::SetTreePrioritiesAndScrollState(
     TreePriority tree_priority,
     ScrollHandlerState scroll_handler_state) {
-  compositor_timing_history_->SetTreePriority(tree_priority);
   state_machine_.SetTreePrioritiesAndScrollState(tree_priority,
                                                  scroll_handler_state);
   ProcessScheduledActions();
