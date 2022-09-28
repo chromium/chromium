@@ -9,7 +9,7 @@
 
 namespace permissions {
 // Alphabetical:
-extern const base::Feature kAndroidApproximateLocationPermissionSupport;
+BASE_DECLARE_FEATURE(kAndroidApproximateLocationPermissionSupport);
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_ANDROID_PERMISSIONS_ANDROID_FEATURE_LIST_H_

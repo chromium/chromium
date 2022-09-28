@@ -9,88 +9,100 @@ namespace features {
 
 // Enables or disables whether permission prompts are automatically blocked
 // after the user has explicitly dismissed them too many times.
-const base::Feature kBlockPromptsIfDismissedOften{
-    "BlockPromptsIfDismissedOften", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kBlockPromptsIfDismissedOften,
+             "BlockPromptsIfDismissedOften",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables whether permission prompts are automatically blocked
 // after the user has ignored them too many times.
-const base::Feature kBlockPromptsIfIgnoredOften{
-    "BlockPromptsIfIgnoredOften", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kBlockPromptsIfIgnoredOften,
+             "BlockPromptsIfIgnoredOften",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Once the user declines a notification permission prompt in a WebContents,
 // automatically dismiss subsequent prompts in the same WebContents, from any
 // origin, until the next user-initiated navigation.
-const base::Feature kBlockRepeatedNotificationPermissionPrompts{
-    "BlockRepeatedNotificationPermissionPrompts",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kBlockRepeatedNotificationPermissionPrompts,
+             "BlockRepeatedNotificationPermissionPrompts",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kConfirmationChip{"ConfirmationChip",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kConfirmationChip,
+             "ConfirmationChip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kChipLocationBarIconOverride{
-    "ChipLocationIconOverride", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kChipLocationBarIconOverride,
+             "ChipLocationIconOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kNotificationInteractionHistory{
-    "NotificationInteractionHistory", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNotificationInteractionHistory,
+             "NotificationInteractionHistory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kOneTimeGeolocationPermission{
-    "OneTimeGeolocationPermission", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOneTimeGeolocationPermission,
+             "OneTimeGeolocationPermission",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables an experimental permission prompt that uses a chip in the location
 // bar.
-const base::Feature kPermissionChip{"PermissionChip",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPermissionChip,
+             "PermissionChip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Not supported on Android.
-const base::Feature kPermissionQuietChip{"PermissionQuietChip",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPermissionQuietChip,
+             "PermissionQuietChip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #else
 
 // Enables a less prominent permission prompt that uses a chip in the location
 // bar. Requires chrome://flags/#quiet-notification-prompts to be enabled.
-const base::Feature kPermissionQuietChip{"PermissionQuietChip",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPermissionQuietChip,
+             "PermissionQuietChip",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const base::Feature kPermissionChipAutoDismiss{
-    "PermissionChipAutoDismiss", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPermissionChipAutoDismiss,
+             "PermissionChipAutoDismiss",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kPermissionChipAutoDismissDelay{
     &kPermissionChipAutoDismiss, "delay_ms", 6000};
 
 // When kPermissionChip (above) is enabled, controls whether or not the
 // permission chip should be more prominent when the request is associated with
 // a gesture. Does nothing when kPermissionChip is disabled.
-const base::Feature kPermissionChipGestureSensitive{
-    "PermissionChipGestureSensitive", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPermissionChipGestureSensitive,
+             "PermissionChipGestureSensitive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When kPermissionChip (above) is enabled, controls whether or not the
 // permission chip should be more or less prominent depending on the request
 // type. Does nothing when kPermissionChip is disabled.
-const base::Feature kPermissionChipRequestTypeSensitive{
-    "PermissionChipRequestTypeSensitive", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPermissionChipRequestTypeSensitive,
+             "PermissionChipRequestTypeSensitive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, use the value of the `service_url` FeatureParam as the url
 // for the Web Permission Predictions Service.
-const base::Feature kPermissionPredictionServiceUseUrlOverride{
-    "kPermissionPredictionServiceUseUrlOverride",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPermissionPredictionServiceUseUrlOverride,
+             "kPermissionPredictionServiceUseUrlOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPermissionOnDeviceNotificationPredictions{
-    "PermissionOnDeviceNotificationPredictions",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPermissionOnDeviceNotificationPredictions,
+             "PermissionOnDeviceNotificationPredictions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kPermissionOnDeviceGeolocationPredictions{
-    "PermissionOnDeviceGeolocationPredictions",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPermissionOnDeviceGeolocationPredictions,
+             "PermissionOnDeviceGeolocationPredictions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 
 // When enabled, blocks notifications permission prompt when Chrome doesn't
 // have app level Notification permission.
-const base::Feature kBlockNotificationPromptsIfDisabledOnAppLevel{
-    "BlockNotificationPromptsIfDisabledOnAppLevel",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kBlockNotificationPromptsIfDisabledOnAppLevel,
+             "BlockNotificationPromptsIfDisabledOnAppLevel",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #else
 
@@ -101,14 +113,16 @@ const base::Feature kBlockNotificationPromptsIfDisabledOnAppLevel{
 // required and should be coming from field trial params of the same name. The
 // `probability` parameter is an odd-one out and is defined and handled by the
 // HatsService itself.
-const base::Feature kPermissionsPostPromptSurvey{
-    "PermissionsPostPromptSurvey", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPermissionsPostPromptSurvey,
+             "PermissionsPostPromptSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, permissions grants with a durable session model will have
 // an expiration date set. The interpretation of the expiration date
 // is not handled by this component, but left to the embedding browser.
-const base::Feature kRecordPermissionExpirationTimestamps{
-    "RecordPermissionExpirationTimestamps", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRecordPermissionExpirationTimestamps,
+             "RecordPermissionExpirationTimestamps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
