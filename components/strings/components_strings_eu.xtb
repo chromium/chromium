@@ -1208,7 +1208,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4221630205957821124">&lt;h4&gt;1. urratsa: hasi saioa atarian&lt;/h4&gt;
     &lt;p&gt;Kafetegi edo aireportuetako Wi-Fi sareetan, beharrezkoa izan ohi da saioa hastea. Saioa hasteko orria ikusteko, joan hau erabiltzen duen web-orri batera: &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
-    &lt;li&gt;Joan hasieran &lt;code&gt;http://&lt;/code&gt; duen webguneren batera; esaterako, &lt;a href="http://adibidea.com" target="_blank"&gt;http://adibidea.com&lt;/a&gt;.&lt;/li&gt;
+    &lt;li&gt;Joan hasieran &lt;code&gt;http://&lt;/code&gt; duen webguneren batera; esaterako, &lt;a href="http://example.com" target="_blank"&gt;http://example.com&lt;/a&gt;.&lt;/li&gt;
     &lt;li&gt;Saioa hasteko orria irekiko da; hasi saioa bertan Internet erabiltzeko.&lt;/li&gt;
     &lt;/ol&gt;
     &lt;h4&gt;2. urratsa: ireki web-orria ezkutuko moduan (ordenagailuan bakarrik)&lt;/h4&gt;
@@ -1318,7 +1318,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Enkriptatu sinkronizatutako pasahitzak Google-ko kontuarekin</translation>
 <translation id="4492519888999857993">Eginbide hauek modu lehenetsian daude desgaituta. Ez dira egongo erabilgarri Chrome-ren hurrengo bertsioetan.</translation>
-<translation id="4493480324863638523">URLak ez du balio. Eskema estandarreko URLa izan behar du, hala nola "http://adibidea.eus" edo "https://adibidea.eus".</translation>
+<translation id="4493480324863638523">URLak ez du balio. Eskema estandarreko URLa izan behar du, hala nola "http://example.com" edo "https://example.com".</translation>
 <translation id="4500587658229086076">segurua ez den edukia</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
 <translation id="4506176782989081258">Baliozkotze-errorea: <ph name="VALIDATION_ERROR" />.</translation>
