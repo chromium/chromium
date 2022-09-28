@@ -11,7 +11,6 @@
 #include <map>
 #include <set>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -20,7 +19,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "media/base/byte_queue.h"
 #include "media/base/demuxer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_tracks.h"
