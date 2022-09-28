@@ -494,8 +494,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       }
 
       const bool is_initialized = representation->IsCleared();
-      auto ignore_validation_errors =
-          IgnoreValidationErrorsScope(procs, device);
       auto result =
           base::WrapUnique(new SharedImageRepresentationAndAccessSkiaFallback(
               std::move(shared_context_state), std::move(representation), procs,
@@ -874,6 +872,40 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     WGPUDevice device_;
     WGPUTexture texture_;
     WGPUTextureUsage usage_;
+  };
+
+  // Implementation of SharedImageRepresentationAndAccess that yields an error
+  // texture.
+  class ErrorSharedImageRepresentationAndAccess
+      : public SharedImageRepresentationAndAccess {
+   public:
+    ErrorSharedImageRepresentationAndAccess(const DawnProcTable& procs,
+                                            WGPUDevice device,
+                                            WGPUTextureUsage usage)
+        : procs_(procs) {
+      // Note: the texture descriptor matters little since this texture won't be
+      // used for reflection, and all validation check the error state of the
+      // texture before the texture attributes.
+      WGPUTextureDescriptor texture_desc = {
+          .usage = static_cast<WGPUTextureUsageFlags>(usage),
+          .dimension = WGPUTextureDimension_2D,
+          .size = {1, 1, 1},
+          .format = WGPUTextureFormat_RGBA8Unorm,
+          .mipLevelCount = 1,
+          .sampleCount = 1,
+      };
+      texture_ = procs_.deviceCreateErrorTexture(device, &texture_desc);
+    }
+
+    ~ErrorSharedImageRepresentationAndAccess() override {
+      procs_.textureRelease(texture_);
+    }
+
+    WGPUTexture texture() const override { return texture_; }
+
+   private:
+    const DawnProcTable& procs_;
+    WGPUTexture texture_;
   };
 
   // Map from the <ID, generation> pair for a wire texture to the shared image
@@ -1678,7 +1710,13 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   }
 
   if (!representation_and_access) {
-    return error::kInvalidArguments;
+    // According to the WebGPU specification, failing to create a WGPUTexture
+    // which wraps a shared image (like the canvas drawing buffer) should yield
+    // an error WGPUTexture. Use an implementation of
+    // SharedImageRepresentationAndAccess which always provides an error.
+    representation_and_access =
+        std::make_unique<ErrorSharedImageRepresentationAndAccess>(
+            dawn::native::GetProcs(), device, usage);
   }
 
   // Inject the texture in the dawn::wire::Server and remember which shared

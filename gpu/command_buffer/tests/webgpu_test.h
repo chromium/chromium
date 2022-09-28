@@ -73,6 +73,9 @@ class WebGPUTest : public testing::Test {
     return gpu_service_holder_.get();
   }
 
+  static std::map<std::pair<WGPUDevice, WGPUErrorType>, /* matched */ bool>
+      s_expected_errors;
+
   wgpu::Instance instance_ = nullptr;
   wgpu::Adapter adapter_ = nullptr;
 
@@ -85,6 +88,20 @@ class WebGPUTest : public testing::Test {
   GpuMemoryBufferFactoryIOSurface image_factory_;
 #endif
 };
+
+#define EXPECT_WEBGPU_ERROR(device, type, statement)                           \
+  do {                                                                         \
+    PollUntilIdle();                                                           \
+    auto it =                                                                  \
+        s_expected_errors.insert({std::make_pair(device.Get(), type), false}); \
+    EXPECT_TRUE(it.second)                                                     \
+        << "Only one expectation per-device-per-type supported.";              \
+    statement;                                                                 \
+    PollUntilIdle();                                                           \
+    EXPECT_TRUE(it.first->second)                                              \
+        << "Expected error (" << type << ") in `" #statement "`";              \
+    s_expected_errors.erase(it.first);                                         \
+  } while (0)
 
 }  // namespace gpu
 

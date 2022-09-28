@@ -47,6 +47,9 @@ void CountCallback(int* count) {
 
 WebGPUTest::Options::Options() = default;
 
+std::map<std::pair<WGPUDevice, WGPUErrorType>, /* matched */ bool>
+    WebGPUTest::s_expected_errors = {};
+
 WebGPUTest::WebGPUTest() = default;
 WebGPUTest::~WebGPUTest() = default;
 
@@ -118,6 +121,9 @@ void WebGPUTest::Initialize(const Options& options) {
 
   cmd_helper_ = std::make_unique<webgpu::WebGPUCmdHelper>(
       context_->GetCommandBufferForTest());
+
+  webgpu()->SetLostContextCallback(base::BindLambdaForTesting(
+      []() { GTEST_FAIL() << "Context lost unexpectedly."; }));
 
   DawnProcTable procs = webgpu()->GetAPIChannel()->GetProcs();
   dawnProcSetProcs(&procs);
@@ -250,10 +256,16 @@ wgpu::Device WebGPUTest::GetNewDevice() {
       },
       nullptr);
   device.SetUncapturedErrorCallback(
-      [](WGPUErrorType type, const char* message, void*) {
+      [](WGPUErrorType type, const char* message, void* userdata) {
+        auto it = s_expected_errors.find(
+            std::make_pair(static_cast<WGPUDevice>(userdata), type));
+        if (it != s_expected_errors.end() && !it->second) {
+          it->second = true;
+          return;
+        }
         GTEST_FAIL() << "Unexpected error (" << type << "): " << message;
       },
-      nullptr);
+      device.Get());
   return device;
 }
 
@@ -296,6 +308,7 @@ TEST_F(WebGPUTest, ReportLossReentrant) {
 TEST_F(WebGPUTest, RequestAdapterAfterContextLost) {
   Initialize(WebGPUTest::Options());
 
+  webgpu()->SetLostContextCallback(base::DoNothing());
   webgpu()->OnGpuControlLostContext();
 
   bool called = false;
@@ -316,6 +329,7 @@ TEST_F(WebGPUTest, RequestAdapterAfterContextLost) {
 TEST_F(WebGPUTest, RequestDeviceAfterContextLost) {
   Initialize(WebGPUTest::Options());
 
+  webgpu()->SetLostContextCallback(base::DoNothing());
   webgpu()->OnGpuControlLostContext();
 
   bool called = false;

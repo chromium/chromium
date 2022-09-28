@@ -265,19 +265,6 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
   GetGpuServiceHolder()->ScheduleGpuTask(base::BindOnce(
       [](webgpu::WebGPUDecoder* decoder, webgpu::ReservedTexture reservation,
          gpu::Mailbox mailbox) {
-        // Error case: invalid mailbox
-        {
-          gpu::Mailbox bad_mailbox;
-          AssociateMailboxCmdStorage cmd;
-          cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
-                       reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
-                       webgpu::WEBGPU_MAILBOX_NONE, bad_mailbox.name);
-          EXPECT_EQ(
-              error::kInvalidArguments,
-              ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(bad_mailbox.name)));
-        }
-
         // Error case: device client id doesn't exist.
         {
           AssociateMailboxCmdStorage cmd;
@@ -364,6 +351,41 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
   GetGpuServiceHolder()->gpu_thread_task_runner()->RunsTasksInCurrentSequence();
 }
 
+// Test that AssociateMailbox with a bad mailbox produces an error texture.
+TEST_P(WebGPUMailboxTest, AssociateMailboxCmdBadMailboxMakesErrorTexture) {
+  // Create the shared image
+  SharedImageInterface* sii = GetSharedImageInterface();
+  Mailbox mailbox = sii->CreateSharedImage(
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
+      kNullSurfaceHandle);
+
+  webgpu::ReservedTexture reservation = webgpu()->ReserveTexture(device_.Get());
+
+  GetGpuServiceHolder()->ScheduleGpuTask(base::BindOnce(
+      [](webgpu::WebGPUDecoder* decoder, webgpu::ReservedTexture reservation,
+         gpu::Mailbox mailbox) {
+        // Error case: invalid mailbox
+        {
+          gpu::Mailbox bad_mailbox;
+          AssociateMailboxCmdStorage cmd;
+          cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
+                       reservation.id, reservation.generation,
+                       WGPUTextureUsage_TextureBinding,
+                       webgpu::WEBGPU_MAILBOX_NONE, bad_mailbox.name);
+          EXPECT_EQ(
+              error::kNoError,
+              ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(bad_mailbox.name)));
+        }
+      },
+      GetDecoder(), reservation, mailbox));
+
+  wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+
+  // Expect an error when creating a view since the texture is an error.
+  EXPECT_WEBGPU_ERROR(device_, WGPUErrorType_Validation, texture.CreateView());
+}
+
 TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
   // Create the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
@@ -424,7 +446,8 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
 // Test that Associate and Dissociate mailbox may be used after the device is
 // destroyed. The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxAfterDeviceDestroy) {
-  if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac") &&
+      !GPUTestBotConfig::CurrentConfigMatches("Win10")) {
     GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
   }
 
@@ -440,19 +463,62 @@ TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxAfterDeviceDestroy) {
 
   device_.Destroy();
 
-  webgpu()->AssociateMailbox(
-      reservation.deviceId, reservation.deviceGeneration, reservation.id,
-      reservation.generation, WGPUTextureUsage_RenderAttachment,
-      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<const GLbyte*>(&mailbox));
+  EXPECT_WEBGPU_ERROR(
+      device_, WGPUErrorType_Validation,
+      webgpu()->AssociateMailbox(
+          reservation.deviceId, reservation.deviceGeneration, reservation.id,
+          reservation.generation, WGPUTextureUsage_RenderAttachment,
+          webgpu::WEBGPU_MAILBOX_NONE,
+          reinterpret_cast<const GLbyte*>(&mailbox)));
+
   wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+  EXPECT_WEBGPU_ERROR(device_, WGPUErrorType_Validation, texture.CreateView());
   webgpu()->DissociateMailbox(reservation.id, reservation.generation);
+  webgpu()->FlushCommands();
+}
+
+// Test that Associate mailbox and DissociateForPresent may be used after the
+// device is destroyed. The test should not crash or produce unexpected
+// validation errors.
+TEST_P(WebGPUMailboxTest,
+       AssociateDissociateMailboxForPresentAfterDeviceDestroy) {
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac") &&
+      !GPUTestBotConfig::CurrentConfigMatches("Win10")) {
+    GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
+  }
+
+  SharedImageInterface* sii = GetSharedImageInterface();
+  Mailbox mailbox = sii->CreateSharedImage(
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
+      kNullSurfaceHandle);
+  SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
+  webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
+
+  webgpu::ReservedTexture reservation = webgpu()->ReserveTexture(device_.Get());
+
+  device_.Destroy();
+
+  EXPECT_WEBGPU_ERROR(
+      device_, WGPUErrorType_Validation,
+      webgpu()->AssociateMailbox(
+          reservation.deviceId, reservation.deviceGeneration, reservation.id,
+          reservation.generation, WGPUTextureUsage_RenderAttachment,
+          webgpu::WEBGPU_MAILBOX_NONE,
+          reinterpret_cast<const GLbyte*>(&mailbox)));
+  wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+  EXPECT_WEBGPU_ERROR(device_, WGPUErrorType_Validation, texture.CreateView());
+  webgpu()->DissociateMailboxForPresent(reservation.deviceId,
+                                        reservation.deviceGeneration,
+                                        reservation.id, reservation.generation);
   webgpu()->FlushCommands();
 }
 
 // Test that ReserveTexture may be used after the device is destroyed.
 // The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest, ReserveTextureAfterDeviceDestroy) {
-  if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac") &&
+      !GPUTestBotConfig::CurrentConfigMatches("Win10")) {
     GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
   }
 
@@ -468,11 +534,15 @@ TEST_P(WebGPUMailboxTest, ReserveTextureAfterDeviceDestroy) {
 
   webgpu::ReservedTexture reservation = webgpu()->ReserveTexture(device_.Get());
 
-  webgpu()->AssociateMailbox(
-      reservation.deviceId, reservation.deviceGeneration, reservation.id,
-      reservation.generation, WGPUTextureUsage_RenderAttachment,
-      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<const GLbyte*>(&mailbox));
+  EXPECT_WEBGPU_ERROR(
+      device_, WGPUErrorType_Validation,
+      webgpu()->AssociateMailbox(
+          reservation.deviceId, reservation.deviceGeneration, reservation.id,
+          reservation.generation, WGPUTextureUsage_RenderAttachment,
+          webgpu::WEBGPU_MAILBOX_NONE,
+          reinterpret_cast<const GLbyte*>(&mailbox)));
   wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+  EXPECT_WEBGPU_ERROR(device_, WGPUErrorType_Validation, texture.CreateView());
   webgpu()->DissociateMailbox(reservation.id, reservation.generation);
   webgpu()->FlushCommands();
 }
@@ -480,7 +550,8 @@ TEST_P(WebGPUMailboxTest, ReserveTextureAfterDeviceDestroy) {
 // Test that DissociateMailbox may be used after the device is destroyed.
 // The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest, DissociateMailboxAfterDeviceDestroy) {
-  if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac") &&
+      !GPUTestBotConfig::CurrentConfigMatches("Win10")) {
     GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
   }
 
@@ -509,7 +580,8 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxAfterDeviceDestroy) {
 // device is destroyed. The test should not crash or produce unexpected
 // validation errors.
 TEST_P(WebGPUMailboxTest, DissociateMailboxForPresentAfterDeviceDestroy) {
-  if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac") &&
+      !GPUTestBotConfig::CurrentConfigMatches("Win10")) {
     GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
   }
 
@@ -539,7 +611,8 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxForPresentAfterDeviceDestroy) {
 // Test that DissociateMailbox may be used after the texture is destroyed.
 // The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest, DissociateMailboxAfterTextureDestroy) {
-  if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac") &&
+      !GPUTestBotConfig::CurrentConfigMatches("Win10")) {
     GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
   }
 
@@ -567,7 +640,8 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxAfterTextureDestroy) {
 // Test that DissociateMailboxForPresent may be used after the texture is
 // destroyed. The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest, DissociateMailboxForPresentAfterTextureDestroy) {
-  if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac") &&
+      !GPUTestBotConfig::CurrentConfigMatches("Win10")) {
     GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
   }
 
