@@ -2794,13 +2794,25 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
         if (id == app_id)
           run_loop.Quit();
       }));
-  std::string url_spec = provider()->registrar().GetAppStartUrl(id).spec();
+
+  const WebApp* web_app = provider()->registrar().GetAppById(id);
+
+  base::flat_set<GURL> install_urls;
+  {
+    auto policy_config_it = web_app->management_to_external_config_map().find(
+        WebAppManagement::kPolicy);
+    ASSERT_NE(policy_config_it,
+              web_app->management_to_external_config_map().end());
+    ASSERT_FALSE(policy_config_it->second.install_urls.empty());
+    install_urls = policy_config_it->second.install_urls;
+  }
+
   {
     ScopedListPrefUpdate update(profile()->GetPrefs(),
                                 prefs::kWebAppInstallForceList);
     size_t removed_count = update->EraseIf([&](const base::Value& item) {
       const base::Value* url_value = item.GetDict().Find(kUrlKey);
-      return url_value && url_value->GetString() == url_spec;
+      return url_value && install_urls.contains(GURL(url_value->GetString()));
     });
     ASSERT_GT(removed_count, 0U);
   }
