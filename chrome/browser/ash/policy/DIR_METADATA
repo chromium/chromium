@@ -1,1 +1,1 @@
-mixins: "//ash/components/policy/COMMON_METADATA"
+mixins: "//chromeos/ash/components/policy/COMMON_METADATA"

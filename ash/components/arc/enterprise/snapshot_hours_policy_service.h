@@ -7,12 +7,12 @@
 
 #include <vector>
 
-#include "ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
+#include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user_manager.h"
 

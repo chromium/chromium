@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
 
-#include "ash/components/policy/weekly_time/time_utils.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/policy/weekly_time/time_utils.h"
 
 namespace em = enterprise_management;
 

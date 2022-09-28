@@ -8,12 +8,12 @@
 #include <string>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"

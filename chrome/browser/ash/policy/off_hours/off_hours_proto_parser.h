@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/policy/weekly_time/weekly_time.h"
-#include "ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "base/values.h"
+#include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
+#include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
