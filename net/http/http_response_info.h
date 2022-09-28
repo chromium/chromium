@@ -222,7 +222,8 @@ class NET_EXPORT HttpResponseInfo {
 
   // The reason why Chrome uses a specific transport protocol for HTTP
   // semantics.
-  net::AlternateProtocolUsage alternate_protocol_usage;
+  net::AlternateProtocolUsage alternate_protocol_usage =
+      net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_MAX;
 
   // The type of connection used for this response.
   ConnectionInfo connection_info = CONNECTION_INFO_UNKNOWN;

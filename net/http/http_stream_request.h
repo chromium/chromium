@@ -237,7 +237,8 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
   NextProto negotiated_protocol_ = kProtoUnknown;
   // The reason why Chrome uses a specific transport protocol for HTTP
   // semantics.
-  AlternateProtocolUsage alternate_protocol_usage_;
+  AlternateProtocolUsage alternate_protocol_usage_ =
+      AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_MAX;
   bool using_spdy_ = false;
   ConnectionAttempts connection_attempts_;
   const StreamType stream_type_;
