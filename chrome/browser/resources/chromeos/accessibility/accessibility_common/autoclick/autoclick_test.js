@@ -15,7 +15,7 @@ AutoclickE2ETest = class extends E2ETestBase {
   }
 
   async setUpDeferred() {
-    this.mockAccessibilityPrivate = MockAccessibilityPrivate;
+    this.mockAccessibilityPrivate = new MockAccessibilityPrivate();
     chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
 
     window.RoleType = chrome.automation.RoleType;

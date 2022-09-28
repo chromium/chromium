@@ -83,7 +83,7 @@ class MockPrefsManager {
 SelectToSpeakUiManagerUnitTest = class extends SelectToSpeakE2ETest {
   constructor() {
     super();
-    this.mockAccessibilityPrivate = MockAccessibilityPrivate;
+    this.mockAccessibilityPrivate = new MockAccessibilityPrivate();
     chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
 
     this.mockPrefsManager = null;

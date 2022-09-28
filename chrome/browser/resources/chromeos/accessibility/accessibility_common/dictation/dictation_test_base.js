@@ -18,7 +18,7 @@ DictationE2ETestBase = class extends E2ETestBase {
     super();
     this.navigateLacrosWithAutoComplete = true;
 
-    this.mockAccessibilityPrivate = MockAccessibilityPrivate;
+    this.mockAccessibilityPrivate = new MockAccessibilityPrivate();
     this.iconType = this.mockAccessibilityPrivate.DictationBubbleIconType;
     this.hintType = this.mockAccessibilityPrivate.DictationBubbleHintType;
     chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
