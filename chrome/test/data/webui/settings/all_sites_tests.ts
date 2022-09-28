@@ -1429,8 +1429,11 @@ suite('AllSites_EnableFirstPartySets', function() {
   const TEST_FPS_SITE_GROUPS: SiteGroup[] = [
     {
       etldPlus1: 'google.com',
-      origins: [createOriginInfo('https://google.com')],
-      numCookies: 0,
+      origins: [
+        createOriginInfo('https://google.com'),
+        createOriginInfo('https://translate.google.com'),
+      ],
+      numCookies: 4,
       fpsOwner: 'google.com',
       fpsNumMembers: 2,
       hasInstalledPWA: false,
@@ -1666,6 +1669,72 @@ suite('AllSites_EnableFirstPartySets', function() {
         await localDataBrowserProxy.whenCalled('getFpsMembershipLabel');
         assertEquals(
             '· Allowed for 1 google.com site',
+            siteEntries[1]!.$.fpsMembership.innerText.trim());
+      });
+
+  test(
+      'site entry first party set constant member count on origin deletion',
+      async function() {
+        TEST_FPS_SITE_GROUPS.forEach(siteGroup => {
+          testElement.siteGroupMap.set(
+              siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+        });
+        testElement.forceListUpdateForTesting();
+        flush();
+
+        let siteEntries =
+            testElement.$.listContainer.querySelectorAll('site-entry');
+        assertEquals(testElement.$.allSitesList.items!.length, 2);
+        await localDataBrowserProxy.whenCalled('getFpsMembershipLabel');
+        assertEquals(
+            '· Allowed for 2 google.com sites',
+            siteEntries[1]!.$.fpsMembership.innerText.trim());
+
+        let originList = siteEntries[0]!.$.originList.get();
+        flush();
+        // Ensure there are 2 origin entries.
+        let originEntries = originList.querySelectorAll('.hr');
+        assertEquals(2, originEntries.length);
+
+        // Remove the first origin.
+        originEntries[0]!.querySelector<HTMLElement>(
+                             '#removeOriginButton')!.click();
+        assertTrue(testElement.$.confirmRemoveSite.get().open);
+        testElement.$.confirmRemoveSite.get()
+            .querySelector<HTMLElement>('.action-button')!.click();
+
+        // Validate that only 1 origin entry remaining.
+        siteEntries =
+            testElement.$.listContainer.querySelectorAll('site-entry');
+        originList = siteEntries[0]!.$.originList.get();
+        flush();
+        originEntries = originList.querySelectorAll('.hr');
+        assertEquals(1, originEntries.length);
+
+        // Ensure that first party set info is unaffected by origin removal.
+        await localDataBrowserProxy.whenCalled('getFpsMembershipLabel');
+        assertEquals(
+            '· Allowed for 2 google.com sites',
+            siteEntries[1]!.$.fpsMembership.innerText.trim());
+
+        // Remove the last origin.
+        siteEntries =
+            testElement.$.listContainer.querySelectorAll('site-entry');
+        originList = siteEntries[0]!.$.originList.get();
+        flush();
+        originEntries[0]!.querySelector<HTMLElement>(
+                             '#removeOriginButton')!.click();
+        assertTrue(testElement.$.confirmRemoveSite.get().open);
+        testElement.$.confirmRemoveSite.get()
+            .querySelector<HTMLElement>('.action-button')!.click();
+
+        // Ensure that the site entry remains in the list as there are cookies
+        // set at the eTLD+1 level so it converts to an ungrouped site entry and
+        // first party set information remain unchanged.
+        assertEquals(testElement.$.allSitesList.items!.length, 2);
+        await localDataBrowserProxy.whenCalled('getFpsMembershipLabel');
+        assertEquals(
+            '· Allowed for 2 google.com sites',
             siteEntries[1]!.$.fpsMembership.innerText.trim());
       });
 

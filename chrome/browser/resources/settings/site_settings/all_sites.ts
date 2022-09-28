@@ -497,6 +497,21 @@ export class AllSitesElement extends AllSitesElementBase {
     this.$.confirmRemoveSite.get().showModal();
   }
 
+  // Creates a placeholder origin used to hold cookies scoped at the eTLD+1
+  // level.
+  private generatePlaceholderOrigin_(etldPlus1: string, numCookies: number):
+      OriginInfo {
+    return {
+      origin: `http://${etldPlus1}/`,
+      engagement: 0,
+      usage: 0,
+      numCookies: numCookies,
+      hasPermissionSettings: false,
+      isInstalled: false,
+      isPartitioned: false,
+    };
+  }
+
   private onConfirmRemoveSite_(e: Event) {
     const {index, actionScope, origin, isPartitioned} = this.actionMenuModel_!;
     const siteGroupToUpdate = this.filteredList_[index];
@@ -533,6 +548,12 @@ export class AllSitesElement extends AllSitesElementBase {
               .find(
                   o => o.isPartitioned === isPartitioned &&
                       o.origin === origin)!.numCookies;
+      if (updatedSiteGroup.origins.length === 0 &&
+          updatedSiteGroup.numCookies > 0) {
+        const originPlaceHolder = this.generatePlaceholderOrigin_(
+            updatedSiteGroup.etldPlus1, updatedSiteGroup.numCookies);
+        updatedSiteGroup.origins.push(originPlaceHolder);
+      }
     } else {
       this.browserProxy.recordAction(AllSitesAction2.REMOVE_SITE_GROUP);
       this.browserProxy.clearEtldPlus1DataAndCookies(
@@ -937,15 +958,8 @@ export class AllSitesElement extends AllSitesElementBase {
       // If there is no origin for this site group that has any data,
       // but the ETLD+1 has cookies in use, create a origin placeholder
       // for display purposes.
-      const originPlaceHolder = {
-        origin: `http://${siteGroupToUpdate.etldPlus1}/`,
-        engagement: 0,
-        usage: 0,
-        numCookies: siteGroupToUpdate.numCookies,
-        hasPermissionSettings: false,
-        isInstalled: false,
-        isPartitioned: false,
-      };
+      const originPlaceHolder = this.generatePlaceholderOrigin_(
+          siteGroupToUpdate.etldPlus1, siteGroupToUpdate.numCookies);
       updatedSiteGroup.origins.push(originPlaceHolder);
       this.set('filteredList_.' + index, updatedSiteGroup);
     } else {
@@ -1031,10 +1045,11 @@ export class AllSitesElement extends AllSitesElementBase {
   private updateSiteGroup_(index: number, updatedSiteGroup: SiteGroup) {
     if (updatedSiteGroup.origins.length > 0) {
       this.set('filteredList_.' + index, updatedSiteGroup);
+      this.siteGroupMap.set(updatedSiteGroup.etldPlus1, updatedSiteGroup);
     } else {
       this.splice('filteredList_', index, 1);
+      this.siteGroupMap.delete(updatedSiteGroup.etldPlus1);
     }
-    this.siteGroupMap.delete(updatedSiteGroup.etldPlus1);
   }
 
   /**
