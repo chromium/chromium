@@ -10,6 +10,7 @@
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -60,10 +61,10 @@ bool IsSectionable(const AutofillField& field) {
 // Assign all credit card fields without a valid autocomplete attribute section
 // to one, separate section based on the first credit card field.
 void AssignCreditCardSections(
-    base::span<std::unique_ptr<AutofillField>> fields,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     base::flat_map<LocalFrameToken, size_t>& frame_token_ids) {
   auto first_cc_field = base::ranges::find_if(
-      fields, [&](const std::unique_ptr<AutofillField>& field) {
+      fields, [](const std::unique_ptr<AutofillField>& field) {
         return field->Type().group() == FieldTypeGroup::kCreditCard &&
                !field->section;
       });
@@ -78,7 +79,7 @@ void AssignCreditCardSections(
 }
 
 void AssignAutocompleteSections(
-    base::span<std::unique_ptr<AutofillField>> fields) {
+    base::span<const std::unique_ptr<AutofillField>> fields) {
   for (const auto& field : fields) {
     if (field->parsed_autocomplete) {
       Section autocomplete_section = Section::FromAutocomplete(
@@ -91,7 +92,7 @@ void AssignAutocompleteSections(
 }
 
 void AssignFieldIdentifierSections(
-    base::span<std::unique_ptr<AutofillField>> section,
+    base::span<const std::unique_ptr<AutofillField>> section,
     base::flat_map<LocalFrameToken, size_t>& frame_token_ids) {
   Section s = Section::FromFieldIdentifier(**section.begin(), frame_token_ids);
   for (const auto& field : section) {
@@ -100,11 +101,22 @@ void AssignFieldIdentifierSections(
   }
 }
 
+void ExpandSections(base::span<const std::unique_ptr<AutofillField>> fields) {
+  Section previous_section;
+  for (const auto& field : fields) {
+    if (!IsSectionable(*field))
+      continue;
+    if (!field->section && previous_section)
+      field->section = previous_section;
+    previous_section = field->section;
+  }
+}
+
 bool ShouldStartNewSection(const ServerFieldTypeSet& seen_types,
                            const AutofillField& current_field,
                            const AutofillField& previous_field) {
-  DCHECK(!previous_field.section);
-  DCHECK(seen_types.contains(previous_field.Type().GetStorableType()));
+  if (current_field.section)
+    return features::kAutofillSectioningModeCreateGaps.Get();
 
   const ServerFieldType current_type = current_field.Type().GetStorableType();
   if (current_type == UNKNOWN_TYPE)
@@ -126,43 +138,61 @@ bool ShouldStartNewSection(const ServerFieldTypeSet& seen_types,
   return HaveSeenSimilarType(current_type, seen_types);
 }
 
+// Finds the first sectionable field that doesn't have a section assigned.
+base::span<const std::unique_ptr<AutofillField>>::iterator
+FindBeginOfNextSection(
+    base::span<const std::unique_ptr<AutofillField>>::iterator begin,
+    base::span<const std::unique_ptr<AutofillField>>::iterator end) {
+  while (begin != end && ((*begin)->section || !IsSectionable(**begin)))
+    begin++;
+  return begin;
+}
+
 // Finds the longest prefix of [begin, end) that belongs to the same section,
 // according to `ShouldStartNewSection()`.
-base::span<std::unique_ptr<AutofillField>>::iterator FindEndOfNextSection(
-    base::span<std::unique_ptr<AutofillField>>::iterator begin,
-    base::span<std::unique_ptr<AutofillField>>::iterator end) {
+base::span<const std::unique_ptr<AutofillField>>::iterator FindEndOfNextSection(
+    base::span<const std::unique_ptr<AutofillField>>::iterator begin,
+    base::span<const std::unique_ptr<AutofillField>>::iterator end) {
   // Keeps track of the focusable types we've seen in this section.
   ServerFieldTypeSet seen_types;
   // The `prev_field` is from the section whose end we are currently searching.
   const AutofillField* prev_field = nullptr;
   for (auto it = begin; it != end; it++) {
     const AutofillField& field = **it;
-    if (field.section || !IsSectionable(field))
+    if (!IsSectionable(field))
       continue;
     if (prev_field && ShouldStartNewSection(seen_types, field, *prev_field))
       return it;
-    seen_types.insert(field.Type().GetStorableType());
-    prev_field = &field;
+    if (!field.section) {
+      seen_types.insert(field.Type().GetStorableType());
+      prev_field = &field;
+    }
   }
   return end;
 }
 
 }  // namespace
 
-void AssignSections(base::span<std::unique_ptr<AutofillField>> fields) {
+void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
   for (const auto& field : fields)
     field->section = Section();
 
   // Create a unique identifier based on the field for the section.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
 
-  AssignAutocompleteSections(fields);
+  if (!features::kAutofillSectioningModeIgnoreAutocomplete.Get())
+    AssignAutocompleteSections(fields);
   AssignCreditCardSections(fields, frame_token_ids);
+  if (features::kAutofillSectioningModeExpand.Get())
+    ExpandSections(fields);
 
   auto begin = fields.begin();
   while (begin != fields.end()) {
+    begin = FindBeginOfNextSection(begin, fields.end());
     auto end = FindEndOfNextSection(begin, fields.end());
-    AssignFieldIdentifierSections({begin, end}, frame_token_ids);
+    DCHECK(begin != end || end == fields.end());
+    if (begin != end)
+      AssignFieldIdentifierSections({begin, end}, frame_token_ids);
     begin = end;
   }
 }

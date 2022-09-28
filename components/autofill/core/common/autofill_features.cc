@@ -598,6 +598,13 @@ BASE_FEATURE(kAutofillUseNewSectioningMethod,
 BASE_FEATURE(kAutofillUseParameterizedSectioning,
              "AutofillUseParameterizedSectioning",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// In the experiment, we test different combinations of these parameters.
+const base::FeatureParam<bool> kAutofillSectioningModeIgnoreAutocomplete{
+    &kAutofillUseParameterizedSectioning, "ignore_autocomplete", false};
+const base::FeatureParam<bool> kAutofillSectioningModeCreateGaps{
+    &kAutofillUseParameterizedSectioning, "create_gaps", false};
+const base::FeatureParam<bool> kAutofillSectioningModeExpand{
+    &kAutofillUseParameterizedSectioning, "expand_assigned_sections", false};
 
 // Controls whether to use form renderer IDs to find the form which contains the
 // field that was last interacted with in
