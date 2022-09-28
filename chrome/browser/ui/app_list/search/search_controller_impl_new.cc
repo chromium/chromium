@@ -90,8 +90,6 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
   ClearAllResultsExceptContinue(results_);
   if (last_query_.empty())
     Publish();
-  for (Observer& observer : observer_list_)
-    observer.OnResultsCleared();
 
   categories_ = CreateAllCategories();
   ranker_->Start(query, results_, categories_);
@@ -122,8 +120,6 @@ void SearchControllerImplNew::StartZeroState(base::OnceClosure on_done,
   // Categories currently are not used by zero-state, but may be required for
   // sorting in SetResults.
   categories_ = CreateAllCategories();
-  for (Observer& observer : observer_list_)
-    observer.OnResultsCleared();
 
   last_query_.clear();
 

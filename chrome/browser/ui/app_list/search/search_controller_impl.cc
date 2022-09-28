@@ -61,9 +61,6 @@ void SearchControllerImpl::StartSearch(const std::u16string& query) {
   session_start_ = base::Time::Now();
   dispatching_query_ = true;
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
-  for (SearchController::Observer& observer : observer_list_) {
-    observer.OnResultsCleared();
-  }
 
   for (const auto& provider : providers_) {
     if (query.empty())
