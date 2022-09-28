@@ -185,23 +185,27 @@ class SavedDeskTest : public OverviewTestBase {
     loop.Run();
   }
 
-  views::View* GetDesksTemplatesButtonForRoot(aura::Window* root_window,
-                                              bool zero_state) {
-    auto* overview_session = GetOverviewSession();
-    if (!overview_session)
-      return nullptr;
+  // May return null in tablet mode.
+  const DesksBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
+    if (auto* overview_session = GetOverviewSession()) {
+      return overview_session->GetGridWithRootWindow(root_window)
+          ->desks_bar_view();
+    }
+    return nullptr;
+  }
 
-    const auto* overview_grid =
-        overview_session->GetGridWithRootWindow(root_window);
-
-    // May be null in tablet mode.
-    const auto* desks_bar_view = overview_grid->desks_bar_view();
-    if (!desks_bar_view)
-      return nullptr;
-
-    if (zero_state)
+  ZeroStateIconButton* GetZeroStateDeskTemplateButtonForRoot(
+      aura::Window* root_window) {
+    if (auto* desks_bar_view = GetDesksBarViewForRoot(root_window))
       return desks_bar_view->zero_state_desks_templates_button();
-    return desks_bar_view->expanded_state_desks_templates_button();
+    return nullptr;
+  }
+
+  ExpandedDesksBarButton* GetExpandedStateDeskTemplateButtonForRoot(
+      aura::Window* root_window) {
+    if (auto* desks_bar_view = GetDesksBarViewForRoot(root_window))
+      return desks_bar_view->expanded_state_desks_templates_button();
+    return nullptr;
   }
 
   OverviewGrid* GetOverviewGridForRoot(aura::Window* root_window) {
@@ -237,10 +241,9 @@ class SavedDeskTest : public OverviewTestBase {
   // button to be visible and clickable.
   void ShowDesksTemplatesGrids() {
     auto* root_window = Shell::GetPrimaryRootWindow();
-    auto* zero_button =
-        GetDesksTemplatesButtonForRoot(root_window, /*zero_state=*/true);
+    auto* zero_button = GetZeroStateDeskTemplateButtonForRoot(root_window);
     auto* expanded_button =
-        GetDesksTemplatesButtonForRoot(root_window, /*zero_state=*/false);
+        GetExpandedStateDeskTemplateButtonForRoot(root_window);
     ASSERT_TRUE(zero_button);
     ASSERT_TRUE(expanded_button);
     ASSERT_TRUE(zero_button->GetVisible() || expanded_button->GetVisible());
@@ -416,10 +419,15 @@ class SavedDeskTest : public OverviewTestBase {
     paint_flags.setColor(color);
     paint_flags.setStrokeWidth(stroke_width);
     paint_flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
-    bounds.Inset(gfx::InsetsF(static_cast<float>(stroke_width) / 2.0f));
+    bounds.Inset(gfx::InsetsF(stroke_width / 2.0f));
     canvas.DrawRoundRect(bounds, /*radius=*/bounds.height() / 2.0f,
                          paint_flags);
     return canvas.GetBitmap();
+  }
+
+  TestDesksTemplatesDelegate* GetDesksTemplatesDelegate() {
+    return static_cast<TestDesksTemplatesDelegate*>(
+        Shell::Get()->desks_templates_delegate());
   }
 
   // OverviewTestBase:
@@ -484,10 +492,9 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonVisibilityClamshell) {
                                            const std::string& trace_string) {
     SCOPED_TRACE(trace_string);
     for (auto* root_window : Shell::GetAllRootWindows()) {
-      auto* zero_button =
-          GetDesksTemplatesButtonForRoot(root_window, /*zero_state=*/true);
+      auto* zero_button = GetZeroStateDeskTemplateButtonForRoot(root_window);
       auto* expanded_button =
-          GetDesksTemplatesButtonForRoot(root_window, /*zero_state=*/false);
+          GetExpandedStateDeskTemplateButtonForRoot(root_window);
       ASSERT_TRUE(zero_button);
       ASSERT_TRUE(expanded_button);
       EXPECT_EQ(zero_state_shown, zero_button->GetVisible());
@@ -519,8 +526,8 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonVisibilityClamshell) {
                              /*trace_string=*/"one-desk-one-entry");
 
   // Click on the templates button. It should expand the desks bar.
-  ClickOnView(GetDesksTemplatesButtonForRoot(Shell::GetPrimaryRootWindow(),
-                                             /*zero_state=*/true));
+  ClickOnView(
+      GetZeroStateDeskTemplateButtonForRoot(Shell::GetPrimaryRootWindow()));
   verify_button_visibilities(/*zero_state_shown=*/false,
                              /*expanded_state_shown=*/true,
                              /*trace_string=*/"expand-from-zero-state");
@@ -1760,9 +1767,7 @@ TEST_F(SavedDeskTest, OverflowUnavailableLessThan5Icons) {
 
   // `CreateRestoreData` creates the windows with app ids of "0", "1", "2", etc.
   // Set 2 of those app ids to be unavailable.
-  auto* delegate = static_cast<TestDesksTemplatesDelegate*>(
-      Shell::Get()->desks_templates_delegate());
-  delegate->set_unavailable_apps({"0", "1"});
+  GetDesksTemplatesDelegate()->set_unavailable_apps({"0", "1"});
 
   OpenOverviewAndShowTemplatesGrid();
 
@@ -1794,9 +1799,7 @@ TEST_F(SavedDeskTest, OverflowUnavailableMoreThan5Icons) {
 
   // `CreateRestoreData` creates the windows with app ids of "0", "1", "2", etc.
   // Set 2 of those app ids to be unavailable.
-  auto* delegate = static_cast<TestDesksTemplatesDelegate*>(
-      Shell::Get()->desks_templates_delegate());
-  delegate->set_unavailable_apps({"0", "1"});
+  GetDesksTemplatesDelegate()->set_unavailable_apps({"0", "1"});
 
   OpenOverviewAndShowTemplatesGrid();
 
@@ -1831,9 +1834,7 @@ TEST_F(SavedDeskTest, OverflowUnavailableAllUnavailableIcons) {
            CreateRestoreData(window_info));
 
   // Set all 10 app ids to be unavailable.
-  auto* delegate = static_cast<TestDesksTemplatesDelegate*>(
-      Shell::Get()->desks_templates_delegate());
-  delegate->set_unavailable_apps(
+  GetDesksTemplatesDelegate()->set_unavailable_apps(
       {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
 
   OpenOverviewAndShowTemplatesGrid();
@@ -1873,10 +1874,8 @@ TEST_F(SavedDeskTest, EnteringInTabletMode) {
   // template button is not created.
   ToggleOverview();
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  auto* zero_state = GetDesksTemplatesButtonForRoot(root,
-                                                    /*zero_state=*/true);
-  auto* expanded_state = GetDesksTemplatesButtonForRoot(root,
-                                                        /*zero_state=*/false);
+  auto* zero_state = GetZeroStateDeskTemplateButtonForRoot(root);
+  auto* expanded_state = GetExpandedStateDeskTemplateButtonForRoot(root);
   EXPECT_FALSE(zero_state->GetVisible());
   EXPECT_FALSE(expanded_state->GetVisible());
   EXPECT_FALSE(GetSaveDeskButtonContainerForRoot(root));
@@ -1895,10 +1894,8 @@ TEST_F(SavedDeskTest, ClamshellToTabletMode) {
   // the save template button are visible.
   ToggleOverview();
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  auto* zero_state = GetDesksTemplatesButtonForRoot(root,
-                                                    /*zero_state=*/true);
-  auto* expanded_state = GetDesksTemplatesButtonForRoot(root,
-                                                        /*zero_state=*/false);
+  auto* zero_state = GetZeroStateDeskTemplateButtonForRoot(root);
+  auto* expanded_state = GetExpandedStateDeskTemplateButtonForRoot(root);
   EXPECT_TRUE(zero_state->GetVisible());
   EXPECT_FALSE(expanded_state->GetVisible());
   EXPECT_TRUE(
@@ -1933,10 +1930,8 @@ TEST_F(SavedDeskTest, ShowingSavedDeskLibraryToTabletMode) {
 
   // Tests that the templates button is in expanded state when the grid is
   // showing, even with one desk.
-  auto* zero_state = GetDesksTemplatesButtonForRoot(root_window,
-                                                    /*zero_state=*/true);
-  auto* expanded_state = GetDesksTemplatesButtonForRoot(root_window,
-                                                        /*zero_state=*/false);
+  auto* zero_state = GetZeroStateDeskTemplateButtonForRoot(root_window);
+  auto* expanded_state = GetExpandedStateDeskTemplateButtonForRoot(root_window);
   ASSERT_FALSE(zero_state->GetVisible());
   ASSERT_TRUE(expanded_state->GetVisible());
 
@@ -2357,15 +2352,14 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonBorderColor) {
 
   ToggleOverview();
 
-  views::View* button = GetDesksTemplatesButtonForRoot(
-      Shell::GetPrimaryRootWindow(), /*zero_state=*/false);
+  ExpandedDesksBarButton* button =
+      GetExpandedStateDeskTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(button);
 
   // Helper to get the color of the border of the desks templates button.
   auto get_border_color = [button]() {
     // The inner button is the one where the border is applied to.
-    DeskButtonBase* inner_button =
-        static_cast<ExpandedDesksBarButton*>(button)->inner_button();
+    DeskButtonBase* inner_button = button->inner_button();
     views::Border* border = inner_button->GetBorder();
     DCHECK(border);
     return border->color();
