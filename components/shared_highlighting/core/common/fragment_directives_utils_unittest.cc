@@ -62,13 +62,11 @@ TEST(TextFragmentsUtilsTest, ParseTextFragments) {
   GURL url_with_fragment(
       "https://www.example.com/#idFrag:~:text=text%201&text=text%202");
   base::Value result = ParseTextFragments(url_with_fragment);
-  ASSERT_EQ(2u, result.GetListDeprecated().size());
-  EXPECT_EQ("text 1", result.GetListDeprecated()[0]
-                          .FindKey(kFragmentTextStartKey)
-                          ->GetString());
-  EXPECT_EQ("text 2", result.GetListDeprecated()[1]
-                          .FindKey(kFragmentTextStartKey)
-                          ->GetString());
+  ASSERT_EQ(2u, result.GetList().size());
+  EXPECT_EQ("text 1",
+            result.GetList()[0].FindKey(kFragmentTextStartKey)->GetString());
+  EXPECT_EQ("text 2",
+            result.GetList()[1].FindKey(kFragmentTextStartKey)->GetString());
 
   GURL url_no_fragment("www.example.com");
   base::Value empty_result = ParseTextFragments(url_no_fragment);
