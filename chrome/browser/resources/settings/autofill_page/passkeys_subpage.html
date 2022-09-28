@@ -52,7 +52,7 @@
 
          <cr-icon-button id="moreActionsButton" class="icon-more-vert"
             data-credential-id$="[[item.credentialId]]"
-            on-click="onDotsClick_" title="$i18n{moreActions}"
+            on-click="onDotsClick_" title="[[getMoreActionsLabel_(item)]]"
             focus-row-control focus-type="moreActionsButton"></cr-icon-button>
       </div>
     </template>

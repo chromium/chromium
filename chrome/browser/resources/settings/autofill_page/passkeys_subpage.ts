@@ -21,6 +21,8 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
 import {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 import {getTemplate} from './passkeys_subpage.html.js';
 
@@ -164,6 +166,15 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
    */
   private onErrorDialogOkClick_() {
     this.$.deleteErrorDialog.get().close();
+  }
+
+  /**
+   * Returns the a11y label for the "More actions" button next to a passkey.
+   */
+  private getMoreActionsLabel_(passkey: Passkey): string {
+    return loadTimeData.getStringF(
+        'managePasskeysMoreActionsLabel', passkey.userName,
+        passkey.relyingPartyId);
   }
 }
 
