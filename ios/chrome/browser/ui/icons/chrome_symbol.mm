@@ -56,7 +56,7 @@ NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
 NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
 NSString* const kPhotoBadgePlusSymbol = @"photo_badge_plus";
 NSString* const kPhotoBadgeMagnifyingglassSymbol =
-    @"photo_badge_magnifyinggglass";
+    @"photo_badge_magnifyingglass";
 NSString* const kReadingListSymbol = @"square_bullet_square";
 NSString* const kRecentTabsSymbol = @"laptopcomputer_and_phone";
 NSString* const kLanguageSymbol = @"language";
