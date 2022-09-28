@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
@@ -75,8 +76,7 @@ class CapturingScannerControllerImpl : public ScannerControllerImpl {
   void TestFoundUwSIds(const std::vector<UwSId>& expected_pup_ids) const {
     EXPECT_EQ(pup_ids_.size(), expected_pup_ids.size());
     for (auto id : expected_pup_ids) {
-      EXPECT_NE(std::find(pup_ids_.begin(), pup_ids_.end(), id),
-                pup_ids_.end());
+      EXPECT_TRUE(base::Contains(pup_ids_, id));
     }
   }
 

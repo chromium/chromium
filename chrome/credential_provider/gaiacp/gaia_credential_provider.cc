@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -174,9 +175,7 @@ bool BackgroundTokenHandleUpdater::IsAuthEnforcedOnAssociatedUsers() {
     const std::wstring& sid = sid_to_association.first;
     // Checks if the login UI was already refreshed due to
     // auth enforcements on this sid.
-    if (reauth_sids_ != nullptr &&
-        (std::find(reauth_sids_->begin(), reauth_sids_->end(), sid) !=
-         reauth_sids_->end()))
+    if (reauth_sids_ != nullptr && base::Contains(*reauth_sids_, sid))
       continue;
 
     // Return true if the associated user sid has auth enforced.

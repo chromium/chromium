@@ -17,6 +17,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"  // For CHECK macros.
 #include "base/memory/ref_counted.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -850,8 +851,7 @@ Status ExecuteGetWindowHandles(Session* session,
     // the mapper?
     status = session->chrome->GetWebViewIdForFirstTab(&mapper_view_id,
                                                       session->w3c_compliant);
-    auto it =
-        std::find(web_view_ids.begin(), web_view_ids.end(), mapper_view_id);
+    auto it = base::ranges::find(web_view_ids, mapper_view_id);
     if (it != web_view_ids.end()) {
       web_view_ids.erase(it);
     }

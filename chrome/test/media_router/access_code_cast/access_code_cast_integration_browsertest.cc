@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gmock_callback_support.h"
@@ -128,8 +129,7 @@ void AccessCodeCastIntegrationBrowserTest::OnWillCreateBrowserContextServices(
   // this to occur).
   ON_CALL(*media_router_, UnregisterMediaSinksObserver(_))
       .WillByDefault([this](MediaSinksObserver* observer) {
-        auto it = std::find(media_sinks_observers_.begin(),
-                            media_sinks_observers_.end(), observer);
+        auto it = base::ranges::find(media_sinks_observers_, observer);
         if (it != media_sinks_observers_.end()) {
           media_sinks_observers_.erase(it);
         }
@@ -145,8 +145,7 @@ void AccessCodeCastIntegrationBrowserTest::OnWillCreateBrowserContextServices(
   // this to occur).
   ON_CALL(*media_router_, UnregisterMediaRoutesObserver(_))
       .WillByDefault([this](MediaRoutesObserver* observer) {
-        auto it = std::find(media_routes_observers_.begin(),
-                            media_routes_observers_.end(), observer);
+        auto it = base::ranges::find(media_routes_observers_, observer);
         if (it != media_routes_observers_.end()) {
           media_routes_observers_.erase(it);
         }

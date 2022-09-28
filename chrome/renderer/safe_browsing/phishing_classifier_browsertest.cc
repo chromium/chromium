@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_discardable_memory_allocator.h"
@@ -93,7 +94,7 @@ class PhishingClassifierTest
     std::vector<int> indices_map_from_original;
     for (const auto& original_hash : original_hashes_vector) {
       indices_map_from_original.push_back(
-          std::find(hashes_vector.begin(), hashes_vector.end(), original_hash) -
+          base::ranges::find(hashes_vector, original_hash) -
           hashes_vector.begin());
     }
     for (std::string& feature : hashes_vector) {

@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -21,6 +20,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -947,7 +947,7 @@ void TruncateLogFileToTail(const base::FilePath& path,
   // Find first newline character within the tail bytes. That will guarantee
   // not only that the log file with start with a full line, but also that it
   // won't start with a middle byte of a multi-byte UTF8 character.
-  auto newline_it = std::find(file_tail.begin(), file_tail.end(), '\n');
+  auto newline_it = base::ranges::find(file_tail, '\n');
   int64_t newline_offset = newline_it - file_tail.begin();
 
   file.Initialize(path,
