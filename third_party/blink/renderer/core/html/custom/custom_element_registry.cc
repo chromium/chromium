@@ -217,8 +217,11 @@ CustomElementDefinition* CustomElementRegistry::DefineInternal(
   // 16: when-defined promise processing
   const auto& entry = when_defined_promise_map_.find(name);
   if (entry != when_defined_promise_map_.end()) {
-    entry->value->Resolve(definition->GetConstructorForScript());
+    ScriptPromiseResolver* resolver = entry->value;
     when_defined_promise_map_.erase(entry);
+    // Resolve() may run synchronous JavaScript that invalidates iterators of
+    // |when_defined_promise_map_|, so it must be called after erasing |entry|.
+    resolver->Resolve(definition->GetConstructorForScript());
   }
 
   return definition;
