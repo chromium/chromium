@@ -240,6 +240,7 @@ void UtilWinImpl::IsPinnedToTaskbar(IsPinnedToTaskbarCallback callback) {
 void UtilWinImpl::UnpinShortcuts(
     const std::vector<base::FilePath>& shortcut_paths,
     UnpinShortcutsCallback callback) {
+  base::win::ScopedCOMInitializer scoped_com_initializer;
   for (const auto& shortcut_path : shortcut_paths)
     UnpinShortcutFromTaskbar(shortcut_path);
 

@@ -93,6 +93,20 @@ bool PinShortcutWithIPinnedList3(const base::FilePath& shortcut) {
   return SUCCEEDED(hr);
 }
 
+// Use IPinnedList3 to unpin shortcut to taskbar on WIN10_RS5 and above.
+// Returns true if unpinning was successful.
+// static
+bool UnpinShortcutWithIPinnedList3(const base::FilePath& shortcut) {
+  Microsoft::WRL::ComPtr<IPinnedList3> pinned_list = GetTaskbarPinnedList();
+  if (!pinned_list)
+    return false;
+
+  ScopedPIDLFromPath item_id_list(shortcut.value().data());
+  HRESULT hr = pinned_list->Modify(item_id_list.Get(), nullptr,
+                                   PinnedListModifyCaller::kExplorer);
+  return SUCCEEDED(hr);
+}
+
 }  // namespace
 
 bool CanPinShortcutToTaskbar() {
@@ -118,6 +132,12 @@ bool PinShortcutToTaskbar(const base::FilePath& shortcut) {
 bool UnpinShortcutFromTaskbar(const base::FilePath& shortcut) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+  // Calling ShellExecute can be crashy because of shell hooks/malware, so try
+  // using IPinnedList3. Fallback to ShellExecute if it fails.
+  if (base::win::GetVersion() >= base::win::Version::WIN10_RS5 &&
+      UnpinShortcutWithIPinnedList3(shortcut)) {
+    return true;
+  }
 
   intptr_t result = reinterpret_cast<intptr_t>(ShellExecute(
       nullptr, L"taskbarunpin", shortcut.value().c_str(), nullptr, nullptr, 0));
