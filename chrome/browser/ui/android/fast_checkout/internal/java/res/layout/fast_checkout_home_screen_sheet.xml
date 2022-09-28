@@ -18,14 +18,13 @@ found in the LICENSE file.
       android:layout_width="wrap_content"
       android:layout_height="@dimen/fast_checkout_product_icon_height"
       android:layout_gravity="center_horizontal"
-      android:layout_marginTop="@dimen/fast_checkout_home_sheet_items_spacing"
       android:importantForAccessibility="no"
       app:srcCompat="@drawable/fre_product_logo"/>
 
     <TextView
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="16dp"
+      android:layout_marginTop="12dp"
       android:gravity="center_horizontal"
       android:textAppearance="@style/TextAppearance.Headline"
       android:text="@string/fast_checkout_home_sheet_title" />
@@ -41,7 +40,7 @@ found in the LICENSE file.
     <LinearLayout
       android:layout_height="wrap_content"
       android:layout_width="match_parent"
-      android:layout_marginTop="@dimen/fast_checkout_home_sheet_items_spacing"
+      android:layout_marginTop="16dp"
       android:orientation="vertical">
       <!-- Selected Address  -->
       <LinearLayout
@@ -99,6 +98,7 @@ found in the LICENSE file.
             app:srcCompat="@drawable/ic_expand_more_horizontal_black_24dp" />
       </LinearLayout>
 
+      <!-- Divider -->
       <View
           android:layout_width="match_parent"
           android:layout_height="2dp"/>

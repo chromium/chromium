@@ -13,18 +13,18 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:orientation="vertical">
 
+    <!-- TODO(b/1334642): Adjust Toolbar according to design.  -->
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/action_bar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:titleTextAppearance="@style/TextAppearance.Headline"
-        style="@style/ModernToolbar" />
+      android:id="@+id/action_bar"
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      android:titleTextAppearance="@style/TextAppearance.Headline"
+      style="@style/ModernToolbar" />
 
     <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/fast_checkout_detail_screen_recycler_view"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_marginTop="18dp"
       android:layout_marginBottom="24dp"
       android:divider="@null"/>
 
