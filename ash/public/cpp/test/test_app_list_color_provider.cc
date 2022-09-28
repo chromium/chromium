@@ -9,14 +9,6 @@
 
 namespace ash {
 
-SkColor TestAppListColorProvider::GetAppListBackgroundColor(
-    bool is_tablet_mode,
-    SkColor default_color,
-    const views::Widget* widget) const {
-  return SkColorSetA(default_color,
-                     is_tablet_mode ? 0x66 /*40%*/ : 0xCD /*80%*/);
-}
-
 SkColor TestAppListColorProvider::GetSearchBoxBackgroundColor(
     const views::Widget* widget) const {
   return gfx::kGoogleGrey900;

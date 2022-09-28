@@ -43,19 +43,6 @@ AppListColorProviderImpl::AppListColorProviderImpl()
 
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
 
-SkColor AppListColorProviderImpl::GetAppListBackgroundColor(
-    bool is_tablet_mode,
-    SkColor default_color,
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        is_tablet_mode ? kColorAshShieldAndBase40 : kColorAshShieldAndBase80);
-  }
-  return default_color;
-}
-
 SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
