@@ -236,9 +236,8 @@ void MimeHandlerViewGuest::CreateWebContents(
 
 void MimeHandlerViewGuest::DidAttachToEmbedder() {
   DCHECK(stream_->handler_url().SchemeIs(extensions::kExtensionScheme));
-  web_contents()->GetController().LoadURL(
-      stream_->handler_url(), content::Referrer(),
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  GetController().LoadURL(stream_->handler_url(), content::Referrer(),
+                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
   auto prefs = web_contents()->GetOrCreateWebPreferences();
   prefs.navigate_on_drag_drop = true;
   web_contents()->SetWebPreferences(prefs);

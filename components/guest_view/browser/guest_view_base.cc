@@ -356,6 +356,11 @@ bool GuestViewBase::ZoomPropagatesFromEmbedderToGuest() const {
   return true;
 }
 
+content::NavigationController& GuestViewBase::GetController() {
+  // TODO(crbug/1261928): Migrate the implementation for MPArch.
+  return web_contents()->GetController();
+}
+
 GuestViewManager* GuestViewBase::GetGuestViewManager() {
   return GuestViewManager::FromBrowserContext(browser_context());
 }

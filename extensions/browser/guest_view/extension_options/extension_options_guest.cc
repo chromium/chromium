@@ -104,10 +104,8 @@ void ExtensionOptionsGuest::CreateWebContents(
 void ExtensionOptionsGuest::DidInitialize(
     const base::Value::Dict& create_params) {
   ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
-  web_contents()->GetController().LoadURL(options_page_,
-                                          content::Referrer(),
-                                          ui::PAGE_TRANSITION_LINK,
-                                          std::string());
+  GetController().LoadURL(options_page_, content::Referrer(),
+                          ui::PAGE_TRANSITION_LINK, std::string());
 }
 
 void ExtensionOptionsGuest::GuestViewDidStopLoading() {

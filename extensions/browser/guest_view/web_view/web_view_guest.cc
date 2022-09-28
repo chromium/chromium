@@ -675,7 +675,7 @@ void WebViewGuest::StopFinding(content::StopFindAction action) {
 }
 
 bool WebViewGuest::Go(int relative_index) {
-  content::NavigationController& controller = web_contents()->GetController();
+  content::NavigationController& controller = GetController();
   if (!controller.CanGoToOffset(relative_index))
     return false;
 
@@ -687,7 +687,7 @@ void WebViewGuest::Reload() {
   // TODO(fsamuel): Don't check for repost because we don't want to show
   // Chromium's repost warning. We might want to implement a separate API
   // for registering a callback if a repost is about to happen.
-  web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
+  GetController().Reload(content::ReloadType::NORMAL, false);
 }
 
 void WebViewGuest::SetUserAgentOverride(
@@ -813,16 +813,13 @@ void WebViewGuest::DidFinishNavigation(
                      web_contents()->GetVisibleURL().spec());
   args->SetBoolKey(guest_view::kIsTopLevel,
                    IsInWebViewMainFrame(navigation_handle));
-  args->SetStringKey(webview::kInternalBaseURLForDataURL,
-                     web_contents()
-                         ->GetController()
-                         .GetLastCommittedEntry()
-                         ->GetBaseURLForDataURL()
-                         .spec());
+  args->SetStringKey(
+      webview::kInternalBaseURLForDataURL,
+      GetController().GetLastCommittedEntry()->GetBaseURLForDataURL().spec());
   args->SetIntKey(webview::kInternalCurrentEntryIndex,
-                  web_contents()->GetController().GetCurrentEntryIndex());
+                  GetController().GetCurrentEntryIndex());
   args->SetIntKey(webview::kInternalEntryCount,
-                  web_contents()->GetController().GetEntryCount());
+                  GetController().GetEntryCount());
   args->SetIntKey(webview::kInternalProcessId,
                   web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
@@ -898,7 +895,7 @@ void WebViewGuest::PrimaryMainFrameRenderProcessGone(
 
 void WebViewGuest::UserAgentOverrideSet(
     const blink::UserAgentOverride& ua_override) {
-  content::NavigationController& controller = web_contents()->GetController();
+  content::NavigationController& controller = GetController();
   content::NavigationEntry* entry = controller.GetVisibleEntry();
   // If we're on the initial NavigationEntry and no navigation had committed,
   // return early. This preserves legacy behavior when the initial
@@ -907,7 +904,7 @@ void WebViewGuest::UserAgentOverrideSet(
   if (!entry || controller.IsInitialNavigation())
     return;
   entry->SetIsOverridingUserAgent(!ua_override.ua_string_override.empty());
-  web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
+  GetController().Reload(content::ReloadType::NORMAL, false);
 }
 
 void WebViewGuest::FrameNameChanged(RenderFrameHost* render_frame_host,
@@ -1318,7 +1315,7 @@ bool WebViewGuest::LoadDataWithBaseURL(const GURL& data_url,
       content::NavigationController::UA_OVERRIDE_INHERIT;
 
   // Navigate to the data URL.
-  web_contents()->GetController().LoadURLWithParams(load_params);
+  GetController().LoadURLWithParams(load_params);
 
   return true;
 }
@@ -1500,7 +1497,7 @@ void WebViewGuest::LoadURLWithParams(const GURL& url,
 
   if (!force_navigation) {
     content::NavigationEntry* last_committed_entry =
-        web_contents()->GetController().GetLastCommittedEntry();
+        GetController().GetLastCommittedEntry();
     if (last_committed_entry && last_committed_entry->GetURL() == url) {
       return;
     }
@@ -1521,7 +1518,7 @@ void WebViewGuest::LoadURLWithParams(const GURL& url,
     load_url_params.override_user_agent =
         content::NavigationController::UA_OVERRIDE_TRUE;
   }
-  web_contents()->GetController().LoadURLWithParams(load_url_params);
+  GetController().LoadURLWithParams(load_url_params);
 }
 
 void WebViewGuest::RequestNewWindowPermission(

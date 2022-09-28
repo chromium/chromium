@@ -229,8 +229,8 @@ void AppViewGuest::DidInitialize(const base::Value::Dict& create_params) {
   if (!url_.is_valid())
     return;
 
-  web_contents()->GetController().LoadURL(
-      url_, content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+  GetController().LoadURL(url_, content::Referrer(), ui::PAGE_TRANSITION_LINK,
+                          std::string());
 }
 
 const char* AppViewGuest::GetAPINamespace() const {

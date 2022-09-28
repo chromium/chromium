@@ -169,6 +169,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Returns the user browser context of the embedder.
   content::BrowserContext* browser_context() const { return browser_context_; }
 
+  content::NavigationController& GetController();
+
   GuestViewManager* GetGuestViewManager();
 
   // Returns the URL of the owner WebContents' SiteInstance.
