@@ -61,6 +61,10 @@ class HeadlessWindowTreeHost : public aura::WindowTreeHost,
   void MoveCursorToScreenLocationInPixels(const gfx::Point& location) override;
   void OnCursorVisibilityChangedNative(bool show) override;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::string GetUniqueId() const override;
+#endif
+
  private:
   gfx::Rect bounds_;
   std::unique_ptr<aura::client::FocusClient> focus_client_;

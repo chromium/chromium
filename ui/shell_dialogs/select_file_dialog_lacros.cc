@@ -12,8 +12,7 @@
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_tree_host_platform.h"
-#include "ui/platform_window/platform_window.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
@@ -75,11 +74,8 @@ std::string GetShellWindowUniqueId(aura::Window* window) {
   // On desktop aura there is one WindowTreeHost per top-level window.
   aura::WindowTreeHost* window_tree_host = root_window->GetHost();
   DCHECK(window_tree_host);
-  // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
-  // aura::WindowTreeHostPlatform.
-  aura::WindowTreeHostPlatform* window_tree_host_platform =
-      static_cast<aura::WindowTreeHostPlatform*>(window_tree_host);
-  return window_tree_host_platform->platform_window()->GetWindowUniqueId();
+
+  return window_tree_host->GetUniqueId();
 }
 
 }  // namespace

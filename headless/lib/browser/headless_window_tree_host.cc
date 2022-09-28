@@ -102,4 +102,11 @@ void HeadlessWindowTreeHost::MoveCursorToScreenLocationInPixels(
 
 void HeadlessWindowTreeHost::OnCursorVisibilityChangedNative(bool show) {}
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+std::string HeadlessWindowTreeHost::GetUniqueId() const {
+  NOTIMPLEMENTED_LOG_ONCE() << "Headless does not have a unique ID";
+  return std::string();
+}
+#endif
+
 }  // namespace headless

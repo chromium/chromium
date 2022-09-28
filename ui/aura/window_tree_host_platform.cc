@@ -186,6 +186,12 @@ void WindowTreeHostPlatform::LockMouse(Window* window) {
   WindowTreeHost::LockMouse(window);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+std::string WindowTreeHostPlatform::GetUniqueId() const {
+  return platform_window()->GetWindowUniqueId();
+}
+#endif
+
 void WindowTreeHostPlatform::OnBoundsChanged(const BoundsChange& change) {
   // It's possible this function may be called recursively. Only notify
   // observers on initial entry. This way observers can safely assume that

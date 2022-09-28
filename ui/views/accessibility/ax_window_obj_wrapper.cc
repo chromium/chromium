@@ -21,7 +21,6 @@
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/compositor/layer.h"
-#include "ui/platform_window/platform_window.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/widget/widget.h"
 
@@ -95,25 +94,19 @@ std::string GetPlatformWindowId(aura::Window* window) {
   if (!window_tree_host)
     return std::string();
 
-  // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
-  // aura::WindowTreeHostPlatform.
-  aura::WindowTreeHostPlatform* window_tree_host_platform =
-      static_cast<aura::WindowTreeHostPlatform*>(window_tree_host);
-
   // Prefer the DesktopWindowTreeHostPlatform if it exists.
   DesktopWindowTreeHostPlatform* desktop_window_tree_host_platform =
       DesktopWindowTreeHostPlatform::GetHostForWidget(
           window_tree_host->GetAcceleratedWidget());
   if (!desktop_window_tree_host_platform)
-    return window_tree_host_platform->platform_window()->GetWindowUniqueId();
+    return window_tree_host->GetUniqueId();
 
   while (desktop_window_tree_host_platform->window_parent()) {
     desktop_window_tree_host_platform =
         desktop_window_tree_host_platform->window_parent();
   }
 
-  return desktop_window_tree_host_platform->platform_window()
-      ->GetWindowUniqueId();
+  return desktop_window_tree_host_platform->GetUniqueId();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
