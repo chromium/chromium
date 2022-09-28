@@ -2714,6 +2714,7 @@ crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-with-tabindex.html [ Failure ]
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slots.html [ Failure ]
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slots-in-slot.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-web-component-input-type-radio.html [ Failure ]
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-with-delegatesFocus.html [ Failure ]
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-nested-slots.html [ Failure ]
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-reverse-unassignable-slot.html [ Failure ]

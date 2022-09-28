@@ -203,6 +203,7 @@ bool RadioInputType::IsKeyboardFocusable() const {
   if (auto* focused_input =
           DynamicTo<HTMLInputElement>(current_focused_element)) {
     if (focused_input->type() == input_type_names::kRadio &&
+        focused_input->GetTreeScope() == GetElement().GetTreeScope() &&
         focused_input->Form() == GetElement().Form() &&
         focused_input->GetName() == GetElement().GetName())
       return false;
@@ -275,6 +276,7 @@ HTMLInputElement* RadioInputType::NextRadioButtonInGroup(
        input_element; input_element = NextInputElement(
                           *input_element, current->Form(), forward)) {
     if (current->Form() == input_element->Form() &&
+        input_element->GetTreeScope() == current->GetTreeScope() &&
         input_element->type() == input_type_names::kRadio &&
         input_element->GetName() == current->GetName())
       return input_element;
