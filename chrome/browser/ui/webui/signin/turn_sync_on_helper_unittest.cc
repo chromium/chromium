@@ -14,11 +14,11 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_file_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -342,14 +342,15 @@ class TurnSyncOnHelperTest : public testing::Test {
   TurnSyncOnHelperTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    const base::FilePath temp_user_data_dir =
+        base::CreateUniqueTempDirectoryScopedToTest();
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         std::make_unique<UnittestProfileManager>(
-            temp_dir_.GetPath(),
+            temp_user_data_dir,
             base::BindRepeating(&TurnSyncOnHelperTest::BuildTestingProfile,
                                 base::Unretained(this))));
     auto testing_profile = BuildTestingProfile(
-        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("profile")),
+        temp_user_data_dir.Append(FILE_PATH_LITERAL("profile")),
         /*delegate=*/nullptr);
     profile_ = testing_profile.get();
 
@@ -363,7 +364,7 @@ class TurnSyncOnHelperTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Lacros expects that the main profile always exists.
     auto main_profile = BuildTestingProfile(
-        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Default")),
+        temp_user_data_dir.Append(FILE_PATH_LITERAL("Default")),
         /*delegate=*/nullptr);
     profile_manager()->RegisterTestingProfile(std::move(main_profile),
                                               /*add_to_storage=*/true);
@@ -757,7 +758,6 @@ class TurnSyncOnHelperTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::ScopedTempDir temp_dir_;
   ScopedTestingLocalState local_state_;
   CoreAccountId account_id_;
   raw_ptr<TestingProfile> profile_;
