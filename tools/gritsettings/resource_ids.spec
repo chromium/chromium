@@ -128,6 +128,10 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [1345],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/desk_api/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [1347],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/gaia_action_buttons/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [1350],

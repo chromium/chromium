@@ -167,6 +167,8 @@ extern const char kGnubbyV3ExtensionId[];
 extern const char kGCSEExtensionId[];
 // The extension id of the Contact Center Insights chrome component extension.
 extern const char kContactCenterInsightsExtensionId[];
+// The extension id of the Desk API chrome component extension.
+extern const char kDeskApiExtensionId[];
 // The extension id of the Bruschetta Security Key Forwarder extension.
 extern const char kBruSecurityKeyForwarderExtensionId[];
 #endif
