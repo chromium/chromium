@@ -157,6 +157,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       bool defer_status,
       cc::PaintHoldingReason reason,
       absl::optional<cc::PaintHoldingCommitTrigger> trigger) override;
+  void OnPauseRenderingChanged(bool) override;
   void DidBeginMainFrame() override;
   void RequestNewLayerTreeFrameSink(
       LayerTreeFrameSinkCallback callback) override;

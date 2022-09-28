@@ -45,6 +45,7 @@ class LayerTreeViewDelegate {
       bool defer_status,
       cc::PaintHoldingReason reason,
       absl::optional<cc::PaintHoldingCommitTrigger> trigger) = 0;
+  virtual void OnPauseRenderingChanged(bool) = 0;
 
   // Notifies that the layer tree host has completed a call to
   // RequestMainFrameUpdate in response to a BeginMainFrame.

@@ -650,6 +650,11 @@ std::unique_ptr<ScopedPauseRendering> LayerTreeHost::PauseRendering() {
   return std::make_unique<ScopedPauseRendering>(this);
 }
 
+void LayerTreeHost::OnPauseRenderingChanged(bool paused) {
+  DCHECK(IsMainThread());
+  client_->OnPauseRenderingChanged(paused);
+}
+
 void LayerTreeHost::OnDeferMainFrameUpdatesChanged(bool defer_status) {
   DCHECK(IsMainThread());
   client_->OnDeferMainFrameUpdatesChanged(defer_status);
