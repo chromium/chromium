@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -40,15 +39,13 @@ namespace media_history {
 
 namespace {
 
-base::FilePath g_temp_history_dir;
-
 std::unique_ptr<KeyedService> BuildTestHistoryService(
     scoped_refptr<base::SequencedTaskRunner> backend_runner,
     content::BrowserContext* context) {
   std::unique_ptr<history::HistoryService> service(
       new history::HistoryService());
   service->set_backend_task_runner_for_testing(std::move(backend_runner));
-  service->Init(history::TestHistoryDatabaseParamsForPath(g_temp_history_dir));
+  service->Init(history::TestHistoryDatabaseParamsForPath(context->GetPath()));
   return service;
 }
 
@@ -66,9 +63,6 @@ class MediaHistoryKeyedServiceTest
       public testing::WithParamInterface<TestState> {
  public:
   void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    g_temp_history_dir = temp_dir_.GetPath();
-
     mock_time_task_runner_ =
         base::MakeRefCounted<base::TestMockTimeTaskRunner>();
 
@@ -76,8 +70,6 @@ class MediaHistoryKeyedServiceTest
     builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestHistoryService, mock_time_task_runner_));
-    builder.SetPath(temp_dir_.GetPath());
-
     profile_ = builder.Build();
 
     // Sleep the thread to allow the media history store to asynchronously
@@ -91,16 +83,12 @@ class MediaHistoryKeyedServiceTest
 
   Profile* profile() { return profile_.get(); }
 
-  void ConfigureHistoryService(
-      scoped_refptr<base::SequencedTaskRunner> backend_runner) {
-    HistoryServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating(&BuildTestHistoryService,
-                                       std::move(backend_runner)));
-  }
-
   void TearDown() override {
     profile()->GetPrefs()->SetBoolean(prefs::kSavingBrowserHistoryDisabled,
                                       false);
+
+    // Destroy the profile, which also stops the history service.
+    profile_.reset();
 
     // Tests that run a history service that uses the mock task runner for
     // backend processing will post tasks there during TearDown. Run them now to
@@ -196,8 +184,6 @@ class MediaHistoryKeyedServiceTest
   scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner_;
 
  private:
-  base::ScopedTempDir temp_dir_;
-
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;

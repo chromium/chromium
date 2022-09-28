@@ -7,7 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -25,10 +24,7 @@
 #include "chrome/browser/media/history/media_history_session_images_table.h"
 #include "chrome/browser/media/history/media_history_session_table.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/history/core/browser/history_database_params.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/history/core/common/pref_names.h"
-#include "components/history/core/test/test_history_database.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/media_player_watch_time.h"
 #include "content/public/test/browser_task_environment.h"
@@ -48,16 +44,6 @@ namespace {
 // The error margin for double time comparison. It is 10 seconds because it
 // might be equal but it might be close too.
 const int kTimeErrorMargin = 10000;
-
-base::FilePath g_temp_history_dir;
-
-std::unique_ptr<KeyedService> BuildTestHistoryService(
-    content::BrowserContext* context) {
-  std::unique_ptr<history::HistoryService> service(
-      new history::HistoryService());
-  service->Init(history::TestHistoryDatabaseParamsForPath(g_temp_history_dir));
-  return service;
-}
 
 enum class TestState {
   kNormal,
@@ -81,19 +67,16 @@ class MediaHistoryStoreUnitTest
     base::HistogramTester histogram_tester;
 
     // Set up the profile.
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
-    profile_builder.SetPath(temp_dir_.GetPath());
-    g_temp_history_dir = temp_dir_.GetPath();
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
 
     if (GetParam() == TestState::kSavingBrowserHistoryDisabled) {
       profile_->GetPrefs()->SetBoolean(prefs::kSavingBrowserHistoryDisabled,
                                        true);
     }
-
-    HistoryServiceFactory::GetInstance()->SetTestingFactory(
-        profile_.get(), base::BindRepeating(&BuildTestHistoryService));
 
     // Sleep the thread to allow the media history store to asynchronously
     // create the database and tables before proceeding with the tests and
@@ -202,9 +185,6 @@ class MediaHistoryStoreUnitTest
   bool IsReadOnly() const { return GetParam() != TestState::kNormal; }
 
   Profile* GetProfile() { return profile_.get(); }
-
- private:
-  base::ScopedTempDir temp_dir_;
 
  protected:
   // |features_| must outlive |task_environment_| to avoid TSAN issues.
