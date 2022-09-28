@@ -1238,7 +1238,6 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     return -1;
   }
 
-  DVLOG(0) << "Chrome is running in full browser mode.";
   is_browser_main_loop_started_ = true;
   main_params.startup_data = mojo_ipc_support_->CreateBrowserStartupData();
   return RunBrowserProcessMain(std::move(main_params), delegate_);
