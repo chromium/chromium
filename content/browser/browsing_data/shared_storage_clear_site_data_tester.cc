@@ -75,14 +75,14 @@ SharedStorageClearSiteDataTester::GetSharedStorageOrigins() {
       storage_partition_impl_->GetSharedStorageManager();
   DCHECK(shared_storage_manager);
 
-  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
+  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoV2Ptr>>
       future;
   shared_storage_manager->FetchOrigins(future.GetCallback());
   auto infos = future.Take();
 
   std::vector<url::Origin> origins;
   for (const auto& info : infos)
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
 
   return origins;
 }
@@ -95,13 +95,13 @@ int SharedStorageClearSiteDataTester::GetSharedStorageNumEntriesForOrigin(
       storage_partition_impl_->GetSharedStorageManager();
   DCHECK(shared_storage_manager);
 
-  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
+  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoV2Ptr>>
       future;
   shared_storage_manager->FetchOrigins(future.GetCallback());
   auto infos = future.Take();
 
   for (const auto& info : infos) {
-    if (info->origin == origin)
+    if (info->storage_key.origin() == origin)
       return PaddedBytesToNumEntries(info->total_size_bytes);
   }
 
@@ -115,7 +115,7 @@ int SharedStorageClearSiteDataTester::GetSharedStorageTotalEntries() {
       storage_partition_impl_->GetSharedStorageManager();
   DCHECK(shared_storage_manager);
 
-  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
+  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoV2Ptr>>
       future;
   shared_storage_manager->FetchOrigins(future.GetCallback());
   auto infos = future.Take();

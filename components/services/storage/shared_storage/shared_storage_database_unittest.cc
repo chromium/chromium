@@ -220,7 +220,7 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFile) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(abc_xyz, chromium_org, google_com,
                                    google_org, grow_with_google_com, gv_com,
                                    waymo_com, withgoogle_com, youtube_com));
@@ -345,7 +345,7 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFileNoBudgetTables) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(abc_xyz, chromium_org, google_com,
                                    google_org, grow_with_google_com, gv_com,
                                    waymo_com, withgoogle_com, youtube_com));
@@ -757,7 +757,7 @@ TEST_P(SharedStorageDatabaseParamTest, FetchOrigins) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4));
 
   EXPECT_EQ(OperationResult::kSuccess, db_->Clear(kOrigin1));
@@ -769,13 +769,13 @@ TEST_P(SharedStorageDatabaseParamTest, FetchOrigins) {
   origins.clear();
   EXPECT_TRUE(origins.empty());
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin3, kOrigin4));
 
   origins.clear();
   EXPECT_TRUE(origins.empty());
   for (const auto& info : db_->FetchOrigins(/*exclude_empty_origins=*/false))
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4));
 }
 
@@ -1041,7 +1041,7 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, AllTime) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3));
 
   EXPECT_EQ(
@@ -1058,7 +1058,7 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, AllTime) {
 
   origins.clear();
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin3));
 
   EXPECT_EQ(
@@ -1129,7 +1129,7 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, SinceThreshold) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4));
 
   // Read from `kOrigin1`.
@@ -1150,7 +1150,7 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, SinceThreshold) {
 
   origins.clear();
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3));
 
   EXPECT_EQ(
@@ -1169,7 +1169,7 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, SinceThreshold) {
 
   origins.clear();
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2));
 
   // There is no error from trying to clear an origin that isn't in the
@@ -1220,7 +1220,7 @@ TEST_P(SharedStorageDatabaseParamTest, PurgeStaleOrigins) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4));
 
   EXPECT_LT(db_->GetCreationTime(kOrigin1).time,
@@ -1244,7 +1244,7 @@ TEST_P(SharedStorageDatabaseParamTest, PurgeStaleOrigins) {
 
   origins.clear();
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin3, kOrigin4));
 
   clock_.Advance(base::Days(kOriginStalenessThresholdDays));
@@ -1287,7 +1287,7 @@ TEST_P(SharedStorageDatabaseParamTest, TrimMemory) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4));
 
   EXPECT_EQ(OperationResult::kSuccess, db_->Clear(kOrigin1));
@@ -1298,7 +1298,7 @@ TEST_P(SharedStorageDatabaseParamTest, TrimMemory) {
 
   origins.clear();
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin3, kOrigin4));
 
   // Release nonessential memory.
@@ -1307,7 +1307,7 @@ TEST_P(SharedStorageDatabaseParamTest, TrimMemory) {
   // Check that the database is still intact.
   origins.clear();
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin3, kOrigin4));
 
   EXPECT_EQ(1L, db_->Length(kOrigin3));
@@ -1482,7 +1482,7 @@ TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(google_com));
 
   histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
@@ -1511,7 +1511,7 @@ TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(abc_xyz, chromium_org, google_com,
                                    google_org, gv_com));
 
@@ -1542,7 +1542,7 @@ TEST_F(SharedStorageDatabaseTest, SixOrigins) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(abc_xyz, chromium_org, google_com,
                                    google_org, gv_com, waymo_com));
 
@@ -1575,7 +1575,7 @@ TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins,
               ElementsAre(abc_xyz, chromium_org, google_com, google_org, gv_com,
                           waymo_com, with_google_com));
@@ -1610,7 +1610,7 @@ TEST_F(SharedStorageDatabaseTest, EightOrigins) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins,
               ElementsAre(abc_xyz, chromium_org, google_com, google_org, gv_com,
                           waymo_com, with_google_com, youtube_com));

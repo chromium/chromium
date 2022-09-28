@@ -2334,7 +2334,7 @@ class StoragePartitionImplSharedStorageTest : public StoragePartitionImplTest {
   // Returns true, if the given origin URL exists.
   bool SharedStorageExistsForOrigin(const url::Origin& origin) {
     for (const auto& info : GetSharedStorageUsage()) {
-      if (origin == info->origin)
+      if (origin == info->storage_key.origin())
         return true;
     }
     return false;
@@ -2379,10 +2379,10 @@ class StoragePartitionImplSharedStorageTest : public StoragePartitionImplTest {
   }
 
  private:
-  std::vector<storage::mojom::StorageUsageInfoPtr> GetSharedStorageUsage() {
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> GetSharedStorageUsage() {
     DCHECK(shared_storage_manager_);
 
-    base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
+    base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoV2Ptr>>
         future;
     shared_storage_manager_->FetchOrigins(future.GetCallback());
     return future.Take();

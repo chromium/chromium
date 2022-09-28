@@ -526,7 +526,7 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
     return future.Get();
   }
 
-  void FetchOrigins(std::vector<mojom::StorageUsageInfoPtr>* out_result,
+  void FetchOrigins(std::vector<mojom::StorageUsageInfoV2Ptr>* out_result,
                     bool exclude_empty_origins = true) {
     DCHECK(out_result);
     DCHECK(async_database_);
@@ -540,11 +540,11 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
     async_database_->FetchOrigins(std::move(callback), exclude_empty_origins);
   }
 
-  std::vector<mojom::StorageUsageInfoPtr> FetchOriginsSync(
+  std::vector<mojom::StorageUsageInfoV2Ptr> FetchOriginsSync(
       bool exclude_empty_origins = true) {
     DCHECK(async_database_);
 
-    base::test::TestFuture<std::vector<mojom::StorageUsageInfoPtr>> future;
+    base::test::TestFuture<std::vector<mojom::StorageUsageInfoV2Ptr>> future;
     async_database_->FetchOrigins(future.GetCallback(), exclude_empty_origins);
     return future.Take();
   }
@@ -693,7 +693,7 @@ TEST_F(AsyncSharedStorageDatabaseImplFromFileV1Test, Version1_LoadFromFile) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : FetchOriginsSync())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(
       origins,
       ElementsAre(abc_xyz, url::Origin::Create(GURL("http://chromium.org")),
@@ -733,7 +733,7 @@ TEST_F(AsyncSharedStorageDatabaseImplFromFileV1NoBudgetTableTest,
 
   std::vector<url::Origin> origins;
   for (const auto& info : FetchOriginsSync())
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(
       origins,
       ElementsAre(abc_xyz, url::Origin::Create(GURL("http://chromium.org")),
@@ -1803,7 +1803,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
 
   // Check that origin list is initially empty due to the database not being
   // initialized.
-  std::vector<mojom::StorageUsageInfoPtr> infos1;
+  std::vector<mojom::StorageUsageInfoV2Ptr> infos1;
   FetchOrigins(&infos1);
 
   // Check that calling `PurgeStaleOrigins()` on the uninitialized database
@@ -1854,7 +1854,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
   int length4 = -1;
   Length(kOrigin4, &length4);
 
-  std::vector<mojom::StorageUsageInfoPtr> infos2;
+  std::vector<mojom::StorageUsageInfoV2Ptr> infos2;
   FetchOrigins(&infos2);
 
   bool success1 = false;
@@ -1875,9 +1875,9 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
   int length8 = -1;
   Length(kOrigin4, &length8);
 
-  std::vector<mojom::StorageUsageInfoPtr> infos3;
+  std::vector<mojom::StorageUsageInfoV2Ptr> infos3;
   FetchOrigins(&infos3);
-  std::vector<mojom::StorageUsageInfoPtr> infos4;
+  std::vector<mojom::StorageUsageInfoV2Ptr> infos4;
   FetchOrigins(&infos4, /*exclude_empty_origins=*/false);
 
   bool success2 = false;
@@ -1900,9 +1900,9 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
 
   TrimMemory();
 
-  std::vector<mojom::StorageUsageInfoPtr> infos5;
+  std::vector<mojom::StorageUsageInfoV2Ptr> infos5;
   FetchOrigins(&infos5);
-  std::vector<mojom::StorageUsageInfoPtr> infos6;
+  std::vector<mojom::StorageUsageInfoV2Ptr> infos6;
   FetchOrigins(&infos6, /*exclude_empty_origins=*/false);
 
   OperationResult result14 = OperationResult::kSqlError;
@@ -1946,7 +1946,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
 
   std::vector<url::Origin> origins;
   for (const auto& info : infos2)
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4));
 
   EXPECT_TRUE(success1);
@@ -1961,12 +1961,12 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
 
   origins.clear();
   for (const auto& info : infos3)
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin3, kOrigin4));
 
   origins.clear();
   for (const auto& info : infos4)
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin3, kOrigin4));
 
   EXPECT_TRUE(success2);
@@ -1981,12 +1981,12 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
 
   origins.clear();
   for (const auto& info : infos5)
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin4));
 
   origins.clear();
   for (const auto& info : infos6)
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin4));
 
   // Database is still intact after trimming memory.
@@ -2208,7 +2208,7 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
 
   // Check that origin list is initially empty due to the database not being
   // initialized.
-  std::vector<mojom::StorageUsageInfoPtr> infos1;
+  std::vector<mojom::StorageUsageInfoV2Ptr> infos1;
   FetchOrigins(&infos1);
 
   // Check that calling `PurgeMatchingOrigins()` on the uninitialized database
@@ -2266,7 +2266,7 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
   int length5 = -1;
   Length(kOrigin5, &length5);
 
-  std::vector<mojom::StorageUsageInfoPtr> infos2;
+  std::vector<mojom::StorageUsageInfoV2Ptr> infos2;
   FetchOrigins(&infos2);
 
   bool success1 = false;
@@ -2290,9 +2290,9 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
   int length10 = -1;
   Length(kOrigin5, &length10);
 
-  std::vector<mojom::StorageUsageInfoPtr> infos3;
+  std::vector<mojom::StorageUsageInfoV2Ptr> infos3;
   FetchOrigins(&infos3);
-  std::vector<mojom::StorageUsageInfoPtr> infos4;
+  std::vector<mojom::StorageUsageInfoV2Ptr> infos4;
   FetchOrigins(&infos4, /*exclude_empty_origins=*/false);
 
   bool success2 = false;
@@ -2320,9 +2320,9 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
 
   TrimMemory();
 
-  std::vector<mojom::StorageUsageInfoPtr> infos5;
+  std::vector<mojom::StorageUsageInfoV2Ptr> infos5;
   FetchOrigins(&infos5);
-  std::vector<mojom::StorageUsageInfoPtr> infos6;
+  std::vector<mojom::StorageUsageInfoV2Ptr> infos6;
   FetchOrigins(&infos6, /*exclude_empty_origins=*/false);
 
   GetResult value1;
@@ -2378,7 +2378,7 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
 
   std::vector<url::Origin> origins;
   for (const auto& info : infos2)
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins,
               ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4, kOrigin5));
 
@@ -2394,12 +2394,12 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
 
   origins.clear();
   for (const auto& info : infos3)
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin3, kOrigin4, kOrigin5));
 
   origins.clear();
   for (const auto& info : infos4)
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins,
               ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4, kOrigin5));
 
@@ -2418,12 +2418,12 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
 
   origins.clear();
   for (const auto& info : infos5)
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin4));
 
   origins.clear();
   for (const auto& info : infos6)
-    origins.push_back(info->origin);
+    origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins,
               ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4, kOrigin5));
 

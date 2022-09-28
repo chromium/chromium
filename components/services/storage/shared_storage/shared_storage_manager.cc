@@ -210,7 +210,8 @@ void SharedStorageManager::PurgeMatchingOrigins(
 }
 
 void SharedStorageManager::FetchOrigins(
-    base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)> callback,
+    base::OnceCallback<void(std::vector<mojom::StorageUsageInfoV2Ptr>)>
+        callback,
     bool exclude_empty_origins) {
   DCHECK(database_);
   database_->FetchOrigins(std::move(callback), exclude_empty_origins);

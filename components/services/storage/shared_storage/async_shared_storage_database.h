@@ -193,12 +193,12 @@ class AsyncSharedStorageDatabase {
   virtual void PurgeStaleOrigins(
       base::OnceCallback<void(OperationResult)> callback) = 0;
 
-  // Fetches a vector of `mojom::StorageUsageInfoPtr`, with one
-  // `mojom::StorageUsageInfoPtr` for each origin currently using shared storage
-  // in this profile. If `exclude_empty_origins` is true, then only those with
-  // positive `length` are included in the vector.
+  // Fetches a vector of `mojom::StorageUsageInfoV2Ptr`, with one
+  // `mojom::StorageUsageInfoV2Ptr` for each origin currently using shared
+  // storage in this profile. If `exclude_empty_origins` is true, then only
+  // those with positive `length` are included in the vector.
   virtual void FetchOrigins(
-      base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
+      base::OnceCallback<void(std::vector<mojom::StorageUsageInfoV2Ptr>)>
           callback,
       bool exclude_empty_origins = true) = 0;
 

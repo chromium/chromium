@@ -288,11 +288,11 @@ class SharedStorageDatabase {
   // `time_stamps` older than `clock_->Now() - budget_interval_`.
   [[nodiscard]] OperationResult PurgeStaleOrigins();
 
-  // Fetches a vector of `mojom::StorageUsageInfoPtr`, with one
-  // `mojom::StorageUsageInfoPtr` for each origin currently using shared storage
-  // in this profile. If `exclude_empty_origins` is true, then only those with
-  // positive `length` are included in the vector.
-  [[nodiscard]] std::vector<mojom::StorageUsageInfoPtr> FetchOrigins(
+  // Fetches a vector of `mojom::StorageUsageInfoV2Ptr`, with one
+  // `mojom::StorageUsageInfoV2Ptr` for each origin currently using shared
+  // storage in this profile. If `exclude_empty_origins` is true, then only
+  // those with positive `length` are included in the vector.
+  [[nodiscard]] std::vector<mojom::StorageUsageInfoV2Ptr> FetchOrigins(
       bool exclude_empty_origins = true);
 
   // Makes a withdrawal of `bits_debit` stamped with the current time from the
