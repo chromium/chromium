@@ -13,12 +13,12 @@ order of the tabs should match the number and order of the panels. Example:
 
 ```html
   <cr-tab-box>
-    <div slot="tabs">Donuts</div>
-    <div slot="tabs">Cookies</div>
-    <div slot="panels">
+    <div slot="tab">Donuts</div>
+    <div slot="tab">Cookies</div>
+    <div slot="panel">
       <span>Some content related to donuts</span>
     </div>
-    <div slot="panels">
+    <div slot="panel">
       <span>Some content related to cookies</span>
     </div>
   </cr-tab-box>
