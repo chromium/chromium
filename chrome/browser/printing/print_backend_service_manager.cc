@@ -87,7 +87,7 @@ void PrintBackendServiceManager::LogCallToRemote(
 void PrintBackendServiceManager::LogCallbackFromRemote(
     base::StringPiece name,
     const CallbackContext& context) {
-  DVLOG(1) << name << "completed for remote `" << context.remote_id
+  DVLOG(1) << name << " completed for remote `" << context.remote_id
            << "` saved callback ID " << context.saved_callback_id;
 }
 
@@ -623,8 +623,8 @@ PrintBackendServiceManager::GetServiceFromBundle(
   mojo::Remote<mojom::PrintBackendService>& service = bundle->service;
   if (!service) {
     VLOG(1) << "Launching print backend "
-            << (sandboxed ? "sandboxed" : "unsandboxed") << " for '"
-            << remote_id << "'";
+            << (sandboxed ? "sandboxed" : "unsandboxed") << " for `"
+            << remote_id << "`";
 
     mojo::Remote<T>& host = bundle->host;
     content::ServiceProcessHost::Launch(
@@ -840,8 +840,8 @@ void PrintBackendServiceManager::UpdateServiceIdleTimeoutByRemoteId(
 void PrintBackendServiceManager::OnIdleTimeout(bool sandboxed,
                                                const std::string& remote_id) {
   DVLOG(1) << "Print Backend service idle timeout for "
-           << (sandboxed ? "sandboxed" : "unsandboxed") << " remote id "
-           << remote_id;
+           << (sandboxed ? "sandboxed" : "unsandboxed") << " remote id `"
+           << remote_id << "`";
   if (sandboxed) {
     sandboxed_remotes_bundles_.erase(remote_id);
   } else {
@@ -853,8 +853,8 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
     bool sandboxed,
     const std::string& remote_id) {
   DVLOG(1) << "Print Backend service disconnected for "
-           << (sandboxed ? "sandboxed" : "unsandboxed") << " remote id "
-           << remote_id;
+           << (sandboxed ? "sandboxed" : "unsandboxed") << " remote id `"
+           << remote_id << "`";
   if (sandboxed) {
     sandboxed_remotes_bundles_.erase(remote_id);
   } else {
