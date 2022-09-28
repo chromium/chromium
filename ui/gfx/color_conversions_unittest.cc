@@ -53,6 +53,45 @@ TEST(ColorConversions, LabToXYZD50) {
   }
 }
 
+TEST(ColorConversions, OKLabToXYZD65) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=lime&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{100.0f, 0.0, 0.0f},
+       {0.9504559270516717f, 1.0f, 1.0890577507598784f}},  // white
+      {{86.64396115356694f, -0.23388757418790818f, 0.17949847989672985f},
+       {0.357584339383878f, 0.715168678767756f, 0.11919477979462598f}},  // lime
+      {{42.09136612058102f, 0.16470430417002319f, -0.10147178154592906f},
+       {0.1279775574172914f, 0.06148383144929487f,
+        0.20935510595451154f}},  // purple
+      {{48.06125447400232f, 0.1440294785250731f, 0.0688902950420287f},
+       {0.167625056565021f, 0.09823806119130823f,
+        0.03204123425728893f}},  // brown
+      {{51.97518277948419f, -0.14030232755310995f, 0.10767589774360209f},
+       {0.07718833433230218f, 0.15437666866460437f,
+        0.025729444777434055f}}};  // green
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_l, input_a, input_b] = color_pair.input;
+    auto [expected_x, expected_y, expected_z] = color_pair.expected;
+    auto [output_x, output_y, output_z] =
+        OKLabToXYZD65(input_l, input_a, input_b);
+    EXPECT_NEAR(output_x, expected_x, 0.001f)
+        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+    EXPECT_NEAR(output_y, expected_y, 0.001f)
+        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+    EXPECT_NEAR(output_z, expected_z, 0.001f)
+        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+  }
+}
+
 TEST(ColorConversions, XYZD50toD65) {
   // Color conversions obtained from
   // https://www.nixsensor.com/free-color-converter/
@@ -173,7 +212,7 @@ TEST(ColorConversions, LchToLab) {
       << " produced " << output_l << ' ' << output_a << ' ' << output_b;
 }
 
-TEST(ColorConversions, LchTosRGB) {
+TEST(ColorConversions, LchToSkColor4f) {
   // Color conversions obtained from
   // https://colorjs.io/apps/convert/?color=purple&precision=4
   ColorTest colors_tests[] = {
@@ -216,6 +255,63 @@ TEST(ColorConversions, LchTosRGB) {
   float expected_b = 1.0f;
   SkColor4f color =
       LchToSkColor4f(input_l, input_c, absl::optional<float>(input_h), 1.0f);
+  EXPECT_NEAR(color.fR, expected_r, 0.001f)
+      << input_l << ' ' << input_c << ' ' << "none"
+      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
+      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
+  EXPECT_NEAR(color.fG, expected_g, 0.001f)
+      << input_l << ' ' << input_c << ' ' << "none"
+      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
+      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
+  EXPECT_NEAR(color.fB, expected_b, 0.001f)
+      << input_l << ' ' << input_c << ' ' << "none"
+      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
+      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
+}
+
+TEST(ColorConversions, OKLchToSkColor4f) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{86.64396115356694f, 0.2948272403370167f, 142.49533888780996f},
+       {0.0f, 1.0f, 0.0f}},  // lime
+      {{42.09136612058102f, 0.19345291484554133f, 328.36341792345144f},
+       {0.5019607843137255f, 0.0f, 0.5019607843137255f}},  // purple
+      {{48.06125447400232f, 0.1596570181206647f, 25.562112067668068f},
+       {0.6470588235294118f, 0.16470588235294117f,
+        0.16470588235294117f}},  // brown
+      {{51.97518277948419f, 0.17685825418032036f, 142.4953388878099f},
+       {0.0f, 0.5019607843137255f, 0.0f}}};  // green
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_l, input_c, input_h] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    SkColor4f color = OKLchToSkColor4f(input_l, input_c,
+                                       absl::optional<float>(input_h), 1.0f);
+    EXPECT_NEAR(color.fR, expected_r, 0.01f)
+        << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fG, expected_g, 0.01f)
+        << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fB, expected_b, 0.01f)
+        << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+  }
+
+  // Try with a none hue value (white).
+  float input_l = 100.0f;
+  float input_c = 0.000010331815288315629f;
+  absl::optional<float> input_h = absl::nullopt;
+  float expected_r = 1.0f;
+  float expected_g = 1.0f;
+  float expected_b = 1.0f;
+  SkColor4f color =
+      OKLchToSkColor4f(input_l, input_c, absl::optional<float>(input_h), 1.0f);
   EXPECT_NEAR(color.fR, expected_r, 0.001f)
       << input_l << ' ' << input_c << ' ' << "none"
       << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
@@ -368,7 +464,7 @@ TEST(ColorConversions, SRGBLinearToSkColor4f) {
 
 TEST(ColorConversions, DisplayP3ToXYZD50) {
   // Color conversions obtained from
-  // https://www.nixsensor.com/free-color-converter/
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
   ColorTest colors_tests[] = {
       {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
       {{0.9999999999999999f, 0.9999999999999997f, 0.9999999999999999f},
@@ -409,7 +505,7 @@ TEST(ColorConversions, DisplayP3ToXYZD50) {
 
 TEST(ColorConversions, DisplayP3ToSkColor4f) {
   // Color conversions obtained from
-  // https://www.nixsensor.com/free-color-converter/
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
   ColorTest colors_tests[] = {
       {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
       {{0.9999999999999999f, 0.9999999999999997f, 0.9999999999999999f},
@@ -484,6 +580,47 @@ TEST(ColorConversions, ProPhotoToXYZD50) {
   }
 }
 
+TEST(ColorConversions, AdobeRGBToXYZD50) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{1.0000000000000002f, 0.9999999999999999f, 1.f},
+       {0.9642956660812443f, 1.0000000361162846f,
+        0.8251045485672053f}},  // white
+      {{0.564972265988564f, 0.9999999999999999f, 0.23442379872902916f},
+       {0.3851514688337912f, 0.7168870538238823f,
+        0.09708128566574631f}},  // lime
+      {{0.5565979160264471f, 0.18045907254050694f, 0.18045907254050705f},
+       {0.1763053229982614f, 0.10171766135467991f,
+        0.024020600356509242f}},  // brown
+      {{0.4275929819700999f, 0.0f, 0.4885886519419426f},
+       {0.1250143560558979f, 0.0611129099463755f,
+        0.15715146562446167f}},  // purple
+      {{0.9363244100721754f, 0.7473920857106169f, 0.7893042668092753f},
+       {0.7245316165924385f, 0.6365774485679174f,
+        0.4915583325045292f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_r, input_g, input_b] = color_pair.input;
+    auto [expected_x, expected_y, expected_z] = color_pair.expected;
+    auto [output_x, output_y, output_z] =
+        AdobeRGBToXYZD50(input_r, input_g, input_b);
+    EXPECT_NEAR(output_x, expected_x, 0.001f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+    EXPECT_NEAR(output_y, expected_y, 0.001f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+    EXPECT_NEAR(output_z, expected_z, 0.001f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+  }
+}
+
 TEST(ColorConversions, ProPhotoToSkColor4f) {
   // Color conversions obtained from
   // https://colorjs.io/apps/convert/?color=pink&precision=4
@@ -519,4 +656,117 @@ TEST(ColorConversions, ProPhotoToSkColor4f) {
         << ' ' << color.fG << ' ' << color.fB;
   }
 }
+
+TEST(ColorConversions, AdobeRGBToSkColor4f) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{1.0000000000000002f, 0.9999999999999999f, 1.f},
+       {1.0f, 1.0f, 1.0f}},  // white
+      {{0.564972265988564f, 0.9999999999999999f, 0.23442379872902916f},
+       {0.0f, 1.0f, 0.0f}},  // lime
+      {{0.5565979160264471f, 0.18045907254050694f, 0.18045907254050705f},
+       {0.6470588235294118f, 0.16470588235294117f,
+        0.16470588235294117f}},  // brown
+      {{0.4275929819700999f, 0.0f, 0.4885886519419426f},
+       {0.5019607843137255f, 0.0f, 0.5019607843137255f}},  // purple
+      {{0.9363244100721754f, 0.7473920857106169f, 0.7893042668092753f},
+       {1.0f, 0.7529411764705882f, 0.796078431372549f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_r, input_g, input_b] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    SkColor4f color = AdobeRGBToSkColor4f(input_r, input_g, input_b, 1.0f);
+    EXPECT_NEAR(color.fR, expected_r, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fG, expected_g, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fB, expected_b, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+  }
+}
+
+TEST(ColorConversions, Rec2020ToXYZD50) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{1.0000000000000002f, 1.f, 1.f},
+       {0.9642956660812443f, 1.0000000361162846f,
+        0.8251045485672053f}},  // white
+      {{0.5675424725933591f, 0.959278677099374f, 0.2689692617052188f},
+       {0.3851514688337912f, 0.7168870538238823f,
+        0.09708128566574631f}},  // lime
+      {{0.4841434514625542f, 0.17985588424119636f, 0.12395667053434403f},
+       {0.1763053229982614f, 0.10171766135467991f,
+        0.024020600356509242f}},  // brown
+      {{0.36142160262090384f, 0.0781562275109019f, 0.429742223818931f},
+       {0.1250143560558979f, 0.0611129099463755f,
+        0.15715146562446167f}},  // purple
+      {{0.9098509851821579f, 0.747938726996672f, 0.7726929727190115f},
+       {0.7245316165924385f, 0.6365774485679174f,
+        0.4915583325045292f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_r, input_g, input_b] = color_pair.input;
+    auto [expected_x, expected_y, expected_z] = color_pair.expected;
+    auto [output_x, output_y, output_z] =
+        Rec2020ToXYZD50(input_r, input_g, input_b);
+    EXPECT_NEAR(output_x, expected_x, 0.001f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+    EXPECT_NEAR(output_y, expected_y, 0.001f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+    EXPECT_NEAR(output_z, expected_z, 0.001f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
+        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
+        << ' ' << output_y << ' ' << output_z;
+  }
+}
+
+TEST(ColorConversions, Rec2020ToSkColor4f) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},               // black
+      {{1.0000000000000002f, 1.f, 1.f}, {1.0f, 1.0f, 1.0f}},  // white
+      {{0.5675424725933591f, 0.959278677099374f, 0.2689692617052188f},
+       {0.0f, 1.0f, 0.0f}},  // lime
+      {{0.4841434514625542f, 0.17985588424119636f, 0.12395667053434403f},
+       {0.6470588235294118f, 0.16470588235294117f,
+        0.16470588235294117f}},  // brown
+      {{0.36142160262090384f, 0.0781562275109019f, 0.429742223818931f},
+       {0.5019607843137255f, 0.0f, 0.5019607843137255f}},  // purple
+      {{0.9098509851821579f, 0.747938726996672f, 0.7726929727190115f},
+       {1.0f, 0.7529411764705882f, 0.796078431372549f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_r, input_g, input_b] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    SkColor4f color = Rec2020ToSkColor4f(input_r, input_g, input_b, 1.0f);
+    EXPECT_NEAR(color.fR, expected_r, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fG, expected_g, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fB, expected_b, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+  }
+}
+
 }  // namespace gfx

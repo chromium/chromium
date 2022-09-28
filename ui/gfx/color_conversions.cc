@@ -101,6 +101,23 @@ std::tuple<float, float, float> ApplyTransferFnProPhoto(float r,
       skcms_TransferFunction_eval(&SkNamedTransferFnExt::kProPhotoRGB, b));
 }
 
+std::tuple<float, float, float> ApplyTransferFnAdobeRGB(float r,
+                                                        float g,
+                                                        float b) {
+  return std::make_tuple(
+      skcms_TransferFunction_eval(&SkNamedTransferFn::k2Dot2, r),
+      skcms_TransferFunction_eval(&SkNamedTransferFn::k2Dot2, g),
+      skcms_TransferFunction_eval(&SkNamedTransferFn::k2Dot2, b));
+}
+
+std::tuple<float, float, float> ApplyTransferFnRec2020(float r,
+                                                       float g,
+                                                       float b) {
+  return std::make_tuple(
+      skcms_TransferFunction_eval(&SkNamedTransferFn::kRec2020, r),
+      skcms_TransferFunction_eval(&SkNamedTransferFn::kRec2020, g),
+      skcms_TransferFunction_eval(&SkNamedTransferFn::kRec2020, b));
+}
 }  // namespace
 
 std::tuple<float, float, float> LchToLab(float l,
@@ -127,6 +144,38 @@ std::tuple<float, float, float> LabToXYZD50(float l, float a, float b) {
   z = LabInverseTransferFunction(z) * kD50_z;
 
   return std::make_tuple(x, y, z);
+}
+
+std::tuple<float, float, float> OKLabToXYZD65(float l, float a, float b) {
+  // Given OKLab, convert to XYZ relative to D65
+  skcms_Matrix3x3 LMStoXYZ = {
+      {{1.2268798733741557f, -0.5578149965554813f, 0.28139105017721583f},
+       {-0.04057576262431372f, 1.1122868293970594f, -0.07171106666151701f},
+       {-0.07637294974672142f, -0.4214933239627914f, 1.5869240244272418f}}};
+  skcms_Matrix3x3 OKLabtoLMS = {
+      {{0.99999999845051981432f, 0.39633779217376785678f,
+        0.21580375806075880339f},
+       {1.0000000088817607767f, -0.1055613423236563494f,
+        -0.063854174771705903402f},
+       {1.0000000546724109177f, -0.089484182094965759684f,
+        -1.2914855378640917399f}}};
+
+  skcms_Vector3 lab_input{{l / 100.f, a, b}};
+  skcms_Vector3 lms_intermediate =
+      skcms_Matrix3x3_apply(&OKLabtoLMS, &lab_input);
+  lms_intermediate.vals[0] = lms_intermediate.vals[0] *
+                             lms_intermediate.vals[0] *
+                             lms_intermediate.vals[0];
+  lms_intermediate.vals[1] = lms_intermediate.vals[1] *
+                             lms_intermediate.vals[1] *
+                             lms_intermediate.vals[1];
+  lms_intermediate.vals[2] = lms_intermediate.vals[2] *
+                             lms_intermediate.vals[2] *
+                             lms_intermediate.vals[2];
+  skcms_Vector3 xyz_output =
+      skcms_Matrix3x3_apply(&LMStoXYZ, &lms_intermediate);
+  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
+                         xyz_output.vals[2]);
 }
 
 std::tuple<float, float, float> XYZD50toD65(float x, float y, float z) {
@@ -171,6 +220,24 @@ std::tuple<float, float, float> DisplayP3ToXYZD50(float r, float g, float b) {
                          xyz_output.vals[2]);
 }
 
+std::tuple<float, float, float> AdobeRGBToXYZD50(float r, float g, float b) {
+  auto [r_, g_, b_] = ApplyTransferFnAdobeRGB(r, g, b);
+  skcms_Vector3 rgb_input{{r_, g_, b_}};
+  skcms_Vector3 xyz_output =
+      skcms_Matrix3x3_apply(&SkNamedGamut::kAdobeRGB, &rgb_input);
+  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
+                         xyz_output.vals[2]);
+}
+
+std::tuple<float, float, float> Rec2020ToXYZD50(float r, float g, float b) {
+  auto [r_, g_, b_] = ApplyTransferFnRec2020(r, g, b);
+  skcms_Vector3 rgb_input{{r_, g_, b_}};
+  skcms_Vector3 xyz_output =
+      skcms_Matrix3x3_apply(&SkNamedGamut::kRec2020, &rgb_input);
+  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
+                         xyz_output.vals[2]);
+}
+
 SkColor4f SRGBLinearToSkColor4f(float r, float g, float b, float alpha) {
   auto [srgb_r, srgb_g, srgb_b] = ApplyInverseTransferFnsRGB(r, g, b);
   return SkColor4f{srgb_r, srgb_g, srgb_b, alpha};
@@ -196,6 +263,11 @@ SkColor4f ProPhotoToSkColor4f(float r, float g, float b, float alpha) {
   return XYZD50ToSkColor4f(x, y, z, alpha);
 }
 
+SkColor4f OKLabToSkColor4f(float l, float a, float b, float alpha) {
+  auto [x, y, z] = OKLabToXYZD65(l, a, b);
+  return XYZD65ToSkColor4f(x, y, z, alpha);
+}
+
 SkColor4f DisplayP3ToSkColor4f(float r, float g, float b, float alpha) {
   auto [x, y, z] = DisplayP3ToXYZD50(r, g, b);
   return XYZD50ToSkColor4f(x, y, z, alpha);
@@ -208,6 +280,24 @@ SkColor4f LchToSkColor4f(float l_input,
   auto [l, a, b] = LchToLab(l_input, c, h);
   auto [x, y, z] = LabToXYZD50(l, a, b);
   return XYZD50ToSkColor4f(x, y, z, alpha);
+}
+SkColor4f AdobeRGBToSkColor4f(float r, float g, float b, float alpha) {
+  auto [x, y, z] = AdobeRGBToXYZD50(r, g, b);
+  return XYZD50ToSkColor4f(x, y, z, alpha);
+}
+
+SkColor4f Rec2020ToSkColor4f(float r, float g, float b, float alpha) {
+  auto [x, y, z] = Rec2020ToXYZD50(r, g, b);
+  return XYZD50ToSkColor4f(x, y, z, alpha);
+}
+
+SkColor4f OKLchToSkColor4f(float l_input,
+                           float c,
+                           absl::optional<float> h,
+                           float alpha) {
+  auto [l, a, b] = LchToLab(l_input, c, h);
+  auto [x, y, z] = OKLabToXYZD65(l, a, b);
+  return XYZD65ToSkColor4f(x, y, z, alpha);
 }
 
 }  // namespace gfx
