@@ -1655,14 +1655,8 @@ bool CanonicalCookie::HasHiddenPrefixName(
   // Compare the value to the host_prefix.
   if (base::StartsWith(value_without_BWS, host_prefix,
                        base::CompareCase::INSENSITIVE_ASCII)) {
-    // The prefix matches, now check if the value string contains a subsequent
-    // '='.
-    if (value_without_BWS.find_first_of('=', host_prefix.size()) !=
-        base::StringPiece::npos) {
-      // This value contains a hidden prefix name.
-      return true;
-    }
-    return false;
+    // This value contains a hidden prefix name.
+    return true;
   }
 
   // Do a similar check for the secure prefix
@@ -1670,10 +1664,7 @@ bool CanonicalCookie::HasHiddenPrefixName(
 
   if (base::StartsWith(value_without_BWS, secure_prefix,
                        base::CompareCase::INSENSITIVE_ASCII)) {
-    if (value_without_BWS.find_first_of('=', secure_prefix.size()) !=
-        base::StringPiece::npos) {
-      return true;
-    }
+    return true;
   }
 
   return false;

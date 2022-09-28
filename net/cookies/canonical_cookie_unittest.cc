@@ -2477,6 +2477,11 @@ TEST(CanonicalCookieTest, SecureCookiePrefix) {
       absl::nullopt /* cookie_partition_key */, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
+  EXPECT_FALSE(CanonicalCookie::Create(
+      https_url, "=__Secure-A; Secure", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */, &status));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
 
   // While tricky, this isn't considered hidden and is fine.
   EXPECT_TRUE(CanonicalCookie::Create(
@@ -2612,6 +2617,11 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
   // Hidden __Host- prefixes should be rejected.
   EXPECT_FALSE(CanonicalCookie::Create(
       https_url, "=__Host-A=B; Path=/; Secure;", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */, &status));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
+  EXPECT_FALSE(CanonicalCookie::Create(
+      https_url, "=__Host-A; Path=/; Secure;", creation_time, server_time,
       absl::nullopt /* cookie_partition_key */, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
@@ -3071,7 +3081,19 @@ TEST(CanonicalCookieTest, IsCanonical) {
                    ->IsCanonical());
 
   EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                   "", "__Secure-a", "x.y", "/", base::Time(), base::Time(),
+                   base::Time(), base::Time(), true, false,
+                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW, false)
+                   ->IsCanonical());
+
+  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
                    "", "__Host-a=b", "x.y", "/", base::Time(), base::Time(),
+                   base::Time(), base::Time(), true, false,
+                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW, false)
+                   ->IsCanonical());
+
+  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                   "", "__Host-a", "x.y", "/", base::Time(), base::Time(),
                    base::Time(), base::Time(), true, false,
                    CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW, false)
                    ->IsCanonical());
@@ -3825,7 +3847,23 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
 
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("https://www.foo.com"), "", "__Host-A", "", "/", two_hours_ago,
+      one_hour_from_now, one_hour_ago, true, false,
+      CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
+      false /*same_party*/, absl::nullopt /*partition_key*/, &status));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
+
+  EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("https://www.foo.com"), "", "__Secure-A=B", "", "/", two_hours_ago,
+      one_hour_from_now, one_hour_ago, true, false,
+      CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
+      false /*same_party*/, absl::nullopt /*partition_key*/, &status));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
+
+  EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("https://www.foo.com"), "", "__Secure-A", "", "/", two_hours_ago,
       one_hour_from_now, one_hour_ago, true, false,
       CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
       false /*same_party*/, absl::nullopt /*partition_key*/, &status));
@@ -5419,20 +5457,20 @@ TEST(CanonicalCookieTest, TestHasHiddenPrefixName) {
       {"foo=bar", false},
       {" \t ", false},
       {"\t", false},
-      {"__Secure-abc", false},
       {"__Secure=-", false},
       {"__Secure=-abc", false},
       {"__Secur=e-abc", false},
       {"__Secureabc", false},
       {"__Host=-", false},
       {"__Host=-abc", false},
-      {"__Host-abc", false},
       {"__Hos=t-abc", false},
       {"_Host", false},
-      {"   __Secure-abc", false},
-      {"\t__Host-", false},
       {"a__Host-abc=123", false},
       {"a__Secure-abc=123", false},
+      {"__Secure-abc", true},
+      {"__Host-abc", true},
+      {"   __Secure-abc", true},
+      {"\t__Host-", true},
       {"__Host-=", true},
       {"__Host-=123", true},
       {"__host-=123", true},
