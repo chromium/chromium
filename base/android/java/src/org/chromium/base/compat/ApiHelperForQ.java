@@ -23,6 +23,7 @@ import android.telephony.TelephonyManager;
 import android.view.MotionEvent;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresPermission;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.AsyncTask;
@@ -44,6 +45,7 @@ public final class ApiHelperForQ {
     private ApiHelperForQ() {}
 
     /** See {@link TelephonyManager.requestCellInfoUpdate() }. */
+    @RequiresPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
     public static void requestCellInfoUpdate(
             TelephonyManager telephonyManager, Callback<List<CellInfo>> callback) {
         telephonyManager.requestCellInfoUpdate(
@@ -98,6 +100,7 @@ public final class ApiHelperForQ {
     }
 
     /** See {@link BiometricManager#canAuthenticate() }. */
+    @RequiresPermission(android.Manifest.permission.USE_BIOMETRIC)
     public static int canAuthenticate(BiometricManager manager) {
         return manager.canAuthenticate();
     }
