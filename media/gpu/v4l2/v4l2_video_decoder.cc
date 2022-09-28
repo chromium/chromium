@@ -42,7 +42,10 @@ constexpr int k1080pArea = 1920 * 1088;
 constexpr size_t kInputBufferMaxSizeFor1080p = 1024 * 1024;
 // Input bitstream buffer size for up to 4k streams.
 constexpr size_t kInputBufferMaxSizeFor4k = 4 * kInputBufferMaxSizeFor1080p;
-constexpr size_t kNumInputBuffers = 8;
+// Some H.264 test vectors (CAPCM*1_Sand_E.h264) need 16 reference frames.
+// TODO(b/249325255): reduce this number to e.g. 8 or even less when it does not
+// artificially limit the size of the CAPTURE (decoded video frames) queue.
+constexpr size_t kNumInputBuffers = 17;
 
 // Input format V4L2 fourccs this class supports.
 constexpr uint32_t kSupportedInputFourccs[] = {
