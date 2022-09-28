@@ -6321,6 +6321,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"support-tool", flag_descriptions::kSupportTool,
      flag_descriptions::kSupportToolDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSupportTool)},
+
+    {"support-tool-screenshot", flag_descriptions::kSupportToolScreenshot,
+     flag_descriptions::kSupportToolScreenshotDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSupportToolScreenshot)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"enable-auto-disable-accessibility",

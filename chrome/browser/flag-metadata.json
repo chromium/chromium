@@ -6257,6 +6257,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "support-tool-screenshot",
+    "owners": [ "//chrome/browser/support_tool/OWNERS" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "suppress-toolbar-captures",
     "owners": [ "pnoland@google.com" ],
     "expiry_milestone": 110
