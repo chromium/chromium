@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.webview_shell.WebPlatformTestsActivity;
 
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ public class WebPlatformTestsActivityTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1096214")
+    @DisabledTest(message = "https://crbug.com/1096214")
     public void testOpenCloseWindow() throws Exception {
         final BlockingQueue<Integer> queue = new LinkedBlockingQueue<>();
 
