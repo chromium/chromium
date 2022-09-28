@@ -5,6 +5,7 @@
 package org.chromium.components.payments.secure_payment_confirmation;
 
 import android.content.Context;
+import android.view.View;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -29,6 +30,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.WebContents;
@@ -85,7 +87,8 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, urlFormatterJniMock);
         Mockito.doReturn("example.com")
                 .when(urlFormatterJniMock)
-                .formatUrlForDisplayOmitScheme(Mockito.anyString());
+                .formatStringUrlForSecurityDisplay(
+                        Mockito.any(), Mockito.eq(SchemeDisplay.OMIT_CRYPTOGRAPHIC));
 
         mResponseCallback = () -> {
             mUserResponded = true;
@@ -142,7 +145,30 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
 
     @Test
     @Feature({"Payments"})
-    public void testShowResponse() {
+    public void testShow() {
+        createNoMatchingCredController();
+        show();
+        SecurePaymentConfirmationNoMatchingCredView view = mNoMatchingCredController.getView();
+        Assert.assertNotNull(view);
+        Assert.assertTrue(view.mDescription.getText().toString().contains("example.com"));
+        // Opt-out text should be hidden by default.
+        Assert.assertEquals(View.GONE, view.mOptOutText.getVisibility());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testShowRendersOptOutWhenRequested() {
+        createNoMatchingCredController();
+        show(/*enableOptOut=*/true);
+        SecurePaymentConfirmationNoMatchingCredView view = mNoMatchingCredController.getView();
+        Assert.assertNotNull(view);
+        Assert.assertEquals(View.VISIBLE, view.mOptOutText.getVisibility());
+        Assert.assertTrue(view.mOptOutText.getText().toString().contains("rp.example"));
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testShowOnResponse() {
         createNoMatchingCredController();
         show();
         mNoMatchingCredController.getView().mOkButton.performClick();
@@ -152,7 +178,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
 
     @Test
     @Feature({"Payments"})
-    public void testShowOptOut() {
+    public void testShowOnOptOut() {
         createNoMatchingCredController();
         show(/*enableOptOut=*/true);
         SecurePaymentConfirmationNoMatchingCredView credView = mNoMatchingCredController.getView();

@@ -45,7 +45,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 
     /* package */ final Context mContext;
     /* package */ final ImageView mHeaderImage;
-    /* package */ final TextView mStoreOrigin;
+    /* package */ final TextView mStoreLabel;
     /* package */ final TextView mPaymentInstrumentLabel;
     /* package */ final ImageView mPaymentIcon;
     /* package */ final TextView mTotal;
@@ -61,7 +61,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
         mContext = context;
         mHeaderImage =
                 (ImageView) mContentView.findViewById(R.id.secure_payment_confirmation_image);
-        mStoreOrigin = (TextView) mContentView.findViewById(R.id.store);
+        mStoreLabel = (TextView) mContentView.findViewById(R.id.store);
         mPaymentInstrumentLabel = (TextView) mContentView.findViewById(R.id.payment);
         mPaymentIcon = (ImageView) mContentView.findViewById(R.id.payment_icon);
         mTotal = (TextView) mContentView.findViewById(R.id.total);

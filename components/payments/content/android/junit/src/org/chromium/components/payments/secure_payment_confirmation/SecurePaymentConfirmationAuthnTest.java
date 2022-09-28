@@ -4,11 +4,16 @@
 
 package org.chromium.components.payments.secure_payment_confirmation;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -36,6 +41,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.WebContents;
@@ -65,6 +71,8 @@ public class SecurePaymentConfirmationAuthnTest {
     private Callback<Boolean> mResponseCallback;
     private Runnable mOptOutCallback;
 
+    private String mPayeeName;
+    private Origin mPayeeOrigin;
     private PaymentItem mTotal;
     private Drawable mPaymentIcon;
     private SecurePaymentConfirmationAuthnController mAuthnController;
@@ -92,28 +100,35 @@ public class SecurePaymentConfirmationAuthnTest {
                 .when(windowAndroid)
                 .getContext();
 
-        // Create formatter mocks
         UrlFormatter.Natives urlFormatterJniMock = Mockito.mock(UrlFormatter.Natives.class);
+        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, urlFormatterJniMock);
+        when(urlFormatterJniMock.formatOriginForSecurityDisplay(
+                     any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
+                .then(inv -> ((Origin) (inv.getArgument(0))).getHost());
+
         CurrencyFormatter.Natives currencyFormatterJniMock =
                 Mockito.mock(CurrencyFormatter.Natives.class);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, urlFormatterJniMock);
         mJniMocker.mock(CurrencyFormatterJni.TEST_HOOKS, currencyFormatterJniMock);
-        Mockito.doReturn("example.com")
-                .when(urlFormatterJniMock)
-                .formatUrlForDisplayOmitScheme(Mockito.anyString());
         Mockito.doReturn("$1.00")
                 .when(currencyFormatterJniMock)
                 .format(Mockito.anyLong(), Mockito.any(CurrencyFormatter.class),
                         Mockito.anyString());
 
-        // Our credit card 'icon' is just a red square.
-        mPaymentIcon = new BitmapDrawable(RuntimeEnvironment.application.getResources(),
-                Bitmap.createBitmap(new int[] {Color.RED}, 1 /* width */, 1 /* height */,
-                        Bitmap.Config.ARGB_8888));
+        mPayeeName = "My Store";
+        org.chromium.url.internal.mojom.Origin origin =
+                new org.chromium.url.internal.mojom.Origin();
+        origin.scheme = "https";
+        origin.host = "store.example";
+        origin.port = 443;
+        mPayeeOrigin = new Origin(origin);
         mTotal = new PaymentItem();
         mTotal.amount = new PaymentCurrencyAmount();
         mTotal.amount.currency = "USD";
         mTotal.amount.value = "1.00";
+        // Our credit card 'icon' is just a red square.
+        mPaymentIcon = new BitmapDrawable(RuntimeEnvironment.application.getResources(),
+                Bitmap.createBitmap(new int[] {Color.RED}, 1 /* width */, 1 /* height */,
+                        Bitmap.Config.ARGB_8888));
         mResponseCallback = (response) -> {
             if (response) {
                 mIsPaymentConfirmed = true;
@@ -147,22 +162,32 @@ public class SecurePaymentConfirmationAuthnTest {
     }
 
     private boolean show() {
-        return show(/*enableOptOut=*/false);
+        return show(mPayeeName, mPayeeOrigin, /*enableOptOut=*/false);
     }
 
-    private boolean show(boolean enableOptOut) {
+    private boolean showWithPayeeName() {
+        return show(mPayeeName, null, /*enableOptOut=*/false);
+    }
+
+    private boolean showWithPayeeOrigin() {
+        return show(null, mPayeeOrigin, /*enableOptOut=*/false);
+    }
+
+    private boolean showWithOptOut() {
+        return show(mPayeeName, mPayeeOrigin, /*enableOptOut=*/true);
+    }
+
+    private boolean show(String payeeName, Origin payeeOrigin, boolean enableOptOut) {
         if (mAuthnController == null) return false;
 
         mIsPaymentConfirmed = false;
         mIsPaymentCancelled = false;
         mIsPaymentOptOut = false;
 
-        org.chromium.url.internal.mojom.Origin mojoOrigin =
-                new org.chromium.url.internal.mojom.Origin();
+        String paymentInstrumentLabel = "My Card";
         String rpId = "rp.example";
-        return mAuthnController.show(mPaymentIcon, "paymentInstrumentLabel", mTotal,
-                mResponseCallback, mOptOutCallback, "payee name", new Origin(mojoOrigin),
-                enableOptOut, rpId);
+        return mAuthnController.show(mPaymentIcon, paymentInstrumentLabel, mTotal,
+                mResponseCallback, mOptOutCallback, payeeName, payeeOrigin, enableOptOut, rpId);
     }
 
     private void setWindowAndroid(WindowAndroid windowAndroid, WebContents webContents) {
@@ -198,7 +223,7 @@ public class SecurePaymentConfirmationAuthnTest {
     @Feature({"Payments"})
     public void testOnAuthnOptOut() {
         createAuthnController();
-        show(/*enableOptOut=*/true);
+        showWithOptOut();
         SecurePaymentConfirmationAuthnView authnView = mAuthnController.getView();
         authnView.mOptOutText.getClickableSpans()[0].onClick(authnView.mOptOutText);
         Assert.assertTrue(mIsPaymentOptOut);
@@ -278,6 +303,36 @@ public class SecurePaymentConfirmationAuthnTest {
 
     @Test
     @Feature({"Payments"})
+    public void testShow() {
+        createAuthnController();
+        show();
+
+        SecurePaymentConfirmationAuthnView view = mAuthnController.getView();
+        Assert.assertNotNull(view);
+        Assert.assertEquals("My Store (store.example)", view.mStoreLabel.getText());
+        Assert.assertEquals("My Card", view.mPaymentInstrumentLabel.getText());
+        Assert.assertEquals(mPaymentIcon, view.mPaymentIcon.getDrawable());
+        Assert.assertEquals("$1.00", view.mTotal.getText());
+        Assert.assertEquals("USD", view.mCurrency.getText());
+        // By default the opt-out text should not be visible.
+        Assert.assertEquals(View.GONE, view.mOptOutText.getVisibility());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testShowAllowsForEmptyPayeeNameOrOrigin() {
+        createAuthnController();
+
+        showWithPayeeName();
+        Assert.assertEquals("My Store", mAuthnController.getView().mStoreLabel.getText());
+        mAuthnController.hide();
+
+        showWithPayeeOrigin();
+        Assert.assertEquals("store.example", mAuthnController.getView().mStoreLabel.getText());
+    }
+
+    @Test
+    @Feature({"Payments"})
     public void testShowHandlesNullIcon() {
         createAuthnController();
 
@@ -290,5 +345,17 @@ public class SecurePaymentConfirmationAuthnTest {
         mPaymentIcon = new BitmapDrawable();
         show();
         Assert.assertNotEquals(mPaymentIcon, mAuthnController.getView().mPaymentIcon.getDrawable());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testShowRendersOptOutWhenRequested() {
+        createAuthnController();
+        showWithOptOut();
+
+        SecurePaymentConfirmationAuthnView view = mAuthnController.getView();
+        Assert.assertNotNull(view);
+        Assert.assertEquals(View.VISIBLE, view.mOptOutText.getVisibility());
+        Assert.assertTrue(view.mOptOutText.getText().toString().contains("rp.example"));
     }
 }

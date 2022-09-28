@@ -27,7 +27,7 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
     /* package */ static void bind(
             PropertyModel model, SecurePaymentConfirmationAuthnView view, PropertyKey propertyKey) {
         if (SecurePaymentConfirmationAuthnProperties.STORE_LABEL == propertyKey) {
-            view.mStoreOrigin.setText(
+            view.mStoreLabel.setText(
                     model.get(SecurePaymentConfirmationAuthnProperties.STORE_LABEL));
         } else if (SecurePaymentConfirmationAuthnProperties.PAYMENT_ICON == propertyKey) {
             Pair<Drawable, Boolean> iconInfo =
