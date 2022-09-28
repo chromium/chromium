@@ -112,15 +112,14 @@ TEST_F(PasswordChangeAnimatedIconTest, PausePulsingAnimation) {
   animated_icon()->StartPulsingAnimation();
   EXPECT_TRUE(animated_icon()->IsPulsing());
 
-  // The icon continues to pulse for at least one cycle after pausing.
   animated_icon()->StopPulsingAnimation();
   EXPECT_TRUE(animated_icon()->IsPulsing());
 
+  // The icon will complete its current cycle.
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
   EXPECT_TRUE(animated_icon()->IsPulsing());
 
-  // But after at most 2 cycle durations, it stops.
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  // The icon stops after a full cycle.
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_FALSE(animated_icon()->IsPulsing());
 }
@@ -130,7 +129,6 @@ TEST_F(PasswordChangeAnimatedIconTest, ResumePulsingAnimation) {
   EXPECT_TRUE(animated_icon()->IsPulsing());
 
   animated_icon()->StopPulsingAnimation();
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_FALSE(animated_icon()->IsPulsing());
 
@@ -173,9 +171,8 @@ TEST_F(PasswordChangeAnimatedIconTest, CallbackSetDuringPulsing) {
   animated_icon()->StartPulsingAnimation();
 
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
-  animated_icon()->StopPulsingAnimation();
 
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  animated_icon()->StopPulsingAnimation();
   EXPECT_CALL(*this, OnAnimationEnded(animated_icon()));
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_FALSE(animated_icon()->IsPulsing());
@@ -184,9 +181,8 @@ TEST_F(PasswordChangeAnimatedIconTest, CallbackSetDuringPulsing) {
 TEST_F(PasswordChangeAnimatedIconTest, CallbackSetBeforeStartingPulsing) {
   animated_icon()->StartPulsingAnimation();
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
-  animated_icon()->StopPulsingAnimation();
 
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  animated_icon()->StopPulsingAnimation();
   EXPECT_CALL(*this, OnAnimationEnded(animated_icon()));
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_FALSE(animated_icon()->IsPulsing());
@@ -195,18 +191,16 @@ TEST_F(PasswordChangeAnimatedIconTest, CallbackSetBeforeStartingPulsing) {
 TEST_F(PasswordChangeAnimatedIconTest, CallbackCalledMultipleTimes) {
   animated_icon()->StartPulsingAnimation();
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
-  animated_icon()->StopPulsingAnimation();
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
 
+  animated_icon()->StopPulsingAnimation();
   EXPECT_CALL(*this, OnAnimationEnded(animated_icon()));
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_FALSE(animated_icon()->IsPulsing());
 
   animated_icon()->StartPulsingAnimation();
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
-  animated_icon()->StopPulsingAnimation();
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
 
+  animated_icon()->StopPulsingAnimation();
   EXPECT_CALL(*this, OnAnimationEnded(animated_icon()));
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_FALSE(animated_icon()->IsPulsing());

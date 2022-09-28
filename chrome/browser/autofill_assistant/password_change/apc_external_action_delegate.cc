@@ -111,6 +111,11 @@ void ApcExternalActionDelegate::OnInterruptFinished() {
   SetTopIcon(model.top_icon);
   SetTitle(model.title);
   SetDescription(model.description);
+  if (model.progress_bar_animation_is_paused) {
+    PauseProgressBarAnimation();
+  } else {
+    ResumeProgressBarAnimation();
+  }
 
   model_before_interrupt_.reset();
 }
@@ -121,8 +126,10 @@ void ApcExternalActionDelegate::OnTouchableAreaChanged(
     const std::vector<autofill_assistant::RectF>& restricted_areas) {
   if (!touchable_areas.empty()) {
     apc_scrim_manager_->Hide();
+    PauseProgressBarAnimation();
   } else {
     apc_scrim_manager_->Show();
+    ResumeProgressBarAnimation();
   }
 }
 
@@ -357,6 +364,18 @@ void ApcExternalActionDelegate::OnBasePromptDomUpdateReceived(
   if (minimum_satisfied_index < base_prompt_return_values_.size()) {
     OnBasePromptChoiceSelected(minimum_satisfied_index);
   }
+}
+
+void ApcExternalActionDelegate::PauseProgressBarAnimation() {
+  DCHECK(password_change_run_display_);
+  model_.progress_bar_animation_is_paused = true;
+  password_change_run_display_->PauseProgressBarAnimation();
+}
+
+void ApcExternalActionDelegate::ResumeProgressBarAnimation() {
+  DCHECK(password_change_run_display_);
+  model_.progress_bar_animation_is_paused = false;
+  password_change_run_display_->ResumeProgressBarAnimation();
 }
 
 base::WeakPtr<PasswordChangeRunController>

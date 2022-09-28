@@ -59,7 +59,6 @@ PasswordChangeAnimatedIcon::~PasswordChangeAnimatedIcon() = default;
 void PasswordChangeAnimatedIcon::StartPulsingAnimation(bool pulse_once) {
   bool is_already_pulsing = IsPulsing();
   pulsing_animation_ = !pulse_once;
-  last_animation_cycle_ = !pulse_once;
   animation_ended_ = false;
 
   // Only start a new cycle if the icon is not already pulsing.
@@ -85,10 +84,7 @@ void PasswordChangeAnimatedIcon::AnimationProgressed(
 
 void PasswordChangeAnimatedIcon::AnimationEnded(
     const gfx::Animation* animation) {
-  // Add one more cycle after stop animation request to avoid abrupt changes.
-  if (pulsing_animation_ || last_animation_cycle_) {
-    if (!pulsing_animation_)
-      last_animation_cycle_ = false;
+  if (pulsing_animation_) {
     Start();
   } else {
     animation_ended_ = true;

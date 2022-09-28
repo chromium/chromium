@@ -103,7 +103,7 @@ TEST_F(PasswordChangeRunProgressTest, SetProgressUpdatesPulsingStep) {
 
 TEST_F(PasswordChangeRunProgressTest, IconsDoNotPulseSimultaneously) {
   // Changing the next step does not immediately change the pulsing icon - the
-  // current one continues to pulse for up to two cycles.
+  // current one continues to pulse for up to one cycle.
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
   run_progress()->SetProgressBarStep(
       ProgressStep::PROGRESS_STEP_CHANGE_PASSWORD);
@@ -112,7 +112,6 @@ TEST_F(PasswordChangeRunProgressTest, IconsDoNotPulseSimultaneously) {
   ASSERT_TRUE(pulsing_step.has_value());
   EXPECT_EQ(pulsing_step.value(), ProgressStep::PROGRESS_STEP_START);
 
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   pulsing_step = run_progress()->GetPulsingProgressBarStep();
   ASSERT_TRUE(pulsing_step.has_value());
@@ -127,7 +126,6 @@ TEST_F(PasswordChangeRunProgressTest, PauseAndResumeIconPulsing) {
   // It does not stop immediately:
   EXPECT_TRUE(run_progress()->GetPulsingProgressBarStep().has_value());
 
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_FALSE(run_progress()->GetPulsingProgressBarStep());
 
@@ -155,10 +153,7 @@ TEST_F(PasswordChangeRunProgressTest, SetProgressMultipleTimes) {
   EXPECT_EQ(run_progress()->GetCurrentProgressBarStep(),
             ProgressStep::PROGRESS_STEP_SAVE_PASSWORD);
 
-  // In that case, the first icon will pulse 1.5 more times.
-  EXPECT_EQ(run_progress()->GetPulsingProgressBarStep().value(),
-            ProgressStep::PROGRESS_STEP_START);
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  // In that case, the first icon will pulse 0.5 more times.
   EXPECT_EQ(run_progress()->GetPulsingProgressBarStep().value(),
             ProgressStep::PROGRESS_STEP_START);
 
@@ -175,7 +170,6 @@ TEST_F(PasswordChangeRunProgressTest, SetProgressMultipleTimes) {
   // This step continues to pulse.
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_EQ(run_progress()->GetPulsingProgressBarStep().value(),
             ProgressStep::PROGRESS_STEP_SAVE_PASSWORD);
 
@@ -189,7 +183,6 @@ TEST_F(PasswordChangeRunProgressTest,
       ProgressStep::PROGRESS_STEP_CHANGE_PASSWORD);
   run_progress()->SetProgressBarStep(ProgressStep::PROGRESS_STEP_SAVE_PASSWORD);
 
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_EQ(run_progress()->GetPulsingProgressBarStep().value(),
             ProgressStep::PROGRESS_STEP_CHANGE_PASSWORD);
@@ -211,8 +204,6 @@ TEST_F(PasswordChangeRunProgressTest,
   EXPECT_EQ(run_progress()->GetPulsingProgressBarStep().value(),
             ProgressStep::PROGRESS_STEP_SAVE_PASSWORD);
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_EQ(run_progress()->GetPulsingProgressBarStep().value(),
             ProgressStep::PROGRESS_STEP_SAVE_PASSWORD);
 }
@@ -225,7 +216,6 @@ TEST_F(PasswordChangeRunProgressTest, LastIconPulsesOnceAndNotifiesCallback) {
 
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_EQ(run_progress()->GetPulsingProgressBarStep().value(),
             ProgressStep::PROGRESS_STEP_SAVE_PASSWORD);
 
@@ -234,7 +224,6 @@ TEST_F(PasswordChangeRunProgressTest, LastIconPulsesOnceAndNotifiesCallback) {
   run_progress()->SetAnimationEndedCallback(closure.Get());
   run_progress()->SetProgressBarStep(ProgressStep::PROGRESS_STEP_END);
 
-  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_EQ(run_progress()->GetPulsingProgressBarStep().value(),
             ProgressStep::PROGRESS_STEP_END);

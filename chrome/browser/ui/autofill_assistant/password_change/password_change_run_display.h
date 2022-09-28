@@ -76,6 +76,10 @@ class PasswordChangeRunDisplay {
       base::RepeatingClosure done_button_callback) = 0;
   virtual void ShowErrorScreen() = 0;
 
+  // Pauses and resumes the icon animation of the progress bar.
+  virtual void PauseProgressBarAnimation() = 0;
+  virtual void ResumeProgressBarAnimation() = 0;
+
   // Notifies the view that the controller was destroyed so that the view
   // can close itself.
   virtual void OnControllerGone() = 0;

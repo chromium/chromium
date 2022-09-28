@@ -52,8 +52,7 @@ class PasswordChangeAnimatedIcon : public gfx::LinearAnimation,
   // if is currently pulsing).
   void StartPulsingAnimation(bool pulse_once = false);
 
-  // Signals to stop pulsing the animation after completing at least one more
-  // full cycle.
+  // Signals to stop pulsing the animation after completing the current cycle.
   void StopPulsingAnimation();
 
   // Returns whether the icon is currently pulsing.
@@ -71,9 +70,6 @@ class PasswordChangeAnimatedIcon : public gfx::LinearAnimation,
 
   // Describes whether the animation should be pulsing.
   bool pulsing_animation_ = false;
-
-  // Describes whether the current animation cycle is the last intended one.
-  bool last_animation_cycle_ = false;
 
   // Is `true` when the animation is currently not pulsing, `false` otherwise.
   bool animation_ended_ = true;

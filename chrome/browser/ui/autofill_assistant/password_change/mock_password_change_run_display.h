@@ -60,6 +60,8 @@ class MockPasswordChangeRunDisplay : public PasswordChangeRunDisplay {
               (base::RepeatingClosure done_button_callback),
               (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
+  MOCK_METHOD(void, PauseProgressBarAnimation, (), (override));
+  MOCK_METHOD(void, ResumeProgressBarAnimation, (), (override));
   MOCK_METHOD(void, OnControllerGone, (), (override));
 
   base::WeakPtr<MockPasswordChangeRunDisplay> GetWeakPtr() {

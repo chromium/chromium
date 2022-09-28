@@ -89,6 +89,8 @@ class ApcExternalActionDelegate
   void OpenPasswordManager() override;
   void ShowErrorScreen() override;
   bool PasswordWasSuccessfullyChanged() override;
+  void PauseProgressBarAnimation() override;
+  void ResumeProgressBarAnimation() override;
 
  private:
   friend class ApcExternalActionDelegateTest;

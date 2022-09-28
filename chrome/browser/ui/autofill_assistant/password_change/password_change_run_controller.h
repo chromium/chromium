@@ -26,6 +26,8 @@ class PasswordChangeRunController {
     autofill_assistant::password_change::TopIcon top_icon;
     std::u16string description;
     autofill_assistant::password_change::ProgressStep progress_step;
+    // Whether the icon animation on the progress bar is paused.
+    bool progress_bar_animation_is_paused = false;
   };
 
   // Factory function to create the controller.
@@ -79,6 +81,10 @@ class PasswordChangeRunController {
   // Returns whether a password change run has resulted in a successfully
   // changed password.
   virtual bool PasswordWasSuccessfullyChanged() = 0;
+
+  // Pauses and resumes that icon animation in the progress bar.
+  virtual void PauseProgressBarAnimation() = 0;
+  virtual void ResumeProgressBarAnimation() = 0;
 
   // Returns a weak pointer to this controller.
   virtual base::WeakPtr<PasswordChangeRunController> GetWeakPtr() = 0;

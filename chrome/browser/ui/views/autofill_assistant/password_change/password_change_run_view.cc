@@ -348,6 +348,14 @@ void PasswordChangeRunView::ClearPrompt() {
   password_change_run_progress_->ResumeIconAnimation();
 }
 
+void PasswordChangeRunView::PauseProgressBarAnimation() {
+  password_change_run_progress_->PauseIconAnimation();
+}
+
+void PasswordChangeRunView::ResumeProgressBarAnimation() {
+  password_change_run_progress_->ResumeIconAnimation();
+}
+
 void PasswordChangeRunView::OnControllerGone() {
   Close();
 }

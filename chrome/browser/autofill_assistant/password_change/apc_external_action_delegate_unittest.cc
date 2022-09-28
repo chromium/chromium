@@ -228,12 +228,14 @@ TEST_F(ApcExternalActionDelegateTest, OnTouchableAreaChangedShowAndHideScrim) {
   // Hides the scrim when `touchable_areas` is not empty.
   touchable_areas.emplace_back();
   EXPECT_CALL(*apc_scrim_manager(), Hide);
+  EXPECT_CALL(*display(), PauseProgressBarAnimation);
   action_delegate()->OnTouchableAreaChanged(visual_viewport, touchable_areas,
                                             restricted_areas);
 
   // Shows the scrim when `touchable_areas` is not empty.
   touchable_areas.clear();
   EXPECT_CALL(*apc_scrim_manager(), Show);
+  EXPECT_CALL(*display(), ResumeProgressBarAnimation);
   action_delegate()->OnTouchableAreaChanged(visual_viewport, touchable_areas,
                                             restricted_areas);
 }
@@ -242,7 +244,6 @@ TEST_F(ApcExternalActionDelegateTest, ShowStartingScreen) {
   const GURL url(kUrl);
 
   EXPECT_CALL(*display(), ShowStartingScreen(url));
-
   action_delegate()->ShowStartingScreen(url);
 }
 
@@ -255,10 +256,7 @@ TEST_F(ApcExternalActionDelegateTest, ShowCompletionScreen) {
 }
 
 TEST_F(ApcExternalActionDelegateTest, ShowErrorScreen) {
-  const GURL url(kUrl);
-
   EXPECT_CALL(*display(), ShowErrorScreen());
-
   action_delegate()->ShowErrorScreen();
 }
 
@@ -644,4 +642,14 @@ TEST_F(ApcExternalActionDelegateTest, ReceiveUpdateSidePanelAction) {
       result_callback.Get());
 
   EXPECT_TRUE(result.success());
+}
+
+TEST_F(ApcExternalActionDelegateTest, PauseProgressBarAnimation) {
+  EXPECT_CALL(*display(), PauseProgressBarAnimation);
+  action_delegate()->PauseProgressBarAnimation();
+}
+
+TEST_F(ApcExternalActionDelegateTest, ResumeProgressBarAnimation) {
+  EXPECT_CALL(*display(), ResumeProgressBarAnimation);
+  action_delegate()->ResumeProgressBarAnimation();
 }
