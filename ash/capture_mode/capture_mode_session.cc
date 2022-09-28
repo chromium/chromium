@@ -729,8 +729,16 @@ void CaptureModeSession::Shutdown() {
   if (!is_stopping_to_start_video_recording_) {
     // Stopping the session for any reason other than starting video recording
     // means a cancellation to an ongoing projector session (if any).
-    if (is_in_projector_mode_)
+    if (is_in_projector_mode_) {
       ProjectorControllerImpl::Get()->OnRecordingStartAborted();
+
+      // Reset the camera selection if it was auto-selected in the
+      // projector-initiated capture mode session when the capture mode session
+      // ended before video recording starts to avoid the camera selection
+      // settings of the normal capture mode session being overridden by the
+      // projector-initiated capture mode session.
+      controller_->camera_controller()->MaybeRevertAutoCameraSelection();
+    }
 
     // Kill the camera preview when the capture mode session ends without
     // starting any recording.

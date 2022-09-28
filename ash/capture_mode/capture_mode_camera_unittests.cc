@@ -4193,6 +4193,14 @@ TEST_F(ProjectorCaptureModeCameraTest,
   EXPECT_TRUE(camera_controller->selected_camera().is_valid());
   EXPECT_EQ(cam_id_2, camera_controller->selected_camera());
   EXPECT_TRUE(camera_controller->camera_preview_widget());
+  CaptureModeController::Get()->Stop();
+
+  // Starting a normal screen capture session and the previously selected
+  // `cam_id_2` should remain being selected.
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+  EXPECT_EQ(cam_id_2, camera_controller->selected_camera());
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
 }
 
 // Tests that the recording starts with camera metrics are recorded correctly in
@@ -4251,6 +4259,60 @@ TEST_F(ProjectorCaptureModeCameraTest,
         GetCaptureModeHistogramName(kHistogramNameBase), test_case.camera_on,
         1);
   }
+}
+
+// Tests that the auto-selected camera in the projector-initiated capture mode
+// session will not be carried over to the normal capture mode session before
+// the video recording starts.
+TEST_F(ProjectorCaptureModeCameraTest,
+       DoNotRememberProjectorCameraSelectionBeforeVideoRecording) {
+  AddDefaultCamera();
+
+  // Initially no camera should be selected for the normal capture mode session.
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+  controller->Stop();
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+
+  // Starts a projector-initiated capture mode session, the camera will be
+  // auto-selected and reset to previous settings after the session.
+  StartProjectorModeSession();
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+  controller->Stop();
+
+  // Starts the capture mode session again and the camera selection settings
+  // will be restored.
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+}
+
+// Tests that the auto-selected camera in the projector-initiated capture mode
+// session will not be carried over to the normal capture mode session after
+// completing a video recording.
+TEST_F(ProjectorCaptureModeCameraTest,
+       DoNotRememberProjectorCameraSelectionAfterVideoRecording) {
+  AddDefaultCamera();
+
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+  controller->Stop();
+
+  // Starts a projector-initiated capture mode session and begin video
+  // recording, the camera will be auto-selected and reset to previous settings
+  // after the session.
+  StartProjectorModeSession();
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+  StartVideoRecordingImmediately();
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+
+  // Starts the capture mode session again and the camera selection settings
+  // will be restored.
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
 }
 
 // A test fixture for testing the rendered video frames. The boolean parameter

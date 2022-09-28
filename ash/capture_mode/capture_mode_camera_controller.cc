@@ -426,8 +426,17 @@ void CaptureModeCameraController::RemoveObserver(Observer* observer) {
 }
 
 void CaptureModeCameraController::MaybeSelectFirstCamera() {
-  if (!selected_camera_.is_valid() && !available_cameras_.empty())
+  if (!selected_camera_.is_valid() && !available_cameras_.empty()) {
     SetSelectedCamera(available_cameras_[0].camera_id);
+    did_make_camera_auto_selection_ = true;
+  }
+}
+
+void CaptureModeCameraController::MaybeRevertAutoCameraSelection() {
+  if (did_make_camera_auto_selection_) {
+    SetSelectedCamera(CameraId());
+    did_make_camera_auto_selection_ = false;
+  }
 }
 
 bool CaptureModeCameraController::IsCameraDisabledByPolicy() const {

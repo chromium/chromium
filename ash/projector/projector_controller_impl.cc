@@ -119,7 +119,6 @@ void ProjectorControllerImpl::StartProjectorSession(
 
   auto* controller = CaptureModeController::Get();
   if (!controller->is_recording_in_progress()) {
-    controller->SetSource(CaptureModeSource::kFullscreen);
     // A capture mode session can be blocked by many factors, such as policy,
     // DLP, ... etc. We don't start a Projector session until we're sure a
     // capture session started.

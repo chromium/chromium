@@ -168,6 +168,10 @@ class ASH_EXPORT CaptureModeCameraController
   // only if no other camera is already selected.
   void MaybeSelectFirstCamera();
 
+  // Reverts the automatic selection of the first available camera if one was
+  // made by calling the `MaybeSelectFirstCamera()`.
+  void MaybeRevertAutoCameraSelection();
+
   // Returns true if camera support is disabled by admins via
   // the `SystemFeaturesDisableList` policy, false otherwise.
   bool IsCameraDisabledByPolicy() const;
@@ -410,6 +414,12 @@ class ASH_EXPORT CaptureModeCameraController
   // Will be set to true the first user logs in. And we should only request the
   // camera devices after the first user logs in.
   bool did_first_user_login_ = false;
+
+  // True if the first available camera was auto-selected by calling
+  // `MaybeSelectFirstCamera()`, false otherwise or if
+  // `MaybeRevertAutoCameraSelection()` was called to revert back this automatic
+  // selection.
+  bool did_make_camera_auto_selection_ = false;
 
   base::WeakPtrFactory<CaptureModeCameraController> weak_ptr_factory_{this};
 };

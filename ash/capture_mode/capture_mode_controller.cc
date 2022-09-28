@@ -1085,6 +1085,12 @@ void CaptureModeController::TerminateRecordingUiElements() {
   capture_mode_util::TriggerAccessibilityAlert(
       IDS_ASH_SCREEN_CAPTURE_ALERT_RECORDING_STOPPED);
 
+  // Reset the camera selection if it was auto-selected in the
+  // projector-initiated capture mode session after video recording is completed
+  // to avoid the camera selection settings of the normal capture mode session
+  // being overridden by the projector-initiated capture mode session.
+  camera_controller_->MaybeRevertAutoCameraSelection();
+
   video_recording_watcher_->ShutDown();
 }
 
@@ -1639,6 +1645,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
     // settings of future generic capture mode sessions.
     enable_audio_recording_ = true;
     SetType(CaptureModeType::kVideo);
+    SetSource(CaptureModeSource::kFullscreen);
   }
 
   RecordCaptureModeEntryType(entry_type);
