@@ -21,7 +21,11 @@ AshLacrosPolicyStackBridge::AshLacrosPolicyStackBridge() {
 AshLacrosPolicyStackBridge::~AshLacrosPolicyStackBridge() {}
 
 base::Value::Dict AshLacrosPolicyStackBridge::GetStatus() {
-  return device_policy_status_.Clone();
+  base::Value::Dict device_policy_status = device_policy_status_.Clone();
+  // Set the policy status description as device policy.
+  device_policy_status.Set(policy::kPolicyDescriptionKey,
+                           kDevicePolicyStatusDescription);
+  return device_policy_status;
 }
 
 base::Value::Dict AshLacrosPolicyStackBridge::GetValues() {
@@ -97,8 +101,6 @@ void AshLacrosPolicyStackBridge::OnDevicePolicyLoaded(
   if (device_policy != device_policy_) {
     device_policy_ = std::move(device_policy);
     device_policy_status_ = std::move(legend_data);
-    device_policy_status_.Set(policy::kPolicyDescriptionKey,
-                              kDevicePolicyStatusDescription);
   }
   NotifyStatusChange();
   NotifyValueChange();
