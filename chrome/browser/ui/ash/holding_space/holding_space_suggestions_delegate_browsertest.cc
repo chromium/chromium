@@ -68,6 +68,12 @@ class HoldingSpaceSuggestionsDelegateBrowserTest
         ash::features::kHoldingSpaceSuggestions, GetParam());
   }
 
+  // drive::DriveIntegrationServiceBrowserTestBase:
+  void SetUpOnMainThread() override {
+    drive::DriveIntegrationServiceBrowserTestBase::SetUpOnMainThread();
+    app_list::WaitUntilFileSuggestServiceReady(GetFileSuggestKeyedService());
+  }
+
   app_list::FileSuggestKeyedService* GetFileSuggestKeyedService() {
     return app_list::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
         browser()->profile());

@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/app_list/search/files/zero_state_drive_provider.h"
 
+#include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ui/app_list/search/ranking/removed_results.pb.h"
+#include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -24,8 +27,12 @@ namespace {
 
 class TestFileSuggestKeyedService : public FileSuggestKeyedService {
  public:
-  explicit TestFileSuggestKeyedService(Profile* profile)
-      : FileSuggestKeyedService(profile) {}
+  explicit TestFileSuggestKeyedService(Profile* profile,
+                                       const base::FilePath& proto_path)
+      : FileSuggestKeyedService(
+            profile,
+            PersistentProto<RemovedResultsProto>(proto_path,
+                                                 base::TimeDelta())) {}
   TestFileSuggestKeyedService(const TestFileSuggestKeyedService&) = delete;
   TestFileSuggestKeyedService& operator=(TestFileSuggestKeyedService&) = delete;
   ~TestFileSuggestKeyedService() override = default;
@@ -40,9 +47,10 @@ class TestFileSuggestKeyedService : public FileSuggestKeyedService {
 };
 
 std::unique_ptr<KeyedService> BuildTestFileSuggestKeyedService(
+    const base::FilePath& proto_dir,
     content::BrowserContext* context) {
   return std::make_unique<TestFileSuggestKeyedService>(
-      Profile::FromBrowserContext(context));
+      Profile::FromBrowserContext(context), proto_dir);
 }
 
 }  // namespace
@@ -53,10 +61,12 @@ class ZeroStateDriveProviderTest : public testing::Test {
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(testing_profile_manager_->SetUp());
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     profile_ = testing_profile_manager_->CreateTestingProfile(
         "primary_profile@test",
         {{FileSuggestKeyedServiceFactory::GetInstance(),
-          base::BindRepeating(&BuildTestFileSuggestKeyedService)}});
+          base::BindRepeating(&BuildTestFileSuggestKeyedService,
+                              temp_dir_.GetPath())}});
     file_suggest_service_ = static_cast<TestFileSuggestKeyedService*>(
         FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_));
     session_manager_ = std::make_unique<session_manager::SessionManager>();
@@ -83,6 +93,7 @@ class ZeroStateDriveProviderTest : public testing::Test {
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<ZeroStateDriveProvider> provider_;
   base::HistogramTester histogram_tester_;
+  base::ScopedTempDir temp_dir_;
   TestFileSuggestKeyedService* file_suggest_service_ = nullptr;
 };
 

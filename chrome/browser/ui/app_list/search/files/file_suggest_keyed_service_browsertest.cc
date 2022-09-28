@@ -60,8 +60,16 @@ class MockObserver : public FileSuggestKeyedService::Observer {
 
 }  // namespace
 
-using FileSuggestKeyedServiceBrowserTest =
-    drive::DriveIntegrationServiceBrowserTestBase;
+class FileSuggestKeyedServiceBrowserTest
+    : public drive::DriveIntegrationServiceBrowserTestBase {
+  // drive::DriveIntegrationServiceBrowserTestBase:
+  void SetUpOnMainThread() override {
+    drive::DriveIntegrationServiceBrowserTestBase::SetUpOnMainThread();
+    WaitUntilFileSuggestServiceReady(
+        FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+            browser()->profile()));
+  }
+};
 
 // Verifies that the file suggest keyed service works as expected when the item
 // suggest cache is empty.

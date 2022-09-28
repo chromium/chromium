@@ -47,7 +47,9 @@ class RemovedResultsRankerTest : public testing::Test {
   }
 
   PersistentProto<RemovedResultsProto> GetProto() {
-    return PersistentProto<RemovedResultsProto>(GetPath(), base::Seconds(0));
+    PersistentProto<RemovedResultsProto> proto(GetPath(), base::Seconds(0));
+    proto.Init();
+    return proto;
   }
 
   RemovedResultsProto ReadFromDisk() {
@@ -67,17 +69,19 @@ class RemovedResultsRankerTest : public testing::Test {
 };
 
 TEST_F(RemovedResultsRankerTest, CheckInitializeEmpty) {
-  RemovedResultsRanker ranker(GetProto());
+  PersistentProto<RemovedResultsProto> proto(GetProto());
+  RemovedResultsRanker ranker(&proto);
   EXPECT_FALSE(IsInitialized(ranker));
   Wait();
 
   EXPECT_TRUE(IsInitialized(ranker));
-  RemovedResultsProto proto = ReadFromDisk();
-  EXPECT_EQ(proto.removed_ids_size(), 0);
+  RemovedResultsProto proto_from_disk = ReadFromDisk();
+  EXPECT_EQ(proto_from_disk.removed_ids_size(), 0);
 }
 
 TEST_F(RemovedResultsRankerTest, RemoveResults) {
-  RemovedResultsRanker ranker(GetProto());
+  PersistentProto<RemovedResultsProto> proto(GetProto());
+  RemovedResultsRanker ranker(&proto);
   Wait();
 
   // Request to remove results.
@@ -88,17 +92,18 @@ TEST_F(RemovedResultsRankerTest, RemoveResults) {
   Wait();
 
   // Check proto for records of removed results.
-  RemovedResultsProto proto = ReadFromDisk();
-  EXPECT_EQ(proto.removed_ids_size(), 3);
+  RemovedResultsProto proto_from_disk = ReadFromDisk();
+  EXPECT_EQ(proto_from_disk.removed_ids_size(), 3);
 
   std::vector<std::string> recorded_ids;
-  for (const auto& result : proto.removed_ids())
+  for (const auto& result : proto_from_disk.removed_ids())
     recorded_ids.push_back(result.first);
   EXPECT_THAT(ids, UnorderedElementsAreArray(recorded_ids));
 }
 
 TEST_F(RemovedResultsRankerTest, DuplicateRemoveRequests) {
-  RemovedResultsRanker ranker(GetProto());
+  PersistentProto<RemovedResultsProto> proto(GetProto());
+  RemovedResultsRanker ranker(&proto);
   Wait();
 
   // Request to remove results, with a duplicate.
@@ -109,17 +114,18 @@ TEST_F(RemovedResultsRankerTest, DuplicateRemoveRequests) {
   Wait();
 
   // Check proto for records of removed results.
-  RemovedResultsProto proto = ReadFromDisk();
-  EXPECT_EQ(proto.removed_ids_size(), 2);
+  RemovedResultsProto proto_from_disk = ReadFromDisk();
+  EXPECT_EQ(proto_from_disk.removed_ids_size(), 2);
 
   std::vector<std::string> recorded_ids;
-  for (const auto& result : proto.removed_ids())
+  for (const auto& result : proto_from_disk.removed_ids())
     recorded_ids.push_back(result.first);
   EXPECT_THAT(recorded_ids, UnorderedElementsAre("A", "B"));
 }
 
 TEST_F(RemovedResultsRankerTest, UpdateResultRanks) {
-  RemovedResultsRanker ranker(GetProto());
+  PersistentProto<RemovedResultsProto> proto(GetProto());
+  RemovedResultsRanker ranker(&proto);
   Wait();
 
   // Request to remove some results.
@@ -152,17 +158,18 @@ TEST_F(RemovedResultsRankerTest, UpdateResultRanks) {
   EXPECT_TRUE(results_map[ResultType::kOmnibox][0]->scoring().filter);
 
   // Check proto for record of removed results.
-  RemovedResultsProto proto = ReadFromDisk();
-  EXPECT_EQ(proto.removed_ids_size(), 3);
+  RemovedResultsProto proto_from_disk = ReadFromDisk();
+  EXPECT_EQ(proto_from_disk.removed_ids_size(), 3);
 
   std::vector<std::string> recorded_ids;
-  for (const auto& result : proto.removed_ids())
+  for (const auto& result : proto_from_disk.removed_ids())
     recorded_ids.push_back(result.first);
   EXPECT_THAT(recorded_ids, UnorderedElementsAre("A", "C", "E"));
 }
 
 TEST_F(RemovedResultsRankerTest, RankEmptyResults) {
-  RemovedResultsRanker ranker(GetProto());
+  PersistentProto<RemovedResultsProto> proto(GetProto());
+  RemovedResultsRanker ranker(&proto);
   Wait();
 
   ResultsMap results_map;
@@ -174,7 +181,8 @@ TEST_F(RemovedResultsRankerTest, RankEmptyResults) {
 }
 
 TEST_F(RemovedResultsRankerTest, RankDuplicateResults) {
-  RemovedResultsRanker ranker(GetProto());
+  PersistentProto<RemovedResultsProto> proto(GetProto());
+  RemovedResultsRanker ranker(&proto);
   Wait();
 
   // Request to remove some results.
@@ -199,11 +207,11 @@ TEST_F(RemovedResultsRankerTest, RankDuplicateResults) {
   EXPECT_FALSE(results_map[ResultType::kInternalApp][1]->scoring().filter);
 
   // Check proto for record of removed results.
-  RemovedResultsProto proto = ReadFromDisk();
-  EXPECT_EQ(proto.removed_ids_size(), 2);
+  RemovedResultsProto proto_from_disk = ReadFromDisk();
+  EXPECT_EQ(proto_from_disk.removed_ids_size(), 2);
 
   std::vector<std::string> recorded_ids;
-  for (const auto& result : proto.removed_ids())
+  for (const auto& result : proto_from_disk.removed_ids())
     recorded_ids.push_back(result.first);
   EXPECT_THAT(recorded_ids, UnorderedElementsAre("A", "C"));
 }

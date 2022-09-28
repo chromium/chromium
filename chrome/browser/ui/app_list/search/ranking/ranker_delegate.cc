@@ -6,6 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/metrics/field_trial_params.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ui/app_list/search/ranking/answer_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/best_match_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/continue_ranker.h"
@@ -27,9 +30,6 @@ namespace {
 // intended to be slightly longer than the longest conceivable latency for a
 // search.
 constexpr base::TimeDelta kStandardWriteDelay = base::Seconds(3);
-
-// No write delay for protos with time-sensitive writes.
-constexpr base::TimeDelta kNoWriteDelay = base::Seconds(0);
 
 }  // namespace
 
@@ -74,8 +74,9 @@ RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
   AddRanker(std::make_unique<ContinueRanker>());
   AddRanker(std::make_unique<FilteringRanker>());
   AddRanker(std::make_unique<RemovedResultsRanker>(
-      PersistentProto<RemovedResultsProto>(
-          state_dir.AppendASCII("removed_results.pb"), kNoWriteDelay)));
+      FileSuggestKeyedServiceFactory::GetInstance()
+          ->GetService(profile)
+          ->GetProto(base::PassKey<RankerDelegate>())));
 
   // 2. Score normalization, a precursor to other ranking.
   AddRanker(std::make_unique<ScoreNormalizingRanker>(

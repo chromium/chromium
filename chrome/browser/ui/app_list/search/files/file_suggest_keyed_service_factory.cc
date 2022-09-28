@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
+#include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace app_list {
@@ -39,7 +40,16 @@ content::BrowserContext* FileSuggestKeyedServiceFactory::GetBrowserContextToUse(
 
 KeyedService* FileSuggestKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new FileSuggestKeyedService(Profile::FromBrowserContext(context));
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  // TODO(https://crbug.com/1368833): Right now, the service reuses the proto
+  // originally for app list. The service should have its own proto that
+  // contains file ids only.
+  PersistentProto<RemovedResultsProto> proto(
+      RankerStateDirectory(profile).AppendASCII("removed_results.pb"),
+      /*write_delay=*/base::TimeDelta());
+
+  return new FileSuggestKeyedService(profile, std::move(proto));
 }
 
 }  // namespace app_list

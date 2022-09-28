@@ -6,6 +6,8 @@
 
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 
 namespace app_list {
@@ -41,6 +43,23 @@ void WaitForFileSuggestionUpdate(
           run_loop.Quit();
       });
   run_loop.Run();
+}
+
+void WaitUntilFileSuggestServiceReady(FileSuggestKeyedService* service) {
+  if (!service->IsReadyForTest()) {
+    testing::NiceMock<MockFileSuggestKeyedServiceObserver> mock;
+    base::ScopedObservation<app_list::FileSuggestKeyedService,
+                            app_list::FileSuggestKeyedService::Observer>
+        service_observer{&mock};
+    service_observer.Observe(service);
+    // Not sure which suggestion type is ready first. Therefore, wait for both.
+    WaitForFileSuggestionUpdate(mock, FileSuggestionType::kDriveFile);
+    if (service->IsReadyForTest())
+      return;
+
+    WaitForFileSuggestionUpdate(mock, FileSuggestionType::kLocalFile);
+    EXPECT_TRUE(service->IsReadyForTest());
+  }
 }
 
 }  // namespace app_list

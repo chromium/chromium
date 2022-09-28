@@ -6,13 +6,25 @@
 
 #include "base/functional/callback.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 
 namespace app_list {
 
-MockFileSuggestKeyedService::MockFileSuggestKeyedService(Profile* profile)
-    : app_list::FileSuggestKeyedService(profile) {}
+std::unique_ptr<KeyedService>
+MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService(
+    const base::FilePath& proto_path,
+    content::BrowserContext* context) {
+  PersistentProto<RemovedResultsProto> proto(proto_path, base::TimeDelta());
+  return std::make_unique<app_list::MockFileSuggestKeyedService>(
+      Profile::FromBrowserContext(context), std::move(proto));
+}
+
+MockFileSuggestKeyedService::MockFileSuggestKeyedService(
+    Profile* profile,
+    PersistentProto<RemovedResultsProto> proto)
+    : app_list::FileSuggestKeyedService(profile, std::move(proto)) {}
 
 MockFileSuggestKeyedService::~MockFileSuggestKeyedService() = default;
 
@@ -41,7 +53,7 @@ void MockFileSuggestKeyedService::RunGetSuggestFileDataCallback(
   auto iter = type_suggestion_mappings_.find(type);
   if (iter != type_suggestion_mappings_.end())
     suggestions = iter->second;
-  std::move(callback).Run(suggestions);
+  FilterRemovedSuggestions(std::move(callback), suggestions);
 }
 
 }  // namespace app_list

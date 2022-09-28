@@ -10,13 +10,26 @@
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 
+namespace content {
+class BrowserContext;
+}
+
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace app_list {
 
 // A mock file suggestion service. Simply returns the cached suggestions without
 // relying on real suggestion providers.
 class MockFileSuggestKeyedService : public app_list::FileSuggestKeyedService {
  public:
-  explicit MockFileSuggestKeyedService(Profile* profile);
+  static std::unique_ptr<KeyedService> BuildMockFileSuggestKeyedService(
+      const base::FilePath& proto_path,
+      content::BrowserContext* context);
+
+  MockFileSuggestKeyedService(Profile* profile,
+                              PersistentProto<RemovedResultsProto> proto);
   MockFileSuggestKeyedService(const MockFileSuggestKeyedService&) = delete;
   MockFileSuggestKeyedService& operator=(const MockFileSuggestKeyedService&) =
       delete;

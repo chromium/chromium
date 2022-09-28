@@ -21,7 +21,7 @@ namespace app_list {
 // On a call to Rank(), previously removed results are filtered out.
 class RemovedResultsRanker : public Ranker {
  public:
-  explicit RemovedResultsRanker(PersistentProto<RemovedResultsProto> proto);
+  explicit RemovedResultsRanker(PersistentProto<RemovedResultsProto>* proto);
   ~RemovedResultsRanker() override;
 
   RemovedResultsRanker(const RemovedResultsRanker&) = delete;
@@ -36,12 +36,14 @@ class RemovedResultsRanker : public Ranker {
   friend class RemovedResultsRankerTest;
 
   // Whether the ranker has finished reading from disk.
-  bool initialized() const { return proto_.initialized(); }
+  bool initialized() const { return proto_->initialized(); }
 
   // How long to wait until writing any |proto_| updates to disk.
   base::TimeDelta write_delay_;
 
-  PersistentProto<RemovedResultsProto> proto_;
+  // TODO(https://crbug.com/1368833): after this issue gets fixed, the ranker
+  // should own a proto that contains only non-file result ids.
+  PersistentProto<RemovedResultsProto>* const proto_;
 };
 
 }  // namespace app_list

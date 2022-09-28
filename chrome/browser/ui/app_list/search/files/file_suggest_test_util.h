@@ -44,6 +44,9 @@ void WaitForFileSuggestionUpdate(
     const testing::NiceMock<MockFileSuggestKeyedServiceObserver>& mock,
     app_list::FileSuggestionType expected_type);
 
+// Waits until `service` is ready.
+void WaitUntilFileSuggestServiceReady(FileSuggestKeyedService* service);
+
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_FILE_SUGGEST_TEST_UTIL_H_

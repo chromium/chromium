@@ -5,29 +5,27 @@
 #include "chrome/browser/ui/app_list/search/ranking/removed_results_ranker.h"
 
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/ranking/util.h"
 
 namespace app_list {
 
 RemovedResultsRanker::RemovedResultsRanker(
-    PersistentProto<RemovedResultsProto> proto)
-    : proto_(std::move(proto)) {
-  proto_.Init();
+    PersistentProto<RemovedResultsProto>* proto)
+    : proto_(proto) {
+  DCHECK(proto_);
 }
 
 RemovedResultsRanker::~RemovedResultsRanker() = default;
 
 void RemovedResultsRanker::UpdateResultRanks(ResultsMap& results,
                                              ProviderType provider) {
-  if (!initialized())
-    return;
-
   const auto it = results.find(provider);
   DCHECK(it != results.end());
 
-  // Filter any results whose IDs have been recorded as for removal.
+  // If `proto_` is not initialized, filter all results; otherwise, filter any
+  // results whose IDs have been recorded as for removal.
+  const bool proto_initialized = initialized();
   for (const auto& result : it->second) {
-    if (proto_->removed_ids().contains(result->id())) {
+    if (!proto_initialized || (*proto_)->removed_ids().contains(result->id())) {
       result->scoring().filter = true;
     }
   }
@@ -40,8 +38,8 @@ void RemovedResultsRanker::Remove(ChromeSearchResult* result) {
   // Record the string ID of |result| to the storage proto's map.
   // Note: We are using a map for its set capabilities; the map value is
   // arbitrary.
-  (*proto_->mutable_removed_ids())[result->id()] = false;
-  proto_.StartWrite();
+  ((*proto_)->mutable_removed_ids())->insert({result->id(), false});
+  proto_->StartWrite();
 }
 
 }  // namespace app_list

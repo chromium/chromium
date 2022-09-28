@@ -34,6 +34,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_test_util.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ui/app_list/search/files/mock_file_suggest_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -110,12 +111,6 @@ std::unique_ptr<KeyedService> BuildArcFileSystemBridge(
   EXPECT_TRUE(arc::ArcServiceManager::Get()->arc_bridge_service());
   return std::make_unique<arc::ArcFileSystemBridge>(
       context, arc::ArcServiceManager::Get()->arc_bridge_service());
-}
-
-std::unique_ptr<KeyedService> BuildMockFileSuggestKeyedService(
-    content::BrowserContext* context) {
-  return std::make_unique<app_list::MockFileSuggestKeyedService>(
-      Profile::FromBrowserContext(context));
 }
 
 std::unique_ptr<KeyedService> BuildVolumeManager(
@@ -2943,11 +2938,14 @@ class HoldingSpaceSuggestionsDelegateTest
         HoldingSpaceKeyedServiceTest::GetTestingFactories();
     testing_factories.emplace_back(
         app_list::FileSuggestKeyedServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockFileSuggestKeyedService));
+        base::BindRepeating(&app_list::MockFileSuggestKeyedService::
+                                BuildMockFileSuggestKeyedService,
+                            temp_dir_.GetPath()));
     return testing_factories;
   }
 
   void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     HoldingSpaceKeyedServiceTest::SetUp();
 
     // Create a mount point to host test files.
@@ -2958,6 +2956,7 @@ class HoldingSpaceSuggestionsDelegateTest
     mount_point_->Mount(GetProfile());
 
     HoldingSpaceModelAttachedWaiter(profile).Wait();
+    app_list::WaitUntilFileSuggestServiceReady(GetFileSuggestKeyedService());
   }
 
   void TearDown() override {
@@ -2976,6 +2975,7 @@ class HoldingSpaceSuggestionsDelegateTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ScopedTestMountPoint> mount_point_;
+  base::ScopedTempDir temp_dir_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
