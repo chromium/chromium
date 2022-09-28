@@ -94,6 +94,8 @@ void AssignAutocompleteSections(
 void AssignFieldIdentifierSections(
     base::span<const std::unique_ptr<AutofillField>> section,
     base::flat_map<LocalFrameToken, size_t>& frame_token_ids) {
+  if (section.empty())
+    return;
   Section s = Section::FromFieldIdentifier(**section.begin(), frame_token_ids);
   for (const auto& field : section) {
     if (!field->section && IsSectionable(*field))
@@ -191,8 +193,7 @@ void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
     begin = FindBeginOfNextSection(begin, fields.end());
     auto end = FindEndOfNextSection(begin, fields.end());
     DCHECK(begin != end || end == fields.end());
-    if (begin != end)
-      AssignFieldIdentifierSections({begin, end}, frame_token_ids);
+    AssignFieldIdentifierSections({begin, end}, frame_token_ids);
     begin = end;
   }
 }
