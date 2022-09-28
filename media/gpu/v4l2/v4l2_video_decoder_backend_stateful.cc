@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -616,9 +617,10 @@ void V4L2StatefulVideoDecoderBackend::ChangeResolution() {
   }
 
   auto ctrl = device_->GetCtrl(V4L2_CID_MIN_BUFFERS_FOR_CAPTURE);
-  constexpr size_t DEFAULT_NUM_OUTPUT_BUFFERS = 7;
+  constexpr size_t kDefaultNumOutputBuffers = 7;
+  constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
   const size_t num_output_buffers =
-      ctrl ? ctrl->value : DEFAULT_NUM_OUTPUT_BUFFERS;
+      (ctrl ? ctrl->value : kDefaultNumOutputBuffers) + kPicsInPipeline;
   if (!ctrl)
     VLOGF(1) << "Using default minimum number of CAPTURE buffers";
 

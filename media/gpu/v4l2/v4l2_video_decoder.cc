@@ -53,11 +53,6 @@ constexpr uint32_t kSupportedInputFourccs[] = {
     V4L2_PIX_FMT_H264,       V4L2_PIX_FMT_VP8,       V4L2_PIX_FMT_VP9,
 };
 
-// Number of output buffers to use for each VD stage above what's required by
-// the decoder (e.g. DPB size, in H264).  We need limits::kMaxVideoFrames to
-// fill up the GpuVideoDecode pipeline, and +1 for a frame in transit.
-constexpr size_t kDpbOutputBufferExtraCount = limits::kMaxVideoFrames + 1;
-
 }  // namespace
 
 // static
@@ -705,8 +700,9 @@ CroStatus V4L2VideoDecoder::ContinueChangeResolution(
   if (state_ != State::kFlushing)
     return CroStatus::Codes::kResetRequired;
 
-  DCHECK_GT(num_output_frames, 0u);
-  num_output_frames_ = num_output_frames + kDpbOutputBufferExtraCount;
+  DCHECK_GT(num_output_frames,
+            static_cast<size_t>(limits::kMaxVideoFrames + 1));
+  num_output_frames_ = num_output_frames;
 
   // Stateful decoders require the input queue to keep running during resolution
   // changes, but stateless ones require it to be stopped.
