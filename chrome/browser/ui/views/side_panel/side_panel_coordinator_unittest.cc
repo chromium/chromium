@@ -26,6 +26,7 @@
 #include "chrome/common/pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/test/views_test_utils.h"
 
 using testing::_;
 
@@ -144,12 +145,12 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
   coordinator_->Toggle();
   const int starting_width = 500;
   browser_view()->unified_side_panel()->SetPanelWidth(starting_width);
-  browser_view()->Layout();
+  views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(), starting_width);
 
   const int increment = 50;
   browser_view()->unified_side_panel()->OnResize(increment, true);
-  browser_view()->Layout();
+  views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(),
             starting_width - increment);
 
@@ -157,11 +158,11 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, false);
   browser_view()->unified_side_panel()->SetPanelWidth(starting_width);
-  browser_view()->Layout();
+  views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(), starting_width);
 
   browser_view()->unified_side_panel()->OnResize(increment, true);
-  browser_view()->Layout();
+  views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(),
             starting_width + increment);
 }
@@ -170,19 +171,19 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
   coordinator_->Toggle();
   const int starting_width = 500;
   browser_view()->unified_side_panel()->SetPanelWidth(starting_width);
-  browser_view()->Layout();
+  views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(), starting_width);
 
   // Use an increment large enough to hit side panel and browser contents
   // minimum width constraints.
   const int large_increment = 1000000000;
   browser_view()->unified_side_panel()->OnResize(large_increment, true);
-  browser_view()->Layout();
+  views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(),
             browser_view()->unified_side_panel()->GetMinimumSize().width());
 
   browser_view()->unified_side_panel()->OnResize(-large_increment, true);
-  browser_view()->Layout();
+  views::test::RunScheduledLayout(browser_view());
   BrowserViewLayout* layout_manager =
       static_cast<BrowserViewLayout*>(browser_view()->GetLayoutManager());
   const int min_web_contents_width =
@@ -200,23 +201,23 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
   coordinator_->Toggle();
   const int starting_width = 500;
   browser_view()->unified_side_panel()->SetPanelWidth(starting_width);
-  browser_view()->Layout();
+  views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(), starting_width);
 
   const int increment = 50;
   browser_view()->unified_side_panel()->OnResize(increment, true);
-  browser_view()->Layout();
+  views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(),
             starting_width - increment);
 
   // Set UI direction to RTL
   base::i18n::SetRTLForTesting(true);
   browser_view()->unified_side_panel()->SetPanelWidth(starting_width);
-  browser_view()->Layout();
+  views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(), starting_width);
 
   browser_view()->unified_side_panel()->OnResize(increment, true);
-  browser_view()->Layout();
+  views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(),
             starting_width + increment);
 }
@@ -225,7 +226,7 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthWindowResize) {
   coordinator_->Toggle();
   const int starting_width = 500;
   browser_view()->unified_side_panel()->SetPanelWidth(starting_width);
-  browser_view()->Layout();
+  views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(), starting_width);
 
   // Shrink browser window enough that side panel should also shrink in
