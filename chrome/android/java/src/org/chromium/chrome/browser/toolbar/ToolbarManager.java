@@ -251,7 +251,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private MenuButtonCoordinator mOverviewModeMenuButtonCoordinator;
     private HomepageManager.HomepageStateListener mHomepageStateListener;
-    private String mHomepageUrl;
     private StatusBarColorController mStatusBarColorController;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -1122,31 +1121,14 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity));
         // clang-format on
         mHomepageStateListener = () -> {
-            mHomepageUrl = HomepageManager.getHomepageUri();
-            Boolean wasHomepageEnabled = mHomepageEnabledSupplier.get();
-            boolean isHomepageEnabled = HomepageManager.isHomepageEnabled();
-            mHomepageEnabledSupplier.set(isHomepageEnabled);
-
+            mHomepageEnabledSupplier.set(HomepageManager.isHomepageEnabled());
             // Whether to show start surface as homepage is affected by whether homepage URI is
             // customized. So we add a supplier to observe homepage URI change.
-            Boolean wasStartSurfaceAsHomepage = mStartSurfaceAsHomepageSupplier.get();
-            boolean isStartSurfaceAsHomepage =
-                    ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(mActivity);
-            mStartSurfaceAsHomepageSupplier.set(isStartSurfaceAsHomepage);
+            mStartSurfaceAsHomepageSupplier.set(
+                    ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(mActivity));
             mHomepageManagedByPolicySupplier.set(HomepagePolicyManager.isHomepageManagedByPolicy());
-
-            // We need to skip recreating CTA the first time when mStartSurfaceAsHomepageSupplier
-            // is set, i.e., mStartSurfaceAsHomepageSupplier.get() is changed from null to
-            // true/false. Otherwise, it will cause infinite loop of calling recreate().
-            if (wasStartSurfaceAsHomepage == null || wasHomepageEnabled == null) return;
-
-            if (mIsStartSurfaceEnabled != ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)
-                    && !sSkipRecreateForTesting) {
-                // If the state of whether Start surface is enabled is changed due to the homepage
-                // settings change, we need to recreate CTA to adopt this config change.
-                recreateActivityWithTabReparenting();
-            }
         };
+
         HomepageManager.getInstance().addListener(mHomepageStateListener);
         mHomepageStateListener.onHomepageStateUpdated();
 
@@ -1199,7 +1181,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     && mLayoutStateProvider.getActiveLayoutType() == LayoutType.START_SURFACE) {
                 return false;
             } else if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                    && ReturnToChromeUtil.isStartSurfaceEnabled(mActivity, mHomepageUrl)) {
+                    && ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)) {
                 return false;
             }
 

@@ -380,7 +380,20 @@ public final class ReturnToChromeUtil {
      */
     public static boolean shouldShowStartSurfaceAsTheHomePage(Context context) {
         return isStartSurfaceEnabled(context)
-                && StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE.getValue();
+                && StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE.getValue()
+                && useChromeHomepage();
+    }
+
+    /**
+     * Returns whether to use Chrome's homepage. This function doesn't distinguish whether to show
+     * NTP or Start though. If checking whether to show Start as homepage, use
+     * {@link ReturnToChromeUtil#shouldShowStartSurfaceAsTheHomePage(Context)} instead.
+     */
+    private static boolean useChromeHomepage() {
+        String homePageUrl = HomepageManager.getHomepageUri();
+        return HomepageManager.isHomepageEnabled()
+                && (TextUtils.isEmpty(homePageUrl)
+                        || UrlUtilities.isCanonicalizedNTPUrl(homePageUrl));
     }
 
     /**
@@ -393,11 +406,12 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * @return Whether Start Surface should be shown as NTP.
+     * @return Whether Start Surface should be shown as a new Tab.
      */
-    public static boolean shouldShowStartSurfaceHomeAsNTP(
+    public static boolean shouldShowStartSurfaceHomeAsNewTab(
             Context context, boolean incognito, boolean isTablet) {
-        return !incognito && shouldShowStartSurfaceAsTheHomePageOnPhone(context, isTablet);
+        return !incognito && !isTablet && isStartSurfaceEnabled(context)
+                && !StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START.getValue();
     }
 
     /**
@@ -408,32 +422,18 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * {@see isStartSurfaceEnabled(Context, String}. This version is if you don't have a
-     * precomputed Homepage Url.
-     */
-    public static boolean isStartSurfaceEnabled(Context context) {
-        String homePageUrl = HomepageManager.getHomepageUri();
-        return isStartSurfaceEnabled(context, homePageUrl);
-    }
-
-    /**
      * Returns whether Start Surface is enabled in the given context.
      * This includes checks of:
      * 1) whether home page is enabled and whether it is Chrome' home page url;
      * 2) whether Start surface is enabled with current accessibility settings;
      * 3) whether it is on phone.
      * @param context The activity context.
-     * @param homePageUrl The url of the app's home page.  {@see isStartSurfaceEnabled(Context} if
-     *         you don't have this.
      */
-    public static boolean isStartSurfaceEnabled(Context context, String homePageUrl) {
+    public static boolean isStartSurfaceEnabled(Context context) {
         // When creating initial tab, i.e. cold start without restored tabs, we should only show
         // StartSurface as the HomePage if Single Pane is enabled, HomePage is not customized, not
         // on tablet, accessibility is not enabled or the tab group continuation feature is enabled.
         return StartSurfaceConfiguration.isStartSurfaceFlagEnabled()
-                && HomepageManager.isHomepageEnabled()
-                && (TextUtils.isEmpty(homePageUrl)
-                        || UrlUtilities.isCanonicalizedNTPUrl(homePageUrl))
                 && !shouldHideStartSurfaceWithAccessibilityOn(context)
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
@@ -482,7 +482,8 @@ public final class ReturnToChromeUtil {
         // If user taps the "New Incognito Tab" item from the app icon, skip here and continue the
         // following checks.
         if (UrlUtilities.isCanonicalizedNTPUrl(intentUrl)
-                && ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(context)
+                && ReturnToChromeUtil.shouldShowStartSurfaceHomeAsNewTab(
+                        context, tabModelSelector.isIncognitoSelected(), isTablet)
                 && !intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)) {
             return true;
         }
@@ -490,8 +491,12 @@ public final class ReturnToChromeUtil {
         boolean isStartSurfaceEnabled = ReturnToChromeUtil.isStartSurfaceEnabled(context);
 
         // If Start surface is enabled and there's no tab existing, handle the initial tab creation.
+        // Note: if user has a customized homepage, we don't show Start even there isn't any tab.
+        // However, if NTP is used as homepage, we show Start when there isn't any tab. See
+        // https://crbug.com/1368224.
         if (isStartSurfaceEnabled && IntentUtils.isMainIntentFromLauncher(intent)
-                && ReturnToChromeUtil.getTotalTabCount(tabModelSelector) <= 0) {
+                && ReturnToChromeUtil.getTotalTabCount(tabModelSelector) <= 0
+                && useChromeHomepage()) {
             return true;
         }
 

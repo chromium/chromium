@@ -479,8 +479,8 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceCoordinator startSurfaceCoordinator =
                 StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(
-                    startSurfaceCoordinator.getStartSurfaceState(), StartSurfaceState.NOT_SHOWN);
+            Assert.assertEquals(startSurfaceCoordinator.getStartSurfaceState(),
+                    StartSurfaceState.SHOWN_TABSWITCHER);
         });
     }
 

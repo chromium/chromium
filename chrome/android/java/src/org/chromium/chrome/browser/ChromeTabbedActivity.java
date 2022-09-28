@@ -1458,14 +1458,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             /**
              * If Start surface homepage is showing and launching NTP will show the Start surface
              * again, skips the calls of hideOverview() and launchNTP(). We need to check
-             * {@link ReturnToChromeUtil#shouldShowStartSurfaceHomeAsNTP(Context,
+             * {@link ReturnToChromeUtil#shouldShowStartSurfaceHomeAsNewTab(Context,
              * boolean, boolean)} to see whether Start surface can be shown when accessibility is
              * enabled.
              */
             if (mStartSurfaceSupplier.get() == null
                     || mStartSurfaceSupplier.get().getStartSurfaceState()
                             != StartSurfaceState.SHOWN_HOMEPAGE
-                    || !ReturnToChromeUtil.shouldShowStartSurfaceHomeAsNTP(
+                    || !ReturnToChromeUtil.shouldShowStartSurfaceHomeAsNewTab(
                             this, getCurrentTabModel().isIncognito(), isTablet())) {
                 mLayoutManager.showLayout(LayoutType.BROWSING, true);
                 if (getTabModelSelector().getCurrentModel().getCount() == 0) {
@@ -2587,7 +2587,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private boolean showStartSurfaceHomeForNTP(boolean isNTP, boolean incognito, Tab parentTab,
             @NewTabPageLaunchOrigin int launchOrigin) {
         if (!isNTP
-                || !ReturnToChromeUtil.shouldShowStartSurfaceHomeAsNTP(
+                || !ReturnToChromeUtil.shouldShowStartSurfaceHomeAsNewTab(
                         this, incognito, isTablet())) {
             return false;
         }
