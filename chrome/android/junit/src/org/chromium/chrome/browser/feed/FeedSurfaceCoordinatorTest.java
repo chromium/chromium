@@ -87,10 +87,19 @@ import java.util.ArrayList;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.DisableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.WEB_FEED_SORT,
-        ChromeFeatureList.WEB_FEED_ONBOARDING, ChromeFeatureList.INTEREST_FEED_V2_AUTOPLAY,
-        ChromeFeatureList.FEED_INTERACTIVE_REFRESH, ChromeFeatureList.FEED_BACK_TO_TOP,
-        ChromeFeatureList.FEED_MULTI_COLUMN})
+@Features.DisableFeatures({
+        ChromeFeatureList.WEB_FEED,
+        ChromeFeatureList.WEB_FEED_SORT,
+        ChromeFeatureList.WEB_FEED_ONBOARDING,
+        ChromeFeatureList.INTEREST_FEED_V2_AUTOPLAY,
+        ChromeFeatureList.FEED_INTERACTIVE_REFRESH,
+        ChromeFeatureList.FEED_BACK_TO_TOP,
+        ChromeFeatureList.FEED_MULTI_COLUMN,
+        // TODO(crbug.com/1353777): Disabling the feature explicitly, because native is not
+        // available to provide a default value. This should be enabled if the feature is enabled by
+        // default or removed if the flag is removed.
+        ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
+})
 public class FeedSurfaceCoordinatorTest {
     private static final @SurfaceType int SURFACE_TYPE = SurfaceType.NEW_TAB_PAGE;
     private static final long SURFACE_CREATION_TIME_NS = 1234L;

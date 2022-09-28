@@ -67,6 +67,10 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+// TODO(crbug.com/1353777): Disabling the feature explicitly, because native is not
+// available to provide a default value. This should be enabled if the feature is enabled by
+// default or removed if the flag is removed.
+@Features.DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
 @Features.EnableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.INTEREST_FEED_V2_HEARTS,
         ChromeFeatureList.WEB_FEED_SORT})
 public class FeedSurfaceMediatorTest {

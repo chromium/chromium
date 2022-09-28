@@ -85,6 +85,7 @@ public class SyncPromoController {
     private static final int MAX_TOTAL_PROMO_SHOW_COUNT = 100;
     private static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
     private static final int MAX_IMPRESSIONS_SETTINGS = 20;
+    private static final int NTP_SYNC_PROMO_RESET_AFTER_DAY = 30;
     private static final int NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE = 30;
     private static final String SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS =
             "SyncAndroidNTPPromoMaxImpressions";
@@ -129,6 +130,15 @@ public class SyncPromoController {
         }
     }
 
+    private static long getNTPSyncPromoResetAfterMillis() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
+            return NTP_SYNC_PROMO_RESET_AFTER_DAY * DateUtils.DAY_IN_MILLIS;
+        }
+        return StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS.getValue()
+                * DateUtils.HOUR_IN_MILLIS;
+    }
+
     /**
      * If the signin promo card has been hidden for longer than the {@link
      * StartSurfaceConfiguration#SIGNIN_PROMO_NTP_RESET_AFTER_HOURS}, resets the impression counts,
@@ -137,9 +147,7 @@ public class SyncPromoController {
      */
     public static void resetNTPSyncPromoLimitsIfHiddenForTooLong() {
         final long currentTime = System.currentTimeMillis();
-        final long resetAfterMs =
-                StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS.getValue()
-                * DateUtils.HOUR_IN_MILLIS;
+        final long resetAfterMs = getNTPSyncPromoResetAfterMillis();
         final long lastShownTime = SharedPreferencesManager.getInstance().readLong(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, 0L);
         if (resetAfterMs <= 0 || lastShownTime <= 0) return;
