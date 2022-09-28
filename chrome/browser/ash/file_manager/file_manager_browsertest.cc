@@ -1258,7 +1258,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         // TestCase("transferDismissedErrorIsRemembered"),
         TestCase("transferNotSupportedOperationHasNoRemainingTimeText"),
         TestCase("transferUpdateSamePanelItem"),
-        TestCase("transferShowPendingMessageForZeroRemainingTime")));
+        TestCase("transferShowPreparingMessageForZeroRemainingTime")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DLP, /* dlp.js */
@@ -1732,7 +1732,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableTrash(),
         TestCase("trashTogglingTrashEnabledPrefUpdatesDirectoryTree")
             .EnableTrash(),
-        TestCase("trashCantRestoreWhenParentDoesntExist").EnableTrash()));
+        TestCase("trashCantRestoreWhenParentDoesntExist").EnableTrash(),
+        TestCase(
+            "trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton")
+            .EnableTrash()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */

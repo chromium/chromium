@@ -83,7 +83,7 @@ export class ProgressCenterPanel {
           }
           if (item.type === ProgressItemType.RESTORE_TO_DESTINATION ||
               item.type === ProgressItemType.RESTORE) {
-            return strf('RESTORE_FROM_TRASH_FILE_NAME', source);
+            return strf('RESTORING_FROM_TRASH_FILE_NAME', source);
           }
           return item.message;
         }
@@ -106,7 +106,7 @@ export class ProgressCenterPanel {
         }
         if (item.type === ProgressItemType.RESTORE_TO_DESTINATION ||
             item.type === ProgressItemType.RESTORE) {
-          return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', count);
+          return strf('RESTORING_FROM_TRASH_ITEMS_REMAINING', count);
         }
         return item.message;
         break;
@@ -188,7 +188,9 @@ export class ProgressCenterPanel {
           }
           if (item.type === ProgressItemType.RESTORE_TO_DESTINATION ||
               item.type === ProgressItemType.RESTORE) {
-            return strf('RESTORE_FROM_TRASH_FILE_NAME', source);
+            return item.state == ProgressItemState.PROGRESSING ?
+                strf('RESTORING_FROM_TRASH_FILE_NAME', source) :
+                strf('RESTORE_TRASH_FILE_NAME', source);
           }
           return item.message;
         }
@@ -222,7 +224,9 @@ export class ProgressCenterPanel {
         }
         if (item.type === ProgressItemType.RESTORE_TO_DESTINATION ||
             item.type === ProgressItemType.RESTORE) {
-          return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', count);
+          return item.state == ProgressItemState.PROGRESSING ?
+              strf('RESTORING_FROM_TRASH_ITEMS_REMAINING', count) :
+              strf('RESTORE_TRASH_MANY_ITEMS', count);
         }
         return item.message;
         break;
@@ -267,7 +271,7 @@ export class ProgressCenterPanel {
       // Return empty string for invalid remaining time in non progressing
       // state.
       return item.state === ProgressItemState.PROGRESSING ?
-          str('PENDING_LABEL') :
+          str('PREPARING_LABEL') :
           '';
     }
 

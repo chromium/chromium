@@ -437,7 +437,42 @@ testcase.trashDoubleClickOnFileInTrashRootShowsDialog = async () => {
   // Double-click the file and ensure an alert dialog is displayed.
   await remoteCall.callRemoteTestUtil(
       'fakeMouseDoubleClick', appId, ['#file-list [file-name="hello.txt"]']);
-  await remoteCall.waitForElement(appId, '.files-alert-dialog');
+  await remoteCall.waitForElement(appId, '.files-confirm-dialog');
+};
+
+/**
+ * Pressing Enter on a file while in Trash shows a disallowed confirm dialog
+ * with a restore button that performs restoration on the file.
+ */
+testcase.trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton =
+    async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+  await remoteCall.callRemoteTestUtil(
+      'overrideTasks', appId, [DOWNLOADS_FAKE_TASKS]);
+
+  // Delete item and wait for it to be removed (no dialog).
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
+  await clickTrashButton(appId);
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Navigate to /Trash and ensure the file is shown.
+  await navigateWithDirectoryTree(appId, '/Trash');
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="hello.txt"]');
+  await remoteCall.waitForElement(appId, '#tasks[hidden]');
+
+  // Press "Enter" on the file and ensure an alert dialog is displayed.
+  const enterKey = ['#file-list', 'Enter', false, false, false];
+  await remoteCall.fakeKeyDown(appId, ...enterKey);
+  await remoteCall.waitForElement(appId, '.files-confirm-dialog');
+
+  // Click the "Restore" button on the error message and ensure it restores the
+  // file back to the Downloads directory.
+  await remoteCall.waitAndClickElement(appId, '.cr-dialog-ok');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+  await remoteCall.waitForElement(appId, '#file-list [file-name="hello.txt"]');
 };
 
 /**
@@ -461,18 +496,18 @@ testcase.trashTraversingFolderShowsDisallowedDialog = async () => {
   // Double-click the folder and ensure an alert dialog is displayed.
   await remoteCall.callRemoteTestUtil(
       'fakeMouseDoubleClick', appId, ['#file-list [file-name="photos"]']);
-  await remoteCall.waitForElement(appId, '.files-alert-dialog');
+  await remoteCall.waitForElement(appId, '.files-confirm-dialog');
 
   // Dismiss the alert dialog.
-  await remoteCall.waitAndClickElement(appId, '.cr-dialog-ok');
+  await remoteCall.waitAndClickElement(appId, '.cr-dialog-cancel');
 
   // Select the element and press enter, outside of Trash this would navigate to
-  // the folder but in Trash it should show an alert dialog.
+  // the folder but in Trash it should show a confirm dialog.
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="photos"]');
   const enterKey = ['#file-list', 'Enter', false, false, false];
   await remoteCall.fakeKeyDown(appId, ...enterKey);
-  await remoteCall.waitForElement(appId, '.files-alert-dialog');
+  await remoteCall.waitForElement(appId, '.files-confirm-dialog');
 };
 
 /**

@@ -467,7 +467,7 @@
     Delete
   </message>
   <message name="IDS_FILE_BROWSER_MOVE_TO_TRASH_BUTTON_LABEL" desc="Context menu item that moves the currently-selected file(s) to the trash / recycle bin.">
-    Move to Trash
+    Move to trash
   </message>
   <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_BUTTON_LABEL" desc="Context menu item that restores the currently-selected file(s) from the trash / recycle bin.">
     Restore from trash
@@ -717,11 +717,17 @@
   <message name="IDS_FILE_BROWSER_DELETE_ERROR" desc="Message informing about error while deleting an item or items.">
     An error occurred. Some items may not have been deleted.
   </message>
-  <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_FILE_NAME" desc="File Manager status message shown when restoring items from trash / recycle bin.">
-    Restoring "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>"...
+  <message name="IDS_FILE_BROWSER_RESTORING_FROM_TRASH_FILE_NAME" desc="File Manager status message shown when restoring items from trash / recycle bin.">
+    Restoring "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>"
   </message>
-  <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_ITEMS_REMAINING" desc="File Manager status message shown when restoring items from trash / recycle bin. 'Item' is used here as a generic term for file or directory.">
-    Restoring <ph name="COUNT">$1<ex>10</ex></ph> items...
+  <message name="IDS_FILE_BROWSER_RESTORING_FROM_TRASH_ITEMS_REMAINING" desc="File Manager status message shown when restoring items from trash / recycle bin. 'Item' is used here as a generic term for file or directory.">
+    Restoring <ph name="COUNT">$1<ex>10</ex></ph> items
+  </message>
+  <message name="IDS_FILE_BROWSER_RESTORE_TRASH_FILE_NAME" desc="When a file has been successfully restored.">
+    <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> restored
+  </message>
+  <message name="IDS_FILE_BROWSER_RESTORE_TRASH_MANY_ITEMS" desc="Shown when a number of files have been successfully restored.">
+    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items restored
   </message>
   <message name="IDS_FILE_BROWSER_TRASH_DELETED_FOREVER" desc="Message informing that items in the trash / recycle bin are deleted forever after 30 days.">
     Files in the trash for more than 30 days will be automatically deleted.
@@ -732,8 +738,17 @@
   <message name="IDS_FILE_BROWSER_TRASH_UNEXPECTED_ERROR" desc="Message informing about error while sending an item to the trash / recycle bin.">
     An error occurred. Some items may not have been trashed.
   </message>
-  <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILES_ERROR" desc="Message informing users they can't open files from the Trash folder">
-    Cannot open trashed files. Please restore the files before opening.
+  <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILE_ERROR_TITLE" desc="Title of message informing users they can't open files from the Trash folder">
+    This item is in your trash
+  </message>
+  <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILE_ERROR_DESC" desc="Description of message informing users they can't open files from the Trash folder">
+    Restore the item or drag it to a new folder outside of trash
+  </message>
+  <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILES_ERROR_TITLE" desc="Title of message informing users they can't open files from the Trash folder">
+    These items are in your trash
+  </message>
+  <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILES_ERROR_DESC" desc="Description of message informing users they can't open files from the Trash folder">
+    Restore the items or drag them to a new folder outside of trash
   </message>
   <message name="IDS_FILE_BROWSER_ERROR_PROGRESS_SUMMARY_PLURAL" desc="Summary message for multiple errors above the progress bar. This message may be placed at the next to ohter *_PROGERSS_SUMMARY messages.">
     <ph name="COUNT">$1<ex>10</ex></ph> errors.
@@ -820,19 +835,22 @@
    Are you sure you want to delete <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items?
  </message>
  <message name="IDS_FILE_BROWSER_UNDO_DELETE_ONE" desc="Confirm to a user that they have deleted a single file and offer to undo">
-   <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> moved to Trash
+   <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> moved to trash
  </message>
  <message name="IDS_FILE_BROWSER_UNDO_DELETE_SOME" desc="Confirm to a user that they have deleted multiple files and offer to undo">
-   <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items moved to Trash
+   <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items moved to trash
  </message>
  <message name="IDS_FILE_BROWSER_MOVE_TO_TRASH_FILE_NAME" desc="Showing progress that a single item is being moved to trash.">
-   Moving <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> to the Trash
+   Moving <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> to the trash
  </message>
  <message name="IDS_FILE_BROWSER_MOVE_TO_TRASH_ITEMS_REMAINING" desc="Showing progress that multiple items are being moved to trash.">
-   Moving <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items to the Trash
+   Moving <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items to the trash
  </message>
  <message name="IDS_FILE_BROWSER_UNDO_DELETE_ACTION_LABEL" desc="Undo label shown on toast to undo delete operation">
    Undo
+ </message>
+ <message name="IDS_FILE_BROWSER_RESTORE_ACTION_LABEL" desc="Restore label shown on dialog when trying to open files that are in Trash">
+   Restore
  </message>
  <message name="IDS_FILE_BROWSER_CONFIRM_EMPTY_TRASH_TITLE" desc="Asks the user if they are sure they want to empty the trash / recylce bin.">
    Permanently delete these files?

@@ -441,7 +441,7 @@ export class FileOperationHandler {
           return strf('DELETE_FILE_NAME', name);
         case util.FileOperationType.RESTORE:
         case util.FileOperationType.RESTORE_TO_DESTINATION:
-          return strf('RESTORE_FROM_TRASH_FILE_NAME', name);
+          return strf('RESTORING_FROM_TRASH_FILE_NAME', name);
         default:
           console.warn(
               `Unexpected operation type: ${event.status.operationType}`);
@@ -460,7 +460,7 @@ export class FileOperationHandler {
           return strf('DELETE_ITEMS_REMAINING', remainNumber);
         case util.FileOperationType.RESTORE:
         case util.FileOperationType.RESTORE_TO_DESTINATION:
-          return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', remainNumber);
+          return strf('RESTORING_FROM_TRASH_ITEMS_REMAINING', remainNumber);
         default:
           console.warn(
               `Unexpected operation type: ${event.status.operationType}`);

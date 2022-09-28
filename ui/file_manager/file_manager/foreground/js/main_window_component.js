@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertInstanceof} from 'chrome://resources/js/assert.js';
+
 import {DialogType} from '../../common/js/dialog_type.js';
 import {metrics} from '../../common/js/metrics.js';
+import {TrashEntry} from '../../common/js/trash.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
@@ -17,6 +20,7 @@ import {DirectoryModel} from './directory_model.js';
 import {FileSelectionHandler} from './file_selection.js';
 import {NamingController} from './naming_controller.js';
 import {TaskController} from './task_controller.js';
+import {Command} from './ui/command.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FileTapHandler} from './ui/file_tap_handler.js';
 import {ListContainer} from './ui/list_container.js';
@@ -249,14 +253,13 @@ export class MainWindowComponent {
     if (!listItem || !listItem.selected || selection.totalCount !== 1) {
       return false;
     }
-
-    const entry = selection.entries[0];
-    // A TrashEntry must have a key on it called `restoreEntry` and thus we use
-    // that as a signal this is a TrashEntry and should not be traversable.
-    if (entry.restoreEntry) {
-      this.ui_.alertDialog.show(str('OPEN_TRASHED_FILES_ERROR'), null, null);
+    const trashEntries = /** @type {!Array<!TrashEntry>} */ (
+        selection.entries.filter(util.isTrashEntry));
+    if (trashEntries.length > 0) {
+      this.showFailedToOpenTrashItemDialog_(trashEntries);
       return false;
     }
+    const entry = selection.entries[0];
     if (entry.isDirectory) {
       this.directoryModel_.changeDirectoryEntry(
           /** @type {!DirectoryEntry} */ (entry));
@@ -277,8 +280,14 @@ export class MainWindowComponent {
       // be restored first.
       if (this.directoryModel_.getCurrentRootType() ===
           VolumeManagerCommon.RootType.TRASH) {
-        this.ui_.alertDialog.show(str('OPEN_TRASHED_FILES_ERROR'), null, null);
-        return false;
+        const selection = this.selectionHandler_.selection;
+        if (!selection) {
+          return true;
+        }
+        const trashEntries = /** @type {!Array<!TrashEntry>} */ (
+            selection.entries.filter(util.isTrashEntry));
+        this.showFailedToOpenTrashItemDialog_(trashEntries);
+        return true;
       }
       this.taskController_.getFileTasks()
           .then(tasks => {
@@ -298,6 +307,26 @@ export class MainWindowComponent {
     }
 
     return false;
+  }
+
+  /**
+   * Show a confirm dialog that shows whether the current selection can't be
+   * opened and offer to restore instead.
+   * @param {!Array<!TrashEntry>} trashEntries The current selection.
+   */
+  showFailedToOpenTrashItemDialog_(trashEntries) {
+    let msgTitle = str('OPEN_TRASHED_FILE_ERROR_TITLE');
+    let msgDesc = str('OPEN_TRASHED_FILE_ERROR_DESC');
+    if (trashEntries.length > 1) {
+      msgTitle = str('OPEN_TRASHED_FILES_ERROR_TITLE');
+      msgDesc = str('OPEN_TRASHED_FILES_ERROR_DESC');
+    }
+    const restoreCommand = assertInstanceof(
+        document.getElementById('restore-from-trash'), Command);
+    this.ui_.restoreConfirmDialog.showWithTitle(msgTitle, msgDesc, () => {
+      restoreCommand.canExecuteChange(this.ui_.listContainer.currentList);
+      restoreCommand.execute(this.ui_.listContainer.currentList);
+    });
   }
 
   /**
@@ -426,7 +455,8 @@ export class MainWindowComponent {
       case 'Enter':  // Enter => Change directory or perform default action.
         const selection = this.selectionHandler_.selection;
         if (selection.totalCount === 1 && selection.entries[0].isDirectory &&
-            !DialogType.isFolderDialog(this.dialogType_)) {
+            !DialogType.isFolderDialog(this.dialogType_) &&
+            !selection.entries.some(util.isTrashEntry)) {
           const item = this.ui_.listContainer.currentList.getListItemByIndex(
               selection.indexes[0]);
           // If the item is in renaming process, we don't allow to change

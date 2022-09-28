@@ -101,9 +101,9 @@ std::u16string GetIOTaskMessage(Profile* profile,
       multiple_file_message_id = IDS_FILE_BROWSER_ZIP_ITEMS_REMAINING;
       break;
     case OperationType::kRestoreToDestination:
-      single_file_message_id = IDS_FILE_BROWSER_RESTORE_FROM_TRASH_FILE_NAME;
+      single_file_message_id = IDS_FILE_BROWSER_RESTORING_FROM_TRASH_FILE_NAME;
       multiple_file_message_id =
-          IDS_FILE_BROWSER_RESTORE_FROM_TRASH_ITEMS_REMAINING;
+          IDS_FILE_BROWSER_RESTORING_FROM_TRASH_ITEMS_REMAINING;
       break;
     case OperationType::kTrash:
       single_file_message_id = IDS_FILE_BROWSER_MOVE_TO_TRASH_FILE_NAME;

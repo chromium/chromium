@@ -108,6 +108,14 @@ export class FileManagerUI {
     this.emptyTrashConfirmDialog.setOkLabel(str('EMPTY_TRASH_DELETE_FOREVER'));
 
     /**
+     * Restore dialog when trying to open files that are in the trash
+     * @type {!FilesConfirmDialog}
+     * @const
+     */
+    this.restoreConfirmDialog = new FilesConfirmDialog(this.element);
+    this.restoreConfirmDialog.setOkLabel(str('RESTORE_ACTION_LABEL'));
+
+    /**
      * Confirm dialog for file move operation.
      * @type {!FilesConfirmDialog}
      * @const

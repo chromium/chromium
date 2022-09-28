@@ -1317,9 +1317,9 @@ testcase.transferUpdateSamePanelItem = async () => {
 };
 
 /**
- * Tests pending message shown when the remaining time is zero.
+ * Tests prepraring message shown when the remaining time is zero.
  */
-testcase.transferShowPendingMessageForZeroRemainingTime = async () => {
+testcase.transferShowPreparingMessageForZeroRemainingTime = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Show a |copy| progress in feedback panel.
@@ -1335,6 +1335,6 @@ testcase.transferShowPendingMessageForZeroRemainingTime = async () => {
   const panel = await remoteCall.waitForElement(
       appId, ['#progress-panel', 'xf-panel-item']);
 
-  // Check secondary text is pending message.
-  chrome.test.assertEq('Pending', panel.attributes['secondary-text']);
+  // Check secondary text is preparing message.
+  chrome.test.assertEq('Preparing', panel.attributes['secondary-text']);
 };
