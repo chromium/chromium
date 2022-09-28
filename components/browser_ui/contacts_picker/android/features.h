@@ -9,7 +9,7 @@
 
 namespace browser_ui {
 
-extern const base::Feature kContactsPickerSelectAll;
+BASE_DECLARE_FEATURE(kContactsPickerSelectAll);
 
 }  // namespace browser_ui
 
