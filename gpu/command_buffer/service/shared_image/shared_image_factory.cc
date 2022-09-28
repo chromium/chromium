@@ -39,26 +39,21 @@
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/service/shared_image/angle_vulkan_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/external_vk_image_backing_factory.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #endif
 
-#if defined(USE_OZONE)
+#if defined(USE_OZONE) && !BUILDFLAG(IS_CASTOS)
+#include "gpu/command_buffer/service/shared_image/ozone_image_backing_factory.h"
 #include "ui/ozone/public/gl_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)) && \
-    BUILDFLAG(ENABLE_VULKAN)
-#include "gpu/command_buffer/service/shared_image/external_vk_image_backing_factory.h"
-#include "gpu/command_buffer/service/shared_image/ozone_image_backing_factory.h"
-#elif BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VULKAN)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
-#include "gpu/command_buffer/service/shared_image/external_vk_image_backing_factory.h"
 #elif BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "gpu/command_buffer/service/shared_image/ozone_image_backing_factory.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -69,7 +64,6 @@
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/channel.h>
-#include "gpu/command_buffer/service/shared_image/ozone_image_backing_factory.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #endif  // BUILDFLAG(IS_FUCHSIA)
@@ -82,26 +76,6 @@
 namespace gpu {
 
 namespace {
-
-#if defined(USE_OZONE) && BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
-
-bool ShouldUseExternalVulkanImageFactory() {
-#if BUILDFLAG(ENABLE_VULKAN)
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformProperties()
-      .uses_external_vulkan_image_factory;
-#else
-  return false;
-#endif
-}
-
-bool ShouldUseOzoneImageBackingFactory() {
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformRuntimeProperties()
-      .supports_native_pixmaps;
-}
-
-#endif  // defined(USE_OZONE) && BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
 
 const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
   switch (type) {
@@ -236,7 +210,7 @@ SharedImageFactory::SharedImageFactory(
   }
 #endif
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VULKAN)
   if (gr_context_type_ == GrContextType::kVulkan) {
     auto external_vk_image_factory =
         std::make_unique<ExternalVkImageBackingFactory>(context_state);
@@ -265,43 +239,34 @@ SharedImageFactory::SharedImageFactory(
         feature_info.get());
     factories_.push_back(std::move(ahb_factory));
   }
+#if BUILDFLAG(ENABLE_VULKAN)
   if (gr_context_type_ == GrContextType::kVulkan &&
       !base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
     auto external_vk_image_factory =
         std::make_unique<ExternalVkImageBackingFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));
   }
-#elif defined(USE_OZONE)
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
-  // Desktop Linux, not ChromeOS.
-  if (ShouldUseOzoneImageBackingFactory()) {
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+#elif defined(USE_OZONE) && !BUILDFLAG(IS_CASTOS)
+  // For all Ozone platforms - Desktop Linux, ChromeOS, Fuchsia.
+  if (ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .supports_native_pixmaps) {
     auto ozone_factory = std::make_unique<OzoneImageBackingFactory>(
         context_state, workarounds, gpu_preferences);
     factories_.push_back(std::move(ozone_factory));
   }
-  if (gr_context_type_ == GrContextType::kVulkan &&
-      (!ShouldUseOzoneImageBackingFactory() ||
-       ShouldUseExternalVulkanImageFactory())) {
-    auto external_vk_image_factory =
-        std::make_unique<ExternalVkImageBackingFactory>(context_state);
-    factories_.push_back(std::move(external_vk_image_factory));
-  }
-#elif BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(ENABLE_VULKAN)
   if (gr_context_type_ == GrContextType::kVulkan) {
-    auto ozone_factory = std::make_unique<OzoneImageBackingFactory>(
-        context_state, workarounds, gpu_preferences);
-    factories_.push_back(std::move(ozone_factory));
     auto external_vk_image_factory =
         std::make_unique<ExternalVkImageBackingFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));
+#if BUILDFLAG(IS_FUCHSIA)
+    vulkan_context_provider_ = context_state->vk_context_provider();
+#endif  // BUILDFLAG(IS_FUCHSIA)
   }
-  vulkan_context_provider_ = context_state->vk_context_provider();
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto ozone_factory = std::make_unique<OzoneImageBackingFactory>(
-      context_state, workarounds, gpu_preferences);
-  factories_.push_back(std::move(ozone_factory));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+#endif  // defined(USE_OZONE) && !BUILDFLAG(IS_CASTOS)
 
 #if BUILDFLAG(IS_MAC)
   // TODO(hitawala): Temporary factory that will be replaced with Ozone and

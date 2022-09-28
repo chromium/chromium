@@ -213,7 +213,9 @@ bool OzoneImageBackingFactory::IsSupported(
   }
 
 #if BUILDFLAG(IS_FUCHSIA)
-  DCHECK_EQ(gr_context_type, GrContextType::kVulkan);
+  if (gr_context_type != GrContextType::kVulkan) {
+    return false;
+  }
 
   // For now just use OzoneImageBacking for primary plane buffers.
   // TODO(crbug.com/1310026): When Vulkan/GL interop is supported on Fuchsia

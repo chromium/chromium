@@ -274,8 +274,6 @@ class OzonePlatformWayland : public OzonePlatform,
       // be able to enable the system frame.
       properties->custom_frame_pref_default = true;
 
-      properties->uses_external_vulkan_image_factory = true;
-
       // Wayland uses sub-surfaces to show tooltips, and sub-surfaces must be
       // bound to their root surfaces always, but finding the correct root
       // surface at the moment of creating the tooltip is not always possible
