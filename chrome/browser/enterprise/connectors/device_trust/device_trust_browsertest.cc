@@ -14,6 +14,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
@@ -29,6 +30,7 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -500,6 +502,37 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest,
   EXPECT_TRUE(enterprise_connectors::DeviceTrustNavigationThrottle::
                   MaybeCreateThrottleFor(&mock_nav_handle) == nullptr);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that the device trust navigation throttle does not get created when
+// there is no management and later gets created when management is added to the
+// same context
+IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest,
+                       ManagementAddedAfterFirstCreationTry) {
+  content::MockNavigationHandle mock_nav_handle(web_contents());
+
+  SetPolicy(false);
+
+  // Make the current context unmanaged
+  auto* management_service =
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile());
+  management_service->SetManagementAuthoritiesForTesting(
+      static_cast<int>(policy::EnterpriseManagementAuthority::NONE));
+
+  // Try to create the device trust navigation throttle.
+  EXPECT_TRUE(enterprise_connectors::DeviceTrustNavigationThrottle::
+                  MaybeCreateThrottleFor(&mock_nav_handle) == nullptr);
+
+  // Make the current context managed again
+  management_service->SetManagementAuthoritiesForTesting(
+      static_cast<int>(policy::EnterpriseManagementAuthority::CLOUD_DOMAIN));
+
+  // Try to create the device trust navigation throttle.
+  EXPECT_EQ(enterprise_connectors::DeviceTrustNavigationThrottle::
+                    MaybeCreateThrottleFor(&mock_nav_handle) != nullptr,
+            is_enabled());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DeviceTrustBrowserTest,

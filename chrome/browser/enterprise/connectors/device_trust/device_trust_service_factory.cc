@@ -34,6 +34,14 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+namespace {
+bool IsProfileManaged(Profile* profile) {
+  auto* management_service =
+      policy::ManagementServiceFactory::GetForProfile(profile);
+  return management_service && management_service->IsManaged();
+}
+}  // namespace
+
 namespace enterprise_connectors {
 
 // static
@@ -43,6 +51,18 @@ DeviceTrustServiceFactory* DeviceTrustServiceFactory::GetInstance() {
 
 // static
 DeviceTrustService* DeviceTrustServiceFactory::GetForProfile(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This blocks the factory from associating nullptr with the current context
+  // before enrollment. Management checks will be removed completely when the
+  // BYOD case is implemented.
+  // Checking for a testing profile is needed to block unit tests without a
+  // proper setup from checking the management service as this can lead to
+  // crashes
+  if (profile->AsTestingProfile() || !IsProfileManaged(profile))
+    // Return nullptr since the current management configuration isn't
+    // supported.
+    return nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return static_cast<DeviceTrustService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -66,13 +86,13 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
 
-  auto* management_service =
-      policy::ManagementServiceFactory::GetForProfile(profile);
-  if (!management_service || !management_service->IsManaged()) {
+  if (!IsProfileManaged(profile))
     // Return nullptr since the current management configuration isn't
     // supported.
     return nullptr;
-  }
+
+  auto* management_service =
+      policy::ManagementServiceFactory::GetForProfile(profile);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<AttestationService> attestation_service =
