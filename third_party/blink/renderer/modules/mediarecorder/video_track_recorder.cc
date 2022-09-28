@@ -180,6 +180,24 @@ static void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
   UMA_HISTOGRAM_ENUMERATION("Media.MediaRecorder.Codec", histogram_index,
                             static_cast<int>(kLastHistogram));
 }
+  
+bool IsRGB(media::VideoPixelFormat format) {
+  switch (format) {
+    case media::PIXEL_FORMAT_ARGB:
+    case media::PIXEL_FORMAT_XRGB:
+    case media::PIXEL_FORMAT_RGB24:
+    case media::PIXEL_FORMAT_ABGR:
+    case media::PIXEL_FORMAT_XBGR:
+    case media::PIXEL_FORMAT_XR30:
+    case media::PIXEL_FORMAT_XB30:
+    case media::PIXEL_FORMAT_BGRA:
+    case media::PIXEL_FORMAT_RGBAF16:
+      return true;
+
+    default:
+      return false;
+  }  
+}
 
 }  // anonymous namespace
 
@@ -406,6 +424,30 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
 
   scoped_refptr<media::VideoFrame> frame;
 
+  const bool is_opaque = media::IsOpaque(video_frame->format());
+  if (IsRGB(video_frame->format()) && video_frame->IsMappable()) {
+    // It's a mapped RGB frame, no readback needed,
+    // all we need is to convert RGB to I420
+    auto visible_rect = video_frame->visible_rect();
+    frame = frame_pool_.CreateFrame(
+        is_opaque ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
+        visible_rect.size(), visible_rect, visible_rect.size(),
+        video_frame->timestamp());
+
+    if (!frame ||
+        !media::ConvertAndScaleFrame(*video_frame, *frame, resize_buffer_)
+             .is_ok()) {
+      // Send black frames (yuv = {0, 127, 127}).
+      DLOG(ERROR) << "Can't convert RGB to I420";
+      frame = media::VideoFrame::CreateColorFrame(
+          video_frame->visible_rect().size(), 0u, 0x80, 0x80,
+          video_frame->timestamp());
+    }
+
+    EncodeOnEncodingTaskRunner(std::move(frame), capture_timestamp);
+    return;
+  }
+
   // |encoder_thread_context_| is null if the GPU process has crashed or isn't
   // there
   if (!encoder_thread_context_) {
@@ -450,8 +492,6 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
       new_visible_size.SetSize(old_visible_size.height(),
                                old_visible_size.width());
     }
-
-    const bool is_opaque = media::IsOpaque(video_frame->format());
 
     frame = frame_pool_.CreateFrame(
         is_opaque ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
