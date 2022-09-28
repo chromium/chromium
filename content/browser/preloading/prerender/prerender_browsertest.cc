@@ -6921,8 +6921,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   RenderFrameHostImpl* primary_frame_host = current_frame_host();
-  blink::mojom::TextAutosizerPageInfo primary_page_info =
-      primary_frame_host->GetPage().text_autosizer_page_info();
 
   int host_id = AddPrerender(kPrerenderingUrl);
   RenderFrameHostImpl* prerender_frame_host =
