@@ -213,12 +213,6 @@ void UnmaskCardRequest::ParseResponse(const base::Value& response) {
       response_details_.expiration_year = base::NumberToString(year.value());
   }
 
-  // TODO(crbug.com/1248268): Clean up unused fido_creation_options.
-  const base::Value* creation_options = response.FindKeyOfType(
-      "fido_creation_options", base::Value::Type::DICTIONARY);
-  if (creation_options)
-    response_details_.fido_creation_options = creation_options->Clone();
-
   const base::Value* request_options = response.FindKeyOfType(
       "fido_request_options", base::Value::Type::DICTIONARY);
   if (request_options)

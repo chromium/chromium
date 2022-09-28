@@ -142,9 +142,6 @@ class PaymentsClient {
     // card is a virtual-card which does not necessarily have the same
     // expiration date as its related actual card.
     std::string expiration_year;
-    // Challenge required for enrolling user into FIDO authentication for future
-    // card unmasking.
-    absl::optional<base::Value> fido_creation_options;
     // Challenge required for authorizing user for FIDO authentication for
     // future card unmasking.
     absl::optional<base::Value> fido_request_options;

@@ -61,7 +61,6 @@ void CreditCardCVCAuthenticator::OnFullCardRequestSucceeded(
           .with_did_succeed(true)
           .with_card(&card)
           .with_cvc(cvc)
-          .with_creation_options(std::move(response.fido_creation_options))
           .with_request_options(std::move(response.fido_request_options))
           .with_card_authorization_token(response.card_authorization_token));
 }

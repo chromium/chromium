@@ -301,9 +301,6 @@ class CreditCardAccessManagerTest : public testing::Test {
     payments::PaymentsClient::UnmaskResponseDetails response;
 #if !BUILDFLAG(IS_IOS)
     response.card_authorization_token = "dummy_card_authorization_token";
-    if (fido_opt_in) {
-      response.fido_creation_options = GetTestCreationOptions();
-    }
     if (follow_with_fido_auth) {
       response.fido_request_options = GetTestRequestOptions();
     }

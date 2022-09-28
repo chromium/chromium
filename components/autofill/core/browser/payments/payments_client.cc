@@ -129,11 +129,6 @@ PaymentsClient::UnmaskResponseDetails&
 PaymentsClient::UnmaskResponseDetails::operator=(
     const PaymentsClient::UnmaskResponseDetails& other) {
   real_pan = other.real_pan;
-  if (other.fido_creation_options.has_value()) {
-    fido_creation_options = other.fido_creation_options->Clone();
-  } else {
-    fido_creation_options.reset();
-  }
   if (other.fido_request_options.has_value()) {
     fido_request_options = other.fido_request_options->Clone();
   } else {

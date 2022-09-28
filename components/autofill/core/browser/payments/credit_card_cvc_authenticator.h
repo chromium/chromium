@@ -43,11 +43,6 @@ class CreditCardCVCAuthenticator
       cvc = std::u16string(s);
       return *this;
     }
-    CVCAuthenticationResponse& with_creation_options(
-        absl::optional<base::Value> v) {
-      creation_options = std::move(v);
-      return *this;
-    }
     CVCAuthenticationResponse& with_request_options(
         absl::optional<base::Value> v) {
       request_options = std::move(v);
@@ -60,7 +55,6 @@ class CreditCardCVCAuthenticator
     bool did_succeed = false;
     raw_ptr<const CreditCard> card = nullptr;
     std::u16string cvc = std::u16string();
-    absl::optional<base::Value> creation_options;
     absl::optional<base::Value> request_options;
     std::string card_authorization_token = std::string();
   };
