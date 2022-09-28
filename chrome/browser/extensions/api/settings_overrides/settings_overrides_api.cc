@@ -10,6 +10,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/api/preference/preference_api.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -21,8 +22,6 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
-#include "extensions/browser/extension_prefs_helper.h"
-#include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
 
@@ -139,14 +138,22 @@ SettingsOverridesAPI::GetFactoryInstance() {
 void SettingsOverridesAPI::SetPref(const std::string& extension_id,
                                    const std::string& pref_key,
                                    base::Value value) const {
-  ExtensionPrefsHelper::Get(profile_)->SetExtensionControlledPref(
+  PreferenceAPI* prefs = PreferenceAPI::Get(profile_);
+  if (!prefs)
+    return;  // Expected in unit tests.
+  prefs->SetExtensionControlledPref(
       extension_id, pref_key, kExtensionPrefsScopeRegular, std::move(value));
 }
 
 void SettingsOverridesAPI::UnsetPref(const std::string& extension_id,
                                      const std::string& pref_key) const {
-  ExtensionPrefsHelper::Get(profile_)->RemoveExtensionControlledPref(
-      extension_id, pref_key, kExtensionPrefsScopeRegular);
+  PreferenceAPI* prefs = PreferenceAPI::Get(profile_);
+  if (!prefs)
+    return;  // Expected in unit tests.
+  prefs->RemoveExtensionControlledPref(
+      extension_id,
+      pref_key,
+      kExtensionPrefsScopeRegular);
 }
 
 void SettingsOverridesAPI::OnExtensionLoaded(
@@ -251,7 +258,7 @@ template <>
 void BrowserContextKeyedAPIFactory<
     SettingsOverridesAPI>::DeclareFactoryDependencies() {
   DependsOn(ExtensionPrefsFactory::GetInstance());
-  DependsOn(ExtensionPrefsHelperFactory::GetInstance());
+  DependsOn(PreferenceAPI::GetFactoryInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 

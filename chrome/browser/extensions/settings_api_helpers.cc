@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/settings_api_helpers.h"
 
+#include "chrome/browser/extensions/api/preference/preference_api.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -11,7 +12,6 @@
 #include "content/public/browser/browser_url_handler.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
-#include "extensions/browser/extension_prefs_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_set.h"
@@ -55,11 +55,13 @@ const Extension* FindOverridingExtension(
       }
 
       // Found an extension overriding the current type, check if primary.
-      if (ExtensionPrefsHelper::Get(browser_context)
-              ->DoesExtensionControlPref((*it)->id(), key, nullptr)) {
-        // Found the primary extension.
-        return it->get();
-      }
+      PreferenceAPI* preference_api = PreferenceAPI::Get(browser_context);
+      if (preference_api &&  // Expected to be NULL in unit tests.
+          !preference_api->DoesExtensionControlPref((*it)->id(), key, nullptr))
+        continue;  // Not primary.
+
+      // Found the primary extension.
+      return it->get();
     }
   }
 

@@ -727,19 +727,7 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
 
   Init();
 
-  ExtensionPrefValueMap* value_map =
-      ExtensionPrefValueMapFactory::GetForBrowserContext(profile());
-
   for (int i = 0; i < 3; ++i) {
-    // Populate the ExtensionPrefValueMap with the extensions that will be
-    // loaded.
-    value_map->RegisterExtension(kId1, base::Time::Now(), /*is_enabled=*/true,
-                                 /*is_incognito_enabled=*/false);
-    value_map->RegisterExtension(kId2, base::Time::Now(), /*is_enabled=*/true,
-                                 /*is_incognito_enabled=*/false);
-    value_map->RegisterExtension(kId3, base::Time::Now(), /*is_enabled=*/true,
-                                 /*is_incognito_enabled=*/false);
-
     switch (static_cast<SettingsApiOverrideType>(i)) {
       case BUBBLE_TYPE_HOME_PAGE:
         // Load two extensions overriding home page and one overriding something

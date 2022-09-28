@@ -42,7 +42,6 @@
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
-#include "extensions/browser/extension_prefs_helper.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/pref_names.h"
@@ -717,7 +716,10 @@ void PreferenceEventRouter::ObserveOffTheRecordPrefs(PrefService* prefs) {
 }
 
 PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
-    : profile_(Profile::FromBrowserContext(context)) {
+    : profile_(Profile::FromBrowserContext(context)),
+      prefs_helper_(
+          ExtensionPrefs::Get(profile_),
+          ExtensionPrefValueMapFactory::GetForBrowserContext(profile_)) {
   for (const auto& pref : kPrefMapping) {
     std::string event_name;
     APIPermissionID permission = APIPermissionID::kInvalid;
@@ -740,7 +742,7 @@ PreferenceAPI::~PreferenceAPI() = default;
 
 void PreferenceAPI::Shutdown() {
   EventRouter::Get(profile_)->UnregisterObserver(this);
-  if (!ExtensionPrefs::Get(profile_)->extensions_disabled())
+  if (!prefs_helper_.prefs()->extensions_disabled())
     ClearIncognitoSessionOnlyContentSettings();
   content_settings_store()->RemoveObserver(this);
 }
@@ -774,13 +776,13 @@ void PreferenceAPI::EnsurePreferenceEventRouterCreated() {
 void PreferenceAPI::OnContentSettingChanged(const std::string& extension_id,
                                             bool incognito) {
   if (incognito) {
-    ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
+    prefs_helper_.prefs()->UpdateExtensionPref(
         extension_id, pref_names::kPrefIncognitoContentSettings,
         base::Value::ToUniquePtrValue(
             base::Value(content_settings_store()->GetSettingsForExtension(
                 extension_id, kExtensionPrefsScopeIncognitoPersistent))));
   } else {
-    ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
+    prefs_helper_.prefs()->UpdateExtensionPref(
         extension_id, pref_names::kPrefContentSettings,
         base::Value::ToUniquePtrValue(
             base::Value(content_settings_store()->GetSettingsForExtension(
@@ -790,7 +792,7 @@ void PreferenceAPI::OnContentSettingChanged(const std::string& extension_id,
 
 void PreferenceAPI::ClearIncognitoSessionOnlyContentSettings() {
   ExtensionIdList extension_ids;
-  ExtensionPrefs::Get(profile_)->GetExtensions(&extension_ids);
+  prefs_helper_.prefs()->GetExtensions(&extension_ids);
   for (const auto& id : extension_ids) {
     content_settings_store()->ClearContentSettingsForExtension(
         id, kExtensionPrefsScopeIncognitoSessionOnly);
@@ -1057,17 +1059,17 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
       transformer->BrowserToExtensionPref(browser_pref_value.get(), incognito));
   EXTENSION_FUNCTION_VALIDATE(extension_pref_value);
 
-  auto* prefs_helper = ExtensionPrefsHelper::Get(browser_context());
+  PreferenceAPI* preference_api = PreferenceAPI::Get(browser_context());
 
   // Set the new Autofill prefs if the extension sets the deprecated pref in
   // order to maintain backward compatibility in the extensions preference API.
   // TODO(crbug.com/870328): Remove this once the deprecated pref is retired.
   if (autofill::prefs::kAutofillEnabledDeprecated == browser_pref) {
     // |SetExtensionControlledPref| takes ownership of the base::Value pointer.
-    prefs_helper->SetExtensionControlledPref(
+    preference_api->SetExtensionControlledPref(
         extension_id(), autofill::prefs::kAutofillCreditCardEnabled, scope,
         base::Value(browser_pref_value->GetBool()));
-    prefs_helper->SetExtensionControlledPref(
+    preference_api->SetExtensionControlledPref(
         extension_id(), autofill::prefs::kAutofillProfileEnabled, scope,
         base::Value(browser_pref_value->GetBool()));
   }
@@ -1079,20 +1081,20 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   // TODO(crbug.com/1064722): Consider extending
   // chrome.privacy.services.safeBrowsingEnabled to a three-state enum.
   if (prefs::kSafeBrowsingEnabled == browser_pref) {
-    prefs_helper->SetExtensionControlledPref(extension_id(),
-                                             prefs::kSafeBrowsingEnhanced,
-                                             scope, base::Value(false));
+    preference_api->SetExtensionControlledPref(extension_id(),
+                                               prefs::kSafeBrowsingEnhanced,
+                                               scope, base::Value(false));
   }
 
   base::Value val =
       base::Value::FromUniquePtrValue(std::move(browser_pref_value));
 
-  prefs_helper->SetExtensionControlledPref(extension_id(), browser_pref, scope,
-                                           val.Clone());
+  preference_api->SetExtensionControlledPref(extension_id(), browser_pref,
+                                             scope, val.Clone());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (pref_path != crosapi::mojom::PrefPath::kUnknown &&
-      prefs_helper->DoesExtensionControlPref(extension_id(), browser_pref,
-                                             nullptr)) {
+      preference_api->DoesExtensionControlPref(extension_id(), browser_pref,
+                                               nullptr)) {
     lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
         pref_path, val.Clone(),
         base::BindOnce(&SetPreferenceFunction::OnLacrosSetSuccess, this));
@@ -1147,8 +1149,6 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
   if (!extension()->permissions_data()->HasAPIPermission(write_permission))
     return RespondNow(Error(kPermissionErrorMessage, pref_key));
 
-  auto* prefs_helper = ExtensionPrefsHelper::Get(browser_context());
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   // If the pref is ash-controlled, check that the service is present.
@@ -1167,12 +1167,13 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
       return RespondNow(Error("OS Service is unavailable."));
     }
   }
-  bool did_just_control_pref = prefs_helper->DoesExtensionControlPref(
-      extension_id(), browser_pref, nullptr);
+  bool did_just_control_pref =
+      PreferenceAPI::Get(browser_context())
+          ->DoesExtensionControlPref(extension_id(), browser_pref, nullptr);
 #endif
 
-  prefs_helper->RemoveExtensionControlledPref(extension_id(), browser_pref,
-                                              scope);
+  PreferenceAPI::Get(browser_context())
+      ->RemoveExtensionControlledPref(extension_id(), browser_pref, scope);
 
   // Whenever an extension clears the |kSafeBrowsingEnabled| preference,
   // it must also clear |kSafeBrowsingEnhanced|. See crbug.com/1064722 for
@@ -1181,8 +1182,9 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
   // TODO(crbug.com/1064722): Consider extending
   // chrome.privacy.services.safeBrowsingEnabled to a three-state enum.
   if (prefs::kSafeBrowsingEnabled == browser_pref) {
-    prefs_helper->RemoveExtensionControlledPref(
-        extension_id(), prefs::kSafeBrowsingEnhanced, scope);
+    PreferenceAPI::Get(browser_context())
+        ->RemoveExtensionControlledPref(extension_id(),
+                                        prefs::kSafeBrowsingEnhanced, scope);
   }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (pref_path != crosapi::mojom::PrefPath::kUnknown &&

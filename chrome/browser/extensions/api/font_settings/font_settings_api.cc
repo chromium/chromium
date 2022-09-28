@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/extensions/api/preference/preference_api.h"
 #include "chrome/browser/extensions/api/preference/preference_helpers.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/font_pref_change_notifier_factory.h"
@@ -31,8 +32,6 @@
 #include "content/public/browser/font_list_async.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
-#include "extensions/browser/extension_prefs_helper.h"
-#include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/error_utils.h"
 
@@ -222,7 +221,7 @@ ExtensionFunction::ResponseAction FontSettingsClearFontFunction::Run() {
   // Ensure |pref_path| really is for a registered per-script font pref.
   EXTENSION_FUNCTION_VALIDATE(profile->GetPrefs()->FindPreference(pref_path));
 
-  ExtensionPrefsHelper::Get(profile)->RemoveExtensionControlledPref(
+  PreferenceAPI::Get(profile)->RemoveExtensionControlledPref(
       extension_id(), pref_path, kExtensionPrefsScopeRegular);
   return RespondNow(NoArguments());
 }
@@ -276,7 +275,7 @@ ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
   // Ensure |pref_path| really is for a registered font pref.
   EXTENSION_FUNCTION_VALIDATE(profile->GetPrefs()->FindPreference(pref_path));
 
-  ExtensionPrefsHelper::Get(profile)->SetExtensionControlledPref(
+  PreferenceAPI::Get(profile)->SetExtensionControlledPref(
       extension_id(), pref_path, kExtensionPrefsScopeRegular,
       base::Value(params->details.font_id));
   return RespondNow(NoArguments());
@@ -327,7 +326,7 @@ ExtensionFunction::ResponseAction ClearFontPrefExtensionFunction::Run() {
   if (profile->IsOffTheRecord())
     return RespondNow(Error(kSetFromIncognitoError));
 
-  ExtensionPrefsHelper::Get(profile)->RemoveExtensionControlledPref(
+  PreferenceAPI::Get(profile)->RemoveExtensionControlledPref(
       extension_id(), GetPrefName(), kExtensionPrefsScopeRegular);
   return RespondNow(NoArguments());
 }
@@ -363,7 +362,7 @@ ExtensionFunction::ResponseAction SetFontPrefExtensionFunction::Run() {
   const base::Value* value = details.GetDict().Find(GetKey());
   EXTENSION_FUNCTION_VALIDATE(value);
 
-  ExtensionPrefsHelper::Get(profile)->SetExtensionControlledPref(
+  PreferenceAPI::Get(profile)->SetExtensionControlledPref(
       extension_id(), GetPrefName(), kExtensionPrefsScopeRegular,
       value->Clone());
   return RespondNow(NoArguments());
