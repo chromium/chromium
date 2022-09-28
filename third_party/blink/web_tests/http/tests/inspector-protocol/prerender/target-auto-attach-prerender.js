@@ -32,6 +32,8 @@
 
   await navigateDone;
 
+  tp.Target.onTargetInfoChanged(event => testRunner.log(event.params));
+
   // Now activate prerender and make sure old target detaches.
   session.evaluate(`document.getElementById('link').click()`);
   const detached = (await tp.Target.onceDetachedFromTarget()).params;

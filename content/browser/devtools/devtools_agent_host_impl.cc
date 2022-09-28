@@ -418,6 +418,10 @@ bool DevToolsAgentHostImpl::ShouldForceCreation() {
   return !!s_force_creation_count_;
 }
 
+std::string DevToolsAgentHostImpl::GetSubtype() {
+  return "";
+}
+
 void DevToolsAgentHostImpl::NotifyCreated() {
   DCHECK(GetDevtoolsInstances().find(id_) == GetDevtoolsInstances().end());
   GetDevtoolsInstances()[id_] = this;

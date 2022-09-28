@@ -88,7 +88,9 @@ static const char kInitializerScript[] = R"(
 
 static const char kTargetNotFound[] = "No target with given id found";
 
-std::unique_ptr<Target::TargetInfo> CreateInfo(DevToolsAgentHost* host) {
+std::unique_ptr<Target::TargetInfo> BuildTargetInfo(
+    DevToolsAgentHost* agent_host) {
+  auto* host = static_cast<DevToolsAgentHostImpl*>(agent_host);
   std::unique_ptr<Target::TargetInfo> target_info =
       Target::TargetInfo::Create()
           .SetTargetId(host->GetId())
@@ -104,6 +106,9 @@ std::unique_ptr<Target::TargetInfo> CreateInfo(DevToolsAgentHost* host) {
     target_info->SetOpenerFrameId(host->GetOpenerFrameId());
   if (host->GetBrowserContext())
     target_info->SetBrowserContextId(host->GetBrowserContext()->UniqueId());
+  std::string subtype = host->GetSubtype();
+  if (!subtype.empty())
+    target_info->SetSubtype(subtype);
   return target_info;
 }
 
@@ -420,7 +425,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     } else {
       agent_host_impl->AttachClient(session);
     }
-    handler->frontend_->AttachedToTarget(id, CreateInfo(agent_host),
+    handler->frontend_->AttachedToTarget(id, BuildTargetInfo(agent_host),
                                          waiting_for_debugger);
     return id;
   }
@@ -851,7 +856,7 @@ void TargetHandler::TargetInfoChanged(DevToolsAgentHost* host) {
       auto_attached_sessions_.find(host) == auto_attached_sessions_.end()) {
     return;
   }
-  frontend_->TargetInfoChanged(CreateInfo(host));
+  frontend_->TargetInfoChanged(BuildTargetInfo(host));
 }
 
 void TargetHandler::AutoAttacherDestroyed(TargetAutoAttacher* auto_attacher) {
@@ -1090,7 +1095,7 @@ Response TargetHandler::GetTargetInfo(
       DevToolsAgentHost::GetForId(target_id));
   if (!agent_host)
     return Response::InvalidParams(kTargetNotFound);
-  *target_info = CreateInfo(agent_host.get());
+  *target_info = BuildTargetInfo(agent_host.get());
   return Response::Success();
 }
 
@@ -1185,7 +1190,7 @@ Response TargetHandler::GetTargets(
   *target_infos = std::make_unique<protocol::Array<Target::TargetInfo>>();
   for (const auto& host : DevToolsAgentHost::GetOrCreateAll()) {
     if (effective_filter->Match(*host))
-      (*target_infos)->emplace_back(CreateInfo(host.get()));
+      (*target_infos)->emplace_back(BuildTargetInfo(host.get()));
   }
   return Response::Success();
 }
@@ -1204,7 +1209,7 @@ void TargetHandler::DevToolsAgentHostCreated(DevToolsAgentHost* host) {
   // If we start discovering late, all existing agent hosts will be reported,
   // but we could have already attached to some.
   if (reported_hosts_.find(host) == reported_hosts_.end()) {
-    frontend_->TargetCreated(CreateInfo(host));
+    frontend_->TargetCreated(BuildTargetInfo(host));
     reported_hosts_.insert(host);
   }
 }

@@ -277,10 +277,10 @@ BuildFederatedAuthRequestIssue(
   return issue;
 }
 
-void UpdateChildFrameTrees(FrameTreeNode* ftn) {
+void UpdateChildFrameTrees(FrameTreeNode* ftn, bool update_target_info) {
   if (auto* agent_host = WebContentsDevToolsAgentHost::GetFor(
           WebContentsImpl::FromFrameTreeNode(ftn))) {
-    agent_host->UpdateChildFrameTrees();
+    agent_host->UpdateChildFrameTrees(update_target_info);
   }
 }
 
@@ -357,7 +357,7 @@ void DidActivatePrerender(const NavigationRequest& nav_request) {
   web_contents->set_last_navigation_was_prerender_activation_for_devtools();
   DispatchToAgents(ftn, &protocol::PageHandler::DidActivatePrerender,
                    nav_request);
-  UpdateChildFrameTrees(ftn);
+  UpdateChildFrameTrees(ftn, /* update_target_info= */ true);
 }
 
 void DidCancelPrerender(const GURL& prerendering_url,
@@ -1104,7 +1104,8 @@ void UpdatePortals(RenderFrameHostImpl* render_frame_host_impl) {
               render_frame_host_impl->frame_tree_node()))) {
     agent_host->UpdatePortals();
   }
-  UpdateChildFrameTrees(render_frame_host_impl->frame_tree_node());
+  UpdateChildFrameTrees(render_frame_host_impl->frame_tree_node(),
+                        /* update_target_info= */ false);
 }
 }  // namespace
 

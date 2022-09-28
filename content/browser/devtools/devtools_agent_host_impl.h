@@ -103,6 +103,7 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   cross_origin_opener_policy(const std::string& id);
 
   virtual protocol::TargetAutoAttacher* auto_attacher();
+  virtual std::string GetSubtype();
 
  protected:
   explicit DevToolsAgentHostImpl(const std::string& id);

@@ -838,6 +838,35 @@ protocol::TargetAutoAttacher* RenderFrameDevToolsAgentHost::auto_attacher() {
   return auto_attacher_.get();
 }
 
+namespace {
+
+constexpr char kSubtypeDisconnected[] = "disconnected";
+constexpr char kSubtypePortal[] = "portal";
+constexpr char kSubtypePrerender[] = "prerender";
+constexpr char kSubtypeFenced[] = "fenced";
+
+}  // namespace
+std::string RenderFrameDevToolsAgentHost::GetSubtype() {
+  if (!frame_tree_node_)
+    return kSubtypeDisconnected;
+
+  switch (frame_tree_node_->GetFrameType()) {
+    case FrameType::kPrimaryMainFrame:
+      if (WebContentsImpl::FromFrameTreeNode(frame_tree_node_)->IsPortal()) {
+        return kSubtypePortal;
+      }
+      [[fallthrough]];
+    // TODO(caseq): figure out what's best to return for subframes in a tree
+    // other than primary.
+    case FrameType::kSubframe:
+      return "";
+    case FrameType::kPrerenderMainFrame:
+      return kSubtypePrerender;
+    case FrameType::kFencedFrameRoot:
+      return kSubtypeFenced;
+  }
+}
+
 bool RenderFrameDevToolsAgentHost::IsChildFrame() {
   return frame_tree_node_ && frame_tree_node_->parent();
 }

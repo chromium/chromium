@@ -19,6 +19,7 @@ Auto-attached via Tab target: [
             attached : true
             browserContextId : <string>
             canAccessOpener : false
+            subtype : portal
             targetId : <string>
             title : This is a portal
             type : page
@@ -34,6 +35,7 @@ Auto-attached via Page target (legacy mode): [
             attached : true
             browserContextId : <string>
             canAccessOpener : false
+            subtype : portal
             targetId : <string>
             title : This is a portal
             type : page
@@ -50,6 +52,7 @@ Portal activated
     attached : true
     browserContextId : <string>
     canAccessOpener : false
+    subtype : portal
     targetId : <string>
     title : 
     type : page

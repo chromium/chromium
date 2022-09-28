@@ -39,7 +39,7 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   void PortalActivated(const Portal& portal);
   void WillInitiatePrerender(FrameTreeNode* ftn);
   // TODO(caseq): do we need more specific signals here?
-  void UpdateChildFrameTrees();
+  void UpdateChildFrameTrees(bool update_target_info);
 
  private:
   class AutoAttacher;
