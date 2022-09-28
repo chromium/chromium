@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
@@ -1793,7 +1794,18 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 }
 
 - (const ui::ColorProvider&)lastActiveColorProvider {
-  DCHECK(_lastActiveColorProvider);
+  // In rare situation the last active color provider is not properly tracked,
+  // probably because -windowDidBecomeMain: is not fired.
+  // TODO(crbug.com/1364279): DCHECK(_lastActiveColorProvider). If this is not
+  // possible, investigate if we should make a GetDefaultColorProvider(), or
+  // GetColorProviderForProfile().
+  if (!_lastActiveColorProvider) {
+    base::debug::DumpWithoutCrashing();
+    return *ui::ColorProviderManager::Get().GetColorProviderFor(
+        ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
+            nullptr));
+  }
+
   return *_lastActiveColorProvider;
 }
 
