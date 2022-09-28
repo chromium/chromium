@@ -631,8 +631,17 @@ class SideSearchAutoTriggeringBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SideSearchAutoTriggeringBrowserTest,
-                       SidePanelAutoTriggersAfterReturningToAPreviousSRP) {
+// TODO(crbug.com/1368921): Flaky on lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP \
+  DISABLED_SidePanelAutoTriggersAfterReturningToAPreviousSRP
+#else
+#define MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP \
+  SidePanelAutoTriggersAfterReturningToAPreviousSRP
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SideSearchAutoTriggeringBrowserTest,
+    MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP) {
   const auto srp_url = GetMatchingSearchUrl();
   const auto non_srp_url_1 = GetNonMatchingUrl();
   const auto non_srp_url_2 = GetNonMatchingUrl();
