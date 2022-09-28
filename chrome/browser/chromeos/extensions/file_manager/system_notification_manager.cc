@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -148,8 +148,7 @@ SystemNotificationManager::CreateNotification(
   return ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
       app_name_, GURL(), message_center::NotifierId(),
-      message_center::RichNotificationData(), delegate,
-      vector_icons::kProductIcon,
+      message_center::RichNotificationData(), delegate, ash::kFilesAppIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
 
@@ -229,7 +228,7 @@ SystemNotificationManager::CreateProgressNotification(
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&SystemNotificationManager::HandleProgressClick,
                               weak_ptr_factory_.GetWeakPtr(), notification_id)),
-      vector_icons::kProductIcon,
+      ash::kFilesAppIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
 
@@ -251,7 +250,7 @@ SystemNotificationManager::CreateIOTaskProgressNotification(
           base::BindRepeating(&SystemNotificationManager::CancelTaskId,
                               weak_ptr_factory_.GetWeakPtr(), task_id,
                               notification_id)),
-      vector_icons::kProductIcon,
+      ash::kFilesAppIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
   // Add the cancel button:
