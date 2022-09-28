@@ -96,3 +96,25 @@ TEST_F('HistogramsInternalsUIBrowserTest', 'DownloadHistograms', function() {
 
   mocha.run();
 });
+
+TEST_F('HistogramsInternalsUIBrowserTest', 'StopMonitoring', function() {
+  test('check page stops updating', async function() {
+    // Make sure page is loaded after switching to monitoring mode.
+    const loaded = new Promise((resolve, reject) => {
+      document.querySelector('#histograms')
+          .addEventListener('histograms-updated-for-test', resolve);
+    });
+    document.querySelector('#enable_monitoring').click();
+    await loaded;
+    const stopButton = document.querySelector('#stop');
+    assertEquals(document.monitoringStopped(), false);
+    assertEquals(stopButton.textContent, 'Stop');
+    assertEquals(stopButton.disabled, false);
+    stopButton.click();
+    assertEquals(document.monitoringStopped(), true);
+    assertEquals(stopButton.textContent, 'Stopped');
+    assertEquals(stopButton.disabled, true);
+  });
+
+  mocha.run();
+});
