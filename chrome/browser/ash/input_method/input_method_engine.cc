@@ -281,7 +281,7 @@ bool InputMethodEngine::SetComposition(int context_id,
   ui::CompositionText composition_text;
   composition_text.text = base::UTF8ToUTF16(text);
   // Check the length of the text.
-  uint32_t utf16_length = GetUtf16Size(composition_text.text);
+  int utf16_length = GetUtf16Size(composition_text.text);
   if (selection_start > utf16_length || selection_end > utf16_length) {
     *error = base::StringPrintf(
         "%s request selection start = %d, selection end = %d, cursor  =  %d",

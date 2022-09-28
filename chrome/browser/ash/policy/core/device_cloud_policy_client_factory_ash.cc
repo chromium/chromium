@@ -32,11 +32,11 @@ absl::optional<policy::CloudPolicyClient::MacAddress> ParseMacAddress(
 
   // Go through every 2 chars digit + 1 char separator. Check the separator is
   // correct. Parse the hex digit.
-  for (int string_idx = 0, span_idx = 0;
+  for (size_t string_idx = 0, span_idx = 0;
        string_idx < mac_address_string.size() &&
        span_idx < parsed_mac_address.size();
        string_idx += 3, ++span_idx) {
-    const int separator_idx = string_idx + 2;
+    const size_t separator_idx = string_idx + 2;
     if (separator_idx < mac_address_string.size() &&
         mac_address_string[separator_idx] != ':') {
       return absl::nullopt;

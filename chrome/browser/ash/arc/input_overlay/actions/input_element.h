@@ -27,7 +27,7 @@ constexpr char kPrimaryDragMove[] = "primary_drag_move";
 constexpr char kSecondaryDragMove[] = "secondary_drag_move";
 
 // Total key size for ActionMoveKey.
-constexpr int kActionMoveKeysSize = 4;
+constexpr size_t kActionMoveKeysSize = 4;
 // Gets the event flags for the modifier domcode. Return ui::DomCode::NONE if
 // |code| is not modifier DomCode.
 int ModifierDomCodeToEventFlag(ui::DomCode code);
@@ -64,7 +64,7 @@ class InputElement {
   // Return true if there is key overlapped or the mouse action is overlapped.
   bool IsOverlapped(const InputElement& input_element) const;
   // Set key in the |keys_| list at the |index| to |code|.
-  void SetKey(int index, ui::DomCode code);
+  void SetKey(size_t index, ui::DomCode code);
   // Set keys to |keys|.
   void SetKeys(std::vector<ui::DomCode>& keys);
   // If it is keyboard-binded input and there is |key| binded, return the index
@@ -76,7 +76,7 @@ class InputElement {
   void set_input_sources(int input_sources) { input_sources_ = input_sources; }
   const std::vector<ui::DomCode>& keys() const { return keys_; }
   bool is_modifier_key() { return is_modifier_key_; }
-  const MouseAction mouse_action() const { return mouse_action_; }
+  MouseAction mouse_action() const { return mouse_action_; }
   const base::flat_set<ui::EventType>& mouse_types() const {
     return mouse_types_;
   }

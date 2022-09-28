@@ -52,7 +52,7 @@ class ZipIOTask : public IOTask {
   Profile* profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
-  int files_preprocessed_ = 0;
+  size_t files_preprocessed_ = 0;
 
   // The directory containing the files to zip.
   base::FilePath source_dir_;

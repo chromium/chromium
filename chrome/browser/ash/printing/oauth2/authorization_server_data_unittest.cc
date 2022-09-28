@@ -28,7 +28,7 @@ void ExpectOneElementListOfStrings(const base::Value::Dict& dict,
                                    const std::string& value) {
   const base::Value::List* list = dict.FindList(name);
   ASSERT_TRUE(list);
-  ASSERT_EQ(list->size(), 1);
+  ASSERT_EQ(list->size(), 1u);
   ASSERT_TRUE(list->front().is_string());
   EXPECT_EQ(list->front().GetString(), value);
 }

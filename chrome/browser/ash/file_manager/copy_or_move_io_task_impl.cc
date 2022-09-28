@@ -193,7 +193,7 @@ void CopyOrMoveIOTaskImpl::VerifyTransfer() {
 void CopyOrMoveIOTaskImpl::StartTransfer() {
   progress_.state = State::kInProgress;
   // Start the transfer by getting the file size.
-  for (int i = 0; i < progress_.sources.size(); i++) {
+  for (size_t i = 0; i < progress_.sources.size(); i++) {
     GetFileSize(i);
   }
 }
@@ -275,7 +275,7 @@ void CopyOrMoveIOTaskImpl::GotFileSize(size_t idx,
     return;
   }
 
-  DCHECK(files_preprocessed_ < progress_.sources.size());
+  DCHECK_LT(files_preprocessed_, progress_.sources.size());
   files_preprocessed_++;
   progress_.total_bytes += file_info.size;
   source_sizes_[idx] = file_info.size;

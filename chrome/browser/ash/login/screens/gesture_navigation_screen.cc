@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
@@ -106,7 +107,7 @@ void GestureNavigationScreen::OnUserAction(const base::Value::List& args) {
     return;
   }
   if (action_id == kUserActionGesturePageChange) {
-    CHECK_EQ(args.size(), 2);
+    CHECK_EQ(args.size(), 2u);
     const std::string& new_page = args[1].GetString();
     GesturePageChange(new_page);
     return;

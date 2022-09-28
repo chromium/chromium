@@ -33,68 +33,68 @@ class ArcAppInstallPolicyDataHelperTest : public testing::Test {
 
 TEST_F(ArcAppInstallPolicyDataHelperTest, AddPolicyData_NoPendingPackages) {
   policy_data_helper_.AddPolicyData({}, 0);
-  EXPECT_EQ(0, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(0u, policy_data_helper_.policy_data()->size());
   EXPECT_FALSE(policy_data_helper_.policy_data_timer()->IsRunning());
 }
 
 TEST_F(ArcAppInstallPolicyDataHelperTest, AddPolicyData) {
   policy_data_helper_.AddPolicyData({kPackageName}, 0);
-  EXPECT_EQ(1, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(1u, policy_data_helper_.policy_data()->size());
   EXPECT_TRUE(policy_data_helper_.policy_data_timer()->IsRunning());
 }
 
 TEST_F(ArcAppInstallPolicyDataHelperTest,
        UpdatePolicySuccessRate_RemoveTrackedPolicy) {
   policy_data_helper_.AddPolicyData({kPackageName}, 0);
-  EXPECT_EQ(1, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(1u, policy_data_helper_.policy_data()->size());
   policy_data_helper_.UpdatePolicySuccessRate(kPackageName, /* success */ true);
-  EXPECT_EQ(0, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(0u, policy_data_helper_.policy_data()->size());
 }
 
 TEST_F(ArcAppInstallPolicyDataHelperTest,
        UpdatePolicySuccessRate_KeepUntrackedPolicy) {
   policy_data_helper_.AddPolicyData({kPackageName, kPackageName2}, 0);
-  EXPECT_EQ(1, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(1u, policy_data_helper_.policy_data()->size());
   policy_data_helper_.UpdatePolicySuccessRate(kPackageName, /* success */ true);
-  EXPECT_EQ(1, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(1u, policy_data_helper_.policy_data()->size());
 }
 
 TEST_F(ArcAppInstallPolicyDataHelperTest, UpdatePolicySuccessRateForPackages) {
   policy_data_helper_.AddPolicyData({kPackageName}, 0);
-  EXPECT_EQ(1, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(1u, policy_data_helper_.policy_data()->size());
 
   task_environment.AdvanceClock(base::Minutes(1));
   policy_data_helper_.AddPolicyData({kPackageName, kPackageName2}, 0);
-  EXPECT_EQ(2, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(2u, policy_data_helper_.policy_data()->size());
 
   policy_data_helper_.UpdatePolicySuccessRate(kPackageName, /* success */ true);
-  EXPECT_EQ(1, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(1u, policy_data_helper_.policy_data()->size());
 
   policy_data_helper_.UpdatePolicySuccessRate(kPackageName2,
                                               /* success */ true);
-  EXPECT_EQ(0, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(0u, policy_data_helper_.policy_data()->size());
 }
 
 TEST_F(ArcAppInstallPolicyDataHelperTest,
        CheckForPolicyDataTimeout_HasTimedout) {
   policy_data_helper_.AddPolicyData({kPackageName}, 0);
-  EXPECT_EQ(1, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(1u, policy_data_helper_.policy_data()->size());
   EXPECT_TRUE(policy_data_helper_.policy_data_timer()->IsRunning());
 
   task_environment.AdvanceClock(base::Minutes(30));
   policy_data_helper_.CheckForPolicyDataTimeout();
-  EXPECT_EQ(0, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(0u, policy_data_helper_.policy_data()->size());
   EXPECT_FALSE(policy_data_helper_.policy_data_timer()->IsRunning());
 }
 
 TEST_F(ArcAppInstallPolicyDataHelperTest,
        CheckForPolicyDataTimeout_HasNotTimedout) {
   policy_data_helper_.AddPolicyData({kPackageName}, 0);
-  EXPECT_EQ(1, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(1u, policy_data_helper_.policy_data()->size());
   EXPECT_TRUE(policy_data_helper_.policy_data_timer()->IsRunning());
 
   policy_data_helper_.CheckForPolicyDataTimeout();
-  EXPECT_EQ(1, policy_data_helper_.policy_data()->size());
+  EXPECT_EQ(1u, policy_data_helper_.policy_data()->size());
   EXPECT_TRUE(policy_data_helper_.policy_data_timer()->IsRunning());
 }
 

@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
         [quit_closure](drive::FileError status,
                        const std::vector<base::FilePath>& paths) {
           EXPECT_EQ(drive::FILE_ERROR_SERVICE_UNAVAILABLE, status);
-          EXPECT_EQ(0, paths.size());
+          EXPECT_EQ(0u, paths.size());
           quit_closure.Run();
         }));
     run_loop.Run();
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
         [quit_closure, sync_path](drive::FileError status,
                                   const std::vector<base::FilePath>& paths) {
           EXPECT_EQ(drive::FILE_ERROR_OK, status);
-          EXPECT_EQ(1, paths.size());
+          EXPECT_EQ(1u, paths.size());
           EXPECT_EQ(sync_path, paths[0]);
           quit_closure.Run();
         }));

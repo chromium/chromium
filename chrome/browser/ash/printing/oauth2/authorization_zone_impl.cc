@@ -55,8 +55,8 @@ std::string RandBase64String() {
 // from Section 2.3 of [RFC3986], with a minimum length of 43 characters
 // and a maximum length of 128 characters."
 std::string CodeChallengeS256(const std::string& code_verifier) {
-  DCHECK_GE(code_verifier.size(), 43);
-  DCHECK_LE(code_verifier.size(), 128);
+  DCHECK_GE(code_verifier.size(), 43u);
+  DCHECK_LE(code_verifier.size(), 128u);
   std::string output;
   base::Base64Encode(crypto::SHA256HashString(code_verifier), &output);
   return output;

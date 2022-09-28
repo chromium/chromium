@@ -84,7 +84,7 @@ TEST_F(GuestIdTest, DuplicateContainerNamesInPrefsAreRemoved) {
 
   const base::Value::List& result = prefs->GetList(prefs::kGuestOsContainers);
 
-  ASSERT_EQ(result.size(), 3);
+  ASSERT_EQ(result.size(), 3u);
   EXPECT_EQ(result[0].GetDict(), dictionary1);
   EXPECT_EQ(result[1].GetDict(), dictionary2);
   EXPECT_EQ(result[2].GetDict(), dictionary3);
@@ -119,7 +119,7 @@ TEST_F(GuestIdTest, RoundTripViaPrefs) {
                               "container_name");
   AddContainerToPrefs(&profile_, id, {});
   auto list = GetContainers(&profile_, VmType::PLUGIN_VM);
-  ASSERT_EQ(list.size(), 1);
+  ASSERT_EQ(list.size(), 1u);
   EXPECT_EQ(list[0], id);
 }
 

@@ -202,7 +202,7 @@ class NetworkInfoSamplerBrowserTest
     ASSERT_TRUE(info_data.has_networks_info());
     const auto& networks_info = info_data.networks_info();
     ASSERT_THAT(networks_info.network_interfaces_size(),
-                Eq(expected_devices.size()));
+                Eq(static_cast<int>(expected_devices.size())));
 
     // Assert details of each network interface
     for (size_t i = 0u; i < expected_devices.size(); ++i) {
@@ -247,7 +247,7 @@ class NetworkInfoSamplerBrowserTest
 IN_PROC_BROWSER_TEST_F(NetworkInfoSamplerBrowserTest,
                        ReportNetworkInfoSingleNetworkDevice) {
   // Single network devices
-  const std::array<NetworkDevice, 1> devices{NetworkDevice(
+  const std::array<NetworkDevice, 1u> devices{NetworkDevice(
       kEthernetPath, shill::kTypeEthernet, "ethernet", kEthernetMac)};
   AddDevices(devices);
   EnableReportingNetworkInterfaces();

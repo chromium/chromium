@@ -57,7 +57,7 @@ class PrintingOAuth2AuthorizationServerSessionTest : public testing::Test {
 
 TEST_F(PrintingOAuth2AuthorizationServerSessionTest, ParseScope) {
   auto scope = ParseScope("  w szczebrzeszynie   chrzaszcz brzmi w trzcinie ");
-  EXPECT_EQ(scope.size(), 5);
+  EXPECT_EQ(scope.size(), 5u);
   EXPECT_TRUE(scope.contains("w"));
   EXPECT_TRUE(scope.contains("szczebrzeszynie"));
   EXPECT_TRUE(scope.contains("chrzaszcz"));
@@ -82,7 +82,7 @@ TEST_F(PrintingOAuth2AuthorizationServerSessionTest, WaitingList) {
   session_->AddToWaitingList(BindResult(cr2));
   session_->AddToWaitingList(BindResult(cr3));
   auto callbacks = session_->TakeWaitingList();
-  ASSERT_EQ(callbacks.size(), 3);
+  ASSERT_EQ(callbacks.size(), 3u);
   EXPECT_TRUE(session_->TakeWaitingList().empty());
   std::move(callbacks[0]).Run(StatusCode::kOK, "1");
   std::move(callbacks[1]).Run(StatusCode::kAccessDenied, "2");

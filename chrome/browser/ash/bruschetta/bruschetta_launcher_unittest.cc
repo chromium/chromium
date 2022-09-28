@@ -138,7 +138,7 @@ TEST_F(BruschettaLauncherTest, LaunchStartVmSuccess) {
 TEST_F(BruschettaLauncherTest, MultipleLaunchRequestsAreBatched) {
   std::vector<BruschettaResult> results;
   std::vector<BruschettaResult> expected;
-  int num_concurrent = 3;
+  size_t num_concurrent = 3;
   auto callback = base::BindLambdaForTesting(
       [this, &results, num_concurrent](BruschettaResult result) {
         results.push_back(result);
@@ -147,7 +147,7 @@ TEST_F(BruschettaLauncherTest, MultipleLaunchRequestsAreBatched) {
         }
       });
 
-  for (int n = 0; n < num_concurrent; n++) {
+  for (size_t n = 0; n < num_concurrent; n++) {
     launcher_->EnsureRunning(callback);
     expected.emplace_back(BruschettaResult::kSuccess);
   }

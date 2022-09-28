@@ -244,7 +244,7 @@ TEST_F(CertProvisioningAshTest, GetStatusEmpty) {
   TestFuture<std::vector<mojom::CertProvisioningProcessStatusPtr>> result;
   service_.GetStatus(result.GetCallback());
 
-  EXPECT_EQ(0, result.Get().size());
+  EXPECT_EQ(0u, result.Get().size());
 }
 
 TEST_F(CertProvisioningAshTest, GetStatusAliveUserWorker) {
@@ -285,7 +285,7 @@ TEST_F(CertProvisioningAshTest, GetStatusAliveUserWorker) {
   TestFuture<std::vector<mojom::CertProvisioningProcessStatusPtr>> result;
   service_.GetStatus(result.GetCallback());
 
-  ASSERT_EQ(1, result.Get().size());
+  ASSERT_EQ(1u, result.Get().size());
   EXPECT_EQ(*result.Get()[0], *expected_user_status);
 }
 
@@ -326,7 +326,7 @@ TEST_F(CertProvisioningAshTest, GetStatusAliveDeviceWorker) {
   TestFuture<std::vector<mojom::CertProvisioningProcessStatusPtr>> result;
   service_.GetStatus(result.GetCallback());
 
-  ASSERT_EQ(1, result.Get().size());
+  ASSERT_EQ(1u, result.Get().size());
   EXPECT_EQ(*result.Get()[0], *expected_device_status);
 }
 
@@ -358,7 +358,7 @@ TEST_F(CertProvisioningAshTest, GetStatusFailedUserWorker) {
   TestFuture<std::vector<mojom::CertProvisioningProcessStatusPtr>> result;
   service_.GetStatus(result.GetCallback());
 
-  ASSERT_EQ(1, result.Get().size());
+  ASSERT_EQ(1u, result.Get().size());
   EXPECT_EQ(*result.Get()[0], *expected_user_status);
 }
 
@@ -390,7 +390,7 @@ TEST_F(CertProvisioningAshTest, GetStatusFailedDeviceWorker) {
   TestFuture<std::vector<mojom::CertProvisioningProcessStatusPtr>> result;
   service_.GetStatus(result.GetCallback());
 
-  ASSERT_EQ(1, result.Get().size());
+  ASSERT_EQ(1u, result.Get().size());
   EXPECT_EQ(*result.Get()[0], *expected_device_status);
 }
 

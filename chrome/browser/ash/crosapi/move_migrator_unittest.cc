@@ -623,7 +623,7 @@ TEST(MoveMigratorTest, SetupAshSplitDir) {
   // Check the content of the leveldb database. It should contain only
   // extensions in the keep list.
   auto db_map = ReadLevelDB(path);
-  EXPECT_EQ(5, db_map.size());
+  EXPECT_EQ(5u, db_map.size());
   EXPECT_EQ("1", db_map["VERSION"]);
   std::string key = "_chrome-extension://" + keep_extension_id + "\x00key"s;
   EXPECT_EQ("meta", db_map["META:chrome-extension://" + keep_extension_id]);
@@ -638,7 +638,7 @@ TEST(MoveMigratorTest, SetupAshSplitDir) {
   // Check the content of the leveldb database. It should contain only
   // extensions in the keep list.
   db_map = ReadLevelDB(path);
-  EXPECT_EQ(2, db_map.size());
+  EXPECT_EQ(2u, db_map.size());
   EXPECT_EQ("value", db_map[keep_extension_id + ".key"]);
 
   // Check Preferences is present in both tmp_profile_dir and tmp_split_dir.
@@ -842,10 +842,10 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     EXPECT_TRUE(base::PathExists(lacros_local_storage_path));
     // Ash contains only keys relevant to the extension keep list.
     auto ash_local_storage = ReadLevelDB(ash_local_storage_path);
-    EXPECT_EQ(5, ash_local_storage.size());
+    EXPECT_EQ(5u, ash_local_storage.size());
     // Lacros contains all the keys.
     auto lacros_local_storage = ReadLevelDB(lacros_local_storage_path);
-    EXPECT_EQ(7, lacros_local_storage.size());
+    EXPECT_EQ(7u, lacros_local_storage.size());
 
     // Ash contains only IndexedDB folders of extensions in keeplist.
     {

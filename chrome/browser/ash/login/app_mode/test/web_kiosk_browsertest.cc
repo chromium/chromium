@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, HiddenShelf) {
   EXPECT_FALSE(ShelfTestApi().IsVisible());
 
   // Simulate the swipe-up gesture.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1U);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   BrowserWindow* browser_window = BrowserList::GetInstance()->get(0)->window();
   gfx::NativeWindow window = browser_window->GetNativeWindow()->GetRootWindow();
   const gfx::Rect display_bounds = window->bounds();
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, OpenA11ySettings) {
 IN_PROC_BROWSER_TEST_F(WebKioskTest, CloseSettingWindowIfOnlyOpen) {
   InitializeRegularOnlineKiosk();
   // The initial browser should exist in the web kiosk session.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   Browser* initial_browser = BrowserList::GetInstance()->get(0);
 
   AppSessionAsh* app_session = WebKioskAppManager::Get()->app_session();
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, CloseSettingWindowIfOnlyOpen) {
   Browser* settings_browser = OpenA11ySettingsBrowser(app_session);
   // Make sure the settings browser was opened.
   ASSERT_NE(settings_browser, nullptr);
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
 
   // Close the initial browser.
   initial_browser->window()->Close();
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, CloseSettingWindowIfOnlyOpen) {
 
   // No browsers are opened in the web kiosk session, so it should be
   // terminated.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 0);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 0u);
   EXPECT_TRUE(app_session->is_shutting_down());
 }
 
@@ -331,14 +331,14 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, CloseSettingWindowIfOnlyOpen) {
 IN_PROC_BROWSER_TEST_F(WebKioskTest, NotExitIfCloseSettingsWindow) {
   InitializeRegularOnlineKiosk();
   // The initial browser should exist in the web kiosk session.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 
   AppSessionAsh* app_session = WebKioskAppManager::Get()->app_session();
 
   Browser* settings_browser = OpenA11ySettingsBrowser(app_session);
   // Make sure the settings browser was opened.
   ASSERT_NE(settings_browser, nullptr);
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
 
   // Close |settings_browser| and ensure it is closed.
   settings_browser->window()->Close();
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, NotExitIfCloseSettingsWindow) {
 
   // The initial browsers should still be opened and so the kiosk session should
   // not be terminated.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_FALSE(app_session->is_shutting_down());
 }
 

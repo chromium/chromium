@@ -459,7 +459,8 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
   // potentially stale.
   if (pending_autocorrect_->num_inserted_chars < 0) {
     pending_autocorrect_->num_inserted_chars = 0;
-  } else if (text.length() > pending_autocorrect_->text_length) {
+  } else if (static_cast<int>(text.length()) >
+             pending_autocorrect_->text_length) {
     // TODO(b/161490813): Fix double counting of emojis and some CJK chars.
     // TODO(b/161490813): Fix logic for text replace.
 

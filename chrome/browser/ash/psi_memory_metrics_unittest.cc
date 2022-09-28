@@ -117,7 +117,7 @@ TEST_F(PSIMemoryMetricsTest, CancelBeforeFirstRun) {
   int bytes_written = base::WriteFile(GetTestFileName(), kFileContents1,
                                       sizeof(kFileContents1) - 1);
 
-  EXPECT_EQ(sizeof(kFileContents1) - 1, bytes_written);
+  EXPECT_EQ(static_cast<int>(sizeof(kFileContents1) - 1), bytes_written);
 
   //  Repeating timer comes on - but we will cancel before first iteration.
   Cit()->Start();
@@ -146,7 +146,7 @@ TEST_F(PSIMemoryMetricsTest, SunnyDay2) {
   int bytes_written = base::WriteFile(GetTestFileName(), kFileContents1,
                                       sizeof(kFileContents1) - 1);
 
-  EXPECT_EQ(sizeof(kFileContents1) - 1, bytes_written);
+  EXPECT_EQ(static_cast<int>(sizeof(kFileContents1) - 1), bytes_written);
 
   Cit()->CollectEvents();
 
@@ -161,7 +161,7 @@ TEST_F(PSIMemoryMetricsTest, SunnyDay3) {
   int bytes_written = base::WriteFile(GetTestFileName(), kFileContents1,
                                       sizeof(kFileContents1) - 1);
 
-  EXPECT_EQ(sizeof(kFileContents1) - 1, bytes_written);
+  EXPECT_EQ(static_cast<int>(sizeof(kFileContents1) - 1), bytes_written);
 
   Cit()->CollectEvents();
 

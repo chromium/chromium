@@ -844,7 +844,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   ASSERT_TRUE(helper_->GetRunningVideoCaptureInfo().has_value());
   auto actual_contents = helper_->GetRunningVideoCaptureInfo()
                              ->confidential_contents.GetContents();
-  EXPECT_EQ(actual_contents.size(), 1);
+  EXPECT_EQ(actual_contents.size(), 1u);
   EXPECT_EQ(actual_contents.begin()->title, u"example.com");
 
   // Change the title.
@@ -865,7 +865,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   ASSERT_TRUE(helper_->GetRunningVideoCaptureInfo().has_value());
   actual_contents = helper_->GetRunningVideoCaptureInfo()
                         ->confidential_contents.GetContents();
-  EXPECT_EQ(actual_contents.size(), 1);
+  EXPECT_EQ(actual_contents.size(), 1u);
   EXPECT_EQ(actual_contents.begin()->title, u"New Title");
 
   run_loop.RunUntilIdle();
@@ -1329,7 +1329,7 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, FullScreenShare) {
   MaybeStartFullScreenShare(web_contents, /*expect_allowed=*/true,
                             /*expect_warning=*/false);
   // Nothing is emitted yet since there's no restrictions on web_contents.
-  ASSERT_EQ(events_.size(), 0);
+  ASSERT_EQ(events_.size(), 0u);
   VerifyHistogramCounts(/*blocked_count=*/0,
                         /*warned_count=*/0,
                         /*total_count=*/1,
@@ -1392,7 +1392,7 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
   MaybeStartTabShare(web_contents, /*expect_allowed=*/true,
                      /*expect_warning=*/false);
   // Nothing is emitted yet since there's no restrictions on web_contents.
-  ASSERT_EQ(events_.size(), 0);
+  ASSERT_EQ(events_.size(), 0u);
   VerifyHistogramCounts(/*blocked_count=*/0,
                         /*warned_count=*/0,
                         /*total_count=*/1,
@@ -1457,7 +1457,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   MaybeStartFullScreenShare(web_contents, /*expect_allowed=*/true,
                             /*expect_warning=*/false);
   // Nothing is emitted yet since there's no restrictions on web_contents.
-  ASSERT_EQ(events_.size(), 0);
+  ASSERT_EQ(events_.size(), 0u);
   VerifyHistogramCounts(/*blocked_count=*/0,
                         /*warned_count=*/0,
                         /*total_count=*/1,
@@ -1549,7 +1549,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                              ->get()
                              ->GetConfidentialContents()
                              .GetContents();
-  EXPECT_EQ(actual_contents.size(), 1);
+  EXPECT_EQ(actual_contents.size(), 1u);
   EXPECT_EQ(actual_contents.begin()->title, u"example.com");
 
   // Another check should be ignored if contents don't change.
@@ -1567,7 +1567,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                         ->get()
                         ->GetConfidentialContents()
                         .GetContents();
-  EXPECT_EQ(actual_contents.size(), 1);
+  EXPECT_EQ(actual_contents.size(), 1u);
   EXPECT_EQ(actual_contents.begin()->title, u"New Title");
 }
 

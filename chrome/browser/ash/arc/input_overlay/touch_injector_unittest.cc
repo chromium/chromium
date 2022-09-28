@@ -850,7 +850,7 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   injector->ParseActions(*json_value);
   injector->OnProtoDataAvailable(*proto);
   EXPECT_EQ(injector_->actions().size(), injector->actions().size());
-  for (int i = 0; i < injector_->actions().size(); i++) {
+  for (size_t i = 0; i < injector_->actions().size(); i++) {
     const auto* action_a = injector_->actions()[i].get();
     const auto* action_b = injector->actions()[i].get();
     EXPECT_EQ(*action_a->current_input(), *action_b->current_input());

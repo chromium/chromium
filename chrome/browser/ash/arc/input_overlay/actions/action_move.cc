@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 
+#include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
@@ -134,23 +135,22 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     if (!input_binding)
       return;
 
-    const auto keys = input_binding->keys();
+    const auto& keys = input_binding->keys();
     if (labels_.empty()) {
-      for (int i = 0; i < keys.size(); i++) {
-        auto label =
-            ActionLabel::CreateTextActionLabel(GetDisplayText(keys[i]));
+      for (const auto& key : keys) {
+        auto label = ActionLabel::CreateTextActionLabel(GetDisplayText(key));
         labels_.emplace_back(AddChildView(std::move(label)));
       }
     } else {
       DCHECK(labels_.size() == keys.size());
-      for (int i = 0; i < keys.size(); i++)
+      for (size_t i = 0; i < keys.size(); i++)
         labels_[i]->SetTextActionLabel(std::move(GetDisplayText(keys[i])));
     }
   }
 
   void OnKeyBindingChange(ActionLabel* action_label,
                           ui::DomCode code) override {
-    DCHECK(labels_.size() == kActionMoveKeysSize);
+    DCHECK_EQ(labels_.size(), kActionMoveKeysSize);
     if (labels_.size() != kActionMoveKeysSize)
       return;
     auto it = std::find(labels_.begin(), labels_.end(), action_label);
@@ -189,13 +189,13 @@ class ActionMove::ActionMoveKeyView : public ActionView {
   void OnMenuEntryPressed() override { NOTIMPLEMENTED(); }
 
   void ChildPreferredSizeChanged(View* child) override {
-    DCHECK(labels_.size() == kActionMoveKeysSize);
+    DCHECK_EQ(labels_.size(), kActionMoveKeysSize);
     if (labels_.size() != kActionMoveKeysSize)
       return;
 
     int label_index = -1;
     auto* label = static_cast<ActionLabel*>(child);
-    for (int i = 0; i < kActionMoveKeysSize; i++) {
+    for (size_t i = 0; i < kActionMoveKeysSize; i++) {
       if (label == labels_[i]) {
         label_index = i;
         break;
@@ -216,11 +216,11 @@ class ActionMove::ActionMoveKeyView : public ActionView {
 
     // Calculate minimum size of the |ActionMoveKeyView|.
     int left = INT_MAX, right = 0, top = INT_MAX, bottom = 0;
-    for (int i = 0; i < kActionMoveKeysSize; i++) {
-      left = std::min(left, labels_[i]->bounds().x());
-      right = std::max(right, labels_[i]->bounds().right());
-      top = std::min(top, labels_[i]->bounds().y());
-      bottom = std::max(bottom, labels_[i]->bounds().bottom());
+    for (const auto* label : labels_) {
+      left = std::min(left, label->bounds().x());
+      right = std::max(right, label->bounds().right());
+      top = std::min(top, label->bounds().y());
+      bottom = std::max(bottom, label->bounds().bottom());
     }
     DCHECK_LT(left, right);
     DCHECK_LT(top, bottom);
@@ -399,7 +399,7 @@ void ActionMove::UnbindInput(const InputElement& input_element) {
   if (IsKeyboardBound(input_element)) {
     // It might be partially overlapped and only remove the keys overlapped.
     for (auto code : input_element.keys()) {
-      for (int i = 0; i < pending_input_->keys().size(); i++) {
+      for (size_t i = 0; i < pending_input_->keys().size(); i++) {
         if (code == pending_input_->keys()[i]) {
           pending_input_->SetKey(i, ui::DomCode::NONE);
           if (action_view_)
@@ -427,7 +427,7 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
   if (IsRepeatedKeyEvent(*key_event))
     return true;
 
-  int index = it - keys.begin();
+  size_t index = it - keys.begin();
   DCHECK(index >= 0 && index < kActionMoveKeysSize);
 
   DCHECK_LT(current_position_idx_, touch_down_positions_.size());
@@ -549,11 +549,11 @@ bool ActionMove::RewriteMouseEvent(
 }
 
 void ActionMove::CalculateMoveVector(gfx::PointF& touch_press_pos,
-                                     int direction_index,
+                                     size_t direction_index,
                                      bool key_press,
                                      const gfx::RectF& content_bounds,
                                      const gfx::Transform* rotation_transform) {
-  DCHECK(direction_index >= 0 && direction_index < kActionMoveKeysSize);
+  DCHECK_LT(direction_index, kActionMoveKeysSize);
   auto new_move = gfx::Vector2dF(kDirection[direction_index][0],
                                  kDirection[direction_index][1]);
   float display_scale_factor =

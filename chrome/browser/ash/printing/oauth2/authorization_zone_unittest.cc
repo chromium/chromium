@@ -219,7 +219,7 @@ TEST_F(PrintingOAuth2AuthorizationZoneTest,
   ASSERT_TRUE(
       ParseURLParameters(authorization_url.substr(question_mark + 1), params));
   EXPECT_EQ(params["client_id"], "clientID_!@#$");
-  EXPECT_EQ(params.count("scope"), 0);
+  EXPECT_EQ(params.count("scope"), 0u);
 }
 
 TEST_F(PrintingOAuth2AuthorizationZoneTest, FirstAccessToken) {

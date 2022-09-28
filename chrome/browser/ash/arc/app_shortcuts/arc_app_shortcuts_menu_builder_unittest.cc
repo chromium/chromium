@@ -81,7 +81,7 @@ TEST_F(ArcAppShortcutsMenuBuilderTest, Basic) {
   run_loop.Run();
 
   DCHECK(menu);
-  int i = 0;
+  size_t i = 0;
   EXPECT_EQ(first_item_label, menu->GetLabelAt(i++));
   EXPECT_EQ(ui::DOUBLE_SEPARATOR, menu->GetSeparatorTypeAt(i++));
   // There is a separator between each app shortcut.

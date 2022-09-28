@@ -442,9 +442,9 @@ TEST_P(CrosHealthdMetricSamplerTbtTest, TestTbtSecurityLevels) {
 
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_bus_device_info());
-  ASSERT_EQ(test_case.healthd_security_levels.size(),
+  ASSERT_EQ(static_cast<int>(test_case.healthd_security_levels.size()),
             result.info_data().bus_device_info().thunderbolt_info_size());
-  for (int i = 0; i < test_case.healthd_security_levels.size(); i++) {
+  for (size_t i = 0; i < test_case.healthd_security_levels.size(); i++) {
     EXPECT_EQ(result.info_data()
                   .bus_device_info()
                   .thunderbolt_info(i)

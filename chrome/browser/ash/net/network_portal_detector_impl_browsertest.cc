@@ -152,7 +152,7 @@ class NetworkPortalDetectorImplBrowserTest
     if (expected_button_title.empty()) {
       EXPECT_EQ(
           display_service_->GetNotification(kNotificationId)->buttons().size(),
-          0);
+          0u);
     } else {
       EXPECT_EQ(GetNotificationButtonTitle(), expected_button_title);
     }

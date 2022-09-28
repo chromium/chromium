@@ -13,6 +13,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -468,7 +469,7 @@ void CrostiniManager::CrostiniRestarter::Timeout(mojom::InstallerState state) {
 }
 
 void CrostiniManager::CrostiniRestarter::CancelRequest(RestartId restart_id) {
-  int num_requests = requests_.size();
+  size_t num_requests = requests_.size();
   FinishRequests(
       base::BindRepeating(
           [](RestartId restart_id, const RestartRequest& request) -> bool {

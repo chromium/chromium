@@ -567,8 +567,8 @@ TEST_F(LorgnetteScannerManagerTest, GetCaps) {
   const auto caps = scanner_capabilities().value();
   ASSERT_EQ(caps.resolutions_size(), 1);
   EXPECT_EQ(caps.resolutions()[0], 300u);
-  EXPECT_EQ(caps.sources_size(), 0u);
-  ASSERT_EQ(caps.color_modes_size(), 1u);
+  EXPECT_EQ(caps.sources_size(), 0);
+  ASSERT_EQ(caps.color_modes_size(), 1);
   EXPECT_EQ(caps.color_modes()[0], lorgnette::MODE_COLOR);
 }
 

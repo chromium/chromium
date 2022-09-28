@@ -176,21 +176,21 @@ TEST_F(GuestOsMimeTypesServiceTest, SetMimeTypesAndGetExtensionTypes) {
 
   // Mime/ extension types not registered yet.
   std::vector<std::string> result = GetExtensionTypesFromMimeTypes({"x/foo"});
-  EXPECT_EQ(0, result.size());
+  EXPECT_EQ(0u, result.size());
 
   service()->UpdateMimeTypes(CreateMimeTypesProto(
       file_extensions, mime_types, kTestVmName, kTestContainerName));
   result = GetExtensionTypesFromMimeTypes({"x/foo"});
-  EXPECT_EQ(1, result.size());
+  EXPECT_EQ(1u, result.size());
   EXPECT_EQ("foo", result[0]);
 
   result = GetExtensionTypesFromMimeTypes({"x/bar"});
-  EXPECT_EQ(1, result.size());
+  EXPECT_EQ(1u, result.size());
   EXPECT_EQ("bar", result[0]);
 
   // We should have 2 possible extensions for this mime type case.
   result = GetExtensionTypesFromMimeTypes({"x/abcdef"});
-  EXPECT_EQ(2, result.size());
+  EXPECT_EQ(2u, result.size());
   EXPECT_TRUE(base::Contains(result, "abc"));
   EXPECT_TRUE(base::Contains(result, "def"));
 }

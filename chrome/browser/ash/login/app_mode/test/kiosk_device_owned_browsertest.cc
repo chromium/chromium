@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowRemainsOpen) {
   ASSERT_NE(settings_browser, nullptr);
 
   // Only the settings browser is opened.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_FALSE(app_session->is_shutting_down());
 }
 
@@ -624,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, CloseSettingsWindow) {
   ASSERT_NE(settings_browser->window(), nullptr);
 
   // Only the settings browser is opened.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_FALSE(app_session->is_shutting_down());
 
   settings_browser->window()->Close();
@@ -633,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, CloseSettingsWindow) {
   browser_closed_waiter.WaitUntilClosed();
 
   // No browsers are opened in the chrome app kiosk session.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 0);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 0u);
   EXPECT_FALSE(app_session->is_shutting_down());
 }
 

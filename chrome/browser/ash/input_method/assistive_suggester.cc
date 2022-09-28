@@ -458,7 +458,7 @@ void AssistiveSuggester::OnLongpressDetected() {
       // If the following conditions are met, its possible the text box does not
       // support IME operations.
       last_surrounding_text_.empty() || last_cursor_pos_ <= 0 ||
-      last_surrounding_text_.length() < last_cursor_pos_ ||
+      static_cast<int>(last_surrounding_text_.length()) < last_cursor_pos_ ||
       last_surrounding_text_[last_cursor_pos_ - 1] !=
           current_longpress_keydown_->GetCharacter()) {
     return;

@@ -368,7 +368,7 @@ TEST_P(LongpressDiacriticsSuggesterTest, AcceptsOnEnterKeyPress) {
   EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler.GetAcceptedSuggestionText(),
             GetParam().candidates[0]);
-  EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1);
+  EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1u);
 }
 
 TEST_P(LongpressDiacriticsSuggesterTest, NotHandledOnDigit0KeyPress) {
@@ -397,7 +397,7 @@ TEST_P(LongpressDiacriticsSuggesterTest, HandlesDigit1KeyPress) {
   EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler.GetAcceptedSuggestionText(),
             GetParam().candidates[0]);
-  EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1);
+  EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1u);
 }
 
 TEST_P(LongpressDiacriticsSuggesterTest, HandlesDigit2KeyPress) {
@@ -417,7 +417,7 @@ TEST_P(LongpressDiacriticsSuggesterTest, HandlesDigit2KeyPress) {
     EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
     EXPECT_EQ(suggestion_handler.GetAcceptedSuggestionText(),
               GetParam().candidates[1]);
-    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1);
+    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1u);
   }
 }
 
@@ -438,7 +438,7 @@ TEST_P(LongpressDiacriticsSuggesterTest, HandlesDigit3KeyPress) {
     EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
     EXPECT_EQ(suggestion_handler.GetAcceptedSuggestionText(),
               GetParam().candidates[2]);
-    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1);
+    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1u);
   }
 }
 
@@ -459,7 +459,7 @@ TEST_P(LongpressDiacriticsSuggesterTest, HandlesDigit4KeyPress) {
     EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
     EXPECT_EQ(suggestion_handler.GetAcceptedSuggestionText(),
               GetParam().candidates[3]);
-    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1);
+    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1u);
   }
 }
 
@@ -480,7 +480,7 @@ TEST_P(LongpressDiacriticsSuggesterTest, HandlesDigit5KeyPress) {
     EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
     EXPECT_EQ(suggestion_handler.GetAcceptedSuggestionText(),
               GetParam().candidates[4]);
-    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1);
+    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1u);
   }
 }
 
@@ -501,7 +501,7 @@ TEST_P(LongpressDiacriticsSuggesterTest, HandlesDigit6KeyPress) {
     EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
     EXPECT_EQ(suggestion_handler.GetAcceptedSuggestionText(),
               GetParam().candidates[5]);
-    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1);
+    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1u);
   }
 }
 
@@ -522,7 +522,7 @@ TEST_P(LongpressDiacriticsSuggesterTest, HandlesDigit7KeyPress) {
     EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
     EXPECT_EQ(suggestion_handler.GetAcceptedSuggestionText(),
               GetParam().candidates[6]);
-    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1);
+    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1u);
   }
 }
 
@@ -543,7 +543,7 @@ TEST_P(LongpressDiacriticsSuggesterTest, HandlesDigit8KeyPress) {
     EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
     EXPECT_EQ(suggestion_handler.GetAcceptedSuggestionText(),
               GetParam().candidates[7]);
-    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1);
+    EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1u);
   }
 }
 
@@ -627,7 +627,7 @@ TEST_P(LongpressDiacriticsSuggesterTest, RecordsAcceptanceCharCodeMetric) {
   suggester.OnFocus(kContextId);
 
   int histogram_accept_count = 0;
-  for (int i = 0; i < 9 && i < GetParam().candidates.size(); i++) {
+  for (size_t i = 0; i < 9 && i < GetParam().candidates.size(); i++) {
     // Insert using dom code for index + 1 (i.e. DIGIT1 inserts 0th index
     // candidate)
     ui::DomCode dom_code = kDigitToDomCode.find(i + 1)->second;

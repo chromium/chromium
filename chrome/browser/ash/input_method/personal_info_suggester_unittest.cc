@@ -95,7 +95,7 @@ TEST_F(PersonalInfoSuggesterTest, SuggestsEmail) {
   suggester_->TrySuggestWithSurroundingText(u"my email is ", 12, 12);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), email_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
 
   SendKeyboardEvent(ui::DomCode::ESCAPE);
@@ -103,14 +103,14 @@ TEST_F(PersonalInfoSuggesterTest, SuggestsEmail) {
   suggester_->TrySuggestWithSurroundingText(u"My email is: ", 13, 13);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), email_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->TrySuggestWithSurroundingText(u"hi, my email: ", 14, 14);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), email_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
 }  // namespace
 
@@ -126,14 +126,14 @@ TEST_F(PersonalInfoSuggesterTest, SuggestsEmailWithMultilineText) {
   suggester_->TrySuggestWithSurroundingText(u"\nmy email is ", 13, 13);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), email_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->TrySuggestWithSurroundingText(u"Hey\nMan\nmy email is ", 20, 20);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), email_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 }
@@ -210,7 +210,7 @@ TEST_F(PersonalInfoSuggesterTest, SuggestWhenEndOfLineWhenNewLineExist) {
                                             12);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), email_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
 }
 
@@ -291,7 +291,7 @@ TEST_F(PersonalInfoSuggesterTest, SuggestsNames) {
   suggester_->TrySuggestWithSurroundingText(u"my first name is ", 17, 17);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), first_name_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
 
   SendKeyboardEvent(ui::DomCode::ESCAPE);
@@ -299,14 +299,14 @@ TEST_F(PersonalInfoSuggesterTest, SuggestsNames) {
   suggester_->TrySuggestWithSurroundingText(u"my last name is: ", 17, 17);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), last_name_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->TrySuggestWithSurroundingText(u"my name is ", 11, 11);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), full_name_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
 
   SendKeyboardEvent(ui::DomCode::ESCAPE);
@@ -314,7 +314,7 @@ TEST_F(PersonalInfoSuggesterTest, SuggestsNames) {
   suggester_->TrySuggestWithSurroundingText(u"Hmm... my FULL name: ", 21, 21);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), full_name_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
 }
 
@@ -412,7 +412,7 @@ TEST_F(PersonalInfoSuggesterTest, SuggestsAddress) {
   suggester_->TrySuggestWithSurroundingText(u"my address is ", 14, 14);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), address_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
 
   SendKeyboardEvent(ui::DomCode::ESCAPE);
@@ -420,28 +420,28 @@ TEST_F(PersonalInfoSuggesterTest, SuggestsAddress) {
   suggester_->TrySuggestWithSurroundingText(u"our address is: ", 16, 16);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), address_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->TrySuggestWithSurroundingText(u"my shipping address: ", 21, 21);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), address_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->TrySuggestWithSurroundingText(u"our billing address is ", 23, 23);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), address_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->TrySuggestWithSurroundingText(u"my current address: ", 20, 20);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), address_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
 }
 
@@ -517,35 +517,35 @@ TEST_F(PersonalInfoSuggesterTest, SuggestsPhoneNumber) {
   suggester_->TrySuggestWithSurroundingText(u"my phone number is ", 19, 19);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), phone_number_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->TrySuggestWithSurroundingText(u"my number is ", 13, 13);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), phone_number_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->TrySuggestWithSurroundingText(u"my mobile number is: ", 21, 21);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), phone_number_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->TrySuggestWithSurroundingText(u"my number: ", 11, 11);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), phone_number_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->TrySuggestWithSurroundingText(u"my telephone number is ", 23, 23);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), phone_number_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
 }
 
@@ -665,7 +665,7 @@ TEST_F(PersonalInfoSuggesterTest, SuggestsWithConfirmedLength) {
   suggester_->TrySuggestWithSurroundingText(u"my phone number is 16", 21, 21);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), phone_number_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 2);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 2u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
 }
 
@@ -824,7 +824,7 @@ TEST_F(PersonalInfoSuggesterTest,
   suggester_->TrySuggestWithSurroundingText(u"my email is ", 12, 12);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), email_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   EXPECT_TRUE(suggester_->HasSuggestions());
 }
@@ -857,7 +857,7 @@ TEST_F(PersonalInfoSuggesterTest,
   suggester_->TrySuggestWithSurroundingText(u"my email is ", 12, 12);
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), email_);
-  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   EXPECT_EQ(suggester_->GetSuggestions(),
             (std::vector<TextSuggestion>{TextSuggestion{

@@ -135,7 +135,7 @@ TEST_F(ArcContentFileSystemAsyncFileUtilTest, Truncate) {
       ash::switches::kEnableArcVm);
 
   GURL externalfile_url = ArcUrlToExternalFileUrl(GURL(kArcUrl));
-  const int64_t kLength = strlen(kData) / 2;
+  const uint64_t kLength = strlen(kData) / 2;
 
   base::RunLoop run_loop;
   async_file_util_->Truncate(

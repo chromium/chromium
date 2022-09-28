@@ -514,7 +514,7 @@ TEST_F(DlpFilesControllerTest, GetDlpRestrictionDetails_Mixed) {
   ASSERT_TRUE(files_controller_);
   auto result = files_controller_->GetDlpRestrictionDetails(kExampleUrl1);
 
-  ASSERT_EQ(result.size(), 3);
+  ASSERT_EQ(result.size(), 3u);
   std::vector<std::string> expected_urls;
   std::vector<DlpRulesManager::Component> expected_components;
   // Block:
@@ -552,7 +552,7 @@ TEST_F(DlpFilesControllerTest, GetDlpRestrictionDetails_Components) {
 
   ASSERT_TRUE(files_controller_);
   auto result = files_controller_->GetDlpRestrictionDetails(kExampleUrl1);
-  ASSERT_EQ(result.size(), 1);
+  ASSERT_EQ(result.size(), 1u);
   std::vector<std::string> expected_urls;
   std::vector<DlpRulesManager::Component> expected_components;
   expected_components.push_back(DlpRulesManager::Component::kUsb);
@@ -577,7 +577,7 @@ TEST_F(DlpFilesControllerTest, GetBlockedComponents) {
 
   ASSERT_TRUE(files_controller_);
   auto result = files_controller_->GetBlockedComponents(kExampleUrl1);
-  ASSERT_EQ(result.size(), 2);
+  ASSERT_EQ(result.size(), 2u);
   std::vector<DlpRulesManager::Component> expected_components;
   expected_components.push_back(DlpRulesManager::Component::kArc);
   expected_components.push_back(DlpRulesManager::Component::kCrostini);
@@ -840,7 +840,7 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
   files_controller_->CheckIfDownloadAllowed(GURL(kExampleUrl1), dst_url.path(),
                                             cb.Get());
 
-  ASSERT_EQ(events.size(), 1);
+  ASSERT_EQ(events.size(), 1u);
   EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
                              kExampleUrl1, expected_component,
                              DlpRulesManager::Restriction::kFiles,
@@ -981,7 +981,7 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
   files_controller_->CheckIfDownloadAllowed(GURL(kExampleUrl1), dst_url.path(),
                                             cb.Get());
 
-  ASSERT_EQ(events.size(), 1 + (choice_result ? 1 : 0));
+  ASSERT_EQ(events.size(), 1u + (choice_result ? 1 : 0));
   EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
                              kExampleUrl1, DlpRulesManager::Component::kUsb,
                              DlpRulesManager::Restriction::kFiles,
@@ -1046,7 +1046,7 @@ TEST_P(DlpFilesWarningDialogContentTest,
        IsFilesTransferRestricted_WarningDialogContent) {
   auto transfer_info = GetParam();
   std::vector<DlpFilesController::FileDaemonInfo> warned_files;
-  for (int i = 0; i < transfer_info.file_sources.size(); ++i) {
+  for (size_t i = 0; i < transfer_info.file_sources.size(); ++i) {
     warned_files.emplace_back(transfer_info.file_inodes[i],
                               base::FilePath(transfer_info.file_paths[i]),
                               transfer_info.file_sources[i]);
@@ -1068,7 +1068,7 @@ TEST_P(DlpFilesWarningDialogContentTest,
   DlpConfidentialContents expected_contents;
 
   if (transfer_info.files_action != DlpFilesController::FileAction::kDownload) {
-    for (int i = 0; i < transfer_info.file_sources.size(); ++i) {
+    for (size_t i = 0; i < transfer_info.file_sources.size(); ++i) {
       expected_contents.Add(
           chromeos::GetIconForPath(
               base::FilePath(std::string(transfer_info.file_paths[i])),

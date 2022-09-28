@@ -1160,13 +1160,13 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
   for (const auto& type_and_info : app_map) {
     auto install_url_origin =
         url::Origin::Create(type_and_info.second->GetInstallUrl());
-    EXPECT_EQ(0, install_url_origins.count(install_url_origin))
+    EXPECT_EQ(0u, install_url_origins.count(install_url_origin))
         << "System web app's install_url origin should be unique.";
     install_url_origins.insert(install_url_origin);
 
     auto start_url_origin =
         url::Origin::Create(type_and_info.second->GetWebAppInfo()->start_url);
-    EXPECT_EQ(0, start_url_origins.count(start_url_origin))
+    EXPECT_EQ(0u, start_url_origins.count(start_url_origin))
         << "System web app's start_url origin should be unique.";
     start_url_origins.insert(start_url_origin);
   }

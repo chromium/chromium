@@ -581,13 +581,13 @@ class CopyOrMoveIOTaskWithScansTest
   void ExpectScan(FileInfo file_info,
                   enterprise_connectors::FileTransferAnalysisDelegate::
                       FileTransferAnalysisResult result) {
-    ASSERT_EQ(scanning_expectations_.count(file_info.source_url), 0);
+    ASSERT_EQ(scanning_expectations_.count(file_info.source_url), 0u);
     scanning_expectations_[file_info.source_url] = result;
   }
 
   // Expect a scan for the directory specified using `file_info`.
   void ExpectDirectoryScan(FileInfo file_info) {
-    ASSERT_EQ(directory_scanning_expectations_.count(file_info.source_url), 0);
+    ASSERT_EQ(directory_scanning_expectations_.count(file_info.source_url), 0u);
     directory_scanning_expectations_.insert(file_info.source_url);
   }
 
@@ -664,14 +664,12 @@ class CopyOrMoveIOTaskWithScansTest
           progress_callback,
       const std::vector<FileInfo>& file_infos,
       const storage::FileSystemURL& dest,
-      size_t total_num_files = -1) {
-    if (total_num_files == -1) {
-      total_num_files = file_infos.size();
-    }
-
-    EXPECT_CALL(progress_callback,
-                Run(AllOf(Field(&ProgressStatus::state, State::kInProgress),
-                          GetBaseMatcher(file_infos, dest, total_num_files))))
+      absl::optional<size_t> total_num_files = absl::nullopt) {
+    EXPECT_CALL(
+        progress_callback,
+        Run(AllOf(Field(&ProgressStatus::state, State::kInProgress),
+                  GetBaseMatcher(file_infos, dest,
+                                 total_num_files.value_or(file_infos.size())))))
         .Times(AnyNumber());
   }
 
@@ -754,10 +752,8 @@ class CopyOrMoveIOTaskWithScansTest
       const storage::FileSystemURL& dest,
       const std::vector<absl::optional<base::File::Error>>& expected_errors,
       base::RepeatingClosure quit_closure,
-      size_t total_num_files = -1) {
-    if (total_num_files == -1) {
-      total_num_files = file_infos.size();
-    }
+      absl::optional<size_t> maybe_total_num_files = absl::nullopt) {
+    size_t total_num_files = maybe_total_num_files.value_or(file_infos.size());
     ASSERT_EQ(expected_errors.size(), file_infos.size());
     // We should get one complete callback when the copy/move finishes.
     bool has_error = std::any_of(

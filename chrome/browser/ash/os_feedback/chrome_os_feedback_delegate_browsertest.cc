@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_EQ("", feedback_data->page_url());
   EXPECT_EQ(base::UTF16ToUTF8(kDescription), feedback_data->description());
   // Verify screenshot is added to feedback data.
-  EXPECT_GT(feedback_data->image().size(), 0);
+  EXPECT_GT(feedback_data->image().size(), 0u);
   // Verify consent data appended to sys_info map.
   auto consent_granted =
       feedback_data->sys_info()->find(kFeedbackUserConsentKey);
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("", feedback_data->page_url());
   EXPECT_EQ(base::UTF16ToUTF8(kDescription), feedback_data->description());
   // Verify screenshot is added to feedback data.
-  EXPECT_GT(feedback_data->image().size(), 0);
+  EXPECT_GT(feedback_data->image().size(), 0u);
   // Verify consent data appended to sys_info map.
   auto consent_granted =
       feedback_data->sys_info()->find(kFeedbackUserConsentKey);
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, NoScreenshot) {
   feedback_delegate_.GetScreenshotPng(future.GetCallback());
 
   const std::vector<uint8_t> result = future.Get();
-  EXPECT_EQ(0, result.size());
+  EXPECT_EQ(0u, result.size());
 }
 
 // Test if Diagnostics app is opened.
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
   std::set<views::Widget*> owned_widgets_pre_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
 
-  EXPECT_EQ(owned_widgets_pre_dialog.size(), 0);
+  EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
 
   // Initialize the delegate.
   ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
   views::Widget::GetAllOwnedWidgets(feedback_window,
                                     &owned_widgets_post_dialog);
 
-  EXPECT_EQ(owned_widgets_post_dialog.size(), 1);
+  EXPECT_EQ(owned_widgets_post_dialog.size(), 1u);
 }
 
 // Test that the SystemInfo (Histograms) dialog opens
@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenSystemInfoDialog) {
   std::set<views::Widget*> owned_widgets_pre_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
 
-  EXPECT_EQ(owned_widgets_pre_dialog.size(), 0);
+  EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
 
   // Initialize the delegate.
   ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenSystemInfoDialog) {
   views::Widget::GetAllOwnedWidgets(feedback_window,
                                     &owned_widgets_post_dialog);
 
-  EXPECT_EQ(owned_widgets_post_dialog.size(), 1);
+  EXPECT_EQ(owned_widgets_post_dialog.size(), 1u);
 }
 
 // Test that the bluetooth logs dialog opens
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   std::set<views::Widget*> owned_widgets_pre_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
 
-  EXPECT_EQ(owned_widgets_pre_dialog.size(), 0);
+  EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
 
   // Initialize the delegate.
   ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   views::Widget::GetAllOwnedWidgets(feedback_window,
                                     &owned_widgets_post_dialog);
 
-  EXPECT_EQ(owned_widgets_post_dialog.size(), 1);
+  EXPECT_EQ(owned_widgets_post_dialog.size(), 1u);
 }
 
 // Test that system logs are preloaded and they are needed.

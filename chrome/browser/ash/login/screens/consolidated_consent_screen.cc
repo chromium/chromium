@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/timezone.h"
@@ -195,7 +196,7 @@ void ConsolidatedConsentScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kBackDemoButtonClicked) {
     exit_callback_.Run(Result::BACK_DEMO);
   } else if (action_id == kAcceptButtonClicked) {
-    CHECK_EQ(args.size(), 5);
+    CHECK_EQ(args.size(), 5u);
     const bool enable_usage = args[1].GetBool();
     const bool enable_backup = args[2].GetBool();
     const bool enable_location = args[3].GetBool();

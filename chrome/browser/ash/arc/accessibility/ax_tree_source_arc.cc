@@ -594,8 +594,9 @@ void AXTreeSourceArc::GetChildren(
       continue;
 
     // move the current node to be visited later if necessary.
-    for (int j = i; j + 1 < out_children->size() &&
-                    NeedReorder(out_children->at(j), out_children->at(j + 1));
+    for (size_t j = i;
+         j + 1 < out_children->size() &&
+         NeedReorder(out_children->at(j), out_children->at(j + 1));
          j++) {
       std::swap(out_children->at(j), out_children->at(j + 1));
     }

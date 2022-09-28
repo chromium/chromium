@@ -225,7 +225,7 @@ void TrashIOTask::UpdateTrashEntry(size_t source_idx) {
 void TrashIOTask::ValidateAndDecrementFreeSpace(
     size_t source_idx,
     const trash::TrashPathsMap::reverse_iterator& it) {
-  size_t trash_contents_size =
+  int trash_contents_size =
       trash_entries_[source_idx].trash_info_contents.size();
   progress_.total_bytes += trash_contents_size;
 

@@ -19,6 +19,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -185,7 +186,7 @@ void CreateAndSaveWindowInfo(int desk_id,
 
   if (window_state_type == chromeos::WindowStateType::kPrimarySnapped ||
       window_state_type == chromeos::WindowStateType::kSecondarySnapped) {
-    DCHECK_GT(snap_percentage, 0);
+    DCHECK_GT(snap_percentage, 0u);
     window_info.snap_percentage = snap_percentage;
   }
 
@@ -1052,7 +1053,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   content::RunAllTasksUntilIdle();
 
   // Verify there is new browser launched.
-  ASSERT_EQ(1, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Browser* browser_from_full_restore = BrowserList::GetInstance()->get(0);
 
   // We're now going to create a new desk and a browser in that desk.
@@ -1074,7 +1075,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   new_browser->window()->Show();
   new_browser->window()->SetBounds(expected_bounds);
 
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 2);
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
 
   // The browser has now been created. We're now going to enter overview mode
   // and save the desk as a template. Once saved, we'll exit overview mode.
@@ -1093,7 +1094,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   new_browser->window()->SetBounds(expected_bounds + gfx::Vector2d(10, 10));
   web_app::CloseAndWait(new_browser);
 
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 1);
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
 
   // We're now going to launch the template and verify that we have a new
   // browser, and that it has the correct bounds and URL.
@@ -1108,7 +1109,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();
 
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 2);
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
 
   Browser* browser_from_template = nullptr;
   for (Browser* b : *BrowserList::GetInstance()) {

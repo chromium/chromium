@@ -244,7 +244,7 @@ bool PersonalInfoSuggester::TrySuggestWithSurroundingText(
     int anchor_pos) {
   // |text| could be very long, we get at most |kMaxTextBeforeCursorLength|
   // characters before cursor.
-  int start_pos = cursor_pos >= kMaxTextBeforeCursorLength
+  int start_pos = cursor_pos >= static_cast<int>(kMaxTextBeforeCursorLength)
                       ? cursor_pos - kMaxTextBeforeCursorLength
                       : 0;
   std::u16string text_before_cursor =

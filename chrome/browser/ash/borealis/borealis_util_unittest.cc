@@ -107,7 +107,7 @@ TEST_F(BorealisUtilTest, FeedbackFormUrlIsPrefilled) {
       net::GetValueForKeyInQuery(url, kDeviceInformationKey, &json_string));
   auto json_root = base::JSONReader::Read(json_string);
   // We currently add this many key/value pairs to the JSON field.
-  EXPECT_EQ(json_root.value().GetDict().size(), 7);
+  EXPECT_EQ(json_root.value().GetDict().size(), 7u);
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleUnknownBorealisAppId) {

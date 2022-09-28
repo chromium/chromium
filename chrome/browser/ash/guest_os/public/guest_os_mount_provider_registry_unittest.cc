@@ -68,9 +68,9 @@ TEST_F(GuestOsMountProviderRegistryTest, TestObservation) {
   std::vector<Id> expected = std::vector<Id>{0, 1};
   ASSERT_EQ(obs.ids_, expected);
   registry.Unregister(0);
-  ASSERT_EQ(obs.ids_.size(), 1);
+  ASSERT_EQ(obs.ids_.size(), 1u);
   registry.Unregister(1);
-  ASSERT_EQ(obs.ids_.size(), 0);
+  ASSERT_EQ(obs.ids_.size(), 0u);
 }
 
 }  // namespace guest_os

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_password_change_screen_handler.h"
@@ -69,7 +70,7 @@ void ActiveDirectoryPasswordChangeScreen::OnUserAction(
     return;
   }
   if (action_id == "changePassword") {
-    CHECK_EQ(3, args.size());
+    CHECK_EQ(3u, args.size());
     const std::string& old_password = args[1].GetString();
     const std::string& new_password = args[2].GetString();
     HandleChangePassword(old_password, new_password);

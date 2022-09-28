@@ -150,7 +150,7 @@ TEST_F(NearbyShareSessionImplFuseBoxTest, FileIntent) {
   ShowArcWindow();
   run_loop.Run();
 
-  ASSERT_EQ(shared_intent->files.size(), 2);
+  ASSERT_EQ(shared_intent->files.size(), 2u);
 
   ASSERT_TRUE(base::StartsWith(shared_intent->files[0]->url.spec(),
                                "file:///media/fuse/fusebox"));

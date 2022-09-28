@@ -60,7 +60,7 @@ TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
                       R"("vm_name":"test-vm",)"
                       R"("vm_type":0})");
   auto extras = ExtrasFromShortcutId(*base::JSONReader::Read(shortcut));
-  EXPECT_EQ(3, extras.size());
+  EXPECT_EQ(3u, extras.size());
 
   // Container with multi-profile should include settings_profile.
   auto pref = base::JSONReader::Read(R"({
@@ -82,7 +82,7 @@ TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
                       R"("vm_name":"test-vm",)"
                       R"("vm_type":0})");
   extras = ExtrasFromShortcutId(*base::JSONReader::Read(shortcut));
-  EXPECT_EQ(4, extras.size());
+  EXPECT_EQ(4u, extras.size());
 }
 
 TEST_F(CrostiniTerminalTest, GetSSHConnections) {

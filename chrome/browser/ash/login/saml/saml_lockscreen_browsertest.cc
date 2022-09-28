@@ -884,7 +884,7 @@ class SAMLCookieTransferTest : public LockscreenWebUiTest {
               run_loop.Quit();
             }));
     run_loop.Run();
-    EXPECT_GT(cookie_list_.size(), 0);
+    EXPECT_GT(cookie_list_.size(), 0u);
 
     const auto saml_cookie_iterator = base::ranges::find(
         cookie_list_, cookie_name,

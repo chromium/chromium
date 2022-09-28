@@ -120,7 +120,7 @@ std::string TokenHardwareChecker::H(std::string input,
   // not to call this method if you're on a thread that disallows blocking.
   base::ScopedBlockingCall sbc(FROM_HERE, base::BlockingType::WILL_BLOCK);
   std::string ret = std::move(input);
-  for (int i = 0; i < kHashIterations; ++i) {
+  for (unsigned i = 0; i < kHashIterations; ++i) {
     std::string raw_sha = crypto::SHA256HashString(ret + salt);
     base::Base64Encode(raw_sha, &ret);
   }

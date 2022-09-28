@@ -204,7 +204,7 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
 
   // Moves to the first test app in a populated list of apps.
   // Returns the index of that item.
-  const int MoveToFirstTestApp() {
+  int MoveToFirstTestApp() {
     // Focus the shelf. This selects the launcher button.
     sm_.Call([this]() {
       EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));

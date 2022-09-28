@@ -841,7 +841,7 @@ TEST(BrowserDataMigratorUtilTest, UpdatePreferencesKeyByType) {
   // If a type other than string is found in a list, it will be left unchanged.
   base::Value::List* l = ash_dict.FindListByDottedPath(wrong_type_key);
   EXPECT_NE(nullptr, l);
-  EXPECT_EQ(3, l->size());
+  EXPECT_EQ(3u, l->size());
 
   // Test Lacros against expected results.
   d = lacros_dict.FindDictByDottedPath("extensions.settings");
@@ -849,7 +849,7 @@ TEST(BrowserDataMigratorUtilTest, UpdatePreferencesKeyByType) {
   EXPECT_EQ(expected_keys, CollectDictKeys(d));
   l = lacros_dict.FindListByDottedPath(wrong_type_key);
   EXPECT_NE(nullptr, l);
-  EXPECT_EQ(3, l->size());
+  EXPECT_EQ(3u, l->size());
 }
 
 TEST(BrowserDataMigratorUtilTest, MigratePreferencesContents) {
@@ -895,7 +895,7 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferencesContents) {
   base::Value::List* ash_extension_list =
       ash_root_dict->FindListByDottedPath(extension_list_key);
   EXPECT_NE(nullptr, ash_extension_list);
-  EXPECT_EQ(2, ash_extension_list->size());
+  EXPECT_EQ(2u, ash_extension_list->size());
   EXPECT_EQ(kExtensionsAshOnly[0], (*ash_extension_list)[0].GetString());
   EXPECT_EQ(kExtensionsBothChromes[0], (*ash_extension_list)[1].GetString());
 
@@ -917,7 +917,7 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferencesContents) {
   base::Value::List* lacros_extension_list =
       lacros_root_dict->FindListByDottedPath(extension_list_key);
   EXPECT_NE(nullptr, lacros_extension_list);
-  EXPECT_EQ(2, lacros_extension_list->size());
+  EXPECT_EQ(2u, lacros_extension_list->size());
   EXPECT_EQ(kExtensionsBothChromes[0], (*lacros_extension_list)[0].GetString());
   EXPECT_EQ(kMoveExtensionId, (*lacros_extension_list)[1].GetString());
 }

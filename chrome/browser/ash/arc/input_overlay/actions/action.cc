@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 
+#include "base/check_op.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/aura/window.h"
@@ -393,11 +394,11 @@ bool Action::VerifyOnKeyRelease(ui::DomCode code) {
   if (!touch_id_) {
     LOG(ERROR) << "There should be a touch ID for the release {"
                << ui::KeycodeConverter::DomCodeToCodeString(code) << "}.";
-    DCHECK_EQ(keys_pressed_.size(), 0);
+    DCHECK_EQ(keys_pressed_.size(), 0u);
     return false;
   }
 
-  DCHECK_NE(keys_pressed_.size(), 0);
+  DCHECK_NE(keys_pressed_.size(), 0u);
   if (keys_pressed_.size() == 0 || !keys_pressed_.contains(code))
     return false;
 
@@ -461,7 +462,7 @@ void Action::UpdateTouchDownPositions() {
 
   touch_down_positions_.clear();
   const auto& content_bounds = touch_injector_->content_bounds();
-  for (int i = 0; i < original_positions_.size(); i++) {
+  for (size_t i = 0; i < original_positions_.size(); i++) {
     auto point = beta_
                      ? current_positions_[i].CalculatePosition(content_bounds)
                      : original_positions_[i].CalculatePosition(content_bounds);

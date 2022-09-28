@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -92,7 +93,7 @@ void ExtractIOTask::FinishedExtraction(base::FilePath directory, bool success) {
       base::PlatformThread::Sleep(base::Microseconds(1));
     }
   }
-  DCHECK_GT(extractCount_, 0);
+  DCHECK_GT(extractCount_, 0u);
   if (--extractCount_ == 0) {
     progress_.state = success ? State::kSuccess : State::kError;
     RecordUmaExtractStatus(progress_.state == State::kSuccess
@@ -231,7 +232,7 @@ void ExtractIOTask::GotFreeDiskSpace(int64_t free_space) {
 }
 
 void ExtractIOTask::ZipInfoCallback(unzip::mojom::InfoPtr info) {
-  DCHECK_GT(extractCount_, 0);
+  DCHECK_GT(extractCount_, 0u);
   if (info->size_is_valid) {
     progress_.total_bytes += info->size;
   }

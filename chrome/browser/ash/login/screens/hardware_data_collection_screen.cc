@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_op.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -105,7 +106,7 @@ void HWDataCollectionScreen::OnUserAction(const base::Value::List& args) {
                            ? Result::ACCEPTED_WITH_HW_DATA_USAGE
                            : Result::ACCEPTED_WITHOUT_HW_DATA_USAGE);
   } else if (action_id == kUserActionSelectHWDataUsage) {
-    CHECK_EQ(args.size(), 2);
+    CHECK_EQ(args.size(), 2u);
     const bool enabled = args[1].GetBool();
     SetHWDataUsageEnabled(enabled);
   } else {

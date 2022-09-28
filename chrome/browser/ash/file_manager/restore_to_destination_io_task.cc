@@ -160,7 +160,7 @@ void RestoreToDestinationIOTask::OnProgressCallback(
   progress_.bytes_transferred = status.bytes_transferred;
   progress_.total_bytes = status.total_bytes;
   progress_.remaining_seconds = status.remaining_seconds;
-  for (int i = 0; i < status.outputs.size(); ++i) {
+  for (size_t i = 0; i < status.outputs.size(); ++i) {
     if (i < progress_.outputs.size() && i < status.outputs.size()) {
       if (progress_.outputs[i].url == status.outputs[i].url &&
           progress_.outputs[i].error == status.outputs[i].error) {

@@ -69,7 +69,7 @@ void BaseScreen::OnUserActionDeprecated(const std::string& action_id) {
 }
 
 void BaseScreen::OnUserAction(const base::Value::List& args) {
-  CHECK_EQ(args.size(), 1);
+  CHECK_EQ(args.size(), 1u);
   OnUserActionDeprecated(args[0].GetString());
 }
 

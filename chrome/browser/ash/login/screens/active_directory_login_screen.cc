@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 
+#include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
@@ -82,7 +83,7 @@ void ActiveDirectoryLoginScreen::OnUserAction(const base::Value::List& args) {
     return;
   }
   if (action_id == "completeAdAuthentication") {
-    CHECK_EQ(args.size(), 3);
+    CHECK_EQ(args.size(), 3u);
     const std::string& username = args[1].GetString();
     const std::string& password = args[2].GetString();
     HandleCompleteAuth(username, password);

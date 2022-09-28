@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
   EXPECT_EQ(kTestKeyboardName,
             test::OobeJS().GetAttributeString("deviceName",
                                               kHidPairingDialogEnterCodePage));
-  EXPECT_EQ(strlen(kTestPinCode),
+  EXPECT_EQ(static_cast<int>(strlen(kTestPinCode)),
             test::OobeJS().GetAttributeInt("numKeysEntered",
                                            kHidPairingDialogEnterCodePage));
 

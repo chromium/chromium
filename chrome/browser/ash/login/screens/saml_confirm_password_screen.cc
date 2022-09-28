@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
+
 #include "ash/constants/ash_features.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -39,7 +41,7 @@ void SamlConfirmPasswordScreen::SetContextAndPasswords(
     ::login::StringList scraped_saml_passwords) {
   user_context_ = std::move(user_context);
   scraped_saml_passwords_ = std::move(scraped_saml_passwords);
-  DCHECK_NE(scraped_saml_passwords_.size(), 1);
+  DCHECK_NE(scraped_saml_passwords_.size(), 1u);
 }
 
 void SamlConfirmPasswordScreen::TryPassword(const std::string& password) {
@@ -98,7 +100,7 @@ void SamlConfirmPasswordScreen::HideImpl() {}
 void SamlConfirmPasswordScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == "inputPassword") {
-    CHECK_EQ(args.size(), 2);
+    CHECK_EQ(args.size(), 2u);
     TryPassword(args[1].GetString());
     return;
   }

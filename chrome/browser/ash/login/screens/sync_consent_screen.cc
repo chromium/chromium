@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -479,7 +480,7 @@ void SyncConsentScreen::HandleContinue(
 void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinue) {
-    CHECK_EQ(args.size(), 5);
+    CHECK_EQ(args.size(), 5u);
     const bool opted_in = args[1].GetBool();
     const bool review_sync = args[2].GetBool();
     const base::Value::List& consent_description_list = args[3].GetList();

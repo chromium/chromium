@@ -12,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -176,13 +177,13 @@ void MarketingOptInScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kUserActionGetStarted) {
-    CHECK_EQ(args.size(), 2);
+    CHECK_EQ(args.size(), 2u);
     const bool chromebook_email_opt_in = args[1].GetBool();
     OnGetStarted(chromebook_email_opt_in);
     return;
   }
   if (action_id == kUserActionSetA11yNavigationButtonsEnabled) {
-    CHECK_EQ(args.size(), 2);
+    CHECK_EQ(args.size(), 2u);
     const bool enabled = args[1].GetBool();
     SetA11yNavigationButtonsEnabled(enabled);
     return;

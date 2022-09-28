@@ -51,7 +51,7 @@ TEST(PrintingOAuth2TestAuthorizationServerTest, ParseURLParameters) {
   base::flat_map<std::string, std::string> results;
   results["trash"] = "something";
   EXPECT_TRUE(ParseURLParameters("ala=ma&kota", results));
-  EXPECT_EQ(results.size(), 2);
+  EXPECT_EQ(results.size(), 2u);
   EXPECT_TRUE(results.contains("kota"));
   EXPECT_EQ(results["ala"], "ma");
   EXPECT_EQ(results["kota"], "");
@@ -115,7 +115,7 @@ TEST(PrintingOAuth2TestAuthorizationServerTest,
   // Process and check the request and send the response.
   base::Value::Dict content;
   ASSERT_EQ(server.ReceivePOSTWithJSON("https://abc/def", content), "");
-  EXPECT_EQ(content.size(), 2);
+  EXPECT_EQ(content.size(), 2u);
   EXPECT_EQ(*content.FindString("field1"), "val1");
   EXPECT_EQ(*content.FindString("field2"), "val2");
   content.Set("field3", "val3");

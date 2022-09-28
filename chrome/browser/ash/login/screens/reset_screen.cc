@@ -11,6 +11,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/scoped_guest_button_blocker.h"
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -307,7 +308,7 @@ void ResetScreen::OnUserAction(const base::Value::List& args) {
     return;
   }
   if (action_id == kUserActionTpmFirmwareUpdateChecked) {
-    CHECK_EQ(args.size(), 2);
+    CHECK_EQ(args.size(), 2u);
     bool checked = args[1].GetBool();
     if (view_) {
       view_->SetIsTpmFirmwareUpdateChecked(checked);

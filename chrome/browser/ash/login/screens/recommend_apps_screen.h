@@ -94,7 +94,7 @@ class RecommendAppsScreen : public BaseScreen,
   // Skip the screen for testing if set to true.
   bool skip_for_testing_ = false;
 
-  int recommended_app_count_ = 0;
+  size_t recommended_app_count_ = 0;
 
   base::raw_ptr<PrefService> pref_service_;
 

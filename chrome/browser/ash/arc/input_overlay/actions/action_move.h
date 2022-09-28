@@ -95,7 +95,7 @@ class ActionMove : public Action {
 
   // For key-bound move.
   void CalculateMoveVector(gfx::PointF& touch_press_pos,
-                           int direction_index,
+                           size_t direction_index,
                            bool key_press,
                            const gfx::RectF& content_bounds,
                            const gfx::Transform* rotation_transform);

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -72,7 +73,7 @@ void DemoPreferencesScreen::HideImpl() {}
 void DemoPreferencesScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinue) {
-    CHECK_EQ(args.size(), 2);
+    CHECK_EQ(args.size(), 2u);
     std::string country(
         g_browser_process->local_state()->GetString(prefs::kDemoModeCountry));
     if (country == DemoSession::kCountryNotSelectedId) {
@@ -88,7 +89,7 @@ void DemoPreferencesScreen::OnUserAction(const base::Value::List& args) {
   } else if (action_id == kUserActionClose) {
     exit_callback_.Run(Result::CANCELED);
   } else if (action_id == kUserActionSetDemoModeCountry) {
-    CHECK_EQ(args.size(), 2);
+    CHECK_EQ(args.size(), 2u);
     g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
                                                 args[1].GetString());
   } else {

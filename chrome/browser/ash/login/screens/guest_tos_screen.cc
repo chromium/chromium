@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -81,7 +82,7 @@ void GuestTosScreen::OnUserAction(const base::Value::List& args) {
   } else if (action_id == kUserActionCancelClicked) {
     exit_callback_.Run(Result::CANCEL);
   } else if (action_id == kUserActionGuestToSAccept) {
-    CHECK_EQ(args.size(), 2);
+    CHECK_EQ(args.size(), 2u);
     const bool enable_usage_stats = args[1].GetBool();
     OnAccept(enable_usage_stats);
   } else {

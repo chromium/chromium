@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
 #include "chrome/browser/apps/app_discovery_service/play_extras.h"
@@ -88,8 +89,8 @@ void RecommendAppsScreen::OnSkip() {
 }
 
 void RecommendAppsScreen::OnInstall(base::Value::List apps) {
-  CHECK_GT(recommended_app_count_, 0);
-  CHECK_GT(apps.size(), 0);
+  CHECK_GT(recommended_app_count_, 0u);
+  CHECK_GT(apps.size(), 0u);
   int selected_app_count = static_cast<int>(apps.size());
   int selected_recommended_percentage =
       100 * selected_app_count / recommended_app_count_;
@@ -150,8 +151,7 @@ void RecommendAppsScreen::ShowImpl() {
 void RecommendAppsScreen::HideImpl() {}
 
 void RecommendAppsScreen::OnLoadSuccess(base::Value app_list) {
-  recommended_app_count_ =
-      app_list.is_list() ? static_cast<int>(app_list.GetList().size()) : 0;
+  recommended_app_count_ = app_list.is_list() ? app_list.GetList().size() : 0;
   if (view_)
     view_->OnLoadSuccess(std::move(app_list));
 }
@@ -221,7 +221,7 @@ void RecommendAppsScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionSkip) {
     OnSkip();
   } else if (action_id == kUserActionInstall) {
-    CHECK_EQ(args.size(), 2);
+    CHECK_EQ(args.size(), 2u);
     OnInstall(args[1].GetList().Clone());
   } else {
     BaseScreen::OnUserAction(args);

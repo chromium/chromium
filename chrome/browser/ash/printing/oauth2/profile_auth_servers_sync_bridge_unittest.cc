@@ -246,7 +246,7 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, GetData) {
   while (output->HasNext()) {
     data.push_back(output->Next());
   }
-  ASSERT_EQ(data.size(), 1);
+  ASSERT_EQ(data.size(), 1u);
   EXPECT_EQ(data[0].first, uri_1_);
   ASSERT_TRUE(data[0].second);
   EXPECT_EQ(

@@ -169,7 +169,7 @@ bool InputElement::IsOverlapped(const InputElement& input_element) const {
   return mouse_action_ == input_element.mouse_action();
 }
 
-void InputElement::SetKey(int index, ui::DomCode code) {
+void InputElement::SetKey(size_t index, ui::DomCode code) {
   DCHECK(index < keys_.size());
   if (index >= keys_.size())
     return;

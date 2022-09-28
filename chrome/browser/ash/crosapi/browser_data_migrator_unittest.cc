@@ -404,7 +404,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
     run_loop.Run();
     ASSERT_TRUE(result.has_value());
     EXPECT_FALSE(result.value());
-    EXPECT_EQ(1024 * 1024, out_size);
+    EXPECT_EQ(1024u * 1024u, out_size);
     EXPECT_FALSE(restart_called);
   }
 

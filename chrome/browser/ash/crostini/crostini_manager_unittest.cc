@@ -717,20 +717,20 @@ TEST_F(CrostiniManagerTest, UninstallPackageOwningFileSignalOperationBlocked) {
 TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerCreated) {
   const base::Value::List* pref =
       &profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
-  EXPECT_EQ(pref->size(), 0);
+  EXPECT_EQ(pref->size(), 0u);
   crostini_manager()->CreateLxdContainer(
       container_id(), absl::nullopt, absl::nullopt,
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS));
   run_loop()->Run();
   pref = &profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
-  EXPECT_EQ(pref->size(), 1);
+  EXPECT_EQ(pref->size(), 1u);
 }
 
 TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerExists) {
   const base::Value::List* pref =
       &profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
-  EXPECT_EQ(pref->size(), 0);
+  EXPECT_EQ(pref->size(), 0u);
   vm_tools::cicerone::CreateLxdContainerResponse response;
   response.set_status(vm_tools::cicerone::CreateLxdContainerResponse::EXISTS);
   fake_cicerone_client_->set_create_lxd_container_response(response);
@@ -740,7 +740,7 @@ TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerExists) {
                      CrostiniResult::SUCCESS));
   run_loop()->Run();
   pref = &profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
-  EXPECT_EQ(pref->size(), 1);
+  EXPECT_EQ(pref->size(), 1u);
 }
 
 class CrostiniManagerRestartTest : public CrostiniManagerTest,
@@ -1932,14 +1932,14 @@ TEST_F(CrostiniManagerRestartTest, UninstallUnregistersContainers) {
   restart_id_ = crostini_manager()->RestartCrostini(
       container_id(),
       base::BindLambdaForTesting([this, registry](CrostiniResult result) {
-        ASSERT_GT(registry->List().size(), 0);
+        ASSERT_GT(registry->List().size(), 0u);
         crostini_manager()->RemoveCrostini(
             kVmName,
             base::BindOnce(&CrostiniManagerRestartTest::RemoveCrostiniCallback,
                            base::Unretained(this), run_loop()->QuitClosure()));
       }));
   run_loop()->Run();
-  ASSERT_EQ(registry->List().size(), 0);
+  ASSERT_EQ(registry->List().size(), 0u);
 }
 
 TEST_F(CrostiniManagerRestartTest,
@@ -1953,13 +1953,13 @@ TEST_F(CrostiniManagerRestartTest,
   restart_id_ = crostini_manager()->RestartCrostini(
       container_id(),
       base::BindLambdaForTesting([this, registry](CrostiniResult result) {
-        ASSERT_GT(registry->List().size(), 0);
+        ASSERT_GT(registry->List().size(), 0u);
         crostini_manager()->DeleteLxdContainer(
             container_id(),
             base::BindOnce(&ExpectBool, run_loop()->QuitClosure(), true));
       }));
   run_loop()->Run();
-  ASSERT_EQ(registry->List().size(), 0);
+  ASSERT_EQ(registry->List().size(), 0u);
 }
 
 TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
@@ -1975,9 +1975,9 @@ TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
       base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
                      base::Unretained(this), run_loop()->QuitClosure()));
   run_loop()->Run();
-  ASSERT_GT(registry->List().size(), 0);
+  ASSERT_GT(registry->List().size(), 0u);
   crostini_manager()->OnLxdContainerDeleted(signal);
-  ASSERT_EQ(registry->List().size(), 0);
+  ASSERT_EQ(registry->List().size(), 0u);
 }
 
 class CrostiniManagerEnterpriseReportingTest

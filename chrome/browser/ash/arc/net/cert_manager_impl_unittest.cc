@@ -203,7 +203,7 @@ TEST_F(CertManagerImplTest, ImportKeyAndCertTest) {
   EXPECT_EQ(key_id, cert_id);
   EXPECT_EQ(import_future.imported_cert_id().value(), cert_id);
   EXPECT_EQ(import_future.imported_slot_id().value(),
-            PK11_GetSlotID(private_slot.get()));
+            static_cast<int>(PK11_GetSlotID(private_slot.get())));
 }
 
 // Importing a certificate with the wrong key fail.

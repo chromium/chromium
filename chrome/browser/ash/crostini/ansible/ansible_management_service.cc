@@ -7,6 +7,7 @@
 #include <memory>
 #include <sstream>
 
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
@@ -170,7 +171,7 @@ void AnsibleManagementService::OnInstallLinuxPackageProgress(
 
 void AnsibleManagementService::GetAnsiblePlaybookToApply(
     const guest_os::GuestId& container_id) {
-  DCHECK_GT(configuration_tasks_.count(container_id), 0);
+  DCHECK_GT(configuration_tasks_.count(container_id), 0u);
   const base::FilePath& ansible_playbook_file_path =
       configuration_tasks_[container_id]->path;
   bool success = base::ThreadPool::PostTaskAndReplyWithResult(
@@ -199,7 +200,7 @@ void AnsibleManagementService::OnAnsiblePlaybookRetrieved(
 
 void AnsibleManagementService::ApplyAnsiblePlaybook(
     const guest_os::GuestId& container_id) {
-  DCHECK_GT(configuration_tasks_.count(container_id), 0);
+  DCHECK_GT(configuration_tasks_.count(container_id), 0u);
   if (!GetCiceroneClient()->IsApplyAnsiblePlaybookProgressSignalConnected()) {
     // Technically we could still start the application, but we wouldn't be able
     // to detect when the application completes, successfully or otherwise.
@@ -291,7 +292,7 @@ void AnsibleManagementService::OnUninstallPackageProgress(
 void AnsibleManagementService::OnConfigurationFinished(
     const guest_os::GuestId& container_id,
     bool success) {
-  DCHECK_GT(configuration_tasks_.count(container_id), 0);
+  DCHECK_GT(configuration_tasks_.count(container_id), 0u);
   if (success && container_id == DefaultContainerId()) {
     profile_->GetPrefs()->SetBoolean(prefs::kCrostiniDefaultContainerConfigured,
                                      true);
@@ -309,7 +310,7 @@ void AnsibleManagementService::RetryConfiguration(
     const guest_os::GuestId& container_id) {
   // We're not 100% sure where we lost connection, so we'll have to restart from
   // the very beginning.
-  DCHECK_GT(configuration_tasks_.count(container_id), 0);
+  DCHECK_GT(configuration_tasks_.count(container_id), 0u);
   VLOG(1) << "Retrying configuration";
   CrostiniManager::GetForProfile(profile_)->InstallLinuxPackageFromApt(
       container_id, kCrostiniDefaultAnsibleVersion,
@@ -320,7 +321,7 @@ void AnsibleManagementService::RetryConfiguration(
 void AnsibleManagementService::CompleteConfiguration(
     const guest_os::GuestId& container_id,
     bool success) {
-  DCHECK_GT(configuration_tasks_.count(container_id), 0);
+  DCHECK_GT(configuration_tasks_.count(container_id), 0u);
   auto callback = std::move(configuration_tasks_[container_id]->callback);
   configuration_tasks_.erase(configuration_tasks_.find(container_id));
 
