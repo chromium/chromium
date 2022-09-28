@@ -169,10 +169,6 @@ struct FrameSenderConfig {
   base::TimeDelta min_playout_delay = kDefaultTargetPlayoutDelay;
   base::TimeDelta max_playout_delay = kDefaultTargetPlayoutDelay;
 
-  // Starting playout delay when streaming animated content.
-  // TODO(https://crbug.com/1363694): animated playout delay should be removed.
-  base::TimeDelta animated_playout_delay = kDefaultTargetPlayoutDelay;
-
   // RTP payload type enum: Specifies the type/encoding of frame data.
   RtpPayloadType rtp_payload_type = RtpPayloadType::UNKNOWN;
 

@@ -98,13 +98,12 @@ FrameSenderImpl::FrameSenderImpl(
   DCHECK(transport_sender_);
   DCHECK_GT(config_.rtp_timebase, 0);
   DCHECK(congestion_control_);
-  // We assume animated content to begin with since that is the common use
-  // case today.
+
+  // We start at the minimum playout delay and extend if necessary later.
   VLOG(1) << SENDER_SSRC << "min latency "
-          << config_.min_playout_delay.InMilliseconds() << "max latency "
-          << config_.max_playout_delay.InMilliseconds() << "animated latency "
-          << config_.animated_playout_delay.InMilliseconds();
-  SetTargetPlayoutDelay(config_.animated_playout_delay);
+          << config_.min_playout_delay.InMilliseconds() << ", max latency "
+          << config_.max_playout_delay.InMilliseconds();
+  SetTargetPlayoutDelay(config_.min_playout_delay);
 
   CastTransportRtpConfig transport_config;
   transport_config.ssrc = config.sender_ssrc;

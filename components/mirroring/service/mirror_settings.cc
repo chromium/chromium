@@ -92,7 +92,6 @@ FrameSenderConfig MirrorSettings::GetDefaultAudioConfig(
   const base::TimeDelta playout_delay = GetPlayoutDelay();
   config.min_playout_delay = playout_delay;
   config.max_playout_delay = playout_delay;
-  config.animated_playout_delay = playout_delay;
   config.rtp_payload_type = payload_type;
   config.rtp_timebase = kAudioTimebase;
   config.channels = kAudioChannels;
@@ -113,7 +112,6 @@ FrameSenderConfig MirrorSettings::GetDefaultVideoConfig(
   const base::TimeDelta playout_delay = GetPlayoutDelay();
   config.min_playout_delay = playout_delay;
   config.max_playout_delay = playout_delay;
-  config.animated_playout_delay = playout_delay;
   config.rtp_payload_type = payload_type;
   config.rtp_timebase = kVidoTimebase;
   config.channels = 1;

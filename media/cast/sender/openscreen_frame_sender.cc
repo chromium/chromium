@@ -58,11 +58,11 @@ OpenscreenFrameSender::OpenscreenFrameSender(
       max_playout_delay_(config.max_playout_delay) {
   DCHECK_GT(sender_->config().rtp_timebase, 0);
 
-  // We assume animated content to begin with since that is the common use
-  // case today.
-  VLOG_WITH_SSRC(1) << "target latency "
-                    << sender_->config().target_playout_delay.count() << "ms";
-  SetTargetPlayoutDelay(config.animated_playout_delay);
+  const std::chrono::milliseconds target_playout_delay =
+      sender_->config().target_playout_delay;
+  VLOG_WITH_SSRC(1) << "target latency " << target_playout_delay.count()
+                    << "ms";
+  SetTargetPlayoutDelay(base::Milliseconds(target_playout_delay.count()));
 
   sender_->SetObserver(this);
 }

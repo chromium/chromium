@@ -146,7 +146,6 @@ VideoSender::VideoSender(
       cast_environment_(cast_environment),
       min_playout_delay_(video_config.min_playout_delay),
       max_playout_delay_(video_config.max_playout_delay),
-      animated_playout_delay_(video_config.animated_playout_delay),
       playout_delay_change_cb_(std::move(playout_delay_change_cb)),
       feedback_cb_(feedback_callback) {
   video_encoder_ = VideoEncoder::Create(cast_environment_, video_config,
@@ -247,9 +246,9 @@ void VideoSender::InsertRawVideoFrame(
       // This is intended to minimize freeze when moving from an interactive
       // session to watching animating content while being limited by end-to-end
       // delay.
-      VLOG(1) << "Ensure playout time is at least " << animated_playout_delay_;
-      if (new_target_delay < animated_playout_delay_)
-        new_target_delay = animated_playout_delay_;
+      VLOG(1) << "Ensure playout time is at least " << min_playout_delay_;
+      if (new_target_delay < min_playout_delay_)
+        new_target_delay = min_playout_delay_;
       VLOG(1) << "New target delay: " << new_target_delay.InMilliseconds();
       playout_delay_change_cb_.Run(new_target_delay);
     }

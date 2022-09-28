@@ -136,9 +136,6 @@ class VideoSender : public FrameSender::Client {
   base::TimeDelta min_playout_delay_;
   base::TimeDelta max_playout_delay_;
 
-  // Starting playout delay when streaming animated content.
-  base::TimeDelta animated_playout_delay_;
-
   PlayoutDelayChangeCB playout_delay_change_cb_;
 
   media::VideoCaptureFeedbackCB feedback_cb_;

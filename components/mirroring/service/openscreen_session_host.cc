@@ -194,10 +194,6 @@ void UpdateConfigUsingSessionParameters(
     const mojom::SessionParameters& session_params,
     FrameSenderConfig& config) {
   if (session_params.target_playout_delay) {
-    // TODO(https://crbug.com/1363694): animated playout delay should be
-    // removed.
-    config.animated_playout_delay = *session_params.target_playout_delay;
-
     // TODO(https://crbug.com/1363017): adaptive playout delay should be
     // re-enabled.
     config.min_playout_delay = *session_params.target_playout_delay;

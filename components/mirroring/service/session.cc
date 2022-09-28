@@ -151,7 +151,6 @@ void AddSenderConfig(int32_t sender_ssrc,
   config.aes_iv_mask = aes_iv;
   config.sender_ssrc = sender_ssrc;
   if (session_params.target_playout_delay) {
-    config.animated_playout_delay = *session_params.target_playout_delay;
     config.min_playout_delay = *session_params.target_playout_delay;
     config.max_playout_delay = *session_params.target_playout_delay;
   }
@@ -174,7 +173,7 @@ void AddStreamObject(int stream_index,
              is_audio ? kAudioPayloadType : kVideoPayloadType);
   stream.Set("ssrc", static_cast<int>(config.sender_ssrc));
   stream.Set("targetDelay",
-             static_cast<int>(config.animated_playout_delay.InMilliseconds()));
+             static_cast<int>(config.max_playout_delay.InMilliseconds()));
   stream.Set("aesKey",
              base::HexEncode(config.aes_key.data(), config.aes_key.size()));
   stream.Set("aesIvMask", base::HexEncode(config.aes_iv_mask.data(),
