@@ -209,6 +209,32 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
+                       CanFetchSubresources) {
+  web_package::WebBundleBuilder builder;
+  builder.AddPrimaryURL(kPrimaryUrl);
+  builder.AddExchange(kPrimaryUrl,
+                      {{":status", "200"}, {"content-type", "text/html"}},
+                      R"(
+    <script>
+      fetch('data.txt')
+        .then(res => res.text())
+        .then(data => { console.log(data); document.title = data; })
+        .catch(err => console.error(err));
+    </script>)");
+  builder.AddExchange(kPrimaryUrl + "/data.txt",
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "some data");
+  base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
+
+  std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
+      GURL(kPrimaryUrl),
+      IsolationData{IsolationData::InstalledBundle{.path = bundle_path}});
+  RegisterWebApp(std::move(iwa));
+
+  NavigateAndWaitForTitle(GURL(kPrimaryUrl), u"some data");
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
                        InvalidStatusCode) {
   web_package::WebBundleBuilder builder;
   builder.AddPrimaryURL(kPrimaryUrl);
