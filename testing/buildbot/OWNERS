@@ -61,6 +61,11 @@ per-file chromium.rust.json=file://build/rust/OWNERS
 per-file chromium.webrtc.json=file://infra/config/subprojects/webrtc/OWNERS
 per-file chromium.webrtc.fyi.json=file://infra/config/subprojects/webrtc/OWNERS
 
+# Open Screen owners.  Keep in sync with openscreen.py recipe owners.
+per-file *openscreen*.json=jophba@chromium.org
+per-file *openscreen*.json=mfoltz@chromium.org
+per-file *openscreen*.json=rwkeane@google.com
+
 # Any non-trivial change to a *.pyl file has corresponding changes to at least
 # one *.json file. Consequently, any change to a *.pyl file will still need
 # approval according to the per-file OWNERS rules above. Giving '*' ownership
