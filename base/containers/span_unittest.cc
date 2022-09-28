@@ -1023,6 +1023,13 @@ TEST(SpanTest, Empty) {
     span<int> span(array);
     EXPECT_FALSE(span.empty());
   }
+
+  {
+    std::vector<int> vector = {1, 2, 3};
+    span<int> s = vector;
+    span<int> span_of_checked_iterators = {s.end(), s.end()};
+    EXPECT_TRUE(span_of_checked_iterators.empty());
+  }
 }
 
 TEST(SpanTest, OperatorAt) {
