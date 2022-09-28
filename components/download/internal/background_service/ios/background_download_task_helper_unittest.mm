@@ -83,7 +83,7 @@ TEST_F(BackgroundDownloadTaskHelperTest, DISABLED_DownloadComplete) {
            }));
   loop.Run();
   EXPECT_TRUE(base::PathExists(dir().GetPath().AppendASCII(guid)));
-  DCHECK(request_sent());
+  ASSERT_TRUE(request_sent());
   auto it = request_sent()->headers.find(net::HttpRequestHeaders::kIfMatch);
   EXPECT_EQ(kHeaderValue, it->second);
   EXPECT_EQ(HttpMethod::METHOD_POST, request_sent()->method);
