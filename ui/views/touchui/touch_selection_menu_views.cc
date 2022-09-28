@@ -38,6 +38,7 @@ struct MenuCommand {
     {ui::TouchEditable::kCut, IDS_APP_CUT},
     {ui::TouchEditable::kCopy, IDS_APP_COPY},
     {ui::TouchEditable::kPaste, IDS_APP_PASTE},
+    {ui::TouchEditable::kSelectAll, IDS_APP_SELECT_ALL},
 };
 
 constexpr int kSpacingBetweenButtons = 2;

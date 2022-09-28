@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -528,6 +529,9 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
     // These commands do invoke the popup.
     case Textfield::kPaste:
       ExecuteTextEditCommand(ui::TextEditCommand::PASTE);
+      return;
+    case Textfield::kSelectAll:
+      ExecuteTextEditCommand(ui::TextEditCommand::SELECT_ALL);
       return;
     default:
       if (Textfield::IsCommandIdEnabled(command_id)) {
@@ -1447,6 +1451,12 @@ void OmniboxViewViews::OnBlur() {
 }
 
 bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (command_id == Textfield::kSelectAll) {
+    return base::FeatureList::IsEnabled(
+        chromeos::features::kTouchTextEditingRedesign);
+  }
+#endif
   if (command_id == Textfield::kPaste)
     return !GetReadOnly() &&
            !GetClipboardText(/*notify_if_restricted=*/false).empty();

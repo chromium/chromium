@@ -78,8 +78,7 @@ class VIEWS_EXPORT Textfield : public View,
   enum MenuCommands {
     kUndo = kLastTouchEditableCommandId + 1,
     kDelete,
-    kSelectAll,
-    kLastCommandId = kSelectAll,
+    kLastCommandId = kDelete,
   };
 
 #if BUILDFLAG(IS_MAC)

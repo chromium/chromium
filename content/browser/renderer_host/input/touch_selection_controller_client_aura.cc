@@ -6,9 +6,11 @@
 
 #include <set>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
@@ -451,6 +453,11 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();
     }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case ui::TouchEditable::kSelectAll:
+      return readable && base::FeatureList::IsEnabled(
+                             chromeos::features::kTouchTextEditingRedesign);
+#endif
     default:
       return false;
   }
@@ -472,6 +479,9 @@ void TouchSelectionControllerClientAura::ExecuteCommand(int command_id,
       break;
     case ui::TouchEditable::kPaste:
       host_delegate->Paste();
+      break;
+    case ui::TouchEditable::kSelectAll:
+      host_delegate->SelectAll();
       break;
     default:
       NOTREACHED();

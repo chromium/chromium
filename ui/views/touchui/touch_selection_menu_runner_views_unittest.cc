@@ -18,7 +18,7 @@ const int kMenuButtonWidth = 63;
 
 // Should match size of |kMenuCommands| array in
 // touch_selection_menu_runner_views.cc.
-const int kMenuCommandCount = 3;
+const int kMenuCommandCount = 4;
 
 }  // namespace
 
