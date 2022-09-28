@@ -183,6 +183,8 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile,
     visit_mojom->debug_info["foreground_duration"] =
         base::NumberToString(annotated_visit.context_annotations
                                  .total_foreground_duration.InSecondsF());
+    visit_mojom->debug_info["visit_source"] =
+        base::NumberToString(annotated_visit.source);
   }
 
   return visit_mojom;

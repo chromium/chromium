@@ -48,6 +48,7 @@ std::string GetDebugJSONForVisits(
         visit.content_annotations.search_normalized_url.is_empty()
             ? ComputeURLForDeduping(visit.url_row.url()).spec()
             : visit.content_annotations.search_normalized_url.spec());
+    debug_visit.Set("visitSource", base::NumberToString(visit.source));
     debug_visits_list.Append(std::move(debug_visit));
   }
 
