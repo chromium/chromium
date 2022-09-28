@@ -649,14 +649,15 @@ void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
   new_swap_chain_rect.set_origin(params.quad_rect.origin());
   gfx::RectF new_onscreen_rect(new_swap_chain_rect);
   transform->TransformRect(&new_onscreen_rect);
+  gfx::Rect result_rect = gfx::ToEnclosingRect(new_onscreen_rect);
   if (IsWithinMargin(clipped_onscreen_rect.x(), 0)) {
-    DCHECK_EQ(new_onscreen_rect.x(), 0);
-    DCHECK_EQ(new_onscreen_rect.width(), monitor_size.width());
+    DCHECK_EQ(result_rect.x(), 0);
+    DCHECK_EQ(result_rect.width(), monitor_size.width());
   }
 
   if (IsWithinMargin(clipped_onscreen_rect.y(), 0)) {
-    DCHECK_EQ(new_onscreen_rect.y(), 0);
-    DCHECK_EQ(new_onscreen_rect.height(), monitor_size.height());
+    DCHECK_EQ(result_rect.y(), 0);
+    DCHECK_EQ(result_rect.height(), monitor_size.height());
   }
 #endif
 }
