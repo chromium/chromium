@@ -25,8 +25,9 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
-const base::Feature kParseOauth2ErrorCode{"ParseOAuth2ErrorCode",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kParseOauth2ErrorCode,
+             "ParseOAuth2ErrorCode",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr char kGetAccessTokenBodyFormat[] =
     "client_id=%s&"
