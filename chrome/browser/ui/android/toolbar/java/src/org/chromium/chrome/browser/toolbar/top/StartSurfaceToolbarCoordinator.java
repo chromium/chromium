@@ -15,10 +15,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -46,6 +48,7 @@ public class StartSurfaceToolbarCoordinator {
     private final ViewStub mStub;
     private final PropertyModel mPropertyModel;
     private final TopToolbarInteractabilityManager mTopToolbarInteractabilityManager;
+    private final boolean mShouldCreateLogoInToolbar;
 
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private StartSurfaceToolbarView mView;
@@ -80,6 +83,7 @@ public class StartSurfaceToolbarCoordinator {
                                 isGridTabSwitcherEnabled)
                         .build();
 
+        mShouldCreateLogoInToolbar = shouldCreateLogoInToolbar;
         boolean isTabToGtsFadeAnimationEnabled = isTabToGtsAnimationEnabled
                 && !DeviceClassManager.enableAccessibilityLayout(mStub.getContext());
         mToolbarMediator = new StartSurfaceToolbarMediator(mPropertyModel,
@@ -225,10 +229,16 @@ public class StartSurfaceToolbarCoordinator {
      * @return Whether or not toolbar phone layout view should be shown.
      */
     boolean shouldShowRealSearchBox() {
-        int fakeSearchBoxMarginToScreenTop =
-                mStub.getResources().getDimensionPixelOffset(R.dimen.toolbar_height_no_shadow)
-                + mStub.getResources().getDimensionPixelOffset(
-                        R.dimen.start_surface_fake_search_box_top_margin);
+        boolean isBigLogoShownInContent = !mShouldCreateLogoInToolbar
+                && LibraryLoader.getInstance().isInitialized()
+                && TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
+        // This value should be equal to
+        // |fakeSearchBoxToRealSearchBoxTop + realVerticalMargin| in
+        // StartSurfaceCoordinator#initializeOffsetChangedListener
+        int fakeSearchBoxMarginToScreenTop = getDimenPixel(R.dimen.toolbar_height_no_shadow)
+                + (isBigLogoShownInContent
+                                ? getDimenPixel(R.dimen.start_surface_content_logo_height)
+                                : getDimenPixel(R.dimen.start_surface_fake_search_box_top_margin));
         return mToolbarMediator.shouldShowRealSearchBox(fakeSearchBoxMarginToScreenTop);
     }
 
@@ -282,6 +292,10 @@ public class StartSurfaceToolbarCoordinator {
 
     private boolean isInflated() {
         return mView != null;
+    }
+
+    private int getDimenPixel(int id) {
+        return mStub.getResources().getDimensionPixelOffset(id);
     }
 
     @VisibleForTesting

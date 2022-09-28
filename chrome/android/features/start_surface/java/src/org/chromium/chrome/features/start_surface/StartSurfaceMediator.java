@@ -368,7 +368,23 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                     assert !mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE);
                     if (hasFakeSearchBox()) {
                         setFakeBoxVisibility(!hasFocus);
-                        setLogoVisibility(!hasFocus);
+                        // TODO(crbug.com/1365694): We should call setLogoVisibility(!hasFocus)
+                        // here.
+                        // However, AppBarLayout's getTotalScrollRange() eliminates the gone
+                        // child view's heights. Therefore, when focus is got, the AppBarLayout's
+                        // scroll offset (based on getTotalScrollRange()) doesn't count the logo's
+                        // height; when focus is cleared, this wrong (smaller than actual) scroll
+                        // offset is restored, causing AppBarLayout to show partially.
+                        // Actually setting fake box gone also causes similar offset problem, but we
+                        // decided to keep fake box as-is for now for two reasons:
+                        // 1. The fake box's height is small enough. Although AppBarLayout still
+                        // shows partial blank bottom part when focus is cleared, it's small enough
+                        // and not noticeable.
+                        // 2. It would be confusing if both real and fake search boxes are visible
+                        // to users.
+                        // We should find a way to set both views gone when search box is
+                        // focused without causing offset issues, but right now it's unclear what
+                        // the plan could be regarding this stuff.
                     }
                     notifyStateChange();
                 }
@@ -1260,7 +1276,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         return Boolean.TRUE.equals(mController.getHandleBackPressChangedSupplier().get());
     }
 
-    @VisibleForTesting
     boolean isLogoVisible() {
         return mLogoCoordinator != null && mLogoCoordinator.isLogoVisible();
     }
@@ -1273,7 +1288,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mOnTabSelectingListener = onTabSelectingListener;
     }
 
-    private int getTopToolbarPlaceholderHeight() {
+    int getTopToolbarPlaceholderHeight() {
         // If logo is visible in Start surface instead of in the toolbar, we don't need to show the
         // top margin of the fake search box.
         return getPixelSize(R.dimen.control_container_height)

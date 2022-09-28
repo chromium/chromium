@@ -778,9 +778,9 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     private void initializeOffsetChangedListener() {
         int realVerticalMargin = getPixelSize(R.dimen.location_bar_vertical_margin);
-        int fakeSearchBoxToRealSearchBoxTop = getPixelSize(R.dimen.control_container_height)
-                + getPixelSize(R.dimen.start_surface_fake_search_box_top_margin)
-                - realVerticalMargin;
+        int logoInSurfaceHeight = getPixelSize(R.dimen.ntp_logo_height)
+                + getPixelSize(R.dimen.ntp_logo_margin_top)
+                + getPixelSize(R.dimen.ntp_logo_margin_bottom);
 
         // The following |fake*| values mean the values of the fake search box; |real*| values
         // mean the values of the real search box.
@@ -809,9 +809,10 @@ public class StartSurfaceCoordinator implements StartSurface {
                 scrollListener.onHeaderOffsetChanged(verticalOffset);
             }
 
-            // This function should be called together with
-            // StartSurfaceToolbarMediator#updateTranslationY, which scroll up the start surface
-            // toolbar together with the header.
+            int fakeSearchBoxToRealSearchBoxTop =
+                    mStartSurfaceMediator.getTopToolbarPlaceholderHeight()
+                    + (mStartSurfaceMediator.isLogoVisible() ? logoInSurfaceHeight : 0)
+                    - realVerticalMargin;
             int scrolledHeight = -verticalOffset;
             // When the fake search box top is scrolled to the search box top, start to reduce
             // fake search box's height until it's the same as the real search box.
@@ -819,6 +820,9 @@ public class StartSurfaceCoordinator implements StartSurface {
                     scrolledHeight - fakeSearchBoxToRealSearchBoxTop, 0, fakeAndRealHeightDiff);
             float expansionFraction = (float) reducedHeight / fakeAndRealHeightDiff;
 
+            // This function should be called together with
+            // StartSurfaceToolbarMediator#updateTranslationY, which scroll up the start surface
+            // toolbar together with the header.
             mTasksSurface.updateFakeSearchBox(fakeHeight - reducedHeight, reducedHeight,
                     (int) (fakeEndPadding * (1 - expansionFraction)),
                     SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(false)
