@@ -16,17 +16,22 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/ash/note_taking_helper.h"
@@ -35,13 +40,24 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/sync/model/string_ordinal.h"
+#include "components/webapps/browser/install_result_code.h"
+#include "content/public/common/content_features.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/install_flag.h"
+#include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -101,8 +117,6 @@ ActionAvailability ToActionAvailability(
     case ash::LockScreenAppSupport::kEnabled:
       return ActionAvailability::kAvailable;
   }
-
-  return ActionAvailability::kAppNotSupportingLockScreen;
 }
 
 void InvokeCallbackOnTaskRunner(
@@ -179,6 +193,59 @@ void InstallExtensionCopy(
       updates_from_webstore_or_empty_update_url);
 }
 
+// Returns whether `app_id` is an installed web app in `profile`.
+bool IsInstalledWebApp(const std::string& app_id, Profile* profile) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+    return false;
+  auto* cache =
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+
+  bool result = false;
+  cache->ForOneApp(app_id, [&result](const apps::AppUpdate& update) {
+    if (apps_util::IsInstalled(update.Readiness()) &&
+        update.AppType() == apps::AppType::kWeb) {
+      result = true;
+    }
+  });
+  return result;
+}
+
+// Returns the start_url of the web app identified by `app_id` in `profile`, or
+// an invalid GURL on error.
+GURL GetStartUrl(const std::string& app_id, Profile* profile) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+    return GURL();
+
+  auto* cache =
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  GURL start_url;
+  cache->ForOneApp(app_id, [&start_url](const apps::AppUpdate& update) {
+    if (update.AppType() == apps::AppType::kWeb) {
+      // Publisher ID is start_url for web apps.
+      start_url = GURL(update.PublisherId());
+    }
+  });
+  return start_url;
+}
+
+// Returns the name of the app identified by `app_id` in `profile`, or a null
+// optional on error.
+absl::optional<std::string> GetName(const std::string& app_id,
+                                    Profile* profile) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+    return absl::nullopt;
+
+  auto* cache =
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  absl::optional<std::string> name;
+  cache->ForOneApp(
+      app_id, [&name](const apps::AppUpdate& update) { name = update.Name(); });
+  return name;
+}
+
+AppManagerImpl::OverrideInstallOptionsCallback
+    g_override_install_options_callback_for_testing_ = nullptr;
+
 }  // namespace
 
 AppManagerImpl::AppManagerImpl(const base::TickClock* tick_clock)
@@ -223,20 +290,30 @@ void AppManagerImpl::OnLockScreenProfileLoaded() {
   CHECK(!ash::ProfileHelper::Get()->GetUserByProfile(lock_screen_profile_))
       << "Lock screen profile should not be associated with any users.";
 
+  if (base::FeatureList::IsEnabled(features::kWebLockScreenApi)) {
+    lock_screen_profile_app_registry_observer_.emplace(this,
+                                                       lock_screen_profile_);
+  }
+
   UpdateLockScreenAppState();
 }
 
-void AppManagerImpl::Start(
-    const base::RepeatingClosure& note_taking_changed_callback) {
+void AppManagerImpl::Start(const base::RepeatingClosure& app_changed_callback) {
   DCHECK_NE(State::kNotInitialized, state_);
 
-  app_changed_callback_ = note_taking_changed_callback;
+  app_changed_callback_ = app_changed_callback;
 
   if (state_ == State::kActive || state_ == State::kActivating)
     return;
 
   extensions_observation_.Observe(
       extensions::ExtensionRegistry::Get(primary_profile_));
+
+  if (base::FeatureList::IsEnabled(features::kWebLockScreenApi)) {
+    DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+        primary_profile_));
+    primary_profile_app_registry_observer_.emplace(this, primary_profile_);
+  }
 
   lock_screen_app_id_.clear();
   std::string app_id = FindLockScreenAppId();
@@ -255,6 +332,8 @@ void AppManagerImpl::Stop() {
 
   app_changed_callback_.Reset();
   extensions_observation_.Reset();
+  lock_screen_profile_app_registry_observer_.reset();
+  primary_profile_app_registry_observer_.reset();
   available_lock_screen_app_reloads_ = 0;
 
   if (state_ == State::kInactive)
@@ -279,7 +358,16 @@ bool AppManagerImpl::LaunchLockScreenApp() {
   if (!IsLockScreenAppAvailable())
     return false;
 
-  // TODO(crbug.com/1006642): Handle web apps here.
+  if (base::FeatureList::IsEnabled(features::kWebLockScreenApi) &&
+      IsInstalledWebApp(lock_screen_app_id_, primary_profile_)) {
+    DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+        lock_screen_profile_));
+    DCHECK(IsInstalledWebApp(lock_screen_app_id_, lock_screen_profile_));
+
+    // TODO(crbug.com/1006642): Launch web apps here.
+    NOTIMPLEMENTED();
+    return false;
+  }
 
   const extensions::Extension* app = GetChromeAppForLockScreenAppLaunch();
   // If the app cannot be found at this point, it either got unexpectedly
@@ -302,6 +390,8 @@ bool AppManagerImpl::LaunchLockScreenApp() {
   return true;
 }
 
+// Cannot be replaced with OnAppUpdate because OnAppUpdate is not called with a
+// readiness change after unloading and reinstalling an extension.
 void AppManagerImpl::OnExtensionLoaded(content::BrowserContext* browser_context,
                                        const extensions::Extension* extension) {
   if (browser_context == primary_profile_ &&
@@ -325,14 +415,35 @@ void AppManagerImpl::OnExtensionUnloaded(
   }
 }
 
-void AppManagerImpl::OnExtensionUninstalled(
-    content::BrowserContext* browser_context,
-    const extensions::Extension* extension,
-    extensions::UninstallReason reason) {
-  // If the app is uninstalled from the lock screen apps profile, make sure
-  // it's not reported as available anymore.
-  if (browser_context == lock_screen_profile_ &&
-      extension->id() == lock_screen_app_id_) {
+void AppManagerImpl::OnAppUpdate(const apps::AppUpdate& update,
+                                 Profile* profile) {
+  if (update.AppId().empty())
+    return;
+  if (!update.ReadinessChanged())
+    return;
+
+  bool is_preferred_app =
+      update.AppId() ==
+      ash::NoteTakingHelper::Get()->GetPreferredAppId(primary_profile_);
+  bool is_current_lock_screen_app = update.AppId() == lock_screen_app_id_;
+  bool is_app_available = update.Readiness() == apps::Readiness::kReady ||
+                          update.Readiness() == apps::Readiness::kTerminated;
+  bool is_primary_profile = profile == primary_profile_;
+  bool is_lock_screen_profile = profile == lock_screen_profile_;
+
+  // App became available in primary profile.
+  if (is_preferred_app && is_app_available && is_primary_profile) {
+    UpdateLockScreenAppState();
+  }
+
+  // App became unavailable in primary profile.
+  if (is_current_lock_screen_app && !is_app_available && is_primary_profile) {
+    UpdateLockScreenAppState();
+  }
+
+  // App became unavailable in lock screen profile.
+  if (is_current_lock_screen_app && !is_app_available &&
+      is_lock_screen_profile) {
     RemoveLockScreenAppDueToError();
   }
 }
@@ -344,6 +455,11 @@ void AppManagerImpl::OnPreferredNoteTakingAppUpdated(Profile* profile) {
     return;
 
   UpdateLockScreenAppState();
+}
+
+AppManagerImpl::OverrideInstallOptionsCallback&
+AppManagerImpl::OverrideInstallOptions() {
+  return g_override_install_options_callback_for_testing_;
 }
 
 void AppManagerImpl::UpdateLockScreenAppState() {
@@ -401,7 +517,48 @@ std::string AppManagerImpl::FindLockScreenAppId() const {
 
 AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
     const std::string& app_id) {
-  // TODO(crbug.com/1006642): First check if app_id is an installed web app.
+  DCHECK(lock_screen_profile_);
+  if (base::FeatureList::IsEnabled(features::kWebLockScreenApi)) {
+    if (!IsInstalledWebApp(app_id, primary_profile_)) {
+      // Installing a Chrome App. Ensure no web apps are left installed.
+      RemoveAllWebAppsFromLockScreenProfile();
+    } else {
+      if (IsInstalledWebApp(app_id, lock_screen_profile_)) {
+        return State::kActive;
+      }
+      // Only one `SynchronizeInstalledApps` call may run at once.
+      if (is_synchronizing_installed_web_apps_) {
+        opt_app_id_pending_synchronize_ = app_id;
+        return State::kActivating;
+      }
+      is_synchronizing_installed_web_apps_ = true;
+
+      GURL install_url = GetStartUrl(app_id, primary_profile_);
+      web_app::ExternalInstallOptions options(
+          install_url, web_app::UserDisplayMode::kStandalone,
+          web_app::ExternalInstallSource::kExternalLockScreen);
+      options.fallback_app_name = GetName(app_id, primary_profile_);
+      if (OverrideInstallOptions())
+        OverrideInstallOptions()(options);
+
+      // CrOSAPI currently only supports one profile (the main profile) so we
+      // cannot use a lock screen app profile on the Lacros side. So, directly
+      // use the lock screen app profile on the Ash side here.
+      // TODO(crbug.com/1343692): Once lacros supports multiple profiles, use
+      // CrOSAPI to install to a lacros-based lock-screen app profile.
+      auto* lock_screen_provider =
+          web_app::WebAppProvider::GetForLocalAppsUnchecked(
+              lock_screen_profile_);
+      DCHECK(lock_screen_provider);
+      lock_screen_provider->externally_managed_app_manager()
+          .SynchronizeInstalledApps(
+              {options}, web_app::ExternalInstallSource::kExternalLockScreen,
+              base::BindOnce(&AppManagerImpl::RecordLockScreenWebAppInstall,
+                             weak_ptr_factory_.GetWeakPtr(), ++install_count_,
+                             tick_clock_->NowTicks()));
+      return State::kActivating;
+    }
+  }
 
   extensions::ExtensionRegistry* primary_registry =
       extensions::ExtensionRegistry::Get(primary_profile_);
@@ -438,9 +595,13 @@ AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
   install_count_++;
 
   if (is_unpacked) {
-    InstallAndEnableLockScreenChromeAppInLockScreenProfile(
-        lock_profile_app.get());
-    return State::kActive;
+    // Post the completion so that this class can update state first.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AppManagerImpl::CompleteLockScreenChromeAppInstall,
+                       weak_ptr_factory_.GetWeakPtr(), install_count_,
+                       tick_clock_->NowTicks(), lock_profile_app));
+    return State::kActivating;
   }
 
   extensions::ExtensionService* lock_screen_service =
@@ -468,6 +629,70 @@ AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
                   tick_clock_->NowTicks()),
               base::ThreadTaskRunnerHandle::Get())));
   return State::kActivating;
+}
+
+bool AppManagerImpl::MaybeRunPendingWebAppSynchronize() {
+  is_synchronizing_installed_web_apps_ = false;
+
+  if (!opt_app_id_pending_synchronize_.has_value())
+    return false;
+
+  std::string pending_app_id = opt_app_id_pending_synchronize_.value();
+  opt_app_id_pending_synchronize_.reset();
+  if (pending_app_id.empty()) {
+    RemoveAllWebAppsFromLockScreenProfile();
+  } else {
+    AddAppToLockScreenProfile(pending_app_id);
+  }
+  return true;
+}
+
+void AppManagerImpl::RecordLockScreenWebAppInstall(
+    int install_id,
+    base::TimeTicks install_start_time,
+    std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>
+        install_results,
+    std::map<GURL, bool> uninstall_results) {
+  DCHECK(base::FeatureList::IsEnabled(features::kWebLockScreenApi));
+  // Only one web app can be installed to the lock screen profile at a time.
+  DCHECK_EQ(install_results.size(), 1u);
+
+  UMA_HISTOGRAM_TIMES(
+      "Apps.LockScreen.NoteTakingApp.LockScreenInstallationDuration",
+      tick_clock_->NowTicks() - install_start_time);
+
+  if (MaybeRunPendingWebAppSynchronize())
+    return;
+
+  // Bail out if the app manager is no longer waiting for this app's
+  // installation.
+  if (install_id != install_count_ || state_ != State::kActivating)
+    return;
+
+  const auto result = install_results.begin()->second;
+  if (webapps::IsSuccess(result.code)) {
+    DCHECK_EQ(lock_screen_app_id_, result.app_id.value_or(std::string()));
+    state_ = State::kActive;
+  } else {
+    state_ = State::kAppUnavailable;
+  }
+
+  if (!app_changed_callback_.is_null())
+    app_changed_callback_.Run();
+}
+
+void AppManagerImpl::RecordLockScreenWebAppUninstall(
+    std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>
+        install_results,
+    std::map<GURL, bool> uninstall_results) {
+  DCHECK(install_results.empty());
+
+  if (MaybeRunPendingWebAppSynchronize())
+    return;
+
+  if (!uninstall_results.empty() && !app_changed_callback_.is_null()) {
+    app_changed_callback_.Run();
+  }
 }
 
 void AppManagerImpl::CompleteLockScreenChromeAppInstall(
@@ -514,6 +739,9 @@ void AppManagerImpl::InstallAndEnableLockScreenChromeAppInLockScreenProfile(
 
 void AppManagerImpl::RemoveChromeAppFromLockScreenProfile(
     const std::string& app_id) {
+  // Note: web apps are removed by the `SynchronizeInstalledApps` call in
+  // `AddAppToLockScreenProfile` when a different app is set, instead of being
+  // explicitly removed here.
   if (app_id.empty())
     return;
 
@@ -535,8 +763,6 @@ void AppManagerImpl::RemoveChromeAppFromLockScreenProfile(
 
 const extensions::Extension*
 AppManagerImpl::GetChromeAppForLockScreenAppLaunch() {
-  // TODO(crbug.com/1006642): First check if app_id is an installed web app.
-
   const extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(lock_screen_profile_);
 
@@ -623,13 +849,39 @@ void AppManagerImpl::HandleLockScreenChromeAppUnload(
   }
 }
 
+void AppManagerImpl::RemoveAllWebAppsFromLockScreenProfile() {
+  if (is_synchronizing_installed_web_apps_) {
+    opt_app_id_pending_synchronize_ = std::string();
+    return;
+  }
+  is_synchronizing_installed_web_apps_ = true;
+
+  // CrOSAPI currently only supports one profile (the main profile) so we
+  // cannot use a lock screen app profile on the Lacros side. So, directly
+  // use the lock screen app profile on the Ash side here.
+  // TODO(crbug.com/1343692): Once lacros supports multiple profiles, use
+  // CrOSAPI to install to a lacros-based lock-screen app profile.
+  auto* lock_screen_provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(lock_screen_profile_);
+  DCHECK(lock_screen_provider);
+  lock_screen_provider->externally_managed_app_manager()
+      .SynchronizeInstalledApps(
+          /*desired_apps_install_options=*/{},
+          web_app::ExternalInstallSource::kExternalLockScreen,
+          base::BindOnce(&AppManagerImpl::RecordLockScreenWebAppUninstall,
+                         weak_ptr_factory_.GetWeakPtr()));
+}
+
 void AppManagerImpl::RemoveLockScreenAppDueToError() {
   if (state_ != State::kActive && state_ != State::kActivating)
     return;
 
-  RemoveChromeAppFromLockScreenProfile(lock_screen_app_id_);
+  std::string prev_lock_screen_app_id = lock_screen_app_id_;
   lock_screen_app_id_.clear();
   state_ = State::kInactive;
+
+  RemoveChromeAppFromLockScreenProfile(prev_lock_screen_app_id);
+  RemoveAllWebAppsFromLockScreenProfile();
 
   if (!app_changed_callback_.is_null())
     app_changed_callback_.Run();
