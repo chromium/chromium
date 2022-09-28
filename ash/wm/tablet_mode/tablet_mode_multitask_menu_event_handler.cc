@@ -74,10 +74,15 @@ void TabletModeMultitaskMenuEventHandler::OnMouseEvent(ui::MouseEvent* event) {
 void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
     ui::GestureEvent* event) {
   aura::Window* active_window = window_util::GetActiveWindow();
-  if (!multitask_menu_ &&
-      (!active_window ||
-       !active_window->Contains(static_cast<aura::Window*>(event->target())) ||
-       !WindowState::Get(active_window)->CanMaximize())) {
+  auto* window_state = WindowState::Get(active_window);
+  // No-op if there is no active window and no multitask menu, which might be
+  // the active window. If the multitask menu is the active window, we still
+  // want to handle events that might close the menu.
+  if (!window_state ||
+      (!multitask_menu_ &&
+       (!active_window ||
+        !active_window->Contains(static_cast<aura::Window*>(event->target())) ||
+        window_state->IsFloated() || !window_state->CanMaximize()))) {
     return;
   }
 
