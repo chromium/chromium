@@ -103,6 +103,232 @@ std::string GetStringFromValue(const std::vector<std::string>& value) {
   return base::JoinString(value, ";");
 }
 
+// Implements `ICurrentState`. Initialized with a snapshot of the current state
+// of the install.
+class CurrentStateImpl
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          ICurrentState,
+          IDispatch> {
+ public:
+  CurrentStateImpl() = default;
+  CurrentStateImpl(const CurrentStateImpl&) = delete;
+  CurrentStateImpl& operator=(const CurrentStateImpl&) = delete;
+
+  HRESULT RuntimeClassInitialize(
+      LONG state_value,
+      const std::wstring& available_version,
+      ULONGLONG bytes_downloaded,
+      ULONGLONG total_bytes_to_download,
+      LONG download_time_remaining_ms,
+      ULONGLONG next_retry_time,
+      LONG install_progress_percentage,
+      LONG install_time_remaining_ms,
+      bool is_canceled,
+      LONG error_code,
+      LONG extra_code1,
+      const std::wstring& completion_message,
+      LONG installer_result_code,
+      LONG installer_result_extra_code1,
+      const std::wstring& post_install_launch_command_line,
+      const std::wstring& post_install_url,
+      LONG post_install_action) {
+    state_value_ = state_value;
+    available_version_ = available_version;
+    bytes_downloaded_ = bytes_downloaded;
+    total_bytes_to_download_ = total_bytes_to_download;
+    download_time_remaining_ms_ = download_time_remaining_ms;
+    next_retry_time_ = next_retry_time;
+    install_progress_percentage_ = install_progress_percentage;
+    install_time_remaining_ms_ = install_time_remaining_ms;
+    is_canceled_ = is_canceled ? VARIANT_TRUE : VARIANT_FALSE;
+    error_code_ = error_code;
+    extra_code1_ = extra_code1;
+    completion_message_ = completion_message;
+    installer_result_code_ = installer_result_code;
+    installer_result_extra_code1_ = installer_result_extra_code1;
+    post_install_launch_command_line_ = post_install_launch_command_line;
+    post_install_url_ = post_install_url;
+    post_install_action_ = post_install_action;
+
+    return S_OK;
+  }
+
+  // Overrides for ICurrentState.
+  IFACEMETHODIMP get_stateValue(LONG* state_value) override {
+    DCHECK(state_value);
+
+    *state_value = state_value_;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_availableVersion(BSTR* available_version) override {
+    DCHECK(available_version);
+
+    *available_version = base::win::ScopedBstr(available_version_).Release();
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_bytesDownloaded(ULONG* bytes_downloaded) override {
+    DCHECK(bytes_downloaded);
+
+    *bytes_downloaded = bytes_downloaded_;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_totalBytesToDownload(
+      ULONG* total_bytes_to_download) override {
+    DCHECK(total_bytes_to_download);
+
+    *total_bytes_to_download = total_bytes_to_download_;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_downloadTimeRemainingMs(
+      LONG* download_time_remaining_ms) override {
+    DCHECK(download_time_remaining_ms);
+
+    *download_time_remaining_ms = download_time_remaining_ms_;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_nextRetryTime(ULONGLONG* next_retry_time) override {
+    DCHECK(next_retry_time);
+
+    *next_retry_time = next_retry_time_;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_installProgress(
+      LONG* install_progress_percentage) override {
+    DCHECK(install_progress_percentage);
+
+    *install_progress_percentage = install_progress_percentage_;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_installTimeRemainingMs(
+      LONG* install_time_remaining_ms) override {
+    DCHECK(install_time_remaining_ms);
+
+    *install_time_remaining_ms = install_time_remaining_ms_;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_isCanceled(VARIANT_BOOL* is_canceled) override {
+    DCHECK(is_canceled);
+
+    *is_canceled = is_canceled_;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_errorCode(LONG* error_code) override {
+    DCHECK(error_code);
+
+    *error_code = error_code_;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_extraCode1(LONG* extra_code1) override {
+    DCHECK(extra_code1);
+
+    *extra_code1 = extra_code1_;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_completionMessage(BSTR* completion_message) override {
+    DCHECK(completion_message);
+
+    *completion_message = base::win::ScopedBstr(completion_message_).Release();
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_installerResultCode(LONG* installer_result_code) override {
+    DCHECK(installer_result_code);
+
+    *installer_result_code = installer_result_code_;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_installerResultExtraCode1(
+      LONG* installer_result_extra_code1) override {
+    DCHECK(installer_result_extra_code1);
+
+    *installer_result_extra_code1 = installer_result_extra_code1_;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_postInstallLaunchCommandLine(
+      BSTR* post_install_launch_command_line) override {
+    DCHECK(post_install_launch_command_line);
+
+    *post_install_launch_command_line =
+        base::win::ScopedBstr(post_install_launch_command_line_).Release();
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_postInstallUrl(BSTR* post_install_url) override {
+    DCHECK(post_install_url);
+
+    *post_install_url = base::win::ScopedBstr(post_install_url_).Release();
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_postInstallAction(LONG* post_install_action) override {
+    DCHECK(post_install_action);
+
+    *post_install_action = post_install_action_;
+    return S_OK;
+  }
+
+  // Overrides for IDispatch.
+  IFACEMETHODIMP GetTypeInfoCount(UINT*) override { return E_NOTIMPL; }
+
+  IFACEMETHODIMP GetTypeInfo(UINT, LCID, ITypeInfo**) override {
+    return E_NOTIMPL;
+  }
+
+  IFACEMETHODIMP GetIDsOfNames(REFIID,
+                               LPOLESTR*,
+                               UINT,
+                               LCID,
+                               DISPID*) override {
+    return E_NOTIMPL;
+  }
+
+  IFACEMETHODIMP Invoke(DISPID,
+                        REFIID,
+                        LCID,
+                        WORD,
+                        DISPPARAMS*,
+                        VARIANT*,
+                        EXCEPINFO*,
+                        UINT*) override {
+    return E_NOTIMPL;
+  }
+
+ private:
+  ~CurrentStateImpl() override = default;
+
+  LONG state_value_;
+  std::wstring available_version_;
+  ULONGLONG bytes_downloaded_;
+  ULONGLONG total_bytes_to_download_;
+  LONG download_time_remaining_ms_;
+  ULONGLONG next_retry_time_;
+  LONG install_progress_percentage_;
+  LONG install_time_remaining_ms_;
+  VARIANT_BOOL is_canceled_;
+  LONG error_code_;
+  LONG extra_code1_;
+  std::wstring completion_message_;
+  LONG installer_result_code_;
+  LONG installer_result_extra_code1_;
+  std::wstring post_install_launch_command_line_;
+  std::wstring post_install_url_;
+  LONG post_install_action_;
+};
+
 }  // namespace
 
 namespace updater {
@@ -253,9 +479,99 @@ STDMETHODIMP LegacyOnDemandImpl::get_command(BSTR command_id,
 
 STDMETHODIMP LegacyOnDemandImpl::get_currentState(IDispatch** current_state) {
   DCHECK(current_state);
-  Microsoft::WRL::ComPtr<ICurrentState> state(this);
-  *current_state = state.Detach();
-  return S_OK;
+
+  base::AutoLock lock{lock_};
+
+  LONG state_value = STATE_INIT;
+  std::wstring available_version;
+  ULONG bytes_downloaded = -1;
+  ULONG total_bytes_to_download = -1;
+  LONG install_progress_percentage = -1;
+  LONG error_code = 0;
+  LONG extra_code1 = 0;
+  std::wstring completion_message;
+  LONG installer_result_code = 0;
+
+  if (state_update_) {
+    // `state_value` is set to the state of update as seen by the on-demand
+    // client:
+    // - if the repeating callback has been received: set to the specific state.
+    // - if the completion callback has been received, but no repeating
+    // callback, then it is set to STATE_ERROR. This is an error state and it
+    // indicates that update is not going to be further handled and repeating
+    // callbacks posted.
+    // - if no callback has been received at all: set to STATE_INIT.
+    switch (state_update_.value().state) {
+      case UpdateService::UpdateState::State::kUnknown:  // Fall through.
+      case UpdateService::UpdateState::State::kNotStarted:
+        state_value = STATE_INIT;
+        break;
+      case UpdateService::UpdateState::State::kCheckingForUpdates:
+        state_value = STATE_CHECKING_FOR_UPDATE;
+        break;
+      case UpdateService::UpdateState::State::kUpdateAvailable:
+        state_value = STATE_UPDATE_AVAILABLE;
+        break;
+      case UpdateService::UpdateState::State::kDownloading:
+        state_value = STATE_DOWNLOADING;
+        break;
+      case UpdateService::UpdateState::State::kInstalling:
+        state_value = STATE_INSTALLING;
+        break;
+      case UpdateService::UpdateState::State::kUpdated:
+        state_value = STATE_INSTALL_COMPLETE;
+        break;
+      case UpdateService::UpdateState::State::kNoUpdate:
+        state_value = STATE_NO_UPDATE;
+        break;
+      case UpdateService::UpdateState::State::kUpdateError:
+        state_value = STATE_ERROR;
+        break;
+    }
+
+    available_version =
+        base::win::ScopedBstr(
+            base::UTF8ToWide(state_update_->next_version.GetString()))
+            .Release();
+    bytes_downloaded = state_update_->downloaded_bytes;
+    total_bytes_to_download = state_update_->total_bytes;
+    install_progress_percentage = state_update_->install_progress;
+
+    if (state_update_->state ==
+        UpdateService::UpdateState::State::kUpdateError) {
+      error_code = state_update_->error_code;
+      extra_code1 = state_update_->extra_code1;
+
+      if (state_update_->error_code == kErrorApplicationInstallerFailed) {
+        // In the error case, if an installer error occurred, it remaps the
+        // installer error to the legacy installer error value, for backward
+        // compatibility.
+        error_code = GOOPDATEINSTALL_E_INSTALLER_FAILED;
+
+        // TODO(1095133): this string needs localization.
+        completion_message = L"Installer failed.";
+        installer_result_code = state_update_->extra_code1;
+      }
+    }
+
+  } else if (result_) {
+    DCHECK_NE(result_.value(), UpdateService::Result::kSuccess);
+    state_value = STATE_ERROR;
+    error_code = (result_.value() == UpdateService::Result::kSuccess) ? 0 : -1;
+  }
+
+  return Microsoft::WRL::MakeAndInitialize<CurrentStateImpl>(
+      current_state, state_value, available_version, bytes_downloaded,
+      total_bytes_to_download,
+      /* download_time_remaining_ms = */ -1,
+      /* next_retry_time = */ -1, install_progress_percentage,
+      /* install_time_remaining_ms = */ -1,
+      /* is_canceled = */ VARIANT_FALSE, error_code, extra_code1,
+      completion_message, installer_result_code,
+      /* installer_result_extra_code1 = */ -1,
+      /* post_install_launch_command_line = */ L"",
+      /* post_install_url = */ L"",
+      /* post_install_action = */ 0);
 }
 
 STDMETHODIMP LegacyOnDemandImpl::launch() {
@@ -271,188 +587,6 @@ STDMETHODIMP LegacyOnDemandImpl::get_serverInstallDataIndex(BSTR* language) {
 }
 
 STDMETHODIMP LegacyOnDemandImpl::put_serverInstallDataIndex(BSTR language) {
-  return E_NOTIMPL;
-}
-
-// Returns the state of update as seen by the on-demand client:
-// - if the repeading callback has been received: returns the specific state.
-// - if the completion callback has been received, but no repeating callback,
-//   then it returns STATE_ERROR. This is an error state and it indicates that
-//   update is not going to be further handled and repeating callbacks posted.
-// - if no callback has been received at all: returns STATE_INIT.
-STDMETHODIMP LegacyOnDemandImpl::get_stateValue(LONG* state_value) {
-  DCHECK(state_value);
-  base::AutoLock lock{lock_};
-  if (state_update_) {
-    switch (state_update_.value().state) {
-      case UpdateService::UpdateState::State::kUnknown:  // Fall through.
-      case UpdateService::UpdateState::State::kNotStarted:
-        *state_value = STATE_INIT;
-        break;
-      case UpdateService::UpdateState::State::kCheckingForUpdates:
-        *state_value = STATE_CHECKING_FOR_UPDATE;
-        break;
-      case UpdateService::UpdateState::State::kUpdateAvailable:
-        *state_value = STATE_UPDATE_AVAILABLE;
-        break;
-      case UpdateService::UpdateState::State::kDownloading:
-        *state_value = STATE_DOWNLOADING;
-        break;
-      case UpdateService::UpdateState::State::kInstalling:
-        *state_value = STATE_INSTALLING;
-        break;
-      case UpdateService::UpdateState::State::kUpdated:
-        *state_value = STATE_INSTALL_COMPLETE;
-        break;
-      case UpdateService::UpdateState::State::kNoUpdate:
-        *state_value = STATE_NO_UPDATE;
-        break;
-      case UpdateService::UpdateState::State::kUpdateError:
-        *state_value = STATE_ERROR;
-        break;
-    }
-  } else if (result_) {
-    DCHECK_NE(result_.value(), UpdateService::Result::kSuccess);
-    *state_value = STATE_ERROR;
-  } else {
-    *state_value = STATE_INIT;
-  }
-
-  return S_OK;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_availableVersion(BSTR* available_version) {
-  base::AutoLock lock{lock_};
-  if (state_update_) {
-    *available_version =
-        base::win::ScopedBstr(
-            base::UTF8ToWide(state_update_->next_version.GetString()))
-            .Release();
-  }
-  return S_OK;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_bytesDownloaded(ULONG* bytes_downloaded) {
-  DCHECK(bytes_downloaded);
-  base::AutoLock lock{lock_};
-  if (!state_update_ || state_update_->downloaded_bytes == -1)
-    return E_FAIL;
-  *bytes_downloaded = state_update_->downloaded_bytes;
-  return S_OK;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_totalBytesToDownload(
-    ULONG* total_bytes_to_download) {
-  DCHECK(total_bytes_to_download);
-  base::AutoLock lock{lock_};
-  if (!state_update_ || state_update_->total_bytes == -1)
-    return E_FAIL;
-  *total_bytes_to_download = state_update_->total_bytes;
-  return S_OK;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_downloadTimeRemainingMs(
-    LONG* download_time_remaining_ms) {
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_nextRetryTime(ULONGLONG* next_retry_time) {
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_installProgress(
-    LONG* install_progress_percentage) {
-  DCHECK(install_progress_percentage);
-  base::AutoLock lock{lock_};
-  if (!state_update_ || state_update_->install_progress == -1)
-    return E_FAIL;
-  *install_progress_percentage = state_update_->install_progress;
-  return S_OK;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_installTimeRemainingMs(
-    LONG* install_time_remaining_ms) {
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_isCanceled(VARIANT_BOOL* is_canceled) {
-  return E_NOTIMPL;
-}
-
-// In the error case, if an installer error occurred, it remaps the installer
-// error to the legacy installer error value, for backward compatibility.
-STDMETHODIMP LegacyOnDemandImpl::get_errorCode(LONG* error_code) {
-  DCHECK(error_code);
-  base::AutoLock lock{lock_};
-  if (state_update_ &&
-      state_update_->state == UpdateService::UpdateState::State::kUpdateError) {
-    *error_code = state_update_->error_code == kErrorApplicationInstallerFailed
-                      ? GOOPDATEINSTALL_E_INSTALLER_FAILED
-                      : state_update_->error_code;
-  } else if (result_) {
-    *error_code = (result_.value() == UpdateService::Result::kSuccess) ? 0 : -1;
-  } else {
-    *error_code = 0;
-  }
-  return S_OK;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_extraCode1(LONG* extra_code1) {
-  DCHECK(extra_code1);
-  base::AutoLock lock{lock_};
-  if (state_update_ &&
-      state_update_->state == UpdateService::UpdateState::State::kUpdateError) {
-    *extra_code1 = state_update_->extra_code1;
-  } else {
-    *extra_code1 = 0;
-  }
-  return S_OK;
-}
-
-// Returns an installer error completion message.
-STDMETHODIMP LegacyOnDemandImpl::get_completionMessage(
-    BSTR* completion_message) {
-  DCHECK(completion_message);
-  base::AutoLock lock{lock_};
-  if (state_update_ &&
-      state_update_->error_code == kErrorApplicationInstallerFailed) {
-    // TODO(1095133): this string needs localization.
-    *completion_message = base::win::ScopedBstr(L"Installer failed.").Release();
-  } else {
-    completion_message = nullptr;
-  }
-  return S_OK;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_installerResultCode(
-    LONG* installer_result_code) {
-  DCHECK(installer_result_code);
-  base::AutoLock lock{lock_};
-  if (state_update_ &&
-      state_update_->error_code == kErrorApplicationInstallerFailed) {
-    *installer_result_code = state_update_->extra_code1;
-  } else {
-    *installer_result_code = 0;
-  }
-  return S_OK;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_installerResultExtraCode1(
-    LONG* installer_result_extra_code1) {
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_postInstallLaunchCommandLine(
-    BSTR* post_install_launch_command_line) {
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_postInstallUrl(BSTR* post_install_url) {
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP LegacyOnDemandImpl::get_postInstallAction(
-    LONG* post_install_action) {
   return E_NOTIMPL;
 }
 

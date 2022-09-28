@@ -45,7 +45,6 @@ class LegacyOnDemandImpl
           IGoogleUpdate3Web,
           IAppBundleWeb,
           IAppWeb,
-          ICurrentState,
           IDispatch> {
  public:
   LegacyOnDemandImpl();
@@ -87,31 +86,6 @@ class LegacyOnDemandImpl
   IFACEMETHODIMP uninstall() override;
   IFACEMETHODIMP get_serverInstallDataIndex(BSTR* language) override;
   IFACEMETHODIMP put_serverInstallDataIndex(BSTR language) override;
-
-  // Overrides for ICurrentState.
-  IFACEMETHODIMP get_stateValue(LONG* state_value) override;
-  IFACEMETHODIMP get_availableVersion(BSTR* available_version) override;
-  IFACEMETHODIMP get_bytesDownloaded(ULONG* bytes_downloaded) override;
-  IFACEMETHODIMP get_totalBytesToDownload(
-      ULONG* total_bytes_to_download) override;
-  IFACEMETHODIMP get_downloadTimeRemainingMs(
-      LONG* download_time_remaining_ms) override;
-  IFACEMETHODIMP get_nextRetryTime(ULONGLONG* next_retry_time) override;
-  IFACEMETHODIMP get_installProgress(
-      LONG* install_progress_percentage) override;
-  IFACEMETHODIMP get_installTimeRemainingMs(
-      LONG* install_time_remaining_ms) override;
-  IFACEMETHODIMP get_isCanceled(VARIANT_BOOL* is_canceled) override;
-  IFACEMETHODIMP get_errorCode(LONG* error_code) override;
-  IFACEMETHODIMP get_extraCode1(LONG* extra_code1) override;
-  IFACEMETHODIMP get_completionMessage(BSTR* completion_message) override;
-  IFACEMETHODIMP get_installerResultCode(LONG* installer_result_code) override;
-  IFACEMETHODIMP get_installerResultExtraCode1(
-      LONG* installer_result_extra_code1) override;
-  IFACEMETHODIMP get_postInstallLaunchCommandLine(
-      BSTR* post_install_launch_command_line) override;
-  IFACEMETHODIMP get_postInstallUrl(BSTR* post_install_url) override;
-  IFACEMETHODIMP get_postInstallAction(LONG* post_install_action) override;
 
   // Overrides for IDispatch.
   IFACEMETHODIMP GetTypeInfoCount(UINT*) override;
