@@ -331,9 +331,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 }
 
 - (int)userSigninMediatorGetConsentConfirmationId {
-  if (self.userSigninMediatorGetSettingsLinkWasTapped) {
-    return self.unifiedConsentCoordinator.openSettingsStringId;
-  }
   return self.viewController.acceptSigninButtonStringId;
 }
 

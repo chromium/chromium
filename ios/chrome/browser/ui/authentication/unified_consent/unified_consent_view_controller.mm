@@ -53,8 +53,6 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   BOOL _postRestoreSigninPromo;
 }
 
-// Read/write internal.
-@property(nonatomic, readwrite) int openSettingsStringId;
 // Main view.
 @property(nonatomic, strong) UIScrollView* scrollView;
 // Identity picker to change the identity to sign-in.
@@ -215,18 +213,6 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   self.syncSettingsTextView.adjustsFontForContentSizeCategory = YES;
   self.syncSettingsTextView.translatesAutoresizingMaskIntoConstraints = NO;
   [container addSubview:self.syncSettingsTextView];
-
-  if (_postRestoreSigninPromo) {
-    self.openSettingsStringId =
-        self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
-            ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS_POST_RESTORE_PROMO
-            : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS_POST_RESTORE_PROMO;
-  } else {
-    self.openSettingsStringId =
-        self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
-            ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS
-            : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS;
-  }
 
   // Layouts
   NSDictionary* views = @{
@@ -442,7 +428,20 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 // customize Settings is shown when there is at least one selected identity on
 // the device.
 - (void)setSettingsLinkURLShown:(BOOL)showLink {
-  NSString* text = l10n_util::GetNSString(self.openSettingsStringId);
+  int openSettingsStringId;
+  if (_postRestoreSigninPromo) {
+    openSettingsStringId =
+        self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
+            ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS_POST_RESTORE_PROMO
+            : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS_POST_RESTORE_PROMO;
+  } else {
+    openSettingsStringId =
+        self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
+            ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS
+            : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS;
+  }
+  NSString* text = l10n_util::GetNSString(openSettingsStringId);
+  _consentStringIds.push_back(openSettingsStringId);
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
     NSFontAttributeName :

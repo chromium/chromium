@@ -14,13 +14,11 @@
 // UnifiedConsentViewController is a sub view controller to ask for the user
 // consent before the user can sign-in.
 // All the string ids displayed by the view are available with
-// `consentStringIds` and `openSettingsStringId`. Those can be used to record
-// the consent agreed by the user.
+// `consentStringIds`. Those can be used to record the consent agreed by the
+// user.
 @interface UnifiedConsentViewController : UIViewController
 
 @property(nonatomic, weak) id<UnifiedConsentViewControllerDelegate> delegate;
-// String id for text to open the settings (related to record the user consent).
-@property(nonatomic, assign, readonly) int openSettingsStringId;
 // Returns YES if the consent view is scrolled to the bottom.
 @property(nonatomic, assign, readonly) BOOL isScrolledToBottom;
 

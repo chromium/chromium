@@ -96,10 +96,6 @@
   return self.unifiedConsentViewController;
 }
 
-- (int)openSettingsStringId {
-  return self.unifiedConsentViewController.openSettingsStringId;
-}
-
 - (const std::vector<int>&)consentStringIds {
   return [self.unifiedConsentViewController consentStringIds];
 }

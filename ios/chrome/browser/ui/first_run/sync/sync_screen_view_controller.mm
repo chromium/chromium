@@ -63,8 +63,6 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
       [self contentTextWithStringID:
                 IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION];
   self.activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
-  self.openSettingsStringID =
-      IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT_WITH_LINK_TO_SETTINGS;
 
   self.primaryActionString =
       [self contentTextWithStringID:self.activateSyncButtonID];
@@ -94,7 +92,8 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
   }
 
   self.disclaimerText =
-      [self contentTextWithStringID:self.openSettingsStringID];
+      [self contentTextWithStringID:
+                IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT_WITH_LINK_TO_SETTINGS];
   self.disclaimerURLs = @[ net::NSURLWithGURL(GURL(kSettingsSyncURL)) ];
 
   [super viewDidLoad];

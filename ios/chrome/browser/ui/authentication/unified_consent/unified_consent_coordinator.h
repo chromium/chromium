@@ -44,8 +44,8 @@
 // a sub view controller to ask for the user consent before the user can
 // sign-in.
 // All the string ids displayed by the view are available with
-// `consentStringIds` and `openSettingsStringId`. Those can be used to record
-// the consent agreed by the user.
+// `consentStringIds`. Those can be used to record the consent agreed by the
+// user.
 @interface UnifiedConsentCoordinator : ChromeCoordinator
 
 @property(nonatomic, weak) id<UnifiedConsentCoordinatorDelegate> delegate;
@@ -56,8 +56,6 @@
 // Informs the coordinator whether the identity picker should automatically be
 // open when the UnifiedConsent view appears.
 @property(nonatomic) BOOL autoOpenIdentityPicker;
-// String id for text to open the settings (related to record the user consent).
-@property(nonatomic, readonly) int openSettingsStringId;
 // View controller used to display the view.
 @property(nonatomic, strong, readonly) UIViewController* viewController;
 // Returns YES if the consent view is scrolled to the bottom.
