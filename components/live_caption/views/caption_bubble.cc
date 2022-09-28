@@ -572,13 +572,13 @@ void CaptionBubble::Init() {
 
   views::Button::PressedCallback pin_or_unpin_callback = base::BindRepeating(
       &CaptionBubble::PinOrUnpinButtonPressed, base::Unretained(this));
-  auto pin_button = BuildImageButton(pin_or_unpin_callback,
-                                     IDS_LIVE_CAPTION_BUBBLE_BACK_TO_TAB);
+  auto pin_button =
+      BuildImageButton(pin_or_unpin_callback, IDS_LIVE_CAPTION_BUBBLE_PIN);
   pin_button->SetVisible(!is_pinned_);
   pin_button_ = header_container->AddChildView(std::move(pin_button));
 
   auto unpin_button = BuildImageButton(std::move(pin_or_unpin_callback),
-                                       IDS_LIVE_CAPTION_BUBBLE_BACK_TO_TAB);
+                                       IDS_LIVE_CAPTION_BUBBLE_UNPIN);
   unpin_button->SetVisible(is_pinned_);
   unpin_button_ = header_container->AddChildView(std::move(unpin_button));
 
