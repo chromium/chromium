@@ -6,7 +6,7 @@
 
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
-#include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace ash {
@@ -22,7 +22,7 @@ FastPairHttpResult::FastPairHttpResult(
                       net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE) &&
                      http_response_code;
   bool http_success =
-      net_success && network::cors::IsOkStatus(*http_response_code);
+      net_success && network::IsSuccessfulStatus(*http_response_code);
   if (http_success) {
     type_ = Type::kSuccess;
   } else if (net_success) {

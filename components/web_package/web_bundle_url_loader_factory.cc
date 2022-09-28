@@ -20,8 +20,8 @@
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/corb/corb_api.h"
-#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
@@ -48,7 +48,7 @@ bool CheckWebBundleServingConstraints(
     const network::mojom::URLResponseHead& response_head,
     std::string& out_error_message) {
   if (!response_head.headers ||
-      !network::cors::IsOkStatus(response_head.headers->response_code())) {
+      !network::IsSuccessfulStatus(response_head.headers->response_code())) {
     out_error_message = "Failed to fetch Web Bundle.";
     return false;
   }

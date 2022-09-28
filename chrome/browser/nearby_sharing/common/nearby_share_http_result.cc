@@ -6,7 +6,7 @@
 
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
-#include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -57,7 +57,7 @@ NearbyShareHttpStatus::NearbyShareHttpStatus(
                       net_error_code_ == net::ERR_HTTP_RESPONSE_CODE_FAILURE) &&
                      http_response_code_;
   bool http_success =
-      net_success && network::cors::IsOkStatus(*http_response_code_);
+      net_success && network::IsSuccessfulStatus(*http_response_code_);
 
   if (http_success) {
     status_ = Status::kSuccess;

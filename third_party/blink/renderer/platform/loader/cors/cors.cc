@@ -162,10 +162,6 @@ bool ContainsOnlyCorsSafelistedHeaders(const HTTPHeaderMap& header_map) {
   return network::cors::CorsUnsafeRequestHeaderNames(in).empty();
 }
 
-bool IsOkStatus(int status) {
-  return network::cors::IsOkStatus(status);
-}
-
 bool CalculateCorsFlag(const KURL& url,
                        const SecurityOrigin* initiator_origin,
                        const SecurityOrigin* isolated_world_origin,

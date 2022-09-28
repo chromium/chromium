@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetcher.h"
 
+#include "services/network/public/cpp/header_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -53,7 +54,8 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
 
   const auto& response = resource->GetResponse();
   // <spec step="9">... response's status is not an ok status</spec>
-  if (response.IsHTTP() && !cors::IsOkStatus(response.HttpStatusCode())) {
+  if (response.IsHTTP() &&
+      !network::IsSuccessfulStatus(response.HttpStatusCode())) {
     return false;
   }
 

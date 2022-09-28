@@ -14,7 +14,7 @@
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
-#include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -221,7 +221,7 @@ void WebPushSender::OnMessageSent(
     return;
   }
 
-  if (!network::cors::IsOkStatus(response_code)) {
+  if (!network::IsSuccessfulStatus(response_code)) {
     DLOG(ERROR) << "HTTP Error: " << response_code;
     InvokeWebPushCallback(std::move(callback),
                           SendWebPushMessageResult::kServerError);

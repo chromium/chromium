@@ -498,10 +498,6 @@ bool IsForbiddenMethod(const std::string& method) {
          upper_method == net::HttpRequestHeaders::kTrackMethod;
 }
 
-bool IsOkStatus(int status) {
-  return status >= 200 && status < 300;
-}
-
 bool IsCorsSameOriginResponseType(mojom::FetchResponseType type) {
   switch (type) {
     case mojom::FetchResponseType::kBasic:

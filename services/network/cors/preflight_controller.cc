@@ -26,6 +26,7 @@
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -225,7 +226,7 @@ base::expected<void, CorsErrorStatus> CheckPreflightAccess(
   auto cors_result =
       CheckAccess(response_url, allow_origin_header, allow_credentials_header,
                   actual_credentials_mode, origin);
-  const bool has_ok_status = IsOkStatus(response_status_code);
+  const bool has_ok_status = IsSuccessfulStatus(response_status_code);
 
   AccessCheckResult result = (!cors_result.has_value() || !has_ok_status)
                                  ? AccessCheckResult::kNotPermittedInPreflight

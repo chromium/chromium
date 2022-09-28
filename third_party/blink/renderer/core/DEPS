@@ -71,6 +71,7 @@ include_rules = [
     "+services/network/public/cpp/cors/cors_error_status.h",
     "+services/network/public/cpp/cross_origin_embedder_policy.h",
     "+services/network/public/cpp/features.h",
+    "+services/network/public/cpp/header_util.h",
     "+services/network/public/cpp/is_potentially_trustworthy.h",
     "+services/network/public/cpp/request_destination.h",
     "+services/network/public/cpp/request_mode.h",

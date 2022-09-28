@@ -43,6 +43,10 @@ COMPONENT_EXPORT(NETWORK_CPP)
 bool ShouldSniffContent(const GURL& url,
                         const mojom::URLResponseHead& response);
 
+// https://fetch.spec.whatwg.org/#ok-status aka a successful 2xx status code,
+// https://www.rfc-editor.org/rfc/rfc9110#status.2xx.
+COMPONENT_EXPORT(NETWORK_CPP) bool IsSuccessfulStatus(int status);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_HEADER_UTIL_H_

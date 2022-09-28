@@ -130,11 +130,6 @@ std::vector<std::string> PrivilegedNoCorsHeaderNames();
 // See https://fetch.spec.whatwg.org/#forbidden-method.
 COMPONENT_EXPORT(NETWORK_CPP) bool IsForbiddenMethod(const std::string& name);
 
-// https://fetch.spec.whatwg.org/#ok-status aka a successful 2xx status code,
-// https://tools.ietf.org/html/rfc7231#section-6.3 . We opt to use the Fetch
-// term in naming the predicate.
-COMPONENT_EXPORT(NETWORK_CPP) bool IsOkStatus(int status);
-
 // Returns true if |type| is a response type which makes a response
 // CORS-same-origin. See https://html.spec.whatwg.org/C/#cors-same-origin.
 COMPONENT_EXPORT(NETWORK_CPP)

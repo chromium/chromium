@@ -13,6 +13,7 @@
 #include "net/base/mime_sniffer.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
@@ -188,6 +189,11 @@ bool ShouldSniffContent(const GURL& url,
       net::ShouldSniffMimeType(url, response.mime_type);
 
   return !sniffing_blocked && we_would_like_to_sniff;
+}
+
+bool IsSuccessfulStatus(int status) {
+  // This contains successful 2xx status code.
+  return status >= net::HTTP_OK && status < net::HTTP_MULTIPLE_CHOICES;
 }
 
 }  // namespace network

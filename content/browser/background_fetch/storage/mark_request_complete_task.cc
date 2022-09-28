@@ -19,7 +19,7 @@
 #include "content/common/fetch/fetch_api_request_proto.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/header_util.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -55,7 +55,7 @@ blink::mojom::SerializedBlobPtr MakeBlob(
 // 2xx status per https://tools.ietf.org/html/rfc7231#section-6.3.
 bool IsOK(const BackgroundFetchRequestInfo& request) {
   int status = request.GetResponseCode();
-  return network::cors::IsOkStatus(status);
+  return network::IsSuccessfulStatus(status);
 }
 
 }  // namespace

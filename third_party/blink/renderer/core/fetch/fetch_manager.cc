@@ -15,6 +15,7 @@
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
@@ -507,7 +508,7 @@ void FetchManager::Loader::DidFinishLoading(uint64_t) {
 
   auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get());
   if (window && window->GetFrame() &&
-      cors::IsOkStatus(response_http_status_code_)) {
+      network::IsSuccessfulStatus(response_http_status_code_)) {
     window->GetFrame()->GetPage()->GetChromeClient().AjaxSucceeded(
         window->GetFrame());
   }

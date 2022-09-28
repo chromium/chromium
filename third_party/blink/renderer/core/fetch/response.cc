@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "services/network/public/cpp/header_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -503,7 +504,7 @@ uint16_t Response::status() const {
 bool Response::ok() const {
   // "The ok attribute's getter must return true
   // if response's status is in the range 200 to 299, and false otherwise."
-  return cors::IsOkStatus(status());
+  return network::IsSuccessfulStatus(status());
 }
 
 String Response::statusText() const {

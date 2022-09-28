@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader.h"
 
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
@@ -81,7 +82,7 @@ void WorkerMainScriptLoader::Start(
       ResourceLoadObserver::ResponseSource::kNotFromMemoryCache);
 
   if (resource_response_.IsHTTP() &&
-      !cors::IsOkStatus(resource_response_.HttpStatusCode())) {
+      !network::IsSuccessfulStatus(resource_response_.HttpStatusCode())) {
     client_->OnFailedLoadingWorkerMainScript();
     resource_load_observer_->DidFailLoading(
         initial_request_.Url(), initial_request_.InspectorId(),
