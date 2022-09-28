@@ -1223,8 +1223,6 @@ class Vector
   // the size of the backing buffer, even if |newCapacity| is small. This
   // function may cause a reallocation.
   void reserve(wtf_size_t new_capacity);
-  // TODO(wangxianzhu): Remove this after converting all callers.
-  void ReserveCapacity(wtf_size_t new_capacity) { reserve(new_capacity); }
 
   // This is similar to reserve() but must be called immediately after
   // the vector is default-constructed.
@@ -1237,8 +1235,6 @@ class Vector
   // Shrink the backing buffer so it can contain exactly |size()| elements.
   // This function may cause a reallocation.
   void shrink_to_fit() { ShrinkCapacity(size()); }
-  // TODO(wangxianzhu): Remove this after converting all callers.
-  void ShrinkToFit() { shrink_to_fit(); }
 
   // Shrink the backing buffer if at least 50% of the vector's capacity is
   // unused. If it shrinks, the new buffer contains roughly 25% of unused

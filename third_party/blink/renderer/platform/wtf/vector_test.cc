@@ -357,7 +357,7 @@ TEST(VectorTest, ContainerAnnotations) {
   int_pointer_a[1] = 11;
   EXPECT_DEATH(int_pointer_a[2] = 12, "container-overflow");
   EXPECT_DEATH((void)int_pointer_a[2], "container-overflow");
-  vector_a.ShrinkToFit();
+  vector_a.shrink_to_fit();
   vector_a.reserve(16);
   int_pointer_a = vector_a.data();
   EXPECT_DEATH((void)int_pointer_a[2], "container-overflow");
