@@ -1565,6 +1565,12 @@
     },
   },
   'chromedriver_py_tests': {
+    'modifications': {
+      'Win10 Tests x64': {
+        # TODO(crbug.com/1369158): Fix & re-enable.
+        'isolate_profile_data': False,
+      },
+    },
     'remove_from': [
       # Timeout happens sometimes (crbug.com/951799).
       'Win10 Tests x64 (dbg)',

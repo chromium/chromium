@@ -4201,7 +4201,7 @@
         ],
         "check_flakiness_for_new_tests": false,
         "isolate_name": "chromedriver_py_tests",
-        "isolate_profile_data": true,
+        "isolate_profile_data": false,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
