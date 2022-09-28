@@ -48,3 +48,6 @@
 
 # TODO(crbug/1359954)
 -org.chromium.chrome.browser.tasks.tab_management.TabSuggestionMessageCardTest.groupTabSuggestionReviewedAndAccepted
+
+# TODO(crbug/1369234)
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRecordRetainableSession_WithoutWarmupAndSession
