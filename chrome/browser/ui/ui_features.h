@@ -55,6 +55,8 @@ BASE_DECLARE_FEATURE(kEvDetailsInPageInfo);
 BASE_DECLARE_FEATURE(kLightweightExtensionOverrideConfirmations);
 #endif
 
+BASE_DECLARE_FEATURE(kForceSignInReauth);
+
 BASE_DECLARE_FEATURE(kPowerBookmarksSidePanel);
 
 BASE_DECLARE_FEATURE(kProminentDarkModeActiveTabTitle);
