@@ -18,7 +18,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/base_tracing.h"
-#include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_cftyperef.h"
