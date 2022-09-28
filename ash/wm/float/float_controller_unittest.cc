@@ -10,6 +10,7 @@
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -58,6 +59,15 @@ NonClientFrameViewAsh* SetUpAndGetFrame(aura::Window* window) {
   DCHECK(frame);
   views::test::RunScheduledLayout(frame);
   return frame;
+}
+
+// Checks if `window` is being visibly animating. That means windows that are
+// animated with tween zero are excluded because those jump to the target at the
+// end of the animation.
+bool IsVisiblyAnimating(aura::Window* window) {
+  DCHECK(window);
+  ui::LayerAnimator* animator = window->layer()->GetAnimator();
+  return animator->is_animating() && animator->tween_type() != gfx::Tween::ZERO;
 }
 
 class WindowFloatTest : public AshTestBase {
@@ -447,6 +457,55 @@ TEST_F(TabletWindowFloatTest, TabletClamshellTransition) {
   // Test that on exiting tablet mode, we maintain float state.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   EXPECT_TRUE(WindowState::Get(window2.get())->IsFloated());
+}
+
+// Tests that the expected windows are animating duration a tablet <-> clamshell
+// transition.
+TEST_F(TabletWindowFloatTest, TabletClamshellTransitionAnimation) {
+  auto normal_window = CreateAppWindow();
+  auto floated_window = CreateFloatedWindow();
+
+  // Both windows are expected to animate, so we wait for them both. We don't
+  // know which window would finish first so we wait for the normal window
+  // first, and if the floated window is still animating, wait for that as well.
+  auto wait_for_windows_finish_animating = [&]() {
+    ShellTestApi().WaitForWindowFinishAnimating(normal_window.get());
+    if (floated_window->layer()->GetAnimator()->is_animating())
+      ShellTestApi().WaitForWindowFinishAnimating(floated_window.get());
+  };
+
+  // Activate `normal_window`. `floated_window` should still animate since it is
+  // stacked on top and visible.
+  wm::ActivateWindow(normal_window.get());
+
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Tests that on entering tablet mode, both windows are animating since both
+  // are visible before and after the transition.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_TRUE(IsVisiblyAnimating(normal_window.get()));
+  ASSERT_TRUE(IsVisiblyAnimating(floated_window.get()));
+  wait_for_windows_finish_animating();
+
+  // Tests that both windows are animating on exit.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ASSERT_TRUE(IsVisiblyAnimating(normal_window.get()));
+  ASSERT_TRUE(IsVisiblyAnimating(floated_window.get()));
+  wait_for_windows_finish_animating();
+
+  // Activate `floated_window`. `normal_window` should still animate since it
+  // is visible behind `floated_window`.
+  wm::ActivateWindow(floated_window.get());
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_TRUE(IsVisiblyAnimating(normal_window.get()));
+  ASSERT_TRUE(IsVisiblyAnimating(floated_window.get()));
+  wait_for_windows_finish_animating();
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  EXPECT_TRUE(IsVisiblyAnimating(normal_window.get()));
+  EXPECT_TRUE(IsVisiblyAnimating(floated_window.get()));
 }
 
 // Tests that a window can be floated in tablet mode, unless its minimum width
