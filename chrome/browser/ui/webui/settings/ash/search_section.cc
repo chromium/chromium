@@ -297,9 +297,6 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("shouldShowQuickAnswersSettings",
                           ShouldShowQuickAnswersSettings());
-  html_source->AddBoolean(
-      "syncSettingsCategorizationEnabled",
-      chromeos::features::IsSyncSettingsCategorizationEnabled());
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);
   html_source->AddLocalizedString("osSearchPageTitle",

@@ -150,7 +150,6 @@ const std::vector<SearchConcept>& GetNonCategorizedSyncSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetCategorizedSyncSearchConcepts() {
-  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_SYNC,
        mojom::kSyncSubpagePath,
@@ -499,9 +498,6 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean(
-      "syncSettingsCategorizationEnabled",
-      chromeos::features::IsSyncSettingsCategorizationEnabled());
-  html_source->AddBoolean(
       "appsToggleSharingEnabled",
       base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
           crosapi::browser_util::IsLacrosEnabled());
@@ -605,11 +601,7 @@ PeopleSection::PeopleSection(Profile* profile,
     FetchAccounts();
   }
 
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    updater.AddSearchTags(GetCategorizedSyncSearchConcepts());
-  } else {
-    updater.AddSearchTags(GetNonCategorizedSyncSearchConcepts());
-  }
+  updater.AddSearchTags(GetCategorizedSyncSearchConcepts());
 
   // Parental control search tags are added if necessary and do not update
   // dynamically during a user session.
@@ -714,8 +706,7 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
             account_apps_availability_));
   }
 
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled())
-    web_ui->AddMessageHandler(std::make_unique<OSSyncHandler>(profile()));
+  web_ui->AddMessageHandler(std::make_unique<OSSyncHandler>(profile()));
 
   web_ui->AddMessageHandler(
       std::make_unique<chromeos::settings::QuickUnlockHandler>(profile(),
