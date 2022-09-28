@@ -294,7 +294,11 @@ import {isRTL} from 'chrome://resources/js/util.m.js';
     } else {
       this.title.textContent = '';
       this.title.hidden = true;
-      this.frame.removeAttribute('aria-label');
+      if (this.text.innerText) {
+        this.frame.setAttribute('aria-label', this.text.innerText);
+      } else {
+        this.frame.removeAttribute('aria-label');
+      }
     }
 
     const self = this;
