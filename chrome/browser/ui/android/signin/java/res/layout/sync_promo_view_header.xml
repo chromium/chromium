@@ -8,7 +8,7 @@ found in the LICENSE file.
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:showIn="@layout/personalized_signin_promo_view_settings">
+    tools:showIn="@layout/sync_promo_view_settings">
 
     <!-- TODO(crbug.com/1319351): Rename the file to personalized_sync_promo_view_header for consistency -->
     <ImageView

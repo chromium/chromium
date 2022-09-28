@@ -55,7 +55,7 @@ public class SyncPromoPreference extends Preference
      */
     public SyncPromoPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setLayoutResource(R.layout.personalized_signin_promo_view_settings);
+        setLayoutResource(R.layout.sync_promo_view_settings);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();

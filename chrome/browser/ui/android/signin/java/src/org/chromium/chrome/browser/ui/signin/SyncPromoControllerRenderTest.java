@@ -302,8 +302,8 @@ public class SyncPromoControllerRenderTest {
             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                     mActivityTestRule.getActivity());
         });
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(
                 view, "settings_sync_promo_view_signed_out_and_no_account_available");
     }
@@ -321,8 +321,8 @@ public class SyncPromoControllerRenderTest {
             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                     mActivityTestRule.getActivity());
         });
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(
                 view, "settings_sync_promo_alternative_title_signed_out_and_no_account_available");
     }
@@ -339,8 +339,8 @@ public class SyncPromoControllerRenderTest {
             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                     mActivityTestRule.getActivity());
         });
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(
                 view, "settings_sync_promo_illustration_signed_out_and_no_account_available");
     }
@@ -357,8 +357,8 @@ public class SyncPromoControllerRenderTest {
             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                     mActivityTestRule.getActivity());
         });
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(
                 view, "settings_sync_promo_single_button_signed_out_and_no_account_available");
     }
@@ -375,8 +375,8 @@ public class SyncPromoControllerRenderTest {
             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                     mActivityTestRule.getActivity());
         });
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(
                 view, "settings_sync_promo_title_signed_out_and_no_account_available");
     }
@@ -387,8 +387,8 @@ public class SyncPromoControllerRenderTest {
     public void testSettingsSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
         mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(view, "settings_sync_promo_view_signed_out_and_account_available");
     }
 
@@ -403,8 +403,8 @@ public class SyncPromoControllerRenderTest {
     testSettingsSyncPromoViewSignedOutAndAccountAvailableWithAlternativeTitle() throws Throwable {
         mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(
                 view, "settings_sync_promo_alternative_title_signed_out_and_account_available");
     }
@@ -419,8 +419,8 @@ public class SyncPromoControllerRenderTest {
     testSettingsSyncPromoViewSignedOutAndAccountAvailableWithIllustration() throws Throwable {
         mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(
                 view, "settings_sync_promo_illustration_signed_out_and_account_available");
     }
@@ -435,8 +435,8 @@ public class SyncPromoControllerRenderTest {
     testSettingsSyncPromoViewSignedOutAndAccountAvailableWithSingleButton() throws Throwable {
         mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(
                 view, "settings_sync_promo_single_button_signed_out_and_account_available");
     }
@@ -451,8 +451,8 @@ public class SyncPromoControllerRenderTest {
     testSettingsSyncPromoViewSignedOutAndAccountAvailableWithTitle() throws Throwable {
         mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(view, "settings_sync_promo_title_signed_out_and_account_available");
     }
 
@@ -463,8 +463,8 @@ public class SyncPromoControllerRenderTest {
         CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(view, "settings_sync_promo_view_signed_in_and_not_syncing");
     }
 
@@ -480,8 +480,8 @@ public class SyncPromoControllerRenderTest {
         CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(
                 view, "settings_sync_promo_alternative_title_signed_in_and_not_syncing");
     }
@@ -497,8 +497,8 @@ public class SyncPromoControllerRenderTest {
         CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(view, "settings_sync_promo_illustration_signed_in_and_not_syncing");
     }
 
@@ -513,8 +513,8 @@ public class SyncPromoControllerRenderTest {
         CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(view, "settings_sync_promo_single_button_signed_in_and_not_syncing");
     }
 
@@ -529,8 +529,8 @@ public class SyncPromoControllerRenderTest {
         CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
-                R.layout.personalized_signin_promo_view_settings);
+        View view = setUpSyncPromoView(
+                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(view, "settings_sync_promo_title_signed_in_and_not_syncing");
     }
 

@@ -55,7 +55,7 @@ public class SyncErrorCardPreference extends Preference
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSize(
                 context, R.drawable.ic_sync_badge_error_20dp);
-        setLayoutResource(R.layout.personalized_signin_promo_view_settings);
+        setLayoutResource(R.layout.sync_promo_view_settings);
         mSyncError = SyncError.NO_ERROR;
     }
 
