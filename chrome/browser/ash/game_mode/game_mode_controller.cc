@@ -27,8 +27,6 @@ namespace {
 constexpr int kRefreshSec = 60;
 constexpr int kTimeoutSec = kRefreshSec + 10;
 
-base::NoDestructor<std::set<std::string>> g_arc_game_pkg_names;
-
 // A GameModeCriteria for ARC windows. This potentially owns a GameModeEnabler
 // which is initialized if the task of the window is determined to be a game.
 class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
@@ -58,11 +56,28 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
                                 weak_ptr_factory_.GetWeakPtr()));
   }
 
+  // Checks if an ARC game package is in the known games list. These are apps
+  // which should be treated like a game without checking their actual app
+  // category. These games may not be classified as games in their manifest, but
+  // we want to treat them as games..
+  static bool IsKnownGame(const std::string& pkg_name) {
+    // This does not have a category set as of v1.18.32 (circa late Sept, 2022).
+    if (pkg_name == "com.mojang.minecraftedu")
+      return true;
+
+    // Not sure about whether the app already has the correct category, as I do
+    // not have access to the APK. As we have no way to alter the list between
+    // release milestones, add it just in case.
+    if (pkg_name == "com.mojang.minecraftpe")
+      return true;
+
+    return false;
+  }
+
   void OnReceiveTaskInfo(const std::string& pkg_name,
                          const std::string& activity) {
-    bool is_known_game = g_arc_game_pkg_names->count(pkg_name);
-    VLOG(2) << "ARC task package " << pkg_name << " is game? " << is_known_game;
-    if (is_known_game) {
+    if (IsKnownGame(pkg_name)) {
+      VLOG(2) << "ARC task package " << pkg_name << " is known game";
       Enable();
     } else if (auto* app_instance =
                    ARC_GET_INSTANCE_FOR_METHOD(connection_, GetAppCategory);
@@ -111,16 +126,6 @@ GameModeController::GameModeController() {
   focus_client->AddObserver(this);
   // In case a window is already focused when this is constructed.
   OnWindowFocused(focus_client->GetFocusedWindow(), nullptr);
-
-  g_arc_game_pkg_names->clear();
-
-  // This does not have a category set as of v1.18.32 (circa late Sept, 2022).
-  g_arc_game_pkg_names->insert("com.mojang.minecraftedu");
-
-  // Not sure about whether the app already has the correct category, as I do
-  // not have access to the APK. As we have no way to alter the list between
-  // release milestones, add it just in case.
-  g_arc_game_pkg_names->insert("com.mojang.minecraftpe");
 }
 
 GameModeController::~GameModeController() {
@@ -162,10 +167,6 @@ void GameModeController::OnWindowFocused(aura::Window* gained_focus,
   if (mode != GameMode::OFF)
     focused_ = std::make_unique<WindowTracker>(window_state,
                                                std::move(maybe_keep_focused));
-}
-
-void AddArcPkgNameForTesting(const std::string& pkg_name) {
-  g_arc_game_pkg_names->insert(pkg_name);
 }
 
 GameModeController::WindowTracker::WindowTracker(

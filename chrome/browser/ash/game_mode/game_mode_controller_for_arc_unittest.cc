@@ -70,7 +70,8 @@ class GameModeControllerForArcTest : public GameModeControllerTestBase {
 TEST_F(GameModeControllerForArcTest, ChangingFullScreenTogglesGameMode) {
   arc_app_test_.app_instance()->SetTaskInfo(42, "org.funstuff.client",
                                             "activity");
-  game_mode::AddArcPkgNameForTesting("org.funstuff.client");
+  arc_app_test_.app_instance()->set_app_category_of_pkg(
+      "org.funstuff.client", arc::mojom::AppCategory::kGame);
 
   auto game_widget = CreateArcTaskWidget(42);
   game_widget->Show();
@@ -93,7 +94,8 @@ TEST_F(GameModeControllerForArcTest, ChangingFullScreenTogglesGameMode) {
 TEST_F(GameModeControllerForArcTest, SwitchToNonGameArcAppTurnsOffGameMode) {
   arc_app_test_.app_instance()->SetTaskInfo(2424, "net.another.game",
                                             "activity");
-  game_mode::AddArcPkgNameForTesting("net.another.game");
+  arc_app_test_.app_instance()->set_app_category_of_pkg(
+      "net.another.game", arc::mojom::AppCategory::kGame);
 
   auto game_widget = CreateArcTaskWidget(2424);
   game_widget->Show();
@@ -121,7 +123,8 @@ TEST_F(GameModeControllerForArcTest, SwitchToNonGameArcAppTurnsOffGameMode) {
 TEST_F(GameModeControllerForArcTest,
        SwitchToNonArcWindowAndBackTurnsOffGameMode) {
   arc_app_test_.app_instance()->SetTaskInfo(42, "org.some.game", "activity");
-  game_mode::AddArcPkgNameForTesting("org.some.game");
+  arc_app_test_.app_instance()->set_app_category_of_pkg(
+      "org.some.game", arc::mojom::AppCategory::kGame);
 
   auto game_widget = CreateArcTaskWidget(42);
   game_widget->Show();
@@ -149,7 +152,8 @@ TEST_F(GameModeControllerForArcTest,
 
 TEST_F(GameModeControllerForArcTest, SwitchToBorealisWindowAndBack) {
   arc_app_test_.app_instance()->SetTaskInfo(14, "jp.foo.game", "activity");
-  game_mode::AddArcPkgNameForTesting("jp.foo.game");
+  arc_app_test_.app_instance()->set_app_category_of_pkg(
+      "jp.foo.game", arc::mojom::AppCategory::kGame);
 
   auto non_game_widget =
       ash::TestWidgetBuilder().SetShow(true).BuildOwnsNativeWidget();
@@ -185,6 +189,20 @@ TEST_F(GameModeControllerForArcTest, IdentifyGameWithGetAppCategory) {
   arc_app_test_.app_instance()->set_app_category_of_pkg(
       "org.an_awesome.game", arc::mojom::AppCategory::kGame);
   arc_app_test_.app_instance()->SetTaskInfo(9882, "org.an_awesome.game",
+                                            "activity");
+
+  auto game_widget = CreateArcTaskWidget(9882);
+  game_widget->Show();
+  fake_resourced_client_->set_set_game_mode_response(
+      ash::ResourcedClient::GameMode::OFF);
+  game_widget->SetFullscreen(true);
+  EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
+}
+
+TEST_F(GameModeControllerForArcTest, IdentifyGameWithKnownGameList) {
+  arc_app_test_.app_instance()->set_app_category_of_pkg(
+      "org.an_awesome.game", arc::mojom::AppCategory::kUndefined);
+  arc_app_test_.app_instance()->SetTaskInfo(9882, "com.mojang.minecraftedu",
                                             "activity");
 
   auto game_widget = CreateArcTaskWidget(9882);
