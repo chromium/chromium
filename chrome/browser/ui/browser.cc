@@ -257,6 +257,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "components/session_manager/core/session_manager.h"
 #endif
@@ -1077,13 +1078,17 @@ bool Browser::CanSaveContents(content::WebContents* web_contents) const {
 
 bool Browser::ShouldDisplayFavicon(content::WebContents* web_contents) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Suppress for System Apps.
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kTerminalMultiProfile) &&
-      app_controller_ && app_controller_->system_app()) {
-    return false;
+  // Display favicons for the Terminal app.
+  if (base::FeatureList::IsEnabled(chromeos::features::kTerminalMultiProfile) &&
+      app_controller_ && app_controller_->system_app() &&
+      app_controller_->app_id() == guest_os::kTerminalSystemAppId) {
+    return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Remove for all other tabbed web apps.
+  if (app_controller_ && app_controller_->has_tab_strip())
+    return false;
 
   // Otherwise, always display the favicon.
   return true;

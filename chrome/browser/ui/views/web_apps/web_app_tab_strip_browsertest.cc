@@ -532,4 +532,18 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
   EXPECT_EQ(tab_strip->active_index(), 0);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NoFavicons) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // No favicons shown for web apps.
+  EXPECT_FALSE(tab_strip->delegate()->ShouldDisplayFavicon(
+      tab_strip->GetActiveWebContents()));
+}
+
 }  // namespace web_app
