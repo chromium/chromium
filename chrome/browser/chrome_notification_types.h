@@ -37,16 +37,6 @@ namespace chrome {
 enum NotificationType {
   NOTIFICATION_CHROME_START = PREVIOUS_END,
 
-  // Application-wide ----------------------------------------------------------
-
-  // This message is sent when the application is terminating (the last
-  // browser window has shutdown as part of an explicit user-initiated exit,
-  // or the user closed the last browser window on Windows/Linux and there are
-  // no BackgroundContents keeping the browser running). No source or details
-  // are passed.
-  // TODO(https://crbug.com/1174781): Remove.
-  NOTIFICATION_APP_TERMINATING = NOTIFICATION_CHROME_START,
-
   // Authentication ----------------------------------------------------------
 
   // This is sent when a login prompt is shown.  The source is the
@@ -54,7 +44,7 @@ enum NotificationType {
   // Details are a LoginNotificationDetails which provide the LoginHandler
   // that should be given authentication.
   // TODO(https://crbug.com/1174785): Remove.
-  NOTIFICATION_AUTH_NEEDED,
+  NOTIFICATION_AUTH_NEEDED = NOTIFICATION_CHROME_START,
 
   // This is sent when authentication credentials have been supplied (either
   // by the user or by an automation service), but before we've actually

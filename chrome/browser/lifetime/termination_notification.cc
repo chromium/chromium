@@ -44,12 +44,6 @@ void NotifyAppTerminating() {
     return;
   notified = true;
   GetAppTerminatingCallbackList().Notify();
-
-  // TODO(https://crbug.com/1174781): Remove.
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_APP_TERMINATING,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
 }
 
 void NotifyAndTerminate(bool fast_path) {

@@ -7,8 +7,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,11 +66,11 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
   BrowserList::AddObserver(&closing_observer);
   EXPECT_CALL(closing_observer, OnBrowserClosing(_)).Times(AtLeast(1));
 
-  content::WindowedNotificationObserver terminate_observer(
-      chrome::NOTIFICATION_APP_TERMINATING,
-      content::NotificationService::AllSources());
+  base::RunLoop exit_waiter;
+  auto subscription =
+      browser_shutdown::AddAppTerminatingCallback(exit_waiter.QuitClosure());
   chrome::ExecuteCommand(browser(), IDC_EXIT);
-  terminate_observer.Wait();
+  exit_waiter.Run();
 
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
