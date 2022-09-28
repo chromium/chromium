@@ -92,7 +92,7 @@ extern sandbox::TargetServices* g_utility_target_services;
         // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "services/accessibility/accessibility_service_impl.h"  // nogncheck
+#include "services/accessibility/accessibility_service_cros.h"  // nogncheck
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"  // nogncheck
 #include "ui/accessibility/accessibility_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -252,7 +252,7 @@ auto RunDataDecoder(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 auto RunAccessibilityService(
     mojo::PendingReceiver<ax::mojom::AccessibilityService> receiver) {
-  return std::make_unique<ax::AccessibilityServiceImpl>(std::move(receiver));
+  return std::make_unique<ax::AccessibilityServiceCros>(std::move(receiver));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

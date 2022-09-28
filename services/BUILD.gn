@@ -53,7 +53,7 @@ test("services_unittests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash || is_linux) {
     deps += [ "//services/accessibility:tests" ]
   }
 
