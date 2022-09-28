@@ -16,8 +16,6 @@
 
 namespace ui {
 
-struct TestAXTreeUpdateNode;
-
 class AXPlatformNodeTest : public ::testing::Test, public TestAXTreeManager {
  public:
   AXPlatformNodeTest();
@@ -27,26 +25,6 @@ class AXPlatformNodeTest : public ::testing::Test, public TestAXTreeManager {
 
  protected:
   void TearDown() override;
-
-  // Initialize given an AXTreeUpdate.
-  void Init(const AXTreeUpdate& initial_state);
-
-  // Convenience functions to initialize directly from a few AXNodeData objects.
-  void Init(const AXNodeData& node1,
-            const AXNodeData& node2 = AXNodeData(),
-            const AXNodeData& node3 = AXNodeData(),
-            const AXNodeData& node4 = AXNodeData(),
-            const AXNodeData& node5 = AXNodeData(),
-            const AXNodeData& node6 = AXNodeData(),
-            const AXNodeData& node7 = AXNodeData(),
-            const AXNodeData& node8 = AXNodeData(),
-            const AXNodeData& node9 = AXNodeData(),
-            const AXNodeData& node10 = AXNodeData(),
-            const AXNodeData& node11 = AXNodeData(),
-            const AXNodeData& node12 = AXNodeData());
-
-  // Initialize given an AXTreeUpdate by given TestAXTreeUpdateNode instance.
-  AXTree* Init(const TestAXTreeUpdateNode& root);
 
   AXTreeUpdate BuildTextField();
   AXTreeUpdate BuildTextFieldWithSelectionRange(int32_t start, int32_t stop);

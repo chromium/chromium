@@ -7,6 +7,7 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
+#include "ui/accessibility/test_ax_tree_update.h"
 
 namespace ui {
 
@@ -57,6 +58,59 @@ void TestAXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
   ax_tree_id_ = GetTreeID();
   if (ax_tree_)
     GetMap().AddTreeManager(GetTreeID(), this);
+}
+
+AXTree* TestAXTreeManager::Init(const AXTreeUpdate& tree_update) {
+  SetTree(std::make_unique<AXTree>(tree_update));
+  return ax_tree_.get();
+}
+
+AXTree* TestAXTreeManager::Init(const TestAXTreeUpdateNode& tree_update_root) {
+  return Init(TestAXTreeUpdate(tree_update_root));
+}
+
+AXTree* TestAXTreeManager::Init(
+    const ui::AXNodeData& node1,
+    const ui::AXNodeData& node2 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node3 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node4 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node5 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node6 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node7 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node8 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node9 /* = AXNodeData() */,
+    const ui::AXNodeData& node10 /* = AXNodeData() */,
+    const ui::AXNodeData& node11 /* = AXNodeData() */,
+    const ui::AXNodeData& node12 /* = AXNodeData() */) {
+  AXTreeUpdate update;
+  update.root_id = node1.id;
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  update.tree_data.title = "Dialog title";
+  update.nodes.push_back(node1);
+  if (node2.id != kInvalidAXNodeID)
+    update.nodes.push_back(node2);
+  if (node3.id != kInvalidAXNodeID)
+    update.nodes.push_back(node3);
+  if (node4.id != kInvalidAXNodeID)
+    update.nodes.push_back(node4);
+  if (node5.id != kInvalidAXNodeID)
+    update.nodes.push_back(node5);
+  if (node6.id != kInvalidAXNodeID)
+    update.nodes.push_back(node6);
+  if (node7.id != kInvalidAXNodeID)
+    update.nodes.push_back(node7);
+  if (node8.id != kInvalidAXNodeID)
+    update.nodes.push_back(node8);
+  if (node9.id != kInvalidAXNodeID)
+    update.nodes.push_back(node9);
+  if (node10.id != kInvalidAXNodeID)
+    update.nodes.push_back(node10);
+  if (node11.id != kInvalidAXNodeID)
+    update.nodes.push_back(node11);
+  if (node12.id != kInvalidAXNodeID)
+    update.nodes.push_back(node12);
+  return Init(update);
 }
 
 AXNode* TestAXTreeManager::GetNodeFromTree(const AXTreeID& tree_id,
