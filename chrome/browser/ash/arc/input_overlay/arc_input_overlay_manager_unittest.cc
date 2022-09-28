@@ -129,6 +129,22 @@ TEST_F(ArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
   EXPECT_FALSE(IsInputOverlayEnabled(arc_window_no_data->GetWindow()));
 }
 
+TEST_F(ArcInputOverlayManagerTest, TestWindowDestroyNoWait) {
+  // This test is to check UAF issue reported in crbug.com/1363030.
+  auto arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
+      kEnabledPackageName);
+  const auto* arc_window_ptr = arc_window->GetWindow();
+
+  // Destroy window before finishing I/O reading. The window can't be destroyed
+  // during ReadDefaultData(), but it can be destroyed before
+  // ReadCustomizedData() and TouchInjector.RecordMenuStateOnLaunch() would
+  // catch it.
+  arc_window.reset();
+  task_environment()->FastForwardBy(kIORead);
+  EXPECT_FALSE(IsInputOverlayEnabled(arc_window_ptr));
+}
+
 TEST_F(ArcInputOverlayManagerTest, TestInputMethodObsever) {
   ASSERT_FALSE(GetInputMethod());
   ASSERT_FALSE(IsTextInputActive());
