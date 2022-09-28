@@ -91,6 +91,8 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
       const vm_tools::cicerone::ContainerStartedSignal& signal) override;
   void OnContainerShutdown(
       const vm_tools::cicerone::ContainerShutdownSignal& signal) override;
+  void OnLxdContainerStopping(
+      const vm_tools::cicerone::LxdContainerStoppingSignal& signal) override;
 
  private:
   void OnListVms(absl::optional<vm_tools::concierge::ListVmsResponse> response);
@@ -108,6 +110,8 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
                       const std::string& homedir,
                       const std::string& ipv4_address,
                       uint32_t sftp_vsock_port);
+  void HandleContainerShutdown(const std::string& vm_name,
+                               const std::string& container_name);
   std::string owner_id_;
   base::flat_map<std::string, vm_tools::concierge::VmInfo> vms_;
   base::flat_map<GuestId, GuestInfo> guests_;
