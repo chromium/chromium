@@ -124,6 +124,7 @@ static_library("arc") {
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/arc",
+    "//chromeos/ash/components/dbus/arc:arc_proto",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/dbus/cryptohome",

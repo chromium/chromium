@@ -28,8 +28,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/components/dbus/arc/arc.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/ash/components/dbus/login_manager/arc.pb.h"
 #include "chromeos/ash/components/dbus/login_manager/login_screen_storage.pb.h"
 #include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -635,7 +635,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
   }
 
   void StartArcMiniContainer(
-      const login_manager::StartArcMiniContainerRequest& request,
+      const arc::StartArcMiniInstanceRequest& request,
       chromeos::VoidDBusMethodCallback callback) override {
     DCHECK(!callback.is_null());
     dbus::MethodCall method_call(
@@ -651,9 +651,8 @@ class SessionManagerClientImpl : public SessionManagerClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void UpgradeArcContainer(
-      const login_manager::UpgradeArcContainerRequest& request,
-      chromeos::VoidDBusMethodCallback callback) override {
+  void UpgradeArcContainer(const arc::UpgradeArcContainerRequest& request,
+                           chromeos::VoidDBusMethodCallback callback) override {
     DCHECK(!callback.is_null());
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,
