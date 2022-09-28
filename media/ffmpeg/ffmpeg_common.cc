@@ -498,6 +498,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   // for now, but may not always be true forever. Fix this in the future.
   gfx::Rect visible_rect(codec_context->width, codec_context->height);
   gfx::Size coded_size = visible_rect.size();
+  gfx::HDRMetadata hdr_metadata;
 
   // In some cases a container may have a DAR but no PAR, but FFmpeg translates
   // everything to PAR. It is possible to get the render width and height, but I
@@ -572,6 +573,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
             // the container
             color_space = hevc_config.GetColorSpace();
           }
+          hdr_metadata = hevc_config.GetHDRMetadata();
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
         }
       }
@@ -722,7 +724,6 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       if (side_data.type != AV_PKT_DATA_MASTERING_DISPLAY_METADATA)
         continue;
 
-      gfx::HDRMetadata hdr_metadata{};
       AVMasteringDisplayMetadata* metadata =
           reinterpret_cast<AVMasteringDisplayMetadata*>(side_data.data);
       if (metadata->has_primaries) {
@@ -744,8 +745,11 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         hdr_metadata.color_volume_metadata.luminance_min =
             av_q2d(metadata->min_luminance);
       }
-      config->set_hdr_metadata(hdr_metadata);
     }
+  }
+
+  if (hdr_metadata.IsValid()) {
+    config->set_hdr_metadata(hdr_metadata);
   }
 
   return true;

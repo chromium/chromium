@@ -59,25 +59,6 @@ EncryptionScheme GetEncryptionScheme(const ProtectionSchemeInfo& sinf) {
   return EncryptionScheme::kUnencrypted;
 }
 
-gfx::ColorVolumeMetadata ConvertMdcvToColorVolumeMetadata(
-    const MasteringDisplayColorVolume& mdcv) {
-  gfx::ColorVolumeMetadata color_volume_metadata;
-
-  color_volume_metadata.primary_r = gfx::ColorVolumeMetadata::Chromaticity(
-      mdcv.display_primaries_rx, mdcv.display_primaries_ry);
-  color_volume_metadata.primary_g = gfx::ColorVolumeMetadata::Chromaticity(
-      mdcv.display_primaries_gx, mdcv.display_primaries_gy);
-  color_volume_metadata.primary_b = gfx::ColorVolumeMetadata::Chromaticity(
-      mdcv.display_primaries_bx, mdcv.display_primaries_by);
-  color_volume_metadata.white_point = gfx::ColorVolumeMetadata::Chromaticity(
-      mdcv.white_point_x, mdcv.white_point_y);
-
-  color_volume_metadata.luminance_max = mdcv.max_display_mastering_luminance;
-  color_volume_metadata.luminance_min = mdcv.min_display_mastering_luminance;
-
-  return color_volume_metadata;
-}
-
 }  // namespace
 
 MP4StreamParser::MP4StreamParser(const std::set<int>& audio_object_types,
@@ -579,22 +560,8 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       if (entry.video_color_space.IsSpecified())
         video_config.set_color_space_info(entry.video_color_space);
 
-      if (entry.mastering_display_color_volume ||
-          entry.content_light_level_information) {
-        gfx::HDRMetadata hdr_metadata;
-        if (entry.mastering_display_color_volume) {
-          hdr_metadata.color_volume_metadata = ConvertMdcvToColorVolumeMetadata(
-              *entry.mastering_display_color_volume);
-        }
-
-        if (entry.content_light_level_information) {
-          hdr_metadata.max_content_light_level =
-              entry.content_light_level_information->max_content_light_level;
-          hdr_metadata.max_frame_average_light_level =
-              entry.content_light_level_information
-                  ->max_pic_average_light_level;
-        }
-        video_config.set_hdr_metadata(hdr_metadata);
+      if (entry.hdr_metadata.has_value() && entry.hdr_metadata->IsValid()) {
+        video_config.set_hdr_metadata(entry.hdr_metadata.value());
       }
 
       DVLOG(1) << "video_track_id=" << video_track_id

@@ -64,15 +64,18 @@ struct MEDIA_EXPORT HEVCDecoderConfigurationRecord : Box {
   VideoCodecProfile GetVideoProfile() const;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   VideoColorSpace GetColorSpace();
+  gfx::HDRMetadata GetHDRMetadata();
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
  private:
   bool ParseInternal(BufferReader* reader, MediaLog* media_log);
+  VideoColorSpace color_space;
+  gfx::HDRMetadata hdr_metadata;
 };
 
 class MEDIA_EXPORT HEVC {
  public:
-  static bool ConvertConfigToAnnexB(
+  static void ConvertConfigToAnnexB(
       const HEVCDecoderConfigurationRecord& hevc_config,
       std::vector<uint8_t>* buffer);
 

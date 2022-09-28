@@ -37,7 +37,7 @@ class MEDIA_EXPORT H264BitReader {
 
   // Read |num_bits| next bits from stream and return in |*out|, first bit
   // from the stream starting at |num_bits| position in |*out|.
-  // |num_bits| may be 1-32, inclusive.
+  // |num_bits| may be 1-31, inclusive.
   // Return false if the given number of bits cannot be read (not enough
   // bits in the stream), true otherwise.
   bool ReadBits(int num_bits, int* out);

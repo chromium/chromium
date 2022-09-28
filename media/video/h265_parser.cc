@@ -1929,6 +1929,31 @@ H265Parser::Result H265Parser::ParseSEI(H265SEIMessage* sei_msg) {
         }
       }
       break;
+    case H265SEIMessage::kSEIContentLightLevelInfo:
+      READ_BITS_OR_RETURN(
+          16, &sei_msg->content_light_level_info.max_content_light_level);
+      READ_BITS_OR_RETURN(
+          16,
+          &sei_msg->content_light_level_info.max_picture_average_light_level);
+      break;
+    case H265SEIMessage::kSEIMasteringDisplayInfo:
+      for (auto& primary : sei_msg->mastering_display_info.display_primaries) {
+        for (auto& component : primary) {
+          READ_BITS_OR_RETURN(16, &component);
+        }
+      }
+      READ_BITS_OR_RETURN(16, &sei_msg->mastering_display_info.white_points[0]);
+      READ_BITS_OR_RETURN(16, &sei_msg->mastering_display_info.white_points[1]);
+      uint32_t luminace_high_31bits, luminance_low_1bit;
+      READ_BITS_OR_RETURN(31, &luminace_high_31bits);
+      READ_BITS_OR_RETURN(1, &luminance_low_1bit);
+      sei_msg->mastering_display_info.max_luminance =
+          (luminace_high_31bits << 1) + (luminance_low_1bit & 0x1);
+      READ_BITS_OR_RETURN(31, &luminace_high_31bits);
+      READ_BITS_OR_RETURN(1, &luminance_low_1bit);
+      sei_msg->mastering_display_info.min_luminance =
+          (luminace_high_31bits << 1) + (luminance_low_1bit & 0x1);
+      break;
     default:
       DVLOG(4) << "Unsupported SEI message";
       break;

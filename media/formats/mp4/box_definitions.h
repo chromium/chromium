@@ -334,8 +334,7 @@ struct MEDIA_EXPORT VideoSampleEntry : Box {
   VideoCodecLevel video_codec_level;
   VideoColorSpace video_color_space;
 
-  absl::optional<MasteringDisplayColorVolume> mastering_display_color_volume;
-  absl::optional<ContentLightLevelInformation> content_light_level_information;
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
 
   bool IsFormatValid() const;
 

@@ -123,6 +123,88 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
     }
   }
 
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  // Parse the color space and hdr metadata.
+  std::vector<uint8_t> param_sets;
+  HEVC::ConvertConfigToAnnexB(*this, &param_sets);
+  H265Parser parser;
+  H265NALU nalu;
+  parser.SetStream(param_sets.data(), param_sets.size());
+  while (true) {
+    H265Parser::Result result = parser.AdvanceToNextNALU(&nalu);
+    if (result != H265Parser::kOk)
+      break;
+
+    switch (nalu.nal_unit_type) {
+      case H265NALU::SPS_NUT: {
+        int sps_id = -1;
+        result = parser.ParseSPS(&sps_id);
+        if (result != H265Parser::kOk) {
+          DVLOG(1) << "Could not parse SPS for fetching colorspace";
+          break;
+        }
+
+        const H265SPS* sps = parser.GetSPS(sps_id);
+        DCHECK(sps);
+        color_space = sps->GetColorSpace();
+        break;
+      }
+      case H265NALU::PREFIX_SEI_NUT: {
+        H265SEIMessage sei_msg;
+        result = parser.ParseSEI(&sei_msg);
+        if (result != H265Parser::kOk) {
+          DVLOG(1) << "Could not parse SEI for fetching HDR metadata";
+          break;
+        }
+        switch (sei_msg.type) {
+          case H265SEIMessage::kSEIContentLightLevelInfo:
+            hdr_metadata.max_content_light_level =
+                sei_msg.content_light_level_info.max_content_light_level;
+            hdr_metadata.max_frame_average_light_level =
+                sei_msg.content_light_level_info
+                    .max_picture_average_light_level;
+            break;
+          case H265SEIMessage::kSEIMasteringDisplayInfo: {
+            constexpr auto kChromaDenominator = 50000.0f;
+            constexpr auto kLumaDenoninator = 10000.0f;
+            // display primaries are in G/B/R order in MDCV SEI.
+            hdr_metadata.color_volume_metadata.primary_r = gfx::PointF(
+                sei_msg.mastering_display_info.display_primaries[2][0] /
+                    kChromaDenominator,
+                sei_msg.mastering_display_info.display_primaries[2][1] /
+                    kChromaDenominator);
+            hdr_metadata.color_volume_metadata.primary_g = gfx::PointF(
+                sei_msg.mastering_display_info.display_primaries[0][0] /
+                    kChromaDenominator,
+                sei_msg.mastering_display_info.display_primaries[0][1] /
+                    kChromaDenominator);
+            hdr_metadata.color_volume_metadata.primary_b = gfx::PointF(
+                sei_msg.mastering_display_info.display_primaries[1][0] /
+                    kChromaDenominator,
+                sei_msg.mastering_display_info.display_primaries[1][1] /
+                    kChromaDenominator);
+            hdr_metadata.color_volume_metadata.white_point =
+                gfx::PointF(sei_msg.mastering_display_info.white_points[0] /
+                                kChromaDenominator,
+                            sei_msg.mastering_display_info.white_points[1] /
+                                kChromaDenominator);
+            hdr_metadata.color_volume_metadata.luminance_max =
+                sei_msg.mastering_display_info.max_luminance / kLumaDenoninator;
+            hdr_metadata.color_volume_metadata.luminance_min =
+                sei_msg.mastering_display_info.min_luminance / kLumaDenoninator;
+            break;
+          }
+          default:
+            break;
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
   return true;
 }
 
@@ -158,42 +240,11 @@ VideoCodecProfile HEVCDecoderConfigurationRecord::GetVideoProfile() const {
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 VideoColorSpace HEVCDecoderConfigurationRecord::GetColorSpace() {
-  if (!arrays.size()) {
-    DVLOG(1) << "HVCCNALArray not found, fallback to default colorspace";
-    return VideoColorSpace();
-  }
+  return color_space;
+}
 
-  std::vector<uint8_t> param_sets;
-  if (!HEVC::ConvertConfigToAnnexB(*this, &param_sets))
-    return VideoColorSpace();
-
-  H265Parser parser;
-  H265NALU nalu;
-  parser.SetStream(param_sets.data(), param_sets.size());
-  while (true) {
-    H265Parser::Result result = parser.AdvanceToNextNALU(&nalu);
-
-    if (result != H265Parser::kOk)
-      return VideoColorSpace();
-
-    switch (nalu.nal_unit_type) {
-      case H265NALU::SPS_NUT: {
-        int sps_id = -1;
-        result = parser.ParseSPS(&sps_id);
-        if (result != H265Parser::kOk) {
-          DVLOG(1) << "Could not parse SPS, fallback to default colorspace";
-          return VideoColorSpace();
-        }
-
-        const H265SPS* sps = parser.GetSPS(sps_id);
-        DCHECK(sps);
-        return sps->GetColorSpace();
-      }
-      default:
-        break;
-    }
-  }
-  NOTREACHED();
+gfx::HDRMetadata HEVCDecoderConfigurationRecord::GetHDRMetadata() {
+  return hdr_metadata;
 }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
@@ -226,7 +277,7 @@ bool HEVC::InsertParamSetsAnnexB(
   start = NULL;
 
   std::vector<uint8_t> param_sets;
-  RCHECK(HEVC::ConvertConfigToAnnexB(hevc_config, &param_sets));
+  HEVC::ConvertConfigToAnnexB(hevc_config, &param_sets);
   DVLOG(4) << __func__ << " converted hvcC to AnnexB "
            << " size=" << param_sets.size() << " inserted at "
            << (int)(config_insert_point - buffer->begin());
@@ -247,7 +298,7 @@ bool HEVC::InsertParamSetsAnnexB(
 }
 
 // static
-bool HEVC::ConvertConfigToAnnexB(
+void HEVC::ConvertConfigToAnnexB(
     const HEVCDecoderConfigurationRecord& hevc_config,
     std::vector<uint8_t>* buffer) {
   DCHECK(buffer->empty());
@@ -264,8 +315,6 @@ bool HEVC::ConvertConfigToAnnexB(
                      hevc_config.arrays[j].units[i].end());
     }
   }
-
-  return true;
 }
 
 // static

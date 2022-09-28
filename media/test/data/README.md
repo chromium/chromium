@@ -985,6 +985,11 @@ bear-320x180-10bit-frame-1.hevc: B
 bear-320x180-10bit-frame-2.hevc: B
 bear-320x180-10bit-frame-3.hevc: P
 
+#### bear-1280x720-hevc-10bit-hdr10.hevc
+AnnexB version of bear-1280x720-hevc-10bit-hdr10.mp4 created using the following command:
+`ffmpeg -i bear-1280x720-hevc-10bit-hdr10.mp4 -c:v copy -bsf hevc_mp4toannexb bear-1280x720-hevc-10bit-hdr10.hevc',
+used by h265_parser_unittest.cc.
+
 #### blackwhite\_yuv444p-frame.hevc
 The first frame of blackwhite_yuv444p.mp4 coded in HEVC by the following command.
 `ffmpeg -i blackwhite_yuv444p.mp4 -vcodec hevc -vframes 1 blackwhite_yuv444p-frame.hevc`
@@ -1227,6 +1232,12 @@ HEVC video stream with 12-bit 444 range extension profile, generated with
 ```
 ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv444p12le bear-1280x720-hevc-12bit-444.mp4
 ```
+
+#### bear-1280x720-hevc-10bit-hdr10.mp4
+HEVC video stream with HDR10 metadata included, generated with
+````
+ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -x265-params colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc:master-display="G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(10000000,500)":max-cll=1000,400 -pix_fmt yuv420p10le bear-1280x720-hevc-10bit-hdr10.mp4 // nocheck
+````
 
 ### Multi-track MP4 file
 

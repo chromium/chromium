@@ -413,10 +413,29 @@ struct MEDIA_EXPORT H265SEIAlphaChannelInfo {
   bool alpha_channel_clip_type_flag;
 };
 
+struct MEDIA_EXPORT H265SEIContentLightLevelInfo {
+  uint16_t max_content_light_level;
+  uint16_t max_picture_average_light_level;
+};
+
+struct MEDIA_EXPORT H265SEIMasteringDisplayInfo {
+  enum {
+    kNumDisplayPrimaries = 3,
+    kDisplayPrimaryComponents = 2,
+  };
+
+  uint16_t display_primaries[kNumDisplayPrimaries][kDisplayPrimaryComponents];
+  uint16_t white_points[2];
+  uint32_t max_luminance;
+  uint32_t min_luminance;
+};
+
 struct MEDIA_EXPORT H265SEIMessage {
   H265SEIMessage();
 
   enum Type {
+    kSEIMasteringDisplayInfo = 137,
+    kSEIContentLightLevelInfo = 144,
     kSEIAlphaChannelInfo = 165,
   };
 
@@ -426,6 +445,8 @@ struct MEDIA_EXPORT H265SEIMessage {
     // Placeholder; in future more supported types will contribute to more
     // union members here.
     H265SEIAlphaChannelInfo alpha_channel_info;
+    H265SEIContentLightLevelInfo content_light_level_info;
+    H265SEIMasteringDisplayInfo mastering_display_info;
   };
 };
 
