@@ -148,6 +148,12 @@ base::Value::List ScreenOzone::GetGpuExtraInfo(
   return platform_screen_->GetGpuExtraInfo(gpu_extra_info);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+display::TabletState ScreenOzone::GetTabletState() const {
+  return platform_screen_->GetTabletState();
+}
+#endif
+
 gfx::NativeWindow ScreenOzone::GetNativeWindowFromAcceleratedWidget(
     gfx::AcceleratedWidget widget) const {
   return nullptr;

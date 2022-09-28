@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/display/display_util.h"
+#include "ui/display/tablet_state.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -141,6 +142,12 @@ base::Value::List Screen::GetGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
   return base::Value::List();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TabletState Screen::GetTabletState() const {
+  return TabletState::kInClamshellMode;
+}
+#endif
 
 void Screen::SetScopedDisplayForNewWindows(int64_t display_id) {
   if (display_id == scoped_display_id_for_new_windows_)

@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -21,6 +22,7 @@ class TimeDelta;
 namespace display {
 class Display;
 class DisplayObserver;
+enum class TabletState;
 }  // namespace display
 
 namespace gfx {
@@ -133,6 +135,12 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   // Sets device scale factor received from external sources such as toolkits.
   // Currently only used by Linux.
   virtual void SetDeviceScaleFactor(float scale);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns tablet state. If a platform does not support this, returns
+  // display::TabletState::kInClamshellMode.
+  virtual display::TabletState GetTabletState() const;
+#endif
 
  protected:
   void StorePlatformNameIntoListOfValues(base::Value::List& values,

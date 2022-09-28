@@ -117,7 +117,9 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
   if (!image_format_hdr_)
     image_format_hdr_ = image_format_alpha_;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   tablet_state_ = connection_->GetTabletState();
+#endif
 }
 
 WaylandScreen::~WaylandScreen() = default;
@@ -255,7 +257,9 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
 }
 
 void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   tablet_state_ = tablet_state;
+#endif
 
   auto* observer_list = display_list_.observers();
   for (auto& observer : *observer_list)
@@ -459,7 +463,6 @@ base::TimeDelta WaylandScreen::CalculateIdleTime() const {
 
 void WaylandScreen::AddObserver(display::DisplayObserver* observer) {
   display_list_.AddObserver(observer);
-  observer->OnDisplayTabletStateChanged(tablet_state_);
 }
 
 void WaylandScreen::RemoveObserver(display::DisplayObserver* observer) {
@@ -481,5 +484,11 @@ base::Value::List WaylandScreen::GetGpuExtraInfo(
   StorePlatformNameIntoListOfValues(values, "wayland");
   return values;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+display::TabletState WaylandScreen::GetTabletState() const {
+  return tablet_state_;
+}
+#endif
 
 }  // namespace ui

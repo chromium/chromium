@@ -79,6 +79,9 @@ class WaylandScreen : public PlatformScreen {
   void RemoveObserver(display::DisplayObserver* observer) override;
   base::Value::List GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info) override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  display::TabletState GetTabletState() const override;
+#endif
 
  protected:
   // Suspends or un-suspends the platform-specific screensaver, and returns
@@ -136,7 +139,9 @@ class WaylandScreen : public PlatformScreen {
 
   wl::Object<zwp_idle_inhibitor_v1> idle_inhibitor_;
   uint32_t screen_saver_suspension_count_ = 0;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   display::TabletState tablet_state_;
+#endif
 
   base::WeakPtrFactory<WaylandScreen> weak_factory_;
 };
