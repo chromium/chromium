@@ -63,6 +63,8 @@ void RgbKeyboardManager::SetStaticBackgroundColor(uint8_t r,
                                                   uint8_t g,
                                                   uint8_t b) {
   DCHECK(RgbkbdClient::Get());
+  background_type_ = BackgroundType::kStaticSingleColor;
+  background_color_ = SkColorSetRGB(r, g, b);
   if (!IsRgbKeyboardSupported()) {
     LOG(ERROR) << "Attempted to set RGB keyboard color, but flag is disabled.";
     return;
@@ -79,6 +81,7 @@ void RgbKeyboardManager::SetStaticBackgroundColor(uint8_t r,
 
 void RgbKeyboardManager::SetRainbowMode() {
   DCHECK(RgbkbdClient::Get());
+  background_type_ = BackgroundType::kStaticRainbow;
   if (!IsRgbKeyboardSupported()) {
     LOG(ERROR) << "Attempted to set RGB rainbow mode, but flag is disabled.";
     return;
@@ -139,6 +142,23 @@ void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(
 
 void RgbKeyboardManager::InitializeRgbKeyboard() {
   DCHECK(RgbkbdClient::Get());
+
+  // Initialize the keyboard based on the correct current state.
+  // `background_type_` will usually be set to kNone. In some cases, a color
+  // may have been set by `KeyboardBacklightColorController` before we are fully
+  // initialized, so here we will correctly set the color once ready.
+  switch (background_type_) {
+    case BackgroundType::kStaticSingleColor:
+      SetStaticBackgroundColor(SkColorGetR(background_color_),
+                               SkColorGetG(background_color_),
+                               SkColorGetB(background_color_));
+      break;
+    case BackgroundType::kStaticRainbow:
+      SetRainbowMode();
+      break;
+    case BackgroundType::kNone:
+      break;
+  }
 
   // Initialize caps lock color changing if supported
   if (IsPerKeyKeyboard()) {

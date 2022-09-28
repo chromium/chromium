@@ -11,6 +11,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/session_manager/session_manager_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -189,6 +190,23 @@ TEST_F(KeyboardBacklightColorControllerTest,
   histogram_tester().ExpectBucketCount(
       "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", true, 1);
   EXPECT_EQ(kDefaultColor, displayed_color());
+}
+
+TEST_F(KeyboardBacklightColorControllerTest, DisplayWhiteBacklightOnOobe) {
+  controller_->OnSessionStateChanged(session_manager::SessionState::ACTIVE);
+  EXPECT_NE(ConvertBacklightColorToSkColor(
+                personalization_app::mojom::BacklightColor::kWhite),
+            displayed_color());
+
+  controller_->OnSessionStateChanged(session_manager::SessionState::LOCKED);
+  EXPECT_NE(ConvertBacklightColorToSkColor(
+                personalization_app::mojom::BacklightColor::kWhite),
+            displayed_color());
+
+  controller_->OnSessionStateChanged(session_manager::SessionState::OOBE);
+  EXPECT_EQ(ConvertBacklightColorToSkColor(
+                personalization_app::mojom::BacklightColor::kWhite),
+            displayed_color());
 }
 
 }  // namespace ash

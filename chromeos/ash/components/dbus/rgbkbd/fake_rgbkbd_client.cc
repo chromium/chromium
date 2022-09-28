@@ -13,7 +13,8 @@ FakeRgbkbdClient::~FakeRgbkbdClient() = default;
 
 void FakeRgbkbdClient::GetRgbKeyboardCapabilities(
     GetRgbKeyboardCapabilitiesCallback callback) {
-  std::move(callback).Run(capabilities_);
+  callback_ = std::move(callback);
+  attempt_run_rgb_keyboard_capabilities_callback();
 }
 
 void FakeRgbkbdClient::SetCapsLockState(bool enabled) {

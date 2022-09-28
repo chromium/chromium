@@ -11,12 +11,10 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/rgb_keyboard/histogram_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/rgbkbd/fake_rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
-#include "rgb_keyboard_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -262,4 +260,52 @@ TEST_F(RgbKeyboardManagerTest, SetCapsLockStateAllowedForPerKeyKeboards) {
   ime_controller_->UpdateCapsLockState(/*caps_enabled=*/true);
   EXPECT_TRUE(client_->get_caps_lock_state());
 }
+
+// Following `RaceCondition*` tests verify that if a keyboard backlight color is
+// set before `RgbKeyboardManager` is ready, that the color is set once
+// `RgbKeyboardManager` is finally ready.
+TEST_F(RgbKeyboardManagerTest, RaceConditionStaticSingleColor) {
+  const uint8_t expected_r = 1;
+  const uint8_t expected_g = 2;
+  const uint8_t expected_b = 3;
+
+  client_->set_should_run_rgb_keyboard_capabilities_callback(
+      /*should_run_callback=*/false);
+  InitializeManagerWithCapability(
+      rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
+
+  manager_->SetStaticBackgroundColor(expected_r, expected_g, expected_b);
+  {
+    const RgbColor& rgb_values = client_->recently_sent_rgb();
+    EXPECT_NE(expected_r, std::get<0>(rgb_values));
+    EXPECT_NE(expected_g, std::get<1>(rgb_values));
+    EXPECT_NE(expected_b, std::get<2>(rgb_values));
+  }
+
+  client_->set_should_run_rgb_keyboard_capabilities_callback(
+      /*should_run_callback=*/true);
+  client_->attempt_run_rgb_keyboard_capabilities_callback();
+  {
+    const RgbColor& rgb_values = client_->recently_sent_rgb();
+    EXPECT_EQ(expected_r, std::get<0>(rgb_values));
+    EXPECT_EQ(expected_g, std::get<1>(rgb_values));
+    EXPECT_EQ(expected_b, std::get<2>(rgb_values));
+  }
+}
+
+TEST_F(RgbKeyboardManagerTest, RaceConditionStaticRainbow) {
+  client_->set_should_run_rgb_keyboard_capabilities_callback(
+      /*should_run_callback=*/false);
+  InitializeManagerWithCapability(
+      rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
+
+  manager_->SetRainbowMode();
+  EXPECT_FALSE(client_->is_rainbow_mode_set());
+
+  client_->set_should_run_rgb_keyboard_capabilities_callback(
+      /*should_run_callback=*/true);
+  client_->attempt_run_rgb_keyboard_capabilities_callback();
+  EXPECT_TRUE(client_->is_rainbow_mode_set());
+}
+
 }  // namespace ash
