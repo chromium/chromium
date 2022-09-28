@@ -70,7 +70,7 @@ class PageTopicsModelExecutor : public PageContentAnnotationJobExecutor,
           override_list);
 
   // Does the required preprocessing on a input domain.
-  static std::string PreprocessHost(const std::string& host);
+  std::string PreprocessHost(const std::string& host) const;
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
@@ -87,6 +87,11 @@ class PageTopicsModelExecutor : public PageContentAnnotationJobExecutor,
   absl::optional<
       std::unordered_map<std::string, std::vector<WeightedIdentifier>>>
       override_list_;
+
+  // The version of topics model provided by the server in the model metadata
+  // which specifies the expected functionality of execution not contained
+  // within the model itself (e.g., preprocessing/post processing).
+  int version_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
