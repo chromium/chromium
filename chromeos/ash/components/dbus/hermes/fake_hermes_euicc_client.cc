@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -36,8 +37,7 @@ bool PopPendingProfile(HermesEuiccClient::Properties* properties,
                        dbus::ObjectPath carrier_profile_path) {
   std::vector<dbus::ObjectPath> pending_profiles =
       properties->pending_carrier_profiles().value();
-  auto it = std::find(pending_profiles.begin(), pending_profiles.end(),
-                      carrier_profile_path);
+  auto it = base::ranges::find(pending_profiles, carrier_profile_path);
   if (it == pending_profiles.end()) {
     return false;
   }
@@ -214,8 +214,7 @@ bool FakeHermesEuiccClient::RemoveCarrierProfile(
   std::vector<dbus::ObjectPath> installed_profiles =
       euicc_properties->installed_carrier_profiles().value();
   auto installed_carrier_profiles_iter =
-      std::find(installed_profiles.begin(), installed_profiles.end(),
-                carrier_profile_path);
+      base::ranges::find(installed_profiles, carrier_profile_path);
   if (installed_carrier_profiles_iter == installed_profiles.end()) {
     return false;
   }

@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/cellular_setup/esim_profile.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -449,8 +450,7 @@ bool ESimProfile::ProfileExistsOnEuicc() {
           ? euicc_properties->installed_carrier_profiles().value()
           : euicc_properties->pending_carrier_profiles().value();
 
-  auto iter = std::find(profile_paths.begin(), profile_paths.end(), path_);
-  return iter != profile_paths.end();
+  return base::Contains(profile_paths, path_);
 }
 
 bool ESimProfile::IsProfileInstalled() {

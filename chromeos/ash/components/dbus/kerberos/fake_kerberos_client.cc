@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -117,8 +118,8 @@ FakeKerberosClient::~FakeKerberosClient() = default;
 void FakeKerberosClient::AddAccount(const kerberos::AddAccountRequest& request,
                                     AddAccountCallback callback) {
   MaybeRecordFunctionCallForTesting(__FUNCTION__);
-  auto it = std::find(accounts_.begin(), accounts_.end(),
-                      AccountData(request.principal_name()));
+  auto it =
+      base::ranges::find(accounts_, AccountData(request.principal_name()));
   if (it != accounts_.end()) {
     it->is_managed |= request.is_managed();
     PostResponse(std::move(callback), kerberos::ERROR_DUPLICATE_PRINCIPAL_NAME,
@@ -137,8 +138,8 @@ void FakeKerberosClient::RemoveAccount(
     RemoveAccountCallback callback) {
   MaybeRecordFunctionCallForTesting(__FUNCTION__);
   kerberos::RemoveAccountResponse response;
-  auto it = std::find(accounts_.begin(), accounts_.end(),
-                      AccountData(request.principal_name()));
+  auto it =
+      base::ranges::find(accounts_, AccountData(request.principal_name()));
   if (it == accounts_.end()) {
     response.set_error(kerberos::ERROR_UNKNOWN_PRINCIPAL_NAME);
   } else {
@@ -367,8 +368,7 @@ KerberosClient::TestInterface* FakeKerberosClient::GetTestInterface() {
 
 FakeKerberosClient::AccountData* FakeKerberosClient::GetAccountData(
     const std::string& principal_name) {
-  auto it = std::find(accounts_.begin(), accounts_.end(),
-                      AccountData(principal_name));
+  auto it = base::ranges::find(accounts_, AccountData(principal_name));
   return it != accounts_.end() ? &*it : nullptr;
 }
 

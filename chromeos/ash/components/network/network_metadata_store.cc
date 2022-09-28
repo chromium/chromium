@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -58,12 +59,6 @@ base::Value::List CreateOrCloneListValue(const base::Value::List* list) {
     return list->Clone();
 
   return base::Value::List();
-}
-
-bool ListContains(const base::Value::List* list, const std::string& value) {
-  if (!list)
-    return false;
-  return std::find(list->begin(), list->end(), value) != list->end();
 }
 
 bool IsApnListValid(const base::Value& list) {
@@ -313,14 +308,15 @@ void NetworkMetadataStore::UpdateExternalModifications(
     const std::string& field) {
   const base::Value::List* fields =
       GetListPref(network_guid, kExternalModifications);
+  const bool contains_field = fields && base::Contains(*fields, field);
   if (GetIsCreatedByUser(network_guid)) {
-    if (ListContains(fields, field)) {
+    if (contains_field) {
       base::Value::List writeable_fields = CreateOrCloneListValue(fields);
       writeable_fields.EraseValue(base::Value(field));
       SetPref(network_guid, kExternalModifications,
               base::Value(std::move(writeable_fields)));
     }
-  } else if (!ListContains(fields, field)) {
+  } else if (!contains_field) {
     base::Value::List writeable_fields = CreateOrCloneListValue(fields);
     writeable_fields.Append(field);
     SetPref(network_guid, kExternalModifications,
@@ -479,7 +475,7 @@ bool NetworkMetadataStore::GetIsFieldExternallyModified(
     const std::string& field) {
   const base::Value::List* fields =
       GetListPref(network_guid, kExternalModifications);
-  return ListContains(fields, field);
+  return fields && base::Contains(*fields, field);
 }
 
 bool NetworkMetadataStore::GetHasBadPassword(const std::string& network_guid) {

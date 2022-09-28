@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -16,6 +15,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -827,12 +827,8 @@ void UpdateEngineClient::Shutdown() {
 bool UpdateEngineClient::IsTargetChannelMoreStable(
     const std::string& current_channel,
     const std::string& target_channel) {
-  const char** cix = std::find(
-      kReleaseChannelsList,
-      kReleaseChannelsList + std::size(kReleaseChannelsList), current_channel);
-  const char** tix = std::find(
-      kReleaseChannelsList,
-      kReleaseChannelsList + std::size(kReleaseChannelsList), target_channel);
+  const char** cix = base::ranges::find(kReleaseChannelsList, current_channel);
+  const char** tix = base::ranges::find(kReleaseChannelsList, target_channel);
   return tix > cix;
 }
 

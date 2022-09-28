@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 
+#include "base/containers/contains.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -22,12 +23,6 @@ size_t GetActiveClientCount(const base::Value& status) {
     return 0;
   }
   return active_clients->GetList().size();
-}
-
-bool CanFindTechnoloyInList(const std::string& technology,
-                            const base::Value::List& technology_list) {
-  return std::find(technology_list.begin(), technology_list.end(),
-                   base::Value(technology)) != technology_list.end();
 }
 
 // Convert the base::Value::List type of |allowed_security_modes_in_shill| to
@@ -346,8 +341,8 @@ void HotspotStateHandler::UpdateHotspotCapabilities(
     return;
   }
 
-  if (!CanFindTechnoloyInList(shill::kTypeCellular,
-                              upstream_technologies->GetList())) {
+  if (!base::Contains(upstream_technologies->GetList(),
+                      base::Value(shill::kTypeCellular))) {
     SetHotspotCapablities(HotspotAllowStatus::kDisallowedNoCellularUpstream);
     return;
   }
@@ -362,8 +357,8 @@ void HotspotStateHandler::UpdateHotspotCapabilities(
     return;
   }
 
-  if (!CanFindTechnoloyInList(shill::kTypeWifi,
-                              downstream_technologies->GetList())) {
+  if (!base::Contains(downstream_technologies->GetList(),
+                      base::Value(shill::kTypeWifi))) {
     SetHotspotCapablities(HotspotAllowStatus::kDisallowedNoWiFiDownstream);
     return;
   }
