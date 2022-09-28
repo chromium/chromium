@@ -111,6 +111,10 @@ void ImageDecoderImpl::DecodeAnimation(mojo_base::BigBuffer encoded_data,
 
   auto frames = blink::WebImage::AnimationFromData(blink::WebData(
       reinterpret_cast<const char*>(encoded_data.data()), encoded_data.size()));
+  if (frames.size() == 0) {
+    std::move(callback).Run({});
+    return;
+  }
 
   int64_t max_frame_size_in_bytes = max_size_in_bytes / frames.size();
   std::vector<mojom::AnimationFramePtr> decoded_images;

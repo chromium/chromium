@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/span.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "gin/array_buffer.h"
@@ -169,6 +171,20 @@ TEST_F(ImageDecoderImplTest, DecodeImageFailed) {
   Request request(decoder());
   request.DecodeImage(jpg, false);
   EXPECT_TRUE(request.bitmap().isNull());
+}
+
+TEST_F(ImageDecoderImplTest, DecodeAnimationFailed) {
+  base::span<const uint8_t> data = base::as_bytes(
+      base::make_span("this ASCII text is *defintely* an animation"));
+
+  std::vector<mojom::AnimationFramePtr> frames;
+  decoder()->DecodeAnimation(
+      data, false, kTestMaxImageSize,
+      base::BindLambdaForTesting(
+          [&frames](std::vector<mojom::AnimationFramePtr> result) {
+            frames = std::move(result);
+          }));
+  EXPECT_EQ(0u, frames.size());
 }
 
 }  // namespace data_decoder
