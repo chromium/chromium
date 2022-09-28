@@ -40,7 +40,7 @@ ApcOnboardingCoordinator::CreateOnboardingInformation() {
   // TODO(crbug.com/1322387): Update link so that it also applies to Desktop.
   info.learn_more_url = GURL(
       "https://support.google.com/assistant/answer/"
-      "9201753?visit_id=637880404267471228-1286648363&p=fast_checkout&rd=1");
+      "9201753?visit_id=637880404267471228-1286648363&p=password_change&rd=1");
 
   return info;
 }
