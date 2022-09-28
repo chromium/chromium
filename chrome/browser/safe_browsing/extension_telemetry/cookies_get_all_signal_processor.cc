@@ -10,11 +10,15 @@
 
 namespace safe_browsing {
 
-using GetAllArgsInfo = ExtensionTelemetryReportRequest::SignalInfo::
-    CookiesGetAllInfo::GetAllArgsInfo;
+namespace {
 
 // Used to limit the number of unique argument sets stored for each extension.
 constexpr size_t kMaxArgSets = 100;
+
+}  // namespace
+
+using GetAllArgsInfo = ExtensionTelemetryReportRequest::SignalInfo::
+    CookiesGetAllInfo::GetAllArgsInfo;
 
 CookiesGetAllSignalProcessor::CookiesGetAllStoreEntry::
     CookiesGetAllStoreEntry() = default;
