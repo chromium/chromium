@@ -3407,11 +3407,21 @@
     ],
   },
   'telemetry_chromium_minidump_unittests': {
+    'modifications': {
+      'android-nougat-x86-rel': {
+        'ci_only': True,
+      },
+    },
     'remove_from': [
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1084352
     ],
   },
   'telemetry_monochrome_minidump_unittests': {
+    'modifications': {
+      'android-nougat-x86-rel': {
+        'ci_only': True,
+      },
+    },
     'remove_from': [
       # Monochrome isn't supported on M.
       'android-marshmallow-arm64-rel',
@@ -3450,6 +3460,7 @@
           # webview instead of the full browser, so explicitly specify it here.
           '--browser=android-chromium',
         ],
+        'ci_only': True,
       },
       'chromeos-amd64-generic-rel': {
         'swarming': {
