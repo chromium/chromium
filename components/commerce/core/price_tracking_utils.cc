@@ -13,7 +13,6 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
-#include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 
 namespace commerce {
@@ -87,8 +86,29 @@ void SetPriceTrackingStateForBookmark(ShoppingService* service,
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       power_bookmarks::GetNodePowerBookmarkMeta(model, node);
 
-  if (!meta || !meta->has_shopping_specifics())
-    return;
+  // If there's no existing meta, check the shopping service. Bookmarks added
+  // prior to making shopping meta available should still be trackable upon
+  // revisiting the page. This logic is here since it's the result of a direct
+  // user action, we don't yet want to passively update "normal" bookmarks.
+  if (!meta || !meta->has_shopping_specifics()) {
+    absl::optional<ProductInfo> info =
+        service->GetAvailableProductInfoForUrl(node->url());
+
+    // If still no information, do nothing.
+    if (!info.has_value())
+      return;
+
+    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> newMeta =
+        std::make_unique<power_bookmarks::PowerBookmarkMeta>();
+    bool changed =
+        PopulateOrUpdateBookmarkMetaIfNeeded(newMeta.get(), info.value());
+    CHECK(changed);
+
+    // Make sure the data is attached to the bookmark and get a copy to use in
+    // the rest of this function.
+    power_bookmarks::SetNodePowerBookmarkMeta(model, node, std::move(newMeta));
+    meta = power_bookmarks::GetNodePowerBookmarkMeta(model, node);
+  }
 
   power_bookmarks::ShoppingSpecifics* specifics =
       meta->mutable_shopping_specifics();
@@ -185,6 +205,53 @@ std::vector<const bookmarks::BookmarkNode*> GetAllShoppingBookmarks(
   power_bookmarks::GetBookmarksMatchingProperties(model, query, -1, &results);
 
   return results;
+}
+
+bool PopulateOrUpdateBookmarkMetaIfNeeded(
+    power_bookmarks::PowerBookmarkMeta* out_meta,
+    const ProductInfo& info) {
+  bool changed = false;
+
+  if (out_meta->lead_image().url() != info.image_url.spec()) {
+    out_meta->mutable_lead_image()->set_url(info.image_url.spec());
+    changed = true;
+  }
+
+  power_bookmarks::ShoppingSpecifics* specifics =
+      out_meta->mutable_shopping_specifics();
+
+  if (specifics->title() != info.title) {
+    specifics->set_title(info.title);
+    changed = true;
+  }
+
+  if (specifics->country_code() != info.country_code) {
+    specifics->set_country_code(info.country_code);
+    changed = true;
+  }
+
+  if (specifics->current_price().currency_code() != info.currency_code ||
+      specifics->current_price().amount_micros() != info.amount_micros) {
+    specifics->mutable_current_price()->set_currency_code(info.currency_code);
+    specifics->mutable_current_price()->set_amount_micros(info.amount_micros);
+    changed = true;
+  }
+
+  if (specifics->offer_id() != info.offer_id) {
+    specifics->set_offer_id(info.offer_id);
+    changed = true;
+  }
+
+  // Only update the cluster ID if it was previously empty. Having this value
+  // change would cause serious problems elsewhere.
+  if (!specifics->has_product_cluster_id()) {
+    specifics->set_product_cluster_id(info.product_cluster_id);
+    changed = true;
+  }
+  // Consider adding a DCHECK for old and new cluster ID equality in the else
+  // clause for the above.
+
+  return changed;
 }
 
 }  // namespace commerce

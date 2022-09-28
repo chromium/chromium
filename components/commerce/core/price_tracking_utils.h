@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -20,6 +21,7 @@ class BookmarkNode;
 
 namespace commerce {
 
+struct ProductInfo;
 class ShoppingService;
 
 // Return whether a bookmark is price tracked. This does not check the
@@ -62,6 +64,12 @@ std::vector<const bookmarks::BookmarkNode*> GetAllPriceTrackedBookmarks(
 // current BrowserContext.
 std::vector<const bookmarks::BookmarkNode*> GetAllShoppingBookmarks(
     bookmarks::BookmarkModel* model);
+
+// Populate or update the provided |out_meta| with information from |info|. The
+// returned boolean indicated whether any information actually changed.
+bool PopulateOrUpdateBookmarkMetaIfNeeded(
+    power_bookmarks::PowerBookmarkMeta* out_meta,
+    const ProductInfo& info);
 
 }  // namespace commerce
 

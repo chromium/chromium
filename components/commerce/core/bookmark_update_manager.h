@@ -41,12 +41,6 @@ class BookmarkUpdateManager {
   // Cancel any scheduled updates.
   void CancelUpdates();
 
-  // Update the provided |out_meta| with information from |info|. The returned
-  // boolean indicated whether any information actually changed.
-  static bool UpdateBookmarkMetaIfNeeded(
-      power_bookmarks::PowerBookmarkMeta* out_meta,
-      const ProductInfo& info);
-
  private:
   friend class BookmarkUpdateManagerTest;
 
