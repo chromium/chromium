@@ -174,6 +174,9 @@ void ShowWebAppIdentityUpdateDialog(
     content::WebContents* web_contents,
     web_app::AppIdentityDialogCallback callback);
 
+// Returns true if the App Identity Dialog has been requested.
+bool AppIdentityUpdateDialogWasRequestedForTesting();
+
 // Sets whether |ShowWebAppIdentityUpdateDialog| should accept immediately
 // without any user interaction.
 void SetAutoAcceptAppIdentityUpdateForTesting(bool auto_accept);
@@ -206,6 +209,9 @@ void ShowWebAppFileLaunchDialog(const std::vector<base::FilePath>& file_paths,
 // checkbox is checked.
 void SetAutoAcceptWebAppDialogForTesting(bool auto_accept,
                                          bool auto_open_in_window);
+
+// Sets an override title for the installation.
+void SetOverrideTitleForTesting(const char* title_to_use);
 
 // Describes the state of in-product-help being shown to the user.
 enum class PwaInProductHelpState {

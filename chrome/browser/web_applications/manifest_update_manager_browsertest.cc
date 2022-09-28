@@ -33,9 +33,11 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
@@ -3948,6 +3950,84 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
   EXPECT_TRUE(web_app->note_taking_new_note_url().is_empty());
+}
+
+class BrowserAddedWaiter final : public BrowserListObserver {
+ public:
+  BrowserAddedWaiter() { BrowserList::AddObserver(this); }
+  ~BrowserAddedWaiter() override { BrowserList::RemoveObserver(this); }
+
+  void Wait() { run_loop_.Run(); }
+
+  // BrowserListObserver
+  void OnBrowserAdded(Browser* browser) override {
+    BrowserList::RemoveObserver(this);
+    // Post a task to ensure the Remove event has been dispatched to all
+    // observers.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  run_loop_.QuitClosure());
+  }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
+AppId InstallShortcutAppForCurrentUrl(Browser* browser,
+                                      bool open_as_window = false,
+                                      const char* override_title = nullptr) {
+  chrome::SetAutoAcceptWebAppDialogForTesting(
+      /*auto_accept=*/true,
+      /*auto_open_in_window=*/open_as_window);
+  chrome::SetOverrideTitleForTesting(override_title);
+  WebAppTestInstallWithOsHooksObserver observer(browser->profile());
+  observer.BeginListening();
+  BrowserAddedWaiter browser_added_waiter;
+  CHECK(chrome::ExecuteCommand(browser, IDC_CREATE_SHORTCUT));
+  AppId app_id = observer.Wait();
+  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+  chrome::SetOverrideTitleForTesting(nullptr);
+  return app_id;
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
+                       CheckShortcutAppDoesntUpdate) {
+  // Override with a manifest that is missing a few things, so it is not
+  // installable, but we can create a shortcut for it.
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "$1",
+      "icons": $2,
+      "scope": "/banners/",
+      "start_url": "/banners/"
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate, {"Test app", kInstallableIconList});
+
+  GURL app_url = GetAppURL();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
+
+  // Install a shortcut to the app, but use a different name for it (necessary
+  // to reproduce the bug).
+  const char* override_title = "foo";
+  AppId app_id =
+      InstallShortcutAppForCurrentUrl(browser(), false, override_title);
+
+  // The app installed should be the only app installed.
+  auto app_ids = GetProvider().registrar().GetAppIds();
+  ASSERT_EQ(1u, app_ids.size());
+  app_id = app_ids[0];
+  EXPECT_EQ(override_title, GetProvider().registrar().GetAppShortName(app_id));
+
+  // Now navigate to the same url and allow the update mechanism to run.
+  UpdateCheckResultAwaiter result_awaiter(browser(), app_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
+  EXPECT_EQ(std::move(result_awaiter).AwaitNextResult(),
+            ManifestUpdateResult::kAppUpToDate);
+
+  // If the App Identity dialog was shown for the shortcut app, then something
+  // is wrong.
+  ASSERT_FALSE(chrome::AppIdentityUpdateDialogWasRequestedForTesting());
 }
 
 using ManifestUpdateManagerBrowserTest_ManifestId =
