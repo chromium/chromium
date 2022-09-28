@@ -100,7 +100,7 @@ void LogRelevance(ChromeSearchResult::ResultType result_type,
 
 }  // namespace
 
-FileResult::FileResult(const std::string& schema,
+FileResult::FileResult(const std::string& id,
                        const base::FilePath& filepath,
                        const absl::optional<std::u16string>& details,
                        ResultType result_type,
@@ -111,7 +111,7 @@ FileResult::FileResult(const std::string& schema,
                        Profile* profile)
     : filepath_(filepath), type_(type), profile_(profile) {
   DCHECK(profile);
-  set_id(schema + filepath.value());
+  set_id(id);
   SetCategory(Category::kFiles);
   SetDisplayType(display_type);
 

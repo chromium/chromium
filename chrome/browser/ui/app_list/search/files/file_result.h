@@ -31,7 +31,7 @@ class FileResult : public ChromeSearchResult, public ash::ColorModeObserver {
  public:
   enum class Type { kFile, kDirectory, kSharedDirectory };
 
-  FileResult(const std::string& schema,
+  FileResult(const std::string& id,
              const base::FilePath& filepath,
              const absl::optional<std::u16string>& details,
              ResultType result_type,

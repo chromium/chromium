@@ -53,6 +53,9 @@ struct FileSuggestData {
   // The path to the suggested file.
   base::FilePath file_path;
 
+  // The suggestion id. Calculated from `type` and `file_path`.
+  std::string id;
+
   // The reason why the file is suggested.
   absl::optional<std::string> prediction_reason;
 };

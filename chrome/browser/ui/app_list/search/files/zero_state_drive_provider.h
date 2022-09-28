@@ -72,6 +72,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   void SetSearchResults(const std::vector<FileSuggestData>& suggest_results);
 
   std::unique_ptr<FileResult> MakeListResult(
+      const std::string& result_id,
       const base::FilePath& filepath,
       const absl::optional<std::string>& prediction_reason,
       const float relevance);

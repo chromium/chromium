@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -202,7 +203,7 @@ void ZeroStateFileProvider::SetSearchResults(ValidAndInvalidResults results) {
     const absl::optional<std::u16string> details = GetJustificationString(
         valid_results[i].last_accessed, valid_results[i].last_modified);
     auto result = std::make_unique<FileResult>(
-        kSchema, filepath, details,
+        /*id=*/kSchema + filepath.value(), filepath, details,
         ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(), score,
         std::u16string(), FileResult::Type::kFile, profile_);
     // TODO(crbug.com/1258415): Only generate thumbnails if the old launcher is
@@ -250,11 +251,11 @@ void ZeroStateFileProvider::OnFilesOpened(
 void ZeroStateFileProvider::AppendFakeSearchResults(Results* results) {
   constexpr int kTotalFakeFiles = 3;
   for (int i = 0; i < kTotalFakeFiles; ++i) {
+    const base::FilePath path(base::FilePath(FILE_PATH_LITERAL(
+        base::StrCat({"Fake-file-", base::NumberToString(i), ".png"}))));
     results->emplace_back(std::make_unique<FileResult>(
-        kSchema,
-        base::FilePath(FILE_PATH_LITERAL(
-            base::StrCat({"Fake-file-", base::NumberToString(i), ".png"}))),
-        u"-", ash::AppListSearchResultType::kZeroStateFile,
+        /*id=*/kSchema + path.value(), path, u"-",
+        ash::AppListSearchResultType::kZeroStateFile,
         ash::SearchResultDisplayType::kContinue, 0.1f, std::u16string(),
         FileResult::Type::kFile, profile_));
   }

@@ -39,8 +39,6 @@ namespace {
 
 using SuggestResults = std::vector<FileSuggestData>;
 
-constexpr char kSchema[] = "zero_state_drive://";
-
 // How long to wait before making the first request for results from the
 // ItemSuggestCache.
 constexpr base::TimeDelta kFirstUpdateDelay = base::Seconds(10);
@@ -204,8 +202,8 @@ void ZeroStateDriveProvider::SetSearchResults(
     const double score = 1.0 - (item_index / total_items);
     ++item_index;
 
-    provider_results.emplace_back(
-        MakeListResult(result.file_path, result.prediction_reason, score));
+    provider_results.emplace_back(MakeListResult(
+        result.id, result.file_path, result.prediction_reason, score));
   }
 
   SwapResults(&provider_results);
@@ -213,6 +211,7 @@ void ZeroStateDriveProvider::SetSearchResults(
 }
 
 std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
+    const std::string& result_id,
     const base::FilePath& filepath,
     const absl::optional<std::string>& prediction_reason,
     const float relevance) {
@@ -221,9 +220,9 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     details = base::UTF8ToUTF16(prediction_reason.value());
 
   auto result = std::make_unique<FileResult>(
-      kSchema, filepath, details, ash::AppListSearchResultType::kZeroStateDrive,
-      GetDisplayType(), relevance, std::u16string(), FileResult::Type::kFile,
-      profile_);
+      result_id, filepath, details,
+      ash::AppListSearchResultType::kZeroStateDrive, GetDisplayType(),
+      relevance, std::u16string(), FileResult::Type::kFile, profile_);
   return result;
 }
 
@@ -235,7 +234,9 @@ void ZeroStateDriveProvider::MaybeUpdateCache() {
 }
 
 void ZeroStateDriveProvider::OnFileSuggestionUpdated(FileSuggestionType type) {
-  DCHECK_EQ(FileSuggestionType::kDriveFile, type);
+  if (type != FileSuggestionType::kDriveFile)
+    return;
+
   StartZeroState();
 }
 

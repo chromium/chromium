@@ -47,9 +47,10 @@ class FileResultTest : public testing::Test {
 };
 
 TEST_F(FileResultTest, CheckMetadata) {
+  const base::FilePath path("/my/test/MIXED_case_FILE.Pdf");
   FileResult result(
-      "zero_state_file://", base::FilePath("/my/test/MIXED_case_FILE.Pdf"),
-      u"some details", ash::AppListSearchResultType::kZeroStateFile,
+      /*id=*/"zero_state_file://" + path.value(), path, u"some details",
+      ash::AppListSearchResultType::kZeroStateFile,
       ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
       FileResult::Type::kFile, profile_.get());
   EXPECT_EQ(base::UTF16ToUTF8(result.title()),
@@ -62,13 +63,15 @@ TEST_F(FileResultTest, CheckMetadata) {
 }
 
 TEST_F(FileResultTest, HostedExtensionsIgnored) {
+  const base::FilePath path1("my/Document.gdoc");
   FileResult result_1(
-      "zero_state_file://", base::FilePath("my/Document.gdoc"), absl::nullopt,
+      /*id=*/"zero_state_file://" + path1.value(), path1, absl::nullopt,
       ash::AppListSearchResultType::kZeroStateFile,
       ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
       FileResult::Type::kFile, profile_.get());
+  const base::FilePath path2("my/Map.gmaps");
   FileResult result_2(
-      "zero_state_file://", base::FilePath("my/Map.gmaps"), absl::nullopt,
+      /*id=*/"zero_state_file://" + path2.value(), path2, absl::nullopt,
       ash::AppListSearchResultType::kZeroStateFile,
       ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
       FileResult::Type::kFile, profile_.get());

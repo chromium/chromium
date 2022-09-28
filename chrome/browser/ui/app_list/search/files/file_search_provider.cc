@@ -181,7 +181,7 @@ std::unique_ptr<FileResult> FileSearchProvider::MakeResult(
   base::i18n::SanitizeUserSuppliedString(&parent_dir_name);
 
   auto result = std::make_unique<FileResult>(
-      kFileSearchSchema, path.path, parent_dir_name,
+      /*id=*/kFileSearchSchema + path.path.value(), path.path, parent_dir_name,
       ash::AppListSearchResultType::kFileSearch,
       ash::SearchResultDisplayType::kList, relevance, last_query_, type,
       profile_);

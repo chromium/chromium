@@ -201,11 +201,11 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
   std::u16string details =
       l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
 
-  auto result =
-      std::make_unique<FileResult>(kDriveSearchSchema, reparented_path, details,
-                                   ash::AppListSearchResultType::kDriveSearch,
-                                   ash::SearchResultDisplayType::kList,
-                                   relevance, last_query_, type, profile_);
+  auto result = std::make_unique<FileResult>(
+      /*id=*/kDriveSearchSchema + reparented_path.value(), reparented_path,
+      details, ash::AppListSearchResultType::kDriveSearch,
+      ash::SearchResultDisplayType::kList, relevance, last_query_, type,
+      profile_);
   result->set_drive_id(drive_id);
   return result;
 }
