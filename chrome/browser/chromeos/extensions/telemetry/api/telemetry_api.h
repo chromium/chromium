@@ -96,6 +96,27 @@ class OsTelemetryGetCpuInfoFunction : public TelemetryApiFunctionBase {
   void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
+class OsTelemetryGetInternetConnectivityInfoFunction
+    : public TelemetryApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getInternetConnectivityInfo",
+                             OS_TELEMETRY_GETINTERNETCONNECTIVITYINFO)
+
+  OsTelemetryGetInternetConnectivityInfoFunction();
+  OsTelemetryGetInternetConnectivityInfoFunction(
+      const OsTelemetryGetInternetConnectivityInfoFunction&) = delete;
+  OsTelemetryGetInternetConnectivityInfoFunction& operator=(
+      const OsTelemetryGetInternetConnectivityInfoFunction&) = delete;
+
+ private:
+  ~OsTelemetryGetInternetConnectivityInfoFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
+};
+
 class OsTelemetryGetMemoryInfoFunction : public TelemetryApiFunctionBase {
  public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getMemoryInfo",

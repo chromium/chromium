@@ -15,6 +15,8 @@
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -331,6 +333,77 @@ TEST(TelemetryApiConverters, StatefulPartitionInfoNullFields) {
       ConvertPtr<telemetry_api::StatefulPartitionInfo>(std::move(input));
   ASSERT_FALSE(result.available_space);
   ASSERT_FALSE(result.total_space);
+}
+
+TEST(TelemetryApiConverters, NetworkStateEnum) {
+  EXPECT_EQ(
+      telemetry_api::NetworkState::NETWORK_STATE_UNINITIALIZED,
+      Convert(chromeos::network_health::mojom::NetworkState::kUninitialized));
+  EXPECT_EQ(telemetry_api::NetworkState::NETWORK_STATE_DISABLED,
+            Convert(chromeos::network_health::mojom::NetworkState::kDisabled));
+  EXPECT_EQ(
+      telemetry_api::NetworkState::NETWORK_STATE_PROHIBITED,
+      Convert(chromeos::network_health::mojom::NetworkState::kProhibited));
+  EXPECT_EQ(
+      telemetry_api::NetworkState::NETWORK_STATE_NOT_CONNECTED,
+      Convert(chromeos::network_health::mojom::NetworkState::kNotConnected));
+  EXPECT_EQ(
+      telemetry_api::NetworkState::NETWORK_STATE_CONNECTING,
+      Convert(chromeos::network_health::mojom::NetworkState::kConnecting));
+  EXPECT_EQ(telemetry_api::NetworkState::NETWORK_STATE_PORTAL,
+            Convert(chromeos::network_health::mojom::NetworkState::kPortal));
+  EXPECT_EQ(telemetry_api::NetworkState::NETWORK_STATE_CONNECTED,
+            Convert(chromeos::network_health::mojom::NetworkState::kConnected));
+  EXPECT_EQ(telemetry_api::NetworkState::NETWORK_STATE_ONLINE,
+            Convert(chromeos::network_health::mojom::NetworkState::kOnline));
+}
+
+TEST(TelemetryApiConverters, NetworkTypeEnum) {
+  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_NONE,
+            Convert(chromeos::network_config::mojom::NetworkType::kAll));
+  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_CELLULAR,
+            Convert(chromeos::network_config::mojom::NetworkType::kCellular));
+  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_ETHERNET,
+            Convert(chromeos::network_config::mojom::NetworkType::kEthernet));
+  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_NONE,
+            Convert(chromeos::network_config::mojom::NetworkType::kMobile));
+  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_TETHER,
+            Convert(chromeos::network_config::mojom::NetworkType::kTether));
+  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_VPN,
+            Convert(chromeos::network_config::mojom::NetworkType::kVPN));
+  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_NONE,
+            Convert(chromeos::network_config::mojom::NetworkType::kWireless));
+  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_WIFI,
+            Convert(chromeos::network_config::mojom::NetworkType::kWiFi));
+}
+
+TEST(TelemetryApiConverters, NetworkInfo) {
+  constexpr char kIpv4Address[] = "1.1.1.1";
+  const std::vector<std::string> kIpv6Addresses = {
+      "FE80:CD00:0000:0CDE:1257:0000:211E:729C",
+      "CD00:FE80:0000:1257:0CDE:0000:729C:211E"};
+  constexpr uint32_t kSignalStrength = 100;
+
+  auto input = chromeos::network_health::mojom::Network::New();
+  input->type = chromeos::network_config::mojom::NetworkType::kWiFi;
+  input->state = chromeos::network_health::mojom::NetworkState::kOnline;
+  input->ipv4_address = kIpv4Address;
+  input->ipv6_addresses = kIpv6Addresses;
+  input->signal_strength =
+      chromeos::network_health::mojom::UInt32Value::New(kSignalStrength);
+
+  auto result = ConvertPtr<telemetry_api::NetworkInfo>(std::move(input));
+  EXPECT_EQ(result.type, telemetry_api::NetworkType::NETWORK_TYPE_WIFI);
+  EXPECT_EQ(result.state, telemetry_api::NetworkState::NETWORK_STATE_ONLINE);
+
+  ASSERT_TRUE(result.ipv4_address);
+  EXPECT_EQ(*result.ipv4_address, kIpv4Address);
+
+  ASSERT_EQ(result.ipv6_addresses.size(), 2LU);
+  EXPECT_EQ(result.ipv6_addresses, kIpv6Addresses);
+
+  ASSERT_TRUE(result.signal_strength);
+  EXPECT_EQ(static_cast<double_t>(*result.signal_strength), kSignalStrength);
 }
 
 }  // namespace converters

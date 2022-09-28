@@ -35660,6 +35660,7 @@ Called by update_extension_histograms.py.-->
   <int value="1711" label="OS_DIAGNOSTICS_RUNSIGNALSTRENGTHROUTINE"/>
   <int value="1712" label="OS_DIAGNOSTICS_RUNGATEWAYCANBEPINGEDROUTINE"/>
   <int value="1713" label="OS_DIAGNOSTICS_RUNDNSRESOLVERPRESENTROUTINE"/>
+  <int value="1714" label="OS_TELEMETRY_GETINTERNETCONNECTIVITYINFO"/>
 </enum>
 
 <enum name="ExtensionIconState">

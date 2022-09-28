@@ -60,6 +60,14 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function getInternetConnectivityInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getInternetConnectivityInfo(),
+            'Error: Unauthorized access to chrome.os.telemetry.' +
+            'getInternetConnectivityInfo. %s'
+        );
+        chrome.test.succeed();
+      },
       async function getMemoryInfo() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getMemoryInfo(),
@@ -350,8 +358,8 @@ std::string GetServiceWorkerForError(const std::string& error) {
             item => typeof obj[item] === 'function');
         }
         apiNames = [
-          ...getMethods(chrome.os.telemetry),
-          ...getMethods(chrome.os.diagnostics)
+          ...getMethods(chrome.os.telemetry).sort(),
+          ...getMethods(chrome.os.diagnostics).sort()
         ];
         chrome.test.assertEq(getTestNames(tests), apiNames);
         chrome.test.succeed();

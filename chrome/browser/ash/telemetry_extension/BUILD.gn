@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
+    "//chromeos/services/network_health/public/mojom:mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]

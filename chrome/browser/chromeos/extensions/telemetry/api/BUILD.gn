@@ -42,6 +42,7 @@ source_set("api") {
     "//chrome/common/chromeos/extensions",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
+    "//chromeos/services/network_health/public/mojom:mojom",
     "//components/security_state/content",
     "//components/security_state/core",
     "//components/user_manager",

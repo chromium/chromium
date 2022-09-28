@@ -14,6 +14,8 @@
 #include "base/notreached.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 
 namespace chromeos {
 namespace converters {
@@ -143,6 +145,24 @@ telemetry_api::StatefulPartitionInfo UncheckedConvertPtr(
   return result;
 }
 
+telemetry_api::NetworkInfo UncheckedConvertPtr(
+    chromeos::network_health::mojom::NetworkPtr input) {
+  telemetry_api::NetworkInfo result;
+
+  result.type = Convert(input->type);
+  result.state = Convert(input->state);
+
+  if (input->ipv4_address.has_value()) {
+    result.ipv4_address = input->ipv4_address.value();
+  }
+  result.ipv6_addresses = input->ipv6_addresses;
+  if (input->signal_strength) {
+    result.signal_strength = input->signal_strength->value;
+  }
+
+  return result;
+}
+
 }  // namespace unchecked
 
 telemetry_api::CpuArchitectureEnum Convert(
@@ -156,6 +176,56 @@ telemetry_api::CpuArchitectureEnum Convert(
       return telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_AARCH64;
     case telemetry_service::ProbeCpuArchitectureEnum::kArmv7l:
       return telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_ARMV7L;
+  }
+  NOTREACHED();
+}
+
+telemetry_api::NetworkState Convert(
+    chromeos::network_health::mojom::NetworkState input) {
+  switch (input) {
+    case network_health::mojom::NetworkState::kUninitialized:
+      return telemetry_api::NetworkState::NETWORK_STATE_UNINITIALIZED;
+    case network_health::mojom::NetworkState::kDisabled:
+      return telemetry_api::NetworkState::NETWORK_STATE_DISABLED;
+    case network_health::mojom::NetworkState::kProhibited:
+      return telemetry_api::NetworkState::NETWORK_STATE_PROHIBITED;
+    case network_health::mojom::NetworkState::kNotConnected:
+      return telemetry_api::NetworkState::NETWORK_STATE_NOT_CONNECTED;
+    case network_health::mojom::NetworkState::kConnecting:
+      return telemetry_api::NetworkState::NETWORK_STATE_CONNECTING;
+    case network_health::mojom::NetworkState::kPortal:
+      return telemetry_api::NetworkState::NETWORK_STATE_PORTAL;
+    case network_health::mojom::NetworkState::kConnected:
+      return telemetry_api::NetworkState::NETWORK_STATE_CONNECTED;
+    case network_health::mojom::NetworkState::kOnline:
+      return telemetry_api::NetworkState::NETWORK_STATE_ONLINE;
+  }
+  NOTREACHED();
+}
+
+telemetry_api::NetworkType Convert(
+    chromeos::network_config::mojom::NetworkType input) {
+  // Cases kAll, kMobile and kWireless are only used for querying
+  // the network_config daemon and are not returned by the cros_healthd
+  // interface we are calling. For this reason we return NONE in those
+  // cases.
+  switch (input) {
+    case network_config::mojom::NetworkType::kAll:
+      return telemetry_api::NetworkType::NETWORK_TYPE_NONE;
+    case network_config::mojom::NetworkType::kCellular:
+      return telemetry_api::NetworkType::NETWORK_TYPE_CELLULAR;
+    case network_config::mojom::NetworkType::kEthernet:
+      return telemetry_api::NetworkType::NETWORK_TYPE_ETHERNET;
+    case network_config::mojom::NetworkType::kMobile:
+      return telemetry_api::NetworkType::NETWORK_TYPE_NONE;
+    case network_config::mojom::NetworkType::kTether:
+      return telemetry_api::NetworkType::NETWORK_TYPE_TETHER;
+    case network_config::mojom::NetworkType::kVPN:
+      return telemetry_api::NetworkType::NETWORK_TYPE_VPN;
+    case network_config::mojom::NetworkType::kWireless:
+      return telemetry_api::NetworkType::NETWORK_TYPE_NONE;
+    case network_config::mojom::NetworkType::kWiFi:
+      return telemetry_api::NetworkType::NETWORK_TYPE_WIFI;
   }
   NOTREACHED();
 }

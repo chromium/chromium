@@ -107,6 +107,9 @@ crosapi::mojom::ProbeSystemInfoPtr UncheckedConvertPtr(
 crosapi::mojom::ProbeOsVersionPtr UncheckedConvertPtr(
     cros_healthd::mojom::OsVersionPtr);
 
+crosapi::mojom::ProbeNetworkResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::NetworkResultPtr input);
+
 std::pair<crosapi::mojom::ProbeCachedVpdInfoPtr,
           crosapi::mojom::ProbeSystemInfoPtr>
 UncheckedConvertPairPtr(cros_healthd::mojom::SystemInfoPtr input);

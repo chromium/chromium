@@ -85,6 +85,49 @@ namespace os.telemetry {
 
   callback MemoryInfoCallback = void (MemoryInfo cpuInfo);
 
+  enum NetworkType {
+    cellular,
+    ethernet,
+    tether,
+    vpn,
+    wifi
+  };
+
+  enum NetworkState {
+    // The network type is available but not yet initialized.
+    uninitialized,
+    // The network type is available but disabled or disabling.
+    disabled,
+    // The network type is prohibited by policy.
+    prohibited,
+    // The network type is available and enabled or enabling, but no network
+    // connection has been established.
+    not_connected,
+    // The network type is available and enabled, and a network connection is
+    // in progress.
+    connecting,
+    // The network is in a portal state.
+    portal,
+    // The network is in a connected state, but connectivity is limited.
+    connected,
+    // The network is connected and online.
+    online
+  };
+
+  dictionary NetworkInfo {
+    NetworkType? type;
+    NetworkState? state;
+    DOMString? ipv4Address;
+    DOMString[] ipv6Addresses;
+    double? signalStrength;
+  };
+
+  dictionary InternetConnectivityInfo {
+    NetworkInfo[] networks;
+  };
+
+  callback InternetConnectivityInfoCallback = void (InternetConnectivityInfo networkInfo);
+
   dictionary OemData {
     // OEM data. This field used to store battery serial number by some OEMs.
     DOMString? oemData;
@@ -140,5 +183,7 @@ namespace os.telemetry {
     [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
 
     [supportsPromises] static void getStatefulPartitionInfo(StatefulPartitionInfoCallback callback);
+
+    [supportsPromises] static void getInternetConnectivityInfo(InternetConnectivityInfoCallback callback);
   };
 };

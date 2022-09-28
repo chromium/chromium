@@ -45,6 +45,8 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
       return cros_healthd::mojom::ProbeCategoryEnum::kBluetooth;
     case crosapi::mojom::ProbeCategoryEnum::kSystem:
       return cros_healthd::mojom::ProbeCategoryEnum::kSystem;
+    case crosapi::mojom::ProbeCategoryEnum::kNetwork:
+      return cros_healthd::mojom::ProbeCategoryEnum::kNetwork;
   }
   NOTREACHED();
 }
@@ -321,6 +323,18 @@ crosapi::mojom::ProbeOsVersionPtr UncheckedConvertPtr(
       std::move(input->patch_number), std::move(input->release_channel));
 }
 
+crosapi::mojom::ProbeNetworkResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::NetworkResultPtr input) {
+  switch (input->which()) {
+    case cros_healthd::mojom::NetworkResult::Tag::kNetworkHealth:
+      return crosapi::mojom::ProbeNetworkResult::NewNetworkHealth(
+          std::move(input->get_network_health()));
+    case cros_healthd::mojom::NetworkResult::Tag::kError:
+      return crosapi::mojom::ProbeNetworkResult::NewError(
+          ConvertProbePtr(std::move(input->get_error())));
+  }
+}
+
 std::pair<crosapi::mojom::ProbeCachedVpdInfoPtr,
           crosapi::mojom::ProbeSystemInfoPtr>
 UncheckedConvertPairPtr(cros_healthd::mojom::SystemInfoPtr input) {
@@ -364,7 +378,8 @@ crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
       ConvertProbePtr(std::move(input->fan_result)),
       ConvertProbePtr(std::move(input->stateful_partition_result)),
       ConvertProbePtr(std::move(input->bluetooth_result)),
-      std::move(system_result_output.second));
+      std::move(system_result_output.second),
+      ConvertProbePtr(std::move(input->network_result)));
 }
 
 }  // namespace unchecked

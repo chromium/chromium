@@ -9,6 +9,7 @@
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,7 +43,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
       crosapi::mojom::ProbeCategoryEnum::kFan,
       crosapi::mojom::ProbeCategoryEnum::kStatefulPartition,
       crosapi::mojom::ProbeCategoryEnum::kBluetooth,
-      crosapi::mojom::ProbeCategoryEnum::kSystem};
+      crosapi::mojom::ProbeCategoryEnum::kSystem,
+      crosapi::mojom::ProbeCategoryEnum::kNetwork};
   EXPECT_THAT(
       ConvertCategoryVector(kInput),
       ElementsAre(
@@ -57,7 +59,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
           cros_healthd::mojom::ProbeCategoryEnum::kFan,
           cros_healthd::mojom::ProbeCategoryEnum::kStatefulPartition,
           cros_healthd::mojom::ProbeCategoryEnum::kBluetooth,
-          cros_healthd::mojom::ProbeCategoryEnum::kSystem));
+          cros_healthd::mojom::ProbeCategoryEnum::kSystem,
+          cros_healthd::mojom::ProbeCategoryEnum::kNetwork));
 }
 
 TEST(ProbeServiceConverters, ErrorType) {
@@ -692,6 +695,43 @@ TEST(ProbeServiceConverters, OsVersionPtr) {
                                                 kPatchNumber, kReleaseChannel));
 }
 
+TEST(ProbeServiceConverters, NetworkResultPtrInfo) {
+  constexpr uint32_t kSignalStrength = 100;
+
+  cros_healthd::mojom::NetworkResultPtr input;
+  {
+    auto network = chromeos::network_health::mojom::Network::New();
+    network->signal_strength =
+        chromeos::network_health::mojom::UInt32Value::New(kSignalStrength);
+
+    std::vector<chromeos::network_health::mojom::NetworkPtr> networks;
+    networks.push_back(std::move(network));
+
+    auto info = chromeos::network_health::mojom::NetworkHealthState::New();
+    info->networks = std::move(networks);
+
+    input =
+        cros_healthd::mojom::NetworkResult::NewNetworkHealth(std::move(info));
+  }
+
+  const auto output = ConvertProbePtr(std::move(input));
+  ASSERT_TRUE(output);
+  ASSERT_TRUE(output->is_network_health());
+
+  const auto& network_health_output = output->get_network_health();
+  ASSERT_EQ(network_health_output->networks.size(), 1ULL);
+  ASSERT_TRUE(network_health_output->networks[0]);
+  EXPECT_EQ(network_health_output->networks[0]->signal_strength,
+            chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
+}
+
+TEST(ProbeServiceConverters, NetworkResultPtrError) {
+  const auto output =
+      ConvertProbePtr(cros_healthd::mojom::NetworkResult::NewError(nullptr));
+  ASSERT_TRUE(output);
+  EXPECT_TRUE(output->is_error());
+}
+
 TEST(ProbeServiceConverters, PairCachedVpdInfoPtrSystemInfoPtr) {
   constexpr char kOemName[] = "OEM-NAME";
   constexpr char kReleaseMilestone[] = "87";
@@ -805,6 +845,9 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
             cros_healthd::mojom::OsInfo::New(),
             cros_healthd::mojom::VpdInfo::New(),
             cros_healthd::mojom::DmiInfo::New()));
+    input->network_result =
+        cros_healthd::mojom::NetworkResult::NewNetworkHealth(
+            chromeos::network_health::mojom::NetworkHealthState::New());
   }
 
   EXPECT_EQ(
@@ -846,7 +889,9 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
           crosapi::mojom::ProbeBluetoothResult::NewBluetoothAdapterInfo({}),
           crosapi::mojom::ProbeSystemResult::NewSystemInfo(
               crosapi::mojom::ProbeSystemInfo::New(
-                  crosapi::mojom::ProbeOsInfo::New()))));
+                  crosapi::mojom::ProbeOsInfo::New())),
+          crosapi::mojom::ProbeNetworkResult::NewNetworkHealth(
+              chromeos::network_health::mojom::NetworkHealthState::New())));
 }
 
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
@@ -862,7 +907,8 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
                 crosapi::mojom::ProbeFanResultPtr(nullptr),
                 crosapi::mojom::ProbeStatefulPartitionResultPtr(nullptr),
                 crosapi::mojom::ProbeBluetoothResultPtr(nullptr),
-                crosapi::mojom::ProbeSystemResultPtr(nullptr)));
+                crosapi::mojom::ProbeSystemResultPtr(nullptr),
+                crosapi::mojom::ProbeNetworkResultPtr(nullptr)));
 }
 
 }  // namespace ash::converters

@@ -11,6 +11,8 @@
 #include "base/check.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom-forward.h"
 
 namespace chromeos {
 
@@ -48,10 +50,19 @@ chromeos::api::os_telemetry::OsVersionInfo UncheckedConvertPtr(
 chromeos::api::os_telemetry::StatefulPartitionInfo UncheckedConvertPtr(
     crosapi::mojom::ProbeStatefulPartitionInfoPtr input);
 
+chromeos::api::os_telemetry::NetworkInfo UncheckedConvertPtr(
+    chromeos::network_health::mojom::NetworkPtr input);
+
 }  // namespace unchecked
 
 chromeos::api::os_telemetry::CpuArchitectureEnum Convert(
     crosapi::mojom::ProbeCpuArchitectureEnum input);
+
+chromeos::api::os_telemetry::NetworkState Convert(
+    chromeos::network_health::mojom::NetworkState input);
+
+chromeos::api::os_telemetry::NetworkType Convert(
+    chromeos::network_config::mojom::NetworkType input);
 
 template <class OutputT, class InputT>
 std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {

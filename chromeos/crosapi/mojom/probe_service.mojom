@@ -43,6 +43,7 @@
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/nullable_primitives.mojom";
+import "chromeos/services/network_health/public/mojom/network_health.mojom";
 
 // Interface for getting device telemetry information. Implemented in
 // ash-chrome.
@@ -70,7 +71,7 @@ interface TelemetryProbeService {
 
 // An enumeration of each category of information that cros_healthd can report.
 //
-// Next ID: 12
+// Next ID: 13
 [Stable, Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 11,
@@ -85,6 +86,7 @@ enum ProbeCategoryEnum {
   kStatefulPartition = 8,
   kBluetooth = 9,
   kSystem = 10,
+  kNetwork = 12,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -487,6 +489,16 @@ union ProbeSystemResult {
   ProbeError error;
 };
 
+// Network probe result. Can either be populated with the NetworkHealthState
+// or an error retrieving the information.
+[Stable]
+union ProbeNetworkResult {
+  // Valid NetworkHealthState.
+  chromeos.network_health.mojom.NetworkHealthState network_health;
+  // The error that occurred attempting to retrieve the NetworkHealthState.
+  ProbeError error;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -495,7 +507,7 @@ union ProbeSystemResult {
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
 //
-// Next ID: 11
+// Next ID: 12
 [Stable]
 struct ProbeTelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
@@ -533,6 +545,10 @@ struct ProbeTelemetryInfo {
   // Information about the system. Only present when kSystem was included in
   // the categories input to ProbeTelemetryInfo.
   ProbeSystemResult? system_result@10;
+  // Information about the networking interfaces and associated networks of the
+  // system. Only present when kNetwork was included in the categories input to
+  // ProbeTelemetryInfo.
+  ProbeNetworkResult? network_result@11;
 };
 
 // Result of running /usr/share/cros/oemdata.sh script.
