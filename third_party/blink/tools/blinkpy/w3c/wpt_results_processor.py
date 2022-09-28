@@ -50,12 +50,6 @@ def _remove_query_params(test_name):
     return test_name if index == -1 else test_name[:index]
 
 
-def _wptrunner_to_resultdb_status(status):
-    """Map a test-level wptrunner status to a ResultDB one."""
-    # Test timeouts are a special case of aborts.
-    return 'ABORT' if status == 'TIMEOUT' else status
-
-
 class WPTResultsProcessor(object):
     def __init__(self,
                  host,
@@ -524,7 +518,7 @@ class WPTResultsProcessor(object):
                                                    durations)):
             result = Result(
                 name=test_name,
-                actual=_wptrunner_to_resultdb_status(actual),
+                actual=actual,
                 started=(self.host.time() - duration),
                 took=duration,
                 worker=0,

@@ -46,7 +46,7 @@ class Web(object):
             # otherwise, HTTPRedirectHandler will throw a HTTPError.
             return self.http_error_301(req, fp, 301, msg, headers)
 
-    def get_binary(self, url, return_none_on_404=False, retries=0):
+    def get_binary(self, url, return_none_on_404=False):
         make_request = functools.partial(self.request_and_read,
                                          'GET',
                                          url,

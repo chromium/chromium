@@ -26,6 +26,7 @@ from blinkpy.w3c.wpt_github_mock import MockWPTGitHub
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 from blinkpy.web_tests.port.android import ANDROID_DISABLED_TESTS
+from blinkpy.web_tests.builder_list import BuilderList
 
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
 MANIFEST_INSTALL_CMD = [
@@ -38,6 +39,27 @@ class TestImporterTest(LoggingTestCase):
 
     def mock_host(self):
         host = MockHost()
+        host.builders = BuilderList({
+            'cq-builder-a': {
+                'port_name': 'linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+                'is_try_builder': True,
+            },
+            'cq-builder-b': {
+                'port_name': 'mac-mac12',
+                'specifiers': ['Mac12', 'Release'],
+                'is_try_builder': True,
+            },
+            'cq-wpt-builder-c': {
+                'port_name': 'linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+                'is_try_builder': True,
+            },
+            'CI Builder D': {
+                'port_name': 'linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+            },
+        })
         port = host.port_factory.get()
         MANIFEST_INSTALL_CMD[0] = port.python3_command()
         for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
@@ -63,6 +85,11 @@ class TestImporterTest(LoggingTestCase):
         self.assertFalse(success)
         self.assertLog([
             'INFO: Triggering try jobs for updating expectations.\n',
+            'INFO: For rebaselining:\n',
+            'INFO:   cq-builder-a\n',
+            'INFO:   cq-builder-b\n',
+            'INFO: For updating WPT metadata:\n',
+            'INFO:   cq-wpt-builder-c\n',
             'ERROR: No initial try job results, aborting.\n',
         ])
         self.assertEqual(importer.git_cl.calls[-1], ['git', 'cl', 'set-close'])
@@ -82,6 +109,11 @@ class TestImporterTest(LoggingTestCase):
         self.assertFalse(success)
         self.assertLog([
             'INFO: Triggering try jobs for updating expectations.\n',
+            'INFO: For rebaselining:\n',
+            'INFO:   cq-builder-a\n',
+            'INFO:   cq-builder-b\n',
+            'INFO: For updating WPT metadata:\n',
+            'INFO:   cq-wpt-builder-c\n',
             'ERROR: The CL was closed, aborting.\n',
         ])
 
@@ -99,6 +131,11 @@ class TestImporterTest(LoggingTestCase):
         success = importer.update_expectations_for_cl()
         self.assertLog([
             'INFO: Triggering try jobs for updating expectations.\n',
+            'INFO: For rebaselining:\n',
+            'INFO:   cq-builder-a\n',
+            'INFO:   cq-builder-b\n',
+            'INFO: For updating WPT metadata:\n',
+            'INFO:   cq-wpt-builder-c\n',
             'INFO: All jobs finished.\n',
         ])
         self.assertTrue(success)
@@ -120,6 +157,11 @@ class TestImporterTest(LoggingTestCase):
         self.assertTrue(success)
         self.assertLog([
             'INFO: Triggering try jobs for updating expectations.\n',
+            'INFO: For rebaselining:\n',
+            'INFO:   cq-builder-a\n',
+            'INFO:   cq-builder-b\n',
+            'INFO: For updating WPT metadata:\n',
+            'INFO:   cq-wpt-builder-c\n',
             'INFO: All jobs finished.\n',
         ])
 

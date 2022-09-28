@@ -256,7 +256,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'test_path': test_abs_path,
                              'result': {
                                  'name': test_name,
-                                 'actual': 'ABORT',
+                                 'actual': 'TIMEOUT',
                                  'expected': {'TIMEOUT'},
                                  'unexpected': False,
                                  'took': 1000,

@@ -162,7 +162,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
 
         # TODO(crbug.com/1356318): This is a temporary hack to hide the
         # inherited '--xvfb' option and force Xvfb to run always.
-        parser.add_argument('--xvfb', default=True, help=argparse.SUPPRESS)
+        parser.add_argument('--xvfb', action='store_true', default=True,
+                            help=argparse.SUPPRESS)
         return parser
 
     def maybe_set_default_isolated_script_test_output(self):

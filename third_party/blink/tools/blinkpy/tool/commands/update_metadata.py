@@ -243,10 +243,13 @@ class UpdateMetadata(Command):
             return options.builds
         if options.reports:
             return []
-        # Only default to try builders if neither builds nor local reports are
-        # explicitly specified.
+        # Only default to wptrunner try builders if neither builds nor local
+        # reports are explicitly specified.
         builders = self._tool.builders.all_try_builder_names()
-        return [Build(builder) for builder in builders]
+        return [
+            Build(builder) for builder in builders
+            if self._tool.builders.is_wpt_builder(builder)
+        ]
 
     def _explicit_include_patterns(self, options: optparse.Values,
                                    args: List[str]) -> List[str]:
@@ -274,9 +277,11 @@ class UpdateMetadata(Command):
         Raises:
             OSError: If a local wptreport is not readable.
         """
+        # TODO(crbug.com/1299650): Filter by failed builds again after the FYI
+        # builders are green and no longer experimental.
         build_ids = [
             build.build_id for build, (_, status) in build_statuses.items()
-            if build.build_id and status == 'FAILURE'
+            if build.build_id and (status == 'FAILURE' or status == 'SUCCESS')
         ]
         urls = self._tool.results_fetcher.fetch_wpt_report_urls(*build_ids)
         if build_ids and not urls:
@@ -403,7 +408,8 @@ class MetadataUpdater:
                 finder.path_from_web_tests(rel_path_to_wpt_root,
                                            'MANIFEST.json'),
             }
-        manifests = testloader.ManifestLoader(test_paths).load()
+        manifests = testloader.ManifestLoader(
+            test_paths, force_manifest_update=True).load()
         # TODO(crbug.com/1299650): Validate the include list instead of silently
         # ignoring the bad test pattern.
         test_filter = testloader.TestFilter(manifests, include=include)

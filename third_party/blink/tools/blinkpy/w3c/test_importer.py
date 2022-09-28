@@ -211,8 +211,7 @@ class TestImporter(object):
 
         Returns True if everything is OK to continue, or False on failure.
         """
-        _log.info('Triggering try jobs for updating expectations.')
-        self.git_cl.trigger_try_jobs(self.blink_try_bots())
+        self._trigger_try_jobs()
         cl_status = self.git_cl.wait_for_try_jobs(
             poll_delay_seconds=POLL_DELAY_SECONDS,
             timeout_seconds=TIMEOUT_SECONDS)
@@ -243,6 +242,25 @@ class TestImporter(object):
                 self._commit_changes(message)
                 self._upload_patchset(message)
         return True
+
+    def _trigger_try_jobs(self):
+        _log.info('Triggering try jobs for updating expectations.')
+        try_bots = set(self.blink_try_bots())
+        wptrunner_builders = {
+            builder
+            for builder in try_bots
+            if self.host.builders.is_wpt_builder(builder)
+        }
+        rebaselining_builders = try_bots - wptrunner_builders
+        if rebaselining_builders:
+            _log.info('For rebaselining:')
+            for builder in sorted(rebaselining_builders):
+                _log.info('  %s', builder)
+        if wptrunner_builders:
+            _log.info('For updating WPT metadata:')
+            for builder in sorted(wptrunner_builders):
+                _log.info('  %s', builder)
+        self.git_cl.trigger_try_jobs(try_bots)
 
     def run_commit_queue_for_cl(self):
         """Triggers CQ and either commits or aborts; returns True on success."""

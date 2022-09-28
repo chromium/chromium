@@ -108,25 +108,25 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
     def setUp(self):
         super().setUp()
         self.tool.builders = BuilderList({
-            'test-linux-rel': {
+            'test-linux-wpt-rel': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
             },
-            'test-mac-rel': {
+            'test-mac-wpt-rel': {
                 'port_name': 'test-mac-mac12',
                 'specifiers': ['Mac12', 'Release'],
                 'is_try_builder': True,
             },
-            'Test Linux Tests': {
+            'Test Linux Tests (wpt)': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
             },
         })
         self.builds = {
-            Build('test-linux-rel', 1000, '1000'):
+            Build('test-linux-wpt-rel', 1000, '1000'):
             TryJobStatus.from_bb_status('FAILURE'),
-            Build('test-mac-rel', 2000, '2000'):
+            Build('test-mac-wpt-rel', 2000, '2000'):
             TryJobStatus.from_bb_status('SUCCESS'),
         }
         self.git_cl = MockGitCL(self.tool, self.builds)
@@ -229,7 +229,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
     def test_execute_trigger_jobs(self):
         self.command.git_cl = MockGitCL(
             self.tool, {
-                Build('test-linux-rel', 1000, '1000'):
+                Build('test-linux-wpt-rel', 1000, '1000'):
                 TryJobStatus.from_bb_status('STARTED'),
             })
         with self._patch_builtins():
@@ -239,8 +239,8 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             'INFO: No finished builds.\n',
             'INFO: Scheduled or started builds:\n',
             'INFO:   BUILDER              NUMBER  STATUS    BUCKET\n',
-            'INFO:   test-linux-rel       1000    STARTED   try   \n',
-            'INFO:   test-mac-rel         --      TRIGGERED try   \n',
+            'INFO:   test-linux-wpt-rel   1000    STARTED   try   \n',
+            'INFO:   test-mac-wpt-rel     --      TRIGGERED try   \n',
             'ERROR: Once all pending try jobs have finished, '
             'please re-run the tool to fetch new results.\n',
         ])
@@ -252,7 +252,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                 patch.object(self.command.git_cl.bb_client,
                              'execute_batch',
                              side_effect=error))
-            exit_code = self.command.main(['--build=Test Linux Tests'])
+            exit_code = self.command.main(['--build=Test Linux Tests (wpt)'])
             self.assertEqual(exit_code, 1)
             self.assertLog([
                 'ERROR: getBuild: mock error (code: 400)\n',
