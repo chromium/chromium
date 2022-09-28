@@ -934,10 +934,16 @@ class CONTENT_EXPORT NavigationRequest
     return prerender_frame_tree_node_id_.value();
   }
 
+  // TODO(crbug.com/1347953): Replace this function with
+  // NavigationRequest::ComputeFencedFrameProperties(), which falls back to
+  // frame_tree_node_->GetFencedFrameProperties() when the NavigationRequest
+  // itself doesn't have any properties.
   const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
   fenced_frame_properties() const {
     return fenced_frame_properties_;
   }
+
+  const absl::optional<base::UnguessableToken> ComputeFencedFrameNonce() const;
 
   void RenderFallbackContentForObjectTag();
 
@@ -2121,16 +2127,28 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest.
   const bool is_target_fenced_frame_root_originating_from_opaque_url_ = false;
 
-  // On every embedder-initiated navigation of a fenced frame, we reinitialize
-  // the fenced frame properties.
+  // On every embedder-initiated navigation of a fenced frame, i.e.
+  // `is_embedder_initiated_fenced_frame_navigation_`, we reinitialize
+  // the fenced frame properties with the default `FencedFrameProperties()`
+  // constructor, which gives the fenced frame a fresh partition nonce.
+  //
   // If the embedder-initiated navigation is to an opaque url (urn:uuid), i.e.
-  // `is_embedder_initiated_fenced_frame_opaque_url_navigation_`, then
-  // this will be non-empty (containing the properties bound to the opaque url),
-  // and we will store this new set of fenced frame properties in the fenced
-  // frame root FrameTreeNode.
-  // If the embedder-initiated navigation is not to an opaque url, then
-  // this will be nullopt, and we will install it in order to clear the old
-  // fenced frame properties.
+  // `is_embedder_initiated_fenced_frame_opaque_url_navigation_`, we overwrite
+  // the default properties stored in this `NavigationRequest` with the
+  // `FencedFrameProperties` bound to that urn:uuid, in
+  // `NavigationRequest::OnFencedFrameURLMappingComplete`.
+  //
+  // For certain actions related to the pending `NavigationRequest` (rather
+  // than the existing fenced frame document), e.g. partitioned network
+  // requests for the pending navigation, we use the pending
+  // `FencedFrameProperties`.
+  //
+  // If the navigation commits, this new set of fenced frame properties will be
+  // stored in the fenced frame root FrameTreeNode in
+  // `NavigationRequest::DidCommitNavigation`.
+  //
+  // If the navigation doesn't commit (e.g. an HTTP 204 response), the fenced
+  // frame properties will not be stored in the fenced frame root.
   absl::optional<FencedFrameURLMapping::FencedFrameProperties>
       fenced_frame_properties_;
 

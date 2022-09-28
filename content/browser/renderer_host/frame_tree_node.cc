@@ -762,7 +762,7 @@ bool FrameTreeNode::NotifyUserActivation(
       true);
 
   absl::optional<base::UnguessableToken> originator_nonce =
-      fenced_frame_nonce();
+      GetFencedFrameNonce();
 
   // See the "Same-origin Visibility" section in |UserActivationState| class
   // doc.
@@ -772,7 +772,7 @@ bool FrameTreeNode::NotifyUserActivation(
         this->current_frame_host()->GetLastCommittedOrigin();
     for (FrameTreeNode* node : frame_tree()->Nodes()) {
       if (shadow_dom_fenced_frame_enabled &&
-          node->fenced_frame_nonce() != originator_nonce) {
+          node->GetFencedFrameNonce() != originator_nonce) {
         continue;
       }
 
@@ -800,12 +800,12 @@ bool FrameTreeNode::ConsumeTransientUserActivation() {
   bool shadow_dom_fenced_frame_enabled =
       frame_tree()->IsFencedFramesShadowDOMBased();
   absl::optional<base::UnguessableToken> originator_nonce =
-      fenced_frame_nonce();
+      GetFencedFrameNonce();
 
   bool was_active = user_activation_state_.IsActive();
   for (FrameTreeNode* node : frame_tree()->Nodes()) {
     if (shadow_dom_fenced_frame_enabled &&
-        node->fenced_frame_nonce() != originator_nonce) {
+        node->GetFencedFrameNonce() != originator_nonce) {
       continue;
     }
 
@@ -928,23 +928,68 @@ bool FrameTreeNode::IsInFencedFrameTree() const {
   return fenced_frame_status_ != FencedFrameStatus::kNotNestedInFencedFrame;
 }
 
-void FrameTreeNode::SetFencedFrameNonceIfNeeded() {
+const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
+FrameTreeNode::GetFencedFrameProperties() {
   if (!IsInFencedFrameTree()) {
+    // If we might be in a urn iframe, try to find the "urn iframe root"
+    // and if it exists, return the attached `FencedFrameProperties`.
+    if (blink::features::IsAllowURNsInIframeEnabled()) {
+      FrameTreeNode* node = this;
+      while (node->parent()) {
+        CHECK(node->parent()->frame_tree_node());
+        if (node->fenced_frame_properties_.has_value()) {
+          return node->fenced_frame_properties_;
+        }
+        node = node->parent()->frame_tree_node();
+      }
+    }
+    return fenced_frame_properties_;
+  }
+
+  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
+    case blink::features::FencedFramesImplementationType::kMPArch: {
+      // Because we already confirmed we're in a fenced frame tree, we know
+      // there must be a fenced frame root with properties stored.
+      CHECK(frame_tree());
+      CHECK(frame_tree()->root());
+      CHECK(frame_tree()->root()->fenced_frame_properties_.has_value());
+      return frame_tree()->root()->fenced_frame_properties_;
+    }
+    case blink::features::FencedFramesImplementationType::kShadowDOM: {
+      FrameTreeNode* node = this;
+
+      while (true) {
+        if (node->IsFencedFrameRoot()) {
+          // Because non-opaque url navigations in ShadowDOM fenced frames
+          // do not install fenced frame properties, this may be absl::nullopt
+          // underneath.
+          return node->fenced_frame_properties_;
+        }
+
+        CHECK(node->parent());
+        CHECK(node->parent()->frame_tree_node());
+        node = node->parent()->frame_tree_node();
+      }
+    }
+  }
+}
+
+absl::optional<base::UnguessableToken> FrameTreeNode::GetFencedFrameNonce() {
+  auto& root_fenced_frame_properties = GetFencedFrameProperties();
+  if (!root_fenced_frame_properties.has_value()) {
+    return absl::nullopt;
+  }
+  return root_fenced_frame_properties->partition_nonce;
+}
+
+void FrameTreeNode::SetFencedFramePropertiesIfNeeded() {
+  if (!IsFencedFrameRoot()) {
     return;
   }
 
-  if (IsFencedFrameRoot()) {
-    fenced_frame_nonce_ = base::UnguessableToken::Create();
-    return;
-  }
-
-  // For nested iframes in a fenced frame tree, propagate the same nonce as was
-  // set in the fenced frame root.
-  DCHECK(parent_);
-  absl::optional<base::UnguessableToken> nonce =
-      parent_->frame_tree_node()->fenced_frame_nonce();
-  DCHECK(nonce.has_value());
-  fenced_frame_nonce_ = nonce;
+  // The fenced frame properties are set only on the fenced frame root.
+  // In the future, they will be set on the FrameTree instead.
+  fenced_frame_properties_ = FencedFrameURLMapping::FencedFrameProperties();
 }
 
 absl::optional<blink::mojom::FencedFrameMode>

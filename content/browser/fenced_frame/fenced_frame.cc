@@ -97,14 +97,6 @@ void FencedFrame::Navigate(const GURL& url,
 
   FrameTreeNode* inner_root = frame_tree_->root();
 
-  // Rerandomize the fenced frame's storage partitioning nonce, so that state
-  // isn't carried over from the previous document. This is necessary in order
-  // to prevent local joining of extra information from the embedder or
-  // special information hidden behind the opaque URL.
-  // TODO(crbug.com/1123606): Reinitialize more of the fenced frame metadata
-  // as needed to isolate state across navigations.
-  inner_root->SetFencedFrameNonceIfNeeded();
-
   // TODO(crbug.com/1237552): Resolve the discussion around navigations being
   // treated as downloads, and implement the correct thing.
   blink::NavigationDownloadPolicy download_policy;

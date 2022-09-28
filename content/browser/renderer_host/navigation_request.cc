@@ -1427,7 +1427,9 @@ NavigationRequest::CreateForSynchronousRendererCommit(
       false /* was_opener_suppressed */, false /* is_pdf */));
 
   absl::optional<base::UnguessableToken> nonce =
-      render_frame_host->ComputeNonce(navigation_request->is_anonymous());
+      render_frame_host->ComputeNonce(
+          navigation_request->is_anonymous(),
+          navigation_request->ComputeFencedFrameNonce());
   url::Origin top_level_origin =
       render_frame_host->ComputeTopFrameOrigin(origin);
   navigation_request->commit_params_->storage_key =
@@ -1534,7 +1536,12 @@ NavigationRequest::NavigationRequest(
           is_embedder_initiated_fenced_frame_navigation
               ? is_embedder_initiated_fenced_frame_opaque_url_navigation_
               : frame_tree_node->current_frame_host()
-                    ->is_fenced_frame_root_originating_from_opaque_url()) {
+                    ->is_fenced_frame_root_originating_from_opaque_url()),
+      fenced_frame_properties_(
+          is_embedder_initiated_fenced_frame_navigation
+              ? absl::make_optional(
+                    FencedFrameURLMapping::FencedFrameProperties())
+              : absl::nullopt) {
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
   DCHECK_EQ(common_params_->url, commit_params_->original_url);
@@ -2159,6 +2166,12 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
           properties->reporting_metadata.Clone();
     }
     fenced_frame_properties_ = properties;
+    // For urns loaded into iframes for FLEDGE OT, we don't want to use a
+    // fenced frame nonce for compatibility.
+    if (!frame_tree_node_->IsFencedFrameRoot()) {
+      CHECK(blink::features::IsAllowURNsInIframeEnabled());
+      fenced_frame_properties_->partition_nonce = absl::nullopt;
+    }
   } else {
     if (frame_tree_node_->IsFencedFrameRoot() &&
         frame_tree_node_->frame_tree()->IsFencedFramesMPArchBased()) {
@@ -4928,14 +4941,15 @@ void NavigationRequest::CommitNavigation() {
   // instead of creating one from a URL which lacks opacity information.
   isolation_info_for_subresources_ =
       render_frame_host_->ComputeIsolationInfoForSubresourcesForPendingCommit(
-          origin, is_anonymous());
+          origin, is_anonymous(), ComputeFencedFrameNonce());
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
   // TODO(https://crbug.com/888079): The storage key's origin is ignored at the
   // moment. We will be able to use it once the browser can compute the origin
   // to commit.
   absl::optional<base::UnguessableToken> nonce =
-      render_frame_host_->ComputeNonce(is_anonymous());
+      render_frame_host_->ComputeNonce(is_anonymous(),
+                                       ComputeFencedFrameNonce());
   commit_params_->storage_key = render_frame_host_->CalculateStorageKey(
       GetOriginToCommit(), base::OptionalToPtr(nonce));
 
@@ -7085,7 +7099,8 @@ net::IsolationInfo NavigationRequest::GetIsolationInfo() {
   // TODO(crbug.com/979296): Consider changing this code to copy an origin
   // instead of creating one from a URL which lacks opacity information.
   return frame_tree_node_->current_frame_host()
-      ->ComputeIsolationInfoForNavigation(common_params_->url, is_anonymous());
+      ->ComputeIsolationInfoForNavigation(common_params_->url, is_anonymous(),
+                                          ComputeFencedFrameNonce());
 }
 
 bool NavigationRequest::HasSubframeNavigationEntryCommitted() {
@@ -8015,6 +8030,17 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForFailedNavigation() const {
          (common_params_->url ==
           GetLastLoadingURLInRendererForNavigationReplacement(
               frame_tree_node_->current_frame_host()));
+}
+
+const absl::optional<base::UnguessableToken>
+NavigationRequest::ComputeFencedFrameNonce() const {
+  // TODO(crbug.com/1347953): Once
+  // NavigationRequest::ComputeFencedFrameProperties() is added, use that rather
+  // than branch here.
+  if (fenced_frame_properties_) {
+    return fenced_frame_properties_->partition_nonce;
+  }
+  return frame_tree_node_->GetFencedFrameNonce();
 }
 
 void NavigationRequest::RenderFallbackContentForObjectTag() {

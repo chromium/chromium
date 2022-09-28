@@ -814,8 +814,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // document (note that the navigation might be committing an anonymous
   // document even if the document currently loaded in this RFH is not
   // anonymous, and vice versa).
-  net::IsolationInfo ComputeIsolationInfoForNavigation(const GURL& destination,
-                                                       bool is_anonymous);
+  // Populate `fenced_frame_nonce_for_navigation` with
+  // `NavigationRequest::ComputeFencedFrameNonce()`.
+  net::IsolationInfo ComputeIsolationInfoForNavigation(
+      const GURL& destination,
+      bool is_anonymous,
+      absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation);
 
   // Computes the IsolationInfo for this frame to |destination|.
   net::IsolationInfo ComputeIsolationInfoForNavigation(const GURL& destination);
@@ -824,9 +828,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // |main_world_origin_for_url_loader_factory| is committed to this frame. The
   // boolean `is_anonymous` specifies whether this frame will commit an
   // anonymous document.
+  // Populate `fenced_frame_nonce_for_navigation` with
+  // `NavigationRequest::ComputeFencedFrameNonce()`.
   net::IsolationInfo ComputeIsolationInfoForSubresourcesForPendingCommit(
       const url::Origin& main_world_origin_for_url_loader_factory,
-      bool is_anonymous);
+      bool is_anonymous,
+      absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation);
 
   // Computes site_for_cookies for this frame. A non-empty result denotes which
   // domains are considered first-party to the top-level site when resources are
@@ -2492,7 +2499,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderFrameHostImpl* GetParentOrOuterDocumentOrEmbedder() const;
 
   // Computes the nonce to be used for isolation info and storage key.
-  absl::optional<base::UnguessableToken> ComputeNonce(bool is_anonymous);
+  // For navigations, populate `fenced_frame_nonce_for_navigation` with
+  // `NavigationRequest::ComputeFencedFrameNonce()`.
+  absl::optional<base::UnguessableToken> ComputeNonce(
+      bool is_anonymous,
+      absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation);
 
   // Return the frame immediately preceding this RenderFrameHost in its parent's
   // children, or nullptr if there is no such node.
@@ -2799,10 +2810,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // subresources, |frame_origin| is the value of |last_committed_origin_|. The
   // boolean `anonymous` specifies whether this resource should be loaded with
   // the restrictions of an anonymous iframe.
+  //
+  // For navigations, populate `fenced_frame_nonce_for_navigation` with
+  // `NavigationRequest::ComputeFencedFrameNonce()`.
   net::IsolationInfo ComputeIsolationInfoInternal(
       const url::Origin& frame_origin,
       net::IsolationInfo::RequestType request_type,
-      bool is_anonymous);
+      bool is_anonymous,
+      absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation);
 
   // Returns whether or not this RenderFrameHost is a descendant of |ancestor|.
   // This is equivalent to check that |ancestor| is reached by iterating on

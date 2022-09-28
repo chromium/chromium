@@ -499,16 +499,34 @@ class CONTENT_EXPORT FrameTreeNode {
   bool IsInFencedFrameTree() const;
 
   // Returns a valid nonce if `IsInFencedFrameTree()` returns true for `this`.
-  // Returns nullopt otherwise. See comments on `fenced_frame_nonce_` for more
-  // details.
-  absl::optional<base::UnguessableToken> fenced_frame_nonce() {
-    return fenced_frame_nonce_;
-  }
+  // Returns nullopt otherwise.
+  //
+  // Nonce used in the net::IsolationInfo and blink::StorageKey for a fenced
+  // frame and any iframes nested within it. Not set if this frame is not in a
+  // fenced frame's FrameTree. Note that this could be a field in FrameTree for
+  // the MPArch version but for the shadow DOM version we need to keep it here
+  // since the fenced frame root is not a main frame for the latter. The value
+  // of the nonce will be the same for all of the the iframes inside a fenced
+  // frame tree. If there is a nested fenced frame it will have a different
+  // nonce than its parent fenced frame. The nonce will stay the same across
+  // navigations initiated from the fenced frame tree because it is always used
+  // in conjunction with other fields of the keys and would be good to access
+  // the same storage across same-origin navigations. If the navigation is
+  // same-origin/site then the same network stack partition/storage will be
+  // reused and if it's cross-origin/site then other parts of the key will
+  // change and so, even with the same nonce, another partition will be used.
+  // But if the navigation is initiated from the embedder, the nonce will be
+  // reinitialized irrespective of same or cross origin such that there is no
+  // privacy leak via storage shared between two embedder initiated navigations.
+  // Note that this reinitialization is implemented for all embedder-initiated
+  // navigations in MPArch, but only urn:uuid navigations in ShadowDOM.
+  absl::optional<base::UnguessableToken> GetFencedFrameNonce();
 
-  // If applicable, set the fenced frame nonce. See comment on
+  // If applicable, initialize the default fenced frame properties. Right now,
+  // this means setting a new fenced frame nonce. See comment on
   // fenced_frame_nonce() for when it is set to a non-null value. Invoked
   // by FrameTree::Init() or FrameTree::AddFrame().
-  void SetFencedFrameNonceIfNeeded();
+  void SetFencedFramePropertiesIfNeeded();
 
   // Returns the mode attribute set on the fenced frame root if this frame is
   // in a fenced frame tree, otherwise returns `absl::nullopt`.
@@ -549,10 +567,12 @@ class CONTENT_EXPORT FrameTreeNode {
     fenced_frame_properties_ = fenced_frame_properties;
   }
 
+  // Return the fenced frame properties for this fenced frame tree (if any).
+  // That is to say, this function returns the `fenced_frame_properties_`
+  // variable attached to the fenced frame root FrameTreeNode, which may be
+  // either this node or an ancestor of it.
   const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
-  fenced_frame_properties() {
-    return fenced_frame_properties_;
-  }
+  GetFencedFrameProperties();
 
   // Traverse up from this node. The `shared_storage_budget_metadata()` of the
   // first seen node with a non-null budget metadata will be returned (i.e. this
@@ -759,32 +779,13 @@ class CONTENT_EXPORT FrameTreeNode {
   // for details on how this state is maintained.
   blink::UserActivationState user_activation_state_;
 
-  // Fenced Frames:
-  // Nonce used in the net::IsolationInfo and blink::StorageKey for a fenced
-  // frame and any iframes nested within it. Not set if this frame is not in a
-  // fenced frame's FrameTree. Note that this could be a field in FrameTree for
-  // the MPArch version but for the shadow DOM version we need to keep it here
-  // since the fenced frame root is not a main frame for the latter. The value
-  // of the nonce will be the same for all of the the iframes inside a fenced
-  // frame tree. If there is a nested fenced frame it will have a different
-  // nonce than its parent fenced frame. The nonce will stay the same across
-  // navigations initiated from the fenced frame tree because it is always used
-  // in conjunction with other fields of the keys and would be good to access
-  // the same storage across same-origin navigations. If the navigation is
-  // same-origin/site then the same network stack partition/storage will be
-  // reused and if it's cross-origin/site then other parts of the key will
-  // change and so, even with the same nonce, another partition will be used.
-  // But if the navigation is initiated from the embedder, the nonce will be
-  // reinitialized irrespective of same or cross origin such that there is no
-  // privacy leak via storage shared between two embedder initiated navigations.
-  // Note that this reinitialization is only implemented for MPArch.
-  absl::optional<base::UnguessableToken> fenced_frame_nonce_;
-
   const FencedFrameStatus fenced_frame_status_ =
       FencedFrameStatus::kNotNestedInFencedFrame;
 
   // If this is a fenced frame resulting from a urn:uuid navigation, this
   // contains all the metadata specifying the resulting context.
+  // TODO(crbug.com/1262022): Move this into the FrameTree once ShadowDOM
+  // and urn iframes are gone.
   absl::optional<FencedFrameURLMapping::FencedFrameProperties>
       fenced_frame_properties_;
 

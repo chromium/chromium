@@ -2806,7 +2806,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       fenced_frame->current_frame_host()->GetIsolationInfoForSubresources();
   EXPECT_TRUE(isolation_info.nonce().has_value());
   absl::optional<base::UnguessableToken> fenced_frame_nonce =
-      fenced_frame->fenced_frame_nonce();
+      fenced_frame->GetFencedFrameNonce();
   EXPECT_TRUE(fenced_frame_nonce.has_value());
   EXPECT_EQ(fenced_frame_nonce.value(), isolation_info.nonce().value());
 
@@ -2852,7 +2852,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ(fenced_frame_nonce.value(),
             nested_iframe_isolation_info.nonce().value());
   absl::optional<base::UnguessableToken> nested_iframe_nonce =
-      fenced_frame->child_at(0)->fenced_frame_nonce();
+      fenced_frame->child_at(0)->GetFencedFrameNonce();
   EXPECT_EQ(nested_iframe_isolation_info.nonce().value(),
             nested_iframe_nonce.value());
   EXPECT_EQ(fenced_frame_nonce.value(), fenced_frame->child_at(0)
@@ -2881,7 +2881,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   auto* nested_fenced_frame = AddNestedFencedFrame(fenced_frame, 1);
   GetFencedFrameRootNode(fenced_frame->child_at(1));
   absl::optional<base::UnguessableToken> nested_fframe_nonce =
-      nested_fenced_frame->fenced_frame_nonce();
+      nested_fenced_frame->GetFencedFrameNonce();
   EXPECT_TRUE(nested_fframe_nonce.has_value());
 
   // Check that a nested fenced frame has a different value than its parent
@@ -2894,7 +2894,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       nested_fenced_frame,
       https_server()->GetURL("b.test", "/fenced_frames/title1.html"));
   absl::optional<base::UnguessableToken> new_fenced_frame_nonce =
-      fenced_frame->fenced_frame_nonce();
+      fenced_frame->GetFencedFrameNonce();
   EXPECT_NE(absl::nullopt, new_fenced_frame_nonce);
   EXPECT_EQ(new_fenced_frame_nonce.value(), fenced_frame_nonce.value());
 }
@@ -2938,7 +2938,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       fenced_frame->current_frame_host()->storage_key().nonce().has_value());
 
   absl::optional<base::UnguessableToken> fenced_frame_nonce =
-      fenced_frame->fenced_frame_nonce();
+      fenced_frame->GetFencedFrameNonce();
   EXPECT_TRUE(fenced_frame_nonce.has_value());
   EXPECT_EQ(fenced_frame_nonce.value(),
             fenced_frame->current_frame_host()->storage_key().nonce().value());

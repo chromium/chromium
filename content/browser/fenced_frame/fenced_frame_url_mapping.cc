@@ -155,13 +155,20 @@ FencedFrameURLMapping::MapInfo& FencedFrameURLMapping::MapInfo::operator=(
 FencedFrameURLMapping::MapInfo& FencedFrameURLMapping::MapInfo::operator=(
     MapInfo&&) = default;
 
+FencedFrameURLMapping::FencedFrameProperties::FencedFrameProperties()
+    : ad_auction_data(absl::nullopt),
+      pending_ad_components_map(absl::nullopt),
+      shared_storage_budget_metadata(absl::nullopt),
+      partition_nonce(base::UnguessableToken::Create()) {}
+
 FencedFrameURLMapping::FencedFrameProperties::FencedFrameProperties(
     const MapInfo& map_info)
     : mapped_url(map_info.mapped_url),
       ad_auction_data(map_info.ad_auction_data),
       pending_ad_components_map(absl::nullopt),
       shared_storage_budget_metadata(absl::nullopt),
-      reporting_metadata(map_info.reporting_metadata) {
+      reporting_metadata(map_info.reporting_metadata),
+      partition_nonce(base::UnguessableToken::Create()) {
   if (map_info.shared_storage_budget_metadata) {
     shared_storage_budget_metadata =
         &map_info.shared_storage_budget_metadata.value();

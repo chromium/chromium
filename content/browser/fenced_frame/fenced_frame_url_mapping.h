@@ -177,6 +177,14 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // `FrameTreeNode`, and live between embedder-initiated fenced frame
   // navigations.
   struct FencedFrameProperties {
+    // The empty constructor is used for:
+    // * pre-navigation fenced frames
+    // * embedder-initiated non-opaque url navigations
+    // All fields are empty, except a randomly generated partition nonce.
+    FencedFrameProperties();
+
+    // For opaque url navigations, the properties should be constructed from
+    // a `MapInfo` that was previously created.
     explicit FencedFrameProperties(const MapInfo& map_info);
     FencedFrameProperties(const FencedFrameProperties&);
     FencedFrameProperties(FencedFrameProperties&&);
@@ -207,6 +215,8 @@ class CONTENT_EXPORT FencedFrameURLMapping {
         shared_storage_budget_metadata;
 
     ReportingMetadata reporting_metadata;
+
+    absl::optional<base::UnguessableToken> partition_nonce;
   };
 
   class MappingResultObserver {

@@ -379,7 +379,7 @@ FrameTreeNode* FrameTree::AddFrame(
       std::move(new_node), new_routing_id, std::move(frame_remote), frame_token,
       document_token, frame_policy, frame_name, frame_unique_name);
 
-  added_node->SetFencedFrameNonceIfNeeded();
+  added_node->SetFencedFramePropertiesIfNeeded();
 
   if (browser_interface_broker_receiver.is_valid()) {
     added_node->current_frame_host()->BindBrowserInterfaceBrokerReceiver(
@@ -773,7 +773,7 @@ void FrameTree::Init(SiteInstance* main_frame_site_instance,
   root_->render_manager()->InitRoot(main_frame_site_instance,
                                     renderer_initiated_creation, frame_policy,
                                     main_frame_name);
-  root_->SetFencedFrameNonceIfNeeded();
+  root_->SetFencedFramePropertiesIfNeeded();
 
   // The initial empty document should inherit the origin of its opener (the
   // origin may change after the first commit), except when they are in

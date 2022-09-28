@@ -3868,9 +3868,10 @@ void RenderFrameHostImpl::DidNavigate(
           ? url::Origin::Create(navigation_request->GetWebBundleURL())
           : GetLastCommittedOrigin();
 
-  isolation_info_ =
-      ComputeIsolationInfoInternal(origin, isolation_info_.request_type(),
-                                   navigation_request->is_anonymous());
+  isolation_info_ = ComputeIsolationInfoInternal(
+      origin, isolation_info_.request_type(),
+      navigation_request->is_anonymous(),
+      navigation_request->ComputeFencedFrameNonce());
 
   // Separately, update the frame's last successful URL except for net error
   // pages, since those do not end up in the correct process after transfers
@@ -3967,25 +3968,31 @@ void RenderFrameHostImpl::SetStorageKey(const blink::StorageKey& storage_key) {
 
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
     const GURL& destination) {
-  return ComputeIsolationInfoForNavigation(destination, IsAnonymous());
+  return ComputeIsolationInfoForNavigation(
+      destination, IsAnonymous(),
+      /*fenced_frame_nonce_for_navigation=*/absl::nullopt);
 }
 
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
     const GURL& destination,
-    bool is_anonymous) {
+    bool is_anonymous,
+    absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation) {
   net::IsolationInfo::RequestType request_type =
       is_main_frame() ? net::IsolationInfo::RequestType::kMainFrame
                       : net::IsolationInfo::RequestType::kSubFrame;
   return ComputeIsolationInfoInternal(url::Origin::Create(destination),
-                                      request_type, is_anonymous);
+                                      request_type, is_anonymous,
+                                      fenced_frame_nonce_for_navigation);
 }
 
 net::IsolationInfo
 RenderFrameHostImpl::ComputeIsolationInfoForSubresourcesForPendingCommit(
     const url::Origin& main_world_origin,
-    bool is_anonymous) {
+    bool is_anonymous,
+    absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation) {
   return ComputeIsolationInfoInternal(
-      main_world_origin, net::IsolationInfo::RequestType::kOther, is_anonymous);
+      main_world_origin, net::IsolationInfo::RequestType::kOther, is_anonymous,
+      fenced_frame_nonce_for_navigation);
 }
 
 net::SiteForCookies RenderFrameHostImpl::ComputeSiteForCookies() {
@@ -3995,7 +4002,8 @@ net::SiteForCookies RenderFrameHostImpl::ComputeSiteForCookies() {
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     const url::Origin& frame_origin,
     net::IsolationInfo::RequestType request_type,
-    bool is_anonymous) {
+    bool is_anonymous,
+    absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation) {
   url::Origin top_frame_origin = ComputeTopFrameOrigin(frame_origin);
   net::SchemefulSite top_frame_site = net::SchemefulSite(top_frame_origin);
 
@@ -4038,17 +4046,34 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     candidate_site_for_cookies = net::SiteForCookies(top_frame_site);
   }
 
-  absl::optional<base::UnguessableToken> nonce = ComputeNonce(is_anonymous);
+  absl::optional<base::UnguessableToken> nonce =
+      ComputeNonce(is_anonymous, fenced_frame_nonce_for_navigation);
   return net::IsolationInfo::Create(
       request_type, top_frame_origin, frame_origin, candidate_site_for_cookies,
       std::move(party_context), nonce ? &nonce.value() : nullptr);
 }
 
 absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
-    bool is_anonymous) {
+    bool is_anonymous,
+    absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation) {
   // If it's an anonymous frame tree, use its nonce even if it's within a fenced
   // frame tree to maintain the guarantee that an anonymous frame tree has
-  // a unique nonce. Otherwise, use the fenced frame nonce for fenced frames.
+  // a unique nonce.
+  if (is_anonymous) {
+    RenderFrameHostImpl* main_rfh = this;
+    while (main_rfh->parent_ && !main_rfh->IsFencedFrameRoot()) {
+      main_rfh = main_rfh->parent_;
+    }
+    return main_rfh->anonymous_iframes_nonce();
+  }
+
+  // Otherwise, use the fenced frame nonce for this navigation.
+  // If this call is for a pending navigation, the fenced frame nonce should
+  // have been computed with `NavigationRequest::ComputeFencedFrameNonce()`
+  // and passed in `fenced_frame_nonce_for_navigation`.
+  // If there is no navigation associated with this call, then we get the nonce
+  // from this RFHI's FrameTreeNode with FrameTreeNode::GetFencedFrameNonce().
+  //
   // Note that MPArch will ensure that fenced frame tree within an anonymous
   // iframe does not have `is_anonymous` set to true. The ShadowDOM architecture
   // cannot make the same guarantee that MPArch will, and therefore the shadow
@@ -4059,14 +4084,10 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
   // frame, we get the anonymous_iframes_nonce of the fenced frame root to
   // prevent anonymous iframes embedded inside a fenced frame from sharing nonce
   // with anonymous iframes outside the fenced frame.
-  if (is_anonymous) {
-    RenderFrameHostImpl* main_rfh = this;
-    while (main_rfh->parent_ && !main_rfh->IsFencedFrameRoot()) {
-      main_rfh = main_rfh->parent_;
-    }
-    return main_rfh->anonymous_iframes_nonce();
+  if (fenced_frame_nonce_for_navigation.has_value()) {
+    return fenced_frame_nonce_for_navigation;
   }
-  return frame_tree_node_->fenced_frame_nonce();
+  return frame_tree_node_->GetFencedFrameNonce();
 }
 
 blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
@@ -4140,7 +4161,8 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
                                      ? new_frame_creator.DeriveNewOpaqueOrigin()
                                      : new_frame_creator;
   isolation_info_ = ComputeIsolationInfoInternal(
-      new_frame_origin, net::IsolationInfo::RequestType::kOther, IsAnonymous());
+      new_frame_origin, net::IsolationInfo::RequestType::kOther, IsAnonymous(),
+      /*fenced_frame_nonce_for_navigation=*/absl::nullopt);
   SetLastCommittedOrigin(new_frame_origin);
 
   SetStorageKey(CalculateStorageKey(
@@ -11044,7 +11066,8 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
   DCHECK(!is_same_document_history_api_navigation || is_same_document);
 
   net::IsolationInfo isolation_info = ComputeIsolationInfoInternal(
-      origin, net::IsolationInfo::RequestType::kOther, IsAnonymous());
+      origin, net::IsolationInfo::RequestType::kOther, IsAnonymous(),
+      /*fenced_frame_nonce_for_navigation=*/absl::nullopt);
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter;
   // We don't switch the COEP reporter on same-document navigations, so create

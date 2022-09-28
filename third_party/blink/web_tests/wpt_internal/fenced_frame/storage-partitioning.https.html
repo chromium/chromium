@@ -39,6 +39,17 @@ async function runTest(getter, setter) {
   assert_equals(getter(key), outer_value,
       "The inner value isn't visible outside the fenced frame.");
 
+  // Perform an embedder-initiated navigation that will fail.
+  const original_url = frame.src;
+  frame.src = "resources/response-204.py";
+  await step_timeout(() => {}, 1000);
+
+  // Check that the failed navigation didn't change the storage partition.
+  // (The partition nonce should be reinitialized on navigation commit.)
+  const inner_after_failure = await frame.execute(getter, [key]);
+  assert_equals(inner_after_failure, inner_value,
+      "The inner value is still present after the failed navigation.");
+
   // Refresh the fenced frame from within.
   await frame.execute(() => {
     window.executor.suspend(() => { location.href = location.href; });
@@ -51,7 +62,7 @@ async function runTest(getter, setter) {
 
   // Refresh the fenced frame from the embedder.
   await frame.execute(() => window.executor.suspend(() => {}));
-  frame.element.src = frame.element.src;
+  frame.element.src = original_url;
 
   // Check that there is a blank slate.
   const inner_after_embedder_refresh = await frame.execute(getter, [key]);
