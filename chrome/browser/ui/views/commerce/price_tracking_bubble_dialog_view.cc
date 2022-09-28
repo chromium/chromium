@@ -44,6 +44,7 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
     content::WebContents* web_contents,
     Profile* profile,
     const GURL& url,
+    ui::ImageModel image_model,
     OnTrackPriceCallback on_track_price_callback,
     Type type)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
@@ -101,6 +102,7 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
     body_label_->AddStyleRange(
         gfx::Range(offset, offset + folder_name.length()), style_info);
   }
+  SetMainImage(std::move(image_model));
 }
 
 PriceTrackingBubbleDialogView::~PriceTrackingBubbleDialogView() = default;
@@ -135,12 +137,14 @@ void PriceTrackingBubbleCoordinator::Show(
     content::WebContents* web_contents,
     Profile* profile,
     const GURL& url,
+    ui::ImageModel image_model,
     PriceTrackingBubbleDialogView::OnTrackPriceCallback callback,
     PriceTrackingBubbleDialogView::Type type) {
   DCHECK(!tracker_.view());
 
   auto bubble = std::make_unique<PriceTrackingBubbleDialogView>(
-      anchor_view_, web_contents, profile, url, std::move(callback), type);
+      anchor_view_, web_contents, profile, url, std::move(image_model),
+      std::move(callback), type);
   tracker_.SetView(bubble.get());
   PriceTrackingBubbleDialogView::CreateBubble(std::move(bubble))->Show();
 }

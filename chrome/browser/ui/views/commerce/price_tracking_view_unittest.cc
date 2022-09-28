@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/test/test_platform_native_widget.h"
@@ -75,8 +76,13 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
   }
 
   raw_ptr<PriceTrackingView> CreateViewAndShow(bool is_price_track_enabled) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(1, 1);
+    const auto valid_product_image =
+        gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
     auto price_tracking_View = std::make_unique<PriceTrackingView>(
-        profile(), GURL(kTestURL), is_price_track_enabled);
+        profile(), GURL(kTestURL),
+        ui::ImageModel::FromImage(valid_product_image), is_price_track_enabled);
     price_tracking_View_ =
         anchor_widget_->SetContentsView(std::move(price_tracking_View));
     anchor_widget_->Show();
@@ -128,16 +134,16 @@ TEST_F(PriceTrackingViewTest, InitialPriceTrackEnabled) {
   const bool enabled = true;
   CreateViewAndShow(enabled);
   VerifyToggleState(enabled);
-  VerifyBodyMessage(
-      l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION));
+  VerifyBodyMessage(l10n_util::GetStringUTF16(
+      IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION));
 }
 
 TEST_F(PriceTrackingViewTest, InitialPriceTrackDisabled) {
   const bool enabled = false;
   CreateViewAndShow(enabled);
   VerifyToggleState(enabled);
-  VerifyBodyMessage(
-      l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION));
+  VerifyBodyMessage(l10n_util::GetStringUTF16(
+      IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION));
 }
 
 TEST_F(PriceTrackingViewTest, ToggleSuccessed) {
@@ -146,8 +152,8 @@ TEST_F(PriceTrackingViewTest, ToggleSuccessed) {
   const bool initial_enabled = false;
   CreateViewAndShow(initial_enabled);
   VerifyToggleState(initial_enabled);
-  VerifyBodyMessage(
-      l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION));
+  VerifyBodyMessage(l10n_util::GetStringUTF16(
+      IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION));
 
   static_cast<commerce::MockShoppingService*>(
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile()))
@@ -155,8 +161,8 @@ TEST_F(PriceTrackingViewTest, ToggleSuccessed) {
 
   ClickToggle();
   VerifyToggleState(!initial_enabled);
-  VerifyBodyMessage(
-      l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION));
+  VerifyBodyMessage(l10n_util::GetStringUTF16(
+      IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION));
 }
 
 TEST_F(PriceTrackingViewTest, ToggleFailed) {
@@ -165,8 +171,8 @@ TEST_F(PriceTrackingViewTest, ToggleFailed) {
   const bool initial_enabled = false;
   CreateViewAndShow(initial_enabled);
   VerifyToggleState(initial_enabled);
-  VerifyBodyMessage(
-      l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION));
+  VerifyBodyMessage(l10n_util::GetStringUTF16(
+      IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION));
 
   static_cast<commerce::MockShoppingService*>(
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile()))

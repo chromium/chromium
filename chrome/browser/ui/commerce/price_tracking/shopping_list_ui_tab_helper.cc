@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 
 #include "base/bind.h"
+#include "base/check_is_test.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -64,9 +65,13 @@ ShoppingListUiTabHelper::ShoppingListUiTabHelper(
       content::WebContentsUserData<ShoppingListUiTabHelper>(*content),
       shopping_service_(shopping_service),
       prefs_(prefs) {
-  // TODO(1360846): Consider using the in-memory cache instead.
-  image_fetcher_ = image_fetcher_service->GetImageFetcher(
-      image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+  if (image_fetcher_service) {
+    // TODO(1360846): Consider using the in-memory cache instead.
+    image_fetcher_ = image_fetcher_service->GetImageFetcher(
+        image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+  } else {
+    CHECK_IS_TEST();
+  }
   scoped_observation_.Observe(
       BookmarkModelFactory::GetForBrowserContext(content->GetBrowserContext()));
 }
@@ -80,7 +85,11 @@ void ShoppingListUiTabHelper::RegisterProfilePrefs(
 }
 
 void ShoppingListUiTabHelper::PrimaryPageChanged(content::Page& page) {
-  if (!shopping_service_ || !IsShoppingListAllowedForEnterprise(prefs_))
+  last_fetched_image_ = gfx::Image();
+  last_fetched_image_url_ = GURL();
+
+  if (!shopping_service_ || !prefs_ ||
+      !IsShoppingListAllowedForEnterprise(prefs_))
     return;
 
   // Cancel any pending callbacks by invalidating any weak pointers.
@@ -90,6 +99,8 @@ void ShoppingListUiTabHelper::PrimaryPageChanged(content::Page& page) {
       web_contents()->GetLastCommittedURL(),
       base::BindOnce(&ShoppingListUiTabHelper::HandleProductInfoResponse,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  UpdatePriceTrackingIconView();
 }
 
 void ShoppingListUiTabHelper::BookmarkModelChanged() {}
@@ -100,6 +111,10 @@ void ShoppingListUiTabHelper::BookmarkMetaInfoChanged(
   if (!commerce::IsProductBookmark(model, node))
     return;
   UpdatePriceTrackingIconView();
+}
+
+bool ShoppingListUiTabHelper::ShouldShowPriceTrackingIconView() {
+  return !last_fetched_image_.IsEmpty();
 }
 
 void ShoppingListUiTabHelper::HandleProductInfoResponse(
@@ -131,7 +146,7 @@ void ShoppingListUiTabHelper::HandleImageFetcherResponse(
   last_fetched_image_url_ = image_url;
   last_fetched_image_ = image;
 
-  // TODO(meiliang): Trigger UI here.
+  UpdatePriceTrackingIconView();
 }
 
 const gfx::Image& ShoppingListUiTabHelper::GetProductImage() {

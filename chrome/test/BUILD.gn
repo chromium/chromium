@@ -3289,6 +3289,8 @@ if (!is_android) {
     }
     if (toolkit_views) {
       sources += [
+        "../browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.cc",
+        "../browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h",
         "../browser/ui/global_error/global_error_browsertest.cc",
         "../browser/ui/global_error/global_error_service_browsertest.cc",
         "../browser/ui/media_router/presentation_receiver_window_controller_browsertest.cc",
@@ -8707,6 +8709,8 @@ test("unit_tests") {
     sources += [
       "../../ui/views/controls/webview/web_dialog_view_unittest.cc",
       "../../ui/views/controls/webview/webview_unittest.cc",
+      "../browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.cc",
+      "../browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h",
       "../browser/ui/media_router/media_route_starter_unittest.cc",
       "../browser/ui/media_router/media_router_ui_unittest.cc",
       "../browser/ui/views/accelerator_table_unittest.cc",
@@ -9616,6 +9620,8 @@ if (!is_android) {
 
     if (toolkit_views) {
       sources += [
+        "../browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.cc",
+        "../browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h",
         "../browser/ui/read_later/read_later_test_utils.cc",
         "../browser/ui/read_later/read_later_test_utils.h",
         "../browser/ui/toolbar/app_menu_model_interactive_uitest.cc",

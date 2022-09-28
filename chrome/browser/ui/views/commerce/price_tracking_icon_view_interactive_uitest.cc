@@ -8,6 +8,7 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -57,6 +58,17 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
 
     bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kTestURL),
                                   std::u16string());
+
+    MockShoppingListUiTabHelper::CreateForWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    mock_tab_helper_ = static_cast<MockShoppingListUiTabHelper*>(
+        MockShoppingListUiTabHelper::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents()));
+    EXPECT_CALL(*mock_tab_helper_, GetProductImage);
+    const gfx::Image image = mock_tab_helper_->GetValidProductImage();
+    ON_CALL(*mock_tab_helper_, GetProductImage)
+        .WillByDefault(
+            testing::ReturnRef(mock_tab_helper_->GetValidProductImage()));
   }
 
   PriceTrackingIconView* GetChip() {
@@ -89,6 +101,9 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
     commerce::AddProductBookmark(bookmark_model, u"title", GURL(kTestURL), 0,
                                  is_price_tracked);
   }
+
+ protected:
+  raw_ptr<MockShoppingListUiTabHelper> mock_tab_helper_;
 
  private:
   base::test::ScopedFeatureList test_features_;
@@ -129,7 +144,6 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
 
   ClickPriceTrackingIconView();
   EXPECT_TRUE(icon_view->GetBubble());
-
   auto* widget = GetChip()->GetBubble()->GetWidget();
   views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
   widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
@@ -137,6 +151,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
   EXPECT_FALSE(icon_view->GetBubble());
 
   // Click the icon again to reshow the bubble.
+  EXPECT_CALL(*mock_tab_helper_, GetProductImage);
   ClickPriceTrackingIconView();
   EXPECT_TRUE(icon_view->GetBubble());
 }

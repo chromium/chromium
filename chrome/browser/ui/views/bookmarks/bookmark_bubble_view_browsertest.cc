@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -63,6 +64,16 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
     if (name == "bookmark_details_on_trackable_product") {
       mock_shopping_service_->SetResponseForGetProductInfoForUrl(
           commerce::ProductInfo());
+      MockShoppingListUiTabHelper::CreateForWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
+      MockShoppingListUiTabHelper* mock_tab_helper =
+          static_cast<MockShoppingListUiTabHelper*>(
+              MockShoppingListUiTabHelper::FromWebContents(
+                  browser()->tab_strip_model()->GetActiveWebContents()));
+      EXPECT_CALL(*mock_tab_helper, GetProductImage);
+      ON_CALL(*mock_tab_helper, GetProductImage)
+          .WillByDefault(
+              testing::ReturnRef(mock_tab_helper->GetValidProductImage()));
     }
 
     const GURL url = GURL("https://www.google.com");

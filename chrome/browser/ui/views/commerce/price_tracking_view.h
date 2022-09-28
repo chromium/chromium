@@ -16,6 +16,7 @@ class PriceTrackingView : public views::FlexLayoutView {
  public:
   PriceTrackingView(Profile* profile,
                     GURL page_url,
+                    ui::ImageModel product_image,
                     bool is_price_track_enabled);
   ~PriceTrackingView() override;
 

@@ -29,6 +29,7 @@ class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
                                 content::WebContents* web_contents,
                                 Profile* profile,
                                 const GURL& url,
+                                ui::ImageModel image_model,
                                 OnTrackPriceCallback on_track_price_callback,
                                 Type type);
   ~PriceTrackingBubbleDialogView() override;
@@ -56,6 +57,7 @@ class PriceTrackingBubbleCoordinator {
   void Show(content::WebContents* web_contents,
             Profile* profile,
             const GURL& url,
+            ui::ImageModel image_model,
             PriceTrackingBubbleDialogView::OnTrackPriceCallback callback,
             PriceTrackingBubbleDialogView::Type type);
 

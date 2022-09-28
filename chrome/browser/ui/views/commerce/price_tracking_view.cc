@@ -31,27 +31,26 @@ constexpr int kHorizontalSpacing = 16;
 
 PriceTrackingView::PriceTrackingView(Profile* profile,
                                      GURL page_url,
+                                     ui::ImageModel product_image,
                                      bool is_price_track_enabled)
     : profile_(profile), is_price_track_enabled_(is_price_track_enabled) {
   // image column
-  auto product_image_containter = std::make_unique<views::BoxLayoutView>();
+  auto* product_image_containter =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
   product_image_containter->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   product_image_containter->SetProperty(
       views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, kHorizontalSpacing));
-  // place holder product image
-  auto* placeholder = product_image_containter->AddChildView(
-      std::make_unique<views::ImageView>());
-  placeholder->SetImageSize(gfx::Size(kProductImageSize, kProductImageSize));
-  placeholder->SetPreferredSize(
-      gfx::Size(kProductImageSize, kProductImageSize));
-  // TODO(meiliang@): Use correct color and corner radius.
-  placeholder->SetBorder(views::CreateRoundedRectBorder(
-      1, 4, SkColorSetA(gfx::kGoogleGrey900, 0x24)));
-  placeholder->SetBackground(
-      views::CreateSolidBackground(SkColorSetA(gfx::kGoogleGrey900, 0x24)));
-  AddChildView(std::move(product_image_containter));
-  // TODO(meiliang): Use image fetcher to fetch image.
+  // Set product image.
+  product_image_containter->AddChildView(
+      views::Builder<views::ImageView>()
+          .SetImageSize(gfx::Size(kProductImageSize, kProductImageSize))
+          .SetPreferredSize(gfx::Size(kProductImageSize, kProductImageSize))
+          // TODO(meiliang@): Verify color and corner radius with UX.
+          .SetBorder(views::CreateRoundedRectBorder(
+              1, 4, SkColorSetA(gfx::kGoogleGrey900, 0x24)))
+          .SetImage(product_image)
+          .Build());
 
   // Text column
   auto text_container = std::make_unique<views::FlexLayoutView>();
@@ -64,7 +63,8 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   // Body label
   body_label_ = text_container->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION),
+      l10n_util::GetStringUTF16(
+          IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
   body_label_->SetProperty(views::kMarginsKey,
                            gfx::Insets::TLBR(kLableSpacing, 0, 0, 0));
