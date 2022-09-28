@@ -48,33 +48,6 @@ bool ParseCommaSeparatedIntegers(const std::string& str,
   return true;
 }
 
-class WindowPlacementPrefUpdate : public DictionaryPrefUpdate {
- public:
-  WindowPlacementPrefUpdate(PrefService* service,
-                            const std::string& window_name)
-      : DictionaryPrefUpdate(service, prefs::kAppWindowPlacement),
-        window_name_(window_name) {}
-
-  WindowPlacementPrefUpdate(const WindowPlacementPrefUpdate&) = delete;
-  WindowPlacementPrefUpdate& operator=(const WindowPlacementPrefUpdate&) =
-      delete;
-
-  ~WindowPlacementPrefUpdate() override {}
-
-  base::Value* Get() override {
-    base::Value* all_apps_dict = DictionaryPrefUpdate::Get();
-    base::Value* this_app_dict = all_apps_dict->FindDictPath(window_name_);
-    if (!this_app_dict) {
-      this_app_dict = all_apps_dict->SetPath(
-          window_name_, base::Value(base::Value::Type::DICTIONARY));
-    }
-    return this_app_dict;
-  }
-
- private:
-  const std::string window_name_;
-};
-
 }  // namespace
 
 std::string GetWindowName(const Browser* browser) {
@@ -95,15 +68,32 @@ std::string GetWindowName(const Browser* browser) {
   }
 }
 
-std::unique_ptr<DictionaryPrefUpdate> GetWindowPlacementDictionaryReadWrite(
+base::Value::Dict& GetWindowPlacementDictionaryReadWrite(
     const std::string& window_name,
-    PrefService* prefs) {
+    PrefService* prefs,
+    std::unique_ptr<ScopedDictPrefUpdate>& scoped_update) {
   DCHECK(!window_name.empty());
-  // A normal DictionaryPrefUpdate will suffice for non-app windows.
+  // Non-app window placements each use their own per-window-name dictionary
+  // preference, so can make a ScopedDictPrefUpdate for the relevant preference,
+  // and return its dictionary directly.
   if (prefs->FindPreference(window_name)) {
-    return std::make_unique<DictionaryPrefUpdate>(prefs, window_name);
+    scoped_update = std::make_unique<ScopedDictPrefUpdate>(prefs, window_name);
+    return scoped_update->Get();
   }
-  return std::make_unique<WindowPlacementPrefUpdate>(prefs, window_name);
+
+  // The window placements for all apps are stored in a single dictionary
+  // preference, with per-window-name nested dictionaries, so need to make
+  // ScopedDictPrefUpdate and then find the relevant dictionary within it, based
+  // on window name.
+  scoped_update =
+      std::make_unique<ScopedDictPrefUpdate>(prefs, prefs::kAppWindowPlacement);
+  base::Value::Dict* this_app_dict =
+      (*scoped_update)->FindDictByDottedPath(window_name);
+  if (this_app_dict)
+    return *this_app_dict;
+  return (*scoped_update)
+      ->SetByDottedPath(window_name, base::Value::Dict())
+      ->GetDict();
 }
 
 const base::Value::Dict* GetWindowPlacementDictionaryReadOnly(
