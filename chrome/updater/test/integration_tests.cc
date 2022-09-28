@@ -902,24 +902,22 @@ TEST_F(IntegrationTest, RecoveryNoUpdater) {
   ExpectAppVersion(appid, version);
   Uninstall();
 }
-// TODO(crbug.com/1362145) - reenable when stable.
-TEST_F(IntegrationTest, DISABLED_OfflineInstall) {
+
+TEST_F(IntegrationTest, OfflineInstall) {
   Install();
   ExpectInstalled();
   RunOfflineInstall(/*is_legacy_install=*/false, /*is_silent_install=*/false);
   Uninstall();
 }
 
-// TODO(crbug.com/1362145) - reenable when stable.
-TEST_F(IntegrationTest, DISABLED_SilentOfflineInstall) {
+TEST_F(IntegrationTest, SilentOfflineInstall) {
   Install();
   ExpectInstalled();
   RunOfflineInstall(/*is_legacy_install=*/false, /*is_silent_install=*/true);
   Uninstall();
 }
 
-// TODO(crbug.com/1362145) - reenable when stable.
-TEST_F(IntegrationTest, DISABLED_LegacySilentOfflineInstall) {
+TEST_F(IntegrationTest, LegacySilentOfflineInstall) {
   Install();
   ExpectInstalled();
   RunOfflineInstall(/*is_legacy_install=*/true, /*is_silent_install=*/true);
