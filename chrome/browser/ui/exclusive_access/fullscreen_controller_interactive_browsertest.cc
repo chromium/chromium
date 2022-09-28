@@ -1077,14 +1077,14 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 
 // TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
-// display::Screen configuration used in this test. Disabled on Mac and Linux,
-// where the window server's async handling of the fullscreen window state may
-// transition the window into fullscreen on the actual (non-mocked) display
-// bounds before or after the window bounds checks, yielding flaky results.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_SeparateDisplayAndSwap DISABLED_SeparateDisplayAndSwap
-#else
+// display::Screen configuration used in this test. Disabled on Linux, where the
+// window server's async handling of the fullscreen window state may transition
+// the window into fullscreen on the actual (non-mocked) display bounds before
+// or after the window bounds checks, yielding flaky results.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_SeparateDisplayAndSwap SeparateDisplayAndSwap
+#else
+#define MAYBE_SeparateDisplayAndSwap DISABLED_SeparateDisplayAndSwap
 #endif
 // Test requesting fullscreen on a separate display and then swapping displays.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
@@ -1094,15 +1094,18 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 
   // Execute JS to request fullscreen on the second display (on the right).
   RequestContentFullscreenOnScreen(1);
-  EXPECT_EQ(gfx::Rect(800, 0, 800, 800), browser()->window()->GetBounds());
+  const display::Screen* screen = display::Screen::GetScreen();
+  const auto second_display = screen->GetAllDisplays()[1];
+  EXPECT_EQ(second_display.bounds(), browser()->window()->GetBounds());
 
   // Execute JS to change fullscreen screens back to the original.
   RequestContentFullscreenOnScreen(0);
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 800), browser()->window()->GetBounds());
+  const auto first_display = screen->GetAllDisplays()[0];
+  EXPECT_EQ(first_display.bounds(), browser()->window()->GetBounds());
 
   // Go back to the second display, just for good measure.
   RequestContentFullscreenOnScreen(1);
-  EXPECT_EQ(gfx::Rect(800, 0, 800, 800), browser()->window()->GetBounds());
+  EXPECT_EQ(second_display.bounds(), browser()->window()->GetBounds());
 
   ExitContentFullscreen();
   EXPECT_EQ(original_bounds, browser()->window()->GetBounds());
