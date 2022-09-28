@@ -110,14 +110,6 @@ bool IsOptimizationTypeAllowed(const google::protobuf::RepeatedPtrField<
     // metadata if applicable and return.
     if (optimization_metadata) {
       switch (optimization.metadata_case()) {
-        case proto::Optimization::kPerformanceHintsMetadata:
-          optimization_metadata->set_performance_hints_metadata(
-              optimization.performance_hints_metadata());
-          break;
-        case proto::Optimization::kPublicImageMetadata:
-          optimization_metadata->set_public_image_metadata(
-              optimization.public_image_metadata());
-          break;
         case proto::Optimization::kLoadingPredictorMetadata:
           optimization_metadata->set_loading_predictor_metadata(
               optimization.loading_predictor_metadata());
@@ -1686,12 +1678,6 @@ void HintsManager::AddHintForTesting(
   if (metadata->loading_predictor_metadata()) {
     *optimization->mutable_loading_predictor_metadata() =
         *metadata->loading_predictor_metadata();
-  } else if (metadata->performance_hints_metadata()) {
-    *optimization->mutable_performance_hints_metadata() =
-        *metadata->performance_hints_metadata();
-  } else if (metadata->public_image_metadata()) {
-    *optimization->mutable_public_image_metadata() =
-        *metadata->public_image_metadata();
   } else if (metadata->any_metadata()) {
     *optimization->mutable_any_metadata() = *metadata->any_metadata();
   } else {

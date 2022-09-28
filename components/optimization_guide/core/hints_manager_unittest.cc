@@ -101,7 +101,7 @@ std::unique_ptr<proto::GetHintsResponse> BuildHintsResponse(
     page_hint->set_page_pattern(url);
     proto::Optimization* opt = page_hint->add_allowlisted_optimizations();
     opt->set_optimization_type(proto::COMPRESS_PUBLIC_IMAGES);
-    opt->mutable_public_image_metadata()->add_url("someurl");
+    opt->mutable_any_metadata()->set_type_url("someurl");
   }
   return get_hints_response;
 }
@@ -1251,39 +1251,6 @@ TEST_F(HintsManagerTest, CanApplyOptimizationHasPageHintButNoMatchingOptType) {
             optimization_type_decision);
 }
 
-TEST_F(HintsManagerTest, CanApplyOptimizationAndPopulatesPublicImageMetadata) {
-  hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
-  proto::Configuration config;
-  proto::Hint* hint = config.add_hints();
-  hint->set_key("somedomain.org");
-  hint->set_key_representation(proto::HOST);
-  hint->set_version("someversion");
-  proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->set_page_pattern("/news/");
-  proto::Optimization* opt = page_hint->add_allowlisted_optimizations();
-  opt->set_optimization_type(proto::COMPRESS_PUBLIC_IMAGES);
-  opt->mutable_public_image_metadata()->add_url("someimage");
-
-  ProcessHints(config, "1.0.0.0");
-
-  auto navigation_data = CreateTestNavigationData(
-      url_with_hints(), {proto::COMPRESS_PUBLIC_IMAGES});
-  base::RunLoop run_loop;
-  CallOnNavigationStartOrRedirect(navigation_data.get(),
-                                  run_loop.QuitClosure());
-  run_loop.Run();
-
-  OptimizationMetadata optimization_metadata;
-  OptimizationTypeDecision optimization_type_decision =
-      hints_manager()->CanApplyOptimization(navigation_data->navigation_url(),
-                                            proto::COMPRESS_PUBLIC_IMAGES,
-                                            &optimization_metadata);
-  // Make sure public images metadata is populated.
-  EXPECT_TRUE(optimization_metadata.public_image_metadata().has_value());
-  EXPECT_EQ(OptimizationTypeDecision::kAllowedByHint,
-            optimization_type_decision);
-}
-
 TEST_F(HintsManagerTest,
        CanApplyOptimizationAndPopulatesLoadingPredictorMetadata) {
   hints_manager()->RegisterOptimizationTypes({proto::LOADING_PREDICTOR});
@@ -1388,20 +1355,11 @@ TEST_F(HintsManagerTest,
 
   hints_manager()->RegisterOptimizationTypes({proto::NOSCRIPT});
   OptimizationMetadata optimization_metadata;
-
-  proto::PerformanceHintsMetadata hints_metadata;
-  auto* hint = hints_metadata.add_performance_hints();
-  hint->set_wildcard_pattern("test.com");
-  hint->set_performance_class(proto::PERFORMANCE_SLOW);
-  OptimizationMetadata metadata;
-  optimization_metadata.set_performance_hints_metadata(hints_metadata);
-
   OptimizationTypeDecision optimization_type_decision =
       hints_manager()->CanApplyOptimization(navigation_data->navigation_url(),
                                             proto::NOSCRIPT,
                                             &optimization_metadata);
 
-  EXPECT_FALSE(optimization_metadata.performance_hints_metadata().has_value());
   EXPECT_EQ(OptimizationTypeDecision::kNoHintAvailable,
             optimization_type_decision);
 }
@@ -2323,7 +2281,7 @@ TEST_F(HintsManagerFetchingTest,
   // a URL-keyed hint.
   EXPECT_EQ(OptimizationTypeDecision::kAllowedByHint,
             optimization_type_decision);
-  EXPECT_TRUE(optimization_metadata.public_image_metadata().has_value());
+  EXPECT_TRUE(optimization_metadata.any_metadata().has_value());
 }
 
 TEST_F(HintsManagerFetchingTest,
@@ -2671,7 +2629,7 @@ TEST_F(HintsManagerFetchingTest,
       base::BindOnce([](OptimizationGuideDecision decision,
                         const OptimizationMetadata& metadata) {
         EXPECT_EQ(OptimizationGuideDecision::kTrue, decision);
-        EXPECT_TRUE(metadata.public_image_metadata().has_value());
+        EXPECT_TRUE(metadata.any_metadata().has_value());
       }));
   RunUntilIdle();
 
@@ -2699,14 +2657,14 @@ TEST_F(HintsManagerFetchingTest,
       base::BindOnce([](OptimizationGuideDecision decision,
                         const OptimizationMetadata& metadata) {
         EXPECT_EQ(OptimizationGuideDecision::kTrue, decision);
-        EXPECT_TRUE(metadata.public_image_metadata().has_value());
+        EXPECT_TRUE(metadata.any_metadata().has_value());
       }));
   hints_manager()->CanApplyOptimizationAsync(
       url_with_url_keyed_hint(), proto::COMPRESS_PUBLIC_IMAGES,
       base::BindOnce([](OptimizationGuideDecision decision,
                         const OptimizationMetadata& metadata) {
         EXPECT_EQ(OptimizationGuideDecision::kTrue, decision);
-        EXPECT_TRUE(metadata.public_image_metadata().has_value());
+        EXPECT_TRUE(metadata.any_metadata().has_value());
       }));
   CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
   RunUntilIdle();
@@ -2796,7 +2754,7 @@ TEST_F(HintsManagerFetchingTest,
       base::BindOnce([](OptimizationGuideDecision decision,
                         const OptimizationMetadata& metadata) {
         EXPECT_EQ(OptimizationGuideDecision::kTrue, decision);
-        EXPECT_TRUE(metadata.public_image_metadata().has_value());
+        EXPECT_TRUE(metadata.any_metadata().has_value());
       }));
   RunUntilIdle();
 
@@ -3006,7 +2964,7 @@ TEST_F(HintsManagerFetchingTest,
       base::BindOnce([](OptimizationGuideDecision decision,
                         const OptimizationMetadata& metadata) {
         EXPECT_EQ(OptimizationGuideDecision::kTrue, decision);
-        EXPECT_TRUE(metadata.public_image_metadata().has_value());
+        EXPECT_TRUE(metadata.any_metadata().has_value());
       }));
   hints_manager()->OnNavigationFinish({url_with_url_keyed_hint()});
   RunUntilIdle();
@@ -3108,7 +3066,7 @@ TEST_F(HintsManagerFetchingTest,
             ASSERT_TRUE(it != decisions.end());
             EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
             EXPECT_TRUE(
-                it->second.metadata.public_image_metadata().has_value());
+                it->second.metadata.any_metadata().has_value());
 
             run_loop->Quit();
           },
@@ -3188,7 +3146,7 @@ TEST_F(
             ASSERT_TRUE(it != decisions.end());
             EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
             EXPECT_TRUE(
-                it->second.metadata.public_image_metadata().has_value());
+                it->second.metadata.any_metadata().has_value());
 
             it = decisions.find(proto::NOSCRIPT);
             ASSERT_TRUE(it != decisions.end());

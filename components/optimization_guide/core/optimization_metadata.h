@@ -41,24 +41,6 @@ class OptimizationMetadata {
   // used for testing purposes.
   void SetAnyMetadataForTesting(const google::protobuf::MessageLite& metadata);
 
-  const absl::optional<proto::PerformanceHintsMetadata>&
-  performance_hints_metadata() const {
-    return performance_hints_metadata_;
-  }
-  void set_performance_hints_metadata(
-      const proto::PerformanceHintsMetadata& performance_hints_metadata) {
-    performance_hints_metadata_ = performance_hints_metadata;
-  }
-
-  const absl::optional<proto::PublicImageMetadata>& public_image_metadata()
-      const {
-    return public_image_metadata_;
-  }
-  void set_public_image_metadata(
-      const proto::PublicImageMetadata& public_image_metadata) {
-    public_image_metadata_ = public_image_metadata;
-  }
-
   const absl::optional<proto::LoadingPredictorMetadata>&
   loading_predictor_metadata() const {
     return loading_predictor_metadata_;
@@ -70,8 +52,7 @@ class OptimizationMetadata {
 
   // Returns true if |this| contains no metadata.
   bool empty() const {
-    return !any_metadata_ && !performance_hints_metadata_ &&
-           !public_image_metadata_ && loading_predictor_metadata_;
+    return !any_metadata_ && !loading_predictor_metadata_;
   }
 
  private:
@@ -80,12 +61,6 @@ class OptimizationMetadata {
   // Optimization types that are not specifically specified below will have
   // metadata populated with this field.
   absl::optional<proto::Any> any_metadata_;
-
-  // Only applicable for the PERFORMANCE_HINTS optimization type.
-  absl::optional<proto::PerformanceHintsMetadata> performance_hints_metadata_;
-
-  // Only applicable for the COMPRESS_PUBLIC_IMAGES optimization type.
-  absl::optional<proto::PublicImageMetadata> public_image_metadata_;
 
   // Only applicable for the LOADING_PREDICTOR optimization type.
   absl::optional<proto::LoadingPredictorMetadata> loading_predictor_metadata_;
