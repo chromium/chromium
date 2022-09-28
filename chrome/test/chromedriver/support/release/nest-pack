@@ -70,7 +70,7 @@ fi
 
 zip -j $tgt/chromedriver_linux64.zip $src/chromedriver_linux64/chromedriver
 zip -j $tgt/chromedriver_mac64.zip $src/chromedriver_mac64/chromedriver
-zip -j $tgt/chromedriver_mac64_m1.zip $src/chromedriver_mac64_m1/chromedriver_mac64/chromedriver
+zip -j $tgt/chromedriver_mac_arm64.zip $src/chromedriver_mac_arm64/chromedriver_mac64/chromedriver
 zip -j $tgt/chromedriver_win32.zip $src/chromedriver_win32/chromedriver.exe
 echo -n "$version" > $tgt/latest
 cp "$path_to_notes" "$tgt/notes.txt"

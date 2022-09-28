@@ -32,7 +32,7 @@ fi
 
 gsutil cp $src/chromedriver_linux64.zip gs://chromedriver/$version/chromedriver_linux64.zip
 gsutil cp $src/chromedriver_mac64.zip gs://chromedriver/$version/chromedriver_mac64.zip
-gsutil cp $src/chromedriver_mac64_m1.zip gs://chromedriver/$version/chromedriver_mac64_m1.zip
+gsutil cp $src/chromedriver_mac_arm64.zip gs://chromedriver/$version/chromedriver_mac_arm64.zip
 gsutil cp $src/chromedriver_win32.zip gs://chromedriver/$version/chromedriver_win32.zip
 
 build=`echo $version | sed -E 's/\.[0-9]+$//'`

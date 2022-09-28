@@ -35,12 +35,12 @@ fi
 
 gsutil cp gs://chromedriver/$version/chromedriver_linux64.zip $published/chromedriver_linux64.zip
 gsutil cp gs://chromedriver/$version/chromedriver_mac64.zip $published/chromedriver_mac64.zip
-gsutil cp gs://chromedriver/$version/chromedriver_mac64_m1.zip $published/chromedriver_mac64_m1.zip
+gsutil cp gs://chromedriver/$version/chromedriver_mac_arm64.zip $published/chromedriver_mac_arm64.zip
 gsutil cp gs://chromedriver/$version/chromedriver_win32.zip $published/chromedriver_win32.zip
 gsutil cp gs://chromedriver/$version/notes.txt $published/notes.txt
 unzip $published/chromedriver_linux64.zip -d $published/chromedriver_linux64
 unzip $published/chromedriver_mac64.zip -d $published/chromedriver_mac64
-unzip $published/chromedriver_mac64_m1.zip -d $published/chromedriver_mac64_m1
+unzip $published/chromedriver_mac_arm64.zip -d $published/chromedriver_mac_arm64
 unzip $published/chromedriver_win32.zip -d $published/chromedriver_win32
 
 function compare_md5 {
@@ -67,7 +67,7 @@ function compare_md5 {
 
 compare_md5 "$unzipped/chromedriver_linux64/chromedriver" "$published/chromedriver_linux64/chromedriver"
 compare_md5 "$unzipped/chromedriver_mac64/chromedriver" "$published/chromedriver_mac64/chromedriver"
-compare_md5 "$unzipped/chromedriver_mac64_m1/chromedriver_mac64/chromedriver" "$published/chromedriver_mac64_m1/chromedriver"
+compare_md5 "$unzipped/chromedriver_mac_arm64/chromedriver_mac64/chromedriver" "$published/chromedriver_mac_arm64/chromedriver"
 compare_md5 "$unzipped/chromedriver_win32/chromedriver.exe" "$published/chromedriver_win32/chromedriver.exe"
 compare_md5 "$packed/notes.txt" "$published/notes.txt"
 
