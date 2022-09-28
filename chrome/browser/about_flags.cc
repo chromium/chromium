@@ -5356,6 +5356,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"eche-swa-measure-latency", flag_descriptions::kEcheSWAMeasureLatencyName,
      flag_descriptions::kEcheSWAMeasureLatencyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEcheSWAMeasureLatency)},
+    {"eche-swa-send-start-signaling",
+     flag_descriptions::kEcheSWASendStartSignalingName,
+     flag_descriptions::kEcheSWASendStartSignalingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kEcheSWASendStartSignaling)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)

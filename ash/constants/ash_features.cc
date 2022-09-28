@@ -677,6 +677,11 @@ BASE_FEATURE(kEcheSWAMeasureLatency,
              "EcheSWAMeasureLatency",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables sending start signaling to establish Eche's WebRTC connection.
+BASE_FEATURE(kEcheSWASendStartSignaling,
+             "EcheSWASendStartSignaling",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables background blur for the app list, shelf, unified system tray,
 // autoclick menu, etc. Also enables the AppsGridView mask layer, slower devices
 // may have choppier app list animations while in this mode. crbug.com/765292.

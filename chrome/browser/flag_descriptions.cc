@@ -5404,6 +5404,12 @@ const char kEcheSWAMeasureLatencyDescription[] =
     "Measure Eche E2E Latency and print all E2E latency logs of Eche in "
     "Console";
 
+const char kEcheSWASendStartSignalingName[] =
+    "Enable Eche Send Start Signaling";
+const char kEcheSWASendStartSignalingDescription[] =
+    "Allows sending start signaling action to establish Eche's WebRTC "
+    "connection";
+
 const char kEnableIkev2VpnName[] = "Enable IKEv2 VPN";
 const char kEnableIkev2VpnDescription[] =
     "Enable selecting IKEv2 as the VPN provider type when creating a VPN "

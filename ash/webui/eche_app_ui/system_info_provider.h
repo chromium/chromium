@@ -24,6 +24,7 @@ extern const char kJsonDebugModeKey[];
 extern const char kJsonGaiaIdKey[];
 extern const char kJsonDeviceTypeKey[];
 extern const char kJsonMeasureLatencyKey[];
+extern const char kJsonSendStartSignalingKey[];
 
 class SystemInfo;
 

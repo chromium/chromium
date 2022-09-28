@@ -56556,6 +56556,7 @@ from previous Chrome versions.
       label="KeepAliveRendererForKeepaliveRequests:enabled"/>
   <int value="-2037390759"
       label="IncognitoBrandConsistencyForAndroid:disabled"/>
+  <int value="-2037280696" label="EcheSWASendStartSignaling:disabled"/>
   <int value="-2036629516" label="SideSearchStatePerTab:enabled"/>
   <int value="-2036149591" label="FaviconsFromWebManifest:disabled"/>
   <int value="-2036127998" label="LocalWebApprovals:disabled"/>
@@ -63090,6 +63091,7 @@ from previous Chrome versions.
   <int value="1933376478" label="IsolatePrerenders:enabled"/>
   <int value="1934470615" label="AppIconInIntentChip:disabled"/>
   <int value="1935405622" label="AppServiceInstanceRegistry:disabled"/>
+  <int value="1936774335" label="EcheSWASendStartSignaling:enabled"/>
   <int value="1936810062" label="WebVrVsyncAlign:enabled"/>
   <int value="1937357350" label="MultilingualTyping:disabled"/>
   <int value="1937435913"

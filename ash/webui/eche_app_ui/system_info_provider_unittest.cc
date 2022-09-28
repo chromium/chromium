@@ -29,6 +29,7 @@ const bool kFakeDebugMode = false;
 const char kFakeGaiaId[] = "123";
 const char kFakeDeviceType[] = "Chromebook";
 const bool kFakeMeasureLatency = false;
+const bool kFakeSendStartSignaling = true;
 
 void ParseJson(const std::string& json,
                std::string& device_name,
@@ -38,7 +39,8 @@ void ParseJson(const std::string& json,
                bool& debug_mode,
                std::string& gaia_id,
                std::string& device_type,
-               bool& measure_latency) {
+               bool& measure_latency,
+               bool& send_start_signaling) {
   absl::optional<base::Value> message_value = base::JSONReader::Read(json);
   base::Value::Dict* message_dictionary = message_value->GetIfDict();
   const std::string* device_name_ptr =
@@ -73,6 +75,10 @@ void ParseJson(const std::string& json,
       message_dictionary->FindBool(kJsonMeasureLatencyKey);
   if (measure_latency_opt.has_value())
     measure_latency = measure_latency_opt.value();
+  absl::optional<bool> send_start_signaling_opt =
+      message_dictionary->FindBool(kJsonSendStartSignalingKey);
+  if (send_start_signaling_opt.has_value())
+    send_start_signaling = send_start_signaling_opt.value();
 }
 
 class TaskRunner {
@@ -270,11 +276,13 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   std::string gaia_id = "";
   std::string device_type = "";
   bool measure_latency = true;
+  bool send_start_signaling = false;
 
   GetSystemInfo();
   std::string json = Callback::GetSystemInfo();
   ParseJson(json, device_name, board_name, tablet_mode, wifi_connection_state,
-            debug_mode, gaia_id, device_type, measure_latency);
+            debug_mode, gaia_id, device_type, measure_latency,
+            send_start_signaling);
 
   EXPECT_EQ(device_name, kFakeDeviceName);
   EXPECT_EQ(board_name, kFakeBoardName);
@@ -284,6 +292,7 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   EXPECT_EQ(gaia_id, kFakeGaiaId);
   EXPECT_EQ(device_type, kFakeDeviceType);
   EXPECT_EQ(measure_latency, kFakeMeasureLatency);
+  EXPECT_EQ(send_start_signaling, kFakeSendStartSignaling);
 }
 
 TEST_F(SystemInfoProviderTest, ObserverCalledWhenBacklightChanged) {
