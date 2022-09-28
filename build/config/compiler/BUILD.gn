@@ -592,9 +592,6 @@ config("compiler") {
       if (is_clang) {
         cflags_cc += [ "-fno-trigraphs" ]
       }
-    } else if (is_linux) {
-      # TODO(crbug.com/1284275): Switch to C++20 on all platforms.
-      cflags_cc += [ "-std=${standard_prefix}++20" ]
     } else {
       cflags_cc += [ "-std=${standard_prefix}++17" ]
     }
