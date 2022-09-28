@@ -17,7 +17,7 @@ async function createIframeAndWaitForMessage(test, iframeUrl, setPermissionPolic
     var iframe = document.createElement("iframe");
     iframe.src = iframeUrl;
     if (setPermissionPolicy) {
-      iframe.allow = "federated-credentials";
+      iframe.allow = "identity-credential-get";
     }
     document.body.appendChild(iframe);
     const message = await messageWatcher.wait_for("message");

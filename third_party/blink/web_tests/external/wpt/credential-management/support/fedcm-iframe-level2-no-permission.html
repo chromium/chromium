@@ -14,7 +14,7 @@ window.onload = async () => {
   var iframe = document.createElement("iframe");
   iframe.src = remoteBaseURL + "fedcm-iframe.html";
   // No permission specified
-  // iframe.allow = "federated-credentials";
+  // iframe.allow = "identity-credential-get";
   document.body.appendChild(iframe);
 };
 

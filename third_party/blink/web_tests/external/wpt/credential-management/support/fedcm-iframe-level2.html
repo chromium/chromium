@@ -13,7 +13,7 @@ const remoteBaseURL =
 window.onload = async () => {
   var iframe = document.createElement("iframe");
   iframe.src = remoteBaseURL + "fedcm-iframe.html";
-  iframe.allow = "federated-credentials";
+  iframe.allow = "identity-credential-get";
   document.body.appendChild(iframe);
 };
 
