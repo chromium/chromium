@@ -89,12 +89,13 @@ class TestResultsFetcher(object):
         return self.accumulated_results_url_base(builder_name)
 
     @memoized
-    def get_artifact_list_for_test(self, result_name):
-        """Fetches the list of artifacts for a test-result."""
-        artifacts = self._resultdb_client.list_artifacts(result_name)
-        if not artifacts:
-            _log.warning("Failed to get baseline artifacts")
-        return artifacts
+    def query_artifact_for_build_test_results(self, build):
+        """Returns a list of test results from ResultDB."""
+        return self._resultdb_client.query_artifacts([build.build_id], {
+            'followEdges': {
+                'testResults': True,
+            },
+        })
 
     def get_full_builder_url(self, url_base, builder_name):
         """ Returns the url for a builder directory in google storage.

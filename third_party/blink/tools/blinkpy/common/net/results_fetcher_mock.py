@@ -72,11 +72,14 @@ class MockTestResultsFetcher(TestResultsFetcher):
         step = BuilderStep(build, step_name=None)
         return self._canned_results.get(step)
 
-    def get_artifact_list_for_test(self, result_id):
-        return self._canned_artifacts_resultdb[result_id]
-
-    def set_artifact_list_for_test(self, build, artifacts):
+    def set_artifact_query_for_build(self, build, artifacts):
         self._canned_artifacts_resultdb = artifacts
+
+    def query_artifact_for_build_test_results(self, build):
+        test_result_list = []
+        for test_results in self._canned_artifacts_resultdb.values():
+            test_result_list.extend(test_results)
+        return test_result_list
 
     def set_webdriver_test_results(self, build, m, results):
         self._webdriver_results[(build, m)] = results

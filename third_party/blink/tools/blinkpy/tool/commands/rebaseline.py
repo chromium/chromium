@@ -377,10 +377,13 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 wpt_build_steps)
 
     def baseline_fetch_url_resultdb(self, test_name, build):
-        # TODO(preethim): Consider doing QueryArtifacts do a walk of that list for
-        # test of interest than sending out the RPC for every test.
+        # TODO(crbug.com/1213998): Optimize the loop through all artifact_list.
+        # Currently the runtime is O(# tests * # artifacts), but the rpc to get
+        # query all artifacts per build is cached instead rpc sent per test.
         webtest_results_resultdb = self._tool.results_fetcher.fetch_results_from_resultdb_layout_tests(
             build, True)
+        artifact_list = (self._tool.results_fetcher.
+                         query_artifact_for_build_test_results(build))
         artifact_fetch_urls = []
         if webtest_results_resultdb:
             results_list = webtest_results_resultdb.test_results_resultdb()
@@ -389,12 +392,11 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 if done:
                     break
                 if test_name in result['testId']:
-                    artifact_list = self._tool.results_fetcher.get_artifact_list_for_test(
-                        result['name'])
                     for artifact in artifact_list:
-                        if 'actual' in artifact['artifactId']:
+                        if 'actual' in artifact['artifactId'] and result[
+                                'name'] in artifact['name']:
                             artifact_fetch_urls.append(artifact['fetchUrl'])
-                        done = True
+                            done = True
         return artifact_fetch_urls
 
     def _can_optimize(self, builder_name):

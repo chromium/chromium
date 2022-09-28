@@ -155,8 +155,10 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 },
             },
         }
+        # TODO(crbug.com/1213998): Fix the example web test result format.
         self.web_test_resultsdb = WebTestResults([{
-            "name": "tests/two/image-fail.html/results/2",
+            "name":
+            "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Ftwo%2Fimage-fail.html",
             "testId": "ninja://:blink_web_tests/two/image-fail.html",
             "resultId": "2",
             "variant": {
@@ -168,7 +170,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             },
             "status": "FAIL"
         }, {
-            "name": "tests/one/missing.html/results/1",
+            "name":
+            "invocations/task-chromium-swarm.appspot.com-1/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fmissing.html",
             "testId": "ninja://:blink_web_tests/one/missing.html",
             "resultId": "1",
             "variant": {
@@ -180,7 +183,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             },
             "status": "FAIL"
         }, {
-            "name": "tests/one/crash.html/results/3",
+            "name":
+            "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fcrash.html",
             "testId": "ninja://:blink_web_tests/one/crash.html",
             "resultId": "3",
             "variant": {
@@ -211,7 +215,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             }],
             "tests/one/crash.html/results/3": [{
                 "name":
-                "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Ftwo%2Fcrash.html/results/3",
+                "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fcrash.html/results/3",
                 "artifactId": "actual_text",
                 "fetchUrl":
                 "https://results.usercontent.cr.dev/invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fcrash.html/results/artifacts/actual_text?token=3",
@@ -326,7 +330,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         for build in self.builds:
             self.tool.results_fetcher.set_results_to_resultdb(
                 build, self.web_test_resultsdb)
-            self.tool.results_fetcher.set_artifact_list_for_test(
+            self.tool.results_fetcher.set_artifact_query_for_build(
                 build, self.test_artifacts_list)
         exit_code = self.command.execute(self.command_options(resultDB=True),
                                          [], self.tool)
@@ -380,7 +384,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         for build in self.builds:
             self.tool.results_fetcher.set_results_to_resultdb(
                 build, self.web_test_resultsdb)
-            self.tool.results_fetcher.set_artifact_list_for_test(
+            self.tool.results_fetcher.set_artifact_query_for_build(
                 build, self.test_artifacts_list)
         exit_code = self.command.execute(
             self.command_options(test_name_file=test_name_file, resultDB=True),

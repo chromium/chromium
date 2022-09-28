@@ -140,7 +140,6 @@ class BaseRPC:
                             method,
                             data,
                             field,
-                            page_size=None,
                             count=1000):
         """Retrieve entities from a pRPC method with paginated results.
 
@@ -159,13 +158,9 @@ class BaseRPC:
             data: JSON-encodable parameters to send to the RPC endpoint.
             field: Name of the repeated field that should be extracted from each
                 response body.
-            page_size: Number of entities to retrieve per request. The server
-                may return fewer if the page size is larger than the maximum
-                supported (typically 1000). Defaults to `count` to try to get
-                all the data in one request.
             count: Total number of entities to attempt to retrieve. The actual
                 number returned may be fewer, depending on how many entities
-                exist.
+                exist, 0 means get all.
 
         Returns:
             A list of up to `count` entities. The shape of each entry depends
@@ -176,14 +171,15 @@ class BaseRPC:
             https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/proto/v1/resultdb.proto
         """
         entities = []
-        data['pageSize'] = page_size or count
-        while data.get('pageToken', True) and count - len(entities) > 0:
+        data['pageSize'] = count if count > 0 else 1000
+        while data.get('pageToken', True) and (count == 0
+                                               or count - len(entities) > 0):
             response = self._luci_rpc(method, data)
             if not isinstance(response, dict):
                 break
             entities.extend(response.get(field) or [])
             data['pageToken'] = response.get('nextPageToken')
-        return entities[:count]
+        return entities[:count] if count > 0 else entities
 
 
 class BuildbucketClient(BaseRPC):
@@ -225,16 +221,11 @@ class BuildbucketClient(BaseRPC):
         return self._luci_rpc(
             'GetBuild', self._make_get_build_body(build, bucket, build_fields))
 
-    def search_builds(self,
-                      predicate,
-                      build_fields=None,
-                      page_size=None,
-                      count=1000):
+    def search_builds(self, predicate, build_fields=None, count=0):
         return self._luci_rpc_paginated('SearchBuilds',
                                         self._make_search_builds_body(
                                             predicate, build_fields),
                                         'builds',
-                                        page_size=page_size,
                                         count=count)
 
     def add_get_build_req(self, build=None, bucket='try', build_fields=None):
@@ -243,9 +234,8 @@ class BuildbucketClient(BaseRPC):
                                                    build_fields), None, None))
 
     def add_search_builds_req(self, predicate, build_fields=None, count=1000):
-        # No `page_size` argument, since it does not make sense to unpaginate
-        # data in a batch request. Just try to extract the repeated field and
-        # truncate it to `count` items, at most.
+        # Just try to extract the repeated field and truncate it to `count`
+        # items, at most.
         self._batch_requests.append(
             ('searchBuilds',
              self._make_search_builds_body(predicate,
@@ -281,7 +271,8 @@ class BuildbucketClient(BaseRPC):
                                request_body, error.get('code'))
             unwrapped_response = response_body[method]
             if field:
-                yield from unwrapped_response[field][:count]
+                yield from unwrapped_response[
+                    field][:count] if count > 0 else unwrapped_response[field]
             else:
                 yield unwrapped_response
 
@@ -301,11 +292,7 @@ class ResultDBClient(BaseRPC):
     def _get_invocations(self, build_ids):
         return ['invocations/build-%s' % build_id for build_id in build_ids]
 
-    def query_test_results(self,
-                           build_ids,
-                           predicate,
-                           page_size=None,
-                           count=1000):
+    def query_test_results(self, build_ids, predicate, count=0):
         request = {
             'invocations': self._get_invocations(build_ids),
             'predicate': predicate,
@@ -313,19 +300,9 @@ class ResultDBClient(BaseRPC):
         return self._luci_rpc_paginated('QueryTestResults',
                                         request,
                                         'testResults',
-                                        page_size=page_size,
                                         count=count)
 
-    def list_artifacts(self, parent, page_size=None, count=1000):
-        request = {'parent': parent}
-        return self._luci_rpc_paginated('ListArtifacts',
-                                        request,
-                                        'artifacts',
-                                        page_size=page_size,
-                                        count=count)
-
-    def query_artifacts(self, build_ids, predicate, page_size=None,
-                        count=1000):
+    def query_artifacts(self, build_ids, predicate, count=0):
         request = {
             'invocations': self._get_invocations(build_ids),
             'predicate': predicate,
@@ -333,5 +310,4 @@ class ResultDBClient(BaseRPC):
         return self._luci_rpc_paginated('QueryArtifacts',
                                         request,
                                         'artifacts',
-                                        page_size=page_size,
                                         count=count)
