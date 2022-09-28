@@ -1397,15 +1397,6 @@ const char kEnableRestrictedWebApisDescription[] =
     "Enable the restricted web APIs for dev trial. This will be replaced with "
     "permission policies to control the capabilities afterwards.";
 
-const char kEnableUseZoomForDsfName[] =
-    "Use Blink's zoom for device scale factor.";
-const char kEnableUseZoomForDsfDescription[] =
-    "If enabled, Blink uses its zooming mechanism to scale content for device "
-    "scale factor.";
-const char kEnableUseZoomForDsfChoiceDefault[] = "Default";
-const char kEnableUseZoomForDsfChoiceEnabled[] = "Enabled";
-const char kEnableUseZoomForDsfChoiceDisabled[] = "Disabled";
-
 const char kEnableWebAuthenticationChromeOSAuthenticatorName[] =
     "ChromeOS platform Web Authentication support";
 const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[] =

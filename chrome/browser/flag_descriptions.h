@@ -773,12 +773,6 @@ extern const char
 extern const char kEnableRestrictedWebApisName[];
 extern const char kEnableRestrictedWebApisDescription[];
 
-extern const char kEnableUseZoomForDsfName[];
-extern const char kEnableUseZoomForDsfDescription[];
-extern const char kEnableUseZoomForDsfChoiceDefault[];
-extern const char kEnableUseZoomForDsfChoiceEnabled[];
-extern const char kEnableUseZoomForDsfChoiceDisabled[];
-
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorName[];
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[];
 
