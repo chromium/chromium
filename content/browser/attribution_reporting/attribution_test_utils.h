@@ -212,7 +212,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
       AttributionSourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
   int GetMaxReportsPerDestination(
-      AttributionReport::ReportType report_type) const override;
+      AttributionReport::Type report_type) const override;
   AttributionRateLimitConfig GetRateLimits() const override;
   int GetMaxDestinationsPerSourceSiteReportingOrigin() const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
@@ -234,9 +234,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_max_sources_per_origin(int max);
 
-  void set_max_reports_per_destination(
-      AttributionReport::ReportType report_type,
-      int max);
+  void set_max_reports_per_destination(AttributionReport::Type report_type,
+                                       int max);
 
   void set_max_destinations_per_source_site_reporting_origin(int max);
 
@@ -311,7 +310,7 @@ class MockAttributionManager : public AttributionManager {
   MOCK_METHOD(
       void,
       GetPendingReportsForInternalUse,
-      (AttributionReport::ReportTypes report_types,
+      (AttributionReport::Types report_types,
        int limit,
        base::OnceCallback<void(std::vector<AttributionReport>)> callback),
       (override));
@@ -336,7 +335,7 @@ class MockAttributionManager : public AttributionManager {
   AttributionDataHostManager* GetDataHostManager() override;
 
   void NotifySourcesChanged();
-  void NotifyReportsChanged(AttributionReport::ReportType report_type);
+  void NotifyReportsChanged(AttributionReport::Type report_type);
   void NotifySourceHandled(const StorableSource& source,
                            StorableSource::Result result);
   void NotifyReportSent(const AttributionReport& report,
@@ -365,10 +364,7 @@ class MockAttributionObserver : public AttributionObserver {
 
   MOCK_METHOD(void, OnSourcesChanged, (), (override));
 
-  MOCK_METHOD(void,
-              OnReportsChanged,
-              (AttributionReport::ReportType),
-              (override));
+  MOCK_METHOD(void, OnReportsChanged, (AttributionReport::Type), (override));
 
   MOCK_METHOD(void,
               OnSourceHandled,
@@ -691,7 +687,7 @@ std::ostream& operator<<(
 std::ostream& operator<<(std::ostream& out, const AttributionReport& report);
 
 std::ostream& operator<<(std::ostream& out,
-                         AttributionReport::ReportType report_type);
+                         AttributionReport::Type report_type);
 
 std::ostream& operator<<(std::ostream& out, SendResult::Status status);
 

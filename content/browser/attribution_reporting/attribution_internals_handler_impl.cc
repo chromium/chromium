@@ -215,12 +215,12 @@ void AttributionInternalsHandlerImpl::GetActiveSources(
 }
 
 void AttributionInternalsHandlerImpl::GetReports(
-    AttributionReport::ReportType report_type,
+    AttributionReport::Type report_type,
     attribution_internals::mojom::Handler::GetReportsCallback callback) {
   if (AttributionManager* manager =
           AttributionManager::FromWebContents(web_ui_->GetWebContents())) {
     manager->GetPendingReportsForInternalUse(
-        AttributionReport::ReportTypes{report_type},
+        AttributionReport::Types{report_type},
         /*limit=*/1000,
         base::BindOnce(&ForwardReportsToWebUI, std::move(callback)));
   } else {
@@ -273,7 +273,7 @@ void AttributionInternalsHandlerImpl::OnSourcesChanged() {
 }
 
 void AttributionInternalsHandlerImpl::OnReportsChanged(
-    AttributionReport::ReportType report_type) {
+    AttributionReport::Type report_type) {
   for (auto& observer : observers_)
     observer->OnReportsChanged(report_type);
 }

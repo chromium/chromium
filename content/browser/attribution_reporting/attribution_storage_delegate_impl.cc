@@ -62,7 +62,7 @@ int AttributionStorageDelegateImpl::GetMaxSourcesPerOrigin() const {
 }
 
 int AttributionStorageDelegateImpl::GetMaxReportsPerDestination(
-    AttributionReport::ReportType) const {
+    AttributionReport::Type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return kAttributionMaxReportsPerDestination;
 }

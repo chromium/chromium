@@ -601,7 +601,7 @@ TEST_F(AttributionStorageTest, MaxEventLevelReportsPerDestination) {
   SourceBuilder source_builder = TestAggregatableSourceProvider().GetBuilder();
 
   delegate()->set_max_reports_per_destination(
-      AttributionReport::ReportType::kEventLevel, 1);
+      AttributionReport::Type::kEventLevel, 1);
   storage()->StoreSource(source_builder.Build());
   storage()->StoreSource(source_builder.Build());
 
@@ -627,7 +627,7 @@ TEST_F(AttributionStorageTest, MaxAggregatableReportsPerDestination) {
   SourceBuilder source_builder = TestAggregatableSourceProvider().GetBuilder();
 
   delegate()->set_max_reports_per_destination(
-      AttributionReport::ReportType::kAggregatableAttribution, 1);
+      AttributionReport::Type::kAggregatableAttribution, 1);
   storage()->StoreSource(source_builder.Build());
   storage()->StoreSource(source_builder.Build());
 
@@ -1730,10 +1730,9 @@ TEST_F(AttributionStorageTest, UpdateReportForSendFailure) {
   EXPECT_THAT(
       actual_reports,
       ElementsAre(
-          AllOf(ReportTypeIs(AttributionReport::ReportType::kEventLevel),
+          AllOf(ReportTypeIs(AttributionReport::Type::kEventLevel),
                 FailedSendAttemptsIs(0)),
-          AllOf(ReportTypeIs(
-                    AttributionReport::ReportType::kAggregatableAttribution),
+          AllOf(ReportTypeIs(AttributionReport::Type::kAggregatableAttribution),
                 FailedSendAttemptsIs(0))));
 
   const base::TimeDelta delay = base::Days(2);

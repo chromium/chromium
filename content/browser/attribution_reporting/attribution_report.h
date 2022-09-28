@@ -30,15 +30,14 @@ namespace content {
 // report. This class can represent multiple different types of reports.
 class CONTENT_EXPORT AttributionReport {
  public:
-  enum class ReportType {
+  enum class Type {
     kEventLevel = 0,
     kAggregatableAttribution = 1,
     kMinValue = kEventLevel,
     kMaxValue = kAggregatableAttribution,
   };
 
-  using ReportTypes =
-      base::EnumSet<ReportType, ReportType::kMinValue, ReportType::kMaxValue>;
+  using Types = base::EnumSet<Type, Type::kMinValue, Type::kMaxValue>;
 
   // Struct that contains the data specific to the event-level report.
   struct CONTENT_EXPORT EventLevelData {
@@ -116,8 +115,8 @@ class CONTENT_EXPORT AttributionReport {
 
   using Id = absl::variant<EventLevelData::Id, AggregatableAttributionData::Id>;
 
-  static ReportType GetReportType(Id report_id) {
-    return static_cast<ReportType>(report_id.index());
+  static Type GetReportType(Id report_id) {
+    return static_cast<Type>(report_id.index());
   }
 
   // Returns the minimum non-null time of `a` and `b`, or `absl::nullopt` if
@@ -160,9 +159,7 @@ class CONTENT_EXPORT AttributionReport {
     return data_;
   }
 
-  ReportType GetReportType() const {
-    return static_cast<ReportType>(data_.index());
-  }
+  Type GetReportType() const { return static_cast<Type>(data_.index()); }
 
   void set_report_time(base::Time report_time);
 

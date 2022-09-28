@@ -190,7 +190,7 @@ void RecordAssembleAggregatableReportStatus(
 // to be assembled for aggregatable reports, for logging metrics.
 void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
   switch (report.GetReportType()) {
-    case AttributionReport::ReportType::kEventLevel: {
+    case AttributionReport::Type::kEventLevel: {
       // Use a large time range to capture users that might not open the browser
       // for a long time while a conversion report is pending. Revisit this
       // range if it is non-ideal for real world data.
@@ -209,7 +209,7 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
                                 time_from_conversion_to_report_send.InHours());
       break;
     }
-    case AttributionReport::ReportType::kAggregatableAttribution: {
+    case AttributionReport::Type::kAggregatableAttribution: {
       base::TimeDelta time_from_conversion_to_report_assembly =
           report.report_time() - report.attribution_info().time;
       UMA_HISTOGRAM_COUNTS_1000(
@@ -224,12 +224,12 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
 void LogMetricsOnReportCompleted(const AttributionReport& report,
                                  SendResult::Status status) {
   switch (report.GetReportType()) {
-    case AttributionReport::ReportType::kEventLevel:
+    case AttributionReport::Type::kEventLevel:
       base::UmaHistogramEnumeration(
           "Conversions.ReportSendOutcome3",
           ConvertToConversionReportSendOutcome(status));
       break;
-    case AttributionReport::ReportType::kAggregatableAttribution:
+    case AttributionReport::Type::kAggregatableAttribution:
       base::UmaHistogramEnumeration(
           "Conversions.AggregatableReport.ReportSendOutcome2",
           ConvertToConversionReportSendOutcome(status));
@@ -582,13 +582,12 @@ void AttributionManagerImpl::OnReportStored(const AttributionTrigger trigger,
     // cause sources to reach event-level attribution limit or become
     // associated with a dedup key.
     NotifySourcesChanged();
-    NotifyReportsChanged(AttributionReport::ReportType::kEventLevel);
+    NotifyReportsChanged(AttributionReport::Type::kEventLevel);
   }
 
   if (result.aggregatable_status() ==
       AttributionTrigger::AggregatableResult::kSuccess) {
-    NotifyReportsChanged(
-        AttributionReport::ReportType::kAggregatableAttribution);
+    NotifyReportsChanged(AttributionReport::Type::kAggregatableAttribution);
   }
 
   for (auto& observer : observers_)
@@ -619,7 +618,7 @@ void AttributionManagerImpl::GetActiveSourcesForWebUI(
 }
 
 void AttributionManagerImpl::GetPendingReportsForInternalUse(
-    AttributionReport::ReportTypes report_types,
+    AttributionReport::Types report_types,
     int limit,
     base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
   attribution_storage_.AsyncCall(&AttributionStorage::GetAttributionReports)
@@ -655,9 +654,9 @@ void AttributionManagerImpl::ClearData(
               manager->scheduler_timer_.Refresh();
               manager->NotifySourcesChanged();
               manager->NotifyReportsChanged(
-                  AttributionReport::ReportType::kEventLevel);
+                  AttributionReport::Type::kEventLevel);
               manager->NotifyReportsChanged(
-                  AttributionReport::ReportType::kAggregatableAttribution);
+                  AttributionReport::Type::kAggregatableAttribution);
             }
           },
           std::move(done), weak_factory_.GetWeakPtr()));
@@ -674,9 +673,9 @@ void AttributionManagerImpl::GetReportsToSend() {
   // once, to avoid pulling an arbitrary number of reports into memory.
   attribution_storage_.AsyncCall(&AttributionStorage::GetAttributionReports)
       .WithArgs(/*max_report_time=*/base::Time::Now(), /*limit=*/-1,
-                AttributionReport::ReportTypes{
-                    AttributionReport::ReportType::kEventLevel,
-                    AttributionReport::ReportType::kAggregatableAttribution})
+                AttributionReport::Types{
+                    AttributionReport::Type::kEventLevel,
+                    AttributionReport::Type::kAggregatableAttribution})
       .Then(base::BindOnce(&AttributionManagerImpl::OnGetReportsToSend,
                            weak_factory_.GetWeakPtr()));
 }
@@ -748,11 +747,11 @@ void AttributionManagerImpl::PrepareToSendReport(AttributionReport report,
                                                  bool is_debug_report,
                                                  ReportSentCallback callback) {
   switch (report.GetReportType()) {
-    case AttributionReport::ReportType::kEventLevel:
+    case AttributionReport::Type::kEventLevel:
       report_sender_->SendReport(std::move(report), is_debug_report,
                                  std::move(callback));
       break;
-    case AttributionReport::ReportType::kAggregatableAttribution:
+    case AttributionReport::Type::kAggregatableAttribution:
       AssembleAggregatableReport(std::move(report), is_debug_report,
                                  std::move(callback));
       break;
@@ -898,7 +897,7 @@ void AttributionManagerImpl::NotifySourcesChanged() {
 }
 
 void AttributionManagerImpl::NotifyReportsChanged(
-    AttributionReport::ReportType report_type) {
+    AttributionReport::Type report_type) {
   for (auto& observer : observers_)
     observer.OnReportsChanged(report_type);
 }

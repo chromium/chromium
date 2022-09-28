@@ -55,7 +55,7 @@ class AttributionManager {
   // Get all pending reports that are currently stored in this partition. Used
   // for populating WebUI and simulator.
   virtual void GetPendingReportsForInternalUse(
-      AttributionReport::ReportTypes report_types,
+      AttributionReport::Types report_types,
       int limit,
       base::OnceCallback<void(std::vector<AttributionReport>)> callback) = 0;
 

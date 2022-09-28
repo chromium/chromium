@@ -160,12 +160,12 @@ int ConfigurableStorageDelegate::GetMaxSourcesPerOrigin() const {
 }
 
 int ConfigurableStorageDelegate::GetMaxReportsPerDestination(
-    AttributionReport::ReportType report_type) const {
+    AttributionReport::Type report_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (report_type) {
-    case AttributionReport::ReportType::kEventLevel:
+    case AttributionReport::Type::kEventLevel:
       return config_.event_level_limit.max_reports_per_destination;
-    case AttributionReport::ReportType::kAggregatableAttribution:
+    case AttributionReport::Type::kAggregatableAttribution:
       return config_.aggregate_limit.max_reports_per_destination;
   }
 }
@@ -270,14 +270,14 @@ void ConfigurableStorageDelegate::set_max_sources_per_origin(int max) {
 }
 
 void ConfigurableStorageDelegate::set_max_reports_per_destination(
-    AttributionReport::ReportType report_type,
+    AttributionReport::Type report_type,
     int max) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (report_type) {
-    case AttributionReport::ReportType::kEventLevel:
+    case AttributionReport::Type::kEventLevel:
       config_.event_level_limit.max_reports_per_destination = max;
       break;
-    case AttributionReport::ReportType::kAggregatableAttribution:
+    case AttributionReport::Type::kAggregatableAttribution:
       config_.aggregate_limit.max_reports_per_destination = max;
       break;
   }
@@ -388,7 +388,7 @@ void MockAttributionManager::NotifySourcesChanged() {
 }
 
 void MockAttributionManager::NotifyReportsChanged(
-    AttributionReport::ReportType report_type) {
+    AttributionReport::Type report_type) {
   for (auto& observer : observers_)
     observer.OnReportsChanged(report_type);
 }
@@ -1204,12 +1204,12 @@ std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         AttributionReport::ReportType report_type) {
+                         AttributionReport::Type report_type) {
   switch (report_type) {
-    case AttributionReport::ReportType::kEventLevel:
+    case AttributionReport::Type::kEventLevel:
       out << "kEventLevel";
       break;
-    case AttributionReport::ReportType::kAggregatableAttribution:
+    case AttributionReport::Type::kAggregatableAttribution:
       out << "kAggregatableAttribution";
       break;
   }
@@ -1380,9 +1380,9 @@ std::vector<AttributionReport> GetAttributionReportsForTesting(
   base::RunLoop run_loop;
   std::vector<AttributionReport> attribution_reports;
   manager->GetPendingReportsForInternalUse(
-      AttributionReport::ReportTypes{
-          AttributionReport::ReportType::kEventLevel,
-          AttributionReport::ReportType::kAggregatableAttribution},
+      AttributionReport::Types{
+          AttributionReport::Type::kEventLevel,
+          AttributionReport::Type::kAggregatableAttribution},
       /*limit=*/-1,
       base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
         attribution_reports = std::move(reports);

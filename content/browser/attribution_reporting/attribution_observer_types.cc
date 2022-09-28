@@ -32,7 +32,7 @@ CreateReportResult::CreateReportResult(
 
   DCHECK(!new_event_level_report_.has_value() ||
          new_event_level_report_->GetReportType() ==
-             AttributionReport::ReportType::kEventLevel);
+             AttributionReport::Type::kEventLevel);
 
   DCHECK_EQ(
       aggregatable_status_ == AttributionTrigger::AggregatableResult::kSuccess,
@@ -40,7 +40,7 @@ CreateReportResult::CreateReportResult(
 
   DCHECK(!new_aggregatable_report_.has_value() ||
          new_aggregatable_report_->GetReportType() ==
-             AttributionReport::ReportType::kAggregatableAttribution);
+             AttributionReport::Type::kAggregatableAttribution);
 
   DCHECK_EQ(
       replaced_event_level_report_.has_value(),

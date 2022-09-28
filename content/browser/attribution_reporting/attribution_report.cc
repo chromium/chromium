@@ -113,10 +113,10 @@ GURL AttributionReport::ReportURL(bool debug) const {
 
   const char* endpoint_path;
   switch (GetReportType()) {
-    case ReportType::kEventLevel:
+    case Type::kEventLevel:
       endpoint_path = "report-event-attribution";
       break;
-    case ReportType::kAggregatableAttribution:
+    case Type::kAggregatableAttribution:
       endpoint_path = "report-aggregate-attribution";
       break;
   }

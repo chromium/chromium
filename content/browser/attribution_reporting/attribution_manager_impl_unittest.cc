@@ -1113,29 +1113,29 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
     for (size_t i = 1; i <= 3; i++) {
       EXPECT_CALL(observer, OnSourcesChanged);
       EXPECT_CALL(observer,
-                  OnReportsChanged(AttributionReport::ReportType::kEventLevel));
-      EXPECT_CALL(observer,
-                  OnReportsChanged(
-                      AttributionReport::ReportType::kAggregatableAttribution));
+                  OnReportsChanged(AttributionReport::Type::kEventLevel));
+      EXPECT_CALL(
+          observer,
+          OnReportsChanged(AttributionReport::Type::kAggregatableAttribution));
     }
 
     EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(observer,
-                OnReportsChanged(AttributionReport::ReportType::kEventLevel))
+                OnReportsChanged(AttributionReport::Type::kEventLevel))
         .Times(3);
-    EXPECT_CALL(observer,
-                OnReportsChanged(
-                    AttributionReport::ReportType::kAggregatableAttribution))
+    EXPECT_CALL(
+        observer,
+        OnReportsChanged(AttributionReport::Type::kAggregatableAttribution))
         .Times(3);
     EXPECT_CALL(checkpoint, Call(3));
 
     EXPECT_CALL(observer, OnSourcesChanged);
     EXPECT_CALL(observer,
-                OnReportsChanged(AttributionReport::ReportType::kEventLevel));
-    EXPECT_CALL(observer,
-                OnReportsChanged(
-                    AttributionReport::ReportType::kAggregatableAttribution))
+                OnReportsChanged(AttributionReport::Type::kEventLevel));
+    EXPECT_CALL(
+        observer,
+        OnReportsChanged(AttributionReport::Type::kAggregatableAttribution))
         .Times(0);
   }
 
@@ -1764,14 +1764,14 @@ TEST_F(AttributionManagerImplTest,
 
   EXPECT_CALL(
       observer,
-      OnReportSent(ReportTypeIs(AttributionReport::ReportType::kEventLevel),
+      OnReportSent(ReportTypeIs(AttributionReport::Type::kEventLevel),
                    /*is_debug_report=*/false,
                    Field(&SendResult::status, SendResult::Status::kSent)));
 
   EXPECT_CALL(
       observer,
       OnReportSent(
-          ReportTypeIs(AttributionReport::ReportType::kAggregatableAttribution),
+          ReportTypeIs(AttributionReport::Type::kAggregatableAttribution),
           /*is_debug_report=*/false,
           Field(&SendResult::status, SendResult::Status::kSent)));
 
@@ -1830,7 +1830,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_CALL(
       observer,
       OnReportSent(
-          ReportTypeIs(AttributionReport::ReportType::kAggregatableAttribution),
+          ReportTypeIs(AttributionReport::Type::kAggregatableAttribution),
           /*is_debug_report=*/false,
           Field(&SendResult::status, SendResult::Status::kFailedToAssemble)));
 

@@ -47,27 +47,27 @@ class EnumTraits<attribution_internals::mojom::SourceType,
 
 template <>
 class EnumTraits<attribution_internals::mojom::ReportType,
-                 content::AttributionReport::ReportType> {
+                 content::AttributionReport::Type> {
  public:
   static attribution_internals::mojom::ReportType ToMojom(
-      content::AttributionReport::ReportType input) {
+      content::AttributionReport::Type input) {
     switch (input) {
-      case content::AttributionReport::ReportType::kEventLevel:
+      case content::AttributionReport::Type::kEventLevel:
         return attribution_internals::mojom::ReportType::kEventLevel;
-      case content::AttributionReport::ReportType::kAggregatableAttribution:
+      case content::AttributionReport::Type::kAggregatableAttribution:
         return attribution_internals::mojom::ReportType::
             kAggregatableAttribution;
     }
   }
 
   static bool FromMojom(attribution_internals::mojom::ReportType input,
-                        content::AttributionReport::ReportType* out) {
+                        content::AttributionReport::Type* out) {
     switch (input) {
       case attribution_internals::mojom::ReportType::kEventLevel:
-        *out = content::AttributionReport::ReportType::kEventLevel;
+        *out = content::AttributionReport::Type::kEventLevel;
         break;
       case attribution_internals::mojom::ReportType::kAggregatableAttribution:
-        *out = content::AttributionReport::ReportType::kAggregatableAttribution;
+        *out = content::AttributionReport::Type::kAggregatableAttribution;
         break;
     }
 

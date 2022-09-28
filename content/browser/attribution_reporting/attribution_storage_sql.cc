@@ -1043,8 +1043,8 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       return EventLevelResult::kInternalError;
   }
 
-  switch (CapacityForStoringReport(
-      trigger, AttributionReport::ReportType::kEventLevel)) {
+  switch (
+      CapacityForStoringReport(trigger, AttributionReport::Type::kEventLevel)) {
     case ConversionCapacityStatus::kHasCapacity:
       break;
     case ConversionCapacityStatus::kNoCapacity:
@@ -1256,7 +1256,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
 std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
     base::Time max_report_time,
     int limit,
-    AttributionReport::ReportTypes report_types) {
+    AttributionReport::Types report_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!report_types.Empty());
 
@@ -1265,9 +1265,9 @@ std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
 
   std::vector<AttributionReport> reports;
 
-  for (AttributionReport::ReportType report_type : report_types) {
+  for (AttributionReport::Type report_type : report_types) {
     switch (report_type) {
-      case AttributionReport::ReportType::kEventLevel: {
+      case AttributionReport::Type::kEventLevel: {
         std::vector<AttributionReport> event_level_reports =
             GetEventLevelReportsInternal(max_report_time, limit);
         reports.insert(reports.end(),
@@ -1275,7 +1275,7 @@ std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
                        std::make_move_iterator(event_level_reports.end()));
         break;
       }
-      case AttributionReport::ReportType::kAggregatableAttribution: {
+      case AttributionReport::Type::kAggregatableAttribution: {
         std::vector<AttributionReport> aggregatable_reports =
             GetAggregatableAttributionReportsInternal(max_report_time, limit);
         reports.insert(reports.end(),
@@ -1810,15 +1810,15 @@ AttributionStorageSql::ReportAlreadyStored(StoredSource::Id source_id,
 AttributionStorageSql::ConversionCapacityStatus
 AttributionStorageSql::CapacityForStoringReport(
     const AttributionTrigger& trigger,
-    AttributionReport::ReportType report_type) {
+    AttributionReport::Type report_type) {
   sql::Statement statement;
   switch (report_type) {
-    case AttributionReport::ReportType::kEventLevel:
+    case AttributionReport::Type::kEventLevel:
       statement.Assign(db_->GetCachedStatement(
           SQL_FROM_HERE,
           ATTRIBUTION_COUNT_REPORTS_SQL(ATTRIBUTION_CONVERSIONS_TABLE)));
       break;
-    case AttributionReport::ReportType::kAggregatableAttribution:
+    case AttributionReport::Type::kAggregatableAttribution:
       statement.Assign(db_->GetCachedStatement(
           SQL_FROM_HERE, ATTRIBUTION_COUNT_REPORTS_SQL(
                              ATTRIBUTION_AGGREGATABLE_REPORT_METADATA_TABLE)));
@@ -2626,7 +2626,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
     return AggregatableResult::kNoHistograms;
 
   switch (CapacityForStoringReport(
-      trigger, AttributionReport::ReportType::kAggregatableAttribution)) {
+      trigger, AttributionReport::Type::kAggregatableAttribution)) {
     case ConversionCapacityStatus::kHasCapacity:
       break;
     case ConversionCapacityStatus::kNoCapacity:

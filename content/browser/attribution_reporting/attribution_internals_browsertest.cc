@@ -69,7 +69,7 @@ auto InvokeCallback(std::vector<StoredSource> value) {
 auto InvokeCallback(std::vector<AttributionReport> value) {
   return
       [value = std::move(value)](
-          AttributionReport::ReportTypes report_types, int limit,
+          AttributionReport::Types report_types, int limit,
           base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
         std::move(callback).Run(std::move(value));
       };
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // The real manager would do this itself, but the test manager requires manual
   // triggering.
-  manager()->NotifyReportsChanged(AttributionReport::ReportType::kEventLevel);
+  manager()->NotifyReportsChanged(AttributionReport::Type::kEventLevel);
 
   ASSERT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
 }
@@ -1038,7 +1038,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // The real manager would do this itself, but the test manager requires manual
   // triggering.
   manager()->NotifyReportsChanged(
-      AttributionReport::ReportType::kAggregatableAttribution);
+      AttributionReport::Type::kAggregatableAttribution);
 
   EXPECT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
 }

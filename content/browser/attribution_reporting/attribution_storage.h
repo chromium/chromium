@@ -72,9 +72,9 @@ class AttributionStorage {
   virtual std::vector<AttributionReport> GetAttributionReports(
       base::Time max_report_time,
       int limit = -1,
-      AttributionReport::ReportTypes report_types = {
-          AttributionReport::ReportType::kEventLevel,
-          AttributionReport::ReportType::kAggregatableAttribution}) = 0;
+      AttributionReport::Types report_types = {
+          AttributionReport::Type::kEventLevel,
+          AttributionReport::Type::kAggregatableAttribution}) = 0;
 
   // Returns the first report time strictly after `time`.
   virtual absl::optional<base::Time> GetNextReportTime(base::Time time) = 0;

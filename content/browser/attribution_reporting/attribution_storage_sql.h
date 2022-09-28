@@ -105,9 +105,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   std::vector<AttributionReport> GetAttributionReports(
       base::Time max_report_time,
       int limit = -1,
-      AttributionReport::ReportTypes report_types = {
-          AttributionReport::ReportType::kEventLevel,
-          AttributionReport::ReportType::kAggregatableAttribution}) override;
+      AttributionReport::Types report_types = {
+          AttributionReport::Type::kEventLevel,
+          AttributionReport::Type::kAggregatableAttribution}) override;
   absl::optional<base::Time> GetNextReportTime(base::Time time) override;
   std::vector<AttributionReport> GetReports(
       const std::vector<AttributionReport::Id>& ids) override;
@@ -166,9 +166,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
   };
 
-  ConversionCapacityStatus CapacityForStoringReport(
-      const AttributionTrigger&,
-      AttributionReport::ReportType) VALID_CONTEXT_REQUIRED(sequence_checker_);
+  ConversionCapacityStatus CapacityForStoringReport(const AttributionTrigger&,
+                                                    AttributionReport::Type)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   enum class MaybeReplaceLowerPriorityEventLevelReportResult {
     kError,

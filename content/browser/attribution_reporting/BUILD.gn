@@ -35,7 +35,7 @@ mojom("mojo_bindings") {
         },
         {
           mojom = "attribution_internals.mojom.ReportType"
-          cpp = "::content::AttributionReport::ReportType"
+          cpp = "::content::AttributionReport::Type"
         },
       ]
       traits_headers = [

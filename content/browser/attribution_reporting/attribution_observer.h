@@ -26,7 +26,7 @@ class AttributionObserver : public base::CheckedObserver {
   virtual void OnSourcesChanged() {}
 
   // Called when reports in storage change.
-  virtual void OnReportsChanged(AttributionReport::ReportType report_type) {}
+  virtual void OnReportsChanged(AttributionReport::Type report_type) {}
 
   // Called when a source is registered, regardless of success.
   virtual void OnSourceHandled(const StorableSource& source,

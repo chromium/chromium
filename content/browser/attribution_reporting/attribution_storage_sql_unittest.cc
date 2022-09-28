@@ -557,7 +557,7 @@ TEST_F(AttributionStorageSqlTest, MaxSourcesPerOrigin) {
 TEST_F(AttributionStorageSqlTest, MaxReportsPerDestination) {
   OpenDatabase();
   delegate()->set_max_reports_per_destination(
-      AttributionReport::ReportType::kEventLevel, 2);
+      AttributionReport::Type::kEventLevel, 2);
   storage()->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
@@ -875,15 +875,13 @@ TEST_F(AttributionStorageSqlTest, DeleteAggregatableAttributionReport) {
   EXPECT_THAT(
       reports,
       ElementsAre(
-          ReportTypeIs(AttributionReport::ReportType::kEventLevel),
-          ReportTypeIs(
-              AttributionReport::ReportType::kAggregatableAttribution)));
+          ReportTypeIs(AttributionReport::Type::kEventLevel),
+          ReportTypeIs(AttributionReport::Type::kAggregatableAttribution)));
 
   EXPECT_TRUE(storage()->DeleteReport(
       AttributionReport::AggregatableAttributionData::Id(1)));
-  EXPECT_THAT(
-      storage()->GetAttributionReports(base::Time::Max()),
-      ElementsAre(ReportTypeIs(AttributionReport::ReportType::kEventLevel)));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              ElementsAre(ReportTypeIs(AttributionReport::Type::kEventLevel)));
 
   CloseDatabase();
 
@@ -912,9 +910,8 @@ TEST_F(AttributionStorageSqlTest,
   EXPECT_THAT(
       reports,
       ElementsAre(
-          ReportTypeIs(AttributionReport::ReportType::kEventLevel),
-          ReportTypeIs(
-              AttributionReport::ReportType::kAggregatableAttribution)));
+          ReportTypeIs(AttributionReport::Type::kEventLevel),
+          ReportTypeIs(AttributionReport::Type::kAggregatableAttribution)));
 
   EXPECT_TRUE(
       storage()->DeleteReport(AttributionReport::EventLevelData::Id(1)));
@@ -950,9 +947,8 @@ TEST_F(AttributionStorageSqlTest,
   EXPECT_THAT(
       reports,
       ElementsAre(
-          ReportTypeIs(AttributionReport::ReportType::kEventLevel),
-          ReportTypeIs(
-              AttributionReport::ReportType::kAggregatableAttribution)));
+          ReportTypeIs(AttributionReport::Type::kEventLevel),
+          ReportTypeIs(AttributionReport::Type::kAggregatableAttribution)));
 
   task_environment_.FastForwardBy(base::Milliseconds(3));
 
