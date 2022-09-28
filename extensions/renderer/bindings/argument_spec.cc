@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/bindings/argument_spec.h"
 
+#include <cmath>
+
 #include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
