@@ -136,6 +136,21 @@ void ReplyToStat(dbus::MethodCall* method_call,
   std::move(sender).Run(std::move(response));
 }
 
+void ReplyToListStorages(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender sender,
+    fusebox_staging::ListStoragesResponseProto response_proto) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
+  dbus::MessageWriter writer(response.get());
+
+  writer.AppendProtoAsArrayOfBytes(response_proto);
+
+  std::move(sender).Run(std::move(response));
+}
+
 }  // namespace
 
 FuseBoxServiceProvider::FuseBoxServiceProvider() : server_(this) {}
@@ -170,6 +185,12 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
                        base::BindRepeating(&FuseBoxServiceProvider::Stat,
                                            weak_ptr_factory_.GetWeakPtr()),
                        base::BindOnce(&OnExportedCallback));
+
+  object->ExportMethod(
+      fusebox::kFuseBoxServiceInterface, fusebox::kListStoragesMethod,
+      base::BindRepeating(&FuseBoxServiceProvider::ListStorages,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&OnExportedCallback));
 }
 
 void FuseBoxServiceProvider::OnRegisterFSURLPrefix(const std::string& subdir) {
@@ -280,6 +301,25 @@ void FuseBoxServiceProvider::Stat(dbus::MethodCall* method_call,
 
   server_.Stat(fs_url_as_string,
                base::BindOnce(&ReplyToStat, method_call, std::move(sender)));
+}
+
+void FuseBoxServiceProvider::ListStorages(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender sender) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  dbus::MessageReader reader(method_call);
+  fusebox_staging::ListStoragesRequestProto request_proto;
+  if (!reader.PopArrayOfBytesAsProto(&request_proto)) {
+    fusebox_staging::ListStoragesResponseProto response_proto;
+    response_proto.set_posix_error_code(EINVAL);
+    ReplyToListStorages(method_call, std::move(sender), response_proto);
+    return;
+  }
+
+  server_.ListStorages(
+      request_proto,
+      base::BindOnce(&ReplyToListStorages, method_call, std::move(sender)));
 }
 
 }  // namespace ash

@@ -47,6 +47,9 @@ class FuseBoxServiceProvider : public CrosDBusService::ServiceProviderInterface,
   void Stat(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
 
+  void ListStorages(dbus::MethodCall* method_call,
+                    dbus::ExportedObject::ResponseSender sender);
+
   scoped_refptr<dbus::ExportedObject> exported_object_;
   fusebox::Server server_;
 

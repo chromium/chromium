@@ -24,6 +24,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/cros_system_api/dbus/fusebox/dbus-constants.h"
 
 // This file provides the "business logic" half of the FuseBox server, coupled
 // with the "D-Bus protocol logic" half in fusebox_service_provider.cc.
@@ -453,6 +454,16 @@ void Server::Stat(std::string fs_url_as_string, StatCallback callback) {
           // Unretained is safe: common.fs_context owns its operation_runner.
           base::Unretained(common.fs_context->operation_runner()),
           common.fs_url, metadata_fields, std::move(outer_callback)));
+}
+
+void Server::ListStorages(fusebox_staging::ListStoragesRequestProto request,
+                          ListStoragesCallback callback) {
+  fusebox_staging::ListStoragesResponseProto response;
+  response.add_storages(kMonikerSubdir);
+  for (const auto& i : prefix_map_) {
+    response.add_storages(i.first);
+  }
+  std::move(callback).Run(response);
 }
 
 }  // namespace fusebox

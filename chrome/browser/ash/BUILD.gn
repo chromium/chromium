@@ -3434,6 +3434,7 @@ source_set("ash") {
     "//chrome/browser:theme_properties",
     "//chrome/browser/apps/platform_apps",
     "//chrome/browser/apps/platform_apps/api",
+    "//chrome/browser/ash/fusebox:fusebox_staging_proto",
     "//chrome/browser/ash/mojo_service_manager",
     "//chrome/browser/ash/nearby:bluetooth_adapter_manager",
     "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",

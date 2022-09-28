@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
+#include "chrome/browser/ash/fusebox/fusebox_staging.pb.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox.pb.h"
 
 class Profile;
@@ -64,7 +65,8 @@ class Server {
   // These methods map 1:1 to the D-Bus methods implemented by
   // fusebox_service_provider.cc.
   //
-  // In terms of semantics, they're roughly equivalent to the C standard
+  // For the "file operation D-Bus methods" (below until "Meta D-Bus methods")
+  // in terms of semantics, they're roughly equivalent to the C standard
   // library functions of the same name. For example, the Stat method here
   // corresponds to the standard stat function described by "man 2 stat".
   //
@@ -108,6 +110,16 @@ class Server {
                                                const base::File::Info& info,
                                                bool read_only)>;
   void Stat(std::string fs_url_as_string, StatCallback callback);
+
+  // File operation D-Bus methods above. Meta D-Bus methods below, which do not
+  // map 1:1 to FUSE or C standard library file operations.
+
+  // ListStorages returns the active subdir names. Active means passed to
+  // RegisterFSURLPrefix without a subsequent UnregisterFSURLPrefix.
+  using ListStoragesCallback = base::OnceCallback<void(
+      fusebox_staging::ListStoragesResponseProto response)>;
+  void ListStorages(fusebox_staging::ListStoragesRequestProto request,
+                    ListStoragesCallback callback);
 
   struct PrefixMapEntry {
     PrefixMapEntry(std::string fs_url_prefix_arg, bool read_only_arg);
