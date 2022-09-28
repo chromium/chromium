@@ -315,9 +315,10 @@ class Storage::PipelineIdInStorage {
                                   pipeline_id_file_path.MaybeAsASCII()}));
     }
     PipelineIdStorageInfo pipeline_id_storage_info;
-    const auto file_buffer = std::make_unique<char[]>(kPipelineIdMaxFileSize);
+
+    char file_buffer[kPipelineIdMaxFileSize];
     const int32_t read_result = pipeline_id_file.Read(
-        /*offset=*/0, file_buffer.get(), kPipelineIdMaxFileSize);
+        /*offset=*/0, file_buffer, kPipelineIdMaxFileSize);
     if (read_result < 0) {
       return Status(error::DATA_LOSS,
                     base::StrCat({"File read error, full_name= ",
@@ -332,7 +333,7 @@ class Storage::PipelineIdInStorage {
                         pipeline_id_file_path.MaybeAsASCII()}));
     }
     google::protobuf::io::ArrayInputStream stream(  // Zero-copy stream.
-        file_buffer.get(), read_result);
+        file_buffer, read_result);
     if (!pipeline_id_storage_info.ParseFromZeroCopyStream(&stream)) {
       return Status(
           error::DATA_LOSS,
@@ -554,10 +555,9 @@ class Storage::KeyInStorage {
 
       SignedEncryptionInfo signed_encryption_key;
       {
-        const auto key_file_buffer =
-            std::make_unique<char[]>(kEncryptionKeyMaxFileSize);
+        char key_file_buffer[kEncryptionKeyMaxFileSize];
         const int32_t read_result = key_file.Read(
-            /*offset=*/0, key_file_buffer.get(), kEncryptionKeyMaxFileSize);
+            /*offset=*/0, key_file_buffer, kEncryptionKeyMaxFileSize);
         if (read_result < 0) {
           LOG(WARNING) << "File read error="
                        << key_file.ErrorToString(key_file.GetLastFileError())
@@ -568,7 +568,7 @@ class Storage::KeyInStorage {
           continue;  // Unexpected file size.
         }
         google::protobuf::io::ArrayInputStream key_stream(  // Zero-copy stream.
-            key_file_buffer.get(), read_result);
+            key_file_buffer, read_result);
         if (!signed_encryption_key.ParseFromZeroCopyStream(&key_stream)) {
           LOG(WARNING) << "Failed to parse key file, full_name='"
                        << file_path.MaybeAsASCII() << "'";

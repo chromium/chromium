@@ -96,7 +96,7 @@ class StorageOptions {
   std::string signature_verification_public_key_;
 
   // Maximum record size.
-  size_t max_record_size_ = 1 * 1024LL * 1024LL;  // 1 MiB
+  size_t max_record_size_ = 1U * 1024UL * 1024UL;  // 1 MiB
 
   // Resources managements.
   scoped_refptr<ResourceInterface> memory_resource_;
@@ -175,7 +175,7 @@ class QueueOptions {
   // When file exceeds this size, the new file is created
   // for further records. Note that each file must have at least
   // one record before it is closed, regardless of that record size.
-  uint64_t max_single_file_size_ = 1 * 1024LL * 1024LL;  // 1 MiB
+  uint64_t max_single_file_size_ = 2UL * 1024UL * 1024UL;
 };
 
 }  // namespace reporting
