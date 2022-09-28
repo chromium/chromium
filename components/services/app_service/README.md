@@ -8,25 +8,21 @@ apps: e.g. launcher, search bar, shelf, New Tab Page, the App Management
 settings page, permissions or settings pages, picking and running default
 handlers for URLs, MIME types or intents, etc.
 
-There is also a different number (`N`) of app platforms or app Providers:
+There is also a different number (`N`) of app platforms or app Publishers:
 built-in apps, extension-backed apps, PWAs (progressive web apps), ARC++
 (Android apps), Crostini (Linux apps), etc.
 
-Historically, each of the `M` Consumers hard-coded each of the `N` Providers,
+Historically, each of the `M` Consumers hard-coded each of the `N` Publishers,
 leading to `M×N` code paths that needed maintaining, or updating every time `M`
 or `N` was incremented.
 
 This document describes the App Service, an intermediary between app Consumers
-and app Providers. This simplifies `M×N` code paths to `M+N` code paths, each
+and app Publishers. This simplifies `M×N` code paths to `M+N` code paths, each
 side with a uniform API, reducing code duplication and improving behavioral
-consistency. This service (a Mojo service) could potentially be spun out into a
-new process, for the usual
-[Servicification](https://www.chromium.org/servicification) benefits (e.g.
-self-contained services are easier to test and to sandbox), and would also
-facilitate Chrome OS apps that aren't tied to the browser, e.g. Ash apps.
+consistency.
 
 The App Service can be decomposed into a number of aspects. In all cases, it
-provides to Consumers a uniform API over the various Provider implementations,
+provides to Consumers a uniform API over the various Publisher implementations,
 for these aspects:
 
   - App Registry: list the installed apps.
@@ -35,7 +31,7 @@ for these aspects:
   - App Installer: install, uninstall and update apps.
   - App Coordinator: keep system-wide settings, e.g. default handlers.
 
-Some things are still the responsbility of individual Consumers or Providers.
+Some things are still the responsbility of individual Consumers or Publishers.
 For example, the order in which the apps' icons are presented in the launcher
 is a launcher-specific detail, not a system-wide detail, and is managed by the
 launcher, not the App Service. Similarly, Android-specific VM (Virtual Machine)
@@ -46,13 +42,8 @@ managed by the Android provider (ARC++).
 ## Profiles
 
 Talk of *the* App Service is an over-simplification. There will be *an* App
-Service instance per Profile, as apps can be installed for *a* Profile.
-
-Note that this doesn't require the App Service to know about Profiles. Instead,
-Profile-specific code (e.g. a KeyedService) finds the Mojo service Connector
-for a Profile, creates an App Service and binds the two (App Service and
-Connector), but the App Service itself doesn't know about Profiles per se.
-
+Service instance(AppServiceProxy) per Profile, as apps can be installed for
+*a* Profile.
 
 # App Registry
 
@@ -60,22 +51,16 @@ The App Registry's one-liner mission is:
 
   - I would like to be able to for-each over all the apps in Chrome.
 
-An obvious initial design for the App Registry involves three actors (Consumers
-⇔ Service ⇔ Providers) with the middle actor (the App Registry Mojo service)
-being a relatively thick implementation with a traditional `GetFoo`, `SetBar`,
-`AddObserver` style API. The drawback is that Consumers are often UI surfaces
-and UI code likes synchronous APIs, but Mojo APIs are generally asynchronous,
-especially as it may cross process boundaries.
+The App Registry design involves three actors (Consumers ⇔ AppRegistryCache
+⇔ Publisher), with the AppRegistryCache providing a platform-independent
+abstraction over the per-platform implementation details.
 
-Instead, we use four actors (Consumers ↔ Proxy ⇔ Service ⇔ Providers), with the
-Consumers ↔ Proxy connection being synchronous and in-process, lighter than the
-async / out-of-process ⇔ connections. The Proxy implementation is relatively
-thick and the Service implementation is relatively thin, almost trivially so.
-Being able to for-each over all the apps is:
+The AppRegistryCache is owned by the AppServiceProxy as an implementation
+detail. Being able to for-each over all the apps is:
 
-    for (const auto& app : GetAppServiceProxy(profile).GetCache().GetAllApps()) {
+    proxy->AppRegistryCache().ForEachApp([..]() {
       DoSomethingWith(app);
-    }
+    });
 
 The Proxy is expected to be in the same process as its Consumers, and the Proxy
 would be a singleton (per Profile) within that process: Consumers would connect
@@ -93,100 +78,37 @@ per-Profile `AppServiceProxy` obviously contains Profile-related code (i.e. a
 given Profile) that is tied to being in the browser process. The
 `AppServiceProxy` also contains process-agnostic code (code that could
 conceivably be used by an `AppServiceProxy` living in an Ash process), such as
-code to cache and update the set of known apps (as in, the `App` Mojo type).
+code to cache and update the set of known apps (as in, the `App` type).
 Specifically, the `AppServiceProxy` code is split into two locations, one under
 `//chrome/browser` and one not:
 
   - `//chrome/browser/apps/app_service`
   - `//components/services/app_service`
 
-On the Provider side, code specific to extension-backed applications or web
-applications (as opposed to ARC++ or Crostini applications) lives under:
+Code specific to publishers lives under:
 
-  - `//chrome/browser/extensions`
-  - `//chrome/browser/web_applications`
+  - `//chrome/browser/apps/app_service/publishers`
 
+Code specific to web application publishers lives under:
 
-## Matchmaking and Publish / Subscribe
-
-The `AppService` itself does not have an `GetAllApps` method. It doesn't do
-much, and it doesn't keep much state. Instead, the App Registry aspect of the
-`AppService` is little more than a well known meeting place for `Publisher`s
-(i.e. Providers) and `Subscriber`s (i.e. Proxies) to discover each other. An
-analogy is that it's a matchmaker for `Publisher`s and `Subscriber`s, although
-it matches all to all instead of one to one. `Publisher`s don't meet
-`Subscriber`s directly, they meet the matchmaker, who introduces them to
-`Subscriber`s.
-
-Once a `Publisher` and `Subscriber` connect, the Pub-side sends the Sub-side a
-stream of `App`s (calling the `Subscriber`'s `OnApps` method). On the initial
-connection, the `Publisher` calls `OnApps` with "here's all the apps that I
-(the `Publisher`) know about", with additional `OnApps` calls made as apps are
-installed, uninstalled, updated, etc.
-
-As mentioned, the App Registry aspect of the `AppService` doesn't do much. Its
-part of the `AppService` Mojo interface is:
-
-    interface AppService {
-      // App Registry methods.
-      RegisterPublisher(Publisher publisher, AppType app_type);
-      RegisterSubscriber(Subscriber subscriber, ConnectOptions? opts);
-
-      // Some additional methods; not App Registry related.
-    };
-
-    interface Publisher {
-      // App Registry methods.
-      Connect(Subscriber subscriber, ConnectOptions? opts);
-
-      // Some additional methods; not App Registry related.
-    };
-
-    interface Subscriber {
-      OnApps(array<App> deltas);
-    };
-
-    enum AppType {
-      kUnknown,
-      kArc,
-      kCrostini,
-      kWeb,
-    };
-
-    struct ConnectOptions {
-      // TBD: some way to represent l10n info such as the UI language.
-    };
-
-Whenever a new `Publisher` is registered, it is connected with all of the
-previously registered `Subscriber`s, and vice versa. Once a `Publisher` is
-connected directly to a `Subscriber`, the `AppService` is no longer involved.
-Even as new apps are installed, uninstalled, updated, etc., the app's
-`Publisher` talks directly to each of its (previously connected) `Subscriber`s,
-without involving the `AppService`.
-
-TBD: whether we need un-registration and dis-connect mechanisms.
+  - `//chrome/browser/web_applications/app_service`
 
 
 ## The App Type
 
-The one Mojo struct type, `App`, represents both a state, "an app that's ready
+The one struct type, `App`, represents both a state, "an app that's ready
 to run", and a delta or change in state, "here's what's new about an app".
 Deltas include events like "an app was just installed" or "just uninstalled" or
 "its icon was updated".
 
 This is achieved by having every `App` field (other than `App.app_type` and
-`App.app_id`) be optional. Either optional in the Mojo sense, with type `T?`
-instead of a plain `T`, or if that isn't possible in Mojo (e.g. for integer or
-enum fields), as a semantic convention above the Mojo layer: 0 is reserved to
-mean "unknown". For example, the `App.show_in_launcher` field is a
-`OptionalBool`, not a `bool`.
+`App.app_id`) be optional.
 
 An `App.readiness` field represents whether an app is installed (i.e. ready to
 launch), uninstalled or otherwise disabled. "An app was just installed" is
 represented by a delta whose `readiness` is `kReady` and the old state's
-`readiness` being some other value. This is at the Mojo level. At the C++
-level, the `AppUpdate` wrapper type (see below) can provide helper
-`WasJustInstalled` methods.
+`readiness` being some other value. The `AppUpdate` wrapper type (see below)
+can provide helper `WasJustInstalled` methods.
 
 The `App`, `Readiness` and `OptionalBool` types are:
 
@@ -197,9 +119,9 @@ The `App`, `Readiness` and `OptionalBool` types are:
       // The fields above are mandatory. Everything else below is optional.
 
       Readiness readiness;
-      string? name;
-      IconKey? icon_key;
-      OptionalBool show_in_launcher;
+      absl::optional<std::string> name;
+      absl::optional<IconKey> icon_key;
+      absl::optional<bool> show_in_launcher;
       // etc.
     };
 
@@ -210,12 +132,6 @@ The `App`, `Readiness` and `OptionalBool` types are:
       kDisabledByPolicy,     // Disabled by admin policy.
       kDisabledByUser,       // Disabled by explicit user action.
       kUninstalledByUser,
-    };
-
-    enum OptionalBool {
-      kUnknown = 0,
-      kFalse,
-      kTrue,
     };
 
     // struct IconKey is discussed in the "App Icon Factory" section.
@@ -249,6 +165,19 @@ methods. An `AppUpdate` is a pair of `App` values: old state and delta.
     };
 
 
+## Registering Publisher
+
+Once a `Publisher` registers itself to `AppServiceProxy`, the publisher sends
+a stream of `App`s (calling the `OnApps` API method). On the initial
+registering, the `Publisher` calls `OnApps` with "here's all the apps that I
+(the `Publisher`) know about", with additional `OnApps` calls made as apps are
+installed, uninstalled, updated, etc.
+
+The key recipient of these calls is the AppRegistryCache, which coalesces the
+updates into AppUpdate objects that are the core way that Consumers of the App
+Service query the installed apps on the OS and interact with them.
+
+
 # App Icon Factory
 
 Icon data (even compressed as a PNG) is bulky, relative to the rest of the
@@ -268,7 +197,7 @@ can be loaded just from the `app_id` alone.
 In either case, the `IconKey.icon_effects` bitmask holds whether to apply
 further image processing effects such as desaturation to gray.
 
-    interface AppService {
+    AppServiceProxy {
       // App Icon Factory methods.
       LoadIcon(
           AppType app_type,
@@ -281,7 +210,7 @@ further image processing effects such as desaturation to gray.
       // Some additional methods; not App Icon Factory related.
     };
 
-    interface Publisher {
+    Publisher {
       // App Icon Factory methods.
       LoadIcon(
           string app_id,
@@ -327,8 +256,8 @@ further image processing effects such as desaturation to gray.
 
     struct IconValue {
       IconType icon_type;
-      gfx.mojom.ImageSkia? uncompressed;
-      array<uint8>? compressed;
+      gfx::ImageSkia uncompressed;
+      std::vector<uint8_t> compressed;
       bool is_placeholder_icon;
     };
 
@@ -336,12 +265,12 @@ further image processing effects such as desaturation to gray.
 ## Icon Changes
 
 Apps can change their icons, e.g. after a new version is installed. From the
-App Service's point of view, an icon change is like any other change: Providers
+App Service's point of view, an icon change is like any other change: Publishers
 broadcast an `App` value representing what's changed (icon or otherwise) about
 an app, the Proxy's `AppRegistryCache` enriches this `App` struct to be an
 `AppUpdate`, and `AppRegistryCache` observers can, if that `AppUpdate` shows
-that the icon has changed, issue a new `LoadIcon` Mojo call. A new Mojo call is
-necessary, because a Mojo callback is a `base::OnceCallback`, so the same
+that the icon has changed, issue a new `LoadIcon` call. A new call is
+necessary, because a callback is a `base::OnceCallback`, so the same
 callback can't be used for both the old and the new icon.
 
 
@@ -370,13 +299,13 @@ additional Consumer-specific cache, with a more relaxed eviction policy, if it
 has additional Consumer-specific UI signals to guide when icon-loading requests
 and cache hits are more or less likely.
 
-Note that cache values (the `IconValue` Mojo struct) are, primarily, a
-gfx.mojom.ImageSkia, which are cheap to share. Copying an ImageSkia value does
+Note that cache values (the `IconValue` struct) are, primarily, a
+gfx.ImageSkia, which are cheap to share. Copying an ImageSkia value does
 not duplicate any underlying pixel buffers.
 
 As a separate optimization, if the `AppServiceProxy` knows how to load an icon
-for a given `IconKey`, it can skip the Mojo round trip and bulk data IPC and
-load it directly instead. For example, it may know how to load icons from a
+for a given `IconKey`, it can skip the round trip and bulk data IPC and load
+it directly instead. For example, it may know how to load icons from a
 statically built resource ID.
 
 
@@ -406,19 +335,19 @@ notified of when real icons are ready will require some mechanism other than a
 placeholder. That field should only be true if the corresponding `LoadIcon`
 call had `allow_placeholder_icon` true. When the `LoadIcon` caller receives a
 placeholder icon, it is up to the caller to issue a new `LoadIcon` call, this
-time with `allow_placeholder_icon` false. As before, a new Mojo call is
-necessary, because a Mojo callback is a `base::OnceCallback`, so the same
-callback can't be used for both the placeholder and the real icon.
+time with `allow_placeholder_icon` false. As before, a new call is necessary,
+because a callback is a `base::OnceCallback`, so the same callback can't be
+used for both the placeholder and the real icon.
 
 
 ## Provider-Specific Subtleties
 
 Some concerns (like caching and coalescing multiple in-flight calls with the
-same `IconKey`) are not specific to any particular Providers like ARC++ or
+same `IconKey`) are not specific to any particular Publishers like ARC++ or
 Crostini, and can be solved by the Proxy.
 
-Other concerns are Provider-specific, and are generally solved in Provider
-implementations, albeit often with non-Provider-specific support (such as for
+Other concerns are Publisher-specific, and are generally solved in Publisher
+implementations, albeit often with non-Publisher-specific support (such as for
 placeholder icons, discussed above). Such concerns include:
 
   - Multiple icon sources: some icons for built-in VM-based apps (e.g. ARC++ or
@@ -428,14 +357,14 @@ placeholder icons, discussed above). Such concerns include:
     bringing up a VM.
   - Potential on-disk corruption: for whatever reason, an on-disk file that's
     meant to hold a cached icon may be missing or invalid. In that case, the
-    Provider should still provide a (placeholder) icon, and trigger
-    Provider-specific clean-up and re-load of the real app icon.
+    Publisher should still provide a (placeholder) icon, and trigger
+    Publisher-specific clean-up and re-load of the real app icon.
 
 All of these concerns listed should be straightforward to handle, and don't
-invalidate the overall App Service `Publisher.LoadIcon` Mojo design, including
-its non-Provider-specific caching and other optimization layers.
+invalidate the overall App Service `Publisher.LoadIcon` design, including
+its non-Publisher-specific caching and other optimization layers.
 
-There are also yet another category of concerns that are Provider-specific, but
+There are also yet another category of concerns that are Publisher-specific, but
 also outside the purview of the App Service. For example, the file system
 layout of ARC++'s on-disk icon cache is, from the App Service's point of view,
 considered a private ARC++ implementation detail. As long as ARC++'s API
@@ -450,7 +379,7 @@ Each `Publisher` has (`Publisher`-specific) implementations of e.g. launching an
 app and populating a context menu. The `AppService` presents a uniform API to
 trigger these, forwarding each call on to the relevant `Publisher`:
 
-    interface AppService {
+    AppServiceProxy {
       // App Runner methods.
       Launch(AppType app_type, string app_id, LaunchOptions? opts);
       // etc.
@@ -458,7 +387,7 @@ trigger these, forwarding each call on to the relevant `Publisher`:
       // Some additional methods; not App Runner related.
     };
 
-    interface Publisher {
+    Publisher {
       // App Runner methods.
       Launch(string app_id, LaunchOptions? opts);
       // etc.
@@ -478,11 +407,11 @@ instances (e.g. multiple windows) of the one app.
 
 # App Installer
 
-This includes Provider-facing API (not Consumer-facing API like the majority of
+This includes Publisher-facing API (not Consumer-facing API like the majority of
 the `AppService`) to help install and uninstall apps consistently. For example,
 one part of app installation is adding an icon shortcut (e.g. on the Desktop
 for Windows, on the Shelf for Chrome OS). This helper code should be written
-once (in the `AppService`), not `N` times in `N` Providers.
+once (in the `AppService`), not `N` times in `N` Publishers.
 
 TBD: details.
 
@@ -491,7 +420,7 @@ TBD: details.
 
 This keeps system-wide or for-apps-as-a-whole preferences and settings, e.g.
 out of all of the installed apps, which app has the user preferred for photo
-editing. Consumer- or Provider-specific settings, e.g. icon order in the Chrome
+editing. Consumer- or Publisher-specific settings, e.g. icon order in the Chrome
 OS shelf, or Crostini VM configuration, is out of scope of the App Service.
 
 TBD: details.
@@ -499,4 +428,4 @@ TBD: details.
 
 ---
 
-Updated on 2019-03-20.
+Updated on 2022-09-27.
