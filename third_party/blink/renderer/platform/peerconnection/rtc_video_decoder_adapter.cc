@@ -166,7 +166,9 @@ scoped_refptr<media::DecoderBuffer> ConvertToDecoderBuffer(
 
 void RTCVideoDecoderAdapter::InitializeOnMediaThread(
     const media::VideoDecoderConfig& config,
-    InitCB init_cb) {
+    InitCB init_cb,
+    base::TimeTicks start_time,
+    std::string* decoder_name) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
@@ -175,7 +177,7 @@ void RTCVideoDecoderAdapter::InitializeOnMediaThread(
     // TODO(sandersd): Plumb a real log sink here so that we can contribute to
     // the media-internals UI. The current log just discards all messages.
     media_log_ = std::make_unique<media::NullMediaLog>();
-
+    start_time_ = start_time;
     video_decoder_ = gpu_factories_->CreateVideoDecoder(
         media_log_.get(), WTF::BindRepeating(&OnRequestOverlayInfo));
 
@@ -186,18 +188,21 @@ void RTCVideoDecoderAdapter::InitializeOnMediaThread(
     }
   }
 
-  // In practice this is ignored by hardware decoders.
-  bool low_delay = true;
-
-  // Encryption is not supported.
-  media::CdmContext* cdm_context = nullptr;
-
   media::VideoDecoder::OutputCB output_cb = ConvertToBaseRepeatingCallback(
       CrossThreadBindRepeating(&RTCVideoDecoderAdapter::OnOutput, weak_this_));
   video_decoder_->Initialize(
-      config, low_delay, cdm_context,
-      base::BindOnce(&RTCVideoDecoderAdapter::OnInitializeDone,
-                     ConvertToBaseOnceCallback(std::move(init_cb))),
+      config, /*low_delay=*/false,
+      /*cdm_context=*/nullptr,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> cb, std::string* decoder_name,
+             media::VideoDecoder* video_decoder, media::DecoderStatus status) {
+            *decoder_name =
+                media::GetDecoderName(video_decoder->GetDecoderType());
+            std::move(cb).Run(status.is_ok());
+          },
+          ConvertToBaseOnceCallback(std::move(init_cb)),
+          CrossThreadUnretained(decoder_name),
+          CrossThreadUnretained(video_decoder_.get())),
       output_cb, base::DoNothing());
 }
 
@@ -362,12 +367,6 @@ void RTCVideoDecoderAdapter::FlushOnMediaThread(FlushDoneCB flush_success_cb,
           std::move(flush_success_cb), std::move(flush_fail_cb)));
 }
 
-// static
-void RTCVideoDecoderAdapter::OnInitializeDone(base::OnceCallback<void(bool)> cb,
-                                              media::DecoderStatus status) {
-  std::move(cb).Run(status.is_ok());
-}
-
 void RTCVideoDecoderAdapter::OnDecodeDone(media::DecoderStatus status) {
   DVLOG(3) << __func__ << "(" << status.group() << ":"
            << static_cast<int>(status.code()) << ")";
@@ -463,8 +462,8 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
   if (gpu_factories->IsDecoderConfigSupported(config) !=
       media::GpuVideoAcceleratorFactories::Supported::kFalse) {
     // Synchronously verify that the decoder can be initialized.
-    rtc_video_decoder_adapter = base::WrapUnique(
-        new RTCVideoDecoderAdapter(gpu_factories, config, format));
+    rtc_video_decoder_adapter =
+        base::WrapUnique(new RTCVideoDecoderAdapter(gpu_factories, config));
     if (rtc_video_decoder_adapter->InitializeSync(config)) {
       return rtc_video_decoder_adapter;
     }
@@ -483,15 +482,16 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
 
 RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    const media::VideoDecoderConfig& config,
-    const webrtc::SdpVideoFormat& format)
+    const media::VideoDecoderConfig& config)
     : media_task_runner_(gpu_factories->GetTaskRunner()),
       gpu_factories_(gpu_factories),
-      format_(format),
       config_(config) {
   DVLOG(1) << __func__;
   DETACH_FROM_SEQUENCE(decoding_sequence_checker_);
   DETACH_FROM_SEQUENCE(media_sequence_checker_);
+  decoder_info_.implementation_name = "ExternalDecoder (Unknown)";
+  decoder_info_.is_hardware_accelerated = true;
+
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
@@ -506,10 +506,10 @@ bool RTCVideoDecoderAdapter::InitializeSync(
     const media::VideoDecoderConfig& config) {
   TRACE_EVENT0("webrtc", "RTCVideoDecoderAdapter::InitializeSync");
   DVLOG(3) << __func__;
-  // Can be called on |worker_thread_| or |decoding_thread_|.
+  // This function is called on a decoder thread.
   DCHECK(!media_task_runner_->RunsTasksInCurrentSequence());
-  base::AutoLock auto_lock(lock_);
-  start_time_ = base::TimeTicks::Now();
+  auto start_time = base::TimeTicks::Now();
+  std::string decoder_name;
 
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   bool result = false;
@@ -522,15 +522,18 @@ bool RTCVideoDecoderAdapter::InitializeSync(
           *media_task_runner_.get(), FROM_HERE,
           CrossThreadBindOnce(&RTCVideoDecoderAdapter::InitializeOnMediaThread,
                               CrossThreadUnretained(this), config,
-                              std::move(init_cb)))) {
+                              std::move(init_cb), start_time,
+                              CrossThreadUnretained(&decoder_name)))) {
     // TODO(crbug.com/1076817) Remove if a root cause is found.
     if (!waiter.TimedWait(base::Seconds(10))) {
-      RecordInitializationLatency(base::TimeTicks::Now() - *start_time_);
+      RecordInitializationLatency(base::TimeTicks::Now() - start_time);
       return false;
     }
 
-    RecordInitializationLatency(base::TimeTicks::Now() - *start_time_);
+    RecordInitializationLatency(base::TimeTicks::Now() - start_time);
   }
+
+  decoder_info_.implementation_name = "ExternalDecoder (" + decoder_name + ")";
   return result;
 }
 
@@ -538,8 +541,8 @@ bool RTCVideoDecoderAdapter::Configure(const Settings& settings) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
 
-  video_codec_type_ = settings.codec_type();
-  DCHECK_EQ(webrtc::PayloadStringToCodecType(format_.name), video_codec_type_);
+  if (WebRtcToMediaVideoCodec(settings.codec_type()) != config_.codec())
+    return false;
 
   base::AutoLock auto_lock(lock_);
 
@@ -551,10 +554,8 @@ bool RTCVideoDecoderAdapter::Configure(const Settings& settings) {
   base::UmaHistogramBoolean("Media.RTCVideoDecoderInitDecodeSuccess",
                             !has_error_);
   if (!has_error_) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Media.RTCVideoDecoderProfile",
-        WebRtcVideoFormatToMediaVideoCodecProfile(format_),
-        media::VIDEO_CODEC_PROFILE_MAX + 1);
+    UMA_HISTOGRAM_ENUMERATION("Media.RTCVideoDecoderProfile", config_.profile(),
+                              media::VIDEO_CODEC_PROFILE_MAX + 1);
   }
   return !has_error_;
 }
@@ -636,16 +637,6 @@ int32_t RTCVideoDecoderAdapter::Release() {
                     : WEBRTC_VIDEO_CODEC_OK;
 }
 
-webrtc::VideoDecoder::DecoderInfo RTCVideoDecoderAdapter::GetDecoderInfo()
-    const {
-  DecoderInfo info;
-  std::string implementation_name_suffix =
-      " (" + media::GetDecoderName(video_decoder_->GetDecoderType()) + ")";
-  info.implementation_name = "ExternalDecoder" + implementation_name_suffix;
-  info.is_hardware_accelerated = true;
-  return info;
-}
-
 bool RTCVideoDecoderAdapter::ShouldReinitializeForSettingHDRColorSpace(
     const webrtc::EncodedImage& input_image) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
@@ -674,9 +665,12 @@ bool RTCVideoDecoderAdapter::ReinitializeSync(
   auto init_cb =
       CrossThreadBindOnce(&FinishWait, CrossThreadUnretained(&waiter),
                           CrossThreadUnretained(&result));
-  FlushDoneCB flush_success_cb =
-      CrossThreadBindOnce(&RTCVideoDecoderAdapter::InitializeOnMediaThread,
-                          weak_this_, config, std::move(init_cb));
+  std::string decoder_name;
+  FlushDoneCB flush_success_cb = CrossThreadBindOnce(
+      &RTCVideoDecoderAdapter::InitializeOnMediaThread, weak_this_, config,
+      std::move(init_cb),
+      /*start_time=*/base::TimeTicks(),
+      /*decoder_name=*/CrossThreadUnretained(&decoder_name));
   FlushDoneCB flush_fail_cb =
       CrossThreadBindOnce(&FinishWait, CrossThreadUnretained(&waiter),
                           CrossThreadUnretained(&result), false);
