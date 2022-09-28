@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame.h"
@@ -27,22 +26,19 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/automation.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/renderer/api/automation/automation_api_converters.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "extensions/renderer/script_context.h"
-#include "gin/converter.h"
 #include "gin/data_object_builder.h"
 #include "ipc/message_filter.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
-#include "ui/accessibility/ax_role_properties.h"
-#include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/platform/automation/automation_api_util.h"
 #include "ui/accessibility/platform/automation/automation_ax_tree_wrapper.h"
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
@@ -51,122 +47,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
-
-namespace {
-
-api::automation::MarkerType ConvertMarkerTypeFromAXToAutomation(
-    ax::mojom::MarkerType ax) {
-  switch (ax) {
-    case ax::mojom::MarkerType::kNone:
-      return api::automation::MARKER_TYPE_NONE;
-    case ax::mojom::MarkerType::kSpelling:
-      return api::automation::MARKER_TYPE_SPELLING;
-    case ax::mojom::MarkerType::kGrammar:
-      return api::automation::MARKER_TYPE_GRAMMAR;
-    case ax::mojom::MarkerType::kTextMatch:
-      return api::automation::MARKER_TYPE_TEXTMATCH;
-    case ax::mojom::MarkerType::kActiveSuggestion:
-      return api::automation::MARKER_TYPE_ACTIVESUGGESTION;
-    case ax::mojom::MarkerType::kSuggestion:
-      return api::automation::MARKER_TYPE_SUGGESTION;
-    case ax::mojom::MarkerType::kHighlight:
-      return api::automation::MARKER_TYPE_HIGHLIGHT;
-  }
-}
-
-// TODO(crbug.com/1357889): Move this and other converters between
-// automation and AX types to a utility file.
-api::automation::TreeChangeType ConvertToAutomationTreeChangeType(
-    ax::mojom::Mutation change_type) {
-  switch (change_type) {
-    case ax::mojom::Mutation::kNone:
-      return api::automation::TREE_CHANGE_TYPE_NONE;
-    case ax::mojom::Mutation::kNodeCreated:
-      return api::automation::TREE_CHANGE_TYPE_NODECREATED;
-    case ax::mojom::Mutation::kSubtreeCreated:
-      return api::automation::TREE_CHANGE_TYPE_SUBTREECREATED;
-    case ax::mojom::Mutation::kNodeChanged:
-      return api::automation::TREE_CHANGE_TYPE_NODECHANGED;
-    case ax::mojom::Mutation::kTextChanged:
-      return api::automation::TREE_CHANGE_TYPE_TEXTCHANGED;
-    case ax::mojom::Mutation::kNodeRemoved:
-      return api::automation::TREE_CHANGE_TYPE_NODEREMOVED;
-    case ax::mojom::Mutation::kSubtreeUpdateEnd:
-      return api::automation::TREE_CHANGE_TYPE_SUBTREEUPDATEEND;
-    default:
-      NOTREACHED();
-  }
-}
-
-// Maps a key, a stringification of values in ui::AXEventGenerator::Event or
-// ax::mojom::Event into a value, automation::api::EventType. The runtime
-// invariant is that there should be exactly the same number of values in the
-// map as is the size of api::automation::EventType.
-api::automation::EventType AXEventToAutomationEventType(
-    ax::mojom::Event event_type) {
-  static base::NoDestructor<std::vector<api::automation::EventType>> enum_map;
-  if (enum_map->empty()) {
-    for (int i = static_cast<int>(ax::mojom::Event::kMinValue);
-         i <= static_cast<int>(ax::mojom::Event::kMaxValue); i++) {
-      auto ax_event_type = static_cast<ax::mojom::Event>(i);
-      if (ui::ShouldIgnoreAXEventForAutomation(ax_event_type) ||
-          ax_event_type == ax::mojom::Event::kNone) {
-        enum_map->emplace_back(api::automation::EVENT_TYPE_NONE);
-        continue;
-      }
-
-      const char* val = ui::ToString(ax_event_type);
-      api::automation::EventType automation_event_type =
-          api::automation::ParseEventType(val);
-      if (automation_event_type == api::automation::EVENT_TYPE_NONE)
-        NOTREACHED() << "Missing mapping from ax::mojom::Event: " << val;
-
-      enum_map->emplace_back(automation_event_type);
-    }
-  }
-
-  return (*enum_map)[static_cast<int>(event_type)];
-}
-
-api::automation::EventType AXGeneratedEventToAutomationEventType(
-    ui::AXEventGenerator::Event event_type) {
-  static base::NoDestructor<std::vector<api::automation::EventType>> enum_map;
-  if (enum_map->empty()) {
-    for (int i = 0;
-         i <= static_cast<int>(ui::AXEventGenerator::Event::MAX_VALUE); i++) {
-      auto ax_event_type = static_cast<ui::AXEventGenerator::Event>(i);
-      if (ui::ShouldIgnoreGeneratedEventForAutomation(ax_event_type)) {
-        enum_map->emplace_back(api::automation::EVENT_TYPE_NONE);
-        continue;
-      }
-
-      const char* val = ui::ToString(ax_event_type);
-      api::automation::EventType automation_event_type =
-          api::automation::ParseEventType(val);
-      if (automation_event_type == api::automation::EVENT_TYPE_NONE)
-        NOTREACHED() << "Missing mapping from ui::AXEventGenerator::Event: "
-                     << val;
-
-      enum_map->emplace_back(automation_event_type);
-    }
-  }
-
-  return (*enum_map)[static_cast<int>(event_type)];
-}
-
-std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>
-AutomationEventTypeToAXEventTuple(api::automation::EventType event_type) {
-  const char* val = api::automation::ToString(event_type);
-  ax::mojom::Event ax_event = ax::mojom::Event::kNone;
-  ui::MaybeParseAXEnum<ax::mojom::Event>(val, &ax_event);
-  ui::AXEventGenerator::Event generated_event =
-      ui::AXEventGenerator::Event::NONE;
-  ui::MaybeParseGeneratedEvent(val, &generated_event);
-  return std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>(
-      ax_event, generated_event);
-}
-
-}  // namespace
 
 class AutomationMessageFilter : public IPC::MessageFilter {
  public:
@@ -226,7 +106,6 @@ AutomationInternalCustomBindings::AutomationInternalCustomBindings(
     NativeExtensionBindingsSystem* bindings_system)
     : ObjectBackedNativeHandler(context),
       is_active_profile_(true),
-      tree_change_observer_overall_filter_(0),
       bindings_system_(bindings_system),
       should_ignore_context_(false) {
   // We will ignore this instance if the extension has a background page and
@@ -257,9 +136,6 @@ void AutomationInternalCustomBindings::AddRoutes() {
   ROUTE_FUNCTION(GetSchemaAdditions);
   ROUTE_FUNCTION(StartCachingAccessibilityTrees);
   ROUTE_FUNCTION(StopCachingAccessibilityTrees);
-  ROUTE_FUNCTION(DestroyAccessibilityTree);
-  ROUTE_FUNCTION(AddTreeChangeObserver);
-  ROUTE_FUNCTION(RemoveTreeChangeObserver);
   ROUTE_FUNCTION(GetState);
 #undef ROUTE_FUNCTION
 
@@ -268,55 +144,6 @@ void AutomationInternalCustomBindings::AddRoutes() {
   automation_v8_bindings_ =
       std::make_unique<ui::AutomationV8Bindings>(this, this);
   automation_v8_bindings_->AddV8Routes();
-
-  automation_v8_bindings_->RouteNodeIDFunction(
-      "GetMarkers",
-      base::BindRepeating([](v8::Isolate* isolate,
-                             v8::ReturnValue<v8::Value> result,
-                             ui::AutomationAXTreeWrapper* tree_wrapper,
-                             ui::AXNode* node) {
-        if (!node->HasIntListAttribute(
-                ax::mojom::IntListAttribute::kMarkerStarts) ||
-            !node->HasIntListAttribute(
-                ax::mojom::IntListAttribute::kMarkerEnds) ||
-            !node->HasIntListAttribute(
-                ax::mojom::IntListAttribute::kMarkerTypes)) {
-          return;
-        }
-
-        const std::vector<int32_t>& marker_starts = node->GetIntListAttribute(
-            ax::mojom::IntListAttribute::kMarkerStarts);
-        const std::vector<int32_t>& marker_ends =
-            node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
-        const std::vector<int32_t>& marker_types = node->GetIntListAttribute(
-            ax::mojom::IntListAttribute::kMarkerTypes);
-
-        std::vector<v8::Local<v8::Object>> markers;
-        for (size_t i = 0; i < marker_types.size(); ++i) {
-          gin::DataObjectBuilder marker_obj(isolate);
-          marker_obj.Set("startOffset", marker_starts[i]);
-          marker_obj.Set("endOffset", marker_ends[i]);
-
-          gin::DataObjectBuilder flags(isolate);
-          int32_t marker_type = marker_types[i];
-          int32_t marker_pos = 1;
-          while (marker_type) {
-            if (marker_type & 1) {
-              flags.Set(
-                  api::automation::ToString(ConvertMarkerTypeFromAXToAutomation(
-                      static_cast<ax::mojom::MarkerType>(marker_pos))),
-                  true);
-            }
-            marker_type = marker_type >> 1;
-            marker_pos = marker_pos << 1;
-          }
-
-          marker_obj.Set("flags", flags.Build());
-          markers.push_back(marker_obj.Build());
-        }
-
-        result.Set(gin::ConvertToV8(isolate, markers));
-      }));
 
   automation_v8_bindings_->RouteNodeIDFunction(
       "GetImageAnnotation",
@@ -330,16 +157,7 @@ void AutomationInternalCustomBindings::Invalidate() {
   if (message_filter_)
     message_filter_->Detach();
 
-  auto& child_tree_id_reverse_map =
-      ui::AutomationAXTreeWrapper::GetChildTreeIDReverseMap();
-  base::EraseIf(
-      child_tree_id_reverse_map,
-      [this](
-          const std::pair<ui::AXTreeID, ui::AutomationAXTreeWrapper*>& pair) {
-        return pair.second->owner() == this;
-      });
-
-  ClearCachedAutomationTreeWrappers();
+  AutomationTreeManagerOwner::Invalidate();
 }
 
 void AutomationInternalCustomBindings::OnMessageReceived(
@@ -380,9 +198,7 @@ void AutomationInternalCustomBindings::StopCachingAccessibilityTrees(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   message_filter_->Detach();
   message_filter_.reset();
-  tree_change_observers_.clear();
-  ClearCachedAutomationTreeWrappers();
-  ui::AutomationAXTreeWrapper::GetChildTreeIDReverseMap().clear();
+  ClearCachedAccessibilityTrees();
 }
 
 void AutomationInternalCustomBindings::GetSchemaAdditions(
@@ -418,69 +234,6 @@ void AutomationInternalCustomBindings::GetSchemaAdditions(
           .Set("Restriction", restriction.Build())
           .Set("DescriptionFromType", description_from_type.Build())
           .Build());
-}
-
-void AutomationInternalCustomBindings::DestroyAccessibilityTree(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() != 1 || !args[0]->IsString()) {
-    ThrowInvalidArgumentsException();
-    return;
-  }
-
-  ui::AXTreeID tree_id = ui::AXTreeID::FromString(
-      *v8::String::Utf8Value(args.GetIsolate(), args[0]));
-  auto& child_tree_id_reverse_map =
-      ui::AutomationAXTreeWrapper::GetChildTreeIDReverseMap();
-  base::EraseIf(
-      child_tree_id_reverse_map,
-      [tree_id](
-          const std::pair<ui::AXTreeID, ui::AutomationAXTreeWrapper*>& pair) {
-        return pair.first == tree_id || pair.second->GetTreeID() == tree_id;
-      });
-
-  if (tree_id == accessibility_focused_tree_id())
-    SetAccessibilityFocusedTreeID(ui::AXTreeIDUnknown());
-
-  RemoveAutomationTreeWrapperFromCache(tree_id);
-  trees_with_event_listeners_.erase(tree_id);
-}
-
-void AutomationInternalCustomBindings::AddTreeChangeObserver(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() != 2 || !args[0]->IsNumber() || !args[1]->IsString()) {
-    ThrowInvalidArgumentsException();
-    return;
-  }
-
-  TreeChangeObserver observer;
-  observer.id = args[0]->Int32Value(context()->v8_context()).FromMaybe(0);
-  std::string filter_str = *v8::String::Utf8Value(args.GetIsolate(), args[1]);
-  observer.filter = api::automation::ParseTreeChangeObserverFilter(filter_str);
-
-  tree_change_observers_.push_back(observer);
-  UpdateOverallTreeChangeObserverFilter();
-}
-
-void AutomationInternalCustomBindings::RemoveTreeChangeObserver(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  // The argument is an integer key for an object which is automatically
-  // converted to a string.
-  if (args.Length() != 1 || !args[0]->IsString()) {
-    ThrowInvalidArgumentsException();
-    return;
-  }
-
-  int observer_id = args[0]->Int32Value(context()->v8_context()).FromMaybe(0);
-
-  for (auto iter = tree_change_observers_.begin();
-       iter != tree_change_observers_.end(); ++iter) {
-    if (iter->id == observer_id) {
-      tree_change_observers_.erase(iter);
-      break;
-    }
-  }
-
-  UpdateOverallTreeChangeObserverFilter();
 }
 
 void AutomationInternalCustomBindings::GetState(
@@ -565,12 +318,6 @@ void AutomationInternalCustomBindings::GetImageAnnotation(
       v8::String::NewFromUtf8(isolate, status_string.c_str()).ToLocalChecked());
 }
 
-void AutomationInternalCustomBindings::UpdateOverallTreeChangeObserverFilter() {
-  tree_change_observer_overall_filter_ = 0;
-  for (const auto& observer : tree_change_observers_)
-    tree_change_observer_overall_filter_ |= 1 << observer.filter;
-}
-
 //
 // Handle accessibility events from the browser process.
 //
@@ -594,9 +341,8 @@ void AutomationInternalCustomBindings::OnAccessibilityEvents(
     DLOG(ERROR) << tree_wrapper->ax_tree()->error();
     base::Value::List args;
     args.Append(tree_id.ToString());
-    bindings_system_->DispatchEventInContext(
-        "automationInternal.onAccessibilityTreeSerializationError", args,
-        nullptr, context());
+    DispatchEvent("automationInternal.onAccessibilityTreeSerializationError",
+                  args);
     return;
   }
 
@@ -660,50 +406,17 @@ bool AutomationInternalCustomBindings::SendTreeChangeEvent(
       SendChildTreeIDEvent(child_tree_id);
   }
 
-  // At this point, don't bother dispatching to js if the node is ignored. A js
-  // client shouldn't process ignored nodes.
-  if (node->IsIgnored())
-    return false;
-
-  // Likewise, don't process tree changes on ignored trees.
-  auto* tree_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(tree->GetAXTreeID());
-  if (!tree_wrapper || tree_wrapper->IsTreeIgnored())
-    return false;
-
-  bool has_filter = false;
-  if (tree_change_observer_overall_filter_ &
-      (1
-       << api::automation::TREE_CHANGE_OBSERVER_FILTER_LIVEREGIONTREECHANGES)) {
-    if (node->HasStringAttribute(
-            ax::mojom::StringAttribute::kContainerLiveStatus) ||
-        node->GetRole() == ax::mojom::Role::kAlert ||
-        change_type == ax::mojom::Mutation::kSubtreeUpdateEnd) {
-      has_filter = true;
-    }
-  }
-
-  if (tree_change_observer_overall_filter_ &
-      (1 << api::automation::TREE_CHANGE_OBSERVER_FILTER_TEXTMARKERCHANGES)) {
-    if (node->HasIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes))
-      has_filter = true;
-  }
-
-  if (tree_change_observer_overall_filter_ &
-      (1 << api::automation::TREE_CHANGE_OBSERVER_FILTER_ALLTREECHANGES))
-    has_filter = true;
-
-  if (!has_filter)
+  if (!ShouldSendTreeChangeEvent(change_type, tree, node))
     return false;
 
   ui::AXTreeID tree_id = tree->GetAXTreeID();
   bool did_send_event = false;
-  for (const auto& observer : tree_change_observers_) {
+  for (const auto& observer : tree_change_observers()) {
     switch (observer.filter) {
-      case api::automation::TREE_CHANGE_OBSERVER_FILTER_NOTREECHANGES:
+      case ui::TreeChangeObserverFilter::kNoTreeChanges:
       default:
         continue;
-      case api::automation::TREE_CHANGE_OBSERVER_FILTER_LIVEREGIONTREECHANGES:
+      case ui::TreeChangeObserverFilter::kLiveRegionTreeChanges:
         if (!node->HasStringAttribute(
                 ax::mojom::StringAttribute::kContainerLiveStatus) &&
             node->GetRole() != ax::mojom::Role::kAlert &&
@@ -711,12 +424,12 @@ bool AutomationInternalCustomBindings::SendTreeChangeEvent(
           continue;
         }
         break;
-      case api::automation::TREE_CHANGE_OBSERVER_FILTER_TEXTMARKERCHANGES:
+      case ui::TreeChangeObserverFilter::kTextMarkerChanges:
         if (!node->HasIntListAttribute(
                 ax::mojom::IntListAttribute::kMarkerTypes))
           continue;
         break;
-      case api::automation::TREE_CHANGE_OBSERVER_FILTER_ALLTREECHANGES:
+      case ui::TreeChangeObserverFilter::kAllTreeChanges:
         break;
     }
 
@@ -728,8 +441,7 @@ bool AutomationInternalCustomBindings::SendTreeChangeEvent(
     args.Append(tree_id.ToString());
     args.Append(node->id());
     args.Append(ToString(automation_change_type));
-    bindings_system_->DispatchEventInContext("automationInternal.onTreeChange",
-                                             args, nullptr, context());
+    DispatchEvent("automationInternal.onTreeChange", args);
   }
 
   return did_send_event;
@@ -810,8 +522,7 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
 
   base::Value::List args;
   args.Append(std::move(event_params));
-  bindings_system_->DispatchEventInContext(
-      "automationInternal.onAccessibilityEvent", args, nullptr, context());
+  DispatchEvent("automationInternal.onAccessibilityEvent", args);
 
   if (!notify_event_for_testing_.is_null())
     notify_event_for_testing_.Run(automation_event_type);
@@ -859,12 +570,30 @@ AutomationInternalCustomBindings::ParseEventType(
       api::automation::ParseEventType(event_type));
 }
 
+ui::TreeChangeObserverFilter
+AutomationInternalCustomBindings::ParseTreeChangeObserverFilter(
+    const std::string& filter) const {
+  return ConvertAutomationTreeChangeObserverFilter(
+      api::automation::ParseTreeChangeObserverFilter(filter));
+}
+
+std::string AutomationInternalCustomBindings::GetMarkerTypeString(
+    ax::mojom::MarkerType type) const {
+  return api::automation::ToString(ConvertMarkerTypeFromAXToAutomation(type));
+}
+
+void AutomationInternalCustomBindings::DispatchEvent(
+    const std::string& event_name,
+    const base::Value::List& event_args) const {
+  bindings_system_->DispatchEventInContext(event_name, event_args, nullptr,
+                                           context());
+}
+
 void AutomationInternalCustomBindings::SendChildTreeIDEvent(
     ui::AXTreeID child_tree_id) {
   base::Value::List args;
   args.Append(child_tree_id.ToString());
-  bindings_system_->DispatchEventInContext("automationInternal.onChildTreeID",
-                                           args, nullptr, context());
+  DispatchEvent("automationInternal.onChildTreeID", args);
 }
 
 void AutomationInternalCustomBindings::SendNodesRemovedEvent(
@@ -880,8 +609,7 @@ void AutomationInternalCustomBindings::SendNodesRemovedEvent(
     args.Append(std::move(nodes));
   }
 
-  bindings_system_->DispatchEventInContext("automationInternal.onNodesRemoved",
-                                           args, nullptr, context());
+  DispatchEvent("automationInternal.onNodesRemoved", args);
 }
 
 std::string
@@ -915,20 +643,7 @@ AutomationInternalCustomBindings::GetLocalizedStringForImageAnnotationStatus(
   return l10n_util::GetStringUTF8(message_id);
 }
 
-void AutomationInternalCustomBindings::TreeEventListenersChanged(
-    ui::AutomationAXTreeWrapper* tree_wrapper) {
-  if (tree_wrapper->EventListenerCount() != 0) {
-    trees_with_event_listeners_.insert(tree_wrapper->GetTreeID());
-    return;
-  }
-
-  if (trees_with_event_listeners_.empty())
-    return;
-
-  trees_with_event_listeners_.erase(tree_wrapper->GetTreeID());
-  if (!trees_with_event_listeners_.empty())
-    return;
-
+void AutomationInternalCustomBindings::NotifyTreeEventListenersChanged() {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       context()->web_frame()->GetTaskRunner(blink::TaskType::kInternalDefault);
   task_runner->PostTask(
@@ -940,12 +655,11 @@ void AutomationInternalCustomBindings::TreeEventListenersChanged(
 
 void AutomationInternalCustomBindings::
     MaybeSendOnAllAutomationEventListenersRemoved() {
-  if (!trees_with_event_listeners_.empty())
+  if (HasTreesWithEventListeners())
     return;
 
-  bindings_system_->DispatchEventInContext(
-      "automationInternal.onAllAutomationEventListenersRemoved",
-      base::Value::List(), nullptr, context());
+  DispatchEvent("automationInternal.onAllAutomationEventListenersRemoved",
+                base::Value::List());
 }
 
 }  // namespace extensions

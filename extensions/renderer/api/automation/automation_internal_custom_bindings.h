@@ -36,11 +36,6 @@ class AutomationInternalCustomBindings;
 class AutomationMessageFilter;
 class NativeExtensionBindingsSystem;
 
-struct TreeChangeObserver {
-  int id;
-  api::automation::TreeChangeObserverFilter filter;
-};
-
 // The native component of custom bindings for the chrome.automationInternal
 // API.
 class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
@@ -75,8 +70,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
       const ui::AXEvent& event,
       absl::optional<ui::AXEventGenerator::Event> generated_event_type =
           absl::optional<ui::AXEventGenerator::Event>()) override;
-  void TreeEventListenersChanged(
-      ui::AutomationAXTreeWrapper* tree_wrapper) override;
+  void NotifyTreeEventListenersChanged() override;
 
   // ui::AutomationV8Router:
   void ThrowInvalidArgumentsException(bool is_fatal = true) const override;
@@ -89,6 +83,11 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
                             HandlerFunction handler_function) override;
   std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event> ParseEventType(
       const std::string& event_type) const override;
+  ui::TreeChangeObserverFilter ParseTreeChangeObserverFilter(
+      const std::string& filter) const override;
+  std::string GetMarkerTypeString(ax::mojom::MarkerType type) const override;
+  void DispatchEvent(const std::string& event_name,
+                     const base::Value::List& event_args) const override;
 
  private:
   friend class AutomationInternalCustomBindingsTest;
@@ -118,17 +117,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   void StopCachingAccessibilityTrees(
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  // Called when an accessibility tree is destroyed and needs to be
-  // removed from our cache.
-  // Args: string ax_tree_id
-  void DestroyAccessibilityTree(
-      const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  void AddTreeChangeObserver(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  void RemoveTreeChangeObserver(
-      const v8::FunctionCallbackInfo<v8::Value>& args);
-
   // Args: string ax_tree_id, int node_id
   // Returns: JS object with a string key for each state flag that's set.
   void GetState(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -150,8 +138,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   void OnAccessibilityLocationChange(
       const ExtensionMsg_AccessibilityLocationChangeParams& params);
 
-  void UpdateOverallTreeChangeObserverFilter();
-
   void SendChildTreeIDEvent(ui::AXTreeID child_tree_id);
 
   std::string GetLocalizedStringForImageAnnotationStatus(
@@ -161,16 +147,10 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
 
   scoped_refptr<AutomationMessageFilter> message_filter_;
   bool is_active_profile_;
-  std::vector<TreeChangeObserver> tree_change_observers_;
-  // A bit-map of api::automation::TreeChangeObserverFilter.
-  int tree_change_observer_overall_filter_;
   NativeExtensionBindingsSystem* bindings_system_;
   bool should_ignore_context_;
 
   std::unique_ptr<ui::AutomationV8Bindings> automation_v8_bindings_;
-
-  // Keeps track of all trees with event listeners.
-  std::set<ui::AXTreeID> trees_with_event_listeners_;
 
   base::RepeatingCallback<void(api::automation::EventType)>
       notify_event_for_testing_;

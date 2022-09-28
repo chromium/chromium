@@ -163,7 +163,10 @@ class AX_EXPORT AutomationV8Bindings {
       AutomationAXTreeWrapper* tree_wrapper,
       AXNode* node,
       const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type);
-
+  void GetMarkers(v8::Isolate* isolate,
+                  v8::ReturnValue<v8::Value> result,
+                  ui::AutomationAXTreeWrapper* tree_wrapper,
+                  ui::AXNode* node);
   void GetFocus(const v8::FunctionCallbackInfo<v8::Value>& args);
 
   //
@@ -183,6 +186,17 @@ class AX_EXPORT AutomationV8Bindings {
   // Args: string ax_tree_id, int node_id
   // Returns: JS object with a map from html attribute key to value.
   void GetHtmlAttributes(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  // Called when an accessibility tree is destroyed and needs to be
+  // removed from our cache.
+  // Args: string ax_tree_id
+  void DestroyAccessibilityTree(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  void AddTreeChangeObserver(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  void RemoveTreeChangeObserver(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
 
   // Creates the backing AutomationPosition native object given a request from
   // javascript.

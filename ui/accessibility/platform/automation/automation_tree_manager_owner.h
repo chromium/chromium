@@ -8,6 +8,7 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/platform/automation/automation_api_util.h"
 #include "ui/accessibility/platform/automation/automation_ax_tree_wrapper.h"
 #include "v8/include/v8-isolate.h"
 
@@ -53,8 +54,7 @@ class AX_EXPORT AutomationTreeManagerOwner {
       absl::optional<AXEventGenerator::Event> generated_event_type =
           absl::optional<AXEventGenerator::Event>()) = 0;
 
-  virtual void TreeEventListenersChanged(
-      AutomationAXTreeWrapper* tree_wrapper) = 0;
+  virtual void NotifyTreeEventListenersChanged() = 0;
 
   // Gets the hosting node in a parent tree.
   AXNode* GetHostInParentTree(
@@ -133,8 +133,16 @@ class AX_EXPORT AutomationTreeManagerOwner {
   bool GetAccessibilityFocus(AXTreeID* tree_id, int* node_id);
 
   // Find the node with the given ID in the tree with the given ID, or
-  // returns nullptr if not found.s
+  // returns nullptr if not found.
   AXNode* GetNodeFromTree(const AXTreeID& tree_id, int node_id);
+
+  void AddTreeChangeObserver(int observer_id, TreeChangeObserverFilter filter);
+  void RemoveTreeChangeObserver(int observer_id);
+  void TreeEventListenersChanged(AutomationAXTreeWrapper* tree_wrapper);
+  bool ShouldSendTreeChangeEvent(ax::mojom::Mutation change_type,
+                                 ui::AXTree* tree,
+                                 ui::AXNode* node) const;
+  void DestroyAccessibilityTree(const ui::AXTreeID& tree_id);
 
   const AXTreeID& accessibility_focused_tree_id() const {
     return accessibility_focused_tree_id_;
@@ -147,6 +155,22 @@ class AX_EXPORT AutomationTreeManagerOwner {
  protected:
   friend class extensions::AutomationInternalCustomBindingsTest;
 
+  void CacheAutomationTreeWrapperForTreeID(
+      const AXTreeID& tree_id,
+      AutomationAXTreeWrapper* tree_wrapper);
+
+  void ClearCachedAccessibilityTrees();
+
+  // Invalidates this AutomationTreeManagerOnwer.
+  void Invalidate();
+
+  bool HasTreesWithEventListeners();
+
+  const std::vector<TreeChangeObserver>& tree_change_observers() {
+    return tree_change_observers_;
+  }
+
+ private:
   // Given an initial AutomationAXTreeWrapper, return the
   // AutomationAXTreeWrapper and node of the focused node within this tree
   // or a focused descendant tree.
@@ -154,23 +178,22 @@ class AX_EXPORT AutomationTreeManagerOwner {
                         AutomationAXTreeWrapper** out_tree,
                         AXNode** out_node);
 
-  void CacheAutomationTreeWrapperForTreeID(
-      const AXTreeID& tree_id,
-      AutomationAXTreeWrapper* tree_wrapper);
-
   void RemoveAutomationTreeWrapperFromCache(const AXTreeID& tree_id);
 
   void ClearCachedAutomationTreeWrappers();
 
-  const AXTreeID& focus_tree_id() const { return focus_tree_id_; }
+  void UpdateOverallTreeChangeObserverFilter();
 
-  int32_t focus_id() const { return focus_id_; }
-
-  const AXTreeID& desktop_tree_id() { return desktop_tree_id_; }
-
- private:
   std::map<AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>
       tree_id_to_tree_wrapper_map_;
+
+  // Keeps track of all trees with event listeners.
+  std::set<ui::AXTreeID> trees_with_event_listeners_;
+
+  std::vector<TreeChangeObserver> tree_change_observers_;
+
+  // A bit-map of api::automation::TreeChangeObserverFilter.
+  int tree_change_observer_overall_filter_ = 0;
 
   // Keeps track  of the single desktop tree, if it exists.
   AXTreeID desktop_tree_id_ = AXTreeIDUnknown();

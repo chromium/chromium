@@ -485,6 +485,9 @@ void AutomationV8Bindings::AddV8Routes() {
   ROUTE_FUNCTION(CreateAutomationPosition);
   ROUTE_FUNCTION(GetAccessibilityFocus);
   ROUTE_FUNCTION(SetDesktopID);
+  ROUTE_FUNCTION(DestroyAccessibilityTree);
+  ROUTE_FUNCTION(AddTreeChangeObserver);
+  ROUTE_FUNCTION(RemoveTreeChangeObserver);
 
   // Bindings that take a Tree ID and return a property of the tree.
 
@@ -1387,6 +1390,9 @@ void AutomationV8Bindings::AddV8Routes() {
       "EventListenerRemoved",
       base::BindRepeating(&AutomationV8Bindings::EventListenerRemoved,
                           base::Unretained(this)));
+  RouteNodeIDFunction("GetMarkers",
+                      base::BindRepeating(&AutomationV8Bindings::GetMarkers,
+                                          base::Unretained(this)));
 }
 
 void AutomationV8Bindings::RouteTreeIDFunction(const std::string& name,
@@ -1574,6 +1580,46 @@ void AutomationV8Bindings::CreateAutomationPosition(
   gin::Handle<AutomationPosition> handle = gin::CreateHandle(
       isolate, new AutomationPosition(*node, offset, is_upstream));
   args.GetReturnValue().Set(handle.ToV8().As<v8::Object>());
+}
+
+void AutomationV8Bindings::DestroyAccessibilityTree(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() != 1 || !args[0]->IsString()) {
+    automation_v8_router_->ThrowInvalidArgumentsException();
+    return;
+  }
+
+  ui::AXTreeID tree_id = ui::AXTreeID::FromString(
+      *v8::String::Utf8Value(args.GetIsolate(), args[0]));
+  automation_tree_manager_owner_->DestroyAccessibilityTree(tree_id);
+}
+
+void AutomationV8Bindings::AddTreeChangeObserver(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() != 2 || !args[0]->IsNumber() || !args[1]->IsString()) {
+    automation_v8_router_->ThrowInvalidArgumentsException();
+    return;
+  }
+
+  int id =
+      args[0]->Int32Value(automation_v8_router_->GetContext()).FromMaybe(0);
+  std::string filter_str = *v8::String::Utf8Value(args.GetIsolate(), args[1]);
+  automation_tree_manager_owner_->AddTreeChangeObserver(
+      id, automation_v8_router_->ParseTreeChangeObserverFilter(filter_str));
+}
+
+void AutomationV8Bindings::RemoveTreeChangeObserver(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  // The argument is an integer key for an object which is automatically
+  // converted to a string.
+  if (args.Length() != 1 || !args[0]->IsString()) {
+    automation_v8_router_->ThrowInvalidArgumentsException();
+    return;
+  }
+
+  int observer_id =
+      args[0]->Int32Value(automation_v8_router_->GetContext()).FromMaybe(0);
+  automation_tree_manager_owner_->RemoveTreeChangeObserver(observer_id);
 }
 
 void AutomationV8Bindings::GetParentID(v8::Isolate* isolate,
@@ -1857,4 +1903,48 @@ void AutomationV8Bindings::EventListenerRemoved(
   tree_wrapper->EventListenerRemoved(event_type, node);
   automation_tree_manager_owner_->TreeEventListenersChanged(tree_wrapper);
 }
+
+void AutomationV8Bindings::GetMarkers(v8::Isolate* isolate,
+                                      v8::ReturnValue<v8::Value> result,
+                                      ui::AutomationAXTreeWrapper* tree_wrapper,
+                                      ui::AXNode* node) {
+  if (!node->HasIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts) ||
+      !node->HasIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds) ||
+      !node->HasIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes)) {
+    return;
+  }
+
+  const std::vector<int32_t>& marker_starts =
+      node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
+  const std::vector<int32_t>& marker_ends =
+      node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
+  const std::vector<int32_t>& marker_types =
+      node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
+
+  std::vector<v8::Local<v8::Object>> markers;
+  for (size_t i = 0; i < marker_types.size(); ++i) {
+    gin::DataObjectBuilder marker_obj(isolate);
+    marker_obj.Set("startOffset", marker_starts[i]);
+    marker_obj.Set("endOffset", marker_ends[i]);
+
+    gin::DataObjectBuilder flags(isolate);
+    int32_t marker_type = marker_types[i];
+    int32_t marker_pos = 1;
+    while (marker_type) {
+      if (marker_type & 1) {
+        flags.Set(automation_v8_router_->GetMarkerTypeString(
+                      static_cast<ax::mojom::MarkerType>(marker_pos)),
+                  true);
+      }
+      marker_type = marker_type >> 1;
+      marker_pos = marker_pos << 1;
+    }
+
+    marker_obj.Set("flags", flags.Build());
+    markers.push_back(marker_obj.Build());
+  }
+
+  result.Set(gin::ConvertToV8(isolate, markers));
+}
+
 }  // namespace ui

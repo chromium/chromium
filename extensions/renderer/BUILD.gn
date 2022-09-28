@@ -11,6 +11,8 @@ source_set("renderer") {
   sources = [
     "activity_log_converter_strategy.cc",
     "activity_log_converter_strategy.h",
+    "api/automation/automation_api_converters.cc",
+    "api/automation/automation_api_converters.h",
     "api/automation/automation_api_helper.cc",
     "api/automation/automation_api_helper.h",
     "api/automation/automation_internal_custom_bindings.cc",

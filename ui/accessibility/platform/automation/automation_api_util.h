@@ -15,6 +15,21 @@ bool AX_EXPORT ShouldIgnoreAXEventForAutomation(ax::mojom::Event event_type);
 bool AX_EXPORT
 ShouldIgnoreGeneratedEventForAutomation(AXEventGenerator::Event event_type);
 
+// Possible tree changes to listen to using addTreeChangeObserver. Note that
+// listening to all tree changes can be expensive.
+enum TreeChangeObserverFilter {
+  kNone,
+  kNoTreeChanges,
+  kLiveRegionTreeChanges,
+  kTextMarkerChanges,
+  kAllTreeChanges,
+};
+
+struct TreeChangeObserver {
+  int id;
+  TreeChangeObserverFilter filter;
+};
+
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_API_UTIL_H_

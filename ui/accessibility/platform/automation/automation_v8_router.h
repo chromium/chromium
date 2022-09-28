@@ -7,6 +7,7 @@
 
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event_generator.h"
+#include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
 #include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-value.h"
 
@@ -30,6 +31,13 @@ class AX_EXPORT AutomationV8Router {
   virtual std::tuple<ax::mojom::Event, AXEventGenerator::Event> ParseEventType(
       const std::string& event_type) const = 0;
 
+  // Parses a string representing the tree change observer filter.
+  virtual TreeChangeObserverFilter ParseTreeChangeObserverFilter(
+      const std::string& filter) const = 0;
+
+  // Converts an ax::mojom::MarkerType into a string.
+  virtual std::string GetMarkerTypeString(ax::mojom::MarkerType type) const = 0;
+
   using HandlerFunction =
       base::RepeatingCallback<void(const v8::FunctionCallbackInfo<v8::Value>&)>;
   virtual void RouteHandlerFunction(const std::string& name,
@@ -37,6 +45,10 @@ class AX_EXPORT AutomationV8Router {
   virtual void RouteHandlerFunction(const std::string& name,
                                     const std::string& api_name,
                                     HandlerFunction handler_function) = 0;
+
+  // Dispatches an event with the given name and arguments.
+  virtual void DispatchEvent(const std::string& event_name,
+                             const base::Value::List& event_args) const = 0;
 };
 }  // namespace ui
 
