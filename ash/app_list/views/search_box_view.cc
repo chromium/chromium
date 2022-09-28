@@ -747,13 +747,13 @@ void SearchBoxView::ProcessAutocomplete(
     return;
   }
 
+  // Clear autocomplete since we don't have a prefix match.
+  ClearAutocompleteText();
+
   if (IsValidAutocompleteText(search_text)) {
     // Setup autocomplete ghost text for eligible search_text.
-    if (features::IsAutocompleteExtendedSuggestionsEnabled()) {
-      MaybeSetAutocompleteGhostText(
-          first_result_view->result()->title(),
-          GetCategoryName(first_result_view->result()));
-    }
+    MaybeSetAutocompleteGhostText(first_result_view->result()->title(),
+                                  GetCategoryName(first_result_view->result()));
 
     if (IsSubstringCaseInsensitive(search_text, user_typed_text)) {
       // user_typed_text is a substring of search_text and is eligible for
@@ -769,8 +769,6 @@ void SearchBoxView::ProcessAutocomplete(
     // search_text is not eligible for autocompletion.
     RecordAutocompleteMatchMetric(SearchBoxTextMatch::kNoMatch);
   }
-
-  ClearAutocompleteText();
 }
 
 bool SearchBoxView::ProcessPrefixMatchAutocomplete(
@@ -1013,7 +1011,6 @@ void SearchBoxView::SetAutocompleteText(
   // |node_data| for "Value".
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
 
-  if (features::IsAutocompleteExtendedSuggestionsEnabled())
     MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 }
 
@@ -1040,8 +1037,7 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
   SetA11yActiveDescendant(absl::nullopt);
   ClearSearch();
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
-  if (features::IsAutocompleteExtendedSuggestionsEnabled())
-    MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
+  MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 }
 
 void SearchBoxView::SetA11yActiveDescendant(
