@@ -53,10 +53,12 @@ PrefetchContainer::PrefetchContainer(
     const GlobalRenderFrameHostId& referring_render_frame_host_id,
     const GURL& url,
     const PrefetchType& prefetch_type,
+    const blink::mojom::Referrer& referrer,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
       url_(url),
       prefetch_type_(prefetch_type),
+      referrer_(referrer),
       prefetch_document_manager_(prefetch_document_manager),
       ukm_source_id_(prefetch_document_manager_
                          ? prefetch_document_manager_->render_frame_host()

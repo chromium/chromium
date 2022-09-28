@@ -229,7 +229,8 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
                                const PrefetchType& prefetch_type) {
     PrefetchDocumentManager* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
-    prefetch_document_manager->PrefetchUrl(url, prefetch_type, nullptr);
+    prefetch_document_manager->PrefetchUrl(url, prefetch_type,
+                                           blink::mojom::Referrer(), nullptr);
   }
 
   int RequestCount() { return test_url_loader_factory_.NumPending(); }

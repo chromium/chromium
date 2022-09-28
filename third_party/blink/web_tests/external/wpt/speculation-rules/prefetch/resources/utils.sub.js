@@ -85,6 +85,15 @@ class PrefetchAgent extends RemoteContext {
   async getRequestCredentials() {
     return this.execute_script(() => window.requestCredentials);
   }
+
+  async setReferrerPolicy(referrerPolicy) {
+    return this.execute_script(referrerPolicy => {
+      const meta = document.createElement("meta");
+      meta.name = "referrer";
+      meta.content = referrerPolicy;
+      document.head.append(meta);
+    }, [referrerPolicy]);
+  }
 }
 
 // Produces n URLs with unique UUIDs which will record when they are prefetched.

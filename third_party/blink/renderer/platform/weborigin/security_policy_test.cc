@@ -417,6 +417,26 @@ TEST(SecurityPolicyTest, TrustworthySafelist) {
   }
 }
 
+TEST(SecurityPolicyTest, ReferrerPolicyToAndFromString) {
+  const char* policies[] = {"no-referrer",
+                            "unsafe-url",
+                            "origin",
+                            "origin-when-cross-origin",
+                            "same-origin",
+                            "strict-origin",
+                            "strict-origin-when-cross-origin",
+                            "no-referrer-when-downgrade"};
+
+  for (const char* policy : policies) {
+    network::mojom::ReferrerPolicy result =
+        network::mojom::ReferrerPolicy::kDefault;
+    EXPECT_TRUE(SecurityPolicy::ReferrerPolicyFromString(
+        policy, kDoNotSupportReferrerPolicyLegacyKeywords, &result));
+    String string_result = SecurityPolicy::ReferrerPolicyAsString(result);
+    EXPECT_EQ(string_result, policy);
+  }
+}
+
 class SecurityPolicyAccessTest : public testing::Test {
  public:
   SecurityPolicyAccessTest() = default;

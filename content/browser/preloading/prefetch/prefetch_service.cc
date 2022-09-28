@@ -683,6 +683,9 @@ void PrefetchService::StartSinglePrefetch(
       std::make_unique<network::ResourceRequest>();
   request->url = prefetch_container->GetURL();
   request->method = "GET";
+  request->referrer = prefetch_container->GetReferrer().url;
+  request->referrer_policy = Referrer::ReferrerPolicyForUrlRequest(
+      prefetch_container->GetReferrer().policy);
   request->enable_load_timing = true;
   // TODO(https://crbug.com/1317756): Investigate if we need to include the
   // net::LOAD_DISABLE_CACHE flag.

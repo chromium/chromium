@@ -51,6 +51,7 @@ class CONTENT_EXPORT PrefetchDocumentManager
   void PrefetchUrl(
       const GURL& url,
       const PrefetchType& prefetch_type,
+      const blink::mojom::Referrer& referrer,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
 
   // Releases ownership of the |PrefetchContainer| associated with |url|. The

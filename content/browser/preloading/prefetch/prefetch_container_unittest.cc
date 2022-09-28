@@ -95,7 +95,7 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
       GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true),
-      nullptr);
+      blink::mojom::Referrer(), nullptr);
 
   EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
             GlobalRenderFrameHostId(1234, 5678));
@@ -114,7 +114,7 @@ TEST_F(PrefetchContainerTest, PrefetchStatus) {
       GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true),
-      nullptr);
+      blink::mojom::Referrer(), nullptr);
 
   EXPECT_FALSE(prefetch_container.HasPrefetchStatus());
 
@@ -130,7 +130,7 @@ TEST_F(PrefetchContainerTest, IsDecoy) {
       GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true),
-      nullptr);
+      blink::mojom::Referrer(), nullptr);
 
   EXPECT_FALSE(prefetch_container.IsDecoy());
 
@@ -143,7 +143,7 @@ TEST_F(PrefetchContainerTest, ValidResponse) {
       GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true),
-      nullptr);
+      blink::mojom::Referrer(), nullptr);
 
   prefetch_container.TakePrefetchedResponse(
       std::make_unique<PrefetchedMainframeResponseContainer>(
@@ -161,7 +161,7 @@ TEST_F(PrefetchContainerTest, CookieListener) {
       GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true),
-      nullptr);
+      blink::mojom::Referrer(), nullptr);
 
   EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
 
@@ -181,7 +181,7 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
       GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true),
-      nullptr);
+      blink::mojom::Referrer(), nullptr);
   prefetch_container.RegisterCookieListener(cookie_manager());
 
   EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
@@ -228,7 +228,7 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
           GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true),
-          nullptr);
+          blink::mojom::Referrer(), nullptr);
 
   network::URLLoaderCompletionStatus completion_status;
   completion_status.encoded_data_length = 100;
@@ -347,7 +347,7 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm_NothingSet) {
           GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true),
-          nullptr);
+          blink::mojom::Referrer(), nullptr);
   prefetch_container.reset();
 
   auto ukm_entries = ukm_recorder.GetEntries(

@@ -4,7 +4,8 @@
 <script>
 window.requestHeaders = {
   purpose: "{{header_or_default(Purpose, )}}",
-  sec_purpose: "{{header_or_default(Sec-Purpose, )}}"
+  sec_purpose: "{{header_or_default(Sec-Purpose, )}}",
+  referer: "{{header_or_default(Referer, )}}",
 };
 
 const uuid = new URLSearchParams(location.search).get('uuid');

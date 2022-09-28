@@ -90,6 +90,7 @@ class PLATFORM_EXPORT SecurityPolicy {
   static bool ReferrerPolicyFromString(const String& policy,
                                        ReferrerPolicyLegacyKeywordsSupport,
                                        network::mojom::ReferrerPolicy* result);
+  static String ReferrerPolicyAsString(network::mojom::ReferrerPolicy policy);
 
   static bool ReferrerPolicyFromHeaderValue(
       const String& header_value,

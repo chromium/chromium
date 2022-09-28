@@ -269,6 +269,32 @@ bool SecurityPolicy::ReferrerPolicyFromString(
   return false;
 }
 
+String SecurityPolicy::ReferrerPolicyAsString(
+    network::mojom::ReferrerPolicy policy) {
+  switch (policy) {
+    case network::mojom::ReferrerPolicy::kAlways:
+      return "unsafe-url";
+    case network::mojom::ReferrerPolicy::kDefault:
+      return "";
+    case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
+      return "no-referrer-when-downgrade";
+    case network::mojom::ReferrerPolicy::kNever:
+      return "no-referrer";
+    case network::mojom::ReferrerPolicy::kOrigin:
+      return "origin";
+    case network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin:
+      return "origin-when-cross-origin";
+    case network::mojom::ReferrerPolicy::kSameOrigin:
+      return "same-origin";
+    case network::mojom::ReferrerPolicy::kStrictOrigin:
+      return "strict-origin";
+    case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
+      return "strict-origin-when-cross-origin";
+  }
+  NOTREACHED();
+  return String();
+}
+
 namespace {
 
 template <typename CharType>

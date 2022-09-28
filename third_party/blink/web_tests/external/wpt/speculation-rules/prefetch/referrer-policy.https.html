@@ -13,7 +13,7 @@ promise_test(async t => {
   assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
 
   const agent = await spawnWindow(t);
-  await setReferrerPolicy(agent, "strict-origin-when-cross-origin");
+  await agent.setReferrerPolicy("strict-origin-when-cross-origin");
   const expectedReferrer = agent.getExecutorURL().href;
 
   const nextURL = agent.getExecutorURL({ page: 2 });
@@ -29,7 +29,7 @@ promise_test(async t => {
   assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
 
   const agent = await spawnWindow(t);
-  await setReferrerPolicy(agent, "strict-origin");
+  await agent.setReferrerPolicy("strict-origin");
   const expectedReferrer = agent.getExecutorURL().origin + "/";
 
   const nextURL = agent.getExecutorURL({ page: 2 });
@@ -45,7 +45,7 @@ promise_test(async t => {
   assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
 
   const agent = await spawnWindow(t);
-  await setReferrerPolicy(agent, "no-referrer");
+  await agent.setReferrerPolicy("no-referrer");
   const expectedReferrer = agent.getExecutorURL().origin + "/";
 
   const nextURL = agent.getExecutorURL({ page: 2 });
@@ -54,15 +54,7 @@ promise_test(async t => {
 
   const headers = await agent.getRequestHeaders();
   assert_prefetched(headers, "must be prefetched");
-  assert_equals(headers.referer, undefined, "must send no referrer");
+  assert_equals(headers.referer, '', "must send no referrer");
 }, 'with "no-referrer" referrer policy');
 
-function setReferrerPolicy(agent, referrerPolicy) {
-  return agent.execute_script(referrerPolicy => {
-    const meta = document.createElement("meta");
-    meta.name = "referrer";
-    meta.content = referrerPolicy;
-    document.head.append(meta);
-  }, [referrerPolicy]);
-}
 </script>

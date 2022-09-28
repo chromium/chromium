@@ -43,6 +43,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const GlobalRenderFrameHostId& referring_render_frame_host_id,
       const GURL& url,
       const PrefetchType& prefetch_type,
+      const blink::mojom::Referrer& referrer,
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager);
   ~PrefetchContainer();
 
@@ -65,6 +66,8 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The type of this prefetch. Controls how the prefetch is handled.
   const PrefetchType& GetPrefetchType() const { return prefetch_type_; }
+
+  const blink::mojom::Referrer& GetReferrer() const { return referrer_; }
 
   base::WeakPtr<PrefetchContainer> GetWeakPtr() const {
     return weak_method_factory_.GetWeakPtr();
@@ -199,6 +202,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // not the preftch proxy is used, and whether or not subresources are
   // prefetched.
   PrefetchType prefetch_type_;
+
+  // The referrer to use for the request.
+  const blink::mojom::Referrer referrer_;
 
   // The |PrefetchDocumentManager| that requested |this|. Initially it owns
   // |this|, but once the network request for the prefetch is started,

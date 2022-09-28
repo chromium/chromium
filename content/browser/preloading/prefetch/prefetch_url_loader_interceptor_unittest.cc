@@ -224,7 +224,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true),
-          nullptr);
+          blink::mojom::Referrer(), nullptr);
 
   prefetch_container->TakePrefetchedResponse(
       std::make_unique<PrefetchedMainframeResponseContainer>(
@@ -276,7 +276,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true),
-          nullptr);
+          blink::mojom::Referrer(), nullptr);
 
   prefetch_container->TakePrefetchedResponse(
       std::make_unique<PrefetchedMainframeResponseContainer>(
@@ -337,7 +337,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/false,
                        /*use_prefetch_proxy=*/false),
-          nullptr);
+          blink::mojom::Referrer(), nullptr);
 
   prefetch_container->TakePrefetchedResponse(
       std::make_unique<PrefetchedMainframeResponseContainer>(
@@ -417,7 +417,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true),
-          nullptr);
+          blink::mojom::Referrer(), nullptr);
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
 
@@ -459,7 +459,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true),
-          nullptr);
+          blink::mojom::Referrer(), nullptr);
 
   prefetch_container->TakePrefetchedResponse(
       std::make_unique<PrefetchedMainframeResponseContainer>(
@@ -507,7 +507,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true),
-          nullptr);
+          blink::mojom::Referrer(), nullptr);
 
   prefetch_container->TakePrefetchedResponse(
       std::make_unique<PrefetchedMainframeResponseContainer>(
@@ -556,7 +556,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true),
-          nullptr);
+          blink::mojom::Referrer(), nullptr);
 
   prefetch_container->TakePrefetchedResponse(
       std::make_unique<PrefetchedMainframeResponseContainer>(
@@ -602,7 +602,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true),
-          nullptr);
+          blink::mojom::Referrer(), nullptr);
 
   prefetch_container->TakePrefetchedResponse(
       std::make_unique<PrefetchedMainframeResponseContainer>(
