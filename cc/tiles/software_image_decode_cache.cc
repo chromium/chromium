@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ostream_operators.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -611,8 +612,7 @@ void SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit(size_t limit) {
 
     const CacheKey& key = it->first;
     auto vector_it = frame_key_to_image_keys_.find(key.frame_key());
-    auto item_it =
-        std::find(vector_it->second.begin(), vector_it->second.end(), key);
+    auto item_it = base::ranges::find(vector_it->second, key);
     DCHECK(item_it != vector_it->second.end());
     vector_it->second.erase(item_it);
     if (vector_it->second.empty())
