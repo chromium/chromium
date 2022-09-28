@@ -349,6 +349,14 @@ public class StatusView extends LinearLayout {
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
                 drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
+
+        // See https://crbug.com/1365377. This approach to convert between drawables has a downside
+        // that it flattens the tint if it's a color state list to a single value. We must choose
+        // a state value when this draw happens. Drawables default to false for all states, which is
+        // mostly fine, except for state_enabled. This causes many of our CSLs to add an alpha
+        // component. So set to enabled to avoid this.
+        drawable.setState(new int[] {android.R.attr.state_enabled});
+
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return new BitmapDrawable(getResources(), bitmap);
