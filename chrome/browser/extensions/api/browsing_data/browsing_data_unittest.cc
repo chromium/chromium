@@ -160,7 +160,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     EXPECT_LE(expected_since, since + 10.0 * 1000.0);
   }
 
-  void SetPrefsAndVerifySettings(int data_type_flags,
+  void SetPrefsAndVerifySettings(uint64_t data_type_flags,
                                  uint64_t expected_origin_type_mask,
                                  uint64_t expected_removal_mask) {
     PrefService* prefs = browser()->profile()->GetPrefs();
@@ -196,7 +196,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     VerifyRemovalMask(expected_origin_type_mask, expected_removal_mask);
   }
 
-  void SetBasicPrefsAndVerifySettings(int data_type_flags,
+  void SetBasicPrefsAndVerifySettings(uint64_t data_type_flags,
                                       uint64_t expected_origin_type_mask,
                                       uint64_t expected_removal_mask) {
     PrefService* prefs = browser()->profile()->GetPrefs();
@@ -550,7 +550,7 @@ TEST_F(BrowsingDataApiTest, SettingsFunctionSimple) {
 
 // Test cookie and app data settings.
 TEST_F(BrowsingDataApiTest, SettingsFunctionSiteData) {
-  int supported_site_data =
+  uint64_t supported_site_data =
       (content::BrowsingDataRemover::DATA_TYPE_COOKIES |
        content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE) &
       ~content::BrowsingDataRemover::DATA_TYPE_BACKGROUND_FETCH &
@@ -571,7 +571,7 @@ TEST_F(BrowsingDataApiTest, SettingsFunctionSiteData) {
 
 // Test an arbitrary assortment of settings.
 TEST_F(BrowsingDataApiTest, SettingsFunctionAssorted) {
-  int supported_site_data =
+  uint64_t supported_site_data =
       (content::BrowsingDataRemover::DATA_TYPE_COOKIES |
        content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE) &
       ~content::BrowsingDataRemover::DATA_TYPE_BACKGROUND_FETCH &
