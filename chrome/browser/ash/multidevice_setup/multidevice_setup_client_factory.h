@@ -9,6 +9,8 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class ChromeOSMetricsProviderTest;
+class ChromeOSSystemProfileProviderTest;
+class ChromeMetricsServiceClientTest;
 class Profile;
 
 namespace ash {
@@ -31,6 +33,8 @@ class MultiDeviceSetupClientFactory : public ProfileKeyedServiceFactory {
  private:
   friend struct base::DefaultSingletonTraits<MultiDeviceSetupClientFactory>;
   friend class ::ChromeOSMetricsProviderTest;
+  friend class ::ChromeOSSystemProfileProviderTest;
+  friend class ::ChromeMetricsServiceClientTest;
 
   MultiDeviceSetupClientFactory();
   ~MultiDeviceSetupClientFactory() override;

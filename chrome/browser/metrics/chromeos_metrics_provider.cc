@@ -36,6 +36,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
+#include "chrome/browser/metrics/chromeos_system_profile_provider.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -68,35 +69,12 @@ void IncrementPrefValue(const char* path) {
   pref->SetInteger(path, value + 1);
 }
 
-// Called on a background thread to load cellular device variant
-// using ConfigFS.
-std::string GetCellularDeviceVariantOnBackgroundThread() {
-  constexpr char kFirmwareVariantPath[] =
-      "/run/chromeos-config/v1/modem/firmware-variant";
-  std::string cellular_device_variant;
-  const base::FilePath modem_path = base::FilePath(kFirmwareVariantPath);
-  if (base::PathExists(modem_path)) {
-    base::ReadFileToString(modem_path, &cellular_device_variant);
-  }
-  VLOG(1) << "cellular_device_variant: " << cellular_device_variant;
-  return cellular_device_variant;
-}
-
-bool IsFeatureEnabled(
-    const ash::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
-        feature_states_map,
-    ash::multidevice_setup::mojom::Feature feature) {
-  return feature_states_map.find(feature)->second ==
-         ash::multidevice_setup::mojom::FeatureState::kEnabledByUser;
-}
-
 }  // namespace
 
 ChromeOSMetricsProvider::ChromeOSMetricsProvider(
     metrics::MetricsLogUploader::MetricServiceType service_type)
-    : cached_profile_(std::make_unique<metrics::CachedMetricsProfile>()),
-      registered_user_count_at_log_initialization_(false),
-      user_count_at_log_initialization_(0) {
+    : cros_system_profile_provider_(
+          std::make_unique<ChromeOSSystemProfileProvider>()) {
   if (service_type == metrics::MetricsLogUploader::UMA)
     profile_provider_ = std::make_unique<metrics::ProfileProvider>();
 }
@@ -142,21 +120,11 @@ void ChromeOSMetricsProvider::Init() {
 }
 
 void ChromeOSMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
-  base::RepeatingClosure barrier =
-      base::BarrierClosure(4, std::move(done_callback));
-  InitTaskGetFullHardwareClass(barrier);
-  InitTaskGetArcFeatures(barrier);
-  InitTaskGetTpmFirmwareVersion(barrier);
-  InitTaskGetCellularDeviceVariant(barrier);
+  cros_system_profile_provider_->AsyncInit(std::move(done_callback));
 }
 
 void ChromeOSMetricsProvider::OnDidCreateMetricsLog() {
-  registered_user_count_at_log_initialization_ = false;
-  if (user_manager::UserManager::IsInitialized()) {
-    registered_user_count_at_log_initialization_ = true;
-    user_count_at_log_initialization_ =
-        user_manager::UserManager::Get()->GetLoggedInUsers().size();
-  }
+  cros_system_profile_provider_->OnDidCreateMetricsLog();
 }
 
 void ChromeOSMetricsProvider::OnRecordingEnabled() {
@@ -169,70 +137,10 @@ void ChromeOSMetricsProvider::OnRecordingDisabled() {
     profile_provider_->OnRecordingDisabled();
 }
 
-void ChromeOSMetricsProvider::InitTaskGetFullHardwareClass(
-    base::OnceClosure callback) {
-  chromeos::system::StatisticsProvider::GetInstance()
-      ->ScheduleOnMachineStatisticsLoaded(
-          base::BindOnce(&ChromeOSMetricsProvider::OnMachineStatisticsLoaded,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ChromeOSMetricsProvider::InitTaskGetArcFeatures(
-    base::OnceClosure callback) {
-  arc::ArcFeaturesParser::GetArcFeatures(
-      base::BindOnce(&ChromeOSMetricsProvider::OnArcFeaturesParsed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ChromeOSMetricsProvider::InitTaskGetTpmFirmwareVersion(
-    base::OnceClosure callback) {
-  chromeos::TpmManagerClient::Get()->GetVersionInfo(
-      tpm_manager::GetVersionInfoRequest(),
-      base::BindOnce(&ChromeOSMetricsProvider::OnTpmManagerGetVersionInfo,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ChromeOSMetricsProvider::InitTaskGetCellularDeviceVariant(
-    base::OnceClosure callback) {
-  // Run the (potentially expensive) task in the background to avoid blocking
-  // the UI thread.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::WithBaseSyncPrimitives(),
-       base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&GetCellularDeviceVariantOnBackgroundThread),
-      base::BindOnce(&ChromeOSMetricsProvider::SetCellularDeviceVariant,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 void ChromeOSMetricsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
-  WriteLinkedAndroidPhoneProto(system_profile_proto);
-  UpdateMultiProfileUserCount(system_profile_proto);
-  WriteDemoModeDimensionMetrics(system_profile_proto);
-
-  metrics::SystemProfileProto::Hardware* hardware =
-      system_profile_proto->mutable_hardware();
-  hardware->set_full_hardware_class(full_hardware_class_);
-  display::Display::TouchSupport has_touch =
-      ui::GetInternalDisplayTouchSupport();
-  if (has_touch == display::Display::TouchSupport::AVAILABLE)
-    hardware->set_internal_display_supports_touch(true);
-  else if (has_touch == display::Display::TouchSupport::UNAVAILABLE)
-    hardware->set_internal_display_supports_touch(false);
-
-  if (tpm_firmware_version_.has_value()) {
-    hardware->set_tpm_firmware_version(*tpm_firmware_version_);
-  }
-
-  hardware->set_cellular_device_variant(cellular_device_variant_);
-
-  if (arc_release_) {
-    metrics::SystemProfileProto::OS::Arc* arc =
-        system_profile_proto->mutable_os()->mutable_arc();
-    arc->set_release(*arc_release_);
-  }
+  cros_system_profile_provider_->ProvideSystemProfileMetrics(
+      system_profile_proto);
 }
 
 void ChromeOSMetricsProvider::ProvideAccessibilityMetrics() {
@@ -297,137 +205,6 @@ void ChromeOSMetricsProvider::ProvideCurrentSessionData(
   }
   arc::UpdateEnabledStateByUserTypeUMA();
   UpdateUserTypeUMA();
-}
-
-void ChromeOSMetricsProvider::WriteDemoModeDimensionMetrics(
-    metrics::SystemProfileProto* system_profile_proto) {
-  if (!ash::DemoSession::IsDeviceInDemoMode()) {
-    return;
-  }
-  metrics::SystemProfileProto::DemoModeDimensions* demo_mode_dimensions =
-      system_profile_proto->mutable_demo_mode_dimensions();
-  PrefService* pref = g_browser_process->local_state();
-  std::string demo_country = pref->GetString(prefs::kDemoModeCountry);
-  demo_mode_dimensions->set_country(demo_country);
-
-  metrics::SystemProfileProto_DemoModeDimensions_Retailer* retailer =
-      demo_mode_dimensions->mutable_retailer();
-  retailer->set_retailer_id(pref->GetString(prefs::kDemoModeRetailerId));
-  retailer->set_store_id(pref->GetString(prefs::kDemoModeStoreId));
-
-  if (chromeos::features::IsCloudGamingDeviceEnabled()) {
-    demo_mode_dimensions->add_customization_facet(
-        metrics::
-            SystemProfileProto_DemoModeDimensions_CustomizationFacet_CLOUD_GAMING_DEVICE);
-  }
-}
-
-void ChromeOSMetricsProvider::WriteLinkedAndroidPhoneProto(
-    metrics::SystemProfileProto* system_profile_proto) {
-  ash::multidevice_setup::MultiDeviceSetupClient* client =
-      ash::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
-          cached_profile_->GetMetricsProfile());
-
-  if (!client)
-    return;
-
-  const ash::multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
-      host_status_with_device = client->GetHostStatus();
-  if (host_status_with_device.first !=
-      ash::multidevice_setup::mojom::HostStatus::kHostVerified) {
-    return;
-  }
-
-  SystemProfileProto::LinkedAndroidPhoneData* linked_android_phone_data =
-      system_profile_proto->mutable_linked_android_phone_data();
-  const uint32_t hashed_name =
-      variations::HashName(host_status_with_device.second->pii_free_name());
-  linked_android_phone_data->set_phone_model_name_hash(hashed_name);
-
-  const ash::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
-      feature_states_map = client->GetFeatureStates();
-  linked_android_phone_data->set_is_smartlock_enabled(IsFeatureEnabled(
-      feature_states_map, ash::multidevice_setup::mojom::Feature::kSmartLock));
-  linked_android_phone_data->set_is_instant_tethering_enabled(IsFeatureEnabled(
-      feature_states_map,
-      ash::multidevice_setup::mojom::Feature::kInstantTethering));
-  linked_android_phone_data->set_is_messages_enabled(IsFeatureEnabled(
-      feature_states_map, ash::multidevice_setup::mojom::Feature::kMessages));
-}
-
-// Writes cellular device variant to system profile proto
-// if present.
-void ChromeOSMetricsProvider::WriteCellularDeviceVariant(
-    metrics::SystemProfileProto* system_profile_proto) {
-  metrics::SystemProfileProto::Hardware* hardware =
-      system_profile_proto->mutable_hardware();
-  constexpr char kFirmwareVariantPath[] =
-      "/run/chromeos-config/v1/modem/firmware-variant";
-  std::string cellular_device_variant;
-  const base::FilePath modem_path = base::FilePath(kFirmwareVariantPath);
-
-  if (base::PathExists(modem_path)) {
-    base::ReadFileToString(modem_path, &cellular_device_variant);
-    hardware->set_cellular_device_variant(cellular_device_variant);
-  }
-}
-
-void ChromeOSMetricsProvider::UpdateMultiProfileUserCount(
-    metrics::SystemProfileProto* system_profile_proto) {
-  if (user_manager::UserManager::IsInitialized()) {
-    size_t user_count =
-        user_manager::UserManager::Get()->GetLoggedInUsers().size();
-
-    // We invalidate the user count if it changed while the log was open.
-    if (registered_user_count_at_log_initialization_ &&
-        user_count != user_count_at_log_initialization_) {
-      user_count = 0;
-    }
-
-    system_profile_proto->set_multi_profile_user_count(user_count);
-  }
-}
-
-void ChromeOSMetricsProvider::OnMachineStatisticsLoaded(
-    base::OnceClosure callback) {
-  chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-      "hardware_class", &full_hardware_class_);
-
-  // Structured metrics needs to know when full hardware class is available
-  // since events should have full hardware class populated. Notify structured
-  // metrics recorder that HWID is available to start sending events.
-  metrics::structured::Recorder::GetInstance()->OnHardwareClassInitialized(
-      full_hardware_class_);
-  std::move(callback).Run();
-}
-
-void ChromeOSMetricsProvider::SetCellularDeviceVariant(
-    base::OnceClosure callback,
-    std::string cellular_device_variant) {
-  cellular_device_variant_ = cellular_device_variant;
-  std::move(callback).Run();
-}
-
-void ChromeOSMetricsProvider::OnArcFeaturesParsed(
-    base::OnceClosure callback,
-    absl::optional<arc::ArcFeatures> features) {
-  base::ScopedClosureRunner runner(std::move(callback));
-  if (!features) {
-    LOG(WARNING) << "ArcFeatures not available on this build";
-    return;
-  }
-  arc_release_ = features->build_props.at("ro.build.version.release");
-}
-
-void ChromeOSMetricsProvider::OnTpmManagerGetVersionInfo(
-    base::OnceClosure callback,
-    const tpm_manager::GetVersionInfoReply& reply) {
-  if (reply.status() == tpm_manager::STATUS_SUCCESS) {
-    tpm_firmware_version_ = reply.firmware_version();
-  } else {
-    LOG(ERROR) << "Failed to get TPM version info.";
-  }
-  std::move(callback).Run();
 }
 
 void ChromeOSMetricsProvider::UpdateUserTypeUMA() {

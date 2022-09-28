@@ -1920,6 +1920,7 @@ source_set("unit_tests") {
     "../memory/memory_kills_monitor_unittest.cc",
     "../memory/oom_kills_monitor_unittest.cc",
     "../metrics/chromeos_metrics_provider_unittest.cc",
+    "../metrics/chromeos_system_profile_provider_unittest.cc",
     "../metrics/cros_healthd_metrics_provider_unittest.cc",
     "../metrics/perf/cpu_identity_unittest.cc",
     "../metrics/perf/random_selector_unittest.cc",

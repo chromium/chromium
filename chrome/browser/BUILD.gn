@@ -4889,6 +4889,8 @@ static_library("browser") {
       "metrics/chromeos_family_link_user_metrics_provider.h",
       "metrics/chromeos_metrics_provider.cc",
       "metrics/chromeos_metrics_provider.h",
+      "metrics/chromeos_system_profile_provider.cc",
+      "metrics/chromeos_system_profile_provider.h",
       "metrics/cros_healthd_metrics_provider.cc",
       "metrics/cros_healthd_metrics_provider.h",
       "metrics/enrollment_status.h",

@@ -14,15 +14,11 @@
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_provider.h"
 
-namespace arc {
-struct ArcFeatures;
-}
-
 namespace metrics {
-class CachedMetricsProfile;
 class ChromeUserMetricsExtension;
 }  // namespace metrics
 
+class ChromeOSSystemProfileProvider;
 enum class EnrollmentStatus;
 class PrefRegistrySimple;
 
@@ -45,22 +41,6 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   // Returns Enterprise Enrollment status.
   static EnrollmentStatus GetEnrollmentStatus();
 
-  // Loads hardware class information. When this task is complete, |callback|
-  // is run.
-  void InitTaskGetFullHardwareClass(base::OnceClosure callback);
-
-  // Retrieves ARC features using ArcFeaturesParser. When this task is complete,
-  // |callback| is run.
-  void InitTaskGetArcFeatures(base::OnceClosure callback);
-
-  // Loads the cellular device variant. When this task is complete, |callback|
-  // is run.
-  void InitTaskGetCellularDeviceVariant(base::OnceClosure callback);
-
-  // Retrieves TPM firmware version using TpmManagerClient. When this task is
-  // complete, |callback| is run.
-  void InitTaskGetTpmFirmwareVersion(base::OnceClosure callback);
-
   // metrics::MetricsProvider:
   void Init() override;
   void AsyncInit(base::OnceClosure done_callback) override;
@@ -78,78 +58,16 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   void ProvideAccessibilityMetrics();
   void ProvideSuggestedContentMetrics();
 
-  // Update the number of users logged into a multi-profile session.
-  // If the number of users change while the log is open, the call invalidates
-  // the user count value.
-  void UpdateMultiProfileUserCount(
-      metrics::SystemProfileProto* system_profile_proto);
-
-  // Invoked when StatisticsProvider finishes loading to read the full hardware
-  // class from StatisticsProvider and calls the callback.
-  void OnMachineStatisticsLoaded(base::OnceClosure callback);
-
-  // Sets the cellular device variant, then calls the callback.
-  void SetCellularDeviceVariant(base::OnceClosure callback,
-                                std::string cellular_device_variant);
-
-  // Updates ARC-related system profile fields, then calls the callback.
-  void OnArcFeaturesParsed(base::OnceClosure callback,
-                           absl::optional<arc::ArcFeatures> features);
-
-  // Sets the TPM firmware version, then calls the callback.
-  void OnTpmManagerGetVersionInfo(
-      base::OnceClosure callback,
-      const tpm_manager::GetVersionInfoReply& reply);
-
-  // Sets the TPM supported features (runtime selection), then calls the
-  // callback.
-  void OnTpmManagerGetSupportedFeatures(
-      base::OnceClosure callback,
-      const tpm_manager::GetSupportedFeaturesReply& reply);
-
   void SetTpmType(metrics::SystemProfileProto* system_profile_proto);
 
   // Called from the ProvideCurrentSessionData(...) to record UserType.
   void UpdateUserTypeUMA();
 
-  // Writes info about the linked Android phone if there is one.
-  void WriteLinkedAndroidPhoneProto(
-      metrics::SystemProfileProto* system_profile_proto);
-
-  // Writes info about cellular device variant if present in
-  // system profile proto.
-  void WriteCellularDeviceVariant(
-      metrics::SystemProfileProto* system_profile_proto);
-
-  void WriteDemoModeDimensionMetrics(
-      metrics::SystemProfileProto* system_profile_proto);
-
   // For collecting systemwide performance data via the UMA channel.
   std::unique_ptr<metrics::ProfileProvider> profile_provider_;
 
-  // Use the first signed-in profile for profile-dependent metrics.
-  std::unique_ptr<metrics::CachedMetricsProfile> cached_profile_;
-
-  // Whether the user count was registered at the last log initialization.
-  bool registered_user_count_at_log_initialization_;
-
-  // The user count at the time that a log was last initialized. Contains a
-  // valid value only if |registered_user_count_at_log_initialization_| is
-  // true.
-  uint64_t user_count_at_log_initialization_;
-
-  // Hardware class (e.g., hardware qualification ID). This value identifies
-  // the configured system components such as CPU, WiFi adapter, etc.
-  std::string full_hardware_class_;
-
-  // Cellular device variant for Chrome OS devices with cellular support.
-  std::string cellular_device_variant_;
-
-  // ARC release version obtained from build properties.
-  absl::optional<std::string> arc_release_ = absl::nullopt;
-
-  // The firmware version of the TPM (go/trusted-platform-module).
-  absl::optional<uint64_t> tpm_firmware_version_ = absl::nullopt;
+  // Interface for providing the SystemProfile to metrics.
+  std::unique_ptr<ChromeOSSystemProfileProvider> cros_system_profile_provider_;
 
   base::WeakPtrFactory<ChromeOSMetricsProvider> weak_ptr_factory_{this};
 };
