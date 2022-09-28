@@ -25,6 +25,8 @@ static_library("internal") {
     "constants.h",
     "data_collection/dummy_training_data_collector.cc",
     "data_collection/dummy_training_data_collector.h",
+    "data_collection/training_data_cache.cc",
+    "data_collection/training_data_cache.h",
     "data_collection/training_data_collector.cc",
     "data_collection/training_data_collector.h",
     "data_collection/training_data_collector_impl.cc",
@@ -204,6 +206,7 @@ source_set("unit_tests") {
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
     "config_parser_unittest.cc",
+    "data_collection/training_data_cache_unittest.cc",
     "data_collection/training_data_collector_impl_unittest.cc",
     "database/database_maintenance_impl_unittest.cc",
     "database/mock_signal_database.cc",
