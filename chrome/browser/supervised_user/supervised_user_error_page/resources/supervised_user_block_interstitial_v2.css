@@ -283,12 +283,18 @@ button:focus-visible {
 
   button,
   [dir='rtl'] button {
+    height: 40px;
     width: 100%;
     padding: 10px;
   }
 
-  .primary-button, .secondary-button {
-      margin: 0 0 24px 0;
+  .primary-button {
+    margin: 0 0 8px 0;
+  }
+
+  .secondary-button {
+    border: none;
+    margin: 0;
   }
 
   .frame-blocked {
@@ -326,7 +332,7 @@ button:focus-visible {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin: auto 0 16px;
+    margin: auto 0 28px;
   }
 
   .go-back-button {
