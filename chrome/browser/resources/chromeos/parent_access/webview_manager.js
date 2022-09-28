@@ -11,12 +11,10 @@
  * standardize some common configurations of webview.
  */
 export class WebviewManager {
-  /**
-   * @param @type {!WebView} The webview to manage.
-   */
+  /** @param {!WebView} webview The webview to manage. */
   constructor(webview) {
     /**
-     * @private @const  @type {!WebView} the webview element that this class
+     * @private {!WebView} the webview element that this class
      *     will manage.
      */
     this.webview_ = webview;
@@ -24,14 +22,14 @@ export class WebviewManager {
     /**
      * Tracks the current function used to filter destinations
      * to which we send access tokens.
-     * @private {!function(string):boolean}
+     * @private {?function(string):boolean}
      */
     this.shouldSendTokenToUrlFn_ = null;
 
     /**
      * Tracks the current function used to filter destinations
      * to which we send allow requests.
-     * @private {!function(string):boolean}
+     * @private {?function(string):boolean}
      */
     this.allowedRequestFn_ = null;
   }

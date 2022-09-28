@@ -72,7 +72,6 @@ preprocess_if_expr("preprocess_src") {
     "util_deprecated.js",
     "util.m.js",
     "webui_resource_test.js",
-    "webview_manager.js",
   ]
 
   if (is_chromeos) {
@@ -126,9 +125,6 @@ js_library("load_time_data_deprecated") {
 if (is_chromeos_ash) {
   js_library("util_deprecated") {
   }
-}
-
-js_library("webview_manager") {
 }
 
 js_library("webui_resource_test") {

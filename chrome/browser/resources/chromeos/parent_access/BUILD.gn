@@ -25,6 +25,7 @@ js_type_check("closure_compile_local") {
     ":parent_access_app",
     ":parent_access_controller",
     ":parent_access_ui",
+    ":webview_manager",
   ]
 }
 
@@ -64,6 +65,9 @@ js_library("parent_access_ui") {
     "$externs_path/chrome_extensions.js",
     "$externs_path/webview_tag.js",
   ]
+}
+
+js_library("webview_manager") {
 }
 
 html_to_js("web_components") {

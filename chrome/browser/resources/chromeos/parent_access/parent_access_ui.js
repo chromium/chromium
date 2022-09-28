@@ -4,11 +4,11 @@
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebviewManager} from 'chrome://resources/js/webview_manager.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ParentAccessController} from './parent_access_controller.js';
 import {GetOAuthTokenStatus, ParentAccessServerMessageType, ParentAccessUIHandler} from './parent_access_ui.mojom-webui.js';
+import {WebviewManager} from './webview_manager.js';
 
 const parentAccessUIHandler = ParentAccessUIHandler.getRemote();
 
