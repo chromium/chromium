@@ -10,12 +10,13 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/dialog_model.h"
-#include "ui/views/view.h"
 
 class PrefService;
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }
 
@@ -25,7 +26,9 @@ class Tracker;
 
 namespace web_app {
 
-class WebAppDetailedInstallDialogDelegate : public ui::DialogModelDelegate {
+class WebAppDetailedInstallDialogDelegate
+    : public ui::DialogModelDelegate,
+      public content::WebContentsObserver {
  public:
   WebAppDetailedInstallDialogDelegate(
       content::WebContents* web_contents,
@@ -40,7 +43,15 @@ class WebAppDetailedInstallDialogDelegate : public ui::DialogModelDelegate {
   void OnAccept();
   void OnCancel();
 
+  // content::WebContentsObserver:
+  void OnVisibilityChanged(content::Visibility visibility) override;
+  void WebContentsDestroyed() override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
  private:
+  void CloseDialog();
+
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppInstallInfo> install_info_;
   chrome::AppInstallationAcceptanceCallback callback_;

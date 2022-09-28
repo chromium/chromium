@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -59,6 +60,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -75,6 +77,7 @@
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/common/content_features.h"
@@ -267,6 +270,17 @@ class WebAppBrowserTest_Tabbed : public WebAppBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kDesktopPWAsTabStrip};
+};
+
+// A dedicated test fixture for detailed install dialog, which requires a
+// command line switch to enable manifest parsing.
+class WebAppBrowserTest_DetailedInstallDialog : public WebAppBrowserTest {
+ public:
+  WebAppBrowserTest_DetailedInstallDialog() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      webapps::features::kDesktopPWAsDetailedInstallDialog};
 };
 
 // TODO(crbug.com/1257751): Stabilize the test.
@@ -1173,6 +1187,24 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CanInstallWithPolicyPwa) {
   EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser), kNotPresent);
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, new_browser),
             kEnabled);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DetailedInstallDialog,
+                       OpenDetailedInstallDialogOnlyOnce) {
+  base::UserActionTester user_action_tester;
+  NavigateToURLAndWait(
+      browser(),
+      https_server()->GetURL(
+          "/banners/"
+          "manifest_test_page.html?manifest=manifest_with_screenshots.json"));
+
+  WebAppTestInstallObserver observer(profile());
+  // The IDC_INSTALL_PWA is executed twice, but the dialog
+  // must be shown only once.
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
+
+  EXPECT_EQ(1u, provider().command_manager().GetCommandCountForTesting());
 }
 
 class WebAppBrowserTest_ExternalPrefMigration
