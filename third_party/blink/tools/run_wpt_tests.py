@@ -136,7 +136,6 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             '--webdriver-arg=--enable-chrome-logs',
             # TODO(crbug/1316055): Enable tombstone with '--stackwalk-binary'
             # and '--symbols-path'.
-            '--headless',
             # Exclude webdriver tests for now. The CI runs them separately.
             '--exclude=webdriver',
             '--exclude=infrastructure/webdriver',
@@ -154,6 +153,9 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             '--run-info=%s' % self._tmp_dir,
         ])
         rest_args.extend(self.product.wpt_args)
+
+        if self.options.headless:
+            rest_args.append('--headless')
 
         if self.options.run_wpt_internal:
             rest_args.extend([
@@ -311,6 +313,12 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                             choices=sorted(self.port.flag_specific_configs()),
                             metavar='FLAG_SPECIFIC',
                             help='The name of a flag-specific suite to run.')
+        parser.add_argument('--no-headless',
+                            action='store_false',
+                            dest='headless',
+                            default=True,
+                            help=('Use this tag to not run wptrunner in'
+                                  'headless mode'))
 
     def add_metadata_arguments(self, parser):
         group = parser.add_argument_group(
