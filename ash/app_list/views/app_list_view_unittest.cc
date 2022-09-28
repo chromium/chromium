@@ -1415,7 +1415,7 @@ TEST_F(AppListViewFocusTest,
        MAYBE_FirstResultSelectedAfterSearchResultsUpdated) {
   Show();
 
-  // Type something in search box to transition to HALF state and populate
+  // Type something in search box to transition to search state and populate
   // fake list results.
   search_box_view()->search_box()->InsertText(
       u"test",
@@ -1468,7 +1468,7 @@ TEST_F(AppListViewFocusTest, HittingEnterWhenFocusOnSearchBox) {
   SimulateKeyPress(ui::VKEY_RETURN, false);
   EXPECT_TRUE(search_box_view()->is_search_box_active());
 
-  // Type something in search box to transition to HALF state and populate
+  // Type something in search box to transition to search state and populate
   // fake list results. Then hit Enter key.
   search_box_view()->search_box()->InsertText(
       u"test",
@@ -2180,7 +2180,7 @@ TEST_F(AppListViewPeekingFocusTest, ShowEmbeddedAssistantUI) {
   SimulateKeyPress(ui::VKEY_RETURN, false);
   EXPECT_TRUE(search_box_view()->is_search_box_active());
 
-  // Type something in search box to transition to HALF state and populate
+  // Type something in search box to transition to search state and populate
   // fake list results. Then hit Enter key.
   search_box_view()->search_box()->InsertText(
       u"test",

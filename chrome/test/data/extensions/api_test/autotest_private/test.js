@@ -434,6 +434,8 @@ var defaultTests = [
 
   // This test verifies that api to wait for launcher state transition
   // to peeking works as expected
+  // TODO(crbug.com/1364795): Remove this test when the peeking state is
+  // removed in autotest_private.idl
   function waitForLauncherStatePeeking() {
     var togglePeeking = newAccelerator('search', false /* shift */);
     chrome.autotestPrivate.activateAccelerator(

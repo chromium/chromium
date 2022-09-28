@@ -59,7 +59,7 @@ constexpr int kSearchBoxHeight = 48;
 constexpr int kSearchBoxHeightForDenseLayout = 40;
 
 // The top search box margin (measured from the app list view top bound) when
-// app list view is in peeking/half state on non-apps page.
+// app list view is in peeking state on non-apps page.
 constexpr int kDefaultSearchBoxTopMarginInPeekingState = 24;
 
 // The top search box margin (measured from the app list view top bound) when
@@ -791,7 +791,6 @@ int ContentsView::GetSearchBoxTopForViewState(
               GetContentsBounds(), GetSearchBoxSize(AppListState::kStateApps))
           .top();
     case AppListViewState::kPeeking:
-    case AppListViewState::kHalf:
       return GetPeekingSearchBoxTopMarginOnPage(state);
   }
 }

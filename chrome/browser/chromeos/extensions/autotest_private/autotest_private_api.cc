@@ -770,8 +770,6 @@ ash::AppListViewState ToAppListViewState(
       return ash::AppListViewState::kClosed;
     case api::autotest_private::LauncherStateType::LAUNCHER_STATE_TYPE_PEEKING:
       return ash::AppListViewState::kPeeking;
-    case api::autotest_private::LauncherStateType::LAUNCHER_STATE_TYPE_HALF:
-      return ash::AppListViewState::kHalf;
     case api::autotest_private::LauncherStateType::
         LAUNCHER_STATE_TYPE_FULLSCREENALLAPPS:
       return ash::AppListViewState::kFullscreenAllApps;

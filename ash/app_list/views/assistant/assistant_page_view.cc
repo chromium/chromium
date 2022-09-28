@@ -64,7 +64,6 @@ constexpr int kShadowElevation = 12;
 int GetPreferredHeightForAppListState(AppListView* app_list_view) {
   auto app_list_view_state = app_list_view->app_list_state();
   switch (app_list_view_state) {
-    case AppListViewState::kHalf:
     case AppListViewState::kFullscreenSearch:
       return kMaxHeightDip;
     default:

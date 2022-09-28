@@ -73,8 +73,7 @@ void AppListNotifierImplOld::NotifySearchQueryChanged(
   // In some cases the query can change after the launcher is closed, in
   // particular this happens when abandoning the launcher with a non-empty
   // query. Only do a state transition if the launcher is showing results.
-  if (view_ == ash::AppListViewState::kHalf ||
-      view_ == ash::AppListViewState::kFullscreenSearch) {
+  if (view_ == ash::AppListViewState::kFullscreenSearch) {
     DoStateTransition(Location::kList, State::kShown);
     DoStateTransition(Location::kTile, State::kShown);
   }
@@ -104,26 +103,20 @@ void AppListNotifierImplOld::OnViewStateChanged(ash::AppListViewState view) {
   //     UI actions (like dragging the launcher around) that end up back in
   //     the same location.
   //
-  //  2. kHalf to kFullscreenSearch. This doesn't change the displayed tile and
-  //     list results.
-  //
-  //  3. kPeeking to kFullscreenAllApps. This doesn't change the displayed
+  //  2. kPeeking to kFullscreenAllApps. This doesn't change the displayed
   //     chip results.
   //
   //  We should also ignore this if the call comes while the launcher is not
   //  shown at all. This happens, for example, in the transition between
   //  clamshell and tablet modes.
   if (!shown_ || view_ == view ||
-      (view_ == ash::AppListViewState::kHalf &&
-       view == ash::AppListViewState::kFullscreenSearch) ||
       (view_ == ash::AppListViewState::kPeeking &&
        view == ash::AppListViewState::kFullscreenAllApps)) {
     return;
   }
   view_ = view;
 
-  if (view == ash::AppListViewState::kHalf ||
-      view == ash::AppListViewState::kFullscreenSearch) {
+  if (view == ash::AppListViewState::kFullscreenSearch) {
     DoStateTransition(Location::kList, State::kShown);
     DoStateTransition(Location::kTile, State::kShown);
   } else {

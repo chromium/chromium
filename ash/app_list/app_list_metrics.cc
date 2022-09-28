@@ -201,10 +201,10 @@ void RecordSearchResultOpenSource(const SearchResult* result,
   if (result->is_recommendation())
     return;
 
-  ApplistSearchResultOpenedSource source;
-  source = is_tablet_mode
-               ? ApplistSearchResultOpenedSource::kFullscreenTablet
-               : ApplistSearchResultOpenedSource::kFullscreenClamshell;
+  ApplistSearchResultOpenedSource source =
+      is_tablet_mode ? ApplistSearchResultOpenedSource::kFullscreenTablet
+                     : ApplistSearchResultOpenedSource::kFullscreenClamshell;
+
   UMA_HISTOGRAM_ENUMERATION(
       kAppListSearchResultOpenSourceHistogram, source,
       ApplistSearchResultOpenedSource::kMaxApplistSearchResultOpenedSource);
@@ -332,7 +332,6 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
       UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedClosed, launched_from);
       break;
     case AppListViewState::kPeeking:
-    case AppListViewState::kHalf:
       NOTREACHED();
       break;
     case AppListViewState::kFullscreenAllApps:
