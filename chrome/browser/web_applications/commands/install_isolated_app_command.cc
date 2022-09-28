@@ -58,23 +58,6 @@ absl::optional<std::string> UTF16ToUTF8(base::StringPiece16 src) {
 
 }  // namespace
 
-base::expected<std::unique_ptr<InstallIsolatedAppCommand>,
-               InstallIsolatedAppCommandCreateError>
-InstallIsolatedAppCommand::Create(
-    const GURL& application_url,
-    WebAppUrlLoader& url_loader,
-    WebAppInstallFinalizer& install_finalizer,
-    base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
-                                           InstallIsolatedAppCommandError>)>
-        callback) {
-  if (!application_url.is_valid()) {
-    return base::unexpected{InstallIsolatedAppCommandCreateError{}};
-  }
-
-  return base::WrapUnique(new InstallIsolatedAppCommand(
-      application_url, url_loader, install_finalizer, std::move(callback)));
-}
-
 InstallIsolatedAppCommand::InstallIsolatedAppCommand(
     const GURL& url,
     WebAppUrlLoader& url_loader,
@@ -118,6 +101,8 @@ void InstallIsolatedAppCommand::Start() {
 }
 
 void InstallIsolatedAppCommand::LoadUrl() {
+  DCHECK(url_.is_valid());
+
   url_loader_.LoadUrl(url_, shared_web_contents(),
                       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
                       base::BindOnce(&InstallIsolatedAppCommand::OnLoadUrl,

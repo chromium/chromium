@@ -159,13 +159,9 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
           callback) {
     const GURL application_url{url};
     DCHECK(application_url.is_valid());
-    base::expected<std::unique_ptr<InstallIsolatedAppCommand>,
-                   InstallIsolatedAppCommandCreateError>
-        command = InstallIsolatedAppCommand::Create(
-            application_url, *url_loader_, *install_finalizer_,
-            std::move(callback));
-    DCHECK(command.has_value());
-    return *std::move(command);
+    return std::make_unique<InstallIsolatedAppCommand>(
+        application_url, *url_loader_, *install_finalizer_,
+        std::move(callback));
   }
 
   void ScheduleCommand(std::unique_ptr<WebAppCommand> command) {
@@ -361,22 +357,6 @@ TEST_F(InstallIsolatedAppCommandTest,
 
   EXPECT_THAT(ExecuteCommand("http://another-test-url-example.com"),
               IsInstallationOk());
-}
-
-TEST_F(InstallIsolatedAppCommandTest, ReportsErrorWhenURLIsInvalid) {
-  base::test::TestFuture<base::expected<InstallIsolatedAppCommandSuccess,
-                                        InstallIsolatedAppCommandError>>
-      test_future;
-
-  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
-
-  base::expected<std::unique_ptr<InstallIsolatedAppCommand>,
-                 InstallIsolatedAppCommandCreateError>
-      maybe_command = InstallIsolatedAppCommand::Create(
-          GURL{"some definetely invalid url"}, *url_loader, install_finalizer(),
-          test_future.GetCallback());
-
-  ASSERT_THAT(maybe_command.has_value(), IsFalse());
 }
 
 TEST_F(InstallIsolatedAppCommandTest, URLLoaderIgnoresQueryParameters) {

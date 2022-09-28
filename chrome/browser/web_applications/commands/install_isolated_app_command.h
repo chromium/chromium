@@ -44,22 +44,15 @@ struct InstallIsolatedAppCommandError {
   }
 };
 
-struct InstallIsolatedAppCommandCreateError {};
-
 class InstallIsolatedAppCommand : public WebAppCommand {
  public:
-  // TODO(kuragin): Consider to create an instance of |GURL| instead of passing
-  // a string and probably introduce factory function in order to handle invalid
-  // urls.
-  //
-  // |application_url| is the url for the app to be installed.
+  // |application_url| is the url for the app to be installed. The url must be
+  // valid.
   //
   // |callback| must be not null.
   //
   // The `id` in the application's manifest must equal "/".
-  static base::expected<std::unique_ptr<InstallIsolatedAppCommand>,
-                        InstallIsolatedAppCommandCreateError>
-  Create(
+  explicit InstallIsolatedAppCommand(
       const GURL& application_url,
       WebAppUrlLoader& url_loader,
       WebAppInstallFinalizer& install_finalizer,
@@ -88,14 +81,6 @@ class InstallIsolatedAppCommand : public WebAppCommand {
       std::unique_ptr<WebAppDataRetriever> data_retriever);
 
  private:
-  explicit InstallIsolatedAppCommand(
-      const GURL& application_url,
-      WebAppUrlLoader& url_loader,
-      WebAppInstallFinalizer& install_finalizer,
-      base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
-                                             InstallIsolatedAppCommandError>)>
-          callback);
-
   void ReportFailure(base::StringPiece message);
   void ReportSuccess();
 
