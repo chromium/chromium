@@ -483,7 +483,11 @@ class TabListMediator {
         @Override
         public void onDidStartNavigationInPrimaryMainFrame(
                 Tab tab, NavigationHandle navigationHandle) {
-            if (navigationHandle.isSameDocument() || UrlUtilities.isNTPUrl(tab.getUrl())) {
+            // The URL of the tab and the navigation handle can match without it being a same
+            // document navigation if the tab had no renderer and needed to start a new one.
+            // See https://crbug.com/1359002.
+            if (navigationHandle.isSameDocument() || UrlUtilities.isNTPUrl(tab.getUrl())
+                    || tab.getUrl().equals(navigationHandle.getUrl())) {
                 return;
             }
             if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX) return;

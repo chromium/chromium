@@ -153,6 +153,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
@@ -563,6 +564,98 @@ public class TabListMediatorUnitTest {
         mCallbackCaptor.getValue().onResult(mFavicon);
 
         assertThat(mModel.get(0).model.get(TabProperties.FAVICON), equalTo(mFavicon));
+    }
+
+    @Test
+    public void updatesFavicon_Navigation_NoOpSameDocument() {
+        initAndAssertAllProperties();
+        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        doReturn(mFavicon).when(mTabListFaviconProvider).getDefaultFavicon(anyBoolean());
+
+        mModel.get(0).model.set(TabProperties.FAVICON, null);
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
+
+        NavigationHandle navigationHandle = mock(NavigationHandle.class);
+        when(navigationHandle.getUrl()).thenReturn(TAB2_URL);
+        when(navigationHandle.isSameDocument()).thenReturn(true);
+
+        mTabObserverCaptor.getValue().onDidStartNavigationInPrimaryMainFrame(
+                mTab1, navigationHandle);
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
+    }
+
+    @Test
+    public void updatesFavicon_Navigation_NoOpSameUrl() {
+        initAndAssertAllProperties();
+        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        doReturn(mFavicon).when(mTabListFaviconProvider).getDefaultFavicon(anyBoolean());
+
+        mModel.get(0).model.set(TabProperties.FAVICON, null);
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
+
+        NavigationHandle navigationHandle = mock(NavigationHandle.class);
+        when(navigationHandle.getUrl()).thenReturn(TAB1_URL);
+        when(navigationHandle.isSameDocument()).thenReturn(false);
+
+        mTabObserverCaptor.getValue().onDidStartNavigationInPrimaryMainFrame(
+                mTab1, navigationHandle);
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
+    }
+
+    @Test
+    public void updatesFavicon_Navigation_NoOpNtpUrl() {
+        initAndAssertAllProperties();
+        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        doReturn(mFavicon).when(mTabListFaviconProvider).getDefaultFavicon(anyBoolean());
+
+        NavigationHandle navigationHandle = mock(NavigationHandle.class);
+        when(navigationHandle.getUrl()).thenReturn(TAB2_URL);
+        when(navigationHandle.isSameDocument()).thenReturn(false);
+
+        TabImpl newTab =
+                prepareTab(TAB3_ID, TAB3_TITLE, JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
+        doReturn(mTab1).when(mTabModelFilter).getTabAt(0);
+        doReturn(mTab2).when(mTabModelFilter).getTabAt(1);
+        doReturn(newTab).when(mTabModelFilter).getTabAt(2);
+        doReturn(3).when(mTabModelFilter).getCount();
+        doReturn(Arrays.asList(newTab)).when(mTabModelFilter).getRelatedTabList(eq(TAB3_ID));
+        assertThat(mModel.size(), equalTo(2));
+
+        mTabModelObserverCaptor.getValue().didAddTab(
+                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        assertThat(mModel.size(), equalTo(3));
+        assertThat(mModel.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
+        assertThat(mModel.get(2).model.get(TabProperties.TITLE), equalTo(TAB3_TITLE));
+
+        mModel.get(2).model.set(TabProperties.FAVICON, null);
+        assertNull(mModel.get(2).model.get(TabProperties.FAVICON));
+
+        mTabObserverCaptor.getValue().onDidStartNavigationInPrimaryMainFrame(
+                newTab, navigationHandle);
+        assertNull(mModel.get(2).model.get(TabProperties.FAVICON));
+    }
+
+    @Test
+    public void updatesFavicon_Navigation() {
+        initAndAssertAllProperties();
+        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        doReturn(mFavicon).when(mTabListFaviconProvider).getDefaultFavicon(anyBoolean());
+
+        mModel.get(0).model.set(TabProperties.FAVICON, null);
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
+
+        NavigationHandle navigationHandle = mock(NavigationHandle.class);
+
+        when(navigationHandle.isSameDocument()).thenReturn(false);
+        when(navigationHandle.getUrl()).thenReturn(TAB2_URL);
+        mTabObserverCaptor.getValue().onDidStartNavigationInPrimaryMainFrame(
+                mTab1, navigationHandle);
+
+        assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON));
     }
 
     @Test
