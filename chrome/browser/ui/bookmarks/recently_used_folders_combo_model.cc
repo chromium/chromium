@@ -8,6 +8,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -125,8 +126,7 @@ absl::optional<size_t> RecentlyUsedFoldersComboModel::GetDefaultIndex() const {
   // that we don't remove `parent_node_`.
   // TODO(pbos): Look at returning -1 here if there's no default index. Right
   // now a lot of code in Combobox assumes an index within `items_` bounds.
-  auto it = std::find(items_.begin(), items_.end(),
-                      Item(parent_node_, Item::TYPE_NODE));
+  auto it = base::ranges::find(items_, Item(parent_node_, Item::TYPE_NODE));
   return it == items_.end() ? 0 : static_cast<int>(it - items_.begin());
 }
 
@@ -233,8 +233,7 @@ const BookmarkNode* RecentlyUsedFoldersComboModel::GetNodeAt(size_t index) {
 }
 
 void RecentlyUsedFoldersComboModel::RemoveNode(const BookmarkNode* node) {
-  auto it =
-      std::find(items_.begin(), items_.end(), Item(node, Item::TYPE_NODE));
+  auto it = base::ranges::find(items_, Item(node, Item::TYPE_NODE));
   if (it != items_.end())
     items_.erase(it);
 }

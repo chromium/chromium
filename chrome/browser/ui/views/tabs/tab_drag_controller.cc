@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 
-#include <algorithm>
 #include <limits>
 #include <set>
 #include <utility>
@@ -19,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_auto_reset.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -506,8 +506,7 @@ void TabDragController::Init(TabDragContext* source_context,
   for (size_t i = 0; i < dragging_views.size(); ++i)
     InitDragData(dragging_views[i], &(drag_data_[i]));
   source_view_index_ =
-      std::find(dragging_views.begin(), dragging_views.end(), source_view) -
-      dragging_views.begin();
+      base::ranges::find(dragging_views, source_view) - dragging_views.begin();
 
   // Listen for Esc key presses.
   key_event_tracker_ = std::make_unique<KeyEventTracker>(

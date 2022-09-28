@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -27,6 +26,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -192,8 +192,7 @@ void ChromeShelfControllerUserSwitchObserver::OnUserProfileReadyToSwitch(
     std::string user_id =
         multi_user_util::GetAccountIdFromProfile(profile).GetUserEmail();
     std::set<std::string>::iterator it =
-        std::find(added_user_ids_waiting_for_profiles_.begin(),
-                  added_user_ids_waiting_for_profiles_.end(), user_id);
+        base::ranges::find(added_user_ids_waiting_for_profiles_, user_id);
     if (it != added_user_ids_waiting_for_profiles_.end()) {
       added_user_ids_waiting_for_profiles_.erase(it);
       AddUser(profile->GetOriginalProfile());

@@ -14,6 +14,7 @@
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
 #include "base/process/process_handle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -671,13 +672,13 @@ void TaskManagerTableModel::OnTaskAdded(TaskId id) {
 
   if (table_model_observer_) {
     std::vector<TaskId>::difference_type index =
-        std::find(tasks_.begin(), tasks_.end(), id) - tasks_.begin();
+        base::ranges::find(tasks_, id) - tasks_.begin();
     table_model_observer_->OnItemsAdded(index, 1);
   }
 }
 
 void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
-  auto index = std::find(tasks_.begin(), tasks_.end(), id);
+  auto index = base::ranges::find(tasks_, id);
   if (index == tasks_.end())
     return;
   auto removed_index = static_cast<size_t>(index - tasks_.begin());
@@ -890,7 +891,7 @@ absl::optional<size_t> TaskManagerTableModel::GetRowForWebContents(
     content::WebContents* web_contents) {
   TaskId task_id =
       observed_task_manager()->GetTaskIdForWebContents(web_contents);
-  auto index = std::find(tasks_.begin(), tasks_.end(), task_id);
+  auto index = base::ranges::find(tasks_, task_id);
   if (index == tasks_.end())
     return absl::nullopt;
   return static_cast<size_t>(index - tasks_.begin());

@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -103,7 +103,7 @@ absl::optional<ash::ShelfAction> AdvanceApp(
   size_t index = 0;
   if (active_item) {
     DCHECK(base::Contains(items, active_item));
-    auto it = std::find(items.cbegin(), items.cend(), active_item);
+    auto it = base::ranges::find(items, active_item);
     index = (it - items.cbegin() + 1) % items.size();
   }
   std::move(activate_callback).Run(items[index]);
@@ -424,8 +424,7 @@ void AppShortcutShelfItemController::OnBrowserClosing(Browser* browser) {
   if (!app_menu_cached_by_browsers_)
     return;
   // Reset pointers to the closed browser, but leave menu indices intact.
-  auto it =
-      std::find(app_menu_browsers_.begin(), app_menu_browsers_.end(), browser);
+  auto it = base::ranges::find(app_menu_browsers_, browser);
   if (it != app_menu_browsers_.end())
     *it = nullptr;
 }

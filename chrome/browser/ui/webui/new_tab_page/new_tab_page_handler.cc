@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -712,8 +711,7 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
   std::copy_if(finch_module_ids.begin(), finch_module_ids.end(),
                std::back_inserter(module_ids),
                [&module_ids](const std::string& id) {
-                 return std::find(module_ids.begin(), module_ids.end(), id) ==
-                        module_ids.end();
+                 return !base::Contains(module_ids, id);
                });
 
   std::move(callback).Run(std::move(module_ids));

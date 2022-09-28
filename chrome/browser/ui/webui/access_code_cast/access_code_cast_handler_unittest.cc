@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -286,8 +287,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     // this to occur).
     ON_CALL(*router(), UnregisterMediaSinksObserver(_))
         .WillByDefault([this](MediaSinksObserver* observer) {
-          auto it = std::find(media_sinks_observers_.begin(),
-                              media_sinks_observers_.end(), observer);
+          auto it = base::ranges::find(media_sinks_observers_, observer);
           if (it != media_sinks_observers_.end()) {
             media_sinks_observers_.erase(it);
           }

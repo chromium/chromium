@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -162,8 +164,7 @@ ReadAnythingFontModel::ReadAnythingFontModel() {
 }
 
 bool ReadAnythingFontModel::IsValidFontName(const std::string& font_name) {
-  return std::find(font_choices_.begin(), font_choices_.end(),
-                   base::UTF8ToUTF16(font_name)) != font_choices_.end();
+  return base::Contains(font_choices_, base::UTF8ToUTF16(font_name));
 }
 
 bool ReadAnythingFontModel::IsValidFontIndex(size_t index) {
@@ -172,8 +173,8 @@ bool ReadAnythingFontModel::IsValidFontIndex(size_t index) {
 
 void ReadAnythingFontModel::SetDefaultIndexFromPrefsFontName(
     std::string prefs_font_name) {
-  auto it = std::find(font_choices_.begin(), font_choices_.end(),
-                      base::UTF8ToUTF16(prefs_font_name));
+  auto it =
+      base::ranges::find(font_choices_, base::UTF8ToUTF16(prefs_font_name));
   default_index_ = static_cast<size_t>(it - font_choices_.begin());
 }
 

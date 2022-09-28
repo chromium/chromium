@@ -2933,9 +2933,7 @@ bool WebAppIntegrationTestDriver::IsFileHandledBySite(
     const std::vector<std::wstring> supported_file_extensions =
         GetFileExtensionsForProgId(file_handler_prog_id);
     std::wstring extension = converter.from_bytes("." + file_extension);
-    if (std::find(supported_file_extensions.begin(),
-                  supported_file_extensions.end(),
-                  extension) != supported_file_extensions.end()) {
+    if (base::Contains(supported_file_extensions, extension)) {
       const std::wstring reg_key = std::wstring(ShellUtil::kRegClasses) +
                                    base::FilePath::kSeparators[0] + extension +
                                    base::FilePath::kSeparators[0] +

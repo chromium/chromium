@@ -5,6 +5,7 @@
 #include <codecvt>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
@@ -1271,9 +1272,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   expected_pixel_colors.push_back(SkColorSetRGB(90, 90, 90));
 #endif
   SkColor icon_pixel_color = GetIconTopLeftColor(shortcut_path);
-  EXPECT_TRUE(std::find(expected_pixel_colors.begin(),
-                        expected_pixel_colors.end(),
-                        icon_pixel_color) != expected_pixel_colors.end())
+  EXPECT_TRUE(base::Contains(expected_pixel_colors, icon_pixel_color))
       << "Actual color (RGB) is: "
       << color_utils::SkColorToRgbString(icon_pixel_color);
 
@@ -2083,9 +2082,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
       std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
       const std::string extension =
           converter.to_bytes(file_extension.substr(1));
-      EXPECT_TRUE(std::find(expected_extensions.begin(),
-                            expected_extensions.end(),
-                            extension) != expected_extensions.end())
+      EXPECT_TRUE(base::Contains(expected_extensions, extension))
           << "Missing file extension: " << extension;
       const std::wstring reg_key =
           L"Software\\Classes\\" + file_extension + L"\\OpenWithProgids";

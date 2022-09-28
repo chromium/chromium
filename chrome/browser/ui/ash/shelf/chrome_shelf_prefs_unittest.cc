@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -290,8 +291,8 @@ TEST_F(ChromeShelfPrefsTest, TransformationForStandaloneBrowserChromeApps) {
 
   // The three items should come in order. Other items might be added by
   // migration. That's OK.
-  auto it = std::find(pinned_apps_strs.begin(), pinned_apps_strs.end(),
-                      kAshChromeAppIdWithUsualPrefix);
+  auto it =
+      base::ranges::find(pinned_apps_strs, kAshChromeAppIdWithUsualPrefix);
   size_t index = it - pinned_apps_strs.begin();
 
   ASSERT_EQ(pinned_apps_strs[index + 1], kLacrosChromeAppIdWithUsualPrefix);

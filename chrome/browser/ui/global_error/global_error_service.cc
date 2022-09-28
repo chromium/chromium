@@ -6,9 +6,8 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_bubble_view_base.h"
@@ -48,7 +47,7 @@ std::unique_ptr<GlobalError> GlobalErrorService::RemoveGlobalError(
 
 void GlobalErrorService::RemoveUnownedGlobalError(GlobalError* error) {
   DCHECK(owned_errors_.find(error) == owned_errors_.end());
-  all_errors_.erase(std::find(all_errors_.begin(), all_errors_.end(), error));
+  all_errors_.erase(base::ranges::find(all_errors_, error));
   GlobalErrorBubbleViewBase* bubble = error->GetBubbleView();
   if (bubble)
     bubble->CloseBubbleView();

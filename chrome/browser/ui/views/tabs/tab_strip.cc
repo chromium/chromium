@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -31,6 +30,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
@@ -588,7 +588,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
     int active_tab_model_index = GetIndexOf(source_view);
     int active_tab_index = static_cast<int>(
-        std::find(views.begin(), views.end(), source_view) - views.begin());
+        base::ranges::find(views, source_view) - views.begin());
     for (size_t i = 0; i < views.size(); ++i) {
       TabSlotView* view = views[i];
       gfx::Rect new_bounds = bounds[i];

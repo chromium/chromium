@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -123,8 +124,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, CloseTabAction) {
     open_tab_ids.push_back(extensions::ExtensionTabUtil::GetTabId(
         browser()->tab_strip_model()->GetWebContentsAt(tab_index)));
   }
-  ASSERT_EQ(open_tab_ids.end(),
-            std::find(open_tab_ids.begin(), open_tab_ids.end(), tab_id));
+  ASSERT_FALSE(base::Contains(open_tab_ids, tab_id));
 }
 
 // When hosting the Tab Search UI as a browser tab, ensure that closing the tab
@@ -163,6 +163,5 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
     open_tab_ids.push_back(extensions::ExtensionTabUtil::GetTabId(
         tab_strip_model->GetWebContentsAt(tab_index)));
   }
-  ASSERT_EQ(open_tab_ids.end(),
-            std::find(open_tab_ids.begin(), open_tab_ids.end(), tab_id));
+  ASSERT_FALSE(base::Contains(open_tab_ids, tab_id));
 }

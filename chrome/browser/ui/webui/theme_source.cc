@@ -4,10 +4,9 @@
 
 #include "chrome/browser/ui/webui/theme_source.h"
 
-#include <algorithm>
-
 #include "base/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -264,7 +263,7 @@ void ThemeSource::SendColorsCss(
                                     ui::ColorId end,
                                     ColorIdCSSCallback color_css_name) {
     // Only return these mappings if specified in the query parameter.
-    auto it = std::find(color_id_sets.begin(), color_id_sets.end(), set_name);
+    auto it = base::ranges::find(color_id_sets, set_name);
     if (it == color_id_sets.end()) {
       return std::string();
     }

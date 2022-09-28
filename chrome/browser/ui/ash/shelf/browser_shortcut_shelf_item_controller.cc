@@ -13,6 +13,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -297,8 +298,7 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
     // If there is more than one suitable browser, we advance to the next if
     // |browser| is already active - or - check the last used browser if it can
     // be used.
-    std::vector<Browser*>::iterator i =
-        std::find(items.begin(), items.end(), browser);
+    std::vector<Browser*>::iterator i = base::ranges::find(items, browser);
     if (i != items.end()) {
       if (browser->window()->IsActive())
         browser = (++i == items.end()) ? items[0] : *i;

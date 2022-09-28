@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
 #include "chrome/browser/ui/webui/settings/settings_secure_dns_handler.h"
 
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -101,7 +102,7 @@ bool FindDropdownItem(const base::Value::List& resolvers,
   dict.Set("value", value);
   dict.Set("policy", policy);
 
-  return std::find(resolvers.begin(), resolvers.end(), dict) != resolvers.end();
+  return base::Contains(resolvers, dict);
 }
 
 }  // namespace

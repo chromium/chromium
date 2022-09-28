@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -103,8 +104,7 @@ TEST_F(WallpaperControllerClientImplTest, DailyGooglePhotosDoNotRepeat) {
   auto handle_photo = [&last_ten](GooglePhotosPhotoPtr photo, bool success) {
     ASSERT_TRUE(success);
 
-    auto it = std::find(last_ten.begin(), last_ten.end(), photo->id);
-    EXPECT_TRUE(it == last_ten.end());
+    EXPECT_FALSE(base::Contains(last_ten, photo->id));
 
     last_ten.push_back(photo->id);
 

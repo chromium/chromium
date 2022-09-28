@@ -257,8 +257,7 @@ void DownloadShelfView::AutoClose() {
 
 void DownloadShelfView::RemoveDownloadView(View* view) {
   DCHECK(view);
-  const auto i =
-      std::find(download_views_.begin(), download_views_.end(), view);
+  const auto i = base::ranges::find(download_views_, view);
   DCHECK(i != download_views_.end());
   download_views_.erase(i);
   RemoveChildViewT(view);

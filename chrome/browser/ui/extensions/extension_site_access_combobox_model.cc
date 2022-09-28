@@ -6,6 +6,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,7 +51,7 @@ size_t ExtensionSiteAccessComboboxModel::GetCurrentSiteAccessIndex() const {
   extensions::SitePermissionsHelper::SiteAccess current_access =
       extensions::SitePermissionsHelper(browser_->profile())
           .GetSiteAccess(*extension_, web_contents->GetLastCommittedURL());
-  auto item_it = std::find(items_.begin(), items_.end(), current_access);
+  auto item_it = base::ranges::find(items_, current_access);
   DCHECK(item_it != items_.end());
 
   return static_cast<size_t>(item_it - items_.begin());

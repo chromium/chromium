@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/UsbChooserDialog_jni.h"
 #include "chrome/browser/profiles/profile.h"
@@ -139,7 +139,7 @@ void UsbChooserDialogAndroid::OnItemSelected(
     const base::android::JavaParamRef<jstring>& item_id_jstring) {
   std::string item_id =
       base::android::ConvertJavaStringToUTF8(env, item_id_jstring);
-  auto it = std::find(item_id_map_.begin(), item_id_map_.end(), item_id);
+  auto it = base::ranges::find(item_id_map_, item_id);
   DCHECK(it != item_id_map_.end());
   controller_->Select(
       {static_cast<size_t>(std::distance(item_id_map_.begin(), it))});
