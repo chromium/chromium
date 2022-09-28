@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import * as dom from '../dom.js';
+import {I18nString} from '../i18n_string.js';
+import {getI18nMessage} from '../models/load_time_data.js';
 import {MimeType} from '../type.js';
 import {instantiateTemplate, loadImage} from '../util.js';
 
@@ -13,10 +15,7 @@ export class DocumentPreviewMode {
 
   private readonly image: HTMLImageElement;
 
-  /**
-   * The target element to append the root element of fix mode.
-   */
-  private readonly target: HTMLElement;
+  private readonly fixButton: HTMLElement;
 
   constructor({target, onFix, onAdd, onShare, onCancel, onSave}: {
     target: HTMLElement,
@@ -26,14 +25,14 @@ export class DocumentPreviewMode {
     onCancel: () => void,
     onSave: (mimeType: MimeType.JPEG|MimeType.PDF) => void,
   }) {
-    this.target = target;
     const fragment = instantiateTemplate(this.templateSelector);
     this.root = dom.getFrom(fragment, '.document-preview-mode', HTMLElement);
+    target.append(this.root);
     this.image = dom.getFrom(this.root, '.image', HTMLImageElement);
 
-    dom.getFrom(
-           this.root, 'button[i18n-aria=label_fix_document]', HTMLButtonElement)
-        .addEventListener('click', onFix);
+    this.fixButton = dom.getFrom(
+        this.root, 'button[i18n-aria=fix_page_button]', HTMLButtonElement);
+    this.fixButton.addEventListener('click', onFix);
     dom.getFrom(
            this.root, 'button[i18n-aria=add_new_page_button]',
            HTMLButtonElement)
@@ -54,15 +53,18 @@ export class DocumentPreviewMode {
         .addEventListener('click', () => onSave(MimeType.JPEG));
   }
 
-  update({src}: {src: string}): Promise<void> {
+  update({src, pageIndex}: {src: string, pageIndex: number}): Promise<void> {
+    this.fixButton.setAttribute(
+        'aria-label',
+        getI18nMessage(I18nString.FIX_PAGE_BUTTON, pageIndex + 1));
     return loadImage(this.image, src);
   }
 
   show(): void {
-    this.target.append(this.root);
+    this.root.classList.add('show');
   }
 
   hide(): void {
-    this.root.remove();
+    this.root.classList.remove('show');
   }
 }

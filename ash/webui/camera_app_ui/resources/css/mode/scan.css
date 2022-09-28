@@ -534,6 +534,10 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 }
 
 .document-preview-mode {
+  display: none;
+}
+
+.document-preview-mode.show {
   display: contents;
 }
 
@@ -583,11 +587,15 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   background-image: url(/images/document_review_share.svg);
 }
 
-.document-preview-mode button[i18n-aria=label_fix_document] {
+.document-preview-mode button[i18n-aria=fix_page_button] {
   background-image: url(/images/document_review_fix_page.svg);
 }
 
 .document-fix-mode {
+  display: none;
+}
+
+.document-fix-mode.show {
   display: contents;
 }
 

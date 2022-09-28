@@ -169,20 +169,15 @@ export class DocumentFixMode {
    */
   private readonly resizeObserver: ResizeObserver;
 
-  /**
-   * The target element to append the root element of fix mode.
-   */
-  private readonly target: HTMLElement;
-
   constructor({target, onExit, onUpdatePage}: {
     target: HTMLElement,
     onExit: () => void,
     onUpdatePage:
         ({corners, rotation}: {corners: Point[], rotation: Rotation}) => void,
   }) {
-    this.target = target;
     const fragment = util.instantiateTemplate(this.templateSelector);
     this.root = dom.getFrom(fragment, '.document-fix-mode', HTMLElement);
+    target.append(this.root);
     this.previewArea = dom.getFrom(this.root, '.preview-area', HTMLDivElement);
     this.imageElement = dom.getFrom(this.root, '.image', HTMLImageElement);
     this.cropAreaContainer =
@@ -643,13 +638,13 @@ export class DocumentFixMode {
   }
 
   show(): void {
-    this.target.append(this.root);
+    this.root.classList.add('show');
     this.resizeObserver.observe(this.previewArea);
   }
 
   hide(): void {
     this.resizeObserver.disconnect();
-    this.root.remove();
+    this.root.classList.remove('show');
   }
 
   private getNextRotation(rotation: Rotation, clockwise = true) {

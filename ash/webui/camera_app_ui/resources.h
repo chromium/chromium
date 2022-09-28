@@ -81,6 +81,7 @@ const struct {
     {"export_button", IDS_EXPORT_BUTTON},
     {"feedback_button", IDS_FEEDBACK_BUTTON},
     {"feedback_description_placeholder", IDS_FEEDBACK_DESCRIPTION_PLACEHOLDER},
+    {"fix_page_button", IDS_FIX_PAGE_BUTTON},
     {"gallery_button", IDS_GALLERY_BUTTON},
     {"gallery_images", IDS_GALLERY_IMAGES},
     {"grid_type_button", IDS_GRID_TYPE_BUTTON},

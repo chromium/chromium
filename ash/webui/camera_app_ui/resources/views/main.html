@@ -465,8 +465,9 @@
       </div>
     </div>
     <div id="view-document-review" class="review-views">
-      <div class="document-pages"></div>
-      <div class="document-preview"></div>
+      <div class="document-pages" role="tablist" aria-label="Scanned page list"
+        aria-orientation="vertical"></div>
+      <div class="document-preview" role="tabpanel"></div>
     </div>
     <div id="view-document-mode-dialog">
       <div class="dialog-popup" role="dialog" aria-labelledby="dialog-msg"
@@ -627,7 +628,7 @@
             <button class="icon-button dark inkdrop"
               i18n-aria="label_share" tabindex="0"></button>
             <button class="icon-button dark inkdrop"
-              i18n-aria="label_fix_document" tabindex="0"></button>
+              i18n-aria="fix_page_button" tabindex="0"></button>
           </div>
           <div class="button-group right">
             <button class="text-button pill dark inkdrop secondary"
@@ -663,7 +664,8 @@
       </div>
     </template>
     <template id="document-review-page">
-      <div class="page" tabindex="0" i18n-aria="select_page_button">
+      <div class="page" tabindex="-1" aria-selected="false" role="tab"
+        i18n-aria="select_page_button">
         <div class="delete-container">
           <button class="delete" i18n-aria="delete_page_button"
                   tabindex="0"></button>

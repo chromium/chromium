@@ -71,6 +71,7 @@ export enum I18nString {
   EXPORT_BUTTON = 'export_button',
   FEEDBACK_BUTTON = 'feedback_button',
   FEEDBACK_DESCRIPTION_PLACEHOLDER = 'feedback_description_placeholder',
+  FIX_PAGE_BUTTON = 'fix_page_button',
   GALLERY_BUTTON = 'gallery_button',
   GALLERY_IMAGES = 'gallery_images',
   GRID_TYPE_BUTTON = 'grid_type_button',

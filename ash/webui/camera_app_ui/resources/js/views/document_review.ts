@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof, assertNotReached} from '../assert.js';
+import {assert, assertInstanceof, assertNotReached} from '../assert.js';
 import {IndicatorType, showIndicator} from '../custom_effect.js';
 import * as dom from '../dom.js';
 import {Point} from '../geometry.js';
@@ -132,9 +132,6 @@ export class DocumentReview extends View {
           target.closest(`.${this.classes.delete}`) !== null;
       if (clickOnDeleteButton) {
         await this.deletePage(index);
-        if (this.pages.length === 0) {
-          this.close();
-        }
         return;
       }
       this.selectPage(index);
@@ -246,6 +243,9 @@ export class DocumentReview extends View {
    * count when the view is closed.
    */
   async open({fix}: {fix?: boolean}): Promise<number> {
+    assert(
+        this.pages.length !== 0,
+        'Page count is expected to be be larger than zero');
     await this.selectPage(this.pages.length - 1);
     await this.showMode(fix === true ? Mode.FIX : Mode.PREVIEW);
     await nav.open(this.name).closed;
@@ -287,7 +287,7 @@ export class DocumentReview extends View {
       case Mode.PREVIEW: {
         const {src} = this.getPageImageElement(
             this.pagesElement.children[this.selectedIndex]);
-        this.modes[mode].update({src});
+        this.modes[mode].update({src, pageIndex: this.selectedIndex});
         break;
       }
       default:
@@ -359,6 +359,12 @@ export class DocumentReview extends View {
         this.selectedIndex === this.pages.length ? this.pages.length - 1 :
                                                    this.selectedIndex);
     this.root.classList.toggle(this.classes.single, this.pages.length === 1);
+
+    if (this.pages.length === 0) {
+      // By design, this line is not reachable. If we decide to let users delete
+      // all pages later, we should close the view when no pages remain.
+      this.close();
+    }
   }
 
   private deletePageView(index: number): void {
@@ -379,10 +385,17 @@ export class DocumentReview extends View {
    */
   private selectPageView(index: number): void {
     for (let i = 0; i < this.pagesElement.children.length; i++) {
-      this.pagesElement.children[i].classList.remove(this.classes.active);
+      const pageElement = this.pagesElement.children[i];
+      pageElement.classList.remove(this.classes.active);
+      pageElement.setAttribute('aria-selected', 'false');
+      pageElement.setAttribute('tabindex', '-1');
     }
-    const activePageElement = this.pagesElement.children[index];
+    const activePageElement =
+        assertInstanceof(this.pagesElement.children[index], HTMLElement);
     activePageElement.classList.add(this.classes.active);
+    activePageElement.setAttribute('aria-selected', 'true');
+    activePageElement.setAttribute('tabindex', '0');
+    activePageElement.focus();
     activePageElement.scrollIntoView();
   }
 
@@ -433,5 +446,44 @@ export class DocumentReview extends View {
     this.hideMultiPageAvailableIndicator?.();
     this.hideMultiPageAvailableIndicator = null;
     return true;
+  }
+
+  override onKeyPressed(key: string): boolean {
+    if (super.onKeyPressed(key)) {
+      return true;
+    }
+    if (this.pages.length === 1 ||
+        !this.pagesElement.contains(document.activeElement)) {
+      return false;
+    }
+    if (key === 'Up') {
+      const index = this.selectedIndex === 0 ? this.pages.length - 1 :
+                                               this.selectedIndex - 1;
+      this.selectPage(index);
+      return true;
+    } else if (key === 'Down') {
+      const index = this.selectedIndex === this.pages.length - 1 ?
+          0 :
+          this.selectedIndex + 1;
+      this.selectPage(index);
+      return true;
+    } else if (key === 'Delete') {
+      this.deletePage(this.selectedIndex);
+      return true;
+    }
+    return false;
+  }
+
+  protected override setUnfocusable(): void {
+    // `tabindex` of page elements might be changed by `selectPage` before the
+    // view is opened to avoid flickering. Set `tabindex` to -1 before
+    // `super.setUnfocusable()` to avoid `tabindex` being changed to 0 by
+    // `super.setFocusable()`.
+    if (this.pagesElement.children.length !== 0) {
+      const activePageElement = this.pagesElement.children[this.selectedIndex];
+      activePageElement.setAttribute('tabindex', '-1');
+      activePageElement.setAttribute('aria-selected', 'false');
+    }
+    super.setUnfocusable();
   }
 }

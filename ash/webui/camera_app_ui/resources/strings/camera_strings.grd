@@ -702,10 +702,10 @@ If your feedback is about image or video quality, please attach a sample photo o
         Downloading updates for document scanning
       </message>
       <message desc="Label for the button of adding a new document page." name="IDS_ADD_NEW_PAGE_BUTTON">
-        Scan additional pages
+        Scan additional page
       </message>
       <message desc="Label for the button of selecting the document page." name="IDS_SELECT_PAGE_BUTTON">
-        Select page
+        Page thumbnail
       </message>
       <message desc="Label for the button of deleting the document page." name="IDS_DELETE_PAGE_BUTTON">
         Delete page
@@ -715,6 +715,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       </message>
       <message desc="Toast message notifying user about multi-page PDF in document mode is available." name="IDS_DOCUMENT_MODE_MULTI_PAGE_TOAST">
         You can now create multi-page PDF
+      </message>
+      <message desc="Label for the button to edit the selected document page." name="IDS_FIX_PAGE_BUTTON">
+        Edit page <ph name="index">$1<ex>1</ex></ph>
       </message>
     </messages>
   </release>
