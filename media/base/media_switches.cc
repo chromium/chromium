@@ -1042,6 +1042,13 @@ const base::Feature MEDIA_EXPORT kUseOutOfProcessVideoDecoding{
     "UseOutOfProcessVideoDecoding", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Spawn utility processes to perform hardware encode acceleration instead of
+// using the GPU process.
+const base::Feature MEDIA_EXPORT kUseOutOfProcessVideoEncoding{
+    "UseOutOfProcessVideoEncoding", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 std::string GetEffectiveAutoplayPolicy(const base::CommandLine& command_line) {
   // Return the autoplay policy set in the command line, if any.
   if (command_line.HasSwitch(switches::kAutoplayPolicy))
