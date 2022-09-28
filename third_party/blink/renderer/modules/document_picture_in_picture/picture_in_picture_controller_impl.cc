@@ -517,6 +517,16 @@ void PictureInPictureControllerImpl::
   // The document PIP window has been destroyed, so the opener is no longer
   // associated with it.  Allow throttling again.
   SetMayThrottleIfUndrawnFrames(true);
+  document_picture_in_picture_session_ = nullptr;
+
+  // If there is an unresolved promise for a document PiP window, reject it now.
+  // Note that we know that it goes with the current session, since we replace
+  // the context observer's context at the same time we replace the session.
+  if (open_document_pip_task_.IsActive()) {
+    open_document_pip_task_.Cancel();
+    open_document_pip_resolver_->Reject();
+    open_document_pip_resolver_ = nullptr;
+  }
 }
 
 void PictureInPictureControllerImpl::PageVisibilityChanged() {
