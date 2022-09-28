@@ -9,6 +9,8 @@
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
+setup(() => assertSpeculationRulesIsSupported());
+
 const uid = token();
 
 const PAGE_URL = `resources/prerendered-page.html?uid=${uid}`;

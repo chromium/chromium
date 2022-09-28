@@ -14,6 +14,8 @@
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
+setup(() => assertSpeculationRulesIsSupported());
+
 const PAGE_URL = 'resources/windowclient-navigate-on-iframe.html';
 const WORKER_URL = 'resources/windowclient-navigate-worker.js';
 const SCOPE = 'resources/';

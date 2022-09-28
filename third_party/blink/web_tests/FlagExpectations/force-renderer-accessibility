@@ -51,6 +51,8 @@ crbug.com/1350124 crbug.com/1126305 virtual/prerender/external/wpt/speculation-r
 crbug.com/1350124 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/activation-start.html [ Skip ]
 crbug.com/1350124 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/cross-origin-isolated.https.html [ Skip ]
 crbug.com/1350124 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/restriction-prompt-by-before-unload.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/windowclient-navigate-to-cross-origin-url-on-iframe.https.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/windowclient-navigate-to-same-origin-url-on-iframe.https.html [ Skip ]
 crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/cross-origin-iframe.html [ Skip ]
 crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/purpose-prefetch-header.https.html [ Skip ]
 crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/sandbox-iframe.html [ Skip ]
@@ -59,8 +61,6 @@ crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/ses
 crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Skip ]
 crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Skip ]
 crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-cross-origin-url-on-iframe.https.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-same-origin-url-on-iframe.https.html [ Skip ]
 
 # Intentional failures for focusless spatial navigation.
 # Focusless spatial navigation is intentionally disabled when accessibility is turned on.
