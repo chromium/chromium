@@ -6,20 +6,15 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_FILE_SUGGESTION_PROVIDER_H_
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 
 namespace app_list {
-struct FileSuggestData;
-enum class FileSuggestionType;
 
 // The base class of file suggestion providers (such as drive file suggestion
 // provider). A subclass should ensure that `NotifySuggestionUpdate()` is
 // called when the suggestions managed by the provider update.
 class FileSuggestionProvider {
  public:
-  using GetSuggestFileDataCallback = base::OnceCallback<void(
-      const absl::optional<std::vector<FileSuggestData>>&)>;
-
   explicit FileSuggestionProvider(
       base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback);
   FileSuggestionProvider(const FileSuggestionProvider&) = delete;
@@ -31,6 +26,7 @@ class FileSuggestionProvider {
   // the callback. The returned suggestions have been filtered by the file
   // last modification time. Only the files that have been modified more
   // recently than a threshold are returned.
+  // NOTE: the overridden function should ensure that `callback` runs finally.
   virtual void GetSuggestFileData(GetSuggestFileDataCallback callback) = 0;
 
  protected:

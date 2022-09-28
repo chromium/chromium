@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/app_list/search/files/file_suggest_test_util.h"
 
 #include "base/json/json_writer.h"
+#include "base/run_loop.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 
 namespace app_list {
 
@@ -27,6 +29,18 @@ std::string CreateItemSuggestUpdateJsonString(
   std::string json_string;
   base::JSONWriter::Write(suggest_item_update, &json_string);
   return json_string;
+}
+
+void WaitForFileSuggestionUpdate(
+    const testing::NiceMock<MockFileSuggestKeyedServiceObserver>& mock,
+    app_list::FileSuggestionType expected_type) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock, OnFileSuggestionUpdated)
+      .WillRepeatedly([&](app_list::FileSuggestionType type) {
+        if (type == expected_type)
+          run_loop.Quit();
+      });
+  run_loop.Run();
 }
 
 }  // namespace app_list

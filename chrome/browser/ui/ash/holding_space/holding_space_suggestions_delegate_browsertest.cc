@@ -19,27 +19,6 @@
 
 namespace ash {
 namespace {
-class MockFileSuggestKeyedServiceObserver
-    : public app_list::FileSuggestKeyedService::Observer {
- public:
-  // app_list::FileSuggestKeyedService::Observer:
-  MOCK_METHOD(void,
-              OnFileSuggestionUpdated,
-              (app_list::FileSuggestionType type),
-              (override));
-};
-
-// Waits until `mock` is notified of the drive file suggestion update.
-void WaitForDriveFileSuggestionUpdate(
-    const testing::NiceMock<MockFileSuggestKeyedServiceObserver>& mock) {
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock, OnFileSuggestionUpdated)
-      .WillOnce([&](app_list::FileSuggestionType type) {
-        EXPECT_EQ(app_list::FileSuggestionType::kDriveFile, type);
-        run_loop.Quit();
-      });
-  run_loop.Run();
-}
 
 // Returns the suggestion items in `model`.
 std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>
@@ -85,13 +64,8 @@ class HoldingSpaceSuggestionsDelegateBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   HoldingSpaceSuggestionsDelegateBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          ash::features::kHoldingSpaceSuggestions);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          ash::features::kHoldingSpaceSuggestions);
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kHoldingSpaceSuggestions, GetParam());
   }
 
   app_list::FileSuggestKeyedService* GetFileSuggestKeyedService() {
@@ -119,7 +93,7 @@ class HoldingSpaceSuggestionsDelegateBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HoldingSpaceSuggestionsDelegateBrowserTest,
-                         testing::Bool());
+                         /*enable_suggestion_feature=*/testing::Bool());
 
 // Verifies that the holding space behaves as expected after the drive file
 // suggestions update.
@@ -153,14 +127,17 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceSuggestionsDelegateBrowserTest,
   model_observer.Observe(model);
 
   // Add an observer to watch for updates in drive file suggestions.
-  testing::NiceMock<MockFileSuggestKeyedServiceObserver> service_observer_mock;
+  testing::NiceMock<app_list::MockFileSuggestKeyedServiceObserver>
+      service_observer_mock;
   base::ScopedObservation<app_list::FileSuggestKeyedService,
                           app_list::FileSuggestKeyedService::Observer>
       service_observer{&service_observer_mock};
   service_observer.Observe(GetFileSuggestKeyedService());
 
   UpdateSuggestionsForDriveFiles({file_id1, file_id2});
-  WaitForDriveFileSuggestionUpdate(service_observer_mock);
+  app_list::WaitForFileSuggestionUpdate(
+      service_observer_mock,
+      /*expected_type=*/app_list::FileSuggestionType::kDriveFile);
 
   const bool holding_space_suggestion_enabled = GetParam();
   if (holding_space_suggestion_enabled) {
@@ -185,7 +162,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceSuggestionsDelegateBrowserTest,
   }
 
   UpdateSuggestionsForDriveFiles({file_id2, file_id3});
-  WaitForDriveFileSuggestionUpdate(service_observer_mock);
+  app_list::WaitForFileSuggestionUpdate(
+      service_observer_mock,
+      /*expected_type=*/app_list::FileSuggestionType::kDriveFile);
 
   if (holding_space_suggestion_enabled) {
     // File 3 should be added to the model before file 2 so that the suggestion

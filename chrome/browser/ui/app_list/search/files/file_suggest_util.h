@@ -5,10 +5,15 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_FILE_SUGGEST_UTIL_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_FILE_SUGGEST_UTIL_H_
 
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
+
+struct FileSuggestData;
+using GetSuggestFileDataCallback = base::OnceCallback<void(
+    const absl::optional<std::vector<FileSuggestData>>&)>;
 
 // Outcome of a call to `FileSuggestKeyedService::GetSuggestFileData()`. These
 // values persist to logs. Entries should not be renumbered and numeric values
@@ -23,10 +28,11 @@ enum class DriveSuggestValidationStatus {
   kMaxValue = kDriveDisabled,
 };
 
-// The types of the file suggestion data.
+// The types of the file suggestion data, ordered by decreasing precedence.
 enum class FileSuggestionType {
   // The drive file suggestion.
   kDriveFile,
+
   // The local file suggestion.
   kLocalFile,
 };

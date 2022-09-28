@@ -5976,6 +5976,10 @@ static_library("test_support") {
     sources += [
       "app_list/search/files/file_suggest_test_util.cc",
       "app_list/search/files/file_suggest_test_util.h",
+      "app_list/search/files/mock_file_suggest_keyed_service.cc",
+      "app_list/search/files/mock_file_suggest_keyed_service.h",
+      "app_list/search/files/mock_file_suggest_keyed_service_observer.cc",
+      "app_list/search/files/mock_file_suggest_keyed_service_observer.h",
       "ash/ash_test_util.cc",
       "ash/ash_test_util.h",
       "ash/shelf/chrome_shelf_controller_test_util.cc",

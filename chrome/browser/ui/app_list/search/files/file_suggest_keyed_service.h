@@ -7,21 +7,18 @@
 
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
 namespace app_list {
 class DriveFileSuggestionProvider;
 class LocalFileSuggestionProvider;
-struct FileSuggestData;
-enum class FileSuggestionType;
 class ZeroStateDriveProvider;
 
 // The keyed service that queries for the file suggestions (for both the drive
@@ -55,11 +52,9 @@ class FileSuggestKeyedService : public KeyedService {
   // suggested file data, including file paths and suggestion reasons, through
   // the callback. The returned suggestions have been filtered by the file
   // last modification time. Only the files that have been modified more
-  // recently than a threshold are returned.
-  void GetSuggestFileData(
-      FileSuggestionType type,
-      base::OnceCallback<
-          void(const absl::optional<std::vector<FileSuggestData>>&)> callback);
+  // recently than a threshold are returned. Overridden for tests.
+  virtual void GetSuggestFileData(FileSuggestionType type,
+                                  GetSuggestFileDataCallback callback);
 
   // Adds/Removes an observer.
   void AddObserver(Observer* observer);
@@ -72,10 +67,11 @@ class FileSuggestKeyedService : public KeyedService {
     return drive_file_suggestion_provider_.get();
   }
 
- private:
+ protected:
   // Called whenever a suggestion provider updates.
   void OnSuggestionProviderUpdated(FileSuggestionType type);
 
+ private:
   // The provider of drive file suggestions.
   std::unique_ptr<DriveFileSuggestionProvider> drive_file_suggestion_provider_;
 

@@ -1,0 +1,46 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_MOCK_FILE_SUGGEST_KEYED_SERVICE_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_MOCK_FILE_SUGGEST_KEYED_SERVICE_H_
+
+#include <map>
+
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
+
+namespace app_list {
+
+// A mock file suggestion service. Simply returns the cached suggestions without
+// relying on real suggestion providers.
+class MockFileSuggestKeyedService : public app_list::FileSuggestKeyedService {
+ public:
+  explicit MockFileSuggestKeyedService(Profile* profile);
+  MockFileSuggestKeyedService(const MockFileSuggestKeyedService&) = delete;
+  MockFileSuggestKeyedService& operator=(const MockFileSuggestKeyedService&) =
+      delete;
+  ~MockFileSuggestKeyedService() override;
+
+  // app_list::FileSuggestKeyedService:
+  void GetSuggestFileData(app_list::FileSuggestionType type,
+                          GetSuggestFileDataCallback callback) override;
+
+  void SetSuggestionsForType(
+      app_list::FileSuggestionType type,
+      const std::vector<app_list::FileSuggestData>& suggestions);
+
+ private:
+  void RunGetSuggestFileDataCallback(app_list::FileSuggestionType type,
+                                     GetSuggestFileDataCallback callback);
+
+  // Caches file suggestions.
+  std::map<app_list::FileSuggestionType, std::vector<app_list::FileSuggestData>>
+      type_suggestion_mappings_;
+
+  base::WeakPtrFactory<MockFileSuggestKeyedService> weak_factory_{this};
+};
+
+}  // namespace app_list
+
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_MOCK_FILE_SUGGEST_KEYED_SERVICE_H_

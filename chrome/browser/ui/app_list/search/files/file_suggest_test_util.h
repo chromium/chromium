@@ -8,6 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/ui/app_list/search/files/mock_file_suggest_keyed_service_observer.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
 namespace app_list {
 
 /*
@@ -35,6 +38,11 @@ struct SuggestItemMetadata {
 std::string CreateItemSuggestUpdateJsonString(
     const std::vector<SuggestItemMetadata>& item_data_array,
     const std::string& session_id);
+
+// Waits until `mock` is notified of the file suggestion update.
+void WaitForFileSuggestionUpdate(
+    const testing::NiceMock<MockFileSuggestKeyedServiceObserver>& mock,
+    app_list::FileSuggestionType expected_type);
 
 }  // namespace app_list
 

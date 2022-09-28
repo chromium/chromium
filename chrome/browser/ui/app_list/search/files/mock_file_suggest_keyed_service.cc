@@ -1,0 +1,47 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/app_list/search/files/mock_file_suggest_keyed_service.h"
+
+#include "base/functional/callback.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
+
+namespace app_list {
+
+MockFileSuggestKeyedService::MockFileSuggestKeyedService(Profile* profile)
+    : app_list::FileSuggestKeyedService(profile) {}
+
+MockFileSuggestKeyedService::~MockFileSuggestKeyedService() = default;
+
+void MockFileSuggestKeyedService::GetSuggestFileData(
+    app_list::FileSuggestionType type,
+    GetSuggestFileDataCallback callback) {
+  // Emulate `FileSuggestKeyedService` that returns data asynchronously.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &MockFileSuggestKeyedService::RunGetSuggestFileDataCallback,
+          weak_factory_.GetWeakPtr(), type, std::move(callback)));
+}
+
+void MockFileSuggestKeyedService::SetSuggestionsForType(
+    app_list::FileSuggestionType type,
+    const std::vector<app_list::FileSuggestData>& suggestions) {
+  type_suggestion_mappings_[type] = suggestions;
+  OnSuggestionProviderUpdated(type);
+}
+
+void MockFileSuggestKeyedService::RunGetSuggestFileDataCallback(
+    app_list::FileSuggestionType type,
+    GetSuggestFileDataCallback callback) {
+  absl::optional<std::vector<FileSuggestData>> suggestions;
+  auto iter = type_suggestion_mappings_.find(type);
+  if (iter != type_suggestion_mappings_.end())
+    suggestions = iter->second;
+  std::move(callback).Run(suggestions);
+}
+
+}  // namespace app_list

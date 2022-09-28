@@ -101,8 +101,7 @@ DriveFileSuggestionProvider::DriveFileSuggestionProvider(
 DriveFileSuggestionProvider::~DriveFileSuggestionProvider() = default;
 
 void DriveFileSuggestionProvider::GetSuggestFileData(
-    base::OnceCallback<
-        void(const absl::optional<std::vector<FileSuggestData>>&)> callback) {
+    GetSuggestFileDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const bool has_active_validation =

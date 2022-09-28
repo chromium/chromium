@@ -20,7 +20,7 @@ void LocalFileSuggestionProvider::GetSuggestFileData(
   // complete, and fire off validation if it's not already in progress. This
   // approach makes sure we won't have issues if multiple clients request data
   // in rapid succession.
-  NOTIMPLEMENTED();
+  std::move(callback).Run(absl::nullopt);
 }
 
 void LocalFileSuggestionProvider::OnFilesOpened(

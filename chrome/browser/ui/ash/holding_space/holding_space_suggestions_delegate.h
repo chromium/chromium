@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_SUGGESTIONS_DELEGATE_H_
 #define CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_SUGGESTIONS_DELEGATE_H_
 
+#include <set>
+
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
@@ -34,8 +36,9 @@ class HoldingSpaceSuggestionsDelegate
   // app_list::FileSuggestKeyedService::Observer:
   void OnFileSuggestionUpdated(app_list::FileSuggestionType type) override;
 
-  // Fetches file suggestions of the specified `type` from the service.
-  void FetchSuggestions(app_list::FileSuggestionType type);
+  // Fetches file suggestions of the specified `type` from the service. Returns
+  // early if the fetch on the suggestions of `type` is already pending.
+  void MaybeFetchSuggestions(app_list::FileSuggestionType type);
 
   // Called when fetching file suggestions finishes.
   void OnSuggestionsFetched(
@@ -43,12 +46,23 @@ class HoldingSpaceSuggestionsDelegate
       const absl::optional<std::vector<app_list::FileSuggestData>>&
           suggestions);
 
+  // Updates suggestions in the holding space model. The method ensures that:
+  // 1. Drive file suggestions (if any) are always in front of local file
+  // suggestions; and
+  // 2. The suggestions of the same type (i.e. drive file ones or local file
+  // ones) follow the relevance order.
+  void UpdateSuggestionsInModel();
+
   base::ScopedObservation<app_list::FileSuggestKeyedService,
                           app_list::FileSuggestKeyedService::Observer>
       file_suggest_service_observation_{this};
 
   // Records the suggestion types on which data fetches are pending.
   std::set<app_list::FileSuggestionType> pending_fetches_;
+
+  // Caches the most recently fetched suggestion data.
+  std::map<app_list::FileSuggestionType, std::vector<app_list::FileSuggestData>>
+      suggestions_by_type_;
 
   base::WeakPtrFactory<HoldingSpaceSuggestionsDelegate> weak_factory_{this};
 };
