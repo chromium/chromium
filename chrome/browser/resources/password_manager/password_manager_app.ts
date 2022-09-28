@@ -12,6 +12,7 @@ import './shared_style.css.js';
 import './side_bar.js';
 import './toolbar.js';
 
+import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
@@ -34,7 +35,8 @@ export interface PasswordManagerAppElement {
   };
 }
 
-const PasswordManagerAppElementBase = RouteObserverMixin(PolymerElement);
+const PasswordManagerAppElementBase =
+    CrContainerShadowMixin(RouteObserverMixin(PolymerElement));
 
 export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   static get is() {
