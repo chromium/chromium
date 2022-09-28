@@ -239,7 +239,6 @@
       },
       'viz_unittests': {},
       'weblayer_bundle_test': {},
-      'weblayer_instrumentation_test_apk': {},
       'webview_instrumentation_test_apk': {
         'swarming': {
           'shards': 7,
@@ -4876,8 +4875,6 @@
     'weblayer_android_gtests': {
       'weblayer_bundle_test': {
       },
-      'weblayer_instrumentation_test_apk': {
-      },
       'weblayer_private_instrumentation_test_apk': {
       },
     },
@@ -4888,11 +4885,6 @@
       },
       'weblayer_unittests': {
       },
-    },
-
-    'weblayer_instrumentation_tests': {
-      'weblayer_instrumentation_test_apk': {
-      }
     },
 
     'weblayer_shell_wpt': {
@@ -4913,28 +4905,6 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'results_handler': 'layout tests',
-      },
-    },
-
-    'weblayer_skew_tests': {
-      'weblayer_skew_tests': {
-        'swarming': {
-          'shards': 2,
-        },
-        'args': [
-          '--additional-apk=apks/WebLayerShellSystemWebView.apk',
-        ],
-      },
-    },
-
-    'weblayer_skew_tests_with_chrome': {
-      'weblayer_skew_tests_with_chrome': {
-        'swarming': {
-          'shards': 2,
-        },
-        'args': [
-          '--additional-apk=apks/ChromePublic.apk'
-        ],
       },
     },
 
@@ -6409,68 +6379,6 @@
       'weblayer_android_gtests': {},
       'weblayer_gtests': {},
       'webview_ui_instrumentation_tests': {},
-    },
-
-
-    'android_weblayer_x86_10_gtests': {
-      'weblayer_instrumentation_tests': {
-        'variants': [
-          {'identifier': 'ToT_Tests'}
-        ]
-      },
-      'weblayer_skew_tests': {
-        'variants': [
-          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE',
-          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
-          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
-          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_THREE_MILESTONE',
-          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_THREE_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
-        ]
-      }
-    },
-
-    'android_weblayer_x86_marshmallow_gtests': {
-      'weblayer_skew_tests_with_chrome': {
-        'variants': [
-          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE',
-          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
-          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
-          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_THREE_MILESTONE',
-          'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_THREE_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
-        ]
-      }
-    },
-
-    'android_weblayer_x86_pie_oreo_gtests': {
-      'weblayer_instrumentation_tests': {
-        'variants': [
-          {'identifier': 'ToT_Tests'}
-        ]
-      },
-      'weblayer_skew_tests': {
-        'variants': [
-          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE',
-          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
-          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
-          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_THREE_MILESTONE',
-          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_THREE_MILESTONE',
-          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
-        ]
-      }
     },
 
     'chromeos_trogdor64_skylab_tests': {

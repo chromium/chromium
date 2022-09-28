@@ -26,11 +26,5 @@ ci/android-marshmallow-x86-rel-non-cq
 ci/android-pie-arm64-dbg
 ci/android-pie-arm64-rel
 ci/android-pie-x86-rel
-ci/android-weblayer-10-x86-rel-tests
-ci/android-weblayer-marshmallow-x86-rel-tests
-ci/android-weblayer-oreo-x86-rel-tests
-ci/android-weblayer-pie-x86-rel-tests
-ci/android-weblayer-with-aosp-webview-x86-rel
-ci/android-weblayer-x86-rel
 ci/android-webview-10-x86-rel-tests
 ci/android-x86-rel
