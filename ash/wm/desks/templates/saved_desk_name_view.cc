@@ -9,11 +9,8 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "base/cxx17_backports.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/layout/box_layout_view.h"
-#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -80,11 +77,8 @@ void SavedDeskNameView::OnContentsChanged() {
 }
 
 gfx::Size SavedDeskNameView::CalculatePreferredSize() const {
-  const gfx::Size preferred_size = DesksTextfield::CalculatePreferredSize();
-  // Use the available width if it is larger than the preferred width.
-  const int preferred_width =
-      base::clamp(preferred_size.width(), 1, GetAvailableWidth());
-  return gfx::Size(preferred_width, kSavedDeskNameViewHeight);
+  return gfx::Size(DesksTextfield::CalculatePreferredSize().width(),
+                   kSavedDeskNameViewHeight);
 }
 
 void SavedDeskNameView::OnGestureEvent(ui::GestureEvent* event) {
@@ -97,24 +91,6 @@ void SavedDeskNameView::OnGestureEvent(ui::GestureEvent* event) {
 void SavedDeskNameView::SetViewName(const std::u16string& name) {
   SetText(temporary_name_.value_or(name));
   PreferredSizeChanged();
-}
-
-int SavedDeskNameView::GetAvailableWidth() const {
-  auto* parent_view = static_cast<const views::BoxLayoutView*>(parent());
-  int available_width = parent_view->width() -
-                        parent_view->GetProperty(views::kMarginsKey)->width() -
-                        parent_view->GetInsideBorderInsets().width();
-  const int between_child_spacing = parent_view->GetBetweenChildSpacing();
-  for (auto* child : parent_view->children()) {
-    if (child == this || !child->GetVisible())
-      continue;
-    // The width of `child` may be 0 if it is offscreen, so use the preferred
-    // width instead.
-    available_width -=
-        (child->GetPreferredSize().width() + between_child_spacing);
-  }
-
-  return std::max(1, available_width);
 }
 
 BEGIN_METADATA(SavedDeskNameView, DesksTextfield)

@@ -154,10 +154,8 @@ SavedDeskItemView::SavedDeskItemView(
               // TODO(richui): Consider splitting some of the children into
               // different files and/or classes.
               .AddChildren(
-                  views::Builder<views::BoxLayoutView>()
-                      .SetOrientation(
-                          views::BoxLayout::Orientation::kHorizontal)
-                      .SetBetweenChildSpacing(kManagedStatusIndicatorSpacing)
+                  views::Builder<views::FlexLayoutView>()
+                      .SetOrientation(views::LayoutOrientation::kHorizontal)
                       .SetPreferredSize(gfx::Size(
                           kTemplateNameAndTimePreferredWidth,
                           SavedDeskNameView::kSavedDeskNameViewHeight))
@@ -173,7 +171,23 @@ SavedDeskItemView::SavedDeskItemView(
                               // template is not modifiable.
                               .SetFocusBehavior(desk_template_->IsModifiable()
                                                     ? GetFocusBehavior()
-                                                    : FocusBehavior::NEVER),
+                                                    : FocusBehavior::NEVER)
+                              .SetProperty(
+                                  views::kFlexBehaviorKey,
+                                  views::FlexSpecification(
+                                      views::MinimumFlexSizeRule::kScaleToZero,
+                                      views::MaximumFlexSizeRule::kPreferred)),
+                          // This is a spacer between the name field and the
+                          // "managed-by-admin" admin icon.
+                          views::Builder<views::View>()
+                              .SetPreferredSize(
+                                  gfx::Size(kManagedStatusIndicatorSpacing, 1))
+                              .SetProperty(
+                                  views::kFlexBehaviorKey,
+                                  views::FlexSpecification(
+                                      views::MinimumFlexSizeRule::kPreferred,
+                                      views::MaximumFlexSizeRule::kPreferred))
+                              .SetVisible(is_admin_managed),
                           views::Builder<views::ImageView>()
                               .SetPreferredSize(
                                   gfx::Size(kManagedStatusIndicatorSize,
@@ -184,6 +198,11 @@ SavedDeskItemView::SavedDeskItemView(
                                   color_provider->GetContentLayerColor(
                                       AshColorProvider::ContentLayerType::
                                           kIconColorSecondary)))
+                              .SetProperty(
+                                  views::kFlexBehaviorKey,
+                                  views::FlexSpecification(
+                                      views::MinimumFlexSizeRule::kPreferred,
+                                      views::MaximumFlexSizeRule::kPreferred))
                               .SetVisible(is_admin_managed)),
                   views::Builder<views::Label>()
                       .CopyAddressTo(&time_view_)
