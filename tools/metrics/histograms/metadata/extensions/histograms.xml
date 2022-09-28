@@ -428,13 +428,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ContentVerification.FetchResult"
-    enum="BooleanSuccess" expires_after="2022-02-01">
+    enum="BooleanSuccess" expires_after="2023-09-01">
+  <owner>vkovalova@google.com</owner>
   <owner>lazyboy@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Whether or not fetching verified_contents.json succeeded. Recorded when the
     file wasn't available locally and we needed to fetch it from network.
+
+    Warning: this histogram was expired from 2022-02-01 to 2022-09-22; data may
+    be missing.
   </summary>
 </histogram>
 
