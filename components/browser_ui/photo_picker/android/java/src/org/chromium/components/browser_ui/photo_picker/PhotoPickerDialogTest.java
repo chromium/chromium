@@ -432,6 +432,35 @@ public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
 
     @Test
     @LargeTest
+    public void testBackPressDismiss() throws Throwable {
+        setupTestFiles();
+        createDialog(false, Arrays.asList("image/*")); // Multi-select = false.
+        Assert.assertTrue(mDialog.isShowing());
+        waitForDecoder();
+
+        // Expected selection count is 1 because clicking on a new view unselects other.
+        int expectedSelectionCount = 1;
+
+        // Click the first view.
+        int callCount = mOnAnimatedCallback.getCallCount();
+        clickView(0, expectedSelectionCount);
+        mOnAnimatedCallback.waitForCallback(callCount, 1);
+
+        // Click the second view.
+        callCount = mOnAnimatedCallback.getCallCount();
+        clickView(1, expectedSelectionCount);
+        mOnAnimatedCallback.waitForCallback(callCount, 1);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mDialog.getOnBackPressedDispatcher().onBackPressed(); });
+
+        Assert.assertNull(mLastSelectedPhotos);
+        Assert.assertEquals(PhotoPickerAction.CANCEL, mLastActionRecorded);
+        Assert.assertFalse(mDialog.isShowing());
+    }
+
+    @Test
+    @LargeTest
     public void testMultiSelectionPhoto() throws Throwable {
         setupTestFiles();
         createDialog(true, Arrays.asList("image/*")); // Multi-select = true.
@@ -511,6 +540,57 @@ public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
             mOnVideoEndedCallback.waitForCallback(callCount, 1);
 
             dismissDialog();
+        } finally {
+            TestThreadUtils.runOnUiThreadBlocking(() -> { StrictMode.setThreadPolicy(oldPolicy); });
+        }
+    }
+
+    @Test
+    @LargeTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
+    public void testVideoPlayerPlayAndBackPress() throws Throwable {
+        // Requesting to play a video is not a case of an accidental disk read on the UI thread.
+        StrictMode.ThreadPolicy oldPolicy = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return StrictMode.allowThreadDiskReads(); });
+
+        try {
+            setupTestFiles();
+            createDialog(true, Arrays.asList("image/*")); // Multi-select = true.
+            Assert.assertTrue(mDialog.isShowing());
+            waitForDecoder();
+
+            PickerCategoryView categoryView = mDialog.getCategoryViewForTesting();
+
+            View container = categoryView.findViewById(R.id.playback_container);
+            Assert.assertTrue(container.getVisibility() == View.GONE);
+
+            // This test video takes one second to play.
+            String fileName = "chrome/test/data/android/photo_picker/noogler_1sec.mp4";
+            File file = new File(UrlUtils.getIsolatedTestFilePath(fileName));
+
+            int callCount = mOnVideoEndedCallback.getCallCount();
+
+            playVideo(Uri.fromFile(file));
+            Assert.assertTrue(container.getVisibility() == View.VISIBLE);
+
+            mOnVideoEndedCallback.waitForCallback(callCount, 1);
+
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> { mDialog.getOnBackPressedDispatcher().onBackPressed(); });
+
+            // Clicking the play button should restart playback.
+            callCount = mOnVideoEndedCallback.getCallCount();
+
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                View playbutton = categoryView.findViewById(R.id.video_player_play_button);
+                categoryView.getVideoPlayerForTesting().onClick(playbutton);
+            });
+
+            mOnVideoEndedCallback.waitForCallback(callCount, 1);
+
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> { mDialog.getOnBackPressedDispatcher().onBackPressed(); });
+            Assert.assertTrue(mDismissed);
         } finally {
             TestThreadUtils.runOnUiThreadBlocking(() -> { StrictMode.setThreadPolicy(oldPolicy); });
         }

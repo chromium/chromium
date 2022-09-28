@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.photo_picker;
 import android.content.ContentResolver;
 import android.net.Uri;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
@@ -98,17 +99,17 @@ public class PhotoPickerDialog
                 new PickerCategoryView(windowAndroid, contentResolver, multiSelectionAllowed, this);
         mCategoryView.initialize(this, mListenerWrapper, mimeTypes);
         setView(mCategoryView);
-    }
-
-    @Override
-    public void onBackPressed() {
-        // Pressing Back when a video is playing, should only end the video playback.
-        boolean videoWasStopped = mCategoryView.closeVideoPlayer();
-        if (videoWasStopped) {
-            return;
-        } else {
-            super.onBackPressed();
-        }
+        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Pressing Back when a video is playing, should only end the video playback.
+                boolean videoWasStopped = mCategoryView.closeVideoPlayer();
+                if (!videoWasStopped) {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
     }
 
     @Override
