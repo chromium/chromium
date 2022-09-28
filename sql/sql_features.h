@@ -12,7 +12,7 @@ namespace sql {
 
 namespace features {
 
-COMPONENT_EXPORT(SQL) extern const base::Feature kEnableWALModeByDefault;
+COMPONENT_EXPORT(SQL) BASE_DECLARE_FEATURE(kEnableWALModeByDefault);
 
 }  // namespace features
 
