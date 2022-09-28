@@ -142,8 +142,16 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         testElement.$.listContainer.querySelectorAll('site-entry');
     assertEquals(3, siteEntries.length);
 
+    browserProxy.resetResolver('getAllSites');
+    const searchParams = new URLSearchParams(
+        'searchSubpage=' + encodeURIComponent(SEARCH_QUERY));
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    Router.getInstance().navigateTo(currentRoute, searchParams);
     testElement.filter = SEARCH_QUERY;
+
     flush();
+    // Changing filter shouldn't trigger additional getAllSites calls.
+    assertEquals(0, browserProxy.getCallCount('getAllSites'));
     siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
     const hiddenSiteEntries = Array.from(
         testElement.shadowRoot!.querySelectorAll('site-entry[hidden]'));

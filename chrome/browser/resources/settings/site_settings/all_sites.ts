@@ -255,9 +255,10 @@ export class AllSitesElement extends AllSitesElementBase {
    *
    * RouteObserverBehavior
    */
-  override currentRouteChanged(currentRoute: Route) {
+  override currentRouteChanged(currentRoute: Route, oldRoute?: Route) {
     super.currentRouteChanged(currentRoute);
-    if (currentRoute === routes.SITE_SETTINGS_ALL) {
+    if (currentRoute === routes.SITE_SETTINGS_ALL &&
+        currentRoute !== oldRoute) {
       this.populateList_();
     }
   }
