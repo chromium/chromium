@@ -235,6 +235,24 @@ class CONTENT_EXPORT ServiceWorkerVersion
   FetchHandlerType fetch_handler_type() const;
   void set_fetch_handler_type(FetchHandlerType fetch_handler_type);
 
+  // If the feature flag for `fetch_handler_type_` is enabled,
+  // the function returns `fetch_handler_type_`.
+  // Otherwise, kNotSkippable would be returned if `fetch_handler_type_`
+  // is not kNoHandler.  Note that kNoHandler will be returned if
+  // `fetch_handler_type_` is kNoHandler.
+  //
+  // You may wonder why we need to introduce the effective fetch handler
+  // type in addition to the existing fetch_handler_type.  That is because
+  // we cannot change the fetch_handler_type behavior for the service
+  // worker registration and the metrics.  Since the service worker
+  // registration is persistent data, I do not think it is good idea to
+  // change its contents by the flag.  For metrics, we want to compare the
+  // same fetch handler case with the different flags.  The
+  // fetch_handler_type should also need to be persistent here.
+  // Note that FCP/LCP with skippable fetch handler type is taken in this
+  // way.
+  FetchHandlerType EffectiveFetchHandlerType() const;
+
   base::TimeDelta TimeSinceNoControllees() const {
     return GetTickDuration(no_controllees_time_);
   }

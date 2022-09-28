@@ -6,6 +6,7 @@ module blink.mojom;
 
 // Describes whether a controller service worker exists and if it has a fetch
 // handler.
+// TODO(crbug.com/1368415): clean up ControllerServiceWorkerMode.
 enum ControllerServiceWorkerMode {
   // No controller exists.
   kNoController,

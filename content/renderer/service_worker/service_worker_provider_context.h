@@ -281,6 +281,8 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type_ =
       blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
+  blink::mojom::ServiceWorkerFetchHandlerType effective_fetch_handler_type_ =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
 
   // Tracks feature usage for UseCounter.
   std::set<blink::mojom::WebFeature> used_features_;

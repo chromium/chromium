@@ -276,6 +276,8 @@ ServiceWorkerMainResourceLoaderInterceptor::
   controller_info->mode = container_host->GetControllerMode();
   controller_info->fetch_handler_type =
       container_host->controller()->fetch_handler_type();
+  controller_info->effective_fetch_handler_type =
+      container_host->controller()->EffectiveFetchHandlerType();
   // Note that |controller_info->remote_controller| is null if the controller
   // has no fetch event handler. In that case the renderer frame won't get the
   // controller pointer upon the navigation commit, and subresource loading will

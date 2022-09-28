@@ -431,6 +431,23 @@ void ServiceWorkerVersion::set_fetch_handler_type(
   fetch_handler_type_ = fetch_handler_type;
 }
 
+ServiceWorkerVersion::FetchHandlerType
+ServiceWorkerVersion::EffectiveFetchHandlerType() const {
+  switch (fetch_handler_type()) {
+    case FetchHandlerType::kNoHandler:
+      return FetchHandlerType::kNoHandler;
+    case FetchHandlerType::kNotSkippable:
+      return FetchHandlerType::kNotSkippable;
+    case FetchHandlerType::kEmptyFetchHandler: {
+      if (features::kSkipEmptyFetchHandler.Get()) {
+        return FetchHandlerType::kEmptyFetchHandler;
+      } else {
+        return FetchHandlerType::kNotSkippable;
+      }
+    }
+  }
+}
+
 void ServiceWorkerVersion::StartWorker(ServiceWorkerMetrics::EventType purpose,
                                        StatusCallback callback) {
   TRACE_EVENT_INSTANT2(

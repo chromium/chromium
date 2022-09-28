@@ -41449,6 +41449,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4360" label="DestructiveDocumentWriteAfterModuleScript"/>
   <int value="4361" label="CSSAtSupportsDropInvalidWhileForgivingParsing"/>
   <int value="4362" label="PermissionsPolicyUnload"/>
+  <int value="4363" label="ServiceWorkerSkippedForSubresourceLoad"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
