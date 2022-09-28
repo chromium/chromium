@@ -286,12 +286,6 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "linux-chromeos-js-code-coverage",
-    use_clang_coverage = True,
-    use_javascript_coverage = True,
-)
-
-try_.builder(
     name = "linux-lacros-dbg",
     # TODO(crbug.com/1233247) Adds the CI tester when it's available.
     mirrors = [
