@@ -950,7 +950,7 @@ void HintsManager::RegisterOptimizationTypes(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool should_load_new_optimization_filter = false;
 
-  DictionaryPrefUpdate previously_registered_opt_types(
+  ScopedDictPrefUpdate previously_registered_opt_types(
       pref_service_, prefs::kPreviouslyRegisteredOptimizationTypes);
   for (const auto optimization_type : optimization_types) {
     if (optimization_type == proto::TYPE_UNSPECIFIED)
@@ -969,7 +969,7 @@ void HintsManager::RegisterOptimizationTypes(
           << "Registered new OptimizationType: " << optimization_type;
     }
 
-    absl::optional<double> value = previously_registered_opt_types->FindBoolKey(
+    absl::optional<double> value = previously_registered_opt_types->FindBool(
         proto::OptimizationType_Name(optimization_type));
     if (!value) {
       if (!is_off_the_record_ &&
@@ -978,7 +978,7 @@ void HintsManager::RegisterOptimizationTypes(
               switches::kHintsProtoOverride)) {
         should_clear_hints_for_new_type_ = true;
       }
-      previously_registered_opt_types->SetBoolKey(
+      previously_registered_opt_types->Set(
           proto::OptimizationType_Name(optimization_type), true);
     }
 

@@ -23,7 +23,6 @@
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -417,9 +416,9 @@ class OptimizationGuideStoreTest : public testing::Test {
   }
 
   bool IsStoreFilesToDeletePrefEmpty() {
-    DictionaryPrefUpdate pref_update(pref_service_.get(),
-                                     prefs::kStoreFilePathsToDelete);
-    return pref_update.Get()->DictEmpty();
+    const base::Value::Dict& pref_dict =
+        pref_service_->GetDict(prefs::kStoreFilePathsToDelete);
+    return pref_dict.empty();
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }

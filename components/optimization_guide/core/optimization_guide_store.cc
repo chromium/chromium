@@ -1006,9 +1006,9 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
       }
 
       if (pref_service_) {
-        DictionaryPrefUpdate pref_update(pref_service_,
+        ScopedDictPrefUpdate pref_update(pref_service_,
                                          prefs::kStoreFilePathsToDelete);
-        pref_update->SetBoolKey(FilePathToString(path_to_delete), true);
+        pref_update->Set(FilePathToString(path_to_delete), true);
       } else {
         // |pref_service_| should always be provided by owning classes; however,
         // if it is not, just default back to deleting it here. This has the
@@ -1177,9 +1177,9 @@ void OptimizationGuideStore::CleanUpFilePaths() {
     return;
   }
 
-  DictionaryPrefUpdate file_paths_to_delete_pref(
+  ScopedDictPrefUpdate file_paths_to_delete_pref(
       pref_service_, prefs::kStoreFilePathsToDelete);
-  for (const auto entry : file_paths_to_delete_pref->DictItems()) {
+  for (const auto entry : *file_paths_to_delete_pref) {
     absl::optional<base::FilePath> path_to_delete =
         StringToFilePath(entry.first);
     if (!path_to_delete) {
@@ -1214,8 +1214,8 @@ void OptimizationGuideStore::OnFilePathDeleted(
 
   // If we get here, we should have a pref service.
   DCHECK(pref_service_);
-  DictionaryPrefUpdate update(pref_service_, prefs::kStoreFilePathsToDelete);
-  update->RemoveKey(file_path_to_clean_up);
+  ScopedDictPrefUpdate update(pref_service_, prefs::kStoreFilePathsToDelete);
+  update->Remove(file_path_to_clean_up);
 }
 
 }  // namespace optimization_guide
