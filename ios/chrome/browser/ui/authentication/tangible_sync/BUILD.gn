@@ -17,6 +17,7 @@ source_set("tangible_sync") {
     "//base",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:constants",
   ]
   public_deps =
@@ -31,7 +32,14 @@ source_set("signin_ui") {
     "tangible_sync_view_controller.mm",
   ]
   deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/authentication/tangible_sync/resources:tangible_sync_autofill",
+    "//ios/chrome/browser/ui/authentication/tangible_sync/resources:tangible_sync_bookmarks",
+    "//ios/chrome/browser/ui/authentication/tangible_sync/resources:tangible_sync_history",
+    "//ios/chrome/browser/ui/elements",
     "//ios/chrome/common/ui/promo_style",
+    "//net",
     "//ui/base",
+    "//url",
   ]
 }

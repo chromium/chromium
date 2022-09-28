@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+class AuthenticationService;
+class ChromeAccountManagerService;
 @protocol TangibleSyncConsumer;
 
 // Mediator that handles the sync operations.
@@ -14,6 +16,14 @@
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<TangibleSyncConsumer> consumer;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithAuthenticationService:
+                    (AuthenticationService*)authenticationService
+                  chromeAccountManagerService:
+                      (ChromeAccountManagerService*)chromeAccountManagerService
+    NS_DESIGNATED_INITIALIZER;
 
 // Disconnect the mediator.
 - (void)disconnect;

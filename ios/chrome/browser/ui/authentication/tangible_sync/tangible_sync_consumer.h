@@ -10,7 +10,8 @@
 // Handles tangible sync UI updates.
 @protocol TangibleSyncConsumer
 
-// TODO(crbug.com/1363812): Needs implementation.
+// Avatar image for the primary identity.
+@property(nonatomic, strong) UIImage* primaryIdentityAvatarImage;
 
 @end
 

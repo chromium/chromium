@@ -6,6 +6,8 @@
 
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_mediator.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller.h"
 
@@ -37,7 +39,15 @@
 - (void)start {
   [super start];
   _viewController = [[TangibleSyncViewController alloc] init];
-  _mediator = [[TangibleSyncMediator alloc] init];
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  ChromeAccountManagerService* chromeAccountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  _mediator = [[TangibleSyncMediator alloc]
+      initWithAuthenticationService:authenticationService
+        chromeAccountManagerService:chromeAccountManagerService];
   _mediator.consumer = _viewController;
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ _viewController ]
