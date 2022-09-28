@@ -64,7 +64,7 @@ try_.orchestrator_builder(
     # branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 100,
+        experiment_percentage = 60,
     ),
     experiments = {
         "enable_weetbix_queries": 100,
@@ -86,9 +86,6 @@ try_.builder(
         "ci/Android x64 Builder (dbg)",
         "ci/android-12l-x64-dbg-tests",
     ],
-    tryjob = try_.job(
-        experiment_percentage = 2,
-    ),
 )
 
 try_.builder(
@@ -379,7 +376,7 @@ try_.orchestrator_builder(
     # branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 60,
+        experiment_percentage = 100,
     ),
     experiments = {
         "enable_weetbix_queries": 100,

@@ -489,16 +489,13 @@ as required builders.
   * [`//third_party/nearby/README.chromium`](https://cs.chromium.org/search?q=+file:third_party/nearby/README.chromium)
 
 * [android-12-x64-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-12-x64-rel""))
-  * Experiment percentage: 100.0
-
-* [android-12l-x64-dbg](https://ci.chromium.org/p/chromium/builders/try/android-12l-x64-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12l-x64-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-12l-x64-dbg""))
-  * Experiment percentage: 2.0
+  * Experiment percentage: 60.0
 
 * [android-marshmallow-x86-rel-reclient](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel-reclient) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-marshmallow-x86-rel-reclient"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-x86-rel-reclient""))
   * Experiment percentage: 5.0
 
 * [android-nougat-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-nougat-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-nougat-x86-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-nougat-x86-rel""))
-  * Experiment percentage: 60.0
+  * Experiment percentage: 100.0
 
 * [android-pie-arm64-coverage-experimental-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-coverage-experimental-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-pie-arm64-coverage-experimental-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-pie-arm64-coverage-experimental-rel""))
   * Experiment percentage: 3.0
