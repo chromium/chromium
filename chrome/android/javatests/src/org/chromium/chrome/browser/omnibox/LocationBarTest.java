@@ -41,6 +41,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.Promise;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
@@ -128,6 +129,7 @@ public class LocationBarTest {
                     .when(mSearchEngineLogoUtils)
                     .getSearchEngineLogo(any(), anyInt(), any(), any());
         });
+        UmaRecorderHolder.resetForTesting();
     }
 
     @After
@@ -265,9 +267,6 @@ public class LocationBarTest {
             Assert.assertEquals(query, mUrlBar.getTextWithoutAutocomplete());
             Assert.assertTrue(mLocationBarMediator.isUrlBarFocused());
         });
-
-        CriteriaHelper.pollUiThread(
-                () -> mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
     }
 
     @Test
