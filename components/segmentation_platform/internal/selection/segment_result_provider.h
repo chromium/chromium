@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_RESULT_PROVIDER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_RESULT_PROVIDER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
@@ -83,8 +83,8 @@ class SegmentResultProvider {
     // The segment ID to fetch result for.
     SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
 
-    // The key is needed for computing segment from discrete mapping.
-    std::string segmentation_key;
+    // The key is needed for computing segment rank from discrete mapping.
+    std::string discrete_mapping_key;
 
     // Ignores model results stored in database and executes them to fetch
     // results. When set to false, the result could be from following:
@@ -97,7 +97,10 @@ class SegmentResultProvider {
 
     // If `ignore_db_scores` is true and TFLite model is available, then write
     // the results to database. Used when user wants to rerun the database
-    // model. `callback` should be null if set to true.
+    // model.
+    // TODO(ssid): `callback` is sometimes not called if this field is set to
+    // true. Fix execution scheduler to run callback always even if save to
+    // database is true.
     // TODO(ssid): Consider moving this option out as a different SaveRequest
     // method in this class.
     bool save_results_to_db = false;

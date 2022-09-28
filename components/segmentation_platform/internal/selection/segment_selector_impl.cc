@@ -226,7 +226,7 @@ void SegmentSelectorImpl::GetRankForNextSegment(
       auto options =
           std::make_unique<SegmentResultProvider::GetResultOptions>();
       options->segment_id = needed_segment.first;
-      options->segmentation_key = config_->segmentation_key;
+      options->discrete_mapping_key = config_->segmentation_key;
       options->ignore_db_scores = config_->on_demand_execution;
       options->input_context = input_context;
       options->callback = base::BindOnce(

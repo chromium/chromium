@@ -22,10 +22,10 @@
 namespace segmentation_platform {
 namespace {
 
-float ComputeDiscreteMapping(const std::string& segmentation_key,
+float ComputeDiscreteMapping(const std::string& discrete_mapping_key,
                              const proto::SegmentInfo& segment_info) {
   float rank = metadata_utils::ConvertToDiscreteScore(
-      segmentation_key, segment_info.prediction_result().result(),
+      discrete_mapping_key, segment_info.prediction_result().result(),
       segment_info.model_metadata());
   VLOG(1) << __func__
           << ": segment=" << SegmentId_Name(segment_info.segment_id())
@@ -225,8 +225,8 @@ void SegmentResultProviderImpl::GetCachedModelScore(
     return;
   }
 
-  float rank = ComputeDiscreteMapping(request_state->options->segmentation_key,
-                                      *db_segment_info);
+  float rank = ComputeDiscreteMapping(
+      request_state->options->discrete_mapping_key, *db_segment_info);
   auto execution_result = std::make_unique<ModelExecutionResult>(
       ModelExecutionResult::Tensor(),
       db_segment_info->prediction_result().result());
@@ -277,14 +277,19 @@ void SegmentResultProviderImpl::ExecuteModelAndGetScore(
   request->record_metrics_for_default =
       source == DefaultModelManager::SegmentSource::DEFAULT_MODEL;
   request->input_context = request_state->options->input_context;
-  // If the request needs to save result to database, ensure that the model is
-  // from database.
-  request->save_result_to_db =
-      (source == DefaultModelManager::SegmentSource::DATABASE &&
-       request_state->options->save_results_to_db);
-  if (request->save_result_to_db) {
-    // Drop `callback` on floor if saving results to database.
-    DCHECK(request_state->options->callback.is_null());
+
+  if (source == DefaultModelManager::SegmentSource::DATABASE &&
+      request_state->options->save_results_to_db) {
+    // If the request needs to save result to database, ensure that the model is
+    // from database. This will drop the callback and not run.
+    if (!request->callback.is_null()) {
+      DLOG(WARNING)
+          << "Callback will not be run when save_results_to_db is set";
+    }
+    request->save_result_to_db = true;
+    request->callback.Reset();
+    // Provider will be fetched by scheduler.
+    request->model_provider = nullptr;
   } else {
     request->callback =
         base::BindOnce(&SegmentResultProviderImpl::OnModelExecuted,
@@ -292,6 +297,7 @@ void SegmentResultProviderImpl::ExecuteModelAndGetScore(
                        source, std::move(callback));
     request->model_provider = provider;
   }
+
   execution_service_->RequestModelExecution(std::move(request));
 }
 
@@ -305,7 +311,7 @@ void SegmentResultProviderImpl::OnModelExecuted(
   if (result->status == ModelExecutionStatus::kSuccess) {
     segment_info->mutable_prediction_result()->set_result(result->score);
     float rank = ComputeDiscreteMapping(
-        request_state->options->segmentation_key, *segment_info);
+        request_state->options->discrete_mapping_key, *segment_info);
     ResultState state =
         source == DefaultModelManager::SegmentSource::DEFAULT_MODEL
             ? ResultState::kDefaultModelScoreUsed

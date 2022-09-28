@@ -9,6 +9,7 @@
 #include <memory>
 #include <sstream>
 
+#include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_clock.h"
@@ -148,6 +149,7 @@ void ServiceProxyImpl::ExecuteModel(SegmentId segment_id) {
   request->save_results_to_db = true;
   request->segment_id = segment_id;
   request->ignore_db_scores = true;
+  request->callback = base::DoNothing();
   segment_result_provider_->GetSegmentResult(std::move(request));
 }
 

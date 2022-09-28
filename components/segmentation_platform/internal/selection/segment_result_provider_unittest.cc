@@ -118,7 +118,7 @@ class SegmentResultProviderTest : public testing::Test {
     base::RunLoop wait_for_result;
     auto options = std::make_unique<SegmentResultProvider::GetResultOptions>();
     options->segment_id = segment_id;
-    options->segmentation_key = "test_key";
+    options->discrete_mapping_key = "test_key";
     options->ignore_db_scores = ignore_db_scores;
     options->callback = base::BindOnce(
         [](SegmentResultProvider::ResultState expected_state,
