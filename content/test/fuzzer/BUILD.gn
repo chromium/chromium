@@ -229,6 +229,20 @@ fuzzer_test("attribution_simulator_fuzzer") {
   seed_corpus = "//content/test/data/fuzzer_corpus/attribution_simulator/"
 }
 
+fuzzer_test("attribution_source_fuzzer") {
+  sources = [ "attribution_source_fuzzer.cc" ]
+  deps = [
+    "//content/browser",
+    "//content/public/browser:browser_sources",
+    "//content/test:test_support",
+    "//testing/libfuzzer/proto:json_proto",
+    "//testing/libfuzzer/proto:json_proto_converter",
+    "//third_party/libprotobuf-mutator",
+  ]
+  seed_corpus =
+      "//testing/libfuzzer/fuzzers/attribution_source_registration_corpus/"
+}
+
 fuzzer_test("browser_accessibility_fuzzer") {
   sources = [ "browser_accessibility_fuzzer.cc" ]
   deps = [

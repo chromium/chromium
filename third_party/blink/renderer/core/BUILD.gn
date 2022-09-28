@@ -1678,7 +1678,7 @@ fuzzer_test("attribution_source_registration_fuzzer") {
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/libprotobuf-mutator",
   ]
-  seed_corpus = "//third_party/blink/renderer/core/frame/attribution_src/attribution_source_registration_corpus"
+  seed_corpus = "//testing/libfuzzer/fuzzers/attribution_source_registration_corpus"
 }
 
 fuzzer_test("attribution_trigger_registration_fuzzer") {

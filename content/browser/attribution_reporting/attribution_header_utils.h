@@ -22,7 +22,6 @@ namespace content {
 
 class StorableSource;
 
-// TODO(apaseltiner):  Add a fuzzer.
 CONTENT_EXPORT absl::optional<StorableSource> ParseSourceRegistration(
     base::Value::Dict registration,
     base::Time source_time,
