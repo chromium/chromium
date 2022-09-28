@@ -110,15 +110,11 @@ public class LibraryLoader {
 
     // Whether to use the Chromium linker vs. the system linker.
     // Avoids locking: should be initialized very early.
-    private boolean mUseChromiumLinker;
+    private boolean mUseChromiumLinker = NativeLibraries.sUseLinker;
 
     // Whether to use ModernLinker vs. LegacyLinker.
     // Avoids locking: should be initialized very early.
-    private boolean mUseModernLinker;
-
-    // Whether the |mUseChromiumLinker| and |mUseModernLinker| configuration has been set.
-    // Avoids locking: should be initialized very early.
-    private boolean mConfigurationSet;
+    private boolean mUseModernLinker = NativeLibraries.sUseModernLinker;
 
     // The type of process the shared library is loaded in. Gets passed to native after loading.
     // Avoids locking: should be initialized very early.
@@ -426,7 +422,9 @@ public class LibraryLoader {
     }
 
     @VisibleForTesting
-    protected LibraryLoader() {}
+    protected LibraryLoader() {
+        if (DEBUG) logLinkersUsed();
+    }
 
     /**
      * Set the {@link LibraryProcessType} for this process.
@@ -474,23 +472,9 @@ public class LibraryLoader {
      */
     public void setLinkerImplementation(boolean useChromiumLinker, boolean useModernLinker) {
         assert !mInitialized;
-
         mUseChromiumLinker = useChromiumLinker;
         mUseModernLinker = useModernLinker;
         if (DEBUG) logLinkersUsed();
-        mConfigurationSet = true;
-    }
-
-    @GuardedBy("mLock")
-    private void setLinkerImplementationIfNeededAlreadyLocked() {
-        if (mConfigurationSet) return;
-
-        // Cannot use initial values for the fields below, as this makes robolectric tests fail,
-        // since they don't have a NativeLibraries class.
-        mUseChromiumLinker = NativeLibraries.sUseLinker;
-        mUseModernLinker = NativeLibraries.sUseModernLinker;
-        if (DEBUG) logLinkersUsed();
-        mConfigurationSet = true;
     }
 
     private void logLinkersUsed() {
@@ -640,7 +624,6 @@ public class LibraryLoader {
      */
     public void preloadNowOverridePackageName(String packageName) {
         synchronized (mLock) {
-            setLinkerImplementationIfNeededAlreadyLocked();
             if (useChromiumLinker()) return;
             preloadAlreadyLocked(packageName, /* inZygote= */ false);
         }
@@ -844,7 +827,6 @@ public class LibraryLoader {
         try (TraceEvent te = TraceEvent.scoped("LibraryLoader.loadMainDexAlreadyLocked")) {
             assert !mInitialized;
             assert mLibraryProcessType != LibraryProcessType.PROCESS_UNINITIALIZED || inZygote;
-            setLinkerImplementationIfNeededAlreadyLocked();
 
             UptimeMillisTimer uptimeTimer = new UptimeMillisTimer();
             CurrentThreadTimeMillisTimer threadTimeTimer = new CurrentThreadTimeMillisTimer();

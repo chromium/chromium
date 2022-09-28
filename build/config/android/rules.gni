@@ -753,14 +753,16 @@ if (enable_java_templates) {
       if (invoker.use_final_fields) {
         # Write native_libraries_list_file via depfile rather than specifyin it
         # as a dep in order allow R8 to run in parallel with native compilation.
-        depfile = "$target_gen_dir/$target_name.d"
-        args += [
-          "--final",
-          "--depfile",
-          rebase_path(depfile, root_build_dir),
-          "--native-libraries-list",
-          rebase_path(invoker.native_libraries_list_file, root_build_dir),
-        ]
+        args += [ "--final" ]
+        if (defined(invoker.native_libraries_list_file)) {
+          depfile = "$target_gen_dir/$target_name.d"
+          args += [
+            "--native-libraries-list",
+            rebase_path(invoker.native_libraries_list_file, root_build_dir),
+            "--depfile",
+            rebase_path(depfile, root_build_dir),
+          ]
+        }
         if (defined(invoker.main_component_library)) {
           args += [
             "--main-component-library",
@@ -1470,6 +1472,14 @@ if (enable_java_templates) {
         require_native_mocks = true
         targets = [ ":$_outer_target_name" ]
       }
+
+      _native_libraries_target_name = "${target_name}__native_libraries"
+      write_native_libraries_java(_native_libraries_target_name) {
+        enable_chromium_linker = false
+        load_library_from_apk = false
+        use_modern_linker = false
+        use_final_fields = true
+      }
     }
 
     java_library_impl(_java_binary_target_name) {
@@ -1500,7 +1510,10 @@ if (enable_java_templates) {
         "//build/android:build_config_for_testing_gen",
       ]
       if (_generate_final_jni) {
-        srcjar_deps += [ ":$_jni_srcjar_target_name" ]
+        srcjar_deps += [
+          ":$_jni_srcjar_target_name",
+          ":$_native_libraries_target_name",
+        ]
       }
     }
 
@@ -2874,9 +2887,8 @@ if (enable_java_templates) {
     } else {
       _generate_native_libraries_java =
           (!_is_bundle_module || _is_base_module) &&
-          (_native_libs_deps != [] || _secondary_abi_native_libs_deps != [] ||
-           defined(invoker.static_library_provider)) &&
-          !_uses_static_library_synchronized_proguard && !_omit_dex
+          !_uses_static_library_synchronized_proguard && !_omit_dex &&
+          !defined(invoker.apk_under_test)
     }
     if (_generate_native_libraries_java) {
       write_native_libraries_java("${_template_name}__native_libraries") {
@@ -2897,7 +2909,7 @@ if (enable_java_templates) {
           }
         } else if (_native_libs_deps != []) {
           native_libraries_list_file = _shared_library_list_file
-        } else {
+        } else if (_secondary_abi_native_libs_deps != []) {
           native_libraries_list_file = _secondary_abi_shared_library_list_file
         }
         enable_chromium_linker = _use_chromium_linker
