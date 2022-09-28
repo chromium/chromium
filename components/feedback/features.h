@@ -13,7 +13,7 @@ namespace feedback::features {
 // alongside the definition of their values in the .cc file.
 
 // Alphabetical:
-extern const base::Feature kOsFeedbackSaveReportToLocalForE2ETesting;
+BASE_DECLARE_FEATURE(kOsFeedbackSaveReportToLocalForE2ETesting);
 
 extern bool IsOsFeedbackSaveReportToLocalForE2ETestingEnabled();
 

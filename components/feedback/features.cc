@@ -10,9 +10,9 @@ namespace feedback::features {
 
 // Enables feedback tool to save feedback report to local disk.
 // This flag is only for e2e tast test purpose.
-const base::Feature kOsFeedbackSaveReportToLocalForE2ETesting{
-    "OsFeedbackSaveReportToLocalForE2ETesting",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOsFeedbackSaveReportToLocalForE2ETesting,
+             "OsFeedbackSaveReportToLocalForE2ETesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsOsFeedbackSaveReportToLocalForE2ETestingEnabled() {
   return base::FeatureList::IsEnabled(
