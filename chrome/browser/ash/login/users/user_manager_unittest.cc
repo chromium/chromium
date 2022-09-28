@@ -192,7 +192,8 @@ class UserManagerTest : public testing::Test {
         ChromeUserManagerImpl::CreateChromeUserManager());
 
     // ChromeUserManagerImpl ctor posts a task to reload policies.
-    base::RunLoop().RunUntilIdle();
+    // Also ensure that all existing ongoing user manager tasks are completed.
+    task_environment_.RunUntilIdle();
   }
 
   std::unique_ptr<MockRemoveUserManager> CreateMockRemoveUserManager() const {

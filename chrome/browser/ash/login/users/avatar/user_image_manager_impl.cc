@@ -260,11 +260,15 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
 
   if (default_user_image::IsValidIndex(image_index_)) {
     // Load one of the default images. This happens synchronously.
+    gfx::ImageSkia default_image =
+        default_user_image::GetDefaultImage(image_index_);
     std::unique_ptr<user_manager::UserImage> user_image(
-        new user_manager::UserImage(
-            default_user_image::GetDefaultImage(image_index_)));
-    UpdateUser(std::move(user_image));
-    NotifyJobDone();
+        user_manager::UserImage::CreateAndEncode(
+            default_image, user_manager::UserImage::ChooseImageFormat(
+                               *default_image.bitmap())));
+    // Cache the in-use default image as part of the migration of avatar
+    // images to cloud.
+    UpdateUserAndSaveImage(std::move(user_image));
   } else if (image_index_ == user_manager::User::USER_IMAGE_EXTERNAL ||
              image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
     // Load the user image from a file referenced by `image_path`. This happens
@@ -291,13 +295,17 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
   DCHECK(default_user_image::IsValidIndex(default_image_index));
 
   image_index_ = default_image_index;
+  gfx::ImageSkia default_image =
+      default_user_image::GetDefaultImage(image_index_);
   std::unique_ptr<user_manager::UserImage> user_image(
-      new user_manager::UserImage(
-          default_user_image::GetDefaultImage(image_index_)));
+      user_manager::UserImage::CreateAndEncode(
+          default_image,
+          user_manager::UserImage::ChooseImageFormat(*default_image.bitmap())));
 
-  UpdateUser(std::move(user_image));
-  UpdateLocalState();
-  NotifyJobDone();
+  // Now that default images are served from the cloud, the current in-use
+  // user avatar image needs to be saved and cached in local state for
+  // offline usage.
+  UpdateUserAndSaveImage(std::move(user_image));
 }
 
 void UserImageManagerImpl::Job::SetToImage(
@@ -523,15 +531,7 @@ void UserImageManagerImpl::LoadUserImage() {
 
   int image_index = image_properties->FindInt(kImageIndexNodeName)
                         .value_or(user_manager::User::USER_IMAGE_INVALID);
-  if (default_user_image::IsValidIndex(image_index)) {
-    user->SetImage(std::make_unique<user_manager::UserImage>(
-                       default_user_image::GetDefaultImage(image_index)),
-                   image_index);
-    return;
-  }
-
-  if (image_index != user_manager::User::USER_IMAGE_EXTERNAL &&
-      image_index != user_manager::User::USER_IMAGE_PROFILE) {
+  if (image_index == user_manager::User::USER_IMAGE_INVALID) {
     NOTREACHED();
     return;
   }
@@ -549,8 +549,10 @@ void UserImageManagerImpl::LoadUserImage() {
               IDR_LOGIN_DEFAULT_USER)),
       image_index, true);
   DCHECK((image_path && !image_path->empty()) ||
-         image_index == user_manager::User::USER_IMAGE_PROFILE);
-  if (!image_path || image_path->empty()) {
+         image_index == user_manager::User::USER_IMAGE_PROFILE ||
+         default_user_image::IsValidIndex(image_index));
+  if (!default_user_image::IsValidIndex(image_index) &&
+      (!image_path || image_path->empty())) {
     // Return if the profile image is to be used but has not been downloaded
     // yet. The profile image will be downloaded after login.
     return;

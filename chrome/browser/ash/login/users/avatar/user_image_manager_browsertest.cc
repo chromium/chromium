@@ -370,17 +370,19 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserDefaultImageIndex) {
   const gfx::ImageSkia& default_image = default_user_image::GetDefaultImage(
       default_user_image::kFirstDefaultImageIndex);
 
+  run_loop_ = std::make_unique<base::RunLoop>();
   UserImageManager* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(test_account_id1_);
   user_image_manager->SaveUserDefaultImageIndex(
       default_user_image::kFirstDefaultImageIndex);
+  run_loop_->Run();
 
   EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(default_user_image::kFirstDefaultImageIndex, user->image_index());
   EXPECT_TRUE(test::AreImagesEqual(default_image, user->GetImage()));
   ExpectUserImageInfo(test_account_id1_,
                       default_user_image::kFirstDefaultImageIndex,
-                      base::FilePath());
+                      GetUserImagePath(test_account_id1_, "jpg"));
 }
 
 // Verifies that SaveUserImage() correctly sets and persists the chosen user
@@ -683,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
       default_user_image::GetDefaultImage(default_image_index);
   EXPECT_TRUE(test::AreImagesEqual(default_image, user->GetImage()));
   ExpectUserImageInfo(enterprise_account_id_, default_image_index,
-                      base::FilePath());
+                      GetUserImagePath(enterprise_account_id_, "jpg"));
 
   // Choose a different user image. Verify that the chosen user image is set and
   // persisted.
@@ -694,15 +696,17 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
   const gfx::ImageSkia& user_image =
       default_user_image::GetDefaultImage(user_image_index);
 
+  run_loop_ = std::make_unique<base::RunLoop>();
   UserImageManager* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(enterprise_account_id_);
   user_image_manager->SaveUserDefaultImageIndex(user_image_index);
+  run_loop_->Run();
 
   EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(user_image_index, user->image_index());
   EXPECT_TRUE(test::AreImagesEqual(user_image, user->GetImage()));
   ExpectUserImageInfo(enterprise_account_id_, user_image_index,
-                      base::FilePath());
+                      GetUserImagePath(enterprise_account_id_, "jpg"));
 }
 
 // Verifies that when the user chooses a user image and a different image is
@@ -724,17 +728,19 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
   const gfx::ImageSkia& default_image = default_user_image::GetDefaultImage(
       default_user_image::kFirstDefaultImageIndex);
 
+  run_loop_ = std::make_unique<base::RunLoop>();
   UserImageManager* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(enterprise_account_id_);
   user_image_manager->SaveUserDefaultImageIndex(
       default_user_image::kFirstDefaultImageIndex);
+  run_loop_->Run();
 
   EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(default_user_image::kFirstDefaultImageIndex, user->image_index());
   EXPECT_TRUE(test::AreImagesEqual(default_image, user->GetImage()));
   ExpectUserImageInfo(enterprise_account_id_,
                       default_user_image::kFirstDefaultImageIndex,
-                      base::FilePath());
+                      GetUserImagePath(enterprise_account_id_, "jpg"));
 
   // Set policy. Verify that the policy-provided user image is downloaded, set
   // and persisted, overriding the previously set image.

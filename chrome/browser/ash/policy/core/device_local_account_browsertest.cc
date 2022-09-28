@@ -935,7 +935,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, AccountListChange) {
   g_browser_process->policy_service()->RefreshPolicies(base::OnceClosure());
 
   // Make sure the second device-local account disappears.
-  WaitUntilLocalStateChanged();
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsKnownUser(account_id_2_));
 }
 
