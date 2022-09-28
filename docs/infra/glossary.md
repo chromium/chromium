@@ -38,6 +38,20 @@ infrastructure.
   * __CQ Builder__: One of the mandatory trybots. See
     [here](../../infra/config/generated/cq-builders.md#required-builders) for
     the full list.
+  * __Compilator__: A type of builder that handles only the "compiling" and
+    "isolating" phases of a CQ build. ("Isolating" referring to the process of
+    uploading test binaries to the CAS server. See CAS in the [misc](#misc)
+    section below.) The name is a portmanteau of the words "compiler" and
+    "isolator".
+  * __Orchestrator__: A type of CQ builder that delegates all "compiling" and
+    "isolating" phases of a build to a triggered child builder called a
+    compilator (see above). For example,
+    [linux-rel](https://ci.chromium.org/p/chromium/builders/try/linux-rel) is
+    an orchestrator on the CQ and
+    [linux-rel-compilator](https://ci.chromium.org/p/chromium/builders/try/linux-rel-compilator)
+    is its compilator. This partitioning confines the busy-waiting phases of a
+    build (ie: waiting for Swarming tests to finish) to the orchestrator,
+    allowing the compilator to quickly move on and pick up new requests.
   * __Optional Trybot__: A trybot that's not a default CQ builder. These can
     be triggered manually by a developer. Or they can be required by the CQ
     if the CL includes changes to a specific file path. See
