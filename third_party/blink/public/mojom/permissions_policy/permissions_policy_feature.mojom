@@ -218,8 +218,11 @@ enum PermissionsPolicyFeature {
   // API.
   kSharedStorage = 103,
 
-// Controls use of unload handlers.
+  // Controls use of unload handlers.
   kUnload = 104,
+
+  // Client Hint for the preferred reduced motion.
+  kClientHintPrefersReducedMotion = 105,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

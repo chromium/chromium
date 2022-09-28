@@ -14,6 +14,7 @@ def client_hints_list():
           b"sec-ch-ua-full-version",
           b"sec-ch-ua-platform-version",
           b"sec-ch-prefers-color-scheme",
+          b"sec-ch-prefers-reduced-motion",
           b"sec-ch-ua-bitness",
           b"sec-ch-viewport-height",
           b"sec-ch-device-memory",

@@ -439,6 +439,7 @@ void FrameFetchContext::AddClientHintsIfNecessary(
 
   absl::optional<ClientHintImageInfo> image_info;
   absl::optional<WTF::AtomicString> prefers_color_scheme;
+  absl::optional<WTF::AtomicString> prefers_reduced_motion;
 
   if (document_) {  // Only get frame info if the frame is not detached
     image_info = ClientHintImageInfo();
@@ -449,7 +450,12 @@ void FrameFetchContext::AddClientHintsIfNecessary(
       image_info->viewport_height = GetFrame()->View()->ViewportHeight();
     }
 
-    prefers_color_scheme = document_->InDarkMode() ? "dark" : "light";
+    prefers_color_scheme = document_->InDarkMode()
+                               ? network::kPrefersColorSchemeDark
+                               : network::kPrefersColorSchemeLight;
+    prefers_reduced_motion = GetSettings()->GetPrefersReducedMotion()
+                                 ? network::kPrefersReducedMotionReduce
+                                 : network::kPrefersReducedMotionNoPreference;
   }
 
   // GetClientHintsPreferences() has things parsed for this document
@@ -457,7 +463,7 @@ void FrameFetchContext::AddClientHintsIfNecessary(
   // with renderer-parsed http-equiv merged in.
   BaseFetchContext::AddClientHintsIfNecessary(
       GetClientHintsPreferences(), resource_origin, is_1p_origin, ua, policy,
-      image_info, prefers_color_scheme, request);
+      image_info, prefers_color_scheme, prefers_reduced_motion, request);
 }
 
 void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(

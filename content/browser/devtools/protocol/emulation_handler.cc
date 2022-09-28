@@ -128,6 +128,7 @@ Response EmulationHandler::Disable() {
   if (focus_emulation_enabled_)
     SetFocusEmulationEnabled(false);
   prefers_color_scheme_ = "";
+  prefers_reduced_motion_ = "";
   return Response::Success();
 }
 
@@ -546,13 +547,16 @@ Response EmulationHandler::SetEmulatedMedia(
     return Response::InternalError();
 
   prefers_color_scheme_ = "";
+  prefers_reduced_motion_ = "";
   if (features.isJust()) {
     for (auto const& mediaFeature : *features.fromJust()) {
-      if (mediaFeature->GetName() == "prefers-color-scheme") {
-        auto const& value = mediaFeature->GetValue();
+      auto const& name = mediaFeature->GetName();
+      auto const& value = mediaFeature->GetValue();
+      if (name == "prefers-color-scheme") {
         prefers_color_scheme_ =
             (value == "light" || value == "dark") ? value : "";
-        return Response::FallThrough();
+      } else if (name == "prefers-reduced-motion") {
+        prefers_reduced_motion_ = (value == "reduce") ? value : "";
       }
     }
   }
@@ -658,12 +662,21 @@ void EmulationHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
   }
   *accept_language_overridden = !accept_language_.empty();
   if (!prefers_color_scheme_.empty()) {
-    const auto& prefersColorSchemeClientHintHeader =
+    const auto& prefers_color_scheme_client_hint_name =
         network::GetClientHintToNameMap().at(
             network::mojom::WebClientHintsType::kPrefersColorScheme);
-    if (headers->HasHeader(prefersColorSchemeClientHintHeader)) {
-      headers->SetHeader(prefersColorSchemeClientHintHeader,
+    if (headers->HasHeader(prefers_color_scheme_client_hint_name)) {
+      headers->SetHeader(prefers_color_scheme_client_hint_name,
                          prefers_color_scheme_);
+    }
+  }
+  if (!prefers_reduced_motion_.empty()) {
+    const auto& prefers_reduced_motion_client_hint_name =
+        network::GetClientHintToNameMap().at(
+            network::mojom::WebClientHintsType::kPrefersReducedMotion);
+    if (headers->HasHeader(prefers_reduced_motion_client_hint_name)) {
+      headers->SetHeader(prefers_reduced_motion_client_hint_name,
+                         prefers_reduced_motion_);
     }
   }
 }

@@ -73,6 +73,8 @@ ClientHintToPolicyFeatureMap MakeClientHintToPolicyFeatureMap() {
        mojom::PermissionsPolicyFeature::kClientHintUAWoW64},
       {network::mojom::WebClientHintsType::kSaveData,
        mojom::PermissionsPolicyFeature::kClientHintSaveData},
+      {network::mojom::WebClientHintsType::kPrefersReducedMotion,
+       mojom::PermissionsPolicyFeature::kClientHintPrefersReducedMotion},
   };
 }
 

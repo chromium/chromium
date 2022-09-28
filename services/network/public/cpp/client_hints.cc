@@ -20,6 +20,12 @@
 
 namespace network {
 
+const char kPrefersColorSchemeDark[] = "dark";
+const char kPrefersColorSchemeLight[] = "light";
+
+const char kPrefersReducedMotionNoPreference[] = "no-preference";
+const char kPrefersReducedMotionReduce[] = "reduce";
+
 ClientHintToNameMap MakeClientHintToNameMap() {
   return {
       {network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
@@ -57,6 +63,8 @@ ClientHintToNameMap MakeClientHintToNameMap() {
       {network::mojom::WebClientHintsType::kFullUserAgent, "sec-ch-ua-full"},
       {network::mojom::WebClientHintsType::kUAWoW64, "sec-ch-ua-wow64"},
       {network::mojom::WebClientHintsType::kSaveData, "save-data"},
+      {network::mojom::WebClientHintsType::kPrefersReducedMotion,
+       "sec-ch-prefers-reduced-motion"},
   };
 }
 

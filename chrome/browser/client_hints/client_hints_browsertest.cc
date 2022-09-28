@@ -23,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -102,10 +103,10 @@ using ::testing::Key;
 using ::testing::Not;
 using ::testing::Optional;
 
-constexpr unsigned expected_client_hints_number = 18u;
+constexpr unsigned expected_client_hints_number = 19u;
 constexpr unsigned expected_default_third_party_client_hints_number = 3u;
-constexpr unsigned expected_requested_third_party_client_hints_number = 21u;
-constexpr unsigned expected_pre_merge_third_party_client_hints_number = 13u;
+constexpr unsigned expected_requested_third_party_client_hints_number = 22u;
+constexpr unsigned expected_pre_merge_third_party_client_hints_number = 14u;
 
 // All of the status codes from HttpResponseHeaders::IsRedirectResponseCode.
 const net::HttpStatusCode kRedirectStatusCodes[] = {
@@ -503,7 +504,8 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
         "UserAgentClientHint,CriticalClientHint,"
-        "AcceptCHFrame,PrefersColorSchemeClientHintHeader",
+        "AcceptCHFrame,PrefersColorSchemeClientHintHeader,"
+        "PrefersReducedMotionClientHintHeader",
         "");
     return feature_list;
   }
@@ -3016,7 +3018,9 @@ class ClientHintsWebHoldbackBrowserTest : public ClientHintsBrowserTest {
 
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,PrefersColorSchemeClientHintHeader", "");
+        "UserAgentClientHint,PrefersColorSchemeClientHintHeader,"
+        "PrefersReducedMotionClientHintHeader",
+        "");
     feature_list->RegisterFieldTrialOverride(
         features::kNetworkQualityEstimatorWebHoldback.name,
         base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
@@ -3535,7 +3539,8 @@ class ClientHintsBrowserTestWithEmulatedMedia
   ClientHintsBrowserTestWithEmulatedMedia()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     scoped_feature_list_.InitFromCommandLine(
-        "UserAgentClientHint,AcceptCHFrame,PrefersColorSchemeClientHintHeader",
+        "UserAgentClientHint,AcceptCHFrame,PrefersColorSchemeClientHintHeader,"
+        "PrefersReducedMotionClientHintHeader",
         "");
 
     https_server_.ServeFilesFromSourceDirectory(
@@ -3556,10 +3561,13 @@ class ClientHintsBrowserTestWithEmulatedMedia
   ~ClientHintsBrowserTestWithEmulatedMedia() override = default;
 
   void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
-    if (request.headers.find("sec-ch-prefers-color-scheme") !=
-        request.headers.end()) {
+    if (base::Contains(request.headers, "sec-ch-prefers-color-scheme")) {
       prefers_color_scheme_observed_ =
           request.headers.at("sec-ch-prefers-color-scheme");
+    }
+    if (base::Contains(request.headers, "sec-ch-prefers-reduced-motion")) {
+      prefers_reduced_motion_observed_ =
+          request.headers.at("sec-ch-prefers-reduced-motion");
     }
   }
 
@@ -3569,12 +3577,13 @@ class ClientHintsBrowserTestWithEmulatedMedia
     return prefers_color_scheme_observed_;
   }
 
-  void EmulatePrefersColorScheme(std::string value) {
-    base::Value::Dict feature;
-    feature.Set("name", "prefers-color-scheme");
-    feature.Set("value", value);
-    base::Value::List features;
-    features.Append(std::move(feature));
+  const std::string& prefers_reduced_motion_observed() const {
+    return prefers_reduced_motion_observed_;
+  }
+
+  void EmulateMedia(base::StringPiece string) {
+    base::Value features = base::test::ParseJson(string);
+    DCHECK(features.is_list());
     base::Value::Dict params;
     params.Set("features", std::move(features));
     SendCommandSync("Emulation.setEmulatedMedia", std::move(params));
@@ -3585,6 +3594,7 @@ class ClientHintsBrowserTestWithEmulatedMedia
   net::EmbeddedTestServer https_server_;
   GURL test_url_;
   std::string prefers_color_scheme_observed_;
+  std::string prefers_reduced_motion_observed_;
 };
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithEmulatedMedia,
@@ -3593,13 +3603,48 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithEmulatedMedia,
   EXPECT_EQ(prefers_color_scheme_observed(), "");
   Attach();
 
-  EmulatePrefersColorScheme("light");
+  EmulateMedia(R"([{"name": "prefers-color-scheme", "value": "light"}])");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
   EXPECT_EQ(prefers_color_scheme_observed(), "light");
 
-  EmulatePrefersColorScheme("dark");
+  EmulateMedia(R"([{"name": "prefers-color-scheme", "value": "dark"}])");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
   EXPECT_EQ(prefers_color_scheme_observed(), "dark");
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithEmulatedMedia,
+                       PrefersReducedMotion) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_reduced_motion_observed(), "");
+  Attach();
+
+  EmulateMedia(R"([{"name": "prefers-reduced-motion", "value": "reduce"}])");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_reduced_motion_observed(), "reduce");
+
+  EmulateMedia(R"([{"name": "prefers-reduced-motion", "value": ""}])");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_reduced_motion_observed(), "no-preference");
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithEmulatedMedia,
+                       MultipleMediaFeatures) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_color_scheme_observed(), "");
+  EXPECT_EQ(prefers_reduced_motion_observed(), "");
+  Attach();
+
+  EmulateMedia(
+      R"([{"name": "prefers-color-scheme", "value": "light"},
+          {"name": "prefers-reduced-motion", "value": "reduce"}])");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_color_scheme_observed(), "light");
+  EXPECT_EQ(prefers_reduced_motion_observed(), "reduce");
+
+  EmulateMedia(R"([{"name": "prefers-color-scheme", "value": "dark"}])");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_color_scheme_observed(), "dark");
+  EXPECT_EQ(prefers_reduced_motion_observed(), "no-preference");
 }
 
 // Base class for the User-Agent reduction or deprecation Origin Trial browser

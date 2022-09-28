@@ -459,7 +459,22 @@ void AddPrefersColorSchemeHeader(net::HttpRequestHeaders* headers,
   bool is_dark_mode =
       preferred_color_scheme == blink::mojom::PreferredColorScheme::kDark;
   SetHeaderToString(headers, WebClientHintsType::kPrefersColorScheme,
-                    is_dark_mode ? "dark" : "light");
+                    is_dark_mode ? network::kPrefersColorSchemeDark
+                                 : network::kPrefersColorSchemeLight);
+}
+
+void AddPrefersReducedMotionHeader(net::HttpRequestHeaders* headers,
+                                   FrameTreeNode* frame_tree_node) {
+  if (!frame_tree_node)
+    return;
+  bool prefers_reduced_motion =
+      WebContents::FromRenderFrameHost(frame_tree_node->current_frame_host())
+          ->GetOrCreateWebPreferences()
+          .prefers_reduced_motion;
+  SetHeaderToString(headers, WebClientHintsType::kPrefersReducedMotion,
+                    prefers_reduced_motion
+                        ? network::kPrefersReducedMotionReduce
+                        : network::kPrefersReducedMotionNoPreference);
 }
 
 bool IsValidURLForClientHints(const url::Origin& origin) {
@@ -975,6 +990,10 @@ void AddRequestClientHintsHeaders(
     AddPrefersColorSchemeHeader(headers, frame_tree_node);
   }
 
+  if (ShouldAddClientHint(data, WebClientHintsType::kPrefersReducedMotion)) {
+    AddPrefersReducedMotionHeader(headers, frame_tree_node);
+  }
+
   if (ShouldAddClientHint(data, WebClientHintsType::kSaveData))
     AddSaveDataHeader(headers, context);
 
@@ -983,7 +1002,7 @@ void AddRequestClientHintsHeaders(
   // If possible, logic should be added above so that the request headers for
   // the newly added client hint can be added to the request.
   static_assert(
-      network::mojom::WebClientHintsType::kSaveData ==
+      network::mojom::WebClientHintsType::kPrefersReducedMotion ==
           network::mojom::WebClientHintsType::kMaxValue,
       "Consider adding client hint request headers from the browser process");
 

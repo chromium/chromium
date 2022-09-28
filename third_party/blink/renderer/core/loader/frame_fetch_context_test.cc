@@ -535,9 +535,10 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest {
  public:
   FrameFetchContextHintsTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kUserAgentClientHint,
-                              blink::features::
-                                  kPrefersColorSchemeClientHintHeader},
+        /*enabled_features=*/
+        {blink::features::kUserAgentClientHint,
+         blink::features::kPrefersColorSchemeClientHintHeader,
+         blink::features::kPrefersReducedMotionClientHintHeader},
         /*disabled_features=*/{});
   }
 
@@ -877,6 +878,29 @@ TEST_F(FrameFetchContextHintsTest, MonitorPrefersColorSchemeHint) {
                false, "");
 }
 
+TEST_F(FrameFetchContextHintsTest, MonitorPrefersReducedMotionHint) {
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               false, "");
+  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               false, "");
+
+  ClientHintsPreferences preferences;
+  preferences.SetShouldSend(
+      network::mojom::WebClientHintsType::kPrefersReducedMotion);
+  document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
+
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               true, "no-preference");
+  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               false, "");
+
+  document->GetSettings()->SetPrefersReducedMotion(true);
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               true, "reduce");
+  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               false, "");
+}
+
 TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", false, "");
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
@@ -890,6 +914,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
                false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
                false, "");
 
   // `Sec-CH-UA` is special.
@@ -921,6 +947,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kUAModel);
   preferences.SetShouldSend(
       network::mojom::WebClientHintsType::kPrefersColorScheme);
+  preferences.SetShouldSend(
+      network::mojom::WebClientHintsType::kPrefersReducedMotion);
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(4096);
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", true, "4");
@@ -943,6 +971,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", true, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
                true, "light");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               true, "no-preference");
 
   // Value of network quality client hints may vary, so only check if the
   // header is present and the values are non-negative/non-empty.
@@ -972,7 +1002,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
       "ch-dpr *; ch-device-memory *; ch-downlink *; ch-ect *; ch-rtt *; ch-ua "
       "*; ch-ua-arch *; ch-ua-platform *; ch-ua-platform-version *; "
       "ch-ua-model *; ch-viewport-width *; ch-width *; ch-prefers-color-scheme "
-      "*");
+      "*; ch-prefers-reduced-motion *");
   document->GetSettings()->SetScriptEnabled(true);
   ClientHintsPreferences preferences;
   preferences.SetShouldSend(
@@ -1000,6 +1030,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kUAModel);
   preferences.SetShouldSend(
       network::mojom::WebClientHintsType::kPrefersColorScheme);
+  preferences.SetShouldSend(
+      network::mojom::WebClientHintsType::kPrefersReducedMotion);
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(4096);
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
 
@@ -1025,6 +1057,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
                "500");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Prefers-Color-Scheme",
                true, "light");
+  ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               true, "no-preference");
 
   // Value of network quality client hints may vary, so only check if the
   // header is present and the values are non-negative/non-empty.
@@ -1087,6 +1121,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Viewport-Width", false,
                "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               false, "");
+  ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Prefers-Reduced-Motion",
                false, "");
 }
 

@@ -687,6 +687,12 @@
     "args": ["--disable-features=UserAgentClientHint"]
   },
   {
+    "prefix": "disable-prefers-reduced-motion-client-hint",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/client-hints", "wpt_internal/client-hints"],
+    "args": ["--disable-features=PrefersReducedMotionClientHintHeader"]
+  },
+  {
     "prefix": "storage-access-api",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/storage-access-api" ],

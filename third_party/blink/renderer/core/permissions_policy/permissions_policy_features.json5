@@ -114,6 +114,10 @@
       permissions_policy_name: "ch-prefers-color-scheme",
     },
     {
+      name: "ClientHintPrefersReducedMotion",
+      permissions_policy_name: "ch-prefers-reduced-motion",
+    },
+    {
       name: "ClientHintRTT",
       permissions_policy_name: "ch-rtt",
     },

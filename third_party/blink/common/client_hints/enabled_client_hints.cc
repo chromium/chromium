@@ -37,13 +37,15 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
       break;
     case WebClientHintsType::kPrefersColorScheme:
       if (!base::FeatureList::IsEnabled(
-              features::kPrefersColorSchemeClientHintHeader))
+              features::kPrefersColorSchemeClientHintHeader)) {
         return true;
+      }
       break;
     case WebClientHintsType::kViewportHeight:
       if (!base::FeatureList::IsEnabled(
-              features::kViewportHeightClientHintHeader))
+              features::kViewportHeightClientHintHeader)) {
         return true;
+      }
       break;
     case WebClientHintsType::kDeviceMemory:
       if (!base::FeatureList::IsEnabled(features::kClientHintsDeviceMemory))
@@ -63,8 +65,9 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
       break;
     case WebClientHintsType::kDeviceMemory_DEPRECATED:
       if (!base::FeatureList::IsEnabled(
-              features::kClientHintsDeviceMemory_DEPRECATED))
+              features::kClientHintsDeviceMemory_DEPRECATED)) {
         return true;
+      }
       break;
     case WebClientHintsType::kDpr_DEPRECATED:
       if (!base::FeatureList::IsEnabled(features::kClientHintsDPR_DEPRECATED))
@@ -72,17 +75,25 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
       break;
     case WebClientHintsType::kResourceWidth_DEPRECATED:
       if (!base::FeatureList::IsEnabled(
-              features::kClientHintsResourceWidth_DEPRECATED))
+              features::kClientHintsResourceWidth_DEPRECATED)) {
         return true;
+      }
       break;
     case WebClientHintsType::kViewportWidth_DEPRECATED:
       if (!base::FeatureList::IsEnabled(
-              features::kClientHintsViewportWidth_DEPRECATED))
+              features::kClientHintsViewportWidth_DEPRECATED)) {
         return true;
+      }
       break;
     case WebClientHintsType::kSaveData:
       if (!base::FeatureList::IsEnabled(features::kClientHintsSaveData))
         return true;
+      break;
+    case WebClientHintsType::kPrefersReducedMotion:
+      if (!base::FeatureList::IsEnabled(
+              features::kPrefersReducedMotionClientHintHeader)) {
+        return true;
+      }
       break;
     default:
       break;

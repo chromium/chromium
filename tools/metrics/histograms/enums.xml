@@ -41451,6 +41451,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4361" label="CSSAtSupportsDropInvalidWhileForgivingParsing"/>
   <int value="4362" label="PermissionsPolicyUnload"/>
   <int value="4363" label="ServiceWorkerSkippedForSubresourceLoad"/>
+  <int value="4364" label="ClientHintsPrefersReducedMotion"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -41575,6 +41576,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="102" label="IdentityCredentialGet"/>
   <int value="103" label="SharedStorage"/>
   <int value="104" label="Unload"/>
+  <int value="105" label="ClientHintPrefersReducedMotion"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

@@ -20,6 +20,18 @@ class Origin;
 
 namespace network {
 
+// The "Sec-CH-Prefers-Color-Scheme" header values.
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const char kPrefersColorSchemeDark[];
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const char kPrefersColorSchemeLight[];
+
+// The "Sec-CH-Prefers-Reduced-Motion" header values.
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const char kPrefersReducedMotionNoPreference[];
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const char kPrefersReducedMotionReduce[];
+
 using ClientHintToNameMap =
     base::flat_map<network::mojom::WebClientHintsType, std::string>;
 

@@ -349,11 +349,20 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // The `Sec-CH-Prefers-Color-Scheme` header field is modeled after the
       // prefers-color-scheme user preference media feature. It reflects the
       // user’s desire that the page use a light or dark color theme. This is
-      // currently pull from operating system preferences, although there may be
-      // internal UI in the future.
+      // currently pulled from operating system preferences, although there may
+      // be internal UI in the future.
       //
       // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-color-scheme
       "sec-ch-prefers-color-scheme",
+
+      // The `Sec-CH-Prefers-Reduced-Motion` header field is modeled after the
+      // prefers-reduced-motion user preference media feature. It reflects the
+      // user’s desire that the page minimizes the amount of animation or motion
+      // it uses. This is currently pulled from operating system preferences,
+      // although there may be internal UI in the future.
+      //
+      // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-reduced-motion
+      "sec-ch-prefers-reduced-motion",
 
       // The Device Memory header field is a number that indicates the client’s
       // device memory i.e. approximate amount of ram in GiB. The header value

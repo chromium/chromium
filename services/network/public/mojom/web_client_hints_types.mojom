@@ -54,6 +54,9 @@ enum WebClientHintsType {
   // kPartitionedCookies = 26, Removed in M103.
   // Indicates the client wants to minimize data transfer if set to 'on'.
   kSaveData = 27,
+  // Indicates the client wants to minimize the amount of animation or motion
+  // it uses if set to 'reduce'.
+  kPrefersReducedMotion = 28,
 
   // Warning: Before adding a new client hint, read the warning at the top.
 };

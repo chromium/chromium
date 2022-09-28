@@ -283,6 +283,11 @@ TEST_F(CorsTest, SafelistedSecCHPrefersColorScheme) {
                                      "\"Prefers-Color-Scheme!\""));
 }
 
+TEST_F(CorsTest, SafelistedSecCHPrefersReducedMotion) {
+  EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-Prefers-Reduced-Motion",
+                                     "\"Prefers-Reduced-Motion!\""));
+}
+
 TEST_F(CorsTest, SafelistedSecCHUA) {
   EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA", "\"User Agent!\""));
   EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA-Platform", "\"Platform!\""));

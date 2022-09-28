@@ -104,6 +104,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const PermissionsPolicy* policy,
       const absl::optional<ClientHintImageInfo>& image_info,
       const absl::optional<WTF::AtomicString>& prefers_color_scheme,
+      const absl::optional<WTF::AtomicString>& prefers_reduced_motion,
       ResourceRequest& request);
 
  protected:

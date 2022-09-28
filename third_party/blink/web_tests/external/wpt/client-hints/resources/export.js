@@ -14,6 +14,7 @@ const client_hints_list = [
   "sec-ch-ua-full-version",
   "sec-ch-ua-platform-version",
   "sec-ch-prefers-color-scheme",
+  "sec-ch-prefers-reduced-motion",
   "sec-ch-ua-bitness",
   "sec-ch-viewport-height",
   "sec-ch-device-memory",

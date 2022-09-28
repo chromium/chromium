@@ -124,6 +124,9 @@ class EmulationHandler : public DevToolsDomainHandler,
   // If |prefers_color_scheme_| is either "light" or "dark", it is used to
   // override the "prefers-color-scheme" client hint header, when present.
   std::string prefers_color_scheme_;
+  // If |prefers_reduced_motion_| is "reduce", it is used to override the
+  // "prefers-reduced-motion" client hint header, when present.
+  std::string prefers_reduced_motion_;
 
   RenderFrameHostImpl* host_;
 
