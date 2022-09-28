@@ -166,17 +166,6 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
-    public void setRequestedWithHeaderMode(int mode) {
-        // TODO(pbirk) Remove once AndroidX has been updated to not reference this method.
-    }
-
-    @Override
-    public int getRequestedWithHeaderMode() {
-        // TODO(pbirk) Remove once AndroidX has been updated to not reference this method.
-        return RequestedWithHeaderMode.APP_PACKAGE_NAME;
-    }
-
-    @Override
     public void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules) {
         recordApiCall(ApiCall.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
         mAwSettings.setRequestedWithHeaderOriginAllowList(allowedOriginRules);

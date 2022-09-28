@@ -4,8 +4,6 @@
 
 package org.chromium.support_lib_boundary;
 
-import org.chromium.support_lib_boundary.WebSettingsBoundaryInterface.RequestedWithHeaderMode;
-
 import java.util.Set;
 
 /**
@@ -27,12 +25,6 @@ public interface ServiceWorkerWebSettingsBoundaryInterface {
     void setBlockNetworkLoads(boolean flag);
 
     boolean getBlockNetworkLoads();
-
-    @Deprecated
-    void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode);
-    @Deprecated
-    @RequestedWithHeaderMode
-    int getRequestedWithHeaderMode();
 
     void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules);
 

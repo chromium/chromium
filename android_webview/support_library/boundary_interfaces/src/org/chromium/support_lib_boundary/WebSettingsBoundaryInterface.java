@@ -57,18 +57,6 @@ public interface WebSettingsBoundaryInterface {
     @WebAuthnSupport
     int getWebAuthnSupport();
 
-    @Deprecated
-    @Retention(RetentionPolicy.SOURCE)
-    @interface RequestedWithHeaderMode {
-        int NO_HEADER = 0;
-        int APP_PACKAGE_NAME = 1;
-    }
-    @Deprecated
-    void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode);
-    @Deprecated
-    @RequestedWithHeaderMode
-    int getRequestedWithHeaderMode();
-
     void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules);
     Set<String> getRequestedWithHeaderOriginAllowList();
 

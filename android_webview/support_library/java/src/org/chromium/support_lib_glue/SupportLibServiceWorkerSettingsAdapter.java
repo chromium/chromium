@@ -8,7 +8,6 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 
 import org.chromium.android_webview.AwServiceWorkerSettings;
 import org.chromium.support_lib_boundary.ServiceWorkerWebSettingsBoundaryInterface;
-import org.chromium.support_lib_boundary.WebSettingsBoundaryInterface.RequestedWithHeaderMode;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.util.Set;
@@ -73,17 +72,6 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
     public boolean getBlockNetworkLoads() {
         recordApiCall(ApiCall.SERVICE_WORKER_SETTINGS_GET_BLOCK_NETWORK_LOADS);
         return mAwServiceWorkerSettings.getBlockNetworkLoads();
-    }
-
-    @Override
-    public void setRequestedWithHeaderMode(int mode) {
-        // TODO(pbirk) Remove once AndroidX has been updated to no longer reference this method
-    }
-
-    @Override
-    public int getRequestedWithHeaderMode() {
-        // TODO(pbirk) Remove once AndroidX has been updated to no longer reference this method
-        return RequestedWithHeaderMode.APP_PACKAGE_NAME;
     }
 
     @Override
