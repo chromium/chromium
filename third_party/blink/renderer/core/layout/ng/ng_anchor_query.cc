@@ -160,7 +160,12 @@ struct NGStitchedAnchorQueries {
                 .block_size;
         continue;
       }
-      // TODO(kojii): column-spanner not supported yet.
+
+      // The containing block of the spanner is the multicol container itself.
+      // https://drafts.csswg.org/css-multicol/#column-span
+      // So anchor queries in column spanners should not be added to any
+      // containing blocks in the multicol.
+      DCHECK(child->IsColumnSpanAll());
     }
   }
 
