@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -69,7 +70,7 @@ class LongTaskDetectorTest : public testing::Test {
   base::TimeTicks DummyTaskEndTime() { return dummy_task_end_time_; }
 
   void SimulateTask(base::TimeDelta duration) {
-    Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
+    platform_->GetMainThreadScheduler()->DefaultTaskRunner()->PostTask(
         FROM_HERE, WTF::BindOnce(&LongTaskDetectorTest::DummyTaskWithDuration,
                                  WTF::Unretained(this), duration));
     platform_->RunUntilIdle();
