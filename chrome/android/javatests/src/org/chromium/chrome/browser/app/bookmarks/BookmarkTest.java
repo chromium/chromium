@@ -1554,6 +1554,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1369091")
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testShowInFolder_NoScroll() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
