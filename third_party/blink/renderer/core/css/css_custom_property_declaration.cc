@@ -14,10 +14,8 @@ void CSSCustomPropertyDeclaration::TraceAfterDispatch(
 }
 
 String CSSCustomPropertyDeclaration::CustomCSSText() const {
-  if (value_)
-    return value_->TokenRange().Serialize();
-  DCHECK(value_id_ != CSSValueID::kInternalVariableValue);
-  return getValueName(value_id_);
+  DCHECK(value_);
+  return value_->TokenRange().Serialize();
 }
 
 }  // namespace blink

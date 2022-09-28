@@ -185,13 +185,13 @@ String StylePropertySerializer::GetCustomPropertyText(
   StringBuilder result;
   if (is_not_first_decl)
     result.Append(' ');
-  const auto* value = To<CSSCustomPropertyDeclaration>(property.Value());
+  const CSSValue* value = property.Value();
   SerializeIdentifier(property.Name().ToAtomicString(), result,
                       is_not_first_decl);
   result.Append(':');
-  if (!value->Value())
+  if (value->IsCSSWideKeyword())
     result.Append(' ');
-  result.Append(value->CustomCSSText());
+  result.Append(value->CssText());
   if (property.IsImportant())
     result.Append(" !important");
   result.Append(';');

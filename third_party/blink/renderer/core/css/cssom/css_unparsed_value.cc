@@ -77,11 +77,7 @@ CSSUnparsedValue* CSSUnparsedValue::FromCSSValue(
 
 CSSUnparsedValue* CSSUnparsedValue::FromCSSValue(
     const CSSCustomPropertyDeclaration& value) {
-  if (const CSSVariableData* data = value.Value())
-    return FromCSSVariableData(*data);
-
-  // Otherwise, it's a CSS-wide keyword
-  return FromString(value.CustomCSSText());
+  return FromCSSVariableData(value.Value());
 }
 
 CSSUnparsedValue* CSSUnparsedValue::FromCSSVariableData(

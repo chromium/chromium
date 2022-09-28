@@ -93,7 +93,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
 
     scoped_refptr<ComputedStyle> style =
         GetDocument().GetStyleResolver().InitialStyleForElement();
-    style->SetVariableData(AtomicString(custom_property_name), value->Value(),
+    style->SetVariableData(AtomicString(custom_property_name), &value->Value(),
                            false);
     ContainerElement().SetComputedStyle(style);
 

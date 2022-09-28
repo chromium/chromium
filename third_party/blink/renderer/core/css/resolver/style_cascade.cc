@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_invalid_variable_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
@@ -128,22 +129,6 @@ CSSPropertyID UnvisitedID(CSSPropertyID id) {
   if (!property.IsVisited())
     return id;
   return property.GetUnvisitedProperty()->PropertyID();
-}
-
-bool IsRevert(const CSSValue& value) {
-  // TODO(andruud): Don't transport CSS-wide keywords in
-  // CustomPropertyDeclaration.
-  return value.IsRevertValue() ||
-         (value.IsCustomPropertyDeclaration() &&
-          To<CSSCustomPropertyDeclaration>(value).IsRevert());
-}
-
-bool IsRevertLayer(const CSSValue& value) {
-  // TODO(andruud): Don't transport CSS-wide keywords in
-  // CustomPropertyDeclaration.
-  return value.IsRevertLayerValue() ||
-         (value.IsCustomPropertyDeclaration() &&
-          To<CSSCustomPropertyDeclaration>(value).IsRevertLayer());
 }
 
 bool IsInterpolation(CascadePriority priority) {
@@ -791,9 +776,9 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
                                       CascadeOrigin& origin,
                                       CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
-  if (IsRevert(value))
+  if (value.IsRevertValue())
     return ResolveRevert(property, value, origin, resolver);
-  if (IsRevertLayer(value))
+  if (value.IsRevertLayerValue())
     return ResolveRevertLayer(property, value, priority, origin, resolver);
   resolver.CollectFlags(property, origin);
   if (const auto* v = DynamicTo<CSSCustomPropertyDeclaration>(value))
@@ -811,14 +796,10 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
     CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
 
-  // TODO(andruud): Don't transport css-wide keywords in this value.
-  if (!decl.Value())
-    return &decl;
-
   DCHECK(!resolver.IsLocked(property));
   CascadeResolver::AutoLock lock(property, resolver);
 
-  scoped_refptr<CSSVariableData> data = decl.Value();
+  scoped_refptr<CSSVariableData> data = &decl.Value();
 
   if (data->NeedsVariableResolution())
     data = ResolveVariableData(data.get(), resolver);
@@ -837,7 +818,7 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   if (!data)
     return CSSInvalidVariableValue::Create();
 
-  if (data == decl.Value())
+  if (data == &decl.Value())
     return &decl;
 
   return MakeGarbageCollected<CSSCustomPropertyDeclaration>(data);
@@ -1202,7 +1183,7 @@ void StyleCascade::CountUse(WebFeature feature) {
 }
 
 void StyleCascade::MaybeUseCountRevert(const CSSValue& value) {
-  if (IsRevert(value))
+  if (value.IsRevertValue())
     CountUse(WebFeature::kCSSKeywordRevert);
 }
 

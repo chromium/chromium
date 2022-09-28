@@ -12,7 +12,6 @@
 
 namespace blink {
 
-class CSSCustomPropertyDeclaration;
 class ComputedStyle;
 class PropertyRegistration;
 class StyleResolverState;
@@ -100,7 +99,7 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
       ConversionCheckers&) const;
 
   InterpolationValue MaybeConvertCustomPropertyDeclaration(
-      const CSSCustomPropertyDeclaration&,
+      const CSSValue&,
       const InterpolationEnvironment&,
       ConversionCheckers&) const;
 

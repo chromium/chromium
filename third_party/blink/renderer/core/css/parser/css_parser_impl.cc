@@ -1506,9 +1506,8 @@ void CSSParserImpl::ConsumeVariableValue(
     const AtomicString& variable_name,
     bool important,
     bool is_animation_tainted) {
-  if (CSSCustomPropertyDeclaration* value =
-          CSSVariableParser::ParseDeclarationValue(
-              tokenized_value, is_animation_tainted, *context_)) {
+  if (CSSValue* value = CSSVariableParser::ParseDeclarationIncludingCSSWide(
+          tokenized_value, is_animation_tainted, *context_)) {
     parsed_properties_.push_back(
         CSSPropertyValue(CSSPropertyName(variable_name), *value, important));
     context_->Count(context_->Mode(), CSSPropertyID::kVariable);

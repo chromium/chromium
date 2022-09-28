@@ -107,6 +107,8 @@ void CustomProperty::ApplyInherit(StyleResolverState& state) const {
 
 void CustomProperty::ApplyValue(StyleResolverState& state,
                                 const CSSValue& value) const {
+  DCHECK(!value.IsCSSWideKeyword());
+
   if (value.IsInvalidVariableValue()) {
     if (!SupportsGuaranteedInvalid()) {
       ApplyUnset(state);
@@ -120,51 +122,39 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
 
   const auto& declaration = To<CSSCustomPropertyDeclaration>(value);
 
-  DCHECK(!value.IsRevertValue());
   bool is_inherited_property = IsInherited();
-  bool initial = declaration.IsInitial(is_inherited_property);
-  bool inherit = declaration.IsInherit(is_inherited_property);
-  DCHECK(!(initial && inherit));
 
-  // TODO(andruud): Use regular initial/inherit dispatch in StyleBuilder
-  //                once custom properties are Ribbonized.
-  if (initial) {
-    ApplyInitial(state);
-  } else if (inherit) {
-    ApplyInherit(state);
-  } else {
-    scoped_refptr<CSSVariableData> data = declaration.Value();
-    DCHECK(!data->NeedsVariableResolution());
+  scoped_refptr<CSSVariableData> data = &declaration.Value();
+  DCHECK(!data->NeedsVariableResolution());
+
+  state.Style()->SetVariableData(name_, data, is_inherited_property);
+
+  if (registration_) {
+    // TODO(andruud): Store CSSParserContext on CSSCustomPropertyDeclaration
+    // and use that.
+    const CSSParserContext* context = StrictCSSParserContext(
+        state.GetDocument().GetExecutionContext()->GetSecureContextMode());
+    auto mode = CSSParserLocalContext::VariableMode::kTyped;
+    auto local_context = CSSParserLocalContext().WithVariableMode(mode);
+    CSSParserTokenRange range = data->TokenRange();
+    const CSSValue* registered_value =
+        ParseSingleValue(range, *context, local_context);
+    if (!registered_value) {
+      if (is_inherited_property)
+        ApplyInherit(state);
+      else
+        ApplyInitial(state);
+      return;
+    }
+
+    registered_value = &StyleBuilderConverter::ConvertRegisteredPropertyValue(
+        state, *registered_value, data->BaseURL(), data->Charset());
+    data = StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
+        *registered_value, data->IsAnimationTainted());
 
     state.Style()->SetVariableData(name_, data, is_inherited_property);
-
-    if (registration_) {
-      // TODO(andruud): Store CSSParserContext on CSSCustomPropertyDeclaration
-      // and use that.
-      const CSSParserContext* context = StrictCSSParserContext(
-          state.GetDocument().GetExecutionContext()->GetSecureContextMode());
-      auto mode = CSSParserLocalContext::VariableMode::kTyped;
-      auto local_context = CSSParserLocalContext().WithVariableMode(mode);
-      CSSParserTokenRange range = data->TokenRange();
-      const CSSValue* registered_value =
-          ParseSingleValue(range, *context, local_context);
-      if (!registered_value) {
-        if (is_inherited_property)
-          ApplyInherit(state);
-        else
-          ApplyInitial(state);
-        return;
-      }
-
-      registered_value = &StyleBuilderConverter::ConvertRegisteredPropertyValue(
-          state, *registered_value, data->BaseURL(), data->Charset());
-      data = StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
-          *registered_value, data->IsAnimationTainted());
-
-      state.Style()->SetVariableData(name_, data, is_inherited_property);
-      state.Style()->SetVariableValue(name_, registered_value,
-                                      is_inherited_property);
-    }
+    state.Style()->SetVariableValue(name_, registered_value,
+                                    is_inherited_property);
   }
 }
 

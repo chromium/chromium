@@ -324,8 +324,9 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
   if (CSSVariableParser::IsValidVariableName(media_feature)) {
     CSSTokenizedValue tokenized_value{range};
     CSSParserImpl::RemoveImportantAnnotationIfPresent(tokenized_value);
-    if (const CSSValue* value = CSSVariableParser::ParseDeclarationValue(
-            tokenized_value, false, context)) {
+    if (const CSSValue* value =
+            CSSVariableParser::ParseDeclarationIncludingCSSWide(
+                tokenized_value, false, context)) {
       while (!range.AtEnd())
         range.Consume();
       return MediaQueryExpValue(*value);

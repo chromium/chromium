@@ -1425,20 +1425,19 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
 
   AtomicString property_name(feature.Name());
 
-  const CSSCustomPropertyDeclaration* query_specified =
-      DynamicTo<CSSCustomPropertyDeclaration>(bounds.right.value.GetCSSValue());
+  const CSSValue& query_specified = bounds.right.value.GetCSSValue();
 
-  if (query_specified->IsRevert() || query_specified->IsRevertLayer()) {
+  if (query_specified.IsRevertValue() || query_specified.IsRevertLayerValue()) {
     return KleeneValue::kFalse;
   }
 
   const CSSValue* query_value = StyleResolver::ComputeValue(
-      container, CSSPropertyName(property_name), *query_specified);
+      container, CSSPropertyName(property_name), query_specified);
 
   if (const auto* decl_value =
           DynamicTo<CSSCustomPropertyDeclaration>(query_value)) {
     CSSVariableData* query_computed =
-        decl_value ? decl_value->Value() : nullptr;
+        decl_value ? &decl_value->Value() : nullptr;
     CSSVariableData* computed =
         container->ComputedStyleRef().GetVariableData(property_name);
 

@@ -108,7 +108,7 @@ static scoped_refptr<CSSVariableData> ConvertInitialVariableData(
     const CSSValue* value) {
   if (!value)
     return nullptr;
-  return To<CSSCustomPropertyDeclaration>(*value).Value();
+  return &To<CSSCustomPropertyDeclaration>(*value).Value();
 }
 
 PropertyRegistration* PropertyRegistration::MaybeCreateForDeclaredProperty(

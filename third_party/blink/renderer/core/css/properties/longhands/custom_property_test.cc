@@ -159,9 +159,9 @@ TEST_F(CustomPropertyTest, ParseSingleValueAnimationTainted) {
       property, "100px", CSSParserLocalContext().WithAnimationTainted(false));
 
   EXPECT_TRUE(
-      To<CSSCustomPropertyDeclaration>(value1)->Value()->IsAnimationTainted());
+      To<CSSCustomPropertyDeclaration>(value1)->Value().IsAnimationTainted());
   EXPECT_FALSE(
-      To<CSSCustomPropertyDeclaration>(value2)->Value()->IsAnimationTainted());
+      To<CSSCustomPropertyDeclaration>(value2)->Value().IsAnimationTainted());
 }
 
 TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
