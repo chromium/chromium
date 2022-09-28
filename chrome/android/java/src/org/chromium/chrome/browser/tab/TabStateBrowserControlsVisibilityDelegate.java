@@ -161,6 +161,7 @@ public class TabStateBrowserControlsVisibilityDelegate
             }
         });
         onWebContentsUpdated(mTab.getWebContents());
+        updateVisibilityConstraints();
     }
 
     private void onWebContentsUpdated(WebContents contents) {
