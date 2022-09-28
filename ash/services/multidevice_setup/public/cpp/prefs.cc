@@ -46,6 +46,9 @@ const char kPhoneHubTaskContinuationEnabledPrefName[] =
     "phone_hub_task_continuation.enabled";
 const char kEcheEnabledPrefName[] = "eche.enabled";
 
+const char kEcheOverriddenSupportReceivedFromPhoneHubPrefName[] =
+    "eche.overridden_support_received_from_phone_hub";
+
 void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kInstantTetheringAllowedPrefName, true);
   registry->RegisterBooleanPref(kMessagesAllowedPrefName, true);
@@ -76,6 +79,10 @@ void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kPhoneHubNotificationsEnabledPrefName, false);
 
   registry->RegisterBooleanPref(kPhoneHubTaskContinuationEnabledPrefName, true);
+
+  registry->RegisterIntegerPref(
+      kEcheOverriddenSupportReceivedFromPhoneHubPrefName,
+      static_cast<int>(EcheSupportReceivedFromPhoneHub::kNotSpecified));
 }
 
 bool AreAnyMultiDeviceFeaturesAllowed(const PrefService* pref_service) {

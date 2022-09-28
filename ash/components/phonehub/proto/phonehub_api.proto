@@ -130,6 +130,20 @@ enum FindMyDeviceCapability {
   NOT_ALLOWED = 1;
 }
 
+enum FeatureStatus {
+  FEATURE_STATUS_UNSPECIFIED = 0;
+  FEATURE_STATUS_UNSUPPORTED = 1;
+  FEATURE_STATUS_SUPPORTED = 2;
+  FEATURE_STATUS_ENABLED = 3;
+
+  // Feature is supported, but disabled by enterprise policy setting.
+  FEATURE_STATUS_PROHIBITED_BY_POLICY = 4;
+
+  // Feature is supported but requires attestation, and the connected device
+  // can not be verified.
+  FEATURE_STATUS_ATTESTATION_FAILED = 5;
+}
+
 // Information about the phone whether is secured with a PIN, pattern or
 // password.
 enum ScreenLockState {
@@ -202,7 +216,9 @@ message PhoneProperties {
 
   FeatureSetupConfig feature_setup_config = 19;
 
-  // Next ID: 20
+  FeatureStatus eche_feature_status = 20;
+
+  // Next ID: 21
 }
 
 message UserState {

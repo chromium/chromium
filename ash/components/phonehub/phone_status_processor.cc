@@ -16,9 +16,11 @@
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ash/components/phonehub/screen_lock_manager_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 namespace phonehub {
@@ -192,7 +194,8 @@ PhoneStatusProcessor::PhoneStatusProcessor(
     NotificationProcessor* notification_processor_,
     MultiDeviceSetupClient* multidevice_setup_client,
     MutablePhoneModel* phone_model,
-    RecentAppsInteractionHandler* recent_apps_interaction_handler)
+    RecentAppsInteractionHandler* recent_apps_interaction_handler,
+    PrefService* pref_service)
     : do_not_disturb_controller_(do_not_disturb_controller),
       feature_status_provider_(feature_status_provider),
       message_receiver_(message_receiver),
@@ -202,7 +205,8 @@ PhoneStatusProcessor::PhoneStatusProcessor(
       notification_processor_(notification_processor_),
       multidevice_setup_client_(multidevice_setup_client),
       phone_model_(phone_model),
-      recent_apps_interaction_handler_(recent_apps_interaction_handler) {
+      recent_apps_interaction_handler_(recent_apps_interaction_handler),
+      pref_service_(pref_service) {
   DCHECK(do_not_disturb_controller_);
   DCHECK(feature_status_provider_);
   DCHECK(message_receiver_);
@@ -211,6 +215,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
   DCHECK(notification_processor_);
   DCHECK(multidevice_setup_client_);
   DCHECK(phone_model_);
+  DCHECK(pref_service_);
 
   message_receiver_->AddObserver(this);
   feature_status_provider_->AddObserver(this);
@@ -283,6 +288,9 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
   if (features::IsEcheSWAEnabled()) {
     recent_apps_interaction_handler_->set_user_states(
         GetUserStates(phone_properties.user_states()));
+
+    SetEcheFeatureStatusReceivedFromPhoneHub(
+        phone_properties.eche_feature_status());
   }
 
   multidevice_feature_access_manager_->SetFeatureSetupRequestSupportedInternal(
@@ -298,6 +306,38 @@ void PhoneStatusProcessor::MaybeSetPhoneModelName(
   }
 
   phone_model_->SetPhoneName(base::UTF8ToUTF16(remote_device->name()));
+}
+
+void PhoneStatusProcessor::SetEcheFeatureStatusReceivedFromPhoneHub(
+    proto::FeatureStatus eche_feature_status) {
+  auto eche_support_received_from_phone_hub =
+      ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSpecified;
+  if (eche_feature_status == proto::FeatureStatus::FEATURE_STATUS_SUPPORTED ||
+      eche_feature_status == proto::FeatureStatus::FEATURE_STATUS_ENABLED ||
+      eche_feature_status ==
+          proto::FeatureStatus::FEATURE_STATUS_PROHIBITED_BY_POLICY) {
+    eche_support_received_from_phone_hub =
+        ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kSupported;
+  } else if (eche_feature_status ==
+                 proto::FeatureStatus::FEATURE_STATUS_UNSUPPORTED ||
+             eche_feature_status ==
+                 proto::FeatureStatus::FEATURE_STATUS_ATTESTATION_FAILED) {
+    eche_support_received_from_phone_hub =
+        ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSupported;
+  } else if (eche_feature_status ==
+             proto::FeatureStatus::FEATURE_STATUS_UNSPECIFIED) {
+    eche_support_received_from_phone_hub =
+        ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSpecified;
+  } else {
+    NOTREACHED();
+    eche_support_received_from_phone_hub =
+        ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSpecified;
+  }
+
+  pref_service_->SetInteger(
+      ash::multidevice_setup::
+          kEcheOverriddenSupportReceivedFromPhoneHubPrefName,
+      static_cast<int>(eche_support_received_from_phone_hub));
 }
 
 void PhoneStatusProcessor::OnFeatureStatusChanged() {

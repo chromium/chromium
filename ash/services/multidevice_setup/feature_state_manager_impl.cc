@@ -264,6 +264,11 @@ FeatureStateManagerImpl::FeatureStateManagerImpl(
                             base::Unretained(this)));
   }
 
+  registrar_.Add(
+      kEcheOverriddenSupportReceivedFromPhoneHubPrefName,
+      base::BindRepeating(&FeatureStateManagerImpl::OnPrefValueChanged,
+                          base::Unretained(this)));
+
   // Prime the cache. Since this is the initial computation, it does not
   // represent a true change of feature state values, so observers should not be
   // notified.
@@ -495,17 +500,37 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
     multidevice::SoftwareFeatureState feature_state =
         host_device.GetSoftwareFeatureState(pair.second);
 
-    if (feature_state == multidevice::SoftwareFeatureState::kEnabled) {
-      return true;
+    // Edge Case: Eche is considered activated on the host when Phone Hub is
+    // enabled and either:
+    // * if phone did not specify Eche state via PhoneHub status message:
+    //   * Eche's state is kSupported or kEnabled.
+    // * if phone did specify Eche state via PhoneHub status message:
+    //   * use the specified Eche state.
+    if (feature == mojom::Feature::kEche) {
+      if (host_device.GetSoftwareFeatureState(
+              multidevice::SoftwareFeature::kPhoneHubHost) !=
+          multidevice::SoftwareFeatureState::kEnabled) {
+        return false;
+      }
+
+      EcheSupportReceivedFromPhoneHub eche_support_received_from_phone_hub =
+          static_cast<EcheSupportReceivedFromPhoneHub>(
+              pref_service_->GetInteger(
+                  kEcheOverriddenSupportReceivedFromPhoneHubPrefName));
+      switch (eche_support_received_from_phone_hub) {
+        case EcheSupportReceivedFromPhoneHub::kNotSpecified:
+          return feature_state ==
+                     multidevice::SoftwareFeatureState::kSupported ||
+                 feature_state == multidevice::SoftwareFeatureState::kEnabled;
+        case EcheSupportReceivedFromPhoneHub::kNotSupported:
+          return false;
+        case EcheSupportReceivedFromPhoneHub::kSupported:
+          return true;
+      };
     }
 
-    // Edge Case: Eche is considered activated on the host when Phone Hub is
-    // enabled and Eche's state is kSupported or kEnabled.
-    if (feature == mojom::Feature::kEche) {
-      return feature_state == multidevice::SoftwareFeatureState::kSupported &&
-             host_device.GetSoftwareFeatureState(
-                 multidevice::SoftwareFeature::kPhoneHubHost) ==
-                 multidevice::SoftwareFeatureState::kEnabled;
+    if (feature_state == multidevice::SoftwareFeatureState::kEnabled) {
+      return true;
     }
 
     // Edge Case: features with global states are considered activated on host

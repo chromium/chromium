@@ -130,7 +130,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           notification_processor_.get(),
           multidevice_setup_client,
           phone_model_.get(),
-          recent_apps_interaction_handler_.get())),
+          recent_apps_interaction_handler_.get(),
+          pref_service)),
       tether_controller_(
           std::make_unique<TetherControllerImpl>(phone_model_.get(),
                                                  user_action_recorder_.get(),

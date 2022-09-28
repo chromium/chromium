@@ -25,10 +25,12 @@
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
 
@@ -93,6 +95,9 @@ class PhoneStatusProcessorTest : public testing::Test {
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     fake_recent_apps_interaction_handler_ =
         std::make_unique<FakeRecentAppsInteractionHandler>();
+
+    multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
+
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kEcheSWA,
                               features::kPhoneHubCameraRoll},
@@ -107,7 +112,7 @@ class PhoneStatusProcessorTest : public testing::Test {
         fake_multidevice_feature_access_manager_.get(),
         fake_screen_lock_manager_.get(), fake_notification_processor_.get(),
         fake_multidevice_setup_client_.get(), mutable_phone_model_.get(),
-        fake_recent_apps_interaction_handler_.get());
+        fake_recent_apps_interaction_handler_.get(), &pref_service_);
   }
 
   void InitializeNotificationProto(proto::Notification* notification,
@@ -133,6 +138,14 @@ class PhoneStatusProcessorTest : public testing::Test {
     notification->set_shared_image("123");
   }
 
+  ash::multidevice_setup::EcheSupportReceivedFromPhoneHub
+  GetEcheSupportReceivedFromPhoneHub() {
+    return static_cast<ash::multidevice_setup::EcheSupportReceivedFromPhoneHub>(
+        pref_service_.GetInteger(
+            ash::multidevice_setup::
+                kEcheOverriddenSupportReceivedFromPhoneHubPrefName));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   multidevice::RemoteDeviceRef test_remote_device_;
   std::unique_ptr<FakeDoNotDisturbController> fake_do_not_disturb_controller_;
@@ -149,6 +162,7 @@ class PhoneStatusProcessorTest : public testing::Test {
       fake_multidevice_setup_client_;
   std::unique_ptr<FakeRecentAppsInteractionHandler>
       fake_recent_apps_interaction_handler_;
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<PhoneStatusProcessor> phone_status_processor_;
 };
 
@@ -287,6 +301,8 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   proto::FeatureSetupConfig* feature_setup_config =
       expected_phone_properties->mutable_feature_setup_config();
   feature_setup_config->set_feature_setup_request_supported(true);
+  expected_phone_properties->set_eche_feature_status(
+      proto::FeatureStatus::FEATURE_STATUS_SUPPORTED);
 
   expected_phone_properties->add_user_states();
   proto::UserState* mutable_user_state =
@@ -342,6 +358,9 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   EXPECT_EQ(PhoneStatusModel::MobileStatus::kSimWithReception,
             phone_status_model->mobile_status());
 
+  EXPECT_EQ(ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kSupported,
+            GetEcheSupportReceivedFromPhoneHub());
+
   // Change feature status to disconnected.
   fake_feature_status_provider_->SetStatus(
       FeatureStatus::kEnabledButDisconnected);
@@ -388,6 +407,8 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   proto::FeatureSetupConfig* feature_setup_config =
       expected_phone_properties->mutable_feature_setup_config();
   feature_setup_config->set_feature_setup_request_supported(false);
+  expected_phone_properties->set_eche_feature_status(
+      proto::FeatureStatus::FEATURE_STATUS_SUPPORTED);
 
   expected_phone_properties->add_user_states();
   proto::UserState* mutable_user_state =
@@ -439,6 +460,9 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_EQ(PhoneStatusModel::MobileStatus::kSimWithReception,
             phone_status_model->mobile_status());
 
+  EXPECT_EQ(ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kSupported,
+            GetEcheSupportReceivedFromPhoneHub());
+
   std::vector<RecentAppsInteractionHandler::UserState> user_states =
       fake_recent_apps_interaction_handler_->user_states();
   EXPECT_EQ(1u, user_states[0].user_id);
@@ -482,6 +506,9 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
             phone_status_model->mobile_connection_metadata()->signal_strength);
   EXPECT_EQ(PhoneStatusModel::MobileStatus::kSimWithReception,
             phone_status_model->mobile_status());
+
+  EXPECT_EQ(ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kSupported,
+            GetEcheSupportReceivedFromPhoneHub());
 
   // Change feature status to disconnected.
   fake_feature_status_provider_->SetStatus(
@@ -604,6 +631,60 @@ TEST_F(PhoneStatusProcessorTest, NotificationAccess) {
       Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
   fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
   EXPECT_EQ(2u, fake_notification_manager_->num_notifications());
+}
+
+TEST_F(PhoneStatusProcessorTest, EcheFeatureStatus) {
+  fake_multidevice_setup_client_->SetHostStatusWithDevice(
+      std::make_pair(HostStatus::kHostVerified, test_remote_device_));
+  CreatePhoneStatusProcessor();
+
+  fake_feature_status_provider_->SetStatus(FeatureStatus::kEnabledAndConnected);
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
+
+  auto expected_phone_properties = std::make_unique<proto::PhoneProperties>();
+  expected_phone_properties->set_eche_feature_status(
+      proto::FeatureStatus::FEATURE_STATUS_UNSPECIFIED);
+
+  proto::PhoneStatusUpdate expected_update;
+  expected_update.set_allocated_properties(expected_phone_properties.release());
+
+  fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
+  EXPECT_EQ(
+      ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSpecified,
+      GetEcheSupportReceivedFromPhoneHub());
+
+  expected_update.mutable_properties()->set_eche_feature_status(
+      proto::FeatureStatus::FEATURE_STATUS_SUPPORTED);
+  fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
+  EXPECT_EQ(ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kSupported,
+            GetEcheSupportReceivedFromPhoneHub());
+
+  expected_update.mutable_properties()->set_eche_feature_status(
+      proto::FeatureStatus::FEATURE_STATUS_ENABLED);
+  fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
+  EXPECT_EQ(ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kSupported,
+            GetEcheSupportReceivedFromPhoneHub());
+
+  expected_update.mutable_properties()->set_eche_feature_status(
+      proto::FeatureStatus::FEATURE_STATUS_PROHIBITED_BY_POLICY);
+  fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
+  EXPECT_EQ(ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kSupported,
+            GetEcheSupportReceivedFromPhoneHub());
+
+  expected_update.mutable_properties()->set_eche_feature_status(
+      proto::FeatureStatus::FEATURE_STATUS_UNSUPPORTED);
+  fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
+  EXPECT_EQ(
+      ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSupported,
+      GetEcheSupportReceivedFromPhoneHub());
+
+  expected_update.mutable_properties()->set_eche_feature_status(
+      proto::FeatureStatus::FEATURE_STATUS_ATTESTATION_FAILED);
+  fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
+  EXPECT_EQ(
+      ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSupported,
+      GetEcheSupportReceivedFromPhoneHub());
 }
 
 }  // namespace phonehub

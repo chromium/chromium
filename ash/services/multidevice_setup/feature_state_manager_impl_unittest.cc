@@ -684,7 +684,7 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHubForSecondaryUsers) {
                        phone_hub_feature);
   }
 
-  // This pref should is disabled for existing Better Together users;
+  // This pref should be disabled for existing Better Together users;
   // they must go to settings to explicitly enable PhoneHub.
   test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, true);
   SetSoftwareFeatureState(false /* use_local_device */,
@@ -1046,6 +1046,100 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, Eche) {
                      mojom::Feature::kEche);
   VerifyFeatureStateChange(12u /* expected_index */, mojom::Feature::kEche,
                            mojom::FeatureState::kProhibitedByPolicy);
+}
+
+TEST_F(MultiDeviceSetupFeatureStateManagerImplTest,
+       EcheSupportReceivedFromPhoneHub) {
+  SetupFeatureStateManager();
+
+  TryAllUnverifiedHostStatesAndVerifyFeatureState(mojom::Feature::kEche);
+
+  SetVerifiedHost();
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kPhoneHubClient,
+                          multidevice::SoftwareFeatureState::kSupported);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByPhone,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(2u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kNotSupportedByPhone);
+
+  SetSoftwareFeatureState(false /* use_local_device */,
+                          multidevice::SoftwareFeature::kPhoneHubHost,
+                          multidevice::SoftwareFeatureState::kEnabled);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(3u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kNotSupportedByChromebook);
+
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kEcheClient,
+                          multidevice::SoftwareFeatureState::kSupported);
+  VerifyFeatureStateChange(4u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kNotSupportedByPhone);
+
+  // The top-level Phone Hub enabled pref is disabled for existing Better
+  // Together users; they must go to settings to explicitly enable PhoneHub.
+  test_pref_service()->SetBoolean(kEcheEnabledPrefName, true);
+  SetSoftwareFeatureState(false /* use_local_device */,
+                          multidevice::SoftwareFeature::kEcheHost,
+                          multidevice::SoftwareFeatureState::kSupported);
+  VerifyFeatureState(mojom::FeatureState::kUnavailableTopLevelFeatureDisabled,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(
+      5u /* expected_index */, mojom::Feature::kEche,
+      mojom::FeatureState::kUnavailableTopLevelFeatureDisabled);
+
+  test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, true);
+  VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(6u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kEnabledByUser);
+
+  // Simulate messages received from PhoneHub which communicate Eche support.
+  // No feature state change should occur yet.
+  test_pref_service()->SetInteger(
+      kEcheOverriddenSupportReceivedFromPhoneHubPrefName,
+      static_cast<int>(EcheSupportReceivedFromPhoneHub::kNotSpecified));
+  VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
+                     mojom::Feature::kEche);
+
+  // When the PhoneHub message does not specify support, the value of
+  // SoftwareFeature::kEcheHost is consulted, like other features.
+  SetSoftwareFeatureState(false /* use_local_device */,
+                          multidevice::SoftwareFeature::kEcheHost,
+                          multidevice::SoftwareFeatureState::kNotSupported);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByPhone,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(7u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kNotSupportedByPhone);
+
+  // Receiving signal of Eche support from PhoneHub should override the value
+  // of SoftwareFeature::kEcheHost.
+  test_pref_service()->SetInteger(
+      kEcheOverriddenSupportReceivedFromPhoneHubPrefName,
+      static_cast<int>(EcheSupportReceivedFromPhoneHub::kSupported));
+  VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(8u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kEnabledByUser);
+
+  // Return SoftwareFeature::kEcheHost to "supported" to prepare for next
+  // change, but no feature state change should occur yet.
+  SetSoftwareFeatureState(false /* use_local_device */,
+                          multidevice::SoftwareFeature::kEcheHost,
+                          multidevice::SoftwareFeatureState::kSupported);
+  VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
+                     mojom::Feature::kEche);
+
+  // Receiving signal of Eche support from PhoneHub should override the value
+  // of SoftwareFeature::kEcheHost.
+  test_pref_service()->SetInteger(
+      kEcheOverriddenSupportReceivedFromPhoneHubPrefName,
+      static_cast<int>(EcheSupportReceivedFromPhoneHub::kNotSupported));
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByPhone,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(9u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kNotSupportedByPhone);
 }
 
 }  // namespace multidevice_setup

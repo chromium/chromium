@@ -12,8 +12,9 @@
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
-namespace ash {
-namespace phonehub {
+class PrefService;
+
+namespace ash::phonehub {
 
 using ::google::protobuf::RepeatedPtrField;
 
@@ -42,7 +43,8 @@ class PhoneStatusProcessor
       NotificationProcessor* notification_processor_,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       MutablePhoneModel* phone_model,
-      RecentAppsInteractionHandler* recent_apps_interaction_handler);
+      RecentAppsInteractionHandler* recent_apps_interaction_handler,
+      PrefService* pref_service);
   ~PhoneStatusProcessor() override;
 
   PhoneStatusProcessor(const PhoneStatusProcessor&) = delete;
@@ -76,7 +78,8 @@ class PhoneStatusProcessor
   void MaybeSetPhoneModelName(
       const absl::optional<multidevice::RemoteDeviceRef>& remote_device);
 
-  void SetDoNotDisturbState(proto::NotificationMode mode);
+  void SetEcheFeatureStatusReceivedFromPhoneHub(
+      proto::FeatureStatus eche_feature_status);
 
   DoNotDisturbController* do_not_disturb_controller_;
   FeatureStatusProvider* feature_status_provider_;
@@ -88,9 +91,9 @@ class PhoneStatusProcessor
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   MutablePhoneModel* phone_model_;
   RecentAppsInteractionHandler* recent_apps_interaction_handler_;
+  PrefService* pref_service_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // ASH_COMPONENTS_PHONEHUB_PHONE_STATUS_PROCESSOR_H_
