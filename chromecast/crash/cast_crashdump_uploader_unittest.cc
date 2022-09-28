@@ -7,18 +7,15 @@
 #include "base/files/file_util.h"
 #include "chromecast/base/scoped_temp_file.h"
 #include "chromecast/crash/cast_crashdump_uploader.h"
+#include "chromecast/crash/libcurl_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.h"
 
 namespace chromecast {
 
-class MockLibcurlWrapper : public google_breakpad::LibcurlWrapper {
+class MockLibcurlWrapper : public LibcurlWrapper {
  public:
   MOCK_METHOD0(Init, bool());
-  MOCK_METHOD2(SetProxy,
-               bool(const std::string& proxy_host,
-                    const std::string& proxy_userpwd));
   MOCK_METHOD2(AddFile,
                bool(const std::string& upload_file_path,
                     const std::string& basename));

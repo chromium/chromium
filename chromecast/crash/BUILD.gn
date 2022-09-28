@@ -66,6 +66,8 @@ cast_source_set("crash") {
     sources += [
       "cast_crashdump_uploader.cc",
       "cast_crashdump_uploader.h",
+      "libcurl_wrapper.cc",
+      "libcurl_wrapper.h",
     ]
 
     if (is_linux || is_chromeos) {
