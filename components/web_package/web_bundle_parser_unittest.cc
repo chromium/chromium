@@ -737,6 +737,7 @@ TEST_F(WebBundleParserTest, RelativeURL) {
   const GURL base_url("https://test.example.com/dir/test.wbn");
   mojom::BundleMetadataPtr metadata =
       ParseUnsignedBundle(&data_source, base_url).first;
+  ASSERT_TRUE(metadata);
   EXPECT_EQ(metadata->primary_url,
             "https://test.example.com/dir/path/to/primary_url");
   ASSERT_TRUE(metadata);
@@ -1097,6 +1098,72 @@ TEST_F(WebBundleParserTest, SignedBundleWrongPublicKeyLength) {
   EXPECT_EQ(error->message,
             "The public key does not have the correct length, expected 32 "
             "bytes.");
+}
+
+TEST_F(WebBundleParserTest, DisconnectWhileParsingMetadata) {
+  base::test::TestFuture<mojom::BundleMetadataPtr,
+                         mojom::BundleMetadataParseErrorPtr>
+      future;
+  {
+    WebBundleBuilder builder;
+    builder.AddPrimaryURL(kPrimaryUrl);
+    builder.AddExchange("https://test.example.com/",
+                        {{":status", "200"}, {"content-type", "text/plain"}},
+                        "payload");
+    TestDataSource data_source(builder.CreateBundle());
+
+    mojo::PendingRemote<mojom::BundleDataSource> source_remote;
+    data_source.AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
+
+    mojo::PendingRemote<mojom::WebBundleParser> parser_remote;
+    WebBundleParser parser_impl(parser_remote.InitWithNewPipeAndPassReceiver(),
+                                std::move(source_remote), GURL());
+    mojom::WebBundleParser& parser = parser_impl;
+
+    parser.ParseMetadata(-1 /* offset */, future.GetCallback());
+    // |data_source| and |parser_impl| are deleted here.
+  }
+
+  auto error = std::get<1>(future.Take());
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error->type, mojom::BundleParseErrorType::kParserInternalError);
+  EXPECT_EQ(error->message, "Data source disconnected.");
+}
+
+TEST_F(WebBundleParserTest, DisconnectWhileParsingResponse) {
+  base::test::TestFuture<mojom::BundleResponsePtr,
+                         mojom::BundleResponseParseErrorPtr>
+      future;
+  {
+    WebBundleBuilder builder;
+    builder.AddPrimaryURL(kPrimaryUrl);
+    builder.AddExchange("https://test.example.com/",
+                        {{":status", "200"}, {"content-type", "text/plain"}},
+                        "payload");
+    TestDataSource data_source(builder.CreateBundle());
+
+    mojom::BundleMetadataPtr metadata = ParseUnsignedBundle(&data_source).first;
+    ASSERT_TRUE(metadata);
+    auto location = FindResponse(metadata, GURL("https://test.example.com/"));
+    ASSERT_TRUE(location);
+
+    mojo::PendingRemote<mojom::BundleDataSource> source_remote;
+    data_source.AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
+
+    mojo::PendingRemote<mojom::WebBundleParser> parser_remote;
+    WebBundleParser parser_impl(parser_remote.InitWithNewPipeAndPassReceiver(),
+                                std::move(source_remote), GURL());
+    mojom::WebBundleParser& parser = parser_impl;
+
+    parser.ParseResponse(location->offset, location->length,
+                         future.GetCallback());
+    // |data_source| and |parser_impl| are deleted here.
+  }
+
+  auto error = std::get<1>(future.Take());
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error->type, mojom::BundleParseErrorType::kParserInternalError);
+  EXPECT_EQ(error->message, "Data source disconnected.");
 }
 
 }  // namespace web_package
