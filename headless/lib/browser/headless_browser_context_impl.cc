@@ -26,9 +26,13 @@
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(HEADLESS_USE_POLICY)
+#if defined(HEADLESS_USE_PREFS)
+#include "components/origin_trials/browser/origin_trials.h"  // nogncheck
+#include "components/origin_trials/browser/prefservice_persistence_provider.h"  // nogncheck
+#include "components/origin_trials/common/features.h"  // nogncheck
 #include "components/user_prefs/user_prefs.h"  // nogncheck
-#endif
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"  // nogncheck
+#endif  // defined(HEADLESS_USE_PREFS)
 
 namespace headless {
 
@@ -75,10 +79,10 @@ HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
   profile_metrics::SetBrowserProfileType(
       this, IsOffTheRecord() ? profile_metrics::BrowserProfileType::kIncognito
                              : profile_metrics::BrowserProfileType::kRegular);
-#if defined(HEADLESS_USE_POLICY)
+#if defined(HEADLESS_USE_PREFS)
   if (PrefService* pref_service = browser->GetPrefs())
     user_prefs::UserPrefs::Set(this, pref_service);
-#endif
+#endif  // defined(HEADLESS_USE_PREFS)
 }
 
 HeadlessBrowserContextImpl::~HeadlessBrowserContextImpl() {
@@ -289,6 +293,25 @@ HeadlessBrowserContextImpl::GetBrowsingDataRemoverDelegate() {
 content::ReduceAcceptLanguageControllerDelegate*
 HeadlessBrowserContextImpl::GetReduceAcceptLanguageControllerDelegate() {
   return nullptr;
+}
+
+content::OriginTrialsControllerDelegate*
+HeadlessBrowserContextImpl::GetOriginTrialsControllerDelegate() {
+#if defined(HEADLESS_USE_PREFS)
+  if (!origin_trials::features::IsPersistentOriginTrialsEnabled())
+    return nullptr;
+
+  if (!origin_trials_controller_delegate_) {
+    origin_trials_controller_delegate_ =
+        std::make_unique<origin_trials::OriginTrials>(
+            std::make_unique<origin_trials::PrefServicePersistenceProvider>(
+                this),
+            std::make_unique<blink::TrialTokenValidator>());
+  }
+  return origin_trials_controller_delegate_.get();
+#else   // defined(HEADLESS_USE_PREFS)
+  return nullptr;
+#endif  // defined(HEADLESS_USE_PREFS)
 }
 
 HeadlessWebContents* HeadlessBrowserContextImpl::CreateWebContents(

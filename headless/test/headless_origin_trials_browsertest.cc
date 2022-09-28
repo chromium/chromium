@@ -4,10 +4,11 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "build/build_config.h"
+#include "base/test/scoped_feature_list.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/content_browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/headless_browser_test.h"
@@ -79,6 +80,50 @@ IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
           ->GetResult()
           ->GetValue()
           ->GetBool());
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
+                       DelegateNotAvailableOnContext) {
+  // Delete this test when |::features::kPersistentOriginTrials| is enabled by
+  // default or fully removed.
+  HeadlessBrowserContext* browser_context =
+      browser()->CreateBrowserContextBuilder().Build();
+  HeadlessBrowserContextImpl* context_impl =
+      HeadlessBrowserContextImpl::From(browser_context);
+  EXPECT_FALSE(context_impl->GetOriginTrialsControllerDelegate())
+      << "Headless browser should not have an OriginTrialsControllerDelegate "
+         "if ::features::kPersistentOriginTrials is not enabled";
+}
+
+// This class can be replaced with |HeadlessOriginTrialsBrowserTest| when
+// |::features::kPersistentOriginTrials| is enabled by default or fully removed.
+class HeadlessPersistentOriginTrialsBrowserTest : public HeadlessBrowserTest {
+ public:
+  HeadlessPersistentOriginTrialsBrowserTest() {
+    test_features_.InitAndEnableFeature(::features::kPersistentOriginTrials);
+  }
+  ~HeadlessPersistentOriginTrialsBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList test_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessPersistentOriginTrialsBrowserTest,
+                       DelegateAvailableOnContext) {
+  HeadlessBrowserContext* browser_context =
+      browser()->CreateBrowserContextBuilder().Build();
+  HeadlessBrowserContextImpl* context_impl =
+      HeadlessBrowserContextImpl::From(browser_context);
+
+#if defined(HEADLESS_USE_PREFS)
+  EXPECT_TRUE(context_impl->GetOriginTrialsControllerDelegate())
+      << "Headless browser should have an OriginTrialsControllerDelegate if "
+         "HEADLESS_USE_PREFS is enabled";
+#else
+  EXPECT_FALSE(context_impl->GetOriginTrialsControllerDelegate())
+      << "Headless browser should not have an OriginTrialsControllerDelegate "
+         "if HEADLESS_USE_PREFS is disabled";
+#endif  // defined(HEADLESS_USE_PREFS)
 }
 
 }  // namespace headless

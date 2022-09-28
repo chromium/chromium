@@ -24,6 +24,7 @@ include_rules = [
 ]
 specific_include_rules = {
   "headless_browser_main_parts.*": [
+    "+components/origin_trials/browser",
     "+components/policy",
     "+components/prefs",
     "+components/pref_registry",
@@ -31,7 +32,9 @@ specific_include_rules = {
   ],
   "headless_browser_context_impl.cc": [
     "+components/keyed_service/content",
+    "+components/origin_trials",
     "+components/user_prefs",
+    "+third_party/blink/public/common/origin_trials",
   ],
   "headless_content_browser_client.cc": [
     "+components/policy",

@@ -519,6 +519,15 @@ component("headless_non_renderer") {
     ]
   }
 
+  if (headless_use_prefs) {
+    deps += [
+      "//components/origin_trials:browser",
+      "//components/origin_trials:common",
+      "//components/user_prefs",
+      "//third_party/blink/public/common",
+    ]
+  }
+
   if (is_component_build) {
     sources += [
       "lib/browser/headless_content_browser_client.cc",
@@ -570,10 +579,7 @@ component("headless_non_renderer") {
     }
 
     if (headless_use_policy) {
-      deps += [
-        "//components/policy/content",
-        "//components/user_prefs",
-      ]
+      deps += [ "//components/policy/content" ]
     }
   }
 
