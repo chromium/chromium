@@ -401,7 +401,7 @@
       'android-fieldtrial-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-perfetto-rel': 'perfetto_release_bot_reclient_android',
       # Keep in sync with android-pie-arm64-rel, but with reclient.
-      'build-perf-android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient',
+      'build-perf-android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_coverage_reclient',
       # Keep in sync with linux-rel, but with reclient.
       'build-perf-linux': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       # Keep in sync with win10_chromium_x64_rel_ng, but with reclient.
@@ -1010,7 +1010,7 @@
       'android-pie-arm64-coverage-experimental-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_native_coverage',
       'android-pie-arm64-coverage-rel': 'android_release_trybot_arm64_webview_monochrome_native_coverage',
       'android-pie-arm64-dbg': 'android_debug_trybot_arm64',
-      'android-pie-arm64-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild',
+      'android-pie-arm64-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_coverage',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_monochrome',
       'android-pie-x86-fyi-rel-reviver': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-pie-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
@@ -1751,16 +1751,16 @@
       'webview_monochrome',
     ],
 
-    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild': [
+    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_coverage': [
       'android', 'release_trybot', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
-      'no_secondary_abi',
+      'no_secondary_abi', 'use_java_coverage', 'partial_code_coverage_instrumentation',
     ],
 
-    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient': [
+    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_coverage_reclient': [
       'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
-      'no_secondary_abi',
+      'no_secondary_abi', 'use_java_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     # TODO(crbug/1182468) Remove these android coverage expectations after

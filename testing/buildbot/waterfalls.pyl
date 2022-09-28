@@ -1081,6 +1081,7 @@
       'android-pie-arm64-rel': {
         'mixins': [
           'has_native_resultdb_integration',
+          'isolate_profile_data',
           'pie_fleet',
           'walleye',
         ],
