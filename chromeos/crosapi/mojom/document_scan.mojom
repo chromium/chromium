@@ -4,8 +4,6 @@
 
 module crosapi.mojom;
 
-import "ui/gfx/geometry/mojom/geometry.mojom";
-
 // The enum below is exactly the same as its counterpart in
 // third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
 

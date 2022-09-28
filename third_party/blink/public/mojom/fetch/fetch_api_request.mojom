@@ -4,8 +4,6 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/chunked_data_pipe_getter.mojom";

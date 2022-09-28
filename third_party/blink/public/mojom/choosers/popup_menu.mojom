@@ -5,7 +5,6 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/text_direction.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Struct for information about entries in an HTML select popup menu.
 struct MenuItem {

@@ -4,7 +4,6 @@
 
 module crosapi.mojom;
 
-import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/values.mojom";
 

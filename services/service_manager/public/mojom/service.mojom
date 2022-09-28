@@ -4,7 +4,6 @@
 
 module service_manager.mojom;
 
-import "mojo/public/mojom/base/process_id.mojom";
 import "services/service_manager/public/mojom/connector.mojom";
 import "services/service_manager/public/mojom/interface_provider.mojom";
 import "services/service_manager/public/mojom/interface_provider_spec.mojom";

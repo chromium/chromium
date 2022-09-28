@@ -4,8 +4,6 @@
 
 module ukm.mojom;
 
-import "url/mojom/url.mojom";
-
 struct UkmEntry {
   int64 source_id;
   uint64 event_hash;

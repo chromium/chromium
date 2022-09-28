@@ -11,7 +11,6 @@
 module chromeos.network_health.mojom;
 
 import "chromeos/services/network_config/public/mojom/network_types.mojom";
-import "mojo/public/mojom/base/time.mojom";
 
 [Stable, Extensible]
 enum NetworkState {

@@ -6,7 +6,6 @@ module network.mojom;
 
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
 

@@ -4,8 +4,6 @@
 
 module ui.mojom;
 
-import "mojo/public/mojom/base/string16.mojom";
-
 enum TextInputMode {
   kDefault,
   kNone,

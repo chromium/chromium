@@ -10,7 +10,6 @@ import "components/performance_manager/public/mojom/lifecycle.mojom";
 import "components/performance_manager/public/mojom/v8_contexts.mojom";
 import "components/performance_manager/public/mojom/web_memory.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Any new type here needs to be mirrored between coordination_unit_types.h and
 // coordination_unit.mojom, and have mappings between the two defined in

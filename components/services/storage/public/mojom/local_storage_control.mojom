@@ -6,7 +6,6 @@ module storage.mojom;
 
 import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 

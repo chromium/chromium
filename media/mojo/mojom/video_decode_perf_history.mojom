@@ -5,7 +5,6 @@
 module media.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // This service will query the history of playback stats to evaluate how
 // a video stream with the given configuration will perform.

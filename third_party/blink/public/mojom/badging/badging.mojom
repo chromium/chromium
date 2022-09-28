@@ -4,8 +4,6 @@
 
 module blink.mojom;
 
-import "url/mojom/url.mojom";
-
 // A value that a badge can hold.
 union BadgeValue {
   // Represents the special value |flag|. This indicates that a badge should be

@@ -6,7 +6,6 @@ module extensions.mojom;
 
 import "extensions/common/api/mime_handler.mojom";
 import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 interface GuestView {

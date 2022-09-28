@@ -4,7 +4,6 @@
 
 module network.mojom;
 
-import "url/mojom/url.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 
 // Interface for getting the result of a proxy lookup from a NetworkContext.

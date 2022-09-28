@@ -4,8 +4,6 @@
 
 module ash.cloud_upload.mojom;
 
-import "mojo/public/mojom/base/file_path.mojom";
-
 // The selected action when the user closes the dialog.
 enum UserAction {
   kCancel,

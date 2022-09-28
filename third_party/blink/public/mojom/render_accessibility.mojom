@@ -11,7 +11,6 @@ import "ui/accessibility/mojom/ax_relative_bounds.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 struct LocationChanges {

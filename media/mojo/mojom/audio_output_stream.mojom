@@ -4,7 +4,6 @@
 
 module media.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "media/mojo/mojom/audio_data_pipe.mojom";
 import "media/mojo/mojom/audio_parameters.mojom";
 import "media/mojo/mojom/media_types.mojom";

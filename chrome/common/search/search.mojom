@@ -4,8 +4,6 @@
 
 module search.mojom;
 
-import "mojo/public/mojom/base/string16.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 [Native]

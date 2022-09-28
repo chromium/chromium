@@ -6,7 +6,6 @@ module media.mojom;
 
 import "media/capture/mojom/video_capture_buffer.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // This file decribes the communication between a given Renderer Host interface

@@ -4,8 +4,6 @@
 
 module chrome.mojom;
 
-import "url/mojom/url.mojom";
-
 enum OfflinePageAutoFetcherScheduleResult {
   // There are too many in flight requests, so the new request was not
   // scheduled.

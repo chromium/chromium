@@ -9,7 +9,6 @@ import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
 import "services/viz/public/mojom/compositing/shared_image_format.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_metadata.mojom";
 

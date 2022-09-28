@@ -4,7 +4,6 @@
 
 module gfx.mojom;
 
-import "ui/gfx/mojom/accelerated_widget.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/rrect_f.mojom";
 import "ui/gfx/mojom/selection_bound.mojom";

@@ -10,7 +10,6 @@ import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
-import "url/mojom/origin.mojom";
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.blink_public.common
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ContextMenuDataMediaType

@@ -4,7 +4,6 @@
 
 module network.mojom;
 
-import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "url/mojom/url.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";

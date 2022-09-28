@@ -6,8 +6,6 @@ module storage.mojom;
 
 import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/values.mojom";
-import "mojo/public/mojom/base/time.mojom";
 
 enum V2SchemaCorruptionStatus {
   CORRUPTION_UNKNOWN,

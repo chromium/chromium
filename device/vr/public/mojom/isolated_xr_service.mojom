@@ -9,7 +9,6 @@ import "device/vr/public/mojom/vr_service.mojom";
 [EnableIf=is_win]
 import "gpu/ipc/common/luid.mojom";
 import "gpu/ipc/common/sync_token.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/gpu.mojom";

@@ -4,8 +4,6 @@
 
 module crosapi.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
-
 [Stable]
 struct WebPageInfo {
   int64  source_id@0;

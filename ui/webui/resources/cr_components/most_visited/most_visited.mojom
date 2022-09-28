@@ -5,7 +5,6 @@
 module most_visited.mojom;
 
 import "mojo/public/mojom/base/text_direction.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "url/mojom/url.mojom";
 

@@ -37,7 +37,6 @@
 module ash.shimless_rma.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/string16.mojom";
 
 // RMA states.
 // This must remain in sync with RmadState.StateCase (generated from the member

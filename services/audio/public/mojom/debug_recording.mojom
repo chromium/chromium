@@ -5,7 +5,6 @@
 module audio.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
-import "mojo/public/mojom/base/file_path.mojom";
 
 enum DebugRecordingStreamType {
   kInput = 0,

@@ -5,7 +5,6 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/shared_memory.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom";

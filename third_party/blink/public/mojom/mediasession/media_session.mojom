@@ -7,8 +7,6 @@ module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "services/media_session/public/mojom/media_session.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
-import "url/mojom/url.mojom";
 
 enum MediaSessionPlaybackState {
      NONE,

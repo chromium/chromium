@@ -8,7 +8,6 @@ import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
 import "third_party/blink/public/mojom/css/preferred_contrast.mojom";
 import "third_party/blink/public/mojom/v8_cache_options.mojom";
 import "url/mojom/url.mojom";
-import "url/mojom/origin.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
 enum PointerType {

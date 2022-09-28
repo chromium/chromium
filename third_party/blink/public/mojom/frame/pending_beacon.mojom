@@ -4,7 +4,6 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "url/mojom/url.mojom";
 

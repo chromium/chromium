@@ -7,7 +7,6 @@ module network.mojom;
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_param.mojom";
-import "url/mojom/url.mojom";
 
 // Represents a WebTransport error.
 // See also: net/quic/quic_transport_client.h

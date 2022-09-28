@@ -4,7 +4,6 @@
 
 module device.mojom;
 
-import "mojo/public/mojom/base/time.mojom";
 import "services/device/public/mojom/pressure_update.mojom";
 
 // This interface is used to get the PressureState.

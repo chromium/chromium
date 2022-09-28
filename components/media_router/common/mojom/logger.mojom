@@ -4,8 +4,6 @@
 
 module media_router.mojom;
 
-import "mojo/public/mojom/base/time.mojom";
-
 enum LogCategory {
   kDiscovery,
   kRoute,

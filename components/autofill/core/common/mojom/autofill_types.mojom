@@ -9,7 +9,6 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // The list of all HTML autocomplete field mode hints supported by Chrome.

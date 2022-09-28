@@ -4,8 +4,6 @@
 
 module network.mojom;
 
-import "url/mojom/url.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/source_location.mojom";
 
 enum CoopAccessReportType {

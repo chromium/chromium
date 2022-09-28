@@ -5,8 +5,6 @@
 module ax.mojom;
 
 import "sandbox/policy/mojom/sandbox.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
-import "mojo/public/mojom/base/values.mojom";
 import "ui/accessibility/mojom/ax_action_data.mojom";
 import "ui/accessibility/mojom/ax_event.mojom";
 import "ui/accessibility/mojom/ax_relative_bounds.mojom";

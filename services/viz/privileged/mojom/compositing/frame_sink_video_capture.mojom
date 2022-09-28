@@ -9,12 +9,10 @@ import "media/capture/mojom/video_capture_types.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/token.mojom";
-import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "ui/gfx/mojom/color_space.mojom";
 
 // Provided with each call to FrameSinkVideoConsumer::OnFrameCaptured() so that
 // the consumer can notify the capturer the instant it is done consuming the

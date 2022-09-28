@@ -4,8 +4,6 @@
 
 module ash.diagnostics.mojom;
 
-import "mojo/public/mojom/base/string16.mojom";
-
 // Contains IP config properties for a single network connection.
 struct IPConfigProperties {
   array<string>? name_servers;

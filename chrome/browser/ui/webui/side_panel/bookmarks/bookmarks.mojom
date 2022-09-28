@@ -6,7 +6,6 @@ module side_panel.mojom;
 
 import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "url/mojom/url.mojom";
 
 // Used to indicate the source item from which the action is triggered.
 enum ActionSource {

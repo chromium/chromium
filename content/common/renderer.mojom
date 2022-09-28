@@ -13,7 +13,6 @@ import "services/network/public/mojom/network_types.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/color/color_id.mojom";
 
 struct UpdateScrollbarThemeParams {

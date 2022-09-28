@@ -4,7 +4,6 @@
 
 module url_rewrite.mojom;
 
-import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 // Used by the browser to push URL rewrite rules to renderers. There will be

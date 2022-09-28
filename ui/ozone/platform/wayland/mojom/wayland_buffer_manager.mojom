@@ -4,7 +4,6 @@
 
 module ui.ozone.mojom;
 
-import "mojo/public/mojom/base/file_path.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/accelerated_widget.mojom";

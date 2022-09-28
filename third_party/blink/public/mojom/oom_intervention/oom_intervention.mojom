@@ -4,8 +4,6 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/shared_memory.mojom";
-
 // There are two phases to estimate a near-OOM situation. First phase takes
 // place in the browser process. When the browser detects a high memory
 // pressure it starts the second phase in the foreground renderer process,

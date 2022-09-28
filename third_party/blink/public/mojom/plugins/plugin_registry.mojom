@@ -6,7 +6,6 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
-import "url/mojom/origin.mojom";
 
 struct PluginMimeType {
   string mime_type;

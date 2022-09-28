@@ -4,8 +4,6 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/time.mojom";
-
 // Implementation of the proposed "Web OTP API".
 //
 // Proposal: https://github.com/WICG/web-otp

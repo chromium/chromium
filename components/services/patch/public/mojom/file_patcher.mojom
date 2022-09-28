@@ -6,7 +6,6 @@ module patch.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
-import "mojo/public/mojom/base/file_path.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // Interface to the out-of-process file patcher. The file patcher runs

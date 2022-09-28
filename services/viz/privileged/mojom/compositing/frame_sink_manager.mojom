@@ -19,7 +19,6 @@ import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_info.mojom";
 import "services/viz/public/mojom/hit_test/aggregated_hit_test_region.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 import "services/viz/public/mojom/compositing/video_detector_observer.mojom";
 
 // Initialization parameters for a RootCompositorFrameSink.

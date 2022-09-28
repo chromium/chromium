@@ -4,8 +4,6 @@
 
 module media.mojom;
 
-import "mojo/public/mojom/base/file.mojom";
-
 // Provides a way to organize persistent per-origin/per-cdm-type data
 // in the browser's file system.
 interface CdmStorage {

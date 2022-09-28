@@ -12,7 +12,6 @@ import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/frame_timing_details.mojom";
 import "services/viz/public/mojom/compositing/returned_resource.mojom";
 import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 import "gpu/ipc/common/mailbox.mojom";
 
 // Tags the frame sink with the type of source producing its content.

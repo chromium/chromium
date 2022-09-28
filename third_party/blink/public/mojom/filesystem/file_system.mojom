@@ -11,7 +11,6 @@ import "mojo/public/mojom/base/file_error.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/file_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 
 enum FileSystemType {

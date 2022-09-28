@@ -6,7 +6,6 @@ module media.mojom;
 
 import "media/mojo/mojom/decryptor.mojom";
 import "media/mojo/mojom/media_types.mojom";
-import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // See media::EmeInitDataType.

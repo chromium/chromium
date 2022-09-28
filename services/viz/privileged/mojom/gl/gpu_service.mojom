@@ -35,7 +35,6 @@ import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
-import "mojo/public/mojom/base/string16.mojom";
 [EnableIf=is_win]
 import "mojo/public/mojom/base/unguessable_token.mojom";
 [EnableIf=is_win]

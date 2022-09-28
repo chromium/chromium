@@ -5,7 +5,6 @@
 module media.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Interface for media players in the renderer to send decode stats to the
 // browser process. Each player will have its own recorder instance.

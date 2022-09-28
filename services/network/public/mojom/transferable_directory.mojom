@@ -5,7 +5,6 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/values.mojom";
 
 // Represents a directory that, on platforms like Fuchsia, can be sent
 // over Mojo as a handle. On other platforms, the path will be used
