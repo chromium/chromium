@@ -132,8 +132,8 @@ var CrSettingsTranslatePageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-TEST_F('CrSettingsTranslatePageTest', 'TargetLanguageSelect', function() {
-  mocha.grep(translate_page_tests.TestNames.TargetLanguageSelect).run();
+TEST_F('CrSettingsTranslatePageTest', 'TranslateSettings', function() {
+  mocha.grep(translate_page_tests.TestNames.TranslateSettings).run();
 });
 
 TEST_F('CrSettingsTranslatePageTest', 'AlwaysTranslateDialog', function() {
@@ -142,10 +142,6 @@ TEST_F('CrSettingsTranslatePageTest', 'AlwaysTranslateDialog', function() {
 
 TEST_F('CrSettingsTranslatePageTest', 'NeverTranslateDialog', function() {
   mocha.grep(translate_page_tests.TestNames.NeverTranslateDialog).run();
-});
-
-TEST_F('CrSettingsTranslatePageTest', 'TranslateToggle', function() {
-  mocha.grep(translate_page_tests.TestNames.TranslateToggle).run();
 });
 
 var CrSettingsLanguagesPageMetricsTest = class extends CrSettingsBrowserTest {
