@@ -132,34 +132,58 @@ TEST_F(PrivacyHubCameraControllerTests, OnCameraHardwarePrivacySwitchChanged) {
   EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::ON,
             controller.HWSwitchState());
 
-  message_center::MessageCenter* const mcenter =
+  message_center::MessageCenter* const message_center =
       message_center::MessageCenter::Get();
-  EXPECT_TRUE(mcenter->FindNotificationById(
+  EXPECT_TRUE(message_center->FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
   EXPECT_TRUE(GetUserPref());
-  mcenter->ClickOnNotificationButton(
+  message_center->ClickOnNotificationButton(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId, 0);
   EXPECT_FALSE(GetUserPref());
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
 }
 
-TEST_F(PrivacyHubCameraControllerTests, CameraOffNotification) {
+TEST_F(PrivacyHubCameraControllerTests, CameraOffNotificationRemoveViaClick) {
   SetUserPref(false);
-  message_center::MessageCenter* const mcenter =
+  message_center::MessageCenter* const message_center =
       message_center::MessageCenter::Get();
-  EXPECT_TRUE(mcenter);
-  EXPECT_FALSE(
-      mcenter->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  ASSERT_TRUE(message_center);
+  ASSERT_FALSE(
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
   controller_->ShowCameraOffNotification();
   EXPECT_TRUE(
-      mcenter->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(GetUserPref());
-  mcenter->ClickOnNotificationButton(kPrivacyHubCameraOffNotificationId, 0);
+
+  // Enabling camera via clicking on the button should clear the notification
+  message_center->ClickOnNotificationButton(kPrivacyHubCameraOffNotificationId,
+                                            0);
   EXPECT_TRUE(GetUserPref());
   EXPECT_FALSE(
-      mcenter->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+}
+
+TEST_F(PrivacyHubCameraControllerTests,
+       CameraOffNotificationRemoveViaUserPref) {
+  SetUserPref(false);
+  message_center::MessageCenter* const message_center =
+      message_center::MessageCenter::Get();
+  ASSERT_TRUE(message_center);
+  ASSERT_FALSE(
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+
+  controller_->ShowCameraOffNotification();
+  EXPECT_TRUE(
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_FALSE(GetUserPref());
+
+  // Enabling camera via the user pref should clear the notification
+  SetUserPref(true);
+  EXPECT_TRUE(GetUserPref());
+  EXPECT_FALSE(
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 }
 
 }  // namespace ash

@@ -89,6 +89,9 @@ class ASH_EXPORT CameraPrivacySwitchController
                         const int notification_message_id,
                         const NotificationCatalogName catalog);
 
+  // Clears all notifications related to the camera SW switch
+  void ClearSWSwitchNotifications();
+
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CameraPrivacySwitchAPI> switch_api_;
   cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_;

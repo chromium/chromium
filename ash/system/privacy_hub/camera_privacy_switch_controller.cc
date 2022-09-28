@@ -87,6 +87,7 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
     const std::string& pref_name) {
   DCHECK_EQ(pref_name, prefs::kUserCameraAllowed);
   switch_api_->SetCameraSWPrivacySwitch(GetUserSwitchPreference());
+  ClearSWSwitchNotifications();
 }
 
 CameraSWPrivacySwitchSetting
@@ -160,8 +161,7 @@ void CameraPrivacySwitchController::ShowNotification(
   scoped_refptr<message_center::NotificationDelegate> delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              [](bool camera_enabled, const char* notification_id,
-                 absl::optional<int> button_index) {
+              [](bool camera_enabled, absl::optional<int> button_index) {
                 if (!button_index) {
                   // Click on the notification body is no-op.
                   return;
@@ -172,11 +172,8 @@ void CameraPrivacySwitchController::ShowNotification(
                   pref_service->SetBoolean(prefs::kUserCameraAllowed,
                                            camera_enabled);
                 }
-                message_center::MessageCenter::Get()->RemoveNotification(
-                    notification_id,
-                    /*by_user=*/false);
               },
-              action_enables_camera, kNotificationId));
+              action_enables_camera));
 
   message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
                                                            /*by_user=*/false);
@@ -193,6 +190,21 @@ void CameraPrivacySwitchController::ShowNotification(
           notification_data, std::move(delegate),
           vector_icons::kVideocamOffIcon,
           message_center::SystemNotificationWarningLevel::NORMAL));
+}
+
+void CameraPrivacySwitchController::ClearSWSwitchNotifications() {
+  constexpr std::array kNotificationIds = {
+      kPrivacyHubCameraOffNotificationId,
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId};
+  message_center::MessageCenter* const message_center =
+      message_center::MessageCenter::Get();
+  if (!message_center) {
+    return;
+  }
+  for (const char* notification_id : kNotificationIds) {
+    message_center->RemoveNotification(notification_id,
+                                       /*by_user=*/false);
+  }
 }
 
 }  // namespace ash
