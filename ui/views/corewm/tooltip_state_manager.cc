@@ -81,14 +81,6 @@ void TooltipStateManager::Show(aura::Window* window,
   StartWillShowTooltipTimer(trimmed_text, hide_delay);
 }
 
-void TooltipStateManager::StopWillHideTooltipTimer() {
-  will_hide_tooltip_timer_.Stop();
-}
-
-void TooltipStateManager::StopWillShowTooltipTimer() {
-  will_show_tooltip_timer_.Stop();
-}
-
 void TooltipStateManager::UpdatePositionIfNeeded(const gfx::Point& position,
                                                  TooltipTrigger trigger) {
   // The position should only be updated when the tooltip has been triggered but

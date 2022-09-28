@@ -44,7 +44,6 @@ void TooltipControllerTestHelper::UpdateIfRequired(TooltipTrigger trigger) {
 }
 
 void TooltipControllerTestHelper::FireHideTooltipTimer() {
-  controller_->state_manager_->StopWillHideTooltipTimer();
   controller_->state_manager_->HideAndReset();
 }
 

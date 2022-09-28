@@ -358,7 +358,6 @@ void TooltipController::UpdateIfRequired(TooltipTrigger trigger) {
   // one, we should force tooltip update
   if (!state_manager_->IsVisible() || IsTooltipTextUpdateNeeded() ||
       IsTooltipIdUpdateNeeded()) {
-    state_manager_->StopWillHideTooltipTimer();
     state_manager_->Show(observed_window_, wm::GetTooltipText(observed_window_),
                          anchor_point_, trigger, GetHideTooltipTimeout());
   }
