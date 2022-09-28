@@ -182,6 +182,12 @@ int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
                                 kResizeHandleHeight);
   }
 
+  // Immersive fullscreen attaches the tab strip to the title bar, no need to
+  // calculate the y_offset below.
+  if (browser_view()->UsesImmersiveFullscreenMode()) {
+    return top_inset;
+  }
+
   // Calculate the y offset for the tab strip because in fullscreen mode the tab
   // strip may need to move under the slide down menu bar.
   CGFloat y_offset = TopUIFullscreenYOffset();
