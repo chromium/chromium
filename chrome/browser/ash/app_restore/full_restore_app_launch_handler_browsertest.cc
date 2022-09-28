@@ -1423,7 +1423,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
 
   void ForceLaunchApp(const std::string& app_id, int32_t window_id) {
     if (arc_app_launch_handler_) {
-      arc_app_launch_handler_->LaunchApp(app_id, window_id);
+      arc_app_launch_handler_->LaunchAppWindow(app_id, window_id);
       content::RunAllTasksUntilIdle();
     }
   }

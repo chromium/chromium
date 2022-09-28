@@ -251,7 +251,7 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
   }
 
   for (const auto& data_it : it->second)
-    LaunchApp(app_id, data_it.first);
+    LaunchAppWindow(app_id, data_it.first);
 
   RemoveWindowsForApp(app_id);
 }
@@ -303,7 +303,7 @@ void ArcAppLaunchHandler::OnWindowActivated(
     return;
 
   RemoveWindow(*arc_app_id, it->second);
-  LaunchApp(*arc_app_id, it->second);
+  LaunchAppWindow(*arc_app_id, it->second);
 }
 
 void ArcAppLaunchHandler::OnWindowInitialized(aura::Window* window) {
@@ -557,7 +557,7 @@ void ArcAppLaunchHandler::MaybeLaunchApp() {
 
   for (auto it = pending_windows_.begin(); it != pending_windows_.end(); ++it) {
     if (IsAppReady(it->app_id)) {
-      LaunchApp(it->app_id, it->window_id);
+      LaunchAppWindow(it->app_id, it->window_id);
       pending_windows_.erase(it);
       MaybeReStartTimer(kAppLaunchDelay);
       return;
@@ -568,7 +568,7 @@ void ArcAppLaunchHandler::MaybeLaunchApp() {
     auto it = windows_.begin();
     if (IsAppReady(it->second.app_id)) {
       launch_count_ = 0;
-      LaunchApp(it->second.app_id, it->second.window_id);
+      LaunchAppWindow(it->second.app_id, it->second.window_id);
       windows_.erase(it);
       MaybeReStartTimer(kAppLaunchDelay);
     } else {
@@ -587,7 +587,7 @@ void ArcAppLaunchHandler::MaybeLaunchApp() {
   for (auto it = no_stack_windows_.begin(); it != no_stack_windows_.end();
        ++it) {
     if (IsAppReady(it->app_id)) {
-      LaunchApp(it->app_id, it->window_id);
+      LaunchAppWindow(it->app_id, it->window_id);
       no_stack_windows_.erase(it);
       MaybeReStartTimer(kAppLaunchDelay);
       return;
@@ -595,8 +595,8 @@ void ArcAppLaunchHandler::MaybeLaunchApp() {
   }
 }
 
-void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
-                                    int32_t window_id) {
+void ArcAppLaunchHandler::LaunchAppWindow(const std::string& app_id,
+                                          int32_t window_id) {
   DCHECK(handler_);
 
   const auto it =

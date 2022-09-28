@@ -132,6 +132,7 @@ class ArcAppLaunchHandler
 
   void OnArcPlayStoreEnabledChanged(bool enabled);
 
+  // Launch all windows for the given `app_id`.
   void LaunchApp(const std::string& app_id);
 
   bool IsAppPendingRestore(const std::string& app_id) const;
@@ -201,7 +202,7 @@ class ArcAppLaunchHandler
   // following the window stack priority.
   void MaybeLaunchApp();
 
-  void LaunchApp(const std::string& app_id, int32_t window_id);
+  void LaunchAppWindow(const std::string& app_id, int32_t window_id);
 
   // Removes all windows records related with `app_id` from `windows_`,
   // `no_stack_windows_`, and `pending_windows_`.
