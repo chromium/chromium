@@ -41424,6 +41424,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4354" label="V8AsyncStackTaggingCreateTaskCall"/>
   <int value="4355" label="WebkitBoxWithoutWebkitLineClamp"/>
   <int value="4356" label="DataUrlInSvgUse"/>
+  <int value="4362" label="PermissionsPolicyUnload"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
