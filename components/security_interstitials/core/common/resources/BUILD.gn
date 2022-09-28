@@ -12,13 +12,12 @@ js_type_check("closure_compile") {
 }
 
 js_library("interstitial_common") {
-  deps = [
-    "//ui/webui/resources/js:load_time_data_deprecated",
-    "//ui/webui/resources/js:webui_resource_test",
-  ]
+  deps = [ "//ui/webui/resources/js:load_time_data_deprecated" ]
   if (is_ios) {
     deps += [ "//ui/webui/resources/js/ios:web_ui" ]
   }
+
+  externs_list = [ "//ui/webui/resources/js/dom_automation_controller.js" ]
 }
 
 js_library("interstitial_mobile_nav") {
