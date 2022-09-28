@@ -62,6 +62,7 @@ generate_grd("build_grd") {
   input_files = [
     "demos/buttons_demo.html",
     "demos/demo.css",
+    "demos/card/card_demo.html",
     "demos/cr_a11y_announcer_demo.html",
     "demos/cr_action_menu_demo.html",
     "demos/cr_checkbox_demo.html",

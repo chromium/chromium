@@ -50,6 +50,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'buttons_demo.html',
             },
             {
+              name: 'Cards and rows',
+              path: 'cards',
+              src: 'card/card_demo.html',
+            },
+            {
               name: 'Checkboxes',
               path: 'checkboxes',
               src: 'cr_checkbox_demo.html',
