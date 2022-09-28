@@ -49,6 +49,12 @@ PlatformManagementService::PlatformManagementService()
 
 PlatformManagementService::~PlatformManagementService() = default;
 
+void PlatformManagementService::AddLocalBrowserManagementStatusProvider(
+    std::unique_ptr<ManagementStatusProvider> provider) {
+  AddManagementStatusProvider(std::move(provider));
+  has_local_browser_managment_status_provider_ = true;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void PlatformManagementService::AddChromeOsStatusProvider(
     std::unique_ptr<ManagementStatusProvider> provider) {
