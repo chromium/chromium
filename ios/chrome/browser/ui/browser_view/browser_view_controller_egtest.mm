@@ -208,7 +208,8 @@
 
 #pragma mark - Multiwindow
 
-- (void)testMultiWindowURLLoading {
+// TODO(crbug.com/1369222): Re-enable this test.
+- (void)DISABLED_testMultiWindowURLLoading {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 

@@ -907,7 +907,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging tab grid item as URL between windows.
-- (void)testDragAndDropURLBetweenWindows {
+// TODO(crbug.com/1363373): Re-enable this test.
+- (void)DISABLED_testDragAndDropURLBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
@@ -1035,7 +1036,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging tab grid main item as URL to an incognito windows.
-- (void)testDragAndDropMainURLInIncognitoWindow {
+// TODO(crbug.com/1369335): Re-enable this test.
+- (void)DISABLED_testDragAndDropMainURLInIncognitoWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
