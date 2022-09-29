@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "extensions/browser/service_worker/worker_id_set.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,8 +48,7 @@ class VectorWorkerIdListImpl {
   }
 
   bool Contains(const WorkerId& worker_id) const {
-    return std::find(workers_.begin(), workers_.end(), worker_id) !=
-           workers_.end();
+    return base::Contains(workers_, worker_id);
   }
 
  private:

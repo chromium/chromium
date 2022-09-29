@@ -4,11 +4,10 @@
 
 #include "extensions/browser/extension_host_queue.h"
 
-#include <algorithm>
-
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -32,7 +31,7 @@ void ExtensionHostQueue::Add(DeferredStartRenderHost* host) {
 }
 
 void ExtensionHostQueue::Remove(DeferredStartRenderHost* host) {
-  auto it = std::find(queue_.begin(), queue_.end(), host);
+  auto it = base::ranges::find(queue_, host);
   if (it != queue_.end())
     queue_.erase(it);
 }

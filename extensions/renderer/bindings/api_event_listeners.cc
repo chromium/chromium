@@ -4,9 +4,10 @@
 
 #include "extensions/renderer/bindings/api_event_listeners.h"
 
-#include <algorithm>
 #include <memory>
 
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/event_matcher.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -139,7 +140,7 @@ bool UnfilteredEventListeners::AddListener(v8::Local<v8::Function> listener,
 
 void UnfilteredEventListeners::RemoveListener(v8::Local<v8::Function> listener,
                                               v8::Local<v8::Context> context) {
-  auto iter = std::find(listeners_.begin(), listeners_.end(), listener);
+  auto iter = base::ranges::find(listeners_, listener);
   if (iter == listeners_.end())
     return;
 
@@ -151,8 +152,7 @@ void UnfilteredEventListeners::RemoveListener(v8::Local<v8::Function> listener,
 }
 
 bool UnfilteredEventListeners::HasListener(v8::Local<v8::Function> listener) {
-  return std::find(listeners_.begin(), listeners_.end(), listener) !=
-         listeners_.end();
+  return base::Contains(listeners_, listener);
 }
 
 size_t UnfilteredEventListeners::GetNumListeners() {
@@ -290,7 +290,7 @@ bool FilteredEventListeners::AddListener(v8::Local<v8::Function> listener,
 
 void FilteredEventListeners::RemoveListener(v8::Local<v8::Function> listener,
                                             v8::Local<v8::Context> context) {
-  auto iter = std::find(listeners_.begin(), listeners_.end(), listener);
+  auto iter = base::ranges::find(listeners_, listener);
   if (iter == listeners_.end())
     return;
 
@@ -301,8 +301,7 @@ void FilteredEventListeners::RemoveListener(v8::Local<v8::Function> listener,
 }
 
 bool FilteredEventListeners::HasListener(v8::Local<v8::Function> listener) {
-  return std::find(listeners_.begin(), listeners_.end(), listener) !=
-         listeners_.end();
+  return base::Contains(listeners_, listener);
 }
 
 size_t FilteredEventListeners::GetNumListeners() {

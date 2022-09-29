@@ -4,7 +4,6 @@
 
 #include "extensions/renderer/bindings/api_event_handler.h"
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
@@ -14,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/supports_user_data.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -206,8 +206,7 @@ void APIEventHandler::InvalidateCustomEvent(v8::Local<v8::Context> context,
   }
 
   emitter->Invalidate(context);
-  auto emitter_entry = std::find(data->anonymous_emitters.begin(),
-                                 data->anonymous_emitters.end(), event);
+  auto emitter_entry = base::ranges::find(data->anonymous_emitters, event);
   if (emitter_entry == data->anonymous_emitters.end()) {
     NOTREACHED();
     return;
