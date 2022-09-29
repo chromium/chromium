@@ -2807,7 +2807,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220922",
+                    "name": "Enabled_20220926",
                     "params": {
                         "default-parser-budget": "10ms",
                         "long-parser-budget": "50ms",
@@ -2835,7 +2835,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220922",
+                    "name": "Enabled_20220926",
                     "params": {
                         "default-parser-budget": "10ms",
                         "long-parser-budget": "500ms",
@@ -2852,6 +2852,9 @@
                         "OptimizeDataUrls",
                         "PrewarmDefaultFontFamilies",
                         "TimedHTMLParserBudget"
+                    ],
+                    "disable_features": [
+                        "EstablishGpuChannelAsync"
                     ]
                 }
             ]
@@ -2862,18 +2865,16 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220922",
+                    "name": "Enabled_20220929",
                     "params": {
                         "default-parser-budget": "10ms",
                         "long-parser-budget": "50ms",
-                        "max_input_stream_bytes_available_unknown": "2048",
                         "num-yields-with-default-budget": "2"
                     },
                     "enable_features": [
                         "DecodeScriptSourceOffThread",
                         "EstablishGpuChannelAsync",
                         "OptimizeDataUrls",
-                        "OptimizeNetworkBuffers2",
                         "PrefetchFontLookupTables",
                         "TimedHTMLParserBudget"
                     ]
@@ -7368,6 +7369,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OptimizeLayoutsForPullRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OptimizeNetworkBuffers": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "2KB_input_stream_20220929",
+                    "params": {
+                        "max_input_stream_bytes_available_unknown": "2048"
+                    },
+                    "enable_features": [
+                        "OptimizeNetworkBuffers2"
                     ]
                 }
             ]
