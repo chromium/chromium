@@ -126,10 +126,6 @@ bool SystemWebAppDelegate::ShouldShowTabContextMenuShortcut(
   return true;
 }
 
-bool SystemWebAppDelegate::ShouldRestoreOverrideUrl() const {
-  return false;
-}
-
 bool SystemWebAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
   return false;
 }
