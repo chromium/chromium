@@ -179,6 +179,9 @@ export function shareDataPageTestSuite() {
     // Performance trace label is a localized string in HTML format.
     assertTrue(getElementContent('#performanceTraceCheckboxLabel').length > 0);
 
+    // Performance trace label is a localized string in HTML format.
+    assertTrue(getElementContent('#performanceTraceCheckboxLabel').length > 0);
+
     // Privacy note is a long localized string in HTML format.
     assertTrue(page.i18nExists('privacyNote'));
     assertEquals(

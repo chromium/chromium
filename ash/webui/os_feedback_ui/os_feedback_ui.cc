@@ -101,6 +101,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"fileTooBigErrorMessage", IDS_FEEDBACK_TOOL_FILE_TOO_BIG_ERROR_MESSAGE},
       {"bluetoothLogsInfo", IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_CHECKBOX},
       {"bluetoothLogsMessage", IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE},
+      {"includeAssistantLogsCheckboxLabel",
+       IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_CHECKBOX},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);

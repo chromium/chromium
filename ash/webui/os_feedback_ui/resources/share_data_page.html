@@ -88,7 +88,8 @@
   }
 
   .checkbox-field-container {
-    display: flex;
+    align-items: start;
+    display: inline-flex;
     margin-bottom: 8px;
   }
 
@@ -238,6 +239,12 @@
         <cr-checkbox id="sysInfoCheckbox" aria-labelledby="sysInfoCheckboxLabel" checked>
         </cr-checkbox>
         <label id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"></label>
+      </div>
+      <!-- Assistant Logs (Googler Internal Only) -->
+      <div id="assistantLogsContainer" class="checkbox-field-container">
+        <cr-checkbox id="assiatantLogsCheckbox" aria-labelledby="assistantLogsLabel" checked>
+        </cr-checkbox>
+        <label id="assistantLogsLabel" inner-h-t-m-l="[[assistantLogsCheckboxLabel_]]"></label>
       </div>
       <!-- Bluetooth Logs (Googler Internal Only) -->
       <div id="bluetoothCheckboxContainer" class="checkbox-field-container"
