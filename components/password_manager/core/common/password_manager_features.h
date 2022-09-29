@@ -118,6 +118,7 @@ constexpr base::FeatureParam<UpmExperimentVariation>
                                  UpmExperimentVariation::kEnableForSyncingUsers,
                                  &kUpmExperimentVariationOption};
 
+extern const base::FeatureParam<int> kMaxUPMReenrollments;
 extern const base::FeatureParam<int> kMaxUPMReenrollmentAttempts;
 #endif
 

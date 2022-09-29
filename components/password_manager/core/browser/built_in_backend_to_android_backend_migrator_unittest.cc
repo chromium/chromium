@@ -81,6 +81,8 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
         prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
     prefs_.registry()->RegisterIntegerPref(
         prefs::kTimesReenrolledToGoogleMobileServices, 0);
+    prefs_.registry()->RegisterIntegerPref(
+        prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
     CreateMigrator(&built_in_backend_, &android_backend_, &prefs_);
   }
 
@@ -443,6 +445,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
                       true);
   const int initial_num_reenrollments =
       prefs()->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices);
+  prefs()->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
+                      10);
 
   PasswordForm form = CreateTestPasswordForm();
   android_backend().AddLoginAsync(form, base::DoNothing());
@@ -472,6 +476,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
   EXPECT_EQ(prefs()->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices),
             initial_num_reenrollments + 1);
+  EXPECT_EQ(prefs()->GetInteger(
+                prefs::kTimesAttemptedToReenrollToGoogleMobileServices),
+            0);
 }
 
 // Holds the built in and android backend's logins and the expected result after
@@ -712,6 +719,8 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
         prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
     prefs()->registry()->RegisterIntegerPref(
         prefs::kTimesReenrolledToGoogleMobileServices, 0);
+    prefs()->registry()->RegisterIntegerPref(
+        prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
 
     // Enable UPM on the stage 'kEnableForSyncingUsers'.
     feature_list().InitAndEnableFeatureWithParameters(

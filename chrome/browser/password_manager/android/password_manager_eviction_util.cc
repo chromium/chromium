@@ -96,6 +96,8 @@ void ReenrollCurrentUser(PrefService* prefs) {
                        kUnenrolledFromGoogleMobileServicesWithErrorListVersion);
   prefs->ClearPref(
       password_manager::prefs::kTimesReenrolledToGoogleMobileServices);
+  prefs->ClearPref(
+      password_manager::prefs::kTimesAttemptedToReenrollToGoogleMobileServices);
 }
 
 bool ShouldIgnoreOnApiError(int api_error_code) {

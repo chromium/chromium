@@ -329,6 +329,11 @@ extern const base::FeatureParam<std::string> kRetriableGmsApiErrors = {
 // The maximum possible number of reenrollments into the UPM. Needed to avoid a
 // patchy experience for users who experience errors in communication with
 // Google Mobile Services on a regular basis.
+extern const base::FeatureParam<int> kMaxUPMReenrollments = {
+    &kUnifiedPasswordManagerReenrollment, "max_reenrollments", 0};
+
+// The maximum possible number of reenrollment migration attempts. Needed to
+// avoid wasting resources of users who have persistent errors.
 extern const base::FeatureParam<int> kMaxUPMReenrollmentAttempts = {
     &kUnifiedPasswordManagerReenrollment, "max_reenrollment_attempts", 0};
 #endif

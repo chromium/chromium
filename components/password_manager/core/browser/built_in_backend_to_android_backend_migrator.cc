@@ -593,6 +593,8 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
     prefs_->SetInteger(
         prefs::kTimesReenrolledToGoogleMobileServices,
         prefs_->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices) + 1);
+    prefs_->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
+                       0);
   }
 
   migration_in_progress_type_ = MigrationType::kNone;
