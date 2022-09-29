@@ -215,7 +215,7 @@ void DownloadPathReservationTrackerTest::CreateReservation(
   if (result != PathValidationResult::PATH_NOT_WRITABLE)
     EXPECT_TRUE(IsPathInUse(path));
   EXPECT_EQ(expected_result, result);
-  EXPECT_EQ(expected_reserved_path.value(), reserved_path.value());
+  EXPECT_EQ(expected_reserved_path, reserved_path);
 }
 
 }  // namespace
