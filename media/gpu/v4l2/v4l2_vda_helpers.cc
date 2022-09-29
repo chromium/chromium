@@ -5,6 +5,8 @@
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -24,9 +26,7 @@ absl::optional<Fourcc> FindImageProcessorInputFormat(V4L2Device* vda_device) {
   memset(&fmtdesc, 0, sizeof(fmtdesc));
   fmtdesc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   while (vda_device->Ioctl(VIDIOC_ENUM_FMT, &fmtdesc) == 0) {
-    if (std::find(processor_input_formats.begin(),
-                  processor_input_formats.end(),
-                  fmtdesc.pixelformat) != processor_input_formats.end()) {
+    if (base::Contains(processor_input_formats, fmtdesc.pixelformat)) {
       DVLOGF(3) << "Image processor input format=" << fmtdesc.description;
       return Fourcc::FromV4L2PixFmt(fmtdesc.pixelformat);
     }
@@ -41,10 +41,8 @@ absl::optional<Fourcc> FindImageProcessorOutputFormat(V4L2Device* ip_device) {
   static constexpr uint32_t kPreferredFormats[] = {V4L2_PIX_FMT_NV12,
                                                    V4L2_PIX_FMT_YVU420};
   auto preferred_formats_first = [](uint32_t a, uint32_t b) -> bool {
-    auto* iter_a = std::find(std::begin(kPreferredFormats),
-                             std::end(kPreferredFormats), a);
-    auto* iter_b = std::find(std::begin(kPreferredFormats),
-                             std::end(kPreferredFormats), b);
+    auto* iter_a = base::ranges::find(kPreferredFormats, a);
+    auto* iter_b = base::ranges::find(kPreferredFormats, b);
     return iter_a < iter_b;
   };
 

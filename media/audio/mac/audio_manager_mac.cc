@@ -4,7 +4,6 @@
 
 #include "media/audio/mac/audio_manager_mac.h"
 
-#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -19,6 +18,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -1229,9 +1229,7 @@ void AudioManagerMac::ReleaseOutputStreamUsingRealDevice(
 
 void AudioManagerMac::ReleaseInputStream(AudioInputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  auto stream_it = std::find(basic_input_streams_.begin(),
-                             basic_input_streams_.end(),
-                             stream);
+  auto stream_it = base::ranges::find(basic_input_streams_, stream);
   if (stream_it == basic_input_streams_.end())
     low_latency_input_streams_.remove(static_cast<AUAudioInputStream*>(stream));
   else

@@ -6,11 +6,11 @@
 
 #include <sys/mman.h>
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "media/gpu/macros.h"
 
@@ -83,8 +83,7 @@ bool IsFormatSupported(VideoPixelFormat format) {
       // Compressed format.
       PIXEL_FORMAT_MJPEG,
   };
-  return std::find(std::cbegin(supported_formats), std::cend(supported_formats),
-                   format) != std::cend(supported_formats);
+  return base::Contains(supported_formats, format);
 }
 
 }  // namespace

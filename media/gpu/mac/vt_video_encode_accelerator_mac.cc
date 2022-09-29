@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
@@ -227,8 +228,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
         << VideoPixelFormatToString(config.input_format);
     return false;
   }
-  if (std::find(std::begin(kSupportedProfiles), std::end(kSupportedProfiles),
-                config.output_profile) == std::end(kSupportedProfiles)) {
+  if (!base::Contains(kSupportedProfiles, config.output_profile)) {
     MEDIA_LOG(ERROR, media_log.get()) << "Output profile not supported= "
                                       << GetProfileName(config.output_profile);
     return false;

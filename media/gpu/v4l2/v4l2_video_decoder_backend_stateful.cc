@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateful.h"
-#include <cstddef>
 
+#include <cstddef>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -743,8 +743,7 @@ bool V4L2StatefulVideoDecoderBackend::IsSupportedProfile(
     for (const auto& entry : profiles)
       supported_profiles_.push_back(entry.profile);
   }
-  return std::find(supported_profiles_.begin(), supported_profiles_.end(),
-                   profile) != supported_profiles_.end();
+  return base::Contains(supported_profiles_, profile);
 }
 
 bool V4L2StatefulVideoDecoderBackend::StopInputQueueOnResChange() const {

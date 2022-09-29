@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -215,8 +215,8 @@ base::SequencedTaskRunner* CodecAllocator::SelectCodecTaskRunner() {
 void CodecAllocator::CompletePendingOperation(base::TimeTicks start_time) {
   // Note: This intentionally only erases the first instance, since there may be
   // multiple instances of the same value.
-  pending_operations_.erase(std::find(pending_operations_.begin(),
-                                      pending_operations_.end(), start_time));
+  pending_operations_.erase(
+      base::ranges::find(pending_operations_, start_time));
 }
 
 }  // namespace media

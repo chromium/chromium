@@ -5,6 +5,7 @@
 #include "media/remoting/renderer_controller.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -616,23 +617,17 @@ void RendererController::SetClient(MediaObserverClient* client) {
 
 bool RendererController::HasVideoCapability(
     mojom::RemotingSinkVideoCapability capability) const {
-  return std::find(std::begin(sink_metadata_.video_capabilities),
-                   std::end(sink_metadata_.video_capabilities),
-                   capability) != std::end(sink_metadata_.video_capabilities);
+  return base::Contains(sink_metadata_.video_capabilities, capability);
 }
 
 bool RendererController::HasAudioCapability(
     mojom::RemotingSinkAudioCapability capability) const {
-  return std::find(std::begin(sink_metadata_.audio_capabilities),
-                   std::end(sink_metadata_.audio_capabilities),
-                   capability) != std::end(sink_metadata_.audio_capabilities);
+  return base::Contains(sink_metadata_.audio_capabilities, capability);
 }
 
 bool RendererController::HasFeatureCapability(
     RemotingSinkFeature capability) const {
-  return std::find(std::begin(sink_metadata_.features),
-                   std::end(sink_metadata_.features),
-                   capability) != std::end(sink_metadata_.features);
+  return base::Contains(sink_metadata_.features, capability);
 }
 
 bool RendererController::SinkSupportsRemoting() const {

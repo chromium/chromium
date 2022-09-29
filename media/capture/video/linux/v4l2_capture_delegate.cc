@@ -11,6 +11,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"

@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -662,8 +663,8 @@ bool SourceBufferState::OnNewConfigs(
                << " config: " << audio_config.AsHumanReadableString();
       DCHECK(audio_config.IsValidConfig());
 
-      const auto& it = std::find(expected_acodecs.begin(),
-                                 expected_acodecs.end(), audio_config.codec());
+      const auto& it =
+          base::ranges::find(expected_acodecs, audio_config.codec());
       if (it == expected_acodecs.end()) {
         MEDIA_LOG(ERROR, media_log_) << "Audio stream codec "
                                      << GetCodecName(audio_config.codec())
@@ -730,8 +731,8 @@ bool SourceBufferState::OnNewConfigs(
       }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 
-      const auto& it = std::find(expected_vcodecs.begin(),
-                                 expected_vcodecs.end(), video_config.codec());
+      const auto& it =
+          base::ranges::find(expected_vcodecs, video_config.codec());
       if (it == expected_vcodecs.end()) {
         MEDIA_LOG(ERROR, media_log_) << "Video stream codec "
                                      << GetCodecName(video_config.codec())

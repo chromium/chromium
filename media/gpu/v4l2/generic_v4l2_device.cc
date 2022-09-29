@@ -15,9 +15,9 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
-#include <algorithm>
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
@@ -226,11 +226,8 @@ bool GenericV4L2Device::CanCreateEGLImageFrom(const Fourcc fourcc) const {
 #endif
   };
 
-  return std::find(
-             kEGLImageDrmFmtsSupported,
-             kEGLImageDrmFmtsSupported + std::size(kEGLImageDrmFmtsSupported),
-             V4L2PixFmtToDrmFormat(fourcc.ToV4L2PixFmt())) !=
-         kEGLImageDrmFmtsSupported + std::size(kEGLImageDrmFmtsSupported);
+  return base::Contains(kEGLImageDrmFmtsSupported,
+                        V4L2PixFmtToDrmFormat(fourcc.ToV4L2PixFmt()));
 }
 
 EGLImageKHR GenericV4L2Device::CreateEGLImage(
@@ -544,8 +541,7 @@ std::string GenericV4L2Device::GetDevicePathFor(Type type, uint32_t pixfmt) {
   const Devices& devices = GetDevicesForType(type);
 
   for (const auto& device : devices) {
-    if (std::find(device.second.begin(), device.second.end(), pixfmt) !=
-        device.second.end())
+    if (base::Contains(device.second, pixfmt))
       return device.first;
   }
 

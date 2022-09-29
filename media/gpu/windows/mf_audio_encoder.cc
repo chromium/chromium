@@ -12,9 +12,11 @@
 #include <string.h>
 #include <wmcodecdsp.h>
 #include <wrl/client.h>
+
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -78,8 +80,7 @@ EncoderStatus::Codes ValidateInputOptions(const AudioEncoder::Options& options,
   if (options.codec != AudioCodec::kAAC)
     return EncoderStatus::Codes::kEncoderUnsupportedCodec;
 
-  if (std::find(kSupportedSampleRates.begin(), kSupportedSampleRates.end(),
-                options.sample_rate) == kSupportedSampleRates.end()) {
+  if (!base::Contains(kSupportedSampleRates, options.sample_rate)) {
     return EncoderStatus::Codes::kEncoderUnsupportedConfig;
   }
 
@@ -102,8 +103,7 @@ EncoderStatus::Codes ValidateInputOptions(const AudioEncoder::Options& options,
   }
 
   *bitrate = options.bitrate.value_or(kDefaultBitrate);
-  if (std::find(kSupportedBitrates.begin(), kSupportedBitrates.end(),
-                *bitrate) == kSupportedBitrates.end()) {
+  if (!base::Contains(kSupportedBitrates, *bitrate)) {
     return EncoderStatus::Codes::kEncoderUnsupportedConfig;
   }
 

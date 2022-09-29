@@ -6,6 +6,7 @@
 
 #include "base/big_endian.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -299,8 +300,7 @@ PacketRef PacedSender::PopNextPacket(PacketType* packet_type,
 }
 
 bool PacedSender::IsHighPriority(const PacketKey& packet_key) const {
-  return std::find(priority_ssrcs_.begin(), priority_ssrcs_.end(),
-                   packet_key.ssrc) != priority_ssrcs_.end();
+  return base::Contains(priority_ssrcs_, packet_key.ssrc);
 }
 
 bool PacedSender::empty() const {

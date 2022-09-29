@@ -108,11 +108,10 @@ Camera3AController::Camera3AController(
     if (available_modes.empty()) {
       return false;
     }
-    if (std::find(
-            available_modes.begin(), available_modes.end(),
+    if (!base::Contains(
+            available_modes,
             base::checked_cast<uint8_t>(
-                cros::mojom::AndroidControlMode::ANDROID_CONTROL_MODE_AUTO)) ==
-        available_modes.end()) {
+                cros::mojom::AndroidControlMode::ANDROID_CONTROL_MODE_AUTO))) {
       return false;
     }
     if (!available_ae_modes_.count(

@@ -5,12 +5,14 @@
 #include "media/mojo/services/watch_time_recorder.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/hash/hash.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -110,12 +112,11 @@ class WatchTimeRecorderTest : public testing::Test {
           ConvertWatchTimeKeyToStringForUma(static_cast<WatchTimeKey>(i));
       if (test_key.empty())
         continue;
-      auto it = std::find(keys.begin(), keys.end(), test_key);
-      if (it == keys.end()) {
-        histogram_tester_->ExpectTotalCount(test_key, 0);
-      } else {
+      if (base::Contains(keys, test_key)) {
         histogram_tester_->ExpectUniqueSample(test_key, value.InMilliseconds(),
                                               1);
+      } else {
+        histogram_tester_->ExpectTotalCount(test_key, 0);
       }
     }
   }
@@ -124,11 +125,10 @@ class WatchTimeRecorderTest : public testing::Test {
                     const std::vector<base::StringPiece>& keys,
                     int64_t value) {
     for (auto key : full_key_list) {
-      auto it = std::find(keys.begin(), keys.end(), key);
-      if (it == keys.end())
-        histogram_tester_->ExpectTotalCount(key, 0);
-      else
+      if (base::Contains(keys, key))
         histogram_tester_->ExpectUniqueSample(key, value, 1);
+      else
+        histogram_tester_->ExpectTotalCount(key, 0);
     }
   }
 

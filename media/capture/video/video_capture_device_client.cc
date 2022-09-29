@@ -4,7 +4,6 @@
 
 #include "media/capture/video/video_capture_device_client.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -12,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -494,8 +494,7 @@ ReadyFrameInBuffer VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
   // If a buffer to retire was specified, retire one.
   if (buffer_id_to_drop != VideoCaptureBufferPool::kInvalidId) {
     auto entry_iter =
-        std::find(buffer_ids_known_by_receiver_.begin(),
-                  buffer_ids_known_by_receiver_.end(), buffer_id_to_drop);
+        base::ranges::find(buffer_ids_known_by_receiver_, buffer_id_to_drop);
     if (entry_iter != buffer_ids_known_by_receiver_.end()) {
       buffer_ids_known_by_receiver_.erase(entry_iter);
       receiver_->OnBufferRetired(buffer_id_to_drop);
@@ -551,8 +550,7 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
     // |buffer_pool_| has decided to release a buffer. Notify receiver in case
     // the buffer has already been shared with it.
     auto entry_iter =
-        std::find(buffer_ids_known_by_receiver_.begin(),
-                  buffer_ids_known_by_receiver_.end(), buffer_id_to_drop);
+        base::ranges::find(buffer_ids_known_by_receiver_, buffer_id_to_drop);
     if (entry_iter != buffer_ids_known_by_receiver_.end()) {
       buffer_ids_known_by_receiver_.erase(entry_iter);
       receiver_->OnBufferRetired(buffer_id_to_drop);

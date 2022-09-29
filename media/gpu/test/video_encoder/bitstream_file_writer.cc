@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -111,9 +112,8 @@ void BitstreamFileWriter::ConstructSpatialIndices(
   CHECK_LE(spatial_layer_resolutions.size(), spatial_layer_resolutions_.size());
 
   original_spatial_indices_.resize(spatial_layer_resolutions.size());
-  auto begin = std::find(spatial_layer_resolutions_.begin(),
-                         spatial_layer_resolutions_.end(),
-                         spatial_layer_resolutions.front());
+  auto begin = base::ranges::find(spatial_layer_resolutions_,
+                                  spatial_layer_resolutions.front());
   CHECK(begin != spatial_layer_resolutions_.end());
   uint8_t sid_offset = begin - spatial_layer_resolutions_.begin();
   for (size_t i = 0; i < spatial_layer_resolutions.size(); ++i) {

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -94,8 +95,7 @@ void OffloadingVideoDecoder::Initialize(const VideoDecoderConfig& config,
   const bool disable_offloading =
       config.is_encrypted() ||
       config.coded_size().width() < min_offloading_width_ ||
-      std::find(supported_codecs_.begin(), supported_codecs_.end(),
-                config.codec()) == supported_codecs_.end();
+      !base::Contains(supported_codecs_, config.codec());
 
   if (initialized_) {
     initialized_ = false;

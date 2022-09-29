@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/i18n/timezone.h"
 #include "base/strings/string_util.h"
 #include "base/token.h"
@@ -88,10 +89,7 @@ PowerLineFrequency VideoCaptureDevice::GetPowerLineFrequencyForLocation() {
       "CR", "CU", "DO", "EC", "FM", "GT", "GU", "GY", "HN", "HT", "JP",
       "KN", "KR", "KY", "MS", "MX", "NI", "PA", "PE", "PF", "PH", "PR",
       "PW", "SA", "SR", "SV", "TT", "TW", "UM", "US", "VG", "VI", "VE"};
-  const char** countries_using_60Hz_end =
-      countries_using_60Hz + std::size(countries_using_60Hz);
-  if (std::find(countries_using_60Hz, countries_using_60Hz_end,
-                current_country) == countries_using_60Hz_end) {
+  if (!base::Contains(countries_using_60Hz, current_country)) {
     return PowerLineFrequency::FREQUENCY_50HZ;
   }
   return PowerLineFrequency::FREQUENCY_60HZ;

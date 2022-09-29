@@ -5,13 +5,16 @@
 #include "media/device_monitors/device_monitor_mac.h"
 
 #include <AVFoundation/AVFoundation.h>
+
 #include <set>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/thread_checker.h"
 
@@ -92,7 +95,7 @@ void DeviceMonitorMacImpl::ConsolidateDevicesListAndNotify(
   std::vector<DeviceInfo>::const_iterator it;
   for (it = snapshot_devices.begin(); it != snapshot_devices.end(); ++it) {
     std::vector<DeviceInfo>::iterator cached_devices_iterator =
-        std::find(cached_devices_.begin(), cached_devices_.end(), *it);
+        base::ranges::find(cached_devices_, *it);
     if (cached_devices_iterator == cached_devices_.end()) {
       video_device_added |= ((it->type() == DeviceInfo::kVideo) ||
                              (it->type() == DeviceInfo::kMuxed));
@@ -374,8 +377,7 @@ void AVFoundationMonitorImpl::OnDeviceChanged() {
   DCHECK(_mainThreadChecker.CalledOnValidThread());
   DCHECK(device != nil);
   // Skip this device if there are already observers connected to it.
-  if (std::find(_monitoredDevices.begin(), _monitoredDevices.end(), device) !=
-      _monitoredDevices.end()) {
+  if (base::Contains(_monitoredDevices, device)) {
     return;
   }
   [device addObserver:self
@@ -394,7 +396,7 @@ void AVFoundationMonitorImpl::OnDeviceChanged() {
   DCHECK(device != nil);
 
   std::set<base::scoped_nsobject<AVCaptureDevice>>::iterator found =
-      std::find(_monitoredDevices.begin(), _monitoredDevices.end(), device);
+      base::ranges::find(_monitoredDevices, device);
   DCHECK(found != _monitoredDevices.end());
   [self removeObservers:*found];
   _monitoredDevices.erase(found);

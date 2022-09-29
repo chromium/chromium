@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <vector>
 
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -68,8 +68,7 @@ static bool IsSupportedAndroidMimeType(const std::string& mime_type) {
       kMp3MimeType, kAacMimeType,         kOpusMimeType, kVorbisMimeType,
       kAvcMimeType, kDolbyVisionMimeType, kHevcMimeType, kVp8MimeType,
       kVp9MimeType, kAv1MimeType};
-  return std::find(supported.begin(), supported.end(), mime_type) !=
-         supported.end();
+  return base::Contains(supported, mime_type);
 }
 
 static bool IsDecoderSupportedByDevice(const std::string& android_mime_type) {
