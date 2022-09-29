@@ -8,6 +8,7 @@
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/floss/bluetooth_gatt_service_floss.h"
+#include "device/bluetooth/floss/bluetooth_remote_gatt_descriptor_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_service_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_gatt_client.h"
@@ -31,6 +32,11 @@ BluetoothRemoteGattCharacteristicFloss::BluetoothRemoteGattCharacteristicFloss(
   DCHECK(characteristic);
 
   service_->AddObserverForHandle(characteristic_->instance_id, this);
+
+  for (GattDescriptor& d : characteristic_->descriptors) {
+    AddDescriptor(
+        BluetoothRemoteGattDescriptorFloss::Create(service_, this, &d));
+  }
 }
 
 BluetoothRemoteGattCharacteristicFloss::
