@@ -34,6 +34,7 @@ class TestableNotificationController : public EcheAppNotificationController {
   // EcheAppNotificationController:
   MOCK_METHOD0(LaunchSettings, void());
   MOCK_METHOD0(LaunchTryAgain, void());
+  MOCK_METHOD0(LaunchNetworkSettings, void());
 };
 
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
@@ -145,6 +146,22 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
   // Clicking the first notification button should relaunch again.
   EXPECT_CALL(*notification_controller_, LaunchTryAgain());
   notification->delegate()->Click(0, absl::nullopt);
+
+  title = u"Check WIFI Title";
+  message = u"Check WIFI Message";
+  notification_controller_->ShowNotificationFromWebUI(
+      title, message, mojom::WebNotificationType::WIFI_NOT_READY);
+  notification =
+      display_service_->GetNotification(kEcheAppNetworkSettingNotifierId);
+  ASSERT_TRUE(notification.has_value());
+  ASSERT_EQ(1u, notification->buttons().size());
+  EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
+  EXPECT_EQ(notification->title(), title);
+  EXPECT_EQ(notification->message(), message);
+
+  // Clicking the notification button should launch network settings.
+  EXPECT_CALL(*notification_controller_, LaunchNetworkSettings());
+  notification->delegate()->Click(0, absl::nullopt);
 }
 
 TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
@@ -212,6 +229,14 @@ TEST_F(EcheAppNotificationControllerTest, CloseNotification) {
   notification =
       display_service_->GetNotification(kEcheAppFromWebWithoutButtonNotifierId);
   ASSERT_FALSE(notification.has_value());
+
+  notification_controller_->ShowNotificationFromWebUI(
+      title, message, mojom::WebNotificationType::WIFI_NOT_READY);
+  notification_controller_->CloseNotification(
+      kEcheAppFromWebWithoutButtonNotifierId);
+  notification =
+      display_service_->GetNotification(kEcheAppFromWebWithoutButtonNotifierId);
+  ASSERT_FALSE(notification.has_value());
 }
 
 TEST_F(EcheAppNotificationControllerTest,
@@ -225,6 +250,8 @@ TEST_F(EcheAppNotificationControllerTest,
       title, message, mojom::WebNotificationType::DEVICE_IDLE);
   notification_controller_->ShowNotificationFromWebUI(
       title, message, mojom::WebNotificationType::INVALID_NOTIFICATION);
+  notification_controller_->ShowNotificationFromWebUI(
+      title, message, mojom::WebNotificationType::WIFI_NOT_READY);
   notification_controller_->CloseConnectionOrLaunchErrorNotifications();
 
   absl::optional<message_center::Notification> notification =
@@ -238,6 +265,9 @@ TEST_F(EcheAppNotificationControllerTest,
   ASSERT_FALSE(notification.has_value());
   notification =
       display_service_->GetNotification(kEcheAppFromWebWithoutButtonNotifierId);
+  ASSERT_FALSE(notification.has_value());
+  notification =
+      display_service_->GetNotification(kEcheAppNetworkSettingNotifierId);
   ASSERT_FALSE(notification.has_value());
 }
 

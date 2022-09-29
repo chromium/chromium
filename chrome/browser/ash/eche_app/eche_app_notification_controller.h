@@ -46,12 +46,9 @@ class EcheAppNotificationController {
   // Close the notifiications about coonnectiion error and launch error
   void CloseConnectionOrLaunchErrorNotifications();
 
- protected:
-  // Exposed for testing.
-  virtual void LaunchSettings();
-  virtual void LaunchTryAgain();
-
  private:
+  friend class EcheAppNotificationControllerTest;
+
   // NotificationDelegate implementation for handling click events.
   class NotificationDelegate : public message_center::NotificationDelegate {
    public:
@@ -72,6 +69,10 @@ class EcheAppNotificationController {
     std::string notification_id_;
     base::WeakPtr<EcheAppNotificationController> notification_controller_;
   };
+
+  virtual void LaunchSettings();
+  virtual void LaunchTryAgain();
+  virtual void LaunchNetworkSettings();
 
   // Displays the notification to the user.
   void ShowNotification(

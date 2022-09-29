@@ -168,7 +168,8 @@ enum class NotificationCatalogName {
   kMultiCapture = 153,
   kPrivacyHubCamera = 154,
   kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn = 155,
-  kMaxValue = kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn
+  kEcheAppNetworkSetting = 156,
+  kMaxValue = kEcheAppNetworkSetting
 };
 
 // A living catalog that registers system nudges.

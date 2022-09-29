@@ -168,6 +168,11 @@ TEST_F(EcheAlertGeneratorTest, ShowNotification) {
               ShowNotification(testing::_, testing::_, testing::_));
   ShowNotification(title.value(), message.value(),
                    mojom::WebNotificationType::TABLET_MODE);
+  // WIFI_NOT_READY
+  EXPECT_CALL(*launch_app_helper_,
+              ShowNotification(testing::_, testing::_, testing::_));
+  ShowNotification(title.value(), message.value(),
+                   mojom::WebNotificationType::WIFI_NOT_READY);
 }
 
 TEST_F(EcheAlertGeneratorTest, ShowToast) {

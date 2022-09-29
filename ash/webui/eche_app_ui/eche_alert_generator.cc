@@ -28,6 +28,10 @@ const char kEcheAppFromWebWithoutButtonNotifierId[] =
     "eche_app_notification_ids.from_web_without_button";
 // The toast id of EcheApp.
 const char kEcheAppToastId[] = "eche_app_toast_id";
+// The notification type from WebUI is WIFI_NOT_READY allow users to network
+// settings page from settings button.
+const char kEcheAppNetworkSettingNotifierId[] =
+    "eche_app_notification_ids.network_settings";
 
 // TODO(crbug.com/1241352): This should probably have a ?p=<FEATURE_NAME> at
 // some point.

@@ -24,6 +24,7 @@ extern const char kEcheAppInactivityNotifierId[];
 extern const char kEcheAppFromWebWithoutButtonNotifierId[];
 extern const char kEcheAppLearnMoreUrl[];
 extern const char kEcheAppToastId[];
+extern const char kEcheAppNetworkSettingNotifierId[];
 
 // Implements the ShowNotification interface to allow WebUI show the native
 // notification and toast.

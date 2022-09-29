@@ -71718,6 +71718,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="153" label="Multi capture started"/>
   <int value="154" label="PrivacyHubCamera"/>
   <int value="155" label="PrivacyHubHWCameraSwitchOffSWCameraSwitchOn"/>
+  <int value="156" label="Eche App Network Setting"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">

@@ -80,6 +80,7 @@ enum WebNotificationType {
     NOTIFICATION_ACTION_NOT_LAUNCHED,
     LAUNCH_NOTIFICATION_FAILED,
     TABLET_MODE,
+    WIFI_NOT_READY,
 };
 
 // Interface for showing a native notification which was generated from WebUI.
