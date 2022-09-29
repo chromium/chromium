@@ -766,6 +766,8 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
     devtools_observer_->OnSubresourceWebBundleMetadata(*devtools_request_id_,
                                                        std::move(urls));
   }
+  base::UmaHistogramCounts10000("SubresourceWebBundles.ResourceCount",
+                                metadata_->requests.size());
 
   if (metadata_->version == web_package::mojom::BundleFormatVersion::kB1) {
     web_bundle_handle_->OnWebBundleError(

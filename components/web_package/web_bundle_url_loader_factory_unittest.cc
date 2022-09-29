@@ -268,6 +268,8 @@ TEST_F(WebBundleURLLoaderFactoryTest, Basic) {
   histogram_tester.ExpectUniqueSample(
       "SubresourceWebBundles.LoadResult",
       WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample("SubresourceWebBundles.ResourceCount", 1,
+                                      1);
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, MetadataParseError) {
@@ -437,6 +439,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, StartRequestBeforeReadingBundle) {
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, MultipleRequests) {
+  base::HistogramTester histogram_tester;
   auto request1 = StartRequest(GURL(kResourceUrl), kResourceRequestId);
   auto request2 = StartRequest(GURL(kResourceUrl2), kResourceRequestId2);
 
@@ -456,6 +459,8 @@ TEST_F(WebBundleURLLoaderFactoryTest, MultipleRequests) {
   request2.client->RunUntilComplete();
 
   EXPECT_EQ(net::OK, request2.client->completion_status().error_code);
+  histogram_tester.ExpectUniqueSample("SubresourceWebBundles.ResourceCount", 3,
+                                      1);
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, CancelRequest) {

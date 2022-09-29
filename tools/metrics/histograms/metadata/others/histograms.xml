@@ -13275,6 +13275,16 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="SubresourceWebBundles.ResourceCount" units="resources"
+    expires_after="2023-02-12">
+  <owner>ksakamoto@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
+  <summary>
+    The number of resources contained in a web bundle. Recorded when bundle
+    metadata is received and parsed successfully.
+  </summary>
+</histogram>
+
 <histogram name="Suggestions.FailedRequestErrorCode" enum="NetErrorCodes"
     expires_after="2020-02-23">
   <owner>mathp@chromium.org</owner>
