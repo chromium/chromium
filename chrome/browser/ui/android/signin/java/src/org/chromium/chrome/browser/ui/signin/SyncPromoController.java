@@ -525,7 +525,7 @@ public class SyncPromoController {
             return;
         }
         view.getPrimaryButton().setText(context.getString(
-                R.string.signin_promo_continue_as, mProfileData.getGivenNameOrFullNameOrEmail()));
+                R.string.sync_promo_continue_as, mProfileData.getGivenNameOrFullNameOrEmail()));
 
         view.getSecondaryButton().setText(R.string.signin_promo_choose_another_account);
         view.getSecondaryButton().setOnClickListener(v -> signinWithNotDefaultAccount(context));

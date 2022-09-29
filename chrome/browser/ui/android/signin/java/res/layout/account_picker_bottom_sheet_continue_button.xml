@@ -16,4 +16,4 @@ found in the LICENSE file.
     android:layout_marginTop="8dp"
     android:ellipsize="end"
     android:singleLine="true"
-    android:text="@string/signin_promo_continue_as" />
+    android:text="@string/sync_promo_continue_as" />

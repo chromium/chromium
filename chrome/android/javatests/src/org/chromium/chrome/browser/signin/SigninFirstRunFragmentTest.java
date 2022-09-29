@@ -378,7 +378,7 @@ public class SigninFirstRunFragmentTest {
         checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
 
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, GIVEN_NAME1);
+                R.string.sync_promo_continue_as, GIVEN_NAME1);
         onView(withText(continueAsText)).perform(click());
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
@@ -467,7 +467,7 @@ public class SigninFirstRunFragmentTest {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         launchActivityWithFragment();
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, GIVEN_NAME1);
+                R.string.sync_promo_continue_as, GIVEN_NAME1);
 
         onView(withText(continueAsText)).perform(click());
         // ToS should be accepted right away, without waiting for the sign-in to complete.
@@ -497,7 +497,7 @@ public class SigninFirstRunFragmentTest {
         onView(withText(TEST_EMAIL1)).perform(click());
         onView(withText(TEST_EMAIL2)).inRoot(isDialog()).perform(click());
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, TEST_EMAIL2);
+                R.string.sync_promo_continue_as, TEST_EMAIL2);
 
         ViewUtils.onViewWaiting(withText(continueAsText)).perform(click());
 
@@ -525,7 +525,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, GIVEN_NAME1);
+                R.string.sync_promo_continue_as, GIVEN_NAME1);
         onView(withText(continueAsText)).perform(click());
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
@@ -559,7 +559,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, GIVEN_NAME1);
+                R.string.sync_promo_continue_as, GIVEN_NAME1);
         onView(withText(continueAsText)).perform(click());
 
         verify(mSigninManagerMock, never()).signin(any(), any());
@@ -617,7 +617,7 @@ public class SigninFirstRunFragmentTest {
                 CHILD_ACCOUNT_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
         launchActivityWithFragment();
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, CHILD_FULL_NAME);
+                R.string.sync_promo_continue_as, CHILD_FULL_NAME);
 
         onView(withText(continueAsText)).perform(click());
 
@@ -647,7 +647,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, GIVEN_NAME1);
+                R.string.sync_promo_continue_as, GIVEN_NAME1);
         onView(withText(continueAsText)).perform(click());
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
@@ -770,7 +770,7 @@ public class SigninFirstRunFragmentTest {
         onView(withText(R.string.done)).perform(click());
 
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, GIVEN_NAME1);
+                R.string.sync_promo_continue_as, GIVEN_NAME1);
         onView(withText(continueAsText)).perform(click());
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
@@ -1070,7 +1070,7 @@ public class SigninFirstRunFragmentTest {
         }
         onView(withId(R.id.signin_fre_selected_account_expand_icon)).check(matches(isDisplayed()));
         final String continueAsText = mFragment.getString(
-                R.string.signin_promo_continue_as, profileData.getGivenNameOrFullNameOrEmail());
+                R.string.sync_promo_continue_as, profileData.getGivenNameOrFullNameOrEmail());
         onView(withText(continueAsText)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
@@ -1086,7 +1086,7 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.signin_fre_selected_account_expand_icon))
                 .check(matches(not(isDisplayed())));
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, GIVEN_NAME1);
+                R.string.sync_promo_continue_as, GIVEN_NAME1);
         onView(withText(continueAsText)).check(matches(not(isDisplayed())));
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.signin_fre_footer)).check(matches(not(isDisplayed())));
@@ -1106,7 +1106,7 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.signin_fre_selected_account_expand_icon))
                 .check(matches(not(isDisplayed())));
         final String continueAsText =
-                mFragment.getString(R.string.signin_promo_continue_as, CHILD_FULL_NAME);
+                mFragment.getString(R.string.sync_promo_continue_as, CHILD_FULL_NAME);
         onView(withText(continueAsText)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));

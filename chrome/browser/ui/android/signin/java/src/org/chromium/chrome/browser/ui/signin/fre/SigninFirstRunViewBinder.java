@@ -85,9 +85,8 @@ class SigninFirstRunViewBinder {
         } else {
             ExistingAccountRowViewBinder.bindAccountView(
                     profileData, view.getSelectedAccountView());
-            view.getContinueButtonView().setText(
-                    view.getContext().getString(R.string.signin_promo_continue_as,
-                            profileData.getGivenNameOrFullNameOrEmail()));
+            view.getContinueButtonView().setText(view.getContext().getString(
+                    R.string.sync_promo_continue_as, profileData.getGivenNameOrFullNameOrEmail()));
         }
         updateVisibility(view, model);
     }

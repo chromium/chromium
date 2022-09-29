@@ -735,7 +735,7 @@ public class AccountPickerBottomSheetTest {
             onVisibleView(withText(fullName)).check(matches(isDisplayed()));
         }
         String continueAsText = sActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, givenName != null ? givenName : email);
+                R.string.sync_promo_continue_as, givenName != null ? givenName : email);
         onView(withText(continueAsText)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_account_picker_dismiss_button))
                 .check(matches(isDisplayed()));

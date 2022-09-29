@@ -68,7 +68,7 @@ found in the LICENSE file.
         android:layout_marginEnd="16dp"
         android:ellipsize="end"
         android:singleLine="true"
-        android:text="@string/signin_promo_continue_as"
+        android:text="@string/sync_promo_continue_as"
         style="@style/FilledButton.Flat" />
 
     <org.chromium.ui.widget.ButtonCompat

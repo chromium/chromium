@@ -160,7 +160,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         ExistingAccountRowViewBinder.bindAccountView(accountProfileData, mSelectedAccountView);
 
         ButtonCompat continueButton = view.findViewById(R.id.account_picker_continue_as_button);
-        String continueAsButtonText = mActivity.getString(R.string.signin_promo_continue_as,
+        String continueAsButtonText = mActivity.getString(R.string.sync_promo_continue_as,
                 accountProfileData.getGivenNameOrFullNameOrEmail());
         continueButton.setText(continueAsButtonText);
     }
