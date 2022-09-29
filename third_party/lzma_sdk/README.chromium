@@ -15,18 +15,27 @@ The original code can be found at https://7-zip.org/a/lzma2107.7z.  Only parts
 of this archive are copied here.  More specifically:
 
 1/ C code required to open 7z archive files and uncompress LZMA
-2/ 7za.exe and 7zr.exe executables (amd64 version)
+2/ 7za, 7zr, and 7zz executables, if Windows is specified as a target OS.
 3/ source code for SfxSetup, a utility for creating self extracting archives
 4/ C code required for xz decompression (split into its own static library)
 
+The 7z binaries are installed via a 3pp CIPD package into bin/ if Windows is
+specified as a target OS in the .gclient file. There are two subdirectories in
+bin/: win64/ and host_platform/. win64/ contains 64-bit Windows binaries to be
+packaged in Chromium targets requiring it, and host_platform/ contains binaries
+for the platform of the host where the Chromium source code is checked out and
+built. host_platform/ binaries should be used for build scripts that call 7z
+binaries. Supported platforms are:
+
+* linux-amd64
+* mac-amd64
+* mac-rm64
+* windows-386
+* windows-amd64
+
 7za.exe and 7zr.exe are both standalone command-line utilities to archive and
 extract files. 7zr is "lightweight" and only handles 7zip extensions. 7za can
-handle a few more. 7za.exe comes from https://www.7-zip.org/a/7z2107-extra.7z.
-
-The 7zz (arm64/x86-64) command for macOS is extracted from
-https://7-zip.org/a/7z2107-mac.tar.xz. It is necessary to remove
-`com.apple.quarantine` file attribute with command `xattr -c` before adding
-the file.
+handle a few more.
 
 The patch in chromium.patch was applied to 7zCrc.c, CpuArch.c, LZFind.c and
 Sha256.c to disable some ARM code that was failing to build in Android and
