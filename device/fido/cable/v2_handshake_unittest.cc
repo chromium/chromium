@@ -322,6 +322,52 @@ TEST(CableV2Encoding, PaddedCBOR) {
   EXPECT_EQ(1u, decoded->GetMap().size());
 }
 
+// EncodePaddedCBORMapOld is the old padding function that used to be used.
+// We should still be compatible with it until M99 has been out in the world
+// for long enough.
+absl::optional<std::vector<uint8_t>> EncodePaddedCBORMapOld(
+    cbor::Value::MapValue map) {
+  absl::optional<std::vector<uint8_t>> cbor_bytes =
+      cbor::Writer::Write(cbor::Value(std::move(map)));
+  if (!cbor_bytes) {
+    return absl::nullopt;
+  }
+
+  base::CheckedNumeric<size_t> padded_size_checked = cbor_bytes->size();
+  padded_size_checked += 1;  // padding-length byte
+  padded_size_checked = (padded_size_checked + 255) & ~255;
+  if (!padded_size_checked.IsValid()) {
+    return absl::nullopt;
+  }
+
+  const size_t padded_size = padded_size_checked.ValueOrDie();
+  DCHECK_GT(padded_size, cbor_bytes->size());
+  const size_t extra_padding = padded_size - cbor_bytes->size();
+
+  cbor_bytes->resize(padded_size);
+  DCHECK_LE(extra_padding, 256u);
+  cbor_bytes->at(padded_size - 1) = static_cast<uint8_t>(extra_padding - 1);
+
+  return *cbor_bytes;
+}
+
+TEST(CableV2Encoding, OldPaddedCBOR) {
+  // Test that we can decode messages padded by the old encoding function.
+  for (size_t i = 0; i < 512; i++) {
+    SCOPED_TRACE(i);
+
+    const std::vector<uint8_t> dummy_array(i);
+    cbor::Value::MapValue map;
+    map.emplace(1, dummy_array);
+    absl::optional<std::vector<uint8_t>> encoded =
+        EncodePaddedCBORMapOld(std::move(map));
+    ASSERT_TRUE(encoded);
+
+    absl::optional<cbor::Value> decoded = DecodePaddedCBORMap(*encoded);
+    ASSERT_TRUE(decoded);
+  }
+}
+
 std::array<uint8_t, kP256X962Length> PublicKeyOf(const EC_KEY* private_key) {
   std::array<uint8_t, kP256X962Length> ret;
   CHECK_EQ(ret.size(),
@@ -600,6 +646,43 @@ TEST_F(CableV2HandshakeTest, KNHandshake) {
         *initiator_result->first));
     EXPECT_EQ(initiator_result->second, responder_result->second);
   }
+}
+
+TEST_F(CableV2HandshakeTest, ConstructionTransition) {
+  std::array<uint8_t, 32> key1, key2;
+  std::fill(key1.begin(), key1.end(), 1);
+  std::fill(key2.begin(), key2.end(), 2);
+
+  Crypter a(key1, key2);
+  Crypter b(key2, key1);
+
+  std::vector<uint8_t> message, ciphertext, plaintext;
+  message.resize(100);
+  std::fill(message.begin(), message.end(), 42);
+
+  // Encrypt a message using the new construction.
+  a.GetNewConstructionFlagForTesting() = true;
+  ciphertext = message;
+  ASSERT_TRUE(a.Encrypt(&ciphertext));
+
+  // The new construction should be automatically detected so this should work
+  // and should cause the flag to be set.
+  EXPECT_FALSE(b.GetNewConstructionFlagForTesting());
+  ASSERT_TRUE(b.Decrypt(ciphertext, &plaintext));
+  ASSERT_TRUE(plaintext == message);
+  EXPECT_TRUE(b.GetNewConstructionFlagForTesting());
+
+  // Sending messages still works.
+  ciphertext = message;
+  ASSERT_TRUE(a.Encrypt(&ciphertext));
+  ASSERT_TRUE(b.Decrypt(ciphertext, &plaintext));
+  ASSERT_TRUE(plaintext == message);
+
+  // But old-construction messages will no longer be accepted.
+  ciphertext = message;
+  a.GetNewConstructionFlagForTesting() = false;
+  ASSERT_TRUE(a.Encrypt(&ciphertext));
+  ASSERT_FALSE(b.Decrypt(ciphertext, &plaintext));
 }
 
 }  // namespace

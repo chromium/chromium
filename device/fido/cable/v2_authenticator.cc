@@ -269,6 +269,7 @@ class TunnelTransport : public Transport {
       network::mojom::NetworkContext* network_context,
       base::span<const uint8_t> secret,
       base::span<const uint8_t, device::kP256X962Length> peer_identity,
+      bool use_new_crypter_construction,
       GeneratePairingDataCallback generate_pairing_data)
       : protocol_revision_(protocol_revision),
         platform_(platform),
@@ -283,7 +284,8 @@ class TunnelTransport : public Transport {
         network_context_(network_context),
         peer_identity_(device::fido_parsing_utils::Materialize(peer_identity)),
         generate_pairing_data_(std::move(generate_pairing_data)),
-        secret_(fido_parsing_utils::Materialize(secret)) {
+        secret_(fido_parsing_utils::Materialize(secret)),
+        use_new_crypter_construction_(use_new_crypter_construction) {
     DCHECK_EQ(state_, State::kNone);
     state_ = State::kConnecting;
 
@@ -313,7 +315,8 @@ class TunnelTransport : public Transport {
             device::cablev2::DerivedValueType::kEIDKey)),
         network_context_(network_context),
         secret_(fido_parsing_utils::Materialize(secret)),
-        local_identity_(std::move(local_identity)) {
+        local_identity_(std::move(local_identity)),
+        use_new_crypter_construction_(protocol_revision_ >= 1) {
     DCHECK_EQ(state_, State::kNone);
 
     state_ = State::kConnectingPaired;
@@ -458,6 +461,9 @@ class TunnelTransport : public Transport {
         update_callback_.Run(Platform::Status::HANDSHAKE_COMPLETE);
         websocket_client_->Write(response);
         crypter_ = std::move(result->first);
+        if (use_new_crypter_construction_) {
+          crypter_->UseNewConstruction();
+        }
 
         cbor::Value::MapValue post_handshake_msg;
         post_handshake_msg.emplace(1, BuildGetInfoResponse());
@@ -636,6 +642,7 @@ class TunnelTransport : public Transport {
   GeneratePairingDataCallback generate_pairing_data_;
   const std::vector<uint8_t> secret_;
   bssl::UniquePtr<EC_KEY> local_identity_;
+  const bool use_new_crypter_construction_;
   GURL target_;
   std::unique_ptr<Platform::BLEAdvert> ble_advert_;
   base::RepeatingCallback<void(Update)> update_callback_;
@@ -1176,7 +1183,8 @@ std::unique_ptr<Transaction> TransactFromQRCode(
     const std::string& authenticator_name,
     base::span<const uint8_t, 16> qr_secret,
     base::span<const uint8_t, kP256X962Length> peer_identity,
-    absl::optional<std::vector<uint8_t>> contact_id) {
+    absl::optional<std::vector<uint8_t>> contact_id,
+    bool use_new_crypter_construction) {
   auto generate_pairing_data = PairingDataGenerator::GetClosure(
       root_secret, authenticator_name, std::move(contact_id));
 
@@ -1184,7 +1192,8 @@ std::unique_ptr<Transaction> TransactFromQRCode(
   return std::make_unique<CTAP2Processor>(
       std::make_unique<TunnelTransport>(
           protocol_revision, platform_ptr, network_context, qr_secret,
-          peer_identity, std::move(generate_pairing_data)),
+          peer_identity, use_new_crypter_construction,
+          std::move(generate_pairing_data)),
       std::move(platform));
 }
 

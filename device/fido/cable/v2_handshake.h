@@ -243,14 +243,21 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Crypter {
   bool Decrypt(base::span<const uint8_t> ciphertext,
                std::vector<uint8_t>* out_plaintext);
 
+  // Encrypt and decrypt with big-endian nonces and no additional data. This
+  // is the format in the spec and that we want to transition to.
+  void UseNewConstruction();
+
   // IsCounterpartyOfForTesting returns true if |other| is the mirror-image of
   // this object. (I.e. read/write keys are equal but swapped.)
   bool IsCounterpartyOfForTesting(const Crypter& other) const;
+
+  bool& GetNewConstructionFlagForTesting();
 
  private:
   const std::array<uint8_t, 32> read_key_, write_key_;
   uint32_t read_sequence_num_ = 0;
   uint32_t write_sequence_num_ = 0;
+  bool new_construction_ = false;
 };
 
 // HandshakeHash is the hashed transcript of a handshake. This can be used as a
