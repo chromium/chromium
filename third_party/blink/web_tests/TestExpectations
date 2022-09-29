@@ -280,10 +280,6 @@ crbug.com/1343590 virtual/prefetch/external/wpt/speculation-rules/prefetch/redir
 crbug.com/1343590 http/tests/inspector-protocol/prefetch/* [ Skip ]
 crbug.com/1343590 virtual/prefetch/http/tests/inspector-protocol/prefetch/* [ Pass ]
 
-# This is slow due to the use of timeouts in speculation rules prefetch tests.
-# TODO(mcnee): Split the test up using variants.
-crbug.com/1369195 virtual/prefetch/external/wpt/speculation-rules/prefetch/referrer-policy.https.html [ Pass Timeout ]
-
 # These tests are flaky with BFCache, which is enabled by default.
 crbug.com/1311546 http/tests/test-runner/back-forward.html [ Failure Pass ]
 
