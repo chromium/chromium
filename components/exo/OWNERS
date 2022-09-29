@@ -9,3 +9,7 @@ yhanada@chromium.org
 
 # For text_input and keyboard.
 hidehiko@chromium.org
+
+# For extended-drag.
+per-file extended_drag*=nickdiego@igalia.com
+per-file wayland/zcr_extended_drag*=nickdiego@igalia.com
