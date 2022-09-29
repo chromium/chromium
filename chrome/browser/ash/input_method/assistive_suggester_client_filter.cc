@@ -149,8 +149,10 @@ const char* kDeniedAppsForDiacritics[] = {
     "algkcnfjnajfhgimadimbjhmpaeohhln",  // SSH app (dev)
 };
 
-bool IsTestUrl(GURL url) {
-  std::string filename = url.ExtractFileName();
+bool IsTestUrl(const absl::optional<GURL>& url) {
+  if (!url)
+    return false;
+  std::string filename = url->ExtractFileName();
   for (const char* test_url : kTestUrls) {
     if (base::CompareCaseInsensitiveASCII(filename, test_url) == 0) {
       return true;
@@ -159,8 +161,10 @@ bool IsTestUrl(GURL url) {
   return false;
 }
 
-bool IsInternalWebsite(GURL url) {
-  std::string host = url.host();
+bool IsInternalWebsite(const absl::optional<GURL>& url) {
+  if (!url)
+    return false;
+  std::string host = url->host();
   for (const size_t hash_code : kHashedInternalUrls) {
     if (hash_code == base::PersistentHash(host)) {
       return true;
@@ -169,16 +173,20 @@ bool IsInternalWebsite(GURL url) {
   return false;
 }
 
-bool AtDomainWithPathPrefix(GURL url,
+bool AtDomainWithPathPrefix(const absl::optional<GURL>& url,
                             const std::string& domain,
                             const std::string& prefix) {
-  return url.DomainIs(domain) && url.has_path() &&
-         base::StartsWith(url.path(), prefix);
+  if (!url)
+    return false;
+  return url->DomainIs(domain) && url->has_path() &&
+         base::StartsWith(url->path(), prefix);
 }
 
 template <size_t N>
 bool IsMatchedUrlWithPathPrefix(const char* (&allowedDomainAndPaths)[N][2],
-                                GURL url) {
+                                const absl::optional<GURL>& url) {
+  if (!url)
+    return false;
   for (size_t i = 0; i < N; i++) {
     auto domain = allowedDomainAndPaths[i][0];
     auto path_prefix = allowedDomainAndPaths[i][1];
@@ -210,8 +218,8 @@ void ReturnEnabledSuggestions(
   // Deny-list (will block if matched, otherwise allow)
   bool diacritic_suggestions_allowed =
       !IsMatchedApp(kDeniedAppsForDiacritics, window_properties) &&
-      !(current_url && IsMatchedUrlWithPathPrefix(
-                           kDeniedDomainAndPathsForDiacritics, *current_url));
+      !IsMatchedUrlWithPathPrefix(kDeniedDomainAndPathsForDiacritics,
+                                  current_url);
 
   // TODO(b/245469813): Investigate if denied is intentional for suggesters
   // below is intentional.
@@ -223,23 +231,23 @@ void ReturnEnabledSuggestions(
 
   // Allow-list (will only allow if matched)
   bool emoji_suggestions_allowed =
-      IsTestUrl(*current_url) || IsInternalWebsite(*current_url) ||
+      IsTestUrl(current_url) || IsInternalWebsite(current_url) ||
       IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForEmojiSuggester,
-                                 *current_url) ||
+                                 current_url) ||
       IsMatchedApp(kAllowedAppsForEmojiSuggester, window_properties);
 
   // Allow-list (will only allow if matched)
   bool multi_word_suggestions_allowed =
-      IsTestUrl(*current_url) || IsInternalWebsite(*current_url) ||
+      IsTestUrl(current_url) || IsInternalWebsite(current_url) ||
       IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForMultiWordSuggester,
-                                 *current_url) ||
+                                 current_url) ||
       IsMatchedApp(kAllowedAppsForMultiWordSuggester, window_properties);
 
   // Allow-list (will only allow if matched)
   bool personal_info_suggestions_allowed =
-      IsTestUrl(*current_url) || IsInternalWebsite(*current_url) ||
+      IsTestUrl(current_url) || IsInternalWebsite(current_url) ||
       IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForPersonalInfoSuggester,
-                                 *current_url) ||
+                                 current_url) ||
       IsMatchedApp(kAllowedAppsForPersonalInfoSuggester, window_properties);
 
   std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{
