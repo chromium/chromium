@@ -85,7 +85,7 @@ FormFieldData CreateFieldByRole(ServerFieldType role) {
   return field;
 }
 
-FormData GetFormData(const FormDataDescription& d) {
+FormData GetFormData(const FormDescription& d) {
   FormData f;
   f.url = GURL(d.url);
   f.action = GURL(d.action);
@@ -95,7 +95,7 @@ FormData GetFormData(const FormDataDescription& d) {
   if (d.main_frame_origin)
     f.main_frame_origin = *d.main_frame_origin;
   f.is_form_tag = d.is_form_tag;
-  for (const FieldDataDescription& dd : d.fields) {
+  for (const FieldDescription& dd : d.fields) {
     FormFieldData ff = CreateFieldByRole(dd.role);
     ff.form_control_type = dd.form_control_type;
     if (ff.form_control_type == "select-one" && !dd.select_options.empty())
@@ -123,6 +123,30 @@ FormData GetFormData(const FormDataDescription& d) {
     f.fields.push_back(ff);
   }
   return f;
+}
+
+std::vector<ServerFieldType> GetHeuristicTypes(
+    const FormDescription& form_description) {
+  std::vector<ServerFieldType> heuristic_types;
+  heuristic_types.reserve(form_description.fields.size());
+
+  for (const auto& field : form_description.fields) {
+    heuristic_types.emplace_back(field.heuristic_type.value_or(field.role));
+  }
+
+  return heuristic_types;
+}
+
+std::vector<ServerFieldType> GetServerTypes(
+    const FormDescription& form_description) {
+  std::vector<ServerFieldType> server_types;
+  server_types.reserve(form_description.fields.size());
+
+  for (const auto& field : form_description.fields) {
+    server_types.emplace_back(field.server_type.value_or(field.role));
+  }
+
+  return server_types;
 }
 
 // static
