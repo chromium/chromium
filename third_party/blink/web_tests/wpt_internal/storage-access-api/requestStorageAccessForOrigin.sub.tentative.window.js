@@ -75,7 +75,7 @@ if (topLevelDocument) {
     return promise
         .then(t.unreached_func('Should have rejected: ' + description))
         .catch(function(e) {
-          assert_equals(e.name, 'SecurityError', description);
+          assert_equals(e.name, 'InvalidStateError', description);
         });
   }, '[non-fully-active] document.requestStorageAccessForOrigin() should not resolve when run in a detached frame');
 
@@ -86,7 +86,7 @@ if (topLevelDocument) {
     return promise
         .then(t.unreached_func('Should have rejected: ' + description))
         .catch(function(e) {
-          assert_equals(e.name, 'SecurityError', description);
+          assert_equals(e.name, 'InvalidStateError', description);
         });
   }, '[non-fully-active] document.requestStorageAccessForOrigin() should not resolve when run in a detached DOMParser document');
 

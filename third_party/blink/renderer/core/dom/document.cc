@@ -6066,7 +6066,7 @@ ScriptPromise Document::requestStorageAccessForOrigin(
     return ScriptPromise::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kSecurityError,
+            DOMExceptionCode::kInvalidStateError,
             "requestStorageAccessForOrigin: Cannot be used unless "
             "the document is fully active."));
   }
@@ -6174,7 +6174,7 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     // Note that in detached frames, resolvers are not able to return a promise.
     return ScriptPromise::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kSecurityError,
+                          DOMExceptionCode::kInvalidStateError,
                           "requestStorageAccess: Cannot be used unless the "
                           "document is fully active."));
   }
