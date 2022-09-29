@@ -469,7 +469,7 @@ std::u16string DownloadItemView::GetTooltipText(const gfx::Point& p) const {
 
 void DownloadItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kGroup;
-  node_data->SetName(accessible_name_);
+  node_data->SetNameChecked(accessible_name_);
 
   // Set the description to the empty string, otherwise the tooltip will be
   // used, which is redundant with the accessible name.
