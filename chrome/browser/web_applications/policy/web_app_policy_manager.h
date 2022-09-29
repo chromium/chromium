@@ -131,6 +131,9 @@ class WebAppPolicyManager {
   void InitChangeRegistrarAndRefreshPolicy(bool enable_pwa_support);
 
   void RefreshPolicyInstalledApps();
+#if BUILDFLAG(IS_CHROMEOS)
+  void RefreshPolicyInstalledIsolatedApps();
+#endif
   void RefreshPolicySettings();
   void OnAppsSynchronized(
       std::map<GURL, ExternallyManagedAppManager::InstallResult>

@@ -32537,6 +32537,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1019" label="DeskAPIThirdPartyAccessEnabled"/>
   <int value="1020" label="FileSystemSyncAccessHandleAsyncInterfaceEnabled"/>
   <int value="1021" label="DefaultHandlersForFileExtensions"/>
+  <int value="1022" label="IsolatedWebAppInstallForceList"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

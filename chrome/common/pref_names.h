@@ -863,6 +863,7 @@ extern const char kNtlmV2Enabled[];
 
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kKerberosEnabled[];
+extern const char kIsolatedWebAppInstallForceList[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 extern const char kCertRevocationCheckingEnabled[];

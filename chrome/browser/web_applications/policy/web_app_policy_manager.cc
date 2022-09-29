@@ -153,6 +153,9 @@ void WebAppPolicyManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kWebAppInstallForceList);
   registry->RegisterListPref(prefs::kWebAppSettings);
+#if BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterListPref(prefs::kIsolatedWebAppInstallForceList);
+#endif
 }
 
 void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
@@ -173,6 +176,15 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
       RefreshPolicySettings();
     }
     RefreshPolicyInstalledApps();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    pref_change_registrar_.Add(
+        prefs::kIsolatedWebAppInstallForceList,
+        base::BindRepeating(
+            &WebAppPolicyManager::RefreshPolicyInstalledIsolatedApps,
+            weak_ptr_factory_.GetWeakPtr()));
+    RefreshPolicyInstalledIsolatedApps();
+#endif
   }
   ObserveDisabledSystemFeaturesPolicy();
 }
@@ -279,6 +291,17 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
       base::BindOnce(&WebAppPolicyManager::OnAppsSynchronized,
                      weak_ptr_factory_.GetWeakPtr()));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void WebAppPolicyManager::RefreshPolicyInstalledIsolatedApps() {
+  const base::Value::List& isolated_web_apps =
+      pref_service_->GetList(prefs::kIsolatedWebAppInstallForceList);
+  if (!isolated_web_apps.empty()) {
+    LOG(ERROR)
+        << "IsolatedWebAppInstallForceList policy is not yet implemented";
+  }
+}
+#endif
 
 void WebAppPolicyManager::RefreshPolicySettings() {
   // No need to validate the types or values of the policy members because we
