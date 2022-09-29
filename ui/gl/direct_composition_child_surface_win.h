@@ -10,32 +10,15 @@
 #include <dcomp.h>
 #include <wrl/client.h>
 
-#include "base/callback.h"
-#include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/synchronization/lock.h"
-#include "base/time/time.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
-#include "ui/gl/vsync_observer.h"
-
-namespace base {
-class SequencedTaskRunner;
-}  // namespace base
 
 namespace gl {
-class VSyncThreadWin;
 
-class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL,
-                                                   public VSyncObserver {
+class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
  public:
-  using VSyncCallback =
-      base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
   DirectCompositionChildSurfaceWin(GLDisplayEGL* display,
-                                   VSyncCallback vsync_callback,
                                    bool use_angle_texture_offset,
-                                   size_t max_pending_frames,
                                    bool force_full_damage,
                                    bool force_full_damage_always);
 
@@ -63,12 +46,13 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   bool SetEnableDCLayers(bool enable) override;
-  gfx::VSyncProvider* GetVSyncProvider() override;
-  bool SupportsGpuVSync() const override;
-  void SetGpuVSyncEnabled(bool enabled) override;
 
-  // VSyncObserver implementation.
-  void OnVSync(base::TimeTicks vsync_time, base::TimeDelta interval) override;
+  // Finish a draw started by |SetDrawRectangle|. Internally, calls presents the
+  // swap chain or calls |EndDraw| on the DComp surface.
+  //
+  // Returns true on success. |swap_rect| will contain the portion of the
+  // surface we're flipping (originally passed in via SetDrawRectangle).
+  bool EndDraw(gfx::Rect* swap_rect);
 
   static bool IsDirectCompositionSwapChainFailed();
 
@@ -89,30 +73,6 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL,
   ~DirectCompositionChildSurfaceWin() override;
 
  private:
-  struct PendingFrame {
-    PendingFrame(Microsoft::WRL::ComPtr<ID3D11Query> query,
-                 PresentationCallback callback);
-    PendingFrame(PendingFrame&& other);
-    ~PendingFrame();
-    PendingFrame& operator=(PendingFrame&& other);
-
-    // Event query issued after frame is presented.
-    Microsoft::WRL::ComPtr<ID3D11Query> query;
-
-    // Presentation callback enqueued in SwapBuffers().
-    PresentationCallback callback;
-  };
-
-  void EnqueuePendingFrame(PresentationCallback callback);
-  void CheckPendingFrames();
-
-  void StartOrStopVSyncThread();
-
-  bool VSyncCallbackEnabled() const;
-
-  void HandleVSyncOnMainThread(base::TimeTicks vsync_time,
-                               base::TimeDelta interval);
-
   // Release the texture that's currently being drawn to. If will_discard is
   // true then the surface should be discarded without swapping any contents
   // to it. Returns false if this fails.
@@ -154,26 +114,9 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL,
   // verify a draw offset bug.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> offscreen_texture_;
 
-  const VSyncCallback vsync_callback_;
   const bool use_angle_texture_offset_;
-  const size_t max_pending_frames_;
   const bool force_full_damage_;
   const bool force_full_damage_always_;
-
-  const raw_ptr<VSyncThreadWin> vsync_thread_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  bool vsync_thread_started_ = false;
-  bool vsync_callback_enabled_ GUARDED_BY(vsync_callback_enabled_lock_) = false;
-  mutable base::Lock vsync_callback_enabled_lock_;
-
-  // Queue of pending presentation callbacks.
-  base::circular_deque<PendingFrame> pending_frames_;
-
-  base::TimeTicks last_vsync_time_;
-  base::TimeDelta last_vsync_interval_;
-
-  base::WeakPtrFactory<DirectCompositionChildSurfaceWin> weak_factory_{this};
 };
 
 }  // namespace gl

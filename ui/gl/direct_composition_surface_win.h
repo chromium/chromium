@@ -10,7 +10,10 @@
 #include <dcomp.h>
 #include <wrl/client.h>
 
+#include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/geometry/transform.h"
@@ -18,6 +21,10 @@
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/vsync_observer.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace gfx {
 namespace mojom {
@@ -27,10 +34,12 @@ class DelegatedInkMetadata;
 }  // namespace gfx
 
 namespace gl {
+class VSyncThreadWin;
 class DCLayerTree;
 class DirectCompositionChildSurfaceWin;
 
-class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL {
+class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
+                                              public VSyncObserver {
  public:
   using VSyncCallback =
       base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
@@ -94,6 +103,9 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL {
       std::unique_ptr<ui::DCRendererLayerParams> params) override;
   void SetFrameRate(float frame_rate) override;
 
+  // VSyncObserver implementation.
+  void OnVSync(base::TimeTicks vsync_time, base::TimeDelta interval) override;
+
   bool SupportsDelegatedInk() override;
   void SetDelegatedInkTrailStartPoint(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
@@ -125,11 +137,55 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL {
   ~DirectCompositionSurfaceWin() override;
 
  private:
+  struct PendingFrame {
+    PendingFrame(Microsoft::WRL::ComPtr<ID3D11Query> query,
+                 PresentationCallback callback);
+    PendingFrame(PendingFrame&& other);
+    ~PendingFrame();
+    PendingFrame& operator=(PendingFrame&& other);
+
+    // Event query issued after frame is presented.
+    Microsoft::WRL::ComPtr<ID3D11Query> query;
+
+    // Presentation callback enqueued in SwapBuffers().
+    PresentationCallback callback;
+  };
+
+  void EnqueuePendingFrame(PresentationCallback callback, bool create_query);
+  void CheckPendingFrames();
+
+  void StartOrStopVSyncThread();
+
+  bool VSyncCallbackEnabled() const;
+
+  void HandleVSyncOnMainThread(base::TimeTicks vsync_time,
+                               base::TimeDelta interval);
+
   HWND window_ = nullptr;
   ChildWindowWin child_window_;
 
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
+
+  const VSyncCallback vsync_callback_;
+
+  const raw_ptr<VSyncThreadWin> vsync_thread_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  bool vsync_thread_started_ = false;
+  bool vsync_callback_enabled_ GUARDED_BY(vsync_callback_enabled_lock_) = false;
+  mutable base::Lock vsync_callback_enabled_lock_;
+
+  // Queue of pending presentation callbacks.
+  base::circular_deque<PendingFrame> pending_frames_;
+  const size_t max_pending_frames_;
+
+  base::TimeTicks last_vsync_time_;
+  base::TimeDelta last_vsync_interval_;
+
   scoped_refptr<DirectCompositionChildSurfaceWin> root_surface_;
   std::unique_ptr<DCLayerTree> layer_tree_;
+
+  base::WeakPtrFactory<DirectCompositionSurfaceWin> weak_factory_{this};
 };
 
 }  // namespace gl
