@@ -62,25 +62,25 @@ BrowserAppInstance::BrowserAppInstance(BrowserAppInstanceUpdate update,
 
 BrowserAppInstance::~BrowserAppInstance() = default;
 
-bool BrowserAppInstance::MaybeUpdate(aura::Window* window,
-                                     std::string title,
-                                     bool is_browser_active,
-                                     bool is_web_contents_active,
-                                     uint32_t browser_session_id,
-                                     uint32_t restored_browser_session_id) {
-  if (this->window == window && this->title == title &&
-      this->is_browser_active == is_browser_active &&
-      this->is_web_contents_active == is_web_contents_active &&
-      this->browser_session_id == browser_session_id &&
-      this->restored_browser_session_id == restored_browser_session_id) {
+bool BrowserAppInstance::MaybeUpdate(aura::Window* new_window,
+                                     std::string new_title,
+                                     bool new_is_browser_active,
+                                     bool new_is_web_contents_active,
+                                     uint32_t new_browser_session_id,
+                                     uint32_t new_restored_browser_session_id) {
+  if (window == new_window && title == new_title &&
+      is_browser_active == new_is_browser_active &&
+      is_web_contents_active == new_is_web_contents_active &&
+      browser_session_id == new_browser_session_id &&
+      restored_browser_session_id == new_restored_browser_session_id) {
     return false;
   }
-  this->window = window;
-  this->title = std::move(title);
-  this->is_browser_active = is_browser_active;
-  this->is_web_contents_active = is_web_contents_active;
-  this->browser_session_id = browser_session_id;
-  this->restored_browser_session_id = restored_browser_session_id;
+  window = new_window;
+  title = std::move(new_title);
+  is_browser_active = new_is_browser_active;
+  is_web_contents_active = new_is_web_contents_active;
+  browser_session_id = new_browser_session_id;
+  restored_browser_session_id = new_restored_browser_session_id;
   return true;
 }
 
@@ -120,11 +120,11 @@ BrowserWindowInstance::BrowserWindowInstance(BrowserWindowInstanceUpdate update,
 
 BrowserWindowInstance::~BrowserWindowInstance() = default;
 
-bool BrowserWindowInstance::MaybeUpdate(bool is_active) {
-  if (this->is_active == is_active) {
+bool BrowserWindowInstance::MaybeUpdate(bool new_is_active) {
+  if (is_active == new_is_active) {
     return false;
   }
-  this->is_active = is_active;
+  is_active = new_is_active;
   return true;
 }
 
