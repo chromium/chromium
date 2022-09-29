@@ -79,7 +79,7 @@ class OmniboxRemoveSuggestionButton : public views::ImageButton {
     // Although this appears visually as a button, expose as a list box option
     // so that it matches the other options within its list box container.
     node_data->role = ax::mojom::Role::kListBoxOption;
-    node_data->SetName(
+    node_data->SetNameChecked(
         l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_BUTTON));
   }
 };
