@@ -8816,13 +8816,18 @@
                 "chromeos_lacros",
                 "linux",
                 "mac",
-                "windows"
+                "windows",
+                "android_webview",
+                "android_weblayer"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "ReportFCPOnCommitAndDontSkip",
                     "enable_features": [
                         "ReportFCPOnlyOnSuccessfulCommit"
+                    ],
+                    "disable_features": [
+                        "SkipCommitsIfNotSynchronizingCompositorState"
                     ]
                 }
             ]
