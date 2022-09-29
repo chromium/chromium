@@ -200,7 +200,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   if (custom_data_.GetStringAttribute(ax::mojom::StringAttribute::kName,
                                       &name)) {
     if (!name.empty())
-      data->SetName(name);
+      data->SetNameChecked(name);
     else
       data->SetNameExplicitlyEmpty();
   }
@@ -372,7 +372,7 @@ void ViewAccessibility::OverrideName(const std::string& name,
   }
 
   custom_data_.SetNameFrom(name_from);
-  custom_data_.SetName(name);
+  custom_data_.SetNameChecked(name);
 }
 
 void ViewAccessibility::OverrideName(const std::u16string& name,

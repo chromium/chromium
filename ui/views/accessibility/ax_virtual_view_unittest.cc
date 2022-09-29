@@ -65,7 +65,7 @@ class AXVirtualViewTest : public ViewsTestBase {
     widget_->GetContentsView()->AddChildView(button_.get());
     virtual_label_ = new AXVirtualView;
     virtual_label_->GetCustomData().role = ax::mojom::Role::kStaticText;
-    virtual_label_->GetCustomData().SetName("Label");
+    virtual_label_->GetCustomData().SetNameChecked("Label");
     button_->GetViewAccessibility().AddVirtualChildView(
         base::WrapUnique(virtual_label_.get()));
     widget_->Show();
@@ -708,7 +708,7 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
   // Test for mixed ignored and unignored root nodes.
   AXVirtualView* virtual_label_2 = new AXVirtualView;
   virtual_label_2->GetCustomData().role = ax::mojom::Role::kStaticText;
-  virtual_label_2->GetCustomData().SetName("Label");
+  virtual_label_2->GetCustomData().SetNameChecked("Label");
   button_->GetViewAccessibility().AddVirtualChildView(
       base::WrapUnique(virtual_label_2));
 

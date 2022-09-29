@@ -368,7 +368,7 @@ TEST_F(AXAuraObjCacheTest, VirtualViews) {
   auto* parent = widget->GetRootView()->AddChildView(std::make_unique<View>());
   AXVirtualView* virtual_label = new AXVirtualView;
   virtual_label->GetCustomData().role = ax::mojom::Role::kStaticText;
-  virtual_label->GetCustomData().SetName("Label");
+  virtual_label->GetCustomData().SetNameChecked("Label");
   parent->GetViewAccessibility().AddVirtualChildView(
       base::WrapUnique(virtual_label));
 

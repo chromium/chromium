@@ -26,7 +26,7 @@ class AccessibleView : public View {
  public:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = role_;
-    node_data->SetName(name_);
+    node_data->SetNameChecked(name_);
     if (description_) {
       node_data->SetDescription(*description_);
     }
@@ -43,7 +43,7 @@ class AccessibleView : public View {
     return description_;
   }
 
-  void SetName(const std::string& name) { name_ = name; }
+  void SetNameChecked(const std::string& name) { name_ = name; }
   const std::string& GetName() const { return name_; }
 
   void SetRole(ax::mojom::Role role) { role_ = role; }
@@ -90,7 +90,7 @@ TEST_F(ViewAXPlatformNodeDelegateMacTest,
   EXPECT_NE(view_->GetPlatformNodeDelegate()->GetName(),
             *view_->GetDescription());
 
-  view_->SetName(kDifferentNodeName);
+  view_->SetNameChecked(kDifferentNodeName);
 
   EXPECT_EQ(view_->GetPlatformNodeDelegate()->GetName(), kDifferentNodeName);
 }
