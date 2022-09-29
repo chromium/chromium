@@ -46,36 +46,45 @@ ui::GestureEvent CreateGestureEvent(ui::GestureEventDetails details) {
   return ui::GestureEvent(0, 0, ui::EF_NONE, base::TimeTicks(), details);
 }
 
-class HomeButtonTest : public AshTestBase,
+class HomeButtonTestBase : public AshTestBase {
+ public:
+  HomeButtonTestBase() = default;
+  HomeButtonTestBase(const HomeButtonTestBase&) = delete;
+  HomeButtonTestBase& operator=(const HomeButtonTestBase&) = delete;
+  ~HomeButtonTestBase() override = default;
+
+  void SendGestureEvent(ui::GestureEvent* event) {
+    ASSERT_TRUE(home_button());
+    home_button()->OnGestureEvent(event);
+  }
+
+  HomeButton* home_button() const {
+    return GetPrimaryShelf()
+        ->shelf_widget()
+        ->navigation_widget()
+        ->GetHomeButton();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class HomeButtonTest : public HomeButtonTestBase,
                        public testing::WithParamInterface<bool> {
  public:
-  HomeButtonTest() = default;
-
-  HomeButtonTest(const HomeButtonTest&) = delete;
-  HomeButtonTest& operator=(const HomeButtonTest&) = delete;
-
-  ~HomeButtonTest() override = default;
-
-  // AshTestBase:
+  // HomeButtonTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(
         features::kHideShelfControlsInTabletMode,
         IsHideShelfControlsInTabletModeEnabled());
 
-    AshTestBase::SetUp();
-  }
-
-  void SendGestureEvent(ui::GestureEvent* event) {
-    HomeButton* const home_button =
-        GetPrimaryShelf()->navigation_widget()->GetHomeButton();
-    ASSERT_TRUE(home_button);
-    home_button->OnGestureEvent(event);
+    HomeButtonTestBase::SetUp();
   }
 
   void SendGestureEventToSecondaryDisplay(ui::GestureEvent* event) {
     // Add secondary display.
     UpdateDisplay("1+1-1000x600,1002+0-600x400");
-    ASSERT_TRUE(GetPrimaryShelf()
+    ASSERT_TRUE(Shelf::ForWindow(Shell::GetAllRootWindows()[1])
                     ->shelf_widget()
                     ->navigation_widget()
                     ->GetHomeButton());
@@ -89,13 +98,6 @@ class HomeButtonTest : public AshTestBase,
 
   bool IsHideShelfControlsInTabletModeEnabled() const { return GetParam(); }
 
-  const HomeButton* home_button() const {
-    return GetPrimaryShelf()
-        ->shelf_widget()
-        ->navigation_widget()
-        ->GetHomeButton();
-  }
-
   AssistantState* assistant_state() const { return AssistantState::Get(); }
 
   PrefService* prefs() {
@@ -107,7 +109,7 @@ class HomeButtonTest : public AshTestBase,
 };
 
 // Tests home button visibility animations.
-class HomeButtonAnimationTest : public AshTestBase {
+class HomeButtonAnimationTest : public HomeButtonTestBase {
  public:
   HomeButtonAnimationTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -115,9 +117,9 @@ class HomeButtonAnimationTest : public AshTestBase {
   }
   ~HomeButtonAnimationTest() override = default;
 
-  // AshTestBase:
+  // HomeButtonTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    HomeButtonTestBase::SetUp();
 
     animation_duration_.emplace(
         ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -125,7 +127,7 @@ class HomeButtonAnimationTest : public AshTestBase {
 
   void TearDown() override {
     animation_duration_.reset();
-    AshTestBase::TearDown();
+    HomeButtonTestBase::TearDown();
   }
 
  private:
@@ -144,7 +146,7 @@ enum class TestAccessibilityFeature {
 // Tests home button visibility with number of accessibility setting enabled,
 // with kHideControlsInTabletModeFeature.
 class HomeButtonVisibilityWithAccessibilityFeaturesTest
-    : public AshTestBase,
+    : public HomeButtonTestBase,
       public ::testing::WithParamInterface<TestAccessibilityFeature> {
  public:
   HomeButtonVisibilityWithAccessibilityFeaturesTest() {
@@ -402,8 +404,7 @@ TEST_P(HomeButtonTest, ButtonPositionInTabletMode) {
 
 // Verifies that home button visibility updates are animated.
 TEST_F(HomeButtonAnimationTest, VisibilityAnimation) {
-  views::View* const home_button_view =
-      GetPrimaryShelf()->shelf_widget()->navigation_widget()->GetHomeButton();
+  views::View* const home_button_view = home_button();
   ASSERT_TRUE(home_button_view);
   EXPECT_TRUE(home_button_view->GetVisible());
   EXPECT_EQ(1.0f, home_button_view->layer()->opacity());
@@ -436,8 +437,7 @@ TEST_F(HomeButtonAnimationTest, VisibilityAnimation) {
 // Verifies that home button visibility updates if the button gets hidden while
 // it's still being shown.
 TEST_F(HomeButtonAnimationTest, HideWhileAnimatingToShow) {
-  views::View* const home_button_view =
-      GetPrimaryShelf()->shelf_widget()->navigation_widget()->GetHomeButton();
+  views::View* const home_button_view = home_button();
   ASSERT_TRUE(home_button_view);
 
   EXPECT_TRUE(home_button_view->GetVisible());
@@ -470,8 +470,7 @@ TEST_F(HomeButtonAnimationTest, HideWhileAnimatingToShow) {
 // Verifies that home button becomes visible if reshown while a hide animation
 // is still in progress.
 TEST_F(HomeButtonAnimationTest, ShowWhileAnimatingToHide) {
-  views::View* const home_button_view =
-      GetPrimaryShelf()->shelf_widget()->navigation_widget()->GetHomeButton();
+  views::View* const home_button_view = home_button();
   ASSERT_TRUE(home_button_view);
 
   EXPECT_TRUE(home_button_view->GetVisible());
@@ -501,9 +500,7 @@ TEST_F(HomeButtonAnimationTest, ShowWhileAnimatingToHide) {
 // Verifies that unanimated navigation widget layout update interrupts in
 // progress button animation.
 TEST_F(HomeButtonAnimationTest, NonAnimatedLayoutDuringAnimation) {
-  Shelf* const shelf = GetPrimaryShelf();
-  views::View* const home_button_view =
-      shelf->shelf_widget()->navigation_widget()->GetHomeButton();
+  views::View* const home_button_view = home_button();
   ASSERT_TRUE(home_button_view);
   EXPECT_TRUE(home_button_view->GetVisible());
   EXPECT_EQ(1.0f, home_button_view->layer()->opacity());
@@ -512,6 +509,7 @@ TEST_F(HomeButtonAnimationTest, NonAnimatedLayoutDuringAnimation) {
   // Switch to tablet mode changes the button visibility.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
+  Shelf* const shelf = GetPrimaryShelf();
   ShelfViewTestAPI shelf_test_api(shelf->GetShelfViewForTesting());
   ShelfNavigationWidget::TestApi test_api(shelf->navigation_widget());
 
@@ -769,8 +767,7 @@ TEST_P(HomeButtonTest, ClickOnCornerPixel) {
 // the center point of the home button is the same as the content view's center
 // point will avoid this problem. See http://crbug.com/1083713
 TEST_P(HomeButtonTest, GestureHomeButtonHitTest) {
-  ShelfNavigationWidget* nav_widget =
-      AshTestBase::GetPrimaryShelf()->navigation_widget();
+  ShelfNavigationWidget* nav_widget = GetPrimaryShelf()->navigation_widget();
   ShelfNavigationWidget::TestApi test_api(nav_widget);
   gfx::Rect nav_widget_bounds = nav_widget->GetRootView()->bounds();
 
