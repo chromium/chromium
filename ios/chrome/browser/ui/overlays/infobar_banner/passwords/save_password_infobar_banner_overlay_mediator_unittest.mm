@@ -9,6 +9,7 @@
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/infobars/core/infobar.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -57,6 +59,7 @@ TEST_F(SavePasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   FakeInfobarBannerConsumer* consumer =
       [[FakeInfobarBannerConsumer alloc] init];
   mediator.consumer = consumer;
+
   // Verify that the infobar was set up properly.
   NSString* title = base::SysUTF16ToNSString(delegate->GetMessageText());
   NSString* password = [@"" stringByPaddingToLength:kPassword.length
@@ -74,17 +77,65 @@ TEST_F(SavePasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
               consumer.buttonText);
   EXPECT_NSEQ(title, consumer.titleText);
   EXPECT_NSEQ(subtitle, consumer.subtitleText);
-  if (UseSymbols()) {
-    EXPECT_NSEQ(
-        CustomSymbolWithPointSize(kPasswordSymbol, kSymbolImagePointSize),
-        consumer.iconImage);
-  } else if (base::FeatureList::IsEnabled(
-                 password_manager::features::
-                     kIOSEnablePasswordManagerBrandingUpdate)) {
+
+  EXPECT_TRUE(consumer.presentsModal);
+}
+
+// Tests that a SavePasswordInfobarBannerOverlayMediator correctly sets up its
+// consumer's icon with legacy assets.
+TEST_F(SavePasswordInfobarBannerOverlayMediatorTest,
+       SetUpConsumerIconNotUseSymbols) {
+  // Create an InfoBarIOS with a IOSChromeSavePasswordInfoBarDelegate.
+  std::unique_ptr<IOSChromeSavePasswordInfoBarDelegate> passed_delegate =
+      MockIOSChromeSavePasswordInfoBarDelegate::Create(kUsername, kPassword);
+  InfoBarIOS infobar(InfobarType::kInfobarTypePasswordSave,
+                     std::move(passed_delegate));
+  // Package the infobar into an OverlayRequest, then create a mediator that
+  // uses this request in order to set up a fake consumer.
+  std::unique_ptr<OverlayRequest> request = OverlayRequest::CreateWithConfig<
+      SavePasswordInfobarBannerOverlayRequestConfig>(&infobar);
+  SavePasswordInfobarBannerOverlayMediator* mediator =
+      [[SavePasswordInfobarBannerOverlayMediator alloc]
+          initWithRequest:request.get()];
+  FakeInfobarBannerConsumer* consumer =
+      [[FakeInfobarBannerConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  // Verify that the infobar icon was set up properly.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
     EXPECT_NSEQ([UIImage imageNamed:@"password_key"], consumer.iconImage);
   } else {
     EXPECT_NSEQ([UIImage imageNamed:@"legacy_password_key"],
                 consumer.iconImage);
   }
-  EXPECT_TRUE(consumer.presentsModal);
+}
+
+// Tests that a SavePasswordInfobarBannerOverlayMediator correctly sets up its
+// consumer's icon with SF symbol.
+TEST_F(SavePasswordInfobarBannerOverlayMediatorTest,
+       SetUpConsumerIconUseSymbols) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kUseSFSymbols);
+
+  // Create an InfoBarIOS with a IOSChromeSavePasswordInfoBarDelegate.
+  std::unique_ptr<IOSChromeSavePasswordInfoBarDelegate> passed_delegate =
+      MockIOSChromeSavePasswordInfoBarDelegate::Create(kUsername, kPassword);
+  InfoBarIOS infobar(InfobarType::kInfobarTypePasswordSave,
+                     std::move(passed_delegate));
+  // Package the infobar into an OverlayRequest, then create a mediator that
+  // uses this request in order to set up a fake consumer.
+  std::unique_ptr<OverlayRequest> request = OverlayRequest::CreateWithConfig<
+      SavePasswordInfobarBannerOverlayRequestConfig>(&infobar);
+  SavePasswordInfobarBannerOverlayMediator* mediator =
+      [[SavePasswordInfobarBannerOverlayMediator alloc]
+          initWithRequest:request.get()];
+  FakeInfobarBannerConsumer* consumer =
+      [[FakeInfobarBannerConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  // Verify that the infobar icon was set up properly.
+  EXPECT_NSEQ(CustomSymbolWithPointSize(kPasswordSymbol, kSymbolImagePointSize),
+              consumer.iconImage);
 }
