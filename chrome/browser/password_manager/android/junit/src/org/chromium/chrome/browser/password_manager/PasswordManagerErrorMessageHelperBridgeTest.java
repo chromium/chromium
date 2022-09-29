@@ -4,10 +4,18 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.app.Activity;
 
 import org.junit.After;
 import org.junit.Before;
@@ -18,17 +26,28 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.base.WindowAndroid;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Unit tests for the error message helper bridge.
@@ -36,6 +55,13 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PasswordManagerErrorMessageHelperBridgeTest {
+    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
+            spy(new FakeAccountManagerFacade());
+
+    @Rule
+    public AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(mFakeAccountManagerFacade);
+
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
@@ -51,7 +77,20 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
 
+    @Mock
+    private IdentityServicesProvider mIdentityServicesProviderMock;
+
+    @Mock
+    private WindowAndroid mWindowAndroidMock;
+
+    @Mock
+    private IdentityManager mIdentityManagerMock;
+
     private SharedPreferencesManager mSharedPrefsManager;
+
+    private CoreAccountInfo mCoreAccountInfo;
+
+    private static final String TEST_EMAIL = "test.account@gmail.com";
 
     @Before
     public void setUp() {
@@ -60,6 +99,12 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         mSharedPrefsManager = SharedPreferencesManager.getInstance();
+        mCoreAccountInfo = mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        when(mIdentityServicesProviderMock.getIdentityManager(mProfile))
+                .thenReturn(mIdentityManagerMock);
+        when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
+                .thenReturn(mCoreAccountInfo);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
     }
 
     @After
@@ -120,5 +165,51 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         verify(mPrefService)
                 .setString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP,
                         Long.toString(currentTimeMs + timeIncrementMs));
+    }
+
+    @Test
+    public void testUpdateCredentialsRecordsSuccessWhenSigningInSucceeds() {
+        final Activity activity = mock(Activity.class);
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
+        doAnswer(invocation -> {
+            Callback<Boolean> callback = invocation.getArgument(2);
+            callback.onResult(true);
+            return null;
+        })
+                .when(mFakeAccountManagerFacade)
+                .updateCredentials(eq(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo)),
+                        eq(activity), any());
+
+        PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
+                mWindowAndroidMock);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PasswordManager.UPMUpdateSignInCredentialsSucces", 1));
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PasswordManager.UPMUpdateSignInCredentialsSucces", 0));
+    }
+
+    @Test
+    public void testUpdateCredentialsRecordsSuccessWhenSigningInFailed() {
+        final Activity activity = mock(Activity.class);
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
+        doAnswer(invocation -> {
+            Callback<Boolean> callback = invocation.getArgument(2);
+            callback.onResult(false);
+            return null;
+        })
+                .when(mFakeAccountManagerFacade)
+                .updateCredentials(eq(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo)),
+                        eq(activity), any());
+
+        PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
+                mWindowAndroidMock);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PasswordManager.UPMUpdateSignInCredentialsSucces", 0));
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PasswordManager.UPMUpdateSignInCredentialsSucces", 1));
     }
 }

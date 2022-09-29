@@ -3085,6 +3085,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.UPMUpdateSignInCredentialsSucces"
+    enum="Boolean" expires_after="2023-03-01">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records whether the user was successfully signed in after using the sign in
+    button on the Password Manager error message. The outcome can be either
+    success or failure. It's recorded when the sign in flow that updates
+    credentials finishes. Currently only used on Android.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UsernameDetectionMethod"
     enum="UsernameDetectionMethod" expires_after="2023-01-22">
   <owner>kazinova@google.com</owner>

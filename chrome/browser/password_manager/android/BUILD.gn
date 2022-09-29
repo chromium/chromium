@@ -220,6 +220,7 @@ robolectric_binary("password_manager_junit_tests") {
     "//components/password_manager/core/common:password_manager_common_java_enums",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
     "//components/sync/android:sync_java",
     "//components/sync/protocol:protocol_java",
     "//components/user_prefs/android:java",
