@@ -65,7 +65,7 @@ class ProxyPolicyHandlerTest : public ConfigurationPolicyPrefStoreTest {
     const base::Value* value = nullptr;
     ASSERT_TRUE(store_->GetValue(proxy_config::prefs::kProxy, &value));
     ASSERT_TRUE(value->is_dict());
-    ProxyConfigDictionary dict(value->Clone());
+    ProxyConfigDictionary dict(value->GetDict().Clone());
     std::string s;
     bool b;
     if (expected_proxy_server.empty()) {

@@ -126,9 +126,10 @@ void NetworkSettingsServiceAsh::SetExtensionProxy(
   pref_service->Set(ash::prefs::kLacrosProxyControllingExtension,
                     std::move(proxy_extension));
 
-  pref_service->Set(
-      proxy_config::prefs::kProxy,
-      CrosapiProxyToProxyConfig(std::move(proxy_config)).GetDictionary());
+  pref_service->SetDict(proxy_config::prefs::kProxy,
+                        CrosapiProxyToProxyConfig(std::move(proxy_config))
+                            .GetDictionary()
+                            .Clone());
 }
 
 void NetworkSettingsServiceAsh::ClearExtensionProxy() {

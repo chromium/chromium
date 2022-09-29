@@ -468,7 +468,7 @@ void LocalTranslator::TranslateNetworkConfiguration() {
   const base::Value* proxy_settings =
       onc_object_->FindDictKey(::onc::network_config::kProxySettings);
   if (proxy_settings) {
-    base::Value proxy_config =
+    base::Value::Dict proxy_config =
         ConvertOncProxySettingsToProxyConfig(*proxy_settings);
     std::string proxy_config_str;
     base::JSONWriter::Write(proxy_config, &proxy_config_str);

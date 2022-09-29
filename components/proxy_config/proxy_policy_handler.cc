@@ -236,22 +236,23 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     return;
   }
 
+  auto set_proxy_pref_value = [&prefs](base::Value::Dict dict) {
+    prefs->SetValue(proxy_config::prefs::kProxy, base::Value(std::move(dict)));
+  };
+
   switch (proxy_mode) {
     case ProxyPrefs::MODE_DIRECT:
-      prefs->SetValue(proxy_config::prefs::kProxy,
-                      ProxyConfigDictionary::CreateDirect());
+      set_proxy_pref_value(ProxyConfigDictionary::CreateDirect());
       break;
     case ProxyPrefs::MODE_AUTO_DETECT:
-      prefs->SetValue(proxy_config::prefs::kProxy,
-                      ProxyConfigDictionary::CreateAutoDetect());
+      set_proxy_pref_value(ProxyConfigDictionary::CreateAutoDetect());
       break;
     case ProxyPrefs::MODE_PAC_SCRIPT: {
       if (pac_url && pac_url->is_string()) {
         bool mandatory =
             pac_mandatory && pac_mandatory->GetIfBool().value_or(false);
-        prefs->SetValue(proxy_config::prefs::kProxy,
-                        ProxyConfigDictionary::CreatePacScript(
-                            pac_url->GetString(), mandatory));
+        set_proxy_pref_value(ProxyConfigDictionary::CreatePacScript(
+            pac_url->GetString(), mandatory));
       } else {
         NOTREACHED();
       }
@@ -259,18 +260,15 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
       if (server->is_string()) {
-        prefs->SetValue(
-            proxy_config::prefs::kProxy,
-            ProxyConfigDictionary::CreateFixedServers(
-                server->GetString(), bypass_list && bypass_list->is_string()
-                                         ? bypass_list->GetString()
-                                         : std::string()));
+        set_proxy_pref_value(ProxyConfigDictionary::CreateFixedServers(
+            server->GetString(), bypass_list && bypass_list->is_string()
+                                     ? bypass_list->GetString()
+                                     : std::string()));
       }
       break;
     }
     case ProxyPrefs::MODE_SYSTEM:
-      prefs->SetValue(proxy_config::prefs::kProxy,
-                      ProxyConfigDictionary::CreateSystem());
+      set_proxy_pref_value(ProxyConfigDictionary::CreateSystem());
       break;
     case ProxyPrefs::kModeCount:
       NOTREACHED();

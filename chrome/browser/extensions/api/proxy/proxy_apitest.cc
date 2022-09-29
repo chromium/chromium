@@ -49,7 +49,7 @@ class ProxySettingsApiTest : public ExtensionApiTest {
     // TODO(https://crbug.com/1348219) This should call
     // `PrefService::GetDict`.
     ProxyConfigDictionary dict(
-        pref_service->GetValue(proxy_config::prefs::kProxy).Clone());
+        pref_service->GetDict(proxy_config::prefs::kProxy).Clone());
 
     ProxyPrefs::ProxyMode mode;
     ASSERT_TRUE(dict.GetMode(&mode));

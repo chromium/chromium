@@ -1676,10 +1676,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   // that the PAC isn't already loaded by the time the extension starts
   // affecting requests.
   PrefService* pref_service = browser()->profile()->GetPrefs();
-  pref_service->Set(proxy_config::prefs::kProxy,
-                    ProxyConfigDictionary::CreatePacScript(
-                        embedded_test_server()->GetURL("/self.pac").spec(),
-                        true /* pac_mandatory */));
+  pref_service->SetDict(proxy_config::prefs::kProxy,
+                        ProxyConfigDictionary::CreatePacScript(
+                            embedded_test_server()->GetURL("/self.pac").spec(),
+                            true /* pac_mandatory */));
   // Flush the proxy configuration change over the Mojo pipe to avoid any races.
   ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
       ->FlushProxyConfigMonitorForTesting();
@@ -5021,10 +5021,10 @@ class ProxyCORSWebRequestApiTest
     ASSERT_TRUE(proxy_cors_server_.Start());
 
     PrefService* pref_service = browser()->profile()->GetPrefs();
-    pref_service->Set(proxy_config::prefs::kProxy,
-                      ProxyConfigDictionary::CreateFixedServers(
-                          proxy_cors_server_.host_port_pair().ToString(),
-                          "accounts.google.com"));
+    pref_service->SetDict(proxy_config::prefs::kProxy,
+                          ProxyConfigDictionary::CreateFixedServers(
+                              proxy_cors_server_.host_port_pair().ToString(),
+                              "accounts.google.com"));
 
     // Flush the proxy configuration change to avoid any races.
     ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())

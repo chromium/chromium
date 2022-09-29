@@ -68,7 +68,7 @@ std::string FormatProxyUri(const char* request_scheme,
 
 // See //net/docs/proxy.md and net::ProxyConfig::ProxyRules::ParseFromString()
 // for translation rules.
-base::Value TranslateManualProxySettings(
+base::Value::Dict TranslateManualProxySettings(
     crosapi::mojom::ProxySettingsManualPtr proxy_settings) {
   std::vector<std::string> proxy_server_specs;
   for (auto const& proxy : proxy_settings->http_proxies) {
@@ -89,7 +89,7 @@ base::Value TranslateManualProxySettings(
       base::JoinString(proxy_settings->exclude_domains, ";"));
 }
 
-base::Value TranslatePacProxySettings(
+base::Value::Dict TranslatePacProxySettings(
     crosapi::mojom::ProxySettingsPacPtr proxy_settings) {
   if (!proxy_settings->pac_url.is_valid())
     return ProxyConfigDictionary::CreateDirect();
@@ -97,7 +97,7 @@ base::Value TranslatePacProxySettings(
                                                 proxy_settings->pac_mandatory);
 }
 
-base::Value TranslateWpadProxySettings(
+base::Value::Dict TranslateWpadProxySettings(
     crosapi::mojom::ProxySettingsWpadPtr proxy_settings) {
   return ProxyConfigDictionary::CreateAutoDetect();
 }

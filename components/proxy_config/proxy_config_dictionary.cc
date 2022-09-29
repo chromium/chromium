@@ -33,10 +33,8 @@ const char kProxyBypassList[] = "bypass_list";
 
 }  // namespace
 
-ProxyConfigDictionary::ProxyConfigDictionary(base::Value dict)
-    : dict_(std::move(dict)) {
-  DCHECK(dict_.is_dict());
-}
+ProxyConfigDictionary::ProxyConfigDictionary(base::Value::Dict dict)
+    : dict_(std::move(dict)) {}
 
 ProxyConfigDictionary::ProxyConfigDictionary(ProxyConfigDictionary&& other) {
   dict_ = std::move(other.dict_);
@@ -45,7 +43,7 @@ ProxyConfigDictionary::ProxyConfigDictionary(ProxyConfigDictionary&& other) {
 ProxyConfigDictionary::~ProxyConfigDictionary() = default;
 
 bool ProxyConfigDictionary::GetMode(ProxyPrefs::ProxyMode* out) const {
-  const base::Value* mode_value = dict_.FindKey(kProxyMode);
+  const base::Value* mode_value = dict_.Find(kProxyMode);
   if (!mode_value || !mode_value->is_string())
     return false;
   std::string mode_str = mode_value->GetString();
@@ -57,7 +55,7 @@ bool ProxyConfigDictionary::GetPacUrl(std::string* out) const {
 }
 
 bool ProxyConfigDictionary::GetPacMandatory(bool* out) const {
-  const base::Value* value = dict_.FindKey(kProxyPacMandatory);
+  const base::Value* value = dict_.Find(kProxyPacMandatory);
   if (!value || !value->is_bool()) {
     *out = false;
     return false;
@@ -75,34 +73,35 @@ bool ProxyConfigDictionary::GetBypassList(std::string* out) const {
 }
 
 bool ProxyConfigDictionary::HasBypassList() const {
-  return dict_.FindKey(kProxyBypassList);
+  return dict_.Find(kProxyBypassList);
 }
 
-const base::Value& ProxyConfigDictionary::GetDictionary() const {
+const base::Value::Dict& ProxyConfigDictionary::GetDictionary() const {
   return dict_;
 }
 
 // static
-base::Value ProxyConfigDictionary::CreateDirect() {
+base::Value::Dict ProxyConfigDictionary::CreateDirect() {
   return CreateDictionary(ProxyPrefs::MODE_DIRECT, std::string(), false,
                           std::string(), std::string());
 }
 
 // static
-base::Value ProxyConfigDictionary::CreateAutoDetect() {
+base::Value::Dict ProxyConfigDictionary::CreateAutoDetect() {
   return CreateDictionary(ProxyPrefs::MODE_AUTO_DETECT, std::string(), false,
                           std::string(), std::string());
 }
 
 // static
-base::Value ProxyConfigDictionary::CreatePacScript(const std::string& pac_url,
-                                                   bool pac_mandatory) {
+base::Value::Dict ProxyConfigDictionary::CreatePacScript(
+    const std::string& pac_url,
+    bool pac_mandatory) {
   return CreateDictionary(ProxyPrefs::MODE_PAC_SCRIPT, pac_url, pac_mandatory,
                           std::string(), std::string());
 }
 
 // static
-base::Value ProxyConfigDictionary::CreateFixedServers(
+base::Value::Dict ProxyConfigDictionary::CreateFixedServers(
     const std::string& proxy_server,
     const std::string& bypass_list) {
   if (!proxy_server.empty()) {
@@ -114,28 +113,28 @@ base::Value ProxyConfigDictionary::CreateFixedServers(
 }
 
 // static
-base::Value ProxyConfigDictionary::CreateSystem() {
+base::Value::Dict ProxyConfigDictionary::CreateSystem() {
   return CreateDictionary(ProxyPrefs::MODE_SYSTEM, std::string(), false,
                           std::string(), std::string());
 }
 
 // static
-base::Value ProxyConfigDictionary::CreateDictionary(
+base::Value::Dict ProxyConfigDictionary::CreateDictionary(
     ProxyPrefs::ProxyMode mode,
     const std::string& pac_url,
     bool pac_mandatory,
     const std::string& proxy_server,
     const std::string& bypass_list) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(kProxyMode, base::Value(ProxyModeToString(mode)));
+  base::Value::Dict dict;
+  dict.Set(kProxyMode, base::Value(ProxyModeToString(mode)));
   if (!pac_url.empty()) {
-    dict.SetKey(kProxyPacUrl, base::Value(pac_url));
-    dict.SetKey(kProxyPacMandatory, base::Value(pac_mandatory));
+    dict.Set(kProxyPacUrl, base::Value(pac_url));
+    dict.Set(kProxyPacMandatory, base::Value(pac_mandatory));
   }
   if (!proxy_server.empty())
-    dict.SetKey(kProxyServer, base::Value(proxy_server));
+    dict.Set(kProxyServer, base::Value(proxy_server));
   if (!bypass_list.empty())
-    dict.SetKey(kProxyBypassList, base::Value(bypass_list));
+    dict.Set(kProxyBypassList, base::Value(bypass_list));
   return dict;
 }
 
@@ -158,7 +157,7 @@ void ProxyConfigDictionary::EncodeAndAppendProxyServer(
 }
 
 bool ProxyConfigDictionary::GetString(const char* key, std::string* out) const {
-  const base::Value* value = dict_.FindKey(key);
+  const base::Value* value = dict_.Find(key);
   if (!value || !value->is_string()) {
     *out = "";
     return false;

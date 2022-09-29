@@ -369,7 +369,7 @@ NetworkTypePattern NetworkTypePatternFromOncType(const std::string& type) {
   return NetworkTypePattern::Default();
 }
 
-base::Value ConvertOncProxySettingsToProxyConfig(
+base::Value::Dict ConvertOncProxySettingsToProxyConfig(
     const base::Value& onc_proxy_settings) {
   std::string type = GetString(onc_proxy_settings, ::onc::proxy::kType);
 
@@ -390,7 +390,7 @@ base::Value ConvertOncProxySettingsToProxyConfig(
         onc_proxy_settings.FindKey(::onc::proxy::kManual);
     if (!manual_dict) {
       NET_LOG(ERROR) << "Manual proxy missing dictionary";
-      return base::Value();
+      return base::Value::Dict();
     }
     std::string manual_spec;
     AppendProxyServerForScheme(*manual_dict, ::onc::proxy::kFtp, &manual_spec);
@@ -409,7 +409,7 @@ base::Value ConvertOncProxySettingsToProxyConfig(
                                                      bypass_rules.ToString());
   }
   NOTREACHED();
-  return base::Value();
+  return base::Value::Dict();
 }
 
 base::Value ConvertProxyConfigToOncProxySettings(
@@ -417,7 +417,7 @@ base::Value ConvertProxyConfigToOncProxySettings(
   DCHECK(proxy_config_value.is_dict());
 
   // Create a ProxyConfigDictionary from the dictionary.
-  ProxyConfigDictionary proxy_config(proxy_config_value.Clone());
+  ProxyConfigDictionary proxy_config(proxy_config_value.GetDict().Clone());
 
   // Create the result Value and populate it.
   base::Value proxy_settings(base::Value::Type::DICTIONARY);

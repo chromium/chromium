@@ -329,7 +329,7 @@ class ProxyConfigServiceImplTest : public testing::Test {
     proxy_config_service_.reset();
   }
 
-  base::Value InitConfigWithTestInput(const Input& input) {
+  base::Value::Dict InitConfigWithTestInput(const Input& input) {
     switch (input.mode) {
       case Mode::kDirect:
         return ProxyConfigDictionary::CreateDirect();
@@ -343,10 +343,10 @@ class ProxyConfigServiceImplTest : public testing::Test {
                                                          input.bypass_rules);
     }
     NOTREACHED();
-    return base::Value();
+    return base::Value::Dict();
   }
 
-  void SetUserConfigInShill(const base::Value* pref_proxy_config_dict) {
+  void SetUserConfigInShill(const base::Value::Dict* pref_proxy_config_dict) {
     std::string proxy_config;
     if (pref_proxy_config_dict)
       base::JSONWriter::Write(*pref_proxy_config_dict, &proxy_config);
@@ -392,7 +392,7 @@ TEST_F(ProxyConfigServiceImplTest, NetworkProxy) {
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "] %s", i,
                                     tests[i].description.c_str()));
 
-    base::Value test_config = InitConfigWithTestInput(tests[i].input);
+    base::Value::Dict test_config = InitConfigWithTestInput(tests[i].input);
     SetUserConfigInShill(&test_config);
 
     net::ProxyConfigWithAnnotation config;
@@ -445,10 +445,9 @@ TEST_F(ProxyConfigServiceImplTest, DynamicPrefsOverride) {
         recommended_params.description.c_str(),
         network_params.description.c_str()));
 
-    base::Value managed_config = InitConfigWithTestInput(managed_params.input);
-    base::Value recommended_config =
-        InitConfigWithTestInput(recommended_params.input);
-    base::Value network_config = InitConfigWithTestInput(network_params.input);
+    base::Value managed_config(InitConfigWithTestInput(managed_params.input));
+    base::Value recommended_config(
+        InitConfigWithTestInput(recommended_params.input));
 
     // Managed proxy pref should take effect over recommended proxy and
     // non-existent network proxy.
@@ -477,6 +476,8 @@ TEST_F(ProxyConfigServiceImplTest, DynamicPrefsOverride) {
     EXPECT_TRUE(recommended_params.proxy_rules.Matches(
         actual_config.value().proxy_rules()));
 
+    base::Value::Dict network_config =
+        InitConfigWithTestInput(network_params.input);
     // Network proxy should take take effect over recommended proxy pref.
     SetUserConfigInShill(&network_config);
     SyncGetLatestProxyConfig(&actual_config);

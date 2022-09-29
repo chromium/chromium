@@ -228,40 +228,40 @@ TEST(ExtensionProxyApiHelpers, GetBypassListFromExtensionPref) {
 
 TEST(ExtensionProxyApiHelpers, CreateProxyConfigDict) {
   std::string error;
-  base::Value exp_direct = ProxyConfigDictionary::CreateDirect();
+  base::Value::Dict exp_direct = ProxyConfigDictionary::CreateDirect();
   std::unique_ptr<base::Value> out_direct(CreateProxyConfigDict(
       ProxyPrefs::MODE_DIRECT, false, std::string(), std::string(),
       std::string(), std::string(), &error));
   EXPECT_EQ(exp_direct, *out_direct);
 
-  base::Value exp_auto = ProxyConfigDictionary::CreateAutoDetect();
+  base::Value::Dict exp_auto = ProxyConfigDictionary::CreateAutoDetect();
   std::unique_ptr<base::Value> out_auto(CreateProxyConfigDict(
       ProxyPrefs::MODE_AUTO_DETECT, false, std::string(), std::string(),
       std::string(), std::string(), &error));
   EXPECT_EQ(exp_auto, *out_auto);
 
-  base::Value exp_pac_url =
+  base::Value::Dict exp_pac_url =
       ProxyConfigDictionary::CreatePacScript(kSamplePacScriptUrl, false);
   std::unique_ptr<base::Value> out_pac_url(CreateProxyConfigDict(
       ProxyPrefs::MODE_PAC_SCRIPT, false, kSamplePacScriptUrl, std::string(),
       std::string(), std::string(), &error));
   EXPECT_EQ(exp_pac_url, *out_pac_url);
 
-  base::Value exp_pac_data =
+  base::Value::Dict exp_pac_data =
       ProxyConfigDictionary::CreatePacScript(kSamplePacScriptAsDataUrl, false);
   std::unique_ptr<base::Value> out_pac_data(CreateProxyConfigDict(
       ProxyPrefs::MODE_PAC_SCRIPT, false, std::string(), kSamplePacScript,
       std::string(), std::string(), &error));
   EXPECT_EQ(exp_pac_data, *out_pac_data);
 
-  base::Value exp_fixed =
+  base::Value::Dict exp_fixed =
       ProxyConfigDictionary::CreateFixedServers("foo:80", "localhost");
   std::unique_ptr<base::Value> out_fixed(CreateProxyConfigDict(
       ProxyPrefs::MODE_FIXED_SERVERS, false, std::string(), std::string(),
       "foo:80", "localhost", &error));
   EXPECT_EQ(exp_fixed, *out_fixed);
 
-  base::Value exp_system = ProxyConfigDictionary::CreateSystem();
+  base::Value::Dict exp_system = ProxyConfigDictionary::CreateSystem();
   std::unique_ptr<base::Value> out_system(CreateProxyConfigDict(
       ProxyPrefs::MODE_SYSTEM, false, std::string(), std::string(),
       std::string(), std::string(), &error));

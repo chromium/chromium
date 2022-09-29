@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   EXPECT_TRUE(
       content::NavigateToURL(web_contents(), PublicNonSecureURL(*server)));
 
-  browser()->profile()->GetPrefs()->Set(
+  browser()->profile()->GetPrefs()->SetDict(
       proxy_config::prefs::kProxy,
       ProxyConfigDictionary::CreateFixedServers(
           server->host_port_pair().ToString(), ""));

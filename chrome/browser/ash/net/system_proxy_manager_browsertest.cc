@@ -420,7 +420,7 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
   }
 
   void SetProxyConfigForNetworkService(const std::string& service_path,
-                                       base::Value proxy_config) {
+                                       base::Value::Dict proxy_config) {
     ProxyConfigDictionary proxy_config_dict(std::move(proxy_config));
     DCHECK(NetworkHandler::IsInitialized());
     const NetworkState* network =
@@ -582,10 +582,9 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerPolicyCredentialsBrowserTest,
 IN_PROC_BROWSER_TEST_F(SystemProxyManagerPolicyCredentialsBrowserTest,
                        UserSetProxy) {
   SetPolicyCredentials(kUsername, kPassword);
-  base::Value proxy_config(base::Value::Type::DICTIONARY);
-  proxy_config.SetKey("mode",
-                      base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  proxy_config.SetKey("server", base::Value("proxy:8080"));
+  base::Value::Dict proxy_config;
+  proxy_config.Set("mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
+  proxy_config.Set("server", base::Value("proxy:8080"));
   SetProxyConfigForNetworkService(kDefaultServicePath, std::move(proxy_config));
   RunUntilIdle();
   int set_auth_details_call_count = 0;

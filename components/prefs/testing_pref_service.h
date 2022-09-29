@@ -39,6 +39,8 @@ class TestingPrefServiceBase : public SuperPrefService {
   void SetManagedPref(const std::string& path,
                       std::unique_ptr<base::Value> value);
   void SetManagedPref(const std::string& path, base::Value value);
+  void SetManagedPref(const std::string& path, base::Value::Dict dict);
+  void SetManagedPref(const std::string& path, base::Value::List list);
 
   // Clears the preference on the managed layer and fire observers if the
   // preference has been defined previously.
@@ -48,6 +50,9 @@ class TestingPrefServiceBase : public SuperPrefService {
   const base::Value* GetSupervisedUserPref(const std::string& path) const;
   void SetSupervisedUserPref(const std::string& path,
                              std::unique_ptr<base::Value> value);
+  void SetSupervisedUserPref(const std::string& path, base::Value value);
+  void SetSupervisedUserPref(const std::string& path, base::Value::Dict dict);
+  void SetSupervisedUserPref(const std::string& path, base::Value::List list);
   void RemoveSupervisedUserPref(const std::string& path);
 
   // Similar to the above, but for extension preferences.
@@ -57,12 +62,17 @@ class TestingPrefServiceBase : public SuperPrefService {
   const base::Value* GetExtensionPref(const std::string& path) const;
   void SetExtensionPref(const std::string& path,
                         std::unique_ptr<base::Value> value);
+  void SetExtensionPref(const std::string& path, base::Value value);
+  void SetExtensionPref(const std::string& path, base::Value::Dict dict);
+  void SetExtensionPref(const std::string& path, base::Value::List list);
   void RemoveExtensionPref(const std::string& path);
 
   // Similar to the above, but for user preferences.
   const base::Value* GetUserPref(const std::string& path) const;
   void SetUserPref(const std::string& path, std::unique_ptr<base::Value> value);
   void SetUserPref(const std::string& path, base::Value value);
+  void SetUserPref(const std::string& path, base::Value::Dict dict);
+  void SetUserPref(const std::string& path, base::Value::List list);
   void RemoveUserPref(const std::string& path);
 
   // Similar to the above, but for recommended policy preferences.
@@ -70,6 +80,8 @@ class TestingPrefServiceBase : public SuperPrefService {
   void SetRecommendedPref(const std::string& path,
                           std::unique_ptr<base::Value> value);
   void SetRecommendedPref(const std::string& path, base::Value value);
+  void SetRecommendedPref(const std::string& path, base::Value::Dict dict);
+  void SetRecommendedPref(const std::string& path, base::Value::List list);
   void RemoveRecommendedPref(const std::string& path);
 
   // Do-nothing implementation for TestingPrefService.
@@ -170,6 +182,18 @@ void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
 
 template <class SuperPrefService, class ConstructionPrefRegistry>
 void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetManagedPref(const std::string& path, base::Value::Dict dict) {
+  SetManagedPref(path, std::make_unique<base::Value>(std::move(dict)));
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetManagedPref(const std::string& path, base::Value::List list) {
+  SetManagedPref(path, std::make_unique<base::Value>(std::move(list)));
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
     RemoveManagedPref(const std::string& path) {
   RemovePref(managed_prefs_.get(), path);
 }
@@ -190,6 +214,24 @@ void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
 
 template <class SuperPrefService, class ConstructionPrefRegistry>
 void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetSupervisedUserPref(const std::string& path, base::Value value) {
+  SetSupervisedUserPref(path, base::Value::ToUniquePtrValue(std::move(value)));
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetSupervisedUserPref(const std::string& path, base::Value::Dict dict) {
+  SetSupervisedUserPref(path, std::make_unique<base::Value>(std::move(dict)));
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetSupervisedUserPref(const std::string& path, base::Value::List list) {
+  SetSupervisedUserPref(path, std::make_unique<base::Value>(std::move(list)));
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
     RemoveSupervisedUserPref(const std::string& path) {
   RemovePref(supervised_user_prefs_.get(), path);
 }
@@ -206,6 +248,24 @@ void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
     SetExtensionPref(const std::string& path,
                      std::unique_ptr<base::Value> value) {
   SetPref(extension_prefs_.get(), path, std::move(value));
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetExtensionPref(const std::string& path, base::Value value) {
+  SetExtensionPref(path, base::Value::ToUniquePtrValue(std::move(value)));
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetExtensionPref(const std::string& path, base::Value::Dict dict) {
+  SetExtensionPref(path, std::make_unique<base::Value>(std::move(dict)));
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetExtensionPref(const std::string& path, base::Value::List list) {
+  SetExtensionPref(path, std::make_unique<base::Value>(std::move(list)));
 }
 
 template <class SuperPrefService, class ConstructionPrefRegistry>
@@ -235,6 +295,18 @@ void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
 
 template <class SuperPrefService, class ConstructionPrefRegistry>
 void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetUserPref(const std::string& path, base::Value::Dict dict) {
+  SetUserPref(path, std::make_unique<base::Value>(std::move(dict)));
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetUserPref(const std::string& path, base::Value::List list) {
+  SetUserPref(path, std::make_unique<base::Value>(std::move(list)));
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
     RemoveUserPref(const std::string& path) {
   RemovePref(user_prefs_.get(), path);
 }
@@ -258,6 +330,18 @@ void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
     SetRecommendedPref(const std::string& path, base::Value value) {
   SetPref(recommended_prefs_.get(), path,
           base::Value::ToUniquePtrValue(std::move(value)));
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetRecommendedPref(const std::string& path, base::Value::Dict dict) {
+  SetRecommendedPref(path, std::make_unique<base::Value>(std::move(dict)));
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetRecommendedPref(const std::string& path, base::Value::List list) {
+  SetRecommendedPref(path, std::make_unique<base::Value>(std::move(list)));
 }
 
 template <class SuperPrefService, class ConstructionPrefRegistry>

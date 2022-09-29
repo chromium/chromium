@@ -88,7 +88,7 @@ std::unique_ptr<ProxyConfigDictionary> GetProxyConfigForNetwork(
   const base::Value& value = network.proxy_config();
   if (value.is_none())
     return nullptr;
-  return std::make_unique<ProxyConfigDictionary>(value.Clone());
+  return std::make_unique<ProxyConfigDictionary>(value.GetDict().Clone());
 }
 
 void SetProxyConfigForNetwork(const ProxyConfigDictionary& proxy_config,

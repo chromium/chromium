@@ -1088,10 +1088,8 @@ TEST_F(ManagementUIHandlerTests, ShowProxyServerDisclosure) {
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
   ash::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
                                                      &local_state_);
-  base::Value policy_prefs_config = ProxyConfigDictionary::CreateAutoDetect();
-  user_prefs_.SetUserPref(
-      proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(policy_prefs_config)));
+  user_prefs_.SetUserPref(proxy_config::prefs::kProxy,
+                          ProxyConfigDictionary::CreateAutoDetect());
   base::RunLoop().RunUntilIdle();
 
   GetTestConfig().managed_device = true;
@@ -1135,10 +1133,8 @@ TEST_F(ManagementUIHandlerTests, HideProxyServerDisclosureForDirectProxy) {
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
   ash::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
                                                      &local_state_);
-  base::Value policy_prefs_config = ProxyConfigDictionary::CreateDirect();
-  user_prefs_.SetUserPref(
-      proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(policy_prefs_config)));
+  user_prefs_.SetUserPref(proxy_config::prefs::kProxy,
+                          ProxyConfigDictionary::CreateDirect());
   base::RunLoop().RunUntilIdle();
 
   GetTestConfig().managed_device = true;

@@ -14,12 +14,13 @@ namespace {
 
 constexpr char kPacUrl[] = "http://pac.pac/";
 
-base::Value GetPacProxyConfig(const std::string& pac_url, bool pac_mandatory) {
+base::Value::Dict GetPacProxyConfig(const std::string& pac_url,
+                                    bool pac_mandatory) {
   return ProxyConfigDictionary::CreatePacScript(pac_url, pac_mandatory);
 }
 
-base::Value GetManualProxyConfig(const std::string& proxy_servers,
-                                 const std::string& bypass_list) {
+base::Value::Dict GetManualProxyConfig(const std::string& proxy_servers,
+                                       const std::string& bypass_list) {
   return ProxyConfigDictionary::CreateFixedServers(proxy_servers, bypass_list);
 }
 

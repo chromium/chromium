@@ -102,7 +102,7 @@ bool GetHttpProxyServer(const ProxyConfigDictionary* proxy_config_dict,
 }
 
 bool IsProxyAutoDetectionConfigured(const base::Value& proxy_config_dict) {
-  ProxyConfigDictionary dict(proxy_config_dict.Clone());
+  ProxyConfigDictionary dict(proxy_config_dict.GetDict().Clone());
   ProxyPrefs::ProxyMode mode;
   dict.GetMode(&mode);
   return mode == ProxyPrefs::MODE_AUTO_DETECT;

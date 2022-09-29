@@ -265,7 +265,7 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
 
   const base::Value::Dict& dict =
       pref_service->GetDict(proxy_config::prefs::kProxy);
-  ProxyConfigDictionary proxy_dict(base::Value(dict.Clone()));
+  ProxyConfigDictionary proxy_dict(dict.Clone());
 
   if (PrefConfigToNetConfig(proxy_dict, config)) {
     if (!pref->IsUserModifiable() || pref->HasUserSetting()) {

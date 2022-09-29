@@ -462,9 +462,9 @@ class NetworkContextConfigurationBrowserTest
   // Sets the proxy preference on a PrefService based on the NetworkContextType,
   // and waits for it to be applied.
   void SetProxyPref(const net::HostPortPair& host_port_pair) {
-    GetPrefService()->Set(proxy_config::prefs::kProxy,
-                          ProxyConfigDictionary::CreateFixedServers(
-                              host_port_pair.ToString(), std::string()));
+    GetPrefService()->SetDict(proxy_config::prefs::kProxy,
+                              ProxyConfigDictionary::CreateFixedServers(
+                                  host_port_pair.ToString(), std::string()));
 
     // Wait for the new ProxyConfig to be passed over the pipe. Needed because
     // Mojo doesn't guarantee ordering of events on different Mojo pipes, and

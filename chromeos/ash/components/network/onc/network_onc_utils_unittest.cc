@@ -46,10 +46,9 @@ TEST(ONCUtils, ProxySettingsToProxyConfig) {
         test_case.FindKey("ONC_ProxySettings");
     ASSERT_TRUE(onc_proxy_settings);
 
-    base::Value actual_proxy_config =
+    base::Value::Dict actual_proxy_config =
         ConvertOncProxySettingsToProxyConfig(*onc_proxy_settings);
-    EXPECT_TRUE(
-        test_utils::Equals(expected_proxy_config, &actual_proxy_config));
+    EXPECT_EQ(*expected_proxy_config, actual_proxy_config);
   }
 }
 

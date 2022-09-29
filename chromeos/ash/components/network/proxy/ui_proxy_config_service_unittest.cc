@@ -211,11 +211,9 @@ TEST_F(UIProxyConfigServiceTest,
 TEST_F(UIProxyConfigServiceTest, ExtensionProxyNotMergedForUnconfiguredNetork) {
   std::unique_ptr<UIProxyConfigService> service = CreateServiceOffLocalState();
 
-  base::Value extension_prefs_config =
-      ProxyConfigDictionary::CreatePacScript("http://pac/script.pac", true);
   user_prefs_.SetExtensionPref(
       proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(extension_prefs_config)));
+      ProxyConfigDictionary::CreatePacScript("http://pac/script.pac", true));
 
   base::Value::Dict config;
   EXPECT_FALSE(
@@ -396,11 +394,9 @@ TEST_F(UIProxyConfigServiceTest, ManualPolicyPrefWithPacPreset) {
 TEST_F(UIProxyConfigServiceTest, PacExtensionPref) {
   std::unique_ptr<UIProxyConfigService> service = CreateServiceForUser();
 
-  base::Value extension_prefs_config =
-      ProxyConfigDictionary::CreatePacScript("http://pac/script.pac", true);
   user_prefs_.SetExtensionPref(
       proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(extension_prefs_config)));
+      ProxyConfigDictionary::CreatePacScript("http://pac/script.pac", true));
 
   base::Value::Dict config;
   EXPECT_TRUE(service->MergeEnforcedProxyConfig(kTestUserWifiGuid, &config));
@@ -419,11 +415,8 @@ TEST_F(UIProxyConfigServiceTest, PacExtensionPref) {
 TEST_F(UIProxyConfigServiceTest, AutoDetectExtensionPref) {
   std::unique_ptr<UIProxyConfigService> service = CreateServiceForUser();
 
-  base::Value extension_prefs_config =
-      ProxyConfigDictionary::CreateAutoDetect();
-  user_prefs_.SetExtensionPref(
-      proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(extension_prefs_config)));
+  user_prefs_.SetExtensionPref(proxy_config::prefs::kProxy,
+                               ProxyConfigDictionary::CreateAutoDetect());
 
   base::Value::Dict config;
   EXPECT_TRUE(service->MergeEnforcedProxyConfig(kTestUserWifiGuid, &config));
@@ -439,10 +432,8 @@ TEST_F(UIProxyConfigServiceTest, AutoDetectExtensionPref) {
 TEST_F(UIProxyConfigServiceTest, DirectExtensionPref) {
   std::unique_ptr<UIProxyConfigService> service = CreateServiceForUser();
 
-  base::Value extension_prefs_config = ProxyConfigDictionary::CreateDirect();
-  user_prefs_.SetExtensionPref(
-      proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(extension_prefs_config)));
+  user_prefs_.SetExtensionPref(proxy_config::prefs::kProxy,
+                               ProxyConfigDictionary::CreateDirect());
 
   base::Value::Dict config;
   EXPECT_TRUE(service->MergeEnforcedProxyConfig(kTestUserWifiGuid, &config));
@@ -458,12 +449,10 @@ TEST_F(UIProxyConfigServiceTest, DirectExtensionPref) {
 TEST_F(UIProxyConfigServiceTest, ManualExtensionPref) {
   std::unique_ptr<UIProxyConfigService> service = CreateServiceForUser();
 
-  base::Value extension_prefs_config =
-      ProxyConfigDictionary::CreateFixedServers(
-          "http=proxy1:81;https=proxy2:82;socks=proxy3:81", "localhost");
   user_prefs_.SetExtensionPref(
       proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(extension_prefs_config)));
+      ProxyConfigDictionary::CreateFixedServers(
+          "http=proxy1:81;https=proxy2:82;socks=proxy3:81", "localhost"));
 
   base::Value::Dict config;
   EXPECT_TRUE(service->MergeEnforcedProxyConfig(kTestUserWifiGuid, &config));
@@ -494,11 +483,9 @@ TEST_F(UIProxyConfigServiceTest, ManualExtensionPref) {
 TEST_F(UIProxyConfigServiceTest, ExtensionProxyOverridesDefault) {
   std::unique_ptr<UIProxyConfigService> service = CreateServiceForUser();
 
-  base::Value extension_prefs_config = ProxyConfigDictionary::CreatePacScript(
-      "http://extension/script.pac", true);
-  user_prefs_.SetExtensionPref(
-      proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(extension_prefs_config)));
+  user_prefs_.SetExtensionPref(proxy_config::prefs::kProxy,
+                               ProxyConfigDictionary::CreatePacScript(
+                                   "http://extension/script.pac", true));
 
   std::string config_json = base::ReplaceStringPlaceholders(
       R"({"Type": $1, "PAC": $2})",
@@ -532,11 +519,8 @@ TEST_F(UIProxyConfigServiceTest, PolicyPrefOverridesExtensionPref) {
                              ProxyConfigDictionary::CreatePacScript(
                                  "http://managed/script.pac", true));
 
-  base::Value extension_prefs_config =
-      ProxyConfigDictionary::CreateAutoDetect();
-  user_prefs_.SetExtensionPref(
-      proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(extension_prefs_config)));
+  user_prefs_.SetExtensionPref(proxy_config::prefs::kProxy,
+                               ProxyConfigDictionary::CreateAutoDetect());
 
   base::Value::Dict config;
   EXPECT_TRUE(service->MergeEnforcedProxyConfig(kTestUserWifiGuid, &config));
@@ -572,11 +556,8 @@ TEST_F(UIProxyConfigServiceTest, PolicyPrefForSharedNetwork) {
 TEST_F(UIProxyConfigServiceTest, ExtensionPrefForSharedNetwork) {
   std::unique_ptr<UIProxyConfigService> service = CreateServiceForUser();
 
-  base::Value extension_prefs_config =
-      ProxyConfigDictionary::CreateAutoDetect();
-  user_prefs_.SetExtensionPref(
-      proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(extension_prefs_config)));
+  user_prefs_.SetExtensionPref(proxy_config::prefs::kProxy,
+                               ProxyConfigDictionary::CreateAutoDetect());
 
   base::Value::Dict config;
   EXPECT_TRUE(service->MergeEnforcedProxyConfig(kTestSharedWifiGuid, &config));
@@ -940,11 +921,9 @@ TEST_F(UIProxyConfigServiceTest, PolicyPrefOverridesOncPolicy) {
 TEST_F(UIProxyConfigServiceTest, ExtensionPrefOverridesOncPolicy) {
   std::unique_ptr<UIProxyConfigService> service = CreateServiceForUser();
 
-  base::Value extension_prefs_config =
-      ProxyConfigDictionary::CreatePacScript("http://pac/script.pac", true);
   user_prefs_.SetExtensionPref(
       proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(extension_prefs_config)));
+      ProxyConfigDictionary::CreatePacScript("http://pac/script.pac", true));
 
   const std::string user_onc_config = base::ReplaceStringPlaceholders(
       R"([{"GUID": "$1", "Type": "WiFi", "ProxySettings": {"Type": "WPAD"}}])",

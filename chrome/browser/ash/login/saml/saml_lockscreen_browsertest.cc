@@ -684,10 +684,9 @@ class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
   // Configure settings which are neccesarry for `NetworkStateInformer` to
   // report `NetworkStateInformer::PROXY_AUTH_REQUIRED` in the tests.
   void ConfigureNetworkBehindProxy() {
-    base::Value proxy_config = ProxyConfigDictionary::CreateFixedServers(
-        proxy_server_.host_port_pair().ToString(), "");
-
-    ProxyConfigDictionary proxy_config_dict(std::move(proxy_config));
+    ProxyConfigDictionary proxy_config_dict(
+        ProxyConfigDictionary::CreateFixedServers(
+            proxy_server_.host_port_pair().ToString(), ""));
     const NetworkState* network =
         network_state_test_helper_->network_state_handler()->DefaultNetwork();
     ASSERT_TRUE(network);

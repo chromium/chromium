@@ -13,16 +13,13 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/components/onc/variable_expander.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/scoped_nss_types.h"
 
 class PrefService;
-
-namespace base {
-class Value;
-}
 
 namespace chromeos::onc {
 struct OncValueSignature;
@@ -45,7 +42,7 @@ NetworkTypePattern NetworkTypePatternFromOncType(const std::string& type);
 // Translates |onc_proxy_settings|, which must be a valid ONC ProxySettings
 // dictionary, to a ProxyConfig dictionary (see proxy_config_dictionary.h).
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-base::Value ConvertOncProxySettingsToProxyConfig(
+base::Value::Dict ConvertOncProxySettingsToProxyConfig(
     const base::Value& onc_proxy_settings);
 
 // Translates |proxy_config_value|, which must be a valid ProxyConfig dictionary

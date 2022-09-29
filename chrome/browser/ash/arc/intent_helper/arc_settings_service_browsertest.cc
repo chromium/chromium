@@ -192,7 +192,7 @@ constexpr char kSetProxyBroadcastAction[] =
 // all their extras match with |extras|.
 int CountProxyBroadcasts(
     const std::vector<FakeIntentHelperInstance::Broadcast>& broadcasts,
-    const std::vector<base::Value*> extras) {
+    const std::vector<base::Value::Dict*>& extras) {
   unsigned long count = 0;
   for (const FakeIntentHelperInstance::Broadcast& broadcast : broadcasts) {
     if (broadcast.action == kSetProxyBroadcastAction) {
@@ -300,7 +300,7 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
   }
 
   void SetProxyConfigForNetworkService(const std::string& service_path,
-                                       base::Value proxy_config) {
+                                       base::Value::Dict proxy_config) {
     ProxyConfigDictionary proxy_config_dict(std::move(proxy_config));
     const ash::NetworkState* network =
         ash::NetworkHandler::Get()->network_state_handler()->GetNetworkState(
@@ -484,10 +484,10 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, ProxyModePolicyTest) {
              base::Value(ProxyPrefs::kAutoDetectProxyModeName), nullptr);
   UpdatePolicy(policy);
 
-  base::Value expected_proxy_config(base::Value::Type::DICTIONARY);
-  expected_proxy_config.SetKey(
-      "mode", base::Value(ProxyPrefs::kAutoDetectProxyModeName));
-  expected_proxy_config.SetKey("pacUrl", base::Value("http://wpad/wpad.dat"));
+  base::Value::Dict expected_proxy_config;
+  expected_proxy_config.Set("mode",
+                            base::Value(ProxyPrefs::kAutoDetectProxyModeName));
+  expected_proxy_config.Set("pacUrl", base::Value("http://wpad/wpad.dat"));
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
                                  {&expected_proxy_config}),
             1);
@@ -502,10 +502,10 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, ONCProxyPolicyTest) {
              policy::POLICY_SOURCE_CLOUD, base::Value(kONCPolicy), nullptr);
   UpdatePolicy(policy);
 
-  base::Value expected_proxy_config(base::Value::Type::DICTIONARY);
-  expected_proxy_config.SetKey(
-      "mode", base::Value(ProxyPrefs::kPacScriptProxyModeName));
-  expected_proxy_config.SetKey("pacUrl", base::Value(kONCPacUrl));
+  base::Value::Dict expected_proxy_config;
+  expected_proxy_config.Set("mode",
+                            base::Value(ProxyPrefs::kPacScriptProxyModeName));
+  expected_proxy_config.Set("pacUrl", base::Value(kONCPacUrl));
 
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
                                  {&expected_proxy_config}),
@@ -524,10 +524,10 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest,
              policy::POLICY_SOURCE_CLOUD, base::Value(kONCPolicy), nullptr);
   UpdatePolicy(policy);
 
-  base::Value expected_proxy_config(base::Value::Type::DICTIONARY);
-  expected_proxy_config.SetKey(
-      "mode", base::Value(ProxyPrefs::kPacScriptProxyModeName));
-  expected_proxy_config.SetKey("pacUrl", base::Value(kONCPacUrl));
+  base::Value::Dict expected_proxy_config;
+  expected_proxy_config.Set("mode",
+                            base::Value(ProxyPrefs::kPacScriptProxyModeName));
+  expected_proxy_config.Set("pacUrl", base::Value(kONCPacUrl));
 
   // Set the user preference to indicate that ARC should connect to
   // System-proxy.
@@ -536,11 +536,11 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest,
       base::Value("local_proxy:3128"));
   RunUntilIdle();
 
-  base::Value expected_proxy_config_system_proxy(base::Value::Type::DICTIONARY);
-  expected_proxy_config_system_proxy.SetKey(
+  base::Value::Dict expected_proxy_config_system_proxy;
+  expected_proxy_config_system_proxy.Set(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  expected_proxy_config_system_proxy.SetKey("host", base::Value("local_proxy"));
-  expected_proxy_config_system_proxy.SetIntKey("port", 3128);
+  expected_proxy_config_system_proxy.Set("host", base::Value("local_proxy"));
+  expected_proxy_config_system_proxy.Set("port", 3128);
 
   // Unset the System-proxy preference to verify that ARC syncs proxy configs
   // correctly when System-proxy is disabled.
@@ -576,9 +576,9 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest,
       base::Value("local_proxy:3128"));
   RunUntilIdle();
 
-  base::Value expected_proxy_config(base::Value::Type::DICTIONARY);
-  expected_proxy_config.SetKey("mode",
-                               base::Value(ProxyPrefs::kDirectProxyModeName));
+  base::Value::Dict expected_proxy_config;
+  expected_proxy_config.Set("mode",
+                            base::Value(ProxyPrefs::kDirectProxyModeName));
 
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
                                  {&expected_proxy_config}),
@@ -599,9 +599,8 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, TwoSourcesTest) {
              base::Value("proxy:8888"), nullptr);
   UpdatePolicy(policy);
 
-  base::Value proxy_config(base::Value::Type::DICTIONARY);
-  proxy_config.SetKey("mode",
-                      base::Value(ProxyPrefs::kAutoDetectProxyModeName));
+  base::Value::Dict proxy_config;
+  proxy_config.Set("mode", base::Value(ProxyPrefs::kAutoDetectProxyModeName));
   ProxyConfigDictionary proxy_config_dict(std::move(proxy_config));
   const ash::NetworkState* network =
       ash::NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
@@ -609,11 +608,11 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, TwoSourcesTest) {
   ash::proxy_config::SetProxyConfigForNetwork(proxy_config_dict, *network);
   RunUntilIdle();
 
-  base::Value expected_proxy_config(base::Value::Type::DICTIONARY);
-  expected_proxy_config.SetKey(
+  base::Value::Dict expected_proxy_config;
+  expected_proxy_config.Set(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  expected_proxy_config.SetKey("host", base::Value("proxy"));
-  expected_proxy_config.SetKey("port", base::Value(8888));
+  expected_proxy_config.Set("host", base::Value("proxy"));
+  expected_proxy_config.Set("port", base::Value(8888));
 
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
                                  {&expected_proxy_config}),
@@ -623,17 +622,17 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, TwoSourcesTest) {
 IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, ProxyPrefTest) {
   fake_intent_helper_instance_->clear_broadcasts();
 
-  base::Value proxy_config(base::Value::Type::DICTIONARY);
-  proxy_config.SetKey("mode", base::Value(ProxyPrefs::kPacScriptProxyModeName));
-  proxy_config.SetKey("pac_url", base::Value("http://proxy"));
-  browser()->profile()->GetPrefs()->Set(proxy_config::prefs::kProxy,
-                                        proxy_config);
+  base::Value::Dict proxy_config;
+  proxy_config.Set("mode", base::Value(ProxyPrefs::kPacScriptProxyModeName));
+  proxy_config.Set("pac_url", base::Value("http://proxy"));
+  browser()->profile()->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
+                                            std::move(proxy_config));
   RunUntilIdle();
 
-  base::Value expected_proxy_config(base::Value::Type::DICTIONARY);
-  expected_proxy_config.SetKey(
-      "mode", base::Value(ProxyPrefs::kPacScriptProxyModeName));
-  expected_proxy_config.SetKey("pacUrl", base::Value("http://proxy"));
+  base::Value::Dict expected_proxy_config;
+  expected_proxy_config.Set("mode",
+                            base::Value(ProxyPrefs::kPacScriptProxyModeName));
+  expected_proxy_config.Set("pacUrl", base::Value("http://proxy"));
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
                                  {&expected_proxy_config}),
             1);
@@ -642,18 +641,17 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, ProxyPrefTest) {
 IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, DefaultNetworkProxyConfigTest) {
   fake_intent_helper_instance_->clear_broadcasts();
 
-  base::Value proxy_config(base::Value::Type::DICTIONARY);
-  proxy_config.SetKey("mode",
-                      base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  proxy_config.SetKey("server", base::Value("proxy:8080"));
+  base::Value::Dict proxy_config;
+  proxy_config.Set("mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
+  proxy_config.Set("server", base::Value("proxy:8080"));
   SetProxyConfigForNetworkService(kDefaultServicePath, std::move(proxy_config));
   RunUntilIdle();
 
-  base::Value expected_proxy_config(base::Value::Type::DICTIONARY);
-  expected_proxy_config.SetKey(
+  base::Value::Dict expected_proxy_config;
+  expected_proxy_config.Set(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  expected_proxy_config.SetKey("host", base::Value("proxy"));
-  expected_proxy_config.SetKey("port", base::Value(8080));
+  expected_proxy_config.Set("host", base::Value("proxy"));
+  expected_proxy_config.Set("port", base::Value(8080));
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
                                  {&expected_proxy_config}),
             1);
@@ -672,21 +670,20 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest,
 
   const char kArcProxyBypassList[] = "test1.org,test2.org";
 
-  base::Value proxy_config(base::Value::Type::DICTIONARY);
-  proxy_config.SetKey("mode",
-                      base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  proxy_config.SetKey("server", base::Value("proxy:8080"));
-  proxy_config.SetKey("bypass_list",
-                      base::Value(chrome_proxy_bypass_rules.ToString()));
+  base::Value::Dict proxy_config;
+  proxy_config.Set("mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
+  proxy_config.Set("server", base::Value("proxy:8080"));
+  proxy_config.Set("bypass_list",
+                   base::Value(chrome_proxy_bypass_rules.ToString()));
   SetProxyConfigForNetworkService(kDefaultServicePath, std::move(proxy_config));
   RunUntilIdle();
 
-  base::Value expected_proxy_config(base::Value::Type::DICTIONARY);
-  expected_proxy_config.SetKey(
+  base::Value::Dict expected_proxy_config;
+  expected_proxy_config.Set(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  expected_proxy_config.SetKey("host", base::Value("proxy"));
-  expected_proxy_config.SetKey("port", base::Value(8080));
-  expected_proxy_config.SetKey("bypassList", base::Value(kArcProxyBypassList));
+  expected_proxy_config.Set("host", base::Value("proxy"));
+  expected_proxy_config.Set("port", base::Value(8080));
+  expected_proxy_config.Set("bypassList", base::Value(kArcProxyBypassList));
 
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
                                  {&expected_proxy_config}),
@@ -697,30 +694,29 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, DefaultNetworkDisconnectedTest) {
   ConnectWifiNetworkService(kWifi0ServicePath, kWifi0Guid, kWifi0Ssid);
   fake_intent_helper_instance_->clear_broadcasts();
   // Set proxy confog for default network.
-  base::Value default_proxy_config(base::Value::Type::DICTIONARY);
-  default_proxy_config.SetKey(
-      "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  default_proxy_config.SetKey("server", base::Value("default.proxy.test:8080"));
+  base::Value::Dict default_proxy_config;
+  default_proxy_config.Set("mode",
+                           base::Value(ProxyPrefs::kFixedServersProxyModeName));
+  default_proxy_config.Set("server", base::Value("default.proxy.test:8080"));
   SetProxyConfigForNetworkService(kDefaultServicePath,
                                   std::move(default_proxy_config));
   RunUntilIdle();
 
   // Set proxy confog for WI-FI network.
-  base::Value wifi_proxy_config(base::Value::Type::DICTIONARY);
-  wifi_proxy_config.SetKey("mode",
-                           base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  wifi_proxy_config.SetKey("server", base::Value("wifi.proxy.test:8080"));
+  base::Value::Dict wifi_proxy_config;
+  wifi_proxy_config.Set("mode",
+                        base::Value(ProxyPrefs::kFixedServersProxyModeName));
+  wifi_proxy_config.Set("server", base::Value("wifi.proxy.test:8080"));
   SetProxyConfigForNetworkService(kWifi0ServicePath,
                                   std::move(wifi_proxy_config));
   RunUntilIdle();
 
   // Observe default network proxy config broadcast.
-  base::Value expected_default_proxy_config(base::Value::Type::DICTIONARY);
-  expected_default_proxy_config.SetKey(
+  base::Value::Dict expected_default_proxy_config;
+  expected_default_proxy_config.Set(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  expected_default_proxy_config.SetKey("host",
-                                       base::Value("default.proxy.test"));
-  expected_default_proxy_config.SetKey("port", base::Value(8080));
+  expected_default_proxy_config.Set("host", base::Value("default.proxy.test"));
+  expected_default_proxy_config.Set("port", base::Value(8080));
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
                                  {&expected_default_proxy_config}),
             1);
@@ -730,11 +726,11 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, DefaultNetworkDisconnectedTest) {
   DisconnectNetworkService(kDefaultServicePath);
 
   // Observe WI-FI network proxy config broadcast.
-  base::Value expected_wifi_proxy_config(base::Value::Type::DICTIONARY);
-  expected_wifi_proxy_config.SetKey(
+  base::Value::Dict expected_wifi_proxy_config;
+  expected_wifi_proxy_config.Set(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  expected_wifi_proxy_config.SetKey("host", base::Value("wifi.proxy.test"));
-  expected_wifi_proxy_config.SetKey("port", base::Value(8080));
+  expected_wifi_proxy_config.Set("host", base::Value("wifi.proxy.test"));
+  expected_wifi_proxy_config.Set("port", base::Value(8080));
 
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
                                  {&expected_wifi_proxy_config}),
@@ -769,14 +765,14 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, TwoONCProxyPolicyTest) {
              nullptr);
   UpdatePolicy(policy);
 
-  base::Value expected_proxy_config(base::Value::Type::DICTIONARY);
-  expected_proxy_config.SetKey(
+  base::Value::Dict expected_proxy_config;
+  expected_proxy_config.Set(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  expected_proxy_config.SetKey("host", base::Value("proxy"));
-  expected_proxy_config.SetKey("port", base::Value(5000));
+  expected_proxy_config.Set("host", base::Value("proxy"));
+  expected_proxy_config.Set("port", base::Value(5000));
 
-  base::Value expected_proxy_config_direct(base::Value::Type::DICTIONARY);
-  expected_proxy_config_direct.SetKey(
+  base::Value::Dict expected_proxy_config_direct;
+  expected_proxy_config_direct.Set(
       "mode", base::Value(ProxyPrefs::kDirectProxyModeName));
 
   EXPECT_EQ(CountProxyBroadcasts(
@@ -790,10 +786,10 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, TwoONCProxyPolicyTest) {
   // Connect to wifi0 with appliead user ONC policy.
   ConnectWifiNetworkService(kWifi0ServicePath, kWifi0Guid, kWifi0Ssid);
 
-  expected_proxy_config.SetKey(
+  expected_proxy_config.Set(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  expected_proxy_config.SetKey("host", base::Value("proxy-n300"));
-  expected_proxy_config.SetKey("port", base::Value(3000));
+  expected_proxy_config.Set("host", base::Value("proxy-n300"));
+  expected_proxy_config.Set("port", base::Value(3000));
 
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
                                  {&expected_proxy_config}),
@@ -805,18 +801,18 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, TwoONCProxyPolicyTest) {
 IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, ProxySyncUnmanagedDevice) {
   fake_intent_helper_instance_->clear_broadcasts();
 
-  std::vector<base::Value*> expected_proxy_configs;
-  base::Value expected_proxy_config1(base::Value::Type::DICTIONARY);
-  expected_proxy_config1.SetKey(
+  std::vector<base::Value::Dict*> expected_proxy_configs;
+  base::Value::Dict expected_proxy_config1;
+  expected_proxy_config1.Set(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  expected_proxy_config1.SetKey("host", base::Value("proxy"));
-  expected_proxy_config1.SetKey("port", base::Value(1111));
+  expected_proxy_config1.Set("host", base::Value("proxy"));
+  expected_proxy_config1.Set("port", base::Value(1111));
 
-  base::Value expected_proxy_config2(base::Value::Type::DICTIONARY);
-  expected_proxy_config2.SetKey(
+  base::Value::Dict expected_proxy_config2;
+  expected_proxy_config2.Set(
       "mode", base::Value(ProxyPrefs::kFixedServersProxyModeName));
-  expected_proxy_config2.SetKey("host", base::Value("proxy"));
-  expected_proxy_config2.SetKey("port", base::Value(2222));
+  expected_proxy_config2.Set("host", base::Value("proxy"));
+  expected_proxy_config2.Set("port", base::Value(2222));
 
   // The number of times to sync is randomly chosen. The only constraint is that
   // it has to be larger than two, as the proxy settings will be synced once at
@@ -824,19 +820,19 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, ProxySyncUnmanagedDevice) {
   int proxy_sync_count = 10;
 
   for (int i = 0; i < proxy_sync_count; i += 2) {
-    base::Value proxy_config1(base::Value::Type::DICTIONARY);
-    proxy_config1.SetKey("mode",
-                         base::Value(ProxyPrefs::kFixedServersProxyModeName));
-    proxy_config1.SetKey("server", base::Value("proxy:1111"));
+    base::Value::Dict proxy_config1;
+    proxy_config1.Set("mode",
+                      base::Value(ProxyPrefs::kFixedServersProxyModeName));
+    proxy_config1.Set("server", base::Value("proxy:1111"));
     SetProxyConfigForNetworkService(kDefaultServicePath,
                                     std::move(proxy_config1));
     expected_proxy_configs.push_back(&expected_proxy_config1);
     RunUntilIdle();
 
-    base::Value proxy_config2(base::Value::Type::DICTIONARY);
-    proxy_config2.SetKey("mode",
-                         base::Value(ProxyPrefs::kFixedServersProxyModeName));
-    proxy_config2.SetKey("server", base::Value("proxy:2222"));
+    base::Value::Dict proxy_config2;
+    proxy_config2.Set("mode",
+                      base::Value(ProxyPrefs::kFixedServersProxyModeName));
+    proxy_config2.Set("server", base::Value("proxy:2222"));
     SetProxyConfigForNetworkService(kDefaultServicePath,
                                     std::move(proxy_config2));
     expected_proxy_configs.push_back(&expected_proxy_config2);
@@ -853,11 +849,11 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, WebProxyAutoDiscovery) {
 
   // Set the proxy config to use auto-discovery. There's no PAC URL set via DHCP
   // so the URL "http://wpad/wpad.dat" set via DNS will be propagated to ARC.
-  base::Value proxy_config_wpad(base::Value::Type::DICTIONARY);
-  proxy_config_wpad.SetKey("mode",
-                           base::Value(ProxyPrefs::kAutoDetectProxyModeName));
-  browser()->profile()->GetPrefs()->Set(proxy_config::prefs::kProxy,
-                                        proxy_config_wpad);
+  base::Value::Dict proxy_config_wpad;
+  proxy_config_wpad.Set("mode",
+                        base::Value(ProxyPrefs::kAutoDetectProxyModeName));
+  browser()->profile()->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
+                                            std::move(proxy_config_wpad));
 
   RunUntilIdle();
   const char kWebProxyAutodetectionUrl[] = "www.proxyurl.com:443";
@@ -867,11 +863,12 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, WebProxyAutoDiscovery) {
 
   // Set the WPAD DHCP URL. This should now have precedence over the PAC URL set
   // via DNS.
-  base::Value wpad_config(base::Value::Type::DICTIONARY);
-  wpad_config.SetKey(shill::kWebProxyAutoDiscoveryUrlProperty,
-                     base::Value(kWebProxyAutodetectionUrl));
+  base::Value::Dict wpad_config;
+  wpad_config.Set(shill::kWebProxyAutoDiscoveryUrlProperty,
+                  base::Value(kWebProxyAutodetectionUrl));
   const std::string kIPConfigPath = "test_ip_config";
-  ip_config_client->AddIPConfig(kIPConfigPath, wpad_config);
+  ip_config_client->AddIPConfig(kIPConfigPath,
+                                base::Value(std::move(wpad_config)));
 
   ash::ShillServiceClient::TestInterface* service_test =
       ash::ShillServiceClient::Get()->GetTestInterface();
@@ -882,27 +879,27 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, WebProxyAutoDiscovery) {
   RunUntilIdle();
 
   // Remove the proxy.
-  base::Value proxy_config_direct(base::Value::Type::DICTIONARY);
-  proxy_config_direct.SetKey("mode",
-                             base::Value(ProxyPrefs::kDirectProxyModeName));
-  browser()->profile()->GetPrefs()->Set(proxy_config::prefs::kProxy,
-                                        proxy_config_direct);
+  base::Value::Dict proxy_config_direct;
+  proxy_config_direct.Set("mode",
+                          base::Value(ProxyPrefs::kDirectProxyModeName));
+  browser()->profile()->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
+                                            std::move(proxy_config_direct));
 
   RunUntilIdle();
-  base::Value expected_proxy_config_wpad_dns(base::Value::Type::DICTIONARY);
-  expected_proxy_config_wpad_dns.SetKey(
+  base::Value::Dict expected_proxy_config_wpad_dns;
+  expected_proxy_config_wpad_dns.Set(
       "mode", base::Value(ProxyPrefs::kAutoDetectProxyModeName));
-  expected_proxy_config_wpad_dns.SetKey("pacUrl",
-                                        base::Value("http://wpad/wpad.dat"));
+  expected_proxy_config_wpad_dns.Set("pacUrl",
+                                     base::Value("http://wpad/wpad.dat"));
 
-  base::Value expected_proxy_config_wpad_dhcp(base::Value::Type::DICTIONARY);
-  expected_proxy_config_wpad_dhcp.SetKey(
+  base::Value::Dict expected_proxy_config_wpad_dhcp;
+  expected_proxy_config_wpad_dhcp.Set(
       "mode", base::Value(ProxyPrefs::kAutoDetectProxyModeName));
-  expected_proxy_config_wpad_dhcp.SetKey(
-      "pacUrl", base::Value(kWebProxyAutodetectionUrl));
+  expected_proxy_config_wpad_dhcp.Set("pacUrl",
+                                      base::Value(kWebProxyAutodetectionUrl));
 
-  base::Value expected_proxy_config_direct(base::Value::Type::DICTIONARY);
-  expected_proxy_config_direct.SetKey(
+  base::Value::Dict expected_proxy_config_direct;
+  expected_proxy_config_direct.Set(
       "mode", base::Value(ProxyPrefs::kDirectProxyModeName));
 
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),

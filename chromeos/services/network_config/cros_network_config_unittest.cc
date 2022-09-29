@@ -2246,10 +2246,8 @@ TEST_F(CrosNetworkConfigTest, NetworkStateChanged) {
 TEST_F(CrosNetworkConfigTest, PolicyEnforcedProxyMode) {
   // Proxies enforced by policy and/or extension are set in the kProxy
   // preference.
-  base::Value policy_prefs_config = ProxyConfigDictionary::CreateAutoDetect();
-  user_prefs_.SetUserPref(
-      proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(policy_prefs_config)));
+  user_prefs_.SetUserPref(proxy_config::prefs::kProxy,
+                          ProxyConfigDictionary::CreateAutoDetect());
 
   mojom::NetworkStatePropertiesPtr network = GetNetworkState("wifi2_guid");
   ASSERT_TRUE(network);

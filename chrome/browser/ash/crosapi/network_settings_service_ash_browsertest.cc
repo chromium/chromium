@@ -210,7 +210,8 @@ class NetworkSettingsServiceAshExtensionTest
  protected:
   // This method simulates sending an extension controlled proxy config from
   // Lacros to Ash.
-  void SendExtensionProxyConfig(base::Value proxy_dict, bool can_be_disabled) {
+  void SendExtensionProxyConfig(base::Value::Dict proxy_dict,
+                                bool can_be_disabled) {
     ProxyConfigDictionary proxy_config_dict(std::move(proxy_dict));
     auto proxy_config =
         crosapi::ProxyConfigToCrosapiProxy(&proxy_config_dict,
@@ -248,8 +249,8 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   ASSERT_TRUE(extension_proxy_pref);
 
   // Emulate receiving an initial proxy config from lacros-chrome.
-  base::Value proxy_config = ProxyConfigDictionary::CreatePacScript(
-      kPacUrl, /*is_pac_mandatory=*/true);
+  base::Value::Dict proxy_config =
+      ProxyConfigDictionary::CreatePacScript(kPacUrl, /*pac_mandatory=*/true);
   SendExtensionProxyConfig(proxy_config.Clone(),
                            /*can_be_disabled=*/true);
   EXPECT_EQ(*(proxy_pref->GetValue()), proxy_config);
@@ -286,8 +287,8 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
 // via policy and then verifies that the direct proxy is applied.
 IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
                        UserPolicyHasPrecedence) {
-  base::Value pac_proxy = ProxyConfigDictionary::CreatePacScript(
-      kPacUrl, /*is_pac_mandatory=*/true);
+  base::Value::Dict pac_proxy =
+      ProxyConfigDictionary::CreatePacScript(kPacUrl, /*pac_mandatory=*/true);
   SendExtensionProxyConfig(pac_proxy.Clone(),
                            /*can_be_disabled=*/true);
   // Set proxy by policy.
@@ -323,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
 
   ProxyConfigDictionary proxy_config_dict(
       ProxyConfigDictionary::CreatePacScript(kPacUrl,
-                                             /*is_pac_mandatory=*/true));
+                                             /*pac_mandatory=*/true));
   auto proxy_config = crosapi::ProxyConfigToCrosapiProxy(&proxy_config_dict,
                                                          /*wpad_url=*/GURL(""));
   proxy_config->extension = crosapi::mojom::ExtensionControllingProxy::New();
@@ -350,8 +351,8 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   {
     base::RunLoop run_loop;
     observer_->SetQuitClosure(run_loop.QuitClosure());
-    base::Value pac_proxy = ProxyConfigDictionary::CreatePacScript(
-        kPacUrl, /*is_pac_mandatory=*/true);
+    base::Value::Dict pac_proxy =
+        ProxyConfigDictionary::CreatePacScript(kPacUrl, /*pac_mandatory=*/true);
     SendExtensionProxyConfig(pac_proxy.Clone(),
                              /*can_be_disabled=*/true);
     // Wait for the `observer` to get the proxy
@@ -379,8 +380,8 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   {
     base::RunLoop run_loop;
     observer_->SetQuitClosure(run_loop.QuitClosure());
-    base::Value pac_proxy = ProxyConfigDictionary::CreatePacScript(
-        kPacUrl, /*is_pac_mandatory=*/true);
+    base::Value::Dict pac_proxy =
+        ProxyConfigDictionary::CreatePacScript(kPacUrl, /*pac_mandatory=*/true);
     SendExtensionProxyConfig(pac_proxy.Clone(),
                              /*can_be_disabled=*/true);
     // Wait for the `observer` to get the proxy
