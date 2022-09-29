@@ -31,7 +31,8 @@ SidePanelResizeHandle::SidePanelResizeHandle(SidePanel* side_panel)
 
 void SidePanelResizeHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kSlider;
-  node_data->SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_PANEL_RESIZE));
+  node_data->SetNameChecked(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_PANEL_RESIZE));
 }
 
 void SidePanelResizeHandle::OnThemeChanged() {
