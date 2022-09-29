@@ -410,8 +410,6 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
                           action, orientation, text_direction);
   GetNode()->DispatchEvent(*keydown);
 
-  // TODO(crbug.com/1099069): add a brief pause between keydown and keyup?
-
   // The keydown handler may have caused the node to be removed.
   if (!GetNode())
     return;
@@ -419,7 +417,17 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
   KeyboardEvent* keyup =
       CreateKeyboardEvent(local_dom_window, WebInputEvent::Type::kKeyUp, action,
                           orientation, text_direction);
-  GetNode()->DispatchEvent(*keyup);
+
+  // Add a 100ms delay between keydown and keyup to make events look less
+  // evidently synthesized.
+  GetDocument()
+      ->GetTaskRunner(TaskType::kUserInteraction)
+      ->PostDelayedTask(
+          FROM_HERE,
+          WTF::BindOnce(
+              [](Node* node, KeyboardEvent* evt) { node->DispatchEvent(*evt); },
+              WrapWeakPersistent(GetNode()), WrapPersistent(keyup)),
+          base::Milliseconds(100));
 }
 
 AXObject* AXNodeObject::ActiveDescendant() {
