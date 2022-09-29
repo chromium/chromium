@@ -7,11 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/root_window_controller.h"
-#include "ash/shell.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
-#include "ash/system/status_area_widget.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
@@ -121,8 +117,8 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
     const apps::CapabilityAccessUpdate& update) {
   base::Erase(mic_using_app_ids[active_user_account_id_], update.AppId());
 
-  bool microphone_is_used = update.Microphone().value_or(false);
-  bool camera_is_used = update.Camera().value_or(false);
+  bool is_microphone_used = update.Microphone().value_or(false);
+  bool is_camera_used = update.Camera().value_or(false);
 
   if (ash::features::IsPrivacyIndicatorsEnabled()) {
     auto app_id = update.AppId();
@@ -132,23 +128,14 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
     ash::ModifyPrivacyIndicatorsNotification(
         app_id,
         GetAppShortNameFromAppId(app_id, GetActiveUserAppRegistryCache()),
-        camera_is_used, microphone_is_used,
+        is_camera_used, is_microphone_used,
         base::MakeRefCounted<ash::PrivacyIndicatorsNotificationDelegate>(
             launch_app, launch_settings));
 
-    DCHECK(ash::Shell::HasInstance());
-    for (auto* root_window_controller :
-         ash::Shell::Get()->GetAllRootWindowControllers()) {
-      DCHECK(root_window_controller);
-      DCHECK(root_window_controller->GetStatusAreaWidget());
-
-      root_window_controller->GetStatusAreaWidget()
-          ->unified_system_tray()
-          ->UpdatePrivacyIndicatorsTrayItem(camera_is_used, microphone_is_used);
-    }
+    ash::UpdatePrivacyIndicatorsView(is_camera_used, is_microphone_used);
   }
 
-  if (microphone_is_used) {
+  if (is_microphone_used) {
     mic_using_app_ids[active_user_account_id_].push_front(update.AppId());
   }
 }

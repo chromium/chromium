@@ -190,10 +190,15 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
       ime_mode_view_(new ImeModeView(shelf)),
       managed_device_view_(new ManagedDeviceTrayItemView(shelf)),
       camera_view_(
-          new CameraMicTrayItemView(shelf,
-                                    CameraMicTrayItemView::Type::kCamera)),
+          !features::IsPrivacyIndicatorsEnabled()
+              ? new CameraMicTrayItemView(shelf,
+                                          CameraMicTrayItemView::Type::kCamera)
+              : nullptr),
       mic_view_(
-          new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)),
+          !features::IsPrivacyIndicatorsEnabled()
+              ? new CameraMicTrayItemView(shelf,
+                                          CameraMicTrayItemView::Type::kMic)
+              : nullptr),
       time_view_(new TimeTrayItemView(shelf, TimeView::Type::kTime)),
       privacy_indicators_view_(features::IsPrivacyIndicatorsEnabled()
                                    ? new PrivacyIndicatorsTrayItemView(shelf)
@@ -233,8 +238,11 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   AddTrayItemToContainer(current_locale_view_);
   AddTrayItemToContainer(ime_mode_view_);
   AddTrayItemToContainer(managed_device_view_);
-  AddTrayItemToContainer(camera_view_);
-  AddTrayItemToContainer(mic_view_);
+
+  if (!features::IsPrivacyIndicatorsEnabled()) {
+    AddTrayItemToContainer(camera_view_);
+    AddTrayItemToContainer(mic_view_);
+  }
 
   if (features::IsSeparateNetworkIconsEnabled()) {
     network_tray_view_ =
@@ -633,10 +641,10 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
   status.push_back(network_tray_view_->GetVisible()
                        ? network_tray_view_->GetAccessibleNameString()
                        : base::EmptyString16());
-  status.push_back(mic_view_->GetVisible()
+  status.push_back(mic_view_ && mic_view_->GetVisible()
                        ? mic_view_->GetAccessibleNameString()
                        : base::EmptyString16());
-  status.push_back(camera_view_->GetVisible()
+  status.push_back(camera_view_ && camera_view_->GetVisible()
                        ? camera_view_->GetAccessibleNameString()
                        : base::EmptyString16());
   status.push_back(managed_device_view_->GetVisible()

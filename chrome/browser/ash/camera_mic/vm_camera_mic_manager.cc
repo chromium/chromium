@@ -12,6 +12,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
+#include "ash/system/privacy/privacy_indicators_controller.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -105,9 +106,9 @@ constexpr base::TimeDelta VmCameraMicManager::kDebounceTime;
 // `OnDeviceUpdated()`, which also starts/stops the debounce timer if necessary.
 //
 // When `active == stage == target`, we are "stable" --- we don't need to do
-// anything (until the next device update). And `SyncNotification()` is normally
-// what brings us to stable. It is called when the timer expired. This is what
-// it does:
+// anything (until the next device update). And
+// `SyncNotificationAndIndicators()` is normally what brings us to stable. It is
+// called when the timer expired. This is what it does:
 //
 // * If `active != stage`, we set `active = stage`. Timer is reset if we are
 //   still not stable.
@@ -122,10 +123,12 @@ constexpr base::TimeDelta VmCameraMicManager::kDebounceTime;
 // 2: 00-01-01  # Mic turning on, debounce timer is started.
 // 3: 00-11-11  # Camera turning on, still in debounce period.
 // 4: 00-11-01  # Camera turning off, still in debounce period.
-// 5: 11-11-01  # Timer expired. `SyncNotification()` sets `active=stage` (shows
-//              # "camera and mic" notification). Reset the timer.
-// 6: 01-01-01  # Timer expired. `SyncNotification()` sets `active=stage=target`
-//              # (shows mic notification).  We are stable now.
+// 5: 11-11-01  # Timer expired. `SyncNotificationAndIndicators()` sets
+//              # `active=stage` (shows "camera and mic" notification). Reset
+//              # the timer.
+// 6: 01-01-01  # Timer expired. `SyncNotificationAndIndicators()` sets
+//              # `active=stage=target` (shows mic notification).  We are stable
+//              # now.
 // 7: 01-01-00  # Mic turning off, debounce timer is started.
 // 8: 00-00-00  # Timer expired. Same as 6, but no notification is shown now.
 //              # Reach stable again.
@@ -139,12 +142,13 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
         vm_type_(vm_type),
         name_id_(name_id),
         notification_changed_callback_(on_notification_changed),
-        debounce_timer_(FROM_HERE,
-                        kDebounceTime,
-                        base::BindRepeating(&VmInfo::SyncNotification,
-                                            // Unretained because the timer
-                                            // cannot outlive the parent.
-                                            base::Unretained(this))) {}
+        debounce_timer_(
+            FROM_HERE,
+            kDebounceTime,
+            base::BindRepeating(&VmInfo::SyncNotificationAndIndicators,
+                                // Unretained because the timer
+                                // cannot outlive the parent.
+                                base::Unretained(this))) {}
   ~VmInfo() = default;
 
   VmType vm_type() const { return vm_type_; }
@@ -197,7 +201,8 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     }
   }
 
-  void UpdateActiveNotification(NotificationType new_notification) {
+  void UpdateActiveNotificationAndIndicators(
+      NotificationType new_notification) {
     DCHECK_NE(notifications_.active, new_notification);
 
     if (notifications_.active != kNoNotification) {
@@ -207,13 +212,22 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
       OpenNotification(new_notification);
     }
     notifications_.active = new_notification;
+
+    if (ash::features::IsPrivacyIndicatorsEnabled()) {
+      ash::UpdatePrivacyIndicatorsView(
+          /*is_camera_used=*/new_notification[static_cast<size_t>(
+              DeviceType::kCamera)],
+          /*is_microphone_used=*/new_notification[static_cast<size_t>(
+              DeviceType::kMic)]);
+    }
+
     notification_changed_callback_.Run();
   }
 
   // See document at the beginning of class.
-  void SyncNotification() {
+  void SyncNotificationAndIndicators() {
     if (notifications_.active != notifications_.stage) {
-      UpdateActiveNotification(notifications_.stage);
+      UpdateActiveNotificationAndIndicators(notifications_.stage);
       SyncTimer();
 
       VLOG(1) << "sync from stage. vm_type=" << static_cast<int>(vm_type_)
@@ -225,7 +239,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     // Only target notification is different.
     DCHECK_NE(notifications_.active, notifications_.target);
     notifications_.stage = notifications_.target;
-    UpdateActiveNotification(notifications_.target);
+    UpdateActiveNotificationAndIndicators(notifications_.target);
     VLOG(1) << "sync from target. vm_type=" << static_cast<int>(vm_type_)
             << " state: " << notifications_.active << "-"
             << notifications_.stage << "-" << notifications_.target;
@@ -258,6 +272,24 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
         l10n_util::GetStringUTF16(IDS_INTERNAL_APP_SETTINGS));
     rich_notification_data.fullscreen_visibility =
         message_center::FullscreenVisibility::OVER_USER;
+
+    if (ash::features::IsPrivacyIndicatorsEnabled()) {
+      // We will use the notification id's logic here for `app_id`
+      auto notification = ash::CreatePrivacyIndicatorsNotification(
+          GetNotificationId(vm_type_, type),
+          l10n_util::GetStringUTF16(name_id_),
+          type[static_cast<size_t>(DeviceType::kCamera)],
+          type[static_cast<size_t>(DeviceType::kMic)],
+          base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
+              weak_ptr_factory_.GetWeakPtr()));
+      notification->set_fullscreen_visibility(
+          message_center::FullscreenVisibility::OVER_USER);
+
+      NotificationDisplayService::GetForProfile(profile_)->Display(
+          NotificationHandler::Type::TRANSIENT, *notification,
+          /*metadata=*/nullptr);
+      return;
+    }
 
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE,

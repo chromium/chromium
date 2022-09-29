@@ -93,7 +93,7 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationMetadata) {
   std::string notification_id = kPrivacyIndicatorsNotificationIdPrefix + app_id;
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
   ash::ModifyPrivacyIndicatorsNotification(
-      app_id, app_name, /*camera_is_used=*/true, /*microphone_is_used=*/true,
+      app_id, app_name, /*is_camera_used=*/true, /*is_microphone_used=*/true,
       delegate);
 
   auto* notification =
@@ -109,8 +109,8 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationClickButton) {
   std::string notification_id = kPrivacyIndicatorsNotificationIdPrefix + app_id;
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
   ash::ModifyPrivacyIndicatorsNotification(
-      app_id, u"test_app_name", /*camera_is_used=*/true,
-      /*microphone_is_used=*/true, delegate);
+      app_id, u"test_app_name", /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, delegate);
 
   // Privacy indicators notification should not be a popup. It is silently added
   // to the tray.

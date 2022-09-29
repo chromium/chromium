@@ -11,6 +11,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
+namespace message_center {
+class Notification;
+}  // namespace message_center
+
 namespace ash {
 
 using AppActionClosure = base::RepeatingCallback<void(void)>;
@@ -40,17 +44,30 @@ class ASH_EXPORT PrivacyIndicatorsNotificationDelegate
   const AppActionClosure launch_settings_;
 };
 
-// Add, update, or remove the privacy notification associated with the given
-// `app_id`.
+// Create a notification with the customized metadata for privacy indicators.
 // The given scoped_refptr for `delegate` will be passed as a parameter for
 // CreateSystemNotification() in case of adding/updating the notification, can
 // be provided as a nullptr if irrelevant.
+std::unique_ptr<message_center::Notification> ASH_EXPORT
+CreatePrivacyIndicatorsNotification(
+    const std::string& app_id,
+    absl::optional<std::u16string> app_name,
+    bool is_camera_used,
+    bool is_microphone_used,
+    scoped_refptr<message_center::NotificationDelegate> delegate);
+
+// Add, update, or remove the privacy notification associated with the given
+// `app_id`.
 void ASH_EXPORT ModifyPrivacyIndicatorsNotification(
     const std::string& app_id,
     absl::optional<std::u16string> app_name,
-    bool camera_is_used,
-    bool microphone_is_used,
+    bool is_camera_used,
+    bool is_microphone_used,
     scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate);
+
+// Update the `PrivacyIndicatorsTrayItemView` across all status area widgets.
+void ASH_EXPORT UpdatePrivacyIndicatorsView(bool is_camera_used,
+                                            bool is_microphone_used);
 
 }  // namespace ash
 
