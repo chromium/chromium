@@ -78,14 +78,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
 }
 
 // TODO(https://crbug.com/1335515): Flaky.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OpenVisitUrlsInTabGroupHardCap \
-  DISABLED_OpenVisitUrlsInTabGroupHardCap
-#else
-#define MAYBE_OpenVisitUrlsInTabGroupHardCap OpenVisitUrlsInTabGroupHardCap
-#endif
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
-                       MAYBE_OpenVisitUrlsInTabGroupHardCap) {
+                       DISABLED_OpenVisitUrlsInTabGroupHardCap) {
   auto* tab_strip_model = browser()->tab_strip_model();
   ASSERT_EQ(1, tab_strip_model->GetTabCount());
 
