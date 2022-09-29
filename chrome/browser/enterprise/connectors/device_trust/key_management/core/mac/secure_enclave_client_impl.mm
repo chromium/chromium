@@ -132,9 +132,6 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateQueryForKey(
       kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
       &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
-  CFDictionarySetValue(
-      query, kSecAttrAccessGroup,
-      base::SysUTF8ToNSString(constants::kKeychainAccessGroup));
   CFDictionarySetValue(query, kSecAttrKeyType, kSecAttrKeyTypeECSECPrimeRandom);
   CFDictionarySetValue(query, kSecAttrLabel,
                        base::SysUTF8ToCFStringRef(GetLabelFromKeyType(type)));
