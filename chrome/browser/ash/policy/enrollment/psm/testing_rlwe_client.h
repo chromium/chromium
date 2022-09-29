@@ -21,11 +21,11 @@ class RlweMembershipResponses;
 }  // namespace rlwe
 }  // namespace private_membership
 
-namespace policy {
+namespace policy::psm {
 
-class TestingPrivateMembershipRlweClient : public PrivateMembershipRlweClient {
+class TestingRlweClient : public RlweClient {
  public:
-  // A factory that creates |TestingPrivateMembershipRlweClient|s.
+  // A factory that creates |TestingRlweClient|s.
   class FactoryImpl : public Factory {
    public:
     // TODO(crbug.com/1239329): Remove |plaintext_ids| from the factory
@@ -45,7 +45,7 @@ class TestingPrivateMembershipRlweClient : public PrivateMembershipRlweClient {
     // |ec_cipher_key_| and deterministic PRNG |seed_|.
     // Note: |plaintext_ids| value will be ignored while creating the client,
     // and |plaintext_testing_ids_| member will be used instead for testing.
-    ::rlwe::StatusOr<std::unique_ptr<PrivateMembershipRlweClient>> Create(
+    ::rlwe::StatusOr<std::unique_ptr<RlweClient>> Create(
         private_membership::rlwe::RlweUseCase use_case,
         const std::vector<private_membership::rlwe::RlwePlaintextId>&
             plaintext_ids) override;
@@ -59,15 +59,13 @@ class TestingPrivateMembershipRlweClient : public PrivateMembershipRlweClient {
         plaintext_testing_ids_;
   };
 
-  // TestingPrivateMembershipRlweClient is neither copyable nor copy assignable.
-  TestingPrivateMembershipRlweClient(
-      const TestingPrivateMembershipRlweClient&) = delete;
-  TestingPrivateMembershipRlweClient& operator=(
-      const TestingPrivateMembershipRlweClient&) = delete;
+  // TestingRlweClient is neither copyable nor copy assignable.
+  TestingRlweClient(const TestingRlweClient&) = delete;
+  TestingRlweClient& operator=(const TestingRlweClient&) = delete;
 
-  ~TestingPrivateMembershipRlweClient() override;
+  ~TestingRlweClient() override;
 
-  // Delegates all function calls into PrivateMembershipRlweClient by
+  // Delegates all function calls into RlweClient by
   // |psm_rlwe_client_|.
 
   ::rlwe::StatusOr<private_membership::rlwe::PrivateMembershipRlweOprfRequest>
@@ -82,7 +80,7 @@ class TestingPrivateMembershipRlweClient : public PrivateMembershipRlweClient {
           query_response) override;
 
  private:
-  explicit TestingPrivateMembershipRlweClient(
+  explicit TestingRlweClient(
       std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
           psm_rlwe_client);
 
@@ -90,6 +88,6 @@ class TestingPrivateMembershipRlweClient : public PrivateMembershipRlweClient {
       psm_rlwe_client_;
 };
 
-}  // namespace policy
+}  // namespace policy::psm
 
 #endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_TESTING_RLWE_CLIENT_H_

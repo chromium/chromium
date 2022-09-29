@@ -22,20 +22,20 @@ const int kHasMembership = 1;
 const int kHasNoMembership = 2;
 }  // namespace
 
-namespace policy {
+namespace policy::psm {
 
-::rlwe::StatusOr<std::unique_ptr<PrivateMembershipRlweClient>>
-FakePrivateMembershipRlweClient::FactoryImpl::Create(
+::rlwe::StatusOr<std::unique_ptr<RlweClient>>
+FakeRlweClient::FactoryImpl::Create(
     psm_rlwe::RlweUseCase use_case,
     const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids) {
-  return absl::WrapUnique<PrivateMembershipRlweClient>(
-      new FakePrivateMembershipRlweClient(use_case, plaintext_ids));
+  return absl::WrapUnique<RlweClient>(
+      new FakeRlweClient(use_case, plaintext_ids));
 }
 
-FakePrivateMembershipRlweClient::~FakePrivateMembershipRlweClient() = default;
+FakeRlweClient::~FakeRlweClient() = default;
 
 ::rlwe::StatusOr<psm_rlwe::PrivateMembershipRlweOprfRequest>
-FakePrivateMembershipRlweClient::CreateOprfRequest() {
+FakeRlweClient::CreateOprfRequest() {
   psm_rlwe::PrivateMembershipRlweOprfRequest request;
   request.set_use_case(use_case_);
 
@@ -47,7 +47,7 @@ FakePrivateMembershipRlweClient::CreateOprfRequest() {
 }
 
 ::rlwe::StatusOr<psm_rlwe::PrivateMembershipRlweQueryRequest>
-FakePrivateMembershipRlweClient::CreateQueryRequest(
+FakeRlweClient::CreateQueryRequest(
     const psm_rlwe::PrivateMembershipRlweOprfResponse& oprf_response) {
   psm_rlwe::PrivateMembershipRlweQueryRequest request;
   request.set_use_case(use_case_);
@@ -71,7 +71,7 @@ FakePrivateMembershipRlweClient::CreateQueryRequest(
 }
 
 ::rlwe::StatusOr<psm_rlwe::RlweMembershipResponses>
-FakePrivateMembershipRlweClient::ProcessQueryResponse(
+FakeRlweClient::ProcessQueryResponse(
     const psm_rlwe::PrivateMembershipRlweQueryResponse& query_response) {
   // Validate that we have an existing response.
   if (!query_response.pir_responses_size()) {
@@ -116,7 +116,7 @@ FakePrivateMembershipRlweClient::ProcessQueryResponse(
   return rlwe_membership_responses;
 }
 
-FakePrivateMembershipRlweClient::FakePrivateMembershipRlweClient(
+FakeRlweClient::FakeRlweClient(
     psm_rlwe::RlweUseCase use_case,
     std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids)
     : use_case_(use_case), plaintext_ids_(std::move(plaintext_ids)) {
@@ -124,4 +124,4 @@ FakePrivateMembershipRlweClient::FakePrivateMembershipRlweClient(
   DCHECK(!plaintext_ids_.empty());
 }
 
-}  // namespace policy
+}  // namespace policy::psm

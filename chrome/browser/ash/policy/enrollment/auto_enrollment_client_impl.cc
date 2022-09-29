@@ -444,7 +444,7 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
   }
 
   explicit InitialServerStateAvailabilityRequester(
-      std::unique_ptr<PsmRlweDmserverClient> psm_rlwe_dmserver_client,
+      std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client,
       PrefService* local_state)
       : psm_rlwe_dmserver_client_(std::move(psm_rlwe_dmserver_client)),
         local_state_(local_state) {}
@@ -488,18 +488,18 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
   }
 
   void HandlePsmCompletion(
-      PsmRlweDmserverClient::ResultHolder psm_result_holder) {
+      psm::RlweDmserverClient::ResultHolder psm_result_holder) {
     UpdateLocalState(psm_result_holder);
 
     switch (psm_result_holder.psm_result) {
-      case PsmResult::kConnectionError:
+      case psm::RlweResult::kConnectionError:
         RunCallback(ServerStateAvailabilityResult::kConnectionError);
         break;
-      case PsmResult::kServerError:
+      case psm::RlweResult::kServerError:
         RunCallback(ServerStateAvailabilityResult::kServerError);
         break;
 
-      case PsmResult::kSuccessfulDetermination:
+      case psm::RlweResult::kSuccessfulDetermination:
         DCHECK(GetServerStateIfObtained());
         RunCallback(ServerStateAvailabilityResult::kSuccess);
         break;
@@ -509,12 +509,12 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
       // error) and will report final progress with given server state even if
       // it's not available.
       // TODO(crbug.com/1249792): Handle internal PSM Errors.
-      case PsmResult::kCreateRlweClientLibraryError:
-      case PsmResult::kCreateOprfRequestLibraryError:
-      case PsmResult::kCreateQueryRequestLibraryError:
-      case PsmResult::kProcessingQueryResponseLibraryError:
-      case PsmResult::kEmptyOprfResponseError:
-      case PsmResult::kEmptyQueryResponseError:
+      case psm::RlweResult::kCreateRlweClientLibraryError:
+      case psm::RlweResult::kCreateOprfRequestLibraryError:
+      case psm::RlweResult::kCreateQueryRequestLibraryError:
+      case psm::RlweResult::kProcessingQueryResponseLibraryError:
+      case psm::RlweResult::kEmptyOprfResponseError:
+      case psm::RlweResult::kEmptyQueryResponseError:
         DCHECK(!GetServerStateIfObtained());
         RunCallback(ServerStateAvailabilityResult::kPsmInternalError);
         break;
@@ -536,7 +536,7 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
   }
 
   void UpdateLocalState(
-      const PsmRlweDmserverClient::ResultHolder& psm_result_holder) {
+      const psm::RlweDmserverClient::ResultHolder& psm_result_holder) {
     if (psm_result_holder.IsError()) {
       local_state_->SetInteger(prefs::kEnrollmentPsmResult,
                                em::DeviceRegisterRequest::PSM_RESULT_ERROR);
@@ -557,7 +557,7 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
 
   // Obtains the device state using PSM protocol. Handles all communications
   // related to PSM protocol with DMServer.
-  std::unique_ptr<PsmRlweDmserverClient> psm_rlwe_dmserver_client_;
+  std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client_;
 
   PrefService* local_state_;
 
@@ -761,7 +761,7 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
     const std::string& device_brand_code,
     int power_initial,
     int power_limit,
-    std::unique_ptr<PsmRlweDmserverClient> psm_rlwe_dmserver_client) {
+    std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client) {
   return base::WrapUnique(new AutoEnrollmentClientImpl(
       progress_callback,
       std::make_unique<InitialServerStateAvailabilityRequester>(

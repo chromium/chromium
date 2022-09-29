@@ -49,11 +49,11 @@ namespace em = enterprise_management;
 // An enum for PSM execution result values.
 using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
-namespace policy {
+namespace policy::psm {
 
 namespace {
 // A struct reporesents the PSM execution result params.
-using PsmResultHolder = PsmRlweDmserverClient::ResultHolder;
+using PsmResultHolder = RlweDmserverClient::ResultHolder;
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -88,9 +88,9 @@ bool ParseProtoFromFile(const base::FilePath& file_path,
 }  // namespace
 
 // The integer parameter represents the index of PSM test case.
-class PsmRlweDmserverClientImplTest : public testing::TestWithParam<int> {
- protected:
-  PsmRlweDmserverClientImplTest() {
+class RlweDmserverClientImplTest : public testing::TestWithParam<int> {
+ public:
+  RlweDmserverClientImplTest() {
     // Create PSM test case, before PSM client to construct the
     // PSM RLWE testing client factory and its RLWE ID.
     CreatePsmTestCase();
@@ -99,7 +99,7 @@ class PsmRlweDmserverClientImplTest : public testing::TestWithParam<int> {
     CreateClient();
   }
 
-  ~PsmRlweDmserverClientImplTest() = default;
+  ~RlweDmserverClientImplTest() override = default;
 
   int GetPsmTestCaseIndex() const { return GetParam(); }
 
@@ -112,7 +112,7 @@ class PsmRlweDmserverClientImplTest : public testing::TestWithParam<int> {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &url_loader_factory_);
 
-    psm_client_ = std::make_unique<PsmRlweDmserverClientImpl>(
+    psm_client_ = std::make_unique<RlweDmserverClientImpl>(
         service_.get(), shared_url_loader_factory_,
         psm_rlwe_test_client_factory_.get(),
         testing_psm_rlwe_id_provider_.get());
@@ -143,16 +143,16 @@ class PsmRlweDmserverClientImplTest : public testing::TestWithParam<int> {
 
     // Sets the PSM RLWE client factory to testing client.
     psm_rlwe_test_client_factory_ =
-        std::make_unique<TestingPrivateMembershipRlweClient::FactoryImpl>(
+        std::make_unique<TestingRlweClient::FactoryImpl>(
             psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
             plaintext_ids);
 
     // Sets the PSM RLWE ID.
-    testing_psm_rlwe_id_provider_ = std::make_unique<TestingPsmRlweIdProvider>(
-        psm_test_case_.plaintext_id());
+    testing_psm_rlwe_id_provider_ =
+        std::make_unique<TestingRlweIdProvider>(psm_test_case_.plaintext_id());
   }
 
-  // Start the `PsmRlweDmserverClient` to retrieve the device state.
+  // Start the `RlweDmserverClient` to retrieve the device state.
   void CheckMembershipWithRlweClient() {
     psm_client_->CheckMembership(future_result_holder_.GetCallback());
   }
@@ -223,7 +223,7 @@ class PsmRlweDmserverClientImplTest : public testing::TestWithParam<int> {
   // If |success_time_recorded| is true it expects one sample
   // for kUMAPsmSuccessTime. Otherwise, expects no sample to be recorded for
   // kUMAPsmSuccessTime.
-  void ExpectPsmHistograms(PsmResult protocol_result,
+  void ExpectPsmHistograms(psm::RlweResult protocol_result,
                            bool success_time_recorded) const {
     histogram_tester_.ExpectBucketCount(
         kUMAPsmResult + kUMASuffixInitialEnrollmentStr, protocol_result,
@@ -255,20 +255,20 @@ class PsmRlweDmserverClientImplTest : public testing::TestWithParam<int> {
               psm_last_job_type_);
   }
 
-  void VerifyPsmRlweOprfRequest() const {
+  void VerifyRlweOprfRequest() const {
     EXPECT_EQ(psm_test_case_.expected_oprf_request().SerializeAsString(),
               psm_request().rlwe_request().oprf_request().SerializeAsString());
   }
 
-  void VerifyPsmRlweQueryRequest() const {
+  void VerifyRlweQueryRequest() const {
     EXPECT_EQ(psm_test_case_.expected_query_request().SerializeAsString(),
               psm_request().rlwe_request().query_request().SerializeAsString());
   }
 
   // Disallow copy constructor and assignment operator.
-  PsmRlweDmserverClientImplTest(const PsmRlweDmserverClientImplTest&) = delete;
-  PsmRlweDmserverClientImplTest& operator=(
-      const PsmRlweDmserverClientImplTest&) = delete;
+  RlweDmserverClientImplTest(const RlweDmserverClientImplTest&) = delete;
+  RlweDmserverClientImplTest& operator=(const RlweDmserverClientImplTest&) =
+      delete;
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -294,18 +294,17 @@ class PsmRlweDmserverClientImplTest : public testing::TestWithParam<int> {
     return response;
   }
 
-  std::unique_ptr<PsmRlweDmserverClient> psm_client_;
+  std::unique_ptr<RlweDmserverClient> psm_client_;
   base::test::TestFuture<PsmResultHolder> future_result_holder_;
   psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase
       psm_test_case_;
 
   // Sets which PSM RLWE client will be created, depending on the factory. It
   // is only used for PSM during creating the client for initial enrollment.
-  std::unique_ptr<TestingPrivateMembershipRlweClient::FactoryImpl>
-      psm_rlwe_test_client_factory_;
+  std::unique_ptr<TestingRlweClient::FactoryImpl> psm_rlwe_test_client_factory_;
 
   // Sets the PSM RLWE ID directly for testing.
-  std::unique_ptr<TestingPsmRlweIdProvider> testing_psm_rlwe_id_provider_;
+  std::unique_ptr<TestingRlweIdProvider> testing_psm_rlwe_id_provider_;
 
   base::HistogramTester histogram_tester_;
   std::unique_ptr<FakeDeviceManagementService> service_;
@@ -321,7 +320,7 @@ class PsmRlweDmserverClientImplTest : public testing::TestWithParam<int> {
       kUMASuffixInitialEnrollment;
 };
 
-TEST_P(PsmRlweDmserverClientImplTest, MembershipRetrievedSuccessfully) {
+TEST_P(RlweDmserverClientImplTest, MembershipRetrievedSuccessfully) {
   InSequence sequence;
 
   const bool kExpectedMembershipResult = GetExpectedMembershipResult();
@@ -337,126 +336,127 @@ TEST_P(PsmRlweDmserverClientImplTest, MembershipRetrievedSuccessfully) {
 
   ASSERT_NO_FATAL_FAILURE(CheckMembershipWithRlweClient());
 
-  VerifyResultHolder(PsmResultHolder(PsmResult::kSuccessfulDetermination,
+  VerifyResultHolder(PsmResultHolder(psm::RlweResult::kSuccessfulDetermination,
                                      kExpectedMembershipResult,
                                      kExpectedPsmDeterminationTimestamp));
 
-  ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
+  ExpectPsmHistograms(psm::RlweResult::kSuccessfulDetermination,
                       /*success_time_recorded=*/true);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
                                   /*dm_status_count=*/2);
-  VerifyPsmRlweQueryRequest();
+  VerifyRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 }
 
-TEST_P(PsmRlweDmserverClientImplTest, EmptyRlweQueryResponse) {
+TEST_P(RlweDmserverClientImplTest, EmptyRlweQueryResponse) {
   InSequence sequence;
   ServerWillReplyWithPsmOprfResponse();
   ServerWillReplyWithEmptyPsmResponse();
 
   ASSERT_NO_FATAL_FAILURE(CheckMembershipWithRlweClient());
 
-  VerifyResultHolder(PsmResultHolder(PsmResult::kEmptyQueryResponseError));
+  VerifyResultHolder(
+      PsmResultHolder(psm::RlweResult::kEmptyQueryResponseError));
 
-  ExpectPsmHistograms(PsmResult::kEmptyQueryResponseError,
+  ExpectPsmHistograms(psm::RlweResult::kEmptyQueryResponseError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
                                   /*dm_status_count=*/2);
-  VerifyPsmRlweQueryRequest();
+  VerifyRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 }
 
-TEST_P(PsmRlweDmserverClientImplTest, EmptyRlweOprfResponse) {
+TEST_P(RlweDmserverClientImplTest, EmptyRlweOprfResponse) {
   InSequence sequence;
   ServerWillReplyWithEmptyPsmResponse();
 
   ASSERT_NO_FATAL_FAILURE(CheckMembershipWithRlweClient());
 
-  VerifyResultHolder(PsmResultHolder(PsmResult::kEmptyOprfResponseError));
+  VerifyResultHolder(PsmResultHolder(psm::RlweResult::kEmptyOprfResponseError));
 
-  ExpectPsmHistograms(PsmResult::kEmptyOprfResponseError,
+  ExpectPsmHistograms(psm::RlweResult::kEmptyOprfResponseError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
                                   /*dm_status_count=*/1);
-  VerifyPsmRlweOprfRequest();
+  VerifyRlweOprfRequest();
   VerifyPsmLastRequestJobType();
 }
 
-TEST_P(PsmRlweDmserverClientImplTest, ConnectionErrorForRlweQueryResponse) {
+TEST_P(RlweDmserverClientImplTest, ConnectionErrorForRlweQueryResponse) {
   InSequence sequence;
   ServerWillReplyWithPsmOprfResponse();
   ServerWillFailForPsm(net::ERR_FAILED, DeviceManagementService::kSuccess);
 
   ASSERT_NO_FATAL_FAILURE(CheckMembershipWithRlweClient());
 
-  VerifyResultHolder(PsmResultHolder(PsmResult::kConnectionError));
+  VerifyResultHolder(PsmResultHolder(psm::RlweResult::kConnectionError));
 
-  ExpectPsmHistograms(PsmResult::kConnectionError,
+  ExpectPsmHistograms(psm::RlweResult::kConnectionError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
                                   /*dm_status_count=*/1);
   ExpectPsmRequestStatusHistogram(DM_STATUS_REQUEST_FAILED,
                                   /*dm_status_count=*/1);
   ExpectPsmNetworkErrorHistogram(-net::ERR_FAILED);
-  VerifyPsmRlweQueryRequest();
+  VerifyRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 }
 
-TEST_P(PsmRlweDmserverClientImplTest, ConnectionErrorForRlweOprfResponse) {
+TEST_P(RlweDmserverClientImplTest, ConnectionErrorForRlweOprfResponse) {
   InSequence sequence;
   ServerWillFailForPsm(net::ERR_FAILED, DeviceManagementService::kSuccess);
 
   ASSERT_NO_FATAL_FAILURE(CheckMembershipWithRlweClient());
 
-  VerifyResultHolder(PsmResultHolder(PsmResult::kConnectionError));
+  VerifyResultHolder(PsmResultHolder(psm::RlweResult::kConnectionError));
 
-  ExpectPsmHistograms(PsmResult::kConnectionError,
+  ExpectPsmHistograms(psm::RlweResult::kConnectionError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_REQUEST_FAILED,
                                   /*dm_status_count=*/1);
   ExpectPsmNetworkErrorHistogram(-net::ERR_FAILED);
-  VerifyPsmRlweOprfRequest();
+  VerifyRlweOprfRequest();
   VerifyPsmLastRequestJobType();
 }
 
-TEST_P(PsmRlweDmserverClientImplTest, NetworkFailureForRlweOprfResponse) {
+TEST_P(RlweDmserverClientImplTest, NetworkFailureForRlweOprfResponse) {
   InSequence sequence;
   ServerWillFailForPsm(net::OK, net::ERR_CONNECTION_CLOSED);
 
   ASSERT_NO_FATAL_FAILURE(CheckMembershipWithRlweClient());
 
-  VerifyResultHolder(PsmResultHolder(PsmResult::kServerError));
+  VerifyResultHolder(PsmResultHolder(psm::RlweResult::kServerError));
 
-  ExpectPsmHistograms(PsmResult::kServerError,
+  ExpectPsmHistograms(psm::RlweResult::kServerError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_HTTP_STATUS_ERROR,
                                   /*dm_status_count=*/1);
   VerifyPsmLastRequestJobType();
 }
 
-TEST_P(PsmRlweDmserverClientImplTest, NetworkFailureForRlweQueryResponse) {
+TEST_P(RlweDmserverClientImplTest, NetworkFailureForRlweQueryResponse) {
   InSequence sequence;
   ServerWillReplyWithPsmOprfResponse();
   ServerWillFailForPsm(net::OK, net::ERR_CONNECTION_CLOSED);
 
   ASSERT_NO_FATAL_FAILURE(CheckMembershipWithRlweClient());
 
-  VerifyResultHolder(PsmResultHolder(PsmResult::kServerError));
+  VerifyResultHolder(PsmResultHolder(psm::RlweResult::kServerError));
 
-  ExpectPsmHistograms(PsmResult::kServerError,
+  ExpectPsmHistograms(psm::RlweResult::kServerError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
                                   /*dm_status_count=*/1);
   ExpectPsmRequestStatusHistogram(DM_STATUS_HTTP_STATUS_ERROR,
                                   /*dm_status_count=*/1);
-  VerifyPsmRlweQueryRequest();
+  VerifyRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 }
 
-INSTANTIATE_TEST_SUITE_P(PsmRlweDmserverClientImplTest,
-                         PsmRlweDmserverClientImplTest,
+INSTANTIATE_TEST_SUITE_P(RlweDmserverClientImplTest,
+                         RlweDmserverClientImplTest,
                          // Loop over all indices starting from 0, and smaller
                          // than `kNumberOfPsmTestCases`.
                          ::testing::Range(0, kNumberOfPsmTestCases));
 
-}  // namespace policy
+}  // namespace policy::psm

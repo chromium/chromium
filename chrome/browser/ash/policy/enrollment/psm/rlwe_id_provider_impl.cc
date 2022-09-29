@@ -13,9 +13,9 @@
 
 namespace psm_rlwe = private_membership::rlwe;
 
-namespace policy {
+namespace policy::psm {
 
-psm_rlwe::RlwePlaintextId PsmRlweIdProviderImpl::ConstructRlweId() {
+psm_rlwe::RlwePlaintextId RlweIdProviderImpl::ConstructRlweId() {
   // Retrieve the device's serial number and RLZ brand code.
   chromeos::system::StatisticsProvider* provider =
       chromeos::system::StatisticsProvider::GetInstance();
@@ -38,4 +38,4 @@ psm_rlwe::RlwePlaintextId PsmRlweIdProviderImpl::ConstructRlweId() {
   return rlwe_id;
 }
 
-}  // namespace policy
+}  // namespace policy::psm

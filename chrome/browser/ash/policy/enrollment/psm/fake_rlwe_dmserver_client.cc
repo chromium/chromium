@@ -9,22 +9,22 @@
 #include "base/check.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
 
-namespace policy {
+namespace policy::psm {
 
-FakePsmRlweDmserverClient::FakePsmRlweDmserverClient()
-    : result_holder_(PsmResult::kConnectionError) {}
+FakeRlweDmserverClient::FakeRlweDmserverClient()
+    : result_holder_(psm::RlweResult::kConnectionError) {}
 
-void FakePsmRlweDmserverClient::CheckMembership(CompletionCallback callback) {
+void FakeRlweDmserverClient::CheckMembership(CompletionCallback callback) {
   DCHECK(callback);
   std::move(callback).Run(result_holder_);
 }
 
-bool FakePsmRlweDmserverClient::IsCheckMembershipInProgress() const {
+bool FakeRlweDmserverClient::IsCheckMembershipInProgress() const {
   return false;
 }
 
-void FakePsmRlweDmserverClient::WillReplyWith(ResultHolder new_result_holder) {
+void FakeRlweDmserverClient::WillReplyWith(ResultHolder new_result_holder) {
   result_holder_ = std::move(new_result_holder);
 }
 
-}  // namespace policy
+}  // namespace policy::psm

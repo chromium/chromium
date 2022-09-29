@@ -27,30 +27,29 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace policy {
+namespace policy::psm {
 
-class PsmRlweIdProvider;
+class RlweIdProvider;
 
-class PsmRlweDmserverClientImpl : public PsmRlweDmserverClient {
+class RlweDmserverClientImpl : public RlweDmserverClient {
  public:
-  // The PsmRlweDmserverClientImpl doesn't take ownership of
+  // The RlweDmserverClientImpl doesn't take ownership of
   // |device_management_service|, |psm_rlwe_client_factory| and
   // |psm_rlwe_id_provider|. All of them must not be nullptr. Also,
-  // |device_management_service| must outlive PsmRlweDmserverClientImpl.
-  PsmRlweDmserverClientImpl(
+  // |device_management_service| must outlive RlweDmserverClientImpl.
+  RlweDmserverClientImpl(
       DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
-      PsmRlweIdProvider* psm_rlwe_id_provider);
+      RlweClient::Factory* psm_rlwe_client_factory,
+      RlweIdProvider* psm_rlwe_id_provider);
 
   // Disallow copy constructor and assignment operator.
-  PsmRlweDmserverClientImpl(const PsmRlweDmserverClientImpl&) = delete;
-  PsmRlweDmserverClientImpl& operator=(const PsmRlweDmserverClientImpl&) =
-      delete;
+  RlweDmserverClientImpl(const RlweDmserverClientImpl&) = delete;
+  RlweDmserverClientImpl& operator=(const RlweDmserverClientImpl&) = delete;
 
   // Cancels the ongoing PSM operation, if any (without calling the operation's
   // callbacks).
-  ~PsmRlweDmserverClientImpl() override;
+  ~RlweDmserverClientImpl() override;
 
   // Determines membership for the |psm_rlwe_id_|.
   void CheckMembership(CompletionCallback callback) override;
@@ -61,17 +60,17 @@ class PsmRlweDmserverClientImpl : public PsmRlweDmserverClient {
 
  private:
   // Records PSM execution result, and stops the protocol.
-  void StoreErrorAndStop(PsmResult psm_result);
+  void StoreErrorAndStop(RlweResult psm_result);
 
   // Constructs and sends the PSM RLWE OPRF request.
-  void SendPsmRlweOprfRequest();
+  void SendRlweOprfRequest();
 
   // If the completion was successful, then it makes another request to
   // DMServer for performing phase two.
   void OnRlweOprfRequestCompletion(DMServerJobResult result);
 
   // Constructs and sends the PSM RLWE Query request.
-  void SendPsmRlweQueryRequest(
+  void SendRlweQueryRequest(
       const enterprise_management::PrivateSetMembershipResponse& psm_response);
 
   // If the completion was successful, then it will parse the result and call
@@ -90,7 +89,7 @@ class PsmRlweDmserverClientImpl : public PsmRlweDmserverClient {
   void RecordPsmSuccessTimeHistogram();
 
   // PSM RLWE client, used for preparing PSM requests and parsing PSM responses.
-  std::unique_ptr<PrivateMembershipRlweClient> psm_rlwe_client_;
+  std::unique_ptr<RlweClient> psm_rlwe_client_;
 
   // Randomly generated device id for the PSM requests.
   std::string random_device_id_;
@@ -98,7 +97,7 @@ class PsmRlweDmserverClientImpl : public PsmRlweDmserverClient {
   // The loader factory to use to perform PSM requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // Unowned by PsmRlweDmserverClientImpl. Its used to communicate with the
+  // Unowned by RlweDmserverClientImpl. Its used to communicate with the
   // device management service.
   DeviceManagementService* const device_management_service_;
 
@@ -127,6 +126,6 @@ class PsmRlweDmserverClientImpl : public PsmRlweDmserverClient {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace policy
+}  // namespace policy::psm
 
 #endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_DMSERVER_CLIENT_IMPL_H_

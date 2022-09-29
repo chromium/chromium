@@ -13,19 +13,19 @@ class RlwePlaintextId;
 }  // namespace rlwe
 }  // namespace private_membership
 
-namespace policy {
+namespace policy::psm {
 
 // Real implementation for the PSM RLWE device ID which is encrypting the PSM
 // ID.
-class PsmRlweIdProviderImpl : public PsmRlweIdProvider {
+class RlweIdProviderImpl : public RlweIdProvider {
  public:
-  PsmRlweIdProviderImpl() = default;
+  RlweIdProviderImpl() = default;
 
-  // `PsmRlweIdProviderImpl` is neither copyable nor copy assignable.
-  PsmRlweIdProviderImpl(const PsmRlweIdProviderImpl&) = delete;
-  PsmRlweIdProviderImpl& operator=(const PsmRlweIdProviderImpl&) = delete;
+  // `RlweIdProviderImpl` is neither copyable nor copy assignable.
+  RlweIdProviderImpl(const RlweIdProviderImpl&) = delete;
+  RlweIdProviderImpl& operator=(const RlweIdProviderImpl&) = delete;
 
-  ~PsmRlweIdProviderImpl() override = default;
+  ~RlweIdProviderImpl() override = default;
 
   // Constructs the encrypted PSM RLWE ID through device's serial number
   // and RLZ brand code that will be retrieved through StatisticsProvider.
@@ -37,6 +37,6 @@ class PsmRlweIdProviderImpl : public PsmRlweIdProvider {
   private_membership::rlwe::RlwePlaintextId ConstructRlweId() override;
 };
 
-}  // namespace policy
+}  // namespace policy::psm
 
 #endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_ID_PROVIDER_IMPL_H_

@@ -163,12 +163,11 @@ class AutoEnrollmentController {
   // Constructs the PSM RLWE client. It will either create a fake or real
   // implementation of the client.
   // It is only used for PSM during creating the client for initial enrollment.
-  std::unique_ptr<policy::PrivateMembershipRlweClient::Factory>
-      psm_rlwe_client_factory_;
+  std::unique_ptr<policy::psm::RlweClient::Factory> psm_rlwe_client_factory_;
 
   // Constructs the PSM RLWE device ID.
   // For more information, see go/psm-rlwe-id-provider.
-  policy::PsmRlweIdProviderImpl psm_rlwe_id_provider_;
+  policy::psm::RlweIdProviderImpl psm_rlwe_id_provider_;
 
   policy::AutoEnrollmentState state_ = policy::AUTO_ENROLLMENT_STATE_IDLE;
   ProgressCallbackList progress_callbacks_;

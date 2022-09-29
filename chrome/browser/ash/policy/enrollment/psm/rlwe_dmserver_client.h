@@ -9,13 +9,13 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace policy {
+namespace policy::psm {
 
 // Indicates all possible PSM protocol results after it has executed
 // successfully or terminated because of an error or timeout. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
-enum class PsmResult {
+enum class RlweResult {
   kSuccessfulDetermination = 0,
   kCreateRlweClientLibraryError = 1,
   kCreateOprfRequestLibraryError = 2,
@@ -31,11 +31,11 @@ enum class PsmResult {
 
 // Interface for the PSM RLWE Client which uses DMServer, allowing to replace
 // the PSM RLWE DMServer client with a fake for tests.
-class PsmRlweDmserverClient {
+class RlweDmserverClient {
  public:
   struct ResultHolder final {
     explicit ResultHolder(
-        PsmResult psm_result,
+        RlweResult psm_result,
         absl::optional<bool> membership_result = absl::nullopt,
         absl::optional<base::Time> membership_determination_time =
             absl::nullopt)
@@ -45,10 +45,10 @@ class PsmRlweDmserverClient {
 
     // Indicate whether an error occurred while executing the PSM protocol.
     bool IsError() const {
-      return psm_result != PsmResult::kSuccessfulDetermination;
+      return psm_result != RlweResult::kSuccessfulDetermination;
     }
 
-    PsmResult psm_result;
+    RlweResult psm_result;
 
     // These fields have values only if `psm_result` value is
     // `kSuccessfulDetermination`.
@@ -62,7 +62,7 @@ class PsmRlweDmserverClient {
   using CompletionCallback =
       base::OnceCallback<void(ResultHolder result_holder)>;
 
-  virtual ~PsmRlweDmserverClient() = default;
+  virtual ~RlweDmserverClient() = default;
 
   // Determines the membership. Then, will call `callback` on
   // successful result or error. Also, the `callback` has to be non-null.
@@ -75,6 +75,6 @@ class PsmRlweDmserverClient {
   virtual bool IsCheckMembershipInProgress() const = 0;
 };
 
-}  // namespace policy
+}  // namespace policy::psm
 
 #endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_DMSERVER_CLIENT_H_

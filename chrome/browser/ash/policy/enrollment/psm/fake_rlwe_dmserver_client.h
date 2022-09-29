@@ -7,18 +7,17 @@
 
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
 
-namespace policy {
+namespace policy::psm {
 
-class FakePsmRlweDmserverClient : public PsmRlweDmserverClient {
+class FakeRlweDmserverClient : public RlweDmserverClient {
  public:
-  FakePsmRlweDmserverClient();
+  FakeRlweDmserverClient();
 
   // Disallow copy constructor and assignment operator.
-  FakePsmRlweDmserverClient(const FakePsmRlweDmserverClient&) = delete;
-  FakePsmRlweDmserverClient& operator=(const FakePsmRlweDmserverClient&) =
-      delete;
+  FakeRlweDmserverClient(const FakeRlweDmserverClient&) = delete;
+  FakeRlweDmserverClient& operator=(const FakeRlweDmserverClient&) = delete;
 
-  ~FakePsmRlweDmserverClient() override = default;
+  ~FakeRlweDmserverClient() override = default;
 
   // Executes the `callback` immediately with `completion_params_`;
   void CheckMembership(CompletionCallback callback) override;
@@ -34,6 +33,6 @@ class FakePsmRlweDmserverClient : public PsmRlweDmserverClient {
   ResultHolder result_holder_;
 };
 
-}  // namespace policy
+}  // namespace policy::psm
 
 #endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_FAKE_RLWE_DMSERVER_CLIENT_H_

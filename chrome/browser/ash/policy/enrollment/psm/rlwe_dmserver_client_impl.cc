@@ -31,13 +31,13 @@
 namespace psm_rlwe = private_membership::rlwe;
 namespace em = enterprise_management;
 
-namespace policy {
+namespace policy::psm {
 
-PsmRlweDmserverClientImpl::PsmRlweDmserverClientImpl(
+RlweDmserverClientImpl::RlweDmserverClientImpl(
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
-    PsmRlweIdProvider* psm_rlwe_id_provider)
+    RlweClient::Factory* psm_rlwe_client_factory,
+    RlweIdProvider* psm_rlwe_id_provider)
     : random_device_id_(base::GenerateGUID()),
       url_loader_factory_(url_loader_factory),
       device_management_service_(device_management_service) {
@@ -57,20 +57,20 @@ PsmRlweDmserverClientImpl::PsmRlweDmserverClientImpl(
     LOG(ERROR) << "PSM error: unexpected internal logic error during creating "
                   "PSM RLWE client";
     last_psm_execution_result_ =
-        ResultHolder(PsmResult::kCreateRlweClientLibraryError);
+        ResultHolder(RlweResult::kCreateRlweClientLibraryError);
     base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_,
-                                  PsmResult::kCreateRlweClientLibraryError);
+                                  RlweResult::kCreateRlweClientLibraryError);
     return;
   }
 
   psm_rlwe_client_ = std::move(status_or_client).value();
 }
 
-PsmRlweDmserverClientImpl::~PsmRlweDmserverClientImpl() {
+RlweDmserverClientImpl::~RlweDmserverClientImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void PsmRlweDmserverClientImpl::CheckMembership(CompletionCallback callback) {
+void RlweDmserverClientImpl::CheckMembership(CompletionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
@@ -90,15 +90,15 @@ void PsmRlweDmserverClientImpl::CheckMembership(CompletionCallback callback) {
 
   on_completion_callback_ = std::move(callback);
 
-  SendPsmRlweOprfRequest();
+  SendRlweOprfRequest();
 }
 
-bool PsmRlweDmserverClientImpl::IsCheckMembershipInProgress() const {
+bool RlweDmserverClientImpl::IsCheckMembershipInProgress() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return psm_request_job_ != nullptr;
 }
 
-void PsmRlweDmserverClientImpl::StoreErrorAndStop(PsmResult psm_result) {
+void RlweDmserverClientImpl::StoreErrorAndStop(RlweResult psm_result) {
   // Note that kUMAPsmResult histogram is only using initial enrollment as a
   // suffix until PSM support FRE.
   base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_, psm_result);
@@ -110,7 +110,7 @@ void PsmRlweDmserverClientImpl::StoreErrorAndStop(PsmResult psm_result) {
   std::move(on_completion_callback_).Run(last_psm_execution_result_.value());
 }
 
-void PsmRlweDmserverClientImpl::SendPsmRlweOprfRequest() {
+void RlweDmserverClientImpl::SendRlweOprfRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Create RLWE OPRF request.
@@ -120,7 +120,7 @@ void PsmRlweDmserverClientImpl::SendPsmRlweOprfRequest() {
     // the error and stop the protocol.
     LOG(ERROR) << "PSM error: unexpected internal logic error during creating "
                   "RLWE OPRF request";
-    StoreErrorAndStop(PsmResult::kCreateOprfRequestLibraryError);
+    StoreErrorAndStop(RlweResult::kCreateOprfRequestLibraryError);
     return;
   }
 
@@ -130,9 +130,9 @@ void PsmRlweDmserverClientImpl::SendPsmRlweOprfRequest() {
   // The passed callback will not be called if |psm_request_job_| is
   // destroyed, so it's safe to use base::Unretained.
   std::unique_ptr<DMServerJobConfiguration> config =
-      CreatePsmRequestJobConfiguration(base::BindOnce(
-          &PsmRlweDmserverClientImpl::OnRlweOprfRequestCompletion,
-          base::Unretained(this)));
+      CreatePsmRequestJobConfiguration(
+          base::BindOnce(&RlweDmserverClientImpl::OnRlweOprfRequestCompletion,
+                         base::Unretained(this)));
 
   em::DeviceManagementRequest* request = config->request();
   em::PrivateSetMembershipRlweRequest* psm_rlwe_request =
@@ -142,7 +142,7 @@ void PsmRlweDmserverClientImpl::SendPsmRlweOprfRequest() {
   psm_request_job_ = device_management_service_->CreateJob(std::move(config));
 }
 
-void PsmRlweDmserverClientImpl::OnRlweOprfRequestCompletion(
+void RlweDmserverClientImpl::OnRlweOprfRequestCompletion(
     DMServerJobResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -158,13 +158,12 @@ void PsmRlweDmserverClientImpl::OnRlweOprfRequestCompletion(
                .rlwe_response()
                .has_oprf_response()) {
         LOG(ERROR) << "PSM error: empty OPRF RLWE response";
-        StoreErrorAndStop(PsmResult::kEmptyOprfResponseError);
+        StoreErrorAndStop(RlweResult::kEmptyOprfResponseError);
         return;
       }
 
       LOG(WARNING) << "PSM RLWE OPRF request completed successfully";
-      SendPsmRlweQueryRequest(
-          result.response.private_set_membership_response());
+      SendRlweQueryRequest(result.response.private_set_membership_response());
       return;
     }
     case DM_STATUS_REQUEST_FAILED: {
@@ -172,18 +171,18 @@ void PsmRlweDmserverClientImpl::OnRlweOprfRequestCompletion(
           << "PSM error: RLWE OPRF request failed due to connection error";
       base::UmaHistogramSparse(kUMAPsmNetworkErrorCode + uma_suffix_,
                                -result.net_error);
-      StoreErrorAndStop(PsmResult::kConnectionError);
+      StoreErrorAndStop(RlweResult::kConnectionError);
       return;
     }
     default: {
       LOG(ERROR) << "PSM error: RLWE OPRF request failed due to server error";
-      StoreErrorAndStop(PsmResult::kServerError);
+      StoreErrorAndStop(RlweResult::kServerError);
       return;
     }
   }
 }
 
-void PsmRlweDmserverClientImpl::SendPsmRlweQueryRequest(
+void RlweDmserverClientImpl::SendRlweQueryRequest(
     const em::PrivateSetMembershipResponse& psm_response) {
   // Extract the oprf_response from |psm_response|.
   const psm_rlwe::PrivateMembershipRlweOprfResponse oprf_response =
@@ -198,7 +197,7 @@ void PsmRlweDmserverClientImpl::SendPsmRlweQueryRequest(
     // the error and stop the protocol.
     LOG(ERROR) << "PSM error: unexpected internal logic error during creating "
                   "RLWE query request";
-    StoreErrorAndStop(PsmResult::kCreateQueryRequestLibraryError);
+    StoreErrorAndStop(RlweResult::kCreateQueryRequestLibraryError);
     return;
   }
 
@@ -206,9 +205,9 @@ void PsmRlweDmserverClientImpl::SendPsmRlweQueryRequest(
 
   // Prepare the RLWE query request job.
   std::unique_ptr<DMServerJobConfiguration> config =
-      CreatePsmRequestJobConfiguration(base::BindOnce(
-          &PsmRlweDmserverClientImpl::OnRlweQueryRequestCompletion,
-          base::Unretained(this), oprf_response));
+      CreatePsmRequestJobConfiguration(
+          base::BindOnce(&RlweDmserverClientImpl::OnRlweQueryRequestCompletion,
+                         base::Unretained(this), oprf_response));
 
   em::DeviceManagementRequest* request = config->request();
   em::PrivateSetMembershipRlweRequest* psm_rlwe_request =
@@ -218,7 +217,7 @@ void PsmRlweDmserverClientImpl::SendPsmRlweQueryRequest(
   psm_request_job_ = device_management_service_->CreateJob(std::move(config));
 }
 
-void PsmRlweDmserverClientImpl::OnRlweQueryRequestCompletion(
+void RlweDmserverClientImpl::OnRlweQueryRequestCompletion(
     const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
         oprf_response,
     DMServerJobResult result) {
@@ -236,7 +235,7 @@ void PsmRlweDmserverClientImpl::OnRlweQueryRequestCompletion(
                .rlwe_response()
                .has_query_response()) {
         LOG(ERROR) << "PSM error: empty query RLWE response";
-        StoreErrorAndStop(PsmResult::kEmptyQueryResponseError);
+        StoreErrorAndStop(RlweResult::kEmptyQueryResponseError);
         return;
       }
 
@@ -254,14 +253,14 @@ void PsmRlweDmserverClientImpl::OnRlweQueryRequestCompletion(
         LOG(ERROR) << "PSM error: unexpected internal logic error during "
                       "processing the "
                       "RLWE query response";
-        StoreErrorAndStop(PsmResult::kProcessingQueryResponseLibraryError);
+        StoreErrorAndStop(RlweResult::kProcessingQueryResponseLibraryError);
         return;
       }
 
       LOG(WARNING) << "PSM query request completed successfully";
 
       base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_,
-                                    PsmResult::kSuccessfulDetermination);
+                                    RlweResult::kSuccessfulDetermination);
       RecordPsmSuccessTimeHistogram();
 
       // The RLWE query response has been processed successfully. Extract
@@ -280,8 +279,8 @@ void PsmRlweDmserverClientImpl::OnRlweQueryRequestCompletion(
             << "PSM error: RLWE membership responses are either empty or its "
                "first response's ID is not the same as the current PSM ID.";
         // TODO(crbug.com/1302982): Record that error separately and merge it
-        // with PsmResult.
-        StoreErrorAndStop(PsmResult::kEmptyQueryResponseError);
+        // with RlweResult.
+        StoreErrorAndStop(RlweResult::kEmptyQueryResponseError);
         return;
       }
 
@@ -300,7 +299,7 @@ void PsmRlweDmserverClientImpl::OnRlweQueryRequestCompletion(
 
       // Store the last PSM execution result.
       last_psm_execution_result_ =
-          ResultHolder(PsmResult::kSuccessfulDetermination, membership_result,
+          ResultHolder(RlweResult::kSuccessfulDetermination, membership_result,
                        /*membership_determination_time=*/base::Time::Now());
 
       std::move(on_completion_callback_)
@@ -312,19 +311,19 @@ void PsmRlweDmserverClientImpl::OnRlweQueryRequestCompletion(
           << "PSM error: RLWE query request failed due to connection error";
       base::UmaHistogramSparse(kUMAPsmNetworkErrorCode + uma_suffix_,
                                -result.net_error);
-      StoreErrorAndStop(PsmResult::kConnectionError);
+      StoreErrorAndStop(RlweResult::kConnectionError);
       return;
     }
     default: {
       LOG(ERROR) << "PSM error: RLWE query request failed due to server error";
-      StoreErrorAndStop(PsmResult::kServerError);
+      StoreErrorAndStop(RlweResult::kServerError);
       return;
     }
   }
 }
 
 std::unique_ptr<DMServerJobConfiguration>
-PsmRlweDmserverClientImpl::CreatePsmRequestJobConfiguration(
+RlweDmserverClientImpl::CreatePsmRequestJobConfiguration(
     DMServerJobConfiguration::Callback callback) {
   return std::make_unique<DMServerJobConfiguration>(
       device_management_service_,
@@ -335,7 +334,7 @@ PsmRlweDmserverClientImpl::CreatePsmRequestJobConfiguration(
       /*oauth_token=*/absl::nullopt, url_loader_factory_, std::move(callback));
 }
 
-void PsmRlweDmserverClientImpl::RecordPsmSuccessTimeHistogram() {
+void RlweDmserverClientImpl::RecordPsmSuccessTimeHistogram() {
   // These values determine bucketing of the histogram, they should not be
   // changed.
   static const base::TimeDelta kMin = base::Milliseconds(1);
@@ -350,4 +349,4 @@ void PsmRlweDmserverClientImpl::RecordPsmSuccessTimeHistogram() {
   }
 }
 
-}  // namespace policy
+}  // namespace policy::psm

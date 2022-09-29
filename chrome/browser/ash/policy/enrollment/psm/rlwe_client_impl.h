@@ -21,11 +21,11 @@ class RlweMembershipResponses;
 }  // namespace rlwe
 }  // namespace private_membership
 
-namespace policy {
+namespace policy::psm {
 
-class PrivateMembershipRlweClientImpl : public PrivateMembershipRlweClient {
+class RlweClientImpl : public RlweClient {
  public:
-  // A factory that creates |PrivateMembershipRlweClientImpl|s.
+  // A factory that creates |RlweClientImpl|s.
   class FactoryImpl : public Factory {
    public:
     FactoryImpl();
@@ -38,21 +38,19 @@ class PrivateMembershipRlweClientImpl : public PrivateMembershipRlweClient {
 
     // Creates PSM RLWE client that generates and holds a randomly generated
     // key.
-    ::rlwe::StatusOr<std::unique_ptr<PrivateMembershipRlweClient>> Create(
+    ::rlwe::StatusOr<std::unique_ptr<RlweClient>> Create(
         private_membership::rlwe::RlweUseCase use_case,
         const std::vector<private_membership::rlwe::RlwePlaintextId>&
             plaintext_ids) override;
   };
 
-  // PrivateMembershipRlweClientImpl is neither copyable nor copy assignable.
-  PrivateMembershipRlweClientImpl(const PrivateMembershipRlweClientImpl&) =
-      delete;
-  PrivateMembershipRlweClientImpl& operator=(
-      const PrivateMembershipRlweClientImpl&) = delete;
+  // RlweClientImpl is neither copyable nor copy assignable.
+  RlweClientImpl(const RlweClientImpl&) = delete;
+  RlweClientImpl& operator=(const RlweClientImpl&) = delete;
 
-  ~PrivateMembershipRlweClientImpl() override;
+  ~RlweClientImpl() override;
 
-  // Delegates all function calls into PrivateMembershipRlweClient by
+  // Delegates all function calls into RlweClient by
   // |psm_rlwe_client_|.
 
   ::rlwe::StatusOr<private_membership::rlwe::PrivateMembershipRlweOprfRequest>
@@ -67,7 +65,7 @@ class PrivateMembershipRlweClientImpl : public PrivateMembershipRlweClient {
           query_response) override;
 
  private:
-  explicit PrivateMembershipRlweClientImpl(
+  explicit RlweClientImpl(
       std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
           psm_rlwe_client);
 
@@ -75,6 +73,6 @@ class PrivateMembershipRlweClientImpl : public PrivateMembershipRlweClient {
       psm_rlwe_client_;
 };
 
-}  // namespace policy
+}  // namespace policy::psm
 
 #endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_CLIENT_IMPL_H_

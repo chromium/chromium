@@ -181,11 +181,11 @@ AutoEnrollmentController::AutoEnrollmentController() {
   // whether switches::kEnterpriseUseFakePsmRlweClient is set.
   if (ShouldUseFakePsmRlweClient()) {
     CHECK_IS_TEST();
-    psm_rlwe_client_factory_ = std::make_unique<
-        policy::FakePrivateMembershipRlweClient::FactoryImpl>();
+    psm_rlwe_client_factory_ =
+        std::make_unique<policy::psm::FakeRlweClient::FactoryImpl>();
   } else {
-    psm_rlwe_client_factory_ = std::make_unique<
-        policy::PrivateMembershipRlweClientImpl::FactoryImpl>();
+    psm_rlwe_client_factory_ =
+        std::make_unique<policy::psm::RlweClientImpl::FactoryImpl>();
   }
 }
 
@@ -439,7 +439,7 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
       serial_number, rlz_brand_code, power_initial, power_limit,
-      std::make_unique<policy::PsmRlweDmserverClientImpl>(
+      std::make_unique<policy::psm::RlweDmserverClientImpl>(
           service,
           g_browser_process->system_network_context_manager()
               ->GetSharedURLLoaderFactory(),

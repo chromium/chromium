@@ -50,7 +50,7 @@ namespace em = enterprise_management;
 using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
 // A struct reporesents the PSM execution result params.
-using PsmResultHolder = policy::PsmRlweDmserverClient::ResultHolder;
+using PsmResultHolder = policy::psm::RlweDmserverClient::ResultHolder;
 
 namespace policy {
 
@@ -122,10 +122,10 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
           progress_callback, service_.get(), local_state_,
           shared_url_loader_factory_, kStateKey, power_initial, power_limit);
     } else {
-      // Store a non-owned smart pointer of FakePsmRlweDmserverClient in
+      // Store a non-owned smart pointer of `psm::FakelweDmserverClient` in
       // `fake_psm_rlwe_dmserver_client_ptr_`.
       auto fake_psm_rlwe_dmserver_client =
-          std::make_unique<FakePsmRlweDmserverClient>();
+          std::make_unique<psm::FakeRlweDmserverClient>();
       fake_psm_rlwe_dmserver_client_ptr_ = fake_psm_rlwe_dmserver_client.get();
 
       client_ =
@@ -415,8 +415,8 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
 
   // Sets the final result of PSM protocol for testing.
-  base::raw_ptr<FakePsmRlweDmserverClient> fake_psm_rlwe_dmserver_client_ptr_ =
-      nullptr;
+  base::raw_ptr<psm::FakeRlweDmserverClient>
+      fake_psm_rlwe_dmserver_client_ptr_ = nullptr;
 
  private:
   const AutoEnrollmentProtocol protocol_;
@@ -1610,7 +1610,7 @@ class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplBaseTest {
     AutoEnrollmentClientImplBaseTest::SetUp();
   }
 
-  void PsmWillReplyWith(PsmResult psm_result,
+  void PsmWillReplyWith(psm::RlweResult psm_result,
                         absl::optional<bool> membership_result = absl::nullopt,
                         absl::optional<base::Time>
                             membership_determination_time = absl::nullopt) {
@@ -1660,7 +1660,7 @@ class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplBaseTest {
 
 TEST_F(PsmHelperInitialEnrollmentTest,
        RetryLogicAfterNetworkFailureForRlweQueryResponse) {
-  PsmWillReplyWith(PsmResult::kServerError);
+  PsmWillReplyWith(psm::RlweResult::kServerError);
 
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -1696,7 +1696,7 @@ TEST_F(PsmHelperInitialEnrollmentTest,
   // Advance the time forward one second.
   task_environment_.FastForwardBy(kOneSecondTimeDelta);
 
-  PsmWillReplyWith(PsmResult::kSuccessfulDetermination,
+  PsmWillReplyWith(psm::RlweResult::kSuccessfulDetermination,
                    kExpectedMembershipResult,
                    kExpectedPsmDeterminationTimestamp);
 
@@ -1761,7 +1761,7 @@ TEST_F(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalSucceed) {
         em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE);
   }
 
-  PsmWillReplyWith(PsmResult::kSuccessfulDetermination,
+  PsmWillReplyWith(psm::RlweResult::kSuccessfulDetermination,
                    kExpectedMembershipResult,
                    kExpectedPsmDeterminationTimestamp);
 
@@ -1805,7 +1805,7 @@ TEST_F(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalFailed) {
   // server-backed state.
   ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
 
-  PsmWillReplyWith(PsmResult::kSuccessfulDetermination,
+  PsmWillReplyWith(psm::RlweResult::kSuccessfulDetermination,
                    kExpectedMembershipResult,
                    kExpectedPsmDeterminationTimestamp);
 
@@ -1841,7 +1841,7 @@ TEST_F(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalIsEmpty) {
   // Advance the time forward one second.
   task_environment_.FastForwardBy(kOneSecondTimeDelta);
 
-  PsmWillReplyWith(PsmResult::kSuccessfulDetermination,
+  PsmWillReplyWith(psm::RlweResult::kSuccessfulDetermination,
                    /*membership_result=*/true,
                    kExpectedPsmDeterminationTimestamp);
 
@@ -1870,7 +1870,7 @@ TEST_F(PsmHelperInitialEnrollmentTest, PsmSucceedAndDeviceDisabled) {
   // Advance the time forward one second.
   task_environment_.FastForwardBy(kOneSecondTimeDelta);
 
-  PsmWillReplyWith(PsmResult::kSuccessfulDetermination,
+  PsmWillReplyWith(psm::RlweResult::kSuccessfulDetermination,
                    /*membership_result=*/true,
                    kExpectedPsmDeterminationTimestamp);
 
@@ -1896,17 +1896,18 @@ TEST_F(PsmHelperInitialEnrollmentTest, PsmSucceedAndDeviceDisabled) {
 
 class PsmHelperInitialEnrollmentInternalErrorTest
     : public PsmHelperInitialEnrollmentTest,
-      public testing::WithParamInterface<PsmResult> {
+      public testing::WithParamInterface<psm::RlweResult> {
  protected:
   void SetUp() override {
-    ASSERT_NE(GetPsmInternalErrorResult(), PsmResult::kSuccessfulDetermination);
-    ASSERT_NE(GetPsmInternalErrorResult(), PsmResult::kConnectionError);
-    ASSERT_NE(GetPsmInternalErrorResult(), PsmResult::kServerError);
+    ASSERT_NE(GetPsmInternalErrorResult(),
+              psm::RlweResult::kSuccessfulDetermination);
+    ASSERT_NE(GetPsmInternalErrorResult(), psm::RlweResult::kConnectionError);
+    ASSERT_NE(GetPsmInternalErrorResult(), psm::RlweResult::kServerError);
 
     PsmHelperInitialEnrollmentTest::SetUp();
   }
 
-  PsmResult GetPsmInternalErrorResult() const { return GetParam(); }
+  psm::RlweResult GetPsmInternalErrorResult() const { return GetParam(); }
 };
 
 TEST_P(PsmHelperInitialEnrollmentInternalErrorTest, PsmFails) {
@@ -1942,12 +1943,12 @@ TEST_P(PsmHelperInitialEnrollmentInternalErrorTest, PsmFails) {
 INSTANTIATE_TEST_SUITE_P(
     PsmForInitialEnrollmentInternalError,
     PsmHelperInitialEnrollmentInternalErrorTest,
-    testing::ValuesIn({PsmResult::kCreateRlweClientLibraryError,
-                       PsmResult::kCreateOprfRequestLibraryError,
-                       PsmResult::kCreateQueryRequestLibraryError,
-                       PsmResult::kProcessingQueryResponseLibraryError,
-                       PsmResult::kEmptyOprfResponseError,
-                       PsmResult::kEmptyQueryResponseError}));
+    testing::ValuesIn({psm::RlweResult::kCreateRlweClientLibraryError,
+                       psm::RlweResult::kCreateOprfRequestLibraryError,
+                       psm::RlweResult::kCreateQueryRequestLibraryError,
+                       psm::RlweResult::kProcessingQueryResponseLibraryError,
+                       psm::RlweResult::kEmptyOprfResponseError,
+                       psm::RlweResult::kEmptyQueryResponseError}));
 
 }  // namespace
 }  // namespace policy

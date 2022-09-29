@@ -17,24 +17,24 @@ class RlweMembershipResponses;
 }  // namespace rlwe
 }  // namespace private_membership
 
-namespace policy {
+namespace policy::psm {
 
 // Interface for the Private Membership RLWE Client, allowing to replace the
 // private membership RLWE client library with a fake for tests.
-class PrivateMembershipRlweClient {
+class RlweClient {
  public:
   class Factory {
    public:
     virtual ~Factory() = default;
     // Creates a client for the Private Membership RLWE protocol. It will be
     // created for |plaintext_ids| with use case as |use_case|.
-    virtual ::rlwe::StatusOr<std::unique_ptr<PrivateMembershipRlweClient>>
-    Create(private_membership::rlwe::RlweUseCase use_case,
-           const std::vector<private_membership::rlwe::RlwePlaintextId>&
-               plaintext_ids) = 0;
+    virtual ::rlwe::StatusOr<std::unique_ptr<RlweClient>> Create(
+        private_membership::rlwe::RlweUseCase use_case,
+        const std::vector<private_membership::rlwe::RlwePlaintextId>&
+            plaintext_ids) = 0;
   };
 
-  virtual ~PrivateMembershipRlweClient() = default;
+  virtual ~RlweClient() = default;
 
   // Creates a request proto for the first phase of the protocol.
   virtual ::rlwe::StatusOr<
@@ -59,6 +59,6 @@ class PrivateMembershipRlweClient {
           query_response) = 0;
 };
 
-}  // namespace policy
+}  // namespace policy::psm
 
 #endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_CLIENT_H_

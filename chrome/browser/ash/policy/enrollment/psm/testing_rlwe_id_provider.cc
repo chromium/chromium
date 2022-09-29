@@ -8,14 +8,14 @@
 
 namespace psm_rlwe = private_membership::rlwe;
 
-namespace policy {
+namespace policy::psm {
 
-TestingPsmRlweIdProvider::TestingPsmRlweIdProvider(
+TestingRlweIdProvider::TestingRlweIdProvider(
     const private_membership::rlwe::RlwePlaintextId& testing_psm_device_rlwe_id)
     : testing_psm_device_rlwe_id_(testing_psm_device_rlwe_id) {}
 
-psm_rlwe::RlwePlaintextId TestingPsmRlweIdProvider::ConstructRlweId() {
+psm_rlwe::RlwePlaintextId TestingRlweIdProvider::ConstructRlweId() {
   return testing_psm_device_rlwe_id_;
 }
 
-}  // namespace policy
+}  // namespace policy::psm

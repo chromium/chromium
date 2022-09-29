@@ -11,19 +11,18 @@
 
 namespace psm_rlwe = private_membership::rlwe;
 
-namespace policy {
+namespace policy::psm {
 
-class PsmRlweIdProviderImplTest : public testing::Test {
- protected:
-  PsmRlweIdProviderImplTest() = default;
+class RlweIdProviderImplTest : public testing::Test {
+ public:
+  RlweIdProviderImplTest() = default;
 
-  PsmRlweIdProviderImplTest(const PsmRlweIdProviderImplTest&) = delete;
-  PsmRlweIdProviderImplTest& operator=(const PsmRlweIdProviderImplTest&) =
-      delete;
-  ~PsmRlweIdProviderImplTest() override = default;
+  RlweIdProviderImplTest(const RlweIdProviderImplTest&) = delete;
+  RlweIdProviderImplTest& operator=(const RlweIdProviderImplTest&) = delete;
+  ~RlweIdProviderImplTest() override = default;
 
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  PsmRlweIdProviderImpl psm_rlwe_impl;
+  RlweIdProviderImpl psm_rlwe_impl;
   const std::string kTestSerialNumber = "111111";
   const std::string kTestBrandCode = "TEST";
 
@@ -31,7 +30,7 @@ class PsmRlweIdProviderImplTest : public testing::Test {
   const std::string kTestBrandCodeHex = "54455354";
 };
 
-TEST_F(PsmRlweIdProviderImplTest, VerifyConstructedRlweId) {
+TEST_F(RlweIdProviderImplTest, VerifyConstructedRlweId) {
   // Sets the values for serial number and RLZ brand code as the values must be
   // present to construct the RLWE ID without CHECK-failures.
   fake_statistics_provider_.SetMachineStatistic(
@@ -39,13 +38,13 @@ TEST_F(PsmRlweIdProviderImplTest, VerifyConstructedRlweId) {
   fake_statistics_provider_.SetMachineStatistic(
       chromeos::system::kRlzBrandCodeKey, kTestBrandCode);
 
-  // RLZ brand code "TEST" (as hex), "/" seperator, and serial number "111111".
-  const std::string kExpectedPsmRlweIdStr =
+  // RLZ brand code "TEST" (as hex), "/" separator, and serial number "111111".
+  const std::string kExpectedRlweIdStr =
       kTestBrandCodeHex + "/" + kTestSerialNumber;
 
   // Construct the PSM RLWE ID, and verify its value.
   psm_rlwe::RlwePlaintextId rlwe_id = psm_rlwe_impl.ConstructRlweId();
-  EXPECT_EQ(rlwe_id.sensitive_id(), kExpectedPsmRlweIdStr);
+  EXPECT_EQ(rlwe_id.sensitive_id(), kExpectedRlweIdStr);
 }
 
-}  // namespace policy
+}  // namespace policy::psm

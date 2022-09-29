@@ -18,9 +18,9 @@
 
 namespace psm_rlwe = private_membership::rlwe;
 
-namespace policy {
+namespace policy::psm {
 
-TestingPrivateMembershipRlweClient::FactoryImpl::FactoryImpl(
+TestingRlweClient::FactoryImpl::FactoryImpl(
     const std::string& ec_cipher_key,
     const std::string& seed,
     std::vector<private_membership::rlwe::RlwePlaintextId>
@@ -29,8 +29,8 @@ TestingPrivateMembershipRlweClient::FactoryImpl::FactoryImpl(
       seed_(seed),
       plaintext_testing_ids_(std::move(plaintext_testing_ids)) {}
 
-::rlwe::StatusOr<std::unique_ptr<PrivateMembershipRlweClient>>
-TestingPrivateMembershipRlweClient::FactoryImpl::Create(
+::rlwe::StatusOr<std::unique_ptr<RlweClient>>
+TestingRlweClient::FactoryImpl::Create(
     psm_rlwe::RlweUseCase use_case,
     const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids) {
   auto status_or_client =
@@ -39,37 +39,35 @@ TestingPrivateMembershipRlweClient::FactoryImpl::Create(
   if (!status_or_client.ok()) {
     return absl::InvalidArgumentError(status_or_client.status().message());
   }
-  return absl::WrapUnique<PrivateMembershipRlweClient>(
-      new TestingPrivateMembershipRlweClient(
-          std::move(status_or_client).value()));
+  return absl::WrapUnique<RlweClient>(
+      new TestingRlweClient(std::move(status_or_client).value()));
 }
 
-TestingPrivateMembershipRlweClient::FactoryImpl::~FactoryImpl() = default;
+TestingRlweClient::FactoryImpl::~FactoryImpl() = default;
 
-TestingPrivateMembershipRlweClient::~TestingPrivateMembershipRlweClient() =
-    default;
+TestingRlweClient::~TestingRlweClient() = default;
 
 ::rlwe::StatusOr<psm_rlwe::PrivateMembershipRlweOprfRequest>
-TestingPrivateMembershipRlweClient::CreateOprfRequest() {
+TestingRlweClient::CreateOprfRequest() {
   return psm_rlwe_client_->CreateOprfRequest();
 }
 
 ::rlwe::StatusOr<psm_rlwe::PrivateMembershipRlweQueryRequest>
-TestingPrivateMembershipRlweClient::CreateQueryRequest(
+TestingRlweClient::CreateQueryRequest(
     const psm_rlwe::PrivateMembershipRlweOprfResponse& oprf_response) {
   return psm_rlwe_client_->CreateQueryRequest(oprf_response);
 }
 
 ::rlwe::StatusOr<psm_rlwe::RlweMembershipResponses>
-TestingPrivateMembershipRlweClient::ProcessQueryResponse(
+TestingRlweClient::ProcessQueryResponse(
     const psm_rlwe::PrivateMembershipRlweQueryResponse& query_response) {
   return psm_rlwe_client_->ProcessQueryResponse(query_response);
 }
 
-TestingPrivateMembershipRlweClient::TestingPrivateMembershipRlweClient(
+TestingRlweClient::TestingRlweClient(
     std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client)
     : psm_rlwe_client_(std::move(psm_rlwe_client)) {
   DCHECK(psm_rlwe_client_);
 }
 
-}  // namespace policy
+}  // namespace policy::psm

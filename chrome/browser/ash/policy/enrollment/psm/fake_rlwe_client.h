@@ -19,11 +19,11 @@ class RlweMembershipResponses;
 }  // namespace rlwe
 }  // namespace private_membership
 
-namespace policy {
+namespace policy::psm {
 
-class FakePrivateMembershipRlweClient : public PrivateMembershipRlweClient {
+class FakeRlweClient : public RlweClient {
  public:
-  // A factory that creates |FakePrivateMembershipRlweClient|s.
+  // A factory that creates |FakeRlweClient|s.
   class FactoryImpl : public Factory {
    public:
     FactoryImpl() = default;
@@ -35,21 +35,19 @@ class FakePrivateMembershipRlweClient : public PrivateMembershipRlweClient {
     ~FactoryImpl() override = default;
 
     // Creates a fake PSM RLWE client for testing purposes.
-    ::rlwe::StatusOr<std::unique_ptr<PrivateMembershipRlweClient>> Create(
+    ::rlwe::StatusOr<std::unique_ptr<RlweClient>> Create(
         private_membership::rlwe::RlweUseCase use_case,
         const std::vector<private_membership::rlwe::RlwePlaintextId>&
             plaintext_ids) override;
   };
 
-  // FakePrivateMembershipRlweClient is neither copyable nor copy assignable.
-  FakePrivateMembershipRlweClient(const FakePrivateMembershipRlweClient&) =
-      delete;
-  FakePrivateMembershipRlweClient& operator=(
-      const FakePrivateMembershipRlweClient&) = delete;
+  // FakeRlweClient is neither copyable nor copy assignable.
+  FakeRlweClient(const FakeRlweClient&) = delete;
+  FakeRlweClient& operator=(const FakeRlweClient&) = delete;
 
-  ~FakePrivateMembershipRlweClient() override;
+  ~FakeRlweClient() override;
 
-  // Mocks all function calls of PrivateMembershipRlweClient.
+  // Mocks all function calls of RlweClient.
 
   ::rlwe::StatusOr<private_membership::rlwe::PrivateMembershipRlweOprfRequest>
   CreateOprfRequest() override;
@@ -63,7 +61,7 @@ class FakePrivateMembershipRlweClient : public PrivateMembershipRlweClient {
           query_response) override;
 
  private:
-  FakePrivateMembershipRlweClient(
+  FakeRlweClient(
       private_membership::rlwe::RlweUseCase use_case,
       std::vector<private_membership::rlwe::RlwePlaintextId> plaintext_ids);
 
@@ -71,6 +69,6 @@ class FakePrivateMembershipRlweClient : public PrivateMembershipRlweClient {
   const std::vector<private_membership::rlwe::RlwePlaintextId> plaintext_ids_;
 };
 
-}  // namespace policy
+}  // namespace policy::psm
 
 #endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_FAKE_RLWE_CLIENT_H_
