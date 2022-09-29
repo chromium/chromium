@@ -550,7 +550,7 @@ void WorkerThread::InitializeSchedulerOnWorkerThread(
   // worker thread. See also comments on GetTaskRunner().
   // We only capture task types that are actually used. When you want to use a
   // new task type, add it here.
-  Vector<TaskType> available_task_types = {
+  static constexpr TaskType kAvailableTaskTypes[] = {
       TaskType::kBackgroundFetch,
       TaskType::kCanvasBlobSerialization,
       TaskType::kDatabaseAccess,
@@ -583,7 +583,8 @@ void WorkerThread::InitializeSchedulerOnWorkerThread(
       TaskType::kWebLocks,
       TaskType::kWebSocket,
       TaskType::kWorkerAnimation};
-  for (auto type : available_task_types) {
+  worker_task_runners_.ReserveCapacityForSize(std::size(kAvailableTaskTypes));
+  for (auto type : kAvailableTaskTypes) {
     auto task_runner = worker_scheduler_->GetTaskRunner(type);
     auto result = worker_task_runners_.insert(type, std::move(task_runner));
     DCHECK(result.is_new_entry);
