@@ -15,11 +15,9 @@ import sys
 from blinkpy.common import path_finder
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.port.android import (
-    PRODUCTS_TO_EXPECTATION_FILE_PATHS,
     ANDROID_WEBLAYER,
     ANDROID_WEBVIEW,
     CHROME_ANDROID,
-    ANDROID_DISABLED_TESTS,
 )
 
 path_finder.add_testing_dir_to_sys_path()
@@ -100,10 +98,6 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             self._parser.error(str(exc))
 
     @property
-    def _metadata_dir(self):
-        return self.fs.join(self._tmp_dir, 'metadata')
-
-    @property
     def _upstream_dir(self):
         return self.fs.join(self._tmp_dir, 'upstream_wpt')
 
@@ -164,11 +158,6 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                 self.path_finder.path_from_web_tests("wptrunner.blink.ini")
             ])
 
-        # if metadata was created then add the metadata directory
-        # to the list of wpt arguments
-        if self._metadata_dir:
-            rest_args.extend(['--metadata', self._metadata_dir])
-
         if self.options.flag_specific:
             configs = self.port.flag_specific_configs()
             rest_args.extend('--binary-arg=%s' % arg
@@ -183,17 +172,6 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
 
         rest_args.extend(self.options.wpt_args)
         return rest_args
-
-    def _maybe_build_metadata(self):
-        metadata_builder_cmd = [
-            self.select_python_executable(),
-            self.path_finder.path_from_blink_tools('build_wpt_metadata.py'),
-            '--metadata-output-dir=%s' % self._metadata_dir,
-        ]
-        if self.options.ignore_default_expectations:
-            metadata_builder_cmd += ['--ignore-default-expectations']
-        metadata_builder_cmd.extend(self.product.metadata_builder_args)
-        return common.run_command(metadata_builder_cmd)
 
     @property
     def log_level(self):
@@ -210,14 +188,6 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             # after the tests complete. Otherwise, `mkdtemp()` raise an error.
             stack.callback(self.fs.rmtree, self._tmp_dir)
             stack.enter_context(self.product.test_env())
-            metadata_command_ret = self._maybe_build_metadata()
-            if metadata_command_ret != 0:
-                return metadata_command_ret
-
-            # If there is no metadata then we need to create an
-            # empty directory to pass to wptrunner
-            if not os.path.exists(self._metadata_dir):
-                os.makedirs(self._metadata_dir)
             if self.options.use_upstream_wpt:
                 logger.info("Using upstream wpt, cloning to %s ..." %
                             self._upstream_dir)
@@ -267,7 +237,6 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
     def add_extra_arguments(self, parser):
         super().add_extra_arguments(parser)
         parser.description = __doc__
-        self.add_metadata_arguments(parser)
         self.add_binary_arguments(parser)
         self.add_test_arguments(parser)
         if _ANDROID_ENABLED:
@@ -320,25 +289,6 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                             default=True,
                             help=('Use this tag to not run wptrunner in'
                                   'headless mode'))
-
-    def add_metadata_arguments(self, parser):
-        group = parser.add_argument_group(
-            'Metadata Builder',
-            'Options for building WPT metadata from web test expectations.')
-        group.add_argument('--additional-expectations',
-                           metavar='EXPECTATIONS_FILE',
-                           action='append',
-                           default=[],
-                           help='Paths to additional test expectations files.')
-        group.add_argument(
-            '--ignore-default-expectations',
-            action='store_true',
-            help='Do not use the default set of TestExpectations files.')
-        group.add_argument('--ignore-browser-specific-expectations',
-                           action='store_true',
-                           default=False,
-                           help='Ignore browser-specific expectation files.')
-        return group
 
     def add_binary_arguments(self, parser):
         group = parser.add_argument_group(
@@ -509,19 +459,6 @@ class Product:
             args.append('--webdriver-binary=%s' % webdriver)
         return args
 
-    @property
-    def metadata_builder_args(self):
-        """list[str]: Arguments to add to the WPT metadata builder command."""
-        return [
-            '--additional-expectations=%s' % expectation
-            for expectation in self.expectations
-        ]
-
-    @property
-    def expectations(self):
-        """list[str]: Paths to additional expectations to build metadata for."""
-        return list(self._options.additional_expectations)
-
     def get_version(self):
         """Get the product version, if available."""
         return None
@@ -545,27 +482,6 @@ class ChromeBase(Product):
             '--processes=%d' % self._options.processes,
         ])
         return wpt_args
-
-    @property
-    def metadata_builder_args(self):
-        args = list(super().metadata_builder_args)
-        # TODO(crbug/1299650): Strip trailing '/'. Otherwise,
-        # build_wpt_metadata.py will not build correctly filesystem paths
-        # correctly.
-        path_to_wpt_root = self._host.filesystem.normpath(
-            self._path_finder.path_from_wpt_tests())
-        args.extend([
-            '--no-process-baselines',
-            '--checked-in-metadata-dir=%s' % path_to_wpt_root,
-        ])
-        return args
-
-    @property
-    def expectations(self):
-        expectations = list(super().expectations)
-        expectations.append(
-            self._path_finder.path_from_web_tests('WPTOverrideExpectations'))
-        return expectations
 
 
 class Chrome(ChromeBase):
@@ -617,13 +533,6 @@ class ChromeiOS(Product):
         ])
         return wpt_args
 
-    @property
-    def expectations(self):
-        expectations = list(super().expectations)
-        expectations.append(
-            self._path_finder.path_from_web_tests('WPTOverrideExpectations'))
-        return expectations
-
 
 @contextlib.contextmanager
 def _install_apk(device, path):
@@ -666,25 +575,6 @@ class ChromeAndroidBase(Product):
         if self._options.adb_binary:
             wpt_args.append('--adb-binary=%s' % self._options.adb_binary)
         return wpt_args
-
-    @property
-    def metadata_builder_args(self):
-        args = list(super().metadata_builder_args)
-        args.extend([
-            '--android-product=%s' % self.name,
-            '--use-subtest-results',
-        ])
-        return args
-
-    @property
-    def expectations(self):
-        expectations = list(super().expectations)
-        expectations.append(ANDROID_DISABLED_TESTS)
-        maybe_path = PRODUCTS_TO_EXPECTATION_FILE_PATHS.get(self.name)
-        if (maybe_path
-                and not self._options.ignore_browser_specific_expectations):
-            expectations.append(maybe_path)
-        return expectations
 
     def get_version(self):
         version_provider = self.get_version_provider_package_name()

@@ -15,7 +15,6 @@ group("wpt_tests_isolate") {
 
     # Include blinkpy tools for setting up expectations and uploading results to
     # ResultDB.
-    "//third_party/blink/tools/build_wpt_metadata.py",
     "//third_party/blink/tools/wpt_process_results.py",
     "//third_party/blink/tools/blinkpy/",
 
@@ -28,17 +27,6 @@ group("wpt_tests_isolate") {
     # The web_tests/wpt_internal directory contains internal WPTs
     "//third_party/blink/web_tests/wpt_internal/",
     "//third_party/blink/web_tests/wptrunner.blink.ini",
-
-    # Include the various Test Expectations files.
-    "//third_party/blink/web_tests/ASANExpectations",
-    "//third_party/blink/web_tests/LeakExpectations",
-    "//third_party/blink/web_tests/MSANExpectations",
-    "//third_party/blink/web_tests/NeverFixTests",
-    "//third_party/blink/web_tests/SlowTests",
-    "//third_party/blink/web_tests/StaleTestExpectations",
-    "//third_party/blink/web_tests/TestExpectations",
-    "//third_party/blink/web_tests/VirtualTestSuites",
-    "//third_party/blink/web_tests/WPTOverrideExpectations",
 
     # Include the root vpython spec.
     "//.vpython3",
@@ -62,9 +50,6 @@ if (is_android) {
       "//build/android/pylib/",
 
       # Android-specific expectations
-      "//third_party/blink/web_tests/android/WebLayerWPTOverrideExpectations",
-      "//third_party/blink/web_tests/android/ChromeWPTOverrideExpectations",
-      "//third_party/blink/web_tests/android/WebviewWPTExpectations",
       "//third_party/blink/web_tests/android/AndroidWPTNeverFixTests",
       "//third_party/blink/web_tests/android/WPTSmokeTestCases",
     ]

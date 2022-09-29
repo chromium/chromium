@@ -23,7 +23,6 @@ from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.web_tests.models.test_expectations import (
     ParseError, SystemConfigurationRemover, TestExpectations)
 from blinkpy.web_tests.models.typ_types import ResultType
-from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 
 _log = logging.getLogger(__name__)
 
@@ -79,8 +78,7 @@ class WPTExpectationsUpdater(object):
         for tests that were renamed. Also the files may have their expectations
         updated using builder results.
         """
-        return (list(self.port.all_expectations_dict().keys()) +
-                list(PRODUCTS_TO_EXPECTATION_FILE_PATHS.values()))
+        return list(self.port.all_expectations_dict().keys())
 
     def run(self):
         """Does required setup before calling update_expectations().
@@ -1036,16 +1034,8 @@ class WPTExpectationsUpdater(object):
         for path in self._test_expectations.expectations_dict:
             _log.info('Updating %s for any removed or renamed tests.',
                       self.host.filesystem.basename(path))
-            if path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
-                # Also delete any expectations for modified test cases at
-                # android side to avoid any conflict
-                # TODO: consider keep the triaged expectations when results do
-                # not change
-                self._clean_single_test_expectations_file(
-                    path, deleted_files + modified_files, renamed_files)
-            else:
-                self._clean_single_test_expectations_file(
-                    path, deleted_files, renamed_files)
+            self._clean_single_test_expectations_file(path, deleted_files,
+                                                      renamed_files)
         self._test_expectations.commit_changes()
 
     def _list_files(self, diff_filter):

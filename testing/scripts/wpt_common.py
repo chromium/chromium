@@ -302,6 +302,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             '--no-capture-stdio',
             '--no-manifest-download',
             '--tests=%s' % self.wpt_root_dir,
+            '--metadata=%s' % self.wpt_root_dir,
             '--mojojs-path=%s' % self.mojo_js_directory,
         ])
 

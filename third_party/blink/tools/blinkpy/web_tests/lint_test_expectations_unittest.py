@@ -35,7 +35,6 @@ from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.web_tests import lint_test_expectations
-from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 from blinkpy.web_tests.port.base import VirtualTestSuite
 from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 
@@ -282,26 +281,6 @@ class LintTest(LoggingTestCase):
         ]
         for pattern, failure in zip(expected_non_existence, failures):
             self.assertIn('Test does not exist: %s' % pattern, failure)
-
-    def test_only_wpt_in_android_override_files(self):
-        options = optparse.Values({
-            'additional_expectations': [],
-            'platform': 'test',
-            'debug_rwt_logging': False
-        })
-        host = MockHost()
-        port = host.port_factory.get(options.platform, options=options)
-        raw_expectations = ('# results: [ Failure ]\n'
-                            'external/wpt/test.html [ Failure ]\n'
-                            'non-wpt/test.html [ Failure ]\n')
-        for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
-            host.filesystem.write_text_file(path, raw_expectations)
-        host.port_factory.get = lambda platform=None, options=None: port
-        host.port_factory.all_port_names = lambda platform=None: [port.name()]
-        port.test_exists = lambda _: True
-        port.tests = lambda _: {'external/wpt/test.html', 'non-wpt/test.html'}
-        failures, _ = lint_test_expectations.lint(host, options)
-        self.assertTrue(all('is for a non WPT test' in f for f in failures))
 
     def test_lint_globs(self):
         options = optparse.Values({

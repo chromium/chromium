@@ -24,7 +24,6 @@ from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.test_importer import TestImporter, ROTATIONS_URL, SHERIFF_EMAIL_FALLBACK, RUBBER_STAMPER_BOT
 from blinkpy.w3c.wpt_github_mock import MockWPTGitHub
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
-from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 from blinkpy.web_tests.port.android import ANDROID_DISABLED_TESTS
 from blinkpy.web_tests.builder_list import BuilderList
 
@@ -62,8 +61,6 @@ class TestImporterTest(LoggingTestCase):
         })
         port = host.port_factory.get()
         MANIFEST_INSTALL_CMD[0] = port.python3_command()
-        for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
-            host.filesystem.write_text_file(path, '')
         host.filesystem.write_text_file(ANDROID_DISABLED_TESTS, '')
         return host
 

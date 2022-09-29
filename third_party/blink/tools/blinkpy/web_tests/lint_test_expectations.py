@@ -39,9 +39,8 @@ from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.web_tests.models.test_expectations import (TestExpectations,
                                                         ParseError)
 from blinkpy.web_tests.models.typ_types import ResultType
-from blinkpy.web_tests.port.android import (
-    PRODUCTS_TO_EXPECTATION_FILE_PATHS, ANDROID_DISABLED_TESTS,
-    ANDROID_WEBLAYER)
+from blinkpy.web_tests.port.android import (ANDROID_DISABLED_TESTS,
+                                            ANDROID_WEBLAYER)
 from blinkpy.web_tests.port.factory import platform_options
 from blinkpy.web_tests.port.linux import LinuxPort
 from blinkpy.web_tests.port.mac import MacPort
@@ -73,7 +72,6 @@ def lint(host, options):
 
     # Add all extra expectation files to be linted.
     options.additional_expectations.extend(
-        list(PRODUCTS_TO_EXPECTATION_FILE_PATHS.values()) +
         [ANDROID_DISABLED_TESTS] + [
             host.filesystem.join(port.web_tests_dir(),
                                  'WPTOverrideExpectations'),
@@ -114,9 +112,6 @@ def lint(host, options):
 def _check_test_existence(host, port, path, expectations):
     failures = []
     warnings = []
-    if path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
-        return [], []
-
     for exp in expectations:
         if not exp.test:
             continue
