@@ -43,6 +43,7 @@ if (is_mac) {
       "chrome_modern_version_code = \"@CHROME_MODERN_VERSION_CODE@\" " +
       "monochrome_version_code = \"@MONOCHROME_VERSION_CODE@\" " +
       "trichrome_version_code = \"@TRICHROME_VERSION_CODE@\" " +
+      "trichrome_beta_version_code = \"@TRICHROME_BETA_VERSION_CODE@\" " +
       "webview_stable_version_code = \"@WEBVIEW_STABLE_VERSION_CODE@\" " +
       "webview_beta_version_code = \"@WEBVIEW_BETA_VERSION_CODE@\" " +
       "webview_dev_version_code = \"@WEBVIEW_DEV_VERSION_CODE@\" "
@@ -64,6 +65,12 @@ if (is_mac) {
         "trichrome_64_32_version_code = \"@TRICHROME_64_32_VERSION_CODE@\" "
     _version_dictionary_template +=
         "trichrome_64_version_code = \"@TRICHROME_64_VERSION_CODE@\" "
+    _version_dictionary_template +=
+        "trichrome_32_beta_version_code = \"@TRICHROME_32_BETA_VERSION_CODE@\" "
+    _version_dictionary_template += "trichrome_32_64_beta_version_code = \"@TRICHROME_32_64_BETA_VERSION_CODE@\" "
+    _version_dictionary_template += "trichrome_64_32_beta_version_code = \"@TRICHROME_64_32_BETA_VERSION_CODE@\" "
+    _version_dictionary_template +=
+        "trichrome_64_beta_version_code = \"@TRICHROME_64_BETA_VERSION_CODE@\" "
     _version_dictionary_template +=
         "webview_32_stable_version_code = \"@WEBVIEW_32_STABLE_VERSION_CODE@\" "
     _version_dictionary_template +=
@@ -135,6 +142,11 @@ if (is_mac) {
                            "trichrome_32_64_version_code",
                            "trichrome_64_32_version_code",
                            "trichrome_64_version_code",
+                           "trichrome_beta_version_code",
+                           "trichrome_32_beta_version_code",
+                           "trichrome_32_64_beta_version_code",
+                           "trichrome_64_32_beta_version_code",
+                           "trichrome_64_beta_version_code",
                            "webview_beta_version_code",
                            "webview_dev_version_code",
                            "webview_stable_version_code",

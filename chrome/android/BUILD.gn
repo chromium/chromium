@@ -52,7 +52,9 @@ chrome_jni_for_test_registration_header = "$root_build_dir/gen/chrome/browser/an
 
 if (current_toolchain == default_toolchain) {
   _default_package = "org.chromium.chrome"
-  if (android_channel != "default") {
+  if (use_stable_package_name_for_trichrome) {
+    _default_package += ".stable"
+  } else if (android_channel != "default") {
     # android-binary-size trybot may checks if an internal Chrome variant's
     # AndroidManifest is as expected by ensuring the differences between its
     # AndroidManifest and its upstream target's .AndroidManifest.expected file
@@ -132,11 +134,19 @@ if (current_toolchain == default_toolchain) {
     ]
   }
 
+  _use_stable_package_name_for_trichrome =
+      use_stable_package_name_for_trichrome && android_channel == "beta"
+
   jinja_template("trichrome_library_android_manifest") {
     input = "java/AndroidManifest_trichrome_library.xml"
     output = trichrome_library_android_manifest
+    if (_use_stable_package_name_for_trichrome) {
+      _version_code = trichrome_beta_version_code
+    } else {
+      _version_code = trichrome_version_code
+    }
     variables = trichrome_jinja_variables + [
-                  "trichrome_version=$trichrome_version_code",
+                  "trichrome_version=$_version_code",
                   "manifest_package=$trichrome_library_package",
                 ]
   }
@@ -145,8 +155,13 @@ if (current_toolchain == default_toolchain) {
     jinja_template("trichrome_library_64_32_android_manifest") {
       input = "java/AndroidManifest_trichrome_library.xml"
       output = trichrome_library_64_32_android_manifest
+      if (_use_stable_package_name_for_trichrome) {
+        _version_code = trichrome_64_32_beta_version_code
+      } else {
+        _version_code = trichrome_64_32_version_code
+      }
       variables = trichrome_jinja_variables + [
-                    "trichrome_version=$trichrome_64_32_version_code",
+                    "trichrome_version=$_version_code",
                     "manifest_package=$trichrome_library_package",
                     "use32bitAbi=",
                   ]
@@ -154,8 +169,13 @@ if (current_toolchain == default_toolchain) {
     jinja_template("trichrome_library_64_android_manifest") {
       input = "java/AndroidManifest_trichrome_library.xml"
       output = trichrome_library_64_android_manifest
+      if (_use_stable_package_name_for_trichrome) {
+        _version_code = trichrome_64_beta_version_code
+      } else {
+        _version_code = trichrome_64_version_code
+      }
       variables = trichrome_jinja_variables + [
-                    "trichrome_version=$trichrome_64_version_code",
+                    "trichrome_version=$_version_code",
                     "manifest_package=$trichrome_library_package",
                     "use32bitAbi=",
                   ]
@@ -163,8 +183,13 @@ if (current_toolchain == default_toolchain) {
     jinja_template("trichrome_library_32_android_manifest") {
       input = "java/AndroidManifest_trichrome_library.xml"
       output = trichrome_library_32_android_manifest
+      if (_use_stable_package_name_for_trichrome) {
+        _version_code = trichrome_32_beta_version_code
+      } else {
+        _version_code = trichrome_32_version_code
+      }
       variables = trichrome_jinja_variables + [
-                    "trichrome_version=$trichrome_32_version_code",
+                    "trichrome_version=$_version_code",
                     "manifest_package=$trichrome_library_package",
                   ]
     }
@@ -2713,20 +2738,41 @@ if (current_toolchain == default_toolchain) {
         if (android_64bit_target_cpu) {
           if (invoker.is_64_bit_browser) {
             if (invoker.include_32_bit_webview) {
-              variables += [ "trichrome_version=$trichrome_64_32_version_code" ]
+              if (_use_stable_package_name_for_trichrome) {
+                _version_code = trichrome_64_32_beta_version_code
+              } else {
+                _version_code = trichrome_64_32_version_code
+              }
             } else {
-              variables += [ "trichrome_version=$trichrome_64_version_code" ]
+              if (_use_stable_package_name_for_trichrome) {
+                _version_code = trichrome_64_beta_version_code
+              } else {
+                _version_code = trichrome_64_version_code
+              }
             }
           } else {
             if (invoker.include_64_bit_webview) {
-              variables += [ "trichrome_version=$trichrome_32_64_version_code" ]
+              if (_use_stable_package_name_for_trichrome) {
+                _version_code = trichrome_32_64_beta_version_code
+              } else {
+                _version_code = trichrome_32_64_version_code
+              }
             } else {
-              variables += [ "trichrome_version=$trichrome_32_version_code" ]
+              if (_use_stable_package_name_for_trichrome) {
+                _version_code = trichrome_32_beta_version_code
+              } else {
+                _version_code = trichrome_32_version_code
+              }
             }
           }
         } else {
-          variables += [ "trichrome_version=$trichrome_version_code" ]
+          if (_use_stable_package_name_for_trichrome) {
+            _version_code = trichrome_beta_version_code
+          } else {
+            _version_code = trichrome_version_code
+          }
         }
+        variables += [ "trichrome_version=$_version_code" ]
       } else {
         _arch = ""
         if (android_64bit_target_cpu && invoker.is_64_bit_browser) {
@@ -3536,19 +3582,39 @@ if (current_toolchain == default_toolchain) {
       if (android_64bit_target_cpu) {
         if (invoker.is_64_bit_browser) {
           if (invoker.include_32_bit_webview) {
-            _version_code = trichrome_64_32_version_code
+            if (_use_stable_package_name_for_trichrome) {
+              _version_code = trichrome_64_32_beta_version_code
+            } else {
+              _version_code = trichrome_64_32_version_code
+            }
           } else {
-            _version_code = trichrome_64_version_code
+            if (_use_stable_package_name_for_trichrome) {
+              _version_code = trichrome_64_beta_version_code
+            } else {
+              _version_code = trichrome_64_version_code
+            }
           }
         } else {
           if (invoker.include_64_bit_webview) {
-            _version_code = trichrome_32_64_version_code
+            if (_use_stable_package_name_for_trichrome) {
+              _version_code = trichrome_32_64_beta_version_code
+            } else {
+              _version_code = trichrome_32_64_version_code
+            }
           } else {
-            _version_code = trichrome_32_version_code
+            if (_use_stable_package_name_for_trichrome) {
+              _version_code = trichrome_32_beta_version_code
+            } else {
+              _version_code = trichrome_32_version_code
+            }
           }
         }
       } else {
-        _version_code = trichrome_version_code
+        if (_use_stable_package_name_for_trichrome) {
+          _version_code = trichrome_beta_version_code
+        } else {
+          _version_code = trichrome_version_code
+        }
       }
     } else {
       if (android_64bit_target_cpu) {

@@ -284,22 +284,44 @@ template("system_webview_apk_or_module_tmpl") {
 
     if (!defined(version_code)) {
       if (_use_trichrome_library) {
+        _use_stable_package_name_for_trichrome =
+            use_stable_package_name_for_trichrome && android_channel == "beta"
         if (android_64bit_target_cpu) {
           if (invoker.is_64_bit_browser) {
             if (_include_32_bit_webview) {
-              version_code = trichrome_64_32_version_code
+              if (_use_stable_package_name_for_trichrome) {
+                version_code = trichrome_64_32_beta_version_code
+              } else {
+                version_code = trichrome_64_32_version_code
+              }
             } else {
-              version_code = trichrome_64_version_code
+              if (_use_stable_package_name_for_trichrome) {
+                version_code = trichrome_64_beta_version_code
+              } else {
+                version_code = trichrome_64_version_code
+              }
             }
           } else {
             if (_include_64_bit_webview) {
-              version_code = trichrome_32_64_version_code
+              if (_use_stable_package_name_for_trichrome) {
+                version_code = trichrome_32_64_beta_version_code
+              } else {
+                version_code = trichrome_32_64_version_code
+              }
             } else {
-              version_code = trichrome_32_version_code
+              if (_use_stable_package_name_for_trichrome) {
+                version_code = trichrome_32_beta_version_code
+              } else {
+                version_code = trichrome_32_version_code
+              }
             }
           }
         } else {
-          version_code = trichrome_version_code
+          if (_use_stable_package_name_for_trichrome) {
+            version_code = trichrome_beta_version_code
+          } else {
+            version_code = trichrome_version_code
+          }
         }
       } else {
         if (android_channel == "dev") {

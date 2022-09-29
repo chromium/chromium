@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/abi.gni")
+import("//build/config/android/channel.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
@@ -27,6 +28,12 @@ declare_args() {
   # WIP: Enable synchronized proguard for Trichrome. (http://crbug.com/901465)
   # Only affects trichrome targets when !is_java_debug.
   enable_trichrome_synchronized_proguard = false
+
+  # By default, Trichrome channels are compiled using separate package names.
+  # Set this to 'true' to compile Trichrome channels using the Stable channel's
+  # package name. This currently only affects builds with `android_channel =
+  # "beta"`.
+  use_stable_package_name_for_trichrome = false
 }
 
 trichrome_jinja_variables = [
@@ -91,22 +98,44 @@ template("trichrome_library_apk_tmpl") {
     uncompress_dex = true
     version_name = chrome_version_name
 
+    _use_stable_package_name_for_trichrome =
+        use_stable_package_name_for_trichrome && android_channel == "beta"
     if (android_64bit_target_cpu) {
       if (invoker.is_64_bit_browser) {
         if (invoker.include_32_bit_webview) {
-          version_code = trichrome_64_32_version_code
+          if (_use_stable_package_name_for_trichrome) {
+            version_code = trichrome_64_32_beta_version_code
+          } else {
+            version_code = trichrome_64_32_version_code
+          }
         } else {
-          version_code = trichrome_64_version_code
+          if (_use_stable_package_name_for_trichrome) {
+            version_code = trichrome_64_beta_version_code
+          } else {
+            version_code = trichrome_64_version_code
+          }
         }
       } else {
         if (invoker.include_64_bit_webview) {
-          version_code = trichrome_32_64_version_code
+          if (_use_stable_package_name_for_trichrome) {
+            version_code = trichrome_32_64_beta_version_code
+          } else {
+            version_code = trichrome_32_64_version_code
+          }
         } else {
-          version_code = trichrome_32_version_code
+          if (_use_stable_package_name_for_trichrome) {
+            version_code = trichrome_32_beta_version_code
+          } else {
+            version_code = trichrome_32_version_code
+          }
         }
       }
     } else {
-      version_code = trichrome_version_code
+      if (_use_stable_package_name_for_trichrome) {
+        version_code = trichrome_beta_version_code
+      } else {
+        version_code = trichrome_version_code
+      }
     }
 
     min_sdk_version = 29
