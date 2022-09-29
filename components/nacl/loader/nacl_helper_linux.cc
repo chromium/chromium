@@ -149,7 +149,7 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   // We do this before seccomp-bpf is initialized.
   PCHECK(signal(SIGPIPE, SIG_IGN) != SIG_ERR);
 
-  base::FieldTrialList field_trial_list(nullptr);
+  base::FieldTrialList field_trial_list;
   base::FieldTrialList::CreateTrialsFromCommandLine(command_line,
                                                     kFieldTrialDescriptor);
   auto feature_list = std::make_unique<base::FeatureList>();

@@ -892,11 +892,8 @@ void VariationsService::PerformSimulationWithVersion(
 
   const base::ElapsedTimer timer;
 
-  std::unique_ptr<const base::FieldTrial::EntropyProvider> default_provider =
-      state_manager_->CreateDefaultEntropyProvider();
-  std::unique_ptr<const base::FieldTrial::EntropyProvider> low_provider =
-      state_manager_->CreateLowEntropyProvider();
-  VariationsSeedSimulator seed_simulator(*default_provider, *low_provider);
+  auto entropy_providers = state_manager_->CreateEntropyProviders();
+  VariationsSeedSimulator seed_simulator(*entropy_providers);
 
   std::unique_ptr<ClientFilterableState> client_state =
       field_trial_creator_.GetClientFilterableStateForVersion(version);

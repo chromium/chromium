@@ -30,6 +30,7 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -115,36 +116,27 @@ class TestOverrideStringCallback {
 
 }  // namespace
 
-// Create a ClientFilterableState with reasonable default values for Chrome.
-std::unique_ptr<ClientFilterableState> CreateChromeClientFilterableState() {
-  auto client_state = std::make_unique<ClientFilterableState>(
-      base::BindOnce([] { return false; }));
-  client_state->locale = "en-CA";
-  client_state->reference_date = base::Time::Now();
-  client_state->version = base::Version("20.0.0.0");
-  client_state->channel = Study::STABLE;
-  client_state->form_factor = Study::PHONE;
-  client_state->platform = Study::PLATFORM_ANDROID;
-  return client_state;
-}
-
 // ChromeEnvironment calls CreateTrialsFromSeed with arguments similar to
 // chrome.
 class ChromeEnvironment {
  public:
+  bool HasHighEntropy() { return true; }
+
   void CreateTrialsFromSeed(
       const VariationsSeed& seed,
-      double low_entropy,
       base::FeatureList* feature_list,
       const VariationsSeedProcessor::UIStringOverrideCallback& callback) {
-    auto client_state = CreateChromeClientFilterableState();
+    auto client_state = CreateDummyClientFilterableState();
     client_state->platform = Study::PLATFORM_ANDROID;
 
-    base::MockEntropyProvider mock_low_entropy_provider(low_entropy);
+    MockEntropyProviders entropy_providers({
+        .low_entropy = kAlwaysUseLastGroup,
+        .high_entropy = kAlwaysUseFirstGroup,
+    });
     // This should mimic the call through SetUpFieldTrials from
     // components/variations/service/variations_service.cc
     VariationsSeedProcessor().CreateTrialsFromSeed(
-        seed, *client_state, callback, mock_low_entropy_provider, feature_list);
+        seed, *client_state, callback, entropy_providers, feature_list);
   }
 };
 
@@ -152,19 +144,22 @@ class ChromeEnvironment {
 // WebView.
 class WebViewEnvironment {
  public:
+  bool HasHighEntropy() { return false; }
+
   void CreateTrialsFromSeed(
       const VariationsSeed& seed,
-      double low_entropy,
       base::FeatureList* feature_list,
       const VariationsSeedProcessor::UIStringOverrideCallback& callback) {
-    auto client_state = CreateChromeClientFilterableState();
+    auto client_state = CreateDummyClientFilterableState();
     client_state->platform = Study::PLATFORM_ANDROID_WEBVIEW;
 
-    base::MockEntropyProvider mock_low_entropy_provider(low_entropy);
+    MockEntropyProviders entropy_providers({
+        .low_entropy = kAlwaysUseLastGroup,
+    });
     // This should mimic the call through SetUpFieldTrials from
     // android_webview/browser/aw_feature_list_creator.cc
     VariationsSeedProcessor().CreateTrialsFromSeed(
-        seed, *client_state, callback, mock_low_entropy_provider, feature_list);
+        seed, *client_state, callback, entropy_providers, feature_list);
   }
 };
 
@@ -183,17 +178,15 @@ class VariationsSeedProcessorTest : public ::testing::Test {
     testing::ClearAllVariationParams();
   }
 
-  void CreateTrialsFromSeed(const VariationsSeed& seed,
-                            double low_entropy = 0.9) {
+  void CreateTrialsFromSeed(const VariationsSeed& seed) {
     base::FeatureList feature_list;
-    env.CreateTrialsFromSeed(seed, low_entropy, &feature_list,
+    env.CreateTrialsFromSeed(seed, &feature_list,
                              override_callback_.callback());
   }
 
   void CreateTrialsFromSeed(const VariationsSeed& seed,
                             base::FeatureList* feature_list) {
-    env.CreateTrialsFromSeed(seed, 0.9, feature_list,
-                             override_callback_.callback());
+    env.CreateTrialsFromSeed(seed, feature_list, override_callback_.callback());
   }
 
  protected:
@@ -449,19 +442,8 @@ TYPED_TEST(VariationsSeedProcessorTest, StartsActive) {
   AddExperiment("Default", 0, study3);
   study3->set_activation_type(Study::ACTIVATE_ON_QUERY);
 
-  ClientFilterableState client_state(base::BindOnce([] { return false; }));
-  client_state.locale = "en-CA";
-  client_state.reference_date = base::Time::Now();
-  client_state.version = base::Version("20.0.0.0");
-  client_state.channel = Study::STABLE;
-  client_state.form_factor = Study::DESKTOP;
-  client_state.platform = Study::PLATFORM_ANDROID;
-
   VariationsSeedProcessor seed_processor;
-  base::MockEntropyProvider mock_low_entropy_provider(0.9);
-  seed_processor.CreateTrialsFromSeed(
-      seed, client_state, this->override_callback_.callback(),
-      mock_low_entropy_provider, base::FeatureList::GetInstance());
+  this->CreateTrialsFromSeed(seed);
 
   // Non-specified and ACTIVATE_ON_QUERY should not start active, but
   // ACTIVATE_ON_STARTUP should.
@@ -739,20 +721,19 @@ TYPED_TEST(VariationsSeedProcessorTest, LowEntropyStudyTest) {
   AddExperiment(kDefaultName, 50, study2);
   study2->mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
 
-  // An entropy value of 0.1 will cause the AA group to be chosen, since AA is
-  // the only non-default group, and has a probability percent above 0.1.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithNullFeatureAndFieldTrialLists();
-  base::FieldTrialList field_trial_list(
-      std::make_unique<base::MockEntropyProvider>(0.1));
+  this->CreateTrialsFromSeed(seed);
 
-  // This entropy value will cause the default group to be chosen since it's a
-  // 50/50 trial.
-  this->CreateTrialsFromSeed(seed, 0.9);
+  // The environment will create a low entropy source that always picks the last
+  // group, and if it creates a high entropy provider will create one that
+  // always uses the first group.
 
   // Since no experiment in study1 sends experiment IDs, it will use the high
-  // entropy provider, which selects the non-default group.
-  EXPECT_EQ(kGroup1Name, base::FieldTrialList::FindFullName(kTrial1Name));
+  // entropy provider when available, which selects the non-default group.
+  if (this->env.HasHighEntropy()) {
+    EXPECT_EQ(kGroup1Name, base::FieldTrialList::FindFullName(kTrial1Name));
+  } else {
+    EXPECT_EQ(kDefaultName, base::FieldTrialList::FindFullName(kTrial1Name));
+  }
 
   // Since an experiment in study2 has google_web_experiment_id set, it will use
   // the low entropy provider, which selects the default group.
@@ -841,8 +822,6 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithNoSlots) {
   layer->set_num_slots(10);
   Layer::LayerMember* member = layer->add_members();
   member->set_id(82);
-  // Add one SlotRange, with no slots actually defined.
-  member->add_slots();
 
   Study* study = seed.add_study();
   study->set_name("Study1");
@@ -858,6 +837,38 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithNoSlots) {
   // The layer member referenced by the study is missing slots, and should
   // never be chosen.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithUnsetSlots) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(10);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(82);
+  // Add one SlotRange, with no start/end unset. This should be equivalent
+  // to specifying start/end = 0, which includes slot 0 only.
+  member->add_slots();
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+
+  this->CreateTrialsFromSeed(seed);
+
+  if (this->env.HasHighEntropy()) {
+    // high entropy should select slot 0, which activates the study.
+    EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  } else {
+    // low entropy should select slot 9, which does not activate the study.
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+  }
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerWithDuplicateSlots) {
@@ -988,11 +999,10 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerNotSelected) {
   layer_membership->set_layer_member_id(0xDEAD);
   AddExperiment("A", 1, study);
 
-  // Entropy 0.99 Should cause slot 7920 to be chosen.
-  this->CreateTrialsFromSeed(seed, /*low_entropy=*/0.99);
+  this->CreateTrialsFromSeed(seed);
 
-  // The study is a member of the 0xDEAD layer member and should be inactive
-  // (or layers are not supported by the environment).
+  // Low entropy should select slot 7999, which should not select layer 0xDEAD,
+  // and the study should not be activated.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
@@ -1031,13 +1041,17 @@ TYPED_TEST(VariationsSeedProcessorTest, LayerWithDefaultEntropy) {
   layer_membership->set_layer_member_id(0xDEAD);
   AddExperiment("A", 1, study);
 
-  // Since we're *not* setting the entropy_mode to LOW, |low_entropy| should
-  // be ignored and the default high entropy should be used, which in
-  // this case is slot 4000 and hence the first layer member is chosen.
-  this->CreateTrialsFromSeed(seed, /*low_entropy=*/0.99);
+  this->CreateTrialsFromSeed(seed);
 
-  // The study is a member of the 0xDEAD layer member and should be active.
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  if (this->env.HasHighEntropy()) {
+    // The high entropy source should select slot 0, which should select
+    // the member 0xDEAD and activate the study.
+    EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  } else {
+    // The low entropy source should select slot 7999, which should NOT select
+    // the member 0xDEAD, so the study will be inactive.
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+  }
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, LayerWithNoMembers) {

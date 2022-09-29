@@ -52,22 +52,20 @@ VariationsLayers::LayerInfo::LayerInfo(const LayerInfo& other) {
   entropy_mode = other.entropy_mode;
 }
 
-VariationsLayers::VariationsLayers(
-    const VariationsSeed& seed,
-    const base::FieldTrial::EntropyProvider& low_entropy_provider) {
+VariationsLayers::VariationsLayers(const VariationsSeed& seed,
+                                   const EntropyProviders& entropy_providers) {
   // TODO(crbug.com/1154033): Support a way to expire old/unused layers so they
   // no longer get processed by the clients.
   for (const Layer& layer_proto : seed.layers())
-    ConstructLayer(low_entropy_provider, layer_proto);
+    ConstructLayer(entropy_providers, layer_proto);
 }
 
 VariationsLayers::VariationsLayers() = default;
 
 VariationsLayers::~VariationsLayers() = default;
 
-void VariationsLayers::ConstructLayer(
-    const base::FieldTrial::EntropyProvider& low_entropy_provider,
-    const Layer& layer_proto) {
+void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
+                                      const Layer& layer_proto) {
   if (layer_proto.id() == 0 || layer_proto.num_slots() == 0 ||
       layer_proto.members_size() == 0) {
     return;
@@ -76,11 +74,10 @@ void VariationsLayers::ConstructLayer(
   double entropy_value;
   if (layer_proto.entropy_mode() == Layer::LOW) {
     entropy_value =
-        GetEntropyForLayer(low_entropy_provider, layer_proto.salt());
+        GetEntropyForLayer(entropy_providers.low_entropy(), layer_proto.salt());
   } else {
-    entropy_value = GetEntropyForLayer(
-        base::FieldTrialList::GetEntropyProviderForOneTimeRandomization(),
-        layer_proto.salt());
+    entropy_value = GetEntropyForLayer(entropy_providers.default_entropy(),
+                                       layer_proto.salt());
   }
 
   const double kEpsilon = 1e-8;

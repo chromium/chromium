@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   std::unique_ptr<base::FieldTrialList> field_trial_list =
-      std::make_unique<base::FieldTrialList>(nullptr);
+      std::make_unique<base::FieldTrialList>();
   // Create field trials according to --force-fieldtrials param.
   base::FieldTrialList::CreateTrialsFromCommandLine(*command_line, -1);
   // Enable and disable features according to --enable-features and

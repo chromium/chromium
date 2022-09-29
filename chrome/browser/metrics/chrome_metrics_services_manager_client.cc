@@ -312,6 +312,7 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), GetRegistryBackupKey(),
         user_data_dir, startup_visibility,
+        metrics::EntropyProviderType::kDefault,
         base::BindRepeating(&PostStoreMetricsClientInfo),
         base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo),
         client_id);

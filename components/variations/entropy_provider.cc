@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
-#include "components/variations/hashing.h"
 #include "components/variations/variations_murmur_hash.h"
 
 namespace variations {
@@ -89,6 +88,28 @@ double NormalizedMurmurHashEntropyProvider::GetEntropyForTrial(
   DCHECK_LT(static_cast<size_t>(x_ordinal), low_entropy_source_max_);
 
   return static_cast<double>(x_ordinal) / low_entropy_source_max_;
+}
+
+EntropyProviders::EntropyProviders(const std::string& high_entropy_source,
+                                   uint16_t low_entropy_source,
+                                   size_t low_entropy_source_max)
+    : low_entropy_(low_entropy_source, low_entropy_source_max) {
+  if (!high_entropy_source.empty()) {
+    high_entropy_.emplace(high_entropy_source);
+  }
+}
+
+EntropyProviders::~EntropyProviders() = default;
+
+const base::FieldTrial::EntropyProvider& EntropyProviders::default_entropy()
+    const {
+  if (high_entropy_.has_value())
+    return high_entropy_.value();
+  return low_entropy_;
+}
+
+const base::FieldTrial::EntropyProvider& EntropyProviders::low_entropy() const {
+  return low_entropy_;
 }
 
 }  // namespace variations

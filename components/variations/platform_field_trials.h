@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
+#include "components/variations/entropy_provider.h"
 
 namespace variations {
 
@@ -29,12 +30,12 @@ class COMPONENT_EXPORT(VARIATIONS) PlatformFieldTrials {
   // FeatureList::AssociateReportingFieldTrial. |has_seed| indicates that the
   // variations service used a seed to create field trials. This can be used to
   // prevent associating a field trial with a feature that you expect to be
-  // controlled by the variations seed. |low_entropy_provider| can be used as a
+  // controlled by the variations seed. |entropy_providers| can be used as a
   // parameter to creating a FieldTrial that should be visible to Google web
   // properties.
   virtual void SetUpFeatureControllingFieldTrials(
       bool has_seed,
-      const base::FieldTrial::EntropyProvider* low_entropy_provider,
+      const variations::EntropyProviders& entropy_providers,
       base::FeatureList* feature_list) = 0;
 
   // Register any synthetic field trials. Will be called later than the above

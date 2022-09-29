@@ -309,16 +309,16 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
         command_line->GetSwitchValuePath(switches::kVariationsTestSeedPath));
   }
 
-  auto low_entropy_provider = metrics_state_manager->CreateLowEntropyProvider();
+  auto entropy_providers = metrics_state_manager->CreateEntropyProviders();
 
   bool used_seed = false;
   if (!used_testing_config) {
-    used_seed = CreateTrialsFromSeed(*low_entropy_provider, feature_list.get(),
+    used_seed = CreateTrialsFromSeed(*entropy_providers, feature_list.get(),
                                      safe_seed_manager);
   }
 
   platform_field_trials->SetUpFeatureControllingFieldTrials(
-      used_seed, low_entropy_provider.get(), feature_list.get());
+      used_seed, *entropy_providers, feature_list.get());
 
   base::FeatureList::SetInstance(std::move(feature_list));
 
@@ -584,7 +584,7 @@ bool VariationsFieldTrialCreator::IsSeedForFutureMilestone(bool is_safe_seed) {
 }
 
 bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
-    const base::FieldTrial::EntropyProvider& low_entropy_provider,
+    const EntropyProviders& entropy_providers,
     base::FeatureList* feature_list,
     SafeSeedManager* safe_seed_manager) {
   TRACE_EVENT0("startup", "VariationsFieldTrialCreator::CreateTrialsFromSeed");
@@ -661,7 +661,7 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
       seed, *client_filterable_state,
       base::BindRepeating(&VariationsFieldTrialCreator::OverrideUIString,
                           base::Unretained(this)),
-      low_entropy_provider, feature_list);
+      entropy_providers, feature_list);
 
   // Store into the |safe_seed_manager| the combined server and client data used
   // to create the field trials. But, as an optimization, skip this step when

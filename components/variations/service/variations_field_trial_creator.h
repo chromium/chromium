@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/metrics.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/seed_response.h"
@@ -218,10 +219,9 @@ class VariationsFieldTrialCreator {
   // registered with |feature_list|. Returns true if trials were created
   // successfully; and if so, stores the loaded variations state into the
   // |safe_seed_manager|.
-  bool CreateTrialsFromSeed(
-      const base::FieldTrial::EntropyProvider& low_entropy_provider,
-      base::FeatureList* feature_list,
-      SafeSeedManager* safe_seed_manager);
+  bool CreateTrialsFromSeed(const EntropyProviders& entropy_providers,
+                            base::FeatureList* feature_list,
+                            SafeSeedManager* safe_seed_manager);
 
   // Reads a seed's data and signature from the file at |seed_path| and writes
   // them to Local State. Exits Chrome (A) if the file's contents can't be

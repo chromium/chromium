@@ -22,15 +22,11 @@ void InitializeFieldTrialAndFeatureList() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  // Initialize statistical testing infrastructure.  We set the entropy
-  // provider to nullptr to disallow non-browser processes from creating
-  // their own one-time randomized trials; they should be created in the
-  // browser process.
+  // Initialize statistical testing infrastructure.
   //
   // This is intentionally leaked since it needs to live for the duration of the
   // process and there's no benefit in cleaning it up at exit.
-  base::FieldTrialList* leaked_field_trial_list =
-      new base::FieldTrialList(nullptr);
+  base::FieldTrialList* leaked_field_trial_list = new base::FieldTrialList();
   ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
   std::ignore = leaked_field_trial_list;
 

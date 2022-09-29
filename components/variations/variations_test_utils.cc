@@ -313,4 +313,28 @@ std::unique_ptr<ClientFilterableState> CreateDummyClientFilterableState() {
   return client_state;
 }
 
+MockEntropyProviders::MockEntropyProviders(
+    MockEntropyProviders::Results results,
+    size_t low_entropy_possible_values)
+    : EntropyProviders(results.high_entropy.has_value() ? "client_id" : "",
+                       0,
+                       low_entropy_possible_values),
+      low_provider_(results.low_entropy),
+      high_provider_(results.high_entropy.value_or(0)) {}
+
+MockEntropyProviders::~MockEntropyProviders() = default;
+
+const base::FieldTrial::EntropyProvider& MockEntropyProviders::low_entropy()
+    const {
+  return low_provider_;
+}
+
+const base::FieldTrial::EntropyProvider& MockEntropyProviders::default_entropy()
+    const {
+  if (default_entropy_is_high_entropy()) {
+    return high_provider_;
+  }
+  return low_provider_;
+}
+
 }  // namespace variations

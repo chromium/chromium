@@ -521,8 +521,7 @@ void ScopedFeatureList::InitWithMergedFeatures(
   // Create a field trial list, to which we'll add trials corresponding to the
   // features that have params, before restoring the field trial state from the
   // previous instance, further down in this function.
-  field_trial_list_ =
-      std::make_unique<FieldTrialList>(std::make_unique<MockEntropyProvider>());
+  field_trial_list_ = std::make_unique<FieldTrialList>();
 
   auto* field_trial_param_associator = FieldTrialParamAssociator::GetInstance();
   for (const auto& feature : merged_features.enabled_feature_list) {

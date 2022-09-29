@@ -216,7 +216,7 @@ class ShellContentBrowserClient::ShellFieldTrials
   void SetUpFieldTrials() override {}
   void SetUpFeatureControllingFieldTrials(
       bool has_seed,
-      const base::FieldTrial::EntropyProvider* low_entropy_provider,
+      const variations::EntropyProviders& entropy_providers,
       base::FeatureList* feature_list) override {}
 };
 

@@ -316,6 +316,7 @@ void CastMetricsServiceClient::InitializeMetricsService() {
       // framework.
       /*user_data_dir=*/base::FilePath(),
       ::metrics::StartupVisibility::kUnknown,
+      ::metrics::EntropyProviderType::kDefault,
       base::BindRepeating(&CastMetricsServiceClient::StoreClientInfo,
                           base::Unretained(this)),
       base::BindRepeating(&CastMetricsServiceClient::LoadClientInfo,

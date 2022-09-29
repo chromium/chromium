@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -18,9 +19,8 @@ namespace variations {
 // chooses which member within each layer should be the active one.
 class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
  public:
-  VariationsLayers(
-      const VariationsSeed& seed,
-      const base::FieldTrial::EntropyProvider& low_entropy_provider);
+  VariationsLayers(const VariationsSeed& seed,
+                   const EntropyProviders& entropy_providers);
 
   VariationsLayers();
   ~VariationsLayers();
@@ -36,9 +36,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   bool IsLayerUsingDefaultEntropy(uint32_t layer_id) const;
 
  private:
-  void ConstructLayer(
-      const base::FieldTrial::EntropyProvider& low_entropy_provider,
-      const Layer& layer_proto);
+  void ConstructLayer(const EntropyProviders& entropy_providers,
+                      const Layer& layer_proto);
 
   struct LayerInfo {
     LayerInfo(absl::optional<uint32_t> active_member_id,

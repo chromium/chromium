@@ -32,12 +32,10 @@
 // // FieldTrials are reference counted, and persist automagically until
 // // process teardown, courtesy of their automatic registration in
 // // FieldTrialList.
-// // Note: This field trial will run in Chrome instances compiled through
-// //       8 July, 2015, and after that all instances will be in "StandardMem".
 // scoped_refptr<base::FieldTrial> trial(
 //     base::FieldTrialList::FactoryGetFieldTrial(
 //         "MemoryExperiment", 1000, "StandardMem",
-//          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization());
+//          base::FieldTrialList::GetEntropyProviderForSessionRandomization());
 //
 // trial->AppendGroup("HighMem", 20);  // 2% in HighMem group.
 // trial->AppendGroup("LowMem", 20);   // 2% in LowMem group.
@@ -397,13 +395,7 @@ class BASE_EXPORT FieldTrialList {
   };
 
   // This singleton holds the global list of registered FieldTrials.
-  //
-  // To support one-time randomized field trials, specify a non-null
-  // |entropy_provider| which should be a source of uniformly distributed
-  // entropy values. If one time randomization is not desired, pass in null for
-  // |entropy_provider|.
-  explicit FieldTrialList(
-      std::unique_ptr<const FieldTrial::EntropyProvider> entropy_provider);
+  FieldTrialList();
   FieldTrialList(const FieldTrialList&) = delete;
   FieldTrialList& operator=(const FieldTrialList&) = delete;
 
@@ -611,11 +603,6 @@ class BASE_EXPORT FieldTrialList {
   GetAllFieldTrialsFromPersistentAllocator(
       PersistentMemoryAllocator const& allocator);
 
-  // Returns the EntropyProvider for one-time randomization.
-  // Crashes if one-time randomization is not enabled.
-  static const FieldTrial::EntropyProvider&
-  GetEntropyProviderForOneTimeRandomization();
-
   // Returns an entropy-provider that can be used for session randomized trials.
   static const FieldTrial::EntropyProvider&
   GetEntropyProviderForSessionRandomization();
@@ -764,10 +751,6 @@ class BASE_EXPORT FieldTrialList {
 
   // Counts the number of field trials whose groups are selected randomly.
   size_t num_registered_randomized_trials_ GUARDED_BY(lock_) = 0;
-
-  // Entropy provider to be used for one-time randomized field trials. If NULL,
-  // one-time randomization is not supported.
-  std::unique_ptr<const FieldTrial::EntropyProvider> entropy_provider_;
 
   // List of observers to be notified when a group is selected for a FieldTrial.
   std::vector<Observer*> observers_ GUARDED_BY(lock_);

@@ -8,12 +8,9 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
-#include "base/test/mock_entropy_provider.h"
-#include "base/test/scoped_command_line.h"
+#include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
-#include "components/variations/processed_study.h"
 #include "components/variations/proto/study.pb.h"
-#include "components/variations/study_filtering.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
 namespace variations {
@@ -68,19 +65,18 @@ std::unique_ptr<ClientFilterableState> MockChromeClientFilterableState() {
 }  // namespace
 
 void CreateTrialsFromStudyFuzzer(const VariationsSeed& seed) {
-  base::FieldTrialList field_trial_list(
-      std::make_unique<SHA1EntropyProvider>("client_id"));
+  base::FieldTrialList field_trial_list;
   base::FeatureList feature_list;
 
   TestOverrideStringCallback override_callback;
   // TODO(b/244252663): Add more coverage of client_state and entropy
   // provider arguments.
   auto client_state = MockChromeClientFilterableState();
-  base::MockEntropyProvider mock_low_entropy_provider(0.9);
+  EntropyProviders entropy_providers("client_id", 7999, 8000);
 
   VariationsSeedProcessor().CreateTrialsFromSeed(
-      seed, *client_state, override_callback.callback(),
-      mock_low_entropy_provider, &feature_list);
+      seed, *client_state, override_callback.callback(), entropy_providers,
+      &feature_list);
 }
 
 DEFINE_PROTO_FUZZER(const VariationsSeed& seed) {

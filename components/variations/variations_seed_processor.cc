@@ -221,15 +221,15 @@ bool ShouldSessionRandomizeStudy(const ProcessedStudy& processed_study) {
 
 const base::FieldTrial::EntropyProvider& SelectEntropyProviderForStudy(
     const ProcessedStudy& processed_study,
-    const base::FieldTrial::EntropyProvider& low_entropy_provider) {
+    const EntropyProviders& entropy_providers) {
   if (ShouldSessionRandomizeStudy(processed_study)) {
     return base::FieldTrialList::GetEntropyProviderForSessionRandomization();
   }
   if (VariationsSeedProcessor::ShouldStudyUseLowEntropy(
           *processed_study.study())) {
-    return low_entropy_provider;
+    return entropy_providers.low_entropy();
   }
-  return base::FieldTrialList::GetEntropyProviderForOneTimeRandomization();
+  return entropy_providers.default_entropy();
 }
 
 }  // namespace
@@ -242,17 +242,17 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
     const VariationsSeed& seed,
     const ClientFilterableState& client_state,
     const UIStringOverrideCallback& override_callback,
-    const base::FieldTrial::EntropyProvider& low_entropy_provider,
+    const EntropyProviders& entropy_providers,
     base::FeatureList* feature_list) {
   base::UmaHistogramCounts1000("Variations.AppliedSeed.StudyCount",
                                seed.study().size());
   std::vector<ProcessedStudy> filtered_studies;
-  VariationsLayers layers(seed, low_entropy_provider);
+  VariationsLayers layers(seed, entropy_providers);
   FilterAndValidateStudies(seed, client_state, layers, &filtered_studies);
   SetSeedVersion(seed.version());
 
   for (const ProcessedStudy& study : filtered_studies) {
-    CreateTrialFromStudy(study, override_callback, low_entropy_provider,
+    CreateTrialFromStudy(study, override_callback, entropy_providers,
                          feature_list);
   }
 }
@@ -275,7 +275,7 @@ bool VariationsSeedProcessor::ShouldStudyUseLowEntropy(const Study& study) {
 void VariationsSeedProcessor::CreateTrialFromStudy(
     const ProcessedStudy& processed_study,
     const UIStringOverrideCallback& override_callback,
-    const base::FieldTrial::EntropyProvider& low_entropy_provider,
+    const EntropyProviders& entropy_providers,
     base::FeatureList* feature_list) {
   // Since trials and features can come from many different sources (variations
   // seed, about://flags, and command line), there are special cases for when
@@ -362,7 +362,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
     return;
 
   const auto& entropy_provider =
-      SelectEntropyProviderForStudy(processed_study, low_entropy_provider);
+      SelectEntropyProviderForStudy(processed_study, entropy_providers);
   uint32_t randomization_seed = ShouldSessionRandomizeStudy(processed_study)
                                     ? 0
                                     : study.randomization_seed();

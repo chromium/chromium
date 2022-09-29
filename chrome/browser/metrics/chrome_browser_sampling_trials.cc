@@ -48,14 +48,15 @@ void AppendSamplingTrialGroup(const std::string& group_name,
 // correct platform. |trial_name| is the name of the trial. |feature_name| is
 // the name of the feature that determines sampling. |sampled_in_rate| is the
 // sampling rate per mille.
-void CreateFallbackSamplingTrial(const std::string& trial_name,
-                                 const std::string& feature_name,
-                                 const int sampled_in_rate_per_mille,
-                                 base::FeatureList* feature_list) {
+void CreateFallbackSamplingTrial(
+    const base::FieldTrial::EntropyProvider& entropy_provider,
+    const std::string& trial_name,
+    const std::string& feature_name,
+    const int sampled_in_rate_per_mille,
+    base::FeatureList* feature_list) {
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
-          trial_name, /*total_probability=*/1000, "Default",
-          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization()));
+          trial_name, /*total_probability=*/1000, "Default", entropy_provider));
 
   // Like the trial name, the order that these two groups are added to the trial
   // must be kept in sync with the order that they appear in the server config.
@@ -88,8 +89,10 @@ void CreateFallbackSamplingTrial(const std::string& trial_name,
 // expected to occur on first-run on platforms that don't have first-run
 // variations support. This should only be called when there is no existing
 // field trial controlling the sampling feature.
-void CreateFallbackUkmSamplingTrial(bool is_stable_channel,
-                                    base::FeatureList* feature_list) {
+void CreateFallbackUkmSamplingTrial(
+    const base::FieldTrial::EntropyProvider& entropy_provider,
+    bool is_stable_channel,
+    base::FeatureList* feature_list) {
   static const char kSampledGroup_Stable[] = "Sampled_NoSeed_Stable";
   static const char kSampledGroup_Other[] = "Sampled_NoSeed_Other";
   const char* sampled_group = kSampledGroup_Other;
@@ -107,7 +110,7 @@ void CreateFallbackUkmSamplingTrial(bool is_stable_channel,
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
           kUkmSamplingTrialName, /*total_probability=*/100, sampled_group,
-          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization()));
+          entropy_provider));
 
   // Everybody (100%) should have a sampling configuration.
   std::map<std::string, std::string> params = {
@@ -124,7 +127,9 @@ void CreateFallbackUkmSamplingTrial(bool is_stable_channel,
 
 }  // namespace
 
-void CreateFallbackSamplingTrialsIfNeeded(base::FeatureList* feature_list) {
+void CreateFallbackSamplingTrialsIfNeeded(
+    const base::FieldTrial::EntropyProvider& entropy_provider,
+    base::FeatureList* feature_list) {
   [[maybe_unused]] const bool is_stable =
       chrome::GetChannel() == version_info::Channel::STABLE;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
@@ -134,7 +139,8 @@ void CreateFallbackSamplingTrialsIfNeeded(base::FeatureList* feature_list) {
     const int kPreStableSampledInRatePerMille = 990;
     const int kStableSampledInRatePerMille = 100;
     CreateFallbackSamplingTrial(
-        kSamplingTrialName, metrics::internal::kMetricsReportingFeature.name,
+        entropy_provider, kSamplingTrialName,
+        metrics::internal::kMetricsReportingFeature.name,
         is_stable ? kStableSampledInRatePerMille
                   : kPreStableSampledInRatePerMille,
         feature_list);
@@ -147,7 +153,7 @@ void CreateFallbackSamplingTrialsIfNeeded(base::FeatureList* feature_list) {
     const int kPreStableSampledInRatePerMille = 990;
     const int kStableSampledInRatePerMille = 190;
     CreateFallbackSamplingTrial(
-        kPostFREFixSamplingTrialName,
+        entropy_provider, kPostFREFixSamplingTrialName,
         metrics::internal::kPostFREFixMetricsReportingFeature.name,
         is_stable ? kStableSampledInRatePerMille
                   : kPreStableSampledInRatePerMille,
@@ -156,11 +162,13 @@ void CreateFallbackSamplingTrialsIfNeeded(base::FeatureList* feature_list) {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void CreateFallbackUkmSamplingTrialIfNeeded(base::FeatureList* feature_list) {
+void CreateFallbackUkmSamplingTrialIfNeeded(
+    const base::FieldTrial::EntropyProvider& entropy_provider,
+    base::FeatureList* feature_list) {
   if (!base::FieldTrialList::TrialExists(kUkmSamplingTrialName)) {
     const bool is_stable =
         chrome::GetChannel() == version_info::Channel::STABLE;
-    CreateFallbackUkmSamplingTrial(is_stable, feature_list);
+    CreateFallbackUkmSamplingTrial(entropy_provider, is_stable, feature_list);
   }
 }
 

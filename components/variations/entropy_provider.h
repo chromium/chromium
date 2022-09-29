@@ -8,13 +8,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <functional>
-#include <random>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 
@@ -69,6 +67,34 @@ class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider
  private:
   const uint16_t low_entropy_source_;
   const size_t low_entropy_source_max_;
+};
+
+class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
+ public:
+  // Construct providers from the given entropy sources.
+  // If |high_entropy_source| is empty, no high entropy provider is created.
+  EntropyProviders(const std::string& high_entropy_source,
+                   uint16_t low_entropy_source,
+                   size_t low_entropy_source_max);
+  EntropyProviders(const EntropyProviders&) = delete;
+  EntropyProviders& operator=(const EntropyProviders&) = delete;
+  virtual ~EntropyProviders();
+
+  // Accessors are virtual for testing purposes.
+
+  // Gets the high entropy source, if available, otherwise returns low entropy.
+  virtual const base::FieldTrial::EntropyProvider& default_entropy() const;
+
+  // Gets the low entropy source.
+  virtual const base::FieldTrial::EntropyProvider& low_entropy() const;
+
+  bool default_entropy_is_high_entropy() const {
+    return high_entropy_.has_value();
+  }
+
+ private:
+  absl::optional<SHA1EntropyProvider> high_entropy_;
+  NormalizedMurmurHashEntropyProvider low_entropy_;
 };
 
 }  // namespace variations

@@ -43,7 +43,7 @@ void MetricsServicesManager::InstantiateFieldTrialList(
       metrics::structured::NeutrinoDevicesLocation::kCreateEntropyProvider);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   client_->GetMetricsStateManager()->InstantiateFieldTrialList(
-      enable_gpu_benchmarking_switch, metrics::EntropyProviderType::kDefault);
+      enable_gpu_benchmarking_switch);
 }
 
 metrics::MetricsService* MetricsServicesManager::GetMetricsService() {
@@ -68,9 +68,9 @@ void MetricsServicesManager::LoadingStateChanged(bool is_loading) {
   GetMetricsServiceClient()->LoadingStateChanged(is_loading);
 }
 
-std::unique_ptr<const base::FieldTrial::EntropyProvider>
-MetricsServicesManager::CreateLowEntropyProviderForTesting() {
-  return client_->GetMetricsStateManager()->CreateLowEntropyProvider();
+std::unique_ptr<const variations::EntropyProviders>
+MetricsServicesManager::CreateEntropyProvidersForTesting() {
+  return client_->GetMetricsStateManager()->CreateEntropyProviders();
 }
 
 metrics::MetricsServiceClient*

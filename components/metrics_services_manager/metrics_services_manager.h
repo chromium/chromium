@@ -20,6 +20,7 @@ class UkmService;
 }
 
 namespace variations {
+class EntropyProviders;
 class VariationsService;
 }
 
@@ -75,8 +76,8 @@ class MetricsServicesManager {
   bool IsUkmAllowedForAllProfiles();
 
   // Returns a low entropy provider.
-  std::unique_ptr<const base::FieldTrial::EntropyProvider>
-  CreateLowEntropyProviderForTesting();
+  std::unique_ptr<const variations::EntropyProviders>
+  CreateEntropyProvidersForTesting();
 
  private:
   // Returns the MetricsServiceClient, creating it if it hasn't been

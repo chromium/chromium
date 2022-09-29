@@ -934,7 +934,7 @@ TEST(FieldTrialTestWithoutList, StatesStringFormat) {
   {
     test::ScopedFeatureList scoped_feature_list1;
     scoped_feature_list1.InitWithNullFeatureAndFieldTrialLists();
-    FieldTrialList field_trial_list(nullptr);
+    FieldTrialList field_trial_list;
 
     scoped_refptr<FieldTrial> trial =
         CreateFieldTrial("Abc", 10, "Default some name");
@@ -952,7 +952,7 @@ TEST(FieldTrialTestWithoutList, StatesStringFormat) {
   // Starting with a new blank FieldTrialList.
   test::ScopedFeatureList scoped_feature_list2;
   scoped_feature_list2.InitWithNullFeatureAndFieldTrialLists();
-  FieldTrialList field_trial_list(nullptr);
+  FieldTrialList field_trial_list;
   ASSERT_TRUE(field_trial_list.CreateTrialsFromString(save_string));
 
   FieldTrial::ActiveGroups active_groups;
@@ -963,19 +963,6 @@ TEST(FieldTrialTestWithoutList, StatesStringFormat) {
   EXPECT_EQ("Xyz", active_groups[1].trial_name);
   EXPECT_EQ("zyx", active_groups[1].group_name);
   EXPECT_TRUE(field_trial_list.TrialExists("zzz"));
-}
-
-TEST(FieldTrialDeathTest, OneTimeRandomizedTrialWithoutFieldTrialList) {
-  test::ScopedFeatureList scoped_feature_list1;
-  scoped_feature_list1.InitWithNullFeatureAndFieldTrialLists();
-
-  // Trying to instantiate a one-time randomized field trial before the
-  // FieldTrialList is created should crash.
-  EXPECT_DEATH_IF_SUPPORTED(
-      FieldTrialList::FactoryGetFieldTrial(
-          "OneTimeRandomizedTrialWithoutFieldTrialList", 100, kDefaultGroupName,
-          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization()),
-      "");
 }
 
 class FieldTrialListTest : public ::testing::Test {

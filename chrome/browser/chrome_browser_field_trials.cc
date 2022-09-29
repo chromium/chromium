@@ -59,10 +59,11 @@ void ChromeBrowserFieldTrials::SetUpFieldTrials() {
 
 void ChromeBrowserFieldTrials::SetUpFeatureControllingFieldTrials(
     bool has_seed,
-    const base::FieldTrial::EntropyProvider* low_entropy_provider,
+    const variations::EntropyProviders& entropy_providers,
     base::FeatureList* feature_list) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::consolidated_consent_field_trial::Create(feature_list, local_state_);
+  ash::consolidated_consent_field_trial::Create(
+      entropy_providers.default_entropy(), feature_list, local_state_);
 #endif
 
   // Only create the fallback trials if there isn't already a variations seed
@@ -73,8 +74,10 @@ void ChromeBrowserFieldTrials::SetUpFeatureControllingFieldTrials(
   // created even if no variations seed was applied. This allows testing the
   // fallback code by intentionally omitting the sampling trial from a
   // variations seed.
-  metrics::CreateFallbackSamplingTrialsIfNeeded(feature_list);
-  metrics::CreateFallbackUkmSamplingTrialIfNeeded(feature_list);
+  metrics::CreateFallbackSamplingTrialsIfNeeded(
+      entropy_providers.default_entropy(), feature_list);
+  metrics::CreateFallbackUkmSamplingTrialIfNeeded(
+      entropy_providers.default_entropy(), feature_list);
   if (!has_seed) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::multidevice_setup::CreateFirstRunFieldTrial(feature_list);

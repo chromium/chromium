@@ -18,6 +18,7 @@
 #include "components/metrics/client_info.h"
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/entropy_state.h"
+#include "components/variations/entropy_provider.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/metrics/structured/neutrino_logging.h"  // nogncheck
@@ -46,10 +47,11 @@ enum class StartupVisibility {
   kMaxValue = kForeground,
 };
 
-// Denotes the type of EntropyProvider to use for one-time randomization.
+// Denotes the type of EntropyProvider to use for default one-time
+// randomization.
 enum class EntropyProviderType {
-  kDefault = 0,  // Use CreateDefaultEntropyProvider().
-  kLow = 1,      // Use CreateLowEntropyProvider().
+  kDefault = 0,  // Enable high entropy randomization if possible.
+  kLow = 1,      // Always use low entropy randomization.
 };
 
 // Responsible for managing MetricsService state prefs, specifically the UMA
@@ -120,16 +122,11 @@ class MetricsStateManager final {
   }
 
   // Instantiates the FieldTrialList. Uses |enable_gpu_benchmarking_switch| to
-  // set up the FieldTrialList for benchmarking runs. Uses
-  // |entropy_provider_type| to determine the type of EntropyProvider to use for
-  // one-time randomization. See CreateLowEntropyProvider() and
-  // CreateDefaultEntropyProvider() for more details.
+  // set up the FieldTrialList for benchmarking runs.
   //
   // Side effect: Initializes |clean_exit_beacon_|.
   void InstantiateFieldTrialList(
-      const char* enable_gpu_benchmarking_switch = nullptr,
-      EntropyProviderType entropy_provider_type =
-          EntropyProviderType::kDefault);
+      const char* enable_gpu_benchmarking_switch = nullptr);
 
   // Signals whether the session has shutdown cleanly. Passing `false` for
   // |has_session_shutdown_cleanly| means that Chrome has launched and has not
@@ -166,22 +163,14 @@ class MetricsStateManager final {
   // Checks if the cloned install detector says that client ids should be reset.
   bool ShouldResetClientIdsOnClonedInstall();
 
-  // Returns the preferred entropy provider used to seed persistent activities
-  // based on whether or not metrics reporting is permitted on this client.
+  // Creates entropy providers for trial randomization.
   //
-  // If there's consent to report metrics or this is the first run of Chrome,
+  // If this StateManager supports high entropy randomization, and there is
+  // either consent to report metrics or this is the first run of Chrome,
   // this method returns an entropy provider that has a high source of entropy,
   // partially based on the client ID or provisional client ID. Otherwise, it
-  // returns an entropy provider that is based on a low entropy source.
-  std::unique_ptr<const base::FieldTrial::EntropyProvider>
-  CreateDefaultEntropyProvider();
-
-  // Returns an entropy provider that is based on a low entropy source. This
-  // provider is the same type of provider returned by
-  // CreateDefaultEntropyProvider() when there's no consent to report metrics,
-  // but will be a new instance.
-  std::unique_ptr<const base::FieldTrial::EntropyProvider>
-  CreateLowEntropyProvider();
+  // only returns an entropy provider that is based on a low entropy source.
+  std::unique_ptr<const variations::EntropyProviders> CreateEntropyProviders();
 
   // Creates the MetricsStateManager, enforcing that only a single instance
   // of the class exists at a time. Returns nullptr if an instance exists
@@ -201,6 +190,7 @@ class MetricsStateManager final {
       const std::wstring& backup_registry_key,
       const base::FilePath& user_data_dir,
       StartupVisibility startup_visibility = StartupVisibility::kUnknown,
+      EntropyProviderType entropy_provider_type = EntropyProviderType::kDefault,
       StoreClientInfoCallback store_client_info = StoreClientInfoCallback(),
       LoadClientInfoCallback load_client_info = LoadClientInfoCallback(),
       base::StringPiece external_client_id = base::StringPiece());
@@ -270,6 +260,7 @@ class MetricsStateManager final {
                       EnabledStateProvider* enabled_state_provider,
                       const std::wstring& backup_registry_key,
                       const base::FilePath& user_data_dir,
+                      EntropyProviderType default_entropy_provider_type,
                       StartupVisibility startup_visibility,
                       StoreClientInfoCallback store_client_info,
                       LoadClientInfoCallback load_client_info,
@@ -332,6 +323,8 @@ class MetricsStateManager final {
   // Weak pointer to an enabled state provider. Used to know whether the user
   // has consented to reporting, and if reporting should be done.
   raw_ptr<EnabledStateProvider> enabled_state_provider_;
+
+  const EntropyProviderType default_entropy_provider_type_;
 
   // A callback run during client id creation so this MetricsStateManager can
   // store a backup of the newly generated ID.

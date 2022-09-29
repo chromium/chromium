@@ -90,12 +90,12 @@ class VariationsSeedSimulatorTest : public ::testing::Test {
     VariationsSeed seed;
     seed.add_study()->MergeFrom(*study);
     auto client_state = CreateDummyClientFilterableState();
-    // Should pick the first group that has non-zero probability weight.
-    base::MockEntropyProvider default_provider(0);
-    // Should pick default groups, if they have non-zero probability weight.
-    base::MockEntropyProvider low_provider(1.0 - 1e-8);
+    MockEntropyProviders entropy_providers({
+        .low_entropy = kAlwaysUseLastGroup,
+        .high_entropy = kAlwaysUseFirstGroup,
+    });
     return ConvertSimulationResultToString(
-        VariationsSeedSimulator(default_provider, low_provider)
+        VariationsSeedSimulator(entropy_providers)
             .SimulateSeedStudies(seed, *client_state));
   }
 

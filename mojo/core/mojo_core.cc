@@ -119,7 +119,7 @@ class GlobalStateInitializer {
     // this code is available for static build. If base library is not shared,
     // libmojo_core.so and the caller of LoadAndInitializeCoreLibrary doesn't
     // share FieldTrialList::GetInstance().
-    field_trial_list_ = std::make_unique<base::FieldTrialList>(nullptr);
+    field_trial_list_ = std::make_unique<base::FieldTrialList>();
     base::FeatureList::InitializeInstance(
         command_line->GetSwitchValueASCII(switches::kEnableFeatures),
         command_line->GetSwitchValueASCII(switches::kDisableFeatures));

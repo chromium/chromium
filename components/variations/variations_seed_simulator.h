@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
 #include "base/version.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
 
@@ -45,14 +46,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedSimulator {
     int kill_critical_group_change_count;
   };
 
-  // Creates the simulator with the given default and low entropy providers. The
-  // |low_entropy_provider| will be used for studies that should only use a low
-  // entropy source. This is defined by
-  // VariationsSeedProcessor::ShouldStudyUseLowEntropy, in
-  // variations_seed_processor.h.
-  VariationsSeedSimulator(
-      const base::FieldTrial::EntropyProvider& default_entropy_provider,
-      const base::FieldTrial::EntropyProvider& low_entropy_provider);
+  // Creates the simulator with the given entropy providers.
+  explicit VariationsSeedSimulator(const EntropyProviders& entropy_providers);
 
   VariationsSeedSimulator(const VariationsSeedSimulator&) = delete;
   VariationsSeedSimulator& operator=(const VariationsSeedSimulator&) = delete;
@@ -100,8 +95,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedSimulator {
   ChangeType SessionStudyGroupChanged(const ProcessedStudy& filtered_study,
                                       const std::string& selected_group);
 
-  const base::FieldTrial::EntropyProvider& default_entropy_provider_;
-  const base::FieldTrial::EntropyProvider& low_entropy_provider_;
+  const EntropyProviders& entropy_providers_;
 };
 
 }  // namespace variations

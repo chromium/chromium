@@ -448,9 +448,7 @@ bool FieldTrialList::used_without_global_ = false;
 
 FieldTrialList::Observer::~Observer() = default;
 
-FieldTrialList::FieldTrialList(
-    std::unique_ptr<const FieldTrial::EntropyProvider> entropy_provider)
-    : entropy_provider_(std::move(entropy_provider)) {
+FieldTrialList::FieldTrialList() {
   DCHECK(!global_);
   DCHECK(!used_without_global_);
   global_ = this;
@@ -1054,16 +1052,6 @@ FieldTrialList::GetAllFieldTrialsFromPersistentAllocator(
     entries.push_back(entry);
   }
   return entries;
-}
-
-// static
-const FieldTrial::EntropyProvider&
-FieldTrialList::GetEntropyProviderForOneTimeRandomization() {
-  // It's invalid to call this when we haven't created the global list with
-  // support for one-time randomization. CHECK that we don't return a null
-  // reference, which would generate a confusing error later.
-  CHECK(global_->entropy_provider_);
-  return *global_->entropy_provider_;
 }
 
 // static

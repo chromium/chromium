@@ -68,7 +68,7 @@ int NaClWin64Main() {
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
 
-  base::FieldTrialList field_trial_list(nullptr);
+  base::FieldTrialList field_trial_list;
   base::FieldTrialList::CreateTrialsFromCommandLine(*command_line,
                                                     /*unused_fd_key=*/0);
 

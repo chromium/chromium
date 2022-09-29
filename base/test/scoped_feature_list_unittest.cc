@@ -650,7 +650,7 @@ TEST_F(ScopedFeatureListTest,
     test::ScopedFeatureList feature_list2;
     feature_list2.InitWithNullFeatureAndFieldTrialLists();
 
-    leaked_field_trial_list = std::make_unique<FieldTrialList>(nullptr);
+    leaked_field_trial_list = std::make_unique<FieldTrialList>();
     FeatureList::InitializeInstance("TestFeature1:TestParam/TestValue2", "",
                                     {});
     EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));

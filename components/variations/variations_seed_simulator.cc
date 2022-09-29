@@ -104,10 +104,8 @@ VariationsSeedSimulator::Result::~Result() {
 }
 
 VariationsSeedSimulator::VariationsSeedSimulator(
-    const base::FieldTrial::EntropyProvider& default_entropy_provider,
-    const base::FieldTrial::EntropyProvider& low_entropy_provider)
-    : default_entropy_provider_(default_entropy_provider),
-      low_entropy_provider_(low_entropy_provider) {}
+    const EntropyProviders& entropy_providers)
+    : entropy_providers_(entropy_providers) {}
 
 VariationsSeedSimulator::~VariationsSeedSimulator() {
 }
@@ -116,7 +114,7 @@ VariationsSeedSimulator::Result VariationsSeedSimulator::SimulateSeedStudies(
     const VariationsSeed& seed,
     const ClientFilterableState& client_state) {
   std::vector<ProcessedStudy> filtered_studies;
-  VariationsLayers layers(seed, low_entropy_provider_);
+  VariationsLayers layers(seed, entropy_providers_);
   FilterAndValidateStudies(seed, client_state, layers, &filtered_studies);
 
   return ComputeDifferences(filtered_studies);
@@ -202,8 +200,8 @@ VariationsSeedSimulator::PermanentStudyGroupChanged(
 
   const base::FieldTrial::EntropyProvider& entropy_provider =
       VariationsSeedProcessor::ShouldStudyUseLowEntropy(study)
-          ? low_entropy_provider_
-          : default_entropy_provider_;
+          ? entropy_providers_.low_entropy()
+          : entropy_providers_.default_entropy();
 
   const std::string simulated_group =
       SimulateGroupAssignment(entropy_provider, processed_study);

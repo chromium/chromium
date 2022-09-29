@@ -82,6 +82,7 @@ class MetricsStateManagerTest : public testing::Test {
         MetricsStateManager::Create(
             &prefs_, enabled_state_provider_.get(), std::wstring(),
             base::FilePath(), StartupVisibility::kUnknown,
+            EntropyProviderType::kDefault,
             base::BindRepeating(
                 &MetricsStateManagerTest::MockStoreClientInfoBackup,
                 base::Unretained(this)),
@@ -193,7 +194,7 @@ TEST_F(MetricsStateManagerTest, EntropySourceUsed_Low) {
   prefs_.SetInt64(prefs::kInstallDate, base::Time::Now().ToTimeT());
 
   std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
-  state_manager->CreateDefaultEntropyProvider();
+  state_manager->CreateEntropyProviders();
   EXPECT_EQ(state_manager->entropy_source_returned(),
             MetricsStateManager::ENTROPY_SOURCE_LOW);
   EXPECT_EQ(state_manager->initial_client_id_for_testing(), "");
@@ -202,7 +203,7 @@ TEST_F(MetricsStateManagerTest, EntropySourceUsed_Low) {
 TEST_F(MetricsStateManagerTest, EntropySourceUsed_High) {
   EnableMetricsReporting();
   std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
-  state_manager->CreateDefaultEntropyProvider();
+  state_manager->CreateEntropyProviders();
   EXPECT_EQ(state_manager->entropy_source_returned(),
             MetricsStateManager::ENTROPY_SOURCE_HIGH);
   EXPECT_EQ(state_manager->initial_client_id_for_testing(),
@@ -335,7 +336,7 @@ TEST_F(MetricsStateManagerTest, ProvisionalClientId_PromotedToClientId) {
   int low_entropy_source = state_manager->GetLowEntropySource();
   // The default entropy provider should be the high entropy one since we a
   // the provisional client ID.
-  state_manager->CreateDefaultEntropyProvider();
+  state_manager->CreateEntropyProviders();
   EXPECT_EQ(state_manager->entropy_source_returned(),
             MetricsStateManager::ENTROPY_SOURCE_HIGH);
 
@@ -374,7 +375,7 @@ TEST_F(MetricsStateManagerTest, ProvisionalClientId_PersistedAcrossFirstRuns) {
         prefs_.FindPreference(prefs::kMetricsClientID)->IsDefaultValue());
     // The default entropy provider should be the high entropy one since we a
     // the provisional client ID.
-    state_manager->CreateDefaultEntropyProvider();
+    state_manager->CreateEntropyProviders();
     EXPECT_EQ(state_manager->entropy_source_returned(),
               MetricsStateManager::ENTROPY_SOURCE_HIGH);
   }
@@ -390,7 +391,7 @@ TEST_F(MetricsStateManagerTest, ProvisionalClientId_PersistedAcrossFirstRuns) {
     EXPECT_TRUE(prefs_.FindPreference(prefs::kMetricsClientID));
     // The default entropy provider should be the high entropy one since we a
     // the provisional client ID.
-    state_manager->CreateDefaultEntropyProvider();
+    state_manager->CreateEntropyProviders();
     EXPECT_EQ(state_manager->entropy_source_returned(),
               MetricsStateManager::ENTROPY_SOURCE_HIGH);
   }

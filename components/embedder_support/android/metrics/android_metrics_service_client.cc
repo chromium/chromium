@@ -244,7 +244,8 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
   // Pass an empty file path since the path is for Extended Variations Safe
   // Mode, which is N/A to Android embedders.
   metrics_state_manager_ = MetricsStateManager::Create(
-      pref_service_, this, std::wstring(), base::FilePath());
+      pref_service_, this, std::wstring(), base::FilePath(),
+      StartupVisibility::kUnknown, EntropyProviderType::kLow);
 
   // Creates the FieldTrialList using the low entropy provider. The low entropy
   // provider is used instead of the default provider because the default
@@ -257,7 +258,7 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
   // experiment state doesn't identify users), but also means fewer combinations
   // are tested in the wild.
   metrics_state_manager_->InstantiateFieldTrialList(
-      cc::switches::kEnableGpuBenchmarking, EntropyProviderType::kLow);
+      cc::switches::kEnableGpuBenchmarking);
 
   init_finished_ = true;
 

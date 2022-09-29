@@ -13,12 +13,14 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/test/mock_entropy_provider.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/variations/entropy_provider.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -60,9 +62,9 @@ class ForceFieldTrialsBrowserTest : public InProcessBrowserTest,
 
   // Creates a 50/50 trial with OneTimeRandomization consistency.
   void CreateFiftyPercentTrial(const std::string& trial_name) {
+    variations::SHA1EntropyProvider entropy_provider("fake_client_id");
     auto* trial = base::FieldTrialList::FactoryGetFieldTrial(
-        trial_name, 100, "Default",
-        base::FieldTrialList::GetEntropyProviderForOneTimeRandomization());
+        trial_name, 100, "Default", entropy_provider);
     trial->AppendGroup(kEnabledGroupName, 50);
     trial->AppendGroup(kDisabledGroupName, 50);
   }

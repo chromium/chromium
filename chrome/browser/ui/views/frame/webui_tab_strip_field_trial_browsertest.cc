@@ -71,8 +71,7 @@ class WebUITabStripFieldTrialBrowserTest : public InProcessBrowserTest {
     variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
         ->ResetForTesting();
     null_feature_list_.InitWithNullFeatureAndFieldTrialLists();
-    field_trial_list_ = std::make_unique<base::FieldTrialList>(
-        std::make_unique<base::MockEntropyProvider>(0.0));
+    field_trial_list_ = std::make_unique<base::FieldTrialList>();
   }
 
  protected:

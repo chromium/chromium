@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_CONSOLIDATED_CONSENT_FIELD_TRIAL_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
@@ -44,7 +45,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 // per-user metrics collection.
 //
 // The rollout plan for this feature is 50% for dev/beta.
-void Create(base::FeatureList* feature_list, PrefService* local_state);
+void Create(const base::FieldTrial::EntropyProvider& entropy_provider,
+            base::FeatureList* feature_list,
+            PrefService* local_state);
 
 // Whether trial should be enabled or not.
 bool ShouldEnableTrial(version_info::Channel channel);

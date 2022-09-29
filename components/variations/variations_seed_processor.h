@@ -15,6 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/version.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
 
@@ -50,12 +51,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
   // according to the client's |client_state|. Any study that should use low
   // entropy will use |low_entropy_provider| for group selection. These studies
   // are defined by ShouldStudyUseLowEntropy;
-  void CreateTrialsFromSeed(
-      const VariationsSeed& seed,
-      const ClientFilterableState& client_state,
-      const UIStringOverrideCallback& override_callback,
-      const base::FieldTrial::EntropyProvider& low_entropy_provider,
-      base::FeatureList* feature_list);
+  void CreateTrialsFromSeed(const VariationsSeed& seed,
+                            const ClientFilterableState& client_state,
+                            const UIStringOverrideCallback& override_callback,
+                            const EntropyProviders& entropy_providers,
+                            base::FeatureList* feature_list);
 
   // If the given |study| should alwoys use low entropy. This is true for any
   // study that can send data to other Google properties.
@@ -72,11 +72,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
   // Creates and registers a field trial from the |processed_study| data. Uses
   // |low_entropy_provider| if ShouldStudyUseLowEntropy returns true for the
   // study.
-  void CreateTrialFromStudy(
-      const ProcessedStudy& processed_study,
-      const UIStringOverrideCallback& override_callback,
-      const base::FieldTrial::EntropyProvider& low_entropy_provider,
-      base::FeatureList* feature_list);
+  void CreateTrialFromStudy(const ProcessedStudy& processed_study,
+                            const UIStringOverrideCallback& override_callback,
+                            const EntropyProviders& entropy_providers,
+                            base::FeatureList* feature_list);
 };
 
 }  // namespace variations

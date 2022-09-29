@@ -272,8 +272,7 @@ absl::optional<int> CastMainDelegate::PostEarlyInitialization(
   } else {
     // This is intentionally leaked since it needs to live for the duration of
     // the browser process and there's no benefit to cleaning it up at exit.
-    base::FieldTrialList* leaked_field_trial_list =
-        new base::FieldTrialList(nullptr);
+    base::FieldTrialList* leaked_field_trial_list = new base::FieldTrialList();
     ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
     std::ignore = leaked_field_trial_list;
   }

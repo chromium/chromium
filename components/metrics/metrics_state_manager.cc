@@ -235,12 +235,14 @@ MetricsStateManager::MetricsStateManager(
     EnabledStateProvider* enabled_state_provider,
     const std::wstring& backup_registry_key,
     const base::FilePath& user_data_dir,
+    EntropyProviderType default_entropy_provider_type,
     StartupVisibility startup_visibility,
     StoreClientInfoCallback store_client_info,
     LoadClientInfoCallback retrieve_client_info,
     base::StringPiece external_client_id)
     : local_state_(local_state),
       enabled_state_provider_(enabled_state_provider),
+      default_entropy_provider_type_(default_entropy_provider_type),
       store_client_info_(std::move(store_client_info)),
       load_client_info_(std::move(retrieve_client_info)),
       clean_exit_beacon_(backup_registry_key, user_data_dir, local_state),
@@ -340,21 +342,14 @@ int MetricsStateManager::GetLowEntropySource() {
 }
 
 void MetricsStateManager::InstantiateFieldTrialList(
-    const char* enable_gpu_benchmarking_switch,
-    EntropyProviderType entropy_provider_type) {
+    const char* enable_gpu_benchmarking_switch) {
   // Instantiate the FieldTrialList to support field trials. If an instance
   // already exists, this is likely a test scenario with a ScopedFeatureList, so
   // use the existing instance so that any overrides are still applied.
   if (!base::FieldTrialList::GetInstance()) {
-    std::unique_ptr<const base::FieldTrial::EntropyProvider> entropy_provider =
-        entropy_provider_type == EntropyProviderType::kLow
-            ? CreateLowEntropyProvider()
-            : CreateDefaultEntropyProvider();
-
     // This is intentionally leaked since it needs to live for the duration of
     // the browser process and there's no benefit in cleaning it up at exit.
-    base::FieldTrialList* leaked_field_trial_list =
-        new base::FieldTrialList(std::move(entropy_provider));
+    base::FieldTrialList* leaked_field_trial_list = new base::FieldTrialList();
     ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
     std::ignore = leaked_field_trial_list;
   }
@@ -541,26 +536,11 @@ bool MetricsStateManager::ShouldResetClientIdsOnClonedInstall() {
   return cloned_install_detector_.ShouldResetClientIds(local_state_);
 }
 
-std::unique_ptr<const base::FieldTrial::EntropyProvider>
-MetricsStateManager::CreateDefaultEntropyProvider() {
-  // |initial_client_id_| should be populated iff (a) we have the client's
-  // consent to enable UMA on startup or (b) it's the first run, in which case
-  // |initial_client_id_| corresponds to |provisional_client_id_|.
-  if (!initial_client_id_.empty()) {
-    UpdateEntropySourceReturnedValue(ENTROPY_SOURCE_HIGH);
-    return std::make_unique<variations::SHA1EntropyProvider>(
-        GetHighEntropySource());
-  }
-
-  UpdateEntropySourceReturnedValue(ENTROPY_SOURCE_LOW);
-  return CreateLowEntropyProvider();
-}
-
-std::unique_ptr<const base::FieldTrial::EntropyProvider>
-MetricsStateManager::CreateLowEntropyProvider() {
-  int source = GetLowEntropySource();
-  return std::make_unique<variations::NormalizedMurmurHashEntropyProvider>(
-      base::checked_cast<uint16_t>(source), kMaxLowEntropySize);
+std::unique_ptr<const variations::EntropyProviders>
+MetricsStateManager::CreateEntropyProviders() {
+  return std::make_unique<variations::EntropyProviders>(
+      GetHighEntropySource(),
+      base::checked_cast<uint16_t>(GetLowEntropySource()), kMaxLowEntropySize);
 }
 
 // static
@@ -570,6 +550,7 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
     const std::wstring& backup_registry_key,
     const base::FilePath& user_data_dir,
     StartupVisibility startup_visibility,
+    EntropyProviderType default_entropy_provider_type,
     StoreClientInfoCallback store_client_info,
     LoadClientInfoCallback retrieve_client_info,
     base::StringPiece external_client_id) {
@@ -578,7 +559,7 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
   if (!instance_exists_) {
     result.reset(new MetricsStateManager(
         local_state, enabled_state_provider, backup_registry_key, user_data_dir,
-        startup_visibility,
+        default_entropy_provider_type, startup_visibility,
         store_client_info.is_null() ? base::DoNothing()
                                     : std::move(store_client_info),
         retrieve_client_info.is_null()
@@ -631,10 +612,15 @@ std::unique_ptr<ClientInfo> MetricsStateManager::LoadClientInfo() {
 }
 
 std::string MetricsStateManager::GetHighEntropySource() {
-  // This should only be called if the |initial_client_id_| is not empty. The
-  // user shouldn't be able to enable UMA between the constructor and calling
-  // this, because field trial setup happens at Chrome initialization.
-  DCHECK(!initial_client_id_.empty());
+  // If high entropy randomization is not supported in this context (e.g. in
+  // webview), or if UMA is not enabled (so there is no client id), then high
+  // entropy randomization is disabled.
+  if (default_entropy_provider_type_ == EntropyProviderType::kLow ||
+      initial_client_id_.empty()) {
+    UpdateEntropySourceReturnedValue(ENTROPY_SOURCE_LOW);
+    return "";
+  }
+  UpdateEntropySourceReturnedValue(ENTROPY_SOURCE_HIGH);
   return entropy_state_.GetHighEntropySource(initial_client_id_);
 }
 

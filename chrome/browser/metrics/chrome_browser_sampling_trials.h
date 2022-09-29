@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_CHROME_BROWSER_SAMPLING_TRIALS_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial.h"
 
 namespace metrics {
 
@@ -18,14 +19,18 @@ namespace metrics {
 // trials regardless of which one the client would use at the time this is
 // called, because the trial used may change during the session (e.g., if the
 // user disables then re-enables metrics reporting during the same session).
-void CreateFallbackSamplingTrialsIfNeeded(base::FeatureList* feature_list);
+void CreateFallbackSamplingTrialsIfNeeded(
+    const base::FieldTrial::EntropyProvider& entropy_providers,
+    base::FeatureList* feature_list);
 
 // Create a field trial to control UKM sampling for Stable if it does not exist
 // (e.g., no variations seed was applied, or the variations seed did not contain
 // the trial). Note that UKM sampling is not per-client such as metrics/crash
 // sampling (see CreateFallbackSamplingTrialsIfNeeded() above), but rather
 // per-metric.
-void CreateFallbackUkmSamplingTrialIfNeeded(base::FeatureList* feature_list);
+void CreateFallbackUkmSamplingTrialIfNeeded(
+    const base::FieldTrial::EntropyProvider& entropy_providers,
+    base::FeatureList* feature_list);
 
 }  // namespace metrics
 

@@ -622,9 +622,8 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
                        CheckLowEntropySourceValue) {
-  std::unique_ptr<const base::FieldTrial::EntropyProvider>
-      low_entropy_provider = g_browser_process->GetMetricsServicesManager()
-                                 ->CreateLowEntropyProviderForTesting();
+  auto entropy_providers = g_browser_process->GetMetricsServicesManager()
+                               ->CreateEntropyProvidersForTesting();
 
   // Create a trial with 100 groups and variation ids to validate that the group
   // reported in the variations header is actually based on the low entropy
@@ -634,8 +633,8 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   // either uses a different API or tighten the current API to set up a field
   // trial that can only be made with the low entropy provider.
   scoped_refptr<base::FieldTrial> trial =
-      base::FieldTrialList::FactoryGetFieldTrial("t1", 100, "default",
-                                                 *low_entropy_provider);
+      base::FieldTrialList::FactoryGetFieldTrial(
+          "t1", 100, "default", entropy_providers->low_entropy());
   for (int i = 1; i < 101; ++i) {
     const std::string group_name = base::StringPrintf("%d", i);
     variations::AssociateGoogleVariationID(

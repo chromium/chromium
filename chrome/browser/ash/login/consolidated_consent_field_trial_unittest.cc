@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/channel_info.h"
 #include "components/prefs/testing_pref_service.h"
@@ -37,7 +38,8 @@ TEST_F(ConsolidatedConsentFieldTrialTest,
   EXPECT_THAT(local_state()->GetString(kTrialGroupPrefName),
               ::testing::IsEmpty());
 
-  Create(&feature_list, local_state());
+  base::MockEntropyProvider entropy_provider(0.9);
+  Create(entropy_provider, &feature_list, local_state());
 
   // Ensure that the correct state is preserved so on the next run, the trial
   // does not change.
@@ -79,7 +81,8 @@ TEST_P(ConsolidatedConsentFieldTrialExistingGroupTest,
 
   // Set pref to enabled group.
   local_state()->SetString(kTrialGroupPrefName, group_name);
-  Create(&feature_list, local_state());
+  base::MockEntropyProvider entropy_provider(0.9);
+  Create(entropy_provider, &feature_list, local_state());
 
   // This check is here in case experiment is disabled.
   if (ShouldEnableTrial(chrome::GetChannel())) {
