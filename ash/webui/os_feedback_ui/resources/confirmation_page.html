@@ -57,6 +57,11 @@
   cr-link-row::part(icon) {
     --cr-icon-button-fill-color: var(--cros-icon-color-primary);
   }
+
+  cr-link-row::part(icon):focus {
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
 </style>
 <div id="container">
   <div id="header">

@@ -118,6 +118,7 @@
     }
 
     .focusable:focus {
+      border-radius: 4px;
       outline: 2px solid var(--cros-focus-ring-color);
     }
 
@@ -191,6 +192,15 @@
     paper-tooltip {
       --paper-tooltip-background: var(--cros-tooltip-background-color);
       --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+    }
+
+    cr-checkbox {
+      --cr-checkbox-ripple-opacity: 0;
+      --cr-checkbox-ripple-size: 32px;
+    }
+
+    :host-context(.focus-outline-visible) cr-checkbox:focus-within {
+      --cr-checkbox-ripple-ring: 2px solid var(--cros-focus-ring-color);
     }
   </style>
 </template>
