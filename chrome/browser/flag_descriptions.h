@@ -3076,6 +3076,9 @@ extern const char kEcheSWAMeasureLatencyDescription[];
 extern const char kEcheSWASendStartSignalingName[];
 extern const char kEcheSWASendStartSignalingDescription[];
 
+extern const char kEcheSWADisableStunServerName[];
+extern const char kEcheSWADisableStunServerDescription[];
+
 extern const char kEnableIkev2VpnName[];
 extern const char kEnableIkev2VpnDescription[];
 

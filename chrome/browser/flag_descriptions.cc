@@ -5406,6 +5406,11 @@ const char kEcheSWASendStartSignalingDescription[] =
     "Allows sending start signaling action to establish Eche's WebRTC "
     "connection";
 
+const char kEcheSWADisableStunServerName[] = "Disable Eche STUN server";
+const char kEcheSWADisableStunServerDescription[] =
+    "Allows disabling the stun servers when establishing a WebRTC connection "
+    "to Eche";
+
 const char kEnableIkev2VpnName[] = "Enable IKEv2 VPN";
 const char kEnableIkev2VpnDescription[] =
     "Enable selecting IKEv2 as the VPN provider type when creating a VPN "

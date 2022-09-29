@@ -1610,6 +1610,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "eche-swa-disable-stun-server",
+    "owners": [ "dhnishi", "mavishsu@google.com", "ftsui@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "eche-swa-measure-latency",
     "owners": [ "paulzchen@google.com", "guanrulee@google.com" ],
     "expiry_milestone": 108
