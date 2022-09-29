@@ -440,7 +440,7 @@ void AutofillPopupBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // consider returning to using kMenu, so that users are notified that a
   // menu popup has been shown.
   node_data->role = ax::mojom::Role::kPane;
-  node_data->SetName(
+  node_data->SetNameChecked(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
 }
 

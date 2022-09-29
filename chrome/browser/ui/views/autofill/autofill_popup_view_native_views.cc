@@ -626,7 +626,7 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (!controller)
     return;
 
-  node_data->SetName(GetVoiceOverString());
+  node_data->SetNameChecked(GetVoiceOverString());
 
   // Compute set size and position in set, by checking the frontend_id of each
   // row, summing the number of interactive rows, and subtracting the number
@@ -1283,7 +1283,7 @@ void AutofillPopupWarningView::GetAccessibleNodeData(
     return;
 
   node_data->role = ax::mojom::Role::kStaticText;
-  node_data->SetName(
+  node_data->SetNameChecked(
       controller->GetSuggestionAt(GetLineNumber()).main_text.value);
 }
 
@@ -1411,7 +1411,7 @@ void AutofillPopupViewNativeViews::GetAccessibleNodeData(
     node_data->AddState(ax::mojom::State::kCollapsed);
     node_data->AddState(ax::mojom::State::kInvisible);
   }
-  node_data->SetName(
+  node_data->SetNameChecked(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
 }
 
