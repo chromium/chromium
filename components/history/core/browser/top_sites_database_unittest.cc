@@ -37,8 +37,8 @@ void VerifyTablesAndColumns(sql::Database* db) {
   // [key] and [value].
   EXPECT_EQ(2u, sql::test::CountTableColumns(db, "meta"));
 
-  // [url], [url_rank], [title], [redirects]
-  EXPECT_EQ(4u, sql::test::CountTableColumns(db, "top_sites"));
+  // [url], [url_rank], [title]
+  EXPECT_EQ(3u, sql::test::CountTableColumns(db, "top_sites"));
 }
 
 void VerifyDatabaseEmpty(sql::Database* db) {
@@ -125,6 +125,28 @@ TEST_F(TopSitesDatabaseTest, Version4) {
   ASSERT_TRUE(transaction.Begin());
   ASSERT_TRUE(db.RemoveURLNoTransactionForTesting(urls[1]));
   transaction.Commit();
+
+  urls = db.GetSites();
+  ASSERT_EQ(2u, urls.size());
+}
+
+TEST_F(TopSitesDatabaseTest, Version5) {
+  ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v5.sql"));
+
+  TopSitesDatabase db;
+  ASSERT_TRUE(db.Init(file_name_));
+
+  VerifyTablesAndColumns(db.db_for_testing());
+
+  // Basic operational check.
+  MostVisitedURLList urls = db.GetSites();
+  ASSERT_EQ(3u, urls.size());
+  EXPECT_EQ(kUrl0, urls[0].url);  // [0] because of url_rank.
+
+  sql::Transaction transaction(db.db_for_testing());
+  ASSERT_TRUE(transaction.Begin());
+  ASSERT_TRUE(db.RemoveURLNoTransactionForTesting(urls[1]));
+  ASSERT_TRUE(transaction.Commit());
 
   urls = db.GetSites();
   ASSERT_EQ(2u, urls.size());
@@ -242,11 +264,11 @@ TEST_F(TopSitesDatabaseTest, Recovery4_CorruptHeader) {
   }
 }
 
-TEST_F(TopSitesDatabaseTest, Recovery4_CorruptIndex) {
+TEST_F(TopSitesDatabaseTest, Recovery5_CorruptIndex) {
   // Create an example database.
-  ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v4.sql"));
+  ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v5.sql"));
 
-  // Corrupt the thumnails.url auto-index.
+  // Corrupt the top_sites.url auto-index.
   static const char kIndexName[] = "sqlite_autoindex_top_sites_1";
   EXPECT_TRUE(sql::test::CorruptIndexRootPage(file_name_, kIndexName));
 
@@ -307,9 +329,9 @@ TEST_F(TopSitesDatabaseTest, Recovery4_CorruptIndex) {
   }
 }
 
-TEST_F(TopSitesDatabaseTest, Recovery4_CorruptIndexAndLostRow) {
+TEST_F(TopSitesDatabaseTest, Recovery5_CorruptIndexAndLostRow) {
   // Create an example database.
-  ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v4.sql"));
+  ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v5.sql"));
 
   // Delete a row.
   {
@@ -319,7 +341,7 @@ TEST_F(TopSitesDatabaseTest, Recovery4_CorruptIndexAndLostRow) {
         raw_db.Execute("DELETE FROM top_sites WHERE url = "
                        "'http://www.google.com/chrome/intl/en/welcome.html'"));
   }
-  // Corrupt the thumnails.url auto-index.
+  // Corrupt the top_sites.url auto-index.
   static const char kIndexName[] = "sqlite_autoindex_top_sites_1";
   EXPECT_TRUE(sql::test::CorruptIndexRootPage(file_name_, kIndexName));
 

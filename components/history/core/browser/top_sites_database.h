@@ -17,6 +17,7 @@ class FilePath;
 
 namespace sql {
 class Database;
+class MetaTable;
 class Statement;
 }  // namespace sql
 
@@ -86,6 +87,9 @@ class TopSitesDatabase {
   // Init() to retry in case of failure, since some failures will
   // invoke recovery code.
   bool InitImpl(const base::FilePath& db_name)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool UpgradeToVersion5(sql::MetaTable&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   void DatabaseErrorCallback(const base::FilePath& db_path,

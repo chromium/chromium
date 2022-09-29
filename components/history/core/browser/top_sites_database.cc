@@ -34,9 +34,6 @@ namespace history {
 //   url_rank         Index of the site, 0-based. The site with the highest rank
 //                    will be the next one evicted.
 //   title            The title to display under that site.
-//   redirects        A space separated list of URLs that are known to redirect
-//                    to this url. As of 9/2019 this column is not used. It will
-//                    be removed shortly.
 
 namespace {
 
@@ -48,6 +45,7 @@ namespace {
 // fatal (in fact, very old data may be expired immediately at startup
 // anyhow).
 
+// Version 5: TODO apaseltiner@chromium.org on 2022-09-21
 // Version 4: 95af34ec/r618360 kristipark@chromium.org on 2018-12-20
 // Version 3: b6d6a783/r231648 by beaudoin@chromium.org on 2013-10-29
 // Version 2: eb0b24e6/r87284 by satorux@chromium.org on 2011-05-31 (deprecated)
@@ -55,7 +53,7 @@ namespace {
 
 // NOTE(shess): When changing the version, add a new golden file for
 // the new version and a test to verify that Init() works with it.
-static const int kVersionNumber = 4;
+static const int kVersionNumber = 5;
 static const int kDeprecatedVersionNumber = 3;  // and earlier.
 
 // Rank used to indicate that this is a newly added URL.
@@ -64,10 +62,9 @@ static const int kRankOfNewURL = -1;
 bool InitTables(sql::Database* db) {
   static constexpr char kTopSitesSql[] =
       "CREATE TABLE IF NOT EXISTS top_sites("
-      "url LONGVARCHAR PRIMARY KEY,"
-      "url_rank INTEGER,"
-      "title LONGVARCHAR,"
-      "redirects LONGVARCHAR)";
+      "url TEXT NOT NULL PRIMARY KEY,"
+      "url_rank INTEGER NOT NULL,"
+      "title TEXT NOT NULL)";
   return db->Execute(kTopSitesSql);
 }
 
@@ -159,7 +156,7 @@ void FixTopSitesTable(sql::Database* db, int version) {
 // constraints.
 void RecoverAndFixup(sql::Database* db, const base::FilePath& db_path) {
   // NOTE(shess): If the version changes, review this code.
-  DCHECK_EQ(4, kVersionNumber);
+  DCHECK_EQ(5, kVersionNumber);
 
   std::unique_ptr<sql::Recovery> recovery =
       sql::Recovery::BeginRecoverDatabase(db, db_path);
@@ -284,6 +281,40 @@ bool TopSitesDatabase::Init(const base::FilePath& db_name) {
   return false;
 }
 
+bool TopSitesDatabase::UpgradeToVersion5(sql::MetaTable& meta_table) {
+  DCHECK(db_);
+  DCHECK(db_->HasActiveTransactions());
+  DCHECK_EQ(4, meta_table.GetVersionNumber());
+
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE new_top_sites("
+      "url TEXT NOT NULL PRIMARY KEY,"
+      "url_rank INTEGER NOT NULL,"
+      "title TEXT NOT NULL)";
+  if (!db_->Execute(kCreateSql))
+    return false;
+
+  static constexpr char kMigrateSql[] =
+      "INSERT INTO new_top_sites(url,url_rank,title)"
+      "SELECT url,url_rank,title FROM top_sites "
+      "WHERE url IS NOT NULL AND url_rank IS NOT NULL AND title IS NOT NULL";
+  if (!db_->Execute(kMigrateSql))
+    return false;
+
+  static constexpr char kDropSql[] = "DROP TABLE top_sites";
+  if (!db_->Execute(kDropSql))
+    return false;
+
+  static constexpr char kRenameSql[] =
+      "ALTER TABLE new_top_sites "
+      "RENAME TO top_sites";
+  if (!db_->Execute(kRenameSql))
+    return false;
+
+  meta_table.SetVersionNumber(5);
+  return true;
+}
+
 bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
   const bool file_existed = base::PathExists(db_name);
 
@@ -326,6 +357,11 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
 
   if (!InitTables(db_.get()))
     return false;
+
+  if (meta_table.GetVersionNumber() == 4) {
+    if (!UpgradeToVersion5(meta_table))
+      return false;
+  }
 
   // Version check.
   if (meta_table.GetVersionNumber() != kVersionNumber)
