@@ -92,7 +92,9 @@ enum class SearchPrefetchServingReason {
   kPostReloadFormOrLink = 9,
   // A prerender navigation request has taken this response away.
   kPrerendered = 10,
-  kMaxValue = kPrerendered,
+  // The prefetch is not ready as it was in-flight.
+  kRequestInFlightNotReady = 11,
+  kMaxValue = kRequestInFlightNotReady,
 };
 
 class SearchPrefetchService : public KeyedService,

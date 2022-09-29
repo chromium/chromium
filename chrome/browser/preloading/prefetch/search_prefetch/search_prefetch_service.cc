@@ -494,6 +494,14 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
 
   auto status = iter->second->current_status();
 
+  if (status == SearchPrefetchStatus::kInFlight) {
+    recorder.reason_ = SearchPrefetchServingReason::kRequestInFlightNotReady;
+    // Set the failure reason when prefetch is not served.
+    iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
+        SearchPrefetchServingReason::kRequestInFlightNotReady));
+    return nullptr;
+  }
+
   bool is_servable =
       status == SearchPrefetchStatus::kComplete ||
       status == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
@@ -1009,14 +1017,18 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
     return prefetches_.end();
   }
 
-  // No need to update the failure reason as these are marked in
-  // TriggeringOutcome for prefetch attempt.
   switch (iter->second->current_status()) {
     case SearchPrefetchStatus::kRequestCancelled:
       recorder.reason_ = SearchPrefetchServingReason::kRequestWasCancelled;
+      // Set the corresponding failure reason.
+      iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
+          SearchPrefetchServingReason::kRequestWasCancelled));
       break;
     case SearchPrefetchStatus::kRequestFailed:
       recorder.reason_ = SearchPrefetchServingReason::kRequestFailed;
+      // Set the corresponding failure reason.
+      iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
+          SearchPrefetchServingReason::kRequestFailed));
       break;
     case SearchPrefetchStatus::kPrerendered:
       recorder.reason_ = SearchPrefetchServingReason::kPrerendered;

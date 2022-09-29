@@ -849,7 +849,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kFailure,
             ToPreloadingFailureReason(
-                SearchPrefetchServingReason::kNotServedOtherReason),
+                BlockOnHeadersEnabled()
+                    ? SearchPrefetchServingReason::kNotServedOtherReason
+                    : SearchPrefetchServingReason::kRequestInFlightNotReady),
             /*accurate=*/true),
         attempt_entry_builder().BuildEntry(
             ukm_source_id, content::PreloadingType::kPrefetch,
@@ -972,7 +974,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
             content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kFailure,
-            content::PreloadingFailureReason::kUnspecified,
+            ToPreloadingFailureReason(
+                SearchPrefetchServingReason::kRequestFailed),
             /*accurate=*/true),
     };
     EXPECT_THAT(attempt_ukm_entries,
@@ -1690,7 +1693,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
             content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kFailure,
-            content::PreloadingFailureReason::kUnspecified,
+            ToPreloadingFailureReason(
+                SearchPrefetchServingReason::kRequestFailed),
             /*accurate=*/true),
         attempt_entry_builder().BuildEntry(
             ukm_source_id, content::PreloadingType::kPrefetch,

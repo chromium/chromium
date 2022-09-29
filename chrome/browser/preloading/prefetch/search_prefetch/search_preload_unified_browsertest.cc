@@ -69,6 +69,14 @@ content::PreloadingFailureReason ToPreloadingFailureReason(
                            kPreloadingFailureReasonContentEnd));
 }
 
+content::PreloadingFailureReason ToPreloadingFailureReason(
+    SearchPrefetchServingReason reason) {
+  return static_cast<content::PreloadingFailureReason>(
+      static_cast<int>(reason) +
+      static_cast<int>(content::PreloadingFailureReason::
+                           kPreloadingFailureReasonContentEnd));
+}
+
 // Sets up testing context for the search preloading features: search prefetch
 // and search prerender.
 // These features are able to coordinate with the other: A prefetched result
@@ -840,7 +848,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
             content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kFailure,
-            content::PreloadingFailureReason::kUnspecified,
+            ToPreloadingFailureReason(
+                SearchPrefetchServingReason::kRequestWasCancelled),
             /*accurate=*/true),
         attempt_entry_builder().BuildEntry(
             ukm_source_id, content::PreloadingType::kPrerender,

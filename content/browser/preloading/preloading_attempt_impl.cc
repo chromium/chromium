@@ -101,7 +101,11 @@ void PreloadingAttemptImpl::SetFailureReason(PreloadingFailureReason reason) {
   DCHECK_EQ(holdback_status_, PreloadingHoldbackStatus::kAllowed);
   DCHECK_EQ(failure_reason_, PreloadingFailureReason::kUnspecified);
   DCHECK_NE(reason, PreloadingFailureReason::kUnspecified);
-  SetTriggeringOutcome(PreloadingTriggeringOutcome::kFailure);
+
+  // It could be possible that the TriggeringOutcome is already kFailure, when
+  // we try to set FailureReason after setting TriggeringOutcome to kFailure.
+  if (triggering_outcome_ != PreloadingTriggeringOutcome::kFailure)
+    SetTriggeringOutcome(PreloadingTriggeringOutcome::kFailure);
   failure_reason_ = reason;
 }
 
