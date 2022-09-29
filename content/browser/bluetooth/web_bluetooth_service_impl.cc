@@ -589,9 +589,6 @@ WebBluetoothServiceImpl::GetBluetoothAllowed() {
   const url::Origin& embedding_origin =
       render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
 
-  // IsSameOriginWith() no longer excludes opaque origins.
-  // TODO(https://crbug.com/994454): Exclude opaque origins explicitly.
-
   // Some embedders that don't support Web Bluetooth indicate this by not
   // returning a chooser.
   // TODO(https://crbug.com/993829): Perform this check once there is a way to
