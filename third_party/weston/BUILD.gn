@@ -84,6 +84,10 @@ pkg_config("libevdev") {
   packages = [ "libevdev" ]
 }
 
+pkg_config("libsystemd") {
+  packages = [ "libsystemd" ]
+}
+
 pkg_config("wayland_cursor") {
   packages = [ "wayland-cursor" ]
 }
@@ -419,6 +423,32 @@ shared_library("weston_test") {
   public_configs = [ ":pixman" ]
 }
 
+shared_library("weston_systemd_notify") {
+  output_prefix_override = true
+  output_name = "systemd-notify"
+
+  sources = [ "src/compositor/systemd-notify.c" ]
+
+  deps = [
+    ":compositor",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":weston_config",
+  ]
+
+  include_dirs = [
+    "src/compositor",
+  ]
+
+  public_configs = [
+    ":libsystemd",
+    ":pixman",
+  ]
+}
+
 executable("weston_keyboard") {
   output_name = "weston-keyboard"
 
@@ -529,6 +559,7 @@ executable("weston") {
     ":weston_keyboard",
     ":weston_screenshooter",
     ":weston_test",
+    ":weston_systemd_notify",
   ]
 
   configs += [ ":weston_config" ]

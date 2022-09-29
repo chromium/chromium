@@ -14,8 +14,10 @@ import os.path
 import random
 import re
 import signal
+import socket
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 
@@ -296,15 +298,17 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
     # to enter idle state. Otherwise, Weston stops to send frame callbacks,
     # and tests start to time out (this typically happens after 300 seconds -
     # the default time after which Weston enters the idle state).
-    # 3) --width && --height set size of a virtual display: we need to set
+    # 3) --modules=test-plugin.so,systemd-notify.so - enables support for the
+    # weston-test Wayland protocol extension and the systemd-notify protocol.
+    # 4) --width && --height set size of a virtual display: we need to set
     # an adequate size so that tests can have more room for managing size
     # of windows.
-    # 4) --use-gl - Runs Weston using hardware acceleration instead of
-    # SwiftShader.
     weston_cmd = ['./weston', '--backend=headless-backend.so', '--idle-time=0',
-          '--width=1024', '--height=768', '--modules=test-plugin.so']
+          '--modules=test-plugin.so,systemd-notify.so', '--width=1024',
+          '--height=768']
 
     if '--weston-use-gl' in cmd:
+      # Runs Weston using hardware acceleration instead of SwiftShader.
       weston_cmd.append('--use-gl')
       cmd.remove('--weston-use-gl')
 
@@ -313,22 +317,56 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
       env = copy.deepcopy(env)
       env['WAYLAND_DEBUG'] = '1'
 
-    weston_proc_display = None
-    for _ in range(10):
-      weston_proc = subprocess.Popen(
-         weston_cmd,
-         stderr=subprocess.STDOUT, env=env)
+    # We use the systemd-notify protocol to detect whether weston has launched
+    # successfully. We listen on a unix socket and set the NOTIFY_SOCKET
+    # environment variable to the socket's path. If we tell it to load its
+    # systemd-notify module, weston will send a 'READY=1' message to the socket
+    # once it has loaded that module.
+    # See the sd_notify(3) man page and weston's compositor/systemd-notify.c for
+    # more details.
+    with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM
+                       | socket.SOCK_NONBLOCK) as notify_socket:
+      notify_socket.bind(_weston_notify_socket_address())
+      env['NOTIFY_SOCKET'] = _weston_notify_socket_address()
 
-      # Get the $WAYLAND_DISPLAY set by Weston and pass it to the test launcher.
-      # Please note that this env variable is local for the process. That's the
-      # reason we have to read it from Weston separately.
-      weston_proc_display = _get_display_from_weston(weston_proc.pid)
-      if weston_proc_display is not None:
-        break # Weston could launch and we found the display.
+      weston_proc_display = None
+      for _ in range(10):
+        weston_proc = subprocess.Popen(
+          weston_cmd,
+          stderr=subprocess.STDOUT, env=env)
+
+        for _ in range(25):
+          time.sleep(0.1)  # Gives weston some time to start.
+          try:
+            if notify_socket.recv(512) == b'READY=1':
+              break
+          except BlockingIOError:
+            continue
+
+        for _ in range(25):
+          # The 'READY=1' message is sent as soon as weston loads the
+          # systemd-notify module. This happens shortly before spawning its
+          # subprocesses (e.g. desktop-shell). Wait some more to ensure they
+          # have been spawned.
+          time.sleep(0.1)
+
+          # Get the $WAYLAND_DISPLAY set by Weston and pass it to the test
+          # launcher. Please note that this env variable is local for the
+          # process. That's the reason we have to read it from Weston
+          # separately.
+          weston_proc_display = _get_display_from_weston(weston_proc.pid)
+          if weston_proc_display is not None:
+            break # Weston could launch and we found the display.
+
+        # Also break from the outer loop.
+        if weston_proc_display is not None:
+          break
 
     # If we couldn't find the display after 10 tries, raise an exception.
     if weston_proc_display is None:
       raise _WestonProcessError('Failed to start Weston.')
+
+    env.pop('NOTIFY_SOCKET')
 
     env['WAYLAND_DISPLAY'] = weston_proc_display
     if '--chrome-wayland-debugging' in cmd:
@@ -347,52 +385,50 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
   finally:
     kill(weston_proc, 'weston')
 
+    if os.path.exists(_weston_notify_socket_address()):
+      os.remove(_weston_notify_socket_address())
+
     # dbus-daemon is not a subprocess, so we can't SIGTERM+waitpid() on it.
     # To ensure it exits, use SIGKILL which should be safe since all other
     # processes that it would have been servicing have exited.
     if dbus_pid:
       os.kill(dbus_pid, signal.SIGKILL)
 
+def _weston_notify_socket_address():
+  return os.path.join(tempfile.gettempdir(), '.xvfb.py-weston-notify.sock')
+
 def _get_display_from_weston(weston_proc_pid):
   """Retrieves $WAYLAND_DISPLAY set by Weston.
 
-  Searches for the child "weston-desktop-shell" process, takes its
-  environmental variables, and returns $WAYLAND_DISPLAY variable set
-  by that process. If the variable is not set, tries up to 10 times
-  and then gives up.
+  Returns the $WAYLAND_DISPLAY variable from one of weston's subprocesses.
+
+  Weston updates this variable early in its startup in the main process, but we
+  can only read the environment variables as they were when the process was
+  created. Therefore we must use one of weston's subprocesses, which are all
+  spawned with the new value for $WAYLAND_DISPLAY. Any of them will do, as they
+  all have the same value set.
 
   Args:
     weston_proc_pid: The process of id of the main Weston process.
 
   Returns:
     the display set by Wayland, which clients can use to connect to.
-
-  TODO(https://crbug.com/1060469): This is potentially error prone
-  function. See the bug for further details.
   """
 
-  # Try 100 times as it is not known when Weston spawn child desktop shell
-  # process. The most seen so far is ~50 checks/~2.5 seconds, but startup
-  # is usually almost instantaneous.
-  for _ in range(100):
-    # gives weston time to start or fail.
-    time.sleep(.05)
-    # Take the parent process.
-    parent = psutil.Process(weston_proc_pid)
-    if parent is None:
-      break # The process is not found. Give up.
+  # Take the parent process.
+  parent = psutil.Process(weston_proc_pid)
+  if parent is None:
+    return None # The process is not found. Give up.
 
-    # Traverse through all the children processes and find the
-    # "weston-desktop-shell" process that sets local to process env variables
-    # including the $WAYLAND_DISPLAY.
-    children = parent.children(recursive=True)
-    for process in children:
-      if process.name() == "weston-desktop-shell":
-        weston_proc_display = process.environ().get('WAYLAND_DISPLAY')
-        # If display is set, Weston could start successfully and we can use
-        # that display for Wayland connection in Chromium.
-        if weston_proc_display is not None:
-          return weston_proc_display
+  # Traverse through all the children processes and find one that has
+  # $WAYLAND_DISPLAY set.
+  children = parent.children(recursive=True)
+  for process in children:
+    weston_proc_display = process.environ().get('WAYLAND_DISPLAY')
+    # If display is set, Weston could start successfully and we can use
+    # that display for Wayland connection in Chromium.
+    if weston_proc_display is not None:
+      return weston_proc_display
   return None
 
 
