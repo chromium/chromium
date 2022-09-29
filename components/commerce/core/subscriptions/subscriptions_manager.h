@@ -30,6 +30,28 @@ class SubscriptionsStorage;
 enum class SubscriptionType;
 struct CommerceSubscription;
 
+// Possible result status of a product (un)tracking request. This enum needs to
+// match the values in enums.xml.
+enum class SubscriptionsRequestStatus {
+  kSuccess = 0,
+  // Server failed to parse the request.
+  kServerParseError = 1,
+  // Server successfully parsed the request, but failed afterwards.
+  kServerInternalError = 2,
+  // Local storage failed to load, create, or delete subscriptions.
+  kStorageError = 3,
+  // If the last sync with server failed, we just drop this request.
+  kLastSyncFailed = 4,
+  // The passed in argument is invalid.
+  kInvalidArgument = 5,
+
+  // This enum must be last and is only used for histograms.
+  kMaxValue = kInvalidArgument
+};
+
+using SubscriptionsRequestCallback =
+    base::OnceCallback<void(SubscriptionsRequestStatus)>;
+
 class SubscriptionsManager : public signin::IdentityManager::Observer {
  public:
   SubscriptionsManager(
@@ -83,11 +105,11 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   struct Request {
     Request(SubscriptionType type,
             AsyncOperation operation,
-            base::OnceCallback<void(bool)> callback);
+            SubscriptionsRequestCallback callback);
     Request(SubscriptionType type,
             AsyncOperation operation,
             std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
-            base::OnceCallback<void(bool)> callback);
+            SubscriptionsRequestCallback callback);
     Request(const Request&) = delete;
     Request& operator=(const Request&) = delete;
     Request(Request&&);
@@ -97,7 +119,7 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
     SubscriptionType type;
     AsyncOperation operation;
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions;
-    base::OnceCallback<void(bool)> callback;
+    SubscriptionsRequestCallback callback;
   };
 
   // Fetch all backend subscriptions and sync with local storage. This should
@@ -121,18 +143,17 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
 
   void GetRemoteSubscriptionsAndUpdateStorage(
       SubscriptionType type,
-      base::OnceCallback<void(bool)> callback);
+      SubscriptionsRequestCallback callback);
 
   void HandleGetSubscriptionsResponse(
       SubscriptionType type,
-      base::OnceCallback<void(bool)> callback,
-      bool succeeded,
+      SubscriptionsRequestCallback callback,
+      SubscriptionsRequestStatus status,
       std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions);
 
-  void HandleManageSubscriptionsResponse(
-      SubscriptionType type,
-      base::OnceCallback<void(bool)> callback,
-      bool succeeded);
+  void HandleManageSubscriptionsResponse(SubscriptionType type,
+                                         SubscriptionsRequestCallback callback,
+                                         SubscriptionsRequestStatus status);
 
   void HandleCheckLocalSubscriptionResponse(bool should_exisit,
                                             bool is_subscribed);

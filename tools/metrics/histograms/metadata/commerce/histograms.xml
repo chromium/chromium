@@ -479,6 +479,28 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Subscriptions.TrackResult"
+    enum="ShoppingSubscriptionsRequestStatus" expires_after="2023-04-25">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the result of a product tracking request in the subscriptions
+    manager. Recorded when the request finishes.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Subscriptions.UntrackResult"
+    enum="ShoppingSubscriptionsRequestStatus" expires_after="2023-04-25">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the result of a product untracking request in the subscriptions
+    manager. Recorded when the request finishes.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Subscriptions.{ManagementType}.Count"
     units="subscriptions" expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>

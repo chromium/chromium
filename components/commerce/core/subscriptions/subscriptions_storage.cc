@@ -46,7 +46,7 @@ void SubscriptionsStorage::GetUniqueExistingSubscriptions(
 
 void SubscriptionsStorage::UpdateStorage(
     SubscriptionType type,
-    base::OnceCallback<void(bool)> callback,
+    StorageOperationCallback callback,
     std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions) {
   LoadAllSubscriptionsForType(
       type, base::BindOnce(&SubscriptionsStorage::PerformUpdateStorage,
@@ -68,8 +68,9 @@ std::string SubscriptionsStorage::GetSubscriptionKey(
          subscription.id;
 }
 
-void SubscriptionsStorage::SaveSubscription(CommerceSubscription subscription,
-                                            StorageOperationCallback callback) {
+void SubscriptionsStorage::SaveSubscription(
+    CommerceSubscription subscription,
+    base::OnceCallback<void(bool)> callback) {
   // Get proto types from the object.
   SubscriptionTypeProto subscription_type = commerce_subscription_db::
       CommerceSubscriptionContentProto_SubscriptionType_TYPE_UNSPECIFIED;
@@ -112,7 +113,7 @@ void SubscriptionsStorage::SaveSubscription(CommerceSubscription subscription,
 
 void SubscriptionsStorage::DeleteSubscription(
     CommerceSubscription subscription,
-    StorageOperationCallback callback) {
+    base::OnceCallback<void(bool)> callback) {
   proto_db_->DeleteOneEntry(GetSubscriptionKey(subscription),
                             std::move(callback));
 }
@@ -223,7 +224,9 @@ void SubscriptionsStorage::PerformUpdateStorage(
                            &all_succeeded));
     }
   }
-  std::move(callback).Run(all_succeeded);
+  std::move(callback).Run(all_succeeded
+                              ? SubscriptionsRequestStatus::kSuccess
+                              : SubscriptionsRequestStatus::kStorageError);
 }
 
 void SubscriptionsStorage::IsSubscribed(

@@ -298,14 +298,15 @@ TEST_F(SubscriptionsStorageTest, TestUpdateStorage) {
   }
 
   base::RunLoop run_loop;
-  storage_->UpdateStorage(SubscriptionType::kPriceTrack,
-                          base::BindOnce(
-                              [](base::RunLoop* run_loop, bool succeeded) {
-                                ASSERT_EQ(true, succeeded);
-                                run_loop->Quit();
-                              },
-                              &run_loop),
-                          MockRemoteSubscriptions());
+  storage_->UpdateStorage(
+      SubscriptionType::kPriceTrack,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, SubscriptionsRequestStatus status) {
+            ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
+            run_loop->Quit();
+          },
+          &run_loop),
+      MockRemoteSubscriptions());
   run_loop.Run();
 }
 
@@ -322,14 +323,15 @@ TEST_F(SubscriptionsStorageTest, TestUpdateStorage_LoadFailed) {
   }
 
   base::RunLoop run_loop;
-  storage_->UpdateStorage(SubscriptionType::kPriceTrack,
-                          base::BindOnce(
-                              [](base::RunLoop* run_loop, bool succeeded) {
-                                ASSERT_EQ(true, succeeded);
-                                run_loop->Quit();
-                              },
-                              &run_loop),
-                          MockRemoteSubscriptions());
+  storage_->UpdateStorage(
+      SubscriptionType::kPriceTrack,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, SubscriptionsRequestStatus status) {
+            ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
+            run_loop->Quit();
+          },
+          &run_loop),
+      MockRemoteSubscriptions());
   run_loop.Run();
 }
 
@@ -345,14 +347,15 @@ TEST_F(SubscriptionsStorageTest, TestUpdateStorage_OperationFailed) {
   }
 
   base::RunLoop run_loop;
-  storage_->UpdateStorage(SubscriptionType::kPriceTrack,
-                          base::BindOnce(
-                              [](base::RunLoop* run_loop, bool succeeded) {
-                                ASSERT_EQ(false, succeeded);
-                                run_loop->Quit();
-                              },
-                              &run_loop),
-                          MockRemoteSubscriptions());
+  storage_->UpdateStorage(
+      SubscriptionType::kPriceTrack,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, SubscriptionsRequestStatus status) {
+            ASSERT_EQ(SubscriptionsRequestStatus::kStorageError, status);
+            run_loop->Quit();
+          },
+          &run_loop),
+      MockRemoteSubscriptions());
   run_loop.Run();
 }
 

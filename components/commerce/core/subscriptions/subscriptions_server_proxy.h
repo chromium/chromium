@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/values.h"
+#include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -31,9 +32,11 @@ namespace commerce {
 enum class SubscriptionType;
 struct CommerceSubscription;
 
-using ManageSubscriptionsFetcherCallback = base::OnceCallback<void(bool)>;
-using GetSubscriptionsFetcherCallback = base::OnceCallback<
-    void(bool, std::unique_ptr<std::vector<CommerceSubscription>>)>;
+using ManageSubscriptionsFetcherCallback =
+    base::OnceCallback<void(SubscriptionsRequestStatus)>;
+using GetSubscriptionsFetcherCallback = base::OnceCallback<void(
+    SubscriptionsRequestStatus,
+    std::unique_ptr<std::vector<CommerceSubscription>>)>;
 
 class SubscriptionsServerProxy {
  public:

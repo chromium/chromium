@@ -87,14 +87,18 @@ class MockSubscriptionsServerProxy : public SubscriptionsServerProxy {
             [succeeded](std::unique_ptr<std::vector<CommerceSubscription>>
                             subscriptions,
                         ManageSubscriptionsFetcherCallback callback) {
-              std::move(callback).Run(succeeded);
+              std::move(callback).Run(
+                  succeeded ? SubscriptionsRequestStatus::kSuccess
+                            : SubscriptionsRequestStatus::kServerParseError);
             });
     ON_CALL(*this, Delete)
         .WillByDefault(
             [succeeded](std::unique_ptr<std::vector<CommerceSubscription>>
                             subscriptions,
                         ManageSubscriptionsFetcherCallback callback) {
-              std::move(callback).Run(succeeded);
+              std::move(callback).Run(
+                  succeeded ? SubscriptionsRequestStatus::kSuccess
+                            : SubscriptionsRequestStatus::kServerParseError);
             });
   }
 
@@ -105,8 +109,10 @@ class MockSubscriptionsServerProxy : public SubscriptionsServerProxy {
         .WillByDefault([subscription_id, succeeded](
                            SubscriptionType type,
                            GetSubscriptionsFetcherCallback callback) {
-          std::move(callback).Run(succeeded,
-                                  BuildSubscriptions(subscription_id));
+          std::move(callback).Run(
+              succeeded ? SubscriptionsRequestStatus::kSuccess
+                        : SubscriptionsRequestStatus::kServerParseError,
+              BuildSubscriptions(subscription_id));
         });
   }
 };
@@ -132,7 +138,7 @@ class MockSubscriptionsStorage : public SubscriptionsStorage {
       void,
       UpdateStorage,
       (SubscriptionType type,
-       base::OnceCallback<void(bool)> callback,
+       StorageOperationCallback callback,
        std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions),
       (override));
   MOCK_METHOD(void, DeleteAll, (), (override));
@@ -166,10 +172,12 @@ class MockSubscriptionsStorage : public SubscriptionsStorage {
     ON_CALL(*this, UpdateStorage)
         .WillByDefault(
             [succeeded](SubscriptionType type,
-                        base::OnceCallback<void(bool)> callback,
+                        StorageOperationCallback callback,
                         std::unique_ptr<std::vector<CommerceSubscription>>
                             remote_subscriptions) {
-              std::move(callback).Run(succeeded);
+              std::move(callback).Run(
+                  succeeded ? SubscriptionsRequestStatus::kSuccess
+                            : SubscriptionsRequestStatus::kStorageError);
             });
   }
 

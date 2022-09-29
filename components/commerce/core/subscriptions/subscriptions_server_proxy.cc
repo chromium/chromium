@@ -76,7 +76,7 @@ void SubscriptionsServerProxy::Create(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     ManageSubscriptionsFetcherCallback callback) {
   if (subscriptions->size() == 0) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(SubscriptionsRequestStatus::kSuccess);
     return;
   }
 
@@ -142,7 +142,7 @@ void SubscriptionsServerProxy::Delete(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     ManageSubscriptionsFetcherCallback callback) {
   if (subscriptions->size() == 0) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(SubscriptionsRequestStatus::kSuccess);
     return;
   }
 
@@ -211,7 +211,8 @@ void SubscriptionsServerProxy::Get(SubscriptionType type,
   } else {
     VLOG(1) << "Unsupported type for Get query";
     std::move(callback).Run(
-        false, std::make_unique<std::vector<CommerceSubscription>>());
+        SubscriptionsRequestStatus::kInvalidArgument,
+        std::make_unique<std::vector<CommerceSubscription>>());
     return;
   }
 
@@ -273,6 +274,11 @@ void SubscriptionsServerProxy::HandleManageSubscriptionsResponses(
     ManageSubscriptionsFetcherCallback callback,
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
+  if (responses->http_status_code != net::HTTP_OK || responses->error_type) {
+    VLOG(1) << "Server failed to parse manage-subscriptions request";
+    std::move(callback).Run(SubscriptionsRequestStatus::kServerParseError);
+    return;
+  }
   data_decoder::DataDecoder::ParseJsonIsolated(
       responses->response,
       base::BindOnce(&SubscriptionsServerProxy::OnManageSubscriptionsJsonParsed,
@@ -285,15 +291,17 @@ void SubscriptionsServerProxy::OnManageSubscriptionsJsonParsed(
   if (result.has_value() && result->is_dict()) {
     if (auto* status_value = result->FindKey(kStatusKey)) {
       if (auto status_code = status_value->FindIntKey(kStatusCodeKey)) {
-        std::move(callback).Run(*status_code == kBackendCanonicalCodeSuccess);
+        std::move(callback).Run(
+            *status_code == kBackendCanonicalCodeSuccess
+                ? SubscriptionsRequestStatus::kSuccess
+                : SubscriptionsRequestStatus::kServerInternalError);
         return;
       }
     }
   }
 
-  // TODO(crbug.com/1348024): Record metrics for failed parse.
   VLOG(1) << "Fail to get status code from response";
-  std::move(callback).Run(false);
+  std::move(callback).Run(SubscriptionsRequestStatus::kServerInternalError);
 }
 
 void SubscriptionsServerProxy::HandleGetSubscriptionsResponses(
@@ -301,9 +309,10 @@ void SubscriptionsServerProxy::HandleGetSubscriptionsResponses(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
   if (responses->http_status_code != net::HTTP_OK || responses->error_type) {
-    VLOG(1) << "Fail to get subscriptions from server";
+    VLOG(1) << "Server failed to parse get-subscriptions request";
     std::move(callback).Run(
-        false, std::make_unique<std::vector<CommerceSubscription>>());
+        SubscriptionsRequestStatus::kServerParseError,
+        std::make_unique<std::vector<CommerceSubscription>>());
     return;
   }
   data_decoder::DataDecoder::ParseJsonIsolated(
@@ -324,13 +333,15 @@ void SubscriptionsServerProxy::OnGetSubscriptionsJsonParsed(
         if (auto subscription = Deserialize(subscription_json))
           subscriptions->push_back(*subscription);
       }
-      std::move(callback).Run(true, std::move(subscriptions));
+      std::move(callback).Run(SubscriptionsRequestStatus::kSuccess,
+                              std::move(subscriptions));
       return;
     }
   }
 
   VLOG(1) << "User has no subscriptions";
-  std::move(callback).Run(true, std::move(subscriptions));
+  std::move(callback).Run(SubscriptionsRequestStatus::kSuccess,
+                          std::move(subscriptions));
 }
 
 base::Value SubscriptionsServerProxy::Serialize(
