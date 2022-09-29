@@ -198,7 +198,11 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
   if (!platform_configuration.IsSupported(release_channel))
     return absl::nullopt;
 
-  if (!AreUnwindPrerequisitesAvailable()) {
+  // We pass `version_info::Channel::UNKNOWN` instead of `absl::nullopt` here
+  // because `AreUnwindPrerequisitesAvailable` accounts for official build
+  // status internally.
+  if (!AreUnwindPrerequisitesAvailable(
+          release_channel.value_or(version_info::Channel::UNKNOWN))) {
     return kProfileDisabledModuleNotInstalled;
   }
 

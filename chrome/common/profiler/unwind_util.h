@@ -8,15 +8,18 @@
 #include "base/profiler/stack_sampling_profiler.h"
 #include "components/version_info/channel.h"
 
-// See `RequestUnwindPrerequisitesInstallation` below for more context. Intended
-// for unit testing.
+// See `RequestUnwindPrerequisitesInstallation` and
+// `AreUnwindPrerequisitesAvailable` below for more context. Intended for unit
+// testing.
 class UnwindPrerequisitesDelegate {
  public:
   virtual ~UnwindPrerequisitesDelegate() = default;
 
-  // This is not intended to be used directly, and instead should be used
-  // through `RequestUnwindPrerequisitesInstallation` below.
+  // These are not intended to be used directly, and instead should be used
+  // through `RequestUnwindPrerequisitesInstallation` and
+  // `AreUnwindPrerequisitesAvailable` below.
   virtual void RequestInstallation(version_info::Channel channel) = 0;
+  virtual bool AreAvailable(version_info::Channel channel) = 0;
 };
 
 // Request the installation of any prerequisites needed for unwinding.
@@ -40,7 +43,13 @@ void RequestUnwindPrerequisitesInstallation(
 
 // Are the prerequisites required for unwinding available in the current
 // context?
-bool AreUnwindPrerequisitesAvailable();
+//
+// If `prerequites_delegate` is provided, it is used to check availability of
+// unwind prerequisites, on certain Android platforms only. Intended for unit
+// testing.
+bool AreUnwindPrerequisitesAvailable(
+    version_info::Channel channel,
+    UnwindPrerequisitesDelegate* prerequites_delegate = nullptr);
 
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory();
 
