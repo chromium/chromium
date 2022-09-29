@@ -19,11 +19,15 @@
 namespace blink {
 
 NullExecutionContext::NullExecutionContext()
+    : NullExecutionContext(scheduler::CreateDummyFrameScheduler()) {}
+
+NullExecutionContext::NullExecutionContext(
+    std::unique_ptr<FrameScheduler> scheduler)
     : ExecutionContext(
           v8::Isolate::GetCurrent(),
           MakeGarbageCollected<Agent>(v8::Isolate::GetCurrent(),
                                       base::UnguessableToken::Create())),
-      scheduler_(scheduler::CreateDummyFrameScheduler()) {}
+      scheduler_(std::move(scheduler)) {}
 
 NullExecutionContext::~NullExecutionContext() {}
 
@@ -41,8 +45,8 @@ FrameOrWorkerScheduler* NullExecutionContext::GetScheduler() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> NullExecutionContext::GetTaskRunner(
-    TaskType) {
-  return Thread::Current()->GetDeprecatedTaskRunner();
+    TaskType task_type) {
+  return scheduler_->GetTaskRunner(task_type);
 }
 
 const BrowserInterfaceBrokerProxy&

@@ -18,10 +18,13 @@
 
 namespace blink {
 
+class FrameScheduler;
+
 class NullExecutionContext : public GarbageCollected<NullExecutionContext>,
                              public ExecutionContext {
  public:
   NullExecutionContext();
+  explicit NullExecutionContext(std::unique_ptr<FrameScheduler> scheduler);
   ~NullExecutionContext() override;
 
   void SetURL(const KURL& url) { url_ = url; }
@@ -71,7 +74,7 @@ class NullExecutionContext : public GarbageCollected<NullExecutionContext>,
   // A dummy scheduler to ensure that the callers of
   // ExecutionContext::GetScheduler don't have to check for whether it's null or
   // not.
-  std::unique_ptr<FrameOrWorkerScheduler> scheduler_;
+  std::unique_ptr<FrameScheduler> scheduler_;
 
   // A fake token identifying this execution context.
   const LocalFrameToken token_;
