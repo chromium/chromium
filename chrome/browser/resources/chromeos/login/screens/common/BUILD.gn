@@ -22,7 +22,6 @@ group("polymer3_elements") {
     ":hw_data_collection_module",
     ":multidevice_setup_module",
     ":offline_ad_login_module",
-    ":os_install_module",
     ":os_trial_module",
     ":recommend_apps_module",
     ":signin_fatal_error_module",
@@ -69,7 +68,7 @@ js_type_check("closure_compile_local") {
     ":offline_ad_login.m",
     ":oobe_eula",
     ":oobe_reset",
-    ":os_install.m",
+    ":os_install",
     ":os_trial.m",
     ":parental_handoff",
     ":pin_setup",
@@ -273,8 +272,8 @@ js_library("gesture_navigation") {
 js_library("gaia_signin.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gaia_signin.m.js" ]
   deps = [
-    "../../../../gaia_auth_host:authenticator",
     "../..:display_manager.m",
+    "../../../../gaia_auth_host:authenticator",
     "../../components:gaia_dialog.m",
     "../../components:notification_card.m",
     "../../components:oobe_types.m",
@@ -449,8 +448,8 @@ js_library("oobe_reset") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("os_install.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/os_install.m.js" ]
+js_library("os_install") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/os_install.js" ]
   deps = [
     "../../:display_manager.m",
     "../../components/behaviors:login_screen_behavior.m",
@@ -467,7 +466,7 @@ js_library("os_install.m") {
 
   externs_list = [ "$externs_path/webview_tag.js" ]
 
-  extra_deps = [ ":os_install_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("parental_handoff") {
@@ -751,15 +750,6 @@ polymer_modulizer("offline_ad_login") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("os_install") {
-  js_file = "os_install.js"
-  html_file = "os_install.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("os_trial") {
   js_file = "os_trial.js"
   html_file = "os_trial.html"
@@ -830,6 +820,7 @@ html_to_js("web_components") {
     "marketing_opt_in.js",
     "oobe_eula.js",
     "oobe_reset.js",
+    "os_install.js",
     "parental_handoff.js",
     "pin_setup.js",
     "saml_confirm_password.js",

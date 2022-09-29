@@ -6,7 +6,24 @@
  * @fileoverview Polymer element for OS install screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_text_button.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_loading_dialog.m.js';
+import '../../components/dialogs/oobe_modal_dialog.m.js';
+
+import {afterNextRender, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
 
 const OsInstallScreenState = {
   INTRO: 'intro',
@@ -23,14 +40,14 @@ const OsInstallScreenState = {
  * @implements {MultiStepBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const OsInstallScreenElementBase = Polymer.mixinBehaviors(
+const OsInstallScreenElementBase = mixinBehaviors(
     [
       OobeI18nBehavior,
       OobeDialogHostBehavior,
       LoginScreenBehavior,
       MultiStepBehavior,
     ],
-    Polymer.Element);
+    PolymerElement);
 
 /**
  * @polymer
@@ -40,7 +57,9 @@ class OsInstall extends OsInstallScreenElementBase {
     return 'os-install-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -166,11 +185,9 @@ class OsInstall extends OsInstallScreenElementBase {
    */
   focusLogsLink_() {
     if (this.uiStep == OsInstallScreenState.NO_DESTINATION_DEVICE_FOUND) {
-      Polymer.RenderStatus.afterNextRender(
-          this, () => this.$.noDestLogsLink.focus());
+      afterNextRender(this, () => this.$.noDestLogsLink.focus());
     } else if (this.uiStep == OsInstallScreenState.FAILED) {
-      Polymer.RenderStatus.afterNextRender(
-          this, () => this.$.serviceLogsLink.focus());
+      afterNextRender(this, () => this.$.serviceLogsLink.focus());
     }
   }
 

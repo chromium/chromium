@@ -29,7 +29,7 @@ import './screens/common/multidevice_setup.m.js';
 import './screens/common/offline_ad_login.m.js';
 import './screens/common/oobe_eula.js';
 import './screens/common/oobe_reset.js';
-import './screens/common/os_install.m.js';
+import './screens/common/os_install.js';
 import './screens/common/os_trial.m.js';
 import './screens/common/parental_handoff.js';
 import './screens/common/pin_setup.js';
