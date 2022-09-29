@@ -35,10 +35,13 @@ class ManagedDeviceTrayItemView : public TrayItemView,
 
   // views::TrayItemView:
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
   void HandleLocaleChange() override;
 
  private:
   void Update();
+  void UpdateIcon();
+  void UpdateTooltipText();
 };
 
 }  // namespace ash

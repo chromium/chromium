@@ -49,21 +49,48 @@ const char* ManagedDeviceTrayItemView::GetClassName() const {
   return "ManagedDeviceTrayItemView";
 }
 
+void ManagedDeviceTrayItemView::OnThemeChanged() {
+  TrayItemView::OnThemeChanged();
+  UpdateIcon();
+}
+
 void ManagedDeviceTrayItemView::HandleLocaleChange() {
-  Update();
+  UpdateTooltipText();
 }
 
 void ManagedDeviceTrayItemView::Update() {
   SessionControllerImpl* session = Shell::Get()->session_controller();
-  if (session->IsUserPublicAccount()) {
+  if (!session->IsUserPublicAccount() && !session->IsUserChild()) {
+    SetVisible(false);
+    return;
+  }
+
+  UpdateIcon();
+  UpdateTooltipText();
+  SetVisible(true);
+}
+
+void ManagedDeviceTrayItemView::UpdateIcon() {
+  const gfx::VectorIcon* icon = nullptr;
+  SessionControllerImpl* session = Shell::Get()->session_controller();
+  if (session->IsUserPublicAccount())
+    icon = &kSystemTrayManagedIcon;
+  else if (session->IsUserChild())
+    icon = &kSystemTraySupervisedUserIcon;
+
+  if (icon) {
     image_view()->SetImage(gfx::CreateVectorIcon(
-        kSystemTrayManagedIcon,
-        TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
+        *icon, TrayIconColor(session->GetSessionState())));
+  }
+}
+
+void ManagedDeviceTrayItemView::UpdateTooltipText() {
+  SessionControllerImpl* session = Shell::Get()->session_controller();
+  if (session->IsUserPublicAccount()) {
     std::string enterprise_domain_manager = Shell::Get()
                                                 ->system_tray_model()
                                                 ->enterprise_domain()
                                                 ->enterprise_domain_manager();
-    SetVisible(true);
     if (!enterprise_domain_manager.empty()) {
       image_view()->SetTooltipText(l10n_util::GetStringFUTF16(
           IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
@@ -73,20 +100,10 @@ void ManagedDeviceTrayItemView::Update() {
       LOG(WARNING)
           << "Public account user, but device not enterprise-enrolled.";
     }
-    return;
-  }
-
-  if (session->IsUserChild()) {
-    image_view()->SetImage(gfx::CreateVectorIcon(
-        kSystemTraySupervisedUserIcon,
-        TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
+  } else if (session->IsUserChild()) {
     image_view()->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FAMILY_LINK_LABEL));
-    SetVisible(true);
-    return;
   }
-
-  SetVisible(false);
 }
 
 }  // namespace ash
