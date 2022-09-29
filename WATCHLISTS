@@ -1059,7 +1059,7 @@
       'filepath': 'extension',
     },
     'face_ml': {
-      'filepath': 'ash/webui/face_ml_app_ui/| ' \
+      'filepath': 'ash/webui/face_ml_app_ui/|' \
                   'chrome/browser/ash/web_applications/face_ml_system_web_app_info.*',
     },
     'feature_policy': {
