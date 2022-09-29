@@ -84,4 +84,12 @@ const char kAccessibilityCaptionsTextShadow[] =
 const char kAccessibilityCaptionsBackgroundOpacity[] =
     "accessibility.captions.background_opacity";
 
+// Whether the Live Translate feature is enabled.
+const char kLiveTranslateEnabled[] =
+    "accessibility.captions.live_translate_enabled";
+
+// The target language to translate the captions to.
+const char kLiveTranslateTargetLanguageCode[] =
+    "accessibility.captions.live_translate_target_language";
+
 }  // namespace prefs

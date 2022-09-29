@@ -74,6 +74,16 @@ void LiveCaptionController::RegisterProfilePrefs(
   registry->RegisterListPref(
       prefs::kLiveCaptionMediaFoundationRendererErrorSilenced,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    registry->RegisterBooleanPref(
+        prefs::kLiveTranslateEnabled, false,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+    registry->RegisterStringPref(
+        prefs::kLiveTranslateTargetLanguageCode, speech::kUsEnglishLocale,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  }
 }
 
 void LiveCaptionController::Init() {

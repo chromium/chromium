@@ -43,6 +43,10 @@ extern const char kAccessibilityCaptionsBackgroundColor[];
 extern const char kAccessibilityCaptionsTextShadow[];
 extern const char kAccessibilityCaptionsBackgroundOpacity[];
 
+// Live Translate prefs.
+extern const char kLiveTranslateEnabled[];
+extern const char kLiveTranslateTargetLanguageCode[];
+
 }  // namespace prefs
 
 #endif  // COMPONENTS_LIVE_CAPTION_PREF_NAMES_H_
