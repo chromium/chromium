@@ -417,8 +417,8 @@ bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
   return metadata_ == other.metadata_ &&
          InvalidationSetMapsEqual<AtomicString>(
              class_invalidation_sets_, other.class_invalidation_sets_) &&
-         class_names_with_self_invalidation_ ==
-             other.class_names_with_self_invalidation_ &&
+         base::ValuesEquivalent(class_names_with_self_invalidation_,
+                                other.class_names_with_self_invalidation_) &&
          InvalidationSetMapsEqual<AtomicString>(id_invalidation_sets_,
                                                 other.id_invalidation_sets_) &&
          InvalidationSetMapsEqual<AtomicString>(
@@ -597,7 +597,17 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
             blink::features::kInvalidationSetClassBloomFilter)) {
       // Do not insert self-invalidation sets for classes;
       // see comment on class_invalidation_sets_.
-      class_names_with_self_invalidation_.Add(
+      if (class_names_with_self_invalidation_ == nullptr) {
+        if (num_candidates_for_class_names_bloom_filter_++ < 50) {
+          // It's not worth spending 2 kB on the Bloom filter for this
+          // style sheet yet, so just insert a regular entry.
+          return &EnsureClassInvalidationSet(selector.Value(), type, position);
+        } else {
+          class_names_with_self_invalidation_ =
+              std::make_unique<WTF::BloomFilter<14>>();
+        }
+      }
+      class_names_with_self_invalidation_->Add(
           selector.Value().Impl()->ExistingHash());
       return nullptr;
     }
@@ -1677,9 +1687,14 @@ void RuleFeatureSet::Merge(const RuleFeatureSet& other) {
   for (const auto& entry : other.class_invalidation_sets_)
     MergeInvalidationSet(class_invalidation_sets_, entry.key, entry.value);
   if (base::FeatureList::IsEnabled(
-          blink::features::kInvalidationSetClassBloomFilter)) {
-    class_names_with_self_invalidation_.Merge(
-        other.class_names_with_self_invalidation_);
+          blink::features::kInvalidationSetClassBloomFilter) &&
+      other.class_names_with_self_invalidation_) {
+    if (class_names_with_self_invalidation_ == nullptr) {
+      class_names_with_self_invalidation_ =
+          std::make_unique<WTF::BloomFilter<14>>();
+    }
+    class_names_with_self_invalidation_->Merge(
+        *other.class_names_with_self_invalidation_);
   }
   for (const auto& entry : other.attribute_invalidation_sets_)
     MergeInvalidationSet(attribute_invalidation_sets_, entry.key, entry.value);
@@ -1718,7 +1733,7 @@ void RuleFeatureSet::Merge(const RuleFeatureSet& other) {
 void RuleFeatureSet::Clear() {
   metadata_.Clear();
   class_invalidation_sets_.clear();
-  class_names_with_self_invalidation_.Clear();
+  class_names_with_self_invalidation_.reset();
   attribute_invalidation_sets_.clear();
   id_invalidation_sets_.clear();
   pseudo_invalidation_sets_.clear();
@@ -1752,7 +1767,8 @@ void RuleFeatureSet::CollectInvalidationSetsForClass(
           blink::features::kInvalidationSetClassBloomFilter)) {
     // Implicit self-invalidation sets for all classes (with Bloom filter
     // rejection); see comment on class_invalidation_sets_.
-    if (class_names_with_self_invalidation_.MayContain(
+    if (class_names_with_self_invalidation_ &&
+        class_names_with_self_invalidation_->MayContain(
             class_name.Impl()->ExistingHash())) {
       invalidation_lists.descendants.push_back(
           InvalidationSet::SelfInvalidationSet());

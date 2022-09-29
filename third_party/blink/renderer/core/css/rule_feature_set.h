@@ -753,7 +753,17 @@ class CORE_EXPORT RuleFeatureSet {
   // Bloom filter if we had to insert sibling or descendant sets too, but this
   // seems a bit narrow in practice.
   InvalidationSetMap class_invalidation_sets_;
-  WTF::BloomFilter<14> class_names_with_self_invalidation_;
+  std::unique_ptr<WTF::BloomFilter<14>> class_names_with_self_invalidation_;
+
+  // We don't create the Bloom filter right away; the experiment might be off,
+  // or there may be so few of them that we don't really bother. This number
+  // counts the times we've inserted something that could go in there; once it
+  // reaches 50 (for this style sheet), we create the Bloom filter and start
+  // inserting there instead. Note that we don't _remove_ any of the sets,
+  // though; they will remain. This also means that when merging the
+  // RuleFeatureSets into the global one, we can go over 50 such entries
+  // in total.
+  unsigned num_candidates_for_class_names_bloom_filter_ = 0;
 
   InvalidationSetMap attribute_invalidation_sets_;
   InvalidationSetMap id_invalidation_sets_;

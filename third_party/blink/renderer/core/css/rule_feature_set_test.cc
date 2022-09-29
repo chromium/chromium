@@ -2828,6 +2828,12 @@ TEST_F(RuleFeatureSetTest, BloomFilterForSelfInvalidation) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::kInvalidationSetClassBloomFilter},
       /*disabled_features=*/{});
+
+  // Add enough dummy classes that the filter will be created.
+  for (unsigned i = 0; i < 100; ++i) {
+    CollectFeatures(".dummy");
+  }
+
   EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures(".p"));
 
   {
