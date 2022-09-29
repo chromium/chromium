@@ -1827,8 +1827,9 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, GetAllStorageKeysUsage) {
   EXPECT_FALSE(usage[storage_key2_index]->last_modified.is_null());
 }
 
+// TODO(crbug.com/1369300): Re-enable this test.
 TEST_P(CacheStorageManagerStorageKeyAndBucketTestP,
-       GetAllStorageKeysUsageWithPadding) {
+       DISABLED_GetAllStorageKeysUsageWithPadding) {
   EXPECT_EQ(0ULL, GetAllStorageKeysUsage().size());
 
   EXPECT_TRUE(Open(bucket_locator1_, "foo"));
