@@ -192,6 +192,9 @@ void RequestUnwindPrerequisitesInstallation(
     UnwindPrerequisitesDelegate* delegate) {
   CHECK_EQ(metrics::CallStackProfileParams::Process::kBrowser,
            GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
+  if (AreUnwindPrerequisitesAvailable(channel, delegate)) {
+    return;
+  }
 #if ANDROID_ARM32_UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
   ModuleUnwindPrerequisitesDelegate default_delegate;
