@@ -8,6 +8,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
+#include "components/history_clusters/core/similar_visit.h"
 
 namespace history_clusters {
 
@@ -52,11 +53,11 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
               return a.annotated_visit.visit_row < b.annotated_visit.visit_row;
             });
 
-  base::flat_map<std::string, size_t> url_to_cluster_map;
+  base::flat_map<SimilarVisit, size_t, SimilarVisit::Comp>
+      similar_visit_to_cluster_map;
   base::flat_map<history::VisitID, size_t> visit_id_to_cluster_map;
   std::vector<history::Cluster> clusters;
   for (auto& visit : visits) {
-    const auto& visit_url = visit.normalized_url;
     absl::optional<size_t> cluster_idx;
     std::vector<history::VisitID> previous_visit_ids_to_check;
     if (visit.annotated_visit.opener_visit_of_redirect_chain_start != 0) {
@@ -79,8 +80,8 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
       }
     } else {
       // See if we have clustered the URL. (forward-back, reload, etc.)
-      auto it = url_to_cluster_map.find(visit_url.possibly_invalid_spec());
-      if (it != url_to_cluster_map.end()) {
+      auto it = similar_visit_to_cluster_map.find(SimilarVisit(visit));
+      if (it != similar_visit_to_cluster_map.end()) {
         cluster_idx = it->second;
       }
     }
@@ -97,7 +98,7 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
         for (const auto& finalized_visit : in_progress_cluster.visits) {
           visit_id_to_cluster_map.erase(
               finalized_visit.annotated_visit.visit_row.visit_id);
-          url_to_cluster_map.erase(visit_url.possibly_invalid_spec());
+          similar_visit_to_cluster_map.erase(SimilarVisit(finalized_visit));
         }
 
         // Reset the working cluster index so we start a new cluster for this
@@ -117,7 +118,7 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
     // Add to mapping.
     visit_id_to_cluster_map[visit.annotated_visit.visit_row.visit_id] =
         *cluster_idx;
-    url_to_cluster_map[visit_url.possibly_invalid_spec()] = *cluster_idx;
+    similar_visit_to_cluster_map[SimilarVisit(visit)] = *cluster_idx;
 
     // By default, the current visit will be assigned a max score of 1.0 until
     // otherwise scored during finalization.

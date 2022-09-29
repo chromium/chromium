@@ -61,6 +61,7 @@ static_library("core") {
     "query_clusters_state.h",
     "ranking_cluster_finalizer.cc",
     "ranking_cluster_finalizer.h",
+    "similar_visit.h",
     "similar_visit_deduper_cluster_finalizer.cc",
     "similar_visit_deduper_cluster_finalizer.h",
     "single_domain_cluster_finalizer.cc",

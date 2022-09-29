@@ -114,12 +114,12 @@ TEST_F(ClustererTest, ClusterTwoVisitsTiedByOpenerVisit) {
                                       testing::VisitResult(2, 1.0))));
 }
 
-TEST_F(ClustererTest, ClusterTwoVisitsTiedByURL) {
+TEST_F(ClustererTest, ClusterTwoVisitsTiedBySimilarVisit) {
   std::vector<history::ClusterVisit> visits;
 
   // Visit2 has the same URL as Visit1.
   history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
-      1, GURL("https://google.com/"), base::Time::FromTimeT(1));
+      1, GURL("https://google.com/#stripped"), base::Time::FromTimeT(1));
   visits.push_back(testing::CreateClusterVisit(visit));
 
   history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
