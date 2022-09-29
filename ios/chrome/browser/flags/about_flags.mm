@@ -1198,6 +1198,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-cbd-sign-out", flag_descriptions::kEnableCBDSignOutName,
      flag_descriptions::kEnableCBDSignOutDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(switches::kEnableCbdSignOut)},
+    {"disable-feed-ios14", flag_descriptions::kDisableFeediOS14Name,
+     flag_descriptions::kDisableFeediOS14Description, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDisableFeediOS14)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
