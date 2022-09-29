@@ -16,6 +16,7 @@
 #include "media/cast/net/rtp/packet_storage.h"
 #include "media/cast/net/rtp/rtp_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 namespace media {
 namespace cast {
@@ -141,7 +142,8 @@ class RtpPacketizerTest : public ::testing::Test {
     pacer_->RegisterSsrc(config_.ssrc, false);
     rtp_packetizer_ = std::make_unique<RtpPacketizer>(
         pacer_.get(), &packet_storage_, config_);
-    video_frame_.dependency = EncodedFrame::DEPENDENT;
+    video_frame_.dependency =
+        openscreen::cast::EncodedFrame::Dependency::kDependent;
     video_frame_.frame_id = FrameId::first() + 1;
     video_frame_.referenced_frame_id = video_frame_.frame_id - 1;
     video_frame_.data.assign(kFrameSize, 123);

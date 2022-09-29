@@ -18,7 +18,10 @@
 #include "media/cast/constants.h"
 #include "media/cast/sender/openscreen_frame_sender.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 #include "third_party/openscreen/src/cast/streaming/sender.h"
+
+using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
 namespace mirroring {
 
@@ -167,16 +170,15 @@ void RemotingSender::TrySendFrame() {
   auto remoting_frame = std::make_unique<media::cast::SenderEncodedFrame>();
   remoting_frame->frame_id = next_frame_id_;
   if (flow_restart_pending_) {
-    remoting_frame->dependency = media::cast::EncodedFrame::KEY;
+    remoting_frame->dependency = Dependency::kKeyFrame;
     flow_restart_pending_ = false;
   } else {
     DCHECK(!is_first_frame);
-    remoting_frame->dependency = media::cast::EncodedFrame::DEPENDENT;
+    remoting_frame->dependency = Dependency::kDependent;
   }
   remoting_frame->referenced_frame_id =
-      remoting_frame->dependency == media::cast::EncodedFrame::KEY
-          ? next_frame_id_
-          : next_frame_id_ - 1;
+      remoting_frame->dependency == Dependency::kKeyFrame ? next_frame_id_
+                                                          : next_frame_id_ - 1;
   remoting_frame->reference_time = clock_->NowTicks();
   remoting_frame->encode_completion_time = remoting_frame->reference_time;
 

@@ -24,6 +24,7 @@
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "third_party/opus/src/include/opus.h"
@@ -147,7 +148,8 @@ class AudioEncoder::ImplBase
         break;
 
       std::unique_ptr<SenderEncodedFrame> audio_frame(new SenderEncodedFrame());
-      audio_frame->dependency = EncodedFrame::KEY;
+      audio_frame->dependency =
+          openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
       audio_frame->frame_id = frame_id_;
       audio_frame->referenced_frame_id = frame_id_;
       audio_frame->rtp_timestamp = frame_rtp_timestamp_;

@@ -22,6 +22,9 @@
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+
+using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
 namespace media {
 namespace cast {
@@ -211,7 +214,7 @@ TEST_F(CastTransportImplTest, NacksCancelRetransmits) {
   fake_frame.frame_id = FrameId::first() + 1;
   fake_frame.referenced_frame_id = FrameId::first() + 1;
   fake_frame.rtp_timestamp = RtpTimeTicks().Expand(UINT32_C(1));
-  fake_frame.dependency = EncodedFrame::KEY;
+  fake_frame.dependency = Dependency::kKeyFrame;
   fake_frame.data.resize(5000, ' ');
 
   transport_sender_->InsertFrame(kVideoSsrc, fake_frame);
@@ -259,7 +262,7 @@ TEST_F(CastTransportImplTest, CancelRetransmits) {
   fake_frame.frame_id = FrameId::first() + 1;
   fake_frame.referenced_frame_id = FrameId::first() + 1;
   fake_frame.rtp_timestamp = RtpTimeTicks().Expand(UINT32_C(1));
-  fake_frame.dependency = EncodedFrame::KEY;
+  fake_frame.dependency = Dependency::kKeyFrame;
   fake_frame.data.resize(5000, ' ');
 
   transport_sender_->InsertFrame(kVideoSsrc, fake_frame);
@@ -302,7 +305,7 @@ TEST_F(CastTransportImplTest, Kickstart) {
   fake_frame.frame_id = FrameId::first() + 1;
   fake_frame.referenced_frame_id = FrameId::first() + 1;
   fake_frame.rtp_timestamp = RtpTimeTicks().Expand(UINT32_C(1));
-  fake_frame.dependency = EncodedFrame::KEY;
+  fake_frame.dependency = Dependency::kKeyFrame;
   fake_frame.data.resize(5000, ' ');
 
   transport_->SetPaused(true);
@@ -345,7 +348,7 @@ TEST_F(CastTransportImplTest, DedupRetransmissionWithAudio) {
   fake_audio.frame_id = FrameId::first() + 1;
   fake_audio.referenced_frame_id = FrameId::first() + 1;
   fake_audio.reference_time = testing_clock_.NowTicks();
-  fake_audio.dependency = EncodedFrame::KEY;
+  fake_audio.dependency = Dependency::kKeyFrame;
   fake_audio.data.resize(100, ' ');
   transport_sender_->InsertFrame(kAudioSsrc, fake_audio);
   task_runner_->Sleep(base::Milliseconds(2));
@@ -368,7 +371,7 @@ TEST_F(CastTransportImplTest, DedupRetransmissionWithAudio) {
   EncodedFrame fake_video;
   fake_video.frame_id = FrameId::first() + 1;
   fake_video.referenced_frame_id = FrameId::first() + 1;
-  fake_video.dependency = EncodedFrame::KEY;
+  fake_video.dependency = Dependency::kKeyFrame;
   fake_video.data.resize(5000, ' ');
   transport_sender_->InsertFrame(kVideoSsrc, fake_video);
   task_runner_->RunTasks();

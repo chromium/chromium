@@ -20,6 +20,7 @@
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/sender/openscreen_frame_sender.h"
 #include "media/cast/sender/performance_metrics_overlay.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 #include "third_party/openscreen/src/cast/streaming/sender.h"
 
 namespace media::cast {
@@ -366,7 +367,8 @@ void VideoSender::OnEncodedVideoFrame(
     // this can misguide the producer of the input video frames.
     VideoCaptureFeedback feedback;
     feedback.resource_utilization =
-        encoded_frame->dependency == EncodedFrame::KEY
+        encoded_frame->dependency ==
+                openscreen::cast::EncodedFrame::Dependency::kKeyFrame
             ? std::min(1.0, attenuated_utilization)
             : attenuated_utilization;
     if (feedback_cb_)

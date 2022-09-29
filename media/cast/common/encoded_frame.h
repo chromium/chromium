@@ -12,6 +12,7 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/common/frame_id.h"
 #include "media/cast/common/rtp_time.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 namespace media {
 namespace cast {
@@ -19,24 +20,6 @@ namespace cast {
 // A combination of metadata and data for one encoded frame.  This can contain
 // audio data or video data or other.
 struct EncodedFrame {
-  enum Dependency {
-    // "null" value, used to indicate whether |dependency| has been set.
-    UNKNOWN_DEPENDENCY,
-
-    // Not decodable without the reference frame indicated by
-    // |referenced_frame_id|.
-    DEPENDENT,
-
-    // Independently decodable.
-    INDEPENDENT,
-
-    // Independently decodable, and no future frames will depend on any frames
-    // before this one.
-    KEY,
-
-    DEPENDENCY_LAST = KEY
-  };
-
   EncodedFrame();
   virtual ~EncodedFrame();
 
@@ -53,7 +36,8 @@ struct EncodedFrame {
   void CopyMetadataTo(EncodedFrame* dest) const;
 
   // This frame's dependency relationship with respect to other frames.
-  Dependency dependency;
+  openscreen::cast::EncodedFrame::Dependency dependency =
+      openscreen::cast::EncodedFrame::Dependency::kUnknown;
 
   // The label associated with this frame.  Implies an ordering relative to
   // other frames in the same stream.
@@ -82,7 +66,7 @@ struct EncodedFrame {
 
   // Playout delay for this and all future frames. Used by the Adaptive
   // Playout delay extension. Zero means no change.
-  uint16_t new_playout_delay_ms;
+  uint16_t new_playout_delay_ms = 0;
 
   // The encoded signal data.
   std::string data;

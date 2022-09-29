@@ -29,6 +29,7 @@
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/threading/platform_thread.h"
@@ -295,11 +296,13 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
       continue;
     }
 
-    if (encoded_frame->dependency == EncodedFrame::KEY) {
+    if (encoded_frame->dependency ==
+        openscreen::cast::EncodedFrame::Dependency::kKeyFrame) {
       EXPECT_EQ(encoded_frame->frame_id, encoded_frame->referenced_frame_id);
       last_key_frame_id = encoded_frame->frame_id;
     } else {
-      EXPECT_EQ(EncodedFrame::DEPENDENT, encoded_frame->dependency);
+      EXPECT_EQ(openscreen::cast::EncodedFrame::Dependency::kDependent,
+                encoded_frame->dependency);
       EXPECT_GT(encoded_frame->frame_id, encoded_frame->referenced_frame_id);
       // There must always be a KEY frame before any DEPENDENT ones.
       ASSERT_FALSE(last_key_frame_id.is_null());

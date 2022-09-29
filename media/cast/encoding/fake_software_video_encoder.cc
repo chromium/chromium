@@ -15,6 +15,9 @@
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+
+using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
 namespace media {
 namespace cast {
@@ -45,11 +48,11 @@ void FakeSoftwareVideoEncoder::Encode(
 
   encoded_frame->frame_id = frame_id_++;
   if (next_frame_is_key_) {
-    encoded_frame->dependency = EncodedFrame::KEY;
+    encoded_frame->dependency = Dependency::kKeyFrame;
     encoded_frame->referenced_frame_id = encoded_frame->frame_id;
     next_frame_is_key_ = false;
   } else {
-    encoded_frame->dependency = EncodedFrame::DEPENDENT;
+    encoded_frame->dependency = Dependency::kDependent;
     encoded_frame->referenced_frame_id = encoded_frame->frame_id - 1;
   }
   encoded_frame->rtp_timestamp =
@@ -57,7 +60,7 @@ void FakeSoftwareVideoEncoder::Encode(
   encoded_frame->reference_time = reference_time;
 
   base::Value values(base::Value::Type::DICTIONARY);
-  values.SetBoolKey("key", encoded_frame->dependency == EncodedFrame::KEY);
+  values.SetBoolKey("key", encoded_frame->dependency == Dependency::kKeyFrame);
   values.SetIntKey("ref", encoded_frame->referenced_frame_id.lower_32_bits());
   values.SetIntKey("id", encoded_frame->frame_id.lower_32_bits());
   values.SetIntKey("size", frame_size_);
@@ -65,7 +68,7 @@ void FakeSoftwareVideoEncoder::Encode(
   encoded_frame->data.resize(
       std::max<size_t>(encoded_frame->data.size(), frame_size_), ' ');
 
-  if (encoded_frame->dependency == EncodedFrame::KEY) {
+  if (encoded_frame->dependency == Dependency::kKeyFrame) {
     encoded_frame->encoder_utilization = 1.0;
     encoded_frame->lossiness = 6.0;
   } else {

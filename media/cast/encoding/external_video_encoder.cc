@@ -423,7 +423,11 @@ class ExternalVideoEncoder::VEAClientImpl final
 
       auto encoded_frame = std::make_unique<SenderEncodedFrame>();
       encoded_frame->dependency =
-          metadata.key_frame ? EncodedFrame::KEY : EncodedFrame::DEPENDENT;
+          metadata.key_frame
+              ?
+
+              openscreen::cast::EncodedFrame::Dependency::kKeyFrame
+              : openscreen::cast::EncodedFrame::Dependency::kDependent;
       encoded_frame->frame_id = next_frame_id_++;
       if (metadata.key_frame) {
         encoded_frame->referenced_frame_id = encoded_frame->frame_id;

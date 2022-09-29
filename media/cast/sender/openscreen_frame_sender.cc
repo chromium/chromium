@@ -20,7 +20,7 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
-
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 namespace media::cast {
 
 // The additional number of frames that can be in-flight when input exceeds the
@@ -196,7 +196,8 @@ void OpenscreenFrameSender::EnqueueFrame(
 
   DCHECK(frame_id > last_sent_frame_id_) << "enqueued frames out of order.";
   last_sent_frame_id_ = frame_id;
-  if (!is_audio_ && encoded_frame->dependency == EncodedFrame::KEY) {
+  if (!is_audio_ && encoded_frame->dependency ==
+                        openscreen::cast::EncodedFrame::Dependency::kKeyFrame) {
     VLOG_WITH_SSRC(1) << "Sending encoded key frame, id=" << frame_id;
   }
 
@@ -207,7 +208,9 @@ void OpenscreenFrameSender::EnqueueFrame(
   encode_event->rtp_timestamp = encoded_frame->rtp_timestamp;
   encode_event->frame_id = frame_id;
   encode_event->size = base::checked_cast<uint32_t>(encoded_frame->data.size());
-  encode_event->key_frame = encoded_frame->dependency == EncodedFrame::KEY;
+  encode_event->key_frame =
+      encoded_frame->dependency ==
+      openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
   encode_event->target_bitrate = encoded_frame->encoder_bitrate;
   encode_event->encoder_cpu_utilization = encoded_frame->encoder_utilization;
   encode_event->idealized_bitrate_utilization = encoded_frame->lossiness;

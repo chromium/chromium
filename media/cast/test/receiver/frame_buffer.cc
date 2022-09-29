@@ -6,6 +6,9 @@
 
 #include "base/check_op.h"
 #include "media/cast/common/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+
+using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
 namespace media {
 namespace cast {
@@ -68,12 +71,13 @@ bool FrameBuffer::AssembleEncodedFrame(EncodedFrame* frame) const {
     return false;
 
   // Frame is complete -> construct.
-  if (is_key_frame_)
-    frame->dependency = EncodedFrame::KEY;
-  else if (frame_id_ == last_referenced_frame_id_)
-    frame->dependency = EncodedFrame::INDEPENDENT;
-  else
-    frame->dependency = EncodedFrame::DEPENDENT;
+  if (is_key_frame_) {
+    frame->dependency = Dependency::kKeyFrame;
+  } else if (frame_id_ == last_referenced_frame_id_) {
+    frame->dependency = Dependency::kIndependent;
+  } else {
+    frame->dependency = Dependency::kDependent;
+  }
   frame->frame_id = frame_id_;
   frame->referenced_frame_id = last_referenced_frame_id_;
   frame->rtp_timestamp = rtp_timestamp_;

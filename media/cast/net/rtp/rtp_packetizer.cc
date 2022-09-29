@@ -12,6 +12,7 @@
 #include "media/cast/common/encoded_frame.h"
 #include "media/cast/net/pacing/paced_sender.h"
 #include "media/cast/net/rtp/rtp_defines.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 namespace media {
 namespace cast {
@@ -99,14 +100,18 @@ void RtpPacketizer::SendFrameAsPackets(const EncodedFrame& frame) {
                          frame.rtp_timestamp);
 
     // Build Cast header.
-    DCHECK_NE(frame.dependency, EncodedFrame::UNKNOWN_DEPENDENCY);
+    DCHECK_NE(frame.dependency,
+              openscreen::cast::EncodedFrame::Dependency::kUnknown);
     uint8_t byte0 = kCastReferenceFrameIdBitMask;
-    if (frame.dependency == EncodedFrame::KEY)
+    if (frame.dependency ==
+        openscreen::cast::EncodedFrame::Dependency::kKeyFrame)
       byte0 |= kCastKeyFrameBitMask;
+
     // Extensions only go on the first packet of the frame
     const uint16_t packet_id = static_cast<uint16_t>(packets.size());
     if (packet_id == 0)
       byte0 |= num_extensions;
+
     packet->data.push_back(byte0);
     packet->data.push_back(frame.frame_id.lower_8_bits());
     size_t start_size = packet->data.size();

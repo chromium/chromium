@@ -26,6 +26,9 @@
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/common/video_frame_factory.h"
 #include "media/cast/constants.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+
+using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
 namespace media {
 namespace cast {
@@ -531,10 +534,10 @@ void H264VideoToolboxEncoder::CompressionCallback(void* encoder_opaque,
   encoded_frame->reference_time = request->reference_time;
   encoded_frame->rtp_timestamp = request->rtp_timestamp;
   if (is_keyframe) {
-    encoded_frame->dependency = EncodedFrame::KEY;
+    encoded_frame->dependency = Dependency::kKeyFrame;
     encoded_frame->referenced_frame_id = frame_id;
   } else {
-    encoded_frame->dependency = EncodedFrame::DEPENDENT;
+    encoded_frame->dependency = Dependency::kDependent;
     // H.264 supports complex frame reference schemes (multiple reference
     // frames, slice references, backward and forward references, etc). Cast
     // doesn't support the concept of forward-referencing frame dependencies or

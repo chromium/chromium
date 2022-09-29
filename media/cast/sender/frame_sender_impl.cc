@@ -18,6 +18,7 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 namespace media::cast {
 namespace {
@@ -315,7 +316,8 @@ void FrameSenderImpl::EnqueueFrame(
   const bool is_first_frame_to_be_sent = last_send_time_.is_null();
 
   if (picture_lost_at_receiver_ &&
-      (encoded_frame->dependency == EncodedFrame::KEY)) {
+      (encoded_frame->dependency ==
+       openscreen::cast::EncodedFrame::Dependency::kKeyFrame)) {
     picture_lost_at_receiver_ = false;
     DCHECK(frame_id > latest_acked_frame_id_);
     // Cancel sending remaining frames.
@@ -340,7 +342,9 @@ void FrameSenderImpl::EnqueueFrame(
     ScheduleNextResendCheck();
   }
 
-  VLOG_IF(1, !is_audio_ && encoded_frame->dependency == EncodedFrame::KEY)
+  VLOG_IF(1, !is_audio_ &&
+                 encoded_frame->dependency ==
+                     openscreen::cast::EncodedFrame::Dependency::kKeyFrame)
       << SENDER_SSRC << "Sending encoded key frame, id=" << frame_id;
 
   std::unique_ptr<FrameEvent> encode_event(new FrameEvent());
@@ -350,7 +354,9 @@ void FrameSenderImpl::EnqueueFrame(
   encode_event->rtp_timestamp = encoded_frame->rtp_timestamp;
   encode_event->frame_id = frame_id;
   encode_event->size = base::checked_cast<uint32_t>(encoded_frame->data.size());
-  encode_event->key_frame = encoded_frame->dependency == EncodedFrame::KEY;
+  encode_event->key_frame =
+      encoded_frame->dependency ==
+      openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
   encode_event->target_bitrate = encoded_frame->encoder_bitrate;
   encode_event->encoder_cpu_utilization = encoded_frame->encoder_utilization;
   encode_event->idealized_bitrate_utilization = encoded_frame->lossiness;

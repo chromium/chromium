@@ -22,7 +22,8 @@ TEST(OpenscreenConversionHelpersTest, EncodedFrameConversions) {
   original.lossiness = 0.5f;
   original.encode_completion_time =
       base::TimeTicks() + base::Milliseconds(1337);
-  original.dependency = EncodedFrame::Dependency::INDEPENDENT;
+  original.dependency =
+      openscreen::cast::EncodedFrame::Dependency::kIndependent;
   original.frame_id = FrameId::first();
   original.rtp_timestamp = ToRtpTimeTicks(base::Seconds(3), 9000);
   original.reference_time = base::TimeTicks() + base::Milliseconds(1338);

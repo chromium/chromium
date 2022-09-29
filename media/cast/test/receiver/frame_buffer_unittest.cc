@@ -8,6 +8,7 @@
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/test/receiver/frame_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 namespace media {
 namespace cast {
@@ -39,7 +40,8 @@ TEST_F(FrameBufferTest, OnePacketInsertSanity) {
   buffer_.InsertPacket(&payload_[0], payload_.size(), rtp_header_);
   EncodedFrame frame;
   EXPECT_TRUE(buffer_.AssembleEncodedFrame(&frame));
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(openscreen::cast::EncodedFrame::Dependency::kKeyFrame,
+            frame.dependency);
   EXPECT_EQ(FrameId::first() + 5, frame.frame_id);
   EXPECT_EQ(FrameId::first() + 5, frame.referenced_frame_id);
   EXPECT_EQ(3000u, frame.rtp_timestamp.lower_32_bits());

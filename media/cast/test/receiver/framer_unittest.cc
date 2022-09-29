@@ -10,6 +10,9 @@
 #include "media/cast/test/mock_rtp_payload_feedback.h"
 #include "media/cast/test/receiver/framer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+
+using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
 namespace media {
 namespace cast {
@@ -66,7 +69,7 @@ TEST_F(FramerTest, AlwaysStartWithKey) {
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
   EXPECT_TRUE(next_frame);
   EXPECT_TRUE(multiple);
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
   EXPECT_EQ(FrameId::first() + 1, frame.frame_id);
   EXPECT_EQ(FrameId::first() + 1, frame.referenced_frame_id);
   framer_.ReleaseFrame(frame.frame_id);
@@ -89,7 +92,7 @@ TEST_F(FramerTest, CompleteFrame) {
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
   EXPECT_TRUE(next_frame);
   EXPECT_FALSE(multiple);
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
   EXPECT_EQ(FrameId::first(), frame.frame_id);
   EXPECT_EQ(FrameId::first(), frame.referenced_frame_id);
   framer_.ReleaseFrame(frame.frame_id);
@@ -149,7 +152,7 @@ TEST_F(FramerTest, DuplicatePackets) {
   EXPECT_TRUE(complete);
   EXPECT_FALSE(duplicate);
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
   EXPECT_FALSE(multiple);
   EXPECT_EQ(FrameId::first(), frame.referenced_frame_id);
 
@@ -160,7 +163,7 @@ TEST_F(FramerTest, DuplicatePackets) {
   EXPECT_FALSE(complete);
   EXPECT_TRUE(duplicate);
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
   EXPECT_EQ(FrameId::first(), frame.frame_id);
   EXPECT_FALSE(multiple);
   EXPECT_EQ(FrameId::first(), frame.referenced_frame_id);
@@ -194,7 +197,7 @@ TEST_F(FramerTest, DuplicatePackets) {
   EXPECT_TRUE(complete);
   EXPECT_FALSE(duplicate);
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
-  EXPECT_EQ(EncodedFrame::DEPENDENT, frame.dependency);
+  EXPECT_EQ(Dependency::kDependent, frame.dependency);
   EXPECT_EQ(FrameId::first() + 1, frame.frame_id);
   EXPECT_EQ(FrameId::first(), frame.referenced_frame_id);
   EXPECT_FALSE(multiple);
@@ -206,7 +209,7 @@ TEST_F(FramerTest, DuplicatePackets) {
   EXPECT_FALSE(complete);
   EXPECT_TRUE(duplicate);
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
-  EXPECT_EQ(EncodedFrame::DEPENDENT, frame.dependency);
+  EXPECT_EQ(Dependency::kDependent, frame.dependency);
   EXPECT_EQ(FrameId::first() + 1, frame.frame_id);
   EXPECT_EQ(FrameId::first(), frame.referenced_frame_id);
   EXPECT_FALSE(multiple);
@@ -229,7 +232,7 @@ TEST_F(FramerTest, ContinuousSequence) {
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
   EXPECT_TRUE(next_frame);
   EXPECT_FALSE(multiple);
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
   EXPECT_EQ(FrameId::first(), frame.frame_id);
   EXPECT_EQ(FrameId::first(), frame.referenced_frame_id);
   framer_.ReleaseFrame(frame.frame_id);
@@ -313,7 +316,7 @@ TEST_F(FramerTest, InOrderReferenceFrameSelection) {
   rtp_header_.reference_frame_id = FrameId::first();
   framer_.InsertPacket(&payload_[0], payload_.size(), rtp_header_, &duplicate);
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
   EXPECT_EQ(FrameId::first(), frame.frame_id);
   EXPECT_EQ(FrameId::first(), frame.referenced_frame_id);
   EXPECT_FALSE(multiple);
@@ -321,14 +324,14 @@ TEST_F(FramerTest, InOrderReferenceFrameSelection) {
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
   EXPECT_TRUE(next_frame);
   EXPECT_TRUE(multiple);
-  EXPECT_EQ(EncodedFrame::DEPENDENT, frame.dependency);
+  EXPECT_EQ(Dependency::kDependent, frame.dependency);
   EXPECT_EQ(FrameId::first() + 1, frame.frame_id);
   EXPECT_EQ(FrameId::first(), frame.referenced_frame_id);
   framer_.ReleaseFrame(frame.frame_id);
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
   EXPECT_FALSE(next_frame);
   EXPECT_FALSE(multiple);
-  EXPECT_EQ(EncodedFrame::DEPENDENT, frame.dependency);
+  EXPECT_EQ(Dependency::kDependent, frame.dependency);
   EXPECT_EQ(FrameId::first() + 4, frame.frame_id);
   EXPECT_EQ(FrameId::first(), frame.referenced_frame_id);
   framer_.ReleaseFrame(frame.frame_id);
@@ -345,7 +348,7 @@ TEST_F(FramerTest, InOrderReferenceFrameSelection) {
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
   EXPECT_TRUE(next_frame);
   EXPECT_FALSE(multiple);
-  EXPECT_EQ(EncodedFrame::DEPENDENT, frame.dependency);
+  EXPECT_EQ(Dependency::kDependent, frame.dependency);
   EXPECT_EQ(FrameId::first() + 5, frame.frame_id);
   EXPECT_EQ(FrameId::first() + 4, frame.referenced_frame_id);
 }
@@ -364,7 +367,7 @@ TEST_F(FramerTest, ReleasesAllReceivedKeyFramesInContinuousSequence) {
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
   EXPECT_TRUE(next_frame);
   EXPECT_FALSE(multiple);
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
   EXPECT_EQ(FrameId::first() + 254, frame.frame_id);
   EXPECT_EQ(FrameId::first() + 254, frame.referenced_frame_id);
   framer_.ReleaseFrame(frame.frame_id);
@@ -381,7 +384,7 @@ TEST_F(FramerTest, ReleasesAllReceivedKeyFramesInContinuousSequence) {
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
   EXPECT_TRUE(next_frame);
   EXPECT_TRUE(multiple);
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
   EXPECT_EQ(FrameId::first() + 255, frame.frame_id);
   EXPECT_EQ(FrameId::first() + 255, frame.referenced_frame_id);
   framer_.ReleaseFrame(frame.frame_id);
@@ -389,7 +392,7 @@ TEST_F(FramerTest, ReleasesAllReceivedKeyFramesInContinuousSequence) {
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
   EXPECT_TRUE(next_frame);
   EXPECT_FALSE(multiple);
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
   EXPECT_EQ(FrameId::first() + 256, frame.frame_id);
   EXPECT_EQ(FrameId::first() + 256, frame.referenced_frame_id);
   framer_.ReleaseFrame(frame.frame_id);
@@ -409,7 +412,7 @@ TEST_F(FramerTest, SkipsMissingFramesWhenLaterKeyFramesAreAvailable) {
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
   EXPECT_TRUE(next_frame);
   EXPECT_FALSE(multiple);
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
   EXPECT_EQ(FrameId::first() + 253, frame.frame_id);
   EXPECT_EQ(FrameId::first() + 253, frame.referenced_frame_id);
   framer_.ReleaseFrame(frame.frame_id);
@@ -426,14 +429,14 @@ TEST_F(FramerTest, SkipsMissingFramesWhenLaterKeyFramesAreAvailable) {
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
   EXPECT_FALSE(next_frame);
   EXPECT_TRUE(multiple);
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
   EXPECT_EQ(FrameId::first() + 255, frame.frame_id);
   EXPECT_EQ(FrameId::first() + 255, frame.referenced_frame_id);
   framer_.ReleaseFrame(frame.frame_id);
   EXPECT_TRUE(framer_.GetEncodedFrame(&frame, &next_frame, &multiple));
   EXPECT_TRUE(next_frame);
   EXPECT_FALSE(multiple);
-  EXPECT_EQ(EncodedFrame::KEY, frame.dependency);
+  EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
   EXPECT_EQ(FrameId::first() + 256, frame.frame_id);
   EXPECT_EQ(FrameId::first() + 256, frame.referenced_frame_id);
   framer_.ReleaseFrame(frame.frame_id);

@@ -49,24 +49,10 @@ base::TimeDelta ToTimeDelta(openscreen::Clock::duration tp) {
       std::chrono::duration_cast<std::chrono::microseconds>(tp).count());
 }
 
-openscreen::cast::EncodedFrame::Dependency ToOpenscreenDependency(
-    media::cast::EncodedFrame::Dependency dependency) {
-  switch (dependency) {
-    case media::cast::EncodedFrame::Dependency::UNKNOWN_DEPENDENCY:
-      return openscreen::cast::EncodedFrame::Dependency::kUnknown;
-    case media::cast::EncodedFrame::Dependency::DEPENDENT:
-      return openscreen::cast::EncodedFrame::Dependency::kDependent;
-    case media::cast::EncodedFrame::Dependency::INDEPENDENT:
-      return openscreen::cast::EncodedFrame::Dependency::kIndependent;
-    case media::cast::EncodedFrame::Dependency::KEY:
-      return openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
-  }
-  NOTREACHED();
-}
 const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
     const SenderEncodedFrame& encoded_frame) {
   return openscreen::cast::EncodedFrame(
-      ToOpenscreenDependency(encoded_frame.dependency), encoded_frame.frame_id,
+      encoded_frame.dependency, encoded_frame.frame_id,
       encoded_frame.referenced_frame_id, encoded_frame.rtp_timestamp,
       ToOpenscreenTimePoint(encoded_frame.reference_time),
       std::chrono::milliseconds(encoded_frame.new_playout_delay_ms),

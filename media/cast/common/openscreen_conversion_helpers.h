@@ -35,12 +35,6 @@ base::TimeDelta ToTimeDelta(openscreen::cast::RtpTimeTicks rtp_ticks,
                             int timebase);
 base::TimeDelta ToTimeDelta(openscreen::Clock::duration tp);
 
-// TODO(https://crbug.com/1343116): as part of libcast implementation, we
-// should remove media::cast::EncodedFrame::Dependency in favor of using
-// the openscreen type throughout.
-openscreen::cast::EncodedFrame::Dependency ToOpenscreenDependency(
-    media::cast::EncodedFrame::Dependency dependency);
-
 const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
     const SenderEncodedFrame& encoded_frame);
 

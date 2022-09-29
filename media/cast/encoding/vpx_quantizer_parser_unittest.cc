@@ -16,6 +16,7 @@
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 namespace media {
 namespace cast {
@@ -104,7 +105,8 @@ TEST_F(VpxQuantizerParserTest, InsufficientData) {
     unsigned int first_partition_size =
         (encoded_data[0] | (encoded_data[1] << 8) | (encoded_data[2] << 16)) >>
         5;
-    if (encoded_frame->dependency == EncodedFrame::KEY) {
+    if (encoded_frame->dependency ==
+        openscreen::cast::EncodedFrame::Dependency::kKeyFrame) {
       // Ten bytes should not be enough to decode the quanitizer value
       // for a Key frame.
       decoded_quantizer = ParseVpxHeaderQuantizer(encoded_data, 10);

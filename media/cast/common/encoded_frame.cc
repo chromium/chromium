@@ -9,9 +9,7 @@
 namespace media {
 namespace cast {
 
-EncodedFrame::EncodedFrame()
-    : dependency(UNKNOWN_DEPENDENCY), new_playout_delay_ms(0) {}
-
+EncodedFrame::EncodedFrame() = default;
 EncodedFrame::~EncodedFrame() = default;
 
 void EncodedFrame::CopyMetadataTo(EncodedFrame* dest) const {

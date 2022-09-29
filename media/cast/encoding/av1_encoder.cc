@@ -10,6 +10,7 @@
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
 #include "third_party/libaom/source/libaom/aom/aomcx.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 namespace media {
 namespace cast {
@@ -245,10 +246,12 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
       continue;
     if (pkt->data.frame.flags & AOM_FRAME_IS_KEY) {
       // TODO(hubbe): Replace "dependency" with a "bool is_key_frame".
-      encoded_frame->dependency = EncodedFrame::KEY;
+      encoded_frame->dependency =
+          openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
       encoded_frame->referenced_frame_id = encoded_frame->frame_id;
     } else {
-      encoded_frame->dependency = EncodedFrame::DEPENDENT;
+      encoded_frame->dependency =
+          openscreen::cast::EncodedFrame::Dependency::kDependent;
       // Frame dependencies could theoretically be relaxed by looking for the
       // AOM_FRAME_IS_DROPPABLE flag, but in recent testing (Oct 2014), this
       // flag never seems to be set.
@@ -297,7 +300,8 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
            << ", lossiness: " << encoded_frame->lossiness
            << " (quantizer chosen by the encoder was " << quantizer << ')';
 
-  if (encoded_frame->dependency == EncodedFrame::KEY) {
+  if (encoded_frame->dependency ==
+      openscreen::cast::EncodedFrame::Dependency::kKeyFrame) {
     key_frame_requested_ = false;
     encoding_speed_acc_.Reset(kHighestEncodingSpeed, video_frame->timestamp());
   } else {

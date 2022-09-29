@@ -36,6 +36,8 @@
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using Dependency = openscreen::cast::EncodedFrame::Dependency;
+
 namespace {
 
 const int kVideoWidth = 1280;
@@ -96,9 +98,9 @@ class MetadataRecorder : public base::RefCountedThreadSafe<MetadataRecorder> {
     auto e = expectations_.front();
     expectations_.pop();
     if (e.expected_frame_id != e.expected_last_referenced_frame_id) {
-      EXPECT_EQ(EncodedFrame::DEPENDENT, encoded_frame->dependency);
+      EXPECT_EQ(Dependency::kDependent, encoded_frame->dependency);
     } else {
-      EXPECT_EQ(EncodedFrame::KEY, encoded_frame->dependency);
+      EXPECT_EQ(Dependency::kKeyFrame, encoded_frame->dependency);
     }
     EXPECT_EQ(e.expected_frame_id, encoded_frame->frame_id);
     EXPECT_EQ(e.expected_last_referenced_frame_id,
