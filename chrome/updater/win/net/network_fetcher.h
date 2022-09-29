@@ -20,7 +20,6 @@
 
 namespace base {
 class FilePath;
-class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace winhttp {
@@ -69,7 +68,6 @@ class NetworkFetcher : public update_client::NetworkFetcher {
   void DownloadToFileComplete(int response_code);
 
   scoped_refptr<winhttp::NetworkFetcher> winhttp_network_fetcher_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   DownloadToFileCompleteCallback download_to_file_complete_callback_;
   PostRequestCompleteCallback post_request_complete_callback_;

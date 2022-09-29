@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/windows_version.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/win/net/network.h"
@@ -127,8 +126,7 @@ NetworkFetcher::NetworkFetcher(
     scoped_refptr<winhttp::ProxyConfiguration> proxy_config)
     : winhttp_network_fetcher_(
           base::MakeRefCounted<winhttp::NetworkFetcher>(session_handle,
-                                                        proxy_config)),
-      main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+                                                        proxy_config)) {}
 
 NetworkFetcher::~NetworkFetcher() {
   winhttp_network_fetcher_->Close();
