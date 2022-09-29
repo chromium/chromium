@@ -124,6 +124,9 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
                     // Show the keyboard based on focusAndShowKeyboard parameter, after receiving
                     // focus for the first time.
                     if (focusAndShowKeyboard && !mHasFocusedAtLeastOnce) {
+                        // Set the cursor position to the end of the text in text input
+                        // when autofocused with focusAndShowKeyboard.
+                        mInput.setSelection(mInput.getText().length());
                         InputMethodManager imm =
                                 (InputMethodManager) v.getContext().getSystemService(
                                         Context.INPUT_METHOD_SERVICE);
