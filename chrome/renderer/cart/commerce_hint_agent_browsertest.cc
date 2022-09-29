@@ -524,16 +524,8 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MAYBE_VisitCart) {
 #endif
 }
 
-// Flaky on Windows: https://crbug.com/1300332.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_VisitCart_GeneralPattern_FromComponent \
-  DISABLED_VisitCart_GeneralPattern_FromComponent
-#else
-#define MAYBE_VisitCart_GeneralPattern_FromComponent \
-  VisitCart_GeneralPattern_FromComponent
-#endif
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest,
-                       MAYBE_VisitCart_GeneralPattern_FromComponent) {
+                       VisitCart_GeneralPattern_FromComponent) {
   bool is_populated =
       commerce_hint_service_->InitializeCommerceHeuristicsForTesting(
           base::Version("0.0.0.1"), "{}", R"###(
@@ -554,16 +546,8 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest,
   WaitForUmaCount("Commerce.Carts.VisitCart", 2);
 }
 
-// TODO(https://crbug.com/1362442): This test is flaky on Linux Asan.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
-#define MAYBE_VisitCart_PerDomain_FromComponent \
-  DISABLED_VisitCart_PerDomain_FromComponent
-#else
-#define MAYBE_VisitCart_PerDomain_FromComponent \
-  VisitCart_PerDomain_FromComponent
-#endif
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest,
-                       MAYBE_VisitCart_PerDomain_FromComponent) {
+                       VisitCart_PerDomain_FromComponent) {
   bool is_populated =
       commerce_hint_service_->InitializeCommerceHeuristicsForTesting(
           base::Version("0.0.0.1"), R"###(

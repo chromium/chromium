@@ -818,7 +818,6 @@ void CommerceHintAgent::ExtractCartWithUpdatedScript(
 void CommerceHintAgent::OnProductsExtracted(absl::optional<base::Value> results,
                                             base::TimeTicks start_time) {
   // Only record when the start time is correctly captured.
-  DCHECK(!start_time.is_null());
   if (!results || !results->is_dict())
     return;
   if (!start_time.is_null()) {
