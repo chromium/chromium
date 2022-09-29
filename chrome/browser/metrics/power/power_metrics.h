@@ -56,10 +56,19 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
         new_battery_state,
     base::TimeDelta interval_duration);
 
-// Report battery metrics to histograms with |suffixes|.
+// Report battery metrics to histograms with |scenario_suffixes|.
 void ReportBatteryHistograms(base::TimeDelta interval_duration,
                              BatteryDischarge battery_discharge,
-                             const std::vector<const char*>& suffixes);
+                             const std::vector<const char*>& scenario_suffixes);
+
+// Report battery metrics to histograms with |scenario_suffixes|. The difference
+// with the above version is that when possible, the intervals are aligned with
+// battery discharge notifications from the OS (MacOS only for now).
+void ReportAlignedBatteryHistograms(
+    base::TimeDelta interval_duration,
+    BatteryDischarge battery_discharge,
+    bool is_initial_interval,
+    const std::vector<const char*>& scenario_suffixes);
 
 #if BUILDFLAG(IS_MAC)
 void ReportShortIntervalHistograms(

@@ -15,8 +15,12 @@
 #include "ui/display/display_observer.h"
 
 class ChromeBrowserMainParts;
+
+#if !BUILDFLAG(IS_ANDROID)
+class BatteryDischargeReporter;
 class PowerMetricsReporter;
 class ProcessMonitor;
+#endif
 
 namespace chrome {
 void AddMetricsExtraParts(ChromeBrowserMainParts* main_parts);
@@ -76,6 +80,8 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
 
   // Reports power metrics.
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
+
+  std::unique_ptr<BatteryDischargeReporter> battery_discharge_reporter_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

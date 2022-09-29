@@ -3985,6 +3985,8 @@ static_library("browser") {
       "metrics/first_web_contents_profiler_base.cc",
       "metrics/first_web_contents_profiler_base.h",
       "metrics/incognito_observer_desktop.cc",
+      "metrics/power/battery_discharge_reporter.cc",
+      "metrics/power/battery_discharge_reporter.h",
       "metrics/power/power_metrics.cc",
       "metrics/power/power_metrics.h",
       "metrics/power/power_metrics_constants.cc",

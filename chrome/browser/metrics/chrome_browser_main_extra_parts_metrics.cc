@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
+#include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
@@ -32,8 +33,6 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/metrics/power/power_metrics_reporter.h"
-#include "chrome/browser/metrics/power/process_monitor.h"
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
@@ -48,7 +47,11 @@
 #include "ui/display/screen.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/power_monitor/battery_state_sampler.h"
 #include "chrome/browser/metrics/first_web_contents_profiler.h"
+#include "chrome/browser/metrics/power/battery_discharge_reporter.h"
+#include "chrome/browser/metrics/power/power_metrics_reporter.h"
+#include "chrome/browser/metrics/power/process_monitor.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -658,8 +661,23 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
             g_browser_process->local_state()));
   }
 
-  // Only instantiate the PowerMetricsReporter if |process_monitor_| exists.
-  // This is always the case for Chrome but not for the unit tests.
+  // Instantiate the power-related metrics reporters.
+
+  // BatteryDischargeRateReporter reports the system-wide battery discharge
+  // rate. It depends on the TabStatsTracker to determine the usage scenario,
+  // and the BatteryStateSampler to determine the battery level.
+  // The TabStatsTracker always exists (except during unit tests), while the
+  // BatteryStateSampler only exists on platform where a BatteryLevelProvider
+  // implementation exists.
+  if (metrics::TabStatsTracker::GetInstance() &&
+      base::BatteryStateSampler::Get()) {
+    battery_discharge_reporter_ = std::make_unique<BatteryDischargeReporter>(
+        base::BatteryStateSampler::Get());
+  }
+
+  // PowerMetricsReporter focus solely on Chrome-specific metrics that affect
+  // power (CPU time, wake ups, etc.). Only instantiate it if |process_monitor_|
+  // exists. This is always the case for Chrome but not for the unit tests.
   if (process_monitor_) {
     power_metrics_reporter_ =
         std::make_unique<PowerMetricsReporter>(process_monitor_.get());

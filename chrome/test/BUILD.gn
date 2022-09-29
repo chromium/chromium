@@ -5592,6 +5592,7 @@ test("unit_tests") {
     sources += [
       # The test is disabled for Android. The respective functionality is currently not being used on
       # Android. We should enable this test when Android becomes supported.
+      "../browser/metrics/power/battery_discharge_reporter_unittest.cc",
       "../browser/performance_manager/metrics/metrics_provider_unittest.cc",
       "../browser/policy/messaging_layer/util/reporting_server_connector_unittest.cc",
     ]

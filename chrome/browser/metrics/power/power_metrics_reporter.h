@@ -20,7 +20,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/power_monitor/iopm_power_source_sampling_event_source.h"
 #include "chrome/browser/metrics/power/coalition_resource_usage_provider_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -136,8 +135,6 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   void MaybeEmitHighCPUTraceEvent(
       const ScenarioParams& short_interval_scenario_params,
       const CoalitionResourceUsageRate& coalition_resource_usage_rate);
-
-  void OnIOPMPowerSourceSamplingEvent();
 #endif  // BUILDFLAG(IS_MAC)
 
   raw_ptr<ProcessMonitor> process_monitor_;
@@ -163,12 +160,6 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   // beginning of a short interval (OnShortIntervalBegin()) and reset at the end
   // (MaybeEmitHighCPUTraceEvent()).
   base::TimeTicks short_interval_begin_time_;
-
-  base::IOPMPowerSourceSamplingEventSource
-      iopm_power_source_sampling_event_source_;
-
-  // The time ticks from when the last IOPMPowerSource event was received.
-  absl::optional<base::TimeTicks> last_event_time_ticks_;
 
   std::unique_ptr<CoalitionResourceUsageProvider>
       coalition_resource_usage_provider_;

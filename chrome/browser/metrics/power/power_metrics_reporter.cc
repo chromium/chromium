@@ -127,10 +127,6 @@ PowerMetricsReporter::PowerMetricsReporter(
   }
 
 #if BUILDFLAG(IS_MAC)
-  iopm_power_source_sampling_event_source_.Start(
-      base::BindRepeating(&PowerMetricsReporter::OnIOPMPowerSourceSamplingEvent,
-                          base::Unretained(this)));
-
   coalition_resource_usage_provider_->Init();
 #endif
 
@@ -442,32 +438,5 @@ void PowerMetricsReporter::MaybeEmitHighCPUTraceEvent(
         TRACE_ID_LOCAL(this), now);
   }
   short_interval_begin_time_ = base::TimeTicks();
-}
-
-void PowerMetricsReporter::OnIOPMPowerSourceSamplingEvent() {
-  base::TimeTicks now_ticks = base::TimeTicks::Now();
-
-  if (!last_event_time_ticks_) {
-    last_event_time_ticks_ = now_ticks;
-    return;
-  }
-
-  // The delta is expected to be almost always 60 seconds. Split the buckets for
-  // 0.2s granularity (10s interval with 50 buckets + 1 underflow bucket + 1
-  // overflow bucket) around that value.
-  base::TimeDelta sampling_event_delta = now_ticks - *last_event_time_ticks_;
-  base::HistogramBase* histogram = base::LinearHistogram::FactoryTimeGet(
-      "Power.IOPMPowerSource.SamplingEventDelta",
-      /*min=*/base::Seconds(55), /*max=*/base::Seconds(65), /*buckets=*/52,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->AddTime(sampling_event_delta);
-  *last_event_time_ticks_ = now_ticks;
-
-  // Same as the above but using a range that starts from zero and significantly
-  // goes beyond the expected mean time of |sampling_event_delta| (which is 60
-  // seconds.).
-  base::UmaHistogramMediumTimes(
-      "Power.IOPMPowerSource.SamplingEventDelta.MediumTimes",
-      sampling_event_delta);
 }
 #endif  // BUILDFLAG(IS_MAC)

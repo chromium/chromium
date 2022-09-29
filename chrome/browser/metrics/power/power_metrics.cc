@@ -21,6 +21,11 @@ constexpr const char* kBatteryDischargeRateHistogramName =
 constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode2";
 
+constexpr const char* kAlignedBatteryDischargeRateHistogramName =
+    "Power.BatteryDischargeRate3";
+constexpr const char* kAlignedBatteryDischargeModeHistogramName =
+    "Power.BatteryDischargeMode3";
+
 #if BUILDFLAG(IS_MAC)
 // Reports `proportion` of a time used to a histogram in permyriad (1/100 %).
 // `proportion` is 0.5 if half a CPU core or half total GPU time is used. It can
@@ -134,19 +139,46 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
   return {BatteryDischargeMode::kDischarging, discharge_rate};
 }
 
-void ReportBatteryHistograms(base::TimeDelta interval_duration,
-                             BatteryDischarge battery_discharge,
-                             const std::vector<const char*>& suffixes) {
-  for (const char* suffix : suffixes) {
+void ReportBatteryHistograms(
+    base::TimeDelta interval_duration,
+    BatteryDischarge battery_discharge,
+    const std::vector<const char*>& scenario_suffixes) {
+  for (const char* scenario_suffix : scenario_suffixes) {
     base::UmaHistogramEnumeration(
-        base::StrCat({kBatteryDischargeModeHistogramName, suffix}),
+        base::StrCat({kBatteryDischargeModeHistogramName, scenario_suffix}),
         battery_discharge.mode);
 
     if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
       DCHECK(battery_discharge.rate.has_value());
       base::UmaHistogramCounts1000(
-          base::StrCat({kBatteryDischargeRateHistogramName, suffix}),
+          base::StrCat({kBatteryDischargeRateHistogramName, scenario_suffix}),
           *battery_discharge.rate);
+    }
+  }
+}
+
+void ReportAlignedBatteryHistograms(
+    base::TimeDelta interval_duration,
+    BatteryDischarge battery_discharge,
+    bool is_initial_interval,
+    const std::vector<const char*>& scenario_suffixes) {
+  const char* interval_type_suffixes[] = {
+      "", is_initial_interval ? ".Initial" : ".Periodic"};
+
+  for (const char* scenario_suffix : scenario_suffixes) {
+    for (const char* interval_type_suffix : interval_type_suffixes) {
+      base::UmaHistogramEnumeration(
+          base::StrCat({kAlignedBatteryDischargeModeHistogramName,
+                        scenario_suffix, interval_type_suffix}),
+          battery_discharge.mode);
+
+      if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
+        DCHECK(battery_discharge.rate.has_value());
+        base::UmaHistogramCounts1000(
+            base::StrCat({kAlignedBatteryDischargeRateHistogramName,
+                          scenario_suffix, interval_type_suffix}),
+            *battery_discharge.rate);
+      }
     }
   }
 }

@@ -22,60 +22,72 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="IntervalType">
+<!--
+    Variants describing if the histogram contains all samples, only the first
+    sample, or only subsequent ones.
+  -->
+
+  <variant name="" summary="all recorded samples"/>
+  <variant name=".Initial"
+      summary="only the first sample recorded of the current Chrome
+               execution. The discharge potentially covers an interval of
+               time during which Chrome wasn't yet running"/>
+  <variant name=".Periodic"
+      summary="every sample recorded after the first one"/>
+</variants>
+
 <variants name="UsageScenario">
 <!--
-  Variants describing the usage scenario for a 2 minutes interval. Consider
-  updating UsageScenario10Sec when updating this.
+  Variants describing the usage scenario for a time interval. Consider updating
+  UsageScenario10Sec when updating this.
 -->
 
-  <variant name="" summary="2 minutes runtime intervals"/>
+  <variant name="" summary="all intervals no matter the usage scenario"/>
   <variant name=".AllTabsHidden"
-      summary="2 minutes runtime intervals during which there were tabs, but
-               none visible">
+      summary="intervals during which there were tabs, but none visible">
     <obsolete>
       01/2022: Replaced with AllTabsHidden_VideoCapture, AllTabsHidden_Audio and
       AllTabsHidden_NoVideoCaptureOrAudio.
     </obsolete>
   </variant>
   <variant name=".AllTabsHidden_Audio"
-      summary="2 minutes runtime intervals during which there was no visible
-               tab and no video capture, but there was audio"/>
+      summary="intervals during which there was no visible tab and no video
+               capture, but there was audio"/>
   <variant name=".AllTabsHidden_NoVideoCaptureOrAudio"
-      summary="2 minutes runtime intervals during which there was no visible
-               tab, no video capture and no audio"/>
+      summary="intervals during which there was no visible tab, no video
+               capture and no audio"/>
   <variant name=".AllTabsHidden_VideoCapture"
-      summary="2 minutes runtime intervals during which there was no visible
-               tab, but there was video capture"/>
+      summary="intervals during which there was no visible tab, but there was
+               video capture"/>
   <variant name=".Audio"
-      summary="2 minutes runtime intervals during which there was audio and
-               at least 1 visible tab, but there was no video playback or
-               video capture"/>
+      summary="intervals during which there was audio and at least 1 visible
+               tab, but there was no video playback or video capture"/>
   <variant name=".EmbeddedVideo_NoNavigation"
-      summary="2 minutes runtime intervals during which a video played in a
-               visible tab and there was no navigation and no video capture"/>
+      summary="intervals during which a video played in a visible tab and
+               there was no navigation and no video capture"/>
   <variant name=".EmbeddedVideo_WithNavigation"
-      summary="2 minutes runtime intervals during which a video played in a
-               visible tab and there was a navigation, but no video capture"/>
+      summary="intervals during which a video played in a visible tab and
+               there was a navigation, but no video capture"/>
   <variant name=".FullscreenVideo"
-      summary="2 minutes runtime intervals during which a video played in
-               fullscreen and there was no video capture"/>
+      summary="intervals during which a video played in fullscreen and there
+               was no video capture"/>
   <variant name=".Interaction"
-      summary="2 minutes runtime intervals during which there was at least 1
-               visible tab and a user interaction, but no navigation, audio,
-               video playback or video capture"/>
-  <variant name=".Navigation"
-      summary="2 minutes runtime intervals during which there was at least 1
-               visible tab and a navigation, but no audio, video playback or
+      summary="intervals during which there was at least 1 visible tab and a
+               user interaction, but no navigation, audio, video playback or
                video capture"/>
+  <variant name=".Navigation"
+      summary="intervals during which there was at least 1 visible tab and a
+               navigation, but no audio, video playback or video capture"/>
   <variant name=".Passive"
-      summary="2 minutes runtime intervals during which there was at least 1
-               visible tab, but no user interaction, navigation, audio, video
-               playback or video capture"/>
+      summary="intervals during which there was at least 1 visible tab, but
+               no user interaction, navigation, audio, video playback or
+               video capture"/>
   <variant name=".VideoCapture"
-      summary="2 minutes runtime intervals during which there was at least 1
-               visible tab and video capture"/>
+      summary="intervals during which there was at least 1 visible tab and
+               video capture"/>
   <variant name=".ZeroWindow"
-      summary="2 minutes runtime intervals during which there was no window"/>
+      summary="intervals during which there was no window"/>
 </variants>
 
 <variants name="UsageScenario10sec">
@@ -141,7 +153,7 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.org</owner>
   <summary>
     See definition of PerformanceClass.AverageCPU6.ProcessName. This is recorded
-    for {UsageScenario} (see go/chrome_power_use_per_scenario).
+    every 2 minutes for {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
@@ -178,7 +190,8 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.org</owner>
   <summary>
     See definition of PerformanceMonitor.EnergyImpact2.ProcessName. This is
-    recorded for {UsageScenario} (see go/chrome_power_use_per_scenario).
+    recorded every 2 minutes for {UsageScenario} (see
+    go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
@@ -224,7 +237,8 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.org</owner>
   <summary>
     See definition of PerformanceMonitor.IdleWakeups2.ProcessName. This is
-    recorded for {UsageScenario} (see go/chrome_power_use_per_scenario).
+    recorded every 2 minutes for {UsageScenario} (see
+    go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
@@ -254,7 +268,8 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.orgg</owner>
   <summary>
     See definition of PerformanceMonitor.PackageExitIdleWakeups2.ProcessName.
-    This is recorded for {UsageScenario} (see go/chrome_power_use_per_scenario).
+    This is recorded every 2 minutes for {UsageScenario} (see
+    go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
@@ -297,7 +312,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The IO reads reported by the resource coalition mechanism on macOS. The data
     is reported as the rate per second during this interval with a byte
-    granularity. This is recorded for {UsageScenario} (see
+    granularity. This is recorded every 2 minutes for {UsageScenario} (see
     go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
@@ -311,7 +326,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The IO writes reported by the resource coalition mechanism on macOS. The
     data is reported as the rate per second during this interval with a byte
-    granularity. This is recorded for {UsageScenario} (see
+    granularity. This is recorded every 2 minutes for {UsageScenario} (see
     go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
@@ -359,7 +374,7 @@ chromium-metrics-reviews@google.com.
     macOS. The utilization is in the 0-100% range per CPU, which is then summed
     up and multiplied by 100. The histogram is capped at 20000 (equivalent to 2
     cores fully loaded). I.e. 4 cores busy at 25% each will read as 25 * 4 * 100
-    = 10000. This is recorded for {UsageScenario} (see
+    = 10000. This is recorded every 2 minutes for {UsageScenario} (see
     go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
@@ -396,7 +411,8 @@ chromium-metrics-reviews@google.com.
     Chrome processes no matter how short-lived, as well as XPC services running
     on Chrome's behalf.
 
-    This is recorded for {UsageScenario} (see go/chrome_power_use_per_scenario).
+    This is recorded every 2 minutes for {UsageScenario} (see
+    go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
@@ -425,7 +441,7 @@ chromium-metrics-reviews@google.com.
     Average GPU utilization reported by the resource coalition mechanism on
     macOS. The utilization is in the 0-100% range and is multiplied by 100. The
     histogram is capped at 10000 (equivalent to the GPU being used 100% of the
-    time). This is recorded for {UsageScenario} (see
+    time). This is recorded every 2 minutes for {UsageScenario} (see
     go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
@@ -439,8 +455,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The interrupt wakeup rate reported by the resource coalition mechanism on
     macOS. The data is reported as the rate per second during this interval with
-    a milliwakeup granularity. This is recorded for {UsageScenario} (see
-    go/chrome_power_use_per_scenario).
+    a milliwakeup granularity. This is recorded every 2 minutes for
+    {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
@@ -453,8 +469,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The platform idle wakeup rate reported by the resource coalition mechanism
     on macOS. The data is reported as the rate per second during this interval
-    with a milliwakeup granularity. This is recorded for {UsageScenario} (see
-    go/chrome_power_use_per_scenario).
+    with a milliwakeup granularity. This is recorded every 2 minutes for
+    {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
@@ -465,8 +481,8 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.org</owner>
   <summary>
     The power usage reported by the resource coalition mechanism on macOS. Only
-    reported on devices with an ARM CPU. This is recorded for {UsageScenario}
-    (see go/chrome_power_use_per_scenario).
+    reported on devices with an ARM CPU. This is recorded every 2 minutes for
+    {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
@@ -480,8 +496,8 @@ chromium-metrics-reviews@google.com.
     Average CPU time spent in a given QoS level, as reported by the resource
     coalition mechanism on macOS. The utilization is in the 0-100% range and is
     multiplied by 100. The histogram is capped at 10000 (equivalent to the GPU
-    being used 100% of the time). This is recorded for {UsageScenario} (see
-    go/chrome_power_use_per_scenario).
+    being used 100% of the time). This is recorded every 2 minutes for
+    {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="QoSLevel">
     <variant name="Background"/>
@@ -705,11 +721,36 @@ chromium-metrics-reviews@google.com.
   <owner>olivierli@chromium.org</owner>
   <summary>
     Battery discharge mode describing whether BatteryDischargeRate2 could be
-    reported or not, and why. This is recorded for {UsageScenario} (an interval
-    represents 2 minutes of Chrome runtime, see
-    go/chrome_power_use_per_scenario).
+    reported or not, and why. This is recorded every 2 minutes for
+    {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
+</histogram>
+
+<histogram name="Power.BatteryDischargeMode3{UsageScenario}{IntervalType}"
+    enum="BatteryDischargeMode" expires_after="2022-11-30">
+  <owner>etiennep@chromium.org</owner>
+  <owner>olivierli@chromium.org</owner>
+  <summary>
+    Battery discharge mode describing whether BatteryDischargeRate3 could be
+    reported or not, and why.
+
+    This is reported at the end of every valid 1 minute interval. An invalid
+    interval is one that deviate too much from 1 minute, which can be caused by
+    the computer going to sleep, or the OS sending multiple notifications in a
+    row.
+
+    This is recorded for {UsageScenario}.
+
+    This contains {IntervalType}.
+
+    There are 2 differences with Power.BatteryDischargeRate2. 1: When possible,
+    the intervals are aligned with battery discharge notifications from the OS
+    (MacOS only for now), and 2: Intervals represents only 1 minute of Chrome
+    runtime (as opposed to 2 minutes).
+  </summary>
+  <token key="UsageScenario" variants="UsageScenario"/>
+  <token key="IntervalType" variants="IntervalType"/>
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate" units="mW"
@@ -733,11 +774,40 @@ chromium-metrics-reviews@google.com.
     the interval: 3900 mAh; - Battery charge at the end of the interval: 3700
     mAh; - Discharge proportion: (3900-3700) / 4000 = 0.05 - Reported value:
     500. This metric is only recorded when on battery power. This is reported on
-    Mac and Windows. This is recorded for {UsageScenario} (an interval
-    represents 2 minutes of Chrome runtime, see
+    Mac and Windows. This is recorded every 2 minutes for {UsageScenario} (see
     go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
+</histogram>
+
+<histogram name="Power.BatteryDischargeRate3{UsageScenario}{IntervalType}"
+    units="hundredth of percent" expires_after="2022-11-30">
+  <owner>etiennep@chromium.org</owner>
+  <owner>olivierli@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    Battery discharge rate per minute, with 1/10000 of full charge resolution,
+    example: - Battery capacity = 4000 mAh; - Battery charge at the beginning of
+    the interval: 3900 mAh; - Battery charge at the end of the interval: 3700
+    mAh; - Discharge proportion: (3900-3700) / 4000 = 0.05 - Reported value:
+    500.
+
+    This is reported at the end of every valid 1 minute interval. An invalid
+    interval is one that deviate too much from 1 minute, which can be caused by
+    the computer going to sleep, or the OS sending multiple notifications in a
+    row.
+
+    This is recorded for {UsageScenario}.
+
+    This contains {IntervalType}.
+
+    There are 2 differences with Power.BatteryDischargeRate2. 1: When possible,
+    the intervals are aligned with battery discharge notifications from the OS
+    (MacOS only for now), and 2: Intervals represents only 1 minute of Chrome
+    runtime (as opposed to 2 minutes).
+  </summary>
+  <token key="UsageScenario" variants="UsageScenario"/>
+  <token key="IntervalType" variants="IntervalType"/>
 </histogram>
 
 <histogram name="Power.BatteryDischargeRateWhileHibernated" units="mW"
