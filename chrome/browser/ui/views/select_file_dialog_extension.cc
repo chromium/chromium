@@ -513,7 +513,9 @@ void SelectFileDialogExtension::SelectFileImpl(
   // |default_extension| is ignored.
   Owner owner;
   owner.window = owner_window;
-  // TODO(crbug.com/1364565): Set the owner.dialog_caller.
+  if (caller && caller->is_valid()) {
+    owner.dialog_caller.emplace(caller->spec());
+  }
   SelectFileWithFileManagerParams(type, title, default_path, file_types,
                                   file_type_index, params, owner,
                                   /*search_query=*/"",
