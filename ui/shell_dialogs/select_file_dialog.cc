@@ -12,7 +12,10 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/third_party/icu/icu_utf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -22,7 +25,25 @@
 namespace {
 
 // Optional dialog factory. Leaked.
-ui::SelectFileDialogFactory* dialog_factory_ = NULL;
+ui::SelectFileDialogFactory* dialog_factory_ = nullptr;
+
+void TruncateStringToSize(base::FilePath::StringType* string, size_t size) {
+  if (string->size() <= size)
+    return;
+#if BUILDFLAG(IS_WIN)
+  const auto* c_str = base::as_u16cstr(string->c_str());
+  for (size_t i = 0; i < string->size(); ++i) {
+    base_icu::UChar32 codepoint;
+    size_t original_i = i;
+    if (!base::ReadUnicodeCharacter(c_str, size, &i, &codepoint) || i >= size) {
+      string->resize(original_i);
+      return;
+    }
+  }
+#else
+  base::TruncateUTF8ToByteSize(*string, size, string);
+#endif
+}
 
 }  // namespace
 
@@ -89,12 +110,10 @@ base::FilePath SelectFileDialog::GetShortenedFilePath(
     max_extension_length =
         std::max(max_extension_length, kMaxNameLength - file_string.length());
   }
-  if (extension.length() > max_extension_length) {
-    // Take the first max_extension_length characters (this will be the
-    // leading '.' plus the next max_extension_length - 1).
-    extension.resize(max_extension_length);
-  }
-  file_string.resize(kMaxNameLength - extension.length());
+  // Take the first max_extension_length characters (this will be the
+  // leading '.' plus the next max_extension_length - 1).
+  TruncateStringToSize(&extension, max_extension_length);
+  TruncateStringToSize(&file_string, kMaxNameLength - extension.length());
   return path.DirName().Append(file_string).AddExtension(extension);
 }
 
