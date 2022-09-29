@@ -223,7 +223,7 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
     inner_text += " ";
     ++word_length;
   }
-  inline_text_box.SetName(inner_text);
+  inline_text_box.SetNameChecked(inner_text);
 
   std::vector<int32_t> word_starts = inline_text_box.GetIntListAttribute(
       ax::mojom::IntListAttribute::kWordStarts);
@@ -370,7 +370,7 @@ size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
   SerializeBoundingBox(line_box.bounding_box(), parent_node.id, line_box_node);
   // `ax::mojom::NameFrom` should be set to the correct value based on the
   // role.
-  line_box_node.SetName(line_box.utf8_string());
+  line_box_node.SetNameChecked(line_box.utf8_string());
   if (!line_box.language().empty()) {
     // TODO(nektar): Only set language if different from parent node (i.e. the
     // page node), in order to minimize memory usage.
