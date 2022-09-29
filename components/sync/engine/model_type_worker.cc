@@ -56,8 +56,9 @@ const char kBlockedByUndecryptableUpdateHistogramName[] =
 const char kPasswordNotesStateHistogramName[] =
     "Sync.PasswordNotesStateInUpdate";
 
-const base::Feature kSyncKeepGcDirectiveDuringSyncCycle{
-    "SyncKeepGcDirectiveDuringSyncCycle", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSyncKeepGcDirectiveDuringSyncCycle,
+             "SyncKeepGcDirectiveDuringSyncCycle",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 void LogPasswordNotesState(PasswordNotesStateForUMA state) {
   base::UmaHistogramEnumeration(kPasswordNotesStateHistogramName, state);
