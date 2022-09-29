@@ -30,7 +30,7 @@ constexpr auto to_address(const Ptr& p) noexcept
 
 template <typename Ptr, typename... None>
 constexpr auto to_address(const Ptr& p, None...) noexcept {
-  return to_address(p.operator->());
+  return base::to_address(p.operator->());
 }
 
 }  // namespace base
