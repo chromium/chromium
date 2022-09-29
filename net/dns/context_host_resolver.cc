@@ -78,7 +78,7 @@ ContextHostResolver::CreateRequest(
     return HostResolver::CreateFailingRequest(ERR_CONTEXT_SHUT_DOWN);
 
   return manager_->CreateRequest(
-      std::move(host), std::move(network_isolation_key),
+      Host(std::move(host)), std::move(network_isolation_key),
       std::move(source_net_log), std::move(optional_parameters),
       resolve_context_.get(), resolve_context_->host_cache());
 }

@@ -469,13 +469,6 @@ base::Value NetLogResults(const HostCache::Entry& results) {
   return base::Value(std::move(dict));
 }
 
-base::Value ToLogStringValue(const HostResolver::Host& host) {
-  if (absl::holds_alternative<url::SchemeHostPort>(host))
-    return base::Value(absl::get<url::SchemeHostPort>(host).Serialize());
-
-  return base::Value(absl::get<HostPortPair>(host).ToString());
-}
-
 base::Value ToLogStringValue(
     const absl::variant<url::SchemeHostPort, std::string>& host) {
   if (absl::holds_alternative<url::SchemeHostPort>(host)) {
@@ -494,19 +487,6 @@ base::StringPiece GetScheme(
   return base::StringPiece();
 }
 
-base::StringPiece GetHostname(const HostResolver::Host& host) {
-  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
-    base::StringPiece hostname = absl::get<url::SchemeHostPort>(host).host();
-    if (hostname.size() >= 2 && hostname.front() == '[' &&
-        hostname.back() == ']') {
-      hostname = hostname.substr(1, hostname.size() - 2);
-    }
-    return hostname;
-  }
-
-  return absl::get<HostPortPair>(host).host();
-}
-
 base::StringPiece GetHostname(
     const absl::variant<url::SchemeHostPort, std::string>& host) {
   if (absl::holds_alternative<url::SchemeHostPort>(host)) {
@@ -521,14 +501,6 @@ base::StringPiece GetHostname(
   return absl::get<std::string>(host);
 }
 
-uint16_t GetPort(const HostResolver::Host& host) {
-  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
-    return absl::get<url::SchemeHostPort>(host).port();
-  }
-
-  return absl::get<HostPortPair>(host).port();
-}
-
 // Only use scheme/port in JobKey if `https_svcb_options_enabled` is true
 // (or the query is explicitly for HTTPS). Otherwise DNS will not give different
 // results for the same hostname.
@@ -537,11 +509,11 @@ absl::variant<url::SchemeHostPort, std::string> CreateHostForJobKey(
     DnsQueryType query_type,
     bool https_svcb_options_enabled) {
   if ((https_svcb_options_enabled || query_type == DnsQueryType::HTTPS) &&
-      absl::holds_alternative<url::SchemeHostPort>(input)) {
-    return absl::get<url::SchemeHostPort>(input);
+      input.HasScheme()) {
+    return input.AsSchemeHostPort();
   }
 
-  return std::string(GetHostname(input));
+  return std::string(input.GetHostnameWithoutBrackets());
 }
 
 DnsResponse CreateFakeEmptyResponse(base::StringPiece hostname,
@@ -832,7 +804,7 @@ class HostResolverManager::RequestImpl
     source_net_log_.BeginEvent(
         NetLogEventType::HOST_RESOLVER_MANAGER_REQUEST, [this] {
           base::Value::Dict dict;
-          dict.Set("host", ToLogStringValue(request_host_));
+          dict.Set("host", request_host_.ToString());
           dict.Set("dns_query_type",
                    base::strict_cast<int>(parameters_.dns_query_type));
           dict.Set("allow_cached_response",
@@ -2215,7 +2187,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     DCHECK_EQ(host_cache_, request->host_cache());
     // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
     // separated by scheme/port.
-    DCHECK_EQ(GetHostname(key_.host), GetHostname(request->request_host()));
+    DCHECK_EQ(GetHostname(key_.host),
+              request->request_host().GetHostnameWithoutBrackets());
 
     request->AssignJob(weak_ptr_factory_.GetSafeRef());
 
@@ -2241,7 +2214,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   void ChangeRequestPriority(RequestImpl* req, RequestPriority priority) {
     // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
     // separated by scheme/port.
-    DCHECK_EQ(GetHostname(key_.host), GetHostname(req->request_host()));
+    DCHECK_EQ(GetHostname(key_.host),
+              req->request_host().GetHostnameWithoutBrackets());
 
     priority_tracker_.Remove(req->priority());
     req->set_priority(priority);
@@ -2254,7 +2228,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   void CancelRequest(RequestImpl* request) {
     // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
     // separated by scheme/port.
-    DCHECK_EQ(GetHostname(key_.host), GetHostname(request->request_host()));
+    DCHECK_EQ(GetHostname(key_.host),
+              request->request_host().GetHostnameWithoutBrackets());
     DCHECK(!requests_.empty());
 
     priority_tracker_.Remove(request->priority());
@@ -2955,7 +2930,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
       if (results.error() == OK && !req->parameters().is_speculative) {
         req->set_results(
-            results.CopyWithDefaultPort(GetPort(req->request_host())));
+            results.CopyWithDefaultPort(req->request_host().GetPort()));
       }
       req->OnJobCompleted(
           key_, results.error(),
@@ -3182,6 +3157,20 @@ HostResolverManager::CreateNetworkBoundHostResolverManager(
   NOTIMPLEMENTED();
   return nullptr;
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+std::unique_ptr<HostResolver::ResolveHostRequest>
+HostResolverManager::CreateRequest(
+    absl::variant<url::SchemeHostPort, HostPortPair> host,
+    NetworkIsolationKey network_isolation_key,
+    NetLogWithSource net_log,
+    absl::optional<ResolveHostParameters> optional_parameters,
+    ResolveContext* resolve_context,
+    HostCache* host_cache) {
+  return CreateRequest(HostResolver::Host(std::move(host)),
+                       std::move(network_isolation_key), std::move(net_log),
+                       std::move(optional_parameters), resolve_context,
+                       host_cache);
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
@@ -3417,7 +3406,7 @@ int HostResolverManager::Resolve(RequestImpl* request) {
       tasks.empty()) {
     if (results.error() == OK && !request->parameters().is_speculative) {
       request->set_results(
-          results.CopyWithDefaultPort(GetPort(request->request_host())));
+          results.CopyWithDefaultPort(request->request_host().GetPort()));
     }
     if (stale_info && !request->parameters().is_speculative)
       request->set_stale_info(std::move(stale_info).value());

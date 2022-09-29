@@ -15,10 +15,12 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time_delta_from_string.h"
 #include "base/values.h"
 #include "net/base/address_list.h"
 #include "net/base/features.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
 #include "net/dns/context_host_resolver.h"
@@ -30,6 +32,8 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/resolve_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -118,6 +122,86 @@ void GetTimeDeltaFromDictString(const base::Value::Dict& args,
 }
 
 }  // namespace
+
+HostResolver::Host::Host(absl::variant<url::SchemeHostPort, HostPortPair> host)
+    : host_(std::move(host)) {
+#if DCHECK_IS_ON()
+  if (absl::holds_alternative<url::SchemeHostPort>(host_)) {
+    DCHECK(absl::get<url::SchemeHostPort>(host_).IsValid());
+  } else {
+    DCHECK(absl::holds_alternative<HostPortPair>(host_));
+    DCHECK(!absl::get<HostPortPair>(host_).IsEmpty());
+  }
+#endif  // DCHECK_IS_ON()
+}
+
+HostResolver::Host::~Host() = default;
+
+HostResolver::Host::Host(const Host&) = default;
+
+HostResolver::Host& HostResolver::Host::operator=(const Host&) = default;
+
+HostResolver::Host::Host(Host&&) = default;
+
+HostResolver::Host& HostResolver::Host::operator=(Host&&) = default;
+
+bool HostResolver::Host::HasScheme() const {
+  return absl::holds_alternative<url::SchemeHostPort>(host_);
+}
+
+const std::string& HostResolver::Host::GetScheme() const {
+  DCHECK(absl::holds_alternative<url::SchemeHostPort>(host_));
+  return absl::get<url::SchemeHostPort>(host_).scheme();
+}
+
+std::string HostResolver::Host::GetHostname() const {
+  if (absl::holds_alternative<url::SchemeHostPort>(host_)) {
+    return absl::get<url::SchemeHostPort>(host_).host();
+  } else {
+    DCHECK(absl::holds_alternative<HostPortPair>(host_));
+    return absl::get<HostPortPair>(host_).HostForURL();
+  }
+}
+
+base::StringPiece HostResolver::Host::GetHostnameWithoutBrackets() const {
+  if (absl::holds_alternative<url::SchemeHostPort>(host_)) {
+    base::StringPiece hostname = absl::get<url::SchemeHostPort>(host_).host();
+    if (hostname.size() > 2 && hostname.front() == '[' &&
+        hostname.back() == ']') {
+      return hostname.substr(1, hostname.size() - 2);
+    } else {
+      return hostname;
+    }
+  } else {
+    DCHECK(absl::holds_alternative<HostPortPair>(host_));
+    return absl::get<HostPortPair>(host_).host();
+  }
+}
+
+uint16_t HostResolver::Host::GetPort() const {
+  if (absl::holds_alternative<url::SchemeHostPort>(host_)) {
+    return absl::get<url::SchemeHostPort>(host_).port();
+  } else {
+    DCHECK(absl::holds_alternative<HostPortPair>(host_));
+    return absl::get<HostPortPair>(host_).port();
+  }
+}
+
+std::string HostResolver::Host::ToString() const {
+  if (absl::holds_alternative<url::SchemeHostPort>(host_)) {
+    return absl::get<url::SchemeHostPort>(host_).Serialize();
+  } else {
+    DCHECK(absl::holds_alternative<HostPortPair>(host_));
+    return absl::get<HostPortPair>(host_).ToString();
+  }
+}
+
+const url::SchemeHostPort& HostResolver::Host::AsSchemeHostPort() const {
+  const url::SchemeHostPort* scheme_host_port =
+      absl::get_if<url::SchemeHostPort>(&host_);
+  DCHECK(scheme_host_port);
+  return *scheme_host_port;
+}
 
 HostResolver::HttpsSvcbOptions::HttpsSvcbOptions() = default;
 

@@ -30,6 +30,7 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_with_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 namespace base {
@@ -56,7 +57,29 @@ class URLRequestContext;
 // See mock_host_resolver.h for test implementations.
 class NET_EXPORT HostResolver {
  public:
-  using Host = absl::variant<url::SchemeHostPort, HostPortPair>;
+  class NET_EXPORT Host {
+   public:
+    explicit Host(absl::variant<url::SchemeHostPort, HostPortPair> host);
+    ~Host();
+
+    Host(const Host&);
+    Host& operator=(const Host&);
+    Host(Host&&);
+    Host& operator=(Host&&);
+
+    bool HasScheme() const;
+    const std::string& GetScheme() const;
+    std::string GetHostname() const;  // With brackets for IPv6 literals.
+    base::StringPiece GetHostnameWithoutBrackets() const;
+    uint16_t GetPort() const;
+
+    std::string ToString() const;
+
+    const url::SchemeHostPort& AsSchemeHostPort() const;
+
+   private:
+    absl::variant<url::SchemeHostPort, HostPortPair> host_;
+  };
 
   // Handler for an individual host resolution request. Created by
   // HostResolver::CreateRequest().

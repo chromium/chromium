@@ -297,6 +297,10 @@ class MockHostResolverBase
   // Preloads the cache with what would currently be the result of a request
   // with the given parameters. Returns the net error of the cached result.
   int LoadIntoCache(
+      absl::variant<url::SchemeHostPort, HostPortPair> endpoint,
+      const NetworkIsolationKey& network_isolation_key,
+      const absl::optional<ResolveHostParameters>& optional_parameters);
+  int LoadIntoCache(
       const Host& endpoint,
       const NetworkIsolationKey& network_isolation_key,
       const absl::optional<ResolveHostParameters>& optional_parameters);
