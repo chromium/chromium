@@ -422,6 +422,8 @@ if (is_win || is_mac || is_linux) {
       "-e",
       "BROWSER_NAME=\"$browser_name\"",
       "-e",
+      "BROWSER_PRODUCT_NAME=\"$browser_product_name\"",
+      "-e",
       "COMPANY_FULLNAME=\"$updater_company_full_name\"",
       "-e",
       "COMPANY_SHORTNAME=\"$updater_company_short_name\"",

@@ -119,8 +119,9 @@
 namespace updater {
 namespace {
 
-constexpr base::FilePath::CharType kFrameworksPath[] = FILE_PATH_LITERAL(
-    "Contents/Frameworks/" BROWSER_NAME_STRING " Framework.framework/Helpers");
+constexpr base::FilePath::CharType kFrameworksPath[] =
+    FILE_PATH_LITERAL("Contents/Frameworks/" BROWSER_PRODUCT_NAME_STRING
+                      " Framework.framework/Helpers");
 constexpr base::FilePath::CharType kProductBundleName[] =
     FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING ".app");
 constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
