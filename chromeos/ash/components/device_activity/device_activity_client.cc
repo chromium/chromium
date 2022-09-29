@@ -412,8 +412,7 @@ void DeviceActivityClient::TransitionOutOfIdle(
   if (current_use_case->IsDevicePingRequired(
           last_transition_out_of_idle_time_)) {
     bool success = current_use_case->SetWindowIdentifier(
-        current_use_case->GenerateUTCWindowIdentifier(
-            last_transition_out_of_idle_time_));
+        last_transition_out_of_idle_time_);
 
     if (!success) {
       TransitionToIdle(current_use_case);

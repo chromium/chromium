@@ -103,7 +103,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   // Updates the window identifier, which updates the |psm_id_| and
   // |psm_rlwe_client_|.
-  bool SetWindowIdentifier(absl::optional<std::string> window_id);
+  bool SetWindowIdentifier(base::Time ts);
 
   // This method will return nullopt if this method is called before the window
   // identifier was set successfully.

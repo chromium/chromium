@@ -101,8 +101,7 @@ TEST_F(DeviceActiveUseCaseTest, ClearSavedState) {
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
-    std::string window_id = use_case->GenerateUTCWindowIdentifier(new_ts);
-    EXPECT_FALSE(use_case->SetWindowIdentifier(window_id));
+    EXPECT_FALSE(use_case->SetWindowIdentifier(new_ts));
 
     use_case->ClearSavedState();
 
@@ -161,9 +160,7 @@ TEST_F(DeviceActiveUseCaseTest, CheckPsmIdGeneratedCorrectly) {
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
-    std::string window_id = use_case->GenerateUTCWindowIdentifier(new_ts);
-
-    use_case->SetWindowIdentifier(window_id);
+    use_case->SetWindowIdentifier(new_ts);
 
     absl::optional<psm_rlwe::RlwePlaintextId> psm_id =
         use_case->GetPsmIdentifier();
@@ -172,9 +169,10 @@ TEST_F(DeviceActiveUseCaseTest, CheckPsmIdGeneratedCorrectly) {
 
     // Verify the PSM value is correct for parameters supplied by the unit
     // tests.
-    std::string unhashed_psm_id = base::JoinString(
-        {psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()), window_id},
-        "|");
+    std::string unhashed_psm_id =
+        base::JoinString({psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()),
+                          use_case->GenerateUTCWindowIdentifier(new_ts)},
+                         "|");
     std::string expected_psm_id_hex =
         use_case->GetDigestString(kFakePsmDeviceActiveSecret, unhashed_psm_id);
     EXPECT_EQ(psm_id.value().sensitive_id(), expected_psm_id_hex);
@@ -381,10 +379,8 @@ TEST_F(DeviceActiveUseCaseTest, SameWindowIdGeneratesSamePsmId) {
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
-    std::string window_id = use_case->GenerateUTCWindowIdentifier(ts);
-
     // Generates the window identifier, psm identifier, and psm rlwe client.
-    use_case->SetWindowIdentifier(window_id);
+    use_case->SetWindowIdentifier(ts);
     absl::optional<psm_rlwe::RlwePlaintextId> psm_id_1 =
         use_case->GetPsmIdentifier();
 
@@ -394,8 +390,8 @@ TEST_F(DeviceActiveUseCaseTest, SameWindowIdGeneratesSamePsmId) {
     use_case->ClearSavedState();
 
     // Regenerate the window identifier, psm identifier and psm rlwe client
-    // using the same |window_id|.
-    use_case->SetWindowIdentifier(window_id);
+    // using the same ts.
+    use_case->SetWindowIdentifier(ts);
     absl::optional<psm_rlwe::RlwePlaintextId> psm_id_2 =
         use_case->GetPsmIdentifier();
 
@@ -417,14 +413,11 @@ TEST_F(DeviceActiveUseCaseTest, DifferentWindowIdGeneratesDifferentPsmId) {
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
-    std::string window_id_1 = use_case->GenerateUTCWindowIdentifier(ts_1);
-    std::string window_id_2 = use_case->GenerateUTCWindowIdentifier(ts_2);
-
-    use_case->SetWindowIdentifier(window_id_1);
+    use_case->SetWindowIdentifier(ts_1);
     absl::optional<psm_rlwe::RlwePlaintextId> psm_id_1 =
         use_case->GetPsmIdentifier();
 
-    use_case->SetWindowIdentifier(window_id_2);
+    use_case->SetWindowIdentifier(ts_2);
     absl::optional<psm_rlwe::RlwePlaintextId> psm_id_2 =
         use_case->GetPsmIdentifier();
 

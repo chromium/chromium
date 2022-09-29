@@ -76,8 +76,8 @@ absl::optional<std::string> DeviceActiveUseCase::GetWindowIdentifier() const {
   return window_id_;
 }
 
-bool DeviceActiveUseCase::SetWindowIdentifier(
-    absl::optional<std::string> window_id) {
+bool DeviceActiveUseCase::SetWindowIdentifier(base::Time ts) {
+  std::string window_id = GenerateUTCWindowIdentifier(ts);
   psm_id_ = GeneratePsmIdentifier(window_id);
 
   // Check if |psm_id_| is generated.
