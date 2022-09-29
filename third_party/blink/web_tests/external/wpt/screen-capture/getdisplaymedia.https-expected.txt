@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Found 54 tests; 49 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getDisplayMedia in navigator.mediaDevices
 FAIL getDisplayMedia() must require user activation assert_unreached: Should have rejected: getDisplayMedia should have returned an already-rejected promise. Reached unreachable code
 FAIL getDisplayMedia() must adhere to frameRate if set assert_greater_than_equal: expected a number greater than or equal to 2.5 but got NaN
@@ -41,5 +42,17 @@ PASS getDisplayMedia({"video":{"frameRate":{"max":-1}}}) must fail with Overcons
 PASS getDisplayMedia() resolves with stream with video track
 PASS getDisplayMedia() with getSettings
 PASS displaySurface is supported
+PASS getDisplayMedia({"video":{"displaySurface":"monitor"}}) must succeed
+PASS getDisplayMedia({"video":{"displaySurface":"window"}}) must succeed
+PASS getDisplayMedia({"video":{"displaySurface":"browser"}}) must succeed
+PASS getDisplayMedia({"selfBrowserSurface":"include"}) must succeed
+PASS getDisplayMedia({"selfBrowserSurface":"exclude"}) must succeed
+PASS getDisplayMedia({"surfaceSwitching":"include"}) must succeed
+PASS getDisplayMedia({"surfaceSwitching":"exclude"}) must succeed
+PASS getDisplayMedia({"systemAudio":"include"}) must succeed
+PASS getDisplayMedia({"systemAudio":"exclude"}) must succeed
+PASS getDisplayMedia({"selfBrowserSurface":"invalid"}) must fail with TypeError
+PASS getDisplayMedia({"surfaceSwitching":"invalid"}) must fail with TypeError
+PASS getDisplayMedia({"systemAudio":"invalid"}) must fail with TypeError
 Harness: the test ran to completion.
 

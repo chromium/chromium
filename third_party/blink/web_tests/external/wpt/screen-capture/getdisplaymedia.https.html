@@ -218,4 +218,35 @@ promise_test(async t => {
     }, property + " is supported");
   });
 }
+
+[
+ {video: {displaySurface: "monitor"}},
+ {video: {displaySurface: "window"}},
+ {video: {displaySurface: "browser"}},
+ {selfBrowserSurface: "include"},
+ {selfBrowserSurface: "exclude"},
+ {surfaceSwitching: "include"},
+ {surfaceSwitching: "exclude"},
+ {systemAudio: "include"},
+ {systemAudio: "exclude"},
+].forEach(constraints => promise_test(async t => {
+  const stream = await getDisplayMedia(constraints);
+  t.add_cleanup(() => stopTracks(stream));
+}, `getDisplayMedia(${j(constraints)}) must succeed`));
+
+[
+ {selfBrowserSurface: "invalid"},
+ {surfaceSwitching: "invalid"},
+ {systemAudio: "invalid"},
+].forEach(constraints => promise_test(async t => {
+  await test_driver.bless('getDisplayMedia()');
+  const p = navigator.mediaDevices.getDisplayMedia(constraints);
+  t.add_cleanup(async () => {
+    try { stopTracks(await p) } catch {}
+  });
+  await promise_rejects_js(
+    t, TypeError, Promise.race([p, Promise.resolve()]),
+    'getDisplayMedia should have returned an already-rejected promise.');
+}, `getDisplayMedia(${j(constraints)}) must fail with TypeError`));
+
 </script>
