@@ -848,9 +848,7 @@ void Av1Decoder::SetupFrameParams(
   // TODO(b/230891887): use uint64_t when v4l2_timeval_to_ns() function is used.
   constexpr uint32_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
 
-  // Note that only 7 slots in the reference frames list are used
-  // although 8 slots are available.
-  for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
+  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
     constexpr size_t kTimestampToNanoSecs = 1000;
 
     // |reference_frame_ts| is needed to use previously decoded frames
