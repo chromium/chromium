@@ -386,7 +386,7 @@ js_library("dialog_action_controller") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 }
 

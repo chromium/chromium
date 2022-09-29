@@ -9,7 +9,7 @@ import './elements/viewer-zoom-toolbar.js';
 import './pdf_viewer_shared_style.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {isRTL} from 'chrome://resources/js/util.m.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 
 import {BrowserApi} from './browser_api.js';
 import {ExtendedKeyEvent, FittingType} from './constants.js';

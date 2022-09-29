@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 window.addEventListener('load', function() {
   let cookieSettingsUrl;

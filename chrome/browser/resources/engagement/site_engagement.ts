@@ -4,7 +4,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {createElementWithClassName} from 'chrome://resources/js/util.m.js';
+import {createElementWithClassName} from 'chrome://resources/js/util.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {SiteEngagementDetails, SiteEngagementDetailsProvider} from './site_engagement_details.mojom-webui.js';

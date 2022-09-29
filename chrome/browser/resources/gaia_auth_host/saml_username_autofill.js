@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {appendParam} from 'chrome://resources/js/util.m.js';
+import {appendParam} from 'chrome://resources/js/util.js';
 
   /**
    * Try to autofill email on login page for supported identity providers

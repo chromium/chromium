@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {DownloadedModelInfo, PageHandlerFactory} from './optimization_guide_internals.mojom-webui.js';

@@ -28,7 +28,7 @@ js_type_check("closure_compile") {
 js_library("notifications_internals") {
   deps = [
     ":notifications_internals_browser_proxy",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 }
 

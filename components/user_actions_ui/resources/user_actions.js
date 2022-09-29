@@ -13,7 +13,7 @@
  */
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 /**
  * Appends a row to the output table listing the user action observed

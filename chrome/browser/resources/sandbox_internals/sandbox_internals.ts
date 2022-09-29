@@ -8,7 +8,7 @@ import './strings.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 /**
  * CSS classes for different statuses.

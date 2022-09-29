@@ -4,7 +4,7 @@
 
 import {dispatchPropertyChange} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
-import {getRequiredElement} from 'chrome://resources/js/util.m.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 /**
  * Finds a good place to set initial focus. Generally called when UI is shown.

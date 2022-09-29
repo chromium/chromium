@@ -36,7 +36,7 @@ js_library("cfm_network_settings") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 }
 

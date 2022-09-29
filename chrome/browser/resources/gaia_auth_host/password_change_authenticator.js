@@ -8,7 +8,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
-import {$, appendParam} from 'chrome://resources/js/util.m.js';
+import {$, appendParam} from 'chrome://resources/js/util.js';
 
 import {SamlHandler} from './saml_handler.js';
 import {WebviewEventManager} from './webview_event_manager.js';

@@ -7,7 +7,7 @@ import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_pr
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {OS_FEEDBACK_UNTRUSTED_ORIGIN, SearchPageElement} from 'chrome://os-feedback/search_page.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {eventToPromise, flushTasks} from '../../test_util.js';

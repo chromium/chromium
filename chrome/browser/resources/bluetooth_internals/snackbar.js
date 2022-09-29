@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
-import {$, ensureTransitionEndEvent, listenOnce} from 'chrome://resources/js/util.m.js';
+import {$, ensureTransitionEndEvent, listenOnce} from 'chrome://resources/js/util.js';
 
 /**
  * Javascript for Snackbar controls, served from chrome://bluetooth-internals/.

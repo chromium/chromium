@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 // Maximum number of labels placed vertically along the sides of the graph.
 const MAX_VERTICAL_LABELS = 6;

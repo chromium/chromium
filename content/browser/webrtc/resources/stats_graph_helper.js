@@ -11,7 +11,7 @@
 // Each group has an expand/collapse button and is collapsed initially.
 //
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {TimelineDataSeries} from './data_series.js';
 import {peerConnectionDataStore} from './dump_creator.js';

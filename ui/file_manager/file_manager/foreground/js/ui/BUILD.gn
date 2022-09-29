@@ -311,7 +311,7 @@ js_library("file_grid") {
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 }
 
@@ -806,7 +806,7 @@ js_unittest("splitter_unittest") {
   deps = [
     ":splitter",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
     "//ui/webui/resources/js/cr:ui",
   ]
 }

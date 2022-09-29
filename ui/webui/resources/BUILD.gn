@@ -203,7 +203,7 @@ generate_definitions_js_files = [
   "js/load_time_data.m.js",
   "js/plural_string_proxy.js",
   "js/icon.js",
-  "js/util.m.js",
+  "js/util.js",
 ]
 
 if (is_chromeos_ash) {

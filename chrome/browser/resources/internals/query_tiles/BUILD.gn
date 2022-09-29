@@ -17,7 +17,7 @@ js_library("query_tiles_internals") {
   deps = [
     ":query_tiles_internals_browser_proxy",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 }
 

@@ -15,7 +15,7 @@ js_library("offline_internals") {
   deps = [
     ":offline_internals_browser_proxy",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 }
 

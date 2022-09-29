@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {createEmptySearchBubble, findAndRemoveHighlights, highlight, removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
-import {findAncestor} from 'chrome://resources/js/util.m.js';
+import {findAncestor} from 'chrome://resources/js/util.js';
 import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsSectionElement} from './settings_page/settings_section.js';

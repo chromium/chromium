@@ -28,7 +28,7 @@ js_type_check("closure_compile") {
 js_library("lens_internals") {
   deps = [
     ":lens_internals_browser_proxy",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 }
 

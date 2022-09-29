@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 document.addEventListener('DOMContentLoaded', function() {
   sendWithPromise('fetchClientId').then((clientId: string) => {

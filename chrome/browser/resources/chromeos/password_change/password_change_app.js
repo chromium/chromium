@@ -5,11 +5,11 @@
 import './strings.m.js';
 import './password_change.js';
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 function initialize() {
   // '$(id)' is an alias for 'document.getElementById(id)'. It is defined
-  // in chrome://resources/js/util.m.js. If this function is not exposed
+  // in chrome://resources/js/util.js. If this function is not exposed
   // via the global object, it would not be available to tests that inject
   // JavaScript directly into the renderer.
   window.$ = $;

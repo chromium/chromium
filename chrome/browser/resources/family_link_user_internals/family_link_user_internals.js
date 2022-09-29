@@ -5,7 +5,7 @@
 import 'chrome://resources/js/jstemplate_compiled.js';
 
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 function initialize() {
   function submitURL(event) {

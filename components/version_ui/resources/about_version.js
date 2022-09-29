@@ -12,7 +12,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import './strings.m.js';
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 /**
  * Promise resolution handler for variations list and command line equivalent.

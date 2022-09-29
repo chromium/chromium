@@ -20,7 +20,7 @@ js_library("index") {
     "line_chart:unit_label",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:promise_resolver",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 
   externs_list = [ "externs.js" ]

@@ -8,7 +8,7 @@ import {toCssPx} from 'chrome://resources/js/cr/ui.js';
 import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/cr/ui/drag_wrapper.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$, isRTL} from 'chrome://resources/js/util.m.js';
+import {$, isRTL} from 'chrome://resources/js/util.js';
 
 import {App} from './apps_page.js';
 import {enterRearrangeMode, getCardSlider, leaveRearrangeMode} from './new_tab.js';

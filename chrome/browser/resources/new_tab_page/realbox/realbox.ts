@@ -6,7 +6,7 @@ import './realbox_dropdown.js';
 import './realbox_icon.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
+import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

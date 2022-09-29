@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
-import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
+import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 
 /**
  * @fileoverview DotList implementation

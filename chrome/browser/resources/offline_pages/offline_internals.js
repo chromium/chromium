@@ -5,7 +5,7 @@
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {IsLogging, OfflineInternalsBrowserProxy, OfflineInternalsBrowserProxyImpl, OfflinePage, SavePageRequest} from './offline_internals_browser_proxy.js';
 

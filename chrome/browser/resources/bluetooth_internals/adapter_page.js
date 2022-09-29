@@ -6,7 +6,7 @@
  * Javascript for AdapterPage, served from chrome://bluetooth-internals/.
  */
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {AdapterInfo} from './adapter.mojom-webui.js';
 import {ObjectFieldSet} from './object_fieldset.js';

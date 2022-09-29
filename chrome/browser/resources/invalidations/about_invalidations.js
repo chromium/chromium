@@ -4,7 +4,7 @@
 
 import 'chrome://resources/js/jstemplate_compiled.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 import {loadTestModule} from './test_loader_util.js';
 
 /**

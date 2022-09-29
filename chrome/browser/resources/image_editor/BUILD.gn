@@ -23,7 +23,7 @@ js_library("untrusted_closure_compile") {
   deps = [
     "//chrome/browser/ui/webui/image_editor:mojo_bindings_webui_js",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 }
 

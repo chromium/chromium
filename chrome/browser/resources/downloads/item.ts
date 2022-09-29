@@ -21,7 +21,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusRowMixin} from 'chrome://resources/js/cr/ui/focus_row_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {HTMLEscape} from 'chrome://resources/js/util.m.js';
+import {HTMLEscape} from 'chrome://resources/js/util.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';

@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 /**
  * Asks the C++ SafeBrowsingUIHandler to get the lists of Safe Browsing

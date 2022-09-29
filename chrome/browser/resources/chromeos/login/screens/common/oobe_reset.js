@@ -15,7 +15,7 @@ import '../../components/common_styles/oobe_dialog_host_styles.m.js';
 import '../../components/dialogs/oobe_adaptive_dialog.m.js';
 import '../../components/dialogs/oobe_modal_dialog.m.js';
 
-import {announceAccessibleMessage, ensureTransitionEndEvent} from '//resources/js/util.m.js';
+import {announceAccessibleMessage, ensureTransitionEndEvent} from '//resources/js/util.js';
 import {afterNextRender, dom, flush, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';

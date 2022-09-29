@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DomainSecurityPolicyView} from 'chrome://net-internals/domain_security_policy_view.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {assertEquals, assertLE, assertNotEquals} from '../chai_assert.js';
 

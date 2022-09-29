@@ -4,7 +4,7 @@
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {isRTL} from 'chrome://resources/js/util.m.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 
 import {TouchHandler} from './touch_handler.js';
 

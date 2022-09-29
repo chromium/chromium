@@ -16,7 +16,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 // When the page loads, request the JSON local state data from C++.
 document.addEventListener('DOMContentLoaded', function() {

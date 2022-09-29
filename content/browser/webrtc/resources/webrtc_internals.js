@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {MAX_STATS_DATA_POINT_BUFFER_SIZE} from './data_series.js';
 import {DumpCreator, peerConnectionDataStore, userMediaRequests} from './dump_creator.js';

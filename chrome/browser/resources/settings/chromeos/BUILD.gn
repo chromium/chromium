@@ -500,7 +500,7 @@ js_library("find_shortcut_behavior") {
     "//ash/webui/common/resources:keyboard_shortcut_list_js",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 }
 
@@ -517,7 +517,7 @@ js_library("main_page_behavior") {
     "..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 }
 

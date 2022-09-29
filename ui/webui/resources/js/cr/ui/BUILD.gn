@@ -77,7 +77,7 @@ if (is_chromeos_ash) {
     deps = [
       "../..:assert",
       "../..:event_tracker",
-      "../..:util.m",
+      "../..:util",
     ]
   }
 

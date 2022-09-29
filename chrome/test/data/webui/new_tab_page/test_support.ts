@@ -4,7 +4,7 @@
 
 import {DomIf} from 'chrome://new-tab-page/new_tab_page.js';
 import {BackgroundImage, Theme} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {assertEquals, assertNotEquals} from '../chai_assert.js';

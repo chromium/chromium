@@ -10,7 +10,7 @@
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert.js';
-import {hasKeyModifiers} from '../../js/util.m.js';
+import {hasKeyModifiers} from '../../js/util.js';
 
 import {getTemplate} from './cr_profile_avatar_selector_grid.html.js';
 

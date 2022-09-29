@@ -4,7 +4,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {KeyboardShortcutList} from 'chrome://resources/ash/common/keyboard_shortcut_list_js.js';
-import {isTextInputElement} from 'chrome://resources/js/util.m.js';
+import {isTextInputElement} from 'chrome://resources/js/util.js';
 
 /**
  * @fileoverview Listens for a find keyboard shortcut (i.e. Ctrl/Cmd+f or /)

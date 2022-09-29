@@ -4,7 +4,7 @@
 
 /* @filedescription Minimal utils and assertion support for places in the code
  * that are still not updated to JS modules. Do not use in new code; use the JS
- * modules (and more extensive) util.m.js, assert.js (for JS code), and
+ * modules (and more extensive) util.js, assert.js (for JS code), and
  * assert_ts.ts (for TS code) instead. */
 
 /**

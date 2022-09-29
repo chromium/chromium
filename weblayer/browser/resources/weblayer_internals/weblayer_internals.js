@@ -5,7 +5,7 @@
 /* Javascript module for chrome://weblayer. */
 
 import {isAndroid} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {PageHandler} from './weblayer_internals.mojom-webui.js';
 

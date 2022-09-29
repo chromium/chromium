@@ -19,6 +19,6 @@ js_type_check("closure_compile") {
 js_library("explore_sites_internals") {
   deps = [
     "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 }

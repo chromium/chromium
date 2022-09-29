@@ -13,7 +13,7 @@ import '../../settings_shared.css.js';
 
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
-import {HTMLEscape} from 'chrome://resources/js/util.m.js';
+import {HTMLEscape} from 'chrome://resources/js/util.js';
 import {ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

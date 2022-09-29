@@ -9,7 +9,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$, createElementWithClassName} from 'chrome://resources/js/util.m.js';
+import {$, createElementWithClassName} from 'chrome://resources/js/util.js';
 
 interface Metric {
   name: string;

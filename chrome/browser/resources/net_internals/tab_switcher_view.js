@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {addNode, addNodeWithText, setNodeDisplay, setNodePosition} from './util.js';
 import {View} from './view.js';

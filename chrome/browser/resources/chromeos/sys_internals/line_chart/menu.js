@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {createElementWithClassName} from 'chrome://resources/js/util.m.js';
+import {createElementWithClassName} from 'chrome://resources/js/util.js';
 
 import {MENU_TEXT_COLOR_DARK, MENU_TEXT_COLOR_LIGHT} from './constants.js';
 import {DataSeries} from './data_series.js';

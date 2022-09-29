@@ -8,7 +8,7 @@ import {crosAudioConfigMojomWebui, DevicePageBrowserProxyImpl, IdleBehavior, Lid
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, isVisible, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 

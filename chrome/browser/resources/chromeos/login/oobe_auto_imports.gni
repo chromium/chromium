@@ -136,4 +136,5 @@ oobe_migrated_imports = [
   "ui/webui/resources/cr_elements/web_ui_listener_behavior.html",
   "ui/webui/resources/html/assert.html",
   "ui/webui/resources/html/parse_html_subset.html",
+  "ui/webui/resources/html/util.html",
 ]

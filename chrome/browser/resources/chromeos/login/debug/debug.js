@@ -9,7 +9,7 @@
 // #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 // #import {loadTimeData} from '../i18n_setup.js';
 // #import {Oobe} from '../cr_ui.m.js'
-// #import {$} from 'chrome://resources/js/util.m.js';
+// #import {$} from 'chrome://resources/js/util.js';
 // #import './debug_util.js';
 // #import {AssistantNativeIconType} from '../../assistant_optin/utils.m.js';
 

@@ -301,7 +301,7 @@ js_library("onboarding_network_page") {
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",

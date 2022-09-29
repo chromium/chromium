@@ -6,7 +6,7 @@ import './strings.m.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 // List of log levels in priority order.
 const logLevels = ['Debug', 'Event', 'User', 'Error'];

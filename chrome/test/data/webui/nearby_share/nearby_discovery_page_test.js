@@ -8,7 +8,7 @@ import 'chrome://nearby/nearby_discovery_page.js';
 
 import {setDiscoveryManagerForTesting} from 'chrome://nearby/discovery_manager.js';
 import {NearbyDiscoveryPageElement} from 'chrome://nearby/nearby_discovery_page.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -112,14 +112,14 @@ js_library("power") {
   deps = [
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
 }
 
 js_library("slow") {
   deps = [
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js:util",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }

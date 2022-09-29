@@ -9,7 +9,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 import 'chrome://resources/js/jstemplate_compiled.js';
 import './strings.m.js';
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 // TODO(vishwath): This function is identical to the one in sync_internals.js
 // Merge both if possible.

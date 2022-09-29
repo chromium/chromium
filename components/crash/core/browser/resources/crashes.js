@@ -10,7 +10,7 @@ import 'chrome://resources/js/action_link.js';
 import './strings.m.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$, appendParam} from 'chrome://resources/js/util.m.js';
+import {$, appendParam} from 'chrome://resources/js/util.js';
 
 /* Id for tracking automatic refresh of crash list.  */
 let refreshCrashListId = undefined;

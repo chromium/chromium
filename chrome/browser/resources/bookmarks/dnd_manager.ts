@@ -7,7 +7,7 @@ import './item.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {isTextInputElement} from 'chrome://resources/js/util.m.js';
+import {isTextInputElement} from 'chrome://resources/js/util.js';
 
 import {changeFolderOpen, deselectItems, selectItem} from './actions.js';
 import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';

@@ -10,7 +10,7 @@
 
 import './service_list.js';
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {DeviceInfo, DeviceRemote, ServiceInfo} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';

@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/cr.m.js';
-import 'chrome://resources/js/util.m.js';
+import 'chrome://resources/js/util.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../shared/animations.css.js';
 import '../shared/chooser_shared.css.js';
@@ -15,7 +15,7 @@ import '../strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {isRTL} from 'chrome://resources/js/util.m.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

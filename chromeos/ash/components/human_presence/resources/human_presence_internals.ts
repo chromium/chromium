@@ -4,7 +4,7 @@
 
 import './strings.m.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 const POLL_INTERVAL_MS = 500;  // Matches hpsd polling rate.
 const MAX_HISTORY = 512 / 4;

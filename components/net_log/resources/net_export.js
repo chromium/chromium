@@ -8,7 +8,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import {addSingletonGetter, addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 /**
  * Main entry point called once the page has loaded.

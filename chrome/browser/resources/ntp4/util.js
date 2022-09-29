@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {findAncestor} from 'chrome://resources/js/util.m.js';
+import {findAncestor} from 'chrome://resources/js/util.js';
 
 /**
  * @param {Node} el A node to search for ancestors with |className|.

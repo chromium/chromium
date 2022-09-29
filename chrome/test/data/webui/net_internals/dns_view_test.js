@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DnsView} from 'chrome://net-internals/dns_view.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {assertEquals} from '../chai_assert.js';
 

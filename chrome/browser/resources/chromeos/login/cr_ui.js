@@ -9,7 +9,7 @@
  */
 
 // #import {assert} from 'chrome://resources/js/assert.js';
-// #import {$} from 'chrome://resources/js/util.m.js';
+// #import {$} from 'chrome://resources/js/util.js';
 // #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 // #import {DisplayManager} from './display_manager.m.js';

@@ -29,4 +29,5 @@ assistant_migrated_imports = [
   "ui/webui/resources/cr_elements/cr_dialog/cr_dialog.html",
   "ui/webui/resources/cr_elements/cr_lottie/cr_lottie.html",
   "ui/webui/resources/cr_elements/cr_toggle/cr_toggle.html",
+  "ui/webui/resources/html/util.html",
 ]

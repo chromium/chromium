@@ -7,7 +7,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 // By default this page only records metrics for a given period of time in order
 // to not waste too much memory. This constant defines the default period until

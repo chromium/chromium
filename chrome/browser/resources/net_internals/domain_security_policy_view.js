@@ -4,7 +4,7 @@
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import './strings.js';
 import {BrowserBridge} from './browser_bridge.js';
