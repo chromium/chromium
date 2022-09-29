@@ -14,12 +14,9 @@
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "third_party/shell-encryption/src/statusor.h"
 
-namespace private_membership {
-namespace rlwe {
+namespace private_membership::rlwe {
 class PrivateMembershipRlweClient;
-class RlweMembershipResponses;
-}  // namespace rlwe
-}  // namespace private_membership
+}  // namespace private_membership::rlwe
 
 namespace policy::psm {
 
@@ -39,9 +36,8 @@ class RlweClientImpl : public RlweClient {
     // Creates PSM RLWE client that generates and holds a randomly generated
     // key.
     ::rlwe::StatusOr<std::unique_ptr<RlweClient>> Create(
-        private_membership::rlwe::RlweUseCase use_case,
-        const std::vector<private_membership::rlwe::RlwePlaintextId>&
-            plaintext_ids) override;
+        UseCase use_case,
+        const std::vector<PlaintextId>& plaintext_ids) override;
   };
 
   // RlweClientImpl is neither copyable nor copy assignable.
@@ -53,16 +49,11 @@ class RlweClientImpl : public RlweClient {
   // Delegates all function calls into RlweClient by
   // |psm_rlwe_client_|.
 
-  ::rlwe::StatusOr<private_membership::rlwe::PrivateMembershipRlweOprfRequest>
-  CreateOprfRequest() override;
-  ::rlwe::StatusOr<private_membership::rlwe::PrivateMembershipRlweQueryRequest>
-  CreateQueryRequest(
-      const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
-          oprf_response) override;
-  ::rlwe::StatusOr<private_membership::rlwe::RlweMembershipResponses>
-  ProcessQueryResponse(
-      const private_membership::rlwe::PrivateMembershipRlweQueryResponse&
-          query_response) override;
+  ::rlwe::StatusOr<OprfRequest> CreateOprfRequest() override;
+  ::rlwe::StatusOr<QueryRequest> CreateQueryRequest(
+      const OprfResponse& oprf_response) override;
+  ::rlwe::StatusOr<MembershipResponses> ProcessQueryResponse(
+      const QueryResponse& query_response) override;
 
  private:
   explicit RlweClientImpl(

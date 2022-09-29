@@ -13,12 +13,6 @@
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "third_party/shell-encryption/src/statusor.h"
 
-namespace private_membership {
-namespace rlwe {
-class RlweMembershipResponses;
-}  // namespace rlwe
-}  // namespace private_membership
-
 namespace policy::psm {
 
 class FakeRlweClient : public RlweClient {
@@ -36,9 +30,8 @@ class FakeRlweClient : public RlweClient {
 
     // Creates a fake PSM RLWE client for testing purposes.
     ::rlwe::StatusOr<std::unique_ptr<RlweClient>> Create(
-        private_membership::rlwe::RlweUseCase use_case,
-        const std::vector<private_membership::rlwe::RlwePlaintextId>&
-            plaintext_ids) override;
+        UseCase use_case,
+        const std::vector<PlaintextId>& plaintext_ids) override;
   };
 
   // FakeRlweClient is neither copyable nor copy assignable.
@@ -49,24 +42,17 @@ class FakeRlweClient : public RlweClient {
 
   // Mocks all function calls of RlweClient.
 
-  ::rlwe::StatusOr<private_membership::rlwe::PrivateMembershipRlweOprfRequest>
-  CreateOprfRequest() override;
-  ::rlwe::StatusOr<private_membership::rlwe::PrivateMembershipRlweQueryRequest>
-  CreateQueryRequest(
-      const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
-          oprf_response) override;
-  ::rlwe::StatusOr<private_membership::rlwe::RlweMembershipResponses>
-  ProcessQueryResponse(
-      const private_membership::rlwe::PrivateMembershipRlweQueryResponse&
-          query_response) override;
+  ::rlwe::StatusOr<OprfRequest> CreateOprfRequest() override;
+  ::rlwe::StatusOr<QueryRequest> CreateQueryRequest(
+      const OprfResponse& oprf_response) override;
+  ::rlwe::StatusOr<MembershipResponses> ProcessQueryResponse(
+      const QueryResponse& query_response) override;
 
  private:
-  FakeRlweClient(
-      private_membership::rlwe::RlweUseCase use_case,
-      std::vector<private_membership::rlwe::RlwePlaintextId> plaintext_ids);
+  FakeRlweClient(UseCase use_case, std::vector<PlaintextId> plaintext_ids);
 
-  const private_membership::rlwe::RlweUseCase use_case_;
-  const std::vector<private_membership::rlwe::RlwePlaintextId> plaintext_ids_;
+  const UseCase use_case_;
+  const std::vector<PlaintextId> plaintext_ids_;
 };
 
 }  // namespace policy::psm

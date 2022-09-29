@@ -33,6 +33,9 @@ class RlweIdProvider;
 
 class RlweDmserverClientImpl : public RlweDmserverClient {
  public:
+  using PlaintextId = private_membership::rlwe::RlwePlaintextId;
+  using OprfResponse =
+      private_membership::rlwe::PrivateMembershipRlweOprfResponse;
   // The RlweDmserverClientImpl doesn't take ownership of
   // |device_management_service|, |psm_rlwe_client_factory| and
   // |psm_rlwe_id_provider|. All of them must not be nullptr. Also,
@@ -75,10 +78,8 @@ class RlweDmserverClientImpl : public RlweDmserverClient {
 
   // If the completion was successful, then it will parse the result and call
   // the |on_completion_callback_| for |psm_id_|.
-  void OnRlweQueryRequestCompletion(
-      const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
-          oprf_response,
-      DMServerJobResult result);
+  void OnRlweQueryRequestCompletion(const OprfResponse& oprf_response,
+                                    DMServerJobResult result);
 
   // Returns a job config that has TYPE_PSM_REQUEST as job type and |callback|
   // will be executed on completion.
@@ -109,7 +110,7 @@ class RlweDmserverClientImpl : public RlweDmserverClient {
   CompletionCallback on_completion_callback_;
 
   // PSM identifier, which is going to be used while preparing the PSM requests.
-  private_membership::rlwe::RlwePlaintextId psm_rlwe_id_;
+  PlaintextId psm_rlwe_id_;
 
   // The time when the PSM request started.
   base::TimeTicks time_start_;

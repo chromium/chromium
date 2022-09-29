@@ -23,8 +23,7 @@ namespace policy::psm {
 TestingRlweClient::FactoryImpl::FactoryImpl(
     const std::string& ec_cipher_key,
     const std::string& seed,
-    std::vector<private_membership::rlwe::RlwePlaintextId>
-        plaintext_testing_ids)
+    std::vector<PlaintextId> plaintext_testing_ids)
     : ec_cipher_key_(ec_cipher_key),
       seed_(seed),
       plaintext_testing_ids_(std::move(plaintext_testing_ids)) {}

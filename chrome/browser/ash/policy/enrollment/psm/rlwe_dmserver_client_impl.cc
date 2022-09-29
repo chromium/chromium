@@ -218,8 +218,7 @@ void RlweDmserverClientImpl::SendRlweQueryRequest(
 }
 
 void RlweDmserverClientImpl::OnRlweQueryRequestCompletion(
-    const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
-        oprf_response,
+    const OprfResponse& oprf_response,
     DMServerJobResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
