@@ -1332,6 +1332,10 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
              child_bfc_offset_estimate == ConstraintSpace().ClearanceOffset());
       // Figure out if the child margin has already got separated from the
       // margin strut or not.
+      //
+      // TODO(mstensho): We get false positives here, if the container was
+      // cleared by floats (but the child wasn't). See
+      // wpt/css/css-break/class-c-breakpoint-after-float-004.html
       child_margin_got_separated =
           child_bfc_offset_estimate != adjoining_bfc_offset_estimate;
     }
@@ -1427,7 +1431,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
 
   if (ConstraintSpace().HasBlockFragmentation()) {
     bool has_container_separation =
-        has_processed_first_child_ || child_margin_got_separated ||
+        has_processed_first_child_ ||
         child_bfc_offset.block_offset > child_bfc_offset_estimate ||
         layout_result->IsPushedByFloats();
     NGBreakStatus break_status = BreakBeforeChildIfNeeded(
