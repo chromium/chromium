@@ -59,6 +59,7 @@ import androidx.webkit.WebViewClientCompat;
 import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
@@ -86,11 +87,14 @@ import java.util.regex.Pattern;
 public class WebViewBrowserActivity extends AppCompatActivity {
     private static final String TAG = "WebViewShell";
 
-    // Our imaginary Android permission to associate with the WebKit geo permission
+    // Our imaginary Android permission to associate with the WebKit geo permission.
     private static final String RESOURCE_GEO = "RESOURCE_GEO";
-    // Our imaginary WebKit permission to request when loading a file:// URL
+    // Our imaginary WebKit permission to request when loading a file:// URL.
     private static final String RESOURCE_FILE_URL = "RESOURCE_FILE_URL";
-    // WebKit permissions with no corresponding Android permission can always be granted
+    // Our imaginary WebKit permissions to request when loading a file:// URL on T+.
+    private static final String RESOURCE_IMAGES_URL = "RESOURCE_IMAGES_URL";
+    private static final String RESOURCE_VIDEO_URL = "RESOURCE_VIDEO_URL";
+    // WebKit permissions with no corresponding Android permission can always be granted.
     private static final String NO_ANDROID_PERMISSION = "NO_ANDROID_PERMISSION";
 
     // TODO(timav): Remove these variables after http://crbug.com/626202 is fixed.
@@ -105,6 +109,10 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         sPermissions = new HashMap<String, String>();
         sPermissions.put(RESOURCE_GEO, Manifest.permission.ACCESS_FINE_LOCATION);
         sPermissions.put(RESOURCE_FILE_URL, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (BuildInfo.isAtLeastT()) {
+            sPermissions.put(RESOURCE_IMAGES_URL, Manifest.permission.READ_MEDIA_IMAGES);
+            sPermissions.put(RESOURCE_VIDEO_URL, Manifest.permission.READ_MEDIA_VIDEO);
+        }
         sPermissions.put(PermissionRequest.RESOURCE_AUDIO_CAPTURE,
                 Manifest.permission.RECORD_AUDIO);
         sPermissions.put(PermissionRequest.RESOURCE_MIDI_SYSEX, NO_ANDROID_PERMISSION);
@@ -189,13 +197,24 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
         @Override
         public String[] getResources() {
-            return new String[] { WebViewBrowserActivity.RESOURCE_FILE_URL };
+            if (BuildInfo.isAtLeastT()) {
+                return new String[] {WebViewBrowserActivity.RESOURCE_IMAGES_URL,
+                        WebViewBrowserActivity.RESOURCE_VIDEO_URL};
+            } else {
+                return new String[] {WebViewBrowserActivity.RESOURCE_FILE_URL};
+            }
         }
 
         @Override
         public void grant(String[] resources) {
-            assert resources.length == 1;
-            assert WebViewBrowserActivity.RESOURCE_FILE_URL.equals(resources[0]);
+            if (BuildInfo.isAtLeastT()) {
+                assert resources.length == 2;
+                assert WebViewBrowserActivity.RESOURCE_IMAGES_URL.equals(resources[0])
+                        && WebViewBrowserActivity.RESOURCE_VIDEO_URL.equals(resources[1]);
+            } else {
+                assert resources.length == 1;
+                assert WebViewBrowserActivity.RESOURCE_FILE_URL.equals(resources[0]);
+            }
             // Try again now that we have read access.
             WebViewBrowserActivity.this.mWebView.loadUrl(mOrigin);
         }
@@ -800,12 +819,20 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     }
 
     private void loadUrl(String url) {
-        // Request read access if necessary
+        // Request read access if necessary.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && "file".equals(Uri.parse(url).getScheme())
-                && PackageManager.PERMISSION_DENIED
-                        == checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            requestPermissionsForPage(new FilePermissionRequest(url));
+                && "file".equals(Uri.parse(url).getScheme())) {
+            if (BuildInfo.isAtLeastT()) {
+                if (PackageManager.PERMISSION_DENIED
+                                == checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES)
+                        && PackageManager.PERMISSION_DENIED
+                                == checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO)) {
+                    requestPermissionsForPage(new FilePermissionRequest(url));
+                }
+            } else if (PackageManager.PERMISSION_DENIED
+                    == checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                requestPermissionsForPage(new FilePermissionRequest(url));
+            }
         }
 
         // If it is file:// and we don't have permission, they'll get the "Webpage not available"
