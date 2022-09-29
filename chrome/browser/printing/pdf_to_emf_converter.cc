@@ -26,6 +26,7 @@
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
+#include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -134,7 +135,7 @@ class PdfConverterImpl : public PdfConverter {
 
   void RecordConversionMetrics();
 
-  PdfRenderSettings settings_;
+  const PdfRenderSettings settings_;
 
   // Document loaded callback.
   PdfConverter::StartCallback start_callback_;
@@ -225,6 +226,7 @@ void PdfConverterImpl::Initialize(scoped_refptr<base::RefCountedMemory> data) {
     return;
   }
 
+  PRINTER_LOG(EVENT) << "PdfConverter created. Mode: " << settings_.mode;
   memcpy(memory.mapping.memory(), data->front(), data->size());
 
   GetPrintingService()->BindPdfToEmfConverterFactory(
