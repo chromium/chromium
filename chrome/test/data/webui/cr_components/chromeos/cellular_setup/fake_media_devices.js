@@ -31,11 +31,13 @@ export class FakeMediaDevices {
 
   /**
    * Resolves promise returned from enumerateDevices().
+   * @param {?function()} callback
    */
-  resolveEnumerateDevices() {
+  resolveEnumerateDevices(callback) {
     assertTrue(
         !!this.enumerateDevicesResolver_, 'enumerateDevices was not called');
     this.enumerateDevicesResolver_(this.devices_);
+    callback();
   }
 
   /** @override */
