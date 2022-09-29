@@ -13,6 +13,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/android/favicon_fetcher.h"
@@ -75,7 +76,8 @@ static void JNI_WebsiteParentApproval_FetchFavicon(
   GURL url = *(url::GURLAndroid::ToNativeGURL(env, j_url));
 
   FaviconFetcher* faviconFetcher =
-      new FaviconFetcher(ProfileManager::GetActiveUserProfile());
+      new FaviconFetcher(LargeIconServiceFactory::GetForBrowserContext(
+          ProfileManager::GetActiveUserProfile()));
 
   faviconFetcher->FetchFavicon(
       url, true, min_source_size_in_pixel, desired_size_in_pixel,

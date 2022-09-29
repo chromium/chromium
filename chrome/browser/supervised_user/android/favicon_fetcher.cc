@@ -12,12 +12,9 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/favicon/large_icon_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/favicon_base/favicon_types.h"
-#include "content/public/browser/browser_context.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
@@ -25,9 +22,15 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "url/gurl.h"
 
-FaviconFetcher::FaviconFetcher(Profile* profile)
-    : large_icon_service_(
-          LargeIconServiceFactory::GetForBrowserContext(profile)) {}
+FaviconFetcher::FaviconFetcher(
+    raw_ptr<favicon::LargeIconService> large_icon_service)
+    : large_icon_service_(large_icon_service) {}
+
+FaviconFetcher::~FaviconFetcher() {}
+
+void FaviconFetcher::Destroy() {
+  delete this;
+}
 
 void FaviconFetcher::OnFaviconDownloaded(
     const GURL& url,
@@ -41,8 +44,15 @@ void FaviconFetcher::OnFaviconDownloaded(
     LOG(WARNING)
         << "Unable to obtain a favicon image with the required specs for "
         << url.host();
-    delete this;
+    Destroy();
   }
+}
+
+void FaviconFetcher::ExecuteFaviconCallback(
+    const base::android::ScopedJavaGlobalRef<jobject>& callback,
+    SkBitmap bitmap) {
+  base::android::RunObjectCallbackAndroid(callback,
+                                          gfx::ConvertToJavaBitmap(bitmap));
 }
 
 void FaviconFetcher::OnGetFaviconFromCacheFinished(
@@ -56,9 +66,8 @@ void FaviconFetcher::OnGetFaviconFromCacheFinished(
         image_result.image.AsImageSkia().GetRepresentation(1.0f).GetBitmap();
     // Return the image to the caller by executing the callback and destroy this
     // instance.
-    base::android::RunObjectCallbackAndroid(
-        callback, gfx::ConvertToJavaBitmap(faviconBitmap));
-    delete this;
+    ExecuteFaviconCallback(callback, faviconBitmap);
+    Destroy();
     return;
   }
 
@@ -96,8 +105,12 @@ void FaviconFetcher::OnGetFaviconFromCacheFinished(
                            base::Unretained(this), url, std::move(callback),
                            faviconDimensions));
   } else {
-    delete this;
+    Destroy();
   }
+}
+
+base::WeakPtr<FaviconFetcher> FaviconFetcher::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void FaviconFetcher::FetchFavicon(

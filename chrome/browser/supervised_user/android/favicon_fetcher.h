@@ -6,23 +6,27 @@
 #define CHROME_BROWSER_SUPERVISED_USER_ANDROID_FAVICON_FETCHER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/favicon_base/favicon_types.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 class FaviconFetcher {
  public:
-  explicit FaviconFetcher(Profile* profile);
+  explicit FaviconFetcher(
+      raw_ptr<favicon::LargeIconService> large_icon_service);
 
   FaviconFetcher() = delete;
 
   FaviconFetcher(const FaviconFetcher&) = delete;
 
-  ~FaviconFetcher() = default;
+  FaviconFetcher& operator=(const FaviconFetcher&) = delete;
+
+  virtual ~FaviconFetcher();
 
   // Initiates a request to fetch a favicon for a specific url.
   // Wraps the calls to a service that obtains the favicon and returns
@@ -34,6 +38,8 @@ class FaviconFetcher {
       int min_source_side_size_in_pixel,
       int desired_side_size_in_pixel,
       const base::android::ScopedJavaGlobalRef<jobject>& callback);
+
+  base::WeakPtr<FaviconFetcher> GetWeakPtr();
 
  private:
   // Wrapper for favicon specs.
@@ -59,9 +65,18 @@ class FaviconFetcher {
       FaviconDimensions faviconDimensions,
       const favicon_base::LargeIconImageResult& image_result);
 
+  // Helper method for returning the favicon to the caller.
+  virtual void ExecuteFaviconCallback(
+      const base::android::ScopedJavaGlobalRef<jobject>& callback,
+      SkBitmap bitmap);
+
+  // Helper destructor wrapper.
+  virtual void Destroy();
+
   // Required for execution of icon fetching.
   raw_ptr<favicon::LargeIconService> large_icon_service_;
   base::CancelableTaskTracker task_tracker_;
+  base::WeakPtrFactory<FaviconFetcher> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_ANDROID_FAVICON_CALLER_H_
