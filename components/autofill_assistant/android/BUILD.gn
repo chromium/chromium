@@ -479,37 +479,6 @@ java_strings_grd("java_strings_grd") {
                 [ "values-{{source_name_part}}/android_chrome_autofill_assistant_strings.xml" ])
 }
 
-if (!incremental_install) {
-  zip("password_change_tests_runner") {
-    testonly = true
-    inputs = [
-      "$root_build_dir/test_runner/ChromePublicTest.apk",
-      "$root_build_dir/test_runner/ChromiumNetTestSupport.apk",
-      "$root_build_dir/test_runner/config_example.cfg",
-      "$root_build_dir/test_runner/parse_logs.py",
-      "$root_build_dir/test_runner/runner.py",
-    ]
-    output = "$root_build_dir/test_runner/password_change_tests_runner.zip"
-    deps = [ ":copy_password_change_tests_runner" ]
-  }
-
-  copy("copy_password_change_tests_runner") {
-    testonly = true
-    sources = [
-      "$root_build_dir/apks/ChromePublicTest.apk",
-      "$root_build_dir/apks/ChromiumNetTestSupport.apk",
-      "internal/tools/password_change_tests_runner/config_example.cfg",
-      "internal/tools/password_change_tests_runner/parse_logs.py",
-      "internal/tools/password_change_tests_runner/runner.py",
-    ]
-    outputs = [ "$root_out_dir/test_runner/{{source_file_part}}" ]
-    deps = [
-      "//chrome/android:chrome_public_test_apk__test_apk__create",
-      "//net/android:net_test_support_apk__create",
-    ]
-  }
-}
-
 robolectric_library("junit") {
   testonly = true
 
