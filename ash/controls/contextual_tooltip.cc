@@ -217,15 +217,16 @@ int GetShownCount(PrefService* prefs, TooltipType type) {
 
 void HandleNudgeShown(PrefService* prefs, TooltipType type) {
   const int shown_count = GetShownCount(prefs, type);
-  DictionaryPrefUpdate update(prefs, prefs::kContextualTooltips);
-  update->SetIntPath(GetPath(type, kShownCount), shown_count + 1);
-  update->SetPath(GetPath(type, kLastTimeShown), base::TimeToValue(GetTime()));
+  ScopedDictPrefUpdate update(prefs, prefs::kContextualTooltips);
+  update->SetByDottedPath(GetPath(type, kShownCount), shown_count + 1);
+  update->SetByDottedPath(GetPath(type, kLastTimeShown),
+                          base::TimeToValue(GetTime()));
 }
 
 void HandleGesturePerformed(PrefService* prefs, TooltipType type) {
   const int success_count = GetSuccessCount(prefs, type);
-  DictionaryPrefUpdate update(prefs, prefs::kContextualTooltips);
-  update->SetIntPath(GetPath(type, kSuccessCount), success_count + 1);
+  ScopedDictPrefUpdate update(prefs, prefs::kContextualTooltips);
+  update->SetByDottedPath(GetPath(type, kSuccessCount), success_count + 1);
 }
 
 void SetDragHandleNudgeDisabledForHiddenShelf(bool nudge_disabled) {
@@ -238,12 +239,12 @@ void SetBackGestureNudgeShowing(bool showing) {
 
 void ClearPrefs() {
   DCHECK(Shell::Get()->session_controller()->GetLastActiveUserPrefService());
-  DictionaryPrefUpdate update(
+  ScopedDictPrefUpdate update(
       Shell::Get()->session_controller()->GetLastActiveUserPrefService(),
       prefs::kContextualTooltips);
-  base::Value* nudges_dict = update.Get();
-  if (nudges_dict && !nudges_dict->DictEmpty())
-    nudges_dict->DictClear();
+  base::Value::Dict& nudges_dict = update.Get();
+  if (!nudges_dict.empty())
+    nudges_dict.clear();
 }
 
 void OverrideClockForTesting(base::Clock* test_clock) {

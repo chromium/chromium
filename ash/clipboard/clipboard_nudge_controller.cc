@@ -164,9 +164,9 @@ void ClipboardNudgeController::OnClipboardDataRead() {
 void ClipboardNudgeController::OnActiveUserPrefServiceChanged(
     PrefService* prefs) {
   // Reset the nudge prefs so that the nudge can be shown again.
-  DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
-  update->SetIntPath(kShownCount, 0);
-  update->SetPath(kLastTimeShown, base::TimeToValue(base::Time()));
+  ScopedDictPrefUpdate update(prefs, prefs::kMultipasteNudges);
+  update->Set(kShownCount, 0);
+  update->Set(kLastTimeShown, base::TimeToValue(base::Time()));
 }
 
 void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
@@ -213,9 +213,9 @@ void ClipboardNudgeController::HandleNudgeShown() {
   if (!prefs)
     return;
   const int shown_count = GetShownCount(prefs);
-  DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
-  update->SetIntPath(kShownCount, shown_count + 1);
-  update->SetPath(kLastTimeShown, base::TimeToValue(GetTime()));
+  ScopedDictPrefUpdate update(prefs, prefs::kMultipasteNudges);
+  update->Set(kShownCount, shown_count + 1);
+  update->Set(kLastTimeShown, base::TimeToValue(GetTime()));
 }
 
 void ClipboardNudgeController::OnClipboardHistoryMenuShown() {

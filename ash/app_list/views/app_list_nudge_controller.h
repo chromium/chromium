@@ -110,7 +110,7 @@ class ASH_EXPORT AppListNudgeController {
  private:
   // If the nudge is hidden and the showing duration is long enough, increments
   // the shown count in prefs.
-  void MaybeIncrementShownCountInPrefs(DictionaryPrefUpdate& update,
+  void MaybeIncrementShownCountInPrefs(ScopedDictPrefUpdate& update,
                                        base::TimeDelta duration);
 
   // The timestamp when the current nudge started showing.

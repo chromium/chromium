@@ -71,8 +71,7 @@ void StabilityMetricsManager::RecordMetricsToUMA() {
 
 void StabilityMetricsManager::ResetMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DictionaryPrefUpdate update(local_state_, prefs::kStabilityMetrics);
-  update->DictClear();
+  local_state_->SetDict(prefs::kStabilityMetrics, base::Value::Dict());
 }
 
 absl::optional<bool> StabilityMetricsManager::GetArcEnabledState() {
@@ -84,8 +83,8 @@ absl::optional<bool> StabilityMetricsManager::GetArcEnabledState() {
 
 void StabilityMetricsManager::SetArcEnabledState(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DictionaryPrefUpdate update(local_state_, prefs::kStabilityMetrics);
-  update->SetBoolKey(kArcEnabledStateKey, enabled);
+  ScopedDictPrefUpdate update(local_state_, prefs::kStabilityMetrics);
+  update->Set(kArcEnabledStateKey, enabled);
 }
 
 absl::optional<NativeBridgeType>
@@ -105,9 +104,8 @@ StabilityMetricsManager::GetArcNativeBridgeType() {
 void StabilityMetricsManager::SetArcNativeBridgeType(
     NativeBridgeType native_bridge_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DictionaryPrefUpdate update(local_state_, prefs::kStabilityMetrics);
-  update->SetIntKey(kArcNativeBridgeTypeKey,
-                    static_cast<int>(native_bridge_type));
+  ScopedDictPrefUpdate update(local_state_, prefs::kStabilityMetrics);
+  update->Set(kArcNativeBridgeTypeKey, static_cast<int>(native_bridge_type));
 }
 
 }  // namespace arc

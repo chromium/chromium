@@ -79,8 +79,8 @@ void DetachableBaseHandler::RemoveUserData(const UserInfo& user) {
   last_used_devices_.erase(user.account_id);
 
   if (local_state_) {
-    DictionaryPrefUpdate update(local_state_, prefs::kDetachableBaseDevices);
-    update->RemoveKey(GetKeyForPrefs(user.account_id));
+    ScopedDictPrefUpdate update(local_state_, prefs::kDetachableBaseDevices);
+    update->Remove(GetKeyForPrefs(user.account_id));
   }
 }
 
@@ -127,9 +127,9 @@ bool DetachableBaseHandler::SetPairedBaseAsLastUsedByUser(
   last_used_devices_[user.account_id] = authenticated_base_id_;
 
   if (!user.is_ephemeral) {
-    DictionaryPrefUpdate update(local_state_, prefs::kDetachableBaseDevices);
-    update->SetPath({GetKeyForPrefs(user.account_id), kLastUsedByUserPrefKey},
-                    base::Value(authenticated_base_id_));
+    ScopedDictPrefUpdate update(local_state_, prefs::kDetachableBaseDevices);
+    update->EnsureDict(GetKeyForPrefs(user.account_id))
+        ->Set(kLastUsedByUserPrefKey, authenticated_base_id_);
   }
 
   return true;

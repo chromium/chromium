@@ -92,7 +92,7 @@ void SetPerDisplayPref(PrefService* prefs,
   if (display_id == display::kInvalidDisplayId)
     return;
 
-  // Avoid DictionaryPrefUpdate's notifications for read but unmodified prefs.
+  // Avoid ScopedDictPrefUpdate's notifications for read but unmodified prefs.
   const base::Value::Dict& current_shelf_prefs =
       prefs->GetDict(prefs::kShelfPreferences);
   std::string display_key = base::NumberToString(display_id);
@@ -105,14 +105,10 @@ void SetPerDisplayPref(PrefService* prefs,
       return;
   }
 
-  DictionaryPrefUpdate update(prefs, prefs::kShelfPreferences);
-  base::Value* shelf_prefs = update.Get();
-  base::Value* display_prefs_weak = shelf_prefs->FindDictKey(display_key);
-  if (!display_prefs_weak) {
-    display_prefs_weak = shelf_prefs->SetKey(
-        display_key, base::Value(base::Value::Type::DICTIONARY));
-  }
-  display_prefs_weak->SetKey(pref_key, base::Value(value));
+  ScopedDictPrefUpdate update(prefs, prefs::kShelfPreferences);
+  base::Value::Dict& shelf_prefs = update.Get();
+  base::Value::Dict* display_prefs_weak = shelf_prefs.EnsureDict(display_key);
+  display_prefs_weak->Set(pref_key, value);
 }
 
 ShelfAlignment AlignmentFromPref(const std::string& value) {

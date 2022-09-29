@@ -52,10 +52,10 @@ void AutozoomNudgeController::OnActiveUserPrefServiceChanged(
   // Reset the nudge prefs so that the nudge can be shown again. This observer
   // callback is only registered and called when
   // features::kAutozoomNudgeSessionReset is enabled.
-  DictionaryPrefUpdate update(prefs, prefs::kAutozoomNudges);
-  update->GetDict().Set(kShownCount, 0);
-  update->GetDict().Set(kLastTimeShown, base::TimeToValue(base::Time()));
-  update->GetDict().Set(kHadEnabled, false);
+  ScopedDictPrefUpdate update(prefs, prefs::kAutozoomNudges);
+  update->Set(kShownCount, 0);
+  update->Set(kLastTimeShown, base::TimeToValue(base::Time()));
+  update->Set(kHadEnabled, false);
 }
 
 base::Time AutozoomNudgeController::GetTime() {
@@ -68,9 +68,9 @@ void AutozoomNudgeController::HandleNudgeShown() {
   if (!prefs)
     return;
   const int shown_count = GetShownCount(prefs);
-  DictionaryPrefUpdate update(prefs, prefs::kAutozoomNudges);
-  update->SetIntPath(kShownCount, shown_count + 1);
-  update->SetPath(kLastTimeShown, base::TimeToValue(GetTime()));
+  ScopedDictPrefUpdate update(prefs, prefs::kAutozoomNudges);
+  update->Set(kShownCount, shown_count + 1);
+  update->Set(kLastTimeShown, base::TimeToValue(GetTime()));
 }
 
 bool AutozoomNudgeController::GetHadEnabled(PrefService* prefs) {
@@ -134,8 +134,8 @@ void AutozoomNudgeController::OnAutozoomStateChanged(
         Shell::Get()->session_controller()->GetLastActiveUserPrefService();
     if (!prefs)
       return;
-    DictionaryPrefUpdate update(prefs, prefs::kAutozoomNudges);
-    update->SetBoolPath(kHadEnabled, true);
+    ScopedDictPrefUpdate update(prefs, prefs::kAutozoomNudges);
+    update->Set(kHadEnabled, true);
   }
 }
 
