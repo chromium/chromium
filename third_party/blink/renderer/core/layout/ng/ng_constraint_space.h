@@ -729,6 +729,12 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() ? rare_data_->ClearanceOffset() : LayoutUnit::Min();
   }
 
+  // Return true if the BFC block-offset has been increased by the presence of
+  // floats (e.g. clearance).
+  bool IsPushedByFloats() const {
+    return HasRareData() && rare_data_->is_pushed_by_floats;
+  }
+
   // Return true if this is participating within a -webkit-line-clamp context.
   bool IsLineClampContext() const {
     return HasRareData() && rare_data_->is_line_clamp_context;
@@ -868,6 +874,7 @@ class CORE_EXPORT NGConstraintSpace final {
         : bfc_offset(bfc_offset),
           data_union_type(static_cast<unsigned>(DataUnionType::kNone)),
           is_line_clamp_context(false),
+          is_pushed_by_floats(false),
           is_restricted_block_size_table_cell(false),
           hide_table_cell_if_empty(false),
           block_direction_fragmentation_type(
@@ -895,6 +902,7 @@ class CORE_EXPORT NGConstraintSpace final {
           fragmentainer_offset_at_bfc(other.fragmentainer_offset_at_bfc),
           data_union_type(other.data_union_type),
           is_line_clamp_context(other.is_line_clamp_context),
+          is_pushed_by_floats(other.is_pushed_by_floats),
           is_restricted_block_size_table_cell(
               other.is_restricted_block_size_table_cell),
           hide_table_cell_if_empty(other.hide_table_cell_if_empty),
@@ -976,6 +984,7 @@ class CORE_EXPORT NGConstraintSpace final {
     bool MaySkipLayout(const RareData& other) const {
       if (data_union_type != other.data_union_type ||
           is_line_clamp_context != other.is_line_clamp_context ||
+          is_pushed_by_floats != other.is_pushed_by_floats ||
           is_restricted_block_size_table_cell !=
               other.is_restricted_block_size_table_cell ||
           hide_table_cell_if_empty != other.hide_table_cell_if_empty ||
@@ -1018,7 +1027,8 @@ class CORE_EXPORT NGConstraintSpace final {
     bool IsInitialForMaySkipLayout() const {
       if (page_name || fragmentainer_block_size != kIndefiniteSize ||
           fragmentainer_offset_at_bfc || is_line_clamp_context ||
-          is_restricted_block_size_table_cell || hide_table_cell_if_empty ||
+          is_pushed_by_floats || is_restricted_block_size_table_cell ||
+          hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
           requires_content_before_breaking || is_inside_balanced_columns ||
           should_ignore_forced_breaks || is_in_column_bfc ||
@@ -1301,6 +1311,7 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned data_union_type : 3;
 
     unsigned is_line_clamp_context : 1;
+    unsigned is_pushed_by_floats : 1;
 
     unsigned is_restricted_block_size_table_cell : 1;
     unsigned hide_table_cell_if_empty : 1;
