@@ -169,5 +169,11 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         public void scrollToPositionWithOffset(int position, int offset) {
             mLayoutManager.scrollToPositionWithOffset(position, offset);
         }
+
+        @Override
+        public void setSpanCount(int spanCount) {
+            throw new UnsupportedOperationException(
+                    "Cannot set span count when using linear layout.");
+        }
     }
 }

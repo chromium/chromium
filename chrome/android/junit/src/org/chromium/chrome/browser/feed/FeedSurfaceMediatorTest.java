@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderProperties;
 import org.chromium.chrome.browser.feed.sections.ViewVisibility;
 import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
+import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
+import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.components.prefs.PrefService;
@@ -72,7 +74,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 // default or removed if the flag is removed.
 @Features.DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
 @Features.EnableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.INTEREST_FEED_V2_HEARTS,
-        ChromeFeatureList.WEB_FEED_SORT})
+        ChromeFeatureList.WEB_FEED_SORT, ChromeFeatureList.FEED_MULTI_COLUMN})
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;
     @Rule
@@ -113,6 +115,8 @@ public class FeedSurfaceMediatorTest {
     @Mock
     private HybridListRenderer mHybridListRenderer;
     @Mock
+    private ListLayoutHelper mListLayoutHelper;
+    @Mock
     private FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     @Mock
     private FeedOptionsCoordinator mOptionsCoordinator;
@@ -147,6 +151,7 @@ public class FeedSurfaceMediatorTest {
         when(mFeedSurfaceCoordinator.getReliabilityLogger()).thenReturn(mReliabilityLogger);
         when(mReliabilityLogger.getLaunchLogger()).thenReturn(mLaunchReliabilityLogger);
         when(mFeedSurfaceCoordinator.getHybridListRenderer()).thenReturn(mHybridListRenderer);
+        when(mHybridListRenderer.getListLayoutHelper()).thenReturn(mListLayoutHelper);
         when(mFeedSurfaceCoordinator.getSurfaceLifecycleManager())
                 .thenReturn(mFeedSurfaceLifecycleManager);
         ObservableSupplierImpl<Boolean> hasUnreadContent = new ObservableSupplierImpl<>();
@@ -487,22 +492,8 @@ public class FeedSurfaceMediatorTest {
     public void testOnHeaderSelected_selectedWithOptions() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         PropertyModel forYou = SectionHeaderProperties.createSectionHeader("For you");
-        model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).add(forYou);
-        forYou.set(SectionHeaderProperties.UNREAD_CONTENT_KEY, true);
-        forYou.set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY, ViewVisibility.GONE);
-
-        model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
-                .add(SectionHeaderProperties.createSectionHeader("Following"));
-        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
-
-        when(mForYouStream.supportsOptions()).thenReturn(true);
-        mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
-        mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mForYouStream);
-
         OnSectionHeaderSelectedListener listener =
-                mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
+                getOnSectionHeaderSelectedListener(model, forYou, true);
         listener.onSectionHeaderSelected(0);
 
         assertEquals(0, model.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
@@ -511,10 +502,45 @@ public class FeedSurfaceMediatorTest {
                 forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
     }
 
+    @Config(qualifiers = "en-sw600dp")
     @Test
-    public void testOnHeaderSelected_selectedNoOptions() {
+    public void testOnHeaderSelected_selectedWithLatestOptionsOnTablet() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         PropertyModel forYou = SectionHeaderProperties.createSectionHeader("For you");
+        OnSectionHeaderSelectedListener listener =
+                getOnSectionHeaderSelectedListener(model, forYou, true);
+        when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.REVERSE_CHRON);
+        listener.onSectionHeaderSelected(1);
+
+        verify(mListLayoutHelper).setSpanCount(2);
+    }
+
+    @Config(qualifiers = "en-sw600dp")
+    @Test
+    public void testOnHeaderSelected_selectedWithSortOptionsOnTablet() {
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        PropertyModel forYou = SectionHeaderProperties.createSectionHeader("For you");
+        OnSectionHeaderSelectedListener listener =
+                getOnSectionHeaderSelectedListener(model, forYou, true);
+        when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.GROUPED);
+        listener.onSectionHeaderSelected(1);
+
+        verify(mListLayoutHelper).setSpanCount(1);
+    }
+
+    @Config(qualifiers = "en-sw600dp")
+    @Test
+    public void testOnOptionSelected() {
+        FeedSurfaceMediator mediator = createMediator();
+        when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.GROUPED);
+
+        mediator.onOptionChanged();
+
+        verify(mListLayoutHelper).setSpanCount(1);
+    }
+
+    private OnSectionHeaderSelectedListener getOnSectionHeaderSelectedListener(
+            PropertyModel model, PropertyModel forYou, boolean value) {
         model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).add(forYou);
         forYou.set(SectionHeaderProperties.UNREAD_CONTENT_KEY, true);
         forYou.set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY, ViewVisibility.GONE);
@@ -523,7 +549,7 @@ public class FeedSurfaceMediatorTest {
                 .add(SectionHeaderProperties.createSectionHeader("Following"));
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
-        when(mForYouStream.supportsOptions()).thenReturn(false);
+        when(mForYouStream.supportsOptions()).thenReturn(value);
         mFeedSurfaceMediator.setStreamForTesting(
                 FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
@@ -531,6 +557,15 @@ public class FeedSurfaceMediatorTest {
 
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
+        return listener;
+    }
+
+    @Test
+    public void testOnHeaderSelected_selectedNoOptions() {
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        PropertyModel forYou = SectionHeaderProperties.createSectionHeader("For you");
+        OnSectionHeaderSelectedListener listener =
+                getOnSectionHeaderSelectedListener(model, forYou, false);
         listener.onSectionHeaderSelected(0);
 
         assertEquals(0, model.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));

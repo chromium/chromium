@@ -31,6 +31,8 @@ import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderProperties;
 import org.chromium.chrome.browser.feed.sections.ViewVisibility;
 import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
+import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator.OptionChangedListener;
+import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
@@ -75,7 +77,7 @@ import java.util.Locale;
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public class FeedSurfaceMediator
         implements FeedSurfaceScrollDelegate, TouchEnabledDelegate, TemplateUrlServiceObserver,
-                   ListMenu.Delegate, IdentityManager.Observer {
+                   ListMenu.Delegate, IdentityManager.Observer, OptionChangedListener {
     private static final String TAG = "FeedSurfaceMediator";
     private static final int INTEREST_FEED_HEADER_POSITION = 0;
 
@@ -96,6 +98,7 @@ public class FeedSurfaceMediator
                 headerList.get(index).set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
                         ViewVisibility.VISIBLE);
             }
+            updateLayout(newStream.supportsOptions(), false);
             if (!mSettingUpStreams) {
                 logSwitchedFeeds(newStream);
                 bindStream(newStream, /*shouldScrollToTop=*/true);
@@ -183,6 +186,9 @@ public class FeedSurfaceMediator
 
     private static PrefChangeRegistrar sTestPrefChangeRegistar;
     private static PrefService sPrefServiceForTest;
+    private static final int SPAN_COUNT_SMALL_WIDTH = 1;
+    private static final int SPAN_COUNT_LARGE_WIDTH = 2;
+    private static final int SMALL_WIDTH = 600;
 
     private final FeedSurfaceCoordinator mCoordinator;
     private final Context mContext;
@@ -244,6 +250,7 @@ public class FeedSurfaceMediator
                 Profile.getLastUsedRegularProfile());
         mActionDelegate = actionDelegate;
         mOptionsCoordinator = optionsCoordinator;
+        mOptionsCoordinator.setOptionsListener(this);
 
         if (sTestPrefChangeRegistar != null) {
             mPrefChangeRegistrar = sTestPrefChangeRegistar;
@@ -270,6 +277,27 @@ public class FeedSurfaceMediator
         initialize();
     }
 
+    @Override
+    public void onOptionChanged() {
+        updateLayout(true, false);
+    }
+
+    private void updateLayout(boolean optionsSupported, boolean overrideSingleSpan) {
+        ListLayoutHelper listLayoutHelper =
+                mCoordinator.getHybridListRenderer().getListLayoutHelper();
+        if (!FeedFeatures.isMultiColumnFeedEnabled(mContext) || listLayoutHelper == null) return;
+        int spanCount = overrideSingleSpan ? SPAN_COUNT_SMALL_WIDTH : SPAN_COUNT_LARGE_WIDTH;
+        if (!overrideSingleSpan && optionsSupported) {
+            @ContentOrder
+            int selectedOption = mOptionsCoordinator.getSelectedOptionId();
+            // Override to single span count when showing following feed sort by site.
+            if (ContentOrder.GROUPED == selectedOption) {
+                spanCount = SPAN_COUNT_SMALL_WIDTH;
+            }
+        }
+        listLayoutHelper.setSpanCount(spanCount);
+    }
+
     /** Clears any dependencies. */
     void destroy() {
         destroyPropertiesForStream();
@@ -291,6 +319,13 @@ public class FeedSurfaceMediator
         mCoordinator.getView().addOnLayoutChangeListener(
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     mSnapScrollHelper.handleScroll();
+                    if (FeedFeatures.isMultiColumnFeedEnabled(mContext)) {
+                        boolean useSingleSpan = (right - left) <= SMALL_WIDTH;
+                        Stream stream = mTabToStreamMap.get(mSectionHeaderModel.get(
+                                SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+                        boolean supportsOptions = (stream != null) && stream.supportsOptions();
+                        updateLayout(supportsOptions, useSingleSpan);
+                    }
                 });
     }
 

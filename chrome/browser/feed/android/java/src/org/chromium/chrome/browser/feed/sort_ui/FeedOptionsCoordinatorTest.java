@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Tests for {@link FeedOptionsCoordinator}.
@@ -123,6 +124,8 @@ public class FeedOptionsCoordinatorTest {
 
     @Test
     public void testOptionsSelected() {
+        AtomicBoolean listenerCalled = new AtomicBoolean(false);
+        mCoordinator.setOptionsListener(() -> { listenerCalled.set(true); });
         List<PropertyModel> chipModels = mCoordinator.getChipModelsForTest();
         chipModels.get(0).set(ChipProperties.SELECTED, false);
         chipModels.get(1).set(ChipProperties.SELECTED, true);
@@ -131,5 +134,6 @@ public class FeedOptionsCoordinatorTest {
 
         assertFalse(chipModels.get(1).get(ChipProperties.SELECTED));
         assertTrue(chipModels.get(0).get(ChipProperties.SELECTED));
+        assertTrue(listenerCalled.get());
     }
 }

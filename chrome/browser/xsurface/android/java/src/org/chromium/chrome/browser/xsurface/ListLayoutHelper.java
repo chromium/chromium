@@ -33,4 +33,7 @@ public interface ListLayoutHelper {
      * @param offset offset to scroll to.
      */
     default void scrollToPositionWithOffset(int position, int offset) {}
+
+    /** Sets column count for @{@link android.support.v7.widget.RecyclerView} */
+    default void setSpanCount(int spanCount) {}
 }

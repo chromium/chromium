@@ -31,28 +31,14 @@ public interface HybridListRenderer {
      * @param viewport the ViewGroup containing the content. Views within the
      *   bounds of this ViewGroup will be considered for view actions. If null,
      *   the returned View will be used as the viewport.
-     * @return
-     */
-    @Nullable
-    @Deprecated
-    default View bind(ListContentManager manager, @Nullable ViewGroup viewport) {
-        return bind(manager);
-    }
-
-    /**
-     * Binds a contentmanager with this renderer.
-     *
-     * @param manager the ListContentManager responsible for populating views
-     * @param viewport the ViewGroup containing the content. Views within the
-     *   bounds of this ViewGroup will be considered for view actions. If null,
-     *   the returned View will be used as the viewport.
-     * @param shouldUseStaggeredLayout whether to use Staggered layout for list.
+     * @param shouldUseStaggeredLayout whether to use Staggered layout for list. Column count should
+     *         be set via ListLayoutHelper#setSpanCount()
      * @return
      */
     @Nullable
     default View bind(ListContentManager manager, @Nullable ViewGroup viewport,
             boolean shouldUseStaggeredLayout) {
-        return bind(manager, viewport);
+        return bind(manager);
     }
 
     /**

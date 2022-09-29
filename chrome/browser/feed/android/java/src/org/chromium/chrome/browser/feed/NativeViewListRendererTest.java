@@ -203,4 +203,14 @@ public class NativeViewListRendererTest {
         assertEquals(expectedLayoutManager.findLastVisibleItemPosition(),
                 helper.findLastVisibleItemPosition());
     }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testLayoutHelperSetSpanCount() {
+        mManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("1"), createContent("2"), createContent("3")}));
+        mRenderer.bind(mManager);
+
+        mRenderer.getListLayoutHelper().setSpanCount(3);
+    }
 }
