@@ -127,7 +127,7 @@ js_library("cups_printers_browser_proxy") {
 js_library("cups_printers_entry") {
   deps = [
     ":cups_printer_types",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
+    "//ash/webui/common/resources:focus_row_behavior",
   ]
 }
 

@@ -20,9 +20,9 @@ js_type_check("closure_compile_module") {
 js_library("bluetooth_device_list_item") {
   deps = [
     ":bluetooth_page_browser_proxy",
+    "//ash/webui/common/resources:focus_row_behavior",
     "//services/device/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
   ]
   externs_list = [
     "$externs_path/bluetooth.js",

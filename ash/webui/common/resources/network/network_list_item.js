@@ -18,9 +18,9 @@ import './network_icon.js';
 
 import {CellularSetupPageName} from '//resources/ash/common/cellular_setup/cellular_types.js';
 import {getESimProfileProperties} from '//resources/ash/common/cellular_setup/esim_manager_utils.js';
+import {FocusRowBehavior} from '//resources/ash/common/focus_row_behavior.js';
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert} from '//resources/js/assert.js';
-import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {ActivationStateType, CrosNetworkConfigRemote, GlobalPolicy, ManagedCellularProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';

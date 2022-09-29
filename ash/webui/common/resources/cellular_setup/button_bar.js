@@ -9,7 +9,7 @@ import '//resources/cr_elements/cr_shared_vars.css.js';
 
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
-import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink_js.js';
+import {focusWithoutInk} from '//resources/ash/common/focus_without_ink_js.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './button_bar.html.js';

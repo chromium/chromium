@@ -8,13 +8,10 @@
 
 // clang-format off
 import {assert} from 'chrome://resources/js/assert.js';
-import {isIOS} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 
 let hideInk = false;
-
-assert(!isIOS, 'pointerdown doesn\'t work on iOS');
 
 document.addEventListener('pointerdown', function() {
   hideInk = true;
@@ -46,4 +43,3 @@ export const focusWithoutInk = function(toFocus) {
   toFocus.focus();
   toFocus.noink = noink;
 };
-

@@ -460,6 +460,9 @@ ts_library("build_ts") {
 
   deps = [ "//ui/webui/resources:library" ]
   extra_deps = [ ":generate_definitions" ]
+  if (is_chromeos_ash) {
+    extra_deps += [ "//ash/webui/common/resources:generate_definitions" ]
+  }
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/chrome_timeticks.d.ts",

@@ -138,9 +138,6 @@ group("closure_compile_modules") {
     ":js_resources_modules",
     "cr:closure_compile_modules",
   ]
-  if (is_chromeos_ash) {
-    deps += [ "cr/ui:closure_compile_modules" ]
-  }
 }
 
 js_type_check("js_resources_modules") {

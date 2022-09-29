@@ -81,7 +81,6 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     public_deps += [
       ":build_cros_styles_grdp",
-      "js/cr/ui:build_grdp",
       "//ash/webui/common/resources:build_grdp",
       "//ash/webui/common/resources:build_html_css_wrapper_files_grdp",
       "//chromeos/ash/components/cros_elements:build_grdp",
@@ -95,7 +94,6 @@ generate_grd("build_grd") {
       "$root_gen_dir/third_party/material_web_components/material_web_components_resources.grdp",
       "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp",
       "$target_gen_dir/cros_styles_resources.grdp",
-      "$target_gen_dir/js/cr/ui/resources.grdp",
     ]
   }
 
@@ -163,7 +161,6 @@ if (is_chromeos_ash) {
   checked_in_dts_files += [
     "cr_elements/cr_container_shadow_behavior.d.ts",
     "js/list_property_update_behavior.d.ts",
-    "js/cr/ui/focus_row_behavior.d.ts",
   ]
 }
 
@@ -188,13 +185,6 @@ generate_definitions_js_files = [
   "js/icon.js",
   "js/util.js",
 ]
-
-if (is_chromeos_ash) {
-  generate_definitions_js_files += [
-    "js/cr/ui/focus_row_js.js",
-    "js/cr/ui/focus_without_ink_js.js",
-  ]
-}
 
 if (is_ios) {
   generate_definitions_js_files += [ "js/ios/web_ui.js" ]

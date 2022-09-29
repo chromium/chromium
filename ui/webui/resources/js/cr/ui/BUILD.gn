@@ -2,22 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/include_polymer.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/js/cr/ui"
-if (is_chromeos_ash) {
-  preprocess_src_manifest = "preprocessed_src_manifest.json"
-}
 
 group("preprocess") {
   public_deps = [ ":preprocess_src_ts" ]
-  if (is_chromeos_ash) {
-    public_deps += [ ":preprocess_src" ]
-  }
 }
 
 # TS files are passed to a separate target so that they are not listed in the
@@ -38,62 +29,6 @@ preprocess_if_expr("preprocess_src_ts") {
     in_files += [
       "focus_row_mixin.ts",
       "focus_without_ink.ts",
-    ]
-  }
-}
-
-# JS files for Chrome OS only.
-if (is_chromeos_ash) {
-  generate_grd("build_grdp") {
-    grd_prefix = "webui_js_cr_ui"
-    out_grd = "$target_gen_dir/resources.grdp"
-    public_deps = [ ":preprocess_src" ]
-    manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
-    resource_path_prefix = "js/cr/ui"
-  }
-
-  preprocess_if_expr("preprocess_src") {
-    in_folder = "./"
-    out_folder = "$preprocess_folder"
-    out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-
-    in_files = [
-      "focus_without_ink_js.js",
-      "focus_row_behavior.js",
-      "focus_row_js.js",
-    ]
-  }
-
-  js_type_check("closure_compile_modules") {
-    is_polymer3 = true
-    deps = [
-      ":focus_row_behavior",
-      ":focus_row_js",
-      ":focus_without_ink_js",
-    ]
-  }
-
-  js_library("focus_row_js") {
-    deps = [
-      "../..:assert",
-      "../..:event_tracker",
-      "../..:util",
-    ]
-  }
-
-  js_library("focus_row_behavior") {
-    deps = [
-      ":focus_row_js",
-      ":focus_without_ink_js",
-      "../..:assert",
-      "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    ]
-  }
-
-  js_library("focus_without_ink_js") {
-    deps = [
-      "../..:assert",
-      "../..:cr.m",
     ]
   }
 }

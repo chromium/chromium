@@ -17,7 +17,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources
 import {getTemplate} from './bluetooth_base_page.html.js';
 
 import {assertNotReached} from '//resources/js/assert.js';
-import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink_js.js';
+import {focusWithoutInk} from '//resources/ash/common/focus_without_ink_js.js';
 
 import {ButtonBarState, ButtonName, ButtonState} from './bluetooth_types.js';
 

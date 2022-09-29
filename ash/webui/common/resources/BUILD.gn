@@ -105,6 +105,9 @@ non_web_component_files = [
   "cr_picture/cr_picture_types.js",
   "cr_picture/png.js",
   "cr_picture/webcam_utils.js",
+  "focus_row_js.js",
+  "focus_row_behavior.js",
+  "focus_without_ink_js.js",
   "keyboard_shortcut_list_js.js",
   "multidevice_setup/fake_mojo_service.js",
   "multidevice_setup/mojo_api.js",
@@ -270,6 +273,8 @@ generate_definitions_js_files = [
   "cr_picture/icons.html.js",
   "cr_picture/png.js",
   "cr_picture/webcam_utils.js",
+  "focus_row_js.js",
+  "focus_without_ink_js.js",
   "keyboard_shortcut_list_js.js",
   "navigation_shared_vars.css.js",
   "network/network_shared.css.js",
@@ -295,6 +300,7 @@ ts_definitions("generate_definitions") {
 
 checked_in_dts_files = [
   "fake_method_resolver.d.ts",
+  "focus_row_behavior.d.ts",
   "keyboard_diagram.d.ts",
   "keyboard_key.d.ts",
 
@@ -385,6 +391,9 @@ js_type_check("closure_compile_local") {
   deps = [
     ":fake_method_resolver",
     ":fake_observables",
+    ":focus_row_behavior",
+    ":focus_row_js",
+    ":focus_without_ink_js",
     ":keyboard_diagram",
     ":keyboard_key",
     ":keyboard_layouts",
@@ -402,6 +411,30 @@ js_library("fake_observables") {
 
 js_library("fake_method_resolver") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_library("focus_row_js") {
+  deps = [
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:event_tracker",
+    "//ui/webui/resources/js:util",
+  ]
+}
+
+js_library("focus_row_behavior") {
+  deps = [
+    ":focus_row_js",
+    ":focus_without_ink_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
+  ]
+}
+
+js_library("focus_without_ink_js") {
+  deps = [
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr.m",
+  ]
 }
 
 js_library("keyboard_diagram") {

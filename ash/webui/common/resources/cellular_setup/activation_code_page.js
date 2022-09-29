@@ -14,7 +14,7 @@ import './base_page.js';
 import './cellular_setup_icons.html.js';
 
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
-import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink_js.js';
+import {focusWithoutInk} from '//resources/ash/common/focus_without_ink_js.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
