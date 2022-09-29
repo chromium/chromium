@@ -16,7 +16,7 @@ namespace sandbox {
 
 enum AppContainerType { kNone, kDerived, kProfile, kLowbox };
 
-class AppContainer {
+class [[clang::lto_visibility_public]] AppContainer {
  public:
   // Increments the reference count of this object. The reference count must
   // be incremented if this interface is given to another component.

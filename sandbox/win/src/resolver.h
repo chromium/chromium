@@ -19,7 +19,7 @@ namespace sandbox {
 // A resolver is the object in charge of performing the actual interception of
 // a function. There should be a concrete implementation of a resolver roughly
 // per type of interception.
-class ResolverThunk {
+class [[clang::lto_visibility_public]] ResolverThunk {
  public:
   ResolverThunk() {}
 

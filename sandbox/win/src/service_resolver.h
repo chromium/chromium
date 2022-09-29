@@ -14,7 +14,8 @@ namespace sandbox {
 
 // This is the concrete resolver used to perform service-call type functions
 // inside ntdll.dll.
-class ServiceResolverThunk : public ResolverThunk {
+class [[clang::lto_visibility_public]] ServiceResolverThunk
+    : public ResolverThunk {
  public:
   // The service resolver needs a child process to write to.
   ServiceResolverThunk(HANDLE process, bool relaxed)
