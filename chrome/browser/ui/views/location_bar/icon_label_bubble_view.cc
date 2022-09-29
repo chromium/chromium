@@ -523,7 +523,7 @@ void IconLabelBubbleView::AnimateIn(absl::optional<int> string_id) {
       // virtual view.
       alert_virtual_view_->GetCustomData().role =
           ax::mojom::Role::kGenericContainer;
-      alert_virtual_view_->GetCustomData().SetName(label);
+      alert_virtual_view_->GetCustomData().SetNameChecked(label);
       alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert);
     }
     label()->SetVisible(true);
