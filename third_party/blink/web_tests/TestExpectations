@@ -1666,7 +1666,6 @@ crbug.com/1356256 fast/table/percent-widths-float.html [ Failure Pass ]
 
 crbug.com/1367912 external/wpt/css/css-break/flexbox/flex-container-fragmentation-008.html [ Failure ]
 crbug.com/1367912 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-029.html [ Failure ]
-crbug.com/1367933 scrollbars/scrollbars-on-positioned-content.html [ Failure ]
 
 # ====== LayoutNG-only failures until here ======
 

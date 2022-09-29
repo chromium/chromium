@@ -1460,10 +1460,14 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
     WritingDirectionMode writing_mode_direction =
         node_info.node.Style().GetWritingDirection();
     bool freeze_horizontal = false, freeze_vertical = false;
+    bool ignore_first_inline_freeze =
+        scrollbars_after.InlineSum() && scrollbars_after.BlockSum();
     // If we're in a measure pass, freeze both scrollbars right away, to avoid
     // quadratic time complexity for deeply nested flexboxes.
-    if (ConstraintSpace().CacheSlot() == NGCacheSlot::kMeasure)
+    if (ConstraintSpace().CacheSlot() == NGCacheSlot::kMeasure) {
       freeze_horizontal = freeze_vertical = true;
+      ignore_first_inline_freeze = false;
+    }
     do {
       // Freeze any scrollbars that appeared, and relayout. Repeat until both
       // have appeared, or until the scrollbar situation doesn't change,
@@ -1471,6 +1475,16 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
       AddScrollbarFreeze(scrollbars_before, scrollbars_after,
                          writing_mode_direction, &freeze_horizontal,
                          &freeze_vertical);
+      if (ignore_first_inline_freeze) {
+        ignore_first_inline_freeze = false;
+        // We allow to remove the inline-direction scrollbar only once
+        // because the box might have unnecessary scrollbar due to
+        // SetIsFixedInlineSize(true).
+        if (writing_mode_direction.IsHorizontal())
+          freeze_horizontal = false;
+        else
+          freeze_vertical = false;
+      }
       scrollbars_before = scrollbars_after;
       PaintLayerScrollableArea::FreezeScrollbarsRootScope freezer(
           *node_info.node.GetLayoutBox(), freeze_horizontal, freeze_vertical);
