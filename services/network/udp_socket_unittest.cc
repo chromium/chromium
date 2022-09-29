@@ -673,18 +673,15 @@ TEST_F(UDPSocketTest, TestReadZeroByte) {
   EXPECT_EQ(std::vector<uint8_t>(), result.data.value());
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 // Some Android devices do not support multicast socket.
 // The ones supporting multicast need WifiManager.MulticastLock to enable it.
 // https://developer.android.com/reference/android/net/wifi/WifiManager.MulticastLock.html
-// TODO(crbug.com/1215667): Fails on iOS running on Mac 11 machines. Flaky on
-// Mac 11 machines.
 // TODO(crbug.com/1255191): Fails on Fuchsia running with run-test-component.
 #define MAYBE_JoinMulticastGroup DISABLED_JoinMulticastGroup
 #else
 #define MAYBE_JoinMulticastGroup JoinMulticastGroup
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
   const char kGroup[] = "237.132.100.17";
 
