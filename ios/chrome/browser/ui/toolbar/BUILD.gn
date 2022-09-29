@@ -124,7 +124,6 @@ source_set("toolbar_ui") {
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/toolbar_container:toolbar_collapsing",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
