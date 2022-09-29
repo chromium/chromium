@@ -126,14 +126,6 @@ HTMLPlugInElement::HTMLPlugInElement(const QualifiedName& tag_name,
       // simpler to make both classes share the same codepath in this class.
       needs_plugin_update_(!flags.IsCreatedByParser()) {
   SetHasCustomStyleCallbacks();
-  if (!base::FeatureList::IsEnabled(
-          features::kBackForwardCacheEnabledForNonPluginEmbed)) {
-    if (auto* context = doc.GetExecutionContext()) {
-      context->GetScheduler()->RegisterStickyFeature(
-          SchedulingPolicy::Feature::kContainsPlugins,
-          {SchedulingPolicy::DisableBackForwardCache()});
-    }
-  }
 }
 
 HTMLPlugInElement::~HTMLPlugInElement() {
@@ -697,16 +689,13 @@ bool HTMLPlugInElement::LoadPlugin(const KURL& url,
     layout_object->GetFrameView()->AddPlugin(plugin);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kBackForwardCacheEnabledForNonPluginEmbed)) {
-    // Disable back/forward cache when a document uses a plugin. This is not
-    // done in the constructor since |HTMLPlugInElement| is a base class for
-    // HTMLObjectElement and HTMLEmbedElement which can host child browsing
-    // contexts instead.
-    GetExecutionContext()->GetScheduler()->RegisterStickyFeature(
-        SchedulingPolicy::Feature::kContainsPlugins,
-        {SchedulingPolicy::DisableBackForwardCache()});
-  }
+  // Disable back/forward cache when a document uses a plugin. This is not
+  // done in the constructor since `HTMLPlugInElement` is a base class for
+  // HTMLObjectElement and HTMLEmbedElement which can host child browsing
+  // contexts instead.
+  GetExecutionContext()->GetScheduler()->RegisterStickyFeature(
+      SchedulingPolicy::Feature::kContainsPlugins,
+      {SchedulingPolicy::DisableBackForwardCache()});
 
   GetDocument().SetContainsPlugins();
   // TODO(esprehn): WebPluginContainerImpl::SetCcLayer() also schedules a

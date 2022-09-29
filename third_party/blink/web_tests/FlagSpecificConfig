@@ -4,10 +4,6 @@
     "args": ["--enable-features=BackForwardCache"]
   },
   {
-    "name": "back-forward-cache-embed",
-    "args": ["--enable-features=BackForwardCacheEnabledForNonPluginEmbed"]
-  },
-  {
     "name": "disable-layout-ng",
     "args": ["--disable-blink-features=LayoutNG,LayoutNGBlockFragmentation"]
   },

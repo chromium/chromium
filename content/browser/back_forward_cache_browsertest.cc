@@ -2502,19 +2502,17 @@ bool BackForwardCacheBrowserTest::IsUnloadAllowedToEnterBackForwardCache() {
 }
 
 bool BackForwardCacheBrowserTest::AddBlocklistedFeature(RenderFrameHost* rfh) {
-  return ExecJs(rfh, R"(
-    let object = document.createElement("object");
-    object.type = "application/x-blink-test-plugin";
-    document.body.appendChild(object);
-  )");
+  // Add kDummy as blocking feature.
+  RenderFrameHostImplWrapper rfh_a(rfh);
+  rfh_a->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
+  return true;
 }
 
 void BackForwardCacheBrowserTest::ExpectNotRestoredDueToBlocklistedFeature(
     base::Location location) {
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kContainsPlugins}, {}, {},
-      {}, location);
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {blink::scheduler::WebSchedulerTrackedFeature::kDummy}, {},
+                    {}, {}, location);
 }
 
 const ukm::TestAutoSetUkmRecorder& BackForwardCacheBrowserTest::ukm_recorder() {

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Page with <embed type=application/javascript src=/resources/test-only-api.js>
-PASS Page with <object type=application/javascript data=/resources/test-only-api.js>
-Harness: the test ran to completion.
-

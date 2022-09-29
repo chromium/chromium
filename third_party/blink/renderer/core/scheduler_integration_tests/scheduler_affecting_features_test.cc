@@ -150,8 +150,6 @@ TEST_F(SchedulingAffectingFeaturesTest, CacheControl_Navigation) {
 }
 
 TEST_F(SchedulingAffectingFeaturesTest, Plugins) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kBackForwardCacheEnabledForNonPluginEmbed);
   {
     SimRequest main_resource("https://example.com/", "text/html");
     LoadURL("https://example.com/");
@@ -181,8 +179,6 @@ TEST_F(SchedulingAffectingFeaturesTest, Plugins) {
 }
 
 TEST_F(SchedulingAffectingFeaturesTest, NonPlugins) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kBackForwardCacheEnabledForNonPluginEmbed);
   {
     SimRequest main_resource("https://example.com/", "text/html");
     LoadURL("https://example.com/");

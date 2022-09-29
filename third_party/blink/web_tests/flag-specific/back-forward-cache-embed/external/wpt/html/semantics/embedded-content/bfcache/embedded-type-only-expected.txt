@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Page with <embed type=text/html src=undefined>
-PASS Page with <object type=text/html data=undefined>
-Harness: the test ran to completion.
-

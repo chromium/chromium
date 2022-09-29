@@ -1301,10 +1301,6 @@ BASE_FEATURE(kBackForwardCacheAppBanner,
              "BackForwardCacheAppBanner",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBackForwardCacheEnabledForNonPluginEmbed,
-             "BackForwardCacheEnabledForNonPluginEmbed",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Initialize CSSDefaultStyleSheets early in renderer startup.
 BASE_FEATURE(kDefaultStyleSheetsEarlyInit,
              "DefaultStyleSheetsEarlyInit",

@@ -678,13 +678,6 @@ class ChromeBackForwardCacheBrowserWithEmbedTest
   }
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Allow BackForwardCache for non-plugin embedded elements.
-    EnableFeatureAndSetParams(
-        blink::features::kBackForwardCacheEnabledForNonPluginEmbed, "", "");
-    ChromeBackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
   void ExpectBlocklistedFeature(
       blink::scheduler::WebSchedulerTrackedFeature feature,
       base::Location location) {

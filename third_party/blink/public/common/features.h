@@ -572,11 +572,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrefetchAndroidFonts);
 // back/forward cache.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheAppBanner);
 
-// Enables back/forward cache for non-plugin embeds.
-// TODO(crbug.com/1325192): Remove once the bug is resolved.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kBackForwardCacheEnabledForNonPluginEmbed);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDefaultStyleSheetsEarlyInit);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSystemColorChooser);

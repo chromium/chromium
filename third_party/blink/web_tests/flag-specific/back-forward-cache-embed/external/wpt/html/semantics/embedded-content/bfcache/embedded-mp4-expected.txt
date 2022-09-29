@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Page with <embed type=undefined src=/media/white.mp4>
-PASS Page with <object type=undefined data=/media/white.mp4>
-Harness: the test ran to completion.
-
