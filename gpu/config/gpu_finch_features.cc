@@ -191,12 +191,6 @@ BASE_FEATURE(kDisableVideoOverlayIfMoving,
 #if BUILDFLAG(IS_MAC)
 // Enable use of Metal for OOP rasterization.
 BASE_FEATURE(kMetal, "Metal", base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if defined(ARCH_CPU_ARM64)
-BASE_FEATURE(kDisableFlushWorkaroundForMacCrash,
-             "DisableFlushWorkaroundForMacCrash",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 #endif
 
 // Causes us to use the SharedImageManager, removing support for the old

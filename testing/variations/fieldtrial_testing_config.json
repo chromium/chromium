@@ -3823,21 +3823,6 @@
             ]
         }
     ],
-    "DisableFlushWorkaroundForMacCrash": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisableFlushWorkaroundForMacCrash"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableFontManagerEarlyInitDesktop": [
         {
             "platforms": [

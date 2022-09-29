@@ -46,10 +46,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kDisableVideoOverlayIfMoving);
 
 #if BUILDFLAG(IS_MAC)
 GPU_EXPORT BASE_DECLARE_FEATURE(kMetal);
-
-#if defined(ARCH_CPU_ARM64)
-GPU_EXPORT BASE_DECLARE_FEATURE(kDisableFlushWorkaroundForMacCrash);
-#endif
 #endif
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kSharedImageManager);
