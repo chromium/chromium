@@ -276,10 +276,10 @@ void TabGroupHeader::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                    : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
 #endif
   if (title.empty()) {
-    node_data->SetName(l10n_util::GetStringFUTF16(
+    node_data->SetNameChecked(l10n_util::GetStringFUTF16(
         IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT, contents, collapsed_state));
   } else {
-    node_data->SetName(
+    node_data->SetNameChecked(
         l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT, title,
                                    contents, collapsed_state));
   }
