@@ -11,7 +11,7 @@
 namespace gcm {
 namespace features {
 
-GCM_EXPORT extern const base::Feature kGCMDeleteIncomingMessagesWithoutTTL;
+GCM_EXPORT BASE_DECLARE_FEATURE(kGCMDeleteIncomingMessagesWithoutTTL);
 
 }  // namespace features
 }  // namespace gcm

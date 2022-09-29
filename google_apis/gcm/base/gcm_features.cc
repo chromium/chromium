@@ -7,8 +7,9 @@
 namespace gcm {
 namespace features {
 
-const base::Feature kGCMDeleteIncomingMessagesWithoutTTL(
-    {"GCMDeleteIncomingMessagesWithoutTTL", base::FEATURE_DISABLED_BY_DEFAULT});
+BASE_FEATURE(kGCMDeleteIncomingMessagesWithoutTTL,
+             "GCMDeleteIncomingMessagesWithoutTTL",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace gcm
