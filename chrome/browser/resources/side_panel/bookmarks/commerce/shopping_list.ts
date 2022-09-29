@@ -43,10 +43,13 @@ export class ShoppingListElement extends PolymerElement {
 
       untrackedItems_: {
         type: Array,
-        value: [],
+        value: () => [],
       },
 
-      productInfos: Array,
+      productInfos: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
@@ -192,6 +195,11 @@ export class ShoppingListElement extends PolymerElement {
     }
     this.untrackedItems_ = this.untrackedItems_.filter(
         item => item.bookmarkId !== product.bookmarkId);
+    if (!this.isSameProduct_(productItem, product)) {
+      const index = this.productInfos.indexOf(productItem);
+      this.splice('productInfos', index, 1);
+      this.splice('productInfos', index, 0, product);
+    }
   }
 
   private onBookmarkPriceUntracked(bookmarkId: bigint) {
@@ -203,6 +211,18 @@ export class ShoppingListElement extends PolymerElement {
     if (!this.untrackedItems_.includes(untrackedItem)) {
       this.push('untrackedItems_', untrackedItem);
     }
+  }
+
+  private isSameProduct_(
+      itemA: BookmarkProductInfo, itemB: BookmarkProductInfo) {
+    // Only compare the user-visible properties.
+    if (itemA.info.title !== itemB.info.title ||
+        itemA.info.imageUrl.url !== itemB.info.imageUrl.url ||
+        itemA.info.currentPrice !== itemB.info.currentPrice ||
+        itemA.info.previousPrice !== itemB.info.previousPrice) {
+      return false;
+    }
+    return true;
   }
 }
 

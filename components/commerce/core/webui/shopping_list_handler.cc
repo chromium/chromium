@@ -77,6 +77,7 @@ ShoppingListHandler::ShoppingListHandler(
       shopping_service_(shopping_service),
       locale_(locale) {
   scoped_observation_.Observe(bookmark_model);
+  shopping_service_->ScheduleSavedProductUpdate();
 }
 
 ShoppingListHandler::~ShoppingListHandler() = default;

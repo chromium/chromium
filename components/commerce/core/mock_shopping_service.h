@@ -38,6 +38,7 @@ class MockShoppingService : public commerce::ShoppingService {
   void Unsubscribe(
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       base::OnceCallback<void(bool)> callback) override;
+  void ScheduleSavedProductUpdate() override;
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);

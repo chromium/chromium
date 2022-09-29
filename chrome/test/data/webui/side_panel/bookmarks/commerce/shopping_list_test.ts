@@ -125,7 +125,7 @@ suite('SidePanelShoppingListTest', () => {
     ShoppingListApiProxyImpl.setInstance(shoppingListApi);
 
     shoppingList = document.createElement('shopping-list');
-    shoppingList.productInfos = products;
+    shoppingList.productInfos = products.slice();
     document.body.appendChild(shoppingList);
 
     await flushTasks();
@@ -336,5 +336,35 @@ suite('SidePanelShoppingListTest', () => {
     shoppingListApi.getCallbackRouterRemote().priceTrackedForBookmark(product);
     await flushTasks();
     checkActionButtonStatus(actionButtonA, true);
+  });
+
+  test('ObservesTrackedProductInfoUpdate', async () => {
+    let productElements = getProductElements(shoppingList);
+    assertEquals(2, products.length);
+
+    for (let i = 0; i < products.length; i++) {
+      checkProductElementRender(productElements[i]!, products[i]!);
+    }
+
+    const updatedProduct = {
+      bookmarkId: BigInt(3),
+      info: {
+        title: 'Product Baz',
+        domain: 'baz.com',
+        imageUrl: {url: 'https://baz.com/image'},
+        productUrl: {url: 'https://baz.com/product'},
+        currentPrice: '$56',
+        previousPrice: '$78',
+      },
+    };
+    shoppingListApi.getCallbackRouterRemote().priceTrackedForBookmark(
+        updatedProduct);
+    await flushTasks();
+
+    productElements = getProductElements(shoppingList);
+    assertEquals(2, products.length);
+
+    checkProductElementRender(productElements[0]!, updatedProduct);
+    checkProductElementRender(productElements[1]!, products[1]!);
   });
 });

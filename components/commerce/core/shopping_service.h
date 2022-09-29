@@ -210,6 +210,10 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // Fetch users' pref from server on whether to receive price tracking emails.
   void FetchPriceEmailPref();
 
+  // Schedule an update for saved product bookmarks using
+  // |bookmark_update_manager_|.
+  virtual void ScheduleSavedProductUpdate();
+
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 
