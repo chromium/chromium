@@ -108,6 +108,16 @@ class PasswordAccessoryControllerImpl
     security_level_for_testing_ = security_level;
   }
 #endif
+ protected:
+  // This constructor can also be used by |CreateForWebContentsForTesting|
+  // to inject a fake |ManualFillingController| and a fake
+  // |PasswordManagerClient|.
+  PasswordAccessoryControllerImpl(
+      content::WebContents* web_contents,
+      password_manager::CredentialCache* credential_cache,
+      base::WeakPtr<ManualFillingController> mf_controller,
+      password_manager::PasswordManagerClient* password_client,
+      PasswordDriverSupplierForFocusedFrame driver_supplier);
 
  private:
   friend class content::WebContentsUserData<PasswordAccessoryControllerImpl>;
@@ -131,16 +141,6 @@ class PasswordAccessoryControllerImpl
     // If true, manual generation will be available for the focused field.
     bool is_manual_generation_available = false;
   };
-
-  // This constructor can also be used by |CreateForWebContentsForTesting|
-  // to inject a fake |ManualFillingController| and a fake
-  // |PasswordManagerClient|.
-  PasswordAccessoryControllerImpl(
-      content::WebContents* web_contents,
-      password_manager::CredentialCache* credential_cache,
-      base::WeakPtr<ManualFillingController> mf_controller,
-      password_manager::PasswordManagerClient* password_client,
-      PasswordDriverSupplierForFocusedFrame driver_supplier);
 
   // Enables or disables saving for the focused origin. This involves removing
   // or adding blocklisted entry in the |PasswordStore|.

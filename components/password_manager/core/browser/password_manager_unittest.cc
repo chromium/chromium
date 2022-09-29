@@ -4514,6 +4514,26 @@ TEST_P(PasswordManagerTest, ParsingNewFormsTriggersSettingFetch) {
   manager()->OnPasswordFormsParsed(&driver_, observed);
 }
 
+TEST_P(PasswordManagerTest, HaveFormManagersReceivedDataDependsOnDriver) {
+  FormData observed_form_data = MakeSimpleFormData();
+  // GetLogins calls remain unanswered to emulate that |PasswordStore| did not
+  // fetch logins yet for this form.
+  EXPECT_CALL(*store_, GetLogins);
+  manager()->OnPasswordFormsParsed(&driver_, {observed_form_data});
+
+  FormData observed_form_data_other_frame = MakeSimpleFormData();
+  MockPasswordManagerDriver other_driver;
+  base::WeakPtr<PasswordStoreConsumer> other_store_consumer;
+  EXPECT_CALL(*store_, GetLogins(_, _))
+      .WillOnce(SaveArg<1>(&other_store_consumer));
+  manager()->OnPasswordFormsParsed(&other_driver,
+                                   {observed_form_data_other_frame});
+  other_store_consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(), {});
+
+  EXPECT_FALSE(manager()->HaveFormManagersReceivedData(&driver_));
+  EXPECT_TRUE(manager()->HaveFormManagersReceivedData(&other_driver));
+}
+
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, testing::Bool());
 
 }  // namespace password_manager

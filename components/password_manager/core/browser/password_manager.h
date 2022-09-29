@@ -164,6 +164,12 @@ class PasswordManager : public PasswordManagerInterface {
   // Handles a request to hide manual fallback for password saving.
   void HideManualFallbackForSaving();
 
+  // Checks whether all |FormFetcher|s belonging to the |driver|-corresponding
+  // frame have finished fetching logins.
+  // Used to determine whether manual password generation can be offered
+  // Automatic password generation already waits for that signal.
+  bool HaveFormManagersReceivedData(const PasswordManagerDriver* driver);
+
   void ProcessAutofillPredictions(
       PasswordManagerDriver* driver,
       const std::vector<autofill::FormStructure*>& forms);
