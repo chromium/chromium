@@ -2220,6 +2220,16 @@ chromium-metrics-reviews@google.com.
   <token key="IncognitoOrNormal" variants="IncognitoOrNormal"/>
 </histogram>
 
+<histogram name="Media.EME.CdmFileIO::OpenFile" enum="CdmStorageStatus"
+    expires_after="2023-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The status of file open received by MojoCdmFileIO. This is reported every
+    time the CDM tries to open a file for read or write.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CdmHostVerificationStatus"
     enum="CdmHostVerificationStatus" expires_after="2023-05-07">
   <owner>xhwang@chromium.org</owner>

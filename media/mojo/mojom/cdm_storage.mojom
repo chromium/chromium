@@ -7,10 +7,12 @@ module media.mojom;
 // Provides a way to organize persistent per-origin/per-cdm-type data
 // in the browser's file system.
 interface CdmStorage {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum Status {
-    kSuccess,  // File was successfully opened.
-    kInUse,    // File is already open by another client.
-    kFailure   // Unable to open file.
+    kSuccess = 0,  // File was successfully opened.
+    kInUse = 1,    // File is already open by another client.
+    kFailure = 2   // Unable to open file.
   };
 
   // Opens the file specified by |file_name|. Can be called multiple times for

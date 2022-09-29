@@ -14455,6 +14455,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="9" label="SessionAlreadyExists"/>
 </enum>
 
+<enum name="CdmStorageStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="In Use"/>
+  <int value="2" label="Failure"/>
+</enum>
+
 <enum name="CdmSystemCode">
 <!-- System Code is CDM specific. Use this as a placeholder to treat sparse
 histogram as enum. Values from 1000000 are reserved/reported by Chromium and are

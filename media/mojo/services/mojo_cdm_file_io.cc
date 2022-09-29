@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -90,6 +91,8 @@ void MojoCdmFileIO::OnFileOpened(
     StorageStatus status,
     mojo::PendingAssociatedRemote<mojom::CdmFile> cdm_file) {
   DVLOG(3) << __func__ << " file: " << file_name_ << ", status: " << status;
+
+  UMA_HISTOGRAM_ENUMERATION("Media.EME.CdmFileIO::OpenFile", status);
 
   // This logs the end of the async Open() request, and separately logs
   // how long the client takes in OnOpenComplete().
