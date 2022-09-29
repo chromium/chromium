@@ -18,7 +18,7 @@
 #include "headless/lib/browser/headless_select_file_dialog_factory.h"
 
 #if defined(HEADLESS_USE_PREFS)
-#include "components/origin_trials/browser/prefservice_persistence_provider.h"
+#include "components/origin_trials/browser/prefservice_persistence_provider.h"  // nogncheck
 #include "components/os_crypt/os_crypt.h"  // nogncheck
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/in_memory_pref_store.h"
