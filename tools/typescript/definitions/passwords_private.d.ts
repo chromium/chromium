@@ -194,6 +194,7 @@ declare global {
       export function addPassword(
           options: AddPasswordOptions, callback?: () => void): void;
       export function extendAuthValidity(callback?: () => void): void;
+      export function switchBiometricAuthBeforeFillingState(): void;
 
       export const onSavedPasswordsListChanged:
           ChromeEvent<(entries: Array<PasswordUiEntry>) => void>;

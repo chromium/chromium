@@ -35681,6 +35681,8 @@ Called by update_extension_histograms.py.-->
   <int value="1714" label="OS_TELEMETRY_GETINTERNETCONNECTIVITYINFO"/>
   <int value="1715" label="PASSWORDSPRIVATE_GETINSECURECREDENTIALS"/>
   <int value="1716" label="ACTION_ISENABLED"/>
+  <int value="1717"
+      label="PASSWORDSPRIVATE_SWITCHBIOMETRICAUTHBEFOREFILLINGSTATE"/>
 </enum>
 
 <enum name="ExtensionIconState">

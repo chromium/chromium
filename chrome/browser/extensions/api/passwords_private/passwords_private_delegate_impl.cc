@@ -51,6 +51,7 @@
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -204,6 +205,43 @@ extensions::api::passwords_private::ImportResults ConvertImportResults(
     private_results.failed_imports.emplace_back(ConvertImportEntry(entry));
   return private_results;
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+using password_manager::prefs::kBiometricAuthenticationBeforeFilling;
+
+scoped_refptr<device_reauth::BiometricAuthenticator> GetBiometricAuthenticator(
+    content::WebContents* web_contents) {
+  auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
+  DCHECK(client);
+  return client->GetBiometricAuthenticator();
+}
+
+void ChangeBiometricAuthenticationBeforeFillingSetting(PrefService* prefs,
+                                                       bool success) {
+  if (success) {
+    prefs->SetBoolean(
+        kBiometricAuthenticationBeforeFilling,
+        !prefs->GetBoolean(kBiometricAuthenticationBeforeFilling));
+  }
+}
+
+std::u16string GetMessageForBiometricAuthenticationBeforeFillingSetting(
+    PrefService* prefs) {
+  const bool pref_enabled =
+      prefs->GetBoolean(kBiometricAuthenticationBeforeFilling);
+#if BUILDFLAG(IS_MAC)
+  return l10n_util::GetStringUTF16(
+      pref_enabled ? IDS_PASSWORD_MANAGER_TURN_OFF_FILLING_REAUTH_MAC
+                   : IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_MAC);
+#elif BUILDFLAG(IS_WIN)
+  return l10n_util::GetStringUTF16(
+      pref_enabled ? IDS_PASSWORD_MANAGER_TURN_OFF_FILLING_REAUTH_WIN
+                   : IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_WIN);
+#endif
+}
+
+#endif
 
 }  // namespace
 
@@ -438,44 +476,20 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
     password_manager::PasswordAccessAuthenticator::AuthResultCallback
         callback) {
 #if BUILDFLAG(IS_WIN)
-  scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator =
-      ChromeBiometricAuthenticatorFactory::GetInstance()
-          ->GetOrCreateBiometricAuthenticator();
-  base::OnceCallback<void()> on_reauth_completed =
-      base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted,
-                     weak_ptr_factory_.GetWeakPtr());
-
-  biometric_authenticator->AuthenticateWithMessage(
-      device_reauth::BiometricAuthRequester::kPasswordsInSettings,
+  AuthenticateWithBiometrics(
       password_manager_util_win::GetMessageForLoginPrompt(purpose),
-      std::move(callback).Then(std::move(on_reauth_completed)));
-
-  biometric_authenticator_ = std::move(biometric_authenticator);
+      std::move(callback));
 #elif BUILDFLAG(IS_MAC)
   scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator =
-      ChromeBiometricAuthenticatorFactory::GetInstance()
-          ->GetOrCreateBiometricAuthenticator();
+      GetBiometricAuthenticator(web_contents_);
   // TODO(crbug.com/1358442): Remove this check.
   if (biometric_authenticator->CanAuthenticate(
           device_reauth::BiometricAuthRequester::kPasswordsInSettings) &&
       base::FeatureList::IsEnabled(
           password_manager::features::kBiometricAuthenticationInSettings)) {
-    base::OnceCallback<void()> on_reauth_completed =
-        base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted,
-                       weak_ptr_factory_.GetWeakPtr());
-
-    biometric_authenticator->AuthenticateWithMessage(
-        device_reauth::BiometricAuthRequester::kPasswordsInSettings,
+    AuthenticateWithBiometrics(
         password_manager_util_mac::GetMessageForBiometricLoginPrompt(purpose),
-        std::move(callback).Then(std::move(on_reauth_completed)));
-
-    // If AuthenticateWithMessage is called again(UI on Mac isn't blocked so
-    // user might click multiple times on the button), it invalidates the old
-    // request which triggers PasswordsPrivateDelegateImpl::OnReauthCompleted
-    // which resets biometric_authenticator_. Having a local variable solves
-    // that problem as there's a second scoped_refptr for the authenticator
-    // object.
-    biometric_authenticator_ = std::move(biometric_authenticator);
+        std::move(callback));
   } else {
     bool result = password_manager_util_mac::AuthenticateUser(purpose);
     std::move(callback).Run(result);
@@ -722,6 +736,24 @@ void PasswordsPrivateDelegateImpl::StartAutomatedPasswordChange(
                     /*skip_login=*/false, std::move(callback));
 }
 
+void PasswordsPrivateDelegateImpl::SwitchBiometricAuthBeforeFillingState(
+    content::WebContents* web_contents) {
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+  NOTIMPLEMENTED();
+#else
+  DCHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kBiometricAuthenticationForFilling));
+  password_manager::PasswordAccessAuthenticator::AuthResultCallback callback =
+      base::BindOnce(&ChangeBiometricAuthenticationBeforeFillingSetting,
+                     profile_->GetPrefs());
+  web_contents_ = web_contents;
+  AuthenticateWithBiometrics(
+      GetMessageForBiometricAuthenticationBeforeFillingSetting(
+          profile_->GetPrefs()),
+      std::move(callback));
+#endif
+}
+
 password_manager::InsecureCredentialsManager*
 PasswordsPrivateDelegateImpl::GetInsecureCredentialsManager() {
   return password_check_delegate_.GetInsecureCredentialsManager();
@@ -871,6 +903,34 @@ void PasswordsPrivateDelegateImpl::EmitHistogramsForCredentialAccess(
       "PasswordManager.AccessPasswordInSettings",
       ConvertPlaintextReason(reason),
       password_manager::metrics_util::ACCESS_PASSWORD_COUNT);
+}
+
+void PasswordsPrivateDelegateImpl::AuthenticateWithBiometrics(
+    const std::u16string& message,
+    password_manager::PasswordAccessAuthenticator::AuthResultCallback
+        callback) {
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+  NOTIMPLEMENTED();
+#else
+  scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator =
+      GetBiometricAuthenticator(web_contents_);
+
+  base::OnceClosure on_reauth_completed =
+      base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  biometric_authenticator->AuthenticateWithMessage(
+      device_reauth::BiometricAuthRequester::kPasswordsInSettings, message,
+      std::move(callback).Then(std::move(on_reauth_completed)));
+
+  // If AuthenticateWithMessage is called again(UI on Mac isn't blocked so
+  // user might click multiple times on the button), it invalidates the old
+  // request which triggers PasswordsPrivateDelegateImpl::OnReauthCompleted
+  // which resets biometric_authenticator_. Having a local variable solves
+  // that problem as there's a second scoped_refptr for the authenticator
+  // object.
+  biometric_authenticator_ = std::move(biometric_authenticator);
+#endif
 }
 
 }  // namespace extensions

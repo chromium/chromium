@@ -690,6 +690,12 @@ var availableTests = [
       chrome.test.succeed();
     });
   },
+
+  function switchBiometricAuthBeforeFillingState() {
+    chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
 ];
 
 var testToRun = window.location.search.substring(1);

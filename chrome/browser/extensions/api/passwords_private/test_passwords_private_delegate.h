@@ -98,6 +98,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
   void ExtendAuthValidity() override;
+  void SwitchBiometricAuthBeforeFillingState(
+      content::WebContents* web_contents) override;
 
   void SetProfile(Profile* profile);
   void SetOptedInForAccountStorage(bool opted_in);

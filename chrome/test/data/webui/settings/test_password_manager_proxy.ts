@@ -122,6 +122,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'startAutomatedPasswordChange',
       'startBulkPasswordCheck',
       'stopBulkPasswordCheck',
+      'switchBiometricAuthBeforeFillingState',
       'unmuteInsecureCredential',
     ]);
 
@@ -437,6 +438,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.methodCalled('requestExportProgressStatus');
     return Promise.resolve(
         chrome.passwordsPrivate.ExportProgressStatus.NOT_STARTED);
+  }
+
+  switchBiometricAuthBeforeFillingState() {
+    this.methodCalled('switchBiometricAuthBeforeFillingState');
   }
 
   undoRemoveSavedPasswordOrException() {}

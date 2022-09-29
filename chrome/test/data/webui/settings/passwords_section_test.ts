@@ -13,9 +13,10 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {PasswordsSectionElement} from 'chrome://settings/lazy_load.js';
 import {buildRouter, HatsBrowserProxyImpl, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SettingsPluralStringProxyImpl,StatusAction, TrustedVaultBannerState, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {SettingsRoutes} from 'chrome://settings/settings_routes.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
+import {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 
 import {createExceptionEntry, createPasswordEntry, makeInsecureCredential, makePasswordCheckStatus, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {getSyncAllPrefs, simulateStoredAccounts, simulateSyncStatus} from './sync_test_util.js';
@@ -285,6 +286,45 @@ suite('PasswordsSection', function() {
           isVisible(passwordsSectionBiometricForFillingEnabled.shadowRoot!
                         .querySelector<HTMLElement>(
                             '#biometricAuthenticationForFillingToggle')));
+    });
+
+    test('testNoSwitchBiometricAuthBeforeFillingToggle', function() {
+      loadTimeData.overrideValues({biometricAuthenticationForFilling: true});
+      const passwordsSection =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
+      const biometricAuthenticationForFillingToggle =
+          passwordsSection.shadowRoot!
+              .querySelector<SettingsToggleButtonElement>(
+                  '#biometricAuthenticationForFillingToggle');
+      const initialState = biometricAuthenticationForFillingToggle!.checked;
+
+      biometricAuthenticationForFillingToggle!.click();
+
+      const afterClickState = biometricAuthenticationForFillingToggle!.checked;
+      assertEquals(initialState, afterClickState);
+    });
+
+    test('testSwitchBiometricAuthBeforeFillingToggle', function() {
+      loadTimeData.overrideValues({biometricAuthenticationForFilling: true});
+      const passwordsSection =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
+      passwordsSection.set(
+          'prefs.password_manager.biometric_authentication_filling.value',
+          false);
+      const biometricAuthenticationForFillingToggle =
+          passwordsSection.shadowRoot!
+              .querySelector<SettingsToggleButtonElement>(
+                  '#biometricAuthenticationForFillingToggle');
+      const initialState = biometricAuthenticationForFillingToggle!.checked;
+
+      biometricAuthenticationForFillingToggle!.click();
+      // Simulate successful authentication
+      passwordsSection.set(
+          'prefs.password_manager.biometric_authentication_filling.value',
+          true);
+
+      const afterClickState = biometricAuthenticationForFillingToggle!.checked;
+      assertNotEquals(initialState, afterClickState);
     });
   }
 

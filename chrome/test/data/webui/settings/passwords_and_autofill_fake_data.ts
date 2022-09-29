@@ -270,6 +270,7 @@ export class PasswordSectionElementFactory {
           value: true,
         },
       },
+      password_manager: {biometric_authentication_filling: {value: true}},
     };
     this.document.body.appendChild(passwordsSection);
     flush();

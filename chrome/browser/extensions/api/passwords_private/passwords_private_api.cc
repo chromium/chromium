@@ -489,4 +489,13 @@ ResponseAction PasswordsPrivateExtendAuthValidityFunction::Run() {
   GetDelegate(browser_context())->ExtendAuthValidity();
   return RespondNow(NoArguments());
 }
+
+// PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction
+ResponseAction
+PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction::Run() {
+  GetDelegate(browser_context())
+      ->SwitchBiometricAuthBeforeFillingState(GetSenderWebContents());
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

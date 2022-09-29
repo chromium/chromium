@@ -354,4 +354,15 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ExtendAuthValidity) {
   EXPECT_TRUE(RunPasswordsSubtest("extendAuthValidity")) << message_;
   EXPECT_TRUE(get_authenticator_interaction_status());
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       SwitchBiometricAuthBeforeFillingState) {
+  EXPECT_FALSE(get_authenticator_interaction_status());
+  EXPECT_TRUE(RunPasswordsSubtest("switchBiometricAuthBeforeFillingState"))
+      << message_;
+  EXPECT_TRUE(get_authenticator_interaction_status());
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 }  // namespace extensions

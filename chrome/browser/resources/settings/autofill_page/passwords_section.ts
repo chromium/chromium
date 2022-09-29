@@ -36,13 +36,14 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {FocusConfig} from '../focus_config.js';
 import {GlobalScrollTargetMixin, GlobalScrollTargetMixinInterface} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
@@ -453,6 +454,18 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private computeHasNeverCheckedPasswords_(): boolean {
     return !this.status.elapsedTimeSinceLastCheck;
+  }
+
+  private switchBiometricAuthBeforeFillingState_(e: Event) {
+    const biometricAuthenticationForFillingToggle =
+        e!.target as SettingsToggleButtonElement;
+    assert(biometricAuthenticationForFillingToggle);
+    // User action is removed since toggle value shouldn't change until user
+    // authenticates successfully, after that toggle value will be put in the
+    // correct state.
+    biometricAuthenticationForFillingToggle.checked =
+        !biometricAuthenticationForFillingToggle.checked;
+    this.passwordManager_.switchBiometricAuthBeforeFillingState();
   }
 
   /**

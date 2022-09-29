@@ -234,6 +234,11 @@ class PasswordsPrivateDelegate : public KeyedService {
 
   // Restarts the authentication timer if it is running.
   virtual void ExtendAuthValidity() = 0;
+
+  // Switches Biometric authentication before filling state after
+  // successful authentication.
+  virtual void SwitchBiometricAuthBeforeFillingState(
+      content::WebContents* web_contents) = 0;
 };
 
 }  // namespace extensions

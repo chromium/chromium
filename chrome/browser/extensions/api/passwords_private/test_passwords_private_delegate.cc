@@ -353,4 +353,9 @@ bool TestPasswordsPrivateDelegate::IsCredentialPresentInInsecureCredentialsList(
                         &api::passwords_private::PasswordUiEntry::id);
 }
 
+void TestPasswordsPrivateDelegate::SwitchBiometricAuthBeforeFillingState(
+    content::WebContents* web_contents) {
+  authenticator_interacted_ = true;
+}
+
 }  // namespace extensions

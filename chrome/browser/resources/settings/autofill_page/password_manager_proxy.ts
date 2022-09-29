@@ -310,6 +310,12 @@ export interface PasswordManagerProxy {
    * Records the referrer of a given navigation to the Password Check page.
    */
   recordPasswordCheckReferrer(referrer: PasswordCheckReferrer): void;
+
+  /**
+   * Switches Biometric authentication before filling state after
+   * successful authentication.
+   */
+  switchBiometricAuthBeforeFillingState(): void;
 }
 
 /**
@@ -629,6 +635,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.metricsPrivate.recordEnumerationValue(
         'PasswordManager.BulkCheck.UserAction', interaction,
         PasswordCheckInteraction.COUNT);
+  }
+
+  switchBiometricAuthBeforeFillingState() {
+    chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState();
   }
 
   /** override */
