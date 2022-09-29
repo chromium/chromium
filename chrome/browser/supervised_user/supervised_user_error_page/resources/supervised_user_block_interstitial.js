@@ -162,7 +162,7 @@ function requestCreated(isSuccessful, isMainFrame) {
   $('block-page-message').hidden = true;
   $('hide-details-link').hidden = true;
   if (interstitialRefreshEnabled) {
-    $('custodians-information').hidden = true;
+    $('block-reason').style.display = "none";
     if (localWebApprovalsEnabled) {
       $('local-approvals-button').hidden = false;
     }
