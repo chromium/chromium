@@ -551,14 +551,14 @@ v8::Local<v8::Context> AutomationInternalCustomBindings::GetContext() const {
 
 void AutomationInternalCustomBindings::RouteHandlerFunction(
     const std::string& name,
-    HandlerFunction handler_function) {
+    AutomationV8Router::HandlerFunction handler_function) {
   ObjectBackedNativeHandler::RouteHandlerFunction(name, handler_function);
 }
 
 void AutomationInternalCustomBindings::RouteHandlerFunction(
     const std::string& name,
     const std::string& api_name,
-    HandlerFunction handler_function) {
+    AutomationV8Router::HandlerFunction handler_function) {
   ObjectBackedNativeHandler::RouteHandlerFunction(name, api_name,
                                                   handler_function);
 }

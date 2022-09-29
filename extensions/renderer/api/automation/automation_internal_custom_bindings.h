@@ -76,11 +76,13 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   void ThrowInvalidArgumentsException(bool is_fatal = true) const override;
   v8::Isolate* GetIsolate() const override;
   v8::Local<v8::Context> GetContext() const override;
-  void RouteHandlerFunction(const std::string& name,
-                            HandlerFunction handler_function) override;
-  void RouteHandlerFunction(const std::string& name,
-                            const std::string& api_name,
-                            HandlerFunction handler_function) override;
+  void RouteHandlerFunction(
+      const std::string& name,
+      AutomationV8Router::HandlerFunction handler_function) override;
+  void RouteHandlerFunction(
+      const std::string& name,
+      const std::string& api_name,
+      AutomationV8Router::HandlerFunction handler_function) override;
   std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event> ParseEventType(
       const std::string& event_type) const override;
   ui::TreeChangeObserverFilter ParseTreeChangeObserverFilter(
