@@ -1029,6 +1029,7 @@ void PrefetchService::OnGotIsolatedCookiesForCopy(
     base::WeakPtr<PrefetchContainer> prefetch_container,
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& excluded_cookies) {
+  prefetch_container->OnIsolatedCookiesReadCompleteAndWriteStart();
   RecordPrefetchProxyPrefetchMainframeCookiesToCopy(cookie_list.size());
 
   if (cookie_list.empty()) {
