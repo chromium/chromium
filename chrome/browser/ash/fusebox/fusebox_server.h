@@ -9,9 +9,12 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 #include "chrome/browser/ash/fusebox/fusebox_staging.pb.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox.pb.h"
+#include "storage/browser/file_system/async_file_util.h"
+#include "storage/browser/file_system/file_system_context.h"
 
 class Profile;
 
@@ -94,6 +97,8 @@ class Server {
             int32_t length,
             ReadCallback callback);
 
+  // Deprecated: use ReadDir2 instead.
+  //
   // ReadDir lists the directory's children. The results may be sent back over
   // multiple RPC messages, each with the same client-chosen cookie value.
   using ReadDirCallback =
@@ -104,6 +109,21 @@ class Server {
   void ReadDir(std::string fs_url_as_string,
                uint64_t cookie,
                ReadDirCallback callback);
+
+  // ReadDir2 lists the directory's children. The results will be sent back in
+  // the responses of one or more request-response RPC pairs. The first request
+  // and last response have a zero cookie value. The remaining RPCs will have
+  // the same server-chosen, non-zero cookie value.
+  //
+  // The request's cancel_error_code is typically zero but if not, it is echoed
+  // in the response (which becomes the final response) and indicates that the
+  // D-Bus client is cancelling the overall "read a directory" operation.
+  //
+  // TODO(crbug.com/1363861): document the D-Bus protocol separately.
+  using ReadDir2Callback =
+      base::OnceCallback<void(fusebox_staging::ReadDir2ResponseProto response)>;
+  void ReadDir2(fusebox_staging::ReadDir2RequestProto request,
+                ReadDir2Callback callback);
 
   // Stat returns the file or directory's metadata.
   using StatCallback = base::OnceCallback<void(int32_t posix_error_code,
@@ -137,10 +157,50 @@ class Server {
   // Neither subdir nor fs_url_prefix should have a trailing slash.
   using PrefixMap = std::map<std::string, PrefixMapEntry>;
 
+  struct ReadDir2MapEntry {
+    explicit ReadDir2MapEntry(ReadDir2Callback callback);
+    ReadDir2MapEntry(ReadDir2MapEntry&&);
+    ~ReadDir2MapEntry();
+
+    // Returns whether the final response was sent.
+    bool Reply(uint64_t cookie, ReadDir2Callback callback);
+
+    int32_t posix_error_code_ = 0;
+    fusebox_staging::ReadDir2ResponseProto response_;
+    bool has_more_ = true;
+
+    ReadDir2Callback callback_;
+  };
+
+  // Maps from ReadDir2 cookies to a pair of (1) a buffer of upstream results
+  // from Chromium's storage layer and (2) a possibly-hasnt-arrived-yet pending
+  // downstream ReadDir2Callback (i.e. a D-Bus RPC response).
+  //
+  // If the upstream layer sends its results first then we need to buffer until
+  // we have a downstream callback to pass those results onto.
+  //
+  // If the downstream layer sends its callback first then we need to hold onto
+  // it until we have results to pass on.
+  //
+  // Note that the upstream API works with a base::RepeatingCallback model (one
+  // request, multiple responses) but the downstream API (i.e. D-Bus) works
+  // with a base::OnceCallback model (N requests, N responses).
+  using ReadDir2Map = std::map<uint64_t, ReadDir2MapEntry>;
+
  private:
+  void OnReadDirectory(scoped_refptr<storage::FileSystemContext> fs_context,
+                       bool read_only,
+                       uint64_t cookie,
+                       base::File::Error error_code,
+                       storage::AsyncFileUtil::EntryList entry_list,
+                       bool has_more);
+
   Delegate* delegate_;
   fusebox::MonikerMap moniker_map_;
   PrefixMap prefix_map_;
+  ReadDir2Map read_dir_2_map_;
+
+  base::WeakPtrFactory<Server> weak_ptr_factory_{this};
 };
 
 }  // namespace fusebox

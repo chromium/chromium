@@ -110,6 +110,20 @@ void CallReverseReplyToReadDir(uint64_t cookie,
   }
 }
 
+void ReplyToReadDir2(dbus::MethodCall* method_call,
+                     dbus::ExportedObject::ResponseSender sender,
+                     fusebox_staging::ReadDir2ResponseProto response_proto) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
+  dbus::MessageWriter writer(response.get());
+
+  writer.AppendProtoAsArrayOfBytes(response_proto);
+
+  std::move(sender).Run(std::move(response));
+}
+
 void ReplyToStat(dbus::MethodCall* method_call,
                  dbus::ExportedObject::ResponseSender sender,
                  int32_t posix_error_code,
@@ -179,6 +193,11 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
   object->ExportMethod(fusebox::kFuseBoxServiceInterface,
                        fusebox::kReadDirMethod,
                        base::BindRepeating(&FuseBoxServiceProvider::ReadDir,
+                                           weak_ptr_factory_.GetWeakPtr()),
+                       base::BindOnce(&OnExportedCallback));
+  object->ExportMethod(fusebox::kFuseBoxServiceInterface,
+                       fusebox::kReadDir2Method,
+                       base::BindRepeating(&FuseBoxServiceProvider::ReadDir2,
                                            weak_ptr_factory_.GetWeakPtr()),
                        base::BindOnce(&OnExportedCallback));
   object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kStatMethod,
@@ -285,6 +304,24 @@ void FuseBoxServiceProvider::ReadDir(
 
   server_.ReadDir(fs_url_as_string, cookie,
                   base::BindRepeating(&CallReverseReplyToReadDir));
+}
+
+void FuseBoxServiceProvider::ReadDir2(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender sender) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  dbus::MessageReader reader(method_call);
+  fusebox_staging::ReadDir2RequestProto request_proto;
+  if (!reader.PopArrayOfBytesAsProto(&request_proto)) {
+    fusebox_staging::ReadDir2ResponseProto response_proto;
+    response_proto.set_posix_error_code(EINVAL);
+    ReplyToReadDir2(method_call, std::move(sender), response_proto);
+    return;
+  }
+
+  server_.ReadDir2(request_proto, base::BindOnce(&ReplyToReadDir2, method_call,
+                                                 std::move(sender)));
 }
 
 void FuseBoxServiceProvider::Stat(dbus::MethodCall* method_call,

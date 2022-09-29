@@ -19,9 +19,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
-#include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/file_stream_reader.h"
-#include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/cros_system_api/dbus/fusebox/dbus-constants.h"
@@ -265,6 +263,36 @@ Server::PrefixMapEntry::PrefixMapEntry(std::string fs_url_prefix_arg,
                                        bool read_only_arg)
     : fs_url_prefix(fs_url_prefix_arg), read_only(read_only_arg) {}
 
+Server::ReadDir2MapEntry::ReadDir2MapEntry(Server::ReadDir2Callback callback)
+    : callback_(std::move(callback)) {}
+
+Server::ReadDir2MapEntry::ReadDir2MapEntry(ReadDir2MapEntry&&) = default;
+
+Server::ReadDir2MapEntry::~ReadDir2MapEntry() = default;
+
+bool Server::ReadDir2MapEntry::Reply(uint64_t cookie,
+                                     ReadDir2Callback callback) {
+  if (callback) {
+    if (callback_) {
+      fusebox_staging::ReadDir2ResponseProto response_proto;
+      response_proto.set_posix_error_code(EINVAL);
+      std::move(callback_).Run(response_proto);
+    }
+    callback_ = std::move(callback);
+  } else if (!callback_) {
+    return false;
+  }
+
+  if (posix_error_code_ != 0) {
+    response_.set_posix_error_code(posix_error_code_);
+  } else {
+    response_.set_cookie(has_more_ ? cookie : 0);
+  }
+  std::move(callback_).Run(std::move(response_));
+  response_ = fusebox_staging::ReadDir2ResponseProto();
+  return (posix_error_code_ != 0) || !has_more_;
+}
+
 // static
 Server* Server::GetInstance() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -427,6 +455,64 @@ void Server::ReadDir(std::string fs_url_as_string,
           common.fs_url, std::move(outer_callback)));
 }
 
+void Server::ReadDir2(fusebox_staging::ReadDir2RequestProto request_proto,
+                      ReadDir2Callback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::string fs_url_as_string = request_proto.has_file_system_url()
+                                     ? request_proto.file_system_url()
+                                     : std::string();
+  uint64_t cookie = request_proto.has_cookie() ? request_proto.cookie() : 0;
+  int32_t cancel_error_code = request_proto.has_cancel_error_code()
+                                  ? request_proto.cancel_error_code()
+                                  : 0;
+
+  auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
+  if (common.is_moniker_root ||
+      (common.error_code != base::File::Error::FILE_OK)) {
+    fusebox_staging::ReadDir2ResponseProto response_proto;
+    response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
+    std::move(callback).Run(response_proto);
+    return;
+  } else if (cancel_error_code) {
+    fusebox_staging::ReadDir2ResponseProto response_proto;
+    response_proto.set_posix_error_code(cancel_error_code);
+    std::move(callback).Run(response_proto);
+    return;
+  }
+
+  if (cookie) {
+    auto iter = read_dir_2_map_.find(cookie);
+    if (iter == read_dir_2_map_.end()) {
+      fusebox_staging::ReadDir2ResponseProto response_proto;
+      response_proto.set_posix_error_code(EINVAL);
+      std::move(callback).Run(response_proto);
+    } else if (iter->second.Reply(cookie, std::move(callback))) {
+      read_dir_2_map_.erase(iter);
+    }
+    return;
+  }
+
+  static uint64_t next_cookie = 0;
+  cookie = ++next_cookie;
+  read_dir_2_map_.insert({cookie, ReadDir2MapEntry(std::move(callback))});
+
+  auto outer_callback = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindRepeating(&Server::OnReadDirectory,
+                          weak_ptr_factory_.GetWeakPtr(), common.fs_context,
+                          common.read_only, cookie));
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindRepeating(
+          base::IgnoreResult(
+              &storage::FileSystemOperationRunner::ReadDirectory),
+          // Unretained is safe: common.fs_context owns its operation_runner.
+          base::Unretained(common.fs_context->operation_runner()),
+          common.fs_url, std::move(outer_callback)));
+}
+
 void Server::Stat(std::string fs_url_as_string, StatCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -464,6 +550,39 @@ void Server::ListStorages(fusebox_staging::ListStoragesRequestProto request,
     response.add_storages(i.first);
   }
   std::move(callback).Run(response);
+}
+
+void Server::OnReadDirectory(
+    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
+    bool read_only,
+    uint64_t cookie,
+    base::File::Error error_code,
+    storage::AsyncFileUtil::EntryList entry_list,
+    bool has_more) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto iter = read_dir_2_map_.find(cookie);
+  if (iter == read_dir_2_map_.end()) {
+    return;
+  }
+
+  if (iter->second.posix_error_code_ == 0) {
+    iter->second.posix_error_code_ = FileErrorToErrno(error_code);
+  }
+
+  for (const auto& entry : entry_list) {
+    bool is_directory = entry.type == filesystem::mojom::FsFileType::DIRECTORY;
+    auto* proto = iter->second.response_.add_entries();
+    proto->set_is_directory(is_directory);
+    proto->set_name(entry.name.value());
+    proto->set_mode_bits(MakeModeBits(is_directory, read_only));
+  }
+
+  iter->second.has_more_ = has_more;
+
+  if (iter->second.Reply(cookie, ReadDir2Callback())) {
+    read_dir_2_map_.erase(iter);
+  }
 }
 
 }  // namespace fusebox
