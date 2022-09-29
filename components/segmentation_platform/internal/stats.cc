@@ -303,7 +303,7 @@ void RecordSegmentSelectionComputed(
                                ? previous_selection.value()
                                : SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
 
-  if (prev_segment == new_selection)
+  if (prev_segment == new_selection || config.on_demand_execution)
     return;
 
   std::string switched_hist =

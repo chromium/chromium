@@ -249,6 +249,8 @@ void SegmentSelectorImpl::GetRankForNextSegment(
     result.rank = segment_id_and_rank.second;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), result));
+    stats::RecordSegmentSelectionComputed(*config_, segment_id_and_rank.first,
+                                          absl::nullopt);
   } else {
     DCHECK(callback.is_null());
     UpdateSelectedSegment(segment_id_and_rank.first,
