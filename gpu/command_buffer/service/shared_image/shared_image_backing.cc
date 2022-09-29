@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -218,7 +219,7 @@ void SharedImageBacking::ReleaseRef(SharedImageRepresentation* representation) {
   AutoLock auto_lock(this);
   DCHECK(is_ref_counted_);
 
-  auto found = std::find(refs_.begin(), refs_.end(), representation);
+  auto found = base::ranges::find(refs_, representation);
   DCHECK(found != refs_.end());
 
   // If the found representation is the first (owning) ref, free the attributed

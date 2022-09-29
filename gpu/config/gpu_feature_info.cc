@@ -4,8 +4,7 @@
 
 #include "gpu/config/gpu_feature_info.h"
 
-#include <algorithm>
-
+#include "base/containers/contains.h"
 #include "gpu/config/gpu_blocklist.h"
 #include "gpu/config/gpu_driver_bug_list.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -42,10 +41,7 @@ void GpuFeatureInfo::ApplyToGLContext(gl::GLContext* gl_context) const {
 }
 
 bool GpuFeatureInfo::IsWorkaroundEnabled(int32_t workaround) const {
-  return std::find(this->enabled_gpu_driver_bug_workarounds.begin(),
-                   this->enabled_gpu_driver_bug_workarounds.end(),
-                   workaround) !=
-         this->enabled_gpu_driver_bug_workarounds.end();
+  return base::Contains(this->enabled_gpu_driver_bug_workarounds, workaround);
 }
 
 bool GpuFeatureInfo::IsInitialized() const {

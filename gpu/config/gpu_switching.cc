@@ -10,10 +10,10 @@
 #include <OpenGL/OpenGL.h>
 #endif
 
-#include <algorithm>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_info.h"
 #include "ui/gl/gl_context.h"
@@ -36,12 +36,6 @@ typedef void* PlatformPixelFormatObj;
 #endif  // BUILDFLAG(IS_MAC)
 
 PlatformPixelFormatObj g_discrete_pixel_format_obj = nullptr;
-
-bool ContainsWorkaround(const std::vector<int32_t>& workarounds,
-                        int32_t workaround) {
-  return (std::find(workarounds.begin(), workarounds.end(), workaround) !=
-          workarounds.end());
-}
 
 void ForceDiscreteGPU() {
   if (g_discrete_pixel_format_obj)
@@ -98,10 +92,10 @@ bool SwitchableGPUsSupported(const GPUInfo& gpu_info,
 void InitializeSwitchableGPUs(
     const std::vector<int32_t>& driver_bug_workarounds) {
   gl::GLContext::SetSwitchableGPUsSupported();
-  if (ContainsWorkaround(driver_bug_workarounds, FORCE_HIGH_PERFORMANCE_GPU)) {
+  if (base::Contains(driver_bug_workarounds, FORCE_HIGH_PERFORMANCE_GPU)) {
     gl::GLSurface::SetForcedGpuPreference(gl::GpuPreference::kHighPerformance);
     ForceDiscreteGPU();
-  } else if (ContainsWorkaround(driver_bug_workarounds, FORCE_LOW_POWER_GPU)) {
+  } else if (base::Contains(driver_bug_workarounds, FORCE_LOW_POWER_GPU)) {
     gl::GLSurface::SetForcedGpuPreference(gl::GpuPreference::kLowPower);
   }
 }

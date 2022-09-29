@@ -9,11 +9,11 @@
 #include <dawn/platform/DawnPlatform.h>
 #include <dawn/wire/WireServer.h>
 
-#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/bits.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -1081,8 +1081,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   // Only allow unsafe APIs if the disallow_unsafe_apis toggle is explicitly
   // disabled.
   allow_unsafe_apis_ =
-      std::find(force_disabled_toggles_.begin(), force_disabled_toggles_.end(),
-                "disallow_unsafe_apis") != force_disabled_toggles_.end();
+      base::Contains(force_disabled_toggles_, "disallow_unsafe_apis");
 
   DawnProcTable wire_procs = dawn::native::GetProcs();
   wire_procs.createInstance =

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "gpu/gles2_conform_support/egl/config.h"
 #include "gpu/gles2_conform_support/egl/context.h"
@@ -236,7 +237,7 @@ EGLBoolean Display::DestroySurface(ThreadState* ts, EGLSurface sfe) {
   base::AutoLock auto_lock(lock_);
   if (!is_initialized_)
     return ts->ReturnError(EGL_NOT_INITIALIZED, EGL_FALSE);
-  auto it = std::find(surfaces_.begin(), surfaces_.end(), sfe);
+  auto it = base::ranges::find(surfaces_, sfe);
   if (it == surfaces_.end())
     return ts->ReturnError(EGL_BAD_SURFACE, EGL_FALSE);
   surfaces_.erase(it);
@@ -347,7 +348,7 @@ EGLBoolean Display::DestroyContext(ThreadState* ts, EGLContext ctx) {
   base::AutoLock auto_lock(lock_);
   if (!is_initialized_)
     return ts->ReturnError(EGL_NOT_INITIALIZED, EGL_FALSE);
-  auto it = std::find(contexts_.begin(), contexts_.end(), ctx);
+  auto it = base::ranges::find(contexts_, ctx);
   if (it == contexts_.end())
     return ts->ReturnError(EGL_BAD_CONTEXT, EGL_FALSE);
   (*it)->MarkDestroyed();
@@ -383,7 +384,7 @@ const Config* Display::GetConfig(EGLConfig cfg) {
 
 Surface* Display::GetSurface(EGLSurface surface) {
   lock_.AssertAcquired();
-  auto it = std::find(surfaces_.begin(), surfaces_.end(), surface);
+  auto it = base::ranges::find(surfaces_, surface);
   if (it == surfaces_.end())
     return nullptr;
   return it->get();
@@ -391,7 +392,7 @@ Surface* Display::GetSurface(EGLSurface surface) {
 
 Context* Display::GetContext(EGLContext context) {
   lock_.AssertAcquired();
-  auto it = std::find(contexts_.begin(), contexts_.end(), context);
+  auto it = base::ranges::find(contexts_, context);
   if (it == contexts_.end())
     return nullptr;
   return it->get();
