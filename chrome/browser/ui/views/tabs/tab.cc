@@ -655,7 +655,7 @@ void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
   std::u16string name = controller_->GetAccessibleTabName(this);
   if (!name.empty()) {
-    node_data->SetName(name);
+    node_data->SetNameChecked(name);
   } else {
     // Under some conditions, |GetAccessibleTabName| returns an empty string.
     node_data->SetNameExplicitlyEmpty();
