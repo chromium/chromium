@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
-
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -11,6 +9,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback.h"
 #include "base/hash/hash.h"
+#include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/exo/wm_helper.h"
@@ -147,6 +146,7 @@ const char* kDeniedAppsForDiacritics[] = {
     "cgfnfgkafmcdkdgilmojlnaadileaach",  // Crosh app
     "fhicihalidkgcimdmhpohldehjmcabcf",  // Terminal app
     "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
+    "algkcnfjnajfhgimadimbjhmpaeohhln",  // SSH app (dev)
 };
 
 bool IsTestUrl(GURL url) {
