@@ -35,4 +35,5 @@ ci.builder(
         },
         "repo_name": "chromium",
     },
+    omit_python2 = False,
 )
