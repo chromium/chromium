@@ -9,6 +9,7 @@ if (is_android) {
 }
 import("//build/buildflag_header.gni")
 import("//components/optimization_guide/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/tflite/features.gni")
 
 static_library("bloomfilter") {
@@ -473,5 +474,34 @@ if (is_mac && build_with_internal_optimization_guide) {
     deps = [
       "//components/optimization_guide/internal:optimization_guide_internal",
     ]
+  }
+}
+
+if (build_with_tflite_lib) {
+  # TODO(b/249585782): Extend this to support NL models as well.
+  template("bert_model_fuzzer") {
+    forward_variables_from(invoker, "*")
+
+    fuzzer_test("optimization_guide_${target_name}_fuzzer") {
+      sources = [ "bert_model_fuzzer.cc" ]
+      defines = [
+        "OPTIMIZATION_TARGET=${optimization_target}",
+        "MODEL_FILE_BASENAME=\"${model_file_basename}\"",
+      ]
+      deps = [
+        ":core",
+        ":features",
+        ":machine_learning",
+        ":model_executor",
+        "//base:base",
+        "//base/test:test_support",
+        "//components/optimization_guide/proto:optimization_guide_proto",
+      ]
+    }
+  }
+
+  bert_model_fuzzer("page_topics") {
+    optimization_target = "OPTIMIZATION_TARGET_PAGE_TOPICS_V2"
+    model_file_basename = "bert_page_topics_model.tflite"
   }
 }
