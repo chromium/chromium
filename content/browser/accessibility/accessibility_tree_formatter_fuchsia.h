@@ -24,9 +24,9 @@ class CONTENT_EXPORT AccessibilityTreeFormatterFuchsia
       const AccessibilityTreeFormatterFuchsia&) = delete;
 
   // ui::AXTreeFormatterBase overrides.
-  base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
-  base::Value BuildTreeForSelector(const AXTreeSelector&) const override;
-  base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* root) const override;
+  base::Value::Dict BuildTreeForSelector(const AXTreeSelector&) const override;
+  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
 
@@ -35,7 +35,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterFuchsia
                           base::Value::Dict* dict) const;
 
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node) const override;
+      const base::Value::Dict& node) const override;
 
   void AddProperties(const BrowserAccessibility& node,
                      base::Value::Dict* dict) const;

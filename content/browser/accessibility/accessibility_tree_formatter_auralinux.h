@@ -25,13 +25,13 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAuraLinux
 
  private:
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node) const override;
+      const base::Value::Dict& node) const override;
 
-  base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
-  base::Value BuildTreeForSelector(
+  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* root) const override;
+  base::Value::Dict BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
-  base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
   std::string EvaluateScript(
       const AXTreeSelector& selector,

@@ -112,31 +112,31 @@ GetIAObject(ui::AXPlatformNodeDelegate* node, LONG& root_x, LONG& root_y) {
   return node->GetNativeViewAccessible();
 }
 
-base::Value AccessibilityTreeFormatterWin::BuildNode(
+base::Value::Dict AccessibilityTreeFormatterWin::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   LONG root_x = 0, root_y = 0;
   Microsoft::WRL::ComPtr<IAccessible> node_ia =
       GetIAObject(node, root_x, root_y);
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  AddProperties(node_ia, &(dict.GetDict()), root_x, root_y);
+  base::Value::Dict dict;
+  AddProperties(node_ia, &dict, root_x, root_y);
   return dict;
 }
 
-base::Value AccessibilityTreeFormatterWin::BuildTree(
+base::Value::Dict AccessibilityTreeFormatterWin::BuildTree(
     ui::AXPlatformNodeDelegate* start) const {
   LONG root_x = 0, root_y = 0;
   Microsoft::WRL::ComPtr<IAccessible> start_ia =
       GetIAObject(start, root_x, root_y);
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  RecursiveBuildTree(start_ia, &(dict.GetDict()), root_x, root_y);
+  base::Value::Dict dict;
+  RecursiveBuildTree(start_ia, &dict, root_x, root_y);
   return dict;
 }
 
-base::Value AccessibilityTreeFormatterWin::BuildTreeForSelector(
+base::Value::Dict AccessibilityTreeFormatterWin::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
   HWND hwnd = GetHWNDBySelector(selector);
   if (!hwnd)
@@ -155,7 +155,7 @@ base::Value AccessibilityTreeFormatterWin::BuildTreeForSelector(
     }
   }
 
-  RecursiveBuildTree(root, &(dict.GetDict()), 0, 0);
+  RecursiveBuildTree(root, &dict, 0, 0);
   return dict;
 }
 
@@ -431,7 +431,7 @@ bool AccessibilityTreeFormatterWin::AddIA2Properties(
 
   if (ia2->get_attributes(bstr.Receive()) == S_OK) {
     // get_attributes() returns a semicolon delimited string. Turn it into a
-    // ListValue
+    // Value::List
 
     std::vector<std::u16string> ia2_attributes =
         base::SplitString(base::WideToUTF16(bstr.Get()), std::u16string(1, ';'),
@@ -730,17 +730,18 @@ void AccessibilityTreeFormatterWin::AddIA2ValueProperties(
 }
 
 std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
-    const base::DictionaryValue& dict) const {
+    const base::Value::Dict& dict) const {
   std::string line;
 
   // Always show role, and show it first.
-  std::string role_value;
-  dict.GetString("role", &role_value);
-  WriteAttribute(true, role_value, &line);
+  const std::string* role_value = dict.FindString("role");
+  if (role_value) {
+    WriteAttribute(true, *role_value, &line);
+  }
 
   for (const char* attribute_name : ALL_ATTRIBUTES) {
-    const base::Value* value;
-    if (!dict.Get(attribute_name, &value))
+    const base::Value* value = dict.Find(attribute_name);
+    if (!value)
       continue;
 
     switch (value->type()) {
@@ -755,15 +756,14 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
       case base::Value::Type::DICTIONARY: {
         // Currently all dictionary values are coordinates.
         // Revisit this if that changes.
-        const base::DictionaryValue* dict_value;
-        value->GetAsDictionary(&dict_value);
+        const base::Value::Dict& dict_value = value->GetDict();
         if (strcmp(attribute_name, "size") == 0) {
           WriteAttribute(
-              false, FormatCoordinates(*dict_value, "size", "width", "height"),
+              false, FormatCoordinates(dict_value, "size", "width", "height"),
               &line);
         } else if (strcmp(attribute_name, "location") == 0) {
           WriteAttribute(false,
-                         FormatCoordinates(*dict_value, "location", "x", "y"),
+                         FormatCoordinates(dict_value, "location", "x", "y"),
                          &line);
         }
         break;

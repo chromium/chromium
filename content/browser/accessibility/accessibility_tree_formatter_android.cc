@@ -96,10 +96,10 @@ AccessibilityTreeFormatterAndroid::AccessibilityTreeFormatterAndroid() {}
 
 AccessibilityTreeFormatterAndroid::~AccessibilityTreeFormatterAndroid() {}
 
-base::Value AccessibilityTreeFormatterAndroid::BuildTree(
+base::Value::Dict AccessibilityTreeFormatterAndroid::BuildTree(
     ui::AXPlatformNodeDelegate* root) const {
   if (!root) {
-    return base::Value(base::Value::Type::DICTIONARY);
+    return base::Value::Dict();
   }
 
   BrowserAccessibility* root_internal =
@@ -108,21 +108,21 @@ base::Value AccessibilityTreeFormatterAndroid::BuildTree(
   // XXX: Android formatter should walk native Android tree (not internal one).
   base::Value::Dict dict;
   RecursiveBuildTree(*root_internal, &dict);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value AccessibilityTreeFormatterAndroid::BuildTreeForSelector(
+base::Value::Dict AccessibilityTreeFormatterAndroid::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   NOTREACHED();
-  return base::Value(base::Value::Type::DICTIONARY);
+  return base::Value::Dict();
 }
 
-base::Value AccessibilityTreeFormatterAndroid::BuildNode(
+base::Value::Dict AccessibilityTreeFormatterAndroid::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   CHECK(node);
   base::Value::Dict dict;
   AddProperties(*BrowserAccessibility::FromAXPlatformNodeDelegate(node), &dict);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void AccessibilityTreeFormatterAndroid::AddDefaultFilters(
@@ -232,8 +232,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
 }
 
 std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
-    const base::DictionaryValue& dict_value) const {
-  const base::Value::Dict& dict = dict_value.GetDict();
+    const base::Value::Dict& dict) const {
   const std::string* error_value = dict.FindString("error");
   if (error_value)
     return *error_value;

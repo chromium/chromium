@@ -16,11 +16,11 @@ class AX_EXPORT AXTreeFormatterMac : public AXTreeFormatterBase {
   ~AXTreeFormatterMac() override;
 
   // AXTreeFormatter
-  base::Value BuildTree(AXPlatformNodeDelegate* root) const override;
-  base::Value BuildTreeForSelector(
+  base::Value::Dict BuildTree(AXPlatformNodeDelegate* root) const override;
+  base::Value::Dict BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
-  base::Value BuildNode(AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
 
   std::string EvaluateScript(const AXTreeSelector& selector,
                              const AXInspectScenario& scenario) const override;
@@ -66,7 +66,7 @@ class AX_EXPORT AXTreeFormatterMac : public AXTreeFormatterBase {
                                           const NSRect& root_rect) const;
 
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node) const override;
+      const base::Value::Dict& node) const override;
 };
 
 }  // namespace ui

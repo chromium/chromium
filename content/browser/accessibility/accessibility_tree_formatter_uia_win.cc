@@ -468,7 +468,7 @@ void AccessibilityTreeFormatterUia::AddDefaultFilters(
           "=*");
 }
 
-base::Value AccessibilityTreeFormatterUia::BuildTree(
+base::Value::Dict AccessibilityTreeFormatterUia::BuildTree(
     ui::AXPlatformNodeDelegate* start) const {
   Microsoft::WRL::ComPtr<IUIAutomationElement> start_element;
   GetUIAElementFromDelegate(start, uia_.Get(), &start_element);
@@ -502,10 +502,10 @@ base::Value AccessibilityTreeFormatterUia::BuildTree(
     RecursiveBuildTree(non_pane_descendant.Get(), root_bounds.left,
                        root_bounds.top, &tree);
   }
-  return base::Value(std::move(tree));
+  return tree;
 }
 
-base::Value AccessibilityTreeFormatterUia::BuildTreeForSelector(
+base::Value::Dict AccessibilityTreeFormatterUia::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   HWND hwnd = GetHWNDBySelector(selector);
 
@@ -521,10 +521,10 @@ base::Value AccessibilityTreeFormatterUia::BuildTreeForSelector(
     RecursiveBuildTree(root.Get(), root_bounds.left, root_bounds.top, &tree);
   }
 
-  return base::Value(std::move(tree));
+  return tree;
 }
 
-base::Value AccessibilityTreeFormatterUia::BuildNode(
+base::Value::Dict AccessibilityTreeFormatterUia::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   Microsoft::WRL::ComPtr<IUIAutomationElement> uia_element;
   GetUIAElementFromDelegate(node, uia_.Get(), &uia_element);
@@ -538,7 +538,7 @@ base::Value AccessibilityTreeFormatterUia::BuildNode(
   RECT root_bounds = GetUIARootBounds(node, uia_.Get());
   base::Value::Dict tree;
   AddProperties(uia_element.Get(), root_bounds.left, root_bounds.top, &tree);
-  return base::Value(std::move(tree));
+  return tree;
 }
 
 void AccessibilityTreeFormatterUia::RecursiveBuildTree(
@@ -1184,9 +1184,8 @@ void AccessibilityTreeFormatterUia::BuildCustomPropertiesMap() {
 }
 
 std::string AccessibilityTreeFormatterUia::ProcessTreeForOutput(
-    const base::DictionaryValue& node) const {
+    const base::Value::Dict& dict) const {
   std::string line;
-  const base::Value::Dict& dict = node.GetDict();
 
   // Always show control type, and show it first.
   const std::string* control_type_value =
@@ -1288,8 +1287,8 @@ void AccessibilityTreeFormatterUia::ProcessValueForOutput(
     case base::Value::Type::DICT: {
       if (name == "BoundingRectangle") {
         WriteAttribute(false,
-                       FormatRectangle(value, "BoundingRectangle", "left",
-                                       "top", "width", "height"),
+                       FormatRectangle(value.GetDict(), "BoundingRectangle",
+                                       "left", "top", "width", "height"),
                        &line);
       }
       break;

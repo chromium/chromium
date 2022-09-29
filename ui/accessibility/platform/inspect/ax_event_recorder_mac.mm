@@ -134,8 +134,8 @@ void AXEventRecorderMac::EventReceived(AXUIElementRef element,
   formatter.SetPropertyFilters(property_filters_,
                                AXTreeFormatter::kFiltersDefaultSet);
 
-  std::string element_str = formatter.FormatTree(
-      base::Value(formatter.BuildNode(static_cast<id>(element))));
+  std::string element_str =
+      formatter.FormatTree(formatter.BuildNode(static_cast<id>(element)));
 
   // Element dumps contain a new line character at the end, remove it.
   if (!element_str.empty() && element_str.back() == '\n') {

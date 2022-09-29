@@ -21,10 +21,10 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   explicit AccessibilityTreeFormatterBlink();
   ~AccessibilityTreeFormatterBlink() override;
 
-  base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
-  base::Value BuildTreeForSelector(
+  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* root) const override;
+  base::Value::Dict BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
-  base::Value BuildTreeForNode(ui::AXNode* node) const override;
+  base::Value::Dict BuildTreeForNode(ui::AXNode* node) const override;
   std::string DumpInternalAccessibilityTree(
       ui::AXTreeID tree_id,
       const std::vector<AXPropertyFilter>& property_filters) override;
@@ -40,7 +40,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   void RecursiveBuildTree(const ui::AXNode& node,
                           base::Value::Dict* dict) const;
 
-  base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
   void AddProperties(const BrowserAccessibility& node,
                      base::Value::Dict* dict) const;
@@ -48,7 +48,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   void AddProperties(const ui::AXNode& node, base::Value::Dict* dict) const;
 
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node) const override;
+      const base::Value::Dict& node) const override;
 };
 
 }  // namespace content

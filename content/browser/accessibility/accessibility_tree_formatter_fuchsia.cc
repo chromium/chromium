@@ -200,10 +200,10 @@ void AccessibilityTreeFormatterFuchsia::AddDefaultFilters(
                     AXPropertyFilter::DENY);
 }
 
-base::Value AccessibilityTreeFormatterFuchsia::BuildTree(
+base::Value::Dict AccessibilityTreeFormatterFuchsia::BuildTree(
     ui::AXPlatformNodeDelegate* root) const {
   if (!root) {
-    return base::Value(base::Value::Type::DICTIONARY);
+    return base::Value::Dict();
   }
 
   BrowserAccessibility* root_internal =
@@ -211,7 +211,7 @@ base::Value AccessibilityTreeFormatterFuchsia::BuildTree(
 
   base::Value::Dict dict;
   RecursiveBuildTree(*root_internal, &dict);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
@@ -245,12 +245,12 @@ void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
   dict->Set(kChildrenDictAttr, std::move(children));
 }
 
-base::Value AccessibilityTreeFormatterFuchsia::BuildNode(
+base::Value::Dict AccessibilityTreeFormatterFuchsia::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   CHECK(node);
   base::Value::Dict dict;
   AddProperties(*BrowserAccessibility::FromAXPlatformNodeDelegate(node), &dict);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void AccessibilityTreeFormatterFuchsia::AddProperties(
@@ -396,8 +396,7 @@ void AccessibilityTreeFormatterFuchsia::AddProperties(
 }
 
 std::string AccessibilityTreeFormatterFuchsia::ProcessTreeForOutput(
-    const base::DictionaryValue& dict_node) const {
-  const base::Value::Dict& node = dict_node.GetDict();
+    const base::Value::Dict& node) const {
   if (const std::string* error_value = node.FindString("error")) {
     return *error_value;
   }
@@ -447,10 +446,10 @@ std::string AccessibilityTreeFormatterFuchsia::ProcessTreeForOutput(
   return line;
 }
 
-base::Value AccessibilityTreeFormatterFuchsia::BuildTreeForSelector(
+base::Value::Dict AccessibilityTreeFormatterFuchsia::BuildTreeForSelector(
     const AXTreeSelector&) const {
   NOTIMPLEMENTED();
-  return base::Value(base::Value::Type::DICTIONARY);
+  return base::Value::Dict();
 }
 
 }  // namespace content

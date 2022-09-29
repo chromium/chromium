@@ -31,13 +31,13 @@ class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
   bool ShouldDumpChildren(const AXPlatformNodeDelegate& node) const;
 
   // Build an accessibility tree for the current Chrome app.
-  virtual base::Value BuildTree(AXPlatformNodeDelegate* root) const = 0;
+  virtual base::Value::Dict BuildTree(AXPlatformNodeDelegate* root) const = 0;
 
   // AXTreeFormatter overrides.
   std::string Format(AXPlatformNodeDelegate* root) const override;
   std::string FormatNode(AXPlatformNodeDelegate* node) const override;
-  std::string FormatTree(const base::Value& tree_node) const override;
-  base::Value BuildTreeForNode(ui::AXNode* root) const override;
+  std::string FormatTree(const base::Value::Dict& tree_node) const override;
+  base::Value::Dict BuildTreeForNode(ui::AXNode* root) const override;
   std::string EvaluateScript(
       const AXTreeSelector& selector,
       const ui::AXInspectScenario& scenario) const override;
@@ -84,18 +84,18 @@ class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
   // - Provides a filtered version of the dictionary in an out param,
   //   (only if the out param is provided).
   virtual std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node) const = 0;
+      const base::Value::Dict& node) const = 0;
 
   //
   // Utility functions to be used by each platform.
   //
 
-  std::string FormatCoordinates(const base::Value& dict,
+  std::string FormatCoordinates(const base::Value::Dict& dict,
                                 const std::string& name,
                                 const std::string& x_name,
                                 const std::string& y_name) const;
 
-  std::string FormatRectangle(const base::Value& dict,
+  std::string FormatRectangle(const base::Value::Dict& dict,
                               const std::string& name,
                               const std::string& left_name,
                               const std::string& top_name,
@@ -113,16 +113,16 @@ class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
                          AXPropertyFilter::Type type = AXPropertyFilter::ALLOW);
   bool show_ids() const { return show_ids_; }
 
-  base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
  private:
-  void RecursiveFormatTree(const base::Value& tree_node,
+  void RecursiveFormatTree(const base::Value::Dict& tree_node,
                            std::string* contents,
                            int depth = 0) const;
 
   bool MatchesPropertyFilters(const std::string& text,
                               bool default_result) const;
-  bool MatchesNodeFilters(const base::Value& dict) const;
+  bool MatchesNodeFilters(const base::Value::Dict& dict) const;
 
   // Property filters used when formatting the accessibility tree as text.
   // Any property which matches a property filter will be skipped.

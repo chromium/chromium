@@ -25,10 +25,10 @@ class AccessibilityTreeFormatterUia : public ui::AXTreeFormatterBase {
   ~AccessibilityTreeFormatterUia() override;
 
   // AccessibilityTreeFormatterBase:
-  base::Value BuildTree(ui::AXPlatformNodeDelegate* start) const override;
-  base::Value BuildTreeForSelector(
+  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* start) const override;
+  base::Value::Dict BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
-  base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
  protected:
   void AddDefaultFilters(
@@ -97,7 +97,7 @@ class AccessibilityTreeFormatterUia : public ui::AXTreeFormatterBase {
                          base::Value::Dict* dict) const;
   std::u16string GetNodeName(IUIAutomationElement* node) const;
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node) const override;
+      const base::Value::Dict& node) const override;
   void ProcessPropertyForOutput(const std::string& property_name,
                                 const base::Value::Dict& dict,
                                 std::string& line) const;

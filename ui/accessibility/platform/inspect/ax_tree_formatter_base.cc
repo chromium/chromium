@@ -59,20 +59,23 @@ std::string AXTreeFormatterBase::FormatNode(
   return FormatTree(BuildNode(node));
 }
 
-base::Value AXTreeFormatterBase::BuildNode(AXPlatformNodeDelegate* node) const {
-  return base::Value(base::Value::Type::DICTIONARY);
+base::Value::Dict AXTreeFormatterBase::BuildNode(
+    AXPlatformNodeDelegate* node) const {
+  return base::Value::Dict();
 }
 
-std::string AXTreeFormatterBase::FormatTree(const base::Value& dict) const {
+std::string AXTreeFormatterBase::FormatTree(
+    const base::Value::Dict& dict) const {
   std::string contents;
   RecursiveFormatTree(dict, &contents);
   return contents;
 }
 
-base::Value AXTreeFormatterBase::BuildTreeForNode(ui::AXNode* root) const {
+base::Value::Dict AXTreeFormatterBase::BuildTreeForNode(
+    ui::AXNode* root) const {
   NOTREACHED()
       << "Only supported when called on AccessibilityTreeFormatterBlink.";
-  return base::Value();
+  return base::Value::Dict();
 }
 
 std::string AXTreeFormatterBase::EvaluateScript(
@@ -91,7 +94,7 @@ std::string AXTreeFormatterBase::EvaluateScript(
   return {};
 }
 
-void AXTreeFormatterBase::RecursiveFormatTree(const base::Value& dict,
+void AXTreeFormatterBase::RecursiveFormatTree(const base::Value::Dict& dict,
                                               std::string* contents,
                                               int depth) const {
   // Check dictionary against node filters, may require us to skip this node
@@ -99,12 +102,11 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::Value& dict,
   if (MatchesNodeFilters(dict))
     return;
 
-  if (dict.DictEmpty())
+  if (dict.empty())
     return;
 
   std::string indent = std::string(depth * kIndentSymbolCount, kIndentSymbol);
-  std::string line =
-      indent + ProcessTreeForOutput(base::Value::AsDictionaryValue(dict));
+  std::string line = indent + ProcessTreeForOutput(dict);
 
   // TODO(accessibility): This can be removed once the UIA tree formatter
   // can call ShouldDumpNode().
@@ -124,10 +126,11 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::Value& dict,
   if (line.find(kSkipChildren) != std::string::npos)
     return;
 
-  const base::Value* children = dict.FindListPath(kChildrenDictAttr);
-  if (children && !children->GetListDeprecated().empty()) {
-    for (const auto& child_dict : children->GetListDeprecated()) {
-      RecursiveFormatTree(child_dict, contents, depth + 1);
+  const base::Value::List* children = dict.FindList(kChildrenDictAttr);
+  if (children) {
+    for (const auto& child : *children) {
+      DCHECK(child.is_dict());
+      RecursiveFormatTree(child.GetDict(), contents, depth + 1);
     }
   }
 }
@@ -214,31 +217,32 @@ bool AXTreeFormatterBase::MatchesPropertyFilters(const std::string& text,
                                                      default_result);
 }
 
-bool AXTreeFormatterBase::MatchesNodeFilters(const base::Value& dict) const {
+bool AXTreeFormatterBase::MatchesNodeFilters(
+    const base::Value::Dict& dict) const {
   return ui::AXTreeFormatter::MatchesNodeFilters(node_filters_, dict);
 }
 
 std::string AXTreeFormatterBase::FormatCoordinates(
-    const base::Value& dict,
+    const base::Value::Dict& dict,
     const std::string& name,
     const std::string& x_name,
     const std::string& y_name) const {
-  int x = dict.FindIntPath(x_name).value_or(0);
-  int y = dict.FindIntPath(y_name).value_or(0);
+  int x = dict.FindInt(x_name).value_or(0);
+  int y = dict.FindInt(y_name).value_or(0);
   return base::StringPrintf("%s=(%d, %d)", name.c_str(), x, y);
 }
 
 std::string AXTreeFormatterBase::FormatRectangle(
-    const base::Value& dict,
+    const base::Value::Dict& dict,
     const std::string& name,
     const std::string& left_name,
     const std::string& top_name,
     const std::string& width_name,
     const std::string& height_name) const {
-  int left = dict.FindIntPath(left_name).value_or(0);
-  int top = dict.FindIntPath(top_name).value_or(0);
-  int width = dict.FindIntPath(width_name).value_or(0);
-  int height = dict.FindIntPath(height_name).value_or(0);
+  int left = dict.FindInt(left_name).value_or(0);
+  int top = dict.FindInt(top_name).value_or(0);
+  int width = dict.FindInt(width_name).value_or(0);
+  int height = dict.FindInt(height_name).value_or(0);
   return base::StringPrintf("%s=(%d, %d, %d, %d)", name.c_str(), left, top,
                             width, height);
 }

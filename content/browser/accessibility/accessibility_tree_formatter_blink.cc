@@ -233,39 +233,39 @@ const char* const TREE_DATA_ATTRIBUTES[] = {"TreeData.textSelStartOffset",
 const char* STATE_FOCUSED = "focused";
 const char* STATE_OFFSCREEN = "offscreen";
 
-base::Value AccessibilityTreeFormatterBlink::BuildTree(
+base::Value::Dict AccessibilityTreeFormatterBlink::BuildTree(
     ui::AXPlatformNodeDelegate* root) const {
   if (!root) {
-    return base::Value(base::Value::Type::DICTIONARY);
+    return base::Value::Dict();
   }
 
   BrowserAccessibility* root_internal =
       BrowserAccessibility::FromAXPlatformNodeDelegate(root);
   base::Value::Dict dict;
   RecursiveBuildTree(*root_internal, &dict);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value AccessibilityTreeFormatterBlink::BuildTreeForSelector(
+base::Value::Dict AccessibilityTreeFormatterBlink::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   NOTREACHED();
-  return base::Value(base::Value::Type::DICTIONARY);
+  return base::Value::Dict();
 }
 
-base::Value AccessibilityTreeFormatterBlink::BuildTreeForNode(
+base::Value::Dict AccessibilityTreeFormatterBlink::BuildTreeForNode(
     ui::AXNode* node) const {
   CHECK(node);
   base::Value::Dict dict;
   RecursiveBuildTree(*node, &dict);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value AccessibilityTreeFormatterBlink::BuildNode(
+base::Value::Dict AccessibilityTreeFormatterBlink::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   CHECK(node);
   base::Value::Dict dict;
   AddProperties(*BrowserAccessibility::FromAXPlatformNodeDelegate(node), &dict);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 std::string AccessibilityTreeFormatterBlink::DumpInternalAccessibilityTree(
@@ -274,8 +274,7 @@ std::string AccessibilityTreeFormatterBlink::DumpInternalAccessibilityTree(
   ui::AXTreeManager* ax_mgr = ui::AXTreeManager::FromID(tree_id);
   DCHECK(ax_mgr);
   SetPropertyFilters(property_filters, kFiltersDefaultSet);
-  base::Value dict = BuildTreeForNode(ax_mgr->GetRoot());
-  return FormatTree(dict);
+  return FormatTree(BuildTreeForNode(ax_mgr->GetRoot()));
 }
 
 void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
@@ -600,8 +599,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
 }
 
 std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
-    const base::DictionaryValue& dict_value) const {
-  const base::Value::Dict& dict = dict_value.GetDict();
+    const base::Value::Dict& dict) const {
   const std::string* error_value = dict.FindString("error");
   if (error_value)
     return *error_value;
@@ -636,34 +634,33 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
     WriteAttribute(false, STATE_FOCUSED, &line);
 
   if (dict.Find("boundsX") && dict.Find("boundsY")) {
-    WriteAttribute(
-        false, FormatCoordinates(dict_value, "location", "boundsX", "boundsY"),
-        &line);
+    WriteAttribute(false,
+                   FormatCoordinates(dict, "location", "boundsX", "boundsY"),
+                   &line);
   }
 
   if (dict.Find("boundsWidth") && dict.Find("boundsHeight")) {
     WriteAttribute(
-        false,
-        FormatCoordinates(dict_value, "size", "boundsWidth", "boundsHeight"),
+        false, FormatCoordinates(dict, "size", "boundsWidth", "boundsHeight"),
         &line);
   }
 
   if (!dict.FindBool("ignored").value_or(false)) {
     if (dict.Find("pageBoundsX") && dict.Find("pageBoundsY")) {
-      WriteAttribute(false,
-                     FormatCoordinates(dict_value, "pageLocation",
-                                       "pageBoundsX", "pageBoundsY"),
-                     &line);
+      WriteAttribute(
+          false,
+          FormatCoordinates(dict, "pageLocation", "pageBoundsX", "pageBoundsY"),
+          &line);
     }
     if (dict.Find("pageBoundsWidth") && dict.Find("pageBoundsHeight")) {
       WriteAttribute(false,
-                     FormatCoordinates(dict_value, "pageSize",
-                                       "pageBoundsWidth", "pageBoundsHeight"),
+                     FormatCoordinates(dict, "pageSize", "pageBoundsWidth",
+                                       "pageBoundsHeight"),
                      &line);
     }
     if (dict.Find("unclippedBoundsX") && dict.Find("unclippedBoundsY")) {
       WriteAttribute(false,
-                     FormatCoordinates(dict_value, "unclippedLocation",
+                     FormatCoordinates(dict, "unclippedLocation",
                                        "unclippedBoundsX", "unclippedBoundsY"),
                      &line);
     }
@@ -671,7 +668,7 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
         dict.Find("unclippedBoundsHeight")) {
       WriteAttribute(
           false,
-          FormatCoordinates(dict_value, "unclippedSize", "unclippedBoundsWidth",
+          FormatCoordinates(dict, "unclippedSize", "unclippedBoundsWidth",
                             "unclippedBoundsHeight"),
           &line);
     }

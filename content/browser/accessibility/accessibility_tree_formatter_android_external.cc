@@ -19,10 +19,10 @@ AccessibilityTreeFormatterAndroidExternal::
 AccessibilityTreeFormatterAndroidExternal::
     ~AccessibilityTreeFormatterAndroidExternal() = default;
 
-base::Value AccessibilityTreeFormatterAndroidExternal::BuildTree(
+base::Value::Dict AccessibilityTreeFormatterAndroidExternal::BuildTree(
     ui::AXPlatformNodeDelegate* root) const {
   if (!root) {
-    return base::Value(base::Value::Type::DICTIONARY);
+    return base::Value::Dict();
   }
 
   BrowserAccessibility* root_internal =
@@ -30,7 +30,7 @@ base::Value AccessibilityTreeFormatterAndroidExternal::BuildTree(
 
   base::Value::Dict dict;
   RecursiveBuildTree(*root_internal, &dict);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void AccessibilityTreeFormatterAndroidExternal::RecursiveBuildTree(
@@ -62,11 +62,10 @@ void AccessibilityTreeFormatterAndroidExternal::RecursiveBuildTree(
 }
 
 std::string AccessibilityTreeFormatterAndroidExternal::ProcessTreeForOutput(
-    const base::DictionaryValue& dict) const {
-  std::string line;
-  if (dict.GetString(kStringKey, &line))
-    return line;
-
+    const base::Value::Dict& dict) const {
+  const std::string* line = dict.FindString(kStringKey);
+  if (line)
+    return *line;
   return std::string();
 }
 

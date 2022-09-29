@@ -9,12 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/gfx/native_widget_types.h"
-
-namespace base {
-class Value;
-}
 
 namespace ui {
 
@@ -46,7 +43,7 @@ class AX_EXPORT AXTreeFormatter {
 
   // Check if the given dictionary matches any of the supplied AXNodeFilter(s).
   static bool MatchesNodeFilters(const std::vector<AXNodeFilter>& node_filters,
-                                 const base::Value& dict);
+                                 const base::Value::Dict& dict);
 
   // Formats a given web content accessible tree.
   // |root| must be non-null and must be in web content.
@@ -57,7 +54,7 @@ class AX_EXPORT AXTreeFormatter {
 
   // Similar to BuildTree, but generates a dictionary just for the current
   // web node (i.e. without children).
-  virtual base::Value BuildNode(AXPlatformNodeDelegate* node) const = 0;
+  virtual base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const = 0;
 
   // Build an accessibility tree for any window or pattern supplied by
   // the selector object.
@@ -82,10 +79,11 @@ class AX_EXPORT AXTreeFormatter {
   //     "children": [ ]
   //   } ]
   // }
-  virtual base::Value BuildTreeForSelector(const AXTreeSelector&) const = 0;
+  virtual base::Value::Dict BuildTreeForSelector(
+      const AXTreeSelector&) const = 0;
 
   // Build an accessibility tree for an application with |node| as the root.
-  virtual base::Value BuildTreeForNode(ui::AXNode* node) const = 0;
+  virtual base::Value::Dict BuildTreeForNode(ui::AXNode* node) const = 0;
 
   // Returns a string representing the internal tree represented by |tree_id|.
   virtual std::string DumpInternalAccessibilityTree(
@@ -93,7 +91,7 @@ class AX_EXPORT AXTreeFormatter {
       const std::vector<AXPropertyFilter>& property_filters) = 0;
 
   // Dumps accessibility tree.
-  virtual std::string FormatTree(const base::Value& tree_node) const = 0;
+  virtual std::string FormatTree(const base::Value::Dict& tree_node) const = 0;
 
   // Evaluates script instructions for the window returned by the selector.
   virtual std::string EvaluateScript(

@@ -61,19 +61,20 @@ void AXTreeFormatterMac::AddDefaultFilters(
   }
 }
 
-base::Value AXTreeFormatterMac::BuildTree(AXPlatformNodeDelegate* root) const {
+base::Value::Dict AXTreeFormatterMac::BuildTree(
+    AXPlatformNodeDelegate* root) const {
   DCHECK(root);
-  return base::Value(BuildTree(root->GetNativeViewAccessible()));
+  return BuildTree(root->GetNativeViewAccessible());
 }
 
-base::Value AXTreeFormatterMac::BuildTreeForSelector(
+base::Value::Dict AXTreeFormatterMac::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   AXUIElementRef node = nil;
   std::tie(node, std::ignore) = FindAXUIElement(selector);
   if (node == nil) {
-    return base::Value(base::Value::Type::DICTIONARY);
+    return base::Value::Dict();
   }
-  return base::Value(BuildTreeForAXUIElement(node));
+  return BuildTreeForAXUIElement(node);
 }
 
 base::Value::Dict AXTreeFormatterMac::BuildTreeForAXUIElement(
@@ -126,7 +127,7 @@ std::string AXTreeFormatterMac::EvaluateScript(
     const std::vector<AXScriptInstruction>& instructions,
     size_t start_index,
     size_t end_index) const {
-  base::Value scripts(base::Value::Type::LIST);
+  base::Value::List scripts;
   AXTreeIndexerMac indexer(platform_root);
   std::map<std::string, id> storage;
   AXCallStatementInvoker invoker(&indexer, &storage);
@@ -158,7 +159,7 @@ std::string AXTreeFormatterMac::EvaluateScript(
   }
 
   std::string contents;
-  for (const base::Value& script : scripts.GetListDeprecated()) {
+  for (const base::Value& script : scripts) {
     std::string line;
     WriteAttribute(true, script.GetString(), &line);
     contents += line + "\n";
@@ -166,9 +167,10 @@ std::string AXTreeFormatterMac::EvaluateScript(
   return contents;
 }
 
-base::Value AXTreeFormatterMac::BuildNode(AXPlatformNodeDelegate* node) const {
+base::Value::Dict AXTreeFormatterMac::BuildNode(
+    AXPlatformNodeDelegate* node) const {
   DCHECK(node);
-  return base::Value(BuildNode(node->GetNativeViewAccessible()));
+  return BuildNode(node->GetNativeViewAccessible());
 }
 
 base::Value::Dict AXTreeFormatterMac::BuildNode(const id node) const {
@@ -269,21 +271,21 @@ base::Value::Dict AXTreeFormatterMac::PopulateLocalPosition(
 }
 
 std::string AXTreeFormatterMac::ProcessTreeForOutput(
-    const base::DictionaryValue& dict) const {
-  std::string error_value;
-  if (dict.GetString("error", &error_value))
-    return error_value;
+    const base::Value::Dict& dict) const {
+  const std::string* error_value = dict.FindString("error");
+  if (error_value)
+    return *error_value;
 
   std::string line;
 
   // AXRole and AXSubrole have own formatting and should be listed upfront.
   std::string role_attr = SysNSStringToUTF8(NSAccessibilityRoleAttribute);
-  const std::string* value = dict.FindStringPath(role_attr);
+  const std::string* value = dict.FindString(role_attr);
   if (value) {
     WriteAttribute(true, *value, &line);
   }
   std::string subrole_attr = SysNSStringToUTF8(NSAccessibilitySubroleAttribute);
-  value = dict.FindStringPath(subrole_attr);
+  value = dict.FindString(subrole_attr);
   if (value) {
     WriteAttribute(false,
                    StringPrintf("%s=%s", subrole_attr.c_str(), value->c_str()),
@@ -291,7 +293,7 @@ std::string AXTreeFormatterMac::ProcessTreeForOutput(
   }
 
   // Expose all other attributes.
-  for (auto item : dict.DictItems()) {
+  for (auto item : dict) {
     if (item.second.is_string() &&
         (item.first == role_attr || item.first == subrole_attr)) {
       continue;

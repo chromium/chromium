@@ -54,16 +54,16 @@ AccessibilityTreeFormatterAuraLinux::AccessibilityTreeFormatterAuraLinux() = def
 
 AccessibilityTreeFormatterAuraLinux::~AccessibilityTreeFormatterAuraLinux() {}
 
-base::Value AccessibilityTreeFormatterAuraLinux::BuildTreeForSelector(
+base::Value::Dict AccessibilityTreeFormatterAuraLinux::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   AtspiAccessible* node = FindAccessible(selector);
   if (!node) {
-    return base::Value(base::Value::Type::DICTIONARY);
+    return base::Value::Dict();
   }
 
   base::Value::Dict dict;
   RecursiveBuildTree(node, &dict);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 std::string AccessibilityTreeFormatterAuraLinux::EvaluateScript(
@@ -126,18 +126,18 @@ AtkObject* GetAtkObject(ui::AXPlatformNodeDelegate* node) {
   return atk_node;
 }
 
-base::Value AccessibilityTreeFormatterAuraLinux::BuildTree(
+base::Value::Dict AccessibilityTreeFormatterAuraLinux::BuildTree(
     ui::AXPlatformNodeDelegate* root) const {
   base::Value::Dict dict;
   RecursiveBuildTree(GetAtkObject(root), &dict);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value AccessibilityTreeFormatterAuraLinux::BuildNode(
+base::Value::Dict AccessibilityTreeFormatterAuraLinux::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   base::Value::Dict dict;
   AddProperties(GetAtkObject(node), &dict);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void AccessibilityTreeFormatterAuraLinux::RecursiveBuildTree(
@@ -654,8 +654,7 @@ const char* const ATK_OBJECT_ATTRIBUTES[] = {
 };
 
 std::string AccessibilityTreeFormatterAuraLinux::ProcessTreeForOutput(
-    const base::DictionaryValue& dict_node) const {
-  const base::Value::Dict& node = dict_node.GetDict();
+    const base::Value::Dict& node) const {
   const std::string* error_value = node.FindString("error");
   if (error_value)
     return *error_value;
