@@ -35,9 +35,15 @@ content::WebUIDataSource* CreateFaceMLAppUntrustedDataSource() {
   // E.g. allow <img>, <audio>, <video> to load blob: and data: URLs.
   // and allow framing blob: URLs for browsable content.
 
+  // Allow styles to include inline styling needed for Polymer elements.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::StyleSrc,
+      "style-src 'self' 'unsafe-inline';");
+
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types lit-html polymer_resin;");
+      "trusted-types polymer_resin lit-html goog#html polymer-html-literal "
+      "polymer-template-event-attribute-policy;");
 
   return source;
 }
