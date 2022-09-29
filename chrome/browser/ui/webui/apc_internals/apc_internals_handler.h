@@ -45,8 +45,18 @@ class APCInternalsHandler : public content::WebUIMessageHandler {
   // Called by user-triggered DOM event.
   void OnRefreshScriptCacheRequested(const base::Value::List& args);
 
+  // Fires "on-prefs-information-received" to update preference information on
+  // the page.
+  void UpdatePrefsInformation();
+
+  // Responds to requests to toggle a user pref.
+  void OnToggleUserPref(const base::Value::List& args);
+
+  // Responds to requests to remove a user set valule for a pref.
+  void OnRemoveUserPref(const base::Value::List& args);
+
   // Fires "on-autofill-assistant-information-received" to update Autofill
-  // Assistant Information on the page.
+  // Assistant information on the page.
   void UpdateAutofillAssistantInformation();
 
   // Responds to requests for setting the Autofill Assistant URL. Called by
@@ -55,12 +65,15 @@ class APCInternalsHandler : public content::WebUIMessageHandler {
 
   void GetLoginsAndTryLaunchScript(const base::Value::List& args);
 
-  // Returns a raw pointer to the |PasswordScriptsFetcher| keyed service.
+  // Returns a raw pointer to the `PasswordScriptsFetcher` keyed service.
   password_manager::PasswordScriptsFetcher* GetPasswordScriptsFetcher();
 
   // Data gathering methods.
   // Gathers information on all APC-related features and feature parameters.
   base::Value::List GetAPCRelatedFlags() const;
+
+  // Gathers information on all APC-related prefs.
+  base::Value::List GetAPCRelatedPrefs();
 
   // Gathers information about the script fetcher, e.g. chosen engine,
   // cache state.

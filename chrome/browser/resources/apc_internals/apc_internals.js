@@ -5,6 +5,13 @@
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.js';
 
+function createButton(text, onClickClosure) {
+  const button = document.createElement('button');
+  button.innerText = text;
+  button.addEventListener('click', onClickClosure);
+  return button;
+}
+
 function createTableRow(...args) {
   const row = document.createElement('tr');
   for (const content of args) {
@@ -17,6 +24,12 @@ function createTableRow(...args) {
     row.appendChild(col);
   }
   return row;
+}
+
+function clearTable(table) {
+  while (table.firstChild) {
+    table.removeChild(table.lastChild);
+  }
 }
 
 function onFlagsInfoReceived(flags) {
@@ -45,14 +58,36 @@ function onScriptFetchingInfoReceived(scriptFetcherInfo) {
   }
 }
 
+function onPrefsInfoReceived(prefsInfo) {
+  if (!prefsInfo) {
+    return;
+  }
+
+  const table = $('prefs-table');
+  clearTable(table);
+
+  const addEntry = function(pref) {
+    const nameLabel = pref['name'];
+    const valueLabel = pref['value'];
+    const controlLabel = pref['control_level'];
+    const toggleButton = createButton('Toggle', () => {
+      chrome.send('toggle-user-pref', [pref['name']]);
+    });
+    const removeButton = createButton('Remove user pref', () => {
+      chrome.send('remove-user-pref', [pref['name']]);
+    });
+    table.appendChild(createTableRow(
+        nameLabel, valueLabel, controlLabel, toggleButton, removeButton));
+  };
+  prefsInfo.forEach(addEntry);
+}
+
 function onAutofillAssistantInfoReceived(autofillAssistantInfo) {
   if (!autofillAssistantInfo) {
     return;
   }
   const table = $('autofill-assistant-table');
-  while (table.firstChild) {
-    table.removeChild(table.lastChild);
-  }
+  clearTable(table);
   for (const [key, value] of Object.entries(autofillAssistantInfo)) {
     table.appendChild(createTableRow(key, value));
   }
@@ -117,6 +152,7 @@ function onScriptCacheReceived(scriptsCacheInfo) {
 
 document.addEventListener('DOMContentLoaded', function(event) {
   addWebUIListener('on-flags-information-received', onFlagsInfoReceived);
+  addWebUIListener('on-prefs-information-received', onPrefsInfoReceived);
   addWebUIListener(
       'on-script-fetching-information-received', onScriptFetchingInfoReceived);
   addWebUIListener(
