@@ -187,6 +187,30 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
   if (fetch_request.signature_type() != em::PolicyFetchRequest::NONE)
     policy_data.set_public_key_version(signing_key_version);
 
+  if (policy_type == dm_protocol::kChromeUserPolicyType ||
+      policy_type == dm_protocol::kChromePublicAccountPolicyType) {
+    std::vector<std::string> user_affiliation_ids =
+        policy_storage()->user_affiliation_ids();
+    if (!user_affiliation_ids.empty()) {
+      for (const std::string& user_affiliation_id : user_affiliation_ids) {
+        policy_data.add_user_affiliation_ids(user_affiliation_id);
+      }
+    }
+  } else if (policy_type == dm_protocol::kChromeDevicePolicyType) {
+    std::vector<std::string> device_affiliation_ids =
+        policy_storage()->device_affiliation_ids();
+    if (!device_affiliation_ids.empty()) {
+      for (const std::string& device_affiliation_id : device_affiliation_ids) {
+        policy_data.add_device_affiliation_ids(device_affiliation_id);
+      }
+    }
+  }
+
+  std::string directory_api_id = policy_storage()->directory_api_id();
+  if (!directory_api_id.empty()) {
+    policy_data.set_directory_api_id(directory_api_id);
+  }
+
   policy_data.SerializeToString(fetch_response->mutable_policy_data());
 
   if (fetch_request.signature_type() == em::PolicyFetchRequest::SHA1_RSA) {

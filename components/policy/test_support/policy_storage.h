@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -94,6 +95,25 @@ class PolicyStorage {
   }
   void add_managed_user(const std::string& managed_user) {
     managed_users_.insert(managed_user);
+  }
+
+  const std::vector<std::string>& device_affiliation_ids() const {
+    return device_affiliation_ids_;
+  }
+  void add_device_affiliation_id(const std::string& device_affiliation_id) {
+    device_affiliation_ids_.emplace_back(device_affiliation_id);
+  }
+
+  const std::vector<std::string>& user_affiliation_ids() const {
+    return user_affiliation_ids_;
+  }
+  void add_user_affiliation_id(const std::string& user_affiliation_id) {
+    user_affiliation_ids_.emplace_back(user_affiliation_id);
+  }
+
+  const std::string& directory_api_id() const { return directory_api_id_; }
+  void set_directory_api_id(const std::string& directory_api_id) {
+    directory_api_id_ = directory_api_id;
   }
 
   std::string policy_user() const { return policy_user_; }
@@ -181,6 +201,12 @@ class PolicyStorage {
   std::string service_account_identity_;
 
   base::flat_set<std::string> managed_users_;
+
+  std::vector<std::string> device_affiliation_ids_;
+
+  std::vector<std::string> user_affiliation_ids_;
+
+  std::string directory_api_id_;
 
   std::string policy_user_;
 

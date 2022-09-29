@@ -21,6 +21,8 @@ account id used for public account policies, "value" is the seralized proto
 message of the policies value encoded in base64.
 The root dictionary also contains a "policy_user" key which indicates the
 current user.
+All the fields are described in the device_management_backend.proto
+(https://source.chromium.org/chromium/chromium/src/+/main:components/policy/proto/device_management_backend.proto;l=516?q=PolicyData)
 
 Example:
 {
@@ -50,6 +52,25 @@ Example:
     "secret123456"
   ],
   "policy_user" : "tast-user@managedchrome.com",
+  "current_key_index": 0,
+  "robot_api_auth_code": "code",
+  "directory_api_id": "id",
+  "request_errors": {
+    "register": 500,
+  }
+  "device_affiliation_ids" : [
+    "device_id"
+  ],
+  "user_affiliation_ids" : [
+    "user_id"
+  ],
+  "allow_set_device_attributes" : false,
+  "initial_enrollment_state": {
+    "TEST_serial": {
+      "initial_enrollment_mode": 2,
+      "management_domain": "test-domain.com"
+    }
+  }
 }
 */
 

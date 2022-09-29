@@ -33,6 +33,16 @@ constexpr char kAllowedPolicyTypesKey[] = "allowed_policy_types";
 constexpr char kPoliciesKey[] = "policies";
 constexpr char kExternalPoliciesKey[] = "external_policies";
 constexpr char kManagedUsersKey[] = "managed_users";
+constexpr char kDeviceAffiliationIdsKey[] = "device_affiliation_ids";
+constexpr char kUserAffiliationIdsKey[] = "user_affiliation_ids";
+constexpr char kDirectoryApiIdKey[] = "directory_api_id";
+constexpr char kRequestErrorsKey[] = "request_errors";
+constexpr char kRobotApiAuthCodeKey[] = "robot_api_auth_code";
+constexpr char kAllowSetDeviceAttributesKey[] = "allow_set_device_attributes";
+constexpr char kInitialEnrollmentStateKey[] = "initial_enrollment_state";
+constexpr char kManagementDomainKey[] = "management_domain";
+constexpr char kInitialEnrollmentModeKey[] = "initial_enrollment_mode";
+constexpr char kCurrentKeyIndexKey[] = "current_key_index";
 constexpr char kPolicyUserKey[] = "policy_user";
 
 constexpr char kDefaultPolicyBlobFilename[] = "policy.json";
@@ -239,11 +249,126 @@ bool FakeDMServer::ReadPolicyBlobFile() {
     }
   }
 
+  base::Value::List* device_affiliation_ids =
+      dict.FindList(kDeviceAffiliationIdsKey);
+  if (device_affiliation_ids) {
+    for (const base::Value& device_affiliation_id : *device_affiliation_ids) {
+      const std::string* device_affiliation_id_val =
+          device_affiliation_id.GetIfString();
+      if (device_affiliation_id_val) {
+        LOG(INFO) << "Adding " << *device_affiliation_id_val
+                  << " as a device affiliation id";
+        policy_storage()->add_device_affiliation_id(*device_affiliation_id_val);
+      }
+    }
+  }
+
+  base::Value::List* user_affiliation_ids =
+      dict.FindList(kUserAffiliationIdsKey);
+  if (user_affiliation_ids) {
+    for (const base::Value& user_affiliation_id : *user_affiliation_ids) {
+      const std::string* user_affiliation_id_val =
+          user_affiliation_id.GetIfString();
+      if (user_affiliation_id_val) {
+        LOG(INFO) << "Adding " << *user_affiliation_id_val
+                  << " as a user affiliation id";
+        policy_storage()->add_user_affiliation_id(*user_affiliation_id_val);
+      }
+    }
+  }
+
+  std::string* directory_api_id = dict.FindString(kDirectoryApiIdKey);
+  if (directory_api_id) {
+    LOG(INFO) << "Adding " << *directory_api_id << " as a directory API ID";
+    policy_storage()->set_directory_api_id(*directory_api_id);
+  }
+
+  if (dict.contains(kAllowSetDeviceAttributesKey)) {
+    absl::optional<bool> allow_set_device_attributes =
+        dict.FindBool(kAllowSetDeviceAttributesKey);
+    if (!allow_set_device_attributes.has_value()) {
+      base::Value* v = dict.Find(kAllowSetDeviceAttributesKey);
+      LOG(ERROR)
+          << "The allow_set_device_attributes key isn't a bool, found type "
+          << v->type() << ", found value " << *v;
+      return false;
+    }
+    policy_storage()->set_allow_set_device_attributes(
+        allow_set_device_attributes.value());
+  }
+
+  std::string* robot_api_auth_code = dict.FindString(kRobotApiAuthCodeKey);
+  if (robot_api_auth_code) {
+    LOG(INFO) << "Adding " << *robot_api_auth_code
+              << " as a robot api auth code";
+    policy_storage()->set_robot_api_auth_code(*robot_api_auth_code);
+  }
+
+  base::Value::Dict* request_errors = dict.FindDict(kRequestErrorsKey);
+  if (request_errors) {
+    for (auto request_error : *request_errors) {
+      absl::optional<int> net_error_code = request_error.second.GetIfInt();
+      if (!net_error_code.has_value()) {
+        LOG(ERROR) << "The error code isn't an int";
+        return false;
+      }
+      LOG(INFO) << "Configuring request " << request_error.first << " to error "
+                << net_error_code.value();
+      EmbeddedPolicyTestServer::ConfigureRequestError(
+          request_error.first,
+          static_cast<net::HttpStatusCode>(net_error_code.value()));
+    }
+  }
+
+  base::Value::Dict* initial_enrollment_state =
+      dict.FindDict(kInitialEnrollmentStateKey);
+  if (initial_enrollment_state) {
+    for (base::detail::dict_iterator::reference state :
+         *initial_enrollment_state) {
+      if (!state.second.is_dict()) {
+        LOG(ERROR) << "The current state value for key " << state.first
+                   << " isn't a dict";
+        return false;
+      }
+      base::Value::Dict& state_val = state.second.GetDict();
+      std::string* management_domain =
+          state_val.FindString(kManagementDomainKey);
+      if (!management_domain) {
+        LOG(ERROR) << "The management_domain key isn't a string";
+        return false;
+      }
+      absl::optional<int> initial_enrollment_mode =
+          state_val.FindInt(kInitialEnrollmentModeKey);
+      if (!initial_enrollment_mode.has_value()) {
+        LOG(ERROR) << "The initial_enrollment_mode key isn't an int";
+        return false;
+      }
+      policy::PolicyStorage::InitialEnrollmentState initial_value;
+      initial_value.management_domain = *management_domain;
+      initial_value.initial_enrollment_mode = static_cast<
+          enterprise_management::DeviceInitialEnrollmentStateResponse::
+              InitialEnrollmentMode>(initial_enrollment_mode.value());
+      policy_storage()->SetInitialEnrollmentState(state.first, initial_value);
+    }
+  }
+
+  if (dict.contains(kCurrentKeyIndexKey)) {
+    absl::optional<int> current_key_index = dict.FindInt(kCurrentKeyIndexKey);
+    if (!current_key_index.has_value()) {
+      base::Value* v = dict.Find(kCurrentKeyIndexKey);
+      LOG(ERROR) << "The current_key_index key isn't an int, found type "
+                 << v->type() << ", found value " << *v;
+      return false;
+    }
+    policy_storage()->signature_provider()->set_current_key_version(
+        current_key_index.value());
+  }
+
   base::Value::List* policies = dict.FindList(kPoliciesKey);
   if (policies) {
     for (const base::Value& policy : *policies) {
       if (!policy.is_dict()) {
-        LOG(ERROR) << "The current policy isn't dict";
+        LOG(ERROR) << "The current policy isn't a dict";
         return false;
       }
       if (!SetPolicyPayload(policy.GetDict().FindString(kPolicyTypeKey),
@@ -259,7 +384,7 @@ bool FakeDMServer::ReadPolicyBlobFile() {
   if (external_policies) {
     for (const base::Value& policy : *external_policies) {
       if (!policy.is_dict()) {
-        LOG(ERROR) << "The current external policy isn't dict";
+        LOG(ERROR) << "The current external policy isn't a dict";
         return false;
       }
       if (!SetExternalPolicyPayload(
@@ -392,7 +517,7 @@ bool FakeDMServer::ReadClientStateFile() {
     return false;
   }
   if (!value->is_dict()) {
-    LOG(ERROR) << "The client state file isn't dict.";
+    LOG(ERROR) << "The client state file isn't a dict.";
     return false;
   }
   base::Value::Dict& dict = value->GetDict();

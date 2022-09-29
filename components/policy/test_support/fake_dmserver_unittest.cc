@@ -395,7 +395,23 @@ TEST_F(FakeDMServerTest, HandlePolicyRequest_Succeeds) {
       R"(ovL3N0b3JhZ2UuZ29vZ2xlYXBpcy5jb20vY2hyb21pdW1vcy10ZXN0LWFzc2V0cy1wdWJ)"
       R"(saWMvZW50ZXJwcmlzZS9wcmludGVycy5qc29uIn0="
         }
-      ]
+      ],
+      "current_key_index": 1,
+      "robot_api_auth_code": "code",
+      "directory_api_id": "id",
+      "device_affiliation_ids" : [
+        "device_id"
+      ],
+      "user_affiliation_ids" : [
+        "user_id"
+      ],
+      "allow_set_device_attributes" : false,
+      "initial_enrollment_state": {
+        "TEST_serial": {
+          "initial_enrollment_mode": 2,
+          "management_domain": "test-domain.com"
+        }
+      }
     }
   )"));
   ASSERT_TRUE(base::WriteFile(client_state_path_, R"(
@@ -442,6 +458,81 @@ TEST_F(FakeDMServerTest, HandlePolicyRequest_Succeeds) {
             "Q0ZDY1NzQ5Y2FiNWVjZDBmYTdkYjIxMWMxMmEzYjgiLCJ1cmwiOiJodHRwczovL3N0"
             "b3JhZ2UuZ29vZ2xlYXBpcy5jb20vY2hyb21pdW1vcy10ZXN0LWFzc2V0cy1wdWJsaW"
             "MvZW50ZXJwcmlzZS9wcmludGVycy5qc29uIn0=");
+
+  int current_key_index = fake_dmserver.policy_storage()
+                              ->signature_provider()
+                              ->current_key_version();
+  EXPECT_EQ(current_key_index, 1);
+
+  std::string robot_api_auth_code =
+      fake_dmserver.policy_storage()->robot_api_auth_code();
+  EXPECT_EQ(robot_api_auth_code, "code");
+
+  std::string directory_api_id =
+      fake_dmserver.policy_storage()->directory_api_id();
+  EXPECT_EQ(directory_api_id, "id");
+
+  bool allow_set_device_attributes =
+      fake_dmserver.policy_storage()->allow_set_device_attributes();
+  EXPECT_FALSE(allow_set_device_attributes);
+
+  std::vector<std::string> device_affiliation_ids =
+      fake_dmserver.policy_storage()->device_affiliation_ids();
+  EXPECT_EQ(device_affiliation_ids.size(), 1u);
+  EXPECT_EQ(device_affiliation_ids[0], "device_id");
+
+  std::vector<std::string> user_affiliation_ids =
+      fake_dmserver.policy_storage()->user_affiliation_ids();
+  EXPECT_EQ(user_affiliation_ids.size(), 1u);
+  EXPECT_EQ(user_affiliation_ids[0], "user_id");
+
+  const policy::PolicyStorage::InitialEnrollmentState*
+      initial_enrollment_state =
+          fake_dmserver.policy_storage()->GetInitialEnrollmentState(
+              "TEST_serial");
+  EXPECT_TRUE(initial_enrollment_state);
+  EXPECT_EQ(initial_enrollment_state->management_domain, "test-domain.com");
+  EXPECT_EQ(
+      initial_enrollment_state->initial_enrollment_mode,
+      static_cast<enterprise_management::DeviceInitialEnrollmentStateResponse::
+                      InitialEnrollmentMode>(2));
+}
+
+TEST_F(FakeDMServerTest, HandlePolicyRequestWithCustomError_Succeeds) {
+  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
+                             client_state_path_.MaybeAsASCII());
+  EXPECT_TRUE(fake_dmserver.Start());
+
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_,
+                              R"(
+    {
+      "managed_users" : [ "*" ],
+      "policy_user" : "tast-user@managedchrome.com",
+      "request_errors": { "policy": 500 },
+      "policies" : [
+        {
+          "policy_type" : "google/chromeos/user", "value" : "uhMCEAE="
+        }
+      ]
+    }
+  )"));
+  ASSERT_TRUE(base::WriteFile(client_state_path_, R"(
+    {
+      "fake_device_id" : {
+        "device_id" : "fake_device_id",
+        "device_token" : "fake_device_token",
+        "machine_name" : "fake_machine_name",
+        "username" : "tast-user@managedchrome.com",
+        "state_keys" : [ "fake_state_key" ],
+        "allowed_policy_types" : [ "google/chrome/extension",
+        "google/chromeos/user" ]
+      }
+    }
+  )"));
+  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
+                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                        "oauth_token=fake_policy_token&request=policy"),
+            net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
 TEST_F(FakeDMServerTest, HandleExternalPolicyRequest_Succeeds) {
@@ -534,6 +625,132 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonDictExternalPolicies_Fails) {
     {
       "managed_users" : [ "*" ],
       "external_policies" : [ "1", "2" ]
+    }
+  )"));
+  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
+                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                        "oauth_token=fake_policy_token&request=policy"),
+            net::HTTP_INTERNAL_SERVER_ERROR);
+}
+
+TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonIntRequestError_Fails) {
+  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
+                             client_state_path_.MaybeAsASCII());
+  EXPECT_TRUE(fake_dmserver.Start());
+
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
+    {
+      "managed_users" : [ "*" ],
+      "policy_user" : "tast-user@managedchrome.com",
+      "request_errors": { "policy": "non int value" },
+      "policies" : [
+        {
+          "policy_type" : "google/chromeos/user", "value" : "uhMCEAE="
+        }
+      ]
+    }
+  )"));
+  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
+                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                        "oauth_token=fake_policy_token&request=policy"),
+            net::HTTP_INTERNAL_SERVER_ERROR);
+}
+
+TEST_F(FakeDMServerTest,
+       ReadPolicyBlobFile_WithNonBoolAllowSetDeviceAttributes_Fails) {
+  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
+                             client_state_path_.MaybeAsASCII());
+  EXPECT_TRUE(fake_dmserver.Start());
+
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
+    {
+      "managed_users" : [ "*" ],
+      "policy_user" : "tast-user@managedchrome.com",
+      "allow_set_device_attributes": { "key": "non int value" },
+      "policies" : [
+        {
+          "policy_type" : "google/chromeos/user", "value" : "uhMCEAE="
+        }
+      ]
+    }
+  )"));
+  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
+                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                        "oauth_token=fake_policy_token&request=policy"),
+            net::HTTP_INTERNAL_SERVER_ERROR);
+}
+
+TEST_F(FakeDMServerTest,
+       ReadPolicyBlobFile_WithNonStringManagementDomain_Fails) {
+  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
+                             client_state_path_.MaybeAsASCII());
+  EXPECT_TRUE(fake_dmserver.Start());
+
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
+    {
+      "managed_users" : [ "*" ],
+      "policy_user" : "tast-user@managedchrome.com",
+      "initial_enrollment_state":
+      {
+        "management_domain": 3,
+        "initial_enrollment_mode": 1
+      },
+      "policies" : [
+        {
+          "policy_type" : "google/chromeos/user", "value" : "uhMCEAE="
+        }
+      ]
+    }
+  )"));
+  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
+                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                        "oauth_token=fake_policy_token&request=policy"),
+            net::HTTP_INTERNAL_SERVER_ERROR);
+}
+
+TEST_F(FakeDMServerTest,
+       ReadPolicyBlobFile_WithNonIntInitialEnrollmentMode_Fails) {
+  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
+                             client_state_path_.MaybeAsASCII());
+  EXPECT_TRUE(fake_dmserver.Start());
+
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
+    {
+      "managed_users" : [ "*" ],
+      "policy_user" : "tast-user@managedchrome.com",
+      "initial_enrollment_state":
+      {
+        "management_domain": "domain",
+        "initial_enrollment_mode": "non int value"
+      },
+      "policies" : [
+        {
+          "policy_type" : "google/chromeos/user", "value" : "uhMCEAE="
+        }
+      ]
+    }
+  )"));
+  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
+                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                        "oauth_token=fake_policy_token&request=policy"),
+            net::HTTP_INTERNAL_SERVER_ERROR);
+}
+
+TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonIntCurrentKeyIndex_Fails) {
+  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
+                             client_state_path_.MaybeAsASCII());
+  EXPECT_TRUE(fake_dmserver.Start());
+
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
+    {
+      "managed_users" : [ "*" ],
+      "policy_user" : "tast-user@managedchrome.com",
+      "current_key_index": "non int value",
+      "policies" : [
+        {
+          "policy_type" : "google/chromeos/user", "value" : "uhMCEAE="
+        }
+      ]
     }
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
