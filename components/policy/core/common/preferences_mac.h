@@ -27,7 +27,6 @@ class POLICY_EXPORT MacPreferences {
     virtual ~PolicyScope() = default;
     virtual void Init(CFStringRef application_id) = 0;
     virtual Boolean IsManagedPolicyAvailable(CFStringRef key) = 0;
-    virtual void Enable(bool enable) = 0;
   };
 
   MacPreferences();
@@ -49,8 +48,6 @@ class POLICY_EXPORT MacPreferences {
   // set at the machine scope for `application_id` that is set by
   // `AppSynchronize()` function above.
   virtual Boolean IsManagedPolicyAvailableForMachineScope(CFStringRef key);
-
-  virtual void LoadPolicyScopeDetectionPolicy(CFStringRef application_id);
 
  private:
   std::unique_ptr<PolicyScope> policy_scope_;

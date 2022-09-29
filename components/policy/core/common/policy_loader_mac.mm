@@ -106,7 +106,6 @@ void PolicyLoaderMac::InitOnBackgroundThread() {
 
 std::unique_ptr<PolicyBundle> PolicyLoaderMac::Load() {
   preferences_->AppSynchronize(application_id_);
-  preferences_->LoadPolicyScopeDetectionPolicy(application_id_);
   std::unique_ptr<PolicyBundle> bundle(new PolicyBundle());
 
   // Load Chrome's policy.

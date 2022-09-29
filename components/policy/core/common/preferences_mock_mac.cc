@@ -45,9 +45,6 @@ Boolean MockPreferences::IsManagedPolicyAvailableForMachineScope(
   return CFSetContainsValue(machine_, key);
 }
 
-void MockPreferences::LoadPolicyScopeDetectionPolicy(
-    CFStringRef application_id) {}
-
 void MockPreferences::AddTestItem(CFStringRef key,
                                   CFPropertyListRef value,
                                   bool is_forced,
