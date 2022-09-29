@@ -145,7 +145,7 @@ class TooltipView : public views::View {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kTooltip;
-    node_data->SetName(render_text_->GetDisplayText());
+    node_data->SetNameChecked(render_text_->GetDisplayText());
   }
 
  private:
