@@ -300,12 +300,14 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
 
   std::unique_ptr<content::TtsUtterance> utterance;
   if (extension()) {
-    extensions::ExtensionHost* host =
+    extensions::ExtensionHost* extension_host =
         extensions::ProcessManager::Get(browser_context())
             ->GetBackgroundHostForExtension(extension()->id());
 
-    if (host && host->host_contents())
-      utterance = content::TtsUtterance::Create(host->host_contents());
+    if (extension_host && extension_host->host_contents()) {
+      utterance =
+          content::TtsUtterance::Create(extension_host->host_contents());
+    }
   }
 
   if (!utterance)

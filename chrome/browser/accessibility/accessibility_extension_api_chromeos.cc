@@ -178,10 +178,11 @@ AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
   ui::KeyboardCode key_code_to_compare = ui::VKEY_UNKNOWN;
   const ui::KeyboardLayoutEngine* layout_engine =
       ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
-  ui::DomCode dom_code =
+  ui::DomCode dom_code_for_key_code =
       ui::KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(key_code);
-  if (dom_code != ui::DomCode::NONE) {
-    if (layout_engine->Lookup(dom_code, /*flags=*/ui::EF_NONE, &dom_key,
+  if (dom_code_for_key_code != ui::DomCode::NONE) {
+    if (layout_engine->Lookup(dom_code_for_key_code,
+                              /*event_flags=*/ui::EF_NONE, &dom_key,
                               &key_code_to_compare)) {
       if (dom_key.IsDeadKey() || !dom_key.IsValid()) {
         return RespondNow(Error("Invalid key code"));
@@ -192,7 +193,7 @@ AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
   }
 
   for (const auto& dom_code : ui::kDomCodesArray) {
-    if (!layout_engine->Lookup(dom_code, /*flags=*/ui::EF_NONE, &dom_key,
+    if (!layout_engine->Lookup(dom_code, /*event_flags=*/ui::EF_NONE, &dom_key,
                                &key_code_to_compare)) {
       continue;
     }

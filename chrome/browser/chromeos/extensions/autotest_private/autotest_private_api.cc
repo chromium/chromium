@@ -4466,11 +4466,13 @@ AutotestPrivateGetAppWindowListFunction::Run() {
       window_info.caption_button_enabled_status = caption_button_enabled_status;
       window_info.caption_button_visible_status = caption_button_visible_status;
     } else {
-      auto* widget = views::Widget::GetWidgetForNativeWindow(window);
+      auto* no_frame_header_widget =
+          views::Widget::GetWidgetForNativeWindow(window);
       // All widgets for app windows in chromeos should have a frame. Non app
       // windows may not have a frame and frame mode will be NONE.
-      DCHECK(!widget || widget->GetNativeWindow()->GetType() !=
-                            aura::client::WINDOW_TYPE_NORMAL);
+      DCHECK(!no_frame_header_widget ||
+             no_frame_header_widget->GetNativeWindow()->GetType() !=
+                 aura::client::WINDOW_TYPE_NORMAL);
       window_info.frame_mode =
           api::autotest_private::FrameMode::FRAME_MODE_NONE;
       window_info.is_frame_visible = false;
