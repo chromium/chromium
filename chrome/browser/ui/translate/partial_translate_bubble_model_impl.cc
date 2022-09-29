@@ -188,7 +188,10 @@ void PartialTranslateBubbleModelImpl::TranslateFullPage(
     content::WebContents* web_contents) {
   translate::TranslateManager* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(web_contents);
-  translate_manager->ShowTranslateUI(true);
+  translate_manager->translate_client()
+      ->GetTranslatePrefs()
+      ->SetRecentTargetLanguage(GetTargetLanguageCode());
+  translate_manager->ShowTranslateUI(GetTargetLanguageCode(), true);
 }
 
 void PartialTranslateBubbleModelImpl::OnPartialTranslateResponse(
