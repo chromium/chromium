@@ -43666,6 +43666,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="Show welcome+sign-in screen"/>
   <int value="13" label="Close welcome+sign-in with sign-in"/>
   <int value="14" label="Close welcome+sign-in without sign-in"/>
+  <int value="15" label="Show tangible sync screen"/>
+  <int value="16" label="Close tangible sync with sync"/>
+  <int value="17" label="Close tangible sync without sync"/>
 </enum>
 
 <enum name="FirstSmartLockStatus">

@@ -13,6 +13,9 @@
 // Avatar image for the primary identity.
 @property(nonatomic, strong) UIImage* primaryIdentityAvatarImage;
 
+// Sets the UI as interactable or not.
+- (void)setUIEnabled:(BOOL)UIEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_TANGIBLE_SYNC_TANGIBLE_SYNC_CONSUMER_H_

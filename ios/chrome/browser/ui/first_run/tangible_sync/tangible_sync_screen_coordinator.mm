@@ -89,9 +89,9 @@
 // Dismisses the current screen, and stops the FRE if `success` is `false`.
 - (void)tangibleSyncCoordinatorCompletedWithSuccess:(bool)success {
   if (success) {
-    [_delegate skipAllScreens];
-  } else {
     [_delegate screenWillFinishPresenting];
+  } else {
+    [_delegate skipAllScreens];
   }
 }
 

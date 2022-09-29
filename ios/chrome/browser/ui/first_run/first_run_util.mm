@@ -164,6 +164,11 @@ void RecordFirstRunScrollButtonVisibilityMetrics(
           "IOS.FirstRun.ScrollButtonVisible.WelcomeScreenWithUMACheckbox",
           scroll_button_visible);
       break;
+    case first_run::FirstRunScreenType::kTangibleSyncScreen:
+      base::UmaHistogramBoolean(
+          "IOS.FirstRun.ScrollButtonVisible.TangibleSyncScreen",
+          scroll_button_visible);
+      break;
   }
 }
 

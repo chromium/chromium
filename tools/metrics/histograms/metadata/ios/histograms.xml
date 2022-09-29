@@ -660,6 +660,8 @@ chromium-metrics-reviews@google.com.
         summary="The screen that asks the user to turn on sync while no
                  account picker is present. Displayed when MICe is enabled or
                  when no account is detected."/>
+    <variant name="TangibleSyncScreen"
+        summary="The tangible sync screen that asks the user to turn on sync."/>
     <variant name="WelcomeScreenWithoutUMACheckbox"
         summary="Welcome screen without UMA checkbox. Displayed when MICe is
                  enabled."/>

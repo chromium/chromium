@@ -110,9 +110,15 @@ enum FirstRunStage {
   kWelcomeAndSigninScreenCompletionWithSignIn = 13,
   // Welcome+SignIn screen is closed without sign in.
   kWelcomeAndSigninScreenCompletionWithoutSignIn = 14,
+  // Sync screen is shown.
+  kTangibleSyncScreenStart = 15,
+  // Sync screen is closed with sync.
+  kTangibleSyncScreenCompletionWithSync = 16,
+  // Sync screen is closed without sync.
+  kTangibleSyncScreenCompletionWithoutSync = 17,
   // Max value of the first run experience stages.
   // kMaxValue should share the value of the highest enumerator.
-  kMaxValue = kWelcomeAndSigninScreenCompletionWithoutSignIn,
+  kMaxValue = kTangibleSyncScreenCompletionWithoutSync,
 };
 
 // The different type of screens of the first run experience. This is mapped to
@@ -149,6 +155,8 @@ enum FirstRunScreenType {
   kWelcomeScreenWithoutUMACheckbox,
   // Welcome screen with UMA checkbox. Displayed when MICe is disabled.
   kWelcomeScreenWithUMACheckbox,
+  // The tangible sync screen that asks the user to turn on sync.
+  kTangibleSyncScreen,
 };
 
 }  // namespace first_run

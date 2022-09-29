@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller.h"
 
+#import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -21,23 +23,41 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 
 }  // namespace
 
-@implementation TangibleSyncViewController
+@implementation TangibleSyncViewController {
+  // Scrim displayed above the view when the UI is disabled.
+  ActivityOverlayView* _overlay;
+}
 
+@dynamic delegate;
 @synthesize primaryIdentityAvatarImage = _primaryIdentityAvatarImage;
+
+#pragma mark - UIViewController
 
 - (void)viewDidLoad {
   self.shouldHideBanner = YES;
   self.hasAvatarImage = YES;
+  self.scrollToEndMandatory = YES;
+  self.readMoreString =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
   self.avatarImage = self.primaryIdentityAvatarImage;
+  [self.delegate addConsentStringID:IDS_IOS_TANGIBLE_SYNC_TITLE];
   self.titleText = l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_TITLE);
+  [self.delegate addConsentStringID:IDS_IOS_TANGIBLE_SYNC_SUBTITLE];
   self.subtitleText = l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_SUBTITLE);
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON);
+  _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
+  [self.delegate addConsentStringID:_activateSyncButtonID];
+  self.primaryActionString = l10n_util::GetNSString(_activateSyncButtonID);
+  [self.delegate addConsentStringID:
+                     IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION];
   self.secondaryActionString = l10n_util::GetNSString(
       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION);
+  [self.delegate addConsentStringID:IDS_IOS_TANGIBLE_SYNC_DISCLAIMER];
   self.disclaimerText =
       l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_DISCLAIMER);
   self.disclaimerURLs = @[ net::NSURLWithGURL(GURL(kSettingsSyncURL)) ];
+  [self.delegate addConsentStringID:IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_BOOKMARKS];
+  [self.delegate addConsentStringID:IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_AUTOFILL];
+  [self.delegate addConsentStringID:IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_HISTORY];
   NSArray<NSString*>* dataTypeNames = @[
     l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_BOOKMARKS),
     l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_AUTOFILL),
@@ -62,8 +82,27 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
         constraintEqualToAnchor:self.specificContentView.leadingAnchor],
     [instructionView.trailingAnchor
         constraintEqualToAnchor:self.specificContentView.trailingAnchor],
+    [self.specificContentView.bottomAnchor
+        constraintGreaterThanOrEqualToAnchor:instructionView.bottomAnchor],
   ]];
   [super viewDidLoad];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [self.delegate logScrollButtonVisible:!self.didReachBottom];
+}
+
+#pragma mark - AuthenticationFlowDelegate
+
+- (void)didPresentDialog {
+  DCHECK(_overlay);
+  [_overlay.indicator stopAnimating];
+}
+
+- (void)didDismissDialog {
+  DCHECK(_overlay);
+  [_overlay.indicator startAnimating];
 }
 
 #pragma mark - TangibleSyncConsumer
@@ -72,6 +111,19 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   if (_primaryIdentityAvatarImage != primaryIdentityAvatarImage) {
     _primaryIdentityAvatarImage = primaryIdentityAvatarImage;
     self.avatarImage = primaryIdentityAvatarImage;
+  }
+}
+
+- (void)setUIEnabled:(BOOL)UIEnabled {
+  if (UIEnabled) {
+    [_overlay removeFromSuperview];
+    _overlay = nil;
+  } else {
+    _overlay = [[ActivityOverlayView alloc] init];
+    _overlay.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_overlay];
+    AddSameConstraints(self.view, _overlay);
+    [_overlay.indicator startAnimating];
   }
 }
 
