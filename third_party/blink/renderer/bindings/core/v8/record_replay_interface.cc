@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 
 #include "base/record_replay.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -44,6 +46,7 @@ const {
   setCommandCallback,
   setClearPauseDataCallback,
   getCurrentError,
+  getCurrentNetworkRequestEvent,
   getBrowserEvents,
   notifyDriverOnConsoleAPICall,
   dump,
@@ -154,6 +157,7 @@ const CommandCallbacks = {
   "Target.getCurrentMessageContents": Target_getCurrentMessageContents,
   "Target.getSourceMapURL": Target_getSourceMapURL,
   "Target.getStepOffsets": Target_getStepOffsets,
+  "Target.getCurrentNetworkRequestEvent": Target_getCurrentNetworkRequestEvent,
   "Target.topFrameLocation": Target_topFrameLocation,
   "Pause.evaluateInFrame": Pause_evaluateInFrame,
   "Pause.evaluateInGlobal": Pause_evaluateInGlobal,
@@ -253,6 +257,15 @@ function Target_getSourceMapURL({ sourceId }) {
 function Target_getStepOffsets() {
   // CDP does not distinguish between steps and breakpoints.
   return {};
+}
+
+function Target_getCurrentNetworkRequestEvent() {
+  try {
+    const obj = JSON.parse(getCurrentNetworkRequestEvent());
+    return obj;
+  } catch (e) {
+    log(`Error: getCurrentNetworkRequestEvent exception: ${e}`);
+  }
 }
 
 function Target_topFrameLocation() {
@@ -1229,7 +1242,35 @@ struct BrowserEvent {
       payload(std::move(other.payload))
   {}
 };
+
 static std::vector<BrowserEvent> *gBrowserEvents = nullptr;
+static base::Value *gCurrentNetworkRequestEvent = nullptr;
+
+static void GetCurrentNetworkRequestEvent(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (!gCurrentNetworkRequestEvent) {
+    return;
+  }
+
+  v8::Isolate* isolate = args.GetIsolate();
+  std::string json;
+  base::JSONWriter::Write(*gCurrentNetworkRequestEvent, &json);
+  v8::Local<v8::String> json_string = ToV8String(isolate, json.c_str());
+  args.GetReturnValue().Set(json_string);
+}
+
+static void HandleNetworkPrepareRequestEvent(const base::DictionaryValue& info) {
+  base::DictionaryValue event;
+  event.SetString("kind", "request");
+  event.Set("requestUrl", std::unique_ptr<base::Value>(info.FindPath("requestUrl")->DeepCopy()));
+  event.Set("requestMethod", std::unique_ptr<base::Value>(info.FindPath("requestMethod")->DeepCopy()));
+  event.Set("requestHeaders", std::unique_ptr<base::Value>(info.FindPath("requestHeaders")->DeepCopy()));
+  std::string request_id;
+  info.FindPath("requestId")->GetAsString(&request_id);
+
+  gCurrentNetworkRequestEvent = &event;
+  recordreplay::OnNetworkRequestEvent(request_id.c_str());
+  gCurrentNetworkRequestEvent = nullptr;
+}
 
 // Store received browser events in a global vector until JS code
 // needs it.  We cannot directly call JS from this code as it may
@@ -1244,6 +1285,13 @@ static void HandleBrowserEvent(const char* name, const char* payload) {
   gBrowserEvents->push_back(
     BrowserEvent(std::string(name), std::string(payload))
   );
+
+  base::Value val = base::JSONReader::Read(payload).value_or(base::Value());
+  assert(!val.is_none() && "Browser event JSON failed");
+  assert(!val.is_dict() && "Browser event JSON is not a dictionary");
+  if (!strcmp(name, "Network.PrepareRequest")) {
+    HandleNetworkPrepareRequestEvent(base::Value::AsDictionaryValue(val));
+  }
 }
 
 static void GetBrowserEvents(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -1277,6 +1325,8 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       v8::FunctionCallbackRecordReplaySetClearPauseDataCallback);
   SetFunctionProperty(isolate, args, "getCurrentError",
                       GetCurrentError);
+  SetFunctionProperty(isolate, args, "getCurrentNetworkRequestEvent",
+                      GetCurrentNetworkRequestEvent);
   SetFunctionProperty(isolate, args, "getBrowserEvents",
                       GetBrowserEvents);
   SetFunctionProperty(isolate, args, "notifyDriverOnConsoleAPICall",
