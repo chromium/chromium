@@ -7,8 +7,8 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 component("policy") {
-  output_name = "ash_policy"  # Avoid conflict with //sandbox/policy
-  defines = [ "IS_ASH_POLICY_IMPL" ]
+  output_name = "chromeos_ash_components_policy"
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
 
   public_deps = [
     "//components/policy/proto",
