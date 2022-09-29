@@ -137,7 +137,7 @@ void PaymentRequestRowView::UpdateButtonState() {
 
 void PaymentRequestRowView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Button::GetAccessibleNodeData(node_data);
-  node_data->SetName(GetAccessibleNameFromTree(this));
+  node_data->SetNameChecked(GetAccessibleNameFromTree(this));
 }
 
 void PaymentRequestRowView::StateChanged(ButtonState old_state) {
