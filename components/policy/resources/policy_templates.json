@@ -8060,7 +8060,7 @@
       'caption': 'Re-enable the deprecated async interface for <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> in File System Access API',
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:107-110', 'chrome_os:107-110', 'android:107-110'],
+      'supported_on': ['chrome.*:108-110', 'chrome_os:108-110', 'android:108-110'],
       'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
@@ -8080,7 +8080,7 @@
       'example_value': False,
       'id': 1020,
       'tags': [],
-      'desc': '''Starting in M107, all of <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> methods will be invoked synchronously.
+      'desc': '''Starting in M108, all of <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> methods will be invoked synchronously.
       Until M110, this policy re-enables asynchronous invocation of <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> methods.
       If this policy is set to Enabled, <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> methods are invoked asynchronously.
       If this policy is set to Disabled or not set, all of <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> methods are invoked synchronously.''',
