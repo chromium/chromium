@@ -135,12 +135,12 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   static GURL SanitizeURL(const GURL& url);
 
   // Called to send the request to the Safe Browsing backend over the network.
-  // It also attached an auth header if |access_token_string| has a value.
+  // It also attached an auth header if |access_token_string| is non-empty.
   void SendRequest(
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      absl::optional<std::string> access_token_string,
+      const std::string& access_token_string,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,

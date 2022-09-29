@@ -774,8 +774,14 @@ TEST_F(RealTimeUrlLookupServiceTest,
         // Cookies should be removed when token is set.
         EXPECT_EQ(request.credentials_mode,
                   network::mojom::CredentialsMode::kOmit);
+        std::string header_value;
+        bool found_header = request.headers.GetHeader(
+            net::HttpRequestHeaders::kAuthorization, &header_value);
+        EXPECT_TRUE(found_header);
+        EXPECT_EQ(header_value, "Bearer access_token_string");
       }));
 
+  EXPECT_TRUE(raw_token_fetcher()->WasStartCalled());
   FulfillAccessTokenRequest("access_token_string");
   EXPECT_CALL(*raw_token_fetcher(), OnInvalidAccessToken(_)).Times(0);
   task_environment_.RunUntilIdle();
@@ -787,6 +793,49 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
   histograms.ExpectUniqueSample("SafeBrowsing.RT.ThreatInfoSize",
                                 /* sample */ 1,
+                                /* expected_count */ 1);
+}
+
+TEST_F(RealTimeUrlLookupServiceTest,
+       TestStartLookup_NoTokenWhenTokenIsUnavailable) {
+  base::HistogramTester histograms;
+  EnableRealTimeUrlLookup({kSafeBrowsingRemoveCookiesInAuthRequests}, {});
+  EnableTokenFetchesInClient();
+  GURL url(kTestUrl);
+  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
+                        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
+                        "example.test/",
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  rt_service()->StartLookup(
+      url, last_committed_url_, is_mainframe_,
+      base::BindOnce(
+          [](std::unique_ptr<RTLookupRequest> request, std::string token) {
+            EXPECT_FALSE(request->has_dm_token());
+            // Check token is not attached.
+            EXPECT_EQ("", token);
+          }),
+      response_callback.Get(), base::SequencedTaskRunnerHandle::Get());
+
+  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
+                                     /* is_cached_response */ false, _));
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::string header_value;
+        bool found_header = request.headers.GetHeader(
+            net::HttpRequestHeaders::kAuthorization, &header_value);
+        EXPECT_FALSE(found_header);
+      }));
+
+  EXPECT_TRUE(raw_token_fetcher()->WasStartCalled());
+  // Token fetcher returns empty string when the token is unavailable.
+  FulfillAccessTokenRequest("");
+  task_environment_.RunUntilIdle();
+
+  histograms.ExpectUniqueSample("SafeBrowsing.RT.HasTokenInRequest",
+                                /* sample */ 0,
                                 /* expected_count */ 1);
 }
 

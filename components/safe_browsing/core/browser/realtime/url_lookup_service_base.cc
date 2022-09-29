@@ -330,7 +330,7 @@ void RealTimeUrlLookupServiceBase::SendSampledRequest(
   DCHECK(url.is_valid());
 
   SendRequest(url, last_committed_url, is_mainframe,
-              /* access_token_string */ absl::nullopt,
+              /* access_token_string */ std::string(),
               std::move(request_callback),
               /* response_callback */ base::NullCallback(),
               std::move(callback_task_runner), /* is_sampled_report */ true);
@@ -364,7 +364,7 @@ void RealTimeUrlLookupServiceBase::StartLookup(
                    std::move(callback_task_runner));
   } else {
     SendRequest(url, last_committed_url, is_mainframe,
-                /* access_token_string */ absl::nullopt,
+                /* access_token_string */ std::string(),
                 std::move(request_callback), std::move(response_callback),
                 std::move(callback_task_runner), /* is_sampled_report */ false);
   }
@@ -374,7 +374,7 @@ void RealTimeUrlLookupServiceBase::SendRequest(
     const GURL& url,
     const GURL& last_committed_url,
     bool is_mainframe,
-    absl::optional<std::string> access_token_string,
+    const std::string& access_token_string,
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -396,13 +396,13 @@ void RealTimeUrlLookupServiceBase::SendRequest(
   request->SerializeToString(&req_data);
 
   auto resource_request = GetResourceRequest();
-  if (access_token_string.has_value()) {
+  if (!access_token_string.empty()) {
     SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
-                                                  access_token_string.value());
+                                                  access_token_string);
   }
   RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.HasTokenInRequest",
                                     GetMetricSuffix(),
-                                    access_token_string.has_value());
+                                    !access_token_string.empty());
 
   // NOTE: Pass |callback_task_runner| by copying it here as it's also needed
   // just below.
@@ -412,10 +412,8 @@ void RealTimeUrlLookupServiceBase::SendRequest(
       request->population().user_population(), is_sampled_report);
 
   callback_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          std::move(request_callback), std::move(request),
-          access_token_string.has_value() ? access_token_string.value() : ""));
+      FROM_HERE, base::BindOnce(std::move(request_callback), std::move(request),
+                                access_token_string));
 }
 
 void RealTimeUrlLookupServiceBase::SendRequestInternal(
