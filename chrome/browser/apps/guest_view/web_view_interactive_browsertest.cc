@@ -1334,7 +1334,16 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, FocusAndVisibility) {
   EXPECT_TRUE(webview_button_not_focused_listener.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, KeyboardFocusSimple) {
+// Flaky on MacOSX, crbug.com/817066.
+// Flaky timeouts on Linux. https://crbug.com/709202
+// Flaky timeouts on Win. https://crbug.com/846695
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+#define MAYBE_KeyboardFocusSimple DISABLED_KeyboardFocusSimple
+#else
+#define MAYBE_KeyboardFocusSimple KeyboardFocusSimple
+#endif
+IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusSimple) {
   TestHelper("testKeyboardFocusSimple", "web_view/focus", NO_TEST_SERVER);
 
   EXPECT_EQ(embedder_web_contents()->GetFocusedFrame(),
