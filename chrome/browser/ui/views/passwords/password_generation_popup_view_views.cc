@@ -318,7 +318,7 @@ void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
     return;
   }
   node_data->role = ax::mojom::Role::kMenuItem;
-  node_data->SetName(base::JoinString(
+  node_data->SetNameChecked(base::JoinString(
       {controller_->SuggestedText(), controller_->password()}, u" "));
   node_data->SetDescription(controller_->HelpText());
 }
