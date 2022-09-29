@@ -15,8 +15,6 @@ import "ui/accessibility/mojom/ax_tree_update.mojom";
 [ServiceSandbox=sandbox.mojom.Sandbox.kPrintCompositor]
 interface PrintCompositor {
   // The status of composition and conversion execution.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
   enum Status {
     kSuccess = 0,
     kHandleMapError = 1,
