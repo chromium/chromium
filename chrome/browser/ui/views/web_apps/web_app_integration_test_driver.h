@@ -323,7 +323,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void AfterStateCheckAction();
 
   AppId GetAppIdBySiteMode(Site site);
-  GURL GetAppStartURL(Site site);
+  GURL GetUrlForSite(Site site);
   absl::optional<AppState> GetAppBySiteMode(StateSnapshot* state_snapshot,
                                             Profile* profile,
                                             Site site);
