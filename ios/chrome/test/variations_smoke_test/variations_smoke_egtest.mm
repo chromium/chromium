@@ -52,15 +52,6 @@ static const NSTimeInterval kWaitForFetchTimeout = 30.0;
              @"Failed to fetch variations seed within timeout.");
   // Writes prefs to Local State file. This might be used in launcher script.
   [VariationsSmokeTestAppInterface localStatePrefsCommitPendingWrite];
-
-  // TODO(crbug.com/1354249): in iOS 16 beta, there seems to be an issue with
-  // commits not persisted to disk immediately. Waiting for 5 seconds after disk
-  // write to temporarily get around the issue for now. We should revisit after
-  // iOS 16 launch.
-  if (@available(iOS 16, *)) {
-    [[NSRunLoop currentRunLoop]
-        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5]];
-  }
 }
 
 @end
