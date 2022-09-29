@@ -40,6 +40,7 @@ Enable the flag chrome://flags/#enable-experimental-web-platform-features .
 ### Using Origin Trial
 
 The [Origin Trial](https://developer.chrome.com/blog/origin-trials/) feature is named `PermissionsPolicyUnload`.
+Registration for the trial is [here](https://developer.chrome.com/origintrials/#/view_trial/1012184016251518977).
 See [feature status](https://chromestatus.com/feature/5760325231050752) to find out
 if the origin trial is currently running.
 
