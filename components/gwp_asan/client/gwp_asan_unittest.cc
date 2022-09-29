@@ -27,10 +27,12 @@ absl::optional<AllocatorSettings> GetAllocatorSettings(
 namespace {
 
 constexpr size_t kLoopIterations = 100;
-const base::Feature kTestFeature1{"GwpAsanTestFeature1",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kTestFeature2{"GwpAsanTestFeature2",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature1,
+             "GwpAsanTestFeature1",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature2,
+             "GwpAsanTestFeature2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Tries to enable hooking with the given process sampling parameters
 // kLoopIterations times and return the number of times hooking was enabled.
