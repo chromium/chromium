@@ -16482,7 +16482,22 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable large cursor on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable large cursor on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 599,
       'caption': '''Enable the large cursor on the login screen''',
       'tags': [],
@@ -16506,7 +16521,22 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable spoken feedback on the login screen and allow the user to temporarily disable it',
+        },
+        {
+          'value': False,
+          'caption': 'Disable spoken feedback on the login screen and allow the user to temporarily enable it',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 216,
       'caption': '''Set the default state of spoken feedback on the login screen''',
       'tags': [],
@@ -16529,7 +16559,22 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable spoken feedback on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable spoken feedback on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 605,
       'caption': '''Enable the spoken feedback on the login screen''',
       'tags': [],
@@ -16553,7 +16598,22 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable high contrast on the login screen and allow the user to temporarily disable it',
+        },
+        {
+          'value': False,
+          'caption': 'Disable high contrast on the login screen and allow the user to temporarily enable it',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 217,
       'caption': '''Set the default state of high contrast mode on the login screen''',
       'tags': [],
@@ -16576,7 +16636,22 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable high contrast on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable high contrast on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 606,
       'caption': '''Enable the high contrast on the login screen''',
       'tags': [],
@@ -16600,7 +16675,22 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable on-screen keyboard on the login screen and allow the user to temporarily disable it',
+        },
+        {
+          'value': False,
+          'caption': 'Disable on-screen keyboard on the login screen and allow the user to temporarily enable it',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'deprecated': True,
+      'default': None,
       'example_value': True,
       'id': 256,
       'caption': '''Set default state of the on-screen keyboard on the login screen''',
@@ -16626,7 +16716,22 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable on-screen keyboard on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable on-screen keyboard on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 607,
       'caption': '''Enable the virtual keyboard on the login screen''',
       'tags': [],
@@ -16651,7 +16756,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Right button is primary',
+        },
+        {
+          'value': False,
+          'caption': 'Left button is primary',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 655,
       'caption': '''Switch the primary mouse button to the right button''',
       'tags': [],
@@ -16675,7 +16795,22 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Right button is primary on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Left button is primary on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'device_only': True,
+      'default': None,
       'example_value': True,
       'id': 657,
       'caption': '''Switch the primary mouse button to the right button on the login screen''',
@@ -16701,6 +16836,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable the shared clipboard feature',
+        },
+        {
+          'value': False,
+          'caption': 'Disable the shared clipboard feature',
+        },
+      ],
       'example_value': True,
       'id': 610,
       'caption': '''Enable the Shared Clipboard Feature''',
