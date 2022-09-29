@@ -1205,11 +1205,12 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 
 // Whether the feed top section, which contains all content between the feed
 // header and the feed, is currently visible.
-// TODO(crbug.com/1331010): The feed top section should still work with the
-// sticky header, but for now we only show the content without it.
+// TODO(crbug.com/1331010): The feed top section may include content that is not
+// the signin promo, which may need to be visible when the user is signed in.
 - (BOOL)isFeedTopSectionVisible {
   return IsDiscoverFeedTopSyncPromoEnabled() && [self shouldFeedBeVisible] &&
-         ![self isContentHeaderSticky];
+         self.authService &&
+         !self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
 // Creates, configures and returns a Discover feed view controller.
