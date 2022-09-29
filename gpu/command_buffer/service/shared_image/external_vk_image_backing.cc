@@ -224,10 +224,12 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
 
   if (!pixel_data.empty()) {
     size_t stride = BitsPerPixel(format) / 8 * size.width();
-    backing->WritePixelsWithData(pixel_data, stride);
+    SkPixmap pixmap(backing->AsSkImageInfo(), pixel_data.data(), stride);
+    backing->UploadToVkImage(pixmap);
 
     // Mark the backing as cleared.
     backing->SetCleared();
+    backing->latest_content_ = kInVkImage;
   }
 
   return backing;
@@ -255,46 +257,24 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
       context_state->vk_context_provider()->GetVulkanImplementation();
   auto resource_format = viz::GetResourceFormat(buffer_format);
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
-  if (vulkan_implementation->CanImportGpuMemoryBuffer(device_queue,
-                                                      handle.type)) {
-    VkFormat vk_format = ToVkFormat(resource_format);
-    auto image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
-        device_queue, std::move(handle), size, vk_format, color_space);
-    if (!image) {
-      DLOG(ERROR) << "Failed to create VkImage from GpuMemoryHandle.";
-      return nullptr;
-    }
+  DCHECK(vulkan_implementation->CanImportGpuMemoryBuffer(device_queue,
+                                                         handle.type));
 
-    bool use_separate_gl_texture =
-        UseSeparateGLTexture(context_state.get(), resource_format);
-    auto backing = std::make_unique<ExternalVkImageBacking>(
-        base::PassKey<ExternalVkImageBacking>(), mailbox, resource_format, size,
-        color_space, surface_origin, alpha_type, usage,
-        std::move(context_state), std::move(image), command_pool,
-        use_separate_gl_texture);
-    backing->SetCleared();
-    return backing;
-  }
-
-  if (gfx::NumberOfPlanesForLinearBufferFormat(buffer_format) != 1) {
-    DLOG(ERROR) << "Invalid image format.";
+  VkFormat vk_format = ToVkFormat(resource_format);
+  auto image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
+      device_queue, std::move(handle), size, vk_format, color_space);
+  if (!image) {
+    DLOG(ERROR) << "Failed to create VkImage from GpuMemoryHandle.";
     return nullptr;
   }
 
-  DCHECK_EQ(handle.type, gfx::SHARED_MEMORY_BUFFER);
-
-  SharedMemoryRegionWrapper shared_memory_wrapper;
-  if (!shared_memory_wrapper.Initialize(handle, size, resource_format))
-    return nullptr;
-
-  auto backing = Create(std::move(context_state), command_pool, mailbox,
-                        resource_format, size, color_space, surface_origin,
-                        alpha_type, usage, image_usage_cache,
-                        base::span<const uint8_t>(), true /* using_gmb */);
-  if (!backing)
-    return nullptr;
-
-  backing->InstallSharedMemory(std::move(shared_memory_wrapper));
+  bool use_separate_gl_texture =
+      UseSeparateGLTexture(context_state.get(), resource_format);
+  auto backing = std::make_unique<ExternalVkImageBacking>(
+      base::PassKey<ExternalVkImageBacking>(), mailbox, resource_format, size,
+      color_space, surface_origin, alpha_type, usage, std::move(context_state),
+      std::move(image), command_pool, use_separate_gl_texture);
+  backing->SetCleared();
   return backing;
 }
 
@@ -471,7 +451,7 @@ void ExternalVkImageBacking::EndAccess(bool readonly,
     if (use_separate_gl_texture()) {
       latest_content_ = is_gl ? kInGLTexture : kInVkImage;
     } else {
-      latest_content_ = kInVkImage | kInGLTexture;
+      latest_content_ = kInVkImage;
     }
   }
 
@@ -514,8 +494,22 @@ SharedImageBackingType ExternalVkImageBacking::GetType() const {
 
 void ExternalVkImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
-  latest_content_ = kInSharedMemory;
+}
+
+bool ExternalVkImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
+  if (!UploadToVkImage(pixmap))
+    return false;
+
   SetCleared();
+  latest_content_ = kInVkImage;
+
+  // Also upload to GL texture if there is a separate one.
+  if (use_separate_gl_texture() && (texture_ || texture_passthrough_)) {
+    UploadToGLTexture(pixmap);
+    latest_content_ |= kInGLTexture;
+  }
+
+  return true;
 }
 
 void ExternalVkImageBacking::AddSemaphoresToPendingListOrRelease(
@@ -773,51 +767,27 @@ ExternalVkImageBacking::ProduceOverlay(SharedImageManager* manager,
       manager, this, tracker);
 }
 
-void ExternalVkImageBacking::InstallSharedMemory(
-    SharedMemoryRegionWrapper shared_memory_wrapper) {
-  DCHECK(!shared_memory_wrapper_.IsValid());
-  DCHECK(shared_memory_wrapper.IsValid());
-  shared_memory_wrapper_ = std::move(shared_memory_wrapper);
-  Update(nullptr);
-}
-
 void ExternalVkImageBacking::UpdateContent(uint32_t content_flags) {
   // Only support one backing for now.
-  DCHECK(content_flags == kInVkImage || content_flags == kInGLTexture ||
-         content_flags == kInSharedMemory);
+  DCHECK(content_flags == kInVkImage || content_flags == kInGLTexture);
+
+  // There is no need to update content when there is only one texture.
+  if (!use_separate_gl_texture())
+    return;
 
   if ((latest_content_ & content_flags) == content_flags)
     return;
 
-  if (content_flags == kInGLTexture && !use_separate_gl_texture())
-    content_flags = kInVkImage;
-
   if (content_flags == kInVkImage) {
-    if (latest_content_ & kInSharedMemory) {
-      if (!shared_memory_wrapper_.IsValid())
-        return;
-      if (!WritePixels())
-        return;
-      latest_content_ |=
-          use_separate_gl_texture() ? kInVkImage : kInVkImage | kInGLTexture;
-      return;
-    }
-    if ((latest_content_ & kInGLTexture) && use_separate_gl_texture()) {
+    if ((latest_content_ & kInGLTexture)) {
       CopyPixelsFromGLTextureToVkImage();
       latest_content_ |= kInVkImage;
-      return;
     }
   } else if (content_flags == kInGLTexture) {
-    DCHECK(use_separate_gl_texture());
-    if (latest_content_ & kInSharedMemory) {
-      CopyPixelsFromShmToGLTexture();
-    } else if (latest_content_ & kInVkImage) {
+    if (latest_content_ & kInVkImage) {
       CopyPixelsFromVkImageToGLTexture();
+      latest_content_ |= kInGLTexture;
     }
-  } else if (content_flags == kInSharedMemory) {
-    // TODO(penghuang): read pixels back from VkImage to shared memory GMB, if
-    // this feature is needed.
-    NOTIMPLEMENTED_LOG_ONCE();
   }
 }
 
@@ -1000,9 +970,7 @@ bool ExternalVkImageBacking::ReadPixelsWithCallback(
   return true;
 }
 
-bool ExternalVkImageBacking::WritePixelsWithData(
-    base::span<const uint8_t> pixel_data,
-    size_t stride) {
+bool ExternalVkImageBacking::UploadToVkImage(const SkPixmap& pixmap) {
   std::vector<ExternalSemaphore> external_semaphores;
   if (!BeginAccessInternal(false /* readonly */, &external_semaphores)) {
     DLOG(ERROR) << "BeginAccess() failed.";
@@ -1011,7 +979,6 @@ bool ExternalVkImageBacking::WritePixelsWithData(
   auto* gr_context = context_state_->gr_context();
   WaitSemaphoresOnGrContext(gr_context, &external_semaphores);
 
-  SkPixmap pixmap(AsSkImageInfo(), pixel_data.data(), stride);
   if (!gr_context->updateBackendTexture(backend_texture_, &pixmap,
                                         /*numLevels=*/1, nullptr, nullptr)) {
     DLOG(ERROR) << "updateBackendTexture() failed.";
@@ -1047,11 +1014,6 @@ bool ExternalVkImageBacking::WritePixelsWithData(
   // GPU work is done.
   ReturnPendingSemaphoresWithFenceHelper(std::move(external_semaphores));
   return true;
-}
-
-bool ExternalVkImageBacking::WritePixels() {
-  return WritePixelsWithData(shared_memory_wrapper_.GetMemoryAsSpan(),
-                             shared_memory_wrapper_.GetStride());
 }
 
 void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
@@ -1167,7 +1129,7 @@ void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
           api, size(), gl_format, gl_type));
 }
 
-void ExternalVkImageBacking::CopyPixelsFromShmToGLTexture() {
+void ExternalVkImageBacking::UploadToGLTexture(const SkPixmap& pixmap) {
   DCHECK(use_separate_gl_texture());
   DCHECK_NE(!!texture_, !!texture_passthrough_);
   const GLuint texture_service_id =
@@ -1208,10 +1170,8 @@ void ExternalVkImageBacking::CopyPixelsFromShmToGLTexture() {
   checked_size *= size().height();
   DCHECK(checked_size.IsValid());
 
-  auto pixel_data = shared_memory_wrapper_.GetMemoryAsSpan();
   api->glTexSubImage2DFn(GL_TEXTURE_2D, 0, 0, 0, size().width(),
-                         size().height(), gl_format, gl_type,
-                         pixel_data.data());
+                         size().height(), gl_format, gl_type, pixmap.addr());
   DCHECK_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
 }
 

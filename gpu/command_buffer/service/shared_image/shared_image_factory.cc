@@ -359,7 +359,17 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
   bool use_compound = false;
   auto* factory = GetFactoryByUsage(usage, resource_format, size,
-                                    /*pixel_data=*/{}, gmb_type, &use_compound);
+                                    /*pixel_data=*/{}, gmb_type);
+
+  if (!factory && gmb_type == gfx::SHARED_MEMORY_BUFFER) {
+    // Check if CompoundImageBacking can hold shared memory buffer plus
+    // another GPU backing type to satisfy requirements.
+    use_compound = true;
+    factory = GetFactoryByUsage(usage | SHARED_IMAGE_USAGE_CPU_UPLOAD,
+                                resource_format, size,
+                                /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
+  }
+
   if (!factory)
     return false;
 
@@ -564,8 +574,7 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     viz::ResourceFormat format,
     const gfx::Size& size,
     base::span<const uint8_t> pixel_data,
-    gfx::GpuMemoryBufferType gmb_type,
-    bool* use_compound_backing) {
+    gfx::GpuMemoryBufferType gmb_type) {
   if (backing_factory_for_testing_)
     return backing_factory_for_testing_;
 
@@ -574,15 +583,6 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     if (factory->IsSupported(usage, format, size, share_between_threads,
                              gmb_type, gr_context_type_, pixel_data)) {
       return factory.get();
-    } else if (use_compound_backing && gmb_type == gfx::SHARED_MEMORY_BUFFER) {
-      // Check if backing type supports CPU upload with no buffer handle so it
-      // can be used with a compound backing instead.
-      if (factory->IsSupported(usage | SHARED_IMAGE_USAGE_CPU_UPLOAD, format,
-                               size, share_between_threads, gfx::EMPTY_BUFFER,
-                               gr_context_type_, pixel_data)) {
-        *use_compound_backing = true;
-        return factory.get();
-      }
     }
   }
 

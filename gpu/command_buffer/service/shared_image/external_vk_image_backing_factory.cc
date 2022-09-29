@@ -155,9 +155,8 @@ bool ExternalVkImageBackingFactory::CanImportGpuMemoryBuffer(
     gfx::GpuMemoryBufferType memory_buffer_type) {
   auto* device_queue = context_state_->vk_context_provider()->GetDeviceQueue();
   return context_state_->vk_context_provider()
-             ->GetVulkanImplementation()
-             ->CanImportGpuMemoryBuffer(device_queue, memory_buffer_type) ||
-         memory_buffer_type == gfx::SHARED_MEMORY_BUFFER;
+      ->GetVulkanImplementation()
+      ->CanImportGpuMemoryBuffer(device_queue, memory_buffer_type);
 }
 
 bool ExternalVkImageBackingFactory::IsSupported(
@@ -174,8 +173,7 @@ bool ExternalVkImageBackingFactory::IsSupported(
 
   // TODO(crbug.com/969114): Not all shared image factory implementations
   // support concurrent read/write usage.
-  constexpr uint32_t kInvalidUsages =
-      SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  constexpr uint32_t kInvalidUsages = SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
   if (usage & kInvalidUsages) {
     return false;
   }
