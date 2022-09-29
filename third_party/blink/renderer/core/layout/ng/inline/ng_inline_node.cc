@@ -1202,6 +1202,10 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     unsigned end_index = index + 1;
     unsigned end_offset = start_item.EndOffset();
 
+    // https://linear.app/replay/issue/RUN-480
+    recordreplay::Assert("NGInlineNode::ShapeText #2 %d %u %u",
+                         direction, end_index, end_offset);
+
     // Symbol marker is painted as graphics. Create a ShapeResult of space
     // glyphs with the desired size to make it less special for line breaker.
     if (UNLIKELY(start_item.IsSymbolMarker())) {
@@ -1221,6 +1225,11 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     for (; end_index < items->size(); end_index++) {
       const NGInlineItem& item = (*items)[end_index];
 
+      // https://linear.app/replay/issue/RUN-480
+      recordreplay::Assert("NGInlineNode::ShapeText #3 %d %d %u %u",
+                           recordreplay::PointerId(item.GetLayoutObject()),
+                           item.Type(), item.Length(), item.EndOffset());
+
       if (item.Type() == NGInlineItem::kControl) {
         // Do not shape across control characters (line breaks, zero width
         // spaces, etc).
@@ -1231,12 +1240,21 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
           continue;
         if (ShouldBreakShapingBeforeText(item, start_item, start_style, font,
                                          direction)) {
+          // https://linear.app/replay/issue/RUN-480
+          recordreplay::Assert("NGInlineNode::ShapeText #4");
           break;
         }
         // Break shaping at ZWNJ so that it prevents kerning. ZWNJ is always at
         // the beginning of an item for this purpose; see NGInlineItemsBuilder.
-        if (text_content[item.StartOffset()] == kZeroWidthNonJoinerCharacter)
+        if (text_content[item.StartOffset()] == kZeroWidthNonJoinerCharacter) {
+          // https://linear.app/replay/issue/RUN-480
+          recordreplay::Assert("NGInlineNode::ShapeText #5");
           break;
+        }
+
+        // https://linear.app/replay/issue/RUN-480
+        recordreplay::Assert("NGInlineNode::ShapeText #6");
+
         end_offset = item.EndOffset();
         num_text_items++;
       } else if (item.Type() == NGInlineItem::kOpenTag) {
@@ -1293,6 +1311,9 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
         continue;
       }
     }
+
+    // https://linear.app/replay/issue/RUN-480
+    recordreplay::Assert("NGInlineNode::ShapeText #10 %u", end_offset);
 
     // Shape each item with the full context of the entire node.
     scoped_refptr<ShapeResult> shape_result =
