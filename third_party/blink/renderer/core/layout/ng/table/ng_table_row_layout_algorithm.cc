@@ -264,7 +264,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus status = FinishFragmentation(
         Node(), ConstraintSpace(), /* trailing_border_padding */ LayoutUnit(),
-        FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
+        FragmentainerSpaceLeft(ConstraintSpace()), &container_builder_);
 
     // TODO(mstensho): Deal with early-breaks.
     DCHECK_EQ(status, NGBreakStatus::kContinue);

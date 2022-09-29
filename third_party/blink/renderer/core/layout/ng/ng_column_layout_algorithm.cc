@@ -314,7 +314,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
     // In addition to establishing one, we're nested inside another
     // fragmentation context.
     FinishFragmentation(Node(), ConstraintSpace(), BorderPadding().block_end,
-                        FragmentainerSpaceAtBfcStart(ConstraintSpace()),
+                        FragmentainerSpaceLeft(ConstraintSpace()),
                         &container_builder_);
 
     // OOF positioned elements inside a nested fragmentation context are laid
@@ -533,8 +533,8 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
   if (!walker.IsFinished() || container_builder_.HasInflowChildBreakInside()) {
     // We broke in the main flow. Let this multicol container take up any
     // remaining space.
-    intrinsic_block_size_ = std::max(
-        intrinsic_block_size_, FragmentainerSpaceAtBfcStart(ConstraintSpace()));
+    intrinsic_block_size_ = std::max(intrinsic_block_size_,
+                                     FragmentainerSpaceLeft(ConstraintSpace()));
 
     // Go through any remaining parts that we didn't get to, and push them as
     // break tokens for the next (outer) fragmentainer to handle.
@@ -618,7 +618,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
   LayoutUnit available_outer_space = kIndefiniteSize;
   if (is_constrained_by_outer_fragmentation_context_) {
     available_outer_space =
-        UnclampedFragmentainerSpaceAtBfcStart(ConstraintSpace()) - row_offset;
+        UnclampedFragmentainerSpaceLeft(ConstraintSpace()) - row_offset;
 
     if (available_outer_space <= LayoutUnit()) {
       if (available_outer_space < LayoutUnit()) {
@@ -1019,7 +1019,7 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
     // point, and determine whether we should break.
 
     LayoutUnit fragmentainer_block_offset =
-        ConstraintSpace().FragmentainerOffsetAtBfc() + block_offset;
+        ConstraintSpace().FragmentainerOffset() + block_offset;
 
     NGBreakStatus break_status = BreakBeforeChildIfNeeded(
         ConstraintSpace(), spanner_node, *result, fragmentainer_block_offset,
@@ -1337,7 +1337,7 @@ LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   if (is_constrained_by_outer_fragmentation_context_) {
     // Don't become too tall to fit in the outer fragmentation context.
     LayoutUnit available_outer_space =
-        UnclampedFragmentainerSpaceAtBfcStart(ConstraintSpace()) - row_offset;
+        UnclampedFragmentainerSpaceLeft(ConstraintSpace()) - row_offset;
     size = std::min(size, available_outer_space.ClampNegativeToZero());
   }
 

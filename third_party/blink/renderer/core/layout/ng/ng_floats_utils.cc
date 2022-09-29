@@ -83,7 +83,7 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
     // is at the fragmentainer start, but for floats, it's the block start
     // *margin* edge, since float margins are unbreakable and are never
     // truncated.
-    LayoutUnit margin_edge_offset = parent_space.FragmentainerOffsetAtBfc() +
+    LayoutUnit margin_edge_offset = parent_space.FragmentainerOffset() +
                                     *origin_block_offset - margins->block_start;
     if (margin_edge_offset <= LayoutUnit())
       builder.SetIsAtFragmentainerStart();
@@ -275,7 +275,9 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     bool is_at_fragmentainer_start;
     do {
       NGConstraintSpace space = CreateConstraintSpaceForFloat(
-          *unpositioned_float, fragmentainer_delta, fragment_margins);
+          *unpositioned_float,
+          fragmentainer_delta - parent_space.ExpectedBfcBlockOffset(),
+          fragment_margins);
 
       is_at_fragmentainer_start = space.IsAtFragmentainerStart();
 
@@ -339,7 +341,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     // behavior is currently unspecified.
     if (!is_at_fragmentainer_start) {
       LayoutUnit fragmentainer_block_offset =
-          parent_space.FragmentainerOffsetAtBfc() +
+          FragmentainerOffsetAtBfc(parent_space) +
           opportunity.rect.start_offset.block_offset +
           fragment_margins.block_start;
       if (!MovePastBreakpoint(parent_space, node, *layout_result,
@@ -378,7 +380,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     // Create a special exclusion past everything, so that the container(s) may
     // grow to encompass the floats, if appropriate.
     NGBfcOffset past_everything(LayoutUnit(),
-                                FragmentainerSpaceAtBfcStart(parent_space));
+                                FragmentainerSpaceLeft(parent_space));
     const NGExclusion* exclusion = NGExclusion::Create(
         NGBfcRect(past_everything, past_everything), float_type);
     exclusion_space->Add(std::move(exclusion));

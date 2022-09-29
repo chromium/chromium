@@ -89,7 +89,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
 
     if (ConstraintSpace().HasBlockFragmentation()) {
       LayoutUnit fragmentainer_block_offset =
-          ConstraintSpace().FragmentainerOffsetAtBfc() + offset.block_offset;
+          ConstraintSpace().FragmentainerOffset() + offset.block_offset;
       NGBreakStatus break_status = BreakBeforeChildIfNeeded(
           ConstraintSpace(), row, *row_result, fragmentainer_block_offset,
           !is_first_non_collapsed_row, &container_builder_);
@@ -157,7 +157,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus status = FinishFragmentation(
         Node(), ConstraintSpace(), /* trailing_border_padding */ LayoutUnit(),
-        FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
+        FragmentainerSpaceLeft(ConstraintSpace()), &container_builder_);
     DCHECK_EQ(status, NGBreakStatus::kContinue);
   }
 

@@ -373,7 +373,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     auto status = FinishFragmentation(
         node, constraint_space, border_padding.block_end,
-        FragmentainerSpaceAtBfcStart(constraint_space), &container_builder_);
+        FragmentainerSpaceLeft(constraint_space), &container_builder_);
     if (status == NGBreakStatus::kDisableFragmentation)
       return container_builder_.Abort(NGLayoutResult::kDisableFragmentation);
     DCHECK_EQ(status, NGBreakStatus::kContinue);
@@ -3164,8 +3164,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     breakpoint_row_set_index = row_set_index;
   };
 
-  LayoutUnit fragmentainer_space =
-      FragmentainerSpaceAtBfcStart(ConstraintSpace());
+  LayoutUnit fragmentainer_space = FragmentainerSpaceLeft(ConstraintSpace());
   base::span<const Member<const NGBreakToken>> child_break_tokens;
   if (BreakToken())
     child_break_tokens = BreakToken()->ChildBreakTokens();

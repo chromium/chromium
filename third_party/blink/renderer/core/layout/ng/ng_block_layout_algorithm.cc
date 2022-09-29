@@ -523,6 +523,10 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
     abort_when_bfc_block_offset_updated_ = true;
 
     container_builder_.SetAdjoiningObjectTypes(adjoining_object_types);
+  } else if (ConstraintSpace().HasBlockFragmentation()) {
+    // The offset from the block-start of the fragmentainer is part of the
+    // constraint space, so if this offset changes, we need to abort.
+    abort_when_bfc_block_offset_updated_ = true;
   }
 
   if (Style().IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
@@ -879,11 +883,9 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
                                         : end_margin_strut.Sum();
 
       if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
-        LayoutUnit bfc_block_offset =
-            *container_builder_.BfcBlockOffset() +
-            previous_inflow_position->logical_block_offset;
         LayoutUnit new_margin_strut_sum = AdjustedMarginAfterFinalChildFragment(
-            ConstraintSpace(), bfc_block_offset, margin_strut_sum);
+            ConstraintSpace(), previous_inflow_position->logical_block_offset,
+            margin_strut_sum);
         if (new_margin_strut_sum != margin_strut_sum) {
           container_builder_.SetIsTruncatedByFragmentationLine();
           margin_strut_sum = new_margin_strut_sum;
@@ -1225,7 +1227,7 @@ void NGBlockLayoutAlgorithm::HandleFloat(
   if (positioned_float.need_break_before) {
     DCHECK(ConstraintSpace().HasBlockFragmentation());
     LayoutUnit fragmentainer_block_offset =
-        ConstraintSpace().FragmentainerOffsetAtBfc() +
+        FragmentainerOffsetAtBfc(ConstraintSpace()) +
         positioned_float.bfc_offset.block_offset;
     BreakBeforeChild(ConstraintSpace(), child, positioned_float.layout_result,
                      fragmentainer_block_offset,
@@ -2322,19 +2324,13 @@ LayoutUnit NGBlockLayoutAlgorithm::PositionSelfCollapsingChildWithParentBfc(
   return child_bfc_block_offset;
 }
 
-LayoutUnit NGBlockLayoutAlgorithm::FragmentainerSpaceAvailable() const {
-  return FragmentainerSpaceAtBfcStart(ConstraintSpace()) -
-         container_builder_.BfcBlockOffset().value_or(
-             ConstraintSpace().ExpectedBfcBlockOffset());
-}
-
 void NGBlockLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
     NGPreviousInflowPosition* previous_inflow_position) {
   if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
     // The remaining part of the fragmentainer (the unusable space for child
     // content, due to the break) should still be occupied by this container.
     previous_inflow_position->logical_block_offset =
-        FragmentainerSpaceAvailable();
+        FragmentainerSpaceLeft(ConstraintSpace());
   }
 }
 
@@ -2377,7 +2373,7 @@ NGBreakStatus NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
 
   LayoutUnit space_left = kIndefiniteSize;
   if (ConstraintSpace().HasKnownFragmentainerBlockSize())
-    space_left = FragmentainerSpaceAvailable();
+    space_left = FragmentainerSpaceLeft(ConstraintSpace());
 
   return FinishFragmentation(Node(), ConstraintSpace(),
                              BorderPadding().block_end, space_left,
@@ -2397,7 +2393,7 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
   DCHECK(container_builder_.BfcBlockOffset());
 
   LayoutUnit fragmentainer_block_offset =
-      ConstraintSpace().FragmentainerOffsetAtBfc() + bfc_block_offset -
+      FragmentainerOffsetAtBfc(ConstraintSpace()) + bfc_block_offset -
       layout_result.AnnotationBlockOffsetAdjustment();
 
   if (has_container_separation) {
@@ -2743,11 +2739,16 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
 
   if (ConstraintSpace().HasBlockFragmentation()) {
     LayoutUnit fragmentainer_offset_delta;
-    // If a block establishes a new formatting context, we must know our
-    // position in the formatting context, to be able to adjust the
-    // fragmentation line.
-    if (is_new_fc)
-      fragmentainer_offset_delta = *child_bfc_block_offset;
+    // We need to keep track of our block-offset within the fragmentation
+    // context, to be able to tell where the fragmentation line is (i.e. where
+    // to break).
+    if (is_new_fc) {
+      fragmentainer_offset_delta =
+          *child_bfc_block_offset - ConstraintSpace().ExpectedBfcBlockOffset();
+    } else {
+      fragmentainer_offset_delta = builder.ExpectedBfcBlockOffset() -
+                                   ConstraintSpace().ExpectedBfcBlockOffset();
+    }
     SetupSpaceBuilderForFragmentation(
         ConstraintSpace(), child, fragmentainer_offset_delta, &builder,
         is_new_fc, container_builder_.RequiresContentBeforeBreaking());

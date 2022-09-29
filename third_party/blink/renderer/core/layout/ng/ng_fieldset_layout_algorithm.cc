@@ -126,7 +126,7 @@ const NGLayoutResult* NGFieldsetLayoutAlgorithm::Layout() {
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus status = FinishFragmentation(
         Node(), ConstraintSpace(), Borders().block_end,
-        FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
+        FragmentainerSpaceLeft(ConstraintSpace()), &container_builder_);
     if (status == NGBreakStatus::kNeedsEarlierBreak) {
       // If we found a good break somewhere inside this block, re-layout and
       // break at that location.
@@ -401,7 +401,7 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
   if (ConstraintSpace().HasBlockFragmentation() && !early_break_) {
     break_status = BreakBeforeChildIfNeeded(
         ConstraintSpace(), fieldset_content, *result,
-        ConstraintSpace().FragmentainerOffsetAtBfc() + intrinsic_block_size_,
+        ConstraintSpace().FragmentainerOffset() + intrinsic_block_size_,
         /* has_container_separation */ false, &container_builder_);
   }
 
@@ -434,9 +434,8 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
 LayoutUnit NGFieldsetLayoutAlgorithm::FragmentainerSpaceAvailable() const {
   // The legend may have extended past the end of the fragmentainer. Clamp to
   // zero if this is the case.
-  return std::max(
-      LayoutUnit(),
-      FragmentainerSpaceAtBfcStart(ConstraintSpace()) - intrinsic_block_size_);
+  return std::max(LayoutUnit(), FragmentainerSpaceLeft(ConstraintSpace()) -
+                                    intrinsic_block_size_);
 }
 
 void NGFieldsetLayoutAlgorithm::ConsumeRemainingFragmentainerSpace() {

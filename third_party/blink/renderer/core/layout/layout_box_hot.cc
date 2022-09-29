@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -335,8 +336,8 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         // additional checks.)
       } else if (new_space.FragmentainerBlockSize() !=
                      old_space.FragmentainerBlockSize() ||
-                 new_space.FragmentainerOffsetAtBfc() !=
-                     old_space.FragmentainerOffsetAtBfc()) {
+                 new_space.FragmentainerOffset() !=
+                     old_space.FragmentainerOffset()) {
         // If the fragment was forced to stay in a fragmentainer (even if it
         // overflowed), BlockSizeForFragmentation() cannot be used for cache
         // testing.
@@ -370,7 +371,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
               cached_layout_result->ExclusionSpace();
           if (result_exclusion_space != old_space.ExclusionSpace()) {
             LayoutUnit block_end_offset =
-                new_space.FragmentainerOffsetAtBfc() +
+                FragmentainerOffsetAtBfc(new_space) +
                 result_exclusion_space.ClearanceOffset(EClear::kBoth);
             if (block_end_offset > new_space.FragmentainerBlockSize())
               return true;
@@ -412,7 +413,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
               cached_layout_result->BlockSizeForFragmentation();
 
           LayoutUnit block_end_offset =
-              new_space.FragmentainerOffsetAtBfc() +
+              FragmentainerOffsetAtBfc(new_space) +
               bfc_block_offset.value_or(LayoutUnit()) +
               block_size_for_fragmentation;
           if (block_end_offset > new_space.FragmentainerBlockSize())

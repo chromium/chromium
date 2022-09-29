@@ -385,25 +385,24 @@ class CORE_EXPORT NGConstraintSpace final {
   }
 
   // Return the border edge block-offset from the block-start of the
-  // fragmentainer relative to the block-start of the current block formatting
-  // context in the current fragmentainer. Note that if the current block
-  // formatting context starts in a previous fragmentainer, we'll return the
-  // block-offset relative to the current fragmentainer.
-  LayoutUnit FragmentainerOffsetAtBfc() const {
+  // fragmentainer relative to the block-start of the current block in the
+  // current fragmentainer. Note that if the current block starts in a previous
+  // fragmentainer, we'll return the block-offset relative to the current
+  // fragmentainer.
+  LayoutUnit FragmentainerOffset() const {
     DCHECK(HasBlockFragmentation());
     if (HasRareData())
-      return rare_data_->fragmentainer_offset_at_bfc;
+      return rare_data_->fragmentainer_offset;
     return LayoutUnit();
   }
 
   // Return true if we're at the start of the fragmentainer. In most cases this
-  // will be equal to "FragmentainerOffsetAtBfc() <= LayoutUnit()", but not
+  // will be equal to "FragmentainerOffset() <= LayoutUnit()", but not
   // necessarily for floats, since float margins are unbreakable. If a node is
   // at the start of the fragmentainer, and the node has an untruncated positive
-  // block-start margin, FragmentainerOffsetAtBfc() will be greater than
-  // zero. This normally means that the node *isn't* at the start of the
-  // fragmentainer, but for floats, this should still be considered to be at the
-  // start.
+  // block-start margin, FragmentainerOffset() will be greater than zero. This
+  // normally means that the node *isn't* at the start of the fragmentainer, but
+  // for floats, this should still be considered to be at the start.
   bool IsAtFragmentainerStart() const {
     return HasRareData() && rare_data_->is_at_fragmentainer_start;
   }
@@ -899,7 +898,7 @@ class CORE_EXPORT NGConstraintSpace final {
           override_min_max_block_sizes(other.override_min_max_block_sizes),
           page_name(other.page_name),
           fragmentainer_block_size(other.fragmentainer_block_size),
-          fragmentainer_offset_at_bfc(other.fragmentainer_offset_at_bfc),
+          fragmentainer_offset(other.fragmentainer_offset),
           data_union_type(other.data_union_type),
           is_line_clamp_context(other.is_line_clamp_context),
           is_pushed_by_floats(other.is_pushed_by_floats),
@@ -1026,7 +1025,7 @@ class CORE_EXPORT NGConstraintSpace final {
     // Must be kept in sync with members checked within |MaySkipLayout|.
     bool IsInitialForMaySkipLayout() const {
       if (page_name || fragmentainer_block_size != kIndefiniteSize ||
-          fragmentainer_offset_at_bfc || is_line_clamp_context ||
+          fragmentainer_offset || is_line_clamp_context ||
           is_pushed_by_floats || is_restricted_block_size_table_cell ||
           hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
@@ -1306,7 +1305,7 @@ class CORE_EXPORT NGConstraintSpace final {
 
     AtomicString page_name;
     LayoutUnit fragmentainer_block_size = kIndefiniteSize;
-    LayoutUnit fragmentainer_offset_at_bfc;
+    LayoutUnit fragmentainer_offset;
 
     unsigned data_union_type : 3;
 

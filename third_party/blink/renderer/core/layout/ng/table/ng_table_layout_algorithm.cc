@@ -889,7 +889,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   const NGTableBreakTokenData* incoming_table_break_data = nullptr;
   LogicalBoxSides border_padding_sides_to_include;
   const LayoutUnit fragmentainer_space_at_start =
-      FragmentainerSpaceAtBfcStart(ConstraintSpace());
+      FragmentainerSpaceLeft(ConstraintSpace());
   LayoutUnit previously_consumed_block_size;
   LayoutUnit previously_consumed_table_box_block_size;
 
@@ -1259,7 +1259,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     }
     if (ConstraintSpace().HasBlockFragmentation()) {
       LayoutUnit fragmentainer_block_offset =
-          ConstraintSpace().FragmentainerOffsetAtBfc() + child_block_offset;
+          ConstraintSpace().FragmentainerOffset() + child_block_offset;
       NGBreakStatus break_status = BreakBeforeChildIfNeeded(
           ConstraintSpace(), child, *child_result, fragmentainer_block_offset,
           has_container_separation, &container_builder_);
@@ -1367,7 +1367,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         child_space, entry.GetBreakToken());
 
     LayoutUnit fragmentainer_block_offset =
-        ConstraintSpace().FragmentainerOffsetAtBfc() + offset.block_offset;
+        ConstraintSpace().FragmentainerOffset() + offset.block_offset;
     NGBreakStatus break_status =
         BreakBeforeChildIfNeeded(ConstraintSpace(), grouped_children.footer,
                                  *result, fragmentainer_block_offset,

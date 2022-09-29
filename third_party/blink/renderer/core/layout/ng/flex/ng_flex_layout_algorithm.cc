@@ -1096,7 +1096,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus break_status = FinishFragmentation(
         Node(), ConstraintSpace(), BorderPadding().block_end,
-        FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
+        FragmentainerSpaceLeft(ConstraintSpace()), &container_builder_);
     if (break_status != NGBreakStatus::kContinue) {
       if (break_status == NGBreakStatus::kNeedsEarlierBreak)
         return container_builder_.Abort(NGLayoutResult::kNeedsEarlierBreak);
@@ -1475,8 +1475,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
                                                   false);
   bool needs_earlier_break_in_column = false;
   NGLayoutResult::EStatus status = NGLayoutResult::kSuccess;
-  LayoutUnit fragmentainer_space =
-      FragmentainerSpaceAtBfcStart(ConstraintSpace());
+  LayoutUnit fragmentainer_space = FragmentainerSpaceLeft(ConstraintSpace());
 
   HeapVector<NGFlexColumnBreakInfo> column_break_info;
   if (is_column_) {
@@ -1708,7 +1707,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       }
       break_status = BreakBeforeChildIfNeeded(
           ConstraintSpace(), flex_item->ng_input_node, *layout_result,
-          ConstraintSpace().FragmentainerOffsetAtBfc() + offset.block_offset,
+          ConstraintSpace().FragmentainerOffset() + offset.block_offset,
           has_container_separation, &container_builder_, !is_column_,
           current_column_break_info);
     }
@@ -2442,7 +2441,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
 
 LayoutUnit NGFlexLayoutAlgorithm::FragmentainerSpaceAvailable(
     LayoutUnit block_offset) const {
-  return (FragmentainerSpaceAtBfcStart(ConstraintSpace()) - block_offset)
+  return (FragmentainerSpaceLeft(ConstraintSpace()) - block_offset)
       .ClampNegativeToZero();
 }
 
@@ -2482,7 +2481,7 @@ NGBreakStatus NGFlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
   DCHECK(InvolvedInBlockFragmentation(container_builder_));
 
   LayoutUnit fragmentainer_block_offset =
-      ConstraintSpace().FragmentainerOffsetAtBfc() + row.cross_axis_offset;
+      ConstraintSpace().FragmentainerOffset() + row.cross_axis_offset;
   if (BreakToken())
     fragmentainer_block_offset -= BreakToken()->ConsumedBlockSize();
 

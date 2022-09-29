@@ -270,10 +270,10 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
     return;
 
   builder->SetFragmentainerBlockSize(parent_space.FragmentainerBlockSize());
-  LayoutUnit fragmentainer_offset_at_bfc =
-      parent_space.FragmentainerOffsetAtBfc() + fragmentainer_offset_delta;
-  builder->SetFragmentainerOffsetAtBfc(fragmentainer_offset_at_bfc);
-  if (fragmentainer_offset_at_bfc <= LayoutUnit())
+  LayoutUnit fragmentainer_offset =
+      parent_space.FragmentainerOffset() + fragmentainer_offset_delta;
+  builder->SetFragmentainerOffset(fragmentainer_offset);
+  if (fragmentainer_offset <= LayoutUnit())
     builder->SetIsAtFragmentainerStart();
   builder->SetFragmentationType(parent_space.BlockFragmentationType());
   builder->SetShouldPropagateChildBreakValues();
@@ -352,10 +352,7 @@ void SetupFragmentBuilderForFragmentation(
           builder->InitialBorderBoxSize().inline_size);
       DCHECK(space.HasKnownFragmentainerBlockSize());
 
-      DCHECK(!builder->BfcBlockOffset());
-      LayoutUnit space_left =
-          FragmentainerSpaceAtBfcStart(space) - space.ExpectedBfcBlockOffset();
-
+      LayoutUnit space_left = FragmentainerSpaceLeft(space);
       LayoutUnit previously_consumed_block_size;
       if (previous_break_token) {
         previously_consumed_block_size =
