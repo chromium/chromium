@@ -148,6 +148,71 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   return target_browser;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+std::unique_ptr<AppBrowserController> CreateWebKioskBrowserController(
+    Browser* browser,
+    WebAppProvider* provider,
+    const AppId& app_id) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return std::make_unique<ash::WebKioskBrowserControllerAsh>(*provider, browser,
+                                                             app_id);
+#else
+  // TODO(b/242023891): Add web Kiosk browser controller for Lacros.
+  return nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const ash::SystemWebAppDelegate* GetSystemWebAppDelegate(Browser* browser,
+                                                         const AppId& app_id) {
+  auto system_app_type =
+      ash::GetSystemWebAppTypeForAppId(browser->profile(), app_id);
+  if (system_app_type) {
+    return ash::SystemWebAppManager::GetForLocalAppsUnchecked(
+               browser->profile())
+        ->GetSystemApp(*system_app_type);
+  }
+  return nullptr;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+std::unique_ptr<AppBrowserController> CreateWebAppBrowserController(
+    Browser* browser,
+    WebAppProvider* provider,
+    const AppId& app_id) {
+  bool should_have_tab_strip_for_swa = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const ash::SystemWebAppDelegate* system_app =
+      GetSystemWebAppDelegate(browser, app_id);
+  should_have_tab_strip_for_swa =
+      system_app && system_app->ShouldHaveTabStrip();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool has_tab_strip =
+      !browser->is_type_app_popup() &&
+      (should_have_tab_strip_for_swa ||
+       provider->registrar().IsTabbedWindowModeEnabled(app_id));
+  return std::make_unique<WebAppBrowserController>(*provider, browser, app_id,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                                                   system_app,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+                                                   has_tab_strip);
+}
+
+std::unique_ptr<AppBrowserController> MaybeCreateHostedAppBrowserController(
+    Browser* browser,
+    const AppId& app_id) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(browser->profile())
+          ->GetExtensionById(app_id, extensions::ExtensionRegistry::EVERYTHING);
+  if (extension && extension->is_hosted_app()) {
+    return std::make_unique<extensions::HostedAppBrowserController>(browser);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  return nullptr;
+}
+
 }  // namespace
 
 absl::optional<AppId> GetWebAppForActiveTab(Browser* browser) {
@@ -273,50 +338,15 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
 #if BUILDFLAG(IS_CHROMEOS)
     if (profiles::IsKioskSession() &&
         base::FeatureList::IsEnabled(features::kKioskEnableAppService)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      controller = std::make_unique<ash::WebKioskBrowserControllerAsh>(
-          *provider, browser, app_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      // TODO(b/242023891): Add web Kiosk browser controller for Lacros.
+      controller = CreateWebKioskBrowserController(browser, provider, app_id);
     } else {
-#endif  // BUILDFLAG(IS_CHROMEOS)
-      bool should_have_tab_strip_for_swa = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      const ash::SystemWebAppDelegate* system_app = nullptr;
-      auto system_app_type =
-          ash::GetSystemWebAppTypeForAppId(browser->profile(), app_id);
-      if (system_app_type) {
-        system_app = ash::SystemWebAppManager::GetForLocalAppsUnchecked(
-                         browser->profile())
-                         ->GetSystemApp(*system_app_type);
-        should_have_tab_strip_for_swa =
-            system_app && system_app->ShouldHaveTabStrip();
-      }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      const bool has_tab_strip =
-          !browser->is_type_app_popup() &&
-          (should_have_tab_strip_for_swa ||
-           provider->registrar().IsTabbedWindowModeEnabled(app_id));
-      controller =
-          std::make_unique<WebAppBrowserController>(*provider, browser, app_id,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-                                                    system_app,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-                                                    has_tab_strip);
-#if BUILDFLAG(IS_CHROMEOS)
+      controller = CreateWebAppBrowserController(browser, provider, app_id);
     }
+#else
+    controller = CreateWebAppBrowserController(browser, provider, app_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   } else {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    const extensions::Extension* extension =
-        extensions::ExtensionRegistry::Get(browser->profile())
-            ->GetExtensionById(app_id,
-                               extensions::ExtensionRegistry::EVERYTHING);
-    if (extension && extension->is_hosted_app()) {
-      controller =
-          std::make_unique<extensions::HostedAppBrowserController>(browser);
-    }
-#endif
+    controller = MaybeCreateHostedAppBrowserController(browser, app_id);
   }
   if (controller)
     controller->Init();
