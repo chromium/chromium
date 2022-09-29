@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
@@ -324,6 +325,8 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
           self.browser->GetCommandDispatcher());
   self.headerController.commandHandler = self;
   self.headerController.delegate = self.ntpMediator;
+  self.headerController.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
 
   self.headerController.readingListModel =
       ReadingListModelFactory::GetForBrowserState(

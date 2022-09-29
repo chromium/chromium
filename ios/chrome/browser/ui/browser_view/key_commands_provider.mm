@@ -12,10 +12,12 @@
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/browser/url_loading/url_loading_util.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -310,10 +312,9 @@
                    modifierFlags:UIKeyModifierCommand | UIKeyModifierShift
                            title:voiceSearchTitle
                           action:^{
-                            UIView* baseView = weakSelf.baseViewController.view;
-                            [[NamedGuide guideWithName:kVoiceSearchButtonGuide
-                                                  view:baseView]
-                                resetConstraints];
+                            [LayoutGuideCenterForBrowser(weakSelf.browser)
+                                referenceView:nil
+                                    underName:kVoiceSearchButtonGuide];
                             [weakSelf.dispatcher startVoiceSearch];
                           }],
     ]];

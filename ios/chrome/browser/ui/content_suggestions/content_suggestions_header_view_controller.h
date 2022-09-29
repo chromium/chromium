@@ -21,6 +21,7 @@
 @protocol NewTabPageControllerDelegate;
 @protocol OmniboxCommands;
 @protocol LensCommands;
+@class LayoutGuideCenter;
 @class PrimaryToolbarViewController;
 class ReadingListModel;
 
@@ -64,6 +65,9 @@ class ReadingListModel;
 
 // The base view controller from which to present UI.
 @property(nonatomic, weak) UIViewController* baseViewController;
+
+// The layout guide center for the current scene.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Return the toolbar view;
 - (UIView*)toolBarView;

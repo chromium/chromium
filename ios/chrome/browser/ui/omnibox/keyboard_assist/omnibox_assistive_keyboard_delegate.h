@@ -9,12 +9,15 @@
 
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
-@class NamedGuide;
+@class LayoutGuideCenter;
 @class OmniboxTextFieldIOS;
 @protocol QRScannerCommands;
 
 // Delegate protocol for the KeyboardAccessoryView.
 @protocol OmniboxAssistiveKeyboardDelegate
+
+// The layout guide center for the current scene.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Notifies the delegate that the Voice Search button was tapped.
 - (void)keyboardAccessoryVoiceSearchTapped:(id)sender;
@@ -36,7 +39,6 @@
 @property(nonatomic, weak) id<BrowserCommands> browserCommandsHandler;
 @property(nonatomic, weak) id<QRScannerCommands> qrScannerCommandsHandler;
 @property(nonatomic, weak) OmniboxTextFieldIOS* omniboxTextField;
-@property(nonatomic, weak) NamedGuide* voiceSearchButtonGuide;
 
 @end
 

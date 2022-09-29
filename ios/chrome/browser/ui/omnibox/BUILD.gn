@@ -176,6 +176,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/location_bar:constants",
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",
+    "//ios/chrome/browser/ui/main:layout_guide_util",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/omnibox/popup",
     "//ios/chrome/browser/ui/omnibox/popup:popup_ui_protocols",

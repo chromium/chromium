@@ -12,7 +12,8 @@
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -23,9 +24,9 @@
 
 @synthesize applicationCommandsHandler = _applicationCommandsHandler;
 @synthesize browserCommandsHandler = _browserCommandsHandler;
+@synthesize layoutGuideCenter = _layoutGuideCenter;
 @synthesize qrScannerCommandsHandler = _qrScannerCommandsHandler;
 @synthesize omniboxTextField = _omniboxTextField;
-@synthesize voiceSearchButtonGuide = _voiceSearchButtonGuide;
 
 #pragma mark - Public
 
@@ -33,7 +34,9 @@
   if (ios::provider::IsVoiceSearchEnabled()) {
     [self.browserCommandsHandler preloadVoiceSearch];
     base::RecordAction(base::UserMetricsAction("MobileCustomRowVoiceSearch"));
-    // The sender can be a regular view or a bar button item. Handle both cases.
+    // Voice Search will query kVoiceSearchButtonGuide to know from where to
+    // start its animation, so reference the sender under that name. The sender
+    // can be a regular view or a bar button item. Handle both cases.
     UIView* view;
     if ([sender isKindOfClass:[UIView class]]) {
       view = base::mac::ObjCCastStrict<UIView>(sender);
@@ -41,21 +44,8 @@
       view = [sender valueForKey:@"view"];
     }
     DCHECK(view);
-    // Since the keyboard accessory view is in a different window than the main
-    // UIViewController upon which Voice Search will be presented, the guide
-    // must be constrained to a frame instead of the view itself.  The keyboard
-    // and its accessory view will be dismissed at the bottom of the screen
-    // before the presentation animation, so bottom-align the view's frame.
-    if (self.voiceSearchButtonGuide) {
-      self.voiceSearchButtonGuide.autoresizingMask =
-          (UIViewAutoresizingFlexibleTopMargin |
-           UIViewAutoresizingFlexibleRightMargin);
-      CGRect frame = view.frame;
-      frame.origin.y =
-          CGRectGetMaxY(self.voiceSearchButtonGuide.owningView.bounds) -
-          CGRectGetHeight(frame);
-      self.voiceSearchButtonGuide.constrainedFrame = frame;
-    }
+    [self.layoutGuideCenter referenceView:view
+                                underName:kVoiceSearchButtonGuide];
     [self.applicationCommandsHandler startVoiceSearch];
   }
 }

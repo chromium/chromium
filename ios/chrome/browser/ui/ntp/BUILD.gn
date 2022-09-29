@@ -91,6 +91,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/context_menu/link_preview",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/follow",
+    "//ios/chrome/browser/ui/main:layout_guide_util",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/main:scene_state_observer",
     "//ios/chrome/browser/ui/ntp/feed_management",

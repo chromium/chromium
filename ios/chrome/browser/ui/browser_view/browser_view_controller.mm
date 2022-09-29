@@ -1860,7 +1860,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       kTabSwitcherGuide,
       kNewTabButtonGuide,
       kSecondaryToolbarGuide,
-      kVoiceSearchButtonGuide,
       kDiscoverFeedHeaderMenuGuide,
       kPrimaryToolbarLocationViewGuide,
     ];

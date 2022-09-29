@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
@@ -137,6 +138,8 @@
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   self.keyboardDelegate.qrScannerCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), QRScannerCommands);
+  self.keyboardDelegate.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.keyboardDelegate.browserCommandsHandler =

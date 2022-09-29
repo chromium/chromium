@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_view_controller.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/omnibox/location_bar_delegate.h"
@@ -132,7 +133,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   return self.browser ? self.browser->GetWebStateList() : nullptr;
 }
 
-#pragma mark - public
+#pragma mark - Public
 
 - (UIViewController*)locationBarViewController {
   return self.viewController;
@@ -164,6 +165,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
           self.browser->GetCommandDispatcher());
   self.viewController.voiceSearchEnabled =
       ios::provider::IsVoiceSearchEnabled();
+  self.viewController.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
 
   _editController = std::make_unique<WebOmniboxEditControllerImpl>(self);
   _editController->SetURLLoader(self);
@@ -494,7 +497,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                     cornerRadius:view.bounds.size.height / 2];
 }
 
-#pragma mark - private
+#pragma mark - Private
 
 // Navigate to `query` from omnibox.
 - (void)loadURLForQuery:(const std::u16string&)query {

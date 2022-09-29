@@ -65,6 +65,7 @@ source_set("location_bar") {
     "//ios/chrome/browser/ui/fullscreen:ui",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",
+    "//ios/chrome/browser/ui/main:layout_guide_util",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/ntp:util",
     "//ios/chrome/browser/ui/omnibox:omnibox",
