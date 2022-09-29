@@ -1068,7 +1068,9 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
           std::make_unique<SharedImageRepresentationFactory>(
               shared_image_manager,
               memory_tracker)),
-      dawn_platform_(new DawnPlatform(std::move(dawn_caching_interface))),
+      dawn_platform_(new DawnPlatform(gpu_preferences.enable_unsafe_webgpu
+                                          ? std::move(dawn_caching_interface)
+                                          : nullptr)),
       dawn_instance_(
           DawnInstance::Create(dawn_platform_.get(), gpu_preferences)),
       memory_transfer_service_(new DawnServiceMemoryTransferService(this)),
