@@ -280,8 +280,8 @@ class FfxTestRunner(AbstractContextManager):
             A subprocess.Popen object.
         """
         command = [
-            '--config', 'test.experimental_structured_output=false', 'test',
-            'run', '--output-directory', self._results_dir, component_uri
+            'test', 'run', '--output-directory', self._results_dir,
+            component_uri
         ]
         if test_args:
             command.append('--')
