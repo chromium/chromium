@@ -5,6 +5,7 @@
 #include "base/allocator/partition_alloc_support.h"
 
 #include <array>
+#include <cinttypes>
 #include <cstdint>
 #include <map>
 #include <string>
