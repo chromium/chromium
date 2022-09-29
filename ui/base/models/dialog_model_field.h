@@ -47,24 +47,32 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
     TextReplacement(const TextReplacement&);
     ~TextReplacement();
 
-    std::u16string text() const { return text_; }
-    Callback callback() const { return callback_; }
-    std::u16string accessible_name() const { return accessible_name_; }
+    const std::u16string& text() const { return text_; }
+    bool is_emphasized() const { return is_emphasized_; }
+    const absl::optional<Callback>& callback() const { return callback_; }
+    const absl::optional<std::u16string>& accessible_name() const {
+      return accessible_name_;
+    }
 
    private:
     friend class DialogModelLabel;
 
+    // Used for regular and emphasized text.
+    explicit TextReplacement(std::u16string text, bool is_emphasized = false);
+    // Used for links.
     TextReplacement(int message_id,
                     Callback closure,
                     std::u16string accessible_name = std::u16string());
 
     const std::u16string text_;
-    const Callback callback_;
-    const std::u16string accessible_name_;
+    const bool is_emphasized_;
+    const absl::optional<Callback> callback_;
+    const absl::optional<std::u16string> accessible_name_;
   };
 
   explicit DialogModelLabel(int message_id);
   explicit DialogModelLabel(std::u16string fixed_string);
+
   DialogModelLabel(const DialogModelLabel&);
   DialogModelLabel& operator=(const DialogModelLabel&) = delete;
   ~DialogModelLabel();
@@ -75,6 +83,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
       int message_id,
       std::vector<TextReplacement> replacements);
 
+  // Builder methods for TextReplacements.
   static TextReplacement CreateLink(
       int message_id,
       base::RepeatingClosure closure,
@@ -83,6 +92,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
       int message_id,
       Callback callback,
       std::u16string accessible_name = std::u16string());
+  static TextReplacement CreatePlainText(std::u16string text);
+  static TextReplacement CreateEmphasizedText(std::u16string text);
 
   // Gets the string. Not for use with replacements, in which case the caller
   // must use replacements() and message_id() to construct the final label. This

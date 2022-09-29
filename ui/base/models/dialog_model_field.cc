@@ -4,19 +4,27 @@
 
 #include "ui/base/models/dialog_model_field.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 
 namespace ui {
 
+DialogModelLabel::TextReplacement::TextReplacement(std::u16string text,
+                                                   bool is_emphasized)
+    : text_(text), is_emphasized_(is_emphasized) {}
 DialogModelLabel::TextReplacement::TextReplacement(
     int message_id,
     Callback callback,
     std::u16string accessible_name)
     : text_(l10n_util::GetStringUTF16(message_id)),
+      is_emphasized_(false),
       callback_(callback),
-      accessible_name_(accessible_name) {}
+      accessible_name_(accessible_name) {
+  // Emphasized links are not supported, at least for now.
+}
 DialogModelLabel::TextReplacement::TextReplacement(const TextReplacement&) =
     default;
 DialogModelLabel::TextReplacement::~TextReplacement() = default;
@@ -74,6 +82,16 @@ DialogModelLabel::TextReplacement DialogModelLabel::CreateLink(
     Callback callback,
     std::u16string accessible_name) {
   return TextReplacement(message_id, callback, accessible_name);
+}
+
+DialogModelLabel::TextReplacement DialogModelLabel::CreatePlainText(
+    std::u16string text) {
+  return TextReplacement(text);
+}
+
+DialogModelLabel::TextReplacement DialogModelLabel::CreateEmphasizedText(
+    std::u16string text) {
+  return TextReplacement(text, true);
 }
 
 DialogModelField::DialogModelField(base::PassKey<DialogModel>,

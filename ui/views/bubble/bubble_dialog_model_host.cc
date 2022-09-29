@@ -35,6 +35,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
 namespace views {
@@ -390,9 +391,9 @@ BubbleDialogModelHost::BubbleDialogModelHost(
         extra_button->label(GetPassKey())));
   } else if (ui::DialogModelLabel::TextReplacement* extra_link =
                  model_->extra_link(GetPassKey())) {
-    DCHECK(extra_link->callback());
+    DCHECK(extra_link->callback().has_value());
     auto link = std::make_unique<views::Link>(extra_link->text());
-    link->SetCallback(extra_link->callback());
+    link->SetCallback(extra_link->callback().value());
     SetExtraView(std::move(link));
   }
 
@@ -907,33 +908,49 @@ std::unique_ptr<View> BubbleDialogModelHost::CreateViewForLabel(
   return CreateLabelForDialogModelLabel(dialog_label);
 }
 
-// TODO(crbug.com/1363412): Add support for replacements with no style, and
-// emphasized style.
 std::unique_ptr<StyledLabel>
 BubbleDialogModelHost::CreateStyledLabelForDialogModelLabel(
     const ui::DialogModelLabel& dialog_label) {
   DCHECK(DialogModelLabelRequiresStyledLabel(dialog_label));
-  // TODO(pbos): Make sure this works for >1 link, it uses .front() now.
-  DCHECK_EQ(dialog_label.replacements(GetPassKey()).size(), 1u);
+  const std::vector<ui::DialogModelLabel::TextReplacement>& replacements =
+      dialog_label.replacements(GetPassKey());
 
-  size_t offset;
-  const std::u16string link_text =
-      dialog_label.replacements(GetPassKey()).front().text();
+  // Retrieve the replacements strings to create the text.
+  std::vector<std::u16string> string_replacements;
+  for (auto replacement : replacements) {
+    string_replacements.push_back(replacement.text());
+  }
+  std::vector<size_t> offsets;
   const std::u16string text = l10n_util::GetStringFUTF16(
-      dialog_label.message_id(GetPassKey()), link_text, &offset);
+      dialog_label.message_id(GetPassKey()), string_replacements, &offsets);
 
   auto styled_label = std::make_unique<StyledLabel>();
   styled_label->SetText(text);
-  auto style_info = StyledLabel::RangeStyleInfo::CreateForLink(
-      dialog_label.replacements(GetPassKey()).front().callback());
-  style_info.accessible_name =
-      dialog_label.replacements(GetPassKey()).front().accessible_name();
-  styled_label->AddStyleRange(gfx::Range(offset, offset + link_text.length()),
-                              style_info);
-
   styled_label->SetDefaultTextStyle(dialog_label.is_secondary(GetPassKey())
                                         ? style::STYLE_SECONDARY
                                         : style::STYLE_PRIMARY);
+
+  // Style the replacements as needed.
+  DCHECK_EQ(string_replacements.size(), offsets.size());
+  for (size_t i = 0; i < replacements.size(); ++i) {
+    auto replacement = replacements[i];
+    // No styling needed if replacement is neither a link nor emphasized text.
+    if (!replacement.callback().has_value() && !replacement.is_emphasized())
+      continue;
+
+    StyledLabel::RangeStyleInfo style_info;
+    if (replacement.callback().has_value()) {
+      style_info = StyledLabel::RangeStyleInfo::CreateForLink(
+          replacement.callback().value());
+      style_info.accessible_name = replacement.accessible_name().value();
+    } else if (replacement.is_emphasized()) {
+      style_info.text_style = views::style::STYLE_EMPHASIZED;
+    }
+
+    auto offset = offsets[i];
+    styled_label->AddStyleRange(
+        gfx::Range(offset, offset + replacement.text().length()), style_info);
+  }
 
   return styled_label;
 }

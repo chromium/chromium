@@ -10,8 +10,8 @@
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/models/dialog_model_field.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/view.h"
@@ -44,13 +44,14 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
   const std::u16string url = GetCurrentHost(web_contents);
   if (actions.size() == 1) {
     dialog_builder.SetIcon(GetIcon(actions[0], web_contents))
-        .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
+        .AddParagraph(ui::DialogModelLabel::CreateWithReplacements(
             IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_SINGLE_EXTENSION,
-            actions[0]->GetActionName(), url)));
+            {ui::DialogModelLabel::CreatePlainText(actions[0]->GetActionName()),
+             ui::DialogModelLabel::CreateEmphasizedText(url)}));
   } else {
-    dialog_builder.AddParagraph(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
+    dialog_builder.AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
         IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
-        url)));
+        ui::DialogModelLabel::CreateEmphasizedText(url)));
     for (auto* action : actions) {
       dialog_builder.AddMenuItem(
           GetIcon(action, web_contents), action->GetActionName(),
