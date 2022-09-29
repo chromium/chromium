@@ -45,7 +45,6 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "keyboard_shortcuts.icon",
     "notification_assistant.icon",
     "notification_supervised_user.icon",
-    "notification_warning.icon",
     "person_pin_circle.icon",
     "screenshot.icon",
     "sentiment_very_satisfied.icon",

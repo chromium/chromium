@@ -26,12 +26,12 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/user_manager/user_manager.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -195,7 +195,7 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               parameters.click_action),
-          chromeos::kNotificationWarningIcon,
+          vector_icons::kNotificationWarningIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
 
   display_service->Display(NotificationHandler::Type::TRANSIENT, *notification,
