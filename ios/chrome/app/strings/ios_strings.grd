@@ -3700,6 +3700,24 @@ New Search
           =1 {Now showing 1 Chrome window}
           other {Now showing {count} Chrome windows}}
       </message>
+      <message name="IDS_IOS_WHATS_NEW_TITLE" desc="Title of the What's new Feature">
+        What's New
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_LEARN_MORE_ACTION_TITLE" desc="Label of the button for users to learn more about a feature or a chrome tip.">
+        Learn more
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_SECTION_CHROME_TIP_TITLE" desc="Title of a section in a table view to inform users about a chrome tip.">
+        Chrome Tip
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_SECTION_FEATURED_TITLE" desc="Title of a section in a table view to inform users about the newest feature.">
+        Featured
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_SECTION_NEW_TITLE" desc="Title of a section in a table view to inform users about new features.">
+        New
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_IPH_TEXT" desc="An in product help message to inform the user about the feature What's New.">
+        Find out what's new in Chrome
+      </message>
       <message name="IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT" desc="A message to inform the user that a credit card will be saved to their Google Account.">
         Cards are saved to your Google Account.
       </message>

@@ -7,15 +7,24 @@ source_set("whats_new") {
   sources = [
     "whats_new_coordinator.h",
     "whats_new_coordinator.mm",
+    "whats_new_detail_view_controller.h",
+    "whats_new_detail_view_controller.mm",
     "whats_new_table_view_controller.h",
     "whats_new_table_view_controller.mm",
   ]
   deps = [
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/whats_new/cells",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
   ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("feature_flags") {
