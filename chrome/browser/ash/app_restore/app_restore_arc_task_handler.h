@@ -64,6 +64,8 @@ class AppRestoreArcTaskHandler : public KeyedService,
   void ClearDeskTemplateArcAppLaunchHandler(int32_t launch_id);
 
   // ArcAppListPrefs::Observer.
+  void OnAppStatesChanged(const std::string& id,
+                          const ArcAppListPrefs::AppInfo& app_info) override;
   void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,
                      const std::string& activity,

@@ -105,6 +105,14 @@ bool AppRestoreArcTaskHandler::IsAppPendingRestore(
   return false;
 }
 
+void AppRestoreArcTaskHandler::OnAppStatesChanged(
+    const std::string& id,
+    const ArcAppListPrefs::AppInfo& app_info) {
+  if (!window_handler_)
+    return;
+  window_handler_->OnAppStatesUpdate(id, app_info.ready, app_info.need_fixup);
+}
+
 void AppRestoreArcTaskHandler::OnTaskCreated(int32_t task_id,
                                              const std::string& package_name,
                                              const std::string& activity,

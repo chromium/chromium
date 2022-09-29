@@ -51,6 +51,11 @@ class ArcGhostWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
     // Observer for ghost window close event.
     virtual void OnWindowCloseRequested(int window_id) {}
 
+    // Observer for ARC App specific state updates.
+    virtual void OnAppStatesUpdate(const std::string& app_id,
+                                   bool ready,
+                                   bool need_fixup) {}
+
    protected:
     ~Observer() override = default;
   };
@@ -79,6 +84,8 @@ class ArcGhostWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   bool HasObserver(Observer* observer);
 
   void OnAppInstanceConnected();
+
+  void OnAppStatesUpdate(std::string app_id, bool ready, bool need_fixup);
 
   void OnWindowInfoUpdated(int window_id,
                            int state,

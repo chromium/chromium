@@ -161,6 +161,13 @@ void ArcGhostWindowHandler::OnAppInstanceConnected() {
     observer.OnAppInstanceConnected();
 }
 
+void ArcGhostWindowHandler::OnAppStatesUpdate(std::string app_id,
+                                              bool ready,
+                                              bool need_fixup) {
+  for (auto& observer : observer_list_)
+    observer.OnAppStatesUpdate(app_id, ready, need_fixup);
+}
+
 void ArcGhostWindowHandler::OnWindowInfoUpdated(int window_id,
                                                 int state,
                                                 int64_t display_id,
