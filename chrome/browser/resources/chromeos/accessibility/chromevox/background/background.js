@@ -80,12 +80,10 @@ export class Background extends ChromeVoxState {
 
     /** @private {boolean} */
     this.talkBackEnabled_ = false;
-
-    this.init_();
   }
 
-  /** @private */
-  init_() {
+  /** @override */
+  init() {
     // Initialize legacy background page first.
     ChromeVoxBackground.init(this);
 
@@ -510,3 +508,4 @@ export class Background extends ChromeVoxState {
 
 InstanceChecker.closeExtraInstances();
 ChromeVoxState.instance = new Background();
+ChromeVoxState.instance.init();

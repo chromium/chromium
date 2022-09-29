@@ -43,6 +43,9 @@ export class ChromeVoxState {
     }
   }
 
+  /** Can be overridden to initialize values and state when first created. */
+  init() {}
+
   /** @return {CursorRange} */
   get currentRange() {
     return this.getCurrentRange();
