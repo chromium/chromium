@@ -912,8 +912,9 @@ void CommerceHintAgent::OnDestruct() {
 }
 
 void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
-  if (should_skip_)
+  if (!should_skip_.has_value() || should_skip_.value()) {
     return;
+  }
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   const GURL& url(frame->GetDocument().Url());
   if (!url.SchemeIsHTTPOrHTTPS())
@@ -998,10 +999,43 @@ void CommerceHintAgent::DidStartNavigationCallback(
 
 void CommerceHintAgent::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
-  if (should_skip_)
-    return;
   if (!starting_url_.is_valid())
     return;
+  DCHECK(starting_url_.SchemeIsHTTPOrHTTPS());
+  mojo::Remote<mojom::CommerceHintObserver> observer =
+      GetObserver(render_frame());
+  if (!commerce::kOptimizeRendererSignal.Get()) {
+    DidCommitProvisionalLoadCallback(starting_url_, std::move(observer), false,
+                                     mojom::Heuristics::New());
+    return;
+  }
+  auto* observer_ptr = observer.get();
+  observer_ptr->OnNavigation(
+      starting_url_, CommerceHeuristicsData::GetInstance().GetVersion(),
+      base::BindOnce(&CommerceHintAgent::DidCommitProvisionalLoadCallback,
+                     weak_factory_.GetWeakPtr(), starting_url_,
+                     std::move(observer)));
+}
+
+void CommerceHintAgent::DidCommitProvisionalLoadCallback(
+    const GURL& url,
+    mojo::Remote<mojom::CommerceHintObserver> observer,
+    bool should_skip,
+    mojom::HeuristicsPtr heuristics) {
+  should_skip_ = should_skip;
+  if (should_skip)
+    return;
+  if (!heuristics->version_number.empty() &&
+      heuristics->version_number !=
+          CommerceHeuristicsData::GetInstance().GetVersion()) {
+    bool is_populated =
+        CommerceHeuristicsData::GetInstance().PopulateDataFromComponent(
+            heuristics->hint_json_data, heuristics->global_json_data,
+            /*product_id_json_data*/ "", /*cart_extraction_script*/ "");
+    DCHECK(is_populated);
+    CommerceHeuristicsData::GetInstance().UpdateVersion(
+        base::Version(heuristics->version_number));
+  }
   if (IsAddToCart(starting_url_.PathForRequestPiece())) {
     RecordCommerceEvent(CommerceEvent::kAddToCartByURL);
     OnAddToCart(render_frame());
@@ -1048,7 +1082,7 @@ void CommerceHintAgent::DidFinishLoadCallback(
     bool should_skip,
     mojom::HeuristicsPtr heuristics) {
   should_skip_ = should_skip;
-  if (should_skip_)
+  if (should_skip)
     return;
   if (!heuristics->version_number.empty() &&
       heuristics->version_number !=
@@ -1076,7 +1110,7 @@ void CommerceHintAgent::DidFinishLoadCallback(
 }
 
 void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
-  if (should_skip_)
+  if (!should_skip_.has_value() || should_skip_.value())
     return;
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   const GURL url(frame->GetDocument().Url());
@@ -1097,7 +1131,7 @@ void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
 
 // TODO(crbug/1164236): use MutationObserver on cart instead.
 void CommerceHintAgent::ExtractCartFromCurrentFrame() {
-  if (should_skip_)
+  if (!should_skip_.has_value() || should_skip_.value())
     return;
   if (!has_finished_loading_)
     return;
