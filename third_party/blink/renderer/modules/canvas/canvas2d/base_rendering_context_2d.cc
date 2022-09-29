@@ -159,22 +159,6 @@ void BaseRenderingContext2D::restore() {
   PopAndRestore();
 }
 
-sk_sp<PaintFilter> BaseRenderingContext2D::StateGetFilter(
-    CanvasRenderingContext2DState::GlobalAlphaFilterMode
-        globalAlphaFilterMode) {
-  // If the globalAlphaFilterMode is set to kInclude, a ComposePaintFilter
-  // is created with the regular filter PaintFilter and the globalAlpha
-  // PaintFilter.
-  if (globalAlphaFilterMode ==
-          CanvasRenderingContext2DState::GlobalAlphaFilterMode::kInclude &&
-      GetState().GlobalAlpha() != 1.0) {
-    gfx::Size size(Width(), Height());
-    return sk_make_sp<ComposePaintFilter>(
-        StateGetFilterImpl(), GetState().GetGlobalAlphaAsFilter(size, this));
-  }
-  return StateGetFilterImpl();
-}
-
 void BaseRenderingContext2D::beginLayer() {
   if (isContextLost())
     return;
@@ -207,11 +191,9 @@ void BaseRenderingContext2D::beginLayer() {
     GetState().FillStyle()->ApplyToFlags(flags);
     flags.setColor(GetState().FillStyle()->PaintColor());
     flags.setBlendMode(GetState().GlobalComposite());
-    flags.setImageFilter(
-        GetState().ShouldDrawShadows()
-            ? GetState().ShadowAndForegroundImageFilter()
-            : StateGetFilter(CanvasRenderingContext2DState::
-                                 GlobalAlphaFilterMode::kExclude));
+    flags.setImageFilter(GetState().ShouldDrawShadows()
+                             ? GetState().ShadowAndForegroundImageFilter()
+                             : StateGetFilter());
     canvas->saveLayer(nullptr, &flags);
 
     // Push to state stack to keep stack size up to date.
@@ -223,10 +205,8 @@ void BaseRenderingContext2D::beginLayer() {
     GetState().FillStyle()->ApplyToFlags(extra_flags);
     extra_flags.setColor(GetState().FillStyle()->PaintColor());
     extra_flags.setAlpha(globalAlpha() * 255);
-    if (GetState().ShouldDrawShadows()) {
-      extra_flags.setImageFilter(StateGetFilter(
-          CanvasRenderingContext2DState::GlobalAlphaFilterMode::kExclude));
-    }
+    if (GetState().ShouldDrawShadows())
+      extra_flags.setImageFilter(StateGetFilter());
     canvas->saveLayer(nullptr, &extra_flags);
   } else {
     cc::PaintFlags flags;
@@ -236,9 +216,7 @@ void BaseRenderingContext2D::beginLayer() {
     // This ComposePaintFilter will work always, whether there is only
     // shadows, or filters, both of them, or none of them.
     flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
-        GetState().ShadowAndForegroundImageFilter(),
-        StateGetFilter(
-            CanvasRenderingContext2DState::GlobalAlphaFilterMode::kExclude)));
+        GetState().ShadowAndForegroundImageFilter(), StateGetFilter()));
     flags.setAlpha(globalAlpha() * 255);
     canvas->saveLayer(nullptr, &flags);
   }
