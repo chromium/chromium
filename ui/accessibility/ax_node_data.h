@@ -151,10 +151,43 @@ struct AX_BASE_EXPORT AXNodeData {
 
   // Adds the name attribute or replaces it if already present. Also sets the
   // NameFrom attribute if not already set.
+  //
+  // [[deprecated("Replaced by `SetNameChecked` and `SetNameExplicitlyEmpty`")]]
+  // See `SetNameChecked` and `SetNameExplicitlyEmpty` which have DCHECKs for
+  // conditions expected to be true, which in reality are not always true.
+  // Tracked by crbug.com/1348081.
   void SetName(const std::string& name);
+  // [[deprecated("Replaced by `SetNameChecked` and `SetNameExplicitlyEmpty`")]]
+  // See `SetNameChecked` and `SetNameExplicitlyEmpty` which have DCHECKs for
+  // conditions expected to be true, which in reality are not always true.
+  // Tracked by crbug.com/1348081.
   void SetName(const std::u16string& name);
 
-  // Allows nameless objects to pass accessibility checks.
+  // Adds the accessible name attribute or replaces it if already present, and
+  // also sets the NameFrom attribute if not already set.
+  //
+  // The value of the accessible name is a localized, end-user-consumable string
+  // which may be derived from visible information (e.g. the text on a button)
+  // or invisible information (e.g. the alternative text describing an icon).
+  // In the case of focusable objects, the name will be presented by the screen
+  // reader when that object gains focus and is critical to understanding the
+  // purpose of that object non-visually.
+  //
+  // Note that `SetNameChecked` must only be used to set a non-empty name, a
+  // condition enforced by a DCHECK. This is done to prevent UI from
+  // accidentally being given an empty name because, as a general rule, nameless
+  // controls tend to be inaccessible. However, because there can be valid
+  // reasons to remove or prevent naming of an item `SetNameExplicitlyEmpty`
+  // provides a means for developers to do so.
+  void SetNameChecked(const std::string& name);
+  void SetNameChecked(const std::u16string& name);
+
+  // Indicates this object should not have an accessible name. One use case is
+  // to prevent screen readers from speaking redundant information, for instance
+  // if the parent View has the same name as this View, causing the screen
+  // reader to speak the name twice. This function can also be used to allow
+  // focusable nameless objects to pass accessibility checks in tests, a
+  // practice that should not be applied in production code.
   void SetNameExplicitlyEmpty();
 
   // Adds the description attribute or replaces it if already present.

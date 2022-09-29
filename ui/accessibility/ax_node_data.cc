@@ -612,7 +612,7 @@ void AXNodeData::SetName(const std::string& name) {
   // Elements with role='presentation' have Role::kNone. They should not be
   // named. Objects with Role::kUnknown were never given a role. This check
   // is only relevant if the name is not empty.
-  // TODO(accessibility): It would be nice to have a means to set the name
+  // TODO(crbug.com/1361972): It would be nice to have a means to set the name
   // and role at the same time to avoid this ordering requirement.
   DCHECK(name.empty() ||
          (role != ax::mojom::Role::kNone && role != ax::mojom::Role::kUnknown))
@@ -631,8 +631,8 @@ void AXNodeData::SetName(const std::string& name) {
     iter->second = name;
   }
 
-  // It is possible for SetName to be called after
-  // SetNameExplicitlyEmpty.
+  // It is possible for `SetName`/`SetNameChecked` to be called after
+  // `SetNameExplicitlyEmpty`.
   if (!name.empty() &&
       GetNameFrom() == ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
     RemoveIntAttribute(ax::mojom::IntAttribute::kNameFrom);
@@ -661,6 +661,24 @@ void AXNodeData::SetName(const std::string& name) {
 
 void AXNodeData::SetName(const std::u16string& name) {
   SetName(base::UTF16ToUTF8(name));
+}
+
+void AXNodeData::SetNameChecked(const std::string& name) {
+  SetName(name);
+
+  // We do this check after calling `SetName` because `SetName` handles the
+  // case where it is called after `SetNameExplicitlyEmpty` by removing the
+  // existing `NameFrom::kAttributeExplicitlyEmpty`.
+  DCHECK_EQ(name.empty(),
+            GetNameFrom() == ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
+      << "If the accessible name of Role::" << role << " class: '"
+      << GetStringAttribute(ax::mojom::StringAttribute::kClassName)
+      << "' is being set to an empty string to improve the "
+         "user experience, call `SetNameExplicitlyEmpty` instead of `SetName`.";
+}
+
+void AXNodeData::SetNameChecked(const std::u16string& name) {
+  SetNameChecked(base::UTF16ToUTF8(name));
 }
 
 void AXNodeData::SetNameExplicitlyEmpty() {

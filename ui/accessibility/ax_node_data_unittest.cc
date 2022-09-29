@@ -401,6 +401,10 @@ TEST(AXNodeDataTest, SetName) {
   EXPECT_EQ("baz", data.GetStringAttribute(ax::mojom::StringAttribute::kName));
   EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kContents);
 
+  // Setting the name to the empty string should not be done by
+  // `SetNameChecked`, which enforces that expectation with a DCHECK.
+  EXPECT_DCHECK_DEATH(data.SetNameChecked(""));
+
   data.SetNameExplicitlyEmpty();
   EXPECT_EQ("", data.GetStringAttribute(ax::mojom::StringAttribute::kName));
   EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
