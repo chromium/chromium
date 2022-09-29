@@ -115,9 +115,9 @@ const CGFloat kOmniboxIconSize = 16;
 #pragma mark - AutocompleteResultDataSource
 
 - (void)requestResultsWithVisibleSuggestionCount:
-    (NSInteger)visibleSuggestionCount {
-  size_t visibleSuggestions =
-      MIN(visibleSuggestionCount, (NSInteger)_currentResult.size());
+    (NSUInteger)visibleSuggestionCount {
+  NSUInteger visibleSuggestions =
+      MIN(visibleSuggestionCount, _currentResult.size());
   if (visibleSuggestions > 0) {
     // Groups visible suggestions by search vs url. Skip the first suggestion
     // because it's the omnibox content.
@@ -402,6 +402,8 @@ const CGFloat kOmniboxIconSize = 16;
 }
 
 - (void)groupCurrentSuggestionsFrom:(NSUInteger)begin to:(NSUInteger)end {
+  DCHECK(begin <= _currentResult.size());
+  DCHECK(end <= _currentResult.size());
   AutocompleteResult::GroupSuggestionsBySearchVsURL(
       std::next(_currentResult.begin(), begin),
       std::next(_currentResult.begin(), end));
