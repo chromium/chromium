@@ -37,16 +37,14 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
           .SetDialogDestroyingCallback(
               base::BindOnce(&HighEfficiencyBubbleDelegate::OnDialogDestroy,
                              base::Unretained(bubble_delegate)))
-          .AddParagraph(
-              ui::DialogModelLabel::CreateWithLink(
-                  IDS_HIGH_EFFICIENCY_DIALOG_BODY,
-                  ui::DialogModelLabel::Link(
-                      IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT,
-                      base::BindRepeating(
-                          &HighEfficiencyBubbleDelegate::OnSettingsClicked,
-                          base::Unretained(bubble_delegate))))
-                  .set_is_secondary())
-          .AddOkButton(base::DoNothing())
+          .AddParagraph(ui::DialogModelLabel(IDS_HIGH_EFFICIENCY_DIALOG_BODY)
+                            .set_is_secondary())
+          .AddOkButton(base::OnceClosure(), l10n_util::GetStringUTF16(IDS_DONE))
+          .AddExtraLink(ui::DialogModelLabel::CreateLink(
+              IDS_SETTINGS_TITLE,
+              base::BindRepeating(
+                  &HighEfficiencyBubbleDelegate::OnSettingsClicked,
+                  base::Unretained(bubble_delegate))))
           .Build();
 
   auto bubble_unique = std::make_unique<views::BubbleDialogModelHost>(

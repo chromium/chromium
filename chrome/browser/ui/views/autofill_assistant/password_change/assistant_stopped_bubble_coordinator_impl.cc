@@ -119,9 +119,9 @@ void AssistantStoppedBubbleCoordinatorImpl::CreateWidget() {
           .SetTitle(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_ASSISTANT_ASSISTANT_STOPPED_BUBBLE_TITLE))
           .DisableCloseOnDeactivate()
-          .AddParagraph(ui::DialogModelLabel::CreateWithLink(
+          .AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
               IDS_AUTOFILL_ASSISTANT_ASSISTANT_STOPPED_BUBBLE_DESCRIPTION,
-              ui::DialogModelLabel::Link(
+              ui::DialogModelLabel::CreateLink(
                   IDS_AUTOFILL_ASSISTANT_ASSISTANT_STOPPED_BUBBLE_TRY_AGAIN,
                   base::BindRepeating(&AssistantStoppedBubbleCoordinatorImpl::
                                           RestartLinkClicked,

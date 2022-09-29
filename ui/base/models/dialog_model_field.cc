@@ -10,30 +10,26 @@
 
 namespace ui {
 
-DialogModelLabel::Link::Link(int message_id,
-                             Callback callback,
-                             std::u16string accessible_name)
-    : message_id(message_id),
-      callback(std::move(callback)),
-      accessible_name(accessible_name) {}
-DialogModelLabel::Link::Link(int message_id,
-                             base::RepeatingClosure closure,
-                             std::u16string accessible_name)
-    : Link(message_id,
-           base::BindRepeating([](base::RepeatingClosure closure,
-                                  const Event& event) { closure.Run(); },
-                               std::move(closure)),
-           accessible_name) {}
-DialogModelLabel::Link::Link(const Link&) = default;
-DialogModelLabel::Link::~Link() = default;
+DialogModelLabel::TextReplacement::TextReplacement(
+    int message_id,
+    Callback callback,
+    std::u16string accessible_name)
+    : text_(l10n_util::GetStringUTF16(message_id)),
+      callback_(callback),
+      accessible_name_(accessible_name) {}
+DialogModelLabel::TextReplacement::TextReplacement(const TextReplacement&) =
+    default;
+DialogModelLabel::TextReplacement::~TextReplacement() = default;
 
 DialogModelLabel::DialogModelLabel(int message_id)
     : message_id_(message_id),
       string_(l10n_util::GetStringUTF16(message_id_)) {}
-DialogModelLabel::DialogModelLabel(int message_id, std::vector<Link> links)
-    : message_id_(message_id), links_(std::move(links)) {
-  // Note that this constructor does not set |string_| which is invalid for
-  // labels with links.
+
+DialogModelLabel::DialogModelLabel(int message_id,
+                                   std::vector<TextReplacement> replacements)
+    : message_id_(message_id), replacements_(std::move(replacements)) {
+  // Note that this constructor does not set `string_` which is invalid for
+  // labels with `replacements_`.
 }
 
 DialogModelLabel::DialogModelLabel(std::u16string fixed_string)
@@ -41,7 +37,7 @@ DialogModelLabel::DialogModelLabel(std::u16string fixed_string)
 
 const std::u16string& DialogModelLabel::GetString(
     base::PassKey<DialogModelHost>) const {
-  DCHECK(links_.empty());
+  DCHECK(replacements_.empty());
   return string_;
 }
 
@@ -49,13 +45,35 @@ DialogModelLabel::DialogModelLabel(const DialogModelLabel&) = default;
 
 DialogModelLabel::~DialogModelLabel() = default;
 
-DialogModelLabel DialogModelLabel::CreateWithLink(int message_id, Link link) {
-  return CreateWithLinks(message_id, {link});
+DialogModelLabel DialogModelLabel::CreateWithReplacement(
+    int message_id,
+    TextReplacement replacement) {
+  return CreateWithReplacements(message_id, {std::move(replacement)});
 }
 
-DialogModelLabel DialogModelLabel::CreateWithLinks(int message_id,
-                                                   std::vector<Link> links) {
-  return DialogModelLabel(message_id, std::move(links));
+DialogModelLabel DialogModelLabel::CreateWithReplacements(
+    int message_id,
+    std::vector<TextReplacement> replacements) {
+  return DialogModelLabel(message_id, std::move(replacements));
+}
+
+DialogModelLabel::TextReplacement DialogModelLabel::CreateLink(
+    int message_id,
+    base::RepeatingClosure closure,
+    std::u16string accessible_name) {
+  return CreateLink(
+      message_id,
+      base::BindRepeating([](base::RepeatingClosure closure,
+                             const Event& event) { closure.Run(); },
+                          std::move(closure)),
+      accessible_name);
+}
+
+DialogModelLabel::TextReplacement DialogModelLabel::CreateLink(
+    int message_id,
+    Callback callback,
+    std::u16string accessible_name) {
+  return TextReplacement(message_id, callback, accessible_name);
 }
 
 DialogModelField::DialogModelField(base::PassKey<DialogModel>,

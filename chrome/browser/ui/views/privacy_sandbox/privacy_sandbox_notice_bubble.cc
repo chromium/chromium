@@ -14,6 +14,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
+#include "ui/base/models/dialog_model_field.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
@@ -100,9 +102,9 @@ void ShowPrivacySandboxNoticeBubble(Browser* browser) {
                    ui::ImageModel::FromImageSkia(*bundle.GetImageSkiaNamed(
                        IDR_PRIVACY_SANDBOX_CONFIRMATION_BANNER_DARK)))
           .AddParagraph(
-              ui::DialogModelLabel::CreateWithLink(
+              ui::DialogModelLabel::CreateWithReplacement(
                   IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION,
-                  ui::DialogModelLabel::Link(
+                  ui::DialogModelLabel::CreateLink(
                       IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION_ESTIMATES_INTERESTS_LINK,
                       base::BindRepeating(
                           &PrivacySandboxNoticeBubbleModelDelegate::
@@ -117,7 +119,7 @@ void ShowPrivacySandboxNoticeBubble(Browser* browser) {
                   base::Unretained(bubble_delegate)),
               l10n_util::GetStringUTF16(
                   IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_ACKNOWLEDGE_BUTTON))
-          .AddExtraLink(ui::DialogModelLabel::Link(
+          .AddExtraLink(ui::DialogModelLabel::CreateLink(
               IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_SETTINGS_LINK,
               base::BindRepeating(&PrivacySandboxNoticeBubbleModelDelegate::
                                       OnSettingsLinkPressed,

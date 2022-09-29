@@ -71,7 +71,7 @@ DialogModel::Builder& DialogModel::Builder::AddExtraButton(
 }
 
 DialogModel::Builder& DialogModel::Builder::AddExtraLink(
-    ui::DialogModelLabel::Link link) {
+    DialogModelLabel::TextReplacement link) {
   DCHECK(!model_->extra_button_);
   DCHECK(!model_->extra_link_);
   model_->extra_link_.emplace(std::move(link));

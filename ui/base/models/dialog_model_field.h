@@ -35,26 +35,32 @@ class Event;
 // DialogModelLabel is an exception to below classes. This is not a
 // DialogModelField but rather represents a text label and styling. This is used
 // with DialogModelParagraph and DialogModelCheckbox for instance and has
-// support for showing a link.
+// support for styling text replacements and showing a link.
 class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
  public:
-  struct COMPONENT_EXPORT(UI_BASE) Link {
-    // TODO(pbos): Move this definition (maybe as a ui::LinkCallback) so it can
-    // be reused with views::Link.
-    using Callback = base::RepeatingCallback<void(const Event& event)>;
+  // TODO(pbos): Move this definition (maybe as a ui::LinkCallback) so it can
+  // be reused with views::Link.
+  using Callback = base::RepeatingCallback<void(const Event& event)>;
 
-    Link(int message_id,
-         Callback callback,
-         std::u16string accessible_name = std::u16string());
-    Link(int message_id,
-         base::RepeatingClosure closure,
-         std::u16string accessible_name = std::u16string());
-    Link(const Link&);
-    ~Link();
+  class COMPONENT_EXPORT(UI_BASE) TextReplacement {
+   public:
+    TextReplacement(const TextReplacement&);
+    ~TextReplacement();
 
-    const int message_id;
-    const Callback callback;
-    const std::u16string accessible_name;
+    std::u16string text() const { return text_; }
+    Callback callback() const { return callback_; }
+    std::u16string accessible_name() const { return accessible_name_; }
+
+   private:
+    friend class DialogModelLabel;
+
+    TextReplacement(int message_id,
+                    Callback closure,
+                    std::u16string accessible_name = std::u16string());
+
+    const std::u16string text_;
+    const Callback callback_;
+    const std::u16string accessible_name_;
   };
 
   explicit DialogModelLabel(int message_id);
@@ -63,15 +69,26 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
   DialogModelLabel& operator=(const DialogModelLabel&) = delete;
   ~DialogModelLabel();
 
-  static DialogModelLabel CreateWithLink(int message_id, Link link);
+  static DialogModelLabel CreateWithReplacement(int message_id,
+                                                TextReplacement replacement);
+  static DialogModelLabel CreateWithReplacements(
+      int message_id,
+      std::vector<TextReplacement> replacements);
 
-  static DialogModelLabel CreateWithLinks(int message_id,
-                                          std::vector<Link> links);
+  static TextReplacement CreateLink(
+      int message_id,
+      base::RepeatingClosure closure,
+      std::u16string accessible_name = std::u16string());
+  static TextReplacement CreateLink(
+      int message_id,
+      Callback callback,
+      std::u16string accessible_name = std::u16string());
 
-  // Gets the string. Not for use with links, in which case the caller must use
-  // links() and message_id() to construct the final label. This is required to
-  // style the final label appropriately and support link callbacks. The caller
-  // is responsible for checking links().empty() before calling this.
+  // Gets the string. Not for use with replacements, in which case the caller
+  // must use replacements() and message_id() to construct the final label. This
+  // is required to style the final label appropriately and support replacement
+  // callbacks. The caller is responsible for checking replacements().empty()
+  // before calling this.
   const std::u16string& GetString(base::PassKey<DialogModelHost>) const;
 
   DialogModelLabel& set_is_secondary() {
@@ -85,9 +102,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
   }
 
   int message_id(base::PassKey<DialogModelHost>) const { return message_id_; }
-  const std::vector<Link> links(base::PassKey<DialogModelHost>) const {
-    return links_;
+  const std::vector<TextReplacement>& replacements(
+      base::PassKey<DialogModelHost>) const {
+    return replacements_;
   }
+
   bool is_secondary(base::PassKey<DialogModelHost>) const {
     return is_secondary_;
   }
@@ -96,11 +115,15 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
   }
 
  private:
-  explicit DialogModelLabel(int message_id, std::vector<Link> links);
+  explicit DialogModelLabel(int message_id,
+                            std::vector<TextReplacement> replacements);
 
   const int message_id_;
   const std::u16string string_;
-  const std::vector<Link> links_;
+
+  // Set of replacements that will be added to `message_id_`.
+  const std::vector<TextReplacement> replacements_;
+
   bool is_secondary_ = false;
   bool allow_character_break_ = false;
 };

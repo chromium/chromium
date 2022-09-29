@@ -280,9 +280,9 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
 
     dialog_builder.AddCheckbox(
         kUmaConsentCheckboxId,
-        ui::DialogModelLabel::CreateWithLink(
+        ui::DialogModelLabel::CreateWithReplacement(
             IDS_SESSION_CRASHED_VIEW_UMA_OPTIN,
-            ui::DialogModelLabel::Link(
+            ui::DialogModelLabel::CreateLink(
                 IDS_SESSION_CRASHED_BUBBLE_UMA_LINK_TEXT,
                 base::BindRepeating(&OpenUmaLink, browser)))
             .set_is_secondary());
