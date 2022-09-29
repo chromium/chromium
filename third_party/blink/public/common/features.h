@@ -685,6 +685,17 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLowPriorityAsyncScriptExecutionMainFrameOnlyParam;
 
+// If enabled, async scripts will be loaded with a lower fetch priority.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowPriorityScriptLoading);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLowPriorityScriptLoadingCrossSiteOnlyParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kLowPriorityScriptLoadingFeatureLimitParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kLowPriorityScriptLoadingDenyListParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLowPriorityScriptLoadingMainFrameOnlyParam;
+
 // If enabled, DOMContentLoaded will be fired after all async scripts are
 // executed.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDOMContentLoadedWaitForAsyncScript);

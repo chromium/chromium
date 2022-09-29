@@ -337,6 +337,49 @@ bool IsEligibleForDelay(const Resource& resource,
   }
 }
 
+// [Intervention, LowPriorityScriptLoading, crbug.com/1365763]
+bool IsEligibleForLowPriorityScriptLoading(const Document& element_document,
+                                           const ScriptElementBase& element,
+                                           const KURL& url) {
+  static const bool enabled =
+      base::FeatureList::IsEnabled(features::kLowPriorityScriptLoading);
+  if (!enabled)
+    return false;
+
+  if (!IsEligibleCommon(element_document))
+    return false;
+
+  if (element.IsPotentiallyRenderBlocking())
+    return false;
+
+  // Most LCP elements are provided by the main frame, and delaying subframe's
+  // resources seems not to improve LCP.
+  static const bool main_frame_only =
+      features::kLowPriorityScriptLoadingMainFrameOnlyParam.Get();
+  if (main_frame_only && !element_document.IsInOutermostMainFrame())
+    return false;
+
+  static const base::TimeDelta feature_limit =
+      features::kLowPriorityScriptLoadingFeatureLimitParam.Get();
+  if (!feature_limit.is_zero() &&
+      element_document.GetStartTime().Elapsed() > feature_limit) {
+    return false;
+  }
+
+  static const bool cross_site_only =
+      features::kLowPriorityScriptLoadingCrossSiteOnlyParam.Get();
+  if (cross_site_only && IsSameSite(url, element_document))
+    return false;
+
+  DEFINE_STATIC_LOCAL(
+      UrlMatcher, deny_list,
+      (UrlMatcher(features::kLowPriorityScriptLoadingDenyListParam.Get())));
+  if (deny_list.Match(url))
+    return false;
+
+  return true;
+}
+
 // [Intervention, SelectiveInOrderScript, crbug.com/1356396]
 bool IsEligibleForSelectiveInOrder(const Resource& resource,
                                    const Document& element_document) {
@@ -853,7 +896,12 @@ PendingScript* ScriptLoader::PrepareScript(
         FetchParameters::DeferOption defer = FetchParameters::kNoDefer;
         if (!parser_inserted_ || element_->AsyncAttributeValue() ||
             element_->DeferAttributeValue()) {
-          defer = FetchParameters::kLazyLoad;
+          if (!IsEligibleForLowPriorityScriptLoading(element_document,
+                                                     *element_, url)) {
+            defer = FetchParameters::kLazyLoad;
+          } else {
+            defer = FetchParameters::kIdleLoad;
+          }
         }
         ClassicPendingScript* pending_script = ClassicPendingScript::Fetch(
             url, element_document, options, cross_origin, encoding, element_,

@@ -1459,6 +1459,19 @@ const base::FeatureParam<bool>
     kLowPriorityAsyncScriptExecutionMainFrameOnlyParam{
         &kLowPriorityAsyncScriptExecution, "main_frame_only", false};
 
+BASE_FEATURE(kLowPriorityScriptLoading,
+             "LowPriorityScriptLoading",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kLowPriorityScriptLoadingCrossSiteOnlyParam{
+    &kLowPriorityScriptLoading, "cross_site_only", false};
+const base::FeatureParam<base::TimeDelta>
+    kLowPriorityScriptLoadingFeatureLimitParam{
+        &kLowPriorityScriptLoading, "feature_limit", base::Seconds(0)};
+const base::FeatureParam<std::string> kLowPriorityScriptLoadingDenyListParam{
+    &kLowPriorityScriptLoading, "deny_list", ""};
+const base::FeatureParam<bool> kLowPriorityScriptLoadingMainFrameOnlyParam{
+    &kLowPriorityScriptLoading, "main_frame_only", false};
+
 BASE_FEATURE(kDOMContentLoadedWaitForAsyncScript,
              "DOMContentLoadedWaitForAsyncScript",
              base::FEATURE_DISABLED_BY_DEFAULT);

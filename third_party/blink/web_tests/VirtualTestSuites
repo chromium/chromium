@@ -993,6 +993,12 @@
     "args": ["--enable-features=DelayAsyncScriptExecution:delay_type/first_paint_or_finished_parsing"]
   },
   {
+    "prefix": "low-priority-script-loading",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["http/tests/devtools/network/resource-priority.js"],
+    "args": ["--enable-features=LowPriorityScriptLoading"]
+  },
+  {
     "prefix": "initially-invisible-images-lcp",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/largest-contentful-paint/initially-invisible-images.html"],
