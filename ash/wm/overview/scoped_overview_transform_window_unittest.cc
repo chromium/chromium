@@ -261,7 +261,7 @@ TEST_F(ScopedOverviewTransformWindowTest, InvisibleTransients) {
   EXPECT_TRUE(child->IsVisible());
   EXPECT_FALSE(child2->IsVisible());
 
-  gfx::Transform transform(1.f, 0.f, 0.f, 1.f, 10.f, 10.f);
+  auto transform = gfx::Transform::MakeTranslation(10.f, 10.f);
   SetTransform(window.get(), transform);
   EXPECT_EQ(transform, window->transform());
   EXPECT_EQ(transform, child->transform());

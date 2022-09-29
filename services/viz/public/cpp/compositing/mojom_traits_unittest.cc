@@ -440,9 +440,9 @@ TEST_F(StructTraitsTest, Selection) {
 }
 
 TEST_F(StructTraitsTest, SharedQuadState) {
-  const gfx::Transform quad_to_target_transform(1.f, 2.f, 3.f, 4.f, 5.f, 6.f,
-                                                7.f, 8.f, 9.f, 10.f, 11.f, 12.f,
-                                                13.f, 14.f, 15.f, 16.f);
+  const auto quad_to_target_transform =
+      gfx::Transform::RowMajor(1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f,
+                               10.f, 11.f, 12.f, 13.f, 14.f, 15.f, 16.f);
   const gfx::Rect layer_rect(1234, 5678);
   const gfx::Rect visible_layer_rect(12, 34, 56, 78);
   const gfx::MaskFilterInfo mask_filter_info(
@@ -482,9 +482,9 @@ TEST_F(StructTraitsTest, CompositorFrame) {
                       gfx::Rect(2, 3), gfx::Transform());
 
   // SharedQuadState.
-  const gfx::Transform sqs_quad_to_target_transform(
-      1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f, 10.f, 11.f, 12.f, 13.f, 14.f,
-      15.f, 16.f);
+  const auto sqs_quad_to_target_transform =
+      gfx::Transform::RowMajor(1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f,
+                               10.f, 11.f, 12.f, 13.f, 14.f, 15.f, 16.f);
   const gfx::Rect sqs_layer_rect(1234, 5678);
   const gfx::Rect sqs_visible_layer_rect(12, 34, 56, 78);
   const gfx::MaskFilterInfo sqs_mask_filter_info(
@@ -768,7 +768,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   const CompositorRenderPassId render_pass_id{3u};
   const gfx::Rect output_rect(45, 22, 120, 13);
   const gfx::Transform transform_to_root =
-      gfx::Transform(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
+      gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   const gfx::Rect damage_rect(56, 123, 19, 43);
   cc::FilterOperations filters;
   filters.Append(cc::FilterOperation::CreateBlurFilter(0.f));
@@ -798,16 +798,18 @@ TEST_F(StructTraitsTest, RenderPass) {
 
   SharedQuadState* shared_state_1 = input->CreateAndAppendSharedQuadState();
   shared_state_1->SetAll(
-      gfx::Transform(16.1f, 15.3f, 14.3f, 13.7f, 12.2f, 11.4f, 10.4f, 9.8f,
-                     8.1f, 7.3f, 6.3f, 5.7f, 4.8f, 3.4f, 2.4f, 1.2f),
+      gfx::Transform::RowMajor(16.1f, 15.3f, 14.3f, 13.7f, 12.2f, 11.4f, 10.4f,
+                               9.8f, 8.1f, 7.3f, 6.3f, 5.7f, 4.8f, 3.4f, 2.4f,
+                               1.2f),
       gfx::Rect(1, 2), gfx::Rect(1337, 5679, 9101112, 131415),
       gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(5.f, 6.f, 70.f, 89.f), 10.f)),
       gfx::Rect(1357, 2468, 121314, 1337), true, 2, SkBlendMode::kSrcOver, 1);
 
   SharedQuadState* shared_state_2 = input->CreateAndAppendSharedQuadState();
   shared_state_2->SetAll(
-      gfx::Transform(1.1f, 2.3f, 3.3f, 4.7f, 5.2f, 6.4f, 7.4f, 8.8f, 9.1f,
-                     10.3f, 11.3f, 12.7f, 13.8f, 14.4f, 15.4f, 16.2f),
+      gfx::Transform::RowMajor(1.1f, 2.3f, 3.3f, 4.7f, 5.2f, 6.4f, 7.4f, 8.8f,
+                               9.1f, 10.3f, 11.3f, 12.7f, 13.8f, 14.4f, 15.4f,
+                               16.2f),
       gfx::Rect(1337, 1234), gfx::Rect(1234, 5678, 9101112, 13141516),
       gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(23.f, 45.f, 60.f, 70.f), 8.f)),
       gfx::Rect(1357, 2468, 121314, 1337), true, 2, SkBlendMode::kSrcOver, 1);
@@ -924,7 +926,7 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   const gfx::Rect output_rect(45, 22, 120, 13);
   const gfx::Rect damage_rect(56, 123, 19, 43);
   const gfx::Transform transform_to_root =
-      gfx::Transform(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
+      gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   const absl::optional<gfx::RRectF> backdrop_filter_bounds;
   SubtreeCaptureId subtree_capture_id;
   const bool has_transparent_background = true;

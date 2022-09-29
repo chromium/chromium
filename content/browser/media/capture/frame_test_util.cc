@@ -262,10 +262,10 @@ gfx::RectF FrameTestUtil::TransformSimilarly(const gfx::Rect& original,
                       transformed.y() - original.y(), 0.0f, 0.0f);
   }
   // The following is the scale-then-translate 2D matrix.
-  const gfx::Transform transform(transformed.width() / original.width(), 0.0f,
-                                 0.0f, transformed.height() / original.height(),
-                                 transformed.x() - original.x(),
-                                 transformed.y() - original.y());
+  const auto transform = gfx::Transform::Affine(
+      transformed.width() / original.width(), 0.0f, 0.0f,
+      transformed.height() / original.height(), transformed.x() - original.x(),
+      transformed.y() - original.y());
   gfx::RectF result(rect);
   transform.TransformRect(&result);
   return result;

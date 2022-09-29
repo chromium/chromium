@@ -81,15 +81,15 @@ const gfx::Rect kOverlayClipRect(0, 0, 128, 128);
 const gfx::PointF kUVTopLeft(0.1f, 0.2f);
 const gfx::PointF kUVBottomRight(1.0f, 1.0f);
 const gfx::Transform kNormalTransform =
-    gfx::Transform(0.9f, 0, 0, 0.8f, 0.1f, 0.2f);  // x,y -> x,y.
+    gfx::Transform::Affine(0.9f, 0, 0, 0.8f, 0.1f, 0.2f);  // x,y -> x,y.
 const gfx::Transform kXMirrorTransform =
-    gfx::Transform(-0.9f, 0, 0, 0.8f, 1.0f, 0.2f);  // x,y -> 1-x,y.
+    gfx::Transform::Affine(-0.9f, 0, 0, 0.8f, 1.0f, 0.2f);  // x,y -> 1-x,y.
 const gfx::Transform kYMirrorTransform =
-    gfx::Transform(0.9f, 0, 0, -0.8f, 0.1f, 1.0f);  // x,y -> x,1-y.
+    gfx::Transform::Affine(0.9f, 0, 0, -0.8f, 0.1f, 1.0f);  // x,y -> x,1-y.
 const gfx::Transform kBothMirrorTransform =
-    gfx::Transform(-0.9f, 0, 0, -0.8f, 1.0f, 1.0f);  // x,y -> 1-x,1-y.
+    gfx::Transform::Affine(-0.9f, 0, 0, -0.8f, 1.0f, 1.0f);  // x,y -> 1-x,1-y.
 const gfx::Transform kSwapTransform =
-    gfx::Transform(0, 1, 1, 0, 0, 0);  // x,y -> y,x.
+    gfx::Transform::Affine(0, 1, 1, 0, 0, 0);  // x,y -> y,x.
 const gfx::BufferFormat kDefaultBufferFormat = gfx::BufferFormat::RGBA_8888;
 
 class TimeTicksOverride {

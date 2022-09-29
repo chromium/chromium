@@ -131,7 +131,7 @@ CompositorFrame FuzzerBrowserProcess::BuildBrowserUICompositorFrame(
                gfx::Rect(kBrowserSize), gfx::Transform());
 
   auto* renderer_sqs = pass->CreateAndAppendSharedQuadState();
-  renderer_sqs->SetAll(gfx::Transform(1.0, 0.0, 0.0, 1.0, 0, 80),
+  renderer_sqs->SetAll(gfx::Transform::MakeTranslation(0, 80),
                        gfx::Rect(kRendererFrameSize),
                        gfx::Rect(kRendererFrameSize),
                        /*mask_filter_info=*/gfx::MaskFilterInfo(),

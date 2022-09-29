@@ -914,7 +914,7 @@ TEST(TransformOperationTest, ExtrapolateMatrixBlending) {
 
 TEST(TransformOperationTest, NonDecomposableBlend) {
   TransformOperations non_decomposible_transform;
-  gfx::Transform non_decomposible_matrix(0, 0, 0, 0, 0, 0);
+  auto non_decomposible_matrix = gfx::Transform::Affine(0, 0, 0, 0, 0, 0);
   non_decomposible_transform.AppendMatrix(non_decomposible_matrix);
 
   TransformOperations identity_transform;

@@ -552,10 +552,10 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
 
   ui::AXNodeData node;
   node.id = kRootId;
-  // gfx::Transform constructor takes arguments in row-major order.
-  node.relative_bounds.transform = std::make_unique<gfx::Transform>(
-      x_scale, 0, 0, x_translation, 0, y_scale, 0, y_translation, 0, 0, z_scale,
-      z_translation, 0, 0, 0, 1);
+  node.relative_bounds.transform =
+      std::make_unique<gfx::Transform>(gfx::Transform::RowMajor(
+          x_scale, 0, 0, x_translation, 0, y_scale, 0, y_translation, 0, 0,
+          z_scale, z_translation, 0, 0, 0, 1));
   node.relative_bounds.bounds = gfx::RectF(
       x_min, y_min, /* width = */ x_max - x_min, /* height = */ y_max - y_min);
 

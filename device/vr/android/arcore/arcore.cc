@@ -22,7 +22,7 @@ gfx::Transform ArCore::GetCameraUvFromScreenUvTransform() const {
   //
   return MatrixFromTransformedPoints(
              TransformDisplayUvCoords(kInputCoordinatesForTransform)) *
-         gfx::Transform(1, 0, 0, -1, 0, 1);
+         gfx::Transform::Affine(1, 0, 0, -1, 0, 1);
 }
 
 gfx::Transform ArCore::GetDepthUvFromScreenUvTransform() const {

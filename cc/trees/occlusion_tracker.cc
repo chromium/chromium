@@ -166,9 +166,9 @@ void OcclusionTracker::EnterRenderTarget(
   }
 
   size_t last_index = stack_.size() - 1;
-  gfx::Transform old_target_to_new_target_transform(
-      inverse_new_target_screen_space_transform,
-      old_target_surface->screen_space_transform());
+  gfx::Transform old_target_to_new_target_transform =
+      inverse_new_target_screen_space_transform *
+      old_target_surface->screen_space_transform();
   stack_[last_index].occlusion_from_outside_target =
       TransformSurfaceOpaqueRegion(
           stack_[last_index - 1].occlusion_from_outside_target, false,

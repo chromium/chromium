@@ -116,8 +116,8 @@ bool CalculateQuadSpaceDamageRect(
     const gfx::Transform& target_to_root_transform,
     const gfx::Rect& root_damage_rect,
     gfx::Rect* quad_space_damage_rect) {
-  gfx::Transform quad_to_root_transform(target_to_root_transform,
-                                        quad_to_target_transform);
+  gfx::Transform quad_to_root_transform =
+      target_to_root_transform * quad_to_target_transform;
   gfx::Transform inverse_transform(gfx::Transform::kSkipInitialization);
   bool inverse_valid = quad_to_root_transform.GetInverse(&inverse_transform);
   if (!inverse_valid)
@@ -252,7 +252,7 @@ gfx::Rect TransformRectToDestRootTargetSpace(
     const gfx::Transform& dest_to_root_target_transform,
     const absl::optional<gfx::Rect>& dest_root_target_clip_rect) {
   gfx::Transform target_to_dest_root_target_transform =
-      gfx::Transform(dest_to_root_target_transform, target_to_dest_transform);
+      dest_to_root_target_transform * target_to_dest_transform;
 
   gfx::Rect rect_in_root_target_space = cc::MathUtil::MapEnclosingClippedRect(
       target_to_dest_root_target_transform, rect_in_target_space);
@@ -713,8 +713,8 @@ void SurfaceAggregator::EmitSurfaceContent(
 
   const gfx::Rect& surface_quad_visible_rect = surface_quad->visible_rect;
   if (ignore_undamaged) {
-    gfx::Transform quad_to_target_transform(
-        target_transform, surface_quad_sqs->quad_to_target_transform);
+    gfx::Transform quad_to_target_transform =
+        target_transform * surface_quad_sqs->quad_to_target_transform;
     *damage_rect_in_quad_space_valid = CalculateQuadSpaceDamageRect(
         quad_to_target_transform, dest_pass->transform_to_root_target,
         root_damage_rect_, damage_rect_in_quad_space);
@@ -780,7 +780,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     // prevents the delegated ink trail from flickering if a compositor frame
     // is not generated due to a delayed main frame.
     TransformAndStoreDelegatedInkMetadata(
-        gfx::Transform(dest_pass->transform_to_root_target, combined_transform),
+        dest_pass->transform_to_root_target * combined_transform,
         frame.metadata.delegated_ink_metadata.get());
   }
 
@@ -1378,8 +1378,7 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
     // prevents the delegated ink trail from flickering if a compositor frame
     // is not generated due to a delayed main frame.
     TransformAndStoreDelegatedInkMetadata(
-        gfx::Transform(source_pass_list.back()->transform_to_root_target,
-                       surface_transform),
+        source_pass_list.back()->transform_to_root_target * surface_transform,
         frame.metadata.delegated_ink_metadata.get());
   }
 
@@ -1412,7 +1411,7 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
       // we will be adding another render pass for the surface transform, in
       // which this will no longer be the root.
       transform_to_root_target =
-          gfx::Transform(surface_transform, source.transform_to_root_target);
+          surface_transform * source.transform_to_root_target;
     }
 
     copy_pass->SetAll(
@@ -1686,9 +1685,9 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
 
       resolved_pass.aggregation().embedded_passes.insert(&child_resolved_pass);
 
-      const gfx::Transform child_to_root_transform(
-          target_to_root_transform,
-          quad->shared_quad_state->quad_to_target_transform);
+      const gfx::Transform child_to_root_transform =
+          target_to_root_transform *
+          quad->shared_quad_state->quad_to_target_transform;
       quad_damage_rect =
           PrewalkRenderPass(resolved_frame, child_resolved_pass, gfx::Rect(),
                             child_to_root_transform, &resolved_pass, result);

@@ -73,7 +73,8 @@ TEST(StructTraitsTest, HitTestRegionList) {
 // Ensures gfx::Transform doesn't mutate itself when its const methods are
 // called, to ensure it won't change in the read-only shared memory segment.
 TEST(StructTraitsTest, TransformImmutable) {
-  gfx::Transform t1(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+  auto t1 = gfx::Transform::RowMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                                     14, 15, 16);
   gfx::Transform t2;
   std::memcpy(&t2, &t1, sizeof(t1));
   EXPECT_FALSE(t2.IsIdentity());

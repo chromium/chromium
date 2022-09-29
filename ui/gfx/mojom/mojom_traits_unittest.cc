@@ -95,45 +95,44 @@ TEST_F(StructTraitsTest, SelectionBound) {
 }
 
 TEST_F(StructTraitsTest, Transform) {
-  const float col1row1 = 1.f;
-  const float col2row1 = 2.f;
-  const float col3row1 = 3.f;
-  const float col4row1 = 4.f;
-  const float col1row2 = 5.f;
-  const float col2row2 = 6.f;
-  const float col3row2 = 7.f;
-  const float col4row2 = 8.f;
-  const float col1row3 = 9.f;
-  const float col2row3 = 10.f;
-  const float col3row3 = 11.f;
-  const float col4row3 = 12.f;
-  const float col1row4 = 13.f;
-  const float col2row4 = 14.f;
-  const float col3row4 = 15.f;
-  const float col4row4 = 16.f;
-  gfx::Transform input(col1row1, col2row1, col3row1, col4row1, col1row2,
-                       col2row2, col3row2, col4row2, col1row3, col2row3,
-                       col3row3, col4row3, col1row4, col2row4, col3row4,
-                       col4row4);
+  const float r0c0 = 1.f;
+  const float r0c1 = 2.f;
+  const float r0c2 = 3.f;
+  const float r0c3 = 4.f;
+  const float r1c0 = 5.f;
+  const float r1c1 = 6.f;
+  const float r1c2 = 7.f;
+  const float r1c3 = 8.f;
+  const float r2c0 = 9.f;
+  const float r2c1 = 10.f;
+  const float r2c2 = 11.f;
+  const float r2c3 = 12.f;
+  const float r3c0 = 13.f;
+  const float r3c1 = 14.f;
+  const float r3c2 = 15.f;
+  const float r3c3 = 16.f;
+  auto input =
+      gfx::Transform::RowMajor(r0c0, r0c1, r0c2, r0c3, r1c0, r1c1, r1c2, r1c3,
+                               r2c0, r2c1, r2c2, r2c3, r3c0, r3c1, r3c2, r3c3);
   mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
   gfx::Transform output;
   remote->EchoTransform(input, &output);
-  EXPECT_EQ(col1row1, output.rc(0, 0));
-  EXPECT_EQ(col2row1, output.rc(0, 1));
-  EXPECT_EQ(col3row1, output.rc(0, 2));
-  EXPECT_EQ(col4row1, output.rc(0, 3));
-  EXPECT_EQ(col1row2, output.rc(1, 0));
-  EXPECT_EQ(col2row2, output.rc(1, 1));
-  EXPECT_EQ(col3row2, output.rc(1, 2));
-  EXPECT_EQ(col4row2, output.rc(1, 3));
-  EXPECT_EQ(col1row3, output.rc(2, 0));
-  EXPECT_EQ(col2row3, output.rc(2, 1));
-  EXPECT_EQ(col3row3, output.rc(2, 2));
-  EXPECT_EQ(col4row3, output.rc(2, 3));
-  EXPECT_EQ(col1row4, output.rc(3, 0));
-  EXPECT_EQ(col2row4, output.rc(3, 1));
-  EXPECT_EQ(col3row4, output.rc(3, 2));
-  EXPECT_EQ(col4row4, output.rc(3, 3));
+  EXPECT_EQ(r0c0, output.rc(0, 0));
+  EXPECT_EQ(r0c1, output.rc(0, 1));
+  EXPECT_EQ(r0c2, output.rc(0, 2));
+  EXPECT_EQ(r0c3, output.rc(0, 3));
+  EXPECT_EQ(r1c0, output.rc(1, 0));
+  EXPECT_EQ(r1c1, output.rc(1, 1));
+  EXPECT_EQ(r1c2, output.rc(1, 2));
+  EXPECT_EQ(r1c3, output.rc(1, 3));
+  EXPECT_EQ(r2c0, output.rc(2, 0));
+  EXPECT_EQ(r2c1, output.rc(2, 1));
+  EXPECT_EQ(r2c2, output.rc(2, 2));
+  EXPECT_EQ(r2c3, output.rc(2, 3));
+  EXPECT_EQ(r3c0, output.rc(3, 0));
+  EXPECT_EQ(r3c1, output.rc(3, 1));
+  EXPECT_EQ(r3c2, output.rc(3, 2));
+  EXPECT_EQ(r3c3, output.rc(3, 3));
 }
 
 TEST_F(StructTraitsTest, AcceleratedWidget) {

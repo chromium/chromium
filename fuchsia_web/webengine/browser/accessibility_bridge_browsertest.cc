@@ -882,8 +882,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
   // accessibility bridge correctly composes node 2's transform and the
   // translation for node 1's bounds.
   update.nodes[1].relative_bounds.bounds = gfx::RectF(10, 11, 10, 11);
-  update.nodes[1].relative_bounds.transform = std::make_unique<gfx::Transform>(
-      5, 0, 0, 100, 0, 5, 0, 200, 0, 0, 5, 0, 0, 0, 0, 1);
+  update.nodes[1].relative_bounds.transform =
+      std::make_unique<gfx::Transform>(gfx::Transform::RowMajor(
+          5, 0, 0, 100, 0, 5, 0, 200, 0, 0, 5, 0, 0, 0, 0, 1));
   bridge->AccessibilityEventReceived(
       CreateAccessibilityEventWithUpdate(std::move(update), tree_id));
   semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(

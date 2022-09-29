@@ -3296,10 +3296,10 @@ TEST_F(DisplayTest, CompositorFrameWithNonInvertibleTransform) {
   gfx::Rect rect3(0, 0, 10, 10);
 
   gfx::Transform invertible;
-  gfx::Transform non_invertible(10, 10, 0, 0,  // row 1
-                                10, 10, 0, 0,  // row 2
-                                0, 0, 1, 0,    // row 3
-                                0, 0, 0, 1);   // row 4
+  auto non_invertible = gfx::Transform::RowMajor(10, 10, 0, 0,  // row 1
+                                                 10, 10, 0, 0,  // row 2
+                                                 0, 0, 1, 0,    // row 3
+                                                 0, 0, 0, 1);   // row 4
   gfx::Transform non_invertible_miss_z;
   non_invertible_miss_z.Scale3d(1, 1, 0);
   bool opaque_content = true;

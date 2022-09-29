@@ -602,8 +602,9 @@ float LayerDrawOpacity(const LayerImpl* layer, const EffectTree& tree) {
 template <typename LayerType>
 gfx::Transform ScreenSpaceTransformInternal(LayerType* layer,
                                             const TransformTree& tree) {
-  gfx::Transform xform(1, 0, 0, 1, layer->offset_to_transform_parent().x(),
-                       layer->offset_to_transform_parent().y());
+  gfx::Transform xform =
+      gfx::Transform::MakeTranslation(layer->offset_to_transform_parent().x(),
+                                      layer->offset_to_transform_parent().y());
   gfx::Transform ssxform = tree.ToScreen(layer->transform_tree_index());
   xform.ConcatTransform(ssxform);
   return xform;

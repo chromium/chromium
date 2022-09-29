@@ -38,37 +38,15 @@ inline bool ApproximatelyOne(SkScalar x, SkScalar tolerance) {
 }  // namespace
 
 // clang-format off
-Transform::Transform(SkScalar col1row1,
-                     SkScalar col2row1,
-                     SkScalar col3row1,
-                     SkScalar col4row1,
-                     SkScalar col1row2,
-                     SkScalar col2row2,
-                     SkScalar col3row2,
-                     SkScalar col4row2,
-                     SkScalar col1row3,
-                     SkScalar col2row3,
-                     SkScalar col3row3,
-                     SkScalar col4row3,
-                     SkScalar col1row4,
-                     SkScalar col2row4,
-                     SkScalar col3row4,
-                     SkScalar col4row4)
-    : matrix_(col1row1, col2row1, col3row1, col4row1,
-              col1row2, col2row2, col3row2, col4row2,
-              col1row3, col2row3, col3row3, col4row3,
-              col1row4, col2row4, col3row4, col4row4) {}
-
-Transform::Transform(SkScalar col1row1,
-                     SkScalar col2row1,
-                     SkScalar col1row2,
-                     SkScalar col2row2,
-                     SkScalar x_translation,
-                     SkScalar y_translation)
-    : matrix_(col1row1, col2row1, 0, x_translation,
-              col1row2, col2row2, 0, y_translation,
-              0, 0, 1, 0,
-              0, 0, 0, 1) {}
+Transform::Transform(SkScalar r0c0, SkScalar r1c0, SkScalar r2c0, SkScalar r3c0,
+                     SkScalar r0c1, SkScalar r1c1, SkScalar r2c1, SkScalar r3c1,
+                     SkScalar r0c2, SkScalar r1c2, SkScalar r2c2, SkScalar r3c2,
+                     SkScalar r0c3, SkScalar r1c3, SkScalar r2c3, SkScalar r3c3)
+    // The parameters of SkMatrix's constructor is in row-major order.
+    : matrix_(r0c0, r0c1, r0c2, r0c3,     // row 0
+              r1c0, r1c1, r1c2, r1c3,     // row 1
+              r2c0, r2c1, r2c2, r2c3,     // row 2
+              r3c0, r3c1, r3c2, r3c3) {}  // row 3
 
 Transform::Transform(const Quaternion& q)
     : matrix_(

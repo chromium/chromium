@@ -278,7 +278,7 @@ TEST_F(AXTreeConverterTest, TransformAccountsForContainerOffset) {
   ui::AXNodeData child_node_data;
   child_node_data.id = 1;
   child_node_data.relative_bounds.transform = std::make_unique<gfx::Transform>(
-      2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+      gfx::Transform::RowMajor(2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
   auto& child_node = AddChildNode(child_node_data);
   root_node().SetLocation(
       kRootId,

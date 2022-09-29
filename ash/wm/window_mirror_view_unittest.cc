@@ -46,7 +46,7 @@ TEST_F(WindowMirrorViewTest, MirrorLayerHasNoTransformWhenNonClientViewShown) {
   // the transform will be copied with it.
   auto widget = CreateTestWidget();
   aura::Window* widget_window = widget->GetNativeWindow();
-  const gfx::Transform transform(1.f, 0.f, 0.f, 1.f, 100.f, 100.f);
+  const auto transform = gfx::Transform::MakeTranslation(100.f, 100.f);
   widget_window->SetTransform(transform);
 
   auto mirror_widget = CreateTestWidget();

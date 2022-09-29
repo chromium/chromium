@@ -161,8 +161,8 @@ class UiInputManagerContentTest : public UiTest {
  protected:
   RenderInfo CreateRenderInfo() {
     RenderInfo render_info;
-    gfx::Transform projection_matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0,
-                                     -1, 0.5);
+    auto projection_matrix = gfx::Transform::RowMajor(1, 0, 0, 0, 0, 1, 0, 0, 0,
+                                                      0, -1, 0, 0, 0, -1, 0.5);
     projection_matrix.Scale(
         1.0f, static_cast<float>(kWindowSize.width()) / kWindowSize.height());
 

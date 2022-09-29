@@ -1732,7 +1732,7 @@ std::vector<mojom::XRInputSourceStatePtr> ArCoreGl::GetInputSourceStates() {
 
     // Fill in the transform matrix in row-major order. The first three columns
     // contain the basis vectors, the fourth column the position offset.
-    gfx::Transform viewer_from_pointer(
+    auto viewer_from_pointer = gfx::Transform::RowMajor(
         new_x.x(), new_y.x(), new_z.x(), touch_point.x(),  // row 1
         new_x.y(), new_y.y(), new_z.y(), touch_point.y(),  // row 2
         new_x.z(), new_y.z(), new_z.z(), touch_point.z(),  // row 3

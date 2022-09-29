@@ -3143,7 +3143,7 @@ TEST_P(GPURendererPixelTest, AntiAliasingPerspective) {
   auto pass = CreateTestRootRenderPass(AggregatedRenderPassId{1}, rect);
 
   gfx::Rect red_rect(0, 0, 180, 500);
-  gfx::Transform red_quad_to_target_transform(
+  auto red_quad_to_target_transform = gfx::Transform::RowMajor(
       1.0f, 2.4520f, 10.6206f, 19.0f, 0.0f, 0.3528f, 5.9737f, 9.5f, 0.0f,
       -0.2250f, -0.9744f, 0.0f, 0.0f, 0.0225f, 0.0974f, 1.0f);
   SharedQuadState* red_shared_state = CreateTestSharedQuadState(

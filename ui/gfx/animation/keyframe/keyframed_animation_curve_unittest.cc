@@ -276,7 +276,7 @@ TEST(KeyframedAnimationCurveTest, RepeatedTransformKeyTimes) {
 // Tests that a discrete transform animation (e.g. where one or more keyframes
 // is a non-invertible matrix) works as expected.
 TEST(KeyframedAnimationCurveTest, DiscreteLinearTransformAnimation) {
-  gfx::Transform non_invertible_matrix(0, 0, 0, 0, 0, 0);
+  auto non_invertible_matrix = gfx::Transform::Affine(0, 0, 0, 0, 0, 0);
   gfx::Transform identity_matrix;
 
   std::unique_ptr<KeyframedTransformAnimationCurve> curve(
@@ -320,7 +320,7 @@ TEST(KeyframedAnimationCurveTest, DiscreteLinearTransformAnimation) {
 }
 
 TEST(KeyframedAnimationCurveTest, DiscreteCubicBezierTransformAnimation) {
-  gfx::Transform non_invertible_matrix(0, 0, 0, 0, 0, 0);
+  auto non_invertible_matrix = gfx::Transform::Affine(0, 0, 0, 0, 0, 0);
   gfx::Transform identity_matrix;
 
   std::unique_ptr<KeyframedTransformAnimationCurve> curve(

@@ -984,7 +984,7 @@ TEST(MathUtilTest, MapClippedQuadClampWholePlaneBelow) {
 
 TEST(MathUtilTest, MapClippedQuadInfiniteMatrix) {
   // clang-format off
-  gfx::Transform transform(
+  auto transform = gfx::Transform::RowMajor(
       1.0f, 0.0f, 0.0f, 0.0f,
       0.0f, -100.0f, 0.0f, std::numeric_limits<float>::infinity(),
       0.0f, 0.0f, 1.0f, 0.0f,

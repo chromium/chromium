@@ -55,14 +55,16 @@ gfx::Transform ComputeTransform(EdgeEffect::Edge edge,
   // Transforms assume the edge layers are anchored to their *top center point*.
   switch (edge) {
     case EdgeEffect::EDGE_TOP:
-      return gfx::Transform(1, 0, 0, 1, 0, offset);
+      return gfx::Transform::MakeTranslation(0, offset);
     case EdgeEffect::EDGE_LEFT:
-      return gfx::Transform(0, 1, -1, 0, -viewport_size.height() / 2.f + offset,
-                            viewport_size.height() / 2.f);
+      return gfx::Transform::Affine(0, 1, -1, 0,
+                                    -viewport_size.height() / 2.f + offset,
+                                    viewport_size.height() / 2.f);
     case EdgeEffect::EDGE_BOTTOM:
-      return gfx::Transform(-1, 0, 0, -1, 0, viewport_size.height() + offset);
+      return gfx::Transform::Affine(-1, 0, 0, -1, 0,
+                                    viewport_size.height() + offset);
     case EdgeEffect::EDGE_RIGHT:
-      return gfx::Transform(
+      return gfx::Transform::Affine(
           0, -1, 1, 0,
           -viewport_size.height() / 2.f + viewport_size.width() + offset,
           viewport_size.height() / 2.f);

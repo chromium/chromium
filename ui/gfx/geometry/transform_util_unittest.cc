@@ -233,29 +233,32 @@ double ComputeDecompRecompError(const Transform& transform) {
 
 TEST(TransformUtilTest, RoundTripTest) {
   // rotateZ(90deg)
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(0, 1, -1, 0, 0, 0)));
+  EXPECT_APPROX_EQ(
+      0, ComputeDecompRecompError(Transform::Affine(0, 1, -1, 0, 0, 0)));
 
   // rotateZ(180deg)
   // Edge case where w = 0.
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(-1, 0, 0, -1, 0, 0)));
+  EXPECT_APPROX_EQ(
+      0, ComputeDecompRecompError(Transform::Affine(-1, 0, 0, -1, 0, 0)));
 
   // rotateX(90deg) rotateY(90deg) rotateZ(90deg)
   // [1  0   0][ 0 0 1][0 -1 0]   [0 0 1][0 -1 0]   [0  0 1]
   // [0  0  -1][ 0 1 0][1  0 0] = [1 0 0][1  0 0] = [0 -1 0]
   // [0  1   0][-1 0 0][0  0 1]   [0 1 0][0  0 1]   [1  0 0]
   // This test case leads to Gimbal lock when using Euler angles.
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::RowMajor(
                           0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1)));
 
   // Quaternion matrices with 0 off-diagonal elements, and negative trace.
   // Stress tests handling of degenerate cases in computing quaternions.
   // Validates fix for https://crbug.com/647554.
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(1, 1, 1, 0, 0, 0)));
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(
+  EXPECT_APPROX_EQ(
+      0, ComputeDecompRecompError(Transform::Affine(1, 1, 1, 0, 0, 0)));
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::RowMajor(
                           -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)));
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::RowMajor(
                           1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)));
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::RowMajor(
                           1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1)));
 }
 
@@ -269,7 +272,7 @@ TEST(TransformUtilTest, Transform2D) {
   // multiple axes.  2D transformation matrices should follow the 2D spec
   // regarding matrix decomposition.
   DecomposedTransform decompFlipX;
-  DecomposeTransform(&decompFlipX, Transform(-1, 0, 0, 1, 0, 0));
+  DecomposeTransform(&decompFlipX, Transform::Affine(-1, 0, 0, 1, 0, 0));
   EXPECT_APPROX_EQ(-1, decompFlipX.scale[0]);
   EXPECT_APPROX_EQ(1, decompFlipX.scale[1]);
   EXPECT_APPROX_EQ(1, decompFlipX.scale[2]);
@@ -277,7 +280,7 @@ TEST(TransformUtilTest, Transform2D) {
   EXPECT_APPROX_EQ(1, decompFlipX.quaternion.w());
 
   DecomposedTransform decompFlipY;
-  DecomposeTransform(&decompFlipY, Transform(1, 0, 0, -1, 0, 0));
+  DecomposeTransform(&decompFlipY, Transform::Affine(1, 0, 0, -1, 0, 0));
   EXPECT_APPROX_EQ(1, decompFlipY.scale[0]);
   EXPECT_APPROX_EQ(-1, decompFlipY.scale[1]);
   EXPECT_APPROX_EQ(1, decompFlipY.scale[2]);
@@ -285,7 +288,7 @@ TEST(TransformUtilTest, Transform2D) {
   EXPECT_APPROX_EQ(1, decompFlipY.quaternion.w());
 
   DecomposedTransform decompR180;
-  DecomposeTransform(&decompR180, Transform(-1, 0, 0, -1, 0, 0));
+  DecomposeTransform(&decompR180, Transform::Affine(-1, 0, 0, -1, 0, 0));
   EXPECT_APPROX_EQ(1, decompR180.scale[0]);
   EXPECT_APPROX_EQ(1, decompR180.scale[1]);
   EXPECT_APPROX_EQ(1, decompR180.scale[2]);
@@ -293,7 +296,7 @@ TEST(TransformUtilTest, Transform2D) {
   EXPECT_APPROX_EQ(0, decompR180.quaternion.w());
 
   DecomposedTransform decompR90;
-  DecomposeTransform(&decompR180, Transform(0, -1, 1, 0, 0, 0));
+  DecomposeTransform(&decompR180, Transform::Affine(0, -1, 1, 0, 0, 0));
   EXPECT_APPROX_EQ(1, decompR180.scale[0]);
   EXPECT_APPROX_EQ(1, decompR180.scale[1]);
   EXPECT_APPROX_EQ(1, decompR180.scale[2]);
@@ -301,7 +304,8 @@ TEST(TransformUtilTest, Transform2D) {
   EXPECT_APPROX_EQ(1 / sqrt(2), decompR180.quaternion.w());
 
   DecomposedTransform decompR90Translate;
-  DecomposeTransform(&decompR90Translate, Transform(0, -1, 1, 0, -1, 1));
+  DecomposeTransform(&decompR90Translate,
+                     Transform::Affine(0, -1, 1, 0, -1, 1));
   EXPECT_APPROX_EQ(1, decompR90Translate.scale[0]);
   EXPECT_APPROX_EQ(1, decompR90Translate.scale[1]);
   EXPECT_APPROX_EQ(1, decompR90Translate.scale[2]);
@@ -312,7 +316,7 @@ TEST(TransformUtilTest, Transform2D) {
   EXPECT_APPROX_EQ(1 / sqrt(2), decompR90Translate.quaternion.w());
 
   DecomposedTransform decompSkewRotate;
-  DecomposeTransform(&decompR90Translate, Transform(1, 1, 1, 0, 0, 0));
+  DecomposeTransform(&decompR90Translate, Transform::Affine(1, 1, 1, 0, 0, 0));
   EXPECT_APPROX_EQ(sqrt(2), decompR90Translate.scale[0]);
   EXPECT_APPROX_EQ(-1 / sqrt(2), decompR90Translate.scale[1]);
   EXPECT_APPROX_EQ(1, decompR90Translate.scale[2]);
@@ -371,80 +375,80 @@ TEST(TransformUtilTest, Transform2dScaleComponents) {
   } tests[] = {
       // clang-format off
       // A matrix with only scale and translation.
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, 1),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, 1),
        Vector2dF(3, 7)},
       // Matrices like the first, but also with various
       // perspective-altering components.
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, -0.5, 1),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, -0.5, 1),
        Vector2dF(3, 7)},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0.2f, 0, -0.5f, 1),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0.2f, 0, -0.5f, 1),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0.2f, -0.2f, -0.5f, 1),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0.2f, -0.2f, -0.5f, 1),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0.2f, -0.2f, -0.5f, 1),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0.2f, -0.2f, -0.5f, 1),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, -0.2f, -0.5f, 1),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, -0.2f, -0.5f, 1),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, -0.5f, 0.25f),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, -0.5f, 0.25f),
        Vector2dF(12, 28)},
       // Matrices like the first, but with some types of rotation.
-      {Transform(0, 3, 0, -23,
-                 7, 0, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, 1),
+      {Transform::RowMajor(0, 3, 0, -23,
+                           7, 0, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, 1),
        Vector2dF(7, 3)},
-      {Transform(3, 8, 0, -23,
-                 4, 6, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, 1),
+      {Transform::RowMajor(3, 8, 0, -23,
+                           4, 6, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, 1),
        Vector2dF(5, 10)},
       // Combination of rotation and perspective
-      {Transform(3, 8, 0, -23,
-                 4, 6, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, 0.25f),
+      {Transform::RowMajor(3, 8, 0, -23,
+                           4, 6, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, 0.25f),
        Vector2dF(20, 40)},
       // Error handling cases for final perspective component.
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, 0),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, 0),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, quiet_NaN_or_zero),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, quiet_NaN_or_zero),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, infinity_or_zero),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, infinity_or_zero),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, denorm_min_or_zero),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, denorm_min_or_zero),
        absl::nullopt},
       // clang-format on
   };

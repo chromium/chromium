@@ -171,7 +171,8 @@ void InitializeApproxIdentityMatrix(Transform* transform) {
 
 TEST(XFormTest, Equality) {
   Transform lhs, interpolated;
-  Transform rhs(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+  auto rhs = Transform::RowMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+                                 15, 16);
   interpolated = lhs;
   for (int i = 0; i <= 100; ++i) {
     for (int row = 0; row < 4; ++row) {
@@ -199,6 +200,27 @@ TEST(XFormTest, Equality) {
     rhs.Translate(2 * i, 2 * i);
     EXPECT_TRUE(lhs == rhs);
   }
+}
+
+// This test is to make it easier to understand the order of operations.
+TEST(XFormTest, PrePostOperations) {
+  auto m1 = Transform::Affine(1, 2, 3, 4, 5, 6);
+  auto m2 = m1;
+  m1.Translate(10, 20);
+  m2.PreconcatTransform(Transform::MakeTranslation(10, 20));
+  EXPECT_EQ(m1, m2);
+
+  m1.PostTranslate(11, 22);
+  m2.ConcatTransform(Transform::MakeTranslation(11, 22));
+  EXPECT_EQ(m1, m2);
+
+  m1.Scale(3, 4);
+  m2.PreconcatTransform(Transform::MakeScale(3, 4));
+  EXPECT_EQ(m1, m2);
+
+  m1.PostScale(5, 6);
+  m2.ConcatTransform(Transform::MakeScale(5, 6));
+  EXPECT_EQ(m1, m2);
 }
 
 TEST(XFormTest, ConcatTranslate) {
@@ -1388,8 +1410,9 @@ TEST(XFormTest, verifyCopyConstructor) {
 }
 
 TEST(XFormTest, verifyConstructorFor16Elements) {
-  Transform transform(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0,
-                      12.0, 13.0, 14.0, 15.0, 16.0);
+  auto transform =
+      Transform::RowMajor(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+                          11.0, 12.0, 13.0, 14.0, 15.0, 16.0);
 
   EXPECT_ROW1_EQ(1.0f, 2.0f, 3.0f, 4.0f, transform);
   EXPECT_ROW2_EQ(5.0f, 6.0f, 7.0f, 8.0f, transform);
@@ -1398,7 +1421,7 @@ TEST(XFormTest, verifyConstructorFor16Elements) {
 }
 
 TEST(XFormTest, verifyConstructorFor2dElements) {
-  Transform transform(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+  Transform transform = Transform::Affine(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 
   EXPECT_ROW1_EQ(1.0f, 2.0f, 0.0f, 5.0f, transform);
   EXPECT_ROW2_EQ(3.0f, 4.0f, 0.0f, 6.0f, transform);
@@ -2706,20 +2729,20 @@ TEST(XFormTest, Preserves2dAxisAlignment) {
   // be positive.
 
   // clang-format off
-  transform = Transform(1.0, 0.0, 0.0, 0.0,
-                        0.0, 1.0, 0.0, 0.0,
-                        0.0, 0.0, 1.0, 0.0,
-                        0.0, 0.0, 0.0, -1.0);
+  transform = Transform::RowMajor(1.0, 0.0, 0.0, 0.0,
+                                  0.0, 1.0, 0.0, 0.0,
+                                  0.0, 0.0, 1.0, 0.0,
+                                  0.0, 0.0, 0.0, -1.0);
   // clang-format on
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
   EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   // clang-format off
-  transform = Transform(2.0, 0.0, 0.0, 0.0,
-                        0.0, 5.0, 0.0, 0.0,
-                        0.0, 0.0, 1.0, 0.0,
-                        0.0, 0.0, 0.0, 0.0);
+  transform = Transform::RowMajor(2.0, 0.0, 0.0, 0.0,
+                                  0.0, 5.0, 0.0, 0.0,
+                                  0.0, 0.0, 1.0, 0.0,
+                                  0.0, 0.0, 0.0, 0.0);
   // clang-format on
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());

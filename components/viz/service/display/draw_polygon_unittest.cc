@@ -175,7 +175,7 @@ TEST(DrawPolygonConstructionTest, ManyVertexNormal) {
 TEST(DrawPolygonConstructionTest, SimpleNormal) {
   gfx::RectF src(-0.1f, -10.0f, 0.2f, 20.0f);
 
-  gfx::Transform transform_i(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  gfx::Transform transform_i;
   DrawPolygon polygon_i(nullptr, src, transform_i, 1);
 
   EXPECT_NORMAL(polygon_i, 0.0f, 0.0f, 1.0f);
@@ -184,7 +184,8 @@ TEST(DrawPolygonConstructionTest, SimpleNormal) {
 TEST(DrawPolygonConstructionTest, DISABLED_NormalInvertXY) {
   gfx::RectF src(-0.1f, -10.0f, 0.2f, 20.0f);
 
-  gfx::Transform transform(0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  auto transform =
+      gfx::Transform::RowMajor(0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
   DrawPolygon polygon_a(nullptr, src, transform, 2);
 
   EXPECT_NORMAL(polygon_a, 0.0f, 0.0f, 1.0f);
@@ -193,7 +194,8 @@ TEST(DrawPolygonConstructionTest, DISABLED_NormalInvertXY) {
 TEST(DrawPolygonConstructionTest, DISABLED_NormalInvertXZ) {
   gfx::RectF src(-0.1f, -10.0f, 0.2f, 20.0f);
 
-  gfx::Transform transform(0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1);
+  auto transform =
+      gfx::Transform::RowMajor(0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1);
   DrawPolygon polygon_b(nullptr, src, transform, 3);
 
   EXPECT_NORMAL(polygon_b, 1.0f, 0.0f, 0.0f);
@@ -202,7 +204,8 @@ TEST(DrawPolygonConstructionTest, DISABLED_NormalInvertXZ) {
 TEST(DrawPolygonConstructionTest, DISABLED_NormalInvertYZ) {
   gfx::RectF src(-0.1f, -10.0f, 0.2f, 20.0f);
 
-  gfx::Transform transform(1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
+  auto transform =
+      gfx::Transform::RowMajor(1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
   DrawPolygon polygon_c(nullptr, src, transform, 4);
 
   EXPECT_NORMAL(polygon_c, 0.0f, 1.0f, 0.0f);
@@ -211,7 +214,8 @@ TEST(DrawPolygonConstructionTest, DISABLED_NormalInvertYZ) {
 TEST(DrawPolygonConstructionTest, NormalRotate90) {
   gfx::RectF src(-0.1f, -10.0f, 0.2f, 20.0f);
 
-  gfx::Transform transform(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1);
+  auto transform =
+      gfx::Transform::RowMajor(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1);
   DrawPolygon polygon_b(nullptr, src, transform, 3);
 
   EXPECT_NORMAL(polygon_b, 0.0f, 0.0f, 1.0f);
@@ -220,7 +224,8 @@ TEST(DrawPolygonConstructionTest, NormalRotate90) {
 TEST(DrawPolygonConstructionTest, InvertXNormal) {
   gfx::RectF src(-0.1f, -10.0f, 0.2f, 20.0f);
 
-  gfx::Transform transform(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  auto transform =
+      gfx::Transform::RowMajor(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
   DrawPolygon polygon_d(nullptr, src, transform, 5);
 
   EXPECT_NORMAL(polygon_d, 0.0f, 0.0f, 1.0f);
@@ -229,7 +234,8 @@ TEST(DrawPolygonConstructionTest, InvertXNormal) {
 TEST(DrawPolygonConstructionTest, InvertYNormal) {
   gfx::RectF src(-0.1f, -10.0f, 0.2f, 20.0f);
 
-  gfx::Transform transform(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  auto transform =
+      gfx::Transform::RowMajor(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
   DrawPolygon polygon_d(nullptr, src, transform, 5);
 
   EXPECT_NORMAL(polygon_d, 0.0f, 0.0f, 1.0f);
@@ -238,7 +244,8 @@ TEST(DrawPolygonConstructionTest, InvertYNormal) {
 TEST(DrawPolygonConstructionTest, InvertZNormal) {
   gfx::RectF src(-0.1f, -10.0f, 0.2f, 20.0f);
 
-  gfx::Transform transform(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1);
+  auto transform =
+      gfx::Transform::RowMajor(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1);
   DrawPolygon polygon_d(nullptr, src, transform, 5);
 
   EXPECT_NORMAL(polygon_d, 0.0f, 0.0f, -1.0f);
@@ -651,13 +658,13 @@ TEST(DrawPolygonSplitTest, SplitNoNaNs) {
 TEST(DrawPolygonSplitTest, SplitNoInfs) {
   // clang-format off
   gfx::RectF rect_a(0, 0, 1140, 418);
-  gfx::Transform transform_a(
+  auto transform_a = gfx::Transform::RowMajor(
       1.39069271, -0.131110176, 0.5, -503.545319,
       1.00984585, -0.273445308, -0.866025388, -828.169128,
       -0.722961724, 0.690888107, 4.23046966e-17, 570.098511,
       0.00144592347, -0.0013817763, -8.46093968e-20, -0.140197217);
   gfx::RectF rect_b(430, 0, 560, 454);
-  gfx::Transform transform_b(
+  auto transform_b = gfx::Transform::RowMajor(
       0.131110176, -0.5, 1.39069271, 952.04541,
       0.273445308, 0.866025388, 1.00984585, 52.3442955,
       -0.690888107, 0, -0.722961724, 429.901398,

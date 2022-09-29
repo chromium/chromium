@@ -25,7 +25,8 @@ namespace {
 // correctly assigns values. See www.crbug.com/483134.
 TEST(TargetValueTest, VerifyLayerAnimationDelegateConstructor) {
   const gfx::Rect kBounds(1, 2, 3, 5);
-  const gfx::Transform kTransform(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f);
+  const auto kTransform =
+      gfx::Transform::Affine(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f);
   const float kOpacity = 1.235f;
   const bool kVisibility = false;
   const float kBrightness = 2.358f;

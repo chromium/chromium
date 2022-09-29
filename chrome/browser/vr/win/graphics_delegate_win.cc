@@ -263,12 +263,12 @@ CameraModel CameraModelViewProjFromXRView(
   float x_scale = 2.0f / (left_tan + right_tan);
   float y_scale = 2.0f / (up_tan + down_tan);
   // clang-format off
-  model.proj_matrix =
-      gfx::Transform(x_scale, 0, -((left_tan - right_tan) * x_scale * 0.5), 0,
-                     0, y_scale, ((up_tan - down_tan) * y_scale * 0.5), 0,
-                     0, 0, (kZFar + kZNear) / (kZNear - kZFar),
-                        2 * kZFar * kZNear / (kZNear - kZFar),
-                     0, 0, -1, 0);
+  model.proj_matrix = gfx::Transform::RowMajor(
+      x_scale, 0, -((left_tan - right_tan) * x_scale * 0.5), 0,
+      0, y_scale, ((up_tan - down_tan) * y_scale * 0.5), 0,
+      0, 0, (kZFar + kZNear) / (kZNear - kZFar),
+          2 * kZFar * kZNear / (kZNear - kZFar),
+      0, 0, -1, 0);
   // clang-format on
   model.view_proj_matrix = model.proj_matrix * model.view_matrix;
   return model;

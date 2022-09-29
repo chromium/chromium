@@ -4307,7 +4307,7 @@ class LayerTreeHostTestUninvertibleTransformDoesNotBlockActivation
     LayerTreeHostTest::SetupTree();
 
     scoped_refptr<Layer> layer = PictureLayer::Create(&client_);
-    layer->SetTransform(gfx::Transform(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
+    layer->SetTransform(gfx::Transform::Affine(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
     layer->SetBounds(gfx::Size(10, 10));
     layer_tree_host()->root_layer()->AddChild(layer);
     client_.set_bounds(layer->bounds());

@@ -39,44 +39,85 @@ class GEOMETRY_SKIA_EXPORT Transform {
       : matrix_(Matrix44::kUninitialized_Constructor) {}
   Transform(const Transform& rhs) = default;
   Transform& operator=(const Transform& rhs) = default;
-  // Initialize with the concatenation of lhs * rhs.
-  Transform(const Transform& lhs, const Transform& rhs)
-      : matrix_(lhs.matrix_, rhs.matrix_) {}
-  // Constructs a transform from explicit 16 matrix elements. Elements
-  // should be given in row-major order.
-  Transform(SkScalar col1row1,
-            SkScalar col2row1,
-            SkScalar col3row1,
-            SkScalar col4row1,
-            SkScalar col1row2,
-            SkScalar col2row2,
-            SkScalar col3row2,
-            SkScalar col4row2,
-            SkScalar col1row3,
-            SkScalar col2row3,
-            SkScalar col3row3,
-            SkScalar col4row3,
-            SkScalar col1row4,
-            SkScalar col2row4,
-            SkScalar col3row4,
-            SkScalar col4row4);
-  // Constructs a transform from explicit 2d elements. All other matrix
-  // elements remain the same as the corresponding elements of an identity
-  // matrix.
-  Transform(SkScalar col1row1,
-            SkScalar col2row1,
-            SkScalar col1row2,
-            SkScalar col2row2,
-            SkScalar x_translation,
-            SkScalar y_translation);
+
+  // Creates a transform from explicit 16 matrix elements in row-major order.
+  static Transform RowMajor(SkScalar r0c0,
+                            SkScalar r0c1,
+                            SkScalar r0c2,
+                            SkScalar r0c3,
+                            SkScalar r1c0,
+                            SkScalar r1c1,
+                            SkScalar r1c2,
+                            SkScalar r1c3,
+                            SkScalar r2c0,
+                            SkScalar r2c1,
+                            SkScalar r2c2,
+                            SkScalar r2c3,
+                            SkScalar r3c0,
+                            SkScalar r3c1,
+                            SkScalar r3c2,
+                            SkScalar r3c3) {
+    return Transform(r0c0, r1c0, r2c0, r3c0,   // col 0
+                     r0c1, r1c1, r2c1, r3c1,   // col 1
+                     r0c2, r1c2, r2c2, r3c2,   // col 2
+                     r0c3, r1c3, r2c3, r3c3);  // col 3
+  }
+
+  // Creates a transform from explicit 16 matrix elements in col-major order.
+  static Transform ColMajor(SkScalar r0c0,
+                            SkScalar r1c0,
+                            SkScalar r2c0,
+                            SkScalar r3c0,
+                            SkScalar r0c1,
+                            SkScalar r1c1,
+                            SkScalar r2c1,
+                            SkScalar r3c1,
+                            SkScalar r0c2,
+                            SkScalar r1c2,
+                            SkScalar r2c2,
+                            SkScalar r3c2,
+                            SkScalar r0c3,
+                            SkScalar r1c3,
+                            SkScalar r2c3,
+                            SkScalar r3c3) {
+    return Transform(r0c0, r1c0, r2c0, r3c0,   // col 0
+                     r0c1, r1c1, r2c1, r3c1,   // col 1
+                     r0c2, r1c2, r2c2, r3c2,   // col 2
+                     r0c3, r1c3, r2c3, r3c3);  // col 3
+  }
+
+  // Creates a transform from explicit 2d elements. All other matrix elements
+  // remain the same as the corresponding elements of an identity matrix.
+  static Transform Affine(SkScalar r0c0,
+                          SkScalar r0c1,
+                          SkScalar r1c0,
+                          SkScalar r1c1,
+                          SkScalar x_translation,
+                          SkScalar y_translation) {
+    return ColMajor(r0c0, r1c0, 0, 0,                     // col 0
+                    r0c1, r1c1, 0, 0,                     // col 1
+                    0, 0, 1, 0,                           // col 2
+                    x_translation, y_translation, 0, 1);  // col 3
+  }
 
   // Constructs a transform corresponding to the given quaternion.
   explicit Transform(const Quaternion& q);
+
+  // Creates a transform as a 2d translation.
+  static Transform MakeTranslation(SkScalar tx, SkScalar ty) {
+    return Affine(1, 0, 0, 1, tx, ty);
+  }
+  // Creates a transform as a 2d scale.
+  static Transform MakeScale(SkScalar scale) { return MakeScale(scale, scale); }
+  static Transform MakeScale(SkScalar sx, SkScalar sy) {
+    return Affine(sx, 0, 0, sy, 0, 0);
+  }
 
   bool operator==(const Transform& rhs) const { return matrix_ == rhs.matrix_; }
   bool operator!=(const Transform& rhs) const { return matrix_ != rhs.matrix_; }
 
   // Resets this transform to the identity transform.
+  // TODO(crbug.com/1359528): Rename this to SetIdentity or remove it.
   void MakeIdentity() { matrix_.setIdentity(); }
 
   // Gets a value at |row|, |col| from the matrix.
@@ -334,6 +375,28 @@ class GEOMETRY_SKIA_EXPORT Transform {
   std::string ToString() const;
 
  private:
+  // Used internally to construct Transform with parameters in col-major order.
+  Transform(SkScalar r0c0,
+            SkScalar r1c0,
+            SkScalar r2c0,
+            SkScalar r3c0,
+            SkScalar r0c1,
+            SkScalar r1c1,
+            SkScalar r2c1,
+            SkScalar r3c1,
+            SkScalar r0c2,
+            SkScalar r1c2,
+            SkScalar r2c2,
+            SkScalar r3c2,
+            SkScalar r0c3,
+            SkScalar r1c3,
+            SkScalar r2c3,
+            SkScalar r3c3);
+
+  // Initialize with the concatenation of lhs * rhs.
+  Transform(const Transform& lhs, const Transform& rhs)
+      : matrix_(lhs.matrix_, rhs.matrix_) {}
+
   Point TransformPointInternal(const Matrix44& xform, const Point& point) const;
 
   PointF TransformPointInternal(const Matrix44& xform,

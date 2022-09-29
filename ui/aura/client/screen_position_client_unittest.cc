@@ -57,7 +57,7 @@ TEST_F(ScreenPositionClientTest, ConvertPointToRootWindowIgnoringTransforms) {
   EXPECT_EQ(gfx::Point(300, 300), point);
 
   point = gfx::Point(100, 100);
-  child->SetTransform(gfx::Transform(1, 0, 0, 1, 100, 100));
+  child->SetTransform(gfx::Transform::MakeTranslation(100, 100));
   test_client.ConvertPointToRootWindowIgnoringTransforms(child.get(), &point);
   EXPECT_EQ(gfx::Point(300, 300), point);
 }

@@ -286,10 +286,11 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
   }
   // Test case from crbug.com/766021.
   {
-    gfx::Transform transform(-0.9397f, -0.7019f, 0.2796f, 2383.4521f,   // row 1
-                             -0.0038f, 0.0785f, 1.0613f, 1876.4553f,    // row 2
-                             -0.0835f, 0.9081f, -0.4105f, -2208.3035f,  // row 3
-                             0.0001f, -0.0008f, 0.0003f, 2.8435f);      // row 4
+    auto transform = gfx::Transform::RowMajor(
+        -0.9397f, -0.7019f, 0.2796f, 2383.4521f,   // row 1
+        -0.0038f, 0.0785f, 1.0613f, 1876.4553f,    // row 2
+        -0.0835f, 0.9081f, -0.4105f, -2208.3035f,  // row 3
+        0.0001f, -0.0008f, 0.0003f, 2.8435f);      // row 4
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());

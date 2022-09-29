@@ -61,7 +61,7 @@ TEST(CompositorRenderPassTest,
   AggregatedRenderPassId render_pass_id{3u};
   gfx::Rect output_rect(45, 22, 120, 13);
   gfx::Transform transform_to_root =
-      gfx::Transform(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
+      gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   gfx::Rect damage_rect(56, 123, 19, 43);
   cc::FilterOperations filters;
   filters.Append(cc::FilterOperation::CreateOpacityFilter(0.5));
@@ -123,7 +123,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   CompositorRenderPassId id{3};
   gfx::Rect output_rect(45, 22, 120, 13);
   gfx::Transform transform_to_root =
-      gfx::Transform(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
+      gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   gfx::Rect damage_rect(56, 123, 19, 43);
   cc::FilterOperations filters;
   filters.Append(cc::FilterOperation::CreateOpacityFilter(0.5));
@@ -181,7 +181,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   CompositorRenderPassId contrib_id{4};
   gfx::Rect contrib_output_rect(10, 15, 12, 17);
   gfx::Transform contrib_transform_to_root =
-      gfx::Transform(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
+      gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   gfx::Rect contrib_damage_rect(11, 16, 10, 15);
   cc::FilterOperations contrib_filters;
   contrib_filters.Append(cc::FilterOperation::CreateSepiaFilter(0.5));
@@ -239,7 +239,7 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   CompositorRenderPassId id{3};
   gfx::Rect output_rect(45, 22, 120, 13);
   gfx::Transform transform_to_root =
-      gfx::Transform(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
+      gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   gfx::Rect damage_rect(56, 123, 19, 43);
   cc::FilterOperations filters;
   filters.Append(cc::FilterOperation::CreateOpacityFilter(0.5));

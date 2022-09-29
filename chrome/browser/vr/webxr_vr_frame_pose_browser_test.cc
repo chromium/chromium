@@ -122,7 +122,7 @@ void MyXRMock::WaitGetMagicWindowPose(
   // Almost identity matrix - enough different that we can identify if magic
   // window poses are used instead of presenting poses.
   pose->device_to_origin =
-      gfx::Transform(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+      gfx::Transform::RowMajor(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
   std::move(callback).Run(std::move(pose));
 }
 

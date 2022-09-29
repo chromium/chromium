@@ -1529,8 +1529,8 @@ gfx::Transform ScrollTree::ScreenSpaceTransform(int scroll_node_id) const {
   const TransformTree& transform_tree = property_trees()->transform_tree();
   const TransformNode* transform_node =
       transform_tree.Node(scroll_node->transform_id);
-  gfx::Transform screen_space_transform(
-      1, 0, 0, 1, scroll_node->offset_to_transform_parent.x(),
+  gfx::Transform screen_space_transform = gfx::Transform::MakeTranslation(
+      scroll_node->offset_to_transform_parent.x(),
       scroll_node->offset_to_transform_parent.y());
   screen_space_transform.ConcatTransform(
       transform_tree.ToScreen(transform_node->id));

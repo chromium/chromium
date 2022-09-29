@@ -1231,7 +1231,7 @@ SkM44 TransformationMatrix::ToSkM44() const {
 }
 
 gfx::Transform TransformationMatrix::ToTransform() const {
-  return gfx::Transform(
+  return gfx::Transform::RowMajor(
       ClampToFloat(matrix_[0][0]), ClampToFloat(matrix_[1][0]),
       ClampToFloat(matrix_[2][0]), ClampToFloat(matrix_[3][0]),
       ClampToFloat(matrix_[0][1]), ClampToFloat(matrix_[1][1]),

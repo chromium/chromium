@@ -266,8 +266,8 @@ void PictureLayer::CaptureContent(const gfx::Rect& rect,
             &inverse_outer_screen_space_transform)) {
       return;
     }
-    gfx::Transform combined_transform{ScreenSpaceTransform(),
-                                      inverse_outer_screen_space_transform};
+    gfx::Transform combined_transform =
+        ScreenSpaceTransform() * inverse_outer_screen_space_transform;
     for (auto& i : *content) {
       i.visual_rect = MathUtil::ProjectEnclosingClippedRect(combined_transform,
                                                             i.visual_rect);
