@@ -529,7 +529,7 @@ TEST_F(ExtensionMessageBubbleTest, WipeoutControllerTest) {
   EXPECT_TRUE(controller->ShouldShow());
   suspicious_extensions = controller->GetExtensionList();
   ASSERT_EQ(1U, suspicious_extensions.size());
-  EXPECT_TRUE(u"Extension 1" == suspicious_extensions[0]);
+  EXPECT_EQ(u"Extension 1", suspicious_extensions[0]);
   bubble.set_controller(controller.get());
   bubble.Show();  // Simulate showing the bubble.
   EXPECT_EQ(0U, controller->link_click_count());
@@ -553,8 +553,8 @@ TEST_F(ExtensionMessageBubbleTest, WipeoutControllerTest) {
   EXPECT_TRUE(controller->ShouldShow());
   suspicious_extensions = controller->GetExtensionList();
   ASSERT_EQ(2U, suspicious_extensions.size());
-  EXPECT_TRUE(u"Extension 1" == suspicious_extensions[1]);
-  EXPECT_TRUE(u"Extension 2" == suspicious_extensions[0]);
+  EXPECT_EQ(u"Extension 1", suspicious_extensions[1]);
+  EXPECT_EQ(u"Extension 2", suspicious_extensions[0]);
   bubble.set_controller(controller.get());
   bubble.Show();  // Simulate showing the bubble.
   EXPECT_EQ(1U, controller->link_click_count());
@@ -587,8 +587,8 @@ TEST_F(ExtensionMessageBubbleTest, DevModeControllerTest) {
   std::vector<std::u16string> dev_mode_extensions =
       controller->GetExtensionList();
   ASSERT_EQ(2U, dev_mode_extensions.size());
-  EXPECT_TRUE(u"Extension 2" == dev_mode_extensions[0]);
-  EXPECT_TRUE(u"Extension 1" == dev_mode_extensions[1]);
+  EXPECT_EQ(u"Extension 2", dev_mode_extensions[0]);
+  EXPECT_EQ(u"Extension 1", dev_mode_extensions[1]);
   EXPECT_EQ(0U, controller->link_click_count());
   EXPECT_EQ(0U, controller->dismiss_click_count());
   EXPECT_EQ(0U, controller->action_click_count());
@@ -775,7 +775,7 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
     std::vector<std::u16string> override_extensions =
         controller->GetExtensionList();
     ASSERT_EQ(1U, override_extensions.size());
-    EXPECT_TRUE(u"Extension 2" == override_extensions[0]);
+    EXPECT_EQ(u"Extension 2", override_extensions[0]);
     EXPECT_EQ(0U, controller->link_click_count());
     EXPECT_EQ(0U, controller->dismiss_click_count());
     EXPECT_EQ(0U, controller->action_click_count());
@@ -935,7 +935,7 @@ TEST_F(ExtensionMessageBubbleTest,
   EXPECT_TRUE(controller->ShouldShow());
   suspicious_extensions = controller->GetExtensionList();
   ASSERT_EQ(1U, suspicious_extensions.size());
-  EXPECT_TRUE(u"Extension 1" == suspicious_extensions[0]);
+  EXPECT_EQ(u"Extension 1", suspicious_extensions[0]);
   bubble.set_controller(controller.get());
   bubble.set_action_on_show(FakeExtensionMessageBubble::BUBBLE_ACTION_IGNORE);
   bubble.Show();  // Simulate showing the bubble.
