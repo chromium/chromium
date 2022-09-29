@@ -438,6 +438,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DiskCache.0.TotalIOTimeRead" units="ms"
+    expires_after="2022-11-25">
+  <owner>jam@chromium.org</owner>
+  <owner>swarm-team@google.com</owner>
+  <summary>
+    The total time it takes to perform a read IO operation. This is emitted at
+    each cache read, and measures from the IO thread to background thread,
+    waiting for the disk read, and back to the IO thread.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalIOTimeWrite" units="ms"
+    expires_after="2022-11-25">
+  <owner>jam@chromium.org</owner>
+  <owner>swarm-team@google.com</owner>
+  <summary>
+    The total time it takes to perform a write IO operation. This is emitted at
+    each cache read, and measures from the IO thread to background thread,
+    optionally waiting for the disk write, and back to the IO thread.
+  </summary>
+</histogram>
+
 <histogram name="DiskCache.0.TotalTime" units="hours" expires_after="M85">
   <owner>rvargas@chromium.org</owner>
   <summary>Number of hours that the cache has been used.</summary>

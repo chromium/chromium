@@ -82,6 +82,11 @@ void BackendIO::OnIOComplete(int result) {
 void BackendIO::OnDone(bool cancel) {
   if (IsEntryOperation()) {
     CACHE_UMA(TIMES, "TotalIOTime", 0, ElapsedTime());
+    if (operation_ == OP_READ) {
+      CACHE_UMA(TIMES, "TotalIOTimeRead", 0, ElapsedTime());
+    } else if (operation_ == OP_WRITE) {
+      CACHE_UMA(TIMES, "TotalIOTimeWrite", 0, ElapsedTime());
+    }
   }
 
   if (ReturnsEntry() && result_ == net::OK) {
