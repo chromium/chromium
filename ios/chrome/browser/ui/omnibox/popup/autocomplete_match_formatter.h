@@ -21,7 +21,7 @@ struct AutocompleteMatch;
 @property(nonatomic, assign) BOOL defaultSearchEngineIsGoogle;
 
 // The pedal data for the underlying match.
-@property(nonatomic, assign) OmniboxPedalData* pedalData;
+@property(nonatomic, strong) OmniboxPedalData* pedalData;
 
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match
     NS_DESIGNATED_INITIALIZER;
