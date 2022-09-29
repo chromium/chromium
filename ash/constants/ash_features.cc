@@ -1143,6 +1143,11 @@ BASE_FEATURE(kInstantTethering,
              "InstantTethering",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables the internal server side speech recognition on ChromeOS.
+BASE_FEATURE(kInternalServerSideSpeechRecognition,
+             "InternalServerSideSpeechRecognition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Jelly features.
 BASE_FEATURE(kJelly, "Jelly", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2323,6 +2328,8 @@ bool IsAudioPeripheralVolumeGranularityEnabled() {
 }
 
 bool IsAudioSourceFetcherResamplingEnabled() {
+  // TODO(b/245617354): Once ready, enable this feature under
+  // kProjectorBleedingEdgeExperience flag as well.
   return base::FeatureList::IsEnabled(kAudioSourceFetcherResampling);
 }
 
@@ -2475,6 +2482,12 @@ bool IsInputInDiagnosticsAppEnabled() {
 bool IsInstantTetheringBackgroundAdvertisingSupported() {
   return base::FeatureList::IsEnabled(
       kInstantTetheringBackgroundAdvertisementSupport);
+}
+
+bool IsInternalServerSideSpeechRecognitionEnabled() {
+  // TODO(b/245614967): Once ready, enable this feature under
+  // kProjectorBleedingEdgeExperience flag as well.
+  return base::FeatureList::IsEnabled(kInternalServerSideSpeechRecognition);
 }
 
 bool IsJellyEnabled() {
