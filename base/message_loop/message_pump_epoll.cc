@@ -7,7 +7,6 @@
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <utility>
@@ -16,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/memory/ref_counted.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/base_tracing.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -182,7 +182,7 @@ void MessagePumpEpoll::UnregisterInterest(
 
   EpollEventEntry& entry = entry_it->second;
   auto& interests = entry.interests.container();
-  auto it = std::find(interests.begin(), interests.end(), interest);
+  auto it = ranges::find(interests, interest);
   DCHECK(it != interests.end());
   interests.erase(it);
 

@@ -6,12 +6,13 @@
 
 #include <objc/runtime.h>
 #include <stddef.h>
-#include <algorithm>
+
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -116,7 +117,7 @@ id Iterator::GetNext() {
 
 - (void)removeObserver:(id)observer {
   DCHECK(observer);
-  auto it = std::find(_observers.begin(), _observers.end(), observer);
+  auto it = base::ranges::find(_observers, observer);
   if (it != _observers.end()) {
     if (_invocationDepth)
       *it = nil;
