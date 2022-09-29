@@ -7,7 +7,6 @@ import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/
 // </if>
 
 import {AuthMode, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
-import {InlineLoginBrowserProxy} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {TestBrowserProxy} from '../test_browser_proxy.js';

@@ -61,7 +61,7 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
     document.body.innerHTML = '';
     testBrowserProxy = new TestInlineLoginBrowserProxy();
     testBrowserProxy.setDialogArguments(dialogArgs);
-    InlineLoginBrowserProxyImpl.instance_ = testBrowserProxy;
+    InlineLoginBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = '';
     inlineLoginComponent = /** @type {InlineLoginAppElement} */ (
         document.createElement('inline-login-app'));

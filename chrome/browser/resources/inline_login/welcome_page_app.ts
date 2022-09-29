@@ -7,16 +7,22 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import './account_manager_shared_css.js';
 
+import {getAccountAdditionOptionsFromJSON} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getAccountAdditionOptionsFromJSON} from './arc_account_picker/arc_util.js';
 import {InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
 import {getTemplate} from './welcome_page_app.html.js';
 
 
-/** @polymer */
+export interface WelcomePageAppElement {
+  $: {
+    checkbox: CrCheckboxElement,
+  };
+}
+
 export class WelcomePageAppElement extends PolymerElement {
   static get is() {
     return 'welcome-page-app';
@@ -59,8 +65,11 @@ export class WelcomePageAppElement extends PolymerElement {
     };
   }
 
-  /** @override */
-  ready() {
+  private isAvailableInArc: boolean;
+  private isArcFlow_: boolean;
+  private isArcAccountRestrictionsEnabled_: boolean;
+
+  override ready() {
     super.ready();
 
     if (this.isArcAccountRestrictionsEnabled_) {
@@ -82,30 +91,28 @@ export class WelcomePageAppElement extends PolymerElement {
     this.setUpLinkCallbacks_();
   }
 
-  /** @return {boolean} */
-  isSkipCheckboxChecked() {
+  isSkipCheckboxChecked(): boolean {
     return !!this.$.checkbox && this.$.checkbox.checked;
   }
 
-  /** @private */
-  setUpLinkCallbacks_() {
-    [this.shadowRoot.querySelector('#osSettingsLink'),
-     this.shadowRoot.querySelector('#appsSettingsLink'),
-     this.shadowRoot.querySelector('#newPersonLink')]
+  private setUpLinkCallbacks_() {
+    [this.shadowRoot!.querySelector('#osSettingsLink'),
+     this.shadowRoot!.querySelector('#appsSettingsLink'),
+     this.shadowRoot!.querySelector('#newPersonLink')]
         .filter(link => !!link)
         .forEach(link => {
-          link.addEventListener(
+          link!.addEventListener(
               'click',
               () => this.dispatchEvent(new CustomEvent('opened-new-window')));
         });
 
     if (this.isArcAccountRestrictionsEnabled_) {
-      const guestModeLink = this.shadowRoot.querySelector('#guestModeLink');
+      const guestModeLink = this.shadowRoot!.querySelector('#guestModeLink');
       if (guestModeLink) {
         guestModeLink.addEventListener('click', () => this.openGuestLink_());
       }
     } else {
-      const incognitoLink = this.shadowRoot.querySelector('#incognitoLink');
+      const incognitoLink = this.shadowRoot!.querySelector('#incognitoLink');
       if (incognitoLink) {
         incognitoLink.addEventListener(
             'click', () => this.openIncognitoLink_());
@@ -113,28 +120,16 @@ export class WelcomePageAppElement extends PolymerElement {
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isArcToggleVisible_() {
+  private isArcToggleVisible_(): boolean {
     return this.isArcAccountRestrictionsEnabled_ && !this.isArcFlow_;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getWelcomeTitle_() {
+  private getWelcomeTitle_(): string {
     return loadTimeData.getStringF(
         'accountManagerDialogWelcomeTitle', loadTimeData.getString('userName'));
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getWelcomeBody_() {
+  private getWelcomeBody_(): string {
     const welcomeBodyKey =
         (this.isArcAccountRestrictionsEnabled_ && this.isArcFlow_) ?
         'accountManagerDialogWelcomeBodyArc' :
@@ -142,16 +137,20 @@ export class WelcomePageAppElement extends PolymerElement {
     return loadTimeData.getString(welcomeBodyKey);
   }
 
-  /** @private */
-  openIncognitoLink_() {
+  private openIncognitoLink_() {
     InlineLoginBrowserProxyImpl.getInstance().showIncognito();
     // `showIncognito` will close the dialog.
   }
 
-  /** @private */
-  openGuestLink_() {
+  private openGuestLink_() {
     InlineLoginBrowserProxyImpl.getInstance().openGuestWindow();
     // `openGuestWindow` will close the dialog.
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'welcome-page-app': WelcomePageAppElement;
   }
 }
 

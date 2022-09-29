@@ -61,7 +61,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
 
     testBrowserProxy = new TestInlineLoginBrowserProxy();
     testBrowserProxy.setDialogArguments(dialogArgs);
-    InlineLoginBrowserProxyImpl.instance_ = testBrowserProxy;
+    InlineLoginBrowserProxyImpl.setInstance(testBrowserProxy);
 
     testArcBrowserProxy = new TestArcAccountPickerBrowserProxy();
     testArcBrowserProxy.setAccountsNotAvailableInArc(accountsNotAvailableInArc);

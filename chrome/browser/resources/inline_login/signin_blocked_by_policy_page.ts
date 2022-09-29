@@ -15,7 +15,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './signin_blocked_by_policy_page.html.js';
 
-/** @polymer */
 export class SigninBlockedByPolicyPageElement extends PolymerElement {
   static get is() {
     return 'signin-blocked-by-policy-page';
@@ -28,15 +27,14 @@ export class SigninBlockedByPolicyPageElement extends PolymerElement {
   /**
    * Gets body text with the respective user email and hosted domain for the
    * user that went through the sign-in flow.
-   * @param {string} email User's email used in the sign-in flow.
-   * @param {string} hostedDomain Hosted domain of the user's email used in the
-   *     sign-in flow.
-   * @param {string} deviceType name of the Chrome device type (e.g. Chromebook,
+   * @param email User's email used in the sign-in flow.
+   * @param hostedDomain Hosted domain of the user's email used in the sign-in
+   *     flow.
+   * @param deviceType name of the Chrome device type (e.g. Chromebook,
    *     Chromebox).
-   * @return {string}
-   * @private
    */
-  getBodyText_(email, hostedDomain, deviceType) {
+  private getBodyText_(email: string, hostedDomain: string, deviceType: string):
+      string {
     return loadTimeData.getStringF(
         'accountManagerDialogSigninBlockedByPolicyBody', email, hostedDomain,
         deviceType);

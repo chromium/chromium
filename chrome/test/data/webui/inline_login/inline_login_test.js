@@ -56,7 +56,7 @@ suite(inline_login_test.suiteName, () => {
   setup(() => {
     document.body.innerHTML = '';
     testBrowserProxy = new TestInlineLoginBrowserProxy();
-    InlineLoginBrowserProxyImpl.instance_ = testBrowserProxy;
+    InlineLoginBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = '';
     inlineLoginComponent = /** @type {InlineLoginAppElement} */ (
         document.createElement('inline-login-app'));

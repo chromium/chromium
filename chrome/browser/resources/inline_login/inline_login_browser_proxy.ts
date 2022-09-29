@@ -2,141 +2,130 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {AuthCompletedCredentials} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-import {AuthCompletedCredentials} from './gaia_auth_host/authenticator.js';
-
-/** @interface */
-export class InlineLoginBrowserProxy {
+export interface InlineLoginBrowserProxy {
   /** Send 'initialize' message to prepare for starting auth. */
-  initialize() {}
+  initialize(): void;
 
   /**
    * Send 'authExtensionReady' message to handle tasks after auth extension
    * loads.
    */
-  authExtensionReady() {}
+  authExtensionReady(): void;
 
   /**
    * Send 'switchToFullTab' message to switch the UI from a constrained dialog
    * to a full tab.
-   * @param {!string} url
    */
-  switchToFullTab(url) {}
+  switchToFullTab(url: string): void;
 
   /**
    * Send 'completeLogin' message to complete login.
-   * @param {!AuthCompletedCredentials} credentials
    */
-  completeLogin(credentials) {}
+  completeLogin(credentials: AuthCompletedCredentials): void;
 
   /**
    * Send 'lstFetchResults' message.
-   * @param {string} arg The string representation of the json data returned by
-   * the sign in dialog after it has finished the sign in process.
+   * @param arg The string representation of the json data returned by
+   *     the sign in dialog after it has finished the sign in process.
    */
-  lstFetchResults(arg) {}
+  lstFetchResults(arg: string): void;
 
   /**
    * Send 'metricsHandler:recordAction' message.
-   * @param {string} metricsAction The action to be recorded.
+   * @param metricsAction The action to be recorded.
    */
-  recordAction(metricsAction) {}
+  recordAction(metricsAction: string): void;
 
   /** Send 'showIncognito' message to the handler */
-  showIncognito() {}
+  showIncognito(): void;
 
   /**
    * Send 'getAccounts' message to the handler. The promise will be resolved
    * with the list of emails of accounts in session.
-   * @return {Promise<Array<string>>}
    */
-  getAccounts() {}
+  getAccounts(): Promise<string[]>;
 
   /** Send 'dialogClose' message to close the login dialog. */
-  dialogClose() {}
+  dialogClose(): void;
 
   // <if expr="chromeos_ash">
   /**
    * Send 'skipWelcomePage' message to the handler.
-   * @param {boolean} skip Whether the welcome page should be skipped.
+   * @param skip Whether the welcome page should be skipped.
    */
-  skipWelcomePage(skip) {}
+  skipWelcomePage(skip: boolean): void;
 
   /** Send 'openGuestWindow' message to the handler */
-  openGuestWindow() {}
+  openGuestWindow(): void;
 
   /**
-   * @return {?string} JSON-encoded dialog arguments.
+   * @return JSON-encoded dialog arguments.
    */
-  getDialogArguments() {}
+  getDialogArguments(): string|null;
   // </if>
 }
 
-/** @implements {InlineLoginBrowserProxy} */
-export class InlineLoginBrowserProxyImpl {
-  /** @override */
+export class InlineLoginBrowserProxyImpl implements InlineLoginBrowserProxy {
   initialize() {
     chrome.send('initialize');
   }
 
-  /** @override */
   authExtensionReady() {
     chrome.send('authExtensionReady');
   }
 
-  /** @override */
-  switchToFullTab(url) {
+  switchToFullTab(url: string) {
     chrome.send('switchToFullTab', [url]);
   }
 
-  /** @override */
-  completeLogin(credentials) {
+  completeLogin(credentials: AuthCompletedCredentials) {
     chrome.send('completeLogin', [credentials]);
   }
 
-  /** @override */
-  lstFetchResults(arg) {
+  lstFetchResults(arg: string) {
     chrome.send('lstFetchResults', [arg]);
   }
 
-  /** @override */
-  recordAction(metricsAction) {
+  recordAction(metricsAction: string) {
     chrome.send('metricsHandler:recordAction', [metricsAction]);
   }
 
-  /** @override */
   showIncognito() {
     chrome.send('showIncognito');
   }
 
-  /** @override */
   getAccounts() {
     return sendWithPromise('getAccounts');
   }
 
-  /** @override */
   dialogClose() {
     chrome.send('dialogClose');
   }
 
   // <if expr="chromeos_ash">
-  /** @override */
-  skipWelcomePage(skip) {
+  skipWelcomePage(skip: boolean) {
     chrome.send('skipWelcomePage', [skip]);
   }
 
-  /** @override */
   openGuestWindow() {
     chrome.send('openGuestWindow');
   }
 
-  /** @override */
   getDialogArguments() {
     return chrome.getVariableValue('dialogArguments');
   }
   // </if>
+
+  static getInstance(): InlineLoginBrowserProxy {
+    return instance || (instance = new InlineLoginBrowserProxyImpl());
+  }
+
+  static setInstance(obj: InlineLoginBrowserProxy) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(InlineLoginBrowserProxyImpl);
+let instance: InlineLoginBrowserProxy|null = null;

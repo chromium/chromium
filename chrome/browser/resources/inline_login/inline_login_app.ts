@@ -8,24 +8,28 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {isRTL} from 'chrome://resources/js/util.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 // <if expr="chromeos_ash">
-import './arc_account_picker/arc_account_picker_app.js';
+import 'chrome://chrome-signin/arc_account_picker/arc_account_picker_app.js';
 import './gaia_action_buttons/gaia_action_buttons.js';
 import './signin_blocked_by_policy_page.js';
 import './signin_error_page.js';
 import './welcome_page_app.js';
 import './strings.m.js';
-import {getAccountAdditionOptionsFromJSON} from './arc_account_picker/arc_util.js';
-import {WelcomePageAppElement} from './welcome_page_app.js';
 // </if>
 
-import {AuthCompletedCredentials, Authenticator, AuthParams} from './gaia_auth_host/authenticator.js';
+import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {isRTL} from 'chrome://resources/js/util.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
+// <if expr="chromeos_ash">
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {getAccountAdditionOptionsFromJSON} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
+// </if>
+
+import {AuthCompletedCredentials, Authenticator, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
 import {getTemplate} from './inline_login_app.html.js';
 import {InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
 
@@ -34,26 +38,46 @@ import {InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_log
  * Chrome desktop (Windows only).
  */
 
-/** @enum {string} */
-export const View = {
-  ADD_ACCOUNT: 'addAccount',
-  SIGNIN_BLOCKED_BY_POLICY: 'signinBlockedByPolicy',
-  SIGNIN_ERROR: 'signinError',
-  WELCOME: 'welcome',
-  ARC_ACCOUNT_PICKER: 'arcAccountPicker',
-};
+export enum View {
+  ADD_ACCOUNT = 'addAccount',
+  // <if expr="chromeos_ash">
+  ARC_ACCOUNT_PICKER = 'arcAccountPicker',
+  SIGNIN_BLOCKED_BY_POLICY = 'signinBlockedByPolicy',
+  SIGNIN_ERROR = 'signinError',
+  WELCOME = 'welcome',
+  // </if>
+}
 
+interface NewWindowProperties {
+  targetUrl: string;
+  window: {
+    discard(): void,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- */
-const InlineLoginAppElementBase =
-    mixinBehaviors([WebUIListenerBehavior, I18nBehavior], PolymerElement);
+interface WebViewElement extends HTMLElement {
+  canGoBack(): boolean;
+  back(): void;
+}
 
-/** @polymer */
+// <if expr="chromeos_ash">
+interface SigninErrorPageData {
+  email: string;
+  hostedDomain: string;
+  signinBlockedByPolicy: boolean;
+  deviceType: string;
+}
+// </if>
+
+export interface InlineLoginAppElement {
+  $: {
+    signinFrame: WebViewElement,
+    viewManager: CrViewManagerElement,
+  };
+}
+
+const InlineLoginAppElementBase = WebUIListenerMixin(I18nMixin(PolymerElement));
+
 export class InlineLoginAppElement extends InlineLoginAppElementBase {
   static get is() {
     return 'inline-login-app';
@@ -73,7 +97,6 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
       /**
        * Indicates whether the page is loading.
-       * @private {boolean}
        */
       loading_: {
         type: Boolean,
@@ -82,7 +105,6 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
       /**
        * Indicates whether the account is being verified.
-       * @private {boolean}
        */
       verifyingAccount_: {
         type: Boolean,
@@ -91,7 +113,6 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
       /**
        * The auth extension host instance.
-       * @private {?Authenticator}
        */
       authExtHost_: {
         type: Object,
@@ -101,7 +122,6 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       // <if expr="chromeos_ash">
       /*
        * True if welcome page should not be shown.
-       * @private
        */
       shouldSkipWelcomePage_: {
         type: Boolean,
@@ -113,7 +133,6 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
       /*
        * True if `kArcAccountRestrictions` feature is enabled.
-       * @private
        */
       isArcAccountRestrictionsEnabled_: {
         type: Boolean,
@@ -125,7 +144,6 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
       /*
        * True if the dialog is open for reauthentication.
-       * @private
        */
       isReauthentication_: {
         type: Boolean,
@@ -134,7 +152,6 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
       /*
        * True if the account should be available in ARC++ after addition.
-       * @private
        */
       isAvailableInArc_: {
         type: Boolean,
@@ -143,20 +160,16 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
       /**
        * User's email used in the sign-in flow.
-       * @private {string}
        */
       email_: {type: String, value: ''},
 
       /**
        * Hosted domain of the user's email used in the sign-in flow.
-       * @private {string}
        */
       hostedDomain_: {type: String, value: ''},
 
       /**
-       * @return {boolean} True if secondary account sign-ins are allowed, false
-       *    otherwise.
-       * @private
+       * Whether secondary account sign-ins are allowed.
        */
       isSecondaryGoogleAccountSigninAllowed_: {
         type: Boolean,
@@ -168,7 +181,6 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
       /**
        * Id of the screen that is currently displayed.
-       * @private {View}
        */
       currentView_: {
         type: String,
@@ -177,23 +189,29 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
+  private loading_: boolean;
+  private verifyingAccount_: boolean;
+  private authExtHost_: Authenticator|null;
 
-    /**
-     * Whether the login UI is loaded for signing in primary account.
-     * @private {boolean}
-     */
-    this.isLoginPrimaryAccount_ = false;
+  // <if expr="chromeos_ash">
+  private shouldSkipWelcomePage_: boolean;
+  private isArcAccountRestrictionsEnabled_: boolean;
+  private isReauthentication_: boolean;
+  private isAvailableInArc_: boolean;
+  private email_: string;
+  private hostedDomain_: string;
+  private isSecondaryGoogleAccountSigninAllowed_: boolean;
+  // </if>
 
+  private currentView_: View;
 
-    /** @private {InlineLoginBrowserProxy} */
-    this.browserProxy_ = InlineLoginBrowserProxyImpl.getInstance();
-  }
+  /** Whether the login UI is loaded for signing in primary account. */
+  private isLoginPrimaryAccount_: boolean = false;
 
-  /** @override */
-  ready() {
+  private browserProxy_: InlineLoginBrowserProxy =
+      InlineLoginBrowserProxyImpl.getInstance();
+
+  override ready() {
     super.ready();
 
     // <if expr="chromeos_ash">
@@ -207,66 +225,53 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     }
     // </if>
 
-    this.authExtHost_ = new Authenticator(
-        /** @type {!WebView} */ (this.$.signinFrame));
+    this.authExtHost_ = new Authenticator(this.$.signinFrame);
     this.addAuthExtHostListeners_();
     this.browserProxy_.initialize();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
-        'load-auth-extension', data => this.loadAuthExtension_(data));
+        'load-auth-extension',
+        (data: AuthParams) => this.loadAuthExtension_(data));
     this.addWebUIListener(
-        'send-lst-fetch-results', arg => this.sendLSTFetchResults_(arg));
+        'send-lst-fetch-results',
+        (arg: string) => this.sendLSTFetchResults_(arg));
     this.addWebUIListener('close-dialog', () => this.closeDialog_());
     // <if expr="chromeos_ash">
     this.addWebUIListener(
-        'show-signin-error-page', data => this.signinErrorShowView_(data));
+        'show-signin-error-page',
+        (data: SigninErrorPageData) => this.signinErrorShowView_(data));
     // </if>
   }
 
-  /** @private */
-  addAuthExtHostListeners_() {
+  private addAuthExtHostListeners_() {
+    assert(this.authExtHost_);
     this.authExtHost_.addEventListener(
-        'dropLink',
-        e => this.onDropLink_(
-            /** @type {!CustomEvent<string>} */ (e)));
+        'dropLink', e => this.onDropLink_(e as CustomEvent<string>));
     this.authExtHost_.addEventListener(
         'newWindow',
-        e => this.onNewWindow_(
-            /** @type {!CustomEvent<NewWindowProperties>} */ (e)));
+        e => this.onNewWindow_(e as CustomEvent<NewWindowProperties>));
     this.authExtHost_.addEventListener('ready', () => this.onAuthReady_());
     this.authExtHost_.addEventListener(
-        'resize',
-        e => this.onResize_(
-            /** @type {!CustomEvent<string>} */ (e)));
+        'resize', e => this.onResize_(e as CustomEvent<string>));
     this.authExtHost_.addEventListener(
         'authCompleted',
-        e => this.onAuthCompleted_(
-            /** @type {!CustomEvent<!AuthCompletedCredentials>} */ (e)));
+        e => this.onAuthCompleted_(e as CustomEvent<AuthCompletedCredentials>));
     this.authExtHost_.addEventListener(
         'showIncognito', () => this.onShowIncognito_());
     this.authExtHost_.addEventListener(
         'getAccounts', () => this.onGetAccounts_());
   }
 
-  /**
-   * @param {!CustomEvent<string>} e
-   * @private
-   */
-  onDropLink_(e) {
+  private onDropLink_(e: CustomEvent<string>) {
     // Navigate to the dropped link.
     window.location.href = e.detail;
   }
 
-  /**
-   * @param {!CustomEvent<NewWindowProperties>} e
-   * @private
-   */
-  onNewWindow_(e) {
+  private onNewWindow_(e: CustomEvent<NewWindowProperties>) {
     window.open(e.detail.targetUrl, '_blank');
     e.detail.window.discard();
     // <if expr="chromeos_ash">
@@ -276,8 +281,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     // </if>
   }
 
-  /** @private */
-  onAuthReady_() {
+  private onAuthReady_() {
     this.loading_ = false;
     if (this.isLoginPrimaryAccount_) {
       this.browserProxy_.recordAction('Signin_SigninPage_Shown');
@@ -285,21 +289,12 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     this.browserProxy_.authExtensionReady();
   }
 
-  /**
-   * @param {!CustomEvent<string>} e
-   * @private
-   */
-  onResize_(e) {
+  private onResize_(e: CustomEvent<string>) {
     this.browserProxy_.switchToFullTab(e.detail);
   }
 
-  /**
-   * @param {!CustomEvent<!AuthCompletedCredentials>} e
-   * @private
-   */
-  onAuthCompleted_(e) {
+  private onAuthCompleted_(e: CustomEvent<AuthCompletedCredentials>) {
     this.verifyingAccount_ = true;
-    /** @type {!AuthCompletedCredentials} */
     const credentials = e.detail;
 
     // <if expr="chromeos_ash">
@@ -311,24 +306,23 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     this.browserProxy_.completeLogin(credentials);
   }
 
-  /** @private */
-  onShowIncognito_() {
+  private onShowIncognito_() {
     this.browserProxy_.showIncognito();
   }
 
-  /** @private */
-  onGetAccounts_() {
+  private onGetAccounts_() {
     this.browserProxy_.getAccounts().then(result => {
+      assert(this.authExtHost_);
       this.authExtHost_.getAccountsResponse(result);
     });
   }
 
   /**
    * Loads auth extension.
-   * @param {!AuthParams} data Parameters for auth extension.
-   * @private
+   * @param data Parameters for auth extension.
    */
-  loadAuthExtension_(data) {
+  private loadAuthExtension_(data: AuthParams) {
+    assert(this.authExtHost_);
     this.authExtHost_.load(data.authMode, data);
     this.loading_ = true;
     this.isLoginPrimaryAccount_ = data.isLoginPrimaryAccount;
@@ -346,47 +340,42 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
    * the inline signin is loaded with reason kFetchLstOnly. Handlers of
    * this message would expect a single argument a base::Dictionary value that
    * contains the values fetched from the gaia sign in endpoint.
-   * @param {string} arg The string representation of the json data returned by
+   * @param arg The string representation of the json data returned by
    *    the sign in dialog after it has finished the sign in process.
-   * @private
    */
-  sendLSTFetchResults_(arg) {
+  private sendLSTFetchResults_(arg: string) {
     this.browserProxy_.lstFetchResults(arg);
   }
 
   /**
-   * @param {boolean} loading Indicates whether the page is loading.
-   * @param {boolean} verifyingAccount Indicates whether the user account is
-   *  being verified.
-   * @return {boolean}
-   * @private
+   * @param loading Indicates whether the page is loading.
+   * @param verifyingAccount Indicates whether the user account is being
+   *     verified.
    */
-  isSpinnerActive_(loading, verifyingAccount) {
+  private isSpinnerActive_(loading: boolean, verifyingAccount: boolean):
+      boolean {
     return loading || verifyingAccount;
   }
 
   /**
    * Closes the login dialog.
-   * @private
    */
-  closeDialog_() {
+  private closeDialog_() {
     this.browserProxy_.dialogClose();
   }
 
   // <if expr="chromeos_ash">
   /**
    * Navigates to the welcome screen.
-   * @private
    */
-  goToWelcomeScreen_() {
+  private goToWelcomeScreen_() {
     this.switchView_(View.WELCOME);
   }
 
   /**
    * Navigates back in the web view if possible. Otherwise closes the dialog.
-   * @private
    */
-  handleGoBack_() {
+  private handleGoBack_() {
     if (this.$.signinFrame.canGoBack()) {
       this.$.signinFrame.back();
       this.$.signinFrame.focus();
@@ -398,19 +387,12 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getBackButtonIcon_() {
+  private getBackButtonIcon_(): string {
     return isRTL() ? 'cr:chevron-right' : 'cr:chevron-left';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getNextButtonLabel_(currentView, isArcAccountRestrictionsEnabled) {
+  private getNextButtonLabel_(
+      currentView: View, isArcAccountRestrictionsEnabled: boolean): string {
     if (currentView === View.SIGNIN_BLOCKED_BY_POLICY ||
         currentView === View.SIGNIN_ERROR) {
       return this.i18n('ok');
@@ -422,55 +404,46 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   }
 
   /**
-   * @param {View} currentView Identifier of the view that is being shown.
-   * @param {boolean} verifyingAccount Indicates whether the user account is
-   *  being verified.
-   * @return {boolean}
-   * @private
+   * @param currentView Identifier of the view that is being shown.
+   * @param verifyingAccount Indicates whether the user account is being
+   *     verified.
    */
-  shouldShowBackButton_(currentView, verifyingAccount) {
+  private shouldShowBackButton_(currentView: View, verifyingAccount: boolean):
+      boolean {
     return currentView === View.ADD_ACCOUNT && !verifyingAccount;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowOkButton_() {
+  private shouldShowOkButton_(): boolean {
     return this.currentView_ === View.WELCOME ||
         this.currentView_ === View.SIGNIN_BLOCKED_BY_POLICY ||
         this.currentView_ === View.SIGNIN_ERROR;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowGaiaButtons_() {
+  private shouldShowGaiaButtons_(): boolean {
     return this.currentView_ === View.ADD_ACCOUNT;
   }
   // </if>
 
   /**
    * Navigates to the default view.
-   * @private
    */
-  switchToDefaultView_() {
+  private switchToDefaultView_() {
     const view = this.getDefaultView_();
 
     // <if expr="chromeos_ash">
     if (this.isArcAccountRestrictionsEnabled_ &&
         view === View.ARC_ACCOUNT_PICKER) {
-      this.shadowRoot.querySelector('arc-account-picker-app')
-          .loadAccounts()
-          .then(
-              accountsFound => {
-                this.switchView_(
-                    accountsFound ? View.ARC_ACCOUNT_PICKER : View.WELCOME);
-              },
-              reject => {
-                this.switchView_(View.WELCOME);
-              });
+      const arcAccountPickerApp =
+          this.shadowRoot!.querySelector('arc-account-picker-app');
+      assert(arcAccountPickerApp);
+      arcAccountPickerApp.loadAccounts().then(
+          (accountsFound: boolean) => {
+            this.switchView_(
+                accountsFound ? View.ARC_ACCOUNT_PICKER : View.WELCOME);
+          },
+          (_error: Error) => {
+            this.switchView_(View.WELCOME);
+          });
       return;
     }
     // </if>
@@ -478,11 +451,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     this.switchView_(view);
   }
 
-  /**
-   * @return {View}
-   * @private
-   */
-  getDefaultView_() {
+  private getDefaultView_(): View {
     // TODO(https://crbug.com/1155041): simplify this when the file will be
     // split into CrOS and non-CrOS parts.
     // <if expr="not chromeos_ash">
@@ -506,23 +475,19 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   }
 
   /**
-   * @param {View} id identifier of the view that should be shown.
-   * @param {string} enterAnimation enter animation for the new view.
-   * @param {string} exitAnimation exit animation for the previous view.
-   * @private
+   * @param id identifier of the view that should be shown.
+   * @param enterAnimation enter animation for the new view.
+   * @param exitAnimation exit animation for the previous view.
    */
-  switchView_(id, enterAnimation = 'fade-in', exitAnimation = 'fade-out') {
+  private switchView_(
+      id: View, enterAnimation: string = 'fade-in',
+      exitAnimation: string = 'fade-out') {
     this.currentView_ = id;
-    /** @type {CrViewManagerElement} */ (this.$.viewManager)
-        .switchView(id, enterAnimation, exitAnimation);
+    this.$.viewManager.switchView(id, enterAnimation, exitAnimation);
     this.dispatchEvent(new CustomEvent('switch-view-notify-for-testing'));
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isWelcomePageEnabled_() {
+  private isWelcomePageEnabled_(): boolean {
     // <if expr="not chromeos_ash">
     return false;
     // </if>
@@ -537,12 +502,8 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
    * Shows the sign-in blocked by policy screen if the user account is not
    * allowed to sign-in. Or shows the sign-in error screen if any error occurred
    * during the sign-in flow.
-   * @param {{email:string, hostedDomain:string, signinBlockedByPolicy:boolean,
-   *  deviceType:string}}
-   * data parameters.
-   * @private
    */
-  signinErrorShowView_(data) {
+  private signinErrorShowView_(data: SigninErrorPageData) {
     this.verifyingAccount_ = false;
     if (data.signinBlockedByPolicy) {
       this.set('email_', data.email);
@@ -557,15 +518,14 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     this.setFocusToWebview_();
   }
 
-  /** @private */
-  onOkButtonClick_() {
+  private onOkButtonClick_() {
     switch (this.currentView_) {
       case View.WELCOME:
         this.switchView_(View.ADD_ACCOUNT);
-        const skipChecked =
-            /** @type {WelcomePageAppElement} */ (
-                this.shadowRoot.querySelector('welcome-page-app'))
-                .isSkipCheckboxChecked();
+        const welcomePageApp =
+            this.shadowRoot!.querySelector('welcome-page-app');
+        assert(welcomePageApp);
+        const skipChecked = welcomePageApp.isSkipCheckboxChecked();
         this.browserProxy_.skipWelcomePage(skipChecked);
         this.setFocusToWebview_();
         break;
@@ -576,16 +536,20 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     }
   }
 
-  /** @private */
-  setFocusToWebview_() {
+  private setFocusToWebview_() {
     this.$.signinFrame.focus();
   }
   // </if>
 
-  /** @param {Object} authExtHost */
-  setAuthExtHostForTest(authExtHost) {
-    this.authExtHost_ = /** @type {!Authenticator} */ (authExtHost);
+  private setAuthExtHostForTest(authExtHost: Authenticator) {
+    this.authExtHost_ = authExtHost;
     this.addAuthExtHostListeners_();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'inline-login-app': InlineLoginAppElement;
   }
 }
 

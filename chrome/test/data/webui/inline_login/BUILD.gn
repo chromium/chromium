@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
@@ -30,106 +29,4 @@ generate_grd("build_grdp") {
   deps = [ ":preprocess" ]
   manifest_files = [ "$target_gen_dir/preprocessed_manifest.json" ]
   resource_path_prefix = "inline_login"
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/gaia_auth_host/=" + rebase_path(
-                            "//chrome/browser/resources/gaia_auth_host/",
-                            root_build_dir) + "\"",
-                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/arc_account_picker/=" + rebase_path(
-                            "//chrome/browser/resources/chromeos/arc_account_picker/",
-                            root_build_dir) + "\"",
-                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/=" + rebase_path(
-                            "//chrome/browser/resources/inline_login/",
-                            root_build_dir) + "\"",
-                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./gen/chrome/test/data/webui/tsc\"",
-                    "js_module_root=" + rebase_path("//chrome/test/data/webui/",
-                                                    root_build_dir),
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                    "js_module_root=" +
-                        rebase_path("//chrome/browser/resources/",
-                                    root_build_dir),
-                    "js_module_root=./gen/chrome/browser/resources/",
-                    "js_module_root=" +
-                        rebase_path("//chrome/browser/resources/inline_login/",
-                                    root_build_dir),
-                    "js_module_root=./gen/chrome/browser/resources/inline_login/",
-                    "js_module_root=./gen/chrome/browser/resources/inline_login/preprocessed/",
-                  ]
-  deps = [
-    ":inline_login_test",
-    ":inline_login_test_util",
-  ]
-  if (is_chromeos_ash) {
-    deps += [
-      ":arc_account_picker_page_test",
-      ":inline_login_signin_blocked_by_policy_page_test",
-      ":inline_login_welcome_page_test",
-    ]
-  }
-}
-
-js_library("inline_login_test") {
-  deps = [
-    ":inline_login_test_util",
-    "..:test_util",
-    "//chrome/browser/resources/inline_login:inline_login_app",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-if (is_chromeos_ash) {
-  js_library("inline_login_welcome_page_test") {
-    deps = [
-      ":inline_login_test_util",
-      "..:test_util",
-      "//chrome/browser/resources/inline_login:inline_login_app",
-      "//ui/webui/resources/js:assert",
-      "//ui/webui/resources/js:load_time_data.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-
-  js_library("inline_login_signin_blocked_by_policy_page_test") {
-    deps = [
-      ":inline_login_test_util",
-      "..:test_util",
-      "//chrome/browser/resources/inline_login:inline_login_app",
-      "//ui/webui/resources/js:assert",
-      "//ui/webui/resources/js:load_time_data.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-
-  js_library("arc_account_picker_page_test") {
-    deps = [
-      ":inline_login_test_util",
-      "..:test_util",
-      "../chromeos/arc_account_picker:test_util",
-      "//chrome/browser/resources/inline_login:inline_login_app",
-      "//ui/webui/resources/js:assert",
-      "//ui/webui/resources/js:load_time_data.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-}
-
-js_library("inline_login_test_util") {
-  sources = [ "$target_gen_dir/inline_login_test_util.js" ]
-  deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/gaia_auth_host:authenticator",
-    "//chrome/browser/resources/inline_login:inline_login_browser_proxy",
-    "//ui/webui/resources/js/cr:event_target",
-  ]
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/resources/chromeos/arc_account_picker:arc_util",
-    ]
-  }
-  extra_deps = [ ":preprocess" ]
 }

@@ -295,10 +295,7 @@ if (include_js_tests) {
 }
 
 group("closure_compile") {
-  deps = [
-    ":closure_compile_local",
-    "inline_login:closure_compile",
-  ]
+  deps = [ ":closure_compile_local" ]
   if (is_chromeos_ash) {
     deps += [
       "chromeos:closure_compile",
