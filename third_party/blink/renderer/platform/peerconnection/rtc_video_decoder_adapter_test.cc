@@ -255,6 +255,21 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
     return input_image;
   }
 
+  webrtc::EncodedImage GetEncodedImageWithSingleSpatialLayer(
+      uint32_t timestamp) {
+    constexpr int kSpatialIndex = 1;
+    webrtc::EncodedImage input_image;
+    static const uint8_t data[1] = {0};
+    input_image.SetEncodedData(
+        webrtc::EncodedImageBuffer::Create(data, sizeof(data)));
+    input_image._frameType = webrtc::VideoFrameType::kVideoFrameKey;
+    input_image.SetTimestamp(timestamp);
+    // Input image only has 1 spatial layer, but non-zero spatial index.
+    input_image.SetSpatialIndex(kSpatialIndex);
+    input_image.SetSpatialLayerFrameSize(kSpatialIndex, sizeof(data));
+    return input_image;
+  }
+
   void SetSdpFormat(const webrtc::SdpVideoFormat& sdp_format) {
     sdp_format_ = sdp_format;
   }
@@ -543,6 +558,26 @@ TEST_F(RTCVideoDecoderAdapterTest, DoesNotFallBackForHighResolution) {
     RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting();
 }
 
+TEST_F(RTCVideoDecoderAdapterTest, DecodesImageWithSingleSpatialLayer) {
+  ASSERT_TRUE(BasicSetup());
+  webrtc::EncodedImage input_image = GetEncodedImageWithSingleSpatialLayer(0);
+  scoped_refptr<media::DecoderBuffer> decoder_buffer;
+  EXPECT_CALL(*video_decoder_, Decode_(_, _))
+      .WillOnce(::testing::DoAll(
+          ::testing::SaveArg<0>(&decoder_buffer),
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk)));
+  EXPECT_EQ(rtc_video_decoder_adapter_->Decode(input_image, false, 0),
+            WEBRTC_VIDEO_CODEC_OK);
+
+  EXPECT_CALL(decoded_cb_, Run(_));
+  FinishDecode(0);
+  media_thread_.FlushForTesting();
+
+  // Check the side data was not set as there was only 1 spatial layer.
+  ASSERT_TRUE(decoder_buffer);
+  EXPECT_EQ(0u, decoder_buffer->side_data_size());
+}
+
 #if BUILDFLAG(IS_WIN)
 TEST_F(RTCVideoDecoderAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
   ASSERT_TRUE(BasicSetup());
@@ -566,6 +601,7 @@ TEST_F(RTCVideoDecoderAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
 TEST_F(RTCVideoDecoderAdapterTest,
        FallbackToSWSinceDecodeVP9kSVCStreamWithoutD3D11) {
   ASSERT_TRUE(BasicSetup());
+  EXPECT_FALSE(base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding));
   SetSpatialIndex(2);
   // kTesting will represent hw decoders for other use cases mentioned above.
   EXPECT_CALL(*video_decoder_, Decode_(_, _)).Times(0);
