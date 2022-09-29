@@ -19,6 +19,7 @@ class TestPasskeysBrowserProxy extends TestBrowserProxy implements
     super([
       'enumerate',
       'delete',
+      'edit',
     ]);
   }
 
@@ -30,6 +31,7 @@ class TestPasskeysBrowserProxy extends TestBrowserProxy implements
     this.nextPasskeys_ = passkeys;
     this.resetResolver('enumerate');
     this.resetResolver('delete');
+    this.resetResolver('edit');
   }
 
   hasPasskeys(): Promise<boolean> {
@@ -46,6 +48,11 @@ class TestPasskeysBrowserProxy extends TestBrowserProxy implements
     return this.consumeNext_();
   }
 
+  edit(credentialId: string, newUsername: string): Promise<Passkey[]|null> {
+    this.methodCalled('edit', credentialId, newUsername);
+    return this.consumeNext_();
+  }
+
   private consumeNext_(): Promise<Passkey[]|null> {
     const result = this.nextPasskeys_;
     this.nextPasskeys_ = null;
@@ -54,7 +61,7 @@ class TestPasskeysBrowserProxy extends TestBrowserProxy implements
 }
 
 /**
- * Get the usernames of the passkeys currently displayed.
+ * Gets the usernames of the passkeys currently displayed.
  */
 function getUsernamesFromList(list: HTMLElement): string[] {
   const inputs = Array.from(list.shadowRoot!.querySelectorAll<HTMLElement>(
@@ -63,7 +70,7 @@ function getUsernamesFromList(list: HTMLElement): string[] {
 }
 
 /**
- * Click the `num`th drop-down icon in the list of passkeys.
+ * Clicks the `num`th drop-down icon in the list of passkeys.
  */
 function clickDots(page: HTMLElement, num: number) {
   const icon = page.shadowRoot!.querySelectorAll<HTMLElement>(
@@ -73,7 +80,7 @@ function clickDots(page: HTMLElement, num: number) {
 }
 
 /**
- * Click the button named `name` in the drop-down.
+ * Clicks the button named `name` in the drop-down.
  */
 function clickButton(page: HTMLElement, name: string) {
   const menu = page.shadowRoot!.querySelector<HTMLElement>('#menu')!;

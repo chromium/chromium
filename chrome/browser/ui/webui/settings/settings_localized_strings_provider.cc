@@ -1071,6 +1071,12 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_PASSWORDS_NOTE_CHARACTER_COUNT_WARNING},
     {"passwordsTimedOut", IDS_SETTINGS_PASSWORDS_TIMED_OUT},
     {"passwordsGotIt", IDS_SETTINGS_GOT_IT},
+#if BUILDFLAG(IS_MAC)
+    {"passkeyLengthError", IDS_SETTINGS_PASSKEYS_LENGTH_ERROR},
+    {"editPasskeySiteLabel", IDS_SETTINGS_PASSKEYS_SITE_LABEL},
+    {"editPasskeyDialogTitle", IDS_SETTINGS_PASSKEYS_DIALOG_TITLE},
+    {"passkeyEditDialogFootnote", IDS_SETTINGS_PASSKEYS_EDIT_DIALOG_FOOTNOTE},
+#endif
     {"noAddressesFound", IDS_SETTINGS_ADDRESS_NONE},
     {"noPasswordsFound", IDS_SETTINGS_PASSWORDS_NONE},
     {"noPasswordsFoundImport", IDS_SETTINGS_PASSWORDS_NONE_WITH_IMPORT},

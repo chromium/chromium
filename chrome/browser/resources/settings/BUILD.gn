@@ -276,6 +276,8 @@ build_webui("build") {
 
   if (!is_mac) {
     web_component_files += [ "a11y_page/captions_subpage.ts" ]
+  } else {
+    web_component_files += [ "autofill_page/passkey_edit_dialog.ts" ]
   }
 
   if (is_win) {

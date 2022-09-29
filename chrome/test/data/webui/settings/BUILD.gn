@@ -35,6 +35,10 @@ preprocessed_files = [
   "test_sync_browser_proxy.ts",
 ]
 
+if (is_mac) {
+  preprocessed_files += [ "passkey_edit_dialog_test.ts" ]
+}
+
 if (!is_chromeos_ash) {
   preprocessed_files += [
     "test_languages_browser_proxy.ts",

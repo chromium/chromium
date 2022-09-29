@@ -14,7 +14,10 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import '../site_favicon.js';
 import './passkeys_delete_confirmation_dialog.js';
+// <if expr="is_macosx">
+import './passkey_edit_dialog.js';
 
+// </if>
 import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -23,6 +26,10 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 
+// <if expr="is_macosx">
+import {PasskeyEditDialogElement, SavedPasskeyEditedEvent} from './passkey_edit_dialog.js';
+// </if>
+
 import {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 import {getTemplate} from './passkeys_subpage.html.js';
 
@@ -30,6 +37,9 @@ export interface SettingsPasskeysSubpageElement {
   $: {
     deleteErrorDialog: CrLazyRenderElement<CrDialogElement>,
     menu: CrActionMenuElement,
+    // <if expr="is_macosx">
+    editPasskeyDialog: PasskeyEditDialogElement,
+    // </if>
   };
 }
 
@@ -49,8 +59,19 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
         type: String,
         value: '',
       },
+      // <if expr="is_macosx">
+      showEditDialog_: Boolean,
+      username_: String,
+      relyingPartyId_: String,
+      // </if>
     };
   }
+
+  // <if expr="is_macosx">
+  private showEditDialog_: boolean;
+  private username_: string;
+  private relyingPartyId_: string;
+  // </if>
 
   private filter: string;
   private passkeys_: Passkey[];
@@ -115,6 +136,13 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
     this.$.menu.showAt(e.target as HTMLElement, {
       anchorAlignmentY: AnchorAlignment.AFTER_END,
     });
+    // <if expr="is_macosx">
+    const existingEntry = this.passkeys_.find(entry => {
+      return entry.credentialId === this.credentialIdForActionMenu_;
+    })!;
+    this.username_ = existingEntry.userName;
+    this.relyingPartyId_ = existingEntry.relyingPartyId;
+    // </if>
   }
 
   /**
@@ -176,8 +204,34 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
         'managePasskeysMoreActionsLabel', passkey.userName,
         passkey.relyingPartyId);
   }
-}
 
+  // <if expr="is_macosx">
+  private onEditClick_() {
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
+    this.showEditDialog_ = true;
+  }
+
+  private onEditDialogClose_() {
+    this.showEditDialog_ = false;
+  }
+
+  /**
+   * Called when an edit operation has completed.
+   */
+  private onEditComplete_(newPasskeys: Passkey[]|null) {
+    this.onEnumerateComplete_(newPasskeys);
+  }
+
+  /**
+   * Called when the user clicks save in the passkey edit dialog.
+   */
+  private onSavedPasskeyEdited_(event: SavedPasskeyEditedEvent) {
+    assert(this.credentialIdForActionMenu_);
+    this.browserProxy_.edit(this.credentialIdForActionMenu_, event.detail)
+        .then(this.onEditComplete_.bind(this));
+  }
+  // </if>
+}
 declare global {
   interface HTMLElementTagNameMap {
     'settings-passkeys-subpage': SettingsPasskeysSubpageElement;
