@@ -149,8 +149,11 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, RequestAndGetDevices) {
 
 IN_PROC_BROWSER_TEST_F(WebUsbTest, RequestDeviceWithGuardBlocked) {
   EXPECT_CALL(delegate(), CanRequestDevicePermission).WillOnce(Return(false));
-  EXPECT_EQ("NotFoundError: No device selected.", EvalJs(web_contents(),
-                                                         R"((async () => {
+  EXPECT_EQ(
+      "NotFoundError: Failed to execute 'requestDevice' on 'USB': No device "
+      "selected.",
+      EvalJs(web_contents(),
+             R"((async () => {
             try {
               await navigator.usb.requestDevice({ filters: [{ vendorId: 0 }] });
               return "Expected error, got success.";

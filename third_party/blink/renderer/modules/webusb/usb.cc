@@ -163,7 +163,8 @@ ScriptPromise USB::requestDevice(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   Vector<UsbDeviceFilterPtr> filters;
   if (options->hasFilters()) {
@@ -179,10 +180,9 @@ ScriptPromise USB::requestDevice(ScriptState* script_state,
 
   DCHECK(options->filters().size() == filters.size());
   get_permission_requests_.insert(resolver);
-  service_->GetPermission(
-      std::move(filters),
-      WTF::BindOnce(&USB::OnGetPermission, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+  service_->GetPermission(std::move(filters),
+                          resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                              &USB::OnGetPermission, WrapPersistent(this))));
   return promise;
 }
 
@@ -241,8 +241,8 @@ void USB::OnGetPermission(ScriptPromiseResolver* resolver,
   if (service_.is_bound() && device_info) {
     resolver->Resolve(GetOrCreateDevice(std::move(device_info)));
   } else {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotFoundError, kNoDeviceSelected));
+    resolver->RejectWithDOMException(DOMExceptionCode::kNotFoundError,
+                                     kNoDeviceSelected);
   }
   get_permission_requests_.erase(resolver);
 }
@@ -286,8 +286,14 @@ void USB::OnServiceConnectionError() {
 
   // Similar protection is unnecessary when rejecting a promise.
   for (auto& resolver : get_permission_requests_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotFoundError, kNoDeviceSelected));
+    ScriptState* resolver_script_state = resolver->GetScriptState();
+    if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                       resolver_script_state)) {
+      continue;
+    }
+    ScriptState::Scope script_state_scope(resolver_script_state);
+    resolver->RejectWithDOMException(DOMExceptionCode::kNotFoundError,
+                                     kNoDeviceSelected);
   }
 }
 

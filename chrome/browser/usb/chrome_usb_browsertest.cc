@@ -293,9 +293,11 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, RequestDeviceWithGuardBlocked) {
                                      CONTENT_SETTING_BLOCK);
 
   UseFakeChooser();
-  EXPECT_EQ("NotFoundError: No device selected.",
-            content::EvalJs(web_contents,
-                            R"((async () => {
+  EXPECT_EQ(
+      "NotFoundError: Failed to execute 'requestDevice' on 'USB': No device "
+      "selected.",
+      content::EvalJs(web_contents,
+                      R"((async () => {
             try {
               await navigator.usb.requestDevice({ filters: [{ vendorId: 0 }] });
               return "Expected error, got success.";
@@ -433,9 +435,11 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, ShowChooserInBackgroundTab) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Try to show the chooser in the background tab.
-  EXPECT_EQ("NotFoundError: No device selected.",
-            content::EvalJs(background_web_contents,
-                            R"((async () => {
+  EXPECT_EQ(
+      "NotFoundError: Failed to execute 'requestDevice' on 'USB': No device "
+      "selected.",
+      content::EvalJs(background_web_contents,
+                      R"((async () => {
           try {
             await navigator.usb.requestDevice({ filters: [] });
             return "Expected error, got success.";
