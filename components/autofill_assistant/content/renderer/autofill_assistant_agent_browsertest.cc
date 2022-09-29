@@ -53,7 +53,6 @@ class MockAutofillAssistantDriver : public mojom::AutofillAssistantDriver {
            void(mojom::ModelStatus, base::File, const std::string&)> callback),
       (override));
 
- private:
   mojo::AssociatedReceiverSet<mojom::AutofillAssistantDriver> receivers_;
 };
 
@@ -132,6 +131,52 @@ TEST_F(AutofillAssistantAgentBrowserTest, GetSemanticNodes) {
           .To<blink::WebFormControlElement>();
   // Ensure we don't create semantic prediction attribute when not in debug mode
   EXPECT_FALSE(web_element.HasAttribute("semantic-prediction"));
+}
+
+TEST_F(AutofillAssistantAgentBrowserTest, ReconnectsAfterDisconnect) {
+  EXPECT_CALL(autofill_assistant_driver_, GetAnnotateDomModel)
+      .Times(2)
+      .WillRepeatedly(
+          [&](base::TimeDelta model_timeout,
+              base::OnceCallback<void(mojom::ModelStatus, base::File,
+                                      const std::string&)> callback) {
+            std::move(callback).Run(mojom::ModelStatus::kSuccess,
+                                    model_file_.Duplicate(), std::string());
+          });
+
+  base::MockCallback<base::OnceCallback<void(mojom::NodeDataStatus,
+                                             const std::vector<NodeData>&)>>
+      callback;
+
+  EXPECT_CALL(callback, Run(mojom::NodeDataStatus::kSuccess, SizeIs(1)))
+      .Times(2);
+
+  LoadHTML(R"(
+    <div>
+      <h1>Shipping address</h1>
+      <label for="street">Street Address</label><input id="street">
+    </div>)");
+
+  autofill_assistant_agent_->GetSemanticNodes(
+      /* role= */ 47 /* ADDRESS_LINE1 */,
+      /* objective= */ 7 /* FILL_DELIVERY_ADDRESS */,
+      /* ignore_objective= */ false,
+      /* model_timeout= */ base::Milliseconds(1000), callback.Get());
+
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate a destroyed driver:
+  autofill_assistant_driver_.receivers_.Clear();
+
+  base::RunLoop().RunUntilIdle();
+
+  autofill_assistant_agent_->GetSemanticNodes(
+      /* role= */ 47 /* ADDRESS_LINE1 */,
+      /* objective= */ 7 /* FILL_DELIVERY_ADDRESS */,
+      /* ignore_objective= */ false,
+      /* model_timeout= */ base::Milliseconds(1000), callback.Get());
+
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(AutofillAssistantAgentBrowserTest, GetSemanticNodesModelTimeout) {
