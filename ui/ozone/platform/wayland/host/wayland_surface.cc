@@ -584,9 +584,11 @@ void WaylandSurface::ApplyPendingState() {
         gfx::ScaleRect(crop_transformed, bounds.width(), bounds.height());
     DCHECK(viewport());
     if (wl_fixed_from_double(viewport_src_dip.width()) == 0 ||
-        wl_fixed_from_double(viewport_src_dip.height()) == 0) {
-      LOG(ERROR) << "Sending viewport src with width/height zero will result "
-                    "in wayland disconnection";
+        wl_fixed_from_double(viewport_src_dip.height()) == 0 ||
+        wl_fixed_from_double(viewport_src_dip.x()) < 0 ||
+        wl_fixed_from_double(viewport_src_dip.y()) < 0) {
+      LOG(ERROR) << "Sending viewport src with width/height zero or negative "
+                    "origin will result in wayland disconnection";
       // TODO(crbug.com/1325344): Resolve why this viewport size ends up being
       // zero and remove the fix below.
       LOG(ERROR) << "viewport_src_dip=" << viewport_src_dip.ToString()
@@ -604,6 +606,8 @@ void WaylandSurface::ApplyPendingState() {
           std::max(viewport_src_dip.width(), kViewPortSizeMinFloat));
       viewport_src_dip.set_height(
           std::max(viewport_src_dip.height(), kViewPortSizeMinFloat));
+      viewport_src_dip.set_x(std::max(viewport_src_dip.x(), 0.f));
+      viewport_src_dip.set_y(std::max(viewport_src_dip.y(), 0.f));
     }
     src_to_set[0] = wl_fixed_from_double(viewport_src_dip.x()),
     src_to_set[1] = wl_fixed_from_double(viewport_src_dip.y());
