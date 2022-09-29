@@ -37,9 +37,11 @@ class ExternalCache {
   // Converts an external extension value to the external extension value
   // describing a cached extension - i.e. a value describing an extension
   // returned by GetCachedExtensions().
-  static base::Value GetExtensionValueToCache(const base::Value& original_value,
-                                              const std::string& path,
-                                              const std::string& version);
+  // TODO(https://crbug.com/1366865) Switch the return type to base::Value::Dict
+  static base::Value GetExtensionValueToCache(
+      const base::Value::Dict& original_value,
+      const std::string& path,
+      const std::string& version);
 
   // If the external extension is not curently cached, whether the extension's
   // value should be added to the set of cached extensions (returned by

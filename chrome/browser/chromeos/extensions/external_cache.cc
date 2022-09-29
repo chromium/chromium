@@ -46,29 +46,22 @@ void ExternalCache::UpdateExtensionsListWithDict(base::Value::Dict prefs) {
 
 // static
 base::Value ExternalCache::GetExtensionValueToCache(
-    const base::Value& extension,
+    const base::Value::Dict& extension,
     const std::string& path,
     const std::string& version) {
-  DCHECK(extension.is_dict());
+  base::Value::Dict result = extension.Clone();
 
-  base::Value result = extension.Clone();
-
-  const base::Value* external_update_url_value = extension.FindKeyOfType(
-      extensions::ExternalProviderImpl::kExternalUpdateUrl,
-      base::Value::Type::STRING);
+  const std::string* external_update_url_value = extension.FindString(
+      extensions::ExternalProviderImpl::kExternalUpdateUrl);
   if (external_update_url_value &&
-      extension_urls::IsWebstoreUpdateUrl(
-          GURL(external_update_url_value->GetString()))) {
-    result.SetKey(extensions::ExternalProviderImpl::kIsFromWebstore,
-                  base::Value(true));
+      extension_urls::IsWebstoreUpdateUrl(GURL(*external_update_url_value))) {
+    result.Set(extensions::ExternalProviderImpl::kIsFromWebstore, true);
   }
-  result.RemoveKey(extensions::ExternalProviderImpl::kExternalUpdateUrl);
+  result.Remove(extensions::ExternalProviderImpl::kExternalUpdateUrl);
 
-  result.SetKey(extensions::ExternalProviderImpl::kExternalVersion,
-                base::Value(version));
-  result.SetKey(extensions::ExternalProviderImpl::kExternalCrx,
-                base::Value(path));
-  return result;
+  result.Set(extensions::ExternalProviderImpl::kExternalVersion, version);
+  result.Set(extensions::ExternalProviderImpl::kExternalCrx, path);
+  return base::Value(std::move(result));
 }
 
 // static

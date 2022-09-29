@@ -121,9 +121,9 @@ void TestExternalCache::UpdateCachedExtensions() {
 
     if (crx_cache_.count(entry.first)) {
       cached_extensions_.SetKey(
-          entry.first,
-          GetExtensionValueToCache(entry.second, crx_cache_[entry.first].path,
-                                   crx_cache_[entry.first].version));
+          entry.first, GetExtensionValueToCache(
+                           entry.second.GetDict(), crx_cache_[entry.first].path,
+                           crx_cache_[entry.first].version));
     } else if (ShouldCacheImmediately(entry.second)) {
       cached_extensions_.SetKey(entry.first, entry.second.Clone());
     }
@@ -141,7 +141,7 @@ void TestExternalCache::AddEntryToCrxCache(const std::string& id,
       configured_extensions_->FindKeyOfType(id, base::Value::Type::DICTIONARY);
   if (extension) {
     cached_extensions_.SetKey(
-        id, GetExtensionValueToCache(*extension, crx_path, version));
+        id, GetExtensionValueToCache(extension->GetDict(), crx_path, version));
     delegate_->OnExtensionListsUpdated(&cached_extensions_);
   }
 }

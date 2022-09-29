@@ -294,8 +294,8 @@ void ExternalCacheImpl::CheckCache() {
     }
     if (is_cached) {
       cached_extensions_->SetKey(
-          entry.first,
-          GetExtensionValueToCache(entry.second, file_path.value(), version));
+          entry.first, GetExtensionValueToCache(entry.second.GetDict(),
+                                                file_path.value(), version));
     } else if (ShouldCacheImmediately(entry.second)) {
       cached_extensions_->SetKey(entry.first, entry.second.Clone());
     }
@@ -376,8 +376,8 @@ void ExternalCacheImpl::OnPutExtension(const extensions::ExtensionId& id,
   }
 
   cached_extensions_->SetKey(
-      id,
-      GetExtensionValueToCache(*original_entry, file_path.value(), version));
+      id, GetExtensionValueToCache(original_entry->GetDict(), file_path.value(),
+                                   version));
 
   if (delegate_)
     delegate_->OnExtensionLoadedInCache(id);
