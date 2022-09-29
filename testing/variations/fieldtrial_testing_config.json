@@ -5765,46 +5765,6 @@
             ]
         }
     ],
-    "IncludeBackgroundSVGInLCP": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IncludeBackgroundSVGInLCP"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IncludeInitiallyInvisibleImagesInLCP": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IncludeInitiallyInvisibleImagesInLCP"
-                    ]
-                }
-            ]
-        }
-    ],
     "IncognitoDownloadsWarning": [
         {
             "platforms": [
