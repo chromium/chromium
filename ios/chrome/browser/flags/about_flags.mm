@@ -1253,6 +1253,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTFLiteLanguageDetectionIgnoreDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(translate::kTFLiteLanguageDetectionIgnoreEnabled)},
+    {"disable-feed-ios14", flag_descriptions::kDisableFeediOS14Name,
+     flag_descriptions::kDisableFeediOS14Description, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDisableFeediOS14)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

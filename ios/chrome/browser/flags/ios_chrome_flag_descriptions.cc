@@ -286,6 +286,10 @@ const char kEnableFeedAblationName[] = "Enables Feed Ablation";
 const char kEnableFeedAblationDescription[] =
     "If Enabled the Feed will be removed from the NTP";
 
+const char kDisableFeediOS14Name[] = "Disable the feed on iOS14 devices";
+const char kDisableFeediOS14Description[] =
+    "If disabled the feed will be removed from the iOS14 devices.";
+
 const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module";
 const char kEnableFREUIModuleIOSDescription[] =
     "Use the new FRE UI module for first run.";
