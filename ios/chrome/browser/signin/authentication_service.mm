@@ -551,8 +551,8 @@ bool AuthenticationService::HandleMDMNotification(ChromeIdentity* identity,
     if (is_blocked && weak_ptr.get()) {
       // If the identity is blocked, sign out of the account. As only managed
       // account can be blocked, this will clear the associated browsing data.
-      if (identity ==
-          weak_ptr->GetPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+      if ([identity isEqual:weak_ptr->GetPrimaryIdentity(
+                                signin::ConsentLevel::kSignin)]) {
         weak_ptr->SignOut(signin_metrics::ABORT_SIGNIN,
                           /*force_clear_browsing_data=*/false, nil);
       }

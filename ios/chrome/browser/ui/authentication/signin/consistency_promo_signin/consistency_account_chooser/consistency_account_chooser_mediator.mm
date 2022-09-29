@@ -56,7 +56,7 @@
 
 - (void)setSelectedIdentity:(ChromeIdentity*)identity {
   DCHECK(identity);
-  if (_selectedIdentity == identity) {
+  if ([_selectedIdentity isEqual:identity]) {
     return;
   }
   ChromeIdentity* previousSelectedIdentity = _selectedIdentity;
