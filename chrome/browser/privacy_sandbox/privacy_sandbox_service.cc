@@ -640,7 +640,7 @@ PrivacySandboxService::GetFirstPartySets() const {
              net::SchemefulSite(GURL("https://google.com"))},
             {net::SchemefulSite(GURL("https://chromium.org")),
              net::SchemefulSite(GURL("https://chromium.org"))},
-            {net::SchemefulSite(GURL("https://googlesource.org")),
+            {net::SchemefulSite(GURL("https://googlesource.com")),
              net::SchemefulSite(GURL("https://chromium.org"))}};
   }
 
