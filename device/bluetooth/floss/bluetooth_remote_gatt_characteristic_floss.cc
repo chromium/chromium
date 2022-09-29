@@ -1,0 +1,256 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+#include "device/bluetooth/floss/bluetooth_remote_gatt_characteristic_floss.h"
+
+#include "base/memory/ptr_util.h"
+#include "base/notreached.h"
+#include "device/bluetooth/bluetooth_gatt_service.h"
+#include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
+#include "device/bluetooth/floss/bluetooth_gatt_service_floss.h"
+#include "device/bluetooth/floss/bluetooth_remote_gatt_service_floss.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_gatt_client.h"
+
+namespace floss {
+
+// static
+std::unique_ptr<BluetoothRemoteGattCharacteristicFloss>
+BluetoothRemoteGattCharacteristicFloss::Create(
+    BluetoothRemoteGattServiceFloss* service,
+    GattCharacteristic* characteristic) {
+  return base::WrapUnique(
+      new BluetoothRemoteGattCharacteristicFloss(service, characteristic));
+}
+
+BluetoothRemoteGattCharacteristicFloss::BluetoothRemoteGattCharacteristicFloss(
+    BluetoothRemoteGattServiceFloss* service,
+    GattCharacteristic* characteristic)
+    : characteristic_(characteristic), service_(service) {
+  DCHECK(service);
+  DCHECK(characteristic);
+
+  service_->AddObserverForHandle(characteristic_->instance_id, this);
+}
+
+BluetoothRemoteGattCharacteristicFloss::
+    ~BluetoothRemoteGattCharacteristicFloss() {
+  service_->RemoveObserverForHandle(characteristic_->instance_id);
+}
+
+std::string BluetoothRemoteGattCharacteristicFloss::GetIdentifier() const {
+  return service_->GetIdentifier() + GetUUID().canonical_value();
+}
+
+device::BluetoothUUID BluetoothRemoteGattCharacteristicFloss::GetUUID() const {
+  return characteristic_->uuid;
+}
+
+BluetoothRemoteGattCharacteristicFloss::Properties
+BluetoothRemoteGattCharacteristicFloss::GetProperties() const {
+  return characteristic_->properties;
+}
+
+BluetoothRemoteGattCharacteristicFloss::Permissions
+BluetoothRemoteGattCharacteristicFloss::GetPermissions() const {
+  return characteristic_->permissions;
+}
+
+const std::vector<uint8_t>& BluetoothRemoteGattCharacteristicFloss::GetValue()
+    const {
+  return cached_data_;
+}
+
+device::BluetoothRemoteGattService*
+BluetoothRemoteGattCharacteristicFloss::GetService() const {
+  return static_cast<device::BluetoothRemoteGattService*>(service_.get());
+}
+
+bool BluetoothRemoteGattCharacteristicFloss::IsNotifying() const {
+  return has_notify_session_;
+}
+
+void BluetoothRemoteGattCharacteristicFloss::ReadRemoteCharacteristic(
+    ValueCallback callback) {
+  DCHECK_GE(num_of_reads_in_progress_, 0);
+  ++num_of_reads_in_progress_;
+
+  AuthRequired auth = GetAuthForRead();
+
+  FlossDBusManager::Get()->GetGattClient()->ReadCharacteristic(
+      base::BindOnce(
+          &BluetoothRemoteGattCharacteristicFloss::OnReadCharacteristic,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      service_->GetDevice()->GetAddress(), characteristic_->instance_id, auth);
+}
+
+void BluetoothRemoteGattCharacteristicFloss::WriteRemoteCharacteristic(
+    const std::vector<uint8_t>& value,
+    device::BluetoothRemoteGattCharacteristic::WriteType write_type,
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  floss::WriteType gatt_write_type = floss::WriteType::kWriteNoResponse;
+  if (write_type ==
+      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse) {
+    gatt_write_type = floss::WriteType::kWrite;
+  }
+
+  WriteRemoteCharacteristicImpl(value, gatt_write_type, std::move(callback),
+                                std::move(error_callback));
+}
+
+void BluetoothRemoteGattCharacteristicFloss::
+    DeprecatedWriteRemoteCharacteristic(const std::vector<uint8_t>& value,
+                                        base::OnceClosure callback,
+                                        ErrorCallback error_callback) {
+  WriteRemoteCharacteristicImpl(value, floss::WriteType::kWriteNoResponse,
+                                std::move(callback), std::move(error_callback));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+void BluetoothRemoteGattCharacteristicFloss::PrepareWriteRemoteCharacteristic(
+    const std::vector<uint8_t>& value,
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  WriteRemoteCharacteristicImpl(value, floss::WriteType::kWritePrepare,
+                                std::move(callback), std::move(error_callback));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+void BluetoothRemoteGattCharacteristicFloss::WriteRemoteCharacteristicImpl(
+    const std::vector<uint8_t>& value,
+    floss::WriteType write_type,
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  AuthRequired auth = GetAuthForWrite();
+
+  FlossDBusManager::Get()->GetGattClient()->WriteCharacteristic(
+      base::BindOnce(
+          &BluetoothRemoteGattCharacteristicFloss::OnWriteCharacteristic,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          std::move(error_callback)),
+      service_->GetDevice()->GetAddress(), characteristic_->instance_id,
+      write_type, auth, value);
+}
+
+void BluetoothRemoteGattCharacteristicFloss::GattCharacteristicRead(
+    std::string address,
+    GattStatus status,
+    int32_t handle,
+    const std::vector<uint8_t>& data) {
+  if (handle != characteristic_->instance_id ||
+      address != service_->GetDevice()->GetAddress()) {
+    return;
+  }
+
+  --num_of_reads_in_progress_;
+  DCHECK_GE(num_of_reads_in_progress_, 0);
+
+  if (status == GattStatus::kSuccess) {
+    cached_data_ = data;
+    std::move(pending_read_callback_)
+        .Run(/*error_code=*/absl::nullopt, cached_data_);
+  } else {
+    std::move(pending_read_callback_)
+        .Run(BluetoothGattServiceFloss::GattStatusToServiceError(status), {});
+  }
+}
+
+void BluetoothRemoteGattCharacteristicFloss::GattCharacteristicWrite(
+    std::string address,
+    GattStatus status,
+    int32_t handle) {
+  if (handle != characteristic_->instance_id ||
+      address != service_->GetDevice()->GetAddress()) {
+    return;
+  }
+
+  auto [callback, error_callback] = std::move(pending_write_callbacks_);
+
+  if (status == GattStatus::kSuccess) {
+    std::move(callback).Run();
+  } else {
+    std::move(error_callback)
+        .Run(BluetoothGattServiceFloss::GattStatusToServiceError(status));
+  }
+}
+
+void BluetoothRemoteGattCharacteristicFloss::OnReadCharacteristic(
+    ValueCallback callback,
+    DBusResult<Void> result) {
+  if (!result.has_value()) {
+    --num_of_reads_in_progress_;
+    DCHECK_GE(num_of_reads_in_progress_, 0);
+
+    std::move(callback).Run(
+        /*error_code=*/BluetoothGattServiceFloss::GattErrorCode::kFailed, {});
+    return;
+  }
+
+  pending_read_callback_ = std::move(callback);
+}
+
+void BluetoothRemoteGattCharacteristicFloss::OnWriteCharacteristic(
+    base::OnceClosure callback,
+    ErrorCallback error_callback,
+    DBusResult<Void> result) {
+  if (!result.has_value()) {
+    std::move(error_callback)
+        .Run(/*error_code=*/BluetoothGattServiceFloss::GattErrorCode::kFailed);
+    return;
+  }
+
+  pending_write_callbacks_ =
+      std::make_pair(std::move(callback), std::move(error_callback));
+}
+
+void BluetoothRemoteGattCharacteristicFloss::SubscribeToNotifications(
+    device::BluetoothRemoteGattDescriptor* ccc_descriptor,
+#if BUILDFLAG(IS_CHROMEOS)
+    NotificationType notification_type,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  NOTIMPLEMENTED();
+}
+
+void BluetoothRemoteGattCharacteristicFloss::UnsubscribeFromNotifications(
+    device::BluetoothRemoteGattDescriptor* ccc_descriptor,
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  NOTIMPLEMENTED();
+}
+
+AuthRequired BluetoothRemoteGattCharacteristicFloss::GetAuthForRead() const {
+  AuthRequired auth = AuthRequired::kNoAuth;
+  Properties props = GetProperties();
+
+  if (props & PROPERTY_READ_ENCRYPTED_AUTHENTICATED) {
+    auth = AuthRequired::kReqMitm;
+  } else if (props & PROPERTY_READ_ENCRYPTED) {
+    auth = AuthRequired::kNoMitm;
+  }
+
+  return auth;
+}
+
+AuthRequired BluetoothRemoteGattCharacteristicFloss::GetAuthForWrite() const {
+  AuthRequired auth = AuthRequired::kNoAuth;
+  Properties props = GetProperties();
+
+  if (props & PROPERTY_WRITE_ENCRYPTED_AUTHENTICATED) {
+    auth = AuthRequired::kReqMitm;
+    if (props & PROPERTY_AUTHENTICATED_SIGNED_WRITES) {
+      auth = AuthRequired::kSignedReqMitm;
+    }
+  } else if (props & PROPERTY_WRITE_ENCRYPTED) {
+    auth = AuthRequired::kNoMitm;
+    if (props & PROPERTY_AUTHENTICATED_SIGNED_WRITES) {
+      auth = AuthRequired::kSignedNoMitm;
+    }
+  }
+
+  return auth;
+}
+
+}  // namespace floss

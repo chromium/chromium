@@ -294,12 +294,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
                                const std::vector<uint8_t> data);
 
   // Register for updates on a specific characteristic.
-  virtual void RegisterForNotification(ResponseCallback<Void> callback,
+  virtual void RegisterForNotification(ResponseCallback<GattStatus> callback,
                                        const std::string& remote_device,
                                        const int32_t handle);
 
   // Unregister for updates on a specific characteristic.
-  virtual void UnregisterNotification(ResponseCallback<Void> callback,
+  virtual void UnregisterNotification(ResponseCallback<GattStatus> callback,
                                       const std::string& remote_device,
                                       const int32_t handle);
 
@@ -365,6 +365,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
                              int32_t timeout,
                              GattStatus status) override;
   void GattServiceChanged(std::string address) override;
+
+  void OnRegisterNotificationResponse(ResponseCallback<GattStatus> callback,
+                                      bool is_registering,
+                                      DBusResult<Void> result);
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
   base::raw_ptr<dbus::Bus> bus_ = nullptr;

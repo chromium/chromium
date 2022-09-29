@@ -5,6 +5,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
+#include "device/bluetooth/floss/bluetooth_remote_gatt_characteristic_floss.h"
 
 namespace floss {
 
@@ -27,7 +28,9 @@ BluetoothRemoteGattServiceFloss::BluetoothRemoteGattServiceFloss(
       primary_(primary),
       remote_service_(remote_service),
       device_(device) {
-  // TODO(b/193685841) - Iterate characteristics
+  for (GattCharacteristic& c : remote_service_.characteristics) {
+    AddCharacteristic(BluetoothRemoteGattCharacteristicFloss::Create(this, &c));
+  }
 }
 
 BluetoothRemoteGattServiceFloss::~BluetoothRemoteGattServiceFloss() = default;
