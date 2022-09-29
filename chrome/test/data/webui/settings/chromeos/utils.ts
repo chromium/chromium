@@ -47,13 +47,13 @@ export async function retry<T>(
 }
 
 // Repeatedly evaluates a lazy |value| until it evaluates without throwing an
-// exception to something != null, or if a timeout is exceeded.
+// exception to something !== null, or if a timeout is exceeded.
 export async function retryUntilSome<T>(
     value: Lazy<T|null>,
     timeoutMilliseconds: number = RETRY_TIMEOUT_MILLISECONDS): Promise<T> {
   return await retry(() => {
     const val = value();
-    assertTrue(val != null);
+    assertTrue(val !== null);
     return val;
   }, timeoutMilliseconds);
 }
@@ -94,10 +94,10 @@ export function querySelectorShadow(
 
   const initSelectors = selectors.slice(0, selectors.length - 1);
   const lastSelector = selectors[selectors.length - 1];
-  assertTrue(lastSelector != null);
+  assertTrue(lastSelector !== undefined);
   for (const selector of initSelectors) {
     const el = root.querySelector(selector);
-    if (el == null || el.shadowRoot == null) {
+    if (el === null || el.shadowRoot === null) {
       return null;
     }
     root = el.shadowRoot;
