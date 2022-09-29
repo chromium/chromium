@@ -60,11 +60,6 @@ PLACEHOLDER_STYLES = {
 }
 
 
-def utf_8_encoder(input_file):
-  for line in input_file:
-    yield line.encode("utf-8")
-
-
 def load_tsv_file(file_path, verbose):
   """ Loads annotations TSV file.
 
@@ -79,10 +74,8 @@ def load_tsv_file(file_path, verbose):
   """
   rows = []
   with io.open(file_path, mode="r", encoding="utf-8") as csvfile:
-    # CSV library does not support unicode, so encoding to utf-8 and back.
-    reader = csv.reader(utf_8_encoder(csvfile), delimiter="\t")
+    reader = csv.reader(csvfile.readlines(), delimiter="\t")
     for row in reader:
-      row = [unicode(col, "utf-8") for col in row]
       # If the last column of the file_row is empty, the row belongs to a
       # platform different from the one that TSV file is generated on, hence it
       # should be ignored.
