@@ -206,6 +206,10 @@ class WPTManifest(object):
         """Checks if a WPT is a crashtest according to the manifest."""
         return self.get_test_type(url) == 'crashtest'
 
+    def is_manual_test(self, url):
+        """Checks if a WPT is a manual according to the manifest."""
+        return self.get_test_type(url) == 'manual'
+
     def is_print_reftest(self, url):
         """Checks if a WPT is a print reftest according to the manifest."""
         return self.get_test_type(url) == 'print-reftest'

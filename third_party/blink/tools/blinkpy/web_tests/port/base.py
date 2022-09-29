@@ -1118,6 +1118,15 @@ class Port(object):
         path_in_wpt = match.group(2)
         return self.wpt_manifest(wpt_path).is_crash_test(path_in_wpt)
 
+    def is_manual_test(self, test_name):
+        """Returns whether a WPT test is a manual."""
+        match = self.WPT_REGEX.match(test_name)
+        if not match:
+            return False
+        wpt_path = match.group(1)
+        path_in_wpt = match.group(2)
+        return self.wpt_manifest(wpt_path).is_manual_test(path_in_wpt)
+
     def is_wpt_print_reftest(self, test):
         """Returns whether a WPT test is a print reftest."""
         match = self.WPT_REGEX.match(test)
@@ -1365,10 +1374,6 @@ class Port(object):
                 continue
             tests.add(line)
         return tests
-
-    def is_manual_test(self, test):
-        """Skip the test if it is a WPT manual test"""
-        return self.is_wpt_test(test) and '-manual.' in test
 
     def skipped_due_to_smoke_tests(self, test):
         """Checks if the test is skipped based on the set of Smoke tests.
