@@ -8,7 +8,7 @@ import os
 import sys
 import subprocess
 
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from common import DIR_SRC_ROOT, run_ffx_command
 from compatible_utils import get_ssh_prefix
@@ -96,7 +96,7 @@ class SSHPortForwarder(chrome_test_server_spawner.PortForwarder):
 # pylint: enable=invalid-name,missing-function-docstring
 
 
-def setup_test_server(target_id: str, test_concurrency: int)\
+def setup_test_server(target_id: Optional[str], test_concurrency: int)\
          -> Tuple[chrome_test_server_spawner.SpawningServer, str]:
     """Provisions a test server and configures |target_id| to use it.
 

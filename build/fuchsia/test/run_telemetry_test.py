@@ -56,5 +56,6 @@ class TelemetryTestRunner(TestRunner):
         if self._test_args:
             test_cmd.extend(self._test_args)
         test_cmd.extend(['--chromium-output-directory', self._out_dir])
-        test_cmd.extend(['--fuchsia-target-id', self._target_id])
+        if self._target_id:
+            test_cmd.extend(['--fuchsia-target-id', self._target_id])
         return subprocess.run(test_cmd, check=True)

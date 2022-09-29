@@ -47,8 +47,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         'test_type',
-        help='The type of test to run. Options include \'blink\', \'gpu\''
-        'or in the case of gtests, the gtest name.')
+        help='The type of test to run. Options include \'blink\', \'gpu\', '
+        'or in the case of executable tests, the test name.')
     parser.add_argument('--device',
                         '-d',
                         action='store_true',
