@@ -6,6 +6,7 @@
 
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -307,6 +308,61 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
   ExpectOutcomeDidNotChange(FROM_HERE);
   // NotRestoredReasons are not recorded.
   EXPECT_TRUE(current_frame_host()->NotRestoredReasonsForTesting().is_null());
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
+                       WindowOpen) {
+  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
+    return;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A and open a popup.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
+  OpenPopup(rfh_a.get(), url_a, "");
+  EXPECT_EQ(2u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
+  rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
+  std::string rfh_a_url = rfh_a->GetLastCommittedURL().spec();
+
+  // 2) Navigate to B. The previous document can't enter the BackForwardCache,
+  // because of the popup.
+  ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a.get(), url_b));
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+  EXPECT_EQ(2u, rfh_b->GetSiteInstance()->GetRelatedActiveContentsCount());
+
+  // 3) Go back to A. The previous document can't enter the BackForwardCache,
+  // because of the popup.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  ExpectNotRestored({NotRestoredReason::kRelatedActiveContentsExist,
+                     NotRestoredReason::kBrowsingInstanceNotSwapped},
+                    {},
+                    {ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents},
+                    {}, {}, FROM_HERE);
+  // Make sure that the tree result also has the same reasons. BrowsingInstance
+  // NotSwapped can only be known at commit time.
+  EXPECT_THAT(
+      GetTreeResult()->GetDocumentResult(),
+      MatchesDocumentResult(
+          NotRestoredReasons(NotRestoredReason::kRelatedActiveContentsExist,
+                             NotRestoredReason::kBrowsingInstanceNotSwapped),
+          BlockListedFeatures()));
+
+  // Both reasons are recorded and sent to the renderer.
+  // BrowsingInstanceNotSwapped is masked as internal error.
+  auto rfh_a_details = MatchesSameOriginDetails(
+      /*id=*/"", /*name=*/"", /*src=*/"", /*url=*/rfh_a_url,
+      /*reasons=*/{"Related active contents", "Internal error"},
+      /*children=*/{});
+  auto rfh_a_result = MatchesNotRestoredReasons(
+      /*blocked=*/true, &rfh_a_details);
+  EXPECT_THAT(current_frame_host()->NotRestoredReasonsForTesting(),
+              rfh_a_result);
 }
 
 }  // namespace content

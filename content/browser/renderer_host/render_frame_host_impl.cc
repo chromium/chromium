@@ -12325,14 +12325,23 @@ void RenderFrameHostImpl::SendCommitNavigation(
   // NotRestoredReasons API, i.e. for cross-document main frame history
   // navigations that are not served by back/forward cache.
   if (IsBackForwardCacheEnabled() &&
-      base::FeatureList::IsEnabled(
-          blink::features::kBackForwardCacheSendNotRestoredReasons) &&
-      navigation_request->IsInMainFrame() &&
-      !navigation_request->IsServedFromBackForwardCache()) {
+      !navigation_request->IsServedFromBackForwardCache() &&
+      BackForwardCacheMetrics::IsCrossDocumentMainFrameHistoryNavigation(
+          navigation_request)) {
     if (NavigationEntryImpl* entry = static_cast<NavigationEntryImpl*>(
             navigation_request->GetNavigationEntry())) {
       if (auto* metrics = entry->back_forward_cache_metrics()) {
-        not_restored_reasons = metrics->GetWebExposedNotRestoredReasons();
+        // Update NotRestoredReasons to include additional reasons only known at
+        // commit time, before reporting to the renderer.
+        metrics->UpdateNotRestoredReasonsForNavigation(navigation_request,
+                                                       /*before_commit=*/true);
+        if (base::FeatureList::IsEnabled(
+                blink::features::kBackForwardCacheSendNotRestoredReasons)) {
+          // Only populate the web-exposed NotRestoredReasons when needed by the
+          // NotRestoredReasons API, i.e. for cross-document main frame history
+          // navigations that are not served by back/forward cache.
+          not_restored_reasons = metrics->GetWebExposedNotRestoredReasons();
+        }
       }
     }
   }

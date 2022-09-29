@@ -609,11 +609,15 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   // Creates and returns an empty tree.
   static std::unique_ptr<BackForwardCacheCanStoreTreeResult> CreateEmptyTree(
       RenderFrameHostImpl* rfh);
+  // Creates and returns an empty tree before committing navigation.
+  static std::unique_ptr<BackForwardCacheCanStoreTreeResult>
+  CreateEmptyTreeBeforeCommit(NavigationRequest* navigation);
 
  private:
   BackForwardCacheCanStoreTreeResult(
       RenderFrameHostImpl* rfh,
       const url::Origin& main_document_origin,
+      const GURL& url,
       BackForwardCacheCanStoreDocumentResult& result_for_this_document,
       ChildrenVector children);
 

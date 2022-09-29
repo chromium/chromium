@@ -235,6 +235,14 @@ class BackForwardCacheMetrics
   blink::mojom::BackForwardCacheNotRestoredReasonsPtr
   GetWebExposedNotRestoredReasons();
 
+  // Record additional reason why navigation was not served from bfcache which
+  // are known only at the commit time, such as BrowsingInstanceNotSwapped,
+  // SessionRestored, Unknown etc. |before_commit| indicates whether this is
+  // called before commit or after commit and will be used for recording the
+  // right values for URL and origin.
+  void UpdateNotRestoredReasonsForNavigation(NavigationRequest* navigation,
+                                             bool before_commit);
+
   // Exported for testing.
   // The DisabledReason's source and id combined to give a unique uint64.
   CONTENT_EXPORT static uint64_t MetricValue(BackForwardCache::DisabledReason);
@@ -254,6 +262,10 @@ class BackForwardCacheMetrics
   void SetObserverForTesting(TestObserver* observer) {
     test_observer_ = observer;
   }
+
+  // Returns if |navigation| is cross-document main frame history navigation.
+  static bool IsCrossDocumentMainFrameHistoryNavigation(
+      NavigationRequest* navigation);
 
  private:
   friend class base::RefCounted<BackForwardCacheMetrics>;
@@ -282,10 +294,6 @@ class BackForwardCacheMetrics
   void RecordHistogramForReloadsAfterHistoryNavigations(
       bool is_reload,
       bool back_forward_cache_allowed) const;
-
-  // Record additional reason why navigation was not served from bfcache which
-  // are known only at the commit time.
-  void UpdateNotRestoredReasonsForNavigation(NavigationRequest* navigation);
 
   // Whether the last navigation swapped BrowsingInstance or not. Returns true
   // if the last navigation did swap BrowsingInstance, or if it's unknown

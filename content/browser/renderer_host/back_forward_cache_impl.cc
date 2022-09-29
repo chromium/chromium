@@ -21,6 +21,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -1016,8 +1017,8 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::PopulateReasonsAndReturnSubtree(
 
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree(
       new BackForwardCacheCanStoreTreeResult(
-          rfh, root_rfh_->GetLastCommittedOrigin(), result_for_rfh,
-          std::move(children_result)));
+          rfh, root_rfh_->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
+          result_for_rfh, std::move(children_result)));
   return tree;
 }
 
@@ -1433,16 +1434,17 @@ bool BackForwardCache::DisabledReason::operator!=(
 BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
     RenderFrameHostImpl* rfh,
     const url::Origin& main_document_origin,
+    const GURL& url,
     BackForwardCacheCanStoreDocumentResult& result_for_this_document,
     BackForwardCacheCanStoreTreeResult::ChildrenVector children)
     : document_result_(std::move(result_for_this_document)),
       children_(std::move(children)),
       is_same_origin_(
-          rfh->GetLastCommittedOrigin().IsSameOriginWith(main_document_origin)),
+          url::Origin::Create(url).IsSameOriginWith(main_document_origin)),
       id_(rfh->frame_tree_node()->html_id()),
       name_(rfh->frame_tree_node()->html_name()),
       src_(rfh->frame_tree_node()->html_src()),
-      url_(rfh->GetLastCommittedURL()) {}
+      url_(url) {}
 
 BackForwardCacheCanStoreTreeResult::~BackForwardCacheCanStoreTreeResult() =
     default;
@@ -1472,9 +1474,21 @@ BackForwardCacheCanStoreTreeResult::CreateEmptyTree(RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult empty_result;
   BackForwardCacheCanStoreTreeResult::ChildrenVector empty_vector;
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> empty_tree(
-      new BackForwardCacheCanStoreTreeResult(rfh, rfh->GetLastCommittedOrigin(),
-                                             empty_result,
-                                             std::move(empty_vector)));
+      new BackForwardCacheCanStoreTreeResult(
+          rfh, rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
+          empty_result, std::move(empty_vector)));
+  return empty_tree;
+}
+
+std::unique_ptr<BackForwardCacheCanStoreTreeResult>
+BackForwardCacheCanStoreTreeResult::CreateEmptyTreeBeforeCommit(
+    NavigationRequest* navigation) {
+  BackForwardCacheCanStoreDocumentResult empty_result;
+  BackForwardCacheCanStoreTreeResult::ChildrenVector empty_vector;
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> empty_tree(
+      new BackForwardCacheCanStoreTreeResult(
+          navigation->GetRenderFrameHost(), navigation->GetOriginToCommit(),
+          navigation->GetURL(), empty_result, std::move(empty_vector)));
   return empty_tree;
 }
 

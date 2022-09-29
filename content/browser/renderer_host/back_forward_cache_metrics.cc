@@ -52,16 +52,19 @@ base::TimeTicks Now() {
   return base::TimeTicks::Now();
 }
 
-bool IsHistoryNavigation(NavigationRequest* navigation) {
-  return navigation->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK;
-}
-
 }  // namespace
 
 // static
 void BackForwardCacheMetrics::OverrideTimeForTesting(base::TickClock* clock) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   g_mock_time_clock_for_testing = clock;
+}
+
+// static
+bool BackForwardCacheMetrics::IsCrossDocumentMainFrameHistoryNavigation(
+    NavigationRequest* navigation) {
+  return navigation->IsInPrimaryMainFrame() && !navigation->IsSameDocument() &&
+         navigation->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK;
 }
 
 // static
@@ -129,8 +132,11 @@ void BackForwardCacheMetrics::DidCommitNavigation(
       back_forward_cache_allowed);
 
   // Record metrics for history navigation, if applicable.
-  if (IsHistoryNavigation(navigation)) {
-    UpdateNotRestoredReasonsForNavigation(navigation);
+  if (IsCrossDocumentMainFrameHistoryNavigation(navigation)) {
+    // We have to update not restored reasons even though we already did in
+    // |SendCommitNavigation()|, because at the commit we might create a new
+    // metrics object.
+    UpdateNotRestoredReasonsForNavigation(navigation, /*before_commit=*/false);
 
     bool can_restore = page_store_result_->CanRestore();
     bool did_store = navigation->IsServedFromBackForwardCache();
@@ -212,7 +218,8 @@ void BackForwardCacheMetrics::DidCommitNavigation(
   // that uses this metrics object.
   previous_navigation_is_served_from_bfcache_ =
       navigation->IsServedFromBackForwardCache();
-  previous_navigation_is_history_ = IsHistoryNavigation(navigation);
+  previous_navigation_is_history_ =
+      IsCrossDocumentMainFrameHistoryNavigation(navigation);
   last_committed_cross_document_main_frame_navigation_id_ =
       navigation->GetNavigationId();
 
@@ -229,7 +236,7 @@ void BackForwardCacheMetrics::DidCommitNavigation(
 
 void BackForwardCacheMetrics::RecordHistoryNavigationUKM(
     NavigationRequest* navigation) const {
-  DCHECK(IsHistoryNavigation(navigation));
+  DCHECK(IsCrossDocumentMainFrameHistoryNavigation(navigation));
   // We've visited an entry associated with this main frame document before,
   // so record metrics to determine whether it might be a back-forward cache
   // hit.
@@ -368,8 +375,9 @@ BackForwardCacheMetrics::GetWebExposedNotRestoredReasons() {
 }
 
 void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
-    NavigationRequest* navigation) {
-  DCHECK(IsHistoryNavigation(navigation));
+    NavigationRequest* navigation,
+    bool before_commit) {
+  DCHECK(IsCrossDocumentMainFrameHistoryNavigation(navigation));
   BackForwardCacheCanStoreDocumentResult new_blocking_reasons;
   // |last_committed_cross_document_main_frame_navigation_id_| is -1 even though
   // this is a history navigation. This can happen only when the session history
@@ -399,8 +407,11 @@ void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
   // Initialize the empty tree result if nothing is set.
   if (!page_store_tree_result_) {
     page_store_tree_result_ =
-        BackForwardCacheCanStoreTreeResult::CreateEmptyTree(
-            navigation->GetRenderFrameHost());
+        before_commit
+            ? BackForwardCacheCanStoreTreeResult::CreateEmptyTreeBeforeCommit(
+                  navigation)
+            : BackForwardCacheCanStoreTreeResult::CreateEmptyTree(
+                  navigation->GetRenderFrameHost());
   }
   // Add the same reason to the root node of the tree once we update the
   // flattened list of reasons.
