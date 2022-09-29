@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-inspector.h"
 
@@ -17,8 +17,7 @@ namespace blink {
 
 class SourceLocation;
 
-class PLATFORM_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient,
-                                       public V8PerIsolateData::Data {
+class PLATFORM_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient {
  public:
   explicit ThreadDebugger(v8::Isolate* isolate)
       : v8_inspector_(v8_inspector::V8Inspector::create(isolate, this)) {}

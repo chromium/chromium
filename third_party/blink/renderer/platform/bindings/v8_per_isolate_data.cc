@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
@@ -48,7 +49,6 @@
 #include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
-#include "v8/include/v8.h"
 
 namespace blink {
 
@@ -343,13 +343,9 @@ void V8PerIsolateData::ClearEndOfScopeTasks() {
 }
 
 void V8PerIsolateData::SetThreadDebugger(
-    std::unique_ptr<V8PerIsolateData::Data> thread_debugger) {
+    std::unique_ptr<ThreadDebugger> thread_debugger) {
   DCHECK(!thread_debugger_);
   thread_debugger_ = std::move(thread_debugger);
-}
-
-V8PerIsolateData::Data* V8PerIsolateData::ThreadDebugger() {
-  return thread_debugger_.get();
 }
 
 void V8PerIsolateData::SetProfilerGroup(

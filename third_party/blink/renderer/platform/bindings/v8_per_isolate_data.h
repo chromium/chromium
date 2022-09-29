@@ -53,6 +53,7 @@ namespace blink {
 class DOMWrapperWorld;
 class ScriptState;
 class StringCache;
+class ThreadDebugger;
 class V8PrivateProperty;
 struct WrapperTypeInfo;
 
@@ -91,14 +92,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
    private:
     V8PerIsolateData* per_isolate_data_;
     const bool original_use_counter_disabled_;
-  };
-
-  // Use this class to abstract away types of members that are pointers to core/
-  // objects, which are simply owned and released by V8PerIsolateData (see
-  // m_threadDebugger for an example).
-  class PLATFORM_EXPORT Data {
-   public:
-    virtual ~Data() = default;
   };
 
   // Pointers to core/ objects that are garbage collected. Receives callback
@@ -193,8 +186,8 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   void RunEndOfScopeTasks();
   void ClearEndOfScopeTasks();
 
-  void SetThreadDebugger(std::unique_ptr<Data>);
-  Data* ThreadDebugger();
+  ThreadDebugger* GetThreadDebugger() const { return thread_debugger_.get(); }
+  void SetThreadDebugger(std::unique_ptr<ThreadDebugger> thread_debugger);
 
   void SetProfilerGroup(V8PerIsolateData::GarbageCollectedData*);
   V8PerIsolateData::GarbageCollectedData* ProfilerGroup();
@@ -272,7 +265,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   bool is_handling_recursion_level_error_ = false;
 
   Vector<base::OnceClosure> end_of_scope_tasks_;
-  std::unique_ptr<Data> thread_debugger_;
+  std::unique_ptr<ThreadDebugger> thread_debugger_;
   Persistent<GarbageCollectedData> profiler_group_;
   Persistent<GarbageCollectedData> canvas_resource_tracker_;
 

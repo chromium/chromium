@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 
+#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+
 namespace blink {
 
 // static
@@ -11,7 +13,7 @@ ThreadDebugger* ThreadDebugger::From(v8::Isolate* isolate) {
   if (!isolate)
     return nullptr;
   V8PerIsolateData* data = V8PerIsolateData::From(isolate);
-  return data ? static_cast<ThreadDebugger*>(data->ThreadDebugger()) : nullptr;
+  return data ? data->GetThreadDebugger() : nullptr;
 }
 
 // static
