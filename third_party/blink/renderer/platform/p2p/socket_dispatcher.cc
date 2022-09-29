@@ -147,6 +147,8 @@ void P2PSocketDispatcher::OnConnectionError() {
 
 void P2PSocketDispatcher::ReconnectP2PSocketManager() {
   network_notification_client_receiver_.reset();
+  if (GetSupplementable()->IsContextDestroyed())
+    return;
   GetP2PSocketManager()->StartNetworkNotifications(
       network_notification_client_receiver_.BindNewPipeAndPassRemote(
           GetSupplementable()->GetTaskRunner(TaskType::kNetworking)));

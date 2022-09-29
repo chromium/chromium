@@ -23,6 +23,8 @@ class PLATFORM_EXPORT ContextLifecycleNotifier : public GarbageCollectedMixin {
 
   void Trace(Visitor* visitor) const override;
 
+  bool IsContextDestroyed() const;
+
  protected:
   // Should be called by implementers to notify observers when the context is
   // destroyed.
@@ -35,9 +37,7 @@ class PLATFORM_EXPORT ContextLifecycleNotifier : public GarbageCollectedMixin {
 
  private:
   HeapObserverSet<ContextLifecycleObserver> observers_;
-#if DCHECK_IS_ON()
-  bool did_notify_observers_ = false;
-#endif
+  bool context_destroyed_ = false;
 };
 
 }  // namespace blink

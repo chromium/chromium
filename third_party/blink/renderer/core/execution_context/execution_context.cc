@@ -72,16 +72,13 @@ ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
       circular_sequential_id_(0),
       in_dispatch_error_event_(false),
       lifecycle_state_(mojom::FrameLifecycleState::kRunning),
-      is_context_destroyed_(false),
       csp_delegate_(MakeGarbageCollected<ExecutionContextCSPDelegate>(*this)),
       window_interaction_tokens_(0),
       origin_trial_context_(MakeGarbageCollected<OriginTrialContext>(this)) {
   DCHECK(agent_);
 }
 
-ExecutionContext::~ExecutionContext() {
-  DCHECK(is_context_destroyed_);
-}
+ExecutionContext::~ExecutionContext() = default;
 
 // static
 ExecutionContext* ExecutionContext::From(const ScriptState* script_state) {
@@ -179,7 +176,6 @@ void ExecutionContext::SetLifecycleState(mojom::FrameLifecycleState state) {
 }
 
 void ExecutionContext::NotifyContextDestroyed() {
-  is_context_destroyed_ = true;
   ContextLifecycleNotifier::NotifyContextDestroyed();
 }
 

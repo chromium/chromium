@@ -275,7 +275,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   bool IsContextPaused() const;
   LoaderFreezeMode GetLoaderFreezeMode() const;
-  bool IsContextDestroyed() const { return is_context_destroyed_; }
   mojom::FrameLifecycleState ContextPauseState() const {
     return lifecycle_state_;
   }
@@ -504,7 +503,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   HeapVector<Member<ErrorEvent>> pending_exceptions_;
 
   mojom::FrameLifecycleState lifecycle_state_;
-  bool is_context_destroyed_;
 
   bool is_in_back_forward_cache_ = false;
 
