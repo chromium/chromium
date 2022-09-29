@@ -154,7 +154,7 @@ NSString* const kDomain2 = @"domain2.com";
   // Use commandline args to insert fake policy data into NSUserDefaults. To the
   // app, this policy data will appear under the
   // "com.apple.configuration.managed" key.
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = NoForceRelaunchAndResetState;
   config.features_enabled.push_back(safe_browsing::kEnhancedProtection);
   return config;

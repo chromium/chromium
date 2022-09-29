@@ -72,7 +72,7 @@ void SelectFeedMenu() {
 @implementation FeedManagementTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kEnableWebChannels);
   return config;
 }
