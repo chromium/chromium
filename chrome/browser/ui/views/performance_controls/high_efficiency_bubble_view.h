@@ -15,6 +15,8 @@ class HighEfficiencyBubbleView {
   HighEfficiencyBubbleView(const HighEfficiencyBubbleView&) = delete;
   HighEfficiencyBubbleView& operator=(const HighEfficiencyBubbleView&) = delete;
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHighEfficiencyDialogBodyElementId);
+
   static views::BubbleDialogModelHost* ShowBubble(
       Browser* browser,
       views::View* anchor_view,

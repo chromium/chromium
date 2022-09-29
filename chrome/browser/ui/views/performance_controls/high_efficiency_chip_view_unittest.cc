@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -13,14 +14,21 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/text/bytes_formatting.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/controls/styled_label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
+
+constexpr int kMemorySavingsBytes = 100000;
 
 class DiscardMockNavigationHandle : public content::MockNavigationHandle {
  public:
@@ -48,6 +56,9 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
     content::WebContents* contents =
         browser()->tab_strip_model()->GetWebContentsAt(0);
     TabDiscardTabHelper::CreateForWebContents(contents);
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        PreDiscardResourceUsage::CreateForWebContents(contents,
+                                                      kMemorySavingsBytes);
   }
 
   void TearDown() override {
@@ -74,6 +85,15 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
         ->GetLocationBarView()
         ->page_action_icon_controller()
         ->GetIconView(PageActionIconType::kHighEfficiency);
+  }
+
+  template <class T>
+  T* GetDialogLabel(ui::ElementIdentifier identifier) {
+    const ui::ElementContext context =
+        views::ElementTrackerViews::GetContextForWidget(
+            GetPageActionIconView()->GetBubble()->anchor_widget());
+    return views::ElementTrackerViews::GetInstance()->GetFirstMatchingViewAs<T>(
+        identifier, context);
   }
 
   base::HistogramTester histogram_tester_;
@@ -137,6 +157,41 @@ TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsOnDialogDismiss) {
   histogram_tester_.ExpectUniqueSample(
       "PerformanceControls.HighEfficiency.BubbleAction",
       HighEfficiencyBubbleActionType::kDismiss, 1);
+}
+
+// A link should be rendered within the dialog.
+TEST_F(HighEfficiencyChipViewTest, ShouldRenderLinkInDialog) {
+  SetTabDiscardState(true);
+
+  PageActionIconView* view = GetPageActionIconView();
+
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(view);
+  test_api.NotifyClick(e);
+
+  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
+      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
+  EXPECT_TRUE(
+      label->GetText().find(u"You can change this anytime in Settings") !=
+      std::string::npos);
+}
+
+// The memory savings should be rendered within the dialog.
+TEST_F(HighEfficiencyChipViewTest, ShouldRenderMemorySavingsInDialog) {
+  SetTabDiscardState(true);
+
+  PageActionIconView* view = GetPageActionIconView();
+
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(view);
+  test_api.NotifyClick(e);
+
+  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
+      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
+  EXPECT_TRUE(label->GetText().find(ui::FormatBytes(kMemorySavingsBytes)) !=
+              std::string::npos);
 }
 
 // When the previous page was not previously discarded, the icon should not be

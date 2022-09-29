@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
 
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+
 TabDiscardTabHelper::~TabDiscardTabHelper() = default;
 
 TabDiscardTabHelper::TabDiscardTabHelper(content::WebContents* contents)
@@ -20,6 +22,15 @@ bool TabDiscardTabHelper::ShouldIconAnimate() const {
 
 void TabDiscardTabHelper::SetWasAnimated() {
   was_animated_ = true;
+}
+
+uint64_t TabDiscardTabHelper::GetMemorySavings() const {
+  auto* pre_discard_resource_usage =
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          PreDiscardResourceUsage::FromWebContents(&GetWebContents());
+  return pre_discard_resource_usage == nullptr
+             ? 0
+             : pre_discard_resource_usage->resident_set_size_estimate();
 }
 
 void TabDiscardTabHelper::DidStartNavigation(

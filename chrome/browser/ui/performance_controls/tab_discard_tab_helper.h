@@ -32,6 +32,9 @@ class TabDiscardTabHelper
   // Indicates that the chip has been animated for the current discard.
   void SetWasAnimated();
 
+  // Returns the memory savings (in bytes) of the previously discarded tab.
+  uint64_t GetMemorySavings() const;
+
   // content::WebContentsObserver
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
