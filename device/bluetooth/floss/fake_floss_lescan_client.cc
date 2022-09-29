@@ -37,12 +37,14 @@ void FakeFlossLEScanClient::UnregisterScanner(ResponseCallback<bool> callback,
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeFlossLEScanClient::StartScan(ResponseCallback<Void> callback,
+void FakeFlossLEScanClient::StartScan(ResponseCallback<BtifStatus> callback,
                                       uint8_t scanner_id,
                                       const ScanSettings& scan_settings,
                                       const ScanFilter& filters) {
   // TODO (b/217274013): filters are currently being ignored
   scanner_ids_.insert(scanner_id);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), BtifStatus::kSuccess));
 }
 
 }  // namespace floss

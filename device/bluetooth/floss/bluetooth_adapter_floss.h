@@ -224,7 +224,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void OnRegisterScanner(
       base::WeakPtr<BluetoothLowEnergyScanSessionFloss> scan_session,
       DBusResult<device::BluetoothUUID> ret);
-  void OnStartScan(DBusResult<Void> ret);
+  void OnStartScan(device::BluetoothUUID uuid,
+                   uint8_t scanner_id,
+                   DBusResult<FlossDBusClient::BtifStatus> ret);
   void OnLowEnergyScanSessionDestroyed(const std::string& uuid_str);
   void OnUnregisterScanner(uint8_t scanner_id, DBusResult<bool> ret);
 

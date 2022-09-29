@@ -130,7 +130,7 @@ void FlossLEScanClient::UnregisterScanner(ResponseCallback<bool> callback,
                      scanner_id);
 }
 
-void FlossLEScanClient::StartScan(ResponseCallback<Void> callback,
+void FlossLEScanClient::StartScan(ResponseCallback<BtifStatus> callback,
                                   uint8_t scanner_id,
                                   const ScanSettings& scan_settings,
                                   const ScanFilter& filter) {
@@ -138,7 +138,7 @@ void FlossLEScanClient::StartScan(ResponseCallback<Void> callback,
                      scan_settings, filter);
 }
 
-void FlossLEScanClient::StopScan(ResponseCallback<Void> callback,
+void FlossLEScanClient::StopScan(ResponseCallback<BtifStatus> callback,
                                  uint8_t scanner_id) {
   CallLEScanMethod<>(std::move(callback), adapter::kStopScan, scanner_id);
 }

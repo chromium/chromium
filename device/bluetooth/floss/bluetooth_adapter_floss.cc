@@ -890,26 +890,22 @@ void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
                        << ", scanner id = " << static_cast<int>(scanner_id)
                        << ", status = " << static_cast<int>(status);
 
-  if (status != GattStatus::kSuccess) {
-    BLUETOOTH_LOG(ERROR) << "Error registering scanner " << uuid
-                         << ", status: " << static_cast<int>(status);
-    scanners_.erase(uuid);
-    return;
-  }
-
   if (!base::Contains(scanners_, uuid)) {
     VLOG(1) << "ScannerRegistered but no longer exists " << uuid;
     return;
   }
 
-  scanners_[uuid]->OnActivate(scanner_id);
+  if (status != GattStatus::kSuccess) {
+    BLUETOOTH_LOG(ERROR) << "Error registering scanner " << uuid
+                         << ", status: " << static_cast<int>(status);
+    scanners_[uuid]->OnActivate(scanner_id, /*success=*/false);
+    return;
+  }
 
   FlossDBusManager::Get()->GetLEScanClient()->StartScan(
       base::BindOnce(&BluetoothAdapterFloss::OnStartScan,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), uuid, scanner_id),
       scanner_id, ScanSettings{}, ScanFilter{});
-
-  return;
 }
 
 void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
@@ -1021,11 +1017,25 @@ void BluetoothAdapterFloss::OnRegisterScanner(
   BLUETOOTH_LOG(EVENT) << "Registering scanner " << ret.value();
 }
 
-void BluetoothAdapterFloss::OnStartScan(DBusResult<Void> ret) {
-  BLUETOOTH_LOG(EVENT) << "OnStartScan success = " << ret.has_value();
-  if (!ret.has_value()) {
-    BLUETOOTH_LOG(ERROR) << "Failed StartScan: " << ret.error();
+void BluetoothAdapterFloss::OnStartScan(
+    device::BluetoothUUID uuid,
+    uint8_t scanner_id,
+    DBusResult<FlossDBusClient::BtifStatus> ret) {
+  if (!base::Contains(scanners_, uuid)) {
+    VLOG(1) << "Started scanning but scanner no longer exists " << uuid;
+    return;
   }
+
+  if (!ret.has_value() ||
+      ret.value() != FlossDBusClient::BtifStatus::kSuccess) {
+    BLUETOOTH_LOG(ERROR) << "Failed StartScan: " << ret.error()
+                         << ", status: " << static_cast<uint32_t>(ret.value());
+    scanners_[uuid]->OnActivate(scanner_id, /*success=*/false);
+    return;
+  }
+
+  BLUETOOTH_LOG(EVENT) << "OnStartScan succeeded";
+  scanners_[uuid]->OnActivate(scanner_id, /*success=*/true);
 }
 
 void BluetoothAdapterFloss::OnLowEnergyScanSessionDestroyed(

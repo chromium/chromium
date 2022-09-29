@@ -26,7 +26,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossLEScanClient : public FlossLEScanClient {
       ResponseCallback<device::BluetoothUUID> callback) override;
   void UnregisterScanner(ResponseCallback<bool> callback,
                          uint8_t scanner_id) override;
-  void StartScan(ResponseCallback<Void> callback,
+  void StartScan(ResponseCallback<BtifStatus> callback,
                  uint8_t scanner_id,
                  const ScanSettings& scan_settings,
                  const ScanFilter& filters) override;

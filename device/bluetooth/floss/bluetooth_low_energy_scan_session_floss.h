@@ -21,7 +21,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanSessionFloss
       base::OnceCallback<void(const std::string&)> destructor_callback);
   ~BluetoothLowEnergyScanSessionFloss() override;
 
-  void OnActivate(uint8_t scanner_id);
+  void OnActivate(uint8_t scanner_id, bool success);
   void OnRelease();
   void OnDeviceFound(device::BluetoothDevice* device);
   void OnDeviceLost(device::BluetoothDevice* device);

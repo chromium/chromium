@@ -375,14 +375,21 @@ TEST_F(FlossLEScanClientTest, TestStartStopScan) {
         uint8_t param1;
         ASSERT_TRUE(FlossDBusClient::ReadDBusParam(&msg, &param1));
         EXPECT_EQ(kTestScannerId, param1);
-        // Create a fake response with no return value.
+        // Create a fake response with BtifStatus return value.
         auto response = ::dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendUint32(
+            static_cast<uint32_t>(FlossDBusClient::BtifStatus::kSuccess));
         std::move(*cb).Run(response.get(), /*err=*/nullptr);
       });
-  client_->StartScan(base::BindLambdaForTesting([](DBusResult<Void> ret) {
-                       // Check that there is no error
-                       EXPECT_TRUE(ret.has_value());
-                     }),
+  client_->StartScan(base::BindLambdaForTesting(
+                         [](DBusResult<FlossDBusClient::BtifStatus> ret) {
+                           // Check that there is no error and return is parsed
+                           // correctly
+                           EXPECT_TRUE(ret.has_value());
+                           EXPECT_EQ(ret.value(),
+                                     FlossDBusClient::BtifStatus::kSuccess);
+                         }),
                      kTestScannerId, ScanSettings{}, ScanFilter{});
 
   // Method of 1 parameter with no return.
@@ -396,14 +403,21 @@ TEST_F(FlossLEScanClientTest, TestStartStopScan) {
         ASSERT_TRUE(FlossDBusClient::ReadAllDBusParams(&msg, &param1));
         EXPECT_EQ(kTestScannerId, param1);
         EXPECT_FALSE(msg.HasMoreData());
-        // Create a fake response with no return value.
+        // Create a fake response with BtifStatus return value.
         auto response = ::dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendUint32(
+            static_cast<uint32_t>(FlossDBusClient::BtifStatus::kSuccess));
         std::move(*cb).Run(response.get(), /*err=*/nullptr);
       });
-  client_->StopScan(base::BindLambdaForTesting([](DBusResult<Void> ret) {
-                      // Check that there is no error
-                      EXPECT_TRUE(ret.has_value());
-                    }),
+  client_->StopScan(base::BindLambdaForTesting(
+                        [](DBusResult<FlossDBusClient::BtifStatus> ret) {
+                          // Check that there is no error and return is parsed
+                          // correctly
+                          EXPECT_TRUE(ret.has_value());
+                          EXPECT_EQ(ret.value(),
+                                    FlossDBusClient::BtifStatus::kSuccess);
+                        }),
                     kTestScannerId);
 }
 

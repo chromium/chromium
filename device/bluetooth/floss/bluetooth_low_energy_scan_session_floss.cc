@@ -20,13 +20,20 @@ BluetoothLowEnergyScanSessionFloss::~BluetoothLowEnergyScanSessionFloss() {
   std::move(destructor_callback_).Run(uuid_.value());
 }
 
-void BluetoothLowEnergyScanSessionFloss::OnActivate(uint8_t scanner_id) {
-  has_activated_ = true;
+void BluetoothLowEnergyScanSessionFloss::OnActivate(uint8_t scanner_id,
+                                                    bool success) {
   scanner_id_ = scanner_id;
   if (!delegate_) {
     return;
   }
 
+  if (!success) {
+    delegate_->OnSessionStarted(
+        this, BluetoothLowEnergyScanSession::ErrorCode::kFailed);
+    return;
+  }
+
+  has_activated_ = true;
   delegate_->OnSessionStarted(this, /*error_code=*/absl::nullopt);
 }
 

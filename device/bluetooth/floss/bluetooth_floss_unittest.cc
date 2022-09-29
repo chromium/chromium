@@ -147,12 +147,13 @@ class BluetoothFlossTest : public testing::Test {
 
     floss_adapter->ScannerRegistered(device::BluetoothUUID(kTestUuidStr),
                                      kTestScannerId, GattStatus::kSuccess);
+
+    base::RunLoop().RunUntilIdle();
+
     ScanResult scan_result;
     scan_result.address = kTestDeviceAddr;
     scan_result.name = kTestDeviceName;
     floss_adapter->ScanResultReceived(scan_result);
-
-    base::RunLoop().RunUntilIdle();
   }
 
  protected:

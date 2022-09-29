@@ -104,11 +104,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossLEScanClient : public FlossDBusClient,
       ResponseCallback<device::BluetoothUUID> callback);
   virtual void UnregisterScanner(ResponseCallback<bool> callback,
                                  uint8_t scanner_id);
-  virtual void StartScan(ResponseCallback<Void> callback,
+  virtual void StartScan(ResponseCallback<BtifStatus> callback,
                          uint8_t scanner_id,
                          const ScanSettings& scan_settings,
                          const ScanFilter& filter);
-  virtual void StopScan(ResponseCallback<Void> callback, uint8_t scanner_id);
+  virtual void StopScan(ResponseCallback<BtifStatus> callback,
+                        uint8_t scanner_id);
 
  protected:
   // ScannerClientObserver overrides
