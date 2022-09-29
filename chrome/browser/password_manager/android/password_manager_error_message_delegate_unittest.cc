@@ -20,6 +20,8 @@ using testing::Return;
 namespace {
 constexpr char kErrorMessageDismissalReasonHistogramName[] =
     "PasswordManager.ErrorMessageDismissalReason";
+constexpr char kErrorMessageDisplayReasonHistogramName[] =
+    "PasswordManager.ErrorMessageDisplayReason";
 }
 
 class PasswordManagerErrorMessageDelegateTest
@@ -32,7 +34,8 @@ class PasswordManagerErrorMessageDelegateTest
   void TearDown() override;
 
   void DisplayMessageAndExpectEnqueued(
-      password_manager::ErrorMessageFlowType flow_type);
+      password_manager::ErrorMessageFlowType flow_type,
+      password_manager::PasswordStoreBackendErrorType error_type);
 
   void ExpectDismissed(messages::DismissReason dismiss_reason);
 
@@ -78,10 +81,11 @@ void PasswordManagerErrorMessageDelegateTest::TearDown() {
 }
 
 void PasswordManagerErrorMessageDelegateTest::DisplayMessageAndExpectEnqueued(
-    password_manager::ErrorMessageFlowType flow_type) {
+    password_manager::ErrorMessageFlowType flow_type,
+    password_manager::PasswordStoreBackendErrorType error_type) {
   EXPECT_CALL(*helper_bridge_, ShouldShowErrorUI()).WillOnce(Return(true));
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
-  delegate_->MaybeDisplayErrorMessage(web_contents(), flow_type,
+  delegate_->MaybeDisplayErrorMessage(web_contents(), flow_type, error_type,
                                       base::DoNothing());
 }
 
@@ -111,8 +115,11 @@ PasswordManagerErrorMessageDelegateTest::GetMessageWrapper() {
 // set correctly for "sign in to save password" message.
 TEST_F(PasswordManagerErrorMessageDelegateTest,
        MessagePropertyValuesSignInToSavePassword) {
+  base::HistogramTester histogram_tester;
+
   DisplayMessageAndExpectEnqueued(
-      password_manager::ErrorMessageFlowType::kSaveFlow);
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::kAuthErrorResolvable);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SIGN_IN_TO_SAVE_PASSWORDS),
             GetMessageWrapper()->GetTitle());
@@ -122,14 +129,21 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
             GetMessageWrapper()->GetPrimaryButtonText());
 
   DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
+
+  histogram_tester.ExpectUniqueSample(
+      kErrorMessageDisplayReasonHistogramName,
+      password_manager::PasswordStoreBackendErrorType::kAuthErrorResolvable, 1);
 }
 
 // Tests that message properties (title, description, icon, button text) are
 // set correctly for "sign in to use password" message.
 TEST_F(PasswordManagerErrorMessageDelegateTest,
        MessagePropertyValuesSignInToUsePassword) {
+  base::HistogramTester histogram_tester;
+
   DisplayMessageAndExpectEnqueued(
-      password_manager::ErrorMessageFlowType::kFillFlow);
+      password_manager::ErrorMessageFlowType::kFillFlow,
+      password_manager::PasswordStoreBackendErrorType::kAuthErrorUnresolvable);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SIGN_IN_TO_USE_PASSWORDS),
             GetMessageWrapper()->GetTitle());
@@ -139,6 +153,11 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
             GetMessageWrapper()->GetPrimaryButtonText());
 
   DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
+
+  histogram_tester.ExpectUniqueSample(
+      kErrorMessageDisplayReasonHistogramName,
+      password_manager::PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
+      1);
 }
 
 // Tests that the sign in flow starts when the user clicks the "Sign in" button
@@ -147,7 +166,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest, SignInOnActionClick) {
   base::HistogramTester histogram_tester;
 
   DisplayMessageAndExpectEnqueued(
-      password_manager::ErrorMessageFlowType::kSaveFlow);
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::kAuthErrorResolvable);
   EXPECT_NE(nullptr, GetMessageWrapper());
 
   EXPECT_CALL(*helper_bridge(),
@@ -167,7 +187,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest, MetricOnAutodismissTimer) {
   base::HistogramTester histogram_tester;
 
   DisplayMessageAndExpectEnqueued(
-      password_manager::ErrorMessageFlowType::kSaveFlow);
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::kAuthErrorResolvable);
   EXPECT_NE(nullptr, GetMessageWrapper());
 
   DismissMessageAndExpectDismissed(messages::DismissReason::TIMER);
@@ -182,11 +203,13 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   EXPECT_CALL(message_dispatcher_bridge(), EnqueueMessage).Times(0);
   delegate()->MaybeDisplayErrorMessage(
       web_contents(), password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::kAuthErrorResolvable,
       base::DoNothing());
 }
 
 TEST_F(PasswordManagerErrorMessageDelegateTest, DisplayeSavesTimestamp) {
   EXPECT_CALL(*helper_bridge(), SaveErrorUIShownTimestamp());
   DisplayMessageAndExpectEnqueued(
-      password_manager::ErrorMessageFlowType::kSaveFlow);
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::kAuthErrorResolvable);
 }

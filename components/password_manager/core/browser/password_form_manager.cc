@@ -125,12 +125,23 @@ bool IsCurrentUserEvicted(PasswordManagerClient* client) {
 bool ShouldShowErrorMessage(
     absl::optional<PasswordStoreBackendError> backend_error,
     PasswordManagerClient* client) {
-  return backend_error.has_value() &&
-         backend_error.value().type ==
-             PasswordStoreBackendErrorType::kAuthErrorResolvable &&
-         !IsCurrentUserEvicted(client) &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kUnifiedPasswordManagerErrorMessages);
+  if (!backend_error.has_value())
+    return false;
+  PasswordStoreBackendError error = backend_error.value();
+  bool is_auth_error =
+      (error.type == PasswordStoreBackendErrorType::kAuthErrorResolvable) ||
+      (error.type == PasswordStoreBackendErrorType::kAuthErrorUnresolvable);
+  if (!is_auth_error)
+    return false;
+  if (IsCurrentUserEvicted(client))
+    return false;
+  DCHECK(error.recovery_type !=
+         PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerErrorMessages)) {
+    return false;
+  }
+  return true;
 }
 #endif
 
@@ -692,7 +703,8 @@ void PasswordFormManager::OnFetchCompleted() {
           password_form->IsLikelySignupForm() ||
                   password_form->IsLikelyChangePasswordForm()
               ? password_manager::ErrorMessageFlowType::kSaveFlow
-              : password_manager::ErrorMessageFlowType::kFillFlow);
+              : password_manager::ErrorMessageFlowType::kFillFlow,
+          backend_error->type);
     }
   }
 #endif

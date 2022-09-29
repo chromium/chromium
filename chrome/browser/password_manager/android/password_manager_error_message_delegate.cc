@@ -26,6 +26,7 @@ PasswordManagerErrorMessageDelegate::~PasswordManagerErrorMessageDelegate() =
 void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
     content::WebContents* web_contents,
     password_manager::ErrorMessageFlowType flow_type,
+    password_manager::PasswordStoreBackendErrorType error_type,
     base::OnceCallback<void()> dismissal_callback) {
   DCHECK(web_contents);
 
@@ -35,6 +36,7 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
   DCHECK(!message_);
 
   CreateMessage(web_contents, flow_type);
+  RecordErrorTypeMetrics(error_type);
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS,
       messages::MessagePriority::kUrgent);
@@ -106,4 +108,10 @@ void PasswordManagerErrorMessageDelegate::RecordDismissalReasonMetrics(
     messages::DismissReason dismiss_reason) {
   base::UmaHistogramEnumeration("PasswordManager.ErrorMessageDismissalReason",
                                 dismiss_reason, messages::DismissReason::COUNT);
+}
+
+void PasswordManagerErrorMessageDelegate::RecordErrorTypeMetrics(
+    password_manager::PasswordStoreBackendErrorType error_type) {
+  base::UmaHistogramEnumeration("PasswordManager.ErrorMessageDisplayReason",
+                                error_type);
 }

@@ -189,7 +189,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
               ShowPasswordManagerErrorMessage,
-              (password_manager::ErrorMessageFlowType),
+              (password_manager::ErrorMessageFlowType,
+               password_manager::PasswordStoreBackendErrorType),
               (override));
 #endif
 };
@@ -2772,7 +2773,8 @@ TEST_P(PasswordFormManagerTest, ReportSubmittedFormFrameCrossOriginIframe) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_P(PasswordFormManagerTest, ClientShouldShowErrorMessage) {
+TEST_P(PasswordFormManagerTest,
+       ClientShouldShowErrorMessageForAuthErrorResolvable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kUnifiedPasswordManagerErrorMessages);
@@ -2780,7 +2782,26 @@ TEST_P(PasswordFormManagerTest, ClientShouldShowErrorMessage) {
       PasswordStoreBackendErrorType::kAuthErrorResolvable,
       PasswordStoreBackendErrorRecoveryType::kRecoverable));
 
-  EXPECT_CALL(client_, ShowPasswordManagerErrorMessage);
+  EXPECT_CALL(client_,
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kFillFlow,
+                  PasswordStoreBackendErrorType::kAuthErrorResolvable));
+  fetcher_->NotifyFetchCompleted();
+}
+
+TEST_P(PasswordFormManagerTest,
+       ClientShouldShowErrorMessageForAuthErrorUnresolvable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kUnifiedPasswordManagerErrorMessages);
+  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+
+  EXPECT_CALL(client_,
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kFillFlow,
+                  PasswordStoreBackendErrorType::kAuthErrorUnresolvable));
   fetcher_->NotifyFetchCompleted();
 }
 
