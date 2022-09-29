@@ -47,7 +47,7 @@ extern NSString* const kDownloadSymbol;
 extern NSString* const kSecureSymbol;
 extern NSString* const kWarningSymbol;
 extern NSString* const kWarningFillSymbol;
-extern NSString* const kHelpFillSymbol;
+extern NSString* const kHelpSymbol;
 extern NSString* const kCheckMarkCircleSymbol;
 extern NSString* const kCheckMarkCircleFillSymbol;
 extern NSString* const kFailMarkCircleFillSymbol;

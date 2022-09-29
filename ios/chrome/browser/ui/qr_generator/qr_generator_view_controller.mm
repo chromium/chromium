@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_view_controller.h"
 
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -25,6 +26,7 @@ constexpr CGFloat kGeneratedImagePadding = 20;
 constexpr CGFloat kButtonMaxWidth = 327;
 constexpr CGFloat kContentMaxWidth = 500;
 constexpr CGFloat kBottomMargin = 24;
+constexpr CGFloat kSymbolSize = 22;
 
 }  // namespace
 
@@ -229,8 +231,11 @@ constexpr CGFloat kBottomMargin = 24;
 
   NSMutableArray* regularHeightItems = [[NSMutableArray alloc] init];
   NSMutableArray* compactHeightItems = [[NSMutableArray alloc] init];
+  UIImage* helpImage =
+      UseSymbols() ? DefaultSymbolWithPointSize(kHelpSymbol, kSymbolSize)
+                   : [UIImage imageNamed:@"help_icon"];
   UIBarButtonItem* helpButton =
-      [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"help_icon"]
+      [[UIBarButtonItem alloc] initWithImage:helpImage
                                        style:UIBarButtonItemStylePlain
                                       target:self
                                       action:@selector(didTapHelpButton)];

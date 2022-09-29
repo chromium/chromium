@@ -756,11 +756,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           [weakSelf reportAnIssue];
         });
 
-    self.helpAction =
-        CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_HELP_MOBILE,
-                                 kHelpFillSymbol, YES, kToolsMenuHelpId, ^{
-                                   [weakSelf openHelp];
-                                 });
+    self.helpAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_HELP_MOBILE, kHelpSymbol, YES, kToolsMenuHelpId, ^{
+          [weakSelf openHelp];
+        });
 
     self.shareChromeAction =
         CreateOverflowMenuAction(IDS_IOS_OVERFLOW_MENU_SHARE_CHROME,
