@@ -225,6 +225,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2227179592712503583">Fjern forslaget</translation>
 <translation id="225680501294068881">Leter etter enheter ...</translation>
 <translation id="2257486738914982088">Noe gikk galt under nedlasting av <ph name="FILENAME" /></translation>
+<translation id="2258734398699965611">Foreslåtte filer</translation>
 <translation id="2268130516524549846">Bluetooth er deaktivert</translation>
 <translation id="2268813581635650749">Logg alle av</translation>
 <translation id="2269016722240250274">Et program bruker mikrofonen din</translation>
@@ -370,6 +371,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Vil du slå av enheten?</translation>
 <translation id="3126069444801937830">Start på nytt for å oppdatere</translation>
+<translation id="3139382871451988441">Slå av kameratilgangen.</translation>
 <translation id="3139942575505304791">Skrivebord 1</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3151786313568798007">Retning</translation>
@@ -561,7 +563,6 @@ Koble enheten til strøm.</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
 <translation id="4247123849143712100">Oppdater og slå av</translation>
 <translation id="4250229828105606438">Skjermdump</translation>
-<translation id="4250899820387052060">Hurtigfiler</translation>
 <translation id="425364040945105958">Uten SIM-kort</translation>
 <translation id="4261870227682513959">Vis innstillinger for varsler. Varsler er av</translation>
 <translation id="4269883910223712419">Administratoren av denne enheten kan</translation>
@@ -647,6 +648,7 @@ Koble enheten til strøm.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox er slått på</translation>
 <translation id="4665114317261903604">Slå av/på Ikke forstyrr. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Slå av kameratilgangen på denne enheten for å blokkere alle kameraer hele tiden.</translation>
 <translation id="4667099493359681081">Laster ned <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Hyllen er nederst</translation>
 <translation id="4696813013609194136">Lås opp enheten med foreldrekode</translation>
@@ -665,6 +667,7 @@ Koble enheten til strøm.</translation>
 <translation id="4776917500594043016">Passord for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Butikk</translation>
 <translation id="4778095205580009397">Google-assistenten er ikke tilgjengelig under demonstrasjonsøkter.</translation>
+<translation id="4789348252524569426">Kan ikke installere talefiler. Enheten må oppdateres. Start enheten på nytt, og prøv igjen.</translation>
 <translation id="479989351350248267">søk</translation>
 <translation id="4804818685124855865">Koble fra</translation>
 <translation id="4814539958450445987">Påloggingsskjerm</translation>
@@ -899,6 +902,7 @@ Koble enheten til strøm.</translation>
 <translation id="6099678161144790572">Redigert den siste måneden</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Talefiler for <ph name="LANGUAGE" /> er lastet ned</translation>
+<translation id="6116825164611323644">Kameratilgang er avslått på denne enheten</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bekreft nedlastingen <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google-assistenten er ikke tilgjengelig i gjesteøkter.</translation>
@@ -1125,6 +1129,7 @@ Nylig installert</translation>
 <translation id="746232733191930409">Skjermopptaksmodus</translation>
 <translation id="7466449121337984263">Trykk på sensoren</translation>
 <translation id="7477793887173910789">Styr musikk, video og mer</translation>
+<translation id="7490360161041035804">Du kan feste viktige filer, inkludert Google Disk-filer. For å feste et element, hold markøren over det eller åpne Filer og høyreklikk på det.</translation>
 <translation id="7497767806359279797">Velg språk og tastatur</translation>
 <translation id="7508690557411636492">Åpnet den siste måneden</translation>
 <translation id="7509246181739783082">Bekreft identiteten din</translation>
@@ -1142,6 +1147,7 @@ Nylig installert</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> bruker mikrofonen din for øyeblikket</translation>
 <translation id="7561982940498449837">Lukk menyen</translation>
 <translation id="7564874036684306347">Flytting av vinduer til et annet skrivebord kan føre til uventet atferd. Følgende varsler, vinduer og dialogbokser kan bli delt mellom skrivebordene.</translation>
+<translation id="7567076708801803118">Vil du slå av kameratilgangen på denne enheten?</translation>
 <translation id="7569509451529460200">Braille og ChromeVox er slått på</translation>
 <translation id="7573585051776738856">Det aktive vinduet er festet på høyre side.</translation>
 <translation id="7579778809502851308">Skjermdump</translation>
@@ -1221,6 +1227,7 @@ Nylig installert</translation>
 <translation id="7982789257301363584">Nettverk</translation>
 <translation id="7984197416080286869">For mange forsøk med fingeravtrykk</translation>
 <translation id="798779949890829624">Denne innstillingen administreres av administratoren din</translation>
+<translation id="799296642788192631">Du kan feste viktige filer. For å feste et element, hold markøren over det eller åpne Filer og høyreklikk på det.</translation>
 <translation id="7994370417837006925">Multipålogging</translation>
 <translation id="7995804128062002838">Kunne ikke ta opp skjermen</translation>
 <translation id="8000066093800657092">Ingen nettverk</translation>
@@ -1348,6 +1355,7 @@ Nylig installert</translation>
 <translation id="8734991477317290293">Det brukes kanskje til å stjele tastetrykkene dine.</translation>
 <translation id="8735678380411481005">Farge på tastaturets bakgrunnsbelysning</translation>
 <translation id="8735953464173050365">Vis tastaturinnstillinger. <ph name="KEYBOARD_NAME" /> er valgt</translation>
+<translation id="8752416742247198423">Slå på kameratilgang for å la apper og nettsider med kameratillatelse bruke kameraene som er koblet til denne enheten.</translation>
 <translation id="8755498163081687682">Verifiser identiteten din: <ph name="ORIGIN_NAME" /> vil bekrefte at det er deg</translation>
 <translation id="875593634123171288">Vis innstillinger for VPN</translation>
 <translation id="8759408218731716181">Kan ikke konfigurere multipålogging</translation>
@@ -1362,6 +1370,7 @@ Nylig installert</translation>
 <translation id="8819728065740986820">Tilpasset lading er på</translation>
 <translation id="8825863694328519386">Sveip fra venstre for å gå tilbake</translation>
 <translation id="8834539327799336565">Tilkoblet nå</translation>
+<translation id="8834657930627018205">Slå på kameratilgang.</translation>
 <translation id="8841375032071747811">Tilbakeknapp</translation>
 <translation id="8843682306134542540">Slå av/på rotasjonslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Søk+Esc</translation>

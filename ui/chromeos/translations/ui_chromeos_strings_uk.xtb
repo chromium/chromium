@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">Архівування елементів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="1722687688096767818">Додається профіль…</translation>
 <translation id="1726100011689679555">Сервери імен</translation>
-<translation id="1726600877401297672">Файли (<ph name="NUMBER_OF_ITEMS" />) переміщено в кошик</translation>
 <translation id="1729953886957086472">Німецька (Німеччина)</translation>
 <translation id="1730235522912993863">Китайська, цанцзе</translation>
 <translation id="1731889557567069540">Скопійовано елементів: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Список</translation>
 <translation id="2377590462528165447">Linux має доступ до стількох папок: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2378075407703503998">Вибрано файлів: <ph name="SELCTED_FILE_COUNT" /></translation>
-<translation id="2387120140441437063">Не вдалося відкрити файли з кошика. Спершу відновіть їх.</translation>
 <translation id="2387458720915042159">Тип з’єднання з проксі-сервером</translation>
 <translation id="2389832672041313158">Бірманська/м'янмська</translation>
 <translation id="2392369802118427583">Активувати</translation>
@@ -211,7 +209,6 @@
 <translation id="2888807692577297075">Немає елементів, які відповідають запиту &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Інформація</translation>
 <translation id="2902734494705624966">Американська розширена</translation>
-<translation id="2906052776158021882">Переміщення файлів (<ph name="NUMBER_OF_ITEMS" />) у кошик</translation>
 <translation id="290843123675549676">Маратхі</translation>
 <translation id="2923240520113693977">Естонська</translation>
 <translation id="2938685643439809023">Монгольська</translation>
@@ -221,7 +218,6 @@
 <translation id="2958458230122209142">В індивідуальному сховищі закінчується місце. Залишилося <ph name="REMAINING_PERCENTAGE" />% з <ph name="TOTAL_SPACE" /> пам’яті.</translation>
 <translation id="2977940621473452797">Цей файл створено для комп’ютерів із програмним забезпеченням Macintosh. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. Знайдіть відповідний додаток у Веб-магазині Chrome.</translation>
 <translation id="2984337792991268709">Сьогодні <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">Відновлення елементів (<ph name="COUNT" />)…</translation>
 <translation id="299638574917407533">Французька (Канада)</translation>
 <translation id="3003189754374775221">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, підключитися</translation>
 <translation id="3003633581067744647">Зменшене зображення</translation>
@@ -239,6 +235,7 @@
 <translation id="3124404833828281817">Замріяна людина</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Недійсний PIN-код. Залишилося спроб: <ph name="RETRIES" />.</translation>
+<translation id="3157931365184549694">Відновити</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (з апаратною підтримкою)</translation>
 <translation id="3188257591659621405">Мої файли</translation>
 <translation id="3194553149358267393">Немає нещодавніх аудіофайлів</translation>
@@ -276,7 +273,6 @@
 <translation id="3414856743105198592">Форматування знімного носія призведе до стирання всіх даних. Продовжити?</translation>
 <translation id="3437801641691368414">Час створення</translation>
 <translation id="343907260260897561">Фотокамера миттєвого друку</translation>
-<translation id="3452106565701029351">Відкріпити в розділі "Швидкі файли"</translation>
 <translation id="3455931012307786678">Естонська</translation>
 <translation id="3475447146579922140">Таблиці Google</translation>
 <translation id="3479552764303398839">Не зараз</translation>
@@ -470,7 +466,6 @@
 <translation id="5068919226082848014">Піца</translation>
 <translation id="5081517858322016911">Буде видалено файли загальним обсягом <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">Переміщення елементів (<ph name="NUMBER_OF_ITEMS" />) у папку "<ph name="FOLDER_NAME" />"</translation>
-<translation id="5092200349368278146">Файл "<ph name="FILE_NAME" />" переміщено в кошик</translation>
 <translation id="509429900233858213">Сталася помилка.</translation>
 <translation id="5098629044894065541">Іврит</translation>
 <translation id="5102922915594634436">Керувати синхронізованими папками</translation>
@@ -576,7 +571,6 @@
 <translation id="5845721951356578987">Медпрацівник</translation>
 <translation id="5861477046012235702">Геймер</translation>
 <translation id="5864471791310927901">Помилка пошуку DHCP</translation>
-<translation id="5887342613489958822">Переміщення файлу "<ph name="FILE_NAME" />" у кошик</translation>
 <translation id="5896749729057314184">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активовано, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
 <translation id="5911887972742538906">Сталася помилка під час встановлення додатка Linux.</translation>
 <translation id="5912396950572065471">Формат</translation>
@@ -688,7 +682,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">Тривалість</translation>
-<translation id="6931302001003657424">Закріпити в розділі "Швидкі файли"</translation>
 <translation id="6935521024859866267">Догори дригом</translation>
 <translation id="6943836128787782965">Помилка HTTP</translation>
 <translation id="6949408524333579394">Сербська, транслітерація</translation>
@@ -765,7 +758,6 @@
 <translation id="7547811415869834682">Нідерландська</translation>
 <translation id="7551643184018910560">Закріпити на панелі запуску</translation>
 <translation id="7553492409867692754">Надати додаткам Linux доступ до файлів у папці "<ph name="FOLDER_NAME" />"</translation>
-<translation id="7575645593344061397">Файл "<ph name="FILENAME" />" відновлюється…</translation>
 <translation id="7589661784326793847">Зачекайте</translation>
 <translation id="7592775719802218421">Файл "<ph name="FILE_NAME" />" завантажується на пристрій</translation>
 <translation id="7600126690270271294">Сербська</translation>
@@ -917,7 +909,6 @@
 <translation id="8787254343425541995">Дозволити проксі-сервери для спільних мереж</translation>
 <translation id="8790981080411996443">Людина, яка поливає квіти</translation>
 <translation id="8798099450830957504">За умовчанням</translation>
-<translation id="8802459921616481935">Перемістити в кошик</translation>
 <translation id="8808686172382650546">Кіт</translation>
 <translation id="8810671769985673465">Не вдалося заархівувати, елемент існує: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Іспанська (Іспанія)</translation>

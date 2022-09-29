@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1005794457625275818">Slapukai leidžiami tam tikrame skaičiuje svetainių (<ph name="FPS_MEMBERS_COUNT" />) <ph name="FPS_OWNER" /> grupėje, įskaitant <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Atidaryti prisijungus</translation>
 <translation id="1044891598689252897">Svetainės veiks įprastai</translation>
 <translation id="1124090076051167250">Tai atlikus bus išvalyta <ph name="DATASIZE" /> svetainių ar programų jūsų pagrindiniame ekrane saugomų duomenų ir slapukų.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Taip</translation>
 <translation id="1446450296470737166">Leisti visiškai valdyti MIDI įr.</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1633720957382884102">Susijusios svetainės</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1647582022260550163">Ar tikrai norite nustatyti leidimus iš naujo ir išvalyti slapukus bei svetainių duomenis?</translation>
 <translation id="1660204651932907780">Leisti svetainėms leisti garsą (rekomenduojama)</translation>

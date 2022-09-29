@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1005794457625275818"><ph name="FPS_OWNER" /> গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইটের জন্য কুকি ব্যবহারের অনুমতি আছে, এতে <ph name="FPS_MEMBER" /> অন্তর্ভুক্ত</translation>
 <translation id="1006017844123154345">অনলাইনে খুলুন</translation>
 <translation id="1044891598689252897">সাইট স্বাভাবিকভাবেই কাজ করবে</translation>
 <translation id="1124090076051167250">এটি করলে, আপনার হোম স্ক্রিনে সাইট বা অ্যাপের মাধ্যমে সেভ হওয়া <ph name="DATASIZE" /> ডেটা এবং কুকি মুছে যাবে।</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="1446450296470737166">MIDI ডিভাইসগুলির পূর্ণ নিয়ন্ত্রণের অনুমতি দিন</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
+<translation id="1633720957382884102">সম্পর্কিত সাইটগুলি</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1647582022260550163">আপনি কি সত্যিই অনুমতি রিসেট করতে এবং কুকি ও সাইট ডেটা মুছে দিতে চান?</translation>
 <translation id="1660204651932907780">সাউন্ডটি প্লে করার জন্য সাইটটিতে অনুমতি দিন (প্রস্তাবিত)</translation>

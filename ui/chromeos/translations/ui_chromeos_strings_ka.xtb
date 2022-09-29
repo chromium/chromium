@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის დაარქივება…</translation>
 <translation id="1722687688096767818">მიმდინარეობს პროფილის დამატება...</translation>
 <translation id="1726100011689679555">სახელთა სერვერები</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> ერთეული გადატანილია წაშლილებში</translation>
 <translation id="1729953886957086472">გერმანული (გერმანია)</translation>
 <translation id="1730235522912993863">ჩინური ჩანჯი</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ერთეული დაკოპირდა.</translation>
@@ -158,7 +157,7 @@
 <translation id="2377319039870049694">სიის ხედზე გადართვა</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> საქაღალდე გაზიარებულია Linux-თან</translation>
 <translation id="2378075407703503998">არჩეულია <ph name="SELCTED_FILE_COUNT" /> ფაილი</translation>
-<translation id="2387120140441437063">წაშლილი ფაილების გახსნა ვერ ხერხდება. გახსნამდე აღადგინეთ ფაილები.</translation>
+<translation id="2383454254762599978">წაშლილებში გადატანა</translation>
 <translation id="2387458720915042159">პროქსი-სერვერის კავშირის ტიპი</translation>
 <translation id="2389832672041313158">ბირმული/მიანმარული</translation>
 <translation id="2392369802118427583">გააქტიურება</translation>
@@ -175,6 +174,7 @@
 <translation id="2500392669976258912">გუჯარათული ფონეტიკური</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">სკანირება</translation>
+<translation id="252641322760726369">თაროდან თქვენს ფაილებზე სწრაფი წვდომა რომ იქონიოთ, ხანგრძლივად შეეხეთ ფაილს, შემდეგ კი შეხებით აირჩიეთ <ph name="ICON" /> და „<ph name="PIN_COMMAND" />“.</translation>
 <translation id="2534460670861217804">უსაფრთხო HTTP პროქსი-სერვერი</translation>
 <translation id="2541377937973966830">ამ საქაღალდის კონტენტი მხოლოდ კითხვადია. ზოგიერთი მოქმედება მხარდაუჭერელია.</translation>
 <translation id="2542049655219295786">Google ცხრილი</translation>
@@ -211,7 +211,6 @@
 <translation id="2888807692577297075">&lt;b&gt;„<ph name="SEARCH_STRING" />“&lt;/b&gt;-ის შესაბამისი ელემენტები ვერ მოიძებნა</translation>
 <translation id="2894654529758326923">ინფორმაცია</translation>
 <translation id="2902734494705624966">აშშ გაფართოებით</translation>
-<translation id="2906052776158021882">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის გადატანა წაშლილებში</translation>
 <translation id="290843123675549676">მარათული</translation>
 <translation id="2923240520113693977">ესტონური</translation>
 <translation id="2938685643439809023">მონღოლური</translation>
@@ -221,7 +220,6 @@
 <translation id="2958458230122209142">მეხსიერება იწურება. <ph name="TOTAL_SPACE" /> ინდივიდუალური მეხსიერებიდან <ph name="REMAINING_PERCENTAGE" />% დაგრჩათ.</translation>
 <translation id="2977940621473452797">ეს ფაილი განკუთვნილია კომპიუტერისთვის, რომელიც იყენებს Macintosh პროგრამულ უზრუნველყოფას. ის არ არის თავსებადი თქვენს მოწყობილობასთან, რომელზეც გაშვებულია ChromeOS. ალტერნატიული აპის პოვნა შეგიძლიათ Chrome Web Store-ში.</translation>
 <translation id="2984337792991268709">დღეს <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">მიმდინარეობს <ph name="COUNT" /> ერთეულის აღდგენა...</translation>
 <translation id="299638574917407533">ფრანგული (კანადა)</translation>
 <translation id="3003189754374775221">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დაკავშირება</translation>
 <translation id="3003633581067744647">ესკიზების ხედზე გადართვა</translation>
@@ -239,6 +237,7 @@
 <translation id="3124404833828281817">პიროვნება, რომელიც ოცნებობს</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN-კოდი არასწორია. <ph name="RETRIES" /> მცდელობა დაგრჩათ.</translation>
+<translation id="3157931365184549694">აღდგენა</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (აპარატურულად მხარდაჭერილი)</translation>
 <translation id="3188257591659621405">ჩემი ფაილები</translation>
 <translation id="3194553149358267393">ბოლოდროინდელი აუდიოფაილები არ არის</translation>
@@ -276,7 +275,6 @@
 <translation id="3414856743105198592">ამოღებადი მედიის ფორმატირების შემთხვევაში მთლიანი მონაცემები წაიშლება. გსურთ გააგრძელოთ?</translation>
 <translation id="3437801641691368414">შექმნის დრო</translation>
 <translation id="343907260260897561">მყისიერი კამერა</translation>
-<translation id="3452106565701029351">სწრაფი ფაილებიდან ჩამაგრების მოხსნა</translation>
 <translation id="3455931012307786678">ესტონური</translation>
 <translation id="3475447146579922140">Google ის ელ.ცხრილი</translation>
 <translation id="3479552764303398839">ახლა არა</translation>
@@ -291,6 +289,7 @@
 <translation id="3549797760399244642">drive.google.com-ზე გადასვლა…</translation>
 <translation id="3553048479571901246">ფაილების <ph name="APP_NAME" />-ით გასახსნელად, პირველ რიგში, დააკოპირეთ ისინი Windows-ის ფაილების საქაღალდეში.</translation>
 <translation id="3556731189587832921">ინგლისური (აშშ) საერთაშორისო PC კლავიატურით</translation>
+<translation id="3557414470514932909">მიმდინარეობს <ph name="FILE_NAME" />-ის გადატანა წაშლილებში</translation>
 <translation id="3567221313191587603">ფაილებზე ხაზგარეშე რეჟიმში წვდომისთვის აირჩიეთ ფაილი, შემდეგ კი გადაიყვანეთ „<ph name="OFFLINE_CHECKBOX_NAME" />“ ჩართულ მდგომარეობაზე.</translation>
 <translation id="357479282490346887">ლიტვური</translation>
 <translation id="3587482841069643663">ყველა</translation>
@@ -342,14 +341,17 @@
 <translation id="3975895378829046965">ბენგალური ფონეტიკური</translation>
 <translation id="4002066346123236978">სათაური</translation>
 <translation id="4017788180641807848">ინგლისური (აშშ) Workman კლავიატურით</translation>
+<translation id="4019998208269143058">სწრაფ ფაილებში ჩამაგრება</translation>
 <translation id="4040753847560036377">PUK-კოდი არასწორია</translation>
 <translation id="4057991113334098539">მიმდინარეობს გააქტიურება...</translation>
 <translation id="4092890906744441904">ირლანდიური</translation>
 <translation id="4124935795427217608">ზღაპრული მარტორქა</translation>
 <translation id="4131235941541910880">გადაიტანეთ არასაჭირო ერთეულები წაშლილებში</translation>
+<translation id="4153015322587141338">თაროდან თქვენს ფაილებზე სწრაფი წვდომა რომ იქონიოთ, მარჯვენა ღილაკით დააწკაპუნეთ ფაილზე და აირჩიეთ „<ph name="PIN_COMMAND" />“.</translation>
 <translation id="4157569377477607576">ადმინისტრატორის წესების მიხედვით რეკომენდებული არ არის:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> გადატანილია.</translation>
 <translation id="4176286497474237543">წაშლილების ახლავე გასუფთავება</translation>
+<translation id="4179621117429069925">ეს ერთეული თქვენს წაშლილებშია</translation>
 <translation id="4186579485882418952">ხაზგარეშე რეჟიმის ჩართვა</translation>
 <translation id="4193154014135846272">Google დოკუმენტი</translation>
 <translation id="4197674956721858839">Zip არჩევანი</translation>
@@ -379,6 +381,7 @@
 <translation id="4387004326333427325">ავთენტიფიკაციის სერტიფიკატი დისტანციურად უარყოფილი იქნა</translation>
 <translation id="4394214039309501350">გარე ბმული</translation>
 <translation id="4394980935660306080">ამ კვირის დასაწყისში</translation>
+<translation id="4398096759193130964">აღადგინეთ ერთეულები, ან ჩავლებით გადაიტანეთ ის ახალ საქაღალდეში წაშლილებს მიღმა</translation>
 <translation id="4401287888955153199">ყველას ამოღება</translation>
 <translation id="4410695710508688828">ამოღების ოპერაცია ვერ შესრულდა. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">შექმენით თქვენი ფაილების მალსახმობი</translation>
@@ -434,6 +437,7 @@
 <translation id="4790766916287588578">ჰინდი InScript კლავიატურით</translation>
 <translation id="4801956050125744859">ორივე შენარჩუნდეს</translation>
 <translation id="4804827417948292437">ავოკადო</translation>
+<translation id="4805966553127040832">მიმდინარეობს <ph name="COUNT" /> ერთეულის აღდგენა</translation>
 <translation id="4823651846660089135">მოწყობილობა მხოლოდ კითხვადია</translation>
 <translation id="4826849268470072925">ტამილური ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ელემენტი არჩეულია</translation>
@@ -452,6 +456,7 @@
 <translation id="4935975195727477204">ყვავილი</translation>
 <translation id="4943368462779413526">ამერიკული ფეხბურთის ბურთი</translation>
 <translation id="4961158930123534723">Parallels Desktop-თან გაზიარებულია 1 საქაღალდე</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> აღდგენილია</translation>
 <translation id="4969785127455456148">ალბომი</translation>
 <translation id="4973523518332075481">სახელის სიგრძე უნდა იყოს <ph name="MAX_LENGTH" /> ან ნაკლები სიმბოლო</translation>
 <translation id="4973970068702235170">დაარქივება ვერ მოხერხდა, მოულოდნელი შეცდომა: <ph name="ERROR_MESSAGE" /></translation>
@@ -470,7 +475,6 @@
 <translation id="5068919226082848014">პიცა</translation>
 <translation id="5081517858322016911">წაიშლება ფაილების <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის გადატანა „<ph name="FOLDER_NAME" />“-ში</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> გადატანილია წაშლილებში</translation>
 <translation id="509429900233858213">შეცდომა მოხდა.</translation>
 <translation id="5098629044894065541">ებრაული</translation>
 <translation id="5102922915594634436">სინქრონიზებული საქაღალდეების მართვა</translation>
@@ -554,6 +558,7 @@
 <translation id="5691596662111998220"><ph name="FILE_NAME" /> აღარ არსებობს.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, განბლოკვა</translation>
 <translation id="5700087501958648444">აუდიოს ინფორმაცია</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> გადატანილია წაშლილებში</translation>
 <translation id="5724172041621205163">ტაი Pattachote კლავიატურით</translation>
 <translation id="5756666464756035725">უნგრული QWERTY</translation>
 <translation id="5763377084591234761">გერმანული (შვეიცარია)</translation>
@@ -575,7 +580,6 @@
 <translation id="5845721951356578987">ექთანი</translation>
 <translation id="5861477046012235702">მოთამაშე</translation>
 <translation id="5864471791310927901">DHCP ძებნა ვერ განხორციელდა</translation>
-<translation id="5887342613489958822">მიმდინარეობს <ph name="FILE_NAME" />-ის გადატანა წაშლილებში</translation>
 <translation id="5896749729057314184">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, არააქტიური, სიგნალის სიძლიერეა <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="5911887972742538906">თქვენი Linux აპლიკაციის ინსტალაციისას მოხდა შეცდომა.</translation>
 <translation id="5912396950572065471">ფორმატი</translation>
@@ -625,6 +629,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> არქივი</translation>
 <translation id="6321303798550928047">ხელის ქნევა</translation>
 <translation id="6327785803543103246">ვებ პროქსი-სერვერის ავტომატური აღმოჩენა</translation>
+<translation id="6337014272874260727">სწრაფი ფაილებიდან ჩამაგრების მოხსნა</translation>
 <translation id="6339145975392024142">აშშ საერთაშორისო (PC)</translation>
 <translation id="6346310558342052870">წვდომა შეზღუდულია</translation>
 <translation id="6356685157277930264">ფაილებთან დაკავშირებული გამოხმაურების ფანჯარა</translation>
@@ -665,6 +670,7 @@
 <translation id="6751256176799620176">არჩეულია 1 საქაღალდე</translation>
 <translation id="6755827872271341378">ChromeOS Flex მოწყობილობა</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
+<translation id="6794539005637808366">აღადგინეთ ერთეული, ან ჩავლებით გადაიტანეთ ის ახალ საქაღალდეში წაშლილებს მიღმა</translation>
 <translation id="6795884519221689054">პანდა</translation>
 <translation id="6806699711453372963">Linux გაზიარების მართვა</translation>
 <translation id="6806796368146926706">ანბანურ-ციფრული იაპონური კლავიატურით</translation>
@@ -687,7 +693,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">ხანგრძლიობა</translation>
-<translation id="6931302001003657424">სწრაფ ფაილებში ჩამაგრება</translation>
 <translation id="6935521024859866267">გადაბრუნებულად</translation>
 <translation id="6943836128787782965">HTTP-ს შეცდომა</translation>
 <translation id="6949408524333579394">სერბული ტრანსლიტერაცია</translation>
@@ -702,6 +707,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">შვედური</translation>
 <translation id="6990081529015358884">ადგილი აღარ არის</translation>
+<translation id="6993826899923627728">ეს ერთეულები თქვენს წაშლილებშია</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> შერჩეული ფოლდერი</translation>
 <translation id="7008426324576352165">ატვირთვის შესასრულებლად თქვენს ორგანიზაციას მეტი მეხსიერება სჭირდება.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -747,6 +753,7 @@
 <translation id="7408870451288633753">ჩეხური</translation>
 <translation id="7417453074306512035">ეთიოპიური კლავიატურა</translation>
 <translation id="7417705661718309329">Google რუკა</translation>
+<translation id="7419668828140929293">მიმდინარეობს „<ph name="FILENAME" />“-ის აღდგენა</translation>
 <translation id="7458955835361612701">ბოლოდროინდელი სურათები არ არის</translation>
 <translation id="7460898608667578234">უკრაინული</translation>
 <translation id="7469894403370665791">ამ ქსელთან ავტომატური დაკავშირება</translation>
@@ -764,7 +771,6 @@
 <translation id="7547811415869834682">ჰოლანდიური</translation>
 <translation id="7551643184018910560">თაროზე ჩამაგრება</translation>
 <translation id="7553492409867692754">მიეცით Linux აპებს საქაღალდეში „<ph name="FOLDER_NAME" />“ არსებულ ფაილებზე წვდომის ნებართვა</translation>
-<translation id="7575645593344061397">მიმდინარეობს „<ph name="FILENAME" />“-ის აღდგენა...</translation>
 <translation id="7589661784326793847">დაელოდეთ ერთი წამი</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> გარდაიქმნება ხაზგარეშე ხელმისაწვდომად</translation>
 <translation id="7600126690270271294">სერბული</translation>
@@ -776,6 +782,7 @@
 <translation id="7655441028674523381">იქონიეთ მარტივი წვდომა Google Photos-ზე</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7663224033570512922">ჰინდი</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> ერთეული გადატანილია წაშლილებში</translation>
 <translation id="7693909743393669729">დისკის დაფორმატება ამოშლის მასში შენახულ ყველა მონაცემს, მათ შორის, დანაყოფებს, რომლებიც შეიძლება არ ჩანდეს. ამ მოქმედებას ვერ გააუქმებთ.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ვერ დაფორმატდა</translation>
 <translation id="76959938259365003">წაშლილები ვერ გასუფთავდა.</translation>
@@ -790,6 +797,7 @@
 <translation id="7760449188139285140">ჩინური Wubi</translation>
 <translation id="7765158879357617694">გადატანა</translation>
 <translation id="7774365994322694683">ჩიტი</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> ერთეული აღდგენილია</translation>
 <translation id="7781829728241885113">გუშინ</translation>
 <translation id="7788080748068240085">„<ph name="FILE_NAME" />“-ის ოფლაინში შესანახად უნდა გაანთავისუფლოთ დამატებით <ph name="TOTAL_FILE_SIZE" /> <ph name="MARKUP_1" />
     <ph name="MARKUP_2" />მოხსნათ იმ ფაილების ჩამაგრება, რომლებიც აღარ გჭირდებათ, ოფლაინში წვდომის მისაღებად<ph name="MARKUP_3" />
@@ -916,7 +924,6 @@
 <translation id="8787254343425541995">პროქსების გამოყენება გაზიარებული ქსელებისთვის</translation>
 <translation id="8790981080411996443">პიროვნება, რომელიც რწყავს ყვავილებს</translation>
 <translation id="8798099450830957504">ნაგულისხმევი</translation>
-<translation id="8802459921616481935">წაშლილებში გადატანა</translation>
 <translation id="8808686172382650546">კატა</translation>
 <translation id="8810671769985673465">შეკუმშვა ვერ მოხერხდა, ერთეული უკვე არსებობს: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">ესპანური (ესპანეთი)</translation>
@@ -971,6 +978,7 @@
 <translation id="947144732524271678">არჩეულია <ph name="ENTRY_COUNT" /> ჩანაწერის დიაპაზონი „<ph name="FROM_ENTRY_NAME" />“-დან „<ph name="TO_ENTRY_NAME" />“-მდე.</translation>
 <translation id="954194396377670556">ადმინისტრატორის წესების მიხედვით იზღუდება.</translation>
 <translation id="965477715979482472">ინგლისური (სამხრეთ აფრიკის რესპუბლიკა)</translation>
+<translation id="976666271385981812">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის გადატანა წაშლილებში</translation>
 <translation id="981121421437150478">ოფლაინი</translation>
 <translation id="988685240266037636">ფაილი სახელად „<ph name="FILE_NAME" />“ უკვე არსებობს. გსურთ მისი ჩანაცვლება?</translation>
 <translation id="992401651319295351"><ph name="RETRIES" /> მცდელობა დაგრჩათ. ამ ქსელს ვერ გამოიყენებთ, სანამ ახალ PIN-კოდს არ დააყენებთ.</translation>

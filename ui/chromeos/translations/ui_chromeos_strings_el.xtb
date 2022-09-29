@@ -81,7 +81,6 @@
 <translation id="1722487484194605434">Συμπίεση <ph name="NUMBER_OF_ITEMS" /> στοιχείων...</translation>
 <translation id="1722687688096767818">Προσθήκη προφίλ…</translation>
 <translation id="1726100011689679555">Διακομιστές ονομάτων</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> στοιχεία μετακινήθηκαν στον κάδο</translation>
 <translation id="1729953886957086472">Γερμανικά (Γερμανίας)</translation>
 <translation id="1730235522912993863">Κινεζικά Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> στοιχεία αντιγράφηκαν.</translation>
@@ -160,7 +159,6 @@
 <translation id="2377319039870049694">Εναλλαγή σε προβολή λίστας</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> φάκελοι κοινόχρηστοι με Linux</translation>
 <translation id="2378075407703503998">Έχουν επιλεγεί <ph name="SELCTED_FILE_COUNT" /> αρχεία</translation>
-<translation id="2387120140441437063">Δεν είναι δυνατό το άνοιγμα των αρχείων που βρίσκονται στον κάδο. Επαναφέρετε τα αρχεία πριν από το άνοιγμα.</translation>
 <translation id="2387458720915042159">Τύπος σύνδεσης διακομιστή μεσολάβησης</translation>
 <translation id="2389832672041313158">Βιρμανικά/Μιανμάρ</translation>
 <translation id="2392369802118427583">Ενεργοποίηση</translation>
@@ -215,7 +213,6 @@
 <translation id="2888807692577297075">Δεν υπάρχουν στοιχεία σε αντιστοιχία με το &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Πληροφορίες</translation>
 <translation id="2902734494705624966">Εκτεταμένο ΗΠΑ</translation>
-<translation id="2906052776158021882">Μετακίνηση <ph name="NUMBER_OF_ITEMS" /> στοιχείων στον κάδο</translation>
 <translation id="290843123675549676">Μαραθικά</translation>
 <translation id="2923240520113693977">Εσθονικά
 </translation>
@@ -226,7 +223,6 @@
 <translation id="2958458230122209142">Περιορισμένος αποθηκευτικός χώρος. Απομένει το <ph name="REMAINING_PERCENTAGE" />% από τα <ph name="TOTAL_SPACE" /> του προσωπικού αποθηκευτικού χώρου.</translation>
 <translation id="2977940621473452797">Αυτό το αρχείο έχει σχεδιαστεί για υπολογιστή που χρησιμοποιεί λογισμικό Macintosh. Δεν είναι συμβατό με τη συσκευή σας, η οποία εκτελεί Chrome OS. Αναζητήστε μια κατάλληλη εφαρμογή αντικατάστασης στο Chrome Web Store.</translation>
 <translation id="2984337792991268709">Σήμερα <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">Επαναφορά <ph name="COUNT" /> στοιχείων…</translation>
 <translation id="299638574917407533">Γαλλικά (Καναδά)</translation>
 <translation id="3003189754374775221">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Σύνδεση</translation>
 <translation id="3003633581067744647">Εναλλαγή σε προβολή μικρογραφιών</translation>
@@ -244,6 +240,7 @@
 <translation id="3124404833828281817">Άτομο που ονειροπολεί</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Μη έγκυρο PIN. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
+<translation id="3157931365184549694">Επαναφορά</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (βασιζόμενο σε υλικό)</translation>
 <translation id="3188257591659621405">Τα αρχεία μου</translation>
 <translation id="3194553149358267393">Δεν υπάρχουν πρόσφατα αρχεία ήχου</translation>
@@ -283,7 +280,6 @@
 <translation id="3414856743105198592">Η μορφοποίηση του αφαιρούμενου μέσου θα διαγράψει όλα τα δεδομένα. Θέλετε να συνεχίσετε;</translation>
 <translation id="3437801641691368414">Ώρα δημιουργίας</translation>
 <translation id="343907260260897561">Στιγμιαία φωτογραφική μηχανή</translation>
-<translation id="3452106565701029351">Ξεκαρφίτσωμα από τα Γρήγορα αρχεία</translation>
 <translation id="3455931012307786678">Εσθονικά</translation>
 <translation id="3475447146579922140">Υπολογιστικό φύλλο Google</translation>
 <translation id="3479552764303398839">Όχι τώρα</translation>
@@ -482,7 +478,6 @@
 <translation id="5068919226082848014">Πίτσα</translation>
 <translation id="5081517858322016911">Θα διαγραφούν αρχεία που καταλαμβάνουν συνολικά <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">Μετακίνηση <ph name="NUMBER_OF_ITEMS" /> στοιχείων στον φάκελο <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146">Το <ph name="FILE_NAME" /> μετακινήθηκε στον κάδο</translation>
 <translation id="509429900233858213">Παρουσιάστηκε σφάλμα.</translation>
 <translation id="5098629044894065541">Εβραϊκά
 </translation>
@@ -591,7 +586,6 @@
 <translation id="5845721951356578987">Νοσοκόμος</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Αποτυχία αναζήτησης DHCP</translation>
-<translation id="5887342613489958822">Μετακίνηση <ph name="FILE_NAME" /> στον κάδο</translation>
 <translation id="5896749729057314184">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Απενεργοποιημένο, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="5911887972742538906">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής σας Linux.</translation>
 <translation id="5912396950572065471">Διαμόρφωση</translation>
@@ -704,7 +698,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">ΗΠΑ Workman</translation>
 <translation id="6930242544192836755">Διάρκεια</translation>
-<translation id="6931302001003657424">Καρφίτσωμα στα Γρήγορα αρχεία</translation>
 <translation id="6935521024859866267">Ανάποδα</translation>
 <translation id="6943836128787782965">Η λήψη HTTP απέτυχε</translation>
 <translation id="6949408524333579394">Μεταγραφή σε Σερβικά</translation>
@@ -784,7 +777,6 @@
 </translation>
 <translation id="7551643184018910560">Καρφίτσωμα στο ράφι</translation>
 <translation id="7553492409867692754">Παραχωρήστε στις εφαρμογές Linux άδεια πρόσβασης σε αρχεία στον φάκελο <ph name="FOLDER_NAME" /></translation>
-<translation id="7575645593344061397">Επαναφορά "<ph name="FILENAME" />"…</translation>
 <translation id="7589661784326793847">Περιμένετε λίγο</translation>
 <translation id="7592775719802218421">Το αρχείο <ph name="FILE_NAME" /> γίνεται διαθέσιμο εκτός σύνδεσης.</translation>
 <translation id="7600126690270271294">Σερβικά</translation>
@@ -940,7 +932,6 @@
 <translation id="8787254343425541995">Να επιτρέπονται οι διακομιστές μεσολάβησης για κοινόχρηστα δίκτυα</translation>
 <translation id="8790981080411996443">Άτομο που ποτίζει φυτά</translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
-<translation id="8802459921616481935">Μετακίνηση στον κάδο</translation>
 <translation id="8808686172382650546">Γάτα</translation>
 <translation id="8810671769985673465">Αποτυχία συμπίεσης, υπάρχει το αρχείο: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Ισπανικά (Ισπανία)</translation>

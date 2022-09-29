@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1005794457625275818"><ph name="FPS_OWNER" /> 그룹의 사이트 <ph name="FPS_MEMBERS_COUNT" />개(<ph name="FPS_MEMBER" /> 포함)에 쿠키 허용됨</translation>
 <translation id="1006017844123154345">온라인 열기</translation>
 <translation id="1044891598689252897">사이트가 정상적으로 작동합니다.</translation>
 <translation id="1124090076051167250">이렇게 하면 사이트 또는 홈 화면의 앱에서 저장한 <ph name="DATASIZE" />의 데이터 및 쿠키가 삭제됩니다.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">예</translation>
 <translation id="1446450296470737166">MIDI 기기의 전체 제어 허용</translation>
 <translation id="1620510694547887537">카메라</translation>
+<translation id="1633720957382884102">관련 사이트</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1647582022260550163">권한을 재설정하고 쿠키 및 사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="1660204651932907780">사이트에서 소리를 재생하도록 허용(권장)</translation>

@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">Po ngjesh <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="1722687688096767818">Po shton profilin...</translation>
 <translation id="1726100011689679555">Serverët e emrave</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> artikuj u zhvendosën te "Koshi"</translation>
 <translation id="1729953886957086472">Gjermanisht (Gjermani)</translation>
 <translation id="1730235522912993863">Kinezisht Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> artikuj të kopjuar.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Kalo te pamja e listës</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosje të ndara me Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> skedarë u zgjodhën</translation>
-<translation id="2387120140441437063">Skedarët e zhvendosur te koshi nuk mund të hapen. Restauro skedarët para se t'i hapësh.</translation>
 <translation id="2387458720915042159">Lloji i lidhjes së përfaqësuesit</translation>
 <translation id="2389832672041313158">Birmanisht/Mianmar</translation>
 <translation id="2392369802118427583">Aktivizoje</translation>
@@ -211,7 +209,6 @@
 <translation id="2888807692577297075">Asnjë artikull nuk përputhet me &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informacion</translation>
 <translation id="2902734494705624966">Amerikane e zgjeruar</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> artikuj po zhvendosen te "Koshi"</translation>
 <translation id="290843123675549676">Maratisht</translation>
 <translation id="2923240520113693977">Estonisht</translation>
 <translation id="2938685643439809023">Mongolisht</translation>
@@ -221,7 +218,6 @@
 <translation id="2958458230122209142">Hapësira ruajtëse në nivel të ulët: <ph name="REMAINING_PERCENTAGE" />% e mbetur nga hapësira jote ruajtëse individuale prej <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Macintosh. Kjo nuk përputhet me pajisjen tënde e cila funksionon me ChromeOS. Kërko "Dyqanin e uebit të Chrome" për një aplikacion të përshtatshëm zëvendësimi.</translation>
 <translation id="2984337792991268709">Sot <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337"><ph name="COUNT" /> artikuj po restaurohen...</translation>
 <translation id="299638574917407533">Frëngjisht (Kanada)</translation>
 <translation id="3003189754374775221">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>
 <translation id="3003633581067744647">Kalo te pamja e miniaturës</translation>
@@ -239,6 +235,7 @@
 <translation id="3124404833828281817">Person duke ëndërruar me sy hapur</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Kodi PIN i pavlefshëm Të kanë mbetur edhe <ph name="RETRIES" /> përpjekje.</translation>
+<translation id="3157931365184549694">Restauro</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (mbështetu nga hardueri)</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
 <translation id="3194553149358267393">Nuk ka skedarë audio të fundit</translation>
@@ -276,7 +273,6 @@
 <translation id="3414856743105198592">Formatimi i medias së çmontueshme do të spastrojë të gjitha të dhënat. Dëshiron të vazhdosh?</translation>
 <translation id="3437801641691368414">Ora e krijimit</translation>
 <translation id="343907260260897561">Kamerë e çastit</translation>
-<translation id="3452106565701029351">Zhgozhdo nga "Skedarët e shpejtë"</translation>
 <translation id="3455931012307786678">Estonisht</translation>
 <translation id="3475447146579922140">Fletëllogaritësja e Google</translation>
 <translation id="3479552764303398839">Jo tani</translation>
@@ -470,7 +466,6 @@
 <translation id="5068919226082848014">Pica</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> nga skedarët do të fshihen</translation>
 <translation id="508423945471810158">Po zhvendos <ph name="NUMBER_OF_ITEMS" /> artikuj në <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> u zhvendos te "Koshi"</translation>
 <translation id="509429900233858213">Ndodhi një gabim.</translation>
 <translation id="5098629044894065541">Hebraisht</translation>
 <translation id="5102922915594634436">Menaxho dosjet e sinkronizuara</translation>
@@ -575,7 +570,6 @@
 <translation id="5845721951356578987">Infermier</translation>
 <translation id="5861477046012235702">Lojtar</translation>
 <translation id="5864471791310927901">Kërkimi i DHCP-së dështoi</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" /> po zhvendoset te "Koshi"</translation>
 <translation id="5896749729057314184">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, i paaktivizuar, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detajet</translation>
 <translation id="5911887972742538906">Ndodhi një gabim gjatë instalimit të aplikacionit tënd për Linux.</translation>
 <translation id="5912396950572065471">Formati</translation>
@@ -687,7 +681,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Tastiera amerikane Workman</translation>
 <translation id="6930242544192836755">Kohëzgjatja</translation>
-<translation id="6931302001003657424">Gozhdo te "Skedarët e shpejtë"</translation>
 <translation id="6935521024859866267">Përmbys</translation>
 <translation id="6943836128787782965">Marrja e HTTP-së dështoi</translation>
 <translation id="6949408524333579394">Serbisht me transliterim</translation>
@@ -764,7 +757,6 @@
 <translation id="7547811415869834682">Hollandisht</translation>
 <translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7553492409867692754">Jepu leje aplikacioneve të Linux që të qasen në skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
-<translation id="7575645593344061397">"<ph name="FILENAME" />" po restaurohet...</translation>
 <translation id="7589661784326793847">Prit vetëm një sekondë</translation>
 <translation id="7592775719802218421">Po bën <ph name="FILE_NAME" /> të disponueshëm jashtë linje</translation>
 <translation id="7600126690270271294">Serbisht</translation>
@@ -916,7 +908,6 @@
 <translation id="8787254343425541995">Lejo përfaqësues për rrjete të ndara</translation>
 <translation id="8790981080411996443">Person duke ujitur lulet</translation>
 <translation id="8798099450830957504">I parazgjedhur</translation>
-<translation id="8802459921616481935">Zhvendos te "Koshi"</translation>
 <translation id="8808686172382650546">Macja</translation>
 <translation id="8810671769985673465">Ngjeshja dështoi, artikulli ekziston: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Spanjisht (Spanjë)</translation>

@@ -1714,6 +1714,7 @@
 <translation id="2799297758492717491">メディアの自動再生を許可する URL パターンのホワイトリストを指定する</translation>
 <translation id="2801065672151277034">証明書の管理設定</translation>
 <translation id="2801155097555584385">バッテリー充電のカスタムの充電開始設定（%）を行う</translation>
+<translation id="2801378553855965587"><ph name="GOOGLE_CALENDAR_NAME" />　統合を無効にする。</translation>
 <translation id="2805707493867224476">すべてのサイトに対してポップアップ表示を許可する</translation>
 <translation id="2818074121667686266">このポリシーを有効に設定するか未設定のままにした場合、AudioCaptureAllowedUrls リストで指定されている URL 以外では、ユーザーに音声キャプチャのアクセスを確認するメッセージが表示されます。
 
@@ -2319,6 +2320,7 @@
       <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> ポリシーが設定されていない場合、このポリシーは無視されます。</translation>
 <translation id="3397883909301547525"><ph name="PRODUCT_OS_NAME" /> ランチャーにおすすめのアプリを表示しない</translation>
 <translation id="3399859571630358395">ファスト ペアリング（ファスト Bluetooth ペアリング）を強制的に無効にする。</translation>
+<translation id="3404681701763345449"><ph name="GOOGLE_CALENDAR_NAME" /> 統合を有効にする。</translation>
 <translation id="3408078762098350617"><ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> で指定し無効にした機能のユーザー エクスペリエンスを管理します。
 
       このポリシーを「blocked」（ブロック）に設定した場合、無効にした機能は使用不可となりますがユーザーには引き続き表示されます。
@@ -3608,6 +3610,7 @@
 <translation id="4913065710388638917">認証フローを有効にする URL のリストを指定する</translation>
 <translation id="4917385247580444890">強い</translation>
 <translation id="4918261735182294270">ユーザーが <ph name="CHROME_SYNC_NAME" /> を有効にするかどうかを選択できるようにする</translation>
+<translation id="491889618361437456"><ph name="GOOGLE_CALENDAR_NAME" /> 統合を有効にします</translation>
 <translation id="4919122295221518724">混合コンテンツの厳密な取り扱いを有効にする</translation>
 <translation id="4920367374739265095">このポリシーでは、プリンタの一括設定に適用するアクセス ポリシーを指定して、ユーザーが <ph name="DEVICE_PRINTERS_POLICY_NAME" /> のどのプリンタを使用できるかを制御できます。
 
@@ -3745,6 +3748,13 @@
 
       このポリシーを未設定または無効にした場合、永続タイプの webkitRequestFileSystem は一時的な割り当てで動作します。
       </translation>
+<translation id="5099372083252975644"><ph name="GOOGLE_CALENDAR_NAME" /> 統合を有効にすると、<ph name="PRODUCT_OS_NAME" /> ユーザーは <ph name="GOOGLE_CALENDAR_NAME" /> から予定を取得して、システム ステータスバーの <ph name="PRODUCT_OS_NAME" /> カレンダー ウィジェットに表示できるようになります。
+
+          このポリシーを有効にした場合、<ph name="PRODUCT_OS_NAME" /> デバイスでは <ph name="GOOGLE_CALENDAR_NAME" /> の予定を取得し、ユーザーがログインしているときにシステム ステータスバーの <ph name="PRODUCT_OS_NAME" /> カレンダー ウィジェットに表示することができます。
+
+          このポリシーを無効にした場合、<ph name="PRODUCT_OS_NAME" /> デバイスでは <ph name="GOOGLE_CALENDAR_NAME" /> の予定を取得し、ユーザーがログインしているときにシステム ステータスバーの <ph name="PRODUCT_OS_NAME" /> カレンダー ウィジェットに表示することはできません。
+
+          このポリシーを未設定のままにした場合、<ph name="GOOGLE_CALENDAR_NAME" /> 機能は企業ユーザーに対してデフォルトで無効になります。</translation>
 <translation id="5103112931744164177">このポリシーでは、DNS サーバーとの通信にオペレーティング システムの DNS クライアントと <ph name="PRODUCT_NAME" /> の組み込みの DNS クライアントのどちらのソフトウェア スタックを使用するかを管理できます。このポリシーは、使用する DNS サーバーの選択には影響しません。たとえば、オペレーティング システムで企業の DNS サーバーを使用するよう設定されている場合、組み込みの DNS クライアントでも同じサーバーが使用されます。また、DNS-over-HTTPS が使用されている場合は、このポリシーの対象となりません。<ph name="PRODUCT_NAME" /> では DNS-over-HTTPS リクエストに対して、常に組み込みのリゾルバを使用します。DNS-over-HTTPS の管理については、<ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> ポリシーをご覧ください。
 
       このポリシーを有効に設定した場合、可能なときは組み込みの DNS クライアントが使用されます。
@@ -4682,6 +4692,7 @@
 <translation id="6181618732396778048">どのサイトにもファイルとディレクトリへの書き込みアクセスの要求を許可しない</translation>
 <translation id="6181783961196084973">アプリのアクティビティを収集するかどうかの切り替え値です。true に設定した場合、ユーザーによるアプリのアクティビティ レポートがサーバーに送信され、お子様と保護者の <ph name="PRODUCT_NAME" /> アプリに表示されます。false に設定した場合、アプリごとの利用時間の上限は引き続き有効ですが、レポートデータはサーバーに送信されず、<ph name="PRODUCT_NAME" /> にも表示されません。</translation>
 <translation id="6183327369896253878">このポリシーを設定した場合、<ph name="PRODUCT_OS_NAME" /> でランチャーバーに表示されるアプリケーション ID が固定され、ユーザーが変更できなくなります。Chrome アプリの場合は ID（「pjkljhegncpnkpknbcohdijeoejaedia」など）、Android アプリの場合はパッケージ名（「com.google.android.gm」など）、ウェブアプリの場合は <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> で使用する URL（「https://google.com/maps」など）を指定します。このポリシーが未設定の場合、ユーザーはランチャーの固定アプリのリストを変更できます。</translation>
+<translation id="6184385589352532028">サードパーティの ChromeOS 制御機能に対して Desk API を有効にしない</translation>
 <translation id="6190367314942602985">ユーザー識別情報に関するレポートを作成</translation>
 <translation id="6191963383731098056">このポリシーにより、管理者は <ph name="PRODUCT_NAME" /> のテーマの色を設定できます。入力する文字列は「#RRGGBB」の形式に沿った有効な 16 進数色コードである必要があります。
 
@@ -5912,34 +5923,6 @@
       注: 「停止」処理を指定した場合は、<ph name="PRODUCT_OS_NAME" /> で停止前に画面をロックするかどうかを別途設定できます。</translation>
 <translation id="7477149584454865826">プリンタの設定に IPP Everywhere を使用するかどうかを示すブール値のフラグです。</translation>
 <translation id="7477231245051133709">「モノラル音声」のユーザー補助機能を有効にする</translation>
-<translation id="7477526482439041787"><ph name="PRODUCT_OS_NAME" /> でデータ漏洩を防止するルールのリストを設定します。
-      データ漏洩は、データのコピーと貼り付け、ファイルの転送、印刷、画面の共有、スクリーンショットの撮影などで起こる可能性があります。
-
-      ルールは次の項目で構成されます。
-      - 参照元の URL のリスト。データを機密として扱い、制限を適用する参照元を指定します。
-      - 参照先の URL またはコンポーネントのリスト。機密データの共有を許可または禁止する参照先を指定します。
-      - 参照元のデータに適用する制限のリスト。
-
-      ルールでは次の項目を管理できます。
-      - 参照元と参照先の間で共有するクリップボード データ。
-      - 参照元のデータのスクリーンショット撮影。
-      - 参照元のデータの印刷。
-      - 参照元のデータが表示されるプライバシー画面。
-      - 参照元のデータの画面共有。
-      制限レベルは「BLOCK」、「ALLOW」、「REPORT」、「WARN」に設定できます。
-      - 制限レベルを「BLOCK」に設定した場合、該当の項目は許可されません。
-      <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> を True に設定した場合、ブロックされた項目は管理者に報告されます。
-      - 制限レベルを「ALLOW」に設定した場合、該当の項目が許可されます。
-
-      - 制限レベルを「REPORT」に設定し、<ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> を True に設定した場合、該当の項目は管理者に報告されます。
-      - 制限レベルを「WARN」に設定した場合、警告が表示され、項目によっては、実行するかキャンセルするか選択を求められます。<ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />を True に設定した場合、警告の表示が管理者に報告されます。該当の項目を実行した場合も報告されます。
-
-      注:
-      - 「PRIVACY_SCREEN」の制限を設定しても、プライバシー画面はオンにできますが、制限クラスを「BLOCK」に設定した場合はオンにできなくなります。
-      - 「CLIPBOARD」の制限を設定した場合、参照先を空白にすることはできませんが、他の制限については参照先を空白にできます。
-      - URL のパターンは https://www.chromium.org/administrators/url-blocklist-filter-format の形式で指定します。
-
-      ポリシーを未設定のままにした場合、制限は適用されません。</translation>
 <translation id="7480826412572122600"><ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する Chrome Enterprise コネクタ サービス設定のリストで、Chrome でファイルがダウンロードされた場合に呼び出されます。
 
       <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、特定のページからダウンロードされるファイルを分析のためコネクタが送信すべきかどうかと、そのファイルの分析リクエストにどのタグを含めるかをコネクタで判別する際に使用されます。「有効」パターンに該当するタグは、ページの URL がそのタグに関連付けられているパターンと一致し、同じタグの「無効」パターンとは一致しない場合に分析リクエストに含められます。分析は、リクエストにタグが少なくとも 1 つ含まれる場合に行われます。
@@ -6408,6 +6391,7 @@
       このポリシーを無効に設定するか未設定のままにした場合、ユーザーは <ph name="LACROS_NAME" /> を使用できません。
 
       このポリシーを有効に設定した場合、ユーザーは <ph name="LACROS_NAME" /> ブラウザを使用できます。</translation>
+<translation id="8020222525161221827">サードパーティの ChromeOS 制御機能に対して Desk API を有効にする</translation>
 <translation id="802147957407376460">画面を 0 度回転（回転なし）</translation>
 <translation id="80243978433618492">URL パラメータのフィルタリングを禁止する</translation>
 <translation id="8025620823136567878">国際キーボード ショートカットをキーのグリフではなく、キーボード上のキーの位置にマッピングする。</translation>
@@ -6991,6 +6975,20 @@
 <translation id="8656110680728938054">「選択して読み上げ」を有効にする</translation>
 <translation id="8659843732895043951">クリップボードの使用を許可するサイトを指定する</translation>
 <translation id="8661297125441579970">データ移行と ARC を許可しない。</translation>
+<translation id="8664285601317301180">このポリシーは、印刷ジョブにおける <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" />（<ph name="INTERNET_PRINTING_PROTOCOL" />）<ph name="IPP_ATTRIBUTE" />の値を制御します。
+
+      このポリシーを文字列に設定した場合、すべての印刷ジョブに <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> アイテムが追加されます。追加された <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> アイテムの <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> メンバーは、変数を置換後、ポリシーの値に設定されます。
+
+      サポートされている変数は、<ph name="DIRECTORY_ID_PLACEHOLDER" />、<ph name="SERIAL_NUMBER_PLACEHOLDER" />、<ph name="ASSET_ID_PLACEHOLDER" />、<ph name="ANNOTATED_LOCATION_PLACEHOLDER" /> です。サポートされていないプレースホルダ変数は置き換えられません。
+
+      変数置換後の値は、<ph name="ASCII" /> で印刷可能な文字のみで構成され、かつ長さが 255 文字を超えない場合に有効とみなされます。
+
+      なお、プライバシー上の理由から、このポリシーは、<ph name="IPPS_PROTOCOL" />、<ph name="HTTPS_PROTOCOL" />、<ph name="USB_PROTOCOL" />、または <ph name="IPP_USB_PROTOCOL" /> プロトコルを使用したプリンタと通信する場合にのみ適用されます。また、このポリシーが適用されるのは <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> をサポートするプリンタに限られます。
+
+      このポリシーは、関連のあるユーザーにのみ適用されます。
+
+      このポリシーを設定しないか、空の値または無効な値が設定されている場合、<ph name="CLIENT_INFO_PLACEHOLDER" /> は印刷ジョブ リクエストに追加されません。
+      </translation>
 <translation id="8665314828727504286">セーフ ブラウジングの保護レベル</translation>
 <translation id="8666123502812856425">このポリシーでは、特定の HID 使用状況があるトップレベルのコレクションを含む HID デバイスへのアクセスを自動的に許可するサイトの URL リストを指定できます。リストの各項目では、「<ph name="USAGES_FIELD_NAME" />」と「<ph name="URLS_FIELD_NAME" />」フィールドの両方を指定する必要があります。「<ph name="USAGES_FIELD_NAME" />」フィールドの各項目において、「<ph name="USAGE_PAGE_FIELD_NAME" />」は必須ですが、「<ph name="USAGE_FIELD_NAME" />」フィールドは必須ではありません。「<ph name="USAGE_FIELD_NAME" />」フィールドを省略した場合、指定した使用状況ページの使用状況があるトップレベルのコレクションを含むあらゆるデバイスに一致するポリシーが作成されます。「<ph name="USAGE_FIELD_NAME" />」フィールドを指定して「<ph name="USAGE_PAGE_FIELD_NAME" />」フィールドは指定しなかった場合、項目は無効になり無視されます。
 
@@ -7385,6 +7383,7 @@
 
       このポリシーを無効に設定した場合、登録済みのデバイスは音声の状態の記録および報告を行いません。
       例外: M95 以前では、システム音量レベルの情報は <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> によって制御されます。</translation>
+<translation id="9071527533179676468">このポリシーを有効にすると、サードパーティのウェブ アプリケーションが Desk API を使用して ChromeOS デスクを制御できるようになります。このポリシーを設定しないか無効にすると、Desk API は使用できません。</translation>
 <translation id="9072475476775217730">このポリシーを無効に設定した場合、<ph name="BLANK_PAGE_NAME" /> をターゲットとするポップアップに、リクエスト元ページへの（JavaScript を介した）アクセスが許可されます。
 
       このポリシーを有効に設定するか未設定のままにした場合、<ph name="WINDOW_OPENER_PROPERTY" /> プロパティは <ph name="NULL_VALUE" /> に設定されます（アンカーで <ph name="REL_OPENER_ATTRIBUTE" /> が指定されている場合は除く）。

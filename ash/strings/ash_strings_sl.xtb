@@ -225,6 +225,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2227179592712503583">Odstrani predlog</translation>
 <translation id="225680501294068881">Iskanje naprav ...</translation>
 <translation id="2257486738914982088">Pri prenosu datoteke <ph name="FILENAME" /> je prišlo do napake.</translation>
+<translation id="2258734398699965611">Predlagane datoteke</translation>
 <translation id="2268130516524549846">Bluetooth onemogočen</translation>
 <translation id="2268813581635650749">Odjava vseh</translation>
 <translation id="2269016722240250274">Aplikacija uporablja vaš mikrofon.</translation>
@@ -370,6 +371,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Želite zaustaviti napravo?</translation>
 <translation id="3126069444801937830">Znova zaženite za posodobitev</translation>
+<translation id="3139382871451988441">Izklopite dostop do kamere.</translation>
 <translation id="3139942575505304791">Namizje 1</translation>
 <translation id="315116470104423982">Prenos podatkov v mobilnih omrežjih</translation>
 <translation id="3151786313568798007">Usmerjenost</translation>
@@ -561,7 +563,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4242533952199664413">Odpri nastavitve</translation>
 <translation id="4247123849143712100">Posodobi in zaustavi</translation>
 <translation id="4250229828105606438">Posnetek zaslona</translation>
-<translation id="4250899820387052060">Hitre datoteke</translation>
 <translation id="425364040945105958">Ni kartice SIM</translation>
 <translation id="4261870227682513959">Prikaz nastavitev obvestil. Obvestila so izklopljena.</translation>
 <translation id="4269883910223712419">Skrbniku te naprave je omogočeno to:</translation>
@@ -647,6 +648,7 @@ Priklopite napravo v vir napajanja.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Omogočen je ChromeVox</translation>
 <translation id="4665114317261903604">Preklop načina »ne moti«. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Izklopite dostop do kamere v tej napravi, če želite ves čas blokirati vse kamere.</translation>
 <translation id="4667099493359681081">Prenašanje datoteke <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Polica na dnu</translation>
 <translation id="4696813013609194136">Odklepanje naprave s kodo starša</translation>
@@ -665,6 +667,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4776917500594043016">Geslo za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Trgovina Play</translation>
 <translation id="4778095205580009397">Pomočnik Google ni na voljo v predstavitveni seji.</translation>
+<translation id="4789348252524569426">Datotek za govor ni mogoče namestiti. Napravo je treba posodobiti. Znova zaženite napravo in poskusite znova.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Prekini povezavo</translation>
 <translation id="4814539958450445987">Zaslon za prijavo</translation>
@@ -899,6 +902,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6099678161144790572">Urejeno v preteklem mesecu</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so bile prenesene</translation>
+<translation id="6116825164611323644">Dostop do kamere je izklopljen v tej napravi</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Potrditev prenosa datoteke <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Pomočnik Google ni na voljo v gostujoči seji.</translation>
@@ -1125,6 +1129,7 @@ Nova namestitev</translation>
 <translation id="746232733191930409">Način snemanja zaslona</translation>
 <translation id="7466449121337984263">Dotaknite se tipala</translation>
 <translation id="7477793887173910789">Upravljanje glasbe, videoposnetkov in drugega</translation>
+<translation id="7490360161041035804">Pripnete lahko pomembne datoteke, vključno z datotekami v Googlu Drive. Če želite pripeti element, premaknite miškin kazalec nanj ali odprite Datoteke in element kliknite z desnim gumbom.</translation>
 <translation id="7497767806359279797">Izbira jezika in tipkovnice</translation>
 <translation id="7508690557411636492">Odprto v preteklem mesecu</translation>
 <translation id="7509246181739783082">Preverjanje identitete</translation>
@@ -1142,6 +1147,7 @@ Nova namestitev</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> trenutno uporablja vaš mikrofon.</translation>
 <translation id="7561982940498449837">Zapri meni</translation>
 <translation id="7564874036684306347">Če okna premaknete na drugo namizje, lahko pride do nepričakovanega delovanja. Nadaljnja obvestila, okna in pogovorna okna so lahko razdeljena med namizji.</translation>
+<translation id="7567076708801803118">Ali želite v tej napravi izklopiti dostop do kamere?</translation>
 <translation id="7569509451529460200">Omogočena sta braillova pisava in ChromeVox</translation>
 <translation id="7573585051776738856">Aktivno okno je zasidrano na desni.</translation>
 <translation id="7579778809502851308">Zajemanje slike</translation>
@@ -1221,6 +1227,7 @@ Nova namestitev</translation>
 <translation id="7982789257301363584">Omrežje</translation>
 <translation id="7984197416080286869">Preveč poskusov odklepanja s prstnim odtisom</translation>
 <translation id="798779949890829624">To nastavitev upravlja skrbnik.</translation>
+<translation id="799296642788192631">Pripnete lahko pomembne datoteke. Če želite pripeti element, premaknite miškin kazalec nanj ali odprite Datoteke in element kliknite z desnim gumbom.</translation>
 <translation id="7994370417837006925">Prijava z več računi</translation>
 <translation id="7995804128062002838">Slike zaslona ni bilo mogoče zajeti</translation>
 <translation id="8000066093800657092">Ni omrežja</translation>
@@ -1348,6 +1355,7 @@ Nova namestitev</translation>
 <translation id="8734991477317290293">Morda poskuša beležiti vse, kar natipkate</translation>
 <translation id="8735678380411481005">Barva osvetlitve tipkovnice</translation>
 <translation id="8735953464173050365">Prikaz nastavitev tipkovnice. Izbrana je tipkovnica <ph name="KEYBOARD_NAME" />.</translation>
+<translation id="8752416742247198423">Omogočite dostop do kamere, če želite aplikacijam in spletnim stranem, ki imajo dovoljenje za uporabo kamer, dovolite uporabo kamer, povezanih s to napravo.</translation>
 <translation id="8755498163081687682">Preverjanje identitete: Spletno mesto <ph name="ORIGIN_NAME" /> želi potrditi, ali ste to res vi.</translation>
 <translation id="875593634123171288">Prikaz nastavitev omrežja VPN</translation>
 <translation id="8759408218731716181">Prijave z več računi ni mogoče nastaviti</translation>
@@ -1362,6 +1370,7 @@ Nova namestitev</translation>
 <translation id="8819728065740986820">Prilagodljivo polnjenje je vklopljeno</translation>
 <translation id="8825863694328519386">Povlecite z leve, če se želite vrniti</translation>
 <translation id="8834539327799336565">Trenutno povezano</translation>
+<translation id="8834657930627018205">Omogočite dostop do kamere.</translation>
 <translation id="8841375032071747811">Gumb za nazaj</translation>
 <translation id="8843682306134542540">Preklop zaklepanja zasuka. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Iskanje + Esc</translation>

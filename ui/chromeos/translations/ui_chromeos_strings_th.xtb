@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">กำลังซิป <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
 <translation id="1722687688096767818">กำลังเพิ่มโปรไฟล์...</translation>
 <translation id="1726100011689679555">เซิร์ฟเวอร์ชื่อ</translation>
-<translation id="1726600877401297672">ย้าย <ph name="NUMBER_OF_ITEMS" /> รายการไปที่ถังขยะแล้ว</translation>
 <translation id="1729953886957086472">เยอรมัน (เยอรมนี)</translation>
 <translation id="1730235522912993863">จีน (Cangjie)</translation>
 <translation id="1731889557567069540">คัดลอก <ph name="NUMBER_OF_ITEMS" /> รายการแล้ว</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">เปลี่ยนเป็นมุมมองรายการ</translation>
 <translation id="2377590462528165447">แชร์กับ Linux แล้ว <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์</translation>
 <translation id="2378075407703503998">เลือก <ph name="SELCTED_FILE_COUNT" /> ไฟล์</translation>
-<translation id="2387120140441437063">ไม่สามารถเปิดไฟล์ที่อยู่ในถังขยะได้ โปรดกู้คืนไฟล์ก่อนเปิด</translation>
 <translation id="2387458720915042159">ประเภทการเชื่อมต่อพร็อกซี</translation>
 <translation id="2389832672041313158">พม่า/เมียนมา</translation>
 <translation id="2392369802118427583">เปิดใช้งาน</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">คุชราต (ตามการออกเสียง)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">สแกน</translation>
+<translation id="252641322760726369">แตะไฟล์ค้างไว้แล้วแตะ <ph name="ICON" /> จากนั้นเลือก "<ph name="PIN_COMMAND" />" เพื่อให้เข้าถึงไฟล์ในชั้นวางได้อย่างรวดเร็ว</translation>
 <translation id="2534460670861217804">พร็อกซี HTTP ที่ปลอดภัย</translation>
 <translation id="2541377937973966830">เนื้อหาของโฟลเดอร์นี้เป็นแบบอ่านอย่างเดียว โดยระบบจะไม่รองรับบางกิจกรรม</translation>
 <translation id="2542049655219295786">ตารางของ Google</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">ไม่มีรายการที่ตรงกับ &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">ข้อมูล</translation>
 <translation id="2902734494705624966">แป้นพิมพ์ขยายแบบสหรัฐอเมริกา</translation>
-<translation id="2906052776158021882">กำลังย้าย <ph name="NUMBER_OF_ITEMS" /> รายการไปที่ถังขยะ</translation>
 <translation id="290843123675549676">มราฐี</translation>
 <translation id="2923240520113693977">เอสโตเนีย</translation>
 <translation id="2938685643439809023">มองโกเลีย</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">มีพื้นที่น้อย เหลือ <ph name="REMAINING_PERCENTAGE" />% จากพื้นที่เก็บข้อมูลส่วนบุคคล <ph name="TOTAL_SPACE" /></translation>
 <translation id="2977940621473452797">ไฟล์นี้ออกแบบมาสำหรับคอมพิวเตอร์ที่ใช้ซอฟต์แวร์ Macintosh จึงไม่สามารถใช้ร่วมกับอุปกรณ์ของคุณซึ่งใช้ Chrome OS โปรดค้นหาแอปทดแทนที่เหมาะสมใน Chrome เว็บสโตร์</translation>
 <translation id="2984337792991268709">วันนี้ <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">กำลังคืนค่า <ph name="COUNT" /> รายการ...</translation>
 <translation id="299638574917407533">ฝรั่งเศส (แคนาดา)</translation>
 <translation id="3003189754374775221">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, เชื่อมต่อ</translation>
 <translation id="3003633581067744647">เปลี่ยนเป็นมุมมองภาพขนาดย่อ</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">คนฝันกลางวัน</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN ไม่ถูกต้อง คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
+<translation id="3157931365184549694">คืนค่า</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (ใช้ฮาร์ดแวร์คีย์เข้ารหัสลับ)</translation>
 <translation id="3188257591659621405">ไฟล์ของฉัน</translation>
 <translation id="3194553149358267393">ไม่มีไฟล์เสียงล่าสุด</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">การฟอร์แมตอุปกรณ์แบบถอดได้จะทำให้ข้อมูลทั้งหมดถูกลบออก คุณต้องการดำเนินการต่อหรือไม่</translation>
 <translation id="3437801641691368414">เวลาที่สร้าง</translation>
 <translation id="343907260260897561">กล้องอินสแตนท์</translation>
-<translation id="3452106565701029351">เลิกปักหมุดจากไฟล์ด่วน</translation>
 <translation id="3455931012307786678">เอสโทเนีย</translation>
 <translation id="3475447146579922140">สเปรดชีตของ Google</translation>
 <translation id="3479552764303398839">ไม่ใช่ตอนนี้</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">ไอร์แลนด์</translation>
 <translation id="4124935795427217608">ยูนิคอร์น</translation>
 <translation id="4131235941541910880">ย้ายรายการที่คุณไม่ต้องการไปยังถังขยะ</translation>
+<translation id="4153015322587141338">คลิกขวาที่ไฟล์แล้วเลือก "<ph name="PIN_COMMAND" />" เพื่อให้เข้าถึงไฟล์ในชั้นวางได้อย่างรวดเร็ว</translation>
 <translation id="4157569377477607576">นโยบายของผู้ดูแลระบบไม่แนะนำให้ทำสิ่งต่อไปนี้</translation>
 <translation id="4159731583141908892">ย้าย <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="4176286497474237543">ล้างข้อมูลทั้งหมดในถังขยะเลย</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">พิซซ่า</translation>
 <translation id="5081517858322016911">ระบบจะลบไฟล์ที่รวมแล้วมีขนาด <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">กำลังย้าย <ph name="NUMBER_OF_ITEMS" /> รายการไปยัง <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146">ย้าย <ph name="FILE_NAME" /> ไปที่ถังขยะแล้ว</translation>
 <translation id="509429900233858213">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="5098629044894065541">ฮิบรู</translation>
 <translation id="5102922915594634436">จัดการโฟลเดอร์ที่ซิงค์</translation>
@@ -576,7 +573,6 @@
 <translation id="5845721951356578987">พยาบาล</translation>
 <translation id="5861477046012235702">เกมเมอร์</translation>
 <translation id="5864471791310927901">การค้นหา DHCP ล้มเหลว</translation>
-<translation id="5887342613489958822">กำลังย้าย <ph name="FILE_NAME" /> ไปที่ถังขยะ</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" /> เครือข่าย, <ph name="NETWORK_NAME" />, ไม่ได้เปิดใช้งาน, ความแรงของสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
 <translation id="5911887972742538906">ข้อผิดพลาดเกิดขึ้นระหว่างการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="5912396950572065471">รูปแบบ</translation>
@@ -688,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Workman สหรัฐฯ</translation>
 <translation id="6930242544192836755">ระยะเวลา</translation>
-<translation id="6931302001003657424">ปักหมุดไว้ที่ไฟล์ด่วน</translation>
 <translation id="6935521024859866267">กลับหัว</translation>
 <translation id="6943836128787782965">การรับ HTTP ล้มเหลว</translation>
 <translation id="6949408524333579394">เซอร์เบีย (การทับศัพท์)</translation>
@@ -765,7 +760,6 @@
 <translation id="7547811415869834682">ดัตช์</translation>
 <translation id="7551643184018910560">ปักหมุดที่ชั้นวาง</translation>
 <translation id="7553492409867692754">ให้สิทธิ์แอป Linux เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
-<translation id="7575645593344061397">กำลังคืนค่า "<ph name="FILENAME" />"...</translation>
 <translation id="7589661784326793847">รอสักครู่</translation>
 <translation id="7592775719802218421">ทำให้ <ph name="FILE_NAME" /> ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="7600126690270271294">เซอร์เบีย</translation>
@@ -917,7 +911,6 @@
 <translation id="8787254343425541995">อนุญาตให้ใช้พร็อกซีสำหรับเครือข่ายที่แชร์ไว้</translation>
 <translation id="8790981080411996443">คนกำลังรดน้ำต้นไม้</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
-<translation id="8802459921616481935">ย้ายไปที่ถังขยะ</translation>
 <translation id="8808686172382650546">แมว</translation>
 <translation id="8810671769985673465">การซิปล้มเหลว มีรายการต่อไปนี้อยู่แล้ว "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">สเปน (สเปน)</translation>

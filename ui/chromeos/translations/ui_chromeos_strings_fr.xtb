@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">Compression de <ph name="NUMBER_OF_ITEMS" /> éléments…</translation>
 <translation id="1722687688096767818">Ajout du profil…</translation>
 <translation id="1726100011689679555">Serveurs de noms</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés vers la corbeille</translation>
 <translation id="1729953886957086472">Allemand (Allemagne)</translation>
 <translation id="1730235522912993863">Chinois (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> éléments copiés.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Passer en mode Liste</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dossiers partagés avec Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fichiers sélectionnés</translation>
-<translation id="2387120140441437063">Impossible d'ouvrir les fichiers placés dans la corbeille. Veuillez les restaurer avant de les ouvrir.</translation>
 <translation id="2387458720915042159">Type de connexion proxy</translation>
 <translation id="2389832672041313158">Birman/Myanmar</translation>
 <translation id="2392369802118427583">Activer</translation>
@@ -211,7 +209,6 @@
 <translation id="2888807692577297075">Aucun élément ne correspond à votre recherche ("<ph name="SEARCH_STRING" />").</translation>
 <translation id="2894654529758326923">Informations</translation>
 <translation id="2902734494705624966">Étendu américain</translation>
-<translation id="2906052776158021882">Déplacement de <ph name="NUMBER_OF_ITEMS" /> éléments vers la corbeille…</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonien</translation>
 <translation id="2938685643439809023">Mongol</translation>
@@ -221,7 +218,6 @@
 <translation id="2958458230122209142">Il vous reste <ph name="REMAINING_PERCENTAGE" /> % de votre espace de stockage individuel total (<ph name="TOTAL_SPACE" />).</translation>
 <translation id="2977940621473452797">Ce fichier est conçu pour un ordinateur utilisant un logiciel Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez rechercher une appli de remplacement appropriée sur le Chrome Web Store.</translation>
 <translation id="2984337792991268709">Aujourd'hui à <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">Restauration de <ph name="COUNT" /> éléments…</translation>
 <translation id="299638574917407533">Français (Canada)</translation>
 <translation id="3003189754374775221">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
 <translation id="3003633581067744647">Passer en mode Vignette</translation>
@@ -239,6 +235,7 @@
 <translation id="3124404833828281817">Personne en train de rêver</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Code PIN incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
+<translation id="3157931365184549694">Restaurer</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (matériel requis)</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3194553149358267393">Aucun fichier audio récent</translation>
@@ -276,7 +273,6 @@
 <translation id="3414856743105198592">Si vous formatez le périphérique amovible, toutes les données seront effacées. Voulez-vous continuer ?</translation>
 <translation id="3437801641691368414">Heure de création</translation>
 <translation id="343907260260897561">Appareil photo instantané</translation>
-<translation id="3452106565701029351">Retirer des fichiers rapides</translation>
 <translation id="3455931012307786678">Estonien</translation>
 <translation id="3475447146579922140">Feuille de calcul Google</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
@@ -470,7 +466,6 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> de fichiers seront supprimés</translation>
 <translation id="508423945471810158">Transfert de <ph name="NUMBER_OF_ITEMS" /> éléments vers <ph name="FOLDER_NAME" />…</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> déplacé vers la corbeille</translation>
 <translation id="509429900233858213">Une erreur s'est produite.</translation>
 <translation id="5098629044894065541">Hébreu</translation>
 <translation id="5102922915594634436">Gérer les dossiers synchronisés</translation>
@@ -576,7 +571,6 @@
 <translation id="5845721951356578987">Personnel de santé</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Échec de la vérification DHCP</translation>
-<translation id="5887342613489958822">Déplacement de <ph name="FILE_NAME" /> vers la corbeille…</translation>
 <translation id="5896749729057314184">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, désactivé, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="5911887972742538906">Une erreur s'est produite lors de l'installation de votre application Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -688,7 +682,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Clavier Workman américain</translation>
 <translation id="6930242544192836755">Durée</translation>
-<translation id="6931302001003657424">Épingler aux fichiers rapides</translation>
 <translation id="6935521024859866267">À l'envers</translation>
 <translation id="6943836128787782965">Échec de l'obtention HTTP.</translation>
 <translation id="6949408524333579394">Serbe (translittération)</translation>
@@ -765,7 +758,6 @@
 <translation id="7547811415869834682">Néerlandais</translation>
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7553492409867692754">Autorisez les applications Linux à accéder aux fichiers du dossier "<ph name="FOLDER_NAME" />"</translation>
-<translation id="7575645593344061397">Restauration du fichier "<ph name="FILENAME" />"…</translation>
 <translation id="7589661784326793847">Veuillez patienter un court instant.</translation>
 <translation id="7592775719802218421">Téléchargement du fichier "<ph name="FILE_NAME" />" pour l'utiliser hors connexion…</translation>
 <translation id="7600126690270271294">Serbe</translation>
@@ -917,7 +909,6 @@
 <translation id="8787254343425541995">Autoriser les proxys pour les réseaux partagés</translation>
 <translation id="8790981080411996443">Personne arrosant des plantes</translation>
 <translation id="8798099450830957504">Par défaut</translation>
-<translation id="8802459921616481935">Placer dans la corbeille</translation>
 <translation id="8808686172382650546">Chat</translation>
 <translation id="8810671769985673465">Échec de la compression au format .zip, car l'élément existe déjà : "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Espagnol (Espagne)</translation>

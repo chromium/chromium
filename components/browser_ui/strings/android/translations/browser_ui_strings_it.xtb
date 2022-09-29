@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1005794457625275818">Cookie consentiti per <ph name="FPS_MEMBERS_COUNT" /> siti nel gruppo <ph name="FPS_OWNER" />, tra cui <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Apri online</translation>
 <translation id="1044891598689252897">I siti funzioneranno normalmente</translation>
 <translation id="1124090076051167250">Verranno cancellati <ph name="DATASIZE" /> di dati e cookie memorizzati da siti e app nella schermata Home.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1446450296470737166">Controllo completo dispos. MIDI</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
+<translation id="1633720957382884102">Siti correlati</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1647582022260550163">Vuoi reimpostare le autorizzazioni e cancellare cookie e dati dei siti?</translation>
 <translation id="1660204651932907780">Consenti ai siti di riprodurre l'audio (opzione consigliata)</translation>

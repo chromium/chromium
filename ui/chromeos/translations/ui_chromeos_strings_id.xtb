@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">Membuat file zip <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="1722687688096767818">Menambahkan Profil ...</translation>
 <translation id="1726100011689679555">Nama server</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> item dipindahkan ke Sampah</translation>
 <translation id="1729953886957086472">Jerman (Jerman)</translation>
 <translation id="1730235522912993863">Cangjie China</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> item disalin.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Beralih ke tampilan daftar</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folder dibagikan dengan Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> file dipilih</translation>
-<translation id="2387120140441437063">Tidak dapat membuka file yang berada dalam Sampah. Pulihkan file sebelum membukanya.</translation>
 <translation id="2387458720915042159">Jenis sambungan proxy</translation>
 <translation id="2389832672041313158">Burma/Myanmar</translation>
 <translation id="2392369802118427583">Aktifkan</translation>
@@ -211,7 +209,6 @@
 <translation id="2888807692577297075">Tidak ada item yang cocok &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informasi</translation>
 <translation id="2902734494705624966">Extended AS</translation>
-<translation id="2906052776158021882">Memindahkan <ph name="NUMBER_OF_ITEMS" /> item ke Sampah</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonia</translation>
 <translation id="2938685643439809023">Mongolia</translation>
@@ -221,7 +218,6 @@
 <translation id="2958458230122209142">Penyimpanan hampir habis. Tersisa <ph name="REMAINING_PERCENTAGE" />% dari <ph name="TOTAL_SPACE" /> penyimpanan individual Anda.</translation>
 <translation id="2977940621473452797">File ini dirancang untuk komputer yang menggunakan software Macintosh. File ini tidak kompatibel dengan perangkat Anda yang menjalankan ChromeOS. Telusuri di Chrome Web Store untuk mendapatkan aplikasi pengganti yang sesuai.</translation>
 <translation id="2984337792991268709"><ph name="TODAY_DAYTIME" /> hari ini</translation>
-<translation id="2994320653639462337">Memulihkan <ph name="COUNT" /> item ...</translation>
 <translation id="299638574917407533">Prancis (Kanada)</translation>
 <translation id="3003189754374775221">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Sambungkan</translation>
 <translation id="3003633581067744647">Beralih ke tampilan thumbnail</translation>
@@ -239,6 +235,7 @@
 <translation id="3124404833828281817">Orang melamun</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN tidak valid. Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
+<translation id="3157931365184549694">Pulihkan</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (dilindungi hardware)</translation>
 <translation id="3188257591659621405">File saya</translation>
 <translation id="3194553149358267393">Tidak ada file audio terbaru</translation>
@@ -276,7 +273,6 @@
 <translation id="3414856743105198592">Memformat media yang dapat dilepas akan menghapus semua data. Apakah Anda ingin melanjutkan?</translation>
 <translation id="3437801641691368414">Waktu pembuatan</translation>
 <translation id="343907260260897561">Kamera Instan</translation>
-<translation id="3452106565701029351">Lepaskan dari File Cepat</translation>
 <translation id="3455931012307786678">Estonia</translation>
 <translation id="3475447146579922140">Spreadsheet Google</translation>
 <translation id="3479552764303398839">Jangan sekarang</translation>
@@ -470,7 +466,6 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> file akan dihapus</translation>
 <translation id="508423945471810158">Memindahkan <ph name="NUMBER_OF_ITEMS" /> item ke <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> dipindahkan ke Sampah</translation>
 <translation id="509429900233858213">Terjadi error.</translation>
 <translation id="5098629044894065541">Ibrani</translation>
 <translation id="5102922915594634436">Kelola folder yang disinkronkan</translation>
@@ -576,7 +571,6 @@
 <translation id="5845721951356578987">Perawat</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Pencarian DHCP gagal</translation>
-<translation id="5887342613489958822">Memindahkan <ph name="FILE_NAME" /> ke Sampah</translation>
 <translation id="5896749729057314184">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Tidak Diaktifkan, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="5911887972742538906">Terjadi error saat menginstal aplikasi Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -688,7 +682,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Workman AS</translation>
 <translation id="6930242544192836755">Durasi</translation>
-<translation id="6931302001003657424">Sematkan ke File Cepat</translation>
 <translation id="6935521024859866267">Terbalik</translation>
 <translation id="6943836128787782965">HTTP gagal</translation>
 <translation id="6949408524333579394">Transliterasi Serbia</translation>
@@ -765,7 +758,6 @@
 <translation id="7547811415869834682">Belanda</translation>
 <translation id="7551643184018910560">Sematkan ke rak</translation>
 <translation id="7553492409867692754">Beri aplikasi Linux izin untuk mengakses file di folder <ph name="FOLDER_NAME" /></translation>
-<translation id="7575645593344061397">Memulihkan "<ph name="FILENAME" />" ...</translation>
 <translation id="7589661784326793847">Tunggu sebentar</translation>
 <translation id="7592775719802218421">Membuat <ph name="FILE_NAME" /> tersedia secara offline</translation>
 <translation id="7600126690270271294">Serbia</translation>
@@ -917,7 +909,6 @@
 <translation id="8787254343425541995">Memungkinkan proxy untuk jaringan bersama</translation>
 <translation id="8790981080411996443">Orang menyiram tanaman</translation>
 <translation id="8798099450830957504">Default</translation>
-<translation id="8802459921616481935">Pindahkan ke Sampah</translation>
 <translation id="8808686172382650546">Kucing</translation>
 <translation id="8810671769985673465">Gagal membuat file zip. Item yang ada: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Spanyol (Spanyol)</translation>

@@ -80,7 +80,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> элемент қысылуда…</translation>
 <translation id="1722687688096767818">Профиль қосылуда…</translation>
 <translation id="1726100011689679555">Ат серверлері</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> элемент себетке жылжытылды</translation>
 <translation id="1729953886957086472">Неміс (Германия)</translation>
 <translation id="1730235522912993863">Қытай (цанцзе)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> элемент көшірілді.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Тізім көрінісіне ауысу</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> қалта Linux жүйесімен бөлісілген</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> файл таңдалды</translation>
-<translation id="2387120140441437063">Себеттегі файлдарды ашу мүмкін емес. Ашпас бұрын, файлдарды себеттен шығарыңыз.</translation>
 <translation id="2387458720915042159">Прокси-сервер байланысының түрі</translation>
 <translation id="2389832672041313158">Бирма (Мьянма)</translation>
 <translation id="2392369802118427583">Белсендіру</translation>
@@ -211,7 +209,6 @@
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; іздеуіне сәйкес келетін элемент жоқ</translation>
 <translation id="2894654529758326923">Ақпарат</translation>
 <translation id="2902734494705624966">АҚШ кеңейтілген</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> элемент себетке жылжытылуда</translation>
 <translation id="290843123675549676">Маратхи</translation>
 <translation id="2923240520113693977">эстон</translation>
 <translation id="2938685643439809023">монғол</translation>
@@ -221,7 +218,6 @@
 <translation id="2958458230122209142">Орын аз, <ph name="TOTAL_SPACE" /> жеке жадтың <ph name="REMAINING_PERCENTAGE" /> %-ы ғана қалды.</translation>
 <translation id="2977940621473452797">Бұл файл Macintosh бағдарламалық құралын пайдаланатын компьютерге арналған. Ол ChromeOS жүйесімен жұмыс істейтін құрылғымен үйлесімді емес. Chrome Web Store дүкенінен сәйкес келетін балама қолданбаны іздеңіз.</translation>
 <translation id="2984337792991268709">Бүгін <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337"><ph name="COUNT" /> элемент қалпына келтірілуде…</translation>
 <translation id="299638574917407533">Француз (Канада)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, қосылу</translation>
 <translation id="3003633581067744647">Нобайлар көрінісіне ауысу</translation>
@@ -239,6 +235,7 @@
 <translation id="3124404833828281817">Қиялдап жатқан адам</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN коды жарамсыз. <ph name="RETRIES" /> әрекет қалды.</translation>
+<translation id="3157931365184549694">Қалпына келтіру</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (жабдық қолдауы бар)</translation>
 <translation id="3188257591659621405">Файлдарым</translation>
 <translation id="3194553149358267393">Жаңа аудиофайлдар жоқ</translation>
@@ -276,7 +273,6 @@
 <translation id="3414856743105198592">Алынбалы тасымалдаушыны пішімдеу әрекеті барлық деректерді өшіреді. Жалғастырасыз ба?</translation>
 <translation id="3437801641691368414">Жасалған уақыты</translation>
 <translation id="343907260260897561">Лезде басып шығаратын камера</translation>
-<translation id="3452106565701029351">"Файлдарға жылдам өту" бөлімінен босату</translation>
 <translation id="3455931012307786678">Эстон</translation>
 <translation id="3475447146579922140">Google электрондық кестесі</translation>
 <translation id="3479552764303398839">Қазір емес</translation>
@@ -470,7 +466,6 @@
 <translation id="5068919226082848014">Пицца</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> файл жойылады.</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> элемент <ph name="FOLDER_NAME" /> қалтасына тасымалдануда.</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> файлы себетке жылжытылды</translation>
 <translation id="509429900233858213">Қате орын алды.</translation>
 <translation id="5098629044894065541">иврит</translation>
 <translation id="5102922915594634436">Синхрондалған қалталарды басқару</translation>
@@ -575,7 +570,6 @@
 <translation id="5845721951356578987">Медбике</translation>
 <translation id="5861477046012235702">Ойыншы</translation>
 <translation id="5864471791310927901">DHCP іздеу сәтсіз аяқталды</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" /> файлы себетке жылжытылуда</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, өшірілді, сигнал күші <ph name="SIGNAL_STRENGTH" />%, мәліметтер</translation>
 <translation id="5911887972742538906">Linux қолданбасын орнату кезінде қате кетті.</translation>
 <translation id="5912396950572065471">Формат</translation>
@@ -687,7 +681,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">АҚШ (Workman)</translation>
 <translation id="6930242544192836755">Ұзақтық</translation>
-<translation id="6931302001003657424">"Файлдарға жылдам өту" бөліміне бекіту</translation>
 <translation id="6935521024859866267">Төменгі жағын жоғары қаратып</translation>
 <translation id="6943836128787782965">HTTP сәтсіз аяқталды</translation>
 <translation id="6949408524333579394">Серб (транслитерация)</translation>
@@ -764,7 +757,6 @@
 <translation id="7547811415869834682">голланд</translation>
 <translation id="7551643184018910560">Сөреге бекіту</translation>
 <translation id="7553492409867692754">Linux қолданбаларына <ph name="FOLDER_NAME" /> қалтасындағы файлдарды пайдалануға рұқсат беріңіз.</translation>
-<translation id="7575645593344061397">"<ph name="FILENAME" />" файлы қалпына келтірілуде…</translation>
 <translation id="7589661784326793847">Күте тұрыңыз</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> файлы офлайн режимде қолжетімді етілуде</translation>
 <translation id="7600126690270271294">Серб</translation>
@@ -916,7 +908,6 @@
 <translation id="8787254343425541995">Ортақ желілерге арналған проксилерге рұқсат беру</translation>
 <translation id="8790981080411996443">Өсімдік суарып жатқан адам</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
-<translation id="8802459921616481935">Себетке жіберу</translation>
 <translation id="8808686172382650546">Мысық</translation>
 <translation id="8810671769985673465">Қысу орындалмады. Мына элемент бұрыннан бар: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Испан (Испания)</translation>

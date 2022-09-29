@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">S'estan comprimint <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
 <translation id="1722687688096767818">S'està afegint el perfil...</translation>
 <translation id="1726100011689679555">Servidors de noms</translation>
-<translation id="1726600877401297672">S'han mogut <ph name="NUMBER_OF_ITEMS" /> elements a la paperera</translation>
 <translation id="1729953886957086472">Alemany (Alemanya)</translation>
 <translation id="1730235522912993863">Xinès (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elements copiats.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Canvia a la visualització de llista</translation>
 <translation id="2377590462528165447">S'han compartit <ph name="NUMBER_OF_ITEMS" /> carpetes amb Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fitxers seleccionats</translation>
-<translation id="2387120140441437063">No es poden obrir els fitxers de la paperera. Restaura els fitxers abans d'obrir-los.</translation>
 <translation id="2387458720915042159">Tipus de connexió del servidor intermediari</translation>
 <translation id="2389832672041313158">Birmà (Birmània)</translation>
 <translation id="2392369802118427583">Activa</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">Gujarati fonètic</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Escaneja</translation>
+<translation id="252641322760726369">Mantén premut un fitxer, toca <ph name="ICON" /> i selecciona <ph name="PIN_COMMAND" /> per accedir ràpidament als teus fitxers al prestatge.</translation>
 <translation id="2534460670861217804">Servidor intermediari HTTP segur</translation>
 <translation id="2541377937973966830">El contingut d'aquesta carpeta és només de lectura. Algunes activitats no s'admeten.</translation>
 <translation id="2542049655219295786">Taula de Google</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">Cap fitxer coincideix amb &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informació</translation>
 <translation id="2902734494705624966">Nord-americà ampliat</translation>
-<translation id="2906052776158021882">S'estan movent <ph name="NUMBER_OF_ITEMS" /> elements a la paperera</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonià</translation>
 <translation id="2938685643439809023">Mongol</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">Hi ha poc emmagatzematge. Queda un <ph name="REMAINING_PERCENTAGE" />% de l'emmagatzematge individual (<ph name="TOTAL_SPACE" />).</translation>
 <translation id="2977940621473452797">Aquest fitxer està dissenyat per a un ordinador amb programari Macintosh. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. Cerca una aplicació alternativa adequada a Chrome Web Store.</translation>
 <translation id="2984337792991268709">Avui a les <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">S'estan restaurant <ph name="COUNT" /> elements...</translation>
 <translation id="299638574917407533">Francès (Canadà)</translation>
 <translation id="3003189754374775221">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, connecta</translation>
 <translation id="3003633581067744647">Canvia a la visualització de miniatures</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">Persona fantasiejant</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">El PIN no és vàlid. Et queden <ph name="RETRIES" /> intents.</translation>
+<translation id="3157931365184549694">Restaura</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (emmagatzemat en maquinari)</translation>
 <translation id="3188257591659621405">Els meus fitxers</translation>
 <translation id="3194553149358267393">No hi ha cap fitxer d'àudio recent</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">Si formateu els suports extraïbles esborrareu totes les dades. Voleu continuar?</translation>
 <translation id="3437801641691368414">Hora de creació</translation>
 <translation id="343907260260897561">Càmera instantània</translation>
-<translation id="3452106565701029351">Deixa de fixar a Fitxers ràpids</translation>
 <translation id="3455931012307786678">Estonià</translation>
 <translation id="3475447146579922140">Full de càlcul de Google</translation>
 <translation id="3479552764303398839">Ara no</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">Irlandès</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Mou els elements que no necessitis a la paperera</translation>
+<translation id="4153015322587141338">Fes clic amb el botó dret en un fitxer i selecciona <ph name="PIN_COMMAND" /> per accedir ràpidament als teus fitxers al prestatge.</translation>
 <translation id="4157569377477607576">La política de l'administrador no recomana:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> s'ha mogut.</translation>
 <translation id="4176286497474237543">Buida la paperera ara</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911">Se suprimiran <ph name="TOTAL_FILE_SIZE" /> de fitxers</translation>
 <translation id="508423945471810158">S'estan traslladant <ph name="NUMBER_OF_ITEMS" /> elements a la carpeta <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146">S'ha mogut <ph name="FILE_NAME" /> a la paperera</translation>
 <translation id="509429900233858213">S'ha produït un error.</translation>
 <translation id="5098629044894065541">Hebreu</translation>
 <translation id="5102922915594634436">Gestiona les carpetes sincronitzades</translation>
@@ -576,7 +573,6 @@
 <translation id="5845721951356578987">Infermer</translation>
 <translation id="5861477046012235702">Jugador de videojocs</translation>
 <translation id="5864471791310927901">Error en la cerca de DHCP</translation>
-<translation id="5887342613489958822">S'està movent <ph name="FILE_NAME" /> a la paperera</translation>
 <translation id="5896749729057314184">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, intensitat del senyal <ph name="SIGNAL_STRENGTH" />%, detalls</translation>
 <translation id="5911887972742538906">S'ha produït un error en instal·lar l'aplicació per a Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -688,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Workman nord-americà</translation>
 <translation id="6930242544192836755">Durada</translation>
-<translation id="6931302001003657424">Fixa a Fitxers ràpids</translation>
 <translation id="6935521024859866267">Cap per avall</translation>
 <translation id="6943836128787782965">La sol·licitud HTTP ha fallat</translation>
 <translation id="6949408524333579394">Serbi (transliteració)</translation>
@@ -765,7 +760,6 @@
 <translation id="7547811415869834682">Neerlandès</translation>
 <translation id="7551643184018910560">Fixa al prestatge</translation>
 <translation id="7553492409867692754">Dona permís a les aplicacions de Linux per accedir als fitxers de la carpeta <ph name="FOLDER_NAME" /></translation>
-<translation id="7575645593344061397">S'està restaurant <ph name="FILENAME" />...</translation>
 <translation id="7589661784326793847">Espereu un moment.</translation>
 <translation id="7592775719802218421">S'està fent que <ph name="FILE_NAME" /> estigui disponible sense connexió</translation>
 <translation id="7600126690270271294">Serbi</translation>
@@ -917,7 +911,6 @@
 <translation id="8787254343425541995">Permet servidors intermediaris per a xarxes compartides</translation>
 <translation id="8790981080411996443">Persona regant les plantes</translation>
 <translation id="8798099450830957504">Predeterminat</translation>
-<translation id="8802459921616481935">Mou a la paperera</translation>
 <translation id="8808686172382650546">Gat</translation>
 <translation id="8810671769985673465">S'ha produït un error en la compressió; l'element existeix: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Espanyol (Espanya)</translation>

@@ -225,6 +225,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2227179592712503583">Suprimeix el suggeriment</translation>
 <translation id="225680501294068881">S'estan cercant dispositius...</translation>
 <translation id="2257486738914982088">S'ha produït un error en baixar <ph name="FILENAME" /></translation>
+<translation id="2258734398699965611">Fitxers suggerits</translation>
 <translation id="2268130516524549846">S'ha desactivat el Bluetooth</translation>
 <translation id="2268813581635650749">Tanca les sessions</translation>
 <translation id="2269016722240250274">Una aplicació està utilitzant el micròfon</translation>
@@ -370,6 +371,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Vols apagar el dispositiu?</translation>
 <translation id="3126069444801937830">Reinicia per actualitzar</translation>
+<translation id="3139382871451988441">Desactiva l'accés a la càmera.</translation>
 <translation id="3139942575505304791">Escriptori 1</translation>
 <translation id="315116470104423982">Dades mòbils</translation>
 <translation id="3151786313568798007">Orientació</translation>
@@ -561,7 +563,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4247123849143712100">Actualitza i apaga</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
-<translation id="4250899820387052060">Fitxers ràpids</translation>
 <translation id="425364040945105958">No hi ha cap SIM</translation>
 <translation id="4261870227682513959">Mostra la configuració de notificacions. Les notificacions estan desactivades.</translation>
 <translation id="4269883910223712419">L'administrador d'aquest dispositiu pot dur a terme les accions següents:</translation>
@@ -647,6 +648,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">S'ha activat ChromeVox</translation>
 <translation id="4665114317261903604">Activa o desactiva el mode No molestis. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Desactiva l'accés a la càmera en aquest dispositiu per bloquejar sempre totes les càmeres.</translation>
 <translation id="4667099493359681081">S'està baixant <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">El prestatge és a la part inferior</translation>
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
@@ -665,6 +667,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4776917500594043016">Contrasenya per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">L'Assistent de Google no està disponible en les sessions de demostració.</translation>
+<translation id="4789348252524569426">No es poden instal·lar els fitxers de parla. Cal actualitzar el dispositiu. Reinicia'l i torna-ho a provar.</translation>
 <translation id="479989351350248267">cerca</translation>
 <translation id="4804818685124855865">Desconnecta</translation>
 <translation id="4814539958450445987">Pantalla d'inici de sessió</translation>
@@ -899,6 +902,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6099678161144790572">Editat durant el darrer mes</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">S'han baixat fitxers de veu en <ph name="LANGUAGE" /></translation>
+<translation id="6116825164611323644">L'accés a la càmera està desactivat en aquest dispositiu</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Confirma la baixada del fitxer <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistent de Google no està disponible a les sessions de convidat.</translation>
@@ -1122,6 +1126,7 @@ Instal·lació nova</translation>
 <translation id="746232733191930409">Mode de gravació de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
 <translation id="7477793887173910789">Controla la música, els vídeos i molt més</translation>
+<translation id="7490360161041035804">Pots fixar fitxers importants, inclosos els de Google Drive. Per fixar-ne un, passa el cursor per sobre d'un element o bé obre Fitxers i fes clic amb el botó dret en un element.</translation>
 <translation id="7497767806359279797">Tria l'idioma i el teclat</translation>
 <translation id="7508690557411636492">Obert durant el darrer mes</translation>
 <translation id="7509246181739783082">Verifica la teva identitat</translation>
@@ -1139,6 +1144,7 @@ Instal·lació nova</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> està utilitzant el micròfon</translation>
 <translation id="7561982940498449837">Tanca el menú</translation>
 <translation id="7564874036684306347">Moure finestres a un altre escriptori pot provocar un comportament imprevist. És possible que les notificacions, les finestres i els quadres de diàleg següents quedin dividits entre escriptoris.</translation>
+<translation id="7567076708801803118">Vols desactivar l'accés a la càmera en aquest dispositiu?</translation>
 <translation id="7569509451529460200">S'ha activat el braille i ChromeVox</translation>
 <translation id="7573585051776738856">Finestra activa acoblada a la dreta.</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
@@ -1218,6 +1224,7 @@ Instal·lació nova</translation>
 <translation id="7982789257301363584">Xarxa</translation>
 <translation id="7984197416080286869">Has intentat desbloquejar el dispositiu amb empremta digital massa vegades</translation>
 <translation id="798779949890829624">El teu administrador gestiona aquesta opció de configuració</translation>
+<translation id="799296642788192631">Pots fixar fitxers importants. Per fixar-ne un, passa el cursor per sobre d'un element o bé obre Fitxers i fes clic amb el botó dret en un element.</translation>
 <translation id="7994370417837006925">Inici de sessió múltiple</translation>
 <translation id="7995804128062002838">No s'ha pogut capturar la pantalla</translation>
 <translation id="8000066093800657092">No hi ha cap xarxa</translation>
@@ -1345,6 +1352,7 @@ Instal·lació nova</translation>
 <translation id="8734991477317290293">Pot ser que estigui provant de robar-te les combinacions de tecles</translation>
 <translation id="8735678380411481005">Color de la retroil·luminació del teclat</translation>
 <translation id="8735953464173050365">Mostra la configuració del teclat. S'ha seleccionat <ph name="KEYBOARD_NAME" />.</translation>
+<translation id="8752416742247198423">Activa l'accés a la càmera per permetre que les aplicacions i les pàgines web que tinguin permís per accedir a la càmera utilitzin les càmeres connectades a aquest dispositiu.</translation>
 <translation id="8755498163081687682">Verifica la teva identitat: <ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
 <translation id="875593634123171288">Mostra la configuració de la VPN</translation>
 <translation id="8759408218731716181">No es pot configurar l'inici de sessió múltiple</translation>
@@ -1359,6 +1367,7 @@ Instal·lació nova</translation>
 <translation id="8819728065740986820">La càrrega intel·ligent està activada</translation>
 <translation id="8825863694328519386">Llisca des de l'esquerra per tornar enrere</translation>
 <translation id="8834539327799336565">Connectats actualment</translation>
+<translation id="8834657930627018205">Activa l'accés a la càmera.</translation>
 <translation id="8841375032071747811">Botó Enrere</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueig de rotació. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Cerca + Esc</translation>

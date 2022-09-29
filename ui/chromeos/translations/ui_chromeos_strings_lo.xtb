@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">ກຳລັງຊິບ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="1722687688096767818">ກຳລັງເພີ່ມໂປຣໄຟລ໌...</translation>
 <translation id="1726100011689679555">ຕັ້ງຊື່ເຊີບເວີ</translation>
-<translation id="1726600877401297672">ຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອແລ້ວ</translation>
 <translation id="1729953886957086472">ພາສາເຢຍລະມັນ (ເຢຍລະມັນ)</translation>
 <translation id="1730235522912993863">ພາສາຈີນ (Cangjie)</translation>
 <translation id="1731889557567069540">ສຳເນົາ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">ປ່ຽນເປັນມຸມມອງລາຍຊື່</translation>
 <translation id="2377590462528165447">ແບ່ງປັນ <ph name="NUMBER_OF_ITEMS" /> ໂຟນເດີກັບ Linux ແລ້ວ</translation>
 <translation id="2378075407703503998">ເລືອກ <ph name="SELCTED_FILE_COUNT" /> ໄຟລ໌ແລ້ວ</translation>
-<translation id="2387120140441437063">ບໍ່ສາມາດເປີດໄຟລ໌ທີ່ຢູ່ໃນຖັງຂີ້ເຫຍື້ອໄດ້. ກະລຸນາກູ້ໄຟລ໌ຄືນມາກ່ອນເປີດ.</translation>
 <translation id="2387458720915042159">ປະເພດການເຊື່ອມຕໍ່ພຣັອກຊີ</translation>
 <translation id="2389832672041313158">ພາສາມຽນມາ/ພະມ້າ</translation>
 <translation id="2392369802118427583">ເປີດໃຊ້ງານ</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">ການອອກສຽງພາສາກູຈາຣາຕິ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">ສະແກນ</translation>
+<translation id="252641322760726369">ແຕະໄຟລ໌ໃດໜຶ່ງຄ້າງໄວ້ແລ້ວແຕະ <ph name="ICON" /> ແລະ ເລືອກ "<ph name="PIN_COMMAND" />" ເພື່ອເຂົ້າເຖິງໄຟລ໌ຂອງທ່ານໃນຖ້ານໄດ້ຢ່າງວ່ອງໄວ.</translation>
 <translation id="2534460670861217804">ພຣັອກຊີ HTTP ທີ່ປອດໄພ</translation>
 <translation id="2541377937973966830">ເນື້ອຫາຂອງໂຟນເດີນີ້ເປັນແບບອ່ານເທົ່ານັ້ນ. ບໍ່ຮອງຮັບບາງກິດຈະກຳ.</translation>
 <translation id="2542049655219295786">ຕາ​ຕະ​ລາງ​ Google</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">ບໍ່ມີລາຍການຖືກຄູ່ກັນ &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">ຂໍ້ມູນ</translation>
 <translation id="2902734494705624966">US ຂະ​ຫຍາຍ</translation>
-<translation id="2906052776158021882">ກຳລັງຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="290843123675549676">ພາສາມາຣາທີ</translation>
 <translation id="2923240520113693977">ພາສາເອສໂຕ​ເນຍ</translation>
 <translation id="2938685643439809023">ພາສາມົງໂກລີ</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">ບ່ອນຈັດເກັບຂໍ້ມູນຍັງເຫຼືອໜ້ອຍພຽງ <ph name="REMAINING_PERCENTAGE" />% ຂອງບ່ອນຈັດເກັບຂໍ້ມູນສ່ວນບຸກຄົນ <ph name="TOTAL_SPACE" /> ຂອງທ່ານ.</translation>
 <translation id="2977940621473452797">ໄຟລ໌ນີ້ຖືກອອກແບບມາສໍາລັບຄອມພິວເຕີທີ່ໃຊ້ຊອບແວ Macintosh. ສິ່ງນີ້ບໍ່ເຂົ້າກັນໄດ້ກັບອຸປະກອນຂອງທ່ານເຊິ່ງໃຊ້ ChromeOS. ກະລຸນາຊອກຫາ Chrome Web Store ສໍາລັບແອັບທົດແທນທີ່ເໝາະສົມ.</translation>
 <translation id="2984337792991268709">​ມື້​ນີ້ <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">ກຳລັງກູ້ຄືນ <ph name="COUNT" /> ລາຍການ...</translation>
 <translation id="299638574917407533">ພາສາຝຣັ່ງ (ຄານາດາ)</translation>
 <translation id="3003189754374775221">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ເຊື່ອມຕໍ່</translation>
 <translation id="3003633581067744647">ປ່ຽນເປັນມຸມມອງຮູບຫຍໍ້</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">ຄົນນອນຝັນກາງເວັນ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN ບໍ່ຖືກຕ້ອງ. ທ່ານລອງໄດ້ອີກ <ph name="RETRIES" /> ເທື່ອ.</translation>
+<translation id="3157931365184549694">ເອົາຄືນມາ</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (ສະໜັບສະໜູນຈາກຮາດແວ)</translation>
 <translation id="3188257591659621405">ໄຟລ໌ຂອງຂ້ອຍ</translation>
 <translation id="3194553149358267393">ບໍ່ມີໄຟລ໌ສຽງຫຼ້າສຸດ</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">ການຟໍແມັດມີເດຍທີ່ສາມາດຖອດອອກໄ້ຈະລຶບທຸກຂໍ້ມູນ. ທ່ານ​ຕ້ອງ​ການ​​ຈະ​ສືບ​ຕໍ່ບໍ​?</translation>
 <translation id="3437801641691368414">ເວລາສ້າງ</translation>
 <translation id="343907260260897561">ກ້ອງຖ່າຍຮູບດ່ວນ</translation>
-<translation id="3452106565701029351">ຖອດປັກໝຸດຈາກໄຟລ໌ດ່ວນ</translation>
 <translation id="3455931012307786678">ພາສາເອສໂຕນຽນ</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3479552764303398839">ບໍ່ແມ່ນດຽວນີ້</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">ພາສາໄອຣິຊ</translation>
 <translation id="4124935795427217608">ຢູນິຄອນ</translation>
 <translation id="4131235941541910880">ຍ້າຍລາຍການທີ່ທ່ານບໍ່ຕ້ອງການໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
+<translation id="4153015322587141338">ຄລິກຂວາໃສ່ໄຟລ໌, ແລ້ວເລືອກ "<ph name="PIN_COMMAND" />" ສຳລັບການເຂົ້າເຖິງດ່ວນຫາໄຟລ໌ຂອງທ່ານໃນຖ້ານ.</translation>
 <translation id="4157569377477607576">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳ:</translation>
 <translation id="4159731583141908892">ຍ້າຍ <ph name="FILE_NAME" /> ແລ້ວ.</translation>
 <translation id="4176286497474237543">ລ້າງຖັງຂີ້ເຫຍື້ອດຽວນີ້</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">ພິດຊ່າ</translation>
 <translation id="5081517858322016911">ລະບົບຈະລຶບໄຟລ໌ <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">ກຳລັງຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການໄປຍັງ <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146">ຍ້າຍ <ph name="FILE_NAME" /> ໄປໃສ່ຖັງຂີ້ເຫຍື້ອແລ້ວ</translation>
 <translation id="509429900233858213">ເກີດຄວາມຜິດພາດຂຶ້ນ.</translation>
 <translation id="5098629044894065541">ພາສາຮິບຣູ</translation>
 <translation id="5102922915594634436">ຈັດການໂຟນເດີທີ່ຊິ້ງຂໍ້ມູນ</translation>
@@ -575,7 +572,6 @@
 <translation id="5845721951356578987">ພະຍາບານ</translation>
 <translation id="5861477046012235702">ຜູ້ຫຼິ້ນເກມ</translation>
 <translation id="5864471791310927901">ຊອກຫາ DHCP ບໍ່ສໍາເລັດ</translation>
-<translation id="5887342613489958822">ກຳລັງຍ້າຍ <ph name="FILE_NAME" /> ໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="5896749729057314184">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ບໍ່ໄດ້ເປີດໃຊ້, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
 <translation id="5911887972742538906">ເກີດຜິດພາດໃນລະຫວ່າງການຕິດຕັ້ງແອັບພລິເຄຊັນ Linux ຂອງທ່ານ.</translation>
 <translation id="5912396950572065471">ຮູບແບບ</translation>
@@ -687,7 +683,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">ໄລ​ຍະ​ເວ​ລາ</translation>
-<translation id="6931302001003657424">ປັກໝຸດໃສ່ໄຟລ໌ດ່ວນ</translation>
 <translation id="6935521024859866267">ປີ້ນດ້ານ</translation>
 <translation id="6943836128787782965">HTTP ລົ້ມເຫຼວ</translation>
 <translation id="6949408524333579394">ການແປທັບສັບພາສາເຊີບຽນ</translation>
@@ -764,7 +759,6 @@
 <translation id="7547811415869834682">ພາສາດັຊ</translation>
 <translation id="7551643184018910560">ປັກໝຸດໃສ່ຖ້ານ</translation>
 <translation id="7553492409867692754">ໃຫ້ການອະນຸຍາດແກ່ແອັບ Linux ເພື່ອເຂົ້າເຖິງໄຟລ໌ຕ່າງໆໃນໂຟນເດີ <ph name="FOLDER_NAME" /></translation>
-<translation id="7575645593344061397">ກຳລັງກູ້ຄືນ "<ph name="FILENAME" />"...</translation>
 <translation id="7589661784326793847">ລໍ​ຖ້າ​ຈັກໜ້ອຍ</translation>
 <translation id="7592775719802218421">ກຳລັງເຮັດໃຫ້ <ph name="FILE_NAME" /> ນຳໃຊ້ແບບອອບລາຍໄດ້</translation>
 <translation id="7600126690270271294">ພາສາເຊີບຽນ</translation>
@@ -916,7 +910,6 @@
 <translation id="8787254343425541995">ອະນຸຍາດໃຫ້ພຣັອກຊີສໍາລັບເຄືອຂ່າຍແຊຣ໌ແລ້ວ</translation>
 <translation id="8790981080411996443">ຄົນຮົດນ້ຳຕົ້ນໄມ້</translation>
 <translation id="8798099450830957504">ຄ່າ​ມາດຕະຖານ</translation>
-<translation id="8802459921616481935">ຍ້າຍໄປຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="8808686172382650546">ແມວ</translation>
 <translation id="8810671769985673465">ການຊິບໄຟລ໌ບໍ່ສຳເລັດ,​ ມີລາຍການ: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">ພາສາສະແປນນິຊ (ສະເປນ)</translation>

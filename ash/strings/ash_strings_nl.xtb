@@ -371,6 +371,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Apparaat uitzetten?</translation>
 <translation id="3126069444801937830">Opnieuw starten om updates uit te voeren</translation>
+<translation id="3139382871451988441">Cameratoegang uitzetten</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3151786313568798007">Stand</translation>
@@ -562,7 +563,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
 <translation id="4247123849143712100">Updaten en uitzetten</translation>
 <translation id="4250229828105606438">Screenshot</translation>
-<translation id="4250899820387052060">Snelle bestanden</translation>
 <translation id="425364040945105958">Geen simkaart</translation>
 <translation id="4261870227682513959">Instellingen voor meldingen bekijken. Meldingen staan uit</translation>
 <translation id="4269883910223712419">De beheerder van dit apparaat kan het volgende doen:</translation>
@@ -648,6 +648,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox staat aan</translation>
 <translation id="4665114317261903604">Niet storen aan/uit. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Zet de cameratoegang op dit apparaat uit om alle camera's altijd te blokkeren.</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> downloaden</translation>
 <translation id="4690510401873698237">Plank aan onderkant</translation>
 <translation id="4696813013609194136">Apparaat ontgrendelen met oudercode</translation>
@@ -666,6 +667,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4776917500594043016">Wachtwoord voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">De Google Assistent is niet beschikbaar in een demosessie.</translation>
+<translation id="4789348252524569426">Kan spraakbestanden niet installeren. Je apparaat moet worden geüpdatet. Start het apparaat opnieuw op en probeer het nogmaals.</translation>
 <translation id="479989351350248267">zoeken</translation>
 <translation id="4804818685124855865">Verbinding verbreken</translation>
 <translation id="4814539958450445987">Inlogscherm</translation>
@@ -1142,6 +1144,7 @@ Nieuwe installatie</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> gebruikt momenteel je microfoon</translation>
 <translation id="7561982940498449837">Menu sluiten</translation>
 <translation id="7564874036684306347">Verplaatsing van vensters naar een ander bureaublad kan leiden tot onverwacht gedrag. Verdere meldingen, vensters en dialoogvensters worden mogelijk verdeeld over de bureaubladen.</translation>
+<translation id="7567076708801803118">Wil je de cameratoegang op dit apparaat uitzetten?</translation>
 <translation id="7569509451529460200">Braille en ChromeVox staan aan</translation>
 <translation id="7573585051776738856">Actief venster rechts vastgezet.</translation>
 <translation id="7579778809502851308">Schermopname</translation>

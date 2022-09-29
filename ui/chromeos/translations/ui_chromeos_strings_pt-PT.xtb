@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">A comprimir <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="1722687688096767818">A adicionar o perfil…</translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> itens movidos para o lixo</translation>
 <translation id="1729953886957086472">Alemão (Alemanha)</translation>
 <translation id="1730235522912993863">Chinês cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> itens copiados.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Mudar para a vista de lista</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> pastas partilhadas com o Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ficheiros selecionados</translation>
-<translation id="2387120140441437063">Não é possível abrir ficheiros movidos para o lixo. Restaure os ficheiros antes de os abrir.</translation>
 <translation id="2387458720915042159">Tipo de ligação proxy</translation>
 <translation id="2389832672041313158">Birmanês/Mianmar</translation>
 <translation id="2392369802118427583">Ativar</translation>
@@ -212,7 +210,6 @@
 <translation id="2888807692577297075">Nenhum item corresponde a &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informações</translation>
 <translation id="2902734494705624966">EUA alargado</translation>
-<translation id="2906052776158021882">A mover <ph name="NUMBER_OF_ITEMS" /> itens para o lixo</translation>
 <translation id="290843123675549676">Marati</translation>
 <translation id="2923240520113693977">Estónio</translation>
 <translation id="2938685643439809023">Mongol</translation>
@@ -222,7 +219,6 @@
 <translation id="2958458230122209142">Armazenamento quase cheio. Restam<ph name="REMAINING_PERCENTAGE" />% do seu armazenamento individual de <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">Este ficheiro foi concebido para computadores com software Macintosh. Não é compatível com o seu dispositivo, pois este tem o ChromeOS instalado. Procure uma app alternativa adequada na Web Store do Chrome.</translation>
 <translation id="2984337792991268709">Hoje <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">A restaurar <ph name="COUNT" /> itens…</translation>
 <translation id="299638574917407533">Francês (Canadá)</translation>
 <translation id="3003189754374775221">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, ligar</translation>
 <translation id="3003633581067744647">Mudar para a vista de miniatura</translation>
@@ -240,6 +236,7 @@
 <translation id="3124404833828281817">Pessoa a sonhar acordada</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN inválido. Tem mais <ph name="RETRIES" /> tentativas.</translation>
+<translation id="3157931365184549694">Restaurar</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (suportado por hardware)</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
 <translation id="3194553149358267393">Sem ficheiros de áudio recentes</translation>
@@ -277,7 +274,6 @@
 <translation id="3414856743105198592">A formatação do suporte de dados amovível apagará todos os dados. Pretende continuar?</translation>
 <translation id="3437801641691368414">Hora de criação</translation>
 <translation id="343907260260897561">Máquina fotográfica instantânea</translation>
-<translation id="3452106565701029351">Desafixar dos Ficheiros rápidos</translation>
 <translation id="3455931012307786678">Estónio</translation>
 <translation id="3475447146579922140">Folha de cálculo do Google</translation>
 <translation id="3479552764303398839">Agora não</translation>
@@ -472,7 +468,6 @@
 <translation id="5068919226082848014">Piza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> de ficheiros serão eliminados</translation>
 <translation id="508423945471810158">A mover <ph name="NUMBER_OF_ITEMS" /> itens para <ph name="FOLDER_NAME" />…</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> movido para o lixo</translation>
 <translation id="509429900233858213">Ocorreu um erro.</translation>
 <translation id="5098629044894065541">Hebraico</translation>
 <translation id="5102922915594634436">Gerir pastas sincronizadas</translation>
@@ -578,7 +573,6 @@
 <translation id="5845721951356578987">Enfermeiro</translation>
 <translation id="5861477046012235702">Jogador</translation>
 <translation id="5864471791310927901">A procura DHCP falhou</translation>
-<translation id="5887342613489958822">A mover <ph name="FILE_NAME" /> para o lixo</translation>
 <translation id="5896749729057314184">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Desativada, Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, Detalhes</translation>
 <translation id="5911887972742538906">Ocorreu um erro durante a instalação da sua aplicação para Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
@@ -690,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Workman dos EUA</translation>
 <translation id="6930242544192836755">Duração</translation>
-<translation id="6931302001003657424">Fixar nos Ficheiros rápidos</translation>
 <translation id="6935521024859866267">Ao Contrário</translation>
 <translation id="6943836128787782965">A obtenção de HTTP falhou</translation>
 <translation id="6949408524333579394">Transliteração sérvia</translation>
@@ -767,7 +760,6 @@
 <translation id="7547811415869834682">Holandês</translation>
 <translation id="7551643184018910560">Fixar na prateleira</translation>
 <translation id="7553492409867692754">Conceda autorização às apps Linux para aceder a ficheiros na pasta <ph name="FOLDER_NAME" />.</translation>
-<translation id="7575645593344061397">A restaurar "<ph name="FILENAME" />"…</translation>
 <translation id="7589661784326793847">Aguarde um momento</translation>
 <translation id="7592775719802218421">A disponibilizar o ficheiro <ph name="FILE_NAME" /> offline…</translation>
 <translation id="7600126690270271294">Sérvio</translation>
@@ -919,7 +911,6 @@
 <translation id="8787254343425541995">Permitir proxies para redes partilhadas</translation>
 <translation id="8790981080411996443">Pessoa a regar plantas</translation>
 <translation id="8798099450830957504">Predefinição</translation>
-<translation id="8802459921616481935">Mover para o lixo</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8810671769985673465">Falha ao comprimir; o item existe: "<ph name="FILE_NAME" />".</translation>
 <translation id="8813284582615685103">Espanhol (Espanha)</translation>

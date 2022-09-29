@@ -225,6 +225,7 @@
 <translation id="2227179592712503583">Ұсынысты өшіру</translation>
 <translation id="225680501294068881">Құрылғылар ізделуде…</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> файлын жүктеп алу кезінде бірдеңе дұрыс болмады.</translation>
+<translation id="2258734398699965611">Ұсынылған файлдар</translation>
 <translation id="2268130516524549846">Bluetooth өшірілген</translation>
 <translation id="2268813581635650749">Барлығын шығару</translation>
 <translation id="2269016722240250274">Қолданба сіздің микрофоныңызды қолданып жатыр.</translation>
@@ -561,7 +562,6 @@
 <translation id="4242533952199664413">Параметрлерді ашу</translation>
 <translation id="4247123849143712100">Жаңарту және өшіру</translation>
 <translation id="4250229828105606438">Скриншот</translation>
-<translation id="4250899820387052060">Файлдарға жылдам өту</translation>
 <translation id="425364040945105958">SIM картасы жоқ.</translation>
 <translation id="4261870227682513959">Хабарландыру параметрлерін көрсету. Хабарландырулар өшірулі</translation>
 <translation id="4269883910223712419">Құрылғының әкімшісі мына әрекеттерді орындай алады:</translation>
@@ -899,6 +899,7 @@
 <translation id="6099678161144790572">Өткен айда өзгертілді.</translation>
 <translation id="6103838137565245112">жүйе</translation>
 <translation id="6114505516289286752">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынды</translation>
+<translation id="6116825164611323644">Бұл құрылғыда камера рұқсаты өшірулі</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> жүктеп алуды растау</translation>
 <translation id="612734058257491180">Google Assistant қонақ сеансында жұмыс істемейді.</translation>
@@ -1125,6 +1126,7 @@
 <translation id="746232733191930409">Экран жазу режимі</translation>
 <translation id="7466449121337984263">Саусақ ізін оқу сканерін түртіңіз.</translation>
 <translation id="7477793887173910789">Музыканы, бейнелерді және т.б. басқарыңыз.</translation>
+<translation id="7490360161041035804">Маңызды файлдарды, соның ішінде Google Drive файлдарын бекітуге болады. Бекіту үшін элементке курсорды апарыңыз немесе Files қолданбасын ашыңыз және элементті тінтуірдің оң жақ түймесімен басыңыз.</translation>
 <translation id="7497767806359279797">Тілді және пернетақтаны таңдау</translation>
 <translation id="7508690557411636492">Өткен айда ашылды.</translation>
 <translation id="7509246181739783082">Жеке басыңызды растаңыз</translation>
@@ -1221,6 +1223,7 @@
 <translation id="7982789257301363584">Желі</translation>
 <translation id="7984197416080286869">Саусақ ізі тым көп енгізілді</translation>
 <translation id="798779949890829624">Бұл параметрді әкімшіңіз басқарады</translation>
+<translation id="799296642788192631">Маңызды файлдарды бекітуге болады. Бекіту үшін элементке курсорды апарыңыз немесе Files қолданбасын ашыңыз және элементті тінтуірдің оң жақ түймесімен басыңыз.</translation>
 <translation id="7994370417837006925">Бірнеше профильдердің кіруі</translation>
 <translation id="7995804128062002838">Экран түсірілмеді.</translation>
 <translation id="8000066093800657092">Желі жоқ</translation>
@@ -1348,6 +1351,7 @@
 <translation id="8734991477317290293">Ол басылған пернелерді "ұрлап алу" әрекетін жасауы мүмкін.</translation>
 <translation id="8735678380411481005">Пернетақта жарығының түсі</translation>
 <translation id="8735953464173050365">Пернетақта параметрлерін көрсету. <ph name="KEYBOARD_NAME" /> таңдалды</translation>
+<translation id="8752416742247198423">Қолданбалар мен веб-беттердің осы құрылғыға қосылған камераларды пайдалануына мүмкіндік беру үшін камера рұқсатын қосыңыз.</translation>
 <translation id="8755498163081687682">Жеке басыңызды растаңыз: <ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>
 <translation id="875593634123171288">VPN параметрлерін көрсету</translation>
 <translation id="8759408218731716181">Бірнеше аккаунттың кіру мүмкіндігін орнату мүмкін емес</translation>
@@ -1362,6 +1366,7 @@
 <translation id="8819728065740986820">Бейімдеп зарядтау функциясы қосулы</translation>
 <translation id="8825863694328519386">Артқа оралу үшін солдан оңға қарай сырғытыңыз.</translation>
 <translation id="8834539327799336565">Қазір жалғанғандар</translation>
+<translation id="8834657930627018205">Камера рұқсатын қосыңыз.</translation>
 <translation id="8841375032071747811">"Артқа" түймесі</translation>
 <translation id="8843682306134542540">Бұру құлпын ашу/жабу. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

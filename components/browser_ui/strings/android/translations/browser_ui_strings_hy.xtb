@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1005794457625275818">Քուքիների օգտագործումը թույլատրված է <ph name="FPS_OWNER" /> խմբի կայքերին (<ph name="FPS_MEMBERS_COUNT" />), այդ թվում՝ <ph name="FPS_MEMBER" /> կայքին</translation>
 <translation id="1006017844123154345">Բացել առցանց</translation>
 <translation id="1044891598689252897">Կայքերը կաշխատեն սովորական ռեժիմով</translation>
 <translation id="1124090076051167250">Կջնջվեն բոլոր տվյալներն ու քուքիները (<ph name="DATASIZE" />), որոնք հիմնական էկրանին են պահվել կայքերի և հավելվածի կողմից։</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Այո</translation>
 <translation id="1446450296470737166">Տրամադրել ամբողջական հսկողություն MIDI սարքերի նկատմամբ</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
+<translation id="1633720957382884102">Կապված կայքեր</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
 <translation id="1647582022260550163">Իսկապե՞ս ուզում եք վերակայել թույլտվությունները և մաքրել քուքիներն ու մյուս տվյալները։</translation>
 <translation id="1660204651932907780">Թույլ տալ կայքերին նվագարկել ձայն (խորհուրդ է տրվում)</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1005794457625275818">Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> sites no grupo <ph name="FPS_OWNER" />, incluindo <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Abrir online</translation>
 <translation id="1044891598689252897">Os sites funcionam normalmente.</translation>
 <translation id="1124090076051167250">Esta ação limpa <ph name="DATASIZE" /> de dados e cookies armazenados por sites ou apps no seu ecrã principal.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1446450296470737166">Perm. controlo total dispo. MIDI</translation>
 <translation id="1620510694547887537">Câmara</translation>
+<translation id="1633720957382884102">Sites relacionados</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1647582022260550163">Tem a certeza de que pretende repor as autorizações e limpar os cookies e os dados de sites?</translation>
 <translation id="1660204651932907780">Permitir que os sites reproduzam som (recomendado)</translation>

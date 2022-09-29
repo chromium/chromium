@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1005794457625275818"><ph name="FPS_MEMBER" /> dahil olmak üzere <ph name="FPS_OWNER" /> grubundaki <ph name="FPS_MEMBERS_COUNT" /> site için çerezlere izin veriliyor</translation>
 <translation id="1006017844123154345">İnternet'te aç</translation>
 <translation id="1044891598689252897">Siteler normal şekilde çalışır</translation>
 <translation id="1124090076051167250">Bu işlem, Ana ekranınızdaki siteler veya uygulamalar tarafından depolanan <ph name="DATASIZE" /> boyutunda veriyi ve çerezi temizleyecek.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Evet</translation>
 <translation id="1446450296470737166">MIDI cihazlarının tam denetimine izin verme</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1633720957382884102">İlgili siteler</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
 <translation id="1647582022260550163">İzinleri sıfırlayıp çerezleri ve site verilerini temizlemek istediğinizden emin misiniz?</translation>
 <translation id="1660204651932907780">Sitelerin ses çalmasına izin ver (önerilir)</translation>

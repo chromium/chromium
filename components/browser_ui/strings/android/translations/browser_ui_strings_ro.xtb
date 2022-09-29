@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1005794457625275818">Cookie-uri permise pentru <ph name="FPS_MEMBERS_COUNT" /> site-uri din grupul <ph name="FPS_OWNER" />, inclusiv <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Deschide online</translation>
 <translation id="1044891598689252897">Site-urile vor funcționa normal</translation>
 <translation id="1124090076051167250">Astfel, se vor șterge <ph name="DATASIZE" /> din datele și cookie-urile stocate de site-uri sau aplicații de pe ecranul de pornire.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Da</translation>
 <translation id="1446450296470737166">Control complet dispozitive MIDI</translation>
 <translation id="1620510694547887537">Cameră</translation>
+<translation id="1633720957382884102">Site-uri conexe</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1647582022260550163">Sigur vrei să resetezi permisiunile și să ștergi cookie-urile și datele privind site-ul?</translation>
 <translation id="1660204651932907780">Permite site-urilor să redea sunet (recomandat)</translation>

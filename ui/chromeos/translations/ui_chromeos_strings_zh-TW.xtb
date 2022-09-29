@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">正在壓縮 <ph name="NUMBER_OF_ITEMS" /> 個項目...</translation>
 <translation id="1722687688096767818">正在新增設定檔…</translation>
 <translation id="1726100011689679555">名稱伺服器</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> 個項目已移至垃圾桶</translation>
 <translation id="1729953886957086472">德文 (德國)</translation>
 <translation id="1730235522912993863">中文 (倉頡)</translation>
 <translation id="1731889557567069540">已複製 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">切換為清單檢視</translation>
 <translation id="2377590462528165447">已與 Linux 共用 <ph name="NUMBER_OF_ITEMS" /> 個資料夾</translation>
 <translation id="2378075407703503998">已選取 <ph name="SELCTED_FILE_COUNT" /> 個檔案</translation>
-<translation id="2387120140441437063">無法開啟已移至垃圾桶的檔案，請先將檔案還原即可開啟。</translation>
 <translation id="2387458720915042159">Proxy 連線類型</translation>
 <translation id="2389832672041313158">緬甸文</translation>
 <translation id="2392369802118427583">啟用</translation>
@@ -212,7 +210,6 @@
 <translation id="2888807692577297075">找不到符合「<ph name="SEARCH_STRING" />」&lt;b&gt;&lt;/b&gt;的項目</translation>
 <translation id="2894654529758326923">資訊</translation>
 <translation id="2902734494705624966">美式改良</translation>
-<translation id="2906052776158021882">正在將 <ph name="NUMBER_OF_ITEMS" /> 個項目移至垃圾桶</translation>
 <translation id="290843123675549676">馬拉地文</translation>
 <translation id="2923240520113693977">愛沙尼亞</translation>
 <translation id="2938685643439809023">蒙古語</translation>
@@ -222,7 +219,6 @@
 <translation id="2958458230122209142">儲存空間即將用盡，你的 <ph name="TOTAL_SPACE" /> 個人儲存空間只剩 <ph name="REMAINING_PERCENTAGE" />% 可用。</translation>
 <translation id="2977940621473452797">這個檔案是專為使用 Macintosh 軟體的電腦所設計，與搭載 Chrome OS 的裝置不相容。請前往 Chrome 線上應用程式商店尋找適合的替代應用程式。</translation>
 <translation id="2984337792991268709">今天<ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">正在還原 <ph name="COUNT" /> 個項目...</translation>
 <translation id="299638574917407533">法文 (加拿大)</translation>
 <translation id="3003189754374775221">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，連線</translation>
 <translation id="3003633581067744647">切換為縮圖檢視</translation>
@@ -240,6 +236,7 @@
 <translation id="3124404833828281817">做白日夢的人</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN 碼無效，你還有 <ph name="RETRIES" /> 次重試機會。</translation>
+<translation id="3157931365184549694">還原</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (使用硬體加密金鑰)</translation>
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="3194553149358267393">最近沒有任何音訊檔案</translation>
@@ -277,7 +274,6 @@
 <translation id="3414856743105198592">將卸除式媒體格式化會清除所有資料，你要繼續嗎？</translation>
 <translation id="3437801641691368414">建立時間</translation>
 <translation id="343907260260897561">即可拍相機</translation>
-<translation id="3452106565701029351">取消固定快速檔案</translation>
 <translation id="3455931012307786678">愛沙尼亞文</translation>
 <translation id="3475447146579922140">Google 試算表</translation>
 <translation id="3479552764303398839">現在不要</translation>
@@ -472,7 +468,6 @@
 <translation id="5068919226082848014">披薩</translation>
 <translation id="5081517858322016911">系統將刪除 <ph name="TOTAL_FILE_SIZE" /> 的檔案</translation>
 <translation id="508423945471810158">正在將 <ph name="NUMBER_OF_ITEMS" /> 個項目移至「<ph name="FOLDER_NAME" />」</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> 已移至垃圾桶</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
 <translation id="5098629044894065541">希伯來文</translation>
 <translation id="5102922915594634436">管理已同步的資料夾</translation>
@@ -578,7 +573,6 @@
 <translation id="5845721951356578987">護士</translation>
 <translation id="5861477046012235702">遊戲玩家</translation>
 <translation id="5864471791310927901">DHCP 查閱失敗</translation>
-<translation id="5887342613489958822">正在將 <ph name="FILE_NAME" /> 移至垃圾桶</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> 個網路中的第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" />，未啟用，訊號強度 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="5911887972742538906">安裝 Linux 應用程式的過程中發生錯誤。</translation>
 <translation id="5912396950572065471">格式</translation>
@@ -690,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">美式 Workman</translation>
 <translation id="6930242544192836755">持續時間</translation>
-<translation id="6931302001003657424">固定至快速檔案</translation>
 <translation id="6935521024859866267">上下顛倒</translation>
 <translation id="6943836128787782965">HTTP 擷取失敗</translation>
 <translation id="6949408524333579394">塞爾維亞文 (音譯)</translation>
@@ -767,7 +760,6 @@
 <translation id="7547811415869834682">荷蘭文</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>
 <translation id="7553492409867692754">授權 Linux 應用程式存取「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
-<translation id="7575645593344061397">正在還原「<ph name="FILENAME" />」...</translation>
 <translation id="7589661784326793847">請稍候片刻</translation>
 <translation id="7592775719802218421">正在將「<ph name="FILE_NAME" />」設定為可離線使用</translation>
 <translation id="7600126690270271294">塞爾維亞文</translation>
@@ -919,7 +911,6 @@
 <translation id="8787254343425541995">允許共用網路使用 Proxy</translation>
 <translation id="8790981080411996443">澆水的人</translation>
 <translation id="8798099450830957504">預設</translation>
-<translation id="8802459921616481935">移至垃圾桶</translation>
 <translation id="8808686172382650546">貓咪</translation>
 <translation id="8810671769985673465">壓縮失敗，項目已存在：「<ph name="FILE_NAME" />」</translation>
 <translation id="8813284582615685103">西班牙文 (西班牙)</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1005794457625275818"><ph name="FPS_MEMBER" />কে ধৰি <ph name="FPS_OWNER" /> গোটৰ <ph name="FPS_MEMBERS_COUNT" /> টা ছাইটৰ বাবে কুকিৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="1006017844123154345">অনলাইনত খোলক</translation>
 <translation id="1044891598689252897">ছাইটসমূহে স্বাভাৱিকভাৱে কাম কৰিব</translation>
 <translation id="1124090076051167250">এইটোৱে আপোনাৰ গৃহ স্ক্রীনত ছাইট অথবা এপ্‌সমূহে ষ্ট’ৰ কৰা <ph name="DATASIZE" /> ডেটা আৰু কুকি মচিব।</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">হয়</translation>
 <translation id="1446450296470737166">MIDI ডিভাইচৰ সম্পূর্ণ নিয়ন্ত্ৰণৰ অনুমতি দিয়া</translation>
 <translation id="1620510694547887537">কেমেৰা</translation>
+<translation id="1633720957382884102">সম্পৰ্কিত ছাইটসমূহ</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1647582022260550163">আপুনি অনুমতিসমূহ ৰিছেট কৰি কুকি আৰু ছাইটৰ ডেটা মচিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="1660204651932907780">ছাইটবোৰক ধ্বনি প্লে’ কৰিবলৈ অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>

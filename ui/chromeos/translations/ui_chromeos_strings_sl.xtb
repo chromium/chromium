@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">Ustvarjanje arhiva zip s toliko elementi: <ph name="NUMBER_OF_ITEMS" /> …</translation>
 <translation id="1722687688096767818">Dodajanje profila …</translation>
 <translation id="1726100011689679555">Imenski strežniki</translation>
-<translation id="1726600877401297672">Št. elementov, premaknjenih v smetnjak: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="1729953886957086472">nemščina (Nemčija)</translation>
 <translation id="1730235522912993863">kitajščina (cangče)</translation>
 <translation id="1731889557567069540">Št. kopiranih elementov: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Preklop na pogled seznama</translation>
 <translation id="2377590462528165447">Št. map, deljenih z Linuxom: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2378075407703503998">Št. izbranih datotek: <ph name="SELCTED_FILE_COUNT" /></translation>
-<translation id="2387120140441437063">Datotek v smetnjaku ni mogoče odpreti. Pred odpiranjem jih obnovite.</translation>
 <translation id="2387458720915042159">Vrsta povezave strežnika proxy</translation>
 <translation id="2389832672041313158">burmanščina/mjanmarščina</translation>
 <translation id="2392369802118427583">Aktiviraj</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">gudžaratščina (fonetična)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Išči</translation>
+<translation id="252641322760726369">Pridržite datoteko in se dotaknite ikone <ph name="ICON" /> ter izberite ukaz »<ph name="PIN_COMMAND" />«, če želite hitro dostopati do datotek na polici.</translation>
 <translation id="2534460670861217804">Varni proxy HTTP</translation>
 <translation id="2541377937973966830">Vsebina te mape je samo za branje. Nekatere dejavnosti niso podprte.</translation>
 <translation id="2542049655219295786">Googlova tabela</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">Noben element se ne ujema s poizvedbo &lt;b&gt;»<ph name="SEARCH_STRING" />«&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Podatki</translation>
 <translation id="2902734494705624966">Združene države (razširjena)</translation>
-<translation id="2906052776158021882">Premikanje elementov v smetnjak (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="290843123675549676">maratščina</translation>
 <translation id="2923240520113693977">estonščina</translation>
 <translation id="2938685643439809023">mongolščina</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">Primanjkuje prostora za shranjevanje, še <ph name="REMAINING_PERCENTAGE" /> % od <ph name="TOTAL_SPACE" /> v vašem posameznem prostoru za shranjevanje.</translation>
 <translation id="2977940621473452797">Ta datoteka je namenjena za računalnike s programsko opremo Macintosh in ni združljiva z vašo napravo, ki uporablja Chrome OS. V Spletni trgovini Chrome poiščite ustrezno nadomestno aplikacijo.</translation>
 <translation id="2984337792991268709">Danes <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">Obnavljanje elementov (<ph name="COUNT" />) …</translation>
 <translation id="299638574917407533">francoščina (Kanada)</translation>
 <translation id="3003189754374775221">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, vzpostavitev povezave</translation>
 <translation id="3003633581067744647">Preklop na pogled sličic</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">Oseba, ki sanjari</translation>
 <translation id="3126026824346185272">CTRL</translation>
 <translation id="3138624403379688522">Neveljavna koda PIN. Imate še toliko poskusov: <ph name="RETRIES" />.</translation>
+<translation id="3157931365184549694">Obnovi</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (podprto s strojno opremo)</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3194553149358267393">Ni nedavnih zvočnih datotek</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">S formatiranjem izmenljivega medija boste izbrisali vse podatke. Ali želite nadaljevati?</translation>
 <translation id="3437801641691368414">Čas ustvarjanja</translation>
 <translation id="343907260260897561">Polaroidni fotoaparat</translation>
-<translation id="3452106565701029351">Odpni s hitrih datotek</translation>
 <translation id="3455931012307786678">estonščina</translation>
 <translation id="3475447146579922140">Googlova preglednica</translation>
 <translation id="3479552764303398839">Ne zdaj</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">irščina</translation>
 <translation id="4124935795427217608">Samorog</translation>
 <translation id="4131235941541910880">Nepotrebne elemente premaknite v smetnjak.</translation>
+<translation id="4153015322587141338">Z desnim gumbom kliknite datoteko in izberite ukaz »<ph name="PIN_COMMAND" />«, če želite hitro dostopati do datotek na polici.</translation>
 <translation id="4157569377477607576">Pravilnik skrbnika ne priporoča:</translation>
 <translation id="4159731583141908892">Premaknjeno: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Takoj izprazni koš</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">Pica</translation>
 <translation id="5081517858322016911">Izbrisanih bo za <ph name="TOTAL_FILE_SIZE" /> datotek</translation>
 <translation id="508423945471810158">Premikanje toliko elementov v mapo <ph name="FOLDER_NAME" />: <ph name="NUMBER_OF_ITEMS" /></translation>
-<translation id="5092200349368278146">Datoteka <ph name="FILE_NAME" /> je premaknjena v smetnjak</translation>
 <translation id="509429900233858213">Napaka.</translation>
 <translation id="5098629044894065541">hebrejščina</translation>
 <translation id="5102922915594634436">Upravljanje sinhroniziranih map</translation>
@@ -576,7 +573,6 @@
 <translation id="5845721951356578987">Zdravstvena tehnica</translation>
 <translation id="5861477046012235702">Igričar</translation>
 <translation id="5864471791310927901">Iskanje DHCP-ja ni uspelo</translation>
-<translation id="5887342613489958822">Premikanje datoteke <ph name="FILE_NAME" /> v smetnjak</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_INDEX" />. omrežje od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivirano, moč signala <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="5911887972742538906">Med nameščanjem aplikacije za Linux je prišlo do napake.</translation>
 <translation id="5912396950572065471">Oblika</translation>
@@ -688,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Združene države (Workman)</translation>
 <translation id="6930242544192836755">Trajanje</translation>
-<translation id="6931302001003657424">Pripni na hitre datoteke</translation>
 <translation id="6935521024859866267">Obrnjeno</translation>
 <translation id="6943836128787782965">Ukaz HTTP get ni uspel</translation>
 <translation id="6949408524333579394">srbščina (transkripcija)</translation>
@@ -765,7 +760,6 @@
 <translation id="7547811415869834682">nizozemščina</translation>
 <translation id="7551643184018910560">Pripenjanje na polico</translation>
 <translation id="7553492409867692754">Aplikacijam za Linux dovolite dostop do datotek v mapi <ph name="FOLDER_NAME" />.</translation>
-<translation id="7575645593344061397">Obnavljanje datoteke »<ph name="FILENAME" />« ...</translation>
 <translation id="7589661784326793847">Počakajte trenutek</translation>
 <translation id="7592775719802218421">Omogočanje dostopa do datoteke <ph name="FILE_NAME" /> brez povezave</translation>
 <translation id="7600126690270271294">srbščina</translation>
@@ -917,7 +911,6 @@
 <translation id="8787254343425541995">Dovoli proxyje za omrežja v skupni rabi</translation>
 <translation id="8790981080411996443">Oseba, ki zaliva rože</translation>
 <translation id="8798099450830957504">Privzeto</translation>
-<translation id="8802459921616481935">Premakni v smetnjak</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8810671769985673465">Ustvarjanje datoteke zip ni uspelo, obstoječi element: »<ph name="FILE_NAME" />«</translation>
 <translation id="8813284582615685103">španščina (Španija)</translation>

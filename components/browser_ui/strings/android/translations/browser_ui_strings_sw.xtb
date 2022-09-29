@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
+<translation id="1005794457625275818">Vidakuzi vimeruhusiwa katika tovuti <ph name="FPS_MEMBERS_COUNT" /> kwenye kikundi cha <ph name="FPS_OWNER" />, ikiwa ni pamoja na <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Fungua Mtandaoni</translation>
 <translation id="1044891598689252897">Tovuti zitafanya kazi kama kawaida</translation>
 <translation id="1124090076051167250">Hatua hii itafuta <ph name="DATASIZE" /> ya data na vidakuzi vilivyohifadhiwa na tovuti au programu kwenye Skrini ya kwanza.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Ndiyo</translation>
 <translation id="1446450296470737166">Ruhusu udhibiti kamili wa vifaa vya MIDI</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1633720957382884102">Tovuti zinazohusiana</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1647582022260550163">Je, una uhakika ungependa kubadilisha ruhusa na kufuta data ya tovuti na vidakuzi?</translation>
 <translation id="1660204651932907780">Ruhusu tovuti kucheza sauti (inapendekezwa)</translation>

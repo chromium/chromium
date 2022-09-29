@@ -80,7 +80,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> అంశాలను జిప్ చేస్తోంది...</translation>
 <translation id="1722687688096767818">ప్రొఫైల్‌ను జోడిస్తోంది...</translation>
 <translation id="1726100011689679555">పేరు సర్వర్‌లు</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు ట్రాష్‌కు తరలించబడ్డాయి</translation>
 <translation id="1729953886957086472">జర్మన్ (జర్మనీ)</translation>
 <translation id="1730235522912993863">చైనీస్ కాంగ్జీ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ఐటమ్‌లు కాపీ చేయబడ్డాయి.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">లిస్ట్‌ వీక్షణకు మార్చు</translation>
 <translation id="2377590462528165447">Linuxతో <ph name="NUMBER_OF_ITEMS" /> ఫోల్డర్‌లు షేర్ చేయబడ్డాయి</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ఫైళ్లు ఎంచుకోబడ్డాయి</translation>
-<translation id="2387120140441437063">ట్రాష్‌లో ఉన్న ఫైళ్లను తెరవడం సాధ్యం కాదు. దయచేసి తెరవడానికి ముందు, ఫైళ్లను రీస్టోర్ చేయండి.</translation>
 <translation id="2387458720915042159">ప్రాక్సీ కనెక్షన్ రకం</translation>
 <translation id="2389832672041313158">బర్మీస్/మయన్మార్</translation>
 <translation id="2392369802118427583">యాక్టివేట్ చేయండి</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">గుజరాతీ ఫొనెటిక్</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">స్కాన్ చేయి</translation>
+<translation id="252641322760726369">షెల్ఫ్‌లో ఉన్న మీ ఫైల్స్‌కు క్విక్ యాక్సెస్‌ను పొందడానికి, ఫైల్‌ను తాకి, నొక్కి ఉంచి, <ph name="ICON" />‌ను ట్యాప్ చేసి, ఆపై "<ph name="PIN_COMMAND" />"ను ఎంచుకోండి.</translation>
 <translation id="2534460670861217804">సురక్షిత HTTP ప్రాక్సీ</translation>
 <translation id="2541377937973966830">ఈ ఫోల్డర్‌లో ఉన్న కంటెంట్‌లు కేవలం చదవడానికి మాత్రమే. కొన్ని యాక్టివిటీలకు సపోర్ట్ ఉండదు.</translation>
 <translation id="2542049655219295786">Google పట్టిక</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;కు అంశాలు సరిపోలలేదు</translation>
 <translation id="2894654529758326923">సమాచారం</translation>
 <translation id="2902734494705624966">యుఎస్ విస్తారితం</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు ట్రాష్‌కు తరలించబడుతున్నాయి</translation>
 <translation id="290843123675549676">మరాఠీ</translation>
 <translation id="2923240520113693977">ఈస్టోనియన్</translation>
 <translation id="2938685643439809023">మంగోలియన్</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">స్టోరేజ్ తక్కువగా ఉంది, మీ <ph name="TOTAL_SPACE" /> వ్యక్తిగత స్టోరేజ్‌లో <ph name="REMAINING_PERCENTAGE" />% మిగిలి ఉంది.</translation>
 <translation id="2977940621473452797">ఈ ఫైల్ Macintosh సాఫ్ట్‌వేర్‌ను ఉపయోగించే కంప్యూటర్ కోసం రూపొందించబడింది. ఇది ChromeOSను రన్ చేసే మీ పరికరంతో అనుకూలంగా లేదు. దయచేసి తగిన ప్రత్యామ్నాయ యాప్ కోసం Chrome వెబ్ స్టోర్‌లో వెతకండి.</translation>
 <translation id="2984337792991268709">ఈ రోజు <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337"><ph name="COUNT" /> ఐటెమ్‌లను రీస్టోర్ చేస్తోంది...</translation>
 <translation id="299638574917407533">ఫ్రెంచ్ (కెనడా)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, కనెక్ట్ చేయండి</translation>
 <translation id="3003633581067744647">థంబ్‌నెయిల్‌ వీక్షణకు మార్చు</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">కలలుగంటున్న వ్యక్తి</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">పిన్ చెల్లదు. మీకు <ph name="RETRIES" /> ప్రయత్నాలు మిగిలి ఉన్నాయి.</translation>
+<translation id="3157931365184549694">పునరుద్ధరించు</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (హార్డ్‌వేర్ మద్దతు కలిగినది)</translation>
 <translation id="3188257591659621405">నా ఫైళ్లు</translation>
 <translation id="3194553149358267393">ఇటీవలి ఆడియో ఫైల్స్ ఏవీ లేవు</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">తొలగించగల మీడియాను ఫార్మాట్ చేయడం వలన మొత్తం డేటా తుడిచి వేయబడుతుంది. మీరు కొనసాగించాలనుకుంటున్నారా?</translation>
 <translation id="3437801641691368414">క్రియేట్ చేసిన సమయం</translation>
 <translation id="343907260260897561">ఇన్‌స్టంట్ కెమెరా</translation>
-<translation id="3452106565701029351">క్విక్ ఫైల్స్ నుండి పిన్‌ను తీసివేయండి</translation>
 <translation id="3455931012307786678">ఎస్టోనియన్</translation>
 <translation id="3475447146579922140">Google స్ప్రెడ్‌షీట్</translation>
 <translation id="3479552764303398839">ఇప్పుడు కాదు</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">ఐరిష్</translation>
 <translation id="4124935795427217608">యునికార్న్</translation>
 <translation id="4131235941541910880">మీకు అవసరం లేని ఐటెమ్‌లను ట్రాష్‌కు తరలించండి</translation>
+<translation id="4153015322587141338">షెల్ఫ్‌లో ఉన్న మీ ఫైల్స్‌కు క్విక్ యాక్సెస్‌ను పొందడానికి, ఫైల్‌పై కుడి క్లిక్ చేసి, "<ph name="PIN_COMMAND" />"ను ఎంచుకోండి.</translation>
 <translation id="4157569377477607576">అడ్మినిస్ట్రేటర్ పాలసీ వీటిని సిఫార్సు చేయదు:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> తరలించబడింది.</translation>
 <translation id="4176286497474237543">ఇప్పుడే ట్రాష్‌ను ఖాళీ చేయండి</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">పిజ్జా</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> పరిమాణం వరకు ఫైళ్లు తొలగించబడతాయి</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను <ph name="FOLDER_NAME" />కు తరలిస్తోంది</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> ట్రాష్‌కు తరలించబడింది</translation>
 <translation id="509429900233858213">ఒక ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="5098629044894065541">హిబ్రూ</translation>
 <translation id="5102922915594634436">సింక్ చేసిన ఫోల్డర్‌లను మేనేజ్ చేయండి</translation>
@@ -576,7 +573,6 @@
 <translation id="5845721951356578987">నర్స్</translation>
 <translation id="5861477046012235702">గేమర్</translation>
 <translation id="5864471791310927901">DHCP లుక్‌అప్ విఫలమైంది</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" /> ట్రాష్‌కు తరలించబడుతోంది</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" />‌లోని నెట్‌వర్క్ <ph name="NETWORK_INDEX" /> యాక్టివేట్ చేయబడలేదు, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="5911887972742538906">మీ Linux అప్లికేషన్ యొక్క ఇన్‌స్టాలేషన్ సమయంలో ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="5912396950572065471">ఫార్మాట్</translation>
@@ -688,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US వర్క్‌మాన్</translation>
 <translation id="6930242544192836755">వ్యవధి</translation>
-<translation id="6931302001003657424">క్విక్ ఫైల్స్‌కు పిన్ చేయండి</translation>
 <translation id="6935521024859866267">తలక్రిందులుగా</translation>
 <translation id="6943836128787782965">HTTP పొందడంలో విఫలమైంది</translation>
 <translation id="6949408524333579394">సెర్బియన్ ట్రాన్స్‌లిటరేషన్</translation>
@@ -765,7 +760,6 @@
 <translation id="7547811415869834682">డచ్</translation>
 <translation id="7551643184018910560">అరకు పిన్ చేయండి</translation>
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" />ఫోల్డర్‌లోని ఫైళ్లను యాక్సెస్ చేయడానికి Linux యాప్‌లకు అనుమతి ఇవ్వండి</translation>
-<translation id="7575645593344061397">"<ph name="FILENAME" />"ను రీస్టోర్ చేస్తోంది...</translation>
 <translation id="7589661784326793847">ఒక క్షణం వేచి ఉండండి</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" />ను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచుతోంది</translation>
 <translation id="7600126690270271294">సెర్బియన్</translation>
@@ -917,7 +911,6 @@
 <translation id="8787254343425541995">భాగస్వామ్య నెట్‌వర్క్‌లకు ప్రాక్సీలను అనుమతించండి</translation>
 <translation id="8790981080411996443">మొక్కలకు నీరు పోస్తున్న వ్యక్తి</translation>
 <translation id="8798099450830957504">డిఫాల్ట్</translation>
-<translation id="8802459921616481935">ట్రాష్‌కు తరలించు</translation>
 <translation id="8808686172382650546">పిల్లి</translation>
 <translation id="8810671769985673465">జిప్ చేయడంలో విఫలమైంది, ఈ అంశం ఉనికిలో ఉంది: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">స్పానిష్ (స్పెయిన్)</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1005794457625275818">允许 <ph name="FPS_OWNER" /> 群组（包括 <ph name="FPS_MEMBER" />）中的 <ph name="FPS_MEMBERS_COUNT" /> 个网站使用 Cookie</translation>
 <translation id="1006017844123154345">在线打开</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
 <translation id="1124090076051167250">此操作会清除网站或其在主屏幕中安装的应用所存储的 <ph name="DATASIZE" /> 数据和 Cookie。</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">是</translation>
 <translation id="1446450296470737166">允许全面控制 MIDI 设备</translation>
 <translation id="1620510694547887537">摄像头</translation>
+<translation id="1633720957382884102">相关网站</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1647582022260550163">确定要重置权限并清除 Cookie 和网站数据吗？</translation>
 <translation id="1660204651932907780">允许网站播放声音（推荐）</translation>

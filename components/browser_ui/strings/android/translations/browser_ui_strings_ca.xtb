@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1005794457625275818">Galetes permeses per a <ph name="FPS_MEMBERS_COUNT" /> llocs web del grup <ph name="FPS_OWNER" />, com ara <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Obre en línia</translation>
 <translation id="1044891598689252897">Els llocs web funcionaran amb normalitat</translation>
 <translation id="1124090076051167250">Amb aquesta acció s'esborraran dades i galetes emmagatzemades pels llocs web o les aplicacions de la pantalla d'inici (<ph name="DATASIZE" />).</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1446450296470737166">Permet control total disp. MIDI</translation>
 <translation id="1620510694547887537">Càmera</translation>
+<translation id="1633720957382884102">Llocs web relacionats</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1647582022260550163">Confirmes que vols restablir els permisos i esborrar les galetes i les dades del lloc web?</translation>
 <translation id="1660204651932907780">Permet que els llocs web reprodueixin so (opció recomanada)</translation>

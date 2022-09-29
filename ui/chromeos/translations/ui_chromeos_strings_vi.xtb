@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">Đang nén <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="1722687688096767818">Đang thêm hồ sơ...</translation>
 <translation id="1726100011689679555">Máy chủ định danh</translation>
-<translation id="1726600877401297672">Đã chuyển <ph name="NUMBER_OF_ITEMS" /> mục vào Thùng rác</translation>
 <translation id="1729953886957086472">Tiếng Đức (Đức)</translation>
 <translation id="1730235522912993863">Tiếng Trung (Thương Hiệt)</translation>
 <translation id="1731889557567069540">Đã sao chép <ph name="NUMBER_OF_ITEMS" /> mục.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Chuyển sang chế độ xem danh sách</translation>
 <translation id="2377590462528165447">Đã chia sẻ <ph name="NUMBER_OF_ITEMS" /> thư mục với Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> tệp được chọn</translation>
-<translation id="2387120140441437063">Không thể mở các tệp trong thùng rác. Vui lòng khôi phục tệp trước khi mở.</translation>
 <translation id="2387458720915042159">Loại kết nối proxy</translation>
 <translation id="2389832672041313158">Tiếng Miến Điện/Myanmar</translation>
 <translation id="2392369802118427583">Kích hoạt</translation>
@@ -212,7 +210,6 @@
 <translation id="2888807692577297075">Không có mục nào khớp với <ph name="SEARCH_STRING" /></translation>
 <translation id="2894654529758326923">Thông tin</translation>
 <translation id="2902734494705624966">Mở rộng của Hoa Kỳ</translation>
-<translation id="2906052776158021882">Đang chuyển <ph name="NUMBER_OF_ITEMS" /> mục vào Thùng rác</translation>
 <translation id="290843123675549676">Tiếng Maratha</translation>
 <translation id="2923240520113693977">Tiếng Estonia</translation>
 <translation id="2938685643439809023">Tiếng Mông Cổ</translation>
@@ -222,7 +219,6 @@
 <translation id="2958458230122209142">Sắp hết bộ nhớ, <ph name="TOTAL_SPACE" /> bộ nhớ cá nhân hiện còn <ph name="REMAINING_PERCENTAGE" />%.</translation>
 <translation id="2977940621473452797">Tệp này dành cho máy tính sử dụng phần mềm Macintosh. Tệp này không tương thích với thiết bị chạy ChromeOS của bạn. Vui lòng tìm kiếm ứng dụng thay thế phù hợp trong Cửa hàng Chrome trực tuyến.</translation>
 <translation id="2984337792991268709">Hôm nay <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">Đang khôi phục <ph name="COUNT" /> mục...</translation>
 <translation id="299638574917407533">Tiếng Pháp (Canada)</translation>
 <translation id="3003189754374775221">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Kết nối</translation>
 <translation id="3003633581067744647">Chuyển sang chế độ xem hình thu nhỏ</translation>
@@ -240,6 +236,7 @@
 <translation id="3124404833828281817">Người mơ mộng</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Mã PIN không hợp lệ. Bạn còn <ph name="RETRIES" /> lần nhập.</translation>
+<translation id="3157931365184549694">Khôi phục</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (dựa trên phần cứng)</translation>
 <translation id="3188257591659621405">Tệp của tôi</translation>
 <translation id="3194553149358267393">Không có tệp âm thanh nào gần đây</translation>
@@ -277,7 +274,6 @@
 <translation id="3414856743105198592">Định dạng phương tiện di động sẽ xóa tất cả dữ liệu. Bạn có muốn tiếp tục không?</translation>
 <translation id="3437801641691368414">Thời gian tạo</translation>
 <translation id="343907260260897561">Máy ảnh chụp lấy ngay</translation>
-<translation id="3452106565701029351">Bỏ ghim khỏi Tệp nhanh</translation>
 <translation id="3455931012307786678">Tiếng Estonia</translation>
 <translation id="3475447146579922140">Bảng tính Google</translation>
 <translation id="3479552764303398839">Để sau</translation>
@@ -472,7 +468,6 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> dung lượng tệp sẽ bị xóa</translation>
 <translation id="508423945471810158">Đang di chuyển <ph name="NUMBER_OF_ITEMS" /> mục vào <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146">Đã chuyển <ph name="FILE_NAME" /> vào Thùng rác</translation>
 <translation id="509429900233858213">Đã xảy ra lỗi.</translation>
 <translation id="5098629044894065541">Tiếng Do Thái</translation>
 <translation id="5102922915594634436">Quản lý các thư mục được đồng bộ hoá</translation>
@@ -578,7 +573,6 @@
 <translation id="5845721951356578987">Y tá</translation>
 <translation id="5861477046012235702">Người chơi trò chơi điện tử</translation>
 <translation id="5864471791310927901">Không thể tra cứu DHCP</translation>
-<translation id="5887342613489958822">Đang chuyển <ph name="FILE_NAME" /> vào Thùng rác</translation>
 <translation id="5896749729057314184">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Chưa kích hoạt, Cường độ tín hiệu: <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="5911887972742538906">Đã xảy ra lỗi trong quá trình cài đặt ứng dụng Linux.</translation>
 <translation id="5912396950572065471">Định dạng</translation>
@@ -690,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Workman Hoa Kỳ</translation>
 <translation id="6930242544192836755">Thời lượng</translation>
-<translation id="6931302001003657424">Ghim vào Tệp nhanh</translation>
 <translation id="6935521024859866267">Lộn ngược</translation>
 <translation id="6943836128787782965">HTTP gặp lỗi</translation>
 <translation id="6949408524333579394">Tiếng Serbia (chuyển tự)</translation>
@@ -767,7 +760,6 @@
 <translation id="7547811415869834682">Tiếng Hà Lan</translation>
 <translation id="7551643184018910560">Ghim vào kệ</translation>
 <translation id="7553492409867692754">Cho phép các ứng dụng Linux truy cập vào tệp trong thư mục <ph name="FOLDER_NAME" /></translation>
-<translation id="7575645593344061397">Đang khôi phục "<ph name="FILENAME" />"...</translation>
 <translation id="7589661784326793847">Xin đợi một chút</translation>
 <translation id="7592775719802218421">Đang chọn chế độ sử dụng được khi không có mạng cho <ph name="FILE_NAME" /></translation>
 <translation id="7600126690270271294">Tiếng Serbia</translation>
@@ -919,7 +911,6 @@
 <translation id="8787254343425541995">Cho phép các proxy đối với mạng chia sẻ</translation>
 <translation id="8790981080411996443">Người tưới cây</translation>
 <translation id="8798099450830957504">Mặc định</translation>
-<translation id="8802459921616481935">Chuyển vào Thùng rác</translation>
 <translation id="8808686172382650546">Mèo</translation>
 <translation id="8810671769985673465">Không nén được, mục tồn tại: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Tiếng Tây Ban Nha (Tây Ban Nha)</translation>

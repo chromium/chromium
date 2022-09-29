@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1005794457625275818">Se permiten cookies para <ph name="FPS_MEMBERS_COUNT" /> sitios en el grupo <ph name="FPS_OWNER" />, incluido <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Abrir en línea</translation>
 <translation id="1044891598689252897">Los sitios funcionarán normalmente</translation>
 <translation id="1124090076051167250">Esta acción borrará <ph name="DATASIZE" /> de datos y cookies almacenados por los sitios o las apps que aparecen en la pantalla principal.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1446450296470737166">Control de dispositivos MIDI</translation>
 <translation id="1620510694547887537">Cámara</translation>
+<translation id="1633720957382884102">Sitios relacionados</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1647582022260550163">¿Confirmas que quieres restablecer los permisos y borrar las cookies y los datos de sitios?</translation>
 <translation id="1660204651932907780">Permitir que los sitios reproduzcan sonido (recomendado)</translation>

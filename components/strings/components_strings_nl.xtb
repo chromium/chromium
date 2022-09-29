@@ -542,6 +542,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2340549657492527534">Reptielen en amfibieën</translation>
 <translation id="2346319942568447007">Afbeelding die je hebt gekopieerd</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> toestaan alle links voor <ph name="PROTOCOL" /> te openen in plaats van <ph name="REPLACED_HANDLER_TITLE" />?</translation>
+<translation id="2353297238722298836">Camera en microfoon toegestaan</translation>
 <translation id="2354001756790975382">Andere bookmarks</translation>
 <translation id="2354430244986887761">Google Safe Browsing heeft onlangs <ph name="BEGIN_LINK" />schadelijke apps gevonden<ph name="END_LINK" /> op <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Aanvallers kunnen mogelijk de afbeeldingen zien die je op deze site bekijkt en je misleiden door de afbeeldingen aan te passen.</translation>
@@ -1141,6 +1142,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4023431997072828269">Dit formulier wordt ingediend via een verbinding die niet beveiligd is. Hierdoor zijn je gegevens zichtbaar voor anderen.</translation>
 <translation id="4025913568718019429">De knop Google-privacyinstellingen beheren, druk op Enter om naar de privacyinstellingen van je Google-account te gaan</translation>
 <translation id="4030383055268325496">&amp;Toevoegen ongedaan maken</translation>
+<translation id="4031179711345676612">Microfoon toegestaan</translation>
 <translation id="4040350669425716613">Colleges en universiteiten</translation>
 <translation id="405399507749852140">Krijg meldingen bij een prijsdaling op een site</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1378,6 +1380,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4658638640878098064">Nietje linksboven</translation>
 <translation id="4660119392514473465">Je kunt nu privé browsen. Andere mensen die dit apparaat gebruiken, kunnen je activiteit niet zien. Downloads, bookmarks en items op je leeslijst worden wel opgeslagen.</translation>
 <translation id="4660567771874403130">Energie en energiebedrijven</translation>
+<translation id="4663373278480897665">Camera toegestaan</translation>
 <translation id="4666114623408286498">Farmaceutica en biotechnologie</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -2021,6 +2024,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Controleer de proxy, firewall en configuratie voor beveiligde DNS<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Twee nietjes links</translation>
+<translation id="6370022303958842211">Acties voor apparaattoegang, zoals inloggen (waaronder redenen voor mislukte logins), uitloggen, vergrendelen en ontgrendelen</translation>
 <translation id="6374865374745447009">vensterbeheer</translation>
 <translation id="6377268785556383139">Eén resultaat voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380497234672085559">A0</translation>

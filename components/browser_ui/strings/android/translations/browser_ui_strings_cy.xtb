@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
+<translation id="1005794457625275818">Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> o wefannau yn y grŵp <ph name="FPS_OWNER" />, gan gynnwys <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Agor ar-lein</translation>
 <translation id="1044891598689252897">Bydd gwefannau'n gweithio fel arfer</translation>
 <translation id="1124090076051167250">Bydd hyn yn clirio <ph name="DATASIZE" /> o ddata a chwcis sy'n cael eu storio gan wefannau neu gan apiau ar eich sgrîn Hafan.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Iawn</translation>
 <translation id="1446450296470737166">Caniatáu rheolaeth lawn dros ddyfeisiau MIDI</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1633720957382884102">Gwefannau Cysylltiedig</translation>
 <translation id="1644574205037202324">Hanes</translation>
 <translation id="1647582022260550163">Ydych chi'n siŵr eich bod am ailosod caniatadau, a chlirio cwcis a data gwefan?</translation>
 <translation id="1660204651932907780">Caniatáu i wefannau chwarae sain (argymhellir)</translation>

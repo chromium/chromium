@@ -80,7 +80,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን በማመቅ ላይ...</translation>
 <translation id="1722687688096767818">መገለጫ በማከል ላይ...</translation>
 <translation id="1726100011689679555">የስም አገልጋዩች</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ወደ መጣያ ተወስደዋል</translation>
 <translation id="1729953886957086472">ጀርመንኛ (ጀርመን)</translation>
 <translation id="1730235522912993863">ቻይንኛ ካንግጂ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተቀድተዋል።</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">ወደ የዝርዝር እይታ ቀይር</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> አቃፊዎች ለLinux ተጋርተዋል</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ፋይሎች ተመርጠዋል</translation>
-<translation id="2387120140441437063">ወደ መጣያ የተወሰዱ ፋይሎችን መክፈት አይችሉም። እባክዎ ከመክፈትዎ በፊት ፋይሎቹን ወደነበሩበት ይመልሱ።</translation>
 <translation id="2387458720915042159">የተኪ ግንኙነት አይነት</translation>
 <translation id="2389832672041313158">በርማኛ/ማያንማር</translation>
 <translation id="2392369802118427583">አግብር</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">የጉጃራቲ ፎነቲክ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">ቃኝ</translation>
+<translation id="252641322760726369">በመደርደሪያ ውስጥ ያሉትን ፋይሎችዎን በፍጥነት ለመድረስ አንድ ፋይል ይንኩ እና ይያዙ እና <ph name="ICON" />ን መታ ያድርጉ እና «<ph name="PIN_COMMAND" />»ን ይምረጡ።</translation>
 <translation id="2534460670861217804">ደህንነቱ የተጠበቀ የኤችቲቲፒ ተኪ</translation>
 <translation id="2541377937973966830">የዚህ አቃፊ ይዘቶች ተነባቢ-ብቻ ናቸው። አንዳንድ እንቅስቃሴዎች አይደገፉም።</translation>
 <translation id="2542049655219295786">Google ሠንጠረዥ</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">ምንም ፋይሎች ከ&lt;b&gt;«<ph name="SEARCH_STRING" />»&lt;/b&gt; ጋር አይዛመዱም</translation>
 <translation id="2894654529758326923">መረጃ</translation>
 <translation id="2902734494705624966">የአሜሪካ ተቀጥሎ</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን ወደ መጣያው በመውሰድ ላይ</translation>
 <translation id="290843123675549676">ማራቲኛ</translation>
 <translation id="2923240520113693977">ኤስቶኒአን</translation>
 <translation id="2938685643439809023">ሞንጎልኛ</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">ማከማቻ ዝቅተኛ ነው ከእርስዎ <ph name="TOTAL_SPACE" /> የግለሰብ ማከማቻ ውስጥ <ph name="REMAINING_PERCENTAGE" />% ቀርቷል።</translation>
 <translation id="2977940621473452797">ይህ ፋይል የMacintosh ሶፍትዌር ለሚጠቀም ኮምፒውተር ነው የተሰራው። ይሄ ChromeOSን ከሚያሄደው መሣሪያዎ ጋር ተኳሃኝ አይደለም። አግባብ የሆነውን መተኪያ መተግበሪያ ለማግኘት እባክዎ Chrome የድር መደብሩን ይፈልጉ።</translation>
 <translation id="2984337792991268709">ዛሬ <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337"><ph name="COUNT" /> ንጥሎችን ወደነበሩበት በመመለስ ላይ...</translation>
 <translation id="299638574917407533">ፈረንሳይኛ (ካናዳ)</translation>
 <translation id="3003189754374775221">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="NETWORK_PROVIDER_NAME" />፣ ሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ተገናኝ</translation>
 <translation id="3003633581067744647">ወደ የድንክዬ እይታ ቀይር</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">የሰው ቀን ህልም ማየት</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">ልክ ያልኾነ ፒን። እርስዎ <ph name="RETRIES" /> ቀሪ ሙከራዎች አሉዎት።</translation>
+<translation id="3157931365184549694">እነበረበት መልስ</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (በሃርድዌር የሚደገፍ)</translation>
 <translation id="3188257591659621405">የእኔ ፋይሎች</translation>
 <translation id="3194553149358267393">ምንም የቅርብ ጊዜ ኦዲዮ ፋይሎች የሉም</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">ተነቃይ ማህደረ ትውስታው ላይ ቅርጸት መስራት ሁሉንም ውሂብ ያጠፋል። መቀጠል ይፈልጋሉ?</translation>
 <translation id="3437801641691368414">የተፈጠረበት ጊዜ</translation>
 <translation id="343907260260897561">ቅጽበታዊ ካሜራ</translation>
-<translation id="3452106565701029351">ከፈጣን ፋይሎች ንቀል</translation>
 <translation id="3455931012307786678">ኤስቶኒያኛ</translation>
 <translation id="3475447146579922140">Google ተመን ሉህ</translation>
 <translation id="3479552764303398839">አሁን አይደለም</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">አይርላንድኛ</translation>
 <translation id="4124935795427217608">ዩኒኮርን</translation>
 <translation id="4131235941541910880">የማያስፈልጉዎትን ንጥሎች ወደ መጣያ ይውሰዷቸው</translation>
+<translation id="4153015322587141338">በመደርደሪያ ውስጥ ያሉትን ፋይሎችዎን በፍጥነት ለመድረስ አንድ ፋይል ላይ የቀኝ ጠቅታ ያድርጉ እና «<ph name="PIN_COMMAND" />»ን ይምረጡ።</translation>
 <translation id="4157569377477607576">የአስተዳዳሪ መመሪያ የሚከተሉትን አይመክርም፦</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ተወስደዋል።</translation>
 <translation id="4176286497474237543">የቆሻሻ ማጠራቀሚያውን አሁኑኑ አጽዳ</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">ፒዛ</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> ከፋይሎች ይሰረዛል</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን ወደ <ph name="FOLDER_NAME" /> በመውሰድ ላይ</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> ወደ መጣያ ተወስዷል</translation>
 <translation id="509429900233858213">ስህተት አጋጥሟል።</translation>
 <translation id="5098629044894065541">ዕብራስጥ</translation>
 <translation id="5102922915594634436">የሰመሩ ማቀፊያዎችን አስተዳድር</translation>
@@ -576,7 +573,6 @@
 <translation id="5845721951356578987">ነርስ</translation>
 <translation id="5861477046012235702">ተጫዋች</translation>
 <translation id="5864471791310927901">የDHCP ፍለጋ አልተሳካም</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" />ን ወደ መጣያው በመውሰድ ላይ</translation>
 <translation id="5896749729057314184">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ ያልነቃ፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ዝርዝሮች</translation>
 <translation id="5911887972742538906">የእርስዎን የLinux መተግበሪያ በመጫን ወቅት ስህተት አጋጥሟል።</translation>
 <translation id="5912396950572065471">ቅርጸት</translation>
@@ -688,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">የአሜሪካ ዎርክማን</translation>
 <translation id="6930242544192836755">ጊዜ</translation>
-<translation id="6931302001003657424">ወደ ፈጣን ፋይሎች ሰካ</translation>
 <translation id="6935521024859866267">ወደ ታች የተገለበጠ</translation>
 <translation id="6943836128787782965">ኤችቲቲፒ ማግኘት አልተሳካም</translation>
 <translation id="6949408524333579394">በሰርቢያኛ ቋንቋ ፊደል መጻፍ</translation>
@@ -765,7 +760,6 @@
 <translation id="7547811415869834682">ደች</translation>
 <translation id="7551643184018910560">መደርደሪያ ላይ ሰካ</translation>
 <translation id="7553492409867692754">የLinux መተግበሪያዎች በ<ph name="FOLDER_NAME" /> አቃፊ ውስጥ ያሉ ፋይሎችን እንዲደርስ ይፍቀዱ</translation>
-<translation id="7575645593344061397">«<ph name="FILENAME" />»ን ወደነበሩበት በመመለስ ላይ...</translation>
 <translation id="7589661784326793847">አንድ ሰከንድ ብቻ ይጠብቁ</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" />ን ከመስመር ውጭ እንዲገኝ በማድረግ ላይ</translation>
 <translation id="7600126690270271294">ሰርቢኛ</translation>
@@ -917,7 +911,6 @@
 <translation id="8787254343425541995">ለተጋሩ አውታረ መረቦች ተኪዎችን ይፍቀዱ</translation>
 <translation id="8790981080411996443">ተክሎችን ውሃ የሚያጠጣ ሰው</translation>
 <translation id="8798099450830957504">እንደወረደ</translation>
-<translation id="8802459921616481935">ወደ መጣያ ውሰድ</translation>
 <translation id="8808686172382650546">ድመት</translation>
 <translation id="8810671769985673465">መጭመቅ አልተሳካም፣ ንጥል አለ፦ «<ph name="FILE_NAME" />»</translation>
 <translation id="8813284582615685103">ስፓኒሽ (ስፔን)</translation>

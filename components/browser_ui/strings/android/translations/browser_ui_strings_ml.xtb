@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
+<translation id="1005794457625275818"><ph name="FPS_MEMBER" /> ഉൾപ്പെടെ, <ph name="FPS_OWNER" /> ഗ്രൂപ്പിലെ <ph name="FPS_MEMBERS_COUNT" /> സെെറ്റുകൾക്ക് കുക്കികൾ അനുവദനീയമാണ്</translation>
 <translation id="1006017844123154345">ഓൺലൈനായി തുറക്കുക</translation>
 <translation id="1044891598689252897">സൈറ്റുകൾ സാധാരണ രീതിയിൽ പ്രവർത്തിക്കും</translation>
 <translation id="1124090076051167250">ഇത് നിങ്ങളുടെ ഹോം സ്ക്രീനിൽ സൈറ്റുകളോ ആപ്പുകളോ സംഭരിച്ച <ph name="DATASIZE" /> ഡാറ്റയും കുക്കികളും മായ്‌ക്കും.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">അതെ</translation>
 <translation id="1446450296470737166">MIDI ഉപകരണങ്ങളുടെ പൂർണ്ണ നിയന്ത്രണം അനുവദിക്കുക</translation>
 <translation id="1620510694547887537">ക്യാമറ</translation>
+<translation id="1633720957382884102">അനുബന്ധ സെെറ്റുകൾ</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
 <translation id="1647582022260550163">അനുമതികൾ റീസെറ്റ് ചെയ്യണമെന്നും കുക്കികളും സൈറ്റ് ഡാറ്റയും മായ്ക്കണമെന്നും നിങ്ങൾക്ക് തീർച്ചയാണോ?</translation>
 <translation id="1660204651932907780">ശബ്‌ദം പ്ലേ ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കുക (ശുപാർശ ചെയ്യുന്നു)</translation>

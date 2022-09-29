@@ -80,7 +80,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> आयटम झिप करत आहे...</translation>
 <translation id="1722687688096767818">प्रोफाइल जोडत आहे…</translation>
 <translation id="1726100011689679555">नाव सर्व्हर</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> आयटम ट्रॅश मध्ये हलवले</translation>
 <translation id="1729953886957086472">जर्मन (जर्मनी)</translation>
 <translation id="1730235522912993863">चीनी कँगजी</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> आयटम कॉपी केले.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">सूची व्‍ह्यूवर स्विच करा</translation>
 <translation id="2377590462528165447">Linux सोबत शेअर केलेली <ph name="NUMBER_OF_ITEMS" /> फोल्डर</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> फाइल निवडल्या</translation>
-<translation id="2387120140441437063">ट्रॅशमध्ये हलवल्या फाइल उघडू शकत नाही. फाइल उघडण्यापूर्वी कृपया त्या रिस्टोअर करा.</translation>
 <translation id="2387458720915042159">प्रॉक्सी कनेक्शन प्रकार</translation>
 <translation id="2389832672041313158">बर्मीज/म्यानमार</translation>
 <translation id="2392369802118427583">सक्रिय करा</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">गुजराती फोनेटिक</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
+<translation id="252641322760726369">फाइलला स्पर्श करून धरून ठेवा आणि <ph name="ICON" /> वर टॅप करा व शेल्फमधील तुमच्या फाइल झटपट अ‍ॅक्सेस करण्यासाठी "<ph name="PIN_COMMAND" />" निवडा.</translation>
 <translation id="2534460670861217804">सुरक्षित HTTP प्रॉक्सी</translation>
 <translation id="2541377937973966830">या फोल्डरमधील आशय रीड-ओन्ली आहेत. काही अ‍ॅक्टिव्हिटींना सपोर्ट नाही.</translation>
 <translation id="2542049655219295786">Google सारणी</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">कोणतेही आयटम &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; शी जुळत नाहीत</translation>
 <translation id="2894654529758326923">माहिती</translation>
 <translation id="2902734494705624966">यूएस विस्तारित</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> आयटम ट्रॅशमध्ये हलवत आहे</translation>
 <translation id="290843123675549676">मराठी</translation>
 <translation id="2923240520113693977">एस्टोनियन</translation>
 <translation id="2938685643439809023">मंगोलियन</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">कमी स्टोरेज तुमच्या <ph name="TOTAL_SPACE" /> वैयक्तिक स्टोरेजपैकी <ph name="REMAINING_PERCENTAGE" />% शिल्लक</translation>
 <translation id="2977940621473452797">ही फाइल Macintosh सॉफ्टवेअर वापरणार्‍या कॉंप्युटरसाठी डिझाइन केली आहे. ही तुमच्या ChromeOS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. कृपया त्या जागी वापरण्यासाठी अनुरूप अ‍ॅप मिळवण्याकरिता Chrome वेब स्टोअर मध्ये शोधा.</translation>
 <translation id="2984337792991268709">आज <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337"><ph name="COUNT" /> आयटम रिस्टोअर करत आहे...</translation>
 <translation id="299638574917407533">फ्रेंच (कॅनडा)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करा</translation>
 <translation id="3003633581067744647">थंबनेल व्ह्यू वर स्विच करा</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">विचारात मग्न असलेली व्यक्ती</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">अवैध पिन. तुमच्याकडे <ph name="RETRIES" /> प्रयत्न शिल्लक आहेत.</translation>
+<translation id="3157931365184549694">पुनर्संचयित करा</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (हार्डवेअर-बॅक्ड)</translation>
 <translation id="3188257591659621405">माझ्या फाइल</translation>
 <translation id="3194553149358267393">अलीकडील कोणत्याही ऑडिओ फाइल नाहीत</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">काढता येणार्‍या मीडिआचे स्वरूपन सर्व डेटा पुसून टाकत आहे. तुम्ही सुरू ठेवू इच्छिता?</translation>
 <translation id="3437801641691368414">तयार केल्याची वेळ</translation>
 <translation id="343907260260897561">इंस्टंट कॅमेरा</translation>
-<translation id="3452106565701029351">झटपट फाइल वरून अनपिन करा</translation>
 <translation id="3455931012307786678">इस्टोनियन</translation>
 <translation id="3475447146579922140">Google स्प्रेडशीट</translation>
 <translation id="3479552764303398839">सध्या नाही</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">आयरिश</translation>
 <translation id="4124935795427217608">युनिकॉर्न</translation>
 <translation id="4131235941541910880">तुम्हाला नको असलेले आयटम हे ट्रॅश मध्ये हलवा</translation>
+<translation id="4153015322587141338">फाइलवर राइट-क्लिक करा आणि शेल्फमधील तुमच्या फाइल झटपट अ‍ॅक्सेस करण्यासाठी "<ph name="PIN_COMMAND" />" निवडा.</translation>
 <translation id="4157569377477607576">अ‍ॅडमिनिस्ट्रेटर धोरणाची शिफारस केली जात नाही:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> हलवला.</translation>
 <translation id="4176286497474237543">आता ट्रॅश रिकामा करा</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">पिझ्झा</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> फाइल हटवल्या जातील</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> आयटम <ph name="FOLDER_NAME" /> वर हलवत आहे</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> ट्रॅश मध्ये हलवली</translation>
 <translation id="509429900233858213">एक एरर आली आहे.</translation>
 <translation id="5098629044894065541">हिब्रू</translation>
 <translation id="5102922915594634436">सिंक केलेली फोल्डर व्यवस्थापित करा</translation>
@@ -576,7 +573,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5845721951356578987">परिचारिका</translation>
 <translation id="5861477046012235702">गेमर</translation>
 <translation id="5864471791310927901">DHCP लुकअप अयशस्वी</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" /> ट्रॅश मध्ये हलवत आहे</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_NAME" /> चे <ph name="NETWORK_INDEX" /> पैकी <ph name="NETWORK_COUNT" /> नेटवर्क, ॲक्टिव्हेट केलेले नाही, सिग्नलची क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
 <translation id="5911887972742538906">तुमच्या Linux ॲप्लिकेशनच्या इंस्टॉलेशन दरम्यान एरर आली आहे.</translation>
 <translation id="5912396950572065471">फॉरमॅट</translation>
@@ -688,7 +684,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">यूएस कामगार</translation>
 <translation id="6930242544192836755">कालावधी</translation>
-<translation id="6931302001003657424">झटपट फाइल वर पिन करा</translation>
 <translation id="6935521024859866267">उलट सुलट</translation>
 <translation id="6943836128787782965">HTTP अयशस्वी झाले</translation>
 <translation id="6949408524333579394">सर्बियन लिप्यंतरण</translation>
@@ -765,7 +760,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7547811415869834682">डच</translation>
 <translation id="7551643184018910560">शेल्फवर पिन करा</translation>
 <translation id="7553492409867692754">Linux अ‍ॅप्सना <ph name="FOLDER_NAME" /> फोल्डरमधील फाइल ॲक्सेस करण्याची परवानगी द्या</translation>
-<translation id="7575645593344061397">"<ph name="FILENAME" />" रिस्टोअर करत आहे...</translation>
 <translation id="7589661784326793847">फक्त एक सेकंद प्रतीक्षा करा</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> ऑफलाइन उपलब्ध करत आहे</translation>
 <translation id="7600126690270271294">सर्बियन</translation>
@@ -917,7 +911,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8787254343425541995">शेअर नेटवर्कसाठी प्रॉक्सीला अनुमती द्या</translation>
 <translation id="8790981080411996443">झाडांना पाणी देत असलेली व्यक्ती</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
-<translation id="8802459921616481935">ट्रॅश मध्ये हलवा</translation>
 <translation id="8808686172382650546">मांजर</translation>
 <translation id="8810671769985673465">झिप करता आले नाही, आयटम अस्तित्वात आहे: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">स्पॅनिश (स्पेन)</translation>

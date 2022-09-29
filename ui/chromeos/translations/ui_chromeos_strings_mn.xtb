@@ -80,7 +80,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> зүйлийг zip хийж байна...</translation>
 <translation id="1722687688096767818">Профайл нэмж байна...</translation>
 <translation id="1726100011689679555">Нэрийн сервер</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> зүйлийг Хогийн сав руу зөөсөн</translation>
 <translation id="1729953886957086472">Герман (Герман)</translation>
 <translation id="1730235522912993863">Хятад Цанцзе</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хуулсан.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Жагсаалтаар харах горим руу сэлгэх</translation>
 <translation id="2377590462528165447">Linux-тэй <ph name="NUMBER_OF_ITEMS" /> фолдер хуваалцсан байна</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> файлууд сонгогдлоо</translation>
-<translation id="2387120140441437063">Хогийн саванд хийсэн файлуудыг нээх боломжгүй. Файлуудыг нээхээс өмнө сэргээнэ үү.</translation>
 <translation id="2387458720915042159">Прокси холболтын төрөл</translation>
 <translation id="2389832672041313158">Бирм/Мьянмар</translation>
 <translation id="2392369802118427583">Идэвхжүүлэх</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">Гужарати авиа зүй</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Шалгах</translation>
+<translation id="252641322760726369">Тавиур дээрх файлууддаа шуурхай хандахын тулд файл дээр удаан дараад, <ph name="ICON" />-г товшиж, "<ph name="PIN_COMMAND" />"-г сонгоно уу.</translation>
 <translation id="2534460670861217804">HTTP проксиг аюулгүй байлгах</translation>
 <translation id="2541377937973966830">Энэ фолдерын контентуудыг зөвхөн уншиж болно. Зарим үйл ажиллагааг дэмждэггүй.</translation>
 <translation id="2542049655219295786">Google-ийн хүснэгт</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;-тай таарах хайлт олдсонгүй</translation>
 <translation id="2894654529758326923">Мэдээлэл</translation>
 <translation id="2902734494705624966">АНУ өргөтгөсөн</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> зүйлийг Хогийн сав руу зөөж байна</translation>
 <translation id="290843123675549676">Марати</translation>
 <translation id="2923240520113693977">Эстон</translation>
 <translation id="2938685643439809023">Монгол</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">Хадгалах сан бага байна. <ph name="TOTAL_SPACE" />-н хувь хүний хадгалах сангаас <ph name="REMAINING_PERCENTAGE" />% үлдсэн байна.</translation>
 <translation id="2977940621473452797">Энэ файл нь Macintosh программ хангамжийг ашиглаж буй компьютерт зориулагдсан байна. Энэ нь таны ChromeOS-г ажиллуулдаг төхөөрөмжид тохирохгүй. Chrome Веб Дэлгүүрээс орлуулж болох тохирох аппыг хайна уу.</translation>
 <translation id="2984337792991268709">Өнөөдөр <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337"><ph name="COUNT" /> зүйлийг сэргээж байна...</translation>
 <translation id="299638574917407533">Франц (Канад)</translation>
 <translation id="3003189754374775221">Сүлжээ <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, дохионы хүч<ph name="SIGNAL_STRENGTH" />%, холбогдох</translation>
 <translation id="3003633581067744647">Өнгөц зургаар харах горим руу сэлгэх</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">Бодлогоширч буй хүн</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">ПИН буруу байна. Танд <ph name="RETRIES" /> оролдлого үлдлээ.</translation>
+<translation id="3157931365184549694">Дахин сэргээх</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (техник хангамжаар дэмжигдсэн)</translation>
 <translation id="3188257591659621405">Миний файл</translation>
 <translation id="3194553149358267393">Саяхны аудио файл байхгүй байна</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">Зөөврийн хэрэгслийг форматлах нь бүх өгөгдлийг арилгана. Та үйлдлийг үргэжлүүлэх үү?</translation>
 <translation id="3437801641691368414">Үүсгэсэн цаг</translation>
 <translation id="343907260260897561">Шууд Камер</translation>
-<translation id="3452106565701029351">Шуурхай файлаас бэхэлснийг болиулах</translation>
 <translation id="3455931012307786678">Эстон</translation>
 <translation id="3475447146579922140">Google-ийн хүснэгт</translation>
 <translation id="3479552764303398839">Одоо биш</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">Ирланд</translation>
 <translation id="4124935795427217608">Ганц эвэртэй морь</translation>
 <translation id="4131235941541910880">Хэрэггүй зүйлсээ хогийн сав руу зөөнө үү</translation>
+<translation id="4153015322587141338">Тавиур дээрх файлууддаа шуурхай хандахын тулд файл дээр баруун товшоод, "<ph name="PIN_COMMAND" />"-г сонгоно уу.</translation>
 <translation id="4157569377477607576">Администраторын бодлого дараахыг санал болгодоггүй:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" />-г зөөсөн.</translation>
 <translation id="4176286497474237543">Хогийн савыг одоо суллах</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">Пицца</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> файл устгагдах болно</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> зүйлийг <ph name="FOLDER_NAME" /> руу зөөж байна</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" />-г Хогийн сав руу зөөсөн</translation>
 <translation id="509429900233858213">Алдаа гарлаа.</translation>
 <translation id="5098629044894065541">Кипр</translation>
 <translation id="5102922915594634436">Синк хийсэн фолдерийг удирдах</translation>
@@ -573,7 +570,6 @@
 <translation id="5845721951356578987">Сувилагч</translation>
 <translation id="5861477046012235702">Тоглогч</translation>
 <translation id="5864471791310927901">DHCP лавлаж харах ажиллагаа амжилтгүй боллоо</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" />-г Хогийн сав руу зөөж байна</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, Идэвхжүүлээгүй, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Дэлгэрэнгүй</translation>
 <translation id="5911887972742538906">Таны Linux аппыг суулгах явцад алдаа гарлаа.</translation>
 <translation id="5912396950572065471">Формат</translation>
@@ -685,7 +681,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">Үргэлжлэх хугацаа</translation>
-<translation id="6931302001003657424">Шуурхай файлд бэхлэх</translation>
 <translation id="6935521024859866267">180 хэм эргэсэн</translation>
 <translation id="6943836128787782965">HTTP амжилтгүй болсон</translation>
 <translation id="6949408524333579394">Серби галиг</translation>
@@ -762,7 +757,6 @@
 <translation id="7547811415869834682">Голланд</translation>
 <translation id="7551643184018910560">Програмын жагсаалтын өмнө гаргах</translation>
 <translation id="7553492409867692754">Linux аппуудад <ph name="FOLDER_NAME" /> фолдерын файлуудад хандах зөвшөөрөл өгнө үү</translation>
-<translation id="7575645593344061397">"<ph name="FILENAME" />"-г сэргээж байна...</translation>
 <translation id="7589661784326793847">Түр хүлээнэ үү</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" />-г офлайнаар ашиглах боломжтой болгож байна</translation>
 <translation id="7600126690270271294">Серб</translation>
@@ -914,7 +908,6 @@
 <translation id="8787254343425541995">Нэгдсэн сүлжээнүүдэд проксиг зөвшөөрөх</translation>
 <translation id="8790981080411996443">Ургамал усалж буй хүн</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
-<translation id="8802459921616481935">Хогийн сав руу зөөх</translation>
 <translation id="8808686172382650546">Муур</translation>
 <translation id="8810671769985673465">Zip болгож чадсангүй. Байгаа зүйлс: "$1" "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Испани (Испани)</translation>

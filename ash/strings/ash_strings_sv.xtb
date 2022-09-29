@@ -225,6 +225,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2227179592712503583">Ta bort förslag</translation>
 <translation id="225680501294068881">Söker efter enheter ...</translation>
 <translation id="2257486738914982088">Det gick inte att ladda ned <ph name="FILENAME" /></translation>
+<translation id="2258734398699965611">Föreslagna filer</translation>
 <translation id="2268130516524549846">Bluetooth inaktiverat</translation>
 <translation id="2268813581635650749">Logga ut alla</translation>
 <translation id="2269016722240250274">Mikrofonen används av en app</translation>
@@ -561,7 +562,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4247123849143712100">Uppdatera och stäng av</translation>
 <translation id="4250229828105606438">Skärmbild</translation>
-<translation id="4250899820387052060">Snabbfiler</translation>
 <translation id="425364040945105958">Inget SIM-kort</translation>
 <translation id="4261870227682513959">Visa aviseringsinställningar. Aviseringar har inaktiverats</translation>
 <translation id="4269883910223712419">Enhetens administratör kan</translation>
@@ -899,6 +899,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6099678161144790572">Redigerades under den senaste månaden</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Filerna för taligenkänning på <ph name="LANGUAGE" /> har laddats ned</translation>
+<translation id="6116825164611323644">Kameraåtkomst är inaktiverad på den här enheten</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bekräfta nedladdning <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google-assistenten är inte tillgänglig i en gästsession.</translation>
@@ -1125,6 +1126,7 @@ Nyligen installerad</translation>
 <translation id="746232733191930409">Skärminspelningsläge</translation>
 <translation id="7466449121337984263">Tryck på sensorn</translation>
 <translation id="7477793887173910789">Styr uppspelningen av musik, videor med mera</translation>
+<translation id="7490360161041035804">Du kan fästa viktiga filer, till exempel Google Drive-filer. Håll muspekaren över ett objekt eller öppna Filer och högerklicka på ett objekt för att fästa det.</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
 <translation id="7508690557411636492">Öppnades under den senaste månaden</translation>
 <translation id="7509246181739783082">Verifiera din identitet</translation>
@@ -1221,6 +1223,7 @@ Nyligen installerad</translation>
 <translation id="7982789257301363584">Nätverk</translation>
 <translation id="7984197416080286869">För många försök att använda fingeravtryck</translation>
 <translation id="798779949890829624">Den här inställningen hanteras av administratören</translation>
+<translation id="799296642788192631">Du kan fästa viktiga filer. Håll muspekaren över ett objekt eller öppna Filer och högerklicka på ett objekt för att fästa det.</translation>
 <translation id="7994370417837006925">Multiinloggning</translation>
 <translation id="7995804128062002838">Skärmbild/skärminspelning misslyckades</translation>
 <translation id="8000066093800657092">Inget nätverk</translation>
@@ -1348,6 +1351,7 @@ Nyligen installerad</translation>
 <translation id="8734991477317290293">Det kan försöka stjäla dina tangenttryckningar</translation>
 <translation id="8735678380411481005">Färg på bakgrundsbelysning för tangentbord</translation>
 <translation id="8735953464173050365">Visa tangentbordsinställningar. Inställt på <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8752416742247198423">Aktivera kameraåtkomst för att tillåta att appar och webbsidor med kamerabehörighet använder kameror som är anslutna till den här enheten.</translation>
 <translation id="8755498163081687682">Verifiera din identitet: <ph name="ORIGIN_NAME" /> vill kontrollera din identitet</translation>
 <translation id="875593634123171288">Visa VPN-inställningar</translation>
 <translation id="8759408218731716181">Det går inte att starta multiinloggning</translation>
@@ -1362,6 +1366,7 @@ Nyligen installerad</translation>
 <translation id="8819728065740986820">Smart laddning har aktiverats</translation>
 <translation id="8825863694328519386">Återgå genom att svepa från vänster</translation>
 <translation id="8834539327799336565">Anslutna just nu</translation>
+<translation id="8834657930627018205">Aktivera kameraåtkomst.</translation>
 <translation id="8841375032071747811">Bakåtknapp</translation>
 <translation id="8843682306134542540">Aktivera och inaktivera rotationslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Sök+Escape</translation>

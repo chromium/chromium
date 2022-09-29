@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">Komprimiranje stavki (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="1722687688096767818">Dodaje se profil...</translation>
 <translation id="1726100011689679555">Poslužitelji naziva</translation>
-<translation id="1726600877401297672">Stavke premještene u otpad: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="1729953886957086472">njemački (Njemačka)</translation>
 <translation id="1730235522912993863">kineski cangjie</translation>
 <translation id="1731889557567069540">Kopirano stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Prebaci na prikaz popisa</translation>
 <translation id="2377590462528165447">S Linuxom se dijeli sljedeći broj mapa: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2378075407703503998">Odabrane datoteke: <ph name="SELCTED_FILE_COUNT" /></translation>
-<translation id="2387120140441437063">Datoteke u otpadu ne mogu se otvoriti. Vratite datoteke prije otvaranja.</translation>
 <translation id="2387458720915042159">Vrsta proxy veze</translation>
 <translation id="2389832672041313158">burmanski (Mjanmar)</translation>
 <translation id="2392369802118427583">Aktiviraj</translation>
@@ -212,7 +210,6 @@
 <translation id="2888807692577297075">Nijedna stavka ne odgovara pretraživanju &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informacije</translation>
 <translation id="2902734494705624966">američka (proširena)</translation>
-<translation id="2906052776158021882">Premještanje <ph name="NUMBER_OF_ITEMS" /> stavke/stavki u otpad</translation>
 <translation id="290843123675549676">marathski</translation>
 <translation id="2923240520113693977">Estonski</translation>
 <translation id="2938685643439809023">Mongolski</translation>
@@ -222,7 +219,6 @@
 <translation id="2958458230122209142">Preostalo je malo pohrane, još <ph name="REMAINING_PERCENTAGE" />% od ukupno <ph name="TOTAL_SPACE" /> u vašoj privatnoj pohrani.</translation>
 <translation id="2977940621473452797">Ta je datoteka predviđena za računalo sa softverom Mac OS. Nije kompatibilna s vašim uređajem na kojem se izvodi Chrome OS. Potražite odgovarajuću zamjensku aplikaciju u Chrome web-trgovini.</translation>
 <translation id="2984337792991268709">Danas u <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">Vraćanje stavki (ukupno <ph name="COUNT" />)...</translation>
 <translation id="299638574917407533">francuski (Kanada)</translation>
 <translation id="3003189754374775221">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, povežite</translation>
 <translation id="3003633581067744647">Prebaci na prikaz minijatura</translation>
@@ -240,6 +236,7 @@
 <translation id="3124404833828281817">Osoba sanjari</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN nije važeći. Preostao vam je sljedeći broj pokušaja: <ph name="RETRIES" />.</translation>
+<translation id="3157931365184549694">Vrati</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (s hardverskom podlogom)</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3194553149358267393">Nema nedavnih audiodatoteka</translation>
@@ -277,7 +274,6 @@
 <translation id="3414856743105198592">Formatiranjem izmjenjivih medija izbrisat će se svi podaci. Želite li nastaviti?</translation>
 <translation id="3437801641691368414">Vrijeme izrade</translation>
 <translation id="343907260260897561">Polaroidni fotoaparat</translation>
-<translation id="3452106565701029351">Otkvači iz brzog pristupa datotekama</translation>
 <translation id="3455931012307786678">estonski</translation>
 <translation id="3475447146579922140">Googleova proračunska tablica</translation>
 <translation id="3479552764303398839">Ne sada</translation>
@@ -472,7 +468,6 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911">Izbrisat će se datoteke ukupne veličine <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">Premještanje stavki (<ph name="NUMBER_OF_ITEMS" />) u mapu <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146">Datoteka <ph name="FILE_NAME" /> premještena je u otpad</translation>
 <translation id="509429900233858213">Došlo je do pogreške.</translation>
 <translation id="5098629044894065541">Hebrejski</translation>
 <translation id="5102922915594634436">Upravljanje sinkroniziranim mapama</translation>
@@ -578,7 +573,6 @@
 <translation id="5845721951356578987">Medicinska sestra</translation>
 <translation id="5861477046012235702">Igrač</translation>
 <translation id="5864471791310927901">DHCP pretraživanje nije uspjelo</translation>
-<translation id="5887342613489958822">Premještanje datoteke <ph name="FILE_NAME" /> u otpad</translation>
 <translation id="5896749729057314184">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nije aktivirana, jačina signala <ph name="SIGNAL_STRENGTH" />%, pojedinosti</translation>
 <translation id="5911887972742538906">Došlo je do pogreške tijekom instalacije vaše Linux aplikacije.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -690,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Američka Workman</translation>
 <translation id="6930242544192836755">Trajanje</translation>
-<translation id="6931302001003657424">Prikvači na brzi pristup datotekama</translation>
 <translation id="6935521024859866267">Naopako</translation>
 <translation id="6943836128787782965">HTTP GET neuspješan</translation>
 <translation id="6949408524333579394">transliteracija za srpski</translation>
@@ -767,7 +760,6 @@
 <translation id="7547811415869834682">Nizozemski</translation>
 <translation id="7551643184018910560">Prikvači na policu</translation>
 <translation id="7553492409867692754">Daje dopuštenje Linux aplikacijama za pristup datotekama u mapi <ph name="FOLDER_NAME" /></translation>
-<translation id="7575645593344061397">Vraćanje datoteke "<ph name="FILENAME" />"...</translation>
 <translation id="7589661784326793847">Pričekajte trenutak</translation>
 <translation id="7592775719802218421">Offline dostupnost datoteke <ph name="FILE_NAME" /></translation>
 <translation id="7600126690270271294">srpski</translation>
@@ -919,7 +911,6 @@
 <translation id="8787254343425541995">Dopusti proxyje za dijeljene mreže</translation>
 <translation id="8790981080411996443">Osoba zalijeva biljke</translation>
 <translation id="8798099450830957504">Zadano</translation>
-<translation id="8802459921616481935">Premjesti u otpad</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8810671769985673465">Komprimiranje nije uspjelo, stavka postoji: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">španjolski (Španjolska)</translation>

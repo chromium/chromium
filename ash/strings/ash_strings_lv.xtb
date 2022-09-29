@@ -225,6 +225,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2227179592712503583">Noņemt ieteikumu</translation>
 <translation id="225680501294068881">Notiek ierīču meklēšana...</translation>
 <translation id="2257486738914982088">Lejupielādējot failu “<ph name="FILENAME" />”, radās kļūda.</translation>
+<translation id="2258734398699965611">Ieteiktie faili</translation>
 <translation id="2268130516524549846">Bluetooth atspējots</translation>
 <translation id="2268813581635650749">Izrakstīt visus</translation>
 <translation id="2269016722240250274">Jūsu mikrofonu izmanto lietojumprogramma</translation>
@@ -561,7 +562,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4242533952199664413">Atvērt iestatījumus</translation>
 <translation id="4247123849143712100">Atjaunināt un izslēgt</translation>
 <translation id="4250229828105606438">Ekrānuzņēmums</translation>
-<translation id="4250899820387052060">Ātrā piekļuve failiem</translation>
 <translation id="425364040945105958">Nav SIM kartes</translation>
 <translation id="4261870227682513959">Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti</translation>
 <translation id="4269883910223712419">Ierīces administrators var veikt šādas darbības:</translation>
@@ -899,6 +899,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6099678161144790572">Rediģēts pagājušajā mēnesī</translation>
 <translation id="6103838137565245112">sistēma</translation>
 <translation id="6114505516289286752">Lejupielādēti runas faili šādā valodā: <ph name="LANGUAGE" /></translation>
+<translation id="6116825164611323644">Piekļuve kamerai ir izslēgta šajā ierīcē</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Faila <ph name="FILENAME" /> lejupielādes apstiprināšana</translation>
 <translation id="612734058257491180">Google asistents nav pieejams viesa sesijā.</translation>
@@ -1125,6 +1126,7 @@ Jauna instalācija</translation>
 <translation id="746232733191930409">Ekrāna ierakstīšanas režīms</translation>
 <translation id="7466449121337984263">Lūdzu, pieskarieties sensoram.</translation>
 <translation id="7477793887173910789">Pārvaldiet savu mūziku, videoklipus un citu saturu</translation>
+<translation id="7490360161041035804">Varat piespraust svarīgus failus, tostarp Google diska failus. Lai piespraustu failu, virziet kursoru virs tā vai atveriet lietotni Faili un noklikšķiniet uz vienuma ar labo pogu.</translation>
 <translation id="7497767806359279797">Izvēlēties valodu un tastatūru</translation>
 <translation id="7508690557411636492">Atvērts pagājušajā mēnesī</translation>
 <translation id="7509246181739783082">Identitātes apstiprināšana</translation>
@@ -1221,6 +1223,7 @@ Jauna instalācija</translation>
 <translation id="7982789257301363584">Tīkls</translation>
 <translation id="7984197416080286869">Pārāk daudz mēģinājumu atbloķēt ar pirksta nospiedumu</translation>
 <translation id="798779949890829624">Šo iestatījumu pārvalda jūsu administrators</translation>
+<translation id="799296642788192631">Varat piespraust svarīgus failus. Lai piespraustu failu, virziet kursoru virs tā vai atveriet lietotni Faili un noklikšķiniet uz vienuma ar labo pogu.</translation>
 <translation id="7994370417837006925">Vairākkārtēja pierakstīšanās</translation>
 <translation id="7995804128062002838">Neizdevās izveidot ekrānuzņēmumu.</translation>
 <translation id="8000066093800657092">Nav tīkla</translation>
@@ -1348,6 +1351,7 @@ Jauna instalācija</translation>
 <translation id="8734991477317290293">Tā, iespējams, mēģina piesavināties jūsu taustiņsitienus</translation>
 <translation id="8735678380411481005">Taustiņu izgaismojuma krāsa</translation>
 <translation id="8735953464173050365">Rādīt tastatūras iestatījumus. Ir atlasīta tastatūra <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8752416742247198423">Ieslēdziet piekļuvi kamerai, lai ļautu lietotnēm un tīmekļa lapām ar kameras atļauju izmantot ar šo ierīci savienotās kameras.</translation>
 <translation id="8755498163081687682">Identitātes apstiprināšana: <ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="875593634123171288">Rādīt VPN iestatījumus</translation>
 <translation id="8759408218731716181">Nevar iestatīt vairākkārtēju pierakstīšanos.</translation>
@@ -1362,6 +1366,7 @@ Jauna instalācija</translation>
 <translation id="8819728065740986820">Adaptīvā uzlāde ir ieslēgta</translation>
 <translation id="8825863694328519386">Lai atgrieztos, velciet no kreisās malas.</translation>
 <translation id="8834539327799336565">Ierīces, ar kurām pašlaik izveidots savienojums</translation>
+<translation id="8834657930627018205">Ieslēgt piekļuvi kamerai</translation>
 <translation id="8841375032071747811">Poga Atpakaļ</translation>
 <translation id="8843682306134542540">Pārslēgt pagriešanas bloķēšanu. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

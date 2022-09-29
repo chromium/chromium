@@ -542,6 +542,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2340549657492527534">Reptiles and amphibians</translation>
 <translation id="2346319942568447007">Image that you copied</translation>
 <translation id="2350796302381711542">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links instead of <ph name="REPLACED_HANDLER_TITLE" />?</translation>
+<translation id="2353297238722298836">Camera and microphone allowed</translation>
 <translation id="2354001756790975382">Other bookmarks</translation>
 <translation id="2354430244986887761">Google Safe Browsing recently <ph name="BEGIN_LINK" />found harmful apps<ph name="END_LINK" /> on <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Attackers might be able to see the images that you’re looking at on this site and trick you by modifying them.</translation>
@@ -845,6 +846,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relative</translation>
 <translation id="3223287115535306850">App launching throbber</translation>
+<translation id="3223425961342298674">Location not allowed</translation>
 <translation id="3225347164936328585">Clapping</translation>
 <translation id="3225919329040284222">The server presented a certificate that doesn't match built-in expectations. These expectations are included for certain, high-security websites in order to protect you.</translation>
 <translation id="3226128629678568754">Press the reload button to resubmit the data needed to load the page.</translation>
@@ -1146,6 +1148,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4023431997072828269">Because this form is being submitted using a connection that’s not secure, your information will be visible to others.</translation>
 <translation id="4025913568718019429">Manage Google Privacy settings button, press Enter to visit your Google Account privacy settings</translation>
 <translation id="4030383055268325496">&amp;Undo add</translation>
+<translation id="4031179711345676612">Microphone allowed</translation>
 <translation id="4040350669425716613">Colleges and universities</translation>
 <translation id="405399507749852140">Get alerts if the price drops on any site</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1183,6 +1186,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4127575959421463246">Looking for the Chrome OS flags? Visit</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 other}other{# others}}</translation>
 <translation id="4130226655945681476">Checking the network cables, modem and router</translation>
+<translation id="4132448310531350254">Duplicate handlers for file_extension <ph name="FILE_EXTENSION" />' referenced by apps '<ph name="POLICY_IDS_LIST" />'.</translation>
 <translation id="4134123981501319574">Create doc</translation>
 <translation id="413544239732274901">Learn more</translation>
 <translation id="4142935452406587478">Tray 10</translation>
@@ -1205,6 +1209,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4194250254487269611">Your card can't be saved at the moment</translation>
 <translation id="4196861286325780578">&amp;Redo move</translation>
 <translation id="4202554117186904723">Fifth roll</translation>
+<translation id="4203769790323223880">Camera not allowed</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Checking firewall and antivirus configurations<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Large</translation>
 <translation id="4210602799576081649">Verification code expired. Request a new code</translation>
@@ -1231,6 +1236,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     &lt;p&gt;Remember to turn your antivirus program back on when you've finished.&lt;/p&gt;
     &lt;h4&gt;Step 5: Get extra help&lt;/h4&gt;
     &lt;p&gt;If you still see the error, contact the website owner.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Microphone not allowed</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Try running Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Can ask to use and move your camera</translation>
 <translation id="4235360514405112390">Valid</translation>
@@ -1383,6 +1389,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4658638640878098064">Staple top left</translation>
 <translation id="4660119392514473465">Now you can browse privately, and other people who use this device won’t see your activity. However, downloads, bookmarks and reading list items will be saved.</translation>
 <translation id="4660567771874403130">Energy and utilities</translation>
+<translation id="4663373278480897665">Camera allowed</translation>
 <translation id="4666114623408286498">Pharmaceuticals and biotech</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -1600,6 +1607,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5177076414499237632">Learn about this page's source and topic</translation>
 <translation id="5179510805599951267">Not in <ph name="ORIGINAL_LANGUAGE" />? Report this error</translation>
 <translation id="518639307526414276">Pet food and pet care supplies</translation>
+<translation id="5190072300954988691">Camera and microphone not allowed</translation>
 <translation id="5190835502935405962">Bookmarks Bar</translation>
 <translation id="5191315092027169558">Your profile is managed by <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> wants to download multiple files</translation>
@@ -1620,6 +1628,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Dismiss</translation>
+<translation id="5239623327352565343">Location allowed</translation>
 <translation id="5242889659037569123">Luggage and travel accessories</translation>
 <translation id="5250209940322997802">'Connect to network'</translation>
 <translation id="52517543715119994">Learn about Chrome features</translation>
@@ -2495,6 +2504,7 @@ Additional details:
 <translation id="7581199239021537589">Side 2 image Y shift</translation>
 <translation id="7582602800368606489">Create a new event in Google Calendar quickly</translation>
 <translation id="7583969447617676942">Legal services</translation>
+<translation id="7586676035079382730">Notifications not allowed</translation>
 <translation id="7591288787774558753">Share confidential content?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> wants to use cookies and site data on <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Server's certificate violates name constraints.</translation>
@@ -3047,6 +3057,7 @@ Additional details:
 <translation id="9131119348384879525">Capture confidential content?</translation>
 <translation id="9136861683332321024">Luxury vehicles</translation>
 <translation id="9137013805542155359">Show original</translation>
+<translation id="9138037198177304356">Notifications allowed</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">Manage addresses</translation>
 <translation id="9144951720726881238">Expiry date:</translation>

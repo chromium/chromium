@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">항목 <ph name="NUMBER_OF_ITEMS" />개 압축 중...</translation>
 <translation id="1722687688096767818">프로필 추가 중...</translation>
 <translation id="1726100011689679555">네임서버</translation>
-<translation id="1726600877401297672">항목 <ph name="NUMBER_OF_ITEMS" />개를 휴지통으로 이동함</translation>
 <translation id="1729953886957086472">독일어(독일)</translation>
 <translation id="1730235522912993863">중국어(창힐수입법)</translation>
 <translation id="1731889557567069540">항목 <ph name="NUMBER_OF_ITEMS" />개를 복사했습니다.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">목록 보기로 전환</translation>
 <translation id="2377590462528165447">폴더 <ph name="NUMBER_OF_ITEMS" />개가 Linux와 공유되었습니다.</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" />개의 파일이 선택됨</translation>
-<translation id="2387120140441437063">삭제된 파일은 열 수 없습니다. 파일을 열기 전에 복원하세요.</translation>
 <translation id="2387458720915042159">프록시 연결 유형</translation>
 <translation id="2389832672041313158">버마어/미얀마어</translation>
 <translation id="2392369802118427583">활성화</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">구자라트어(표음)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">검색</translation>
+<translation id="252641322760726369">실행기에서 파일에 빠르게 액세스하려면 파일을 길게 터치하고 <ph name="ICON" /> 아이콘을 탭한 다음 "<ph name="PIN_COMMAND" />"을 선택합니다.</translation>
 <translation id="2534460670861217804">보안 HTTP 프록시</translation>
 <translation id="2541377937973966830">이 폴더의 콘텐츠는 읽기 전용입니다. 일부 활동이 지원되지 않습니다.</translation>
 <translation id="2542049655219295786">Google 표</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">&lt;b&gt;'<ph name="SEARCH_STRING" />'&lt;/b&gt;와(과) 일치하는 항목 없음</translation>
 <translation id="2894654529758326923">정보</translation>
 <translation id="2902734494705624966">영어(미국) 확장</translation>
-<translation id="2906052776158021882">항목 <ph name="NUMBER_OF_ITEMS" />개를 휴지통으로 이동하는 중</translation>
 <translation id="290843123675549676">마라타어</translation>
 <translation id="2923240520113693977">에스토니아어</translation>
 <translation id="2938685643439809023">몽고어</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">저장용량 부족. 개인별 저장용량 <ph name="TOTAL_SPACE" /> 중 <ph name="REMAINING_PERCENTAGE" />% 남았습니다.</translation>
 <translation id="2977940621473452797">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었으며 ChromeOS를 실행하는 기기와 호환될 수 없습니다. 적합한 대체 앱을 찾으려면 Chrome 웹 스토어를 검색해 보세요.</translation>
 <translation id="2984337792991268709">오늘 <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337"><ph name="COUNT" />개 항목 복원 중...</translation>
 <translation id="299638574917407533">프랑스어(캐나다)</translation>
 <translation id="3003189754374775221">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 연결</translation>
 <translation id="3003633581067744647">썸네일 이미지 보기로 전환</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">공상에 빠진 사람</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">잘못된 PIN입니다. 기회가 <ph name="RETRIES" />번 남았습니다.</translation>
+<translation id="3157931365184549694">복구</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />](하드웨어에 백업됨)</translation>
 <translation id="3188257591659621405">내 파일</translation>
 <translation id="3194553149358267393">최근 오디오 파일 없음</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">이동식 미디어를 포맷하면 데이터가 모두 삭제됩니다. 계속하시겠습니까?</translation>
 <translation id="3437801641691368414">만든 시간</translation>
 <translation id="343907260260897561">즉석 카메라</translation>
-<translation id="3452106565701029351">빠른 파일에서 고정 해제</translation>
 <translation id="3455931012307786678">에스토니아어</translation>
 <translation id="3475447146579922140">Google Sheets</translation>
 <translation id="3479552764303398839">나중에</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">아일랜드어</translation>
 <translation id="4124935795427217608">유니콘</translation>
 <translation id="4131235941541910880">필요하지 않은 항목은 휴지통으로 옮기세요.</translation>
+<translation id="4153015322587141338">파일을 마우스 오른쪽 버튼으로 클릭하고 실행기에서 파일에 빠르게 액세스할 수 있도록 "<ph name="PIN_COMMAND" />"을 선택합니다.</translation>
 <translation id="4157569377477607576">관리자 정책에서 권장되지 않는 사항:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> 항목을 이동했습니다.</translation>
 <translation id="4176286497474237543">지금 휴지통 비우기</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">피자</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" />의 파일이 삭제됩니다.</translation>
 <translation id="508423945471810158">항목 <ph name="NUMBER_OF_ITEMS" />개를 <ph name="FOLDER_NAME" /> 폴더로 이동 중</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> 파일을 휴지통으로 이동함</translation>
 <translation id="509429900233858213">오류가 발생했습니다.</translation>
 <translation id="5098629044894065541">히브리어</translation>
 <translation id="5102922915594634436">동기화된 폴더 관리</translation>
@@ -576,7 +573,6 @@
 <translation id="5845721951356578987">간호사</translation>
 <translation id="5861477046012235702">게이머</translation>
 <translation id="5864471791310927901">DHCP 조회 실패</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" /> 파일을 휴지통으로 이동하는 중</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째 네트워크, <ph name="NETWORK_NAME" />, 비활성화됨, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="5911887972742538906">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다.</translation>
 <translation id="5912396950572065471">포맷</translation>
@@ -688,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">미국 워크맨</translation>
 <translation id="6930242544192836755">기간</translation>
-<translation id="6931302001003657424">빠른 파일에 고정</translation>
 <translation id="6935521024859866267">180도 회전</translation>
 <translation id="6943836128787782965">HTTP 실패</translation>
 <translation id="6949408524333579394">세르비아어(음역)</translation>
@@ -765,7 +760,6 @@
 <translation id="7547811415869834682">네덜란드어</translation>
 <translation id="7551643184018910560">실행기에 고정</translation>
 <translation id="7553492409867692754">Linux 앱이 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 허용합니다.</translation>
-<translation id="7575645593344061397">'<ph name="FILENAME" />' 복원 중...</translation>
 <translation id="7589661784326793847">잠시만 기다려 주세요.</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> 파일을 오프라인에서 사용하도록 설정 중</translation>
 <translation id="7600126690270271294">세르비아어</translation>
@@ -917,7 +911,6 @@
 <translation id="8787254343425541995">공유 네트워크에서 프록시 허용</translation>
 <translation id="8790981080411996443">식물에 물을 주는 사람</translation>
 <translation id="8798099450830957504">기본값</translation>
-<translation id="8802459921616481935">휴지통으로 이동</translation>
 <translation id="8808686172382650546">고양이</translation>
 <translation id="8810671769985673465">압축에 실패했습니다. 남은 항목: '<ph name="FILE_NAME" />'</translation>
 <translation id="8813284582615685103">스페인어(스페인)</translation>

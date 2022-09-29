@@ -165,6 +165,7 @@
 <translation id="1838895407229022812">ღამის განათება გამორთულია.</translation>
 <translation id="1862380676329487333">განახლება და გასვლა</translation>
 <translation id="1864454756846565995">USB-C მოწყობილობა (უკანა პორტი)</translation>
+<translation id="1869497990620230175">სწრაფი ფაილები</translation>
 <translation id="1879018240766558464">ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია. სხვა აპები შეინახება.</translation>
 <translation id="1882814835921407042">მობილური ქსელი არ არის</translation>
 <translation id="1882897271359938046">გამოსახვა <ph name="DISPLAY_NAME" /></translation>
@@ -225,6 +226,7 @@
 <translation id="2227179592712503583">შემოთავაზების ამოშლა</translation>
 <translation id="225680501294068881">სკანირება მოწყობილობებისთვის…</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> ვერ ჩამოიტვირთა შეფერხების გამო</translation>
+<translation id="2258734398699965611">შემოთავაზებული ფაილები</translation>
 <translation id="2268130516524549846">Bluetooth გათიშულია</translation>
 <translation id="2268813581635650749">ყველას გამოსვლა</translation>
 <translation id="2269016722240250274">აპლიკაცია იყენებს თქვენს მიკროფონს</translation>
@@ -370,6 +372,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">გსურთ, გათიშოთ მოწყობილობა?</translation>
 <translation id="3126069444801937830">გადატვირთეთ განახლებისთვის</translation>
+<translation id="3139382871451988441">კამერაზე წვდომის გამორთვა.</translation>
 <translation id="3139942575505304791">დესკტოპი 1</translation>
 <translation id="315116470104423982">მობილური მონაცემები</translation>
 <translation id="3151786313568798007">ორიენტაცია</translation>
@@ -561,7 +564,6 @@
 <translation id="4242533952199664413">პარამეტრების გახსნა</translation>
 <translation id="4247123849143712100">განახლება და გამორთვა</translation>
 <translation id="4250229828105606438">ეკრანის ანაბეჭდი</translation>
-<translation id="4250899820387052060">სწრაფი ფაილები</translation>
 <translation id="425364040945105958">SIM-ბარათი არ არის</translation>
 <translation id="4261870227682513959">შეტყობინების პარამეტრების ჩვენება. შეტყობინებები გამორთულია</translation>
 <translation id="4269883910223712419">ამ მოწყობილობის ადმინისტრატორს შეუძლია:</translation>
@@ -647,6 +649,7 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ჩართულია</translation>
 <translation id="4665114317261903604">„არ შემაწუხოთ“ რეჟიმის გადართვა. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">გამორთეთ კამერაზე წვდომა ამ მოწყობილობაზე, რომ ყველა კამერა ყოველთვის დაბლოკილი იყოს.</translation>
 <translation id="4667099493359681081">მიმდინარეობს „<ph name="FILENAME" />“-ის ჩამოტვირთვა</translation>
 <translation id="4690510401873698237">თარო მდებარეობს ქვედა ნაწილში</translation>
 <translation id="4696813013609194136">განბლოკეთ მოწყობილობა მშობლის კოდით</translation>
@@ -665,6 +668,7 @@
 <translation id="4776917500594043016">პაროლი <ph name="USER_EMAIL_ADDRESS" />-თვის</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google ასისტენტი მიუწვდომელია დემო-სესიაში.</translation>
+<translation id="4789348252524569426">მეტყველების ფაილების ინსტალაცია ვერ მოხერხდა. საჭიროა თქვენი მოწყობილობის განახლება. გადატვირთეთ მოწყობილობა და ცადეთ ხელახლა.</translation>
 <translation id="479989351350248267">ძიება</translation>
 <translation id="4804818685124855865">გათიშვა</translation>
 <translation id="4814539958450445987">შესვლის ეკრანი</translation>
@@ -899,6 +903,7 @@
 <translation id="6099678161144790572">თვის განმავლობაში რედაქტირებული</translation>
 <translation id="6103838137565245112">სისტემა</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> მეტყველების ფაილები ჩამოიტვირთა</translation>
+<translation id="6116825164611323644">კამერაზე წვდომა გამორთულია ამ მოწყობილობაზე</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">დაადასტურეთ ჩამოტვირთვა <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google ასისტენტი მიუწვდომელია სტუმრის სესიაში.</translation>
@@ -1125,6 +1130,7 @@
 <translation id="746232733191930409">ეკრანის ჩაწერის რეჟიმი</translation>
 <translation id="7466449121337984263">შეეხეთ სენსორს</translation>
 <translation id="7477793887173910789">მართეთ თქვენი მუსიკა, ვიდეოები და სხვა</translation>
+<translation id="7490360161041035804">შეგიძლიათ ჩაამაგროთ მნიშვნელოვანი ფაილები, მათ შორის, Google Drive-იდან. ჩასამაგრებლად გადაატარეთ კურსორი სასურველ ერთეულს, ან გახსენით Files აპი და დააწკაპუნეთ ერთეულზე მარჯვენა კლავიშით.</translation>
 <translation id="7497767806359279797">აირჩიეთ ენა და კლავიატურა</translation>
 <translation id="7508690557411636492">თვის განმავლობაში გახსნილი</translation>
 <translation id="7509246181739783082">დაადასტურეთ ვინაობა</translation>
@@ -1142,6 +1148,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ამჟამად იყენებს თქვენს მიკროფონს</translation>
 <translation id="7561982940498449837">მენიუს დახურვა</translation>
 <translation id="7564874036684306347">ფანჯრების სხვა დესკტოპზე გადატანამ შეიძლება მოულოდნელი ქცევა გამოიწვიოს. შემდგომი შეტყობინებები, ფანჯრები და დიალოგები შეიძლება გაიყოს დესკტოპებს შორის.</translation>
+<translation id="7567076708801803118">გსურთ, გამორთოთ კამერაზე წვდომა ამ მოწყობილობაზე?</translation>
 <translation id="7569509451529460200">ბრაილის შრიფტი და ChromeVox ჩართულია</translation>
 <translation id="7573585051776738856">აქტიური ფანჯარა ჩამაგრებულია მარჯვნივ.</translation>
 <translation id="7579778809502851308">ეკრანის აღბეჭდვა</translation>
@@ -1221,6 +1228,7 @@
 <translation id="7982789257301363584">ქსელი</translation>
 <translation id="7984197416080286869">დაფიქსირდა თითის ანაბეჭდის გამოყენების მეტისმეტად ბევრი მცდელობა</translation>
 <translation id="798779949890829624">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი</translation>
+<translation id="799296642788192631">შეგიძლიათ ჩაამაგროთ მნიშვნელოვანი ფაილები. ჩასამაგრებლად გადაატარეთ კურსორი სასურველ ერთეულს, ან გახსენით Files აპი და დააწკაპუნეთ ერთეულზე მარჯვენა კლავიშით.</translation>
 <translation id="7994370417837006925">ერთდროული შესვლა სისტემაში</translation>
 <translation id="7995804128062002838">ეკრანის აღბეჭდვა ვერ მოხერხდა</translation>
 <translation id="8000066093800657092">ქსელი არ არის</translation>
@@ -1348,6 +1356,7 @@
 <translation id="8734991477317290293">ეს შეიძლება იყოს თქვენ მიერ აკრეფილი ტექსტის მოპარვის მცდელობა</translation>
 <translation id="8735678380411481005">კლავიატურის ფონური განათების ფერი</translation>
 <translation id="8735953464173050365">კლავიატურის პარამეტრების ჩვენება. არჩეულია <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8752416742247198423">ჩართეთ კამერაზე წვდომა, რათა აპებსა და ვებსაიტებს, რომლებსაც კამერაზე წვდომის ნებართვა აქვს, შეეძლოს ამ მოწყობილობასთან დაკავშირებული კამერების გამოყენება.</translation>
 <translation id="8755498163081687682">დაადასტურეთ ვინაობა: <ph name="ORIGIN_NAME" /> ითხოვს თქვენი ვინაობის დადასტურებას</translation>
 <translation id="875593634123171288">VPN-ის პარამეტრების ჩვენება</translation>
 <translation id="8759408218731716181">მრავლობითი შესვლის დაყენება შეუძლებელია</translation>
@@ -1362,6 +1371,7 @@
 <translation id="8819728065740986820">ადაპტირებადი დატენა ჩართულია</translation>
 <translation id="8825863694328519386">უკან დასაბრუნებლად გადაფურცლეთ მარცხნიდან</translation>
 <translation id="8834539327799336565">ამჟამად დაკავშირებული</translation>
+<translation id="8834657930627018205">კამერაზე წვდომის ჩართვა.</translation>
 <translation id="8841375032071747811">ღილაკი „უკან“</translation>
 <translation id="8843682306134542540">ბრუნვის ჩაკეტვის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

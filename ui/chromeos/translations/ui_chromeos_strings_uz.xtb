@@ -80,7 +80,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ta element arxivlanmoqda...</translation>
 <translation id="1722687688096767818">Profil kiritilmoqda...</translation>
 <translation id="1726100011689679555">Nom serverlari (NS)</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> ta element chiqitdonga tashlandi</translation>
 <translation id="1729953886957086472">Nemis (Germaniya)</translation>
 <translation id="1730235522912993863">Xitoy (Kangji)</translation>
 <translation id="1731889557567069540">Nusxa olindi: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Qator shaklida</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ta jild Linuxga ulashilgan</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ta fayl belgilandi</translation>
-<translation id="2387120140441437063">Fayllar chiqindiga tashlangani uchun ochilmadi. Ochishdan oldin ularni tiklang.</translation>
 <translation id="2387458720915042159">Proksi-server orqali ulanish turi</translation>
 <translation id="2389832672041313158">Birma/Myanma</translation>
 <translation id="2392369802118427583">Faollashtirish</translation>
@@ -212,7 +210,6 @@
 <translation id="2888807692577297075">&lt;b&gt;“<ph name="SEARCH_STRING" />”&lt;/b&gt; so‘rovi bo‘yicha hech qanday fayl topilmadi</translation>
 <translation id="2894654529758326923">Ma’lumot</translation>
 <translation id="2902734494705624966">Kengaytirilgan AQSH klaviaturasi</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> ta element chiqitdonga tashlanmoqda</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estoncha</translation>
 <translation id="2938685643439809023">Mo`g`ul tili</translation>
@@ -222,7 +219,6 @@
 <translation id="2958458230122209142">Shaxsiy xotirada joy kam: <ph name="TOTAL_SPACE" /> dan<ph name="REMAINING_PERCENTAGE" />% boʻsh joy qoldi.</translation>
 <translation id="2977940621473452797">Bu fayl Mac platformasi uchun ishlab chiqilgan va ChromeOS qurilmangizda ishga tushmaydi. Ochadigan kerakli ilovani topish uchun Chrome internet doʻkoniga tashrif buyuring.</translation>
 <translation id="2984337792991268709">Bugun <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337"><ph name="COUNT" /> ta fayl tiklanmoqda...</translation>
 <translation id="299638574917407533">Fransuz (Kanada)</translation>
 <translation id="3003189754374775221">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoya: <ph name="NETWORK_PROVIDER_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Ulanish</translation>
 <translation id="3003633581067744647">Eskiz shaklida</translation>
@@ -240,6 +236,7 @@
 <translation id="3124404833828281817">Uyqusragan odam</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN kod xato. Sizda <ph name="RETRIES" /> ta urinish qoldi.</translation>
+<translation id="3157931365184549694">Qayta tiklash</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (qurilmada o‘rnatilgan)</translation>
 <translation id="3188257591659621405">Fayllarim</translation>
 <translation id="3194553149358267393">Oxirgi audio fayllar yoʻq</translation>
@@ -277,7 +274,6 @@
 <translation id="3414856743105198592">Tashqi xotira qurilmasini formatlash undagi barcha ma’lumotlarni tozalaydi. Davom etasizmi?</translation>
 <translation id="3437801641691368414">Yaratilgan vaqti</translation>
 <translation id="343907260260897561">Polaroid</translation>
-<translation id="3452106565701029351">Tezkor fayllardan yechish</translation>
 <translation id="3455931012307786678">Eston</translation>
 <translation id="3475447146579922140">Google elektron jadvali</translation>
 <translation id="3479552764303398839">Hozir emas</translation>
@@ -472,7 +468,6 @@
 <translation id="5068919226082848014">Pitsa</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> joy tozalanadi</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> ta fayl <ph name="FOLDER_NAME" /> jildiga koʻchirilmoqda</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> chiqitdonga tashlandi</translation>
 <translation id="509429900233858213">Xatolik yuz berdi.</translation>
 <translation id="5098629044894065541">Ivrit</translation>
 <translation id="5102922915594634436">Sinxronlangan jildlarni boshqarish</translation>
@@ -577,7 +572,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5845721951356578987">Hamshira</translation>
 <translation id="5861477046012235702">Geymer</translation>
 <translation id="5864471791310927901">DHCP topilmadi</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" /> chiqitdonga tashlanmoqda</translation>
 <translation id="5896749729057314184">Tarmoq: <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, faolsizlantirilgan, signal kuchi <ph name="SIGNAL_STRENGTH" />%, tafsilotlar</translation>
 <translation id="5911887972742538906">Linux ilovasini o‘rnatishda xatolik yuz berdi.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -689,7 +683,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">AQSH (Workman)</translation>
 <translation id="6930242544192836755">Davomiyligi</translation>
-<translation id="6931302001003657424">Tezkor fayllarga mahkamlash</translation>
 <translation id="6935521024859866267">Oyog‘i osmonda</translation>
 <translation id="6943836128787782965">HTTP GET so‘rovida xatolik yuz berdi</translation>
 <translation id="6949408524333579394">Serb (transliteratsiya)</translation>
@@ -766,7 +759,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7547811415869834682">Golland tili</translation>
 <translation id="7551643184018910560">Javonga qadab qo‘yish</translation>
 <translation id="7553492409867692754">Linux ilovalarga <ph name="FOLDER_NAME" /> jildidagi fayllarini ochishga ruxsat berish</translation>
-<translation id="7575645593344061397">“<ph name="FILENAME" />” tiklanmoqda...</translation>
 <translation id="7589661784326793847">Kutib turing...</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> fayli oflaynga nusxalanmoqda</translation>
 <translation id="7600126690270271294">Serb</translation>
@@ -918,7 +910,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8787254343425541995">Umumiy tarmoqlarga proksi-serverlardan foydalanishga ruxsat berish</translation>
 <translation id="8790981080411996443">Oʻsimlik sugʻoruvchi odam</translation>
 <translation id="8798099450830957504">Standart</translation>
-<translation id="8802459921616481935">Chiqitdonga tashlash</translation>
 <translation id="8808686172382650546">Mushuk</translation>
 <translation id="8810671769985673465">Arxivlanmadi, bunday element allaqachon arxivlangan: “<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">Ispan (Ispaniya)</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1005794457625275818"><ph name="FPS_MEMBER" />‌తో సహా, <ph name="FPS_OWNER" /> గ్రూప్‌లో ఉన్న <ph name="FPS_MEMBERS_COUNT" /> సైట్‌ల కోసం కుక్కీలు అనుమతించబడతాయి</translation>
 <translation id="1006017844123154345">ఆన్‌లైన్‌లో తెరువు</translation>
 <translation id="1044891598689252897">సైట్‌లు సాధారణ రీతిలో పని చేస్తాయి</translation>
 <translation id="1124090076051167250">ఇది మీ హోమ్ స్క్రీన్‌పై ఉన్న, సైట్‌లు లేదా యాప్‌ల ద్వారా స్టోర్ చేయబడిన <ph name="DATASIZE" /> డేటా, కుక్కీలను క్లియర్ చేస్తుంది.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">అవును</translation>
 <translation id="1446450296470737166">MIDI పరికరాల పూర్తి నియం. అనుమ.</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
+<translation id="1633720957382884102">సంబంధిత సైట్‌లు</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
 <translation id="1647582022260550163">మీరు ఖచ్చితంగా అనుమతులను రీసెట్ చేసి, అలాగే కుక్కీలు, సైట్ డేటాను క్లియర్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="1660204651932907780">ధ్వనిని ప్లే చేయగలిగేలా సైట్‌లను అనుమతిస్తుంది (సిఫార్సు చేయబడింది)</translation>

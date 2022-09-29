@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="1005794457625275818"><ph name="FPS_OWNER" /> тобундагы <ph name="FPS_MEMBERS_COUNT" /> сайтка, анын ичинде <ph name="FPS_MEMBER" /> уруксат берилген cookie файлдары</translation>
 <translation id="1006017844123154345">Онлайнда ачуу</translation>
 <translation id="1044891598689252897">Сайттар кадимкидей иштейт</translation>
 <translation id="1124090076051167250">Ушуну менен сайттар жана колдонмолор Башкы экраныңызда сактаган маалымат менен cookie файлдар ээлеп турган <ph name="DATASIZE" /> орун бошотулат.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Ооба</translation>
 <translation id="1446450296470737166">MIDI түзмктрд толук көзмлд уркст</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1633720957382884102">Байланышкан сайттар</translation>
 <translation id="1644574205037202324">Таржымал</translation>
 <translation id="1647582022260550163">Уруксаттар чын эле баштапкы абалга келтирилип, cookie файлдары жана сайттагы маалымат тазалансынбы?</translation>
 <translation id="1660204651932907780">Сайттарга үн чыгарууга уруксат берилсин (сунушталат)</translation>

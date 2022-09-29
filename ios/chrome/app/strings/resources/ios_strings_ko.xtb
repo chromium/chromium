@@ -424,6 +424,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4536418791685807335">다시 로그인해 주세요.</translation>
 <translation id="4540780316273593836">문제 발생</translation>
 <translation id="457386861538956877">더보기...</translation>
+<translation id="4588014171431912783">마지막 백업에 따라 동기화 설정이 복원됩니다. <ph name="BEGIN_LINK" />동기화할 수 있는 항목 확인하기<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">키보드</translation>
 <translation id="4606247758155004938">조직에서 관리하는 브라우저입니다.</translation>
 <translation id="461440297010471931">Google에서 검색하기</translation>
@@ -703,6 +704,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6620279676667515405">취소</translation>
 <translation id="6624219055418309072">시크릿 모드에서 차단</translation>
+<translation id="6625830436658400045">마지막 백업에 따라 동기화 설정이 복원됩니다. 언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
 <translation id="6628106477656132239">유효기간이 잘못됨</translation>
 <translation id="6634432609054530164">조직에서 시크릿 모드를 사용 중지함</translation>
 <translation id="6638511529934826365">텍스트 확대/축소…</translation>

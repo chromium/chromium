@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="1005794457625275818"><ph name="FPS_MEMBER" /> daxil olmaqla, <ph name="FPS_OWNER" /> qrupundakı <ph name="FPS_MEMBERS_COUNT" /> sayt üçün kukilərə icazə verilir</translation>
 <translation id="1006017844123154345">Onlayn açın</translation>
 <translation id="1044891598689252897">Saytlar normal qaydada işləyəcək</translation>
 <translation id="1124090076051167250">Bununla Əsas ekranda saytlar və ya tətbiqlər tərəfindən saxlanılan <ph name="DATASIZE" /> data və kuki silinəcək.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Bəli</translation>
 <translation id="1446450296470737166">MIDI cihazlar üzərində tam nəzarətə icazə verin</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1633720957382884102">Əlaqəli saytlar</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1647582022260550163">İcazələri sıfırlamaq, kukiləri və sayt datasını silmək istədiyinizə əminsiniz?</translation>
 <translation id="1660204651932907780">Saytlara səs oxutmaq icazəsi verin (məsləhətli)</translation>

@@ -80,7 +80,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> üksuse pakkimine …</translation>
 <translation id="1722687688096767818">Profiili lisamine …</translation>
 <translation id="1726100011689679555">Nimeserverid</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> üksust teisaldati prügikasti</translation>
 <translation id="1729953886957086472">saksa (Saksamaa)</translation>
 <translation id="1730235522912993863">hiina, cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> üksust on kopeeritud.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Lülita loendivaatele</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> kausta jagati Linuxiga</translation>
 <translation id="2378075407703503998">Valitud on <ph name="SELCTED_FILE_COUNT" /> faili</translation>
-<translation id="2387120140441437063">Ei saa prügikasti teisaldatud faile avada. Taastage failid enne nende avamist.</translation>
 <translation id="2387458720915042159">Puhverserveri ühenduse tüüp</translation>
 <translation id="2389832672041313158">birma (Myanmar)</translation>
 <translation id="2392369802118427583">Aktiveeri</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">gudžarati, foneetiline</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Kontrolli</translation>
+<translation id="252641322760726369">Puudutage pikalt faili, puudutage ikooni <ph name="ICON" /> ja tehke valik „<ph name="PIN_COMMAND" />“, et riiulil olevatele failidele kiirelt juurde pääseda.</translation>
 <translation id="2534460670861217804">Turvaline HTTP-puhverserver</translation>
 <translation id="2541377937973966830">Selle kausta sisu on kirjutuskaitstud. Mõnda toimingut ei toetata.</translation>
 <translation id="2542049655219295786">Google'i tabel</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">Päringule &lt;b&gt;„<ph name="SEARCH_STRING" />”&lt;/b&gt; ei leitud ühtki vastet</translation>
 <translation id="2894654529758326923">Teave</translation>
 <translation id="2902734494705624966">USA laiendatud</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> üksust teisaldatakse prügikasti</translation>
 <translation id="290843123675549676">marathi</translation>
 <translation id="2923240520113693977">eesti keel</translation>
 <translation id="2938685643439809023">mongoolia keel</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">Salvestusruumi on vähe, alles on <ph name="REMAINING_PERCENTAGE" />% kogu teie individuaalsest salvestusruumist <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">See fail on mõeldud Macintoshi tarkvara kasutavale arvutile. See ei ühildu teie seadmega, mis käitab Chrome OS-i. Otsige sobivat asendusrakendust Chrome'i veebipoest.</translation>
 <translation id="2984337792991268709">Täna kell <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337"><ph name="COUNT" /> üksuse taastamine …</translation>
 <translation id="299638574917407533">prantsuse (Kanada)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, ühenda</translation>
 <translation id="3003633581067744647">Lülita pisipildivaatele</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">Unistav inimene</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Vale PIN-kood. Teil on veel <ph name="RETRIES" /> katset.</translation>
+<translation id="3157931365184549694">Taasta</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (riistvaratoega)</translation>
 <translation id="3188257591659621405">Minu failid</translation>
 <translation id="3194553149358267393">Hiljutisi helifaile pole</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">Irdkandja vormindamine kustutab kõik andmed. Kas soovite jätkata?</translation>
 <translation id="3437801641691368414">Loomisaeg</translation>
 <translation id="343907260260897561">Kiirkaamera</translation>
-<translation id="3452106565701029351">Vabasta kiirfailidest</translation>
 <translation id="3455931012307786678">eesti</translation>
 <translation id="3475447146579922140">Google'i arvutustabel</translation>
 <translation id="3479552764303398839">Mitte praegu</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">iiri</translation>
 <translation id="4124935795427217608">Ükssarvik</translation>
 <translation id="4131235941541910880">Teisaldage ebavajalikud üksused prügikasti</translation>
+<translation id="4153015322587141338">Paremklõpsake failil ja tehke valik „<ph name="PIN_COMMAND" />“, et riiulil olevatele failidele kiirelt juurde pääseda.</translation>
 <translation id="4157569377477607576">Administraatori reegel ei soovita:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> on teisaldatud.</translation>
 <translation id="4176286497474237543">Tühjenda prügikast kohe</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">Pitsa</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> jagu faile kustutatakse</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> üksust teisaldatakse kausta <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146">Fail <ph name="FILE_NAME" /> teisaldati prügikasti</translation>
 <translation id="509429900233858213">Tekkis viga.</translation>
 <translation id="5098629044894065541">heebrea keel</translation>
 <translation id="5102922915594634436">Sünkroonitud kaustade haldamine</translation>
@@ -576,7 +573,6 @@
 <translation id="5845721951356578987">Meditsiiniõde</translation>
 <translation id="5861477046012235702">Mängur</translation>
 <translation id="5864471791310927901">DHCP otsing nurjus</translation>
-<translation id="5887342613489958822">Fail <ph name="FILE_NAME" /> teisaldatakse prügikasti</translation>
 <translation id="5896749729057314184">Võrk <ph name="NETWORK_INDEX" /> <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, inaktiveeritud, signaalitugevus <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
 <translation id="5911887972742538906">Linuxi rakenduse installimisel ilmnes viga.</translation>
 <translation id="5912396950572065471">Vorming</translation>
@@ -688,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">USA Workman</translation>
 <translation id="6930242544192836755">Kestus</translation>
-<translation id="6931302001003657424">Kinnita kiirfailidesse</translation>
 <translation id="6935521024859866267">Tagurpidi</translation>
 <translation id="6943836128787782965">HTTP hankimine nurjus</translation>
 <translation id="6949408524333579394">serbia, transliteratsioon</translation>
@@ -765,7 +760,6 @@
 <translation id="7547811415869834682">hollandi keel</translation>
 <translation id="7551643184018910560">Riiulile kinnitamine</translation>
 <translation id="7553492409867692754">Andke Linuxi rakendustele õigus pääseda juurde kaustas <ph name="FOLDER_NAME" /> olevatele failidele</translation>
-<translation id="7575645593344061397">Faili „<ph name="FILENAME" />” taastamine …</translation>
 <translation id="7589661784326793847">Oodake sekund</translation>
 <translation id="7592775719802218421">Fail <ph name="FILE_NAME" /> tehakse võrguühenduseta kättesaadavaks</translation>
 <translation id="7600126690270271294">serbia</translation>
@@ -917,7 +911,6 @@
 <translation id="8787254343425541995">Lubage puhverserverid jagatud võrkudes</translation>
 <translation id="8790981080411996443">Taimi kastev inimene</translation>
 <translation id="8798099450830957504">Vaikimisi</translation>
-<translation id="8802459921616481935">Teisalda prügikasti</translation>
 <translation id="8808686172382650546">Kass</translation>
 <translation id="8810671769985673465">Pakkimine nurjus, üksus on juba olemas: „<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">hispaania (Hispaania)</translation>

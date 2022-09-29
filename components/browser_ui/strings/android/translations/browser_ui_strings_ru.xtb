@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1005794457625275818">Файлы cookie разрешено использовать сайтам (<ph name="FPS_MEMBERS_COUNT" />) группы <ph name="FPS_OWNER" />, включая <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Открыть в Интернете</translation>
 <translation id="1044891598689252897">Сайты будут работать в нормальном режиме</translation>
 <translation id="1124090076051167250">Будут удалены данные и файлы cookie, сохраненные сайтами или приложениями, добавленными на главный экран. Всего: <ph name="DATASIZE" />.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Да</translation>
 <translation id="1446450296470737166">Полный доступ к управлению MIDI-устройствами</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1633720957382884102">Связанные сайты</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1647582022260550163">Разрешения будут сброшены, а файлы cookie и другие данные этого сайта – удалены.</translation>
 <translation id="1660204651932907780">Разрешить сайтам воспроизводить звуки (рекомендуется)</translation>

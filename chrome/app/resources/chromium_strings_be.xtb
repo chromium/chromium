@@ -184,6 +184,7 @@
 <translation id="5386450000063123300">Chromium абнаўляецца (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Дазволіць уваход у Chromium</translation>
 <translation id="5398878173008909840">Даступная новая версія Chromium.</translation>
+<translation id="5405650547142096840">Выдаліць з Chromium</translation>
 <translation id="5427571867875391349">Зрабіць Chromium стандартным браўзерам</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium (бэта-версія)</translation>
 <translation id="5473971139929175403">Chromium на гэтым дыстрыбутыве Linux больш не падтрымліваецца і таму можа працаваць няправільна</translation>
@@ -308,6 +309,7 @@
 <translation id="7689606757190482937">Сінхранізуйце і персаналізуйце Chromium на сваіх прыладах</translation>
 <translation id="7745317241717453663">Гэта дзеянне выдаліць з прылады даныя прагляду старонак у інтэрнэце. Каб потым атрымаць свае даныя, увайдзіце ва ўліковы запіс Chromium як <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Усталёўшчыку не ўдалося стварыць часовы каталог. Праверце, ці ёсць вольнае месца на дыску і дазвол на ўсталяванне праграмнага забеспячэння.</translation>
+<translation id="7786760609782648049">Паскорце працу Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7828947555739565424">Профіль Chromium з такім уліковым запісам ужо існуе на гэтай прыладзе</translation>
 <translation id="7845233973568007926">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце камп'ютар.</translation>

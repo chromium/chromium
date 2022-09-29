@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="1005794457625275818"><ph name="FPS_MEMBER" /> का साथै <ph name="FPS_OWNER" /> का <ph name="FPS_MEMBERS_COUNT" /> वटा साइटलाई कुकी प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="1006017844123154345">अनलाइन खोल्नुहोस्</translation>
 <translation id="1044891598689252897">साइटहरू सामान्य रूपमा चल्ने छन्</translation>
 <translation id="1124090076051167250">यस कार्यले साइट वा एपहरूले तपाईंको होम स्क्रिनमा भण्डारण गरेका <ph name="DATASIZE" /> बराबरका डेटा र कुकीहरू मेटाउने छ।</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">हो</translation>
 <translation id="1446450296470737166">MIDI डिभाइसहरूको पूर्ण नियन्त्रणलाई अनुमति दिनुहोस्</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
+<translation id="1633720957382884102">सम्बन्धित साइटहरू</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1647582022260550163">तपाईं साँच्चिकै अनुमतिहरू रिसेट गर्न र कुकी तथा साइटसम्बन्धी डेटा मेटाउन चाहनुहुन्छ?</translation>
 <translation id="1660204651932907780">साइटहरूलाई आवाज प्ले गर्ने अनुमति दिनुहोस् (सिफारिस गरिएको)</translation>

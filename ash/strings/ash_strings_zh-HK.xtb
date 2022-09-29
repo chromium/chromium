@@ -563,7 +563,6 @@
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4247123849143712100">更新並關機</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
-<translation id="4250899820387052060">快速檔案</translation>
 <translation id="425364040945105958">沒有 SIM 卡</translation>
 <translation id="4261870227682513959">顯示通知設定。通知已關閉</translation>
 <translation id="4269883910223712419">此裝置的管理員擁有下列權限：</translation>
@@ -649,7 +648,7 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">已啟用 ChromeVox</translation>
 <translation id="4665114317261903604">切換「請勿騷擾」模式。<ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">關閉這部裝置的相機存取權，一律封鎖所有相機。</translation>
+<translation id="4666082839192943839">請關閉此裝置上的相機存取權，以便一律封鎖所有相機。</translation>
 <translation id="4667099493359681081">下載緊 <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">捷徑列喺螢幕個底度</translation>
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
@@ -668,7 +667,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
 <translation id="4777825441726637019">Play 商店</translation>
 <translation id="4778095205580009397">「Google 助理」不適用於示範工作階段。</translation>
-<translation id="4789348252524569426">無法安裝語音檔案，必須更新裝置。請重新啟動裝置，然後再試一次。</translation>
+<translation id="4789348252524569426">無法安裝語音檔案，裝置需要更新。請重新開機，然後再試一次。</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">中斷連線</translation>
 <translation id="4814539958450445987">登入畫面</translation>
@@ -902,7 +901,7 @@
 <translation id="6099678161144790572">上個月編輯過</translation>
 <translation id="6103838137565245112">系統</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
-<translation id="6116825164611323644">這部裝置的相機存取權已關閉</translation>
+<translation id="6116825164611323644">此裝置的相機存取權已關閉</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">確認下載 <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">「Google 助理」不適用於訪客工作階段。</translation>
@@ -1128,7 +1127,7 @@
 <translation id="746232733191930409">螢幕錄影模式</translation>
 <translation id="7466449121337984263">請輕觸感應器</translation>
 <translation id="7477793887173910789">控制音樂、影片及其他內容</translation>
-<translation id="7490360161041035804">你可以固定重要檔案，包括 Google 雲端硬碟檔案。如要固定項目，請將游標懸停在該項目上，或是開啟「檔案」應用程式，並在項目上按一下滑鼠右鍵。</translation>
+<translation id="7490360161041035804">您可以將重要檔案固定，包括「Google 雲端硬碟」檔案。如要固定項目，請將滑鼠游標移至項目或開啟「檔案」應用程式，並在項目上按一下右鍵。</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
 <translation id="7508690557411636492">上個月開啟過</translation>
 <translation id="7509246181739783082">驗證您的身分</translation>
@@ -1146,7 +1145,7 @@
 <translation id="7557816257942363084">「<ph name="APP_NAME" />」目前正在使用您的麥克風</translation>
 <translation id="7561982940498449837">關閉選單</translation>
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致非預期的行為。後續的通知、視窗和對話框可能會在不同的桌面上分開顯示。</translation>
-<translation id="7567076708801803118">要關閉這部裝置的相機存取權嗎？</translation>
+<translation id="7567076708801803118">確定要關閉此裝置上的相機存取權嗎？</translation>
 <translation id="7569509451529460200">已啟用點字和 ChromeVox</translation>
 <translation id="7573585051776738856">用緊嘅視固定咗喺畫面右邊。</translation>
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
@@ -1226,7 +1225,7 @@
 <translation id="7982789257301363584">網絡</translation>
 <translation id="7984197416080286869">指紋識別失敗嘅次數太多</translation>
 <translation id="798779949890829624">此設定由管理員管理</translation>
-<translation id="799296642788192631">你可以固定重要檔案。如要固定項目，請將游標懸停在該項目上，或是開啟「檔案」應用程式，並在項目上按一下滑鼠右鍵。</translation>
+<translation id="799296642788192631">您可以將重要檔案固定。如要固定項目，請將滑鼠游標移至項目或開啟「檔案」應用程式，並在項目上按一下右鍵。</translation>
 <translation id="7994370417837006925">多重登入</translation>
 <translation id="7995804128062002838">無法擷取螢幕畫面</translation>
 <translation id="8000066093800657092">沒有網絡</translation>
@@ -1354,7 +1353,7 @@
 <translation id="8734991477317290293">鍵盤可能會嘗試盜取您的按鍵操作</translation>
 <translation id="8735678380411481005">鍵盤背光顏色</translation>
 <translation id="8735953464173050365">顯示鍵盤設定。已選擇<ph name="KEYBOARD_NAME" /></translation>
-<translation id="8752416742247198423">開啟相機存取權，允許任何具有相機權限的應用程式和網頁使用連結至這部裝置的相機。</translation>
+<translation id="8752416742247198423">開啟相機存取權，允許任何具有相機權限的應用程式和網頁使用連接至此裝置的相機。</translation>
 <translation id="8755498163081687682">驗證你嘅身份：<ph name="ORIGIN_NAME" /> 要求確認你嘅身分</translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>
 <translation id="8759408218731716181">無法設定多重登入</translation>

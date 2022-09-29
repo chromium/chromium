@@ -184,6 +184,7 @@
 <translation id="5386450000063123300">Chromium жаңартылуда (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium браузеріне кіруге рұқсат ету</translation>
 <translation id="5398878173008909840">Жаңа Chromium нұсқасы қолжетімді.</translation>
+<translation id="5405650547142096840">Chromium-нен жою</translation>
 <translation id="5427571867875391349">Әдепкі браузер ретінде Chromium қолданбасын орнату</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium бета нұсқасы</translation>
 <translation id="5473971139929175403">Chromium дұрыс жұмыс істемеуі мүмкін, себебі оған Linux жүйесінде қолдау көрсетілмейді.</translation>
@@ -308,6 +309,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="7689606757190482937">Chromium браузерін барлық құрылғыларда синхрондап, параметрлерін жекелендіріңіз</translation>
 <translation id="7745317241717453663">Шолу деректері бұл құрылғыдан жойылады. Деректерді кейінірек алу үшін Chromium жүйесіне <ph name="USER_EMAIL" /> болып кіріңіз.</translation>
 <translation id="7747138024166251722">Орнату құралы уақытша каталогті жасай алмады. Дисктегі бос орынды және бағдарламалық жасақтама рұқсатын тексеріңіз.</translation>
+<translation id="7786760609782648049">Chromium жылдамдығын арттырыңыз</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7828947555739565424">Осы құрылғыда бұл аккаунтқа Chromium профилі тіркеліп қойған.</translation>
 <translation id="7845233973568007926">Орнатқаныңыз үшін рақмет. <ph name="BUNDLE_NAME" /> пайдаланбас бұрын компьютерді өшіріп қосуыңыз керек.</translation>

@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">Compressione di <ph name="NUMBER_OF_ITEMS" /> elementi...</translation>
 <translation id="1722687688096767818">Aggiunta del profilo in corso…</translation>
 <translation id="1726100011689679555">Server dei nomi</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> elementi spostati nel cestino</translation>
 <translation id="1729953886957086472">Tedesco (Germania)</translation>
 <translation id="1730235522912993863">Cinese Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementi copiati.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Passa alla visualizzazione elenco</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> cartelle condivise con Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> file selezionati</translation>
-<translation id="2387120140441437063">Impossibile aprire i file nel cestino. Ripristina i file prima di aprirli.</translation>
 <translation id="2387458720915042159">Tipo di connessione proxy</translation>
 <translation id="2389832672041313158">Birmano/Myanmar</translation>
 <translation id="2392369802118427583">Attiva</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">Gujarati fonetica</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Scansiona</translation>
+<translation id="252641322760726369">Tocca e tieni premuto un file, tocca <ph name="ICON" /> e seleziona "<ph name="PIN_COMMAND" />" per accedervi rapidamente dalla barra delle app.</translation>
 <translation id="2534460670861217804">Proxy HTTP sicuro</translation>
 <translation id="2541377937973966830">I contenuti in questa cartella sono di sola lettura. Alcune attività non sono supportate.</translation>
 <translation id="2542049655219295786">Tabella Google</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">Nessun elemento corrispondente a &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informazioni</translation>
 <translation id="2902734494705624966">Tastiera estesa USA</translation>
-<translation id="2906052776158021882">Spostamento di <ph name="NUMBER_OF_ITEMS" /> elementi nel cestino…</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estone</translation>
 <translation id="2938685643439809023">Mongolo</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">Spazio di archiviazione in esaurimento: <ph name="REMAINING_PERCENTAGE" />% del tuo spazio di archiviazione individuale (<ph name="TOTAL_SPACE" />) ancora disponibile.</translation>
 <translation id="2977940621473452797">Questo file è supportato su computer con software Macintosh. Non è compatibile con il tuo dispositivo che esegue Chrome OS. Cerca sul Chrome Web Store un'app sostitutiva adatta.</translation>
 <translation id="2984337792991268709">Oggi alle <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">Ripristino di <ph name="COUNT" /> elementi in corso…</translation>
 <translation id="299638574917407533">Francese (Canada)</translation>
 <translation id="3003189754374775221">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, connetti</translation>
 <translation id="3003633581067744647">Passa alla visualizzazione miniatura</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">Persona che sogna a occhi aperti</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN non valido. Hai ancora <ph name="RETRIES" /> tentativi a disposizione.</translation>
+<translation id="3157931365184549694">Ripristina</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (con supporto hardware)</translation>
 <translation id="3188257591659621405">I miei file</translation>
 <translation id="3194553149358267393">Nessun file audio recente</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">La formattazione del supporto rimovibile comporterà la cancellazione di tutti i dati. Vuoi continuare?</translation>
 <translation id="3437801641691368414">Data/ora creazione</translation>
 <translation id="343907260260897561">Fotocamera istantanea</translation>
-<translation id="3452106565701029351">Sblocca da File rapidi</translation>
 <translation id="3455931012307786678">Estone</translation>
 <translation id="3475447146579922140">Foglio di calcolo Google</translation>
 <translation id="3479552764303398839">Non adesso</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">Irlandese</translation>
 <translation id="4124935795427217608">Unicorno</translation>
 <translation id="4131235941541910880">Sposta nel cestino gli elementi che non ti servono</translation>
+<translation id="4153015322587141338">Fai clic con il tasto destro del mouse su un file e seleziona "<ph name="PIN_COMMAND" />" per accedervi rapidamente dalla barra delle app.</translation>
 <translation id="4157569377477607576">Il criterio dell'amministratore sconsiglia:</translation>
 <translation id="4159731583141908892">Elemento <ph name="FILE_NAME" /> spostato.</translation>
 <translation id="4176286497474237543">Svuota il cestino adesso</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911">Verranno eliminati <ph name="TOTAL_FILE_SIZE" /> di file</translation>
 <translation id="508423945471810158">Spostamento di <ph name="NUMBER_OF_ITEMS" /> elementi in <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> spostato nel cestino</translation>
 <translation id="509429900233858213">Si è verificato un errore.</translation>
 <translation id="5098629044894065541">Ebraico</translation>
 <translation id="5102922915594634436">Gestisci cartelle sincronizzate</translation>
@@ -575,7 +572,6 @@
 <translation id="5845721951356578987">Infermiera</translation>
 <translation id="5861477046012235702">Giocatore</translation>
 <translation id="5864471791310927901">Ricerca DHCP non riuscita</translation>
-<translation id="5887342613489958822">Spostamento di <ph name="FILE_NAME" /> nel cestino…</translation>
 <translation id="5896749729057314184">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Non attivato, Intensità del segnale <ph name="SIGNAL_STRENGTH" />%, Dettagli</translation>
 <translation id="5911887972742538906">Si è verificato un errore durante l'installazione dell'applicazione Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
@@ -687,7 +683,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Workman USA</translation>
 <translation id="6930242544192836755">Durata</translation>
-<translation id="6931302001003657424">Blocca su File rapidi</translation>
 <translation id="6935521024859866267">Capovolta</translation>
 <translation id="6943836128787782965">Recupero HTTP non riuscito</translation>
 <translation id="6949408524333579394">Traslitterazione serbo</translation>
@@ -764,7 +759,6 @@
 <translation id="7547811415869834682">Olandese</translation>
 <translation id="7551643184018910560">Blocca sulla barra delle app</translation>
 <translation id="7553492409867692754">Concedi alle app Linux l'autorizzazione per accedere ai file nella cartella <ph name="FOLDER_NAME" /></translation>
-<translation id="7575645593344061397">Ripristino del file "<ph name="FILENAME" />" in corso…</translation>
 <translation id="7589661784326793847">Aspetta solo un secondo</translation>
 <translation id="7592775719802218421">Preparazione per la visualizzazione offline del file <ph name="FILE_NAME" />…</translation>
 <translation id="7600126690270271294">Serbo</translation>
@@ -916,7 +910,6 @@
 <translation id="8787254343425541995">Consenti proxy per reti condivise</translation>
 <translation id="8790981080411996443">Persona che annaffia le piante</translation>
 <translation id="8798099450830957504">Predefinito</translation>
-<translation id="8802459921616481935">Sposta nel Cestino</translation>
 <translation id="8808686172382650546">Gatto</translation>
 <translation id="8810671769985673465">Compressione non riuscita. Elemento esistente: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Spagnolo (Spagna)</translation>

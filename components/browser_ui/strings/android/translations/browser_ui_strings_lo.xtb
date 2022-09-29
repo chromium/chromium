@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="1005794457625275818">ອະນຸຍາດຄຸກກີ້ສຳລັບ <ph name="FPS_MEMBERS_COUNT" /> ເວັບໄຊໃນກຸ່ມ <ph name="FPS_OWNER" /> ແລ້ວ, ຮວມທັງ <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">ເປີດອອນລາຍ</translation>
 <translation id="1044891598689252897">ເວັບໄຊຈະເຮັດວຽກໄດ້ປົກກະຕິ</translation>
 <translation id="1124090076051167250">ນີ້ຈະລຶບລ້າງຂໍ້ມູນ <ph name="DATASIZE" /> ແລະ ຄຸກກີ້ທັງໝົດທີ່ເກັບໄວ້ໂດຍເວັບໄຊ ຫຼື ແອັບໃນໜ້າຈໍຫຼັກຂອງທ່ານ.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">ແມ່ນແລ້ວ</translation>
 <translation id="1446450296470737166">ອະ​ນຸ​ຍາດ​ການ​ຄວບ​ຄຸມ​ອຸ​ປະ​ກອນ MIDI ເຕັມ</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
+<translation id="1633720957382884102">ເວັບໄຊທີ່ກ່ຽວຂ້ອງ</translation>
 <translation id="1644574205037202324">ປະຫວັດ</translation>
 <translation id="1647582022260550163">ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການຣີເຊັດການອະນຸຍາດ ແລະ ລຶບລ້າງຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊ?</translation>
 <translation id="1660204651932907780">ອະນຸຍາດໃຫ້ເວັບໄຊຫຼິ້ນສຽງ (ແນະນຳ)</translation>

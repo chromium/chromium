@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් සිප් කෙරේ...</translation>
 <translation id="1722687688096767818">පැතිකඩ එක් කරමින්...</translation>
 <translation id="1726100011689679555">නම් සේවාදායක</translation>
-<translation id="1726600877401297672">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් කුණු කූඩය වෙත ගෙන යන ලදි</translation>
 <translation id="1729953886957086472">ජර්මානු (ජර්මනිය)</translation>
 <translation id="1730235522912993863">චීන කන්ජි</translation>
 <translation id="1731889557567069540">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් පිටපත් කරන ලදී.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">ලැයිස්තු දසුනට මාරු වන්න</translation>
 <translation id="2377590462528165447">ෆෝල්ඩර <ph name="NUMBER_OF_ITEMS" />ක් ලිනක්ස් සමඟ බෙදා ගත්තා</translation>
 <translation id="2378075407703503998">ගොනු <ph name="SELCTED_FILE_COUNT" /> තෝරා ඇත</translation>
-<translation id="2387120140441437063">කුණු කූඩයට දැමූ ගොනු විවෘත කළ නොහැකිය. කරුණාකර විවෘත කිරීමට පෙර ගොනු ප්‍රතිසාධනය කරන්න.</translation>
 <translation id="2387458720915042159">ප්‍රොක්සි සබැඳුම් වර්ගය</translation>
 <translation id="2389832672041313158">බුරුම/මියන්මාරය</translation>
 <translation id="2392369802118427583">සක්‍රිය කරන්න</translation>
@@ -211,7 +209,6 @@
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; වෙත කිසිඳු අයිතමයක් නොගැලපේ</translation>
 <translation id="2894654529758326923">තොරතුරු</translation>
 <translation id="2902734494705624966">US දිගුකළ</translation>
-<translation id="2906052776158021882">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් කුණු කූඩය වෙත ගෙන යමින්</translation>
 <translation id="290843123675549676">මරාති</translation>
 <translation id="2923240520113693977">ඇස්ටෝනියානු</translation>
 <translation id="2938685643439809023">මොන්ගෝලියානු</translation>
@@ -221,7 +218,6 @@
 <translation id="2958458230122209142">ආචයනය අඩුයි, ඔබේ <ph name="TOTAL_SPACE" /> ක තනි පුද්ගල ආචනයනයෙන් <ph name="REMAINING_PERCENTAGE" />% ක් ඉතුරුයි.</translation>
 <translation id="2977940621473452797">මෙම ගොනුව Macintosh මෘදුකාංගය භාවිත කරන පරිගණකයක් සඳහා සැලසුම් කර ඇත. මෙය ඔබගේ ChromeOS ධාවනය වන උපාංගය සමඟ නොගැළපේ. කරුණාකර ගැළපෙන ප්‍රතිස්ථාපන යෙදුමක් Chrome Web Store හි සොයන්න.</translation>
 <translation id="2984337792991268709">අද <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">අයිතම <ph name="COUNT" />ක් ප්‍රතිසාධනය කරමින්...</translation>
 <translation id="299638574917407533">ප්‍රංශ (කැනඩාව)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, සබඳින්න</translation>
 <translation id="3003633581067744647">සිඟිති රූ දසුනට මාරු වන්න</translation>
@@ -239,6 +235,7 @@
 <translation id="3124404833828281817">දවල් සිහින දකින පුද්ගලයා</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">අවලංගු PIN එකකි. ඔබට උත්සාහයන් <ph name="RETRIES" />ක් ඉතිරිව ඇත.</translation>
+<translation id="3157931365184549694">ප්‍රතිසාධනය</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (දෘඨාංග-පිටුබලය සහිත)</translation>
 <translation id="3188257591659621405">මගේ ගොනු</translation>
 <translation id="3194553149358267393">මෑත ශ්‍රව්‍ය ගොනු නැත</translation>
@@ -276,7 +273,6 @@
 <translation id="3414856743105198592">ඉවත් කළ හැකි මාධ්‍යය හැඩතල ගැන්වීම සියලු දත්ත මැකීමට සුදානම් වේ. ඔබ දිගටම කරගෙන යාමට කැමතිද?</translation>
 <translation id="3437801641691368414">සාදන ලද වේලාව</translation>
 <translation id="343907260260897561">ක්ෂණික කැමරාව</translation>
-<translation id="3452106565701029351">ඉක්මන් ගොනුවලින් ගලවන්න</translation>
 <translation id="3455931012307786678">එස්තෝනියානු</translation>
 <translation id="3475447146579922140">Google පැතුරුම්පත</translation>
 <translation id="3479552764303398839">දැන් නොවේ</translation>
@@ -470,7 +466,6 @@
 <translation id="5068919226082848014">පීසා</translation>
 <translation id="5081517858322016911">ගොනුවලින් <ph name="TOTAL_FILE_SIZE" /> ක් මකනු ලැබේ</translation>
 <translation id="508423945471810158">අයිතම <ph name="NUMBER_OF_ITEMS" /> ක් <ph name="FOLDER_NAME" /> වෙත ගෙන යාම</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> කුණු කූඩය වෙත ගෙන යන ලදි</translation>
 <translation id="509429900233858213">දෝශයක් ඇතිවිය.</translation>
 <translation id="5098629044894065541">හීබෲ</translation>
 <translation id="5102922915594634436">සමමුහුර්ත ෆෝල්ඩර කළමනාකරණය කරන්න</translation>
@@ -575,7 +570,6 @@
 <translation id="5845721951356578987">හෙදිය</translation>
 <translation id="5861477046012235702">ක්‍රීඩාකරු</translation>
 <translation id="5864471791310927901">DHCP විමසුම අසාර්ථක විය</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" /> කුණු කූඩය වෙත ගෙන යමින්</translation>
 <translation id="5896749729057314184">ජාල <ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, සක්‍රිය නොකළ සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
 <translation id="5911887972742538906">ඔබගේ Linux යෙදුම ස්ථාපනය අතරතුරේදී දෝෂයක් ඇති විය.</translation>
 <translation id="5912396950572065471">ආකෘතිය</translation>
@@ -687,7 +681,6 @@
 <translation id="6915678159055240887">ChromeboX</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">කාලසීමාව</translation>
-<translation id="6931302001003657424">ඉක්මන් ගොනු වෙත අමුණන්න</translation>
 <translation id="6935521024859866267">යටිකුරු</translation>
 <translation id="6943836128787782965">HTTP අසාර්ථක විය</translation>
 <translation id="6949408524333579394">සර්බියානු අක්ෂර පරිවර්තනය</translation>
@@ -764,7 +757,6 @@
 <translation id="7547811415869834682">ලංදේසි</translation>
 <translation id="7551643184018910560">රාක්කය වෙත අමුණන්න</translation>
 <translation id="7553492409867692754">Linux යෙදුම්වලට <ph name="FOLDER_NAME" /> ෆෝල්ඩරය තුළ ගොනු වෙත ප්‍රවේශ වීමට අවසරය දෙන්න</translation>
-<translation id="7575645593344061397">"<ph name="FILENAME" />" ප්‍රතිසාධනය කරමින්...</translation>
 <translation id="7589661784326793847">මොහොතක් රැඳී සිටින්න</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> නොබැඳිව ලබා ගත හැකි බවට පත් කරමින්</translation>
 <translation id="7600126690270271294">සර්බියානු</translation>
@@ -916,7 +908,6 @@
 <translation id="8787254343425541995">බෙදාගත් ජාල සඳහා ප්‍රොක්සි වලට ඉඩදෙන්න</translation>
 <translation id="8790981080411996443">පැලවලට වතුර දමන පුද්ගලයා</translation>
 <translation id="8798099450830957504">පෙරනිමි</translation>
-<translation id="8802459921616481935">කුණු කූඩය වෙත ගෙන යන්න</translation>
 <translation id="8808686172382650546">පූසා</translation>
 <translation id="8810671769985673465">සිප් කිරීම අසාර්ථකයි, අයිතමය පවතියි: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">ස්පාඤ්ඤ (ස්පාඤ්ඤය)</translation>

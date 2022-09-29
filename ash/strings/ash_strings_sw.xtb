@@ -225,6 +225,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2227179592712503583">Ondoa pendekezo</translation>
 <translation id="225680501294068881">Inatambazaa vifaa...</translation>
 <translation id="2257486738914982088">Hitilafu fulani imetokea wakati wa kupakua <ph name="FILENAME" /></translation>
+<translation id="2258734398699965611">Faili zinazopendekezwa</translation>
 <translation id="2268130516524549846">Bluetooth imelemazwa</translation>
 <translation id="2268813581635650749">Ondoa wote</translation>
 <translation id="2269016722240250274">Kuna programu inayotumia maikrofoni yako</translation>
@@ -561,7 +562,6 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4242533952199664413">Fungua mipangilio</translation>
 <translation id="4247123849143712100">Sasisha kisha uzime</translation>
 <translation id="4250229828105606438">Picha ya skrini</translation>
-<translation id="4250899820387052060">Faili Zinazofikiwa Haraka</translation>
 <translation id="425364040945105958">Hakuna SIM</translation>
 <translation id="4261870227682513959">Onyesha mipangilio ya arifa. Umezima arifa</translation>
 <translation id="4269883910223712419">Msimamizi wa kifaa hiki ana uwezo wa:</translation>
@@ -899,6 +899,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="6099678161144790572">Ilibadilishwa mwezi uliopita</translation>
 <translation id="6103838137565245112">mfumo</translation>
 <translation id="6114505516289286752">Faili za matamshi za <ph name="LANGUAGE" /> zimepakuliwa</translation>
+<translation id="6116825164611323644">Ufikiaji wa kamera umezimwa kwenye kifaa hiki</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Thibitisha upakuaji <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Programu ya Mratibu wa Google haipatikani katika kipindi cha mgeni.</translation>
@@ -1125,6 +1126,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="746232733191930409">Hali ya kurekodi skrini</translation>
 <translation id="7466449121337984263">Tafadhali gusa kitambuzi</translation>
 <translation id="7477793887173910789">Dhibiti muziki, video na vipengee vyako vingine</translation>
+<translation id="7490360161041035804">Unaweza kubandika faili muhimu, ikiwa ni pamoja na faili za Hifadhi ya Google. Ili ubandike, elea juu ya kipengee au fungua Faili na ubofye kulia kwenye kipengee.</translation>
 <translation id="7497767806359279797">Chagua lugha na kibodi</translation>
 <translation id="7508690557411636492">Ilifunguliwa mwezi uliopita</translation>
 <translation id="7509246181739783082">Thibitisha utambulisho wako</translation>
@@ -1222,6 +1224,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7982789257301363584">Mtandao</translation>
 <translation id="7984197416080286869">Umejaribu kuweka alama ya kidole mara nyingi mno</translation>
 <translation id="798779949890829624">Mipangilio hii inadhibitiwa na msimamizi wako</translation>
+<translation id="799296642788192631">Unaweza kubandika faili muhimu. Ili ubandike, elea juu ya kipengee au fungua Faili na ubofye kulia kwenye kipengee.</translation>
 <translation id="7994370417837006925">Uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja</translation>
 <translation id="7995804128062002838">Imeshindwa kupiga picha ya skrini</translation>
 <translation id="8000066093800657092">Hakuna mtandao</translation>
@@ -1248,7 +1251,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="813913629614996137">Inaanzisha…</translation>
 <translation id="8142441511840089262">Bofya mara mbili</translation>
 <translation id="8142699993796781067">Mtandao binafsi</translation>
-<translation id="8144760705599030999">Hifadhi <ph name="NAME" /> yako kwenye <ph name="EMAIL" /> ili uoanishe haraka kwenye vifaa vyako vingine</translation>
+<translation id="8144760705599030999">Hifadhi <ph name="NAME" /> yako kwenye <ph name="EMAIL" /> ili uoanishe haraka na vifaa vyako vingine</translation>
 <translation id="8152092012181020186">Bonyeza Ctrl + W ili ufunge.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Jaza kiotomatiki</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Mipangilio hii inadhibitiwa na msimamizi wako.</translation>
@@ -1349,6 +1352,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8734991477317290293">Huenda inajaribu kuiba mibofyo yako</translation>
 <translation id="8735678380411481005">Rangi ya mwangaza wa kibodi</translation>
 <translation id="8735953464173050365">Onyesha mipangilio ya kibodi. Umechagua <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8752416742247198423">Washa ufikiaji wa kamera ili uruhusu programu na kurasa za wavuti zenye ruhusa ya kufikia kamera zitumie kamera iliyounganishwa kwenye kifaa hiki.</translation>
 <translation id="8755498163081687682">Thibitisha utambulisho wako: <ph name="ORIGIN_NAME" /> ingependa kuthibitisha kwamba ni wewe</translation>
 <translation id="875593634123171288">Onyesha mipangilio ya VPN</translation>
 <translation id="8759408218731716181">Haiwezi kusanida uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja</translation>
@@ -1363,6 +1367,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8819728065740986820">Hali ya kuchaji inayojirekebisha imewashwa</translation>
 <translation id="8825863694328519386">Telezesha kidole kutoka kushoto ili urudi nyuma</translation>
 <translation id="8834539327799336565">Vilivyounganishwa kwa sasa</translation>
+<translation id="8834657930627018205">Washa ufikiaji wa kamera.</translation>
 <translation id="8841375032071747811">Kitufe cha Nyuma</translation>
 <translation id="8843682306134542540">Washa au uzime hali ya kufunga kwa kuzungusha. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1005794457625275818">„Бисквитките“ са разрешени за <ph name="FPS_MEMBERS_COUNT" /> сайта в групата на <ph name="FPS_OWNER" />, включително <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Отваряне онлайн</translation>
 <translation id="1044891598689252897">Сайтовете ще работят нормално</translation>
 <translation id="1124090076051167250">Съхраняваните от сайтовете или приложенията на началния екран данни и „бисквитки“ в размер на <ph name="DATASIZE" /> ще бъдат изчистени.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Да</translation>
 <translation id="1446450296470737166">Разр. на пълния контрол над MIDI</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1633720957382884102">Сродни сайтове</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1647582022260550163">Наистина ли искате да нулирате разрешенията и да изчистите „бисквитките“ и данните за сайта?</translation>
 <translation id="1660204651932907780">Разрешаване на сайтовете да възпроизвеждат звук (препоръчително)</translation>

@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">Se arhivează <ph name="NUMBER_OF_ITEMS" /> elemente...</translation>
 <translation id="1722687688096767818">Se adaugă profilul...</translation>
 <translation id="1726100011689679555">Servere de nume</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> elemente au fost mutate în coșul de gunoi</translation>
 <translation id="1729953886957086472">Germană (Germania)</translation>
 <translation id="1730235522912993863">Chineză Cangjie</translation>
 <translation id="1731889557567069540">Elemente copiate: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Comută la afișarea listă</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosare cu acces permis pentru Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fișiere selectate</translation>
-<translation id="2387120140441437063">Nu se pot deschide fișierele din coșul de gunoi. Restabilește fișierele înainte de a le deschide.</translation>
 <translation id="2387458720915042159">Tip de conexiune prin proxy</translation>
 <translation id="2389832672041313158">Birmană/Myanmar</translation>
 <translation id="2392369802118427583">Activează</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">Gujarati fonetică</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Scanează</translation>
+<translation id="252641322760726369">Atinge lung un fișier, atinge <ph name="ICON" /> și selectează <ph name="PIN_COMMAND" /> pentru acces rapid la fișierele din raft.</translation>
 <translation id="2534460670861217804">Proxy HTTP securizat</translation>
 <translation id="2541377937973966830">Conținutul acestui dosar este numai în citire. Unele acțiuni nu sunt acceptate.</translation>
 <translation id="2542049655219295786">Tabel Google</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">Nu există elemente care să corespundă cu &lt;b&gt;„<ph name="SEARCH_STRING" />”&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informații</translation>
 <translation id="2902734494705624966">S.U.A. extinsă</translation>
-<translation id="2906052776158021882">Se mută <ph name="NUMBER_OF_ITEMS" /> elemente în coșul de gunoi</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonă</translation>
 <translation id="2938685643439809023">Mongolă</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">Spațiu de stocare limitat: <ph name="REMAINING_PERCENTAGE" /> % din spațiul de stocare individual de <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">Fișierul este creat pentru un computer care folosește software Macintosh. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. Caută o aplicație de înlocuire potrivită în Magazinul web Chrome.</translation>
 <translation id="2984337792991268709">Astăzi, la <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">Se restabilesc <ph name="COUNT" /> elemente...</translation>
 <translation id="299638574917407533">Franceză (Canada)</translation>
 <translation id="3003189754374775221">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>
 <translation id="3003633581067744647">Comută la afișarea cu miniaturi</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">Persoană care visează cu ochii deschiși</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN nevalid. Mai ai <ph name="RETRIES" /> încercări.</translation>
+<translation id="3157931365184549694">Restabilește</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (stocat pe hardware)</translation>
 <translation id="3188257591659621405">Fișierele mele</translation>
 <translation id="3194553149358267393">Niciun fișier audio recent</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">Formatarea suportului media amovibil va șterge toate datele. Doriți să continuați?</translation>
 <translation id="3437801641691368414">Ora creării</translation>
 <translation id="343907260260897561">Cameră foto instantanee</translation>
-<translation id="3452106565701029351">Anulează fixarea în Fișiere rapide</translation>
 <translation id="3455931012307786678">Estoniană</translation>
 <translation id="3475447146579922140">Foaie de calcul Google</translation>
 <translation id="3479552764303398839">Nu acum</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">Irlandeză</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Mută elementele de care nu ai nevoie în coșul de gunoi</translation>
+<translation id="4153015322587141338">Dă clic dreapta pe un fișier și selectează <ph name="PIN_COMMAND" /> pentru acces rapid la fișierele din raft.</translation>
 <translation id="4157569377477607576">Politica implementată de administrator nu recomandă:</translation>
 <translation id="4159731583141908892">Mutate: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Golește coșul de gunoi acum</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> fișiere vor fi șterse</translation>
 <translation id="508423945471810158">Se mută <ph name="NUMBER_OF_ITEMS" /> elemente în <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> mutate în coșul de gunoi</translation>
 <translation id="509429900233858213">A apărut o eroare.</translation>
 <translation id="5098629044894065541">Ebraică</translation>
 <translation id="5102922915594634436">Gestionează dosarele sincronizate</translation>
@@ -576,7 +573,6 @@
 <translation id="5845721951356578987">Asistentă medicală</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Căutarea DHCP nu a reușit</translation>
-<translation id="5887342613489958822">Se mută <ph name="FILE_NAME" /> în coșul de gunoi</translation>
 <translation id="5896749729057314184">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inactivă, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="5911887972742538906">A apărut o eroare în timpul instalării aplicației Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -688,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">S.U.A. Workman</translation>
 <translation id="6930242544192836755">Durată</translation>
-<translation id="6931302001003657424">Fixează în Fișiere rapide</translation>
 <translation id="6935521024859866267">Răsturnat</translation>
 <translation id="6943836128787782965">Metoda GET a protocolului HTTP nu a reușit</translation>
 <translation id="6949408524333579394">Sârbă, transliterație</translation>
@@ -765,7 +760,6 @@
 <translation id="7547811415869834682">Neerlandeză</translation>
 <translation id="7551643184018910560">Fixați în raft</translation>
 <translation id="7553492409867692754">Acordă aplicațiilor Linux permisiunea să acceseze fișiere din dosarul <ph name="FOLDER_NAME" /></translation>
-<translation id="7575645593344061397">Se restabilește „<ph name="FILENAME" />”...</translation>
 <translation id="7589661784326793847">Așteptați puțin</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> devine disponibil offline</translation>
 <translation id="7600126690270271294">Sârbă</translation>
@@ -917,7 +911,6 @@
 <translation id="8787254343425541995">Permiteți proxy-uri pentru rețelele utilizate în comun</translation>
 <translation id="8790981080411996443">Persoană care udă plante</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
-<translation id="8802459921616481935">Mută în coșul de gunoi</translation>
 <translation id="8808686172382650546">Pisică</translation>
 <translation id="8810671769985673465">Arhivarea nu a reușit, elementul există: „<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">Spaniolă (Spania)</translation>

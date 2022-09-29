@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="1005794457625275818">ქუქი-ჩანაწერები დაშვებულია <ph name="FPS_MEMBERS_COUNT" /> საიტისთვის ჯგუფში „<ph name="FPS_OWNER" />“, რომელთა შორისაა <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">ონლაინ-ვერსიის გახსნა</translation>
 <translation id="1044891598689252897">საიტები ჩვეულებრივად იმუშავებს</translation>
 <translation id="1124090076051167250">ამ მოქმედებით გასუფთავდება საიტების ან აპების მიერ თქვენს მთავარ ეკრანზე შენახული მონაცემებისა და ქუქი-ჩანაწერების <ph name="DATASIZE" />.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">დიახ</translation>
 <translation id="1446450296470737166">MIDI მოწყ. სრული კონტ. დაშვება</translation>
 <translation id="1620510694547887537">კამერა</translation>
+<translation id="1633720957382884102">დაკავშირებული საიტები</translation>
 <translation id="1644574205037202324">ისტორია</translation>
 <translation id="1647582022260550163">ნამდვილად გსურთ, გადააყენოთ ნებართვები, ასევე, გაასუფთაოთ ქუქი-ჩანაწერები და საიტების მონაცემები?</translation>
 <translation id="1660204651932907780">საიტებისთვის ხმის დაკვრის დაშვება (რეკომენდებული)</translation>

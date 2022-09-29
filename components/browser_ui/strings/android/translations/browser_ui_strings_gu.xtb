@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="1005794457625275818"><ph name="FPS_MEMBER" /> સહિત <ph name="FPS_OWNER" /> ગ્રૂપમાં <ph name="FPS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને પરવાનગી આપવામાં આવી છે</translation>
 <translation id="1006017844123154345">ઑનલાઇન ખોલો</translation>
 <translation id="1044891598689252897">સાઇટ સામાન્ય રીતે કાર્ય કરશે</translation>
 <translation id="1124090076051167250">આમ કરવાથી તમારી હોમ સ્ક્રીન પર સાઇટ કે ઍપ દ્વારા સ્ટોર કરવામાં આવેલો ડેટા અને કૂકીના <ph name="DATASIZE" /> સાફ કરવામાં આવશે.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">હા</translation>
 <translation id="1446450296470737166">MIDI ઉપકરણોના પૂર્ણ નિયંત્રણની મંજૂરી આપો</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
+<translation id="1633720957382884102">સંબંધિત સાઇટ</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
 <translation id="1647582022260550163">શું તમે ખરેખર પરવાનગીઓ રીસેટ કરવા અને કુકી તેમજ સાઇટનો ડેટા સાફ કરવા માગો છો?</translation>
 <translation id="1660204651932907780">સાઇટને સાઉન્ડ ચલાવવાની મંજૂરી આપો (સુઝાવ આપેલો છે)</translation>
@@ -381,7 +383,7 @@
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">કોઈ ચોક્કસ સાઇટ માટે કુકીને બ્લૉક કરો.</translation>
 <translation id="8959122750345127698">નેવિગેશન બિનપહોંચ યોગ્ય છે: <ph name="URL" /></translation>
-<translation id="8986362086234534611">ભૂલી ગયા</translation>
+<translation id="8986362086234534611">ભૂલી જાઓ</translation>
 <translation id="9019902583201351841">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}}</translation>

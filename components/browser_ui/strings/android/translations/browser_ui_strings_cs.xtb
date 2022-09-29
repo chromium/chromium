@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1005794457625275818">Soubory cookie jsou povoleny pro tento počet webů ve skupině <ph name="FPS_OWNER" />: <ph name="FPS_MEMBERS_COUNT" /> (včetně webu <ph name="FPS_MEMBER" />)</translation>
 <translation id="1006017844123154345">Otevřít online</translation>
 <translation id="1044891598689252897">Weby budou fungovat normálně</translation>
 <translation id="1124090076051167250">Tímto vymažete <ph name="DATASIZE" /> dat a souborů cookie, které uložily weby nebo aplikace na ploše.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Ano</translation>
 <translation id="1446450296470737166">Povolit úplné ovládání zařízení MIDI</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1633720957382884102">Související weby</translation>
 <translation id="1644574205037202324">Historie</translation>
 <translation id="1647582022260550163">Opravdu chcete resetovat oprávnění a vymazat soubory cookie a údaje o webu?</translation>
 <translation id="1660204651932907780">Povolit webům přehrávat zvuky (doporučeno)</translation>

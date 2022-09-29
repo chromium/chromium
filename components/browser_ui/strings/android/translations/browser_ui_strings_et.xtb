@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1005794457625275818">Küpsised on lubatud <ph name="FPS_MEMBERS_COUNT" /> saidile rühmas <ph name="FPS_OWNER" />, sealhulgas saidile <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Ava veebis</translation>
 <translation id="1044891598689252897">Saidid töötavad tavapärasel moel</translation>
 <translation id="1124090076051167250">See kustutab <ph name="DATASIZE" /> andmeid ja küpsisefaile, mille saidid või rakendused on teie avakuvale salvestanud.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Jah</translation>
 <translation id="1446450296470737166">MIDI-seadm. täieliku juht. lub.</translation>
 <translation id="1620510694547887537">Kaamera</translation>
+<translation id="1633720957382884102">Seotud saidid</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="1647582022260550163">Kas olete kindel, et soovite load lähtestada ning küpsisefailid ja saidi andmed kustutada?</translation>
 <translation id="1660204651932907780">Saitidel lubatakse esitada heli (soovitatav)</translation>

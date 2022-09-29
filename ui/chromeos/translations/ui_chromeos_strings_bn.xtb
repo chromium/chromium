@@ -80,7 +80,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />টি আইটেম জিপ করা হচ্ছে…</translation>
 <translation id="1722687688096767818">প্রোফাইল যোগ করা হচ্ছে...</translation>
 <translation id="1726100011689679555">নেম সার্ভারগুলি</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" />টি আইটেম ট্র্যাশে সরানো হয়েছে</translation>
 <translation id="1729953886957086472">জার্মান (জার্মানি)</translation>
 <translation id="1730235522912993863">চীনা কাংগজি</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" />টি আইটেম কপি করা হয়েছে।</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">তালিকা দৃশ্যে যান</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" />টি ফোল্ডার Linux-এর সাথে শেয়ার করা হয়েছে</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> টি ফাইল নির্বাচিত</translation>
-<translation id="2387120140441437063">ট্র্যাশ ফোল্ডারে পাঠানো ফাইল খোলা যাচ্ছে না। ফাইলটি খোলার আগে রিস্টোর করুন।</translation>
 <translation id="2387458720915042159">প্রক্সি কানেকশনের ধরণ</translation>
 <translation id="2389832672041313158">বার্মিজ/মায়ানমার</translation>
 <translation id="2392369802118427583">সক্রিয় করুন</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">গুজরাতি ফোনেটিক</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
+<translation id="252641322760726369">ফাইলে টাচ করে ধরে থেকে, <ph name="ICON" /> ট্যাপ করুন এবং শেল্ফে আপনার ফাইল দ্রুত অ্যাক্সেস করতে, "<ph name="PIN_COMMAND" />" বিকল্পটি বেছে নিন।</translation>
 <translation id="2534460670861217804">সুরক্ষিত HTTP প্রক্সী</translation>
 <translation id="2541377937973966830">এই ফোল্ডারের কন্টেন্ট 'রিড-ওনলি' মোডে রয়েছে। কিছু অ্যাক্টিভিটি এখানে কাজ করবে না।</translation>
 <translation id="2542049655219295786">Google টেবিল</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; এর সাথে কোনো আইটেম মেলেনি</translation>
 <translation id="2894654529758326923">তথ্য</translation>
 <translation id="2902734494705624966">মার্কিন যুক্তরাষ্ট্রীয় বর্ধিত</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" />টি আইটেম ট্র্যাশে সরানো হচ্ছে</translation>
 <translation id="290843123675549676">মারাঠি</translation>
 <translation id="2923240520113693977">এস্তোনীয়</translation>
 <translation id="2938685643439809023">মঙ্গোলীয়</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">স্টোরেজে স্পেস কম আছে আপনার <ph name="TOTAL_SPACE" /> ব্যক্তিগত স্টোরেজের <ph name="REMAINING_PERCENTAGE" />% বাকি আছে।</translation>
 <translation id="2977940621473452797">Macintosh সফ্টওয়্যার ব্যবহার করে এমন একটি কম্পিউটারের জন্য এই ফাইলটি ডিজাইন করা হয়েছে৷ ChromeOS দ্বারা চালিত আপনার ডিভাইসটির সাথে এটি সামঞ্জস্যপূর্ণ নয়। একটি উপযুক্ত প্রতিস্থাপনযোগ্য অ্যাপের জন্য Chrome ওয়েব স্টোর-এ সার্চ করুন।</translation>
 <translation id="2984337792991268709">আজ <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337"><ph name="COUNT" />টি আইটেম ফিরিয়ে আনা হচ্ছে...</translation>
 <translation id="299638574917407533">ফরাসি (কানাডা)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, কানেক্ট করুন</translation>
 <translation id="3003633581067744647">থাম্বনেল দৃশ্যে পাল্টান</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">দিবাস্বপ্ন দেখছে এমন ব্যক্তির ছবি</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">ভুল পিন দিয়েছেন। আপনি আর <ph name="RETRIES" /> বার চেষ্টা করতে পারবেন।</translation>
+<translation id="3157931365184549694">পুনরুদ্ধার করুন</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (হার্ডওয়্যার-সাহায্যপ্রাপ্ত)</translation>
 <translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="3194553149358267393">কোনও সাম্প্রতিক অডিও ফাইল নেই</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">সরানোযোগ্য মিডিয়া বিন্যাস করা সমস্ত ডেটা মুছে দিতে চলেছে৷ আপনি কি চালিয়ে যেতে চান?</translation>
 <translation id="3437801641691368414">যে সময় তৈরি করা হয়েছে</translation>
 <translation id="343907260260897561">ইনস্ট্যান্ট ক্যামেরা</translation>
-<translation id="3452106565701029351">ঝটপট অ্যাক্সেসযোগ্য ফাইল থেকে আনপিন করুন</translation>
 <translation id="3455931012307786678">এস্তোনিয়ান</translation>
 <translation id="3475447146579922140">Google স্প্রেডশীট</translation>
 <translation id="3479552764303398839">এখনই নয়</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">আইরিশ</translation>
 <translation id="4124935795427217608">ইউনিকর্ন</translation>
 <translation id="4131235941541910880">অপ্রয়োজনীয় আইটেম ট্র্যাশে সরান</translation>
+<translation id="4153015322587141338">কোনও ফাইলে রাইট-ক্লিক করুন এবং শেল্ফে আপনার ফাইল দ্রুত অ্যাক্সেস করার জন্য "<ph name="PIN_COMMAND" />" বিকল্পটি বেছে নিন।</translation>
 <translation id="4157569377477607576">অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী এটি করা যাবে না:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> সরানো হয়েছে।</translation>
 <translation id="4176286497474237543">ট্র্যাশ এখনই খালি করুন</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">পিৎজা</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> ফাইল মুছে ফেলা হবে</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" />টি আইটেম <ph name="FOLDER_NAME" /> ফোল্ডারে সরানো হচ্ছে</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> ট্র্যাশে সরানো হয়েছে</translation>
 <translation id="509429900233858213">একটি ত্রুটি ঘটেছে৷</translation>
 <translation id="5098629044894065541">হিব্রু</translation>
 <translation id="5102922915594634436">সিঙ্ক করা ফোল্ডারগুলি ম্যানেজ করুন</translation>
@@ -575,7 +572,6 @@
 <translation id="5845721951356578987">নার্স</translation>
 <translation id="5861477046012235702">গেমার</translation>
 <translation id="5864471791310927901">DHCP লুকআপ ব্যর্থ</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" /> ট্র্যাশে সরানো হচ্ছে</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, চালু করা হয়নি, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
 <translation id="5911887972742538906">Linux অ্যাপ্লিকেশন ইনস্টল করার সময়ে সমস্যা হয়েছে।</translation>
 <translation id="5912396950572065471">ফর্ম্যাট</translation>
@@ -687,7 +683,6 @@
 <translation id="6915678159055240887">ক্রোমবাক্স</translation>
 <translation id="6918340160281024199">মার্কিন ওয়ার্কম্যান</translation>
 <translation id="6930242544192836755">সময়কাল</translation>
-<translation id="6931302001003657424">ঝটপট অ্যাক্সেসযোগ্য ফাইল থেকে পিন করুন</translation>
 <translation id="6935521024859866267">ওলট পালট</translation>
 <translation id="6943836128787782965">HTTP ব্যর্থ হয়েছে</translation>
 <translation id="6949408524333579394">সার্বিয়ান লিপ্যন্তর</translation>
@@ -764,7 +759,6 @@
 <translation id="7547811415869834682">ডাচ</translation>
 <translation id="7551643184018910560">শেল্ফে পিন করুন</translation>
 <translation id="7553492409867692754">Linux অ্যাপকে <ph name="FOLDER_NAME" /> ফোল্ডারের ফাইল অ্যাক্সেস করার অনুমতি দিন</translation>
-<translation id="7575645593344061397">"<ph name="FILENAME" />" ফিরিয়ে আনা হচ্ছে...</translation>
 <translation id="7589661784326793847">এক সেকেন্ড অপেক্ষা করুন</translation>
 <translation id="7592775719802218421">অফলাইনে দেখার জন্য <ph name="FILE_NAME" /> ডাউনলোড করা হচ্ছে</translation>
 <translation id="7600126690270271294">সার্বিয়ান</translation>
@@ -916,7 +910,6 @@
 <translation id="8787254343425541995">শেয়ার করে নেওয়া নেটওয়ার্কগুলির জন্য প্রক্সিগুলির অনুমতি দিন</translation>
 <translation id="8790981080411996443">গাছে জল দিচ্ছে এমন ব্যক্তির ছবি</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
-<translation id="8802459921616481935">ট্র্যাশ ফোল্ডারে সরান</translation>
 <translation id="8808686172382650546">বিড়াল</translation>
 <translation id="8810671769985673465">জিপ করা যায়নি, আইটেমটি এখনও আছে: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">স্প্যানিশ (স্পেন)</translation>

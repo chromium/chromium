@@ -78,7 +78,6 @@
 <translation id="1722487484194605434">מתבצע כיווץ של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="1722687688096767818">בתהליך הוספת פרופיל…</translation>
 <translation id="1726100011689679555">שרתי שמות</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> פריטים הועברו לאשפה</translation>
 <translation id="1729953886957086472">גרמנית (גרמניה)</translation>
 <translation id="1730235522912993863">‏סינית Cangjie</translation>
 <translation id="1731889557567069540">הועתקו <ph name="NUMBER_OF_ITEMS" /> פריטים.</translation>
@@ -154,7 +153,6 @@
 <translation id="2377319039870049694">מעבר לתצוגת רשימה</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> תיקיות שותפו עם Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> קבצים נבחרו</translation>
-<translation id="2387120140441437063">לא ניתן לפתוח את הקבצים שנמצאים באשפה. יש לשחזר את הקבצים לפני הפתיחה.</translation>
 <translation id="2387458720915042159">‏סוג חיבור לשרת proxy</translation>
 <translation id="2389832672041313158">בורמזית/מיאנמר</translation>
 <translation id="2392369802118427583">הפעלה</translation>
@@ -207,7 +205,6 @@
 <translation id="2888807692577297075">‏אין פריטים התואמים ל-&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">מידע</translation>
 <translation id="2902734494705624966">ארה"ב - מורחבת</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> פריטים מועברים לאשפה</translation>
 <translation id="290843123675549676">מראטית</translation>
 <translation id="2923240520113693977">אסטונית</translation>
 <translation id="2938685643439809023">מונגולית</translation>
@@ -217,7 +214,6 @@
 <translation id="2958458230122209142">נפח האחסון כמעט ריק. יש עוד <ph name="REMAINING_PERCENTAGE" />% מתוך האחסון לשימוש פרטי בנפח <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">‏הקובץ הזה מיועד למחשב שיכול להפעיל תוכנות Macintosh. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה ChromeOS. יש לחפש אפליקציה חלופית בחנות האינטרנט של Chrome.</translation>
 <translation id="2984337792991268709">היום <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">בתהליך שחזור של <ph name="COUNT" /> פריטים…</translation>
 <translation id="299638574917407533">צרפתית (קנדה)</translation>
 <translation id="3003189754374775221">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="NETWORK_PROVIDER_NAME" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
 <translation id="3003633581067744647">מעבר לתצוגה של תמונות ממוזערות</translation>
@@ -234,6 +230,7 @@
 <translation id="3124404833828281817">אדם חולם בהקיץ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">קוד האימות לא חוקי. נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
+<translation id="3157931365184549694">שחזור</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (בגיבוי חומרה)</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="3194553149358267393">לא נמצאו קובצי אודיו מהזמן האחרון</translation>
@@ -271,7 +268,6 @@
 <translation id="3414856743105198592">פרמוט המדיה הנשלפת יגרום למחיקת כל הנתונים. האם ברצונך להמשיך?</translation>
 <translation id="3437801641691368414">שעת יצירה</translation>
 <translation id="343907260260897561">מצלמת פיתוח מיידי</translation>
-<translation id="3452106565701029351">ביטול ההצמדה מ'קבצים מהירים'</translation>
 <translation id="3455931012307786678">אסטונית</translation>
 <translation id="3475447146579922140">‏גיליון אלקטרוני של Google</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
@@ -461,7 +457,6 @@
 <translation id="5068919226082848014">פיצה</translation>
 <translation id="5081517858322016911">קבצים בנפח כולל של <ph name="TOTAL_FILE_SIZE" /> יימחקו</translation>
 <translation id="508423945471810158">מתבצעת העברה של <ph name="NUMBER_OF_ITEMS" /> פריטים אל <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146">הקובץ <ph name="FILE_NAME" /> הועבר לאשפה</translation>
 <translation id="509429900233858213">אירעה שגיאה.</translation>
 <translation id="5098629044894065541">עברית</translation>
 <translation id="5102922915594634436">ניהול תיקיות מסונכרנות</translation>
@@ -564,7 +559,6 @@
 <translation id="5845721951356578987">אחות</translation>
 <translation id="5861477046012235702">גיימר</translation>
 <translation id="5864471791310927901">‏חיפוש DHCP נכשל</translation>
-<translation id="5887342613489958822">הקובץ <ph name="FILE_NAME" /> מועבר לאשפה</translation>
 <translation id="5896749729057314184">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, לא פעילה, חוזק האות <ph name="SIGNAL_STRENGTH" />%, פרטים</translation>
 <translation id="5911887972742538906">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux.</translation>
 <translation id="5912396950572065471">פורמט</translation>
@@ -674,7 +668,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">משך החיבור</translation>
-<translation id="6931302001003657424">הצמדה ל'קבצים מהירים'</translation>
 <translation id="6935521024859866267">פרפר הפוך</translation>
 <translation id="6943836128787782965">‏פעולת get של HTTP נכשלה</translation>
 <translation id="6949408524333579394">תעתיק סרבית</translation>
@@ -751,7 +744,6 @@
 <translation id="7547811415869834682">הולנדית</translation>
 <translation id="7551643184018910560">הצמדה למדף</translation>
 <translation id="7553492409867692754">‏הענקת הרשאת גישה לאפליקציות של Linux לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
-<translation id="7575645593344061397">מתבצע שחזור של "<ph name="FILENAME" />"…</translation>
 <translation id="7589661784326793847">יש להמתין מספר רגעים</translation>
 <translation id="7592775719802218421">בתהליך להפוך את <ph name="FILE_NAME" /> לזמין אופליין</translation>
 <translation id="7600126690270271294">סרבית</translation>
@@ -900,7 +892,6 @@
 <translation id="8787254343425541995">‏אפשר שרתי proxy עבור רשתות משותפות</translation>
 <translation id="8790981080411996443">אדם משקה עציצים</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
-<translation id="8802459921616481935">העברה לאשפה</translation>
 <translation id="8808686172382650546">חתול</translation>
 <translation id="8810671769985673465">הכיווץ נכשל, הפריט קיים: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">ספרדית (ספרד)</translation>

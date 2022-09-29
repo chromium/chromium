@@ -1651,6 +1651,7 @@
 <translation id="2480868415629598489">복사하고 붙여넣는 데이터 수정</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2482895651873876648"><ph name="GROUP_NAME" /> 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2484909293434545162">사이트에서 쿠키를 사용하는 경우 여기에 표시됩니다.</translation>
 <translation id="2484959914739448251">동기화된 모든 기기 및 Google 계정에서 인터넷 사용 기록을 삭제하려면 <ph name="BEGIN_LINK" />암호를 입력<ph name="END_LINK" />하세요.</translation>
 <translation id="2485394160472549611">추천</translation>
 <translation id="2485422356828889247">제거</translation>
@@ -1686,7 +1687,7 @@
 <translation id="2508428939232952663">Google Play 스토어 계정</translation>
 <translation id="2509495747794740764">배율 값은 10에서 200 사이의 숫자여야 합니다.</translation>
 <translation id="2509566264613697683">8배</translation>
-<translation id="2510988373360790637">블루투스 기기 삭제</translation>
+<translation id="2510988373360790637">블루투스 기기 페어링 해제</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" />(선택됨)</translation>
 <translation id="2513396635448525189">로그인 이미지</translation>
 <translation id="2514326558286966059">지문으로 신속하게 잠금 해제</translation>
@@ -3687,6 +3688,7 @@
 <translation id="4415245286584082850">발견된 기기가 없습니다. 새 탭에서 고객센터 도움말을 엽니다.</translation>
 <translation id="4415276339145661267">Google 계정 관리</translation>
 <translation id="4415748029120993980">SECG 타원 곡선 secp384r1(또는 NIST P-384)</translation>
+<translation id="4415815425191869676">다음 사이트를 항상 활성 상태로 유지</translation>
 <translation id="4416450511678320850">콘텐츠에 사용할 수 있는 앱이 없음</translation>
 <translation id="4416582610654027550">유효한 URL을 입력하세요.</translation>
 <translation id="4419409365248380979"><ph name="HOST" />에서 항상 쿠키를 설정하도록 허용</translation>
@@ -4069,6 +4071,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4785719467058219317">이 웹사이트에 등록되지 않은 보안 키를 사용하고 있습니다.</translation>
 <translation id="4785914069240823137">자르기 취소</translation>
 <translation id="4788092183367008521">네트워크 연결을 확인한 다음 다시 시도하세요.</translation>
+<translation id="4789348252524569426">음성 파일을 설치할 수 없습니다. 기기를 업데이트해야 합니다. 기기를 재시작한 후 다시 시도해 보세요.</translation>
 <translation id="4789550509729954245">근처의 기기가 공유 중일 때 알림 표시</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint 가속 사용</translation>
@@ -4360,7 +4363,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5074761966806028321">설정을 완료하려면 여전히 권한이 필요합니다.</translation>
 <translation id="5075563999073408211">한 개 이상의 스위치로 기기를 제어합니다. 키보드 키, 게임패드 버튼 또는 전용 기기를 스위치로 사용할 수 있습니다.</translation>
 <translation id="5075910247684008552">보안 사이트에서는 안전하지 않은 콘텐츠가 기본적으로 차단됩니다.</translation>
-<translation id="5078490485380754244">기기 삭제</translation>
+<translation id="5078490485380754244">기기 저장 안함</translation>
 <translation id="5078638979202084724">모든 탭 북마크</translation>
 <translation id="5078796286268621944">잘못된 PIN</translation>
 <translation id="5079010647467150187">기본 제공 VPN 추가...</translation>
@@ -8742,6 +8745,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="964286338916298286">IT 관리자가 내 기기에서 Chrome Goodies를 이용할 수 없도록 설정했습니다.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{애플리케이션}other{애플리케이션}}</translation>
 <translation id="964790508619473209">화면 배치</translation>
+<translation id="965175368833098333">메모리 절약 모드를 사용하면 비활성 탭에서 메모리를 회수할 수 있습니다. 이렇게 하면 다른 작업을 위한 컴퓨터 리소스가 확보됩니다.</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" />에서 SMS를 보내고 받으세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast 문제 신고</translation>
 <translation id="967398046773905967">모든 사이트의 HID 기기 액세스를 허용하지 않음</translation>

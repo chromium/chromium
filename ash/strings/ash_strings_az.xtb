@@ -225,6 +225,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2227179592712503583">Təklifi silin</translation>
 <translation id="225680501294068881">Cihazlar axtarılır...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> faylını endirkən xəta baş verdi</translation>
+<translation id="2258734398699965611">Təklif edilən fayllar</translation>
 <translation id="2268130516524549846">Bluetooth deaktiv edildi</translation>
 <translation id="2268813581635650749">Hamısından çıxın</translation>
 <translation id="2269016722240250274">Tətbiq mikrofonunuzu işlədir</translation>
@@ -370,6 +371,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Cihaz söndürülsün?</translation>
 <translation id="3126069444801937830">Güncəlləşmək üçün yenidən başladın</translation>
+<translation id="3139382871451988441">Kamera girişini deaktiv edin.</translation>
 <translation id="3139942575505304791">Masa 1</translation>
 <translation id="315116470104423982">Mobil data</translation>
 <translation id="3151786313568798007">Oriyentasiya</translation>
@@ -561,7 +563,6 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4242533952199664413">Ayarları açın</translation>
 <translation id="4247123849143712100">Güncəlləyin və söndürün</translation>
 <translation id="4250229828105606438">Skrinşot</translation>
-<translation id="4250899820387052060">Sürətli Fayllar</translation>
 <translation id="425364040945105958">SIM yoxdur</translation>
 <translation id="4261870227682513959">Bildiriş ayarlarını göstərin. Bildirişlər deaktivdir</translation>
 <translation id="4269883910223712419">Bu cihazın admini edə bilər:</translation>
@@ -647,6 +648,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox aktiv edildi</translation>
 <translation id="4665114317261903604">"Narahat etməyin" rejiminə keçin. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Bütün kameraları hər zaman bloklamaq üçün bu cihazda kamera girişini deaktiv edin.</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> endirilir</translation>
 <translation id="4690510401873698237">Rəf aşağıdadır</translation>
 <translation id="4696813013609194136">Cihazı valideyn kodu ilə kiliddən çıxarın</translation>
@@ -665,6 +667,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> üçün parol</translation>
 <translation id="4777825441726637019">Play Mağaza</translation>
 <translation id="4778095205580009397">Google Assistent demo sessiyasında əlçatan deyil.</translation>
+<translation id="4789348252524569426">Nitq fayllarını quraşdırmaq olmur. Cihazınız güncəllənməlidir. Cihazı yenidən başladıb təkrar cəhd edin.</translation>
 <translation id="479989351350248267">axtarın</translation>
 <translation id="4804818685124855865">Ayırın</translation>
 <translation id="4814539958450445987">Giriş ekranı</translation>
@@ -899,6 +902,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6099678161144790572">Keçən ay redaktə edilib</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> dilində danışıq faylları endirilib</translation>
+<translation id="6116825164611323644">Bu cihazda kameraya giriş deaktivdir</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> endirilməsini təsdiq edin</translation>
 <translation id="612734058257491180">Google Assistent qonaq sessiyasında əlçatan deyil.</translation>
@@ -1143,6 +1147,7 @@ Yeni quraşdırma</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> hazırda mikrofonunuzdan istifadə edir</translation>
 <translation id="7561982940498449837">Menyunu bağlayın</translation>
 <translation id="7564874036684306347">Pəncərənin digər masaüstünə köçürülməsi gözlənilməz nəticələr verə bilər. Növbəti bildirişlər, pəncərə və dialoqlar masaüstülər arasında bölüşdürülə bilər.</translation>
+<translation id="7567076708801803118">Bu cihazda kamera girişini deaktiv etmək istəyirsiniz?</translation>
 <translation id="7569509451529460200">Brayl və ChromeVox aktiv edildi</translation>
 <translation id="7573585051776738856">Aktiv pəncərə sağa əlavə edilib.</translation>
 <translation id="7579778809502851308">Ekran çəkimi</translation>
@@ -1350,6 +1355,7 @@ Yeni quraşdırma</translation>
 <translation id="8734991477317290293">Bu düymələrininızı oğurlamağa cəhd edə bilər</translation>
 <translation id="8735678380411481005">Klaviatura arxa işığı rəngi</translation>
 <translation id="8735953464173050365">Klaviatura ayarlarını göstərin. <ph name="KEYBOARD_NAME" /> seçilib</translation>
+<translation id="8752416742247198423">Kamera icazəsi olan tətbiqlərə və veb səhifələrə bu cihaza qoşulmuş kameralardan istifadə etməyə icazə vermək üçün kameraya girişi aktiv edin.</translation>
 <translation id="8755498163081687682">Kimliyinizi doğrulayın: <ph name="ORIGIN_NAME" /> siz olduğunuzu təsdiqləmək istəyir</translation>
 <translation id="875593634123171288">VPN ayarlarını göstərin</translation>
 <translation id="8759408218731716181">Çoxsaylı giriş ayarlana bilmir</translation>
@@ -1364,6 +1370,7 @@ Yeni quraşdırma</translation>
 <translation id="8819728065740986820">Adaptiv şarj aktivdir</translation>
 <translation id="8825863694328519386">Geri qayıtmaq üçün soldan sürüşdürün</translation>
 <translation id="8834539327799336565">Hazırda qoşulub</translation>
+<translation id="8834657930627018205">Kamera girişini aktiv edin.</translation>
 <translation id="8841375032071747811">"Geri" düyməsi</translation>
 <translation id="8843682306134542540">Fırlanma kilidini aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

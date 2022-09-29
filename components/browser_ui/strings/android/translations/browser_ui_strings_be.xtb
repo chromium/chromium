@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1005794457625275818">Выкарыстанне файлаў cookie дазволена для некалькіх сайтаў (<ph name="FPS_MEMBERS_COUNT" />) у групе <ph name="FPS_OWNER" />, у тым ліку для <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Адкрыць у інтэрнэце</translation>
 <translation id="1044891598689252897">Сайты будуць працаваць нармальна</translation>
 <translation id="1124090076051167250">Будуць выдалены файлы cookie і даныя (<ph name="DATASIZE" />), захаваныя сайтамі або размешчанымі на галоўным экране праграмамі.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Так</translation>
 <translation id="1446450296470737166">Дазв. поўны кантроль MIDI-прылад</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1633720957382884102">Звязаныя сайты</translation>
 <translation id="1644574205037202324">Гісторыя</translation>
 <translation id="1647582022260550163">Вы ўпэўненыя, што хочаце скінуць дазволы, выдаліць файлы cookie і іншыя даныя сайта?</translation>
 <translation id="1660204651932907780">Дазволіць сайтам прайграваць гук (рэкамендуецца)</translation>

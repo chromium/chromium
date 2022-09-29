@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="1005794457625275818"><ph name="FPS_MEMBER" /> தளங்கள் உட்பட <ph name="FPS_OWNER" /> குழுவிலுள்ள <ph name="FPS_MEMBERS_COUNT" /> தளங்களுக்குக் குக்கீகள் அனுமதிக்கப்பட்டுள்ளன</translation>
 <translation id="1006017844123154345">ஆன்லைனில் திற</translation>
 <translation id="1044891598689252897">தளங்கள் இயல்பாகவே செயல்படும்</translation>
 <translation id="1124090076051167250">இதைச் செய்தால் தளங்களோ முகப்புத் திரையில் உள்ள ஆப்ஸோ சேமித்துள்ள <ph name="DATASIZE" /> தரவும் குக்கீகளும் அழிக்கப்படும்.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">ஆம்</translation>
 <translation id="1446450296470737166">MIDI சாதனங்களுக்கு முழுக் கட்டுப்பாட்டை அனுமதி</translation>
 <translation id="1620510694547887537">கேமரா</translation>
+<translation id="1633720957382884102">தொடர்புடைய தளங்கள்</translation>
 <translation id="1644574205037202324">வரலாறு</translation>
 <translation id="1647582022260550163">அனுமதிகளை மீட்டமைத்து, குக்கீகளையும் தளத் தரவையும் அழிக்க விரும்புகிறீர்களா?</translation>
 <translation id="1660204651932907780">ஒலியை இயக்க, தளங்களை அனுமதிக்கும் (பரிந்துரைக்கப்படுவது)</translation>

@@ -80,7 +80,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />টা বস্তু জিপ কৰি থকা হৈছে...</translation>
 <translation id="1722687688096767818">প্ৰ’ফাইল যোগ দি থকা হৈছে...</translation>
 <translation id="1726100011689679555">নাম সম্পর্কীয় ছার্ভাৰ</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু ট্ৰেশ্বলৈ স্থানান্তৰ কৰা হ’ল</translation>
 <translation id="1729953886957086472">জাৰ্মান (জাৰ্মানী)</translation>
 <translation id="1730235522912993863">চীনা কেঞ্জি</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> টা বস্তুৰ প্ৰতিলিপি কৰা হ'ল।</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">সূচী চোৱা ম’ডলৈ সলনি কৰক</translation>
 <translation id="2377590462528165447">Linuxৰ সৈতে <ph name="NUMBER_OF_ITEMS" />টা ফ’ল্ডাৰ শ্বেয়াৰ কৰা হ’ল</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" />টা ফাইল বাছনি কৰা হৈছে</translation>
-<translation id="2387120140441437063">ট্ৰেশ্বত থকা ফাইল খুলিব নোৱাৰি। অনুগ্ৰহ কৰি খোলাৰ পূৰ্বে ফাইল পুনঃস্থাপন কৰক।</translation>
 <translation id="2387458720915042159">প্ৰক্সি সংযোগৰ প্ৰকাৰ</translation>
 <translation id="2389832672041313158">বাৰ্মীজ/ম্যানমাৰ</translation>
 <translation id="2392369802118427583">সক্ৰিয় কৰক</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">গুজৰাটী ফ’নেটিক</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">স্কেন কৰক</translation>
+<translation id="252641322760726369">শ্বেল্ফত আপোনাৰ ফাইল ক্ষিপ্ৰতাৰে এক্সেছ কৰিবলৈ এটা ফাইল স্পৰ্শ কৰি ধৰি ৰাখি <ph name="ICON" />ত টিপক আৰু "<ph name="PIN_COMMAND" />" বাছনি কৰক।</translation>
 <translation id="2534460670861217804">HTTP প্ৰক্সি সুৰক্ষিত কৰক</translation>
 <translation id="2541377937973966830">এই ফ’ল্ডাৰটোৰ সমলবোৰ কেৱল পঢ়িব পৰা। কিছুমান কাৰ্যকলাপ সমৰ্থিত নহয়।</translation>
 <translation id="2542049655219295786">Google তালিকা</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;ৰ সৈতে কোনো বস্তু মিলা নাই</translation>
 <translation id="2894654529758326923">তথ্য</translation>
 <translation id="2902734494705624966">ইউ.এছ.ৰ বিস্তাৰিত</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু ট্ৰেশ্বলৈ স্থানান্তৰ কৰি থকা হৈছে</translation>
 <translation id="290843123675549676">মাৰাঠী</translation>
 <translation id="2923240520113693977">ইষ্ট’নিয়া</translation>
 <translation id="2938685643439809023">Mongolian</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">ষ্ট'ৰেজ কম আছে, আপোনাৰ <ph name="TOTAL_SPACE" /> ব্যক্তিগত ষ্ট'ৰেজৰ ভিতৰত <ph name="REMAINING_PERCENTAGE" />% বাকী আছে।</translation>
 <translation id="2977940621473452797">এই ফাইলটো Macintosh ছফ্টৱেৰ ব্যৱহাৰ কৰা কম্পিউটাৰৰ বাবে ডিজাইন কৰা হৈছে। আপোনাৰ ChromeOSৰ দ্বাৰা চালিত ডিভাইচটোত এই ফাইলটো খুলিব নোৱাৰি। অনুগ্ৰহ কৰি Chrome Web Storeত এটা উপযোগী বিকল্প এপৰ সন্ধান কৰক।</translation>
 <translation id="2984337792991268709">আজি <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337"><ph name="COUNT" /> টা বস্তু পুনঃস্থাপন কৰি থকা হৈছে...</translation>
 <translation id="299638574917407533">ফৰাচী (কানাডা)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সংযোগ কৰক</translation>
 <translation id="3003633581067744647">থাম্বনেইল ভিউ ব্যৱহাৰ কৰক</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">দিবাস্বপ্ন দেখি থকা ব্যক্তিৰ ছবি</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">অমান্য পিন। আপোনাৰ <ph name="RETRIES" /> টা প্ৰয়াস বাকী আছে।</translation>
+<translation id="3157931365184549694">পুনঃস্থাপন কৰক</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (হাৰ্ডৱেৰ-সমৰ্থিত)</translation>
 <translation id="3188257591659621405">মোৰ ফাইলসমূহ</translation>
 <translation id="3194553149358267393">কোনো শেহতীয়া অডিঅ’ ফাইল নাই</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">আঁতৰাব পৰা মিডিয়া ফর্মেট কৰা কার্যয়ে সকলো ডেটা মচিব। আপুনি অব্যাহত ৰাখিব খোজেনে?</translation>
 <translation id="3437801641691368414">সৃষ্টি কৰাৰ সময়</translation>
 <translation id="343907260260897561">তাৎক্ষণিক কেমেৰা</translation>
-<translation id="3452106565701029351">ক্ষিপ্ৰতাৰে এক্সেছ কৰিব পৰা ফাইলৰ পৰা আনপিন কৰক</translation>
 <translation id="3455931012307786678">ইষ্ট’নিয়া</translation>
 <translation id="3475447146579922140">Google স্প্ৰেডশ্বীট</translation>
 <translation id="3479552764303398839">এতিয়া নহয়</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">আইৰিশ্ব</translation>
 <translation id="4124935795427217608">এশিঙিয়া ঘোঁৰা</translation>
 <translation id="4131235941541910880">আপোনাক নলগা বস্তুসমূহ ট্ৰেশ্বলৈ নিয়ক</translation>
+<translation id="4153015322587141338">শ্বেল্ফত আপোনাৰ ফাইল ক্ষিপ্ৰতাৰে এক্সেছ কৰিবলৈ এটা ফাইলত ৰাইট-ক্লিক কৰক আৰু "<ph name="PIN_COMMAND" />" বাছনি কৰক।</translation>
 <translation id="4157569377477607576">প্ৰশাসকৰ নীতিয়ে এইসমূহ চুপাৰিছ নকৰে:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> স্থানান্তৰ কৰা হ’ল।</translation>
 <translation id="4176286497474237543">ট্ৰেশ্ব এতিয়াই খালী কৰক</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">পিজ্জা</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> ফাইল মচা হ'ব</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু <ph name="FOLDER_NAME" />লৈ স্থানান্তৰ কৰি থকা হৈছে</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> ট্ৰেশ্বলৈ স্থানান্তৰ কৰা হ’ল</translation>
 <translation id="509429900233858213">কোনো আসোঁৱাহ হৈছে।</translation>
 <translation id="5098629044894065541">হিব্ৰু</translation>
 <translation id="5102922915594634436">ছিংক কৰা ফ’ল্ডাৰ পৰিচালনা কৰক</translation>
@@ -575,7 +572,6 @@
 <translation id="5845721951356578987">নাৰ্চ</translation>
 <translation id="5861477046012235702">গে’মাৰ</translation>
 <translation id="5864471791310927901">DHCP বিচাৰিব পৰা নগ’ল।</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" /> ট্ৰেশ্বলৈ স্থানান্তৰ কৰি থকা হৈছে</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> টাৰ ভিতৰত <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, সক্ৰিয় নকৰা, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>
 <translation id="5911887972742538906">আপোনাৰ Linux এপ্লিকেশ্বন ইনষ্টল কৰাৰ সময়ত আসোঁৱাহৰ সৃষ্টি হৈছে৷</translation>
 <translation id="5912396950572065471">ফৰ্মেট কৰক</translation>
@@ -687,7 +683,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">ইউ.এছ. ৱর্কমেন</translation>
 <translation id="6930242544192836755">সময়ৰ পৰিসৰ</translation>
-<translation id="6931302001003657424">ক্ষিপ্ৰতাৰে এক্সেছ কৰিব পৰা ফাইলত পিন কৰক</translation>
 <translation id="6935521024859866267">ওপৰৰ অংশটো তলমুৱা হৈ থকা</translation>
 <translation id="6943836128787782965">HTTP বিফল হ’ল</translation>
 <translation id="6949408524333579394">ছাৰ্বিয়ান লিপ্যন্তৰণ</translation>
@@ -764,7 +759,6 @@
 <translation id="7547811415869834682">ডাচ্চ</translation>
 <translation id="7551643184018910560">শ্বেল্‌ফত পিন কৰক</translation>
 <translation id="7553492409867692754">Linuxৰ এপ্‌সমূহক <ph name="FOLDER_NAME" /> ফ’ল্ডাৰটোত থকা ফাইল এক্সেছ কৰিবলৈ অনুমতি দিয়ক</translation>
-<translation id="7575645593344061397">"<ph name="FILENAME" />" পুনঃস্থাপন কৰি থকা হৈছে…</translation>
 <translation id="7589661784326793847">কেইছেকেণ্ডমান অপেক্ষা কৰক</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> অফলাইনত উপলব্ধ কৰি থকা হৈছে</translation>
 <translation id="7600126690270271294">ছার্বিয়ান</translation>
@@ -916,7 +910,6 @@
 <translation id="8787254343425541995">শ্বেয়াৰ কৰি থোৱা নেটৱৰ্কৰ বাবে প্ৰ’ক্সিৰ অনুমতি বন্ধ কৰক</translation>
 <translation id="8790981080411996443">ফুলত পানী দি থকা ব্যক্তিৰ ছবি</translation>
 <translation id="8798099450830957504">ডিফ’ল্ট</translation>
-<translation id="8802459921616481935">ট্ৰেশ্বলৈ নিয়ক</translation>
 <translation id="8808686172382650546">মেকুৰী</translation>
 <translation id="8810671769985673465">জিপ কৰিব পৰা নগ’ল, বাকী থকা বস্তু: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">স্পেনিশ্ব (স্পেইন)</translation>

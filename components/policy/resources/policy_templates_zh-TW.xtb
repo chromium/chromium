@@ -6180,33 +6180,6 @@
       注意：如果指定動作為「暫停」，你可以另行設定 <ph name="PRODUCT_OS_NAME" />在暫停前是否要鎖定螢幕。</translation>
 <translation id="7477149584454865826">布林值標記，表示是否要使用 IPP Everywhere 設定印表機。</translation>
 <translation id="7477231245051133709">啟用單聲道音訊無障礙功能</translation>
-<translation id="7477526482439041787">設定規則清單，避免 <ph name="PRODUCT_OS_NAME" /> 發生資料外洩的情況。
-      複製及貼上資料、傳輸檔案、列印、分享螢幕畫面或擷取螢幕畫面等動作都有可能導致資料外洩。
-
-      每條規則都包含下列項目：
-      - 定義為網址的來源清單。系統會將來源中的所有資料都視為機密資料並套用限制。
-      - 定義為網址或元件的目的地清單，可允許或禁止將機密資料分享到清單中的目的地。
-      - 要套用到來源資料的限制清單。
-
-      你可以新增規則以便：
-      - 控管來源與目的地共用的剪貼簿資料。
-      - 控管任何來源的螢幕畫面擷取動作。
-      - 控管任何來源的列印動作。
-      - 控管任何來源在顯示狀態下的隱私保護畫面。
-      - 控管任何來源的螢幕畫面分享動作。
-
-      限制等級可設為「BLOCK」、「ALLOW」、「REPORT」或「WARN」。
-      - 如果將限制等級設為「BLOCK」，將無法執行該動作。如果將 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 設為 True，系統會將遭禁止的動作回報給管理員。
-      - 如果將限制等級設為「ALLOW」，則可以執行該動作。
-      - 如果將限制等級設為「REPORT」，並將 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 設為 True，系統會將該動作回報給管理員。
-      - 如果將限制等級設為「WARN」，系統會顯示警告訊息，使用者可能可以選擇繼續執行或取消動作。如果將 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 設為 True，系統會將顯示警告的動作回報給管理員。假如使用者繼續執行動作，系統也會一併回報。
-
-      注意：
-      - PRIVACY_SCREEN 限制等級設為「BLOCK」時，不會禁止啟用隱私保護畫面，而會強制執行該功能。
-      - 如果有任一限制是「CLIPBOARD」，請勿將目的地留空，但目的地對其餘限制沒有影響。
-      - 網址格式如下：https://www.chromium.org/administrators/url-blocklist-filter-format。
-
-      如未設定這項政策，系統不會套用任何限制。</translation>
 <translation id="7480826412572122600">指定要套用至 <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise 連接器的 Chrome Enterprise 連接器服務設定清單，這份清單會在透過 Chrome 下載檔案時觸發。
 
       從特定網頁下載檔案時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否要傳送檔案進行分析，以及要在該檔案的分析要求中加入哪些標記。系統會比對標記對應的模式，如果頁面網址符合與該標記相關聯的模式，且不符合該標記的「disable」模式，系統就會在分析要求中加入與「enable」模式對應的標記。當要求中加入至少 1 個標記，系統就會進行分析。

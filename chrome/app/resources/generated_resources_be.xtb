@@ -1293,6 +1293,7 @@
 <translation id="2179416702468739594">Ідзе пошук даступных профіляў. Гэта можа прывесці да адключэння мабільнай сеткі на некалькі хвілін.</translation>
 <translation id="2180620921879609685">Блакіраваць змесціва на любой старонцы</translation>
 <translation id="2182058453334755893">Скапіравана ў буфер абмену</translation>
+<translation id="2183570493397356669">Кнопка "Працягнуць" адключана</translation>
 <translation id="2184515124301515068">Дазволіць браўзеру Chrome вызначаць, калі сайты могуць прайграваць гук (рэкамендуецца)</translation>
 <translation id="2186206192313702726">Google Аб'ектыў</translation>
 <translation id="2186711480981247270">Старонка абагулена з іншай прылады</translation>
@@ -1638,6 +1639,7 @@
 <translation id="2480868415629598489">Змена даных, якія вы капіруеце і ўстаўляеце</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2482895651873876648">Укладка перамешчана ў групу "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2484909293434545162">Сайты, якія выкарыстоўваюць файлы cookie, з'явяцца тут</translation>
 <translation id="2484959914739448251">Каб ачысціць даныя прагляду з усіх сінхранізаваных прылад і Уліковага запісу Google, <ph name="BEGIN_LINK" />увядзіце фразу-пароль<ph name="END_LINK" />.</translation>
 <translation id="2485394160472549611">Найлепшыя падборкі для вас</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
@@ -3676,6 +3678,7 @@
 <translation id="4415245286584082850">Прылады не знойдзены. Адкрыць артыкул даведачнага цэнтра ў новай укладцы.</translation>
 <translation id="4415276339145661267">Кіраванне Уліковым запісам Google</translation>
 <translation id="4415748029120993980">SECG эліптычны secp384r1 (іншая назва – NIST P-384)</translation>
+<translation id="4415815425191869676">Сайты, укладкі з якімі заўсёды павінны заставацца актыўнымі</translation>
 <translation id="4416450511678320850">Для гэтага змесціва праграм няма</translation>
 <translation id="4416582610654027550">Увядзіце правільны URL-адрас</translation>
 <translation id="4419409365248380979">Заўсёды дазваляць сайту <ph name="HOST" /> захоўваць файлы cookie</translation>
@@ -4057,6 +4060,7 @@
 <translation id="4785719467058219317">Вы выкарыстоўваеце ключ бяспекі, не зарэгістраваны на гэтым вэб-сайце</translation>
 <translation id="4785914069240823137">Скасаваць абрэзку</translation>
 <translation id="4788092183367008521">Праверце падключэнне да сеткі і паўтарыце спробу.</translation>
+<translation id="4789348252524569426">Не ўдалося ўсталяваць файлы для распазнавання маўлення. Неабходна абнавіць прыладу. Перазапусціце яе і паўтарыце спробу.</translation>
 <translation id="4789550509729954245">Паказваць апавяшчэнне, калі прылады, якія знаходзяцца паблізу, абагульваюць змесціва</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Уключыць паскарэнне TrackPoint</translation>
@@ -7040,6 +7044,7 @@
 <translation id="7665082356120621510">Зарэзерваваць памер</translation>
 <translation id="7665369617277396874">Дадаць уліковы запіс</translation>
 <translation id="766635563210446220">Не ўдалося імпартаваць паролі. Упэўніцеся, што ў файла <ph name="FILENAME" /> правільны фармат. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="7666531788977935712">Кнопка "Працягнуць" уключана</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{Вярніце прыладу <ph name="DEVICE_TYPE" /> на працягу {NUM_WEEKS} тыдня}one{Вярніце прыладу <ph name="DEVICE_TYPE" /> на працягу {NUM_WEEKS} тыдня}few{Вярніце прыладу <ph name="DEVICE_TYPE" /> на працягу {NUM_WEEKS} тыдняў}many{Вярніце прыладу <ph name="DEVICE_TYPE" /> на працягу {NUM_WEEKS} тыдняў}other{Вярніце прыладу <ph name="DEVICE_TYPE" /> на працягу {NUM_WEEKS} тыдня}}</translation>
 <translation id="7668423670802040666">У Менеджары пароляў Google для ўліковага запісу <ph name="ACCOUNT" /></translation>
 <translation id="7668648754769651616">Спецыяльныя магчымасці спрашчаюць карыстанне прыладай. Каб атрымаць доступ да хуткіх налад, націсніце на гадзіннік унізе экрана.</translation>
@@ -8733,6 +8738,7 @@
 <translation id="964286338916298286">Адміністратар выключыў перавагі Chrome для вашай прылады.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Праграма}one{Праграмы}few{Праграмы}many{Праграмы}other{Праграмы}}</translation>
 <translation id="964790508619473209">Размяшчэнне экранаў</translation>
+<translation id="965175368833098333">Рэжым эканоміі памяці дапамагае вызваліць рэсурсы камп'ютара, якія выкарыстоўваюцца неактыўнымі ўкладкамі, і пераразмеркаваць іх на іншыя задачы.</translation>
 <translation id="965211523698323809">Адпраўляйце і атрымлівайце тэкставыя паведамленні з прылады "<ph name="DEVICE_TYPE" />". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Паскардзіцца на праблему з Google Cast</translation>
 <translation id="967398046773905967">Не дазваляць сайтам атрымліваць доступ да прылад HID</translation>

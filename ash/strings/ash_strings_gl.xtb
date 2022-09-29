@@ -225,6 +225,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2227179592712503583">Quitar suxestión</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
 <translation id="2257486738914982088">Produciuse un erro ao descargar o ficheiro <ph name="FILENAME" /></translation>
+<translation id="2258734398699965611">Ficheiros suxeridos</translation>
 <translation id="2268130516524549846">Bluetooth desactivado</translation>
 <translation id="2268813581635650749">Pechar as sesións</translation>
 <translation id="2269016722240250274">Unha aplicación está utilizando o teu micrófono</translation>
@@ -562,7 +563,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4242533952199664413">Abrir configuración</translation>
 <translation id="4247123849143712100">Actualizar e apagar</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
-<translation id="4250899820387052060">Ficheiros rápidos</translation>
 <translation id="425364040945105958">Non hai SIM</translation>
 <translation id="4261870227682513959">Mostrar a configuración de notificacións. Están desactivadas</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode facer o seguinte:</translation>
@@ -900,6 +900,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6099678161144790572">Editouse durante o último mes</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Descargáronse os ficheiros de voz en <ph name="LANGUAGE" /></translation>
+<translation id="6116825164611323644">O acceso á cámara está desactivado neste dispositivo</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmar descarga de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">O Asistente de Google non está dispoñible cando se utiliza unha sesión de convidado.</translation>
@@ -1126,6 +1127,7 @@ Nova instalación</translation>
 <translation id="746232733191930409">Modo de gravación da pantalla</translation>
 <translation id="7466449121337984263">Toca o sensor</translation>
 <translation id="7477793887173910789">Controlar a túa música, os vídeos e moito máis</translation>
+<translation id="7490360161041035804">Podes fixar os ficheiros importantes, incluídos os de Google Drive. Para facelo, pasa por enriba dun elemento ou abre Ficheiros e fai clic co botón dereito sobre un elemento.</translation>
 <translation id="7497767806359279797">Escoller idioma e teclado</translation>
 <translation id="7508690557411636492">Abriuse durante o último mes</translation>
 <translation id="7509246181739783082">Verifica a túa identidade</translation>
@@ -1222,6 +1224,7 @@ Nova instalación</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7984197416080286869">Realizáronse demasiados intentos de desbloqueo mediante a impresión dixital</translation>
 <translation id="798779949890829624">O teu administrador xestiona esta opción de configuración</translation>
+<translation id="799296642788192631">Podes fixar os ficheiros importantes. Para facelo, pasa por enriba dun elemento ou abre Ficheiros e fai clic co botón dereito sobre un elemento.</translation>
 <translation id="7994370417837006925">Inicio de sesión múltiple</translation>
 <translation id="7995804128062002838">Produciuse un erro ao facer a captura de pantalla</translation>
 <translation id="8000066093800657092">Sen rede</translation>
@@ -1349,6 +1352,7 @@ Nova instalación</translation>
 <translation id="8734991477317290293">É posible que estea tentando detectar as teclas que premes</translation>
 <translation id="8735678380411481005">Cor de retroiluminación do teclado</translation>
 <translation id="8735953464173050365">Mostrar a configuración do teclado. Está seleccionado o seguinte: <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8752416742247198423">Activa o acceso á cámara para que as aplicacións e páxinas web que teñan permiso poidan usar as cámaras conectadas a este dispositivo.</translation>
 <translation id="8755498163081687682">Verificar identidade: <ph name="ORIGIN_NAME" /> quere confirmar a túa identidade</translation>
 <translation id="875593634123171288">Mostrar a configuración da VPN</translation>
 <translation id="8759408218731716181">Erro ao configurar o inicio de sesión múltiple</translation>
@@ -1363,6 +1367,7 @@ Nova instalación</translation>
 <translation id="8819728065740986820">A función Carga intelixente está activada</translation>
 <translation id="8825863694328519386">Pasa o dedo desde a esquerda para volver</translation>
 <translation id="8834539327799336565">Dispositivos conectados actualmente</translation>
+<translation id="8834657930627018205">Activar acceso á cámara.</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
 <translation id="8843682306134542540">Activar/desactivar o bloqueo de rotación. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Busca+Esc</translation>

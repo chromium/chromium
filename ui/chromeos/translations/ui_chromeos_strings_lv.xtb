@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu tilpsaspiešana...</translation>
 <translation id="1722687688096767818">Notiek profila pievienošana...</translation>
 <translation id="1726100011689679555">Nosaukumu serveri</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> faili ir pārvietoti uz atkritni.</translation>
 <translation id="1729953886957086472">Vācu (Vācija)</translation>
 <translation id="1730235522912993863">Ķīniešu, Candže</translation>
 <translation id="1731889557567069540">Nokopēti vienumi: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Pāriet uz saraksta skatījumu</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mapes kopīgotas ar sistēmu Linux</translation>
 <translation id="2378075407703503998">Atlasīti <ph name="SELCTED_FILE_COUNT" /> faili.</translation>
-<translation id="2387120140441437063">Nevar atvērt atkritnē ievietotos failus. Lai šos failus varētu atvērt, vispirms atjaunojiet tos.</translation>
 <translation id="2387458720915042159">Starpniekservera savienojuma veids</translation>
 <translation id="2389832672041313158">Birmiešu (Mjanma)</translation>
 <translation id="2392369802118427583">Aktivizēt</translation>
@@ -211,7 +209,6 @@
 <translation id="2888807692577297075">Neviens vienums neatbilst vaicājumam &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;.</translation>
 <translation id="2894654529758326923">Informācija</translation>
 <translation id="2902734494705624966">ASV paplašinātā</translation>
-<translation id="2906052776158021882">Notiek <ph name="NUMBER_OF_ITEMS" /> failu pārvietošana uz atkritni…</translation>
 <translation id="290843123675549676">Marathu</translation>
 <translation id="2923240520113693977">Igauņu valoda</translation>
 <translation id="2938685643439809023">Mongoļu valoda</translation>
@@ -221,7 +218,6 @@
 <translation id="2958458230122209142">Jūsu individuālajā <ph name="TOTAL_SPACE" /> krātuvē ir atlicis maz vietas (<ph name="REMAINING_PERCENTAGE" />%).</translation>
 <translation id="2977940621473452797">Šis fails ir paredzēts datoram ar Macintosh programmatūru. Tas nav saderīgs ar jūsu ierīci, kurā darbojas operētājsistēma Chrome OS. Lūdzu, meklējiet Chrome interneta veikalā atbilstošu aizstājošo lietotni.</translation>
 <translation id="2984337792991268709">Šodien plkst. <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">Notiek vienumu atjaunošana (skaits: <ph name="COUNT" />)…</translation>
 <translation id="299638574917407533">Franču (Kanāda)</translation>
 <translation id="3003189754374775221">Tīkls numur <ph name="NETWORK_INDEX" />, tīklu kopskaits: <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signāla stiprums procentos: <ph name="SIGNAL_STRENGTH" />, savienojums</translation>
 <translation id="3003633581067744647">Pārslēgties uz sīktēlu skatījumu</translation>
@@ -239,6 +235,7 @@
 <translation id="3124404833828281817">Aizsapņojusies persona</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN nav derīgs. Atlikuši <ph name="RETRIES" /> mēģinājumi.</translation>
+<translation id="3157931365184549694">Atjaunot</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (ar krātuvi aparatūrā)</translation>
 <translation id="3188257591659621405">Mani faili</translation>
 <translation id="3194553149358267393">Nav nesenu audio failu</translation>
@@ -276,7 +273,6 @@
 <translation id="3414856743105198592">Formatējot noņemamu datu nesēju, tiks dzēsti visi dati. Vai vēlaties turpināt?</translation>
 <translation id="3437801641691368414">Izveides laiks</translation>
 <translation id="343907260260897561">Tūlītējo fotogrāfiju kamera</translation>
-<translation id="3452106565701029351">Atspraust no sadaļas “Ātrā piekļuve failiem”</translation>
 <translation id="3455931012307786678">Igauņu</translation>
 <translation id="3475447146579922140">Google izklājlapa</translation>
 <translation id="3479552764303398839">Vēlāk</translation>
@@ -470,7 +466,6 @@
 <translation id="5068919226082848014">Pica</translation>
 <translation id="5081517858322016911">Tiks dzēsti <ph name="TOTAL_FILE_SIZE" /> failu.</translation>
 <translation id="508423945471810158">Notiek pārvietošana uz mapi <ph name="FOLDER_NAME" />. Pārvietojamo vienumu skaits: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="5092200349368278146">Fails “<ph name="FILE_NAME" />” ir pārvietots uz atkritni.</translation>
 <translation id="509429900233858213">Radās kļūda.</translation>
 <translation id="5098629044894065541">Ebreju valoda</translation>
 <translation id="5102922915594634436">Pārvaldīt sinhronizētās mapes</translation>
@@ -576,7 +571,6 @@
 <translation id="5845721951356578987">Medmāsa</translation>
 <translation id="5861477046012235702">Videospēļu spēlētājs</translation>
 <translation id="5864471791310927901">DHCP uzmeklēšana neizdevās</translation>
-<translation id="5887342613489958822">Notiek faila “<ph name="FILE_NAME" />” pārvietošana uz atkritni…</translation>
 <translation id="5896749729057314184">Tīkls numur <ph name="NETWORK_INDEX" /> no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nav aktivizēts, signāla stiprums procentos ir <ph name="SIGNAL_STRENGTH" />, detalizēta informācija</translation>
 <translation id="5911887972742538906">Linux lietojumprogrammas instalēšanas laikā radās kļūda.</translation>
 <translation id="5912396950572065471">Formāts</translation>
@@ -688,7 +682,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Workman (ASV)</translation>
 <translation id="6930242544192836755">Ilgums</translation>
-<translation id="6931302001003657424">Piespraust sadaļai “Ātrā piekļuve failiem”</translation>
 <translation id="6935521024859866267">Otrādi</translation>
 <translation id="6943836128787782965">Neizdevās iegūt HTTP</translation>
 <translation id="6949408524333579394">Serbu, transliterācija</translation>
@@ -765,7 +758,6 @@
 <translation id="7547811415869834682">Holandiešu valoda</translation>
 <translation id="7551643184018910560">Piespraust plauktam</translation>
 <translation id="7553492409867692754">Linux lietotnes saņems atļauju piekļūt failiem mapē <ph name="FOLDER_NAME" /></translation>
-<translation id="7575645593344061397">Notiek faila “<ph name="FILENAME" />” atjaunošana…</translation>
 <translation id="7589661784326793847">Mirkli uzgaidiet!</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> tiek padarīts pieejams bezsaistē</translation>
 <translation id="7600126690270271294">Serbu</translation>
@@ -917,7 +909,6 @@
 <translation id="8787254343425541995">Ļaut starpniekserveru izmantošanu koplietotajiem tīkliem</translation>
 <translation id="8790981080411996443">Persona laista puķes</translation>
 <translation id="8798099450830957504">Noklusējums</translation>
-<translation id="8802459921616481935">Pārvietot uz atkritni</translation>
 <translation id="8808686172382650546">Kaķis</translation>
 <translation id="8810671769985673465">Tilpsaspiešana neizdevās, vienums pastāv: <ph name="FILE_NAME" />.</translation>
 <translation id="8813284582615685103">Spāņu (Spānija)</translation>

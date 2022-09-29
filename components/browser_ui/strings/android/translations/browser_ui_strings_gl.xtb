@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1005794457625275818">Cookies permitidas para <ph name="FPS_MEMBERS_COUNT" /> sitios do grupo <ph name="FPS_OWNER" />, que inclúe a <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Abrir en liña</translation>
 <translation id="1044891598689252897">Os sitios funcionarán con normalidade</translation>
 <translation id="1124090076051167250">Ao realizar esta acción, borraranse os datos e as cookies (<ph name="DATASIZE" />) que almacenasen os sitios ou as aplicacións da túa pantalla de inicio.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Si</translation>
 <translation id="1446450296470737166">Permitir control disposit. MIDI</translation>
 <translation id="1620510694547887537">Cámara</translation>
+<translation id="1633720957382884102">Sitios relacionados</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1647582022260550163">Seguro que queres restablecer os permisos, así como borrar as cookies e os datos do sitio?</translation>
 <translation id="1660204651932907780">Permite que os sitios reproduzan son (recomendado)</translation>

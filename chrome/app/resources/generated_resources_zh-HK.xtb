@@ -1302,6 +1302,7 @@
 <translation id="2179416702468739594">正在尋找可用的設定檔。這可能導致流動網絡中斷連線幾分鐘。</translation>
 <translation id="2180620921879609685">封鎖任何頁面上的內容</translation>
 <translation id="2182058453334755893">已複製至剪貼簿</translation>
+<translation id="2183570493397356669">停用咗繼續按鈕</translation>
 <translation id="2184515124301515068">允許 Chrome 選擇何時讓網站播放音效 (建議)</translation>
 <translation id="2186206192313702726">Google 智能鏡頭</translation>
 <translation id="2186711480981247270">由其他裝置分享的頁面</translation>
@@ -1650,7 +1651,7 @@
 <translation id="2480868415629598489">修改您複製並貼上的資料</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">分頁移咗去包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組</translation>
-<translation id="2484909293434545162">使用 Cookie 的網站會顯示在這裡</translation>
+<translation id="2484909293434545162">使用 Cookie 的網站會在此處顯示</translation>
 <translation id="2484959914739448251">如要從所有已同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />輸入密碼短語<ph name="END_LINK" />。</translation>
 <translation id="2485394160472549611">推薦精選</translation>
 <translation id="2485422356828889247">解除安裝</translation>
@@ -3689,7 +3690,7 @@
 <translation id="4415245286584082850">搵唔到裝置。你可以喺新分頁度開啟說明中心文章。</translation>
 <translation id="4415276339145661267">管理您的 Google 帳戶</translation>
 <translation id="4415748029120993980">SECG 橢圓曲線 secp384r1 (亦稱為 NIST P-384)</translation>
-<translation id="4415815425191869676">一律啟用這些網站</translation>
+<translation id="4415815425191869676">一律保持這些網站在啟用狀態</translation>
 <translation id="4416450511678320850">沒有與此內容相關的應用程式</translation>
 <translation id="4416582610654027550">輸入有效的網址</translation>
 <translation id="4419409365248380979">永遠允許 <ph name="HOST" /> 設定 Coockie</translation>
@@ -4072,7 +4073,7 @@
 <translation id="4785719467058219317">您目前使用的安全密鑰並未在此網站註冊</translation>
 <translation id="4785914069240823137">取消裁剪</translation>
 <translation id="4788092183367008521">請檢查你的網絡連線，然後再試一次。</translation>
-<translation id="4789348252524569426">無法安裝語音檔案，必須更新裝置。請重新啟動裝置，然後再試一次。</translation>
+<translation id="4789348252524569426">無法安裝語音檔案，裝置需要更新。請重新開機，然後再試一次。</translation>
 <translation id="4789550509729954245">附近裝置分享緊內容嘅時候顯示通知</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">啟用 TrackPoint 加速功能</translation>
@@ -7048,6 +7049,7 @@
 <translation id="7665082356120621510">預留空間大小</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="766635563210446220">無法匯入密碼，請檢查「<ph name="FILENAME" />」的格式是否正確。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="7666531788977935712">啟用咗繼續按鈕</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{在 {NUM_WEEKS} 星期內歸還 <ph name="DEVICE_TYPE" />}other{在 {NUM_WEEKS} 星期內歸還 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="7668423670802040666">前往 <ph name="ACCOUNT" /> 的「Google 密碼管理工具」進行更新</translation>
 <translation id="7668648754769651616">無障礙功能讓裝置更易用。如要存取「快速設定」，請選取畫面底部的時間。</translation>
@@ -8743,7 +8745,7 @@
 <translation id="964286338916298286">IT 管理員已為您的裝置停用 Chrome Goodies。</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{應用程式}other{應用程式}}</translation>
 <translation id="964790508619473209">螢幕安排</translation>
-<translation id="965175368833098333">「記憶體節省模式」可收回未使用分頁的記憶體，藉此釋出電腦資源來處理其他工作。</translation>
+<translation id="965175368833098333">「節省記憶體」模式可收回未使用分頁的記憶體，這樣做可釋出電腦的資源來處理其他工作。</translation>
 <translation id="965211523698323809">在 <ph name="DEVICE_TYPE" /> 上收發短訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">報告 Google Cast 的問題</translation>
 <translation id="967398046773905967">禁止任何網站存取 HID 裝置</translation>

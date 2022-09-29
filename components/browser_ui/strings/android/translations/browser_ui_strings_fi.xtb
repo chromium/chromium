@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1005794457625275818">Evästeet sallittu <ph name="FPS_MEMBERS_COUNT" /> sivustolla ryhmässä <ph name="FPS_OWNER" />, mukaan lukien <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Avaa verkkoversio</translation>
 <translation id="1044891598689252897">Sivustot toimivat normaalisti</translation>
 <translation id="1124090076051167250">Tämä tyhjentää <ph name="DATASIZE" /> dataa ja aloitusnäytölläsi olevien sivustojen tai sovellusten tallentamat evästeet.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Kyllä</translation>
 <translation id="1446450296470737166">Salli MIDI-laitteiden täysi käyttöoik.</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1633720957382884102">Aiheeseen liittyvät sivustot</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1647582022260550163">Haluatko varmasti nollata luvat sekä tyhjentää evästeet ja sivustodatan?</translation>
 <translation id="1660204651932907780">Salli sivustojen toistaa ääniä (suositus)</translation>

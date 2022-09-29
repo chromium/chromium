@@ -80,7 +80,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ സിപ്പ് ചെയ്യുന്നു...</translation>
 <translation id="1722687688096767818">പ്രൊഫെെൽ ചേർക്കുന്നു...</translation>
 <translation id="1726100011689679555">നെയിം സെർവറുകൾ</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ട്രാഷിലേക്ക് നീക്കി</translation>
 <translation id="1729953886957086472">ജർമ്മൻ (ജർമ്മനി)</translation>
 <translation id="1730235522912993863">ചൈനീസ് സാങ്‌ചി</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ പകർത്തി.</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">ലിസ്റ്റ് കാഴ്‌ചയിലേക്ക് മാറുക</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ഫോൾഡറുകൾ Linux ഉപയോഗിച്ച് പങ്കിട്ടു</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ഫയലുകൾ തിരഞ്ഞെടുത്തു</translation>
-<translation id="2387120140441437063">ട്രാഷ് ചെയ്ത ഫയലുകൾ തുറക്കാനാകില്ല. തുറക്കും മുമ്പ് ഫയലുകൾ പുനഃസ്ഥാപിക്കുക.</translation>
 <translation id="2387458720915042159">പ്രോക്‌സി കണക്ഷൻ തരം</translation>
 <translation id="2389832672041313158">ബർമീസ്/മ്യാൻമർ</translation>
 <translation id="2392369802118427583">സജീവമാക്കുക</translation>
@@ -175,6 +173,7 @@
 <translation id="2500392669976258912">ഗുജറാത്തി ഉച്ചാരണശബ്‌ദം</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">സ്‌കാൻ ചെയ്യുക</translation>
+<translation id="252641322760726369">ഷെൽഫിലെ നിങ്ങളുടെ ഫയലുകളിലേക്ക് അതിവേഗ ആക്‌സസ് ലഭിക്കാൻ, ഒരു ഫയൽ സ്‌പർശിച്ച് പിടിച്ച് <ph name="ICON" /> ടാപ്പ് ചെയ്യുക, തുടർന്ന് "<ph name="PIN_COMMAND" />" തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="2534460670861217804">സുരക്ഷിത HTTP പ്രോക്‌സി</translation>
 <translation id="2541377937973966830">ഈ ഫോൾഡറിലെ ഉള്ളടക്കങ്ങൾ വായിക്കാൻ മാത്രമുള്ളതാണ്. ചില ആക്റ്റിവിറ്റികൾക്ക് പിന്തുണയില്ല.</translation>
 <translation id="2542049655219295786">Google പട്ടിക</translation>
@@ -211,7 +210,6 @@
 <translation id="2888807692577297075">ഇനങ്ങളൊന്നും &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; എന്നതുമായി പൊരുത്തപ്പെടുന്നില്ല്ല</translation>
 <translation id="2894654529758326923">വിവരം</translation>
 <translation id="2902734494705624966">യുഎസ് വിപുലീകൃതം</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ട്രാഷിലേക്ക് നീക്കുന്നു</translation>
 <translation id="290843123675549676">മറാഠി</translation>
 <translation id="2923240520113693977">എസ്റ്റോണിയന്‍</translation>
 <translation id="2938685643439809023">മംഗോളിയന്‍</translation>
@@ -221,7 +219,6 @@
 <translation id="2958458230122209142">സ്റ്റോറേജ് കുറവാണ്, നിങ്ങളുടെ <ph name="TOTAL_SPACE" /> വ്യക്തിഗത സ്റ്റോറേജിൽ <ph name="REMAINING_PERCENTAGE" />% ശേഷിക്കുന്നു.</translation>
 <translation id="2977940621473452797">Macintosh സോഫ്റ്റ്‌വെയർ ഉപയോഗിക്കുന്ന കമ്പ്യൂട്ടറിന് വേണ്ടി രൂപകൽപ്പന ചെയ്ത ഫയൽ ആണിത്. ChromeOS റൺ ചെയ്യുന്ന നിങ്ങളുടെ ഉപകരണത്തിൽ ഇതിന് പിന്തുണയില്ല. Chrome വെബ് സ്റ്റോറിൽ അനുയോജ്യമായ മറ്റൊരു ആപ്പ് തിരയുക.</translation>
 <translation id="2984337792991268709">ഇന്ന് <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337"><ph name="COUNT" /> ഇനങ്ങൾ പുനഃസ്ഥാപിക്കുന്നു...</translation>
 <translation id="299638574917407533">ഫ്രഞ്ച് (കാനഡ)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="3003633581067744647">ലഘുചിത്ര കാഴ്ച്ചയിലേക്ക് മാറുക</translation>
@@ -239,6 +236,7 @@
 <translation id="3124404833828281817">പകൽക്കിനാവ് കാണുന്ന വ്യക്തി</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">പിൻ അസാധുവാണ്. നിങ്ങൾക്ക് <ph name="RETRIES" /> ശ്രമങ്ങൾ കൂടി ബാക്കിയുണ്ട്.</translation>
+<translation id="3157931365184549694">പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (ഹാർഡ്‌വെയർ പിന്തുണയുള്ളത്)</translation>
 <translation id="3188257591659621405">എൻ്റെ ഫയലുകൾ</translation>
 <translation id="3194553149358267393">അടുത്തിടെയുള്ള ഓഡിയോ ഫയലുകളൊന്നുമില്ല</translation>
@@ -276,7 +274,6 @@
 <translation id="3414856743105198592">നീക്കം ചെയ്യാവുന്ന മീഡിയയിലെ ഫോർമാറ്റിംഗ് എല്ലാ ഡാറ്റയും മായ്‍ക്കും. തുടരാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുണ്ടോ?</translation>
 <translation id="3437801641691368414">സൃഷ്‌ടിച്ച സമയം</translation>
 <translation id="343907260260897561">തൽക്ഷണ ക്യാമറ</translation>
-<translation id="3452106565701029351">പെട്ടെന്ന് ആക്‌സസ് ചെയ്യാവുന്ന ഫയലുകളിൽ നിന്ന് അൺപിൻ ചെയ്യുക</translation>
 <translation id="3455931012307786678">എസ്തോണിയൻ</translation>
 <translation id="3475447146579922140">Google സ്‌പ്രെഡ്‌ഷീറ്റ്</translation>
 <translation id="3479552764303398839">ഇപ്പോഴല്ല</translation>
@@ -347,6 +344,7 @@
 <translation id="4092890906744441904">ഐറിഷ്</translation>
 <translation id="4124935795427217608">യൂണികോൺ</translation>
 <translation id="4131235941541910880">നിങ്ങൾക്ക് ആവശ്യമില്ലാത്ത ഇനങ്ങൾ ട്രാഷിലേക്ക് നീക്കുക</translation>
+<translation id="4153015322587141338">ഷെൽഫിലെ നിങ്ങളുടെ ഫയലുകളിലേക്ക് അതിവേഗ ആക്‌സസ് ലഭിക്കാൻ, ഒരു ഫയലിൽ വലത് ക്ലിക്ക് ചെയ്‌ത് "<ph name="PIN_COMMAND" />" തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="4157569377477607576">അഡ്‌മിൻ നയം ഇവ നിർദ്ദേശിക്കുന്നില്ല:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> നീക്കി.</translation>
 <translation id="4176286497474237543">ഇപ്പോൾ ട്രാഷ് ശൂന്യമാക്കുക</translation>
@@ -470,7 +468,6 @@
 <translation id="5068919226082848014">പിസ്സ</translation>
 <translation id="5081517858322016911">ഫയലുകളിൽ <ph name="TOTAL_FILE_SIZE" /> ഇല്ലാതാക്കപ്പെടും</translation>
 <translation id="508423945471810158"><ph name="FOLDER_NAME" /> ഫോൾഡറിലേക്ക് <ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ നീക്കുന്നു</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> ട്രാഷിലേക്ക് നീക്കി</translation>
 <translation id="509429900233858213">ഒരു പിശക് സംഭവിച്ചു.</translation>
 <translation id="5098629044894065541">ഹീബ്രു</translation>
 <translation id="5102922915594634436">സമന്വയിപ്പിച്ച ഫോൾഡറുകൾ മാനേജ് ചെയ്യുക</translation>
@@ -576,7 +573,6 @@
 <translation id="5845721951356578987">നഴ്‌സ്</translation>
 <translation id="5861477046012235702">ഗെയിമർ</translation>
 <translation id="5864471791310927901">DHCP തിരയൽ പരാജയപ്പെട്ടു</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" /> ട്രാഷിലേക്ക് നീക്കുന്നു</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, സജീവമാക്കിയിട്ടില്ല, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="5911887972742538906">നിങ്ങളുടെ Linux ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുന്ന സമയത്ത് ഒരു പിശക് സംഭവിച്ചു.</translation>
 <translation id="5912396950572065471">ഫോർമാറ്റ്</translation>
@@ -688,7 +684,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">യുഎസ് വർക്ക്‌മാൻ</translation>
 <translation id="6930242544192836755">സമയ ദൈർഘ്യം</translation>
-<translation id="6931302001003657424">പെട്ടെന്ന് ആക്‌സസ് ചെയ്യാവുന്ന ഫയലുകളിലേക്ക് പിൻ ചെയ്യുക</translation>
 <translation id="6935521024859866267">അപ്‌സൈഡ് ഡൗൺ</translation>
 <translation id="6943836128787782965">HTTP പരാജയപ്പെട്ടു</translation>
 <translation id="6949408524333579394">സെർബിയൻ ലിപ്യന്തരണം</translation>
@@ -765,7 +760,6 @@
 <translation id="7547811415869834682">ഡച്ച്</translation>
 <translation id="7551643184018910560">ഷെൽഫിലേക്ക് പിൻ ചെയ്യുക</translation>
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" /> ഫോൾഡറിലെ ഫയലുകൾ ആക്‌സസ് ചെയ്യാൻ Linux ആപ്പുകൾക്ക് അനുമതി നൽകുക</translation>
-<translation id="7575645593344061397">"<ph name="FILENAME" />" പുനഃസ്ഥാപിക്കുന്നു...</translation>
 <translation id="7589661784326793847">ഒരു നിമിഷം കാത്തിരിക്കുക</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കുന്നു</translation>
 <translation id="7600126690270271294">സെർബിയൻ</translation>
@@ -917,7 +911,6 @@
 <translation id="8787254343425541995">പങ്കിട്ട നെറ്റ്‌വർക്കുകൾക്കായി പ്രോക്സികൾ അനുവദിക്കുക</translation>
 <translation id="8790981080411996443">ചെടികൾ നനയ്ക്കുന്ന വ്യക്തി</translation>
 <translation id="8798099450830957504">ഡിഫോൾട്ട്</translation>
-<translation id="8802459921616481935">ട്രാഷിലേക്ക് നീക്കുക</translation>
 <translation id="8808686172382650546">പൂച്ച</translation>
 <translation id="8810671769985673465">സിപ്പ് ചെയ്യാനായില്ല, നിലവിലുള്ള ഇനങ്ങൾ: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">സ്‌പാനിഷ് (സ്പെയിൻ)</translation>

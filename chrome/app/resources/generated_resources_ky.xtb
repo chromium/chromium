@@ -1650,6 +1650,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2480868415629598489">Көчүрүлүп, коюла турган дайындарды өзгөртүү</translation>
 <translation id="2482878487686419369">Билдирмелер</translation>
 <translation id="2482895651873876648">Өтмөк төмөнкү топко жылды: <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2484909293434545162">Эгер сайтта cookie файлдары колдонулса, ал ушул жерде көрүнөт</translation>
 <translation id="2484959914739448251">Бардык шайкештирилген түзмөктөрүңүздөгү жана Google аккаунтуңуздагы серептөө дайындарын тазалоо үчүн <ph name="BEGIN_LINK" />өткөрүүчү сүйлөмдү киргизиңиз<ph name="END_LINK" />.</translation>
 <translation id="2485394160472549611">Сиз үчүн тандалган видеолор</translation>
 <translation id="2485422356828889247">Орнотуудан чыгаруу</translation>
@@ -8741,6 +8742,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="964286338916298286">IT администраторуңуз түзмөгүңүз үчүн Chrome Goodies'ти өчүрүп койгон.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Колдонмо}other{Колдонмолор}}</translation>
 <translation id="964790508619473209">Экрандагы нерселерди жайгаштыруу</translation>
+<translation id="965175368833098333">Эстутумду үнөмдөгүч колдонулбаган өтмөктөрдөгү эстутумду пайдалана алат. Ушуну менен компьютердин ресурстары башка тапшырмалар үчүн жеткиликтүү болот.</translation>
 <translation id="965211523698323809">SMS билдирүүлөрүн <ph name="DEVICE_TYPE" /> түзмөгүнөн жөнөтүп, ала аласыз. <ph name="LINK_BEGIN" />Көбүрөөк билүү<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast кызматындагы маселе тууралуу кабарлоо</translation>
 <translation id="967398046773905967">Бардык сайттарга HID түзмөктөрүн колдонууга бөгөт коюлсун</translation>

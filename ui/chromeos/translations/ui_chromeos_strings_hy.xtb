@@ -80,7 +80,6 @@
 <translation id="1722487484194605434">Արխիվացվում է <ph name="NUMBER_OF_ITEMS" /> տարր…</translation>
 <translation id="1722687688096767818">Պրոֆիլն ավելացվում է…</translation>
 <translation id="1726100011689679555">Անունների սերվերներ</translation>
-<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> տարր տեղափոխվեց աղբարկղ</translation>
 <translation id="1729953886957086472">գերմաներեն (Գերմանիա)</translation>
 <translation id="1730235522912993863">չինարեն (ցանցզե)</translation>
 <translation id="1731889557567069540">Պատճենվեց <ph name="NUMBER_OF_ITEMS" /> տարր։</translation>
@@ -158,7 +157,6 @@
 <translation id="2377319039870049694">Ցանկի տեսքով</translation>
 <translation id="2377590462528165447">Դուք <ph name="NUMBER_OF_ITEMS" /> պանակով կիսվեցին Լինուքսի հետ</translation>
 <translation id="2378075407703503998">Ընտրված է <ph name="SELCTED_FILE_COUNT" /> ֆայլ</translation>
-<translation id="2387120140441437063">Հնարավոր չէ բացել աղբարկղ ուղարկված ֆայլերը։ Նախ վերականգնեք դրանք։</translation>
 <translation id="2387458720915042159">Պրոքսի սերվերի միացման տեսակը</translation>
 <translation id="2389832672041313158">բիրմաներեն (Մյանմա)</translation>
 <translation id="2392369802118427583">Ակտիվացնել</translation>
@@ -211,7 +209,6 @@
 <translation id="2888807692577297075">&lt;b&gt;«<ph name="SEARCH_STRING" />»&lt;/b&gt;-ին համընկնող արդյունքներ չկան</translation>
 <translation id="2894654529758326923">Տեղեկություններ</translation>
 <translation id="2902734494705624966">ԱՄՆ ընդլայնված</translation>
-<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> տարր տեղափոխվում է աղբարկղ</translation>
 <translation id="290843123675549676">մարաթի</translation>
 <translation id="2923240520113693977">Էստոնական</translation>
 <translation id="2938685643439809023">Մոնղոլական</translation>
@@ -221,7 +218,6 @@
 <translation id="2958458230122209142">Տարածքը քիչ է։ Մնացել <ph name="TOTAL_SPACE" /> անհատական տարածքի <ph name="REMAINING_PERCENTAGE" />%-ը։</translation>
 <translation id="2977940621473452797">Այս ֆայլը նախատեսված է Macintosh-ի ծրագրակազմով համակարգիչների համար։ Այն համատեղելի չէ ձեր ChromeOS-ով աշխատող սարքի հետ։ Որոնեք համապատասխան փոխարինող հավելված Chrome Web Store-ում։</translation>
 <translation id="2984337792991268709">Այսօր <ph name="TODAY_DAYTIME" />-ին</translation>
-<translation id="2994320653639462337"><ph name="COUNT" /> տարր վերականգնվում է…</translation>
 <translation id="299638574917407533">ֆրանսերեն (Կանադա)</translation>
 <translation id="3003189754374775221">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, միացում</translation>
 <translation id="3003633581067744647">Միացնել մանրապատկերի դիտակերպը</translation>
@@ -239,6 +235,7 @@
 <translation id="3124404833828281817">Երազկոտ մարդ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN կոդն անվավեր է։ Մնաց <ph name="RETRIES" /> փորձ։</translation>
+<translation id="3157931365184549694">Վերականգնել</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (ապարատային աջակցում)</translation>
 <translation id="3188257591659621405">Իմ ֆայլերը</translation>
 <translation id="3194553149358267393">Վերջերս բացված աուդիո ֆայլեր չկան</translation>
@@ -276,7 +273,6 @@
 <translation id="3414856743105198592">Հեռացվելի կրիչի ձևաչափումը կջնջի բոլոր տվյալները: Ցանկանո՞ւմ եք շարունակել:</translation>
 <translation id="3437801641691368414">Ստեղծման ժամը</translation>
 <translation id="343907260260897561">Ակնթարթային տեսախցիկ</translation>
-<translation id="3452106565701029351">Ապամրացնել ֆայլերի արագ մուտքից</translation>
 <translation id="3455931012307786678">էստոներեն</translation>
 <translation id="3475447146579922140">Google աղյուսակ</translation>
 <translation id="3479552764303398839">Հիմա չէ</translation>
@@ -470,7 +466,6 @@
 <translation id="5068919226082848014">Պիցցա</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> ծավալով ֆայլեր կջնջվեն</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> տարր տեղափոխվում է «<ph name="FOLDER_NAME" />» պանակ</translation>
-<translation id="5092200349368278146"><ph name="FILE_NAME" /> ֆայլը տեղափոխվեց աղբարկղ</translation>
 <translation id="509429900233858213">Սխալ առաջացավ:</translation>
 <translation id="5098629044894065541">Եբրայական</translation>
 <translation id="5102922915594634436">Կառավարել համաժամացված պանակները</translation>
@@ -575,7 +570,6 @@
 <translation id="5845721951356578987">Բուժքույր</translation>
 <translation id="5861477046012235702">Խաղացող</translation>
 <translation id="5864471791310927901">DHCP-ի որոնումը չհաջողվեց</translation>
-<translation id="5887342613489958822"><ph name="FILE_NAME" /> ֆայլը տեղափոխվում է աղբարկղ</translation>
 <translation id="5896749729057314184">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ակտիվացված չէ, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /> տոկոս, մանրամասներ</translation>
 <translation id="5911887972742538906">Լինուքսի հավելվածը տեղադրելիս սխալ առաջացավ:</translation>
 <translation id="5912396950572065471">Ձևաչափ</translation>
@@ -687,7 +681,6 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">Տևողություն</translation>
-<translation id="6931302001003657424">Ամրացնել ֆայլերի արագ մուտքին</translation>
 <translation id="6935521024859866267">Գլխիվայր</translation>
 <translation id="6943836128787782965">HTTP GET-ի սխալ</translation>
 <translation id="6949408524333579394">սերբերեն (տառադարձություն)</translation>
@@ -764,7 +757,6 @@
 <translation id="7547811415869834682">Հոլանդական</translation>
 <translation id="7551643184018910560">Ամրացնել դարակում</translation>
 <translation id="7553492409867692754">Հասանելի դարձրեք «<ph name="FOLDER_NAME" />» պանակի ֆայլերը Լինուքսին</translation>
-<translation id="7575645593344061397">«<ph name="FILENAME" />» ֆայլը վերականգնվում է…</translation>
 <translation id="7589661784326793847">Մեկ վայրկյան</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> ֆայլը ներբեռնվում է</translation>
 <translation id="7600126690270271294">սերբերեն</translation>
@@ -916,7 +908,6 @@
 <translation id="8787254343425541995">Օգտագործել պրոքսի-սերվերներ՝ համօգտագործվող ցանցերի համար</translation>
 <translation id="8790981080411996443">Բույսեր ջրող մարդ</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
-<translation id="8802459921616481935">Ուղարկել աղբարկղ</translation>
 <translation id="8808686172382650546">Կատու</translation>
 <translation id="8810671769985673465">Չհաջողվեց արխիվացնել։ Տարրն արդեն արխիվում է՝ «<ph name="FILE_NAME" />»</translation>
 <translation id="8813284582615685103">իսպաներեն (Իսպանիա)</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1005794457625275818">Leyfð fótspor fyrir <ph name="FPS_MEMBERS_COUNT" />-vefsvæði í hópnum <ph name="FPS_OWNER" />, þ.m.t. <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Opna á netinu</translation>
 <translation id="1044891598689252897">Vefsvæði virka sem skyldi</translation>
 <translation id="1124090076051167250">Þetta hreinsar <ph name="DATASIZE" /> af gögnum og fótsporum sem geymd eru af vefsvæðum og forritum á heimaskjánum.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">Já</translation>
 <translation id="1446450296470737166">Leyfa ótakmarkaða stjórn á MIDI-tækjum</translation>
 <translation id="1620510694547887537">Myndavél</translation>
+<translation id="1633720957382884102">Tengd vefsvæði</translation>
 <translation id="1644574205037202324">Ferill</translation>
 <translation id="1647582022260550163">Viltu örugglega endurstilla heimildir og hreinsa fótspor og vefsvæðagögn?</translation>
 <translation id="1660204651932907780">Leyfa vefsvæðum að spila hljóð (mælt með)</translation>

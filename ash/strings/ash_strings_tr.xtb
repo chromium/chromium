@@ -225,6 +225,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2227179592712503583">Öneriyi kaldır</translation>
 <translation id="225680501294068881">Cihazlar taranıyor...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> indirilirken bir sorun oluştu</translation>
+<translation id="2258734398699965611">Önerilen dosyalar</translation>
 <translation id="2268130516524549846">Bluetooth devre dışı</translation>
 <translation id="2268813581635650749">Tüm oturumları kapat</translation>
 <translation id="2269016722240250274">Bir uygulama mikrofonunuzu kullanıyor</translation>
@@ -561,7 +562,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
 <translation id="4247123849143712100">Güncelle ve kapat</translation>
 <translation id="4250229828105606438">Ekran görüntüsü</translation>
-<translation id="4250899820387052060">Hızlı Dosyalar</translation>
 <translation id="425364040945105958">SIM kart yok</translation>
 <translation id="4261870227682513959">Bildirim ayarlarını göster. Bildirimler kapalı</translation>
 <translation id="4269883910223712419">Bu cihazın yöneticisi şunları yapabilir:</translation>
@@ -899,6 +899,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6099678161144790572">Geçen ay düzenlendi</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> dosyaları indirildi</translation>
+<translation id="6116825164611323644">Bu cihazda kamera erişimi kapalı</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> dosyasının indirilmesini onaylayın</translation>
 <translation id="612734058257491180">Google Asistan, misafir oturumunda kullanılamaz.</translation>
@@ -1125,6 +1126,7 @@ Yeni yüklenmiş</translation>
 <translation id="746232733191930409">Ekran kaydetme modu</translation>
 <translation id="7466449121337984263">Lütfen sensöre dokunun</translation>
 <translation id="7477793887173910789">Müzik, video ve diğer içeriklerinizi kontrol edin</translation>
+<translation id="7490360161041035804">Google Drive dosyaları da dahil olmak üzere önemli dosyaları sabitleyebilirsiniz. Sabitlemek için fareyle bir öğenin üzerine gelin veya Dosyalar'ı açıp öğeyi sağ tıklayın.</translation>
 <translation id="7497767806359279797">Dil ve klavye seçin</translation>
 <translation id="7508690557411636492">Geçen ay açıldı</translation>
 <translation id="7509246181739783082">Kimliğinizi doğrulayın</translation>
@@ -1221,6 +1223,7 @@ Yeni yüklenmiş</translation>
 <translation id="7982789257301363584">Ağ</translation>
 <translation id="7984197416080286869">Çok fazla parmak izi denemesi yapıldı</translation>
 <translation id="798779949890829624">Bu ayar, yöneticiniz tarafından yönetilir</translation>
+<translation id="799296642788192631">Önemli dosyaları sabitleyebilirsiniz. Sabitlemek için fareyle bir öğenin üzerine gelin veya Dosyalar'ı açıp öğeyi sağ tıklayın.</translation>
 <translation id="7994370417837006925">Çoklu oturum açma</translation>
 <translation id="7995804128062002838">Ekran görüntüsü alınamadı</translation>
 <translation id="8000066093800657092">Ağ yok</translation>
@@ -1348,6 +1351,7 @@ Yeni yüklenmiş</translation>
 <translation id="8734991477317290293">Bu klavye, tuş vuruşlarınızı çalmaya çalışıyor olabilir</translation>
 <translation id="8735678380411481005">Klavye arka ışığı rengi</translation>
 <translation id="8735953464173050365">Klavye ayarlarını göster. <ph name="KEYBOARD_NAME" /> seçildi</translation>
+<translation id="8752416742247198423">Kamera izni olan uygulamaların ve web sayfalarının bu cihaza bağlı kameraları kullanmasına izin vermek için kamera erişimini açın.</translation>
 <translation id="8755498163081687682">Kimliğinizi doğrulayın: <ph name="ORIGIN_NAME" />, kimliğinizi doğrulamak istiyor</translation>
 <translation id="875593634123171288">VPN ayarlarını göster</translation>
 <translation id="8759408218731716181">Çoklu oturum açma kurulamıyor</translation>
@@ -1362,6 +1366,7 @@ Yeni yüklenmiş</translation>
 <translation id="8819728065740986820">Uyarlanabilir Şarj açık</translation>
 <translation id="8825863694328519386">Geri gitmek için soldan kaydırın</translation>
 <translation id="8834539327799336565">Şu anda bağlı</translation>
+<translation id="8834657930627018205">Kamera erişimini etkinleştirin.</translation>
 <translation id="8841375032071747811">Geri düğmesi</translation>
 <translation id="8843682306134542540">Döndürme kilidini aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Ara+Esc</translation>
