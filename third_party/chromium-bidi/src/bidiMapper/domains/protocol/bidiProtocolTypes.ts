@@ -804,7 +804,7 @@ export namespace CDP {
     export type EventReceivedParams = {
       cdpMethod: string;
       cdpParams: object;
-      session?: string;
+      cdpSession?: string;
     };
   }
   export const EventNames = [PROTO.EventReceivedEvent.method] as const;

@@ -37,7 +37,7 @@ async def test_cdp_subscribeCdpEvents_cdpEventReceived(websocket, context_id):
         "method": "PROTO.cdp.getSession",
         "params": {"context": context_id}})
 
-    session_id = command_result["session"]
+    session_id = command_result["cdpSession"]
 
     await send_JSON_command(websocket, {
         "method": "PROTO.cdp.sendCommand",
@@ -63,5 +63,5 @@ async def test_cdp_subscribeCdpEvents_cdpEventReceived(websocket, context_id):
                 "executionContextId": any_value,
                 "timestamp": any_value,
                 "stackTrace": any_value},
-            "session": session_id}},
+            "cdpSession": session_id}},
         resp)

@@ -144,7 +144,7 @@ export class BrowsingContextProcessor {
           params: {
             cdpMethod: method,
             cdpParams: params,
-            session: sessionId,
+            cdpSession: sessionId,
           },
         },
         null
@@ -408,7 +408,10 @@ export class BrowsingContextProcessor {
       params.cdpParams,
       params.cdpSession ?? null
     );
-    return { result: sendCdpCommandResult };
+    return {
+      result: sendCdpCommandResult,
+      cdpSession: params.cdpSession,
+    };
   }
 
   async process_PROTO_cdp_getSession(params: CDP.PROTO.GetSessionParams) {
@@ -416,8 +419,8 @@ export class BrowsingContextProcessor {
     const sessionId =
       BrowsingContextProcessor.#getKnownContext(context).cdpSessionId;
     if (sessionId === undefined) {
-      return { result: { session: null } };
+      return { result: { cdpSession: null } };
     }
-    return { result: { session: sessionId } };
+    return { result: { cdpSession: sessionId } };
   }
 }
