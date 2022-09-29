@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -111,10 +112,8 @@ class ProjectorNavigationThrottleTestParameterized
 // https://screencast.apps.chrome/xyz?resourceKey=abc redirects to
 // chrome://projector/app/xyz?timestamp=[timestamp]&resourceKey=abc and launches
 // the SWA.
-// TODO(crbug.com/1368850): Disabled due to constant failure with parameter 3, 4
-// and 5.
 IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
-                       DISABLED_PwaNavigationRedirects) {
+                       PwaNavigationRedirects) {
   base::HistogramTester histogram_tester;
 
   std::string url = kChromeUIUntrustedProjectorPwaUrl;
@@ -132,7 +131,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
     // Simulate the user clicking a link.
     NavigateParams params(browser(), gurl,
                           ui::PageTransition::PAGE_TRANSITION_LINK);
-    ui_test_utils::NavigateToURL(&params);
+    Navigate(&params);
   } else {
     // Simulate the user typing the url into the omnibox.
     ui_test_utils::NavigateToURLWithDisposition(
