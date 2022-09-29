@@ -62,10 +62,6 @@ GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
     : GLSurfaceEGL(display),
       root_surface_name_(BuildSurfaceName(kRootSurfaceName)),
       child_surface_name_(BuildSurfaceName(kChildSurfaceName)),
-      window_rect_(0,
-                   0,
-                   ANativeWindow_getWidth(window),
-                   ANativeWindow_getHeight(window)),
       root_surface_(
           new gfx::SurfaceControl::Surface(window, root_surface_name_.c_str())),
       transaction_ack_timeout_manager_(task_runner),
@@ -155,7 +151,6 @@ bool GLSurfaceEGLSurfaceControl::Resize(const gfx::Size& size,
                                         bool has_alpha) {
   // TODO(khushalsagar): Update GLSurfaceFormat using the |color_space| above?
   // We don't do this for the NativeViewGLSurfaceEGL as well yet.
-  window_rect_ = gfx::Rect(size);
   return true;
 }
 
@@ -188,14 +183,14 @@ gfx::SwapResult GLSurfaceEGLSurfaceControl::PostSubBuffer(
 void GLSurfaceEGLSurfaceControl::SwapBuffersAsync(
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback) {
-  CommitPendingTransaction(window_rect_, std::move(completion_callback),
+  CommitPendingTransaction(std::move(completion_callback),
                            std::move(presentation_callback));
 }
 
 void GLSurfaceEGLSurfaceControl::CommitOverlayPlanesAsync(
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback) {
-  CommitPendingTransaction(window_rect_, std::move(completion_callback),
+  CommitPendingTransaction(std::move(completion_callback),
                            std::move(presentation_callback));
 }
 
@@ -206,13 +201,11 @@ void GLSurfaceEGLSurfaceControl::PostSubBufferAsync(
     int height,
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback) {
-  CommitPendingTransaction(gfx::Rect(x, y, width, height),
-                           std::move(completion_callback),
+  CommitPendingTransaction(std::move(completion_callback),
                            std::move(presentation_callback));
 }
 
 void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
-    const gfx::Rect& damage_rect,
     SwapCompletionCallback completion_callback,
     PresentationCallback present_callback) {
   // The transaction is initialized on the first ScheduleOverlayPlane call. If
@@ -657,33 +650,6 @@ void GLSurfaceEGLSurfaceControl::SetFrameRate(float frame_rate) {
 void GLSurfaceEGLSurfaceControl::SetChoreographerVsyncIdForNextFrame(
     absl::optional<int64_t> choreographer_vsync_id) {
   choreographer_vsync_id_for_next_frame_ = choreographer_vsync_id;
-}
-
-gfx::Rect GLSurfaceEGLSurfaceControl::ApplyDisplayInverse(
-    const gfx::Rect& input) const {
-  gfx::Transform display_inverse = gfx::OverlayTransformToTransform(
-      gfx::InvertOverlayTransform(display_transform_),
-      gfx::SizeF(window_rect_.size()));
-  return cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
-      display_inverse, input);
-}
-
-const gfx::ColorSpace&
-GLSurfaceEGLSurfaceControl::GetNearestSupportedColorSpace(
-    const gfx::ColorSpace& buffer_color_space) const {
-  static constexpr gfx::ColorSpace kSRGB = gfx::ColorSpace::CreateSRGB();
-  static constexpr gfx::ColorSpace kP3 = gfx::ColorSpace::CreateDisplayP3D65();
-
-  switch (format_.GetColorSpace()) {
-    case GLSurfaceFormat::COLOR_SPACE_UNSPECIFIED:
-    case GLSurfaceFormat::COLOR_SPACE_SRGB:
-      return kSRGB;
-    case GLSurfaceFormat::COLOR_SPACE_DISPLAY_P3:
-      return buffer_color_space == kP3 ? kP3 : kSRGB;
-  }
-
-  NOTREACHED();
-  return kSRGB;
 }
 
 GLSurfaceEGLSurfaceControl::SurfaceState::SurfaceState(

@@ -181,8 +181,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
     base::CancelableOnceClosure hang_detection_cb_;
   };
 
-  void CommitPendingTransaction(const gfx::Rect& damage_rect,
-                                SwapCompletionCallback completion_callback,
+  void CommitPendingTransaction(SwapCompletionCallback completion_callback,
                                 PresentationCallback callback);
 
   // Called on the |gpu_task_runner_| when a transaction is acked by the
@@ -201,15 +200,8 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
   void AdvanceTransactionQueue();
   void CheckPendingPresentationCallbacks();
 
-  gfx::Rect ApplyDisplayInverse(const gfx::Rect& input) const;
-  const gfx::ColorSpace& GetNearestSupportedColorSpace(
-      const gfx::ColorSpace& buffer_color_space) const;
-
   const std::string root_surface_name_;
   const std::string child_surface_name_;
-
-  // The rect of the native window backing this surface.
-  gfx::Rect window_rect_;
 
   // Holds the surface state changes made since the last call to SwapBuffers.
   absl::optional<gfx::SurfaceControl::Transaction> pending_transaction_;
