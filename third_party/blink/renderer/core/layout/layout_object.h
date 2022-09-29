@@ -1195,6 +1195,20 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetHasCounterNodeMap(has_counter_node_map);
   }
 
+  // |NGPhysicalAnchorQuery| is built and propagated up in the fragment tree
+  // during the layout. This function indicates whether |this| may have an
+  // anchor query or not before the layout. When it returns false, |this| does
+  // not have an |NGPhysicalAnchorQuery|.
+  bool MayHaveAnchorQuery() const {
+    NOT_DESTROYED();
+    return may_have_anchor_query_;
+  }
+  void SetSelfMayHaveAnchorQuery() {
+    NOT_DESTROYED();
+    may_have_anchor_query_ = true;
+  }
+  void MarkMayHaveAnchorQuery();
+
   bool IsTruncated() const {
     NOT_DESTROYED();
     return bitfields_.IsTruncated();
@@ -3919,11 +3933,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // DisplayItemClient and LayoutObject's other fields.
   PaintInvalidationReason full_paint_invalidation_reason_;
 
+  // Additional bitfields.
+  // These are not in LayoutObjectBitfields to avoid to bump its size. These are
+  // unit8_t in order to pack it together with PaintInvalidationReason.
+
   // This boolean is used to know if this LayoutObject is a container for
   // absolute position descendants.
-  // This is not in LayoutObjectBitfields to avoid to bump its size.
-  // This is unit8_t in order to pack it together with PaintInvalidationReason.
   uint8_t can_contain_absolute_position_objects_ : 1;
+  // See comments for |MayHaveAnchorQuery()|.
+  uint8_t may_have_anchor_query_ : 1;
 
 #if DCHECK_IS_ON()
   unsigned has_ax_object_ : 1;

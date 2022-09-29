@@ -384,6 +384,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
 LayoutObject::LayoutObject(Node* node)
     : full_paint_invalidation_reason_(PaintInvalidationReason::kNone),
       can_contain_absolute_position_objects_(false),
+      may_have_anchor_query_(false),
 #if DCHECK_IS_ON()
       has_ax_object_(false),
       set_needs_layout_forbidden_(false),
@@ -430,6 +431,13 @@ bool LayoutObject::IsStyleGenerated() const {
 
   const Node* node = GetNode();
   return !node || node->IsPseudoElement();
+}
+
+void LayoutObject::MarkMayHaveAnchorQuery() {
+  for (LayoutObject* runner = this; runner && !runner->MayHaveAnchorQuery();
+       runner = runner->Parent()) {
+    runner->SetSelfMayHaveAnchorQuery();
+  }
 }
 
 void LayoutObject::SetIsInsideFlowThreadIncludingDescendants(
@@ -3065,6 +3073,9 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
       element->EnsureToggleMap().CreateToggles(toggle_root);
     }
   }
+
+  if (!StyleRef().AnchorName().IsNull())
+    MarkMayHaveAnchorQuery();
 }
 
 void LayoutObject::ApplyPseudoElementStyleChanges(
@@ -3700,6 +3711,9 @@ void LayoutObject::InsertedIntoTree() {
 
   if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock())
     flow_thread->FlowThreadDescendantWasInserted(this);
+
+  if (MayHaveAnchorQuery())
+    Parent()->MarkMayHaveAnchorQuery();
 }
 
 enum FindReferencingScrollAnchorsBehavior { kDontClear, kClear };

@@ -481,9 +481,7 @@ void NGLogicalAnchorQueryForFragmentation::Update(
 
   has_anchors_on_oofs_ = false;
   for (const NGLogicalOOFNodeForFragmentation& oof_node : oof_nodes) {
-    // TODO(crbug.com/1309178): Anchors on in-flow boxes inside of OOFs is not
-    // supported yet.
-    if (!oof_node.box->Style()->AnchorName().IsNull()) {
+    if (oof_node.box->MayHaveAnchorQuery()) {
       has_anchors_on_oofs_ = true;
       break;
     }
