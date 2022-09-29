@@ -92,7 +92,7 @@ bool LocationIconView::OnMousePressed(const ui::MouseEvent& event) {
 void LocationIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (delegate_->IsEditingOrEmpty()) {
     node_data->role = ax::mojom::Role::kImage;
-    node_data->SetName(l10n_util::GetStringUTF8(IDS_ACC_SEARCH_ICON));
+    node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ACC_SEARCH_ICON));
     return;
   }
 
