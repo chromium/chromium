@@ -219,43 +219,6 @@ class WebsiteLoginManagerImpl::PendingFetchLastTimePasswordUseRequest
   base::OnceCallback<void(absl::optional<base::Time>)> callback_;
 };
 
-// A pending request to delete the password for the specified |login|.
-class WebsiteLoginManagerImpl::PendingDeletePasswordRequest
-    : public WebsiteLoginManagerImpl::PendingRequest {
- public:
-  PendingDeletePasswordRequest(
-      const password_manager::PasswordFormDigest& form_digest,
-      const password_manager::PasswordManagerClient* client,
-      const Login& login,
-      base::OnceCallback<void(bool)> callback,
-      base::OnceCallback<void(const PendingRequest*)> notify_finished_callback)
-      : PendingRequest(form_digest,
-                       client,
-                       std::move(notify_finished_callback)),
-        login_(login),
-        callback_(std::move(callback)),
-        store_(client->GetProfilePasswordStore()) {}
-
- protected:
-  // From PendingRequest:
-  void OnFetchCompleted() override {
-    std::vector<const password_manager::PasswordForm*> matches =
-        form_fetcher_->GetNonFederatedMatches();
-    const auto* match = FindPasswordForLogin(matches, login_);
-    if (match != nullptr) {
-      store_->RemoveLogin(*match);
-    }
-
-    std::move(callback_).Run(match != nullptr);
-    PendingRequest::OnFetchCompleted();
-  }
-
- private:
-  Login login_;
-  base::OnceCallback<void(bool)> callback_;
-  raw_ptr<password_manager::PasswordStoreInterface> store_;
-};
-
 // A request to update store with new password for a login.
 class WebsiteLoginManagerImpl::UpdatePasswordRequest
     : public password_manager::FormFetcher::Consumer {
@@ -361,20 +324,6 @@ void WebsiteLoginManagerImpl::GetPasswordForLogin(
       password_manager::PasswordForm::Scheme::kHtml, login.origin.spec(),
       GURL());
   pending_requests_.emplace_back(std::make_unique<PendingFetchPasswordRequest>(
-      digest, client_, login, std::move(callback),
-      base::BindOnce(&WebsiteLoginManagerImpl::OnRequestFinished,
-                     weak_ptr_factory_.GetWeakPtr())));
-  pending_requests_.back()->Start();
-}
-
-void WebsiteLoginManagerImpl::DeletePasswordForLogin(
-    const Login& login,
-    base::OnceCallback<void(bool)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  password_manager::PasswordFormDigest digest(
-      password_manager::PasswordForm::Scheme::kHtml, login.origin.spec(),
-      GURL());
-  pending_requests_.push_back(std::make_unique<PendingDeletePasswordRequest>(
       digest, client_, login, std::move(callback),
       base::BindOnce(&WebsiteLoginManagerImpl::OnRequestFinished,
                      weak_ptr_factory_.GetWeakPtr())));

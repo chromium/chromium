@@ -36,8 +36,6 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
   void GetPasswordForLogin(
       const Login& login,
       base::OnceCallback<void(bool, std::string)> callback) override;
-  void DeletePasswordForLogin(const Login& login,
-                              base::OnceCallback<void(bool)> callback) override;
 
   void GetGetLastTimePasswordUsed(
       const Login& login,
@@ -77,7 +75,6 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
   class PendingFetchLoginsRequest;
   class PendingFetchPasswordRequest;
   class UpdatePasswordRequest;
-  class PendingDeletePasswordRequest;
   class PendingFetchLastTimePasswordUseRequest;
   class WebsiteLeakDetectionDelegate;
 

@@ -259,30 +259,6 @@ TEST_F(WebsiteLoginManagerImplTest, SaveGeneratedPassword) {
   WaitForPasswordStore();
 }
 
-TEST_F(WebsiteLoginManagerImplTest, DeletePasswordSuccess) {
-  password_manager::PasswordFormDigest form_digest(
-      password_manager::PasswordForm::Scheme::kHtml, kFakeUrl, GURL());
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
-  // `DeletePasswordForLogin` will first fetch all existing logins.
-  EXPECT_CALL(*store(), GetLogins(form_digest, _));
-  EXPECT_CALL(*store(), RemoveLogin(FormMatches(MakeSimplePasswordForm())));
-  EXPECT_CALL(mock_callback, Run(true)).Times(1);
-  manager_->DeletePasswordForLogin({GURL(kFakeUrl), kFakeUsername},
-                                   mock_callback.Get());
-  WaitForPasswordStore();
-}
-
-TEST_F(WebsiteLoginManagerImplTest, DeletePasswordFailed) {
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
-  // `DeletePasswordForLogin` will first fetch all existing logins.
-  EXPECT_CALL(*store(), GetLogins);
-  EXPECT_CALL(*store(), RemoveLogin).Times(0);
-  EXPECT_CALL(mock_callback, Run(false)).Times(1);
-  manager_->DeletePasswordForLogin({GURL(kFakeUrl2), kFakeUsername2},
-                                   mock_callback.Get());
-  WaitForPasswordStore();
-}
-
 TEST_F(WebsiteLoginManagerImplTest, GetGetLastTimePasswordUsedSuccess) {
   password_manager::PasswordFormDigest form_digest(
       password_manager::PasswordForm::Scheme::kHtml, kFakeUrl, GURL());
