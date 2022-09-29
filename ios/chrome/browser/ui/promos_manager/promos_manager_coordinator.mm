@@ -244,6 +244,7 @@
 
     [alert addAction:defaultAction];
     [alert addAction:cancelAction];
+    alert.preferredAction = defaultAction;
 
     [self.baseViewController presentViewController:alert
                                           animated:YES
