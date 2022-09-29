@@ -112,16 +112,10 @@ base::ScopedCFTypeRef<CFArrayRef> CreateRateLimitArray(const Bitrate& bitrate) {
 }  // namespace
 
 struct VTVideoEncodeAccelerator::InProgressFrameEncode {
-  InProgressFrameEncode() = delete;
-
-  InProgressFrameEncode(base::TimeDelta rtp_timestamp, base::TimeTicks ref_time)
-      : timestamp(rtp_timestamp), reference_time(ref_time) {}
-
-  InProgressFrameEncode(const InProgressFrameEncode&) = delete;
-  InProgressFrameEncode& operator=(const InProgressFrameEncode&) = delete;
+  InProgressFrameEncode(base::TimeDelta rtp_timestamp)
+      : timestamp(rtp_timestamp) {}
 
   const base::TimeDelta timestamp;
-  const base::TimeTicks reference_time;
 };
 
 struct VTVideoEncodeAccelerator::EncodeOutput {
@@ -366,14 +360,12 @@ void VTVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
           kVTEncodeFrameOptionKey_ForceKeyFrame,
           force_keyframe ? kCFBooleanTrue : kCFBooleanFalse);
 
-  base::TimeTicks ref_time =
-      frame->metadata().reference_time.value_or(base::TimeTicks::Now());
   auto timestamp_cm =
       CMTimeMake(frame->timestamp().InMicroseconds(), USEC_PER_SEC);
   // Wrap information we'll need after the frame is encoded in a heap object.
   // We'll get the pointer back from the VideoToolbox completion callback.
   std::unique_ptr<InProgressFrameEncode> request(
-      new InProgressFrameEncode(frame->timestamp(), ref_time));
+      new InProgressFrameEncode(frame->timestamp()));
 
   if (bitrate_.mode() == Bitrate::Mode::kConstant) {
     // In CBR mode, we adjust bitrate before every encode based on past history
