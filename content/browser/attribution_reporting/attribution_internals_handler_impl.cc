@@ -67,7 +67,8 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
     const CommonSourceInfo& source,
     Attributability attributability,
     const std::vector<uint64_t>& dedup_keys,
-    int64_t aggregatable_budget_consumed) {
+    int64_t aggregatable_budget_consumed,
+    const std::vector<uint64_t>& aggregatable_dedup_keys) {
   DCHECK_GE(aggregatable_budget_consumed, 0);
   return attribution_internals::mojom::WebUISource::New(
       source.source_event_id(), source.source_origin(),
@@ -82,7 +83,7 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
             return std::make_pair(key.first,
                                   HexEncodeAggregationKey(key.second));
           }),
-      aggregatable_budget_consumed, attributability);
+      aggregatable_budget_consumed, aggregatable_dedup_keys, attributability);
 }
 
 void ForwardSourcesToWebUI(
@@ -110,9 +111,10 @@ void ForwardSourcesToWebUI(
       }
     }
 
-    web_ui_sources.push_back(
-        WebUISource(source.common_info(), attributability, source.dedup_keys(),
-                    source.aggregatable_budget_consumed()));
+    web_ui_sources.push_back(WebUISource(source.common_info(), attributability,
+                                         source.dedup_keys(),
+                                         source.aggregatable_budget_consumed(),
+                                         source.aggregatable_dedup_keys()));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_sources));
@@ -176,6 +178,12 @@ void ForwardReportsToWebUI(
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_reports));
+}
+
+attribution_internals::mojom::DedupKeyPtr CreateWebUIDedupKey(
+    absl::optional<uint64_t> dedup_key) {
+  return dedup_key ? attribution_internals::mojom::DedupKey::New(*dedup_key)
+                   : nullptr;
 }
 
 }  // namespace
@@ -304,7 +312,8 @@ void AttributionInternalsHandlerImpl::OnSourceHandled(
 
   auto web_ui_source =
       WebUISource(source.common_info(), attributability, /*dedup_keys=*/{},
-                  /*aggregatable_budget_consumed=*/0);
+                  /*aggregatable_budget_consumed=*/0,
+                  /*aggregatable_dedup_keys=*/{});
 
   for (auto& observer : observers_) {
     observer->OnSourceRejected(web_ui_source.Clone());
@@ -427,10 +436,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
         absl::in_place,
         /*data=*/event_trigger.data,
         /*priority=*/event_trigger.priority,
-        /*deduplication_key=*/event_trigger.dedup_key
-            ? attribution_internals::mojom::DedupKey::New(
-                  *event_trigger.dedup_key)
-            : nullptr,
+        /*deduplication_key=*/CreateWebUIDedupKey(event_trigger.dedup_key),
         /*filters=*/event_trigger.filters.filter_values(),
         /*not_filters=*/event_trigger.not_filters.filter_values());
   }
@@ -451,8 +457,8 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   }
 
   web_ui_trigger->aggregatable_values = trigger.aggregatable_values().values();
-
-  // TODO(crbug.com/1368147): Display aggregatable dedup key in internals UI.
+  web_ui_trigger->aggregatable_dedup_key =
+      CreateWebUIDedupKey(trigger.aggregatable_dedup_key());
 
   for (auto& observer : observers_) {
     observer->OnTriggerHandled(web_ui_trigger.Clone());

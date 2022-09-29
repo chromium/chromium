@@ -102,6 +102,7 @@ struct WebUISource {
   // The value is a hex-encoded unsigned 128-bit integer.
   map<string, string> aggregation_keys;
   uint64 aggregatable_budget_consumed;
+  array<uint64> aggregatable_dedup_keys;
 
   // Union of `StorableSource::Result` and `StoredSource::AttributionLogic`.
   enum Attributability {
@@ -148,6 +149,7 @@ struct WebUITrigger {
   array<WebUIEventTriggerData> event_triggers;
   array<WebUIAggregatableTriggerData> aggregatable_triggers;
   map<string, uint32> aggregatable_values;
+  DedupKey? aggregatable_dedup_key;
 
   enum Status {
     // Shared statuses:

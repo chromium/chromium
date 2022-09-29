@@ -203,6 +203,7 @@ class Source {
   priority: bigint;
   status: string;
   aggregatableBudgetConsumed: bigint;
+  aggregatableDedupKeys: string;
 
   constructor(mojo: WebUISource) {
     this.sourceEventId = mojo.sourceEventId;
@@ -219,6 +220,7 @@ class Source {
     this.debugKey = mojo.debugKey ? mojo.debugKey.value.toString() : '';
     this.dedupKeys = mojo.dedupKeys.join(', ');
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
+    this.aggregatableDedupKeys = mojo.aggregatableDedupKeys.join(', ');
     this.status = attributabilityToText(mojo.attributability);
   }
 }
@@ -249,6 +251,8 @@ class SourceTableModel extends TableModel<Source> {
           (e) => `${e.aggregatableBudgetConsumed} / ${BUDGET_PER_SOURCE}`),
       new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
       new ValueColumn<Source, string>('Dedup Keys', (e) => e.dedupKeys),
+      new ValueColumn<Source, string>(
+          'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys),
     ];
 
     this.emptyRowText = 'No sources.';
@@ -296,6 +300,7 @@ class Trigger {
   aggregatableStatus: string;
   aggregatableTriggers: string;
   aggregatableValues: string;
+  aggregatableDedupKey: string;
 
   constructor(mojo: WebUITrigger) {
     this.triggerTime = new Date(mojo.triggerTime);
@@ -340,6 +345,9 @@ class Trigger {
     this.aggregatableValues =
         JSON.stringify(mojo.aggregatableValues, null, ' ');
 
+    this.aggregatableDedupKey = mojo.aggregatableDedupKey ?
+        mojo.aggregatableDedupKey.value.toString() : '';
+
     this.eventLevelStatus = triggerStatusToText(mojo.eventLevelStatus);
     this.aggregatableStatus = triggerStatusToText(mojo.aggregatableStatus);
   }
@@ -368,6 +376,8 @@ class TriggerTableModel extends TableModel<Trigger> {
           'Aggregatable Triggers', (e) => e.aggregatableTriggers),
       new CodeColumn<Trigger>(
           'Aggregatable Values', (e) => e.aggregatableValues),
+      new ValueColumn<Trigger, string>(
+          'Aggregatable Dedup Key', (e) => e.aggregatableDedupKey),
     ];
 
     this.emptyRowText = 'No triggers.';

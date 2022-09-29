@@ -271,6 +271,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                    {{"a", {"b", "c"}}}))
                .SetAggregationKeys(
                    *AttributionAggregationKeys::FromKeys({{"a", 1}}))
+               .SetAggregatableDedupKeys({14, 18})
                .BuildStored(),
            SourceBuilder(now + base::Hours(2))
                .SetActiveState(StoredSource::ActiveState::
@@ -316,6 +317,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[1].children[12].innerText === "" &&
           table.children[0].children[13].innerText === "" &&
           table.children[1].children[13].innerText === "13, 17" &&
+          table.children[0].children[14].innerText === "" &&
+          table.children[1].children[14].innerText === "14, 18" &&
           table.children[0].children[1].innerText === "Unattributable: noised" &&
           table.children[1].children[1].innerText === "Attributable" &&
           table.children[2].children[1].innerText === "Attributable: reached event-level attribution limit" &&
@@ -882,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       /*filters=*/AttributionFilterData::CreateForTesting({{"a", {"b"}}}),
       /*not_filters=*/AttributionFilterData::CreateForTesting({{"g", {"h"}}}),
       /*debug_key=*/1,
-      /*aggregatable_dedup_key=*/absl::nullopt,
+      /*aggregatable_dedup_key=*/18,
       {
           AttributionTrigger::EventTriggerData(
               /*data=*/2,
@@ -935,7 +938,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[0].children[7].innerText === '{ "g": [  "h" ]}' &&
             table.children[0].children[8].innerText === $2 &&
             table.children[0].children[9].innerText === $3 &&
-            table.children[0].children[10].innerText === '{ "a": 123, "b": 456}') {
+            table.children[0].children[10].innerText === '{ "a": 123, "b": 456}' &&
+            table.children[0].children[11].innerText === "18") {
           obs.disconnect();
           document.title = $1;
         }
