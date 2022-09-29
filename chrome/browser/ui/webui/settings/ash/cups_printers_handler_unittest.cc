@@ -25,6 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 namespace settings {
@@ -100,7 +101,8 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override {
+                      void* params,
+                      const GURL* caller) override {
     // Check that the extensions we expect match the actual extensions passed
     // from the CupsPrintersHandler.
     VerifyExtensions(file_types);

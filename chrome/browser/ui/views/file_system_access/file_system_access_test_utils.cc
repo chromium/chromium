@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 
+#include "url/gurl.h"
+
 SelectPredeterminedFileDialog::SelectPredeterminedFileDialog(
     std::vector<base::FilePath> result,
     Listener* listener,
@@ -21,7 +23,8 @@ void SelectPredeterminedFileDialog::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params) {
+    void* params,
+    const GURL* caller) {
   if (result_.size() == 1)
     listener_->FileSelected(result_[0], 0, params);
   else

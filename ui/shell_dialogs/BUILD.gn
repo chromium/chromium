@@ -186,5 +186,8 @@ source_set("test_support") {
     "fake_select_file_dialog.h",
   ]
   public_deps = [ ":shell_dialogs" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//url",
+  ]
 }

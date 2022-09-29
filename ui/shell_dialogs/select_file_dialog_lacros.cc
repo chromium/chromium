@@ -15,6 +15,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+#include "url/gurl.h"
 
 namespace ui {
 namespace {
@@ -117,7 +118,8 @@ void SelectFileDialogLacros::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params) {
+    void* params,
+    const GURL* caller) {
   CheckCalledOnValidSequence();
   params_ = params;
 

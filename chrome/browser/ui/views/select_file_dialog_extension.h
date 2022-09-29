@@ -127,7 +127,8 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override;
+                      void* params,
+                      const GURL* caller) override;
   bool HasMultipleFileTypeChoicesImpl() override;
 
  private:

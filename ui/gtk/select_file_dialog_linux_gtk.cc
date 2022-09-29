@@ -35,6 +35,7 @@
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "url/gurl.h"
 
 namespace gtk {
 
@@ -215,7 +216,8 @@ void SelectFileDialogLinuxGtk::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params) {
+    void* params,
+    const GURL* caller) {
   set_type(type);
   if (owning_window) {
     owning_window->AddObserver(this);

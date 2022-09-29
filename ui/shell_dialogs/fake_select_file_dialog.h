@@ -75,7 +75,8 @@ class FakeSelectFileDialog : public SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override;
+                      void* params,
+                      const GURL* caller) override;
   bool HasMultipleFileTypeChoicesImpl() override;
   bool IsRunning(gfx::NativeWindow owning_window) const override;
   void ListenerDestroyed() override {}

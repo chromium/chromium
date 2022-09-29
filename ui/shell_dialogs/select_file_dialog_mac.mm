@@ -14,6 +14,7 @@
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "url/gurl.h"
 
 using remote_cocoa::mojom::SelectFileDialogType;
 using remote_cocoa::mojom::SelectFileTypeInfo;
@@ -79,7 +80,8 @@ void SelectFileDialogImpl::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow gfx_window,
-    void* params) {
+    void* params,
+    const GURL* caller) {
   DCHECK(type == SELECT_FOLDER || type == SELECT_UPLOAD_FOLDER ||
          type == SELECT_EXISTING_FOLDER || type == SELECT_OPEN_FILE ||
          type == SELECT_OPEN_MULTI_FILE || type == SELECT_SAVEAS_FILE);

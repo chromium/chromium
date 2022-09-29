@@ -47,7 +47,8 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLinux : public SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override = 0;
+                      void* params,
+                      const GURL* caller) override = 0;
 
   // Wrapper for base::DirectoryExists() that allow access on the UI
   // thread. Use this only in the file dialog functions, where it's ok

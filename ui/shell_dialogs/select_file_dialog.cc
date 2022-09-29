@@ -21,6 +21,7 @@
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -54,7 +55,7 @@ SelectFileDialog::FileTypeInfo::FileTypeInfo() = default;
 SelectFileDialog::FileTypeInfo::FileTypeInfo(const FileTypeInfo& other) =
     default;
 
-SelectFileDialog::FileTypeInfo::~FileTypeInfo() {}
+SelectFileDialog::FileTypeInfo::~FileTypeInfo() = default;
 
 void SelectFileDialog::Listener::FileSelectedWithExtraInfo(
     const ui::SelectedFileInfo& file,
@@ -125,7 +126,8 @@ void SelectFileDialog::SelectFile(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params) {
+    void* params,
+    const GURL* caller) {
   CheckCalledOnValidSequence();
   DCHECK(listener_);
 
@@ -146,7 +148,7 @@ void SelectFileDialog::SelectFile(
 
   // Call the platform specific implementation of the file selection dialog.
   SelectFileImpl(type, title, path, file_types, file_type_index,
-                 default_extension, owning_window, params);
+                 default_extension, owning_window, params, caller);
 }
 
 bool SelectFileDialog::HasMultipleFileTypeChoices() {

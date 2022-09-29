@@ -55,7 +55,8 @@ class SelectFileDialogImpl : public SelectFileDialog {
                       int file_type_index,
                       const std::string& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override;
+                      void* params,
+                      const GURL* caller) override;
 
  protected:
   ~SelectFileDialogImpl() override;

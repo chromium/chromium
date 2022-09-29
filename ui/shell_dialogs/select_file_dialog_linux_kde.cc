@@ -28,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -68,7 +69,8 @@ class SelectFileDialogLinuxKde : public SelectFileDialogLinux {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override;
+                      void* params,
+                      const GURL* caller) override;
 
  private:
   bool HasMultipleFileTypeChoicesImpl() override;
@@ -264,7 +266,8 @@ void SelectFileDialogLinuxKde::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params) {
+    void* params,
+    const GURL* caller) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   set_type(type);
 

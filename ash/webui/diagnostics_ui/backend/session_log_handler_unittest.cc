@@ -36,6 +36,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "url/gurl.h"
 
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_suite.h"
@@ -121,7 +122,8 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override {
+                      void* params,
+                      const GURL* caller) override {
     if (selected_path_.empty()) {
       listener_->FileSelectionCanceled(params);
       return;

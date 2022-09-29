@@ -17,6 +17,7 @@
 #include "ui/base/ui_base_jni_headers/SelectFileDialog_jni.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+#include "url/gurl.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
@@ -119,7 +120,8 @@ void SelectFileDialogImpl::SelectFileImpl(
     int file_type_index,
     const std::string& default_extension,
     gfx::NativeWindow owning_window,
-    void* params) {
+    void* params,
+    const GURL* caller) {
   CheckCalledOnValidSequence();
   JNIEnv* env = base::android::AttachCurrentThread();
 

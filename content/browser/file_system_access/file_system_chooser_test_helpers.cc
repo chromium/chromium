@@ -6,6 +6,7 @@
 #include "base/memory/raw_ptr.h"
 
 #include "ui/shell_dialogs/selected_file_info.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -27,7 +28,8 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override {
+                      void* params,
+                      const GURL* caller) override {
     if (out_params_) {
       out_params_->type = type;
       if (file_types)
@@ -71,7 +73,8 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override {
+                      void* params,
+                      const GURL* caller) override {
     if (out_params_) {
       out_params_->type = type;
       if (file_types)

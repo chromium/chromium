@@ -9,6 +9,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -33,7 +34,8 @@ class PPAPITestSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override {
+                      void* params,
+                      const GURL* caller) override {
     switch (mode_) {
       case PPAPITestSelectFileDialogFactory::RESPOND_WITH_FILE_LIST:
         break;

@@ -21,6 +21,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "url/gurl.h"
 #include "url/url_util.h"
 
 namespace ui {
@@ -170,7 +171,8 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params) {
+    void* params,
+    const GURL* caller) {
   CheckCalledOnValidSequence();
   auto info = base::MakeRefCounted<DialogInfo>();
   info->type = type;

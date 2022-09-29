@@ -4,6 +4,8 @@
 
 #include "headless/lib/browser/headless_select_file_dialog_factory.h"
 
+#include "url/gurl.h"
+
 namespace headless {
 
 namespace {
@@ -42,7 +44,8 @@ class HeadlessSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override {
+                      void* params,
+                      const GURL* caller) override {
     if (callback_)
       std::move(callback_).Run(type);
 

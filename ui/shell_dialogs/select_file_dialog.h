@@ -17,6 +17,8 @@
 #include "ui/shell_dialogs/base_shell_dialog.h"
 #include "ui/shell_dialogs/shell_dialogs_export.h"
 
+class GURL;
+
 namespace ui {
 
 class SelectFileDialogFactory;
@@ -194,8 +196,10 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   //   modeless dialog.
   // |params| is data from the calling context which will be passed through to
   //   the listener. Can be NULL.
+  // |caller| is the URL of the dialog caller which can be used to check further
+  // Policy restrictions, when applicable. Can be NULL.
   // NOTE: only one instance of any shell dialog can be shown per owning_window
-  //       at a time (for obvious reasons).
+  // at a time (for obvious reasons).
   void SelectFile(Type type,
                   const std::u16string& title,
                   const base::FilePath& default_path,
@@ -203,7 +207,8 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
                   int file_type_index,
                   const base::FilePath::StringType& default_extension,
                   gfx::NativeWindow owning_window,
-                  void* params);
+                  void* params,
+                  const GURL* caller = nullptr);
   bool HasMultipleFileTypeChoices();
 
  protected:
@@ -222,7 +227,8 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
       int file_type_index,
       const base::FilePath::StringType& default_extension,
       gfx::NativeWindow owning_window,
-      void* params) = 0;
+      void* params,
+      const GURL* caller) = 0;
 
   // SelectFileDialog and each platform implementation should be accessed only
   // in the main thread. Implementations often use background threads to

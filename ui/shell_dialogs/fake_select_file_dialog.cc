@@ -5,6 +5,7 @@
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "url/gurl.h"
 
 namespace ui {
 
@@ -60,7 +61,8 @@ void FakeSelectFileDialog::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params) {
+    void* params,
+    const GURL* caller) {
   title_ = title;
   params_ = params;
   if (file_types)

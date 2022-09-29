@@ -508,7 +508,8 @@ void SelectFileDialogExtension::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owner_window,
-    void* params) {
+    void* params,
+    const GURL* caller) {
   // |default_extension| is ignored.
   Owner owner;
   owner.window = owner_window;
