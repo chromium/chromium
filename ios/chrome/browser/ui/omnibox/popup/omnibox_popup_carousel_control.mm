@@ -105,14 +105,17 @@ FaviconView* CarouselItemFaviconView() {
 - (void)setSelected:(BOOL)selected {
   [super setSelected:selected];
   if (selected) {
-    self.backgroundColor = [UIColor colorNamed:kGrey200Color];
+    self.backgroundColor =
+        [UIColor colorNamed:@"omnibox_suggestion_row_highlight_color"];
   } else {
     self.backgroundColor = UIColor.clearColor;
   }
 }
 
 - (void)addSubviews {
-  // TODO(crbug.com/1365374): Add rounded corners for the cell.
+  // Rounds corners in a Squircle.
+  self.layer.cornerCurve = kCACornerCurveContinuous;
+  self.layer.cornerRadius = kPreviewCornerRadius;
   // TODO(crbug.com/1365374): Add context Menu.
   [self
       addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
