@@ -424,8 +424,8 @@ interesting attributes supported today.
   one `Default` field, and the field must be of nullable or integral type. When
   defaulted to this field, the value is always null/zero/false as appropriate.
 
-  Note: in the future, an `Extensible` enumeration will also REQUIRE that a
-  `Default` value be specified, so all new extensible enums should specify one.
+  An `Extensible` enumeration REQUIRES that a `Default` value be specified,
+  so all new extensible enums should specify one.
 
 * **`[Native]`**:
   The `Native` attribute may be specified for an empty struct declaration to
