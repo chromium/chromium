@@ -9,6 +9,9 @@
 import {Earcon} from '../../common/abstract_earcons.js';
 import {ChromeVox} from '../chromevox.js';
 
+const AriaCurrentState = chrome.automation.AriaCurrentState;
+const Restriction = chrome.automation.Restriction;
+
 /**
  * The ordering of contextual output.
  * @enum {string}
@@ -127,4 +130,65 @@ export class OutputNodeSpan {
  */
 export const OutputEventType = {
   NAVIGATE: 'navigate',
+};
+
+/**
+ * Rules for mapping properties to a msg id
+ * @const {Object<Object<string, string>>}
+ */
+export const OutputPropertyMap = {
+  CHECKED: {
+    'true': 'checked_true',
+    'false': 'checked_false',
+    'mixed': 'checked_mixed',
+  },
+  PRESSED: {
+    'true': 'aria_pressed_true',
+    'false': 'aria_pressed_false',
+    'mixed': 'aria_pressed_mixed',
+  },
+  RESTRICTION: {
+    [Restriction.DISABLED]: 'aria_disabled_true',
+    [Restriction.READ_ONLY]: 'aria_readonly_true',
+  },
+  STATE: {
+    [AriaCurrentState.TRUE]: 'aria_current_true',
+    [AriaCurrentState.PAGE]: 'aria_current_page',
+    [AriaCurrentState.STEP]: 'aria_current_step',
+    [AriaCurrentState.LOCATION]: 'aria_current_location',
+    [AriaCurrentState.DATE]: 'aria_current_date',
+    [AriaCurrentState.TIME]: 'aria_current_time',
+  },
+};
+
+/**
+ * Metadata about supported automation states.
+ * @const {!Object<string, {on: {msgId: string, earconId: string},
+ *                          off: {msgId: string, earconId: string},
+ *                          isRoleSpecific: (boolean|undefined)}>}
+ *     on: info used to describe a state that is set to true.
+ *     off: info used to describe a state that is set to undefined.
+ *     isRoleSpecific: info used for specific roles.
+ */
+export const OUTPUT_STATE_INFO = {
+  collapsed: {on: {msgId: 'aria_expanded_false'}},
+  default: {on: {msgId: 'default_state'}},
+  expanded: {on: {msgId: 'aria_expanded_true'}},
+  multiselectable: {on: {msgId: 'aria_multiselectable_true'}},
+  required: {on: {msgId: 'aria_required_true'}},
+  visited: {on: {msgId: 'visited_state'}},
+};
+
+/**
+ * Maps input types to message IDs.
+ * @const {Object<string, string>}
+ */
+export const INPUT_TYPE_MESSAGE_IDS = {
+  'email': 'input_type_email',
+  'number': 'input_type_number',
+  'password': 'input_type_password',
+  'search': 'input_type_search',
+  'tel': 'input_type_number',
+  'text': 'input_type_text',
+  'url': 'input_type_url',
 };

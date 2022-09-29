@@ -30,7 +30,7 @@ import {OutputFormatParser, OutputFormatParserObserver} from './output_format_pa
 import {OutputFormatTree} from './output_format_tree.js';
 import {OutputRulesStr} from './output_logger.js';
 import {OutputRoleInfo} from './output_role_info.js';
-import {OutputAction, OutputContextOrder, OutputEarconAction, OutputEventType, OutputNodeSpan, OutputSelectionSpan, OutputSpeechProperties} from './output_types.js';
+import * as outputTypes from './output_types.js';
 
 const AriaCurrentState = chrome.automation.AriaCurrentState;
 const AutomationNode = chrome.automation.AutomationNode;
@@ -105,8 +105,8 @@ export class Output {
      */
     this.queueMode_;
 
-    /** @private {!OutputContextOrder} */
-    this.contextOrder_ = OutputContextOrder.LAST;
+    /** @private {!outputTypes.OutputContextOrder} */
+    this.contextOrder_ = outputTypes.OutputContextOrder.LAST;
 
     /** @private {!Object<string, boolean>} */
     this.suppressions_ = {};
@@ -219,7 +219,7 @@ export class Output {
    * Specify ranges for speech.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withSpeech(range, prevRange, type) {
@@ -234,7 +234,7 @@ export class Output {
    * Specify ranges for aurally styled speech.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withRichSpeech(range, prevRange, type) {
@@ -249,7 +249,7 @@ export class Output {
    * Specify ranges for braille.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withBraille(range, prevRange, type) {
@@ -280,7 +280,7 @@ export class Output {
    * Specify ranges for location.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withLocation(range, prevRange, type) {
@@ -296,7 +296,7 @@ export class Output {
    * Specify the same ranges for speech and braille.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withSpeechAndBraille(range, prevRange, type) {
@@ -309,7 +309,7 @@ export class Output {
    * Specify the same ranges for aurally styled speech and braille.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withRichSpeechAndBraille(range, prevRange, type) {
@@ -356,7 +356,7 @@ export class Output {
    * @return {!Output}
    */
   withContextFirst() {
-    this.contextOrder_ = OutputContextOrder.FIRST;
+    this.contextOrder_ = outputTypes.OutputContextOrder.FIRST;
     return this;
   }
 
@@ -506,8 +506,9 @@ export class Output {
       }
 
       let speechProps;
-      const speechPropsInstance = /** @type {OutputSpeechProperties} */ (
-          buff.getSpanInstanceOf(OutputSpeechProperties));
+      const speechPropsInstance =
+          /** @type {outputTypes.OutputSpeechProperties} */ (
+              buff.getSpanInstanceOf(outputTypes.OutputSpeechProperties));
 
       if (!speechPropsInstance) {
         speechProps = this.initialSpeechProps_;
@@ -525,7 +526,8 @@ export class Output {
       (function() {
         const scopedBuff = buff;
         speechProps.startCallback = function() {
-          const actions = scopedBuff.getSpansInstanceOf(OutputAction);
+          const actions =
+              scopedBuff.getSpansInstanceOf(outputTypes.OutputAction);
           if (actions) {
             actions.forEach(action => action.run());
           }
@@ -556,7 +558,7 @@ export class Output {
     // Braille.
     if (this.brailleBuffer_.length) {
       const buff = this.mergeBraille_(this.brailleBuffer_);
-      const selSpan = buff.getSpanInstanceOf(OutputSelectionSpan);
+      const selSpan = buff.getSpanInstanceOf(outputTypes.OutputSelectionSpan);
       let startIndex = -1;
       let endIndex = -1;
       if (selSpan) {
@@ -628,7 +630,7 @@ export class Output {
    * type.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff Buffer to receive rendered output.
    * @param {!OutputRulesStr} ruleStr
    * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
@@ -689,7 +691,7 @@ export class Output {
    *    outputBuffer: !Array<Spannable>,
    *    outputRuleString: !OutputRulesStr,
    *    opt_prevNode: (!AutomationNode|undefined),
-   *    opt_speechProps: (!OutputSpeechProperties|undefined)
+   *    opt_speechProps: (!outputTypes.OutputSpeechProperties|undefined)
    * }} params An object containing all required and optional parameters.
    * @private
    */
@@ -752,7 +754,7 @@ export class Output {
                 return true;
               }
               if (owner.formatOptions_.auralStyle) {
-                speechProps = new OutputSpeechProperties();
+                speechProps = new outputTypes.OutputSpeechProperties();
                 speechProps.properties['relativePitch'] = -0.3;
               }
 
@@ -773,7 +775,7 @@ export class Output {
               owner.formatTextContent_(node, token, buff, options, ruleStr);
             } else if (node[token] !== undefined) {
               owner.formatAsFieldAccessor_(node, token, buff, options, ruleStr);
-            } else if (Output.STATE_INFO_[token]) {
+            } else if (outputTypes.OUTPUT_STATE_INFO[token]) {
               owner.formatAsStateValue_(node, token, buff, options, ruleStr);
             } else if (token === 'phoneticReading') {
               owner.formatPhoneticReading_(node, buff);
@@ -792,7 +794,7 @@ export class Output {
             ruleStr.write(' @');
             if (owner.formatOptions_.auralStyle) {
               if (!speechProps) {
-                speechProps = new OutputSpeechProperties();
+                speechProps = new outputTypes.OutputSpeechProperties();
               }
               speechProps.properties['relativePitch'] = -0.2;
             }
@@ -802,7 +804,7 @@ export class Output {
           /** @override */
           onSpeechPropertyToken(token, tree, options) {
             ruleStr.write(' ! ' + token + '\n');
-            speechProps = new OutputSpeechProperties();
+            speechProps = new outputTypes.OutputSpeechProperties();
             speechProps.properties[token] = true;
             if (tree.firstChild) {
               if (!owner.formatOptions_.auralStyle) {
@@ -854,7 +856,7 @@ export class Output {
 
     let selectedText = '';
     if (node.textSelStart !== undefined) {
-      options.annotation.push(new OutputSelectionSpan(
+      options.annotation.push(new outputTypes.OutputSelectionSpan(
           node.textSelStart || 0, node.textSelEnd || 0));
 
       if (node.value) {
@@ -894,7 +896,7 @@ export class Output {
     // node is the active descendant. This ensures the braille window is
     // panned appropriately.
     if (node.activeDescendantFor && node.activeDescendantFor.length > 0) {
-      options.annotation.push(new OutputSelectionSpan(0, 0));
+      options.annotation.push(new outputTypes.OutputSelectionSpan(0, 0));
     }
 
     if (localStorage['languageSwitching'] === 'true') {
@@ -1028,7 +1030,7 @@ export class Output {
    * @param {!OutputRulesStr} ruleStr
    */
   formatRestriction_(node, token, buff, ruleStr) {
-    const msg = Output.RESTRICTION_STATE_MAP[node.restriction];
+    const msg = outputTypes.OutputPropertyMap.RESTRICTION[node.restriction];
     if (msg) {
       ruleStr.writeToken(token);
       this.format_({
@@ -1047,7 +1049,7 @@ export class Output {
    * @param {!OutputRulesStr} ruleStr
    */
   formatChecked_(node, token, buff, ruleStr) {
-    const msg = Output.CHECKED_STATE_MAP[node.checked];
+    const msg = outputTypes.OutputPropertyMap.CHECKED[node.checked];
     if (msg) {
       ruleStr.writeToken(token);
       this.format_({
@@ -1066,7 +1068,7 @@ export class Output {
    * @param {!OutputRulesStr} ruleStr
    */
   formatPressed_(node, token, buff, ruleStr) {
-    const msg = Output.PRESSED_STATE_MAP[node.checked];
+    const msg = outputTypes.OutputPropertyMap.PRESSED[node.checked];
     if (msg) {
       ruleStr.writeToken(token);
       this.format_({
@@ -1087,7 +1089,7 @@ export class Output {
   formatState_(node, token, buff, ruleStr) {
     if (node.state) {
       Object.getOwnPropertyNames(node.state).forEach(state => {
-        const stateInfo = Output.STATE_INFO_[state];
+        const stateInfo = outputTypes.OUTPUT_STATE_INFO[state];
         if (stateInfo && !stateInfo.isRoleSpecific && stateInfo.on) {
           ruleStr.writeToken(token);
           this.format_({
@@ -1170,7 +1172,7 @@ export class Output {
     }
     ruleStr.writeToken(token);
     this.render_(
-        subrange, prev, OutputEventType.NAVIGATE, buff, ruleStr,
+        subrange, prev, outputTypes.OutputEventType.NAVIGATE, buff, ruleStr,
         {suppressStartEndAncestry: true});
   }
 
@@ -1236,7 +1238,7 @@ export class Output {
     }
     options.annotation.push(token);
     let msgId =
-        Output.INPUT_TYPE_MESSAGE_IDS_[node.inputType] || 'input_type_text';
+        outputTypes.INPUT_TYPE_MESSAGE_IDS[node.inputType] || 'input_type_text';
     if (this.formatOptions_.braille) {
       msgId = msgId + '_brl';
     }
@@ -1344,7 +1346,9 @@ export class Output {
       }
     } else if (node[relationName]) {
       const related = node[relationName];
-      this.node_(related, related, OutputEventType.NAVIGATE, buff, ruleStr);
+      this.node_(
+          related, related, outputTypes.OutputEventType.NAVIGATE, buff,
+          ruleStr);
     }
   }
 
@@ -1418,7 +1422,7 @@ export class Output {
    */
   formatAsStateValue_(node, token, buff, options, ruleStr) {
     options.annotation.push('state');
-    const stateInfo = Output.STATE_INFO_[token];
+    const stateInfo = outputTypes.OUTPUT_STATE_INFO[token];
     let resolvedInfo = {};
     resolvedInfo = node.state[/** @type {StateType} */ (token)] ? stateInfo.on :
                                                                   stateInfo.off;
@@ -1427,7 +1431,7 @@ export class Output {
     }
     if (this.formatOptions_.speech && resolvedInfo.earconId) {
       options.annotation.push(
-          new OutputEarconAction(resolvedInfo.earconId),
+          new outputTypes.OutputEarconAction(resolvedInfo.earconId),
           node.location || undefined);
     }
     const msgId = this.formatOptions_.braille ? resolvedInfo.msgId + '_brl' :
@@ -1539,7 +1543,7 @@ export class Output {
         return;
       }
 
-      options.annotation.push(new OutputEarconAction(
+      options.annotation.push(new outputTypes.OutputEarconAction(
           tree.firstChild.value, node.location || undefined));
       this.append_(buff, '', options);
       ruleStr.writeTokenWithValue(token, tree.firstChild.value);
@@ -1657,7 +1661,7 @@ export class Output {
   /**
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} rangeBuff
    * @param {!OutputRulesStr} ruleStr
    * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
@@ -1674,14 +1678,18 @@ export class Output {
       return;
     }
     const isForward = prevRange.compare(range) === Dir.FORWARD;
-    const addContextBefore = this.contextOrder_ === OutputContextOrder.FIRST ||
-        this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST ||
-        (this.contextOrder_ === OutputContextOrder.DIRECTED && isForward);
-    const addContextAfter = this.contextOrder_ === OutputContextOrder.LAST ||
-        this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST ||
-        (this.contextOrder_ === OutputContextOrder.DIRECTED && !isForward);
+    const addContextBefore =
+        this.contextOrder_ === outputTypes.OutputContextOrder.FIRST ||
+        this.contextOrder_ === outputTypes.OutputContextOrder.FIRST_AND_LAST ||
+        (this.contextOrder_ === outputTypes.OutputContextOrder.DIRECTED &&
+         isForward);
+    const addContextAfter =
+        this.contextOrder_ === outputTypes.OutputContextOrder.LAST ||
+        this.contextOrder_ === outputTypes.OutputContextOrder.FIRST_AND_LAST ||
+        (this.contextOrder_ === outputTypes.OutputContextOrder.DIRECTED &&
+         !isForward);
     const preferStartOrEndAncestry =
-        this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST;
+        this.contextOrder_ === outputTypes.OutputContextOrder.FIRST_AND_LAST;
     let prevNode = prevRange.start.node;
     let node = range.start.node;
 
@@ -1792,7 +1800,7 @@ export class Output {
   /**
    * @param {!AutomationNode} node
    * @param {!AutomationNode} prevNode
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff
    * @param {!OutputRulesStr} ruleStr
    * @param {{suppressStartEndAncestry: (boolean|undefined),
@@ -1871,7 +1879,7 @@ export class Output {
    * @param {{
    * node: !AutomationNode,
    * prevNode: !AutomationNode,
-   * type: (EventType|OutputEventType),
+   * type: (EventType|outputTypes.OutputEventType),
    * buff: !Array<Spannable>,
    * ruleStr: !OutputRulesStr,
    * ancestors: !Array<!AutomationNode>,
@@ -1944,7 +1952,8 @@ export class Output {
 
         if (this.formatOptions_.braille && buff.length) {
           const nodeSpan = this.mergeBraille_(buff);
-          nodeSpan.setSpan(new OutputNodeSpan(formatNode), 0, nodeSpan.length);
+          nodeSpan.setSpan(
+              new outputTypes.OutputNodeSpan(formatNode), 0, nodeSpan.length);
           originalBuff.push(nodeSpan);
         }
       }
@@ -1954,7 +1963,7 @@ export class Output {
   /**
    * @param {!AutomationNode} node
    * @param {!AutomationNode} prevNode
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff
    * @param {!OutputRulesStr} ruleStr
    * @private
@@ -2008,7 +2017,8 @@ export class Output {
     // Restore braille and add an annotation for this node.
     if (this.formatOptions_.braille) {
       const nodeSpan = this.mergeBraille_(buff);
-      nodeSpan.setSpan(new OutputNodeSpan(node), 0, nodeSpan.length);
+      nodeSpan.setSpan(
+          new outputTypes.OutputNodeSpan(node), 0, nodeSpan.length);
       originalBuff.push(nodeSpan);
     }
   }
@@ -2016,7 +2026,7 @@ export class Output {
   /**
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff
    * @private
    */
@@ -2035,7 +2045,7 @@ export class Output {
     const rangeStart = range.start.index;
     const rangeEnd = range.end.index;
     if (this.formatOptions_.braille) {
-      options.annotation.push(new OutputNodeSpan(node));
+      options.annotation.push(new outputTypes.OutputNodeSpan(node));
       const selStart = node.textSelStart;
       const selEnd = node.textSelEnd;
 
@@ -2052,7 +2062,7 @@ export class Output {
         // relative selStart and relative selEnd for the current line are then
         // just the difference between |selStart|, |selEnd| with |rangeStart|.
         // See editing_test.js for examples.
-        options.annotation.push(new OutputSelectionSpan(
+        options.annotation.push(new outputTypes.OutputSelectionSpan(
             selStart - rangeStart, selEnd - rangeStart));
       } else if (
           rangeStart !== 0 || rangeEnd !== range.start.getText().length) {
@@ -2060,13 +2070,15 @@ export class Output {
         // covered by the range. We exclude full content underlines because it
         // is distracting to read braille with all cells underlined with a
         // cursor.
-        options.annotation.push(new OutputSelectionSpan(rangeStart, rangeEnd));
+        options.annotation.push(
+            new outputTypes.OutputSelectionSpan(rangeStart, rangeEnd));
       }
     }
 
-    // Intentionally skip subnode output for OutputContextOrder.DIRECTED.
-    if (this.contextOrder_ === OutputContextOrder.FIRST ||
-        (this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST &&
+    // Intentionally skip subnode output for
+    // outputTypes.OutputContextOrder.DIRECTED.
+    if (this.contextOrder_ === outputTypes.OutputContextOrder.FIRST ||
+        (this.contextOrder_ === outputTypes.OutputContextOrder.FIRST_AND_LAST &&
          range.start.index === 0)) {
       this.ancestry_(node, prevNode, type, buff, ruleStr, {preferStart: true});
     }
@@ -2092,8 +2104,8 @@ export class Output {
     }
     ruleStr.write('subNode_: ' + text + '\n');
 
-    if (this.contextOrder_ === OutputContextOrder.LAST ||
-        (this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST &&
+    if (this.contextOrder_ === outputTypes.OutputContextOrder.LAST ||
+        (this.contextOrder_ === outputTypes.OutputContextOrder.FIRST_AND_LAST &&
          range.end.index === range.end.getText().length)) {
       this.ancestry_(node, prevNode, type, buff, ruleStr, {preferEnd: true});
     }
@@ -2115,7 +2127,7 @@ export class Output {
    * |computeDelayedHints_|.
    * @param {!CursorRange} range
    * @param {!Array<AutomationNode>} uniqueAncestors
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff Buffer to receive rendered output.
    * @param {!OutputRulesStr} ruleStr
    * @private
@@ -2144,7 +2156,7 @@ export class Output {
     const delayedMsgs =
         Output.computeDelayedHints_(node, uniqueAncestors, type);
     if (delayedMsgs.length > 0) {
-      delayedMsgs[0].props = new OutputSpeechProperties();
+      delayedMsgs[0].props = new outputTypes.OutputSpeechProperties();
       delayedMsgs[0].props.properties['delay'] = true;
     }
 
@@ -2210,9 +2222,10 @@ export class Output {
     let ancestorIndex = 0;
     do {
       if (currentNode.ariaCurrentState &&
-          Output.ARIA_CURRENT_STATE_INFO_[currentNode.ariaCurrentState]) {
+          outputTypes.OutputPropertyMap.STATE[currentNode.ariaCurrentState]) {
         ret.push({
-          msgId: Output.ARIA_CURRENT_STATE_INFO_[currentNode.ariaCurrentState],
+          msgId:
+              outputTypes.OutputPropertyMap.STATE[currentNode.ariaCurrentState],
         });
         break;
       }
@@ -2226,7 +2239,7 @@ export class Output {
    * Internal helper to |hint_|. Returns a list of message hints.
    * @param {!AutomationNode} node
    * @param {!Array<AutomationNode>} uniqueAncestors
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Array<{text: (string|undefined),
    *           msgId: (string|undefined),
    *           subs: (Array<string>|undefined),
@@ -2375,8 +2388,8 @@ export class Output {
     // Reject empty values without meaningful annotations.
     if ((!value || value.length === 0) &&
         opt_options.annotation.every(
-            annotation => !(annotation instanceof OutputAction) &&
-                !(annotation instanceof OutputSelectionSpan))) {
+            annotation => !(annotation instanceof outputTypes.OutputAction) &&
+                !(annotation instanceof outputTypes.OutputSelectionSpan))) {
       return;
     }
 
@@ -2388,7 +2401,7 @@ export class Output {
     // |isUnique| specifies an annotation that cannot be duplicated.
     if (opt_options.isUnique) {
       const annotationSansNodes = opt_options.annotation.filter(
-          annotation => !(annotation instanceof OutputNodeSpan));
+          annotation => !(annotation instanceof outputTypes.OutputNodeSpan));
 
       const alreadyAnnotated = buff.some(spannable => {
         annotationSansNodes.some(annotation => {
@@ -2425,7 +2438,8 @@ export class Output {
     let prevIsName = false;
     return spans.reduce((result, cur) => {
       // Ignore empty spans except when they contain a selection.
-      const hasSelection = cur.getSpanInstanceOf(OutputSelectionSpan);
+      const hasSelection =
+          cur.getSpanInstanceOf(outputTypes.OutputSelectionSpan);
       if (cur.length === 0 && !hasSelection) {
         return result;
       }
@@ -2442,7 +2456,7 @@ export class Output {
       // Keep track of if there's an inline node associated with
       // |cur|.
       const hasInlineNode =
-          cur.getSpansInstanceOf(OutputNodeSpan).some(spannable => {
+          cur.getSpansInstanceOf(outputTypes.OutputNodeSpan).some(spannable => {
             if (!spannable.node) {
               return false;
             }
@@ -2484,7 +2498,7 @@ export class Output {
    * Find the earcon for a given node (including ancestry).
    * @param {!AutomationNode} node
    * @param {!AutomationNode=} opt_prevNode
-   * @return {OutputAction}
+   * @return {outputTypes.OutputAction}
    */
   findEarcon_(node, opt_prevNode) {
     if (node === opt_prevNode) {
@@ -2503,7 +2517,7 @@ export class Output {
       while (earconFinder = ancestors.pop()) {
         const info = OutputRoleInfo[earconFinder.role];
         if (info && info.earconId) {
-          return new OutputEarconAction(
+          return new outputTypes.OutputEarconAction(
               info.earconId, node.location || undefined);
           break;
         }
@@ -2560,7 +2574,7 @@ export class Output {
   assignLocaleAndAppend_(text, contextNode, buff, options) {
     const data =
         LocaleOutputHelper.instance.computeTextAndLocale(text, contextNode);
-    const speechProps = new OutputSpeechProperties();
+    const speechProps = new outputTypes.OutputSpeechProperties();
     speechProps.properties['lang'] = data.locale;
     this.append_(buff, data.text, options);
     // Attach associated SpeechProperties if the buffer is
@@ -2576,85 +2590,6 @@ export class Output {
  * @type {string}
  */
 Output.SPACE = ' ';
-
-/**
- * Metadata about supported automation states.
- * @const {!Object<string, {on: {msgId: string, earconId: string},
- *                          off: {msgId: string, earconId: string},
- *                          isRoleSpecific: (boolean|undefined)}>}
- *     on: info used to describe a state that is set to true.
- *     off: info used to describe a state that is set to undefined.
- *     isRoleSpecific: info used for specific roles.
- * @private
- */
-Output.STATE_INFO_ = {
-  collapsed: {on: {msgId: 'aria_expanded_false'}},
-  default: {on: {msgId: 'default_state'}},
-  expanded: {on: {msgId: 'aria_expanded_true'}},
-  multiselectable: {on: {msgId: 'aria_multiselectable_true'}},
-  required: {on: {msgId: 'aria_required_true'}},
-  visited: {on: {msgId: 'visited_state'}},
-};
-
-/**
- * Maps aria-current state types to message IDs.
- * @const {Object<string>}
- * @private
- */
-Output.ARIA_CURRENT_STATE_INFO_ = {
-  [AriaCurrentState.TRUE]: 'aria_current_true',
-  [AriaCurrentState.PAGE]: 'aria_current_page',
-  [AriaCurrentState.STEP]: 'aria_current_step',
-  [AriaCurrentState.LOCATION]: 'aria_current_location',
-  [AriaCurrentState.DATE]: 'aria_current_date',
-  [AriaCurrentState.TIME]: 'aria_current_time',
-};
-
-/**
- * Maps input types to message IDs.
- * @const {Object<string>}
- * @private
- */
-Output.INPUT_TYPE_MESSAGE_IDS_ = {
-  'email': 'input_type_email',
-  'number': 'input_type_number',
-  'password': 'input_type_password',
-  'search': 'input_type_search',
-  'tel': 'input_type_number',
-  'text': 'input_type_text',
-  'url': 'input_type_url',
-};
-
-/**
- * Rules for mapping the restriction property to a msg id
- * @const {Object<string>}
- * @private
- */
-Output.RESTRICTION_STATE_MAP = {};
-Output.RESTRICTION_STATE_MAP[Restriction.DISABLED] = 'aria_disabled_true';
-Output.RESTRICTION_STATE_MAP[Restriction.READ_ONLY] = 'aria_readonly_true';
-
-/**
- * Rules for mapping the checked property to a msg id
- * @const {Object<string>}
- * @private
- */
-Output.CHECKED_STATE_MAP = {
-  'true': 'checked_true',
-  'false': 'checked_false',
-  'mixed': 'checked_mixed',
-};
-
-/**
- * Rules for mapping the checked property to a msg id
- * @const {Object<string>}
- * @private
- */
-Output.PRESSED_STATE_MAP = {
-  'true': 'aria_pressed_true',
-  'false': 'aria_pressed_false',
-  'mixed': 'aria_pressed_mixed',
-};
 
 /**
  * Rules specifying format of AutomationNodes for output.
