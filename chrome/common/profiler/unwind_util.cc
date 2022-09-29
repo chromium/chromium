@@ -217,6 +217,16 @@ bool AreUnwindPrerequisitesAvailable(
     version_info::Channel channel,
     UnwindPrerequisitesDelegate* prerequites_delegate) {
 #if ANDROID_ARM32_UNWINDING_SUPPORTED
+#if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Sometimes, DFMs can be installed even if not requested by Chrome
+  // explicitly (for instance, in some app stores). Therefore, even if the
+  // unwinder module is installed, we only consider it to be available for
+  // specific channels.
+  if (!(channel == version_info::Channel::CANARY ||
+        channel == version_info::Channel::DEV)) {
+    return false;
+  }
+#endif  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   ModuleUnwindPrerequisitesDelegate default_delegate;
   if (prerequites_delegate == nullptr) {
     prerequites_delegate = &default_delegate;

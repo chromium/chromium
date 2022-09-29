@@ -98,25 +98,34 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
   } test_cases[] = {
     {version_info::Channel::CANARY, &true_mock_delegate, true},
     {version_info::Channel::DEV, &true_mock_delegate, true},
-    {version_info::Channel::BETA, &true_mock_delegate, true},
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL) && \
     BUILDFLAG(ENABLE_ARM_CFI_TABLE)
     {version_info::Channel::CANARY, &false_mock_delegate, false},
     {version_info::Channel::DEV, &false_mock_delegate, false},
     {version_info::Channel::BETA, &false_mock_delegate, false},
-    {version_info::Channel::STABLE, &true_mock_delegate, false},
     {version_info::Channel::STABLE, &false_mock_delegate, false},
-    {version_info::Channel::UNKNOWN, &true_mock_delegate, false},
     {version_info::Channel::UNKNOWN, &false_mock_delegate, false},
-#else
+#if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    {version_info::Channel::BETA, &true_mock_delegate, false},
+    {version_info::Channel::STABLE, &true_mock_delegate, false},
+    {version_info::Channel::UNKNOWN, &true_mock_delegate, false},
+#else   // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    {version_info::Channel::BETA, &true_mock_delegate, true},
+    {version_info::Channel::STABLE, &true_mock_delegate, true},
+    {version_info::Channel::UNKNOWN, &true_mock_delegate, true},
+#endif  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#else   // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL) &&
+        // BUILDFLAG(ENABLE_ARM_CFI_TABLE)
     {version_info::Channel::CANARY, &false_mock_delegate, true},
     {version_info::Channel::DEV, &false_mock_delegate, true},
+    {version_info::Channel::BETA, &true_mock_delegate, true},
     {version_info::Channel::BETA, &false_mock_delegate, true},
     {version_info::Channel::STABLE, &true_mock_delegate, true},
     {version_info::Channel::STABLE, &false_mock_delegate, true},
     {version_info::Channel::UNKNOWN, &true_mock_delegate, true},
     {version_info::Channel::UNKNOWN, &false_mock_delegate, true},
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL) &&
+        // BUILDFLAG(ENABLE_ARM_CFI_TABLE)
   };
 
   for (const auto& test_case : test_cases) {
