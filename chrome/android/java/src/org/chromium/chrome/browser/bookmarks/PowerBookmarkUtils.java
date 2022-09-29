@@ -395,7 +395,7 @@ public class PowerBookmarkUtils {
         if (bookmarkBridge.isBookmarkModelLoaded()) {
             updater.run();
         } else {
-            bookmarkBridge.addObserver(new BookmarkBridge.BookmarkModelObserver() {
+            bookmarkBridge.addObserver(new BookmarkModelObserver() {
                 @Override
                 public void bookmarkModelLoaded() {
                     updater.run();

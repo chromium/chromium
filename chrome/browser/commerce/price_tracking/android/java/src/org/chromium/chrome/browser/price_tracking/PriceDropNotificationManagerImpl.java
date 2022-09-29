@@ -30,6 +30,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -271,7 +272,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             if (bookmarkBridge.isBookmarkModelLoaded()) {
                 unsubscribeRunnable.run();
             } else {
-                bookmarkBridge.addObserver(new BookmarkBridge.BookmarkModelObserver() {
+                bookmarkBridge.addObserver(new BookmarkModelObserver() {
                     @Override
                     public void bookmarkModelLoaded() {
                         unsubscribeRunnable.run();

@@ -62,13 +62,13 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkActionBar;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkFolderRow;
 import org.chromium.chrome.browser.bookmarks.BookmarkItemRow;
 import org.chromium.chrome.browser.bookmarks.BookmarkItemsAdapter;
 import org.chromium.chrome.browser.bookmarks.BookmarkManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow;
@@ -775,8 +775,8 @@ public class BookmarkTest {
 
         // Callback occurs upon changes inside of the bookmark model.
         CallbackHelper modelReorderHelper = new CallbackHelper();
-        BookmarkBridge.BookmarkModelObserver bookmarkModelObserver =
-                new BookmarkBridge.BookmarkModelObserver() {
+        BookmarkModelObserver bookmarkModelObserver =
+                new BookmarkModelObserver() {
                     @Override
                     public void bookmarkModelChanged() {
                         modelReorderHelper.notifyCalled();
@@ -840,8 +840,8 @@ public class BookmarkTest {
 
         // Callback occurs upon changes inside of the bookmark model.
         CallbackHelper modelReorderHelper = new CallbackHelper();
-        BookmarkBridge.BookmarkModelObserver bookmarkModelObserver =
-                new BookmarkBridge.BookmarkModelObserver() {
+        BookmarkModelObserver bookmarkModelObserver =
+                new BookmarkModelObserver() {
                     @Override
                     public void bookmarkModelChanged() {
                         modelReorderHelper.notifyCalled();
@@ -903,8 +903,8 @@ public class BookmarkTest {
 
         // Callback occurs upon changes inside of the bookmark model.
         CallbackHelper modelReorderHelper = new CallbackHelper();
-        BookmarkBridge.BookmarkModelObserver bookmarkModelObserver =
-                new BookmarkBridge.BookmarkModelObserver() {
+        BookmarkModelObserver bookmarkModelObserver =
+                new BookmarkModelObserver() {
                     @Override
                     public void bookmarkModelChanged() {
                         modelReorderHelper.notifyCalled();
